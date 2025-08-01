@@ -1,0 +1,264 @@
+/**
+ * Copyright (c) 2024-2025 Huawei Technologies Co., Ltd.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file mx_matmul_utils.h
+ * \brief
+ */
+
+#ifndef AICORE_ADV_API_DETAIL_MATMUL_UTILS_MX_MATMUL_UTILS_H
+#define AICORE_ADV_API_DETAIL_MATMUL_UTILS_MX_MATMUL_UTILS_H
+
+#include "matmul_type_def.h"
+#include "../feature_trait/matmul_feature_trait.h"
+namespace AscendC {
+
+template <typename T, typename U>
+constexpr bool IsSameTypeV = AscendC::IsSameType<T, U>::value;
+
+template <typename T, typename... Others>
+struct IsTypeOneOf {
+    static constexpr bool value = false;
+};
+
+template <typename T, typename First, typename... Others>
+struct IsTypeOneOf<T, First, Others...> {
+    static constexpr bool value = IsSameTypeV<T, First> || IsTypeOneOf<T, Others...>::value;
+};
+
+template <typename T, typename... Others>
+constexpr bool IsTypeOneOfV = IsTypeOneOf<T, Others...>::value;
+
+template <typename T>
+struct GetMmDstType {
+    using Type = T;
+};
+
+template <typename T, bool isMxType = false>
+struct GetL0DataType {
+    using Type = T;
+};
+
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+template <>
+struct GetMmDstType<fp8_e4m3fn_t> {
+    using Type = float;
+};
+
+template <>
+struct GetMmDstType<fp8_e5m2_t> {
+    using Type = float;
+};
+
+template <>
+struct GetMmDstType<hifloat8_t> {
+    using Type = float;
+};
+
+template <>
+struct GetMmDstType<fp4x2_e2m1_t> {
+    using Type = float;
+};
+
+template <>
+struct GetMmDstType<fp4x2_e1m2_t> {
+    using Type = float;
+};
+
+template <>
+struct GetL0DataType<fp8_e5m2_t, true> {
+    using Type = AscendC::mx_fp8_e5m2_t;
+};
+
+template <>
+struct GetL0DataType<fp8_e5m2_t, false> {
+    using Type = fp8_e5m2_t;
+};
+
+template <>
+struct GetL0DataType<fp8_e4m3fn_t, true> {
+    using Type = AscendC::mx_fp8_e4m3_t;
+};
+
+template <>
+struct GetL0DataType<fp8_e4m3fn_t, false> {
+    using Type = fp8_e4m3fn_t;
+};
+#endif
+
+template <typename SrcT>
+__aicore__ inline constexpr static int32_t AuxGetC0Size()
+{
+    if (sizeof(SrcT) == sizeof(float)) {
+        return Impl::B32_C0SIZE;
+    }
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    else if (IsTypeOneOfV<SrcT, int8_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t, fp8_e8m0_t>) {
+        return Impl::B8_C0SIZE;
+    } else if (IsTypeOneOfV<SrcT, int4b_t, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
+        return Impl::B4_C0SIZE;
+    }
+#else
+    else if (IsSameType<SrcT, int8_t>::value) {
+        return Impl::B8_C0SIZE;
+    } else if (IsSameType<SrcT, int4b_t>::value) {
+        return Impl::B4_C0SIZE;
+    }
+#endif
+    return Impl::B16_C0SIZE;
+}
+
+template <typename SrcT>
+__aicore__ inline constexpr bool IsSupportB8()
+{
+    if (IsSameTypeV<SrcT, int8_t>) {
+        return true;
+    }
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    if (IsTypeOneOfV<SrcT, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t>) {
+        return true;
+    }
+#endif
+    return false;
+}
+
+template <typename SrcT>
+__aicore__ inline constexpr bool IsSupportB4()
+{
+    if (IsSameTypeV<SrcT, int4b_t>) {
+        return true;
+    }
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    if (IsTypeOneOfV<SrcT, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
+        return true;
+    }
+#endif
+    return false;
+}
+
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+constexpr uint8_t INTRA_MODE = 4;
+template <typename INPUT_TYPE>
+__aicore__ constexpr bool PhyMxScalePosIsL1()
+{
+    if constexpr (HasScalePosition<INPUT_TYPE>::value) {
+        return PhyPosIsL1(INPUT_TYPE::scalePosition);
+    }
+    return false;
+}
+
+template <typename INPUT_TYPE>
+__aicore__ constexpr bool PhyMxScalePosIsUB()
+{
+    if constexpr (HasScalePosition<INPUT_TYPE>::value) {
+        return PhyPosIsUB(INPUT_TYPE::scalePosition);
+    }
+    return false;
+}
+
+template <typename INPUT_TYPE>
+__aicore__ constexpr bool PhyMxScalePosIsGM()
+{
+    if constexpr (HasScalePosition<INPUT_TYPE>::value) {
+        return PhyPosIsGM(INPUT_TYPE::scalePosition);
+    }
+    return false;
+}
+#endif
+
+template <typename T>
+__aicore__ constexpr int32_t GetBitSize()
+{
+    if constexpr (std::is_arithmetic<T>::value) {
+        return sizeof(T) * ONE_BYTE_BIT_SIZE;
+    }
+    if constexpr (IsSameTypeV<T, AscendC::int4b_t>) {
+        return ONE_BYTE_BIT_SIZE / 2;
+    }
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    if constexpr (IsTypeOneOfV<T, fp8_e8m0_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t>) {
+        return ONE_BYTE_BIT_SIZE;
+    }
+    if constexpr (IsTypeOneOfV<T, fp4x2_e2m1_t, fp4x2_e1m2_t>) {
+        return ONE_BYTE_BIT_SIZE / 2;
+    }
+#endif
+    return ONE_BYTE_BIT_SIZE * 2;
+}
+
+template <typename T>
+constexpr bool IsScaleTransWithInlv = (HasScalePosition<T>::value && PhyPosIsGM(T::pos) && (T::format == CubeFormat::ND)
+                                       && PhyPosIsL1(T::scalePosition));
+
+template <typename A_TYPE, typename B_TYPE, const auto& MM_CFG>
+__aicore__ inline constexpr bool IsL1BNeedTrans()
+{
+    if constexpr (!Impl::Detail::MatmulFeatureTrait<MM_CFG>::IsMmadInstrSupportAntiQuant()) {
+        if constexpr (GetBitSize<typename B_TYPE::T>() == GetBitSize<typename A_TYPE::T>()) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    return false;
+}
+
+template <typename A_TYPE, typename B_TYPE, const auto& MM_CFG>
+__aicore__ inline constexpr auto GetTransBDataType()
+{
+    if constexpr (HasScalePosition<A_TYPE>::value) {
+        B_TYPE mxBType;
+        return mxBType;
+    } else if constexpr (IsL1BNeedTrans<A_TYPE, B_TYPE, MM_CFG>()) {
+        A_TYPE AType;
+        return AType;
+    } else {
+        B_TYPE BType;
+        return BType;
+    }
+}
+template <typename INPUT_TYPE>
+__aicore__ inline constexpr bool IsScaleTag()
+{
+    return INPUT_TYPE::TAG == InputTypeTag::scaleA || INPUT_TYPE::TAG == InputTypeTag::scaleB;
+}
+
+template <typename INPUT_TYPE>
+__aicore__ inline constexpr bool InputPhyPosIsL1()
+{
+    if constexpr (IsScaleTag<INPUT_TYPE>()) {
+        return PhyPosIsL1(INPUT_TYPE::scalePosition);
+    } else {
+        return PhyPosIsL1(INPUT_TYPE::pos);
+    }
+}
+
+template <typename INPUT_TYPE>
+__aicore__ inline constexpr bool InputPhyPosIsUB()
+{
+    if constexpr (IsScaleTag<INPUT_TYPE>()) {
+        return PhyPosIsUB(INPUT_TYPE::scalePosition);
+    } else {
+        return PhyPosIsUB(INPUT_TYPE::pos);
+    }
+}
+
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+template <typename T>
+constexpr bool SupportMXFP8 = IsTypeOneOfV<T, fp8_e4m3fn_t, fp8_e5m2_t>;
+#else
+template <typename T>
+constexpr bool SupportMXFP8 = false;
+#endif
+template <typename AType, typename BType>
+constexpr bool IsMxEnableUnitFlag = (HasScalePosition<AType>::value && AType::isTrans && !BType::isTrans
+                                     && SupportMXFP8<typename AType::T>);
+} // namespace AscendC
+#endif // _MATMUL_UTILS_H_

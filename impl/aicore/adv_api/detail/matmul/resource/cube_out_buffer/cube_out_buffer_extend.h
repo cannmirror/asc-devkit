@@ -1,0 +1,67 @@
+/**
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+/*!
+ * \file cube_out_buffer_extend.h
+ * \brief
+ */
+#ifndef AICORE_ADV_API_DETAIL_MATMUL_RESOURCE_CUBE_OUT_BUFFER_CUBE_OUT_BUFFER_EXTEND_H
+#define AICORE_ADV_API_DETAIL_MATMUL_RESOURCE_CUBE_OUT_BUFFER_CUBE_OUT_BUFFER_EXTEND_H
+
+#include "../../utils/matmul_utils.h"
+#include "matmul/tiling.h"
+
+namespace AscendC {
+namespace Impl {
+namespace Detail {
+/*
+    CubeOutBuffer is considered entirely experimental.
+    We retain the freedom to make incompatible changes, but do not guarantee the stability.
+    CubeOutBuffer is only for internal usage, does not support extension or customized specialization!
+*/
+template <typename IMPL, typename A_TYPE, typename B_TYPE, typename L0cT, class C_TYPE, const auto& MM_CFG>
+class CubeOutBuffer<IMPL, A_TYPE, B_TYPE, L0cT, C_TYPE, MM_CFG, enable_if_t<PhyPosIsL0C(C_TYPE::pos)>> {
+public:
+    __aicore__ inline CubeOutBuffer(){};
+    __aicore__ inline ~CubeOutBuffer(){};
+    __aicore__ inline void Init(int32_t cacheSize = 1, uint32_t lenFactor = 1) {}
+
+    __aicore__ inline void SetTensor(const LocalTensor<L0cT>& tensor)
+    {
+        cMatrix_ = tensor;
+    }
+
+    __aicore__ inline LocalTensor<L0cT> AllocTensor()
+    {
+        return cMatrix_;
+    }
+
+    __aicore__ inline LocalTensor<L0cT> GetTensor()
+    {
+        return cMatrix_;
+    }
+
+    __aicore__ inline void EnQue(LocalTensor<L0cT>& tensor) {}
+
+    __aicore__ inline LocalTensor<L0cT> DeQue()
+    {
+        return cMatrix_;
+    }
+
+    __aicore__ inline void FreeTensor(LocalTensor<L0cT>& co1Local) {}
+
+    __aicore__ inline void Destroy() {}
+
+private:
+    LocalTensor<L0cT> cMatrix_;
+};
+} // namespace Detail
+} // namespace Impl
+} // namespace AscendC
+#endif // AICORE_ADV_API_DETAIL_MATMUL_RESOURCE_CUBE_OUT_BUFFER_CUBE_OUT_BUFFER_EXTEND_H
