@@ -1,0 +1,191 @@
+/**
+ * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file test_n_loop_basic.cpp
+ * \brief n loop ut for basic
+ */
+#include <gtest/gtest.h>
+#include "kernel_operator.h"
+#include "matmul/tiling.h"
+#include "detail/matmul/utils/matmul_param.h"
+#include "detail/matmul/policy/matmul_policy.h"
+#define private public
+#define protected public
+#include "detail/matmul/policy/matmul_private_modules.h"
+#include "detail/matmul/param/matmul_tensor_info.h"
+#include "detail/matmul/param/matmul_shape_tiling.h"
+#include "detail/matmul/scheduler/iterator/n_loop/n_loop.h"
+#include "detail/matmul/scheduler/iterator/n_loop/n_loop_basic.h"
+
+using namespace std;
+using namespace AscendC;
+
+namespace {
+static constexpr MatmulConfig CFG_BASIC = GetBasicConfig(16, 32, 64);
+static constexpr MatmulConfig CFG_SPECIAL_BASIC = GetSpecialBasicConfig(64, 64, 64, 128, 256, 64, 1, 1);
+template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const MatmulConfig& MM_CFG, class MM_CB,
+    MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)>
+class MatmulImpl : MATMUL_IMPORT_MODULE_PRIVATE(NLoop),
+                   MATMUL_IMPORT_MODULE_PRIVATE(MatmulShapeInfo),
+                   MATMUL_IMPORT_MODULE_PRIVATE(MatmulShapeTiling) {
+    MATMUL_ALLOW_USING_PRIVATE(NLoop);
+    MATMUL_ALLOW_USING_PRIVATE(MatmulShapeInfo);
+    MATMUL_ALLOW_USING_PRIVATE(MatmulShapeTiling);
+
+public:
+    using VAR_PARAMS = typename Impl::Detail::MatmulParams<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG,
+        GetMatmulVersion(MM_CFG)>::PARAMS;
+    using IMPL = MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
+    MATMUL_USE_MODULE(MatmulShapeTiling);
+    MATMUL_USE_MODULE(MatmulShapeInfo);
+
+    MatmulImpl()
+    {
+        InitVar();
+    }
+
+    void InitVar()
+    {
+        MATMUL_MODULE(MatmulShapeTiling)->SetTiling(&tiling);
+        var.tpipe_ = &pipe;
+    }
+
+    void SetInitParams(int32_t singleCoreN, int32_t baseN, int32_t stepN)
+    {
+        MATMUL_MODULE(MatmulShapeInfo)->SetSingleCoreN(singleCoreN);
+        tiling.singleCoreN = singleCoreN;
+        tiling.baseN = baseN;
+        tiling.stepN = stepN;
+        tiling.iterateOrder = 1;
+    }
+
+    int32_t GetSingleShape()
+    {
+        return MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
+    }
+
+private:
+    TCubeTiling tiling;
+    TPipe pipe;
+    VAR_PARAMS var;
+};
+} // namespace
+
+class TestNLoopBasic : public testing::Test {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+
+private:
+    using A_TYPE = MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, false>;
+    using B_TYPE = MatmulType<AscendC::TPosition::GM, CubeFormat::ND, half, false>;
+    using C_TYPE = MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
+    using BIAS_TYPE = MatmulType<AscendC::TPosition::GM, CubeFormat::ND, float>;
+
+    MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_BASIC, void> mm;
+    MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_SPECIAL_BASIC, void> mm2;
+};
+
+TEST_F(TestNLoopBasic, first_iter)
+{
+    mm.SetInitParams(64, 32, 1);
+    mm.Init(mm.GetSingleShape()); // SetSingleShape
+    mm.OuterStart();
+    mm.InnerStart();
+    // Outer
+    EXPECT_EQ(mm.GetTotalIter(), 2); // totalIter
+    EXPECT_EQ(mm.GetOuterIdx(), 0);
+    EXPECT_EQ(mm.GetOuterIter(), 2);      // outerIter
+    EXPECT_EQ(mm.GetTileShape(), 32);     // mainTileShape
+    EXPECT_EQ(mm.GetTileBlockShape(), 2); // Ceil(mainTileShape, BLOCK_CUBE)
+    // Inner
+    EXPECT_EQ(mm.GetInnerIdx(), 0);
+    EXPECT_EQ(mm.GetInnerIter(), 1);      // stepN
+    EXPECT_EQ(mm.GetBaseShape(), 32);     // baseShape
+    EXPECT_EQ(mm.GetBaseBlockShape(), 2); // Ceil(baseShape, BLOCK_CUBE)
+}
+
+TEST_F(TestNLoopBasic, inner_end)
+{
+    mm.SetInitParams(64, 32, 1);
+    mm.Init(mm.GetSingleShape());
+    mm.OuterStart();
+    mm.InnerStart();
+
+    EXPECT_EQ(mm.GetInnerIdx(), 0);
+    mm.InnerNext();
+    EXPECT_TRUE(mm.InnerEnd());
+}
+
+TEST_F(TestNLoopBasic, outer_end)
+{
+    mm.SetInitParams(64, 32, 1);
+    mm.Init(mm.GetSingleShape());
+    mm.OuterStart();
+    mm.InnerStart();
+    mm.InnerNext();
+
+    EXPECT_EQ(mm.GetOuterIdx(), 0);
+    mm.OuterNext();
+    EXPECT_EQ(mm.GetOuterIdx(), 1);
+    mm.OuterNext();
+    EXPECT_TRUE(mm.OuterEnd());
+}
+
+TEST_F(TestNLoopBasic, first_iter_spec)
+{
+    mm2.SetInitParams(256, 64, 1);
+    mm2.Init(mm2.GetSingleShape()); // SetSingleShape
+    mm2.OuterStart();
+    mm2.InnerStart();
+    // Outer
+    EXPECT_EQ(mm2.GetTotalIter(), 4); // totalIter
+    EXPECT_EQ(mm2.GetOuterIdx(), 0);
+    EXPECT_EQ(mm2.GetOuterIter(), 4);      // outerIter
+    EXPECT_EQ(mm2.GetTileShape(), 64);     // mainTileShape
+    EXPECT_EQ(mm2.GetTileBlockShape(), 4); // Ceil(mainTileShape, BLOCK_CUBE)
+    // Inner
+    EXPECT_EQ(mm2.GetInnerIdx(), 0);
+    EXPECT_EQ(mm2.GetInnerIter(), 1);      // stepN
+    EXPECT_EQ(mm2.GetBaseShape(), 64);     // baseShape
+    EXPECT_EQ(mm2.GetBaseBlockShape(), 4); // Ceil(baseShape, BLOCK_CUBE)
+}
+
+TEST_F(TestNLoopBasic, inner_end_spec)
+{
+    mm2.SetInitParams(256, 64, 1);
+    mm2.Init(mm2.GetSingleShape());
+    mm2.OuterStart();
+    mm2.InnerStart();
+
+    EXPECT_EQ(mm2.GetInnerIdx(), 0);
+    mm2.InnerNext();
+    EXPECT_TRUE(mm2.InnerEnd());
+}
+
+TEST_F(TestNLoopBasic, outer_end_spec)
+{
+    mm2.SetInitParams(256, 64, 1);
+    mm2.Init(mm2.GetSingleShape());
+    mm2.OuterStart();
+    mm2.InnerStart();
+    mm2.InnerNext();
+
+    EXPECT_EQ(mm2.GetOuterIdx(), 0);
+    mm2.OuterNext();
+    EXPECT_EQ(mm2.GetOuterIdx(), 1);
+    mm2.OuterNext();
+    EXPECT_EQ(mm2.GetOuterIdx(), 2);
+    mm2.OuterNext();
+    EXPECT_EQ(mm2.GetOuterIdx(), 3);
+    mm2.OuterNext();
+    EXPECT_TRUE(mm2.OuterEnd());
+}

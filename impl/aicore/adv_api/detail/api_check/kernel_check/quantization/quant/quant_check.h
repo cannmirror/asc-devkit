@@ -1,0 +1,64 @@
+/**
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file quant_check.h
+ * \brief
+ */
+#ifndef AICORE_ADV_API_DETAIL_API_CHECK_KERNEL_CHECK_QUANTIZATION_QUANT_QUANT_CHECK_H
+#define AICORE_ADV_API_DETAIL_API_CHECK_KERNEL_CHECK_QUANTIZATION_QUANT_QUANT_CHECK_H
+
+#include "quantization/ascend_quant_utils.h"
+#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 100 || __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220)
+#include "quant_check_common.h"
+#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#include "quant_check_310.h"
+#endif
+
+namespace AscendC {
+namespace HighLevelApiCheck {
+
+template <typename T, bool isReuseSource = false, const AscendQuantConfig& config>
+__aicore__ inline void CheckFuncAscendQuant(__gm__ const char* apiName, const LocalTensor<int8_t>& dstTensor,
+    const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const float scale, const float offset,
+    const uint32_t calCount)
+{
+#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 100 || __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220)
+    CheckFuncClassAscendQuantTensor<T, isReuseSource, config> checkFun(apiName);
+    checkFun.VerifyingParameters(dstTensor, srcTensor, sharedTmpBuffer, scale, offset, calCount);
+#endif
+}
+
+template <typename T, bool isReuseSource = false, const AscendQuantConfig& config>
+__aicore__ inline void CheckFuncAscendQuant(__gm__ const char* apiName, const LocalTensor<int8_t>& dstTensor,
+    const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor,
+    const T offset, const uint32_t scaleCount, const uint32_t calCount)
+{
+#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 100 || __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220)
+    CheckFuncClassAscendQuantChannelOffset<T, isReuseSource, config> checkFun(apiName);
+    checkFun.VerifyingParameters(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offset, scaleCount, calCount);
+#endif
+}
+
+template <typename T, bool isReuseSource = false, const AscendQuantConfig& config>
+__aicore__ inline void CheckFuncAscendQuant(__gm__ const char* apiName, const LocalTensor<int8_t>& dstTensor,
+    const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor,
+    const LocalTensor<T>& offsetTensor, const uint32_t scaleCount, const uint32_t offsetCount, const uint32_t calCount)
+{
+#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 100 || __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220)
+    CheckFuncClassAscendQuantChannelOffsetTensor<T, isReuseSource, config> checkFun(apiName);
+    checkFun.VerifyingParameters(
+        dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor, scaleCount, offsetCount, calCount);
+#endif
+}
+
+} // namespace HighLevelApiCheck
+} // namespace AscendC
+#endif // AICORE_ADV_API_DETAIL_API_CHECK_KERNEL_CHECK_QUANTIZATION_QUANT_QUANT_CHECK_H
