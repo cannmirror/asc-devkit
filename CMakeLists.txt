@@ -69,6 +69,7 @@ target_include_directories(
             $<BUILD_INTERFACE:${KERNEL_TILING_DIR}>)
 
 add_subdirectory(impl)
+add_subdirectory(ops_templates)
 if(ENABLE_TEST)
   add_subdirectory(test)
 endif()

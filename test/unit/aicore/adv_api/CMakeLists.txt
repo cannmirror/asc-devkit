@@ -25,12 +25,6 @@ set(ASCENDC_UTILS_IMPL ${ASCENDC_IMPL_DIR}/aicore/utils)
 
 add_compile_definitions(__CCE_KT_TEST__=1 ASCENDC_CPU_DEBUG=1 ASCENDC_DUMP=0 LOG_CPP)
 
-if (BUILD_OPEN_PROJECT)
-  include(cmake/config.cmake)
-  include(cmake/intf.cmake)
-  include(cmake/func.cmake)
-endif ()
-
 set(ASCENDC_SYS_DIR ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux)
 
 set(ASCENDC_DEP_HEADER_DIR ${ASCENDC_SYS_DIR}/include ${ASCENDC_SYS_DIR}/include/base
@@ -42,7 +36,7 @@ set(ASCEND_DEP_LIB_DIR ${ASCENDC_SYS_DIR}/lib64/ ${ASCEND_CANN_PACKAGE_PATH}/too
 set(CMAKE_CXX_STANDARD 17)
 
 set(ASCENDC_TEST_HEADER_FILES
-    ${ASCENDC_ADV_API_TESTS_DIR}/common
+    ${ASCENDC_UNIT_TESTS_DIR}/common
     ${ASCENDC_ADV_API_TESTS_DIR}/matmul/utils
     ${ASCENDC_ADV_API_INCLUDE}
     ${ASCENDC_IMPL_DIR}/aicore
@@ -462,14 +456,14 @@ file(
 foreach (product_type ${PRODUCT_TYPE_LIST})
   add_executable(
     ascendc_utest_${product_type}
-    ${ASCENDC_ADV_API_TESTS_DIR}/main_global.cpp
-    $<$<STREQUAL:${product_type},ascend610>:${ASCENDC_ADV_API_TESTS_DIR}/common/tik_pv_wrapper.cpp>
-    $<$<STREQUAL:${product_type},ascend310p>:${ASCENDC_ADV_API_TESTS_DIR}/common/tik_pv_wrapper.cpp>
-    $<$<STREQUAL:${product_type},ascend910B1_AIC>:${ASCENDC_ADV_API_TESTS_DIR}/common/k3_pvwrap.cpp>
-    $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_ADV_API_TESTS_DIR}/common/k3_pvwrap.cpp>
-    $<$<STREQUAL:${product_type},ascend910_9599_AIC>:${ASCENDC_ADV_API_TESTS_DIR}/common/k3_pvwrap.cpp>
-    $<$<STREQUAL:${product_type},ascend910_9599_AIV>:${ASCENDC_ADV_API_TESTS_DIR}/common/k3_pvwrap.cpp>
-    $<$<STREQUAL:${product_type},ascend310B1>:${ASCENDC_ADV_API_TESTS_DIR}/common/k3_pvwrap.cpp>
+    ${ASCENDC_ADV_API_TESTS_DIR}/main.cpp
+    $<$<STREQUAL:${product_type},ascend610>:${ASCENDC_UNIT_TESTS_DIR}/common/tik_pv_wrapper.cpp>
+    $<$<STREQUAL:${product_type},ascend310p>:${ASCENDC_UNIT_TESTS_DIR}/common/tik_pv_wrapper.cpp>
+    $<$<STREQUAL:${product_type},ascend910B1_AIC>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
+    $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
+    $<$<STREQUAL:${product_type},ascend910_9599_AIC>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
+    $<$<STREQUAL:${product_type},ascend910_9599_AIV>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
+    $<$<STREQUAL:${product_type},ascend310B1>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
     ${ASCENDC_TEST_${product_type}_CASE_SRC_FILES}
   )
 
@@ -585,7 +579,6 @@ foreach (product_type ${PRODUCT_TYPE_LIST})
             ${ASCENDC_ADV_API_INCLUDE}/transpose/
             ${ASCENDC_ADV_API_INCLUDE}/conv_backprop/
             ${ASCENDC_ADV_API_INCLUDE}/lib/conv/conv3d/
-            ${ASCENDC_ADV_API_TESTS_DIR}/common/
   )
 
   target_compile_options(ascendc_utest_${product_type} PRIVATE -fno-access-control)
@@ -644,7 +637,7 @@ file(
 foreach (product_type ${PRODUCT_TYPE_LIST})
   add_executable(
     ascendc_tiling_utest_${product_type}
-    ${ASCENDC_TILING_SRC_FILES} ${ASCENDC_TILING_TEST_SRC_FILES} ${ASCENDC_ADV_API_TESTS_DIR}/common/platform_stub.cpp
+    ${ASCENDC_TILING_SRC_FILES} ${ASCENDC_TILING_TEST_SRC_FILES} ${ASCENDC_UNIT_TESTS_DIR}/common/platform_stub.cpp
     ${ASCENDC_ADV_API_TESTS_DIR}/tiling/main.cpp
   )
 
@@ -686,7 +679,6 @@ foreach (product_type ${PRODUCT_TYPE_LIST})
             ${ASCENDC_ADV_API_INCLUDE}/transpose/
             ${ASCENDC_ADV_API_INCLUDE}/conv_backprop/
             ${ASCENDC_ADV_API_INCLUDE}/lib/conv/conv3d/
-            ${ASCENDC_ADV_API_TESTS_DIR}/common/
   )
 
   target_link_directories(ascendc_tiling_utest_${product_type} PRIVATE ${ASCEND_DEP_LIB_DIR})

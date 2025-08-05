@@ -8,4 +8,14 @@
 # repository for the full text of the License.
 # ===============================================================================
 
+get_filename_component(ASCENDC_UNIT_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
+
+if (BUILD_OPEN_PROJECT)
+  include(${ASCENDC_UNIT_TESTS_DIR}/cmake/config.cmake)
+  include(${ASCENDC_UNIT_TESTS_DIR}/cmake/intf.cmake)
+  include(${ASCENDC_UNIT_TESTS_DIR}/cmake/func.cmake)
+endif ()
+
 add_subdirectory(aicore)
+add_subdirectory(act)
+add_subdirectory(atvc)
