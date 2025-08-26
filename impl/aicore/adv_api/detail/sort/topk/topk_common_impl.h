@@ -23,6 +23,7 @@
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "topk_common_utils.h"
+#include "index/arithprogression.h"
 
 #if __CCE_AICORE__ == 220
 #include "topk_v220_impl.h"
