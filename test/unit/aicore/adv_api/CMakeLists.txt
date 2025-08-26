@@ -527,7 +527,7 @@ foreach (product_type ${PRODUCT_TYPE_LIST})
     )
   elseif (${product_type} STREQUAL "ascend910_9599_AIC")
     target_compile_definitions(
-      ascendc_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __DAV_C310__ __DAV_C310_CUBE__
+      ascendc_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __NPU_ARCH__=3101 __DAV_C310__ __DAV_C310_CUBE__
     )
     target_link_directories(
       ascendc_utest_${product_type} PRIVATE ${ASCEND_DEP_LIB_DIR}
@@ -535,7 +535,7 @@ foreach (product_type ${PRODUCT_TYPE_LIST})
     )
   elseif (${product_type} STREQUAL "ascend910_9599_AIV")
     target_compile_definitions(
-      ascendc_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __DAV_C310__ __DAV_C310_VEC__
+      ascendc_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __NPU_ARCH__=3101 __DAV_C310__ __DAV_C310_VEC__
     )
     target_link_directories(
       ascendc_utest_${product_type} PRIVATE ${ASCEND_DEP_LIB_DIR}
@@ -642,21 +642,21 @@ foreach (product_type ${PRODUCT_TYPE_LIST})
   )
 
   if (${product_type} STREQUAL "ascend610")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=200)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=200 __NPU_ARCH__=2002)
   elseif (${product_type} STREQUAL "ascend310p")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=200)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=200 __NPU_ARCH__=2002)
   elseif (${product_type} STREQUAL "ascend910B1_AIC")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=220)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=220 __NPU_ARCH__=2201)
   elseif (${product_type} STREQUAL "ascend910B1_AIV")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=220)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=220 __NPU_ARCH__=2201)
   elseif (${product_type} STREQUAL "ascend910_9599_AIC")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __DAV_C310__)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __NPU_ARCH__=3101 __DAV_C310__)
   elseif (${product_type} STREQUAL "ascend910_9599_AIV")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __DAV_C310__)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __NPU_ARCH__=3101 __DAV_C310__)
   elseif (${product_type} STREQUAL "ascend310B1")
-    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=300)
+    target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=300 __NPU_ARCH__=3002)
   elseif (${product_type} STREQUAL "ascend610Lite")
-    target_compile_definitions(ascendc_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310)
+    target_compile_definitions(ascendc_utest_${product_type} PRIVATE UT_TEST __CCE_AICORE__=310 __NPU_ARCH__=3102)
   endif ()
 
   target_include_directories(
