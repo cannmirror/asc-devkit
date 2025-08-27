@@ -19,6 +19,7 @@
 #include "matmul_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "tiling/platform/platform_ascendc.h"
+#include "aicore/utils/common_types.h"
 
 namespace matmul_tiling {
 #if !defined(__ASCC_DEVICE__) && !defined(__ASCC_HOST__)
@@ -89,25 +90,8 @@ const std::map<DataType, uint32_t> DTYPE_BIT_TAB = {{DataType::DT_FLOAT, 32}, {D
     {DataType::DT_FLOAT4_E1M2, 4}, {DataType::DT_HIFLOAT8, 8}, {DataType::DT_FLOAT8_E4M3FN, 8},
     {DataType::DT_FLOAT8_E5M2, 8}, {DataType::DT_FLOAT8_E8M0, 8}};
 #endif // __ASCC_DEVICE__
-enum class TPosition : int32_t {
-    GM,
-    A1,
-    A2,
-    B1,
-    B2,
-    C1,
-    C2,
-    CO1,
-    CO2,
-    VECIN,
-    VECOUT,
-    VECCALC,
-    LCM = VECCALC,
-    SPM,
-    SHM = SPM,
-    TSCM,
-    MAX,
-};
+
+using TPosition = AscendC::TPosition;
 
 enum class TilingPolicy : int32_t { FIXED_A_TSCM, FIXED_B_TSCM, FIXED_A_B_TSCM, NO_POLICY };
 

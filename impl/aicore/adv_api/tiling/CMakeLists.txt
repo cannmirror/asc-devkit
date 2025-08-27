@@ -15,6 +15,7 @@ target_include_directories(
     $<BUILD_INTERFACE:${ASCENDC_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/aicore/adv_api>
+    $<BUILD_INTERFACE:${ASCENDC_DIR}/include>
     $<BUILD_INTERFACE:${ASCENDC_DIR}/include/aicore/adv_api>
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include>>
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include/base>>
