@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_API_IMPL_H
-#define AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_API_IMPL_H
+#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_API_IMPL_H
+#define AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_API_IMPL_H
 
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
@@ -22,8 +22,8 @@
 #include "conv3d_util.h"
 #include "conv/conv3d/conv3d_config.h"
 #include "conv3d_common_func.h"
-#include "../../../common/conv_forward_framework_util.h"
-#include "../../../common/conv_forward_common_func.h"
+#include "../common/conv_forward_framework_util.h"
+#include "../common/conv_forward_common_func.h"
 
 #define QUE_DEPTH_SIZE_TWO 2
 

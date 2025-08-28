@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 #define AICORE_ADV_API_DETAIL_CONV_BACKPROP_CONV3D_BACKPROP_INPUT_CONV3D_BP_INPUT_INIT_FUNC_H
 
 #if __CCE_AICORE__ == 220
-#include "impl/dav_v220/conv3d_bp_input_mte2_sub_func.h"
-#include "impl/dav_v220/conv3d_bp_input_sub_func.h"
-#include "impl/dav_v220/conv3d_bp_kernel_split.h"
+#include "dav_v220/conv3d_bp_input_mte2_sub_func.h"
+#include "dav_v220/conv3d_bp_input_sub_func.h"
+#include "dav_v220/conv3d_bp_kernel_split.h"
 #endif
 
 namespace ConvBackpropInputFunc {

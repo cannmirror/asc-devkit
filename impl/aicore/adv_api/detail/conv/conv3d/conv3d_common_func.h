@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_COMMON_FUNC_H
-#define AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_COMMON_FUNC_H
+#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_COMMON_FUNC_H
+#define AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_COMMON_FUNC_H
 
 #include "conv3d_iterate_impl.h"
 

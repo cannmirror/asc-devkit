@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
  * \brief
  */
 
-#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_UTIL_H
-#define AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_UTIL_H
+#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_UTIL_H
+#define AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_UTIL_H
 
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "kernel_utils.h"
-#include "../../../common/conv_forward_util.h"
+#include "../common/conv_forward_util.h"
 
 namespace Conv3dApi {
 const static uint64_t LOAD2D_MAX_REPEAT_TIMES = 255;
@@ -32,4 +32,4 @@ static __aicore__ inline uint64_t GetCurrentKD(uint64_t tilingKL1, uint64_t cin,
     return ConvApi::CeilDIV(tilingKL1, cin * khxKw);
 }
 } // namespace Conv3dApi
-#endif // __AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_UTIL_H__
+#endif // __AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_UTIL_H__

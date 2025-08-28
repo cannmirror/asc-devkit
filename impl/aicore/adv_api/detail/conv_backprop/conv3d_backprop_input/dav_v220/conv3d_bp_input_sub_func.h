@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef AICORE_ADV_API_DETAIL_CONV_BACKPROP_CONV3D_BACKPROP_INPUT_IMPL_DAV_V220_CONV3D_BP_INPUT_SUB_FUNC_H
-#define AICORE_ADV_API_DETAIL_CONV_BACKPROP_CONV3D_BACKPROP_INPUT_IMPL_DAV_V220_CONV3D_BP_INPUT_SUB_FUNC_H
+#ifndef AICORE_ADV_API_DETAIL_CONV_BACKPROP_CONV3D_BACKPROP_INPUT_DAV_V220_CONV3D_BP_INPUT_SUB_FUNC_H
+#define AICORE_ADV_API_DETAIL_CONV_BACKPROP_CONV3D_BACKPROP_INPUT_DAV_V220_CONV3D_BP_INPUT_SUB_FUNC_H
 
 #include "conv3d_bp_kernel_split.h"
 
