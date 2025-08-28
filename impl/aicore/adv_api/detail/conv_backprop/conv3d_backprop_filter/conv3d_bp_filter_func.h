@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ struct Out2L1ScalarParams {
 };
 
 #if __CCE_AICORE__ == 220
-#include "impl/dav_v220/conv3d_bp_filter_sub_func.h"
+#include "dav_v220/conv3d_bp_filter_sub_func.h"
 #endif
 
 DECLARE_CHECK_IMPL(ConvBackpropFilterFunc, Init);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
  * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -13,12 +13,12 @@
  * \brief
  */
 
-#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_COMMON_SUB_API_H
-#define AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_COMMON_SUB_API_H
+#ifndef AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_COMMON_SUB_API_H
+#define AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_COMMON_SUB_API_H
 
 #if (__CCE_AICORE__ > 200)
-#include "impl/dav_m220/conv3d_sub_api.h"
-#include "impl/dav_m220/conv3d_pointwise_sub_api.h"
-#include "impl/dav_m220/conv3d_groupopt_sub_api.h"
+#include "dav_m220/conv3d_sub_api.h"
+#include "dav_m220/conv3d_pointwise_sub_api.h"
+#include "dav_m220/conv3d_groupopt_sub_api.h"
 #endif
-#endif // __AICORE_ADV_API_DETAIL_CONV_CONV3D_KERNEL_CONV3D_CONV3D_COMMON_SUB_API_H__
+#endif // __AICORE_ADV_API_DETAIL_CONV_CONV3D_CONV3D_COMMON_SUB_API_H__
