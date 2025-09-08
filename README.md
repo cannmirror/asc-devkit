@@ -1,7 +1,11 @@
 # Ascend C
 ## 概述
 
-Ascend C是CANN针对算子开发场景推出的编程语言，原生支持C和C++标准规范，兼具开发效率和运行性能。基于Ascend C编写的算子程序，通过编译器编译和运行时调度，运行在昇腾AI处理器上。使用Ascend C，开发者可以基于昇腾AI硬件，高效的实现自定义的创新算法。
+Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture for Neural Networks）针对算子开发场景推出的编程语言，原生支持C和C++标准规范，兼具开发效率和运行性能。基于Ascend C编写的算子程序，通过编译器编译和运行时调度，运行在昇腾AI处理器上。使用Ascend C，开发者可以基于昇腾AI硬件，高效的实现自定义的创新算法。
+
+Ascend C在CANN架构中的位置如下图所示：
+
+![原理图](docs/figures/architecture.png)
 
 Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API进行编程。Ascend C编程类库分为算子模板库、AICore API（高阶API、基础API、HOST API、C++标准库）等。另外，Ascend C提供一系列用于算子开发的调试工具以及强大的算子工程能力。
 
@@ -9,11 +13,11 @@ Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API
 
 - **ACT**
 
-  ACT（Ascend C Templates）是基于Ascend C开发的高性能Cube类算子模板库，专门用于昇腾硬件上的矩阵乘类融合算子定制化开发。该库采用模块化分层架构，将复杂算子分解为可灵活组合的层级组件，开发者通过拼接复用即可高效构建自定义算子。支持接口独立替换与自定义扩展，内置Tiling自动推导与静态检查能力以提升调试效率，并深度优化硬件适配，最大化释放NPU算力。整体兼顾开发效率与极致性能，显著降低高性能算子开发门槛。
+  [ACT](./ops_templates/act/README.md)（Ascend C Templates）是基于Ascend C开发的高性能Cube类算子模板库，专门用于昇腾硬件上的矩阵乘类融合算子定制化开发。该库采用模块化分层架构，将复杂算子分解为可灵活组合的层级组件，开发者通过拼接复用即可高效构建自定义算子。支持接口独立替换与自定义扩展，内置Tiling自动推导与静态检查能力以提升调试效率，并深度优化硬件适配，最大化释放NPU算力。整体兼顾开发效率与极致性能，显著降低高性能算子开发门槛。
 
 - **ATVC**
 
-  ATVC（Ascend C Templates for Vector Compute）是一个为Ascend C典型Vector算子封装的模板头文件集合，提供了3类典型Vector算子的通用Tiling计算接口和kernel模板类，模板内部自动完成算子的数据搬入搬出等底层通用操作，兼顾开发效率与算子性能，帮助用户快速完成Ascend C算子开发。当前已支持ElementWise、Reduce、Broadcast三类算子。
+  [ATVC](./ops_templates/atvc/README.md)（Ascend C Templates for Vector Compute）是一个为Ascend C典型Vector算子封装的模板头文件集合，提供了3类典型Vector算子的通用Tiling计算接口和kernel模板类，模板内部自动完成算子的数据搬入搬出等底层通用操作，兼顾开发效率与算子性能，帮助用户快速完成Ascend C算子开发。当前已支持ElementWise、Reduce、Broadcast三类算子。
 
 ### AI Core API
 - **高阶API**
@@ -39,9 +43,10 @@ Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API
 
 
 ## 版本配套说明
-本源码仓会适配CANN软件版本创建相应的标签并发行，关于CANN软件版本与本源码仓中标签的配套关系可参见"开放项目与CANN版本配套表"。需要注意，为确保您的源码定制开发顺利进行，请选择配套的CANN版本与Gitee标签源码，使用master分支可能存在版本不匹配的风险。
 
-本源码仓支持的固件驱动版本与配套CANN软件支持的固件驱动版本相同，开发者可通过“昇腾社区-固件与驱动”页面根据产品型号与CANN软件版本获取配套的固件与驱动。
+- 本项目会创建与CANN软件版本适配的标签并发行，两者的配套关系请参见"[开放项目与CANN版本配套表](https://gitee.com/ascend/cann-community/blob/master/README.md#cannversionmap)"。**需注意，为确保您的源码定制开发顺利进行，请选择配套的CANN版本与GitCode标签源码，使用master分支可能存在版本不匹配风险。**
+
+- 本项目支持的固件驱动版本与配套CANN软件支持的固件驱动版本相同，开发者可通过“[昇腾社区-固件与驱动](https://www.hiascend.com/hardware/firmware-drivers/community?product=2&model=28)”，根据产品型号与CANN软件版本获取配套的固件与驱动。
 
 ## 目录结构说明
 
@@ -75,7 +80,7 @@ Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API
 ```
 
 ## 环境准备
-ascendc-api-adv支持由源码编译，进行源码编译前，请根据如下步骤完成相关环境准备。
+ascend-c项目支持由源码编译，进行源码编译前，请根据如下步骤完成相关环境准备。
 
 1. **获取CANN开发套件包**
 
@@ -83,7 +88,7 @@ ascendc-api-adv支持由源码编译，进行源码编译前，请根据如下�
 
 2. **安装依赖**<a name=dependence></a>
 
-   以下所列仅为ascendc-api-adv源码编译用到的依赖，其中python、gcc、cmake的安装方法请参见配套版本的[用户手册](https://hiascend.com/document/redirect/CannCommunityInstDepend)，选择安装场景后，参见“安装CANN > 安装依赖”章节进行相关依赖的安装。
+   以下所列仅为ascend-c源码编译用到的依赖，其中python、gcc、cmake的安装方法请参见配套版本的[用户手册](https://hiascend.com/document/redirect/CannCommunityInstDepend)，选择安装场景后，参见“安装CANN > 安装依赖”章节进行相关依赖的安装。
 
    - python >= 3.7.0
 
@@ -91,7 +96,7 @@ ascendc-api-adv支持由源码编译，进行源码编译前，请根据如下�
 
    - cmake >= 3.16.0
 
-   - googletest（可选，仅执行UT时依赖，建议版本release-1.11.0）
+   - googletest（可选，仅执行UT时依赖，建议版本[release-1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)）
 
      下载[googletest源码](https://github.com/google/googletest.git)后，执行以下命令安装：
 
@@ -160,13 +165,13 @@ ${tag_version}请替换为具体的标签名称，本源码仓与CANN版本的�
 
 1. 编译
 
-   ascendc-api-adv仓提供一键式编译安装能力，进入本开源仓代码根目录，执行如下命令：
+   ascend-c仓提供一键式编译安装能力，进入本开源仓代码根目录，执行如下命令：
 
    ```bash
    bash build.sh
    ```
 
-   编译完成后会在`output`目录下生成CANN-ascendc_api_adv-*<cann_version>*-linux.*<arch>*.run软件包。
+   编译完成后会在`output`目录下生成CANN-ascend_c-*<cann_version>*-linux.*<arch>*.run软件包。
 2. 安装
 
    在开源仓根目录下执行下列命令，根据设置的环境变量路径，将编译生成的run包安装到CANN包的装包路径，同时会覆盖原CANN包中的高阶API内容。
@@ -177,7 +182,7 @@ ${tag_version}请替换为具体的标签名称，本源码仓与CANN版本的�
    # 切换到run包生成路径下
    cd output
    # 安装run包
-   ./CANN-ascendc_api_adv-<cann_version>-linux.<arch>.run
+   ./CANN-ascend_c-<cann_version>-linux.<arch>.run
    ```
 
 ## UT测试（可选）
@@ -199,15 +204,17 @@ bash build.sh --test
 开发者调用高阶API实现自定义算子后，可通过单算子调用的方式验证算子功能。本代码仓提供部分算子实现及其调用样例，具体请参考[examples](./examples)目录下的样例。
 
 ## 相关文档
-[Ascend C资料书架](./docs/README.md) - 总览Ascend C相关文档及视频资料<br>
-[Ascend C模块介绍](./docs/01_introduction.md) - 介绍Ascend C中各模块的架构和功能<br>
-[自定义开发API指南](./docs/02_programming_guidelines.md) - 介绍如何基于Ascend C进行开发高阶API<br>
-[模板库](./ops_templates/README.md) - 介绍Ascend C模板库<br>
-[高阶API列表](./docs/aicore/adv-api/README.md) - 总览Ascend C高阶API<br>
-[基础API列表](./docs/aicore/basic-api/README.md) - 总览Ascend C基础API<br>
-[HOST API列表](./docs/aicore/simt-api/README.md) - 总览Ascend C HOST API<br>
-[工具类API列表](./docs/aicore/utils/README.md) - 总览Ascend C 工具类API<br>
-[变更日志](./CHANGELOG.md) - 介绍各版本特性变更<br>
+
+| 文档  |  说明   |
+|---------|--------|
+|[Ascend C资料书架](./docs/README.md)|总览Ascend C相关文档及视频资料。|
+|[自定义开发API指南](./docs/02_programming_guidelines.md)|介绍如何基于Ascend C进行开发高阶API。|
+|[模板库](./ops_templates/README.md)|介绍Ascend C模板库。|
+|[高阶API列表](./docs/aicore/adv-api/README.md)|总览Ascend C高阶API。|
+|[基础API列表](./docs/aicore/basic-api/README.md)|总览Ascend C基础API。|
+|[工具类API列表](./docs/aicore/utils/README.md)|总览Ascend C 工具类API。|
+|[HOST API列表](./docs/aicore/simt-api/README.md)|总览Ascend C HOST API。|
+|[变更日志](./CHANGELOG.md)|介绍各版本特性变更。|
 
 ## 贡献指南
 
@@ -217,3 +224,6 @@ ascend-c仓欢迎广大开发者体验并参与贡献，在参与社区贡献之
 
 1. 提交PR时，请按照PR模板仔细填写本次PR的业务背景、目的、方案等信息。
 2. 若您的修改不是简单的bug修复，而是涉及到新增特性、新增接口、新增配置参数或者修改代码流程等，请务必先通过Issue进行方案讨论，以避免您的代码被拒绝合入。若您不确定本次修改是否可被归为“简单的bug修复”，亦可通过提交Issue进行方案讨论。
+
+## 许可证
+[CANN Open Software License Agreement Version 1.0](LICENSE)
