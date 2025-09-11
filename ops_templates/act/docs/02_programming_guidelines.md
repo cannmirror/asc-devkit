@@ -14,12 +14,14 @@ KernelMatmul<class ProblemShape, class BlockMmadBuilder, class BlockEpilogue, cl
 ```
 
 - ProblemShape
+
   ProblemShape定义Matmul计算的Shape的数据类型，定义如下：
 
    ```cpp
    using ProblemShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
    ```
 - BlockMmadBuilder
+
   BlockMmadBuilder为Block层Mmad计算接口，定义方式如下：
 
    ```cpp
@@ -58,6 +60,7 @@ KernelMatmul<class ProblemShape, class BlockMmadBuilder, class BlockEpilogue, cl
    该示例支持A、B矩阵以行优先（RowMajor）或列优先（ColMajor）的数据排布方式作为输入。
 
 - BlockEpilogue
+
   BlockEpilogue为Block层的后处理，本示例构建基础Matmul，无后处理，所以传入空类即可。
 
    ```cpp
@@ -66,7 +69,8 @@ KernelMatmul<class ProblemShape, class BlockMmadBuilder, class BlockEpilogue, cl
    ```
 
 - BlockScheduler
-BlockScheduler模板类定义矩阵计算中循环处理数据时的方向顺序，提供计算地址偏移的方法。本示例使用基础的[`IterateKScheduler`](../include/matmul/block/block_scheduler_iterateK.h)。
+
+    BlockScheduler模板类定义矩阵计算中循环处理数据时的方向顺序，提供计算地址偏移的方法。本示例使用基础的[`IterateKScheduler`](../include/matmul/block/block_scheduler_iterateK.h)。
 
    ```cpp
    using BlockScheduler = IterateKScheduler;

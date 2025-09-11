@@ -33,13 +33,13 @@ Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API
 
   工具类API当前包含C++标准库的实现。C++标准库中提供一些常见的c++标准库函数，提供模板类编程能力，主要包括算法、数学函数、容器函数、类型特征和通用工具等。使用C++标准库允许用户编写API时使用C++模板元编程能力，提高API的可读性和可维护性。
 
-**调试工具**
+### 调试工具
 
-  调试工具是Ascend C提供用于帮助算子开发，进行算子调试，调优等一系列工具，其包括孪生调试工具用于用户在CPU域调试精度，进行算子开发，model2trace, msobjdump, show_kernel_debug_data等为对算子的相关的调试信息进行解析。
+  调试工具是Ascend C提供的用于帮助算子开发、算子调试、算子调优等一系列工具。其中的孪生调试工具用于CPU域调试精度，提升算子开发效率；model2trace、msobjdump、show_kernel_debug_data等工具用于对算子的相关调试信息进行解析。
 
-**算子工程**
+### 算子工程
 
-  算子工程用于开发Ascend C算子，其中包括Kernel Launch、 单算子API调用、算子入图、AI框架调用等功能。其中内置cmake用于完成编译和部署，并且包含了多个Kernel编译脚本，以及编译过程所需要的一些工具，如用于生成算子信息库、原型库、单算子调用接口的opbuild可执行，用于动态库打包的elf工具等。
+  算子工程用于调用Ascend C算子，包括Kernel Launch、 单算子API调用、算子入图、AI框架调用等功能。算子工程中的内置cmake用于完成算子编译和部署，其包含了多个Kernel编译脚本、编译过程所需要的一些工具，如用于生成算子信息库、原型库、单算子调用接口的opbuild可执行，用于动态库打包的elf工具等。
 
 
 ## 版本配套说明
@@ -208,7 +208,7 @@ bash build.sh --test
 | 文档  |  说明   |
 |---------|--------|
 |[Ascend C资料书架](./docs/README.md)|总览Ascend C相关文档及视频资料。|
-|[自定义开发API指南](./docs/02_programming_guidelines.md)|介绍如何基于Ascend C进行开发高阶API。|
+|[自定义开发API指南](./docs/01_adv_api_programming_guide.md)|介绍如何基于Ascend C开发高阶API。|
 |[模板库](./ops_templates/README.md)|介绍Ascend C模板库。|
 |[高阶API列表](./docs/aicore/adv-api/README.md)|总览Ascend C高阶API。|
 |[基础API列表](./docs/aicore/basic-api/README.md)|总览Ascend C基础API。|
@@ -216,7 +216,7 @@ bash build.sh --test
 |[HOST API列表](./docs/aicore/simt-api/README.md)|总览Ascend C HOST API。|
 |[变更日志](./CHANGELOG.md)|介绍各版本特性变更。|
 
-## 贡献指南
+## 贡献指南<a name=contribute></a>
 
 ascend-c仓欢迎广大开发者体验并参与贡献，在参与社区贡献之前。请参见[cann-community](https://gitcode.com/ascend/cann-community)了解行为准则，进行CLA协议签署，以及参与开源仓贡献的详细流程。
 

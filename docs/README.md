@@ -5,6 +5,7 @@
 | [Ascend C算子开发指南](https://hiascend.com/document/redirect/CannCommunityOpdevAscendC) | 使用Ascend C编写算子程序，基于昇腾AI硬件，高效的实现自定义算子。 | Ascend C是CANN针对算子开发场景推出的编程语言，原生支持C和C++标准规范，兼具开发效率和运行性能。使用Ascend C编写算子程序，运行在昇腾AI处理器上，实现自定义的创新算法。 |
 | [Ascend C最佳实践](https://hiascend.com/document/redirect/CannCommunityAscendCBestPractice) | 基于已完成开发的Ascend C算子，需要进一步优化算子性能的开发者。 | 异构计算的特点、算子功能的调试方法以及算子性能的优化策略。通过介绍Ascend C编程中的调试与优化思路，结合多种性能优化手段，并辅以具体案例，旨在帮助开发者实现高性能算子的开发。|
 | [Ascend C API参考手册](https://hiascend.com/document/redirect/CannCommunityAscendCApi) | 使用Ascend C提供的各类API，进行Ascend C自定义算子开发的用户。 | Ascend C所有类别API的使用说明，包括函数原型、使用约束和调用示例等。 |
+| [自定义高阶API开发指南](./01_adv_api_programming_guide.md) | 基于Ascend C开源仓，开发定制化API的用户。 | 指导用户自定义开发高阶API的教程，内容包括设计API、开发API、测试API等。该教程旨在帮助开发者实现自定义API的开发。  |
 
 
 
