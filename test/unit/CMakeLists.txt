@@ -7,7 +7,6 @@
 # FITNESS FOR A PARTICULAR PURPOSE. See LICENSE in the root of the software
 # repository for the full text of the License.
 # ===============================================================================
-
 get_filename_component(ASCENDC_UNIT_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 
 if (BUILD_OPEN_PROJECT)
@@ -16,6 +15,4 @@ if (BUILD_OPEN_PROJECT)
   include(${ASCENDC_UNIT_TESTS_DIR}/cmake/func.cmake)
 endif ()
 
-add_subdirectory(aicore)
-add_subdirectory(act)
-add_subdirectory(atvc)
+add_subdirectory(adv_api)

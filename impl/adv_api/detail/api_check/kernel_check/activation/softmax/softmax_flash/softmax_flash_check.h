@@ -1,0 +1,77 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file softmax_flash_check.h
+ * \brief
+ */
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_SOFTMAX_FLASH_CHECK_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_SOFTMAX_FLASH_CHECK_H_
+
+#include "kernel_tiling/kernel_tiling.h"
+#include "include/adv_api/activation/softmax_utils.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
+#include "softmax_flash_check_common.h"
+#else
+#include "softmax_flash_check_aicore.h"
+#endif
+
+namespace AscendC {
+namespace HighLevelApiCheck {
+
+template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
+__aicore__ inline void CheckFuncSoftmaxFlash(__gm__ const char *apiName, const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor,
+    const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor,
+    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const LocalTensor<uint8_t> &sharedTmpBuffer,
+    const SoftMaxTiling &tiling, bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+{
+    CheckFuncClassSoftmaxFlashSameT<T, isReuseSource, isBasicBlock> checkFun(apiName);
+    checkFun.VerifyingParameters(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
+        inMaxTensor, sharedTmpBuffer, tiling, isUpdate, softmaxShapeInfo);
+}
+
+template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
+__aicore__ inline void CheckFuncSoftmaxFlash(__gm__ const char *apiName, const LocalTensor<half> &dstTensor, const LocalTensor<float> &sumTensor,
+    const LocalTensor<float> &maxTensor, const LocalTensor<half> &srcTensor, const LocalTensor<half> &expMaxTensor,
+    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor,
+    const LocalTensor<uint8_t> &sharedTmpBuffer, const SoftMaxTiling &tiling, bool isUpdate,
+    const SoftMaxShapeInfo &softmaxShapeInfo)
+{
+    CheckFuncClassSoftmaxFlash<T, isReuseSource, isBasicBlock> checkFun(apiName);
+    checkFun.VerifyingParameters(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
+        inMaxTensor, sharedTmpBuffer, tiling, isUpdate, softmaxShapeInfo);
+}
+
+template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
+__aicore__ inline void CheckFuncSoftmaxFlash(__gm__ const char *apiName, const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor,
+    const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor,
+    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor,
+    const SoftMaxTiling &tiling, bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+{
+    CheckFuncClassSoftmaxFlashSameT<T, isReuseSource, isBasicBlock> checkFun(apiName);
+    checkFun.VerifyingParameters(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
+        inMaxTensor, tiling, isUpdate, softmaxShapeInfo);
+}
+
+template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
+__aicore__ inline void CheckFuncSoftmaxFlash(__gm__ const char *apiName, const LocalTensor<half> &dstTensor, const LocalTensor<float> &sumTensor,
+    const LocalTensor<float> &maxTensor, const LocalTensor<half> &srcTensor, const LocalTensor<half> &expMaxTensor,
+    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor,
+    const SoftMaxTiling &tiling, bool isUpdate,
+    const SoftMaxShapeInfo &softmaxShapeInfo)
+{
+    CheckFuncClassSoftmaxFlash<T, isReuseSource, isBasicBlock> checkFun(apiName);
+    checkFun.VerifyingParameters(dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
+        inMaxTensor, tiling, isUpdate, softmaxShapeInfo);
+}
+
+}
+}
+#endif // IMPL_API_CHECK_KERNEL_CHECK_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_SOFTMAX_FLASH_CHECK_H_

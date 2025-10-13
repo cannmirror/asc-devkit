@@ -1,0 +1,76 @@
+/**
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/* !
+ * \file bitwise_xor_tiling_impl.cpp
+ * \brief
+ */
+#include <set>
+#include "include/adv_api/math/bitwise_xor_tiling.h"
+#include "../../detail/host_log.h"
+#include "graph/tensor.h"
+#include "../../detail/api_check/host_apicheck.h"
+
+namespace AscendC {
+namespace {
+static const std::set<uint32_t> SUPPORT_TYPESIZE = {1, 2, 4, 8};
+static constexpr const char BITWISE_XOR_GET_MAX_MIN[] = "GetBitwiseXorMaxMinTmpSize";
+static constexpr const char BITWISE_XOR_GET_TMP_BUFFER[] = "GetBitwiseXorTmpBufferFactorSize";
+
+uint32_t GetBitwiseXorMaxTmpSize(const platform_ascendc::SocVersion& socVersion, const uint32_t inputSize,
+                                 const uint32_t typeSize)
+{
+    (void)socVersion;
+    (void)typeSize;
+    (void)inputSize;
+    return 0;
+}
+
+uint32_t GetBitwiseXorMinTmpSize(const platform_ascendc::SocVersion& socVersion, const uint32_t typeSize)
+{
+    (void)socVersion;
+    (void)typeSize;
+    return 0;
+}
+} // namespace
+void GetBitwiseXorMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
+                                const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+                                uint32_t& minValue)
+{
+    (void)isReuseSource;
+
+    const uint32_t inputSize = srcShape.GetShapeSize();
+    platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
+    ASCENDC_HOST_ASSERT((socVersion == platform_ascendc::SocVersion::ASCEND910_95
+                         || socVersion == platform_ascendc::SocVersion::ASCEND910_55),
+                        return, "Unsupported SocVersion of BitwiseXor API.");
+
+    HighLevelApiCheck::SrcShapeSizeVerifyingParameters<BITWISE_XOR_GET_MAX_MIN>(inputSize, typeSize);
+    HighLevelApiCheck::TypeSizeVerifyingParameters<BITWISE_XOR_GET_MAX_MIN>(typeSize, SUPPORT_TYPESIZE);
+    HighLevelApiCheck::IsReuseSourceVerifyingParameters<BITWISE_XOR_GET_MAX_MIN>(isReuseSource);
+
+    maxValue = GetBitwiseXorMaxTmpSize(socVersion, inputSize, typeSize);
+    minValue = GetBitwiseXorMinTmpSize(socVersion, typeSize);
+}
+
+void GetBitwiseXorTmpBufferFactorSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const uint32_t typeSize,
+                                      uint32_t& maxLivedNodeCount, uint32_t& extraBuf)
+{
+    platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
+    ASCENDC_HOST_ASSERT((socVersion == platform_ascendc::SocVersion::ASCEND910_95
+                         || socVersion == platform_ascendc::SocVersion::ASCEND910_55),
+                        return, "Unsupported SocVersion of BitwiseXor API.");
+    HighLevelApiCheck::TypeSizeVerifyingParameters<BITWISE_XOR_GET_TMP_BUFFER>(typeSize, SUPPORT_TYPESIZE);
+
+    extraBuf = 0u;
+    maxLivedNodeCount = 0u;
+}
+
+} // namespace AscendC

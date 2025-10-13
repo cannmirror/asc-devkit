@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+ 
+ /* !
+ * \file bitwise_and_common_impl.h
+ * \brief
+ */
+
+#ifndef LIB_MATH_BITWISE_AND_IMPL_H
+#define LIB_MATH_BITWISE_AND_IMPL_H
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#include "kernel_tensor.h"
+#include "../bitwise_template/bitwise_template.h"
+namespace AscendC {
+struct BitwiseAndConfig {
+    bool isReuseSource;
+};
+constexpr BitwiseAndConfig DEFAULT_BITWISE_AND_CONFIG = {false};
+
+template <const BitwiseAndConfig& config = DEFAULT_BITWISE_AND_CONFIG, typename T>
+__aicore__ inline void BitwiseAndImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
+                                      const uint32_t count)
+{
+    // Only for AI Vector Core.
+    if ASCEND_IS_AIC {
+        return;
+    }
+    CHECK_FUNC_HIGHLEVEL_API(BitwiseAnd, (T, config.isReuseSource), (dst, src0, src1, count));
+
+    if constexpr (sizeof(T) == 8) {
+        BitwiseTemplateImpl<
+            MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>, T>(
+            dst, src0, src1, count);
+    } else {
+        BitwiseTemplateImpl<
+            MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne>>, T>(
+            dst, src0, src1, count);
+    }
+}
+
+} // namespace AscendC
+#endif
+#endif  // IMPL_MATH_BITWISE_AND_BITWISE_AND_COMMON_IMPL_H

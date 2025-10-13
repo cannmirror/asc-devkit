@@ -7,9 +7,9 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
-#include <thread>
-#include "securec.h"
 #include "tik_pv_wrapper.h"
+#include "securec.h"
+#include <thread>
 
 PVMemAccessList pv_mem_access_list;
 uint64_t g_tikCtrlValue = 0;

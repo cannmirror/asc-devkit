@@ -18,7 +18,7 @@ CPU_NUM=$(($(cat /proc/cpuinfo | grep "^processor" | wc -l)))
 JOB_NUM="-j${CPU_NUM}"
 ASAN="false"
 COV="false"
-CUSTOM_OPTION="-DCMAKE_INSTALL_PREFIX=${OUTPUT_DIR}"
+CUSTOM_OPTION="-DCMAKE_INSTALL_PREFIX=${OUTPUT_DIR} -DPACKAGE_OPEN_PROJECT=ON"
 
 if [ "${USER_ID}" != "0" ]; then
     DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
