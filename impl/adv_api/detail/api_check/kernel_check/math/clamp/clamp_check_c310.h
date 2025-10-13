@@ -1,0 +1,89 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file clamp_check_c310.h
+ * \brief
+ */
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_CLAMP_CLAMP_CHECK_C310_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_MATH_CLAMP_CLAMP_CHECK_C310_H_
+
+#include "../math_common_check.h"
+
+namespace AscendC {
+namespace HighLevelApiCheck {
+
+template <typename T, bool isReuseSource = false>
+class CheckFuncClassClampMax {
+public:
+    __aicore__ inline CheckFuncClassClampMax() {};
+    __aicore__ inline CheckFuncClassClampMax(__gm__ const char* name)  {};
+
+public:
+    __aicore__ inline void VerifyingParameters(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+        const LocalTensor<uint8_t>& sharedTmpBuffer, const T scalar, const uint32_t count) {};
+};
+
+template <typename T, bool isReuseSource = false>
+class CheckFuncClassClampMin {
+public:
+    __aicore__ inline CheckFuncClassClampMin() {};
+    __aicore__ inline CheckFuncClassClampMin(__gm__ const char* name)  {};
+
+public:
+    __aicore__ inline void VerifyingParameters(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+        const LocalTensor<uint8_t>& sharedTmpBuffer, const T scalar, const uint32_t count) {};
+};
+
+template <typename T, typename U, typename S, bool isReuseSource = false>
+class CheckFuncClassClamp : public DataTypeCheckFuncBasicClass, public CalCountCheckFuncBasicClass,
+    public ReuseSourceCheckFuncBasicClass, public SingleTensorCheckFuncBasicClass, public MultipleTensorCheckFuncBasicClass {
+public:
+    __aicore__ inline CheckFuncClassClamp() {};
+    __aicore__ inline CheckFuncClassClamp(__gm__ const char* name) :
+        DataTypeCheckFuncBasicClass(name), CalCountCheckFuncBasicClass(name),
+        ReuseSourceCheckFuncBasicClass(name), SingleTensorCheckFuncBasicClass(name), MultipleTensorCheckFuncBasicClass(name) {};
+
+public:
+    __aicore__ inline void VerifyingParameters(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& min, const S& max, 
+        const uint32_t count) {
+        ReuseSourceCheckFuncBasicClass::IsReuseSourceVerifyingParameters<false>(ARG_AND_STRING(isReuseSource));
+
+        if constexpr (TypeUtils::IsLocalTensorType<U>() && TypeUtils::IsLocalTensorType<S>()) {
+            CalCountCheckFuncBasicClass::CalCountVerifyingParameters(ARG_AND_STRING(count),VA_ARGS_TO_MAKE_TUPLE(dst, src, min, max));
+            SingleTensorCheckFuncBasicClass::TensorVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src, min, max),
+                VA_ARGS_TO_MAKE_TUPLE_STRING(TPosition::VECIN, TPosition::VECOUT, TPosition::VECCALC));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, min));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, max));
+        } else if constexpr (TypeUtils::IsLocalTensorType<U>() && TypeUtils::IsInnerDefaultType<S>()) {
+            CalCountCheckFuncBasicClass::CalCountVerifyingParameters(ARG_AND_STRING(count),VA_ARGS_TO_MAKE_TUPLE(dst, src, min));
+            SingleTensorCheckFuncBasicClass::TensorVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src, min),
+                VA_ARGS_TO_MAKE_TUPLE_STRING(TPosition::VECIN, TPosition::VECOUT, TPosition::VECCALC));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, min));
+        } else if constexpr (TypeUtils::IsLocalTensorType<S>() && TypeUtils::IsInnerDefaultType<U>()) {
+            CalCountCheckFuncBasicClass::CalCountVerifyingParameters(ARG_AND_STRING(count),VA_ARGS_TO_MAKE_TUPLE(dst, src, max));
+            SingleTensorCheckFuncBasicClass::TensorVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src, max),
+                VA_ARGS_TO_MAKE_TUPLE_STRING(TPosition::VECIN, TPosition::VECOUT, TPosition::VECCALC));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, max));
+        } else {
+            CalCountCheckFuncBasicClass::CalCountVerifyingParameters(ARG_AND_STRING(count),VA_ARGS_TO_MAKE_TUPLE(dst, src));
+            SingleTensorCheckFuncBasicClass::TensorVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src),
+                VA_ARGS_TO_MAKE_TUPLE_STRING(TPosition::VECIN, TPosition::VECOUT, TPosition::VECCALC));
+            MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src));
+        }
+    };
+};
+
+}
+}
+#endif // IMPL_API_CHECK_KERNEL_CHECK_MATH_CLAMP_CLAMP_CHECK_C310_H_

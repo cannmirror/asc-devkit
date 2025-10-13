@@ -1,0 +1,57 @@
+/**
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/* !
+ * \file logical_xor_check_c310.h
+ * \brief
+ */
+
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_LOGICAL_XOR_LOGICAL_XOR_CHECK_C310_H
+#define IMPL_API_CHECK_KERNEL_CHECK_LOGICAL_XOR_LOGICAL_XOR_CHECK_C310_H
+#include "../../basic_check/datatype_check.h"
+#include "../../basic_check/calcount_check.h"
+#include "../../basic_check/reuse_source_check.h"
+#include "../../basic_check/single_tensor_check.h"
+#include "../../basic_check/multiple_tensor_check.h"
+
+namespace AscendC {
+namespace HighLevelApiCheck {
+template <typename T, typename U, bool isReuseSource>
+class CheckFuncClassLogicalXor : public DataTypeCheckFuncBasicClass,
+                                 public CalCountCheckFuncBasicClass,
+                                 public ReuseSourceCheckFuncBasicClass,
+                                 public SingleTensorCheckFuncBasicClass,
+                                 public MultipleTensorCheckFuncBasicClass {
+public:
+    __aicore__ inline CheckFuncClassLogicalXor(){};
+    __aicore__ inline CheckFuncClassLogicalXor(__gm__ const char* name) :
+        DataTypeCheckFuncBasicClass(name), CalCountCheckFuncBasicClass(name), ReuseSourceCheckFuncBasicClass(name),
+        SingleTensorCheckFuncBasicClass(name), MultipleTensorCheckFuncBasicClass(name){};
+    __aicore__ inline void VerifyingParameters(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
+                                               const LocalTensor<U>& src1, const uint32_t count)
+    {
+        ReuseSourceCheckFuncBasicClass::IsReuseSourceVerifyingParameters<false>(ARG_AND_STRING(isReuseSource));
+
+        CalCountCheckFuncBasicClass::CalCountVerifyingParameters(ARG_AND_STRING(count),
+                                                                 VA_ARGS_TO_MAKE_TUPLE(dst, src0, src1));
+
+        SingleTensorCheckFuncBasicClass::TensorVerifyingParameters(
+            VA_ARGS_TO_MAKE_TUPLE(dst, src0, src1),
+            VA_ARGS_TO_MAKE_TUPLE_STRING(TPosition::VECIN, TPosition::VECOUT, TPosition::VECCALC));
+
+        MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src0));
+
+        MultipleTensorCheckFuncBasicClass::TensorReuseVerifyingParameters(VA_ARGS_TO_MAKE_TUPLE(dst, src1));
+    };
+};
+} // namespace HighLevelApiCheck
+} // namespace AscendC
+
+#endif // IMPL_API_CHECK_KERNEL_CHECK_LOGICAL_XOR_LOGICAL_XOR_CHECK_C310_H

@@ -14,12 +14,13 @@
 #include <memory>
 #include <vector>
 
+// #define TIK_PV_API __attribute__((__visibility__("default")))
 #define TIK_PV_API
 
 class TIK_PV_API PVEnv {
 public:
-    PVEnv(){};
-    virtual ~PVEnv(){};
+    PVEnv() {};
+    virtual ~PVEnv() {};
 };
 
 struct PvMemAccess {
@@ -37,6 +38,7 @@ struct PVMemAccessList {
     PvMemAccess* list = nullptr;
     int32_t len = 0;
 };
+
 
 extern "C" TIK_PV_API void set_config_path(const char* path);
 extern "C" TIK_PV_API PVEnv* pv_create(uint32_t chip_version, const char* path, uint32_t core_id);
@@ -70,5 +72,6 @@ extern "C" TIK_PV_API int32_t pv_read_va_register(PVEnv* p_env, int32_t va_index
 extern "C" TIK_PV_API int32_t pv_write_va_register(PVEnv* p_env, int32_t va_index, uint64_t* val0, uint64_t* val1);
 extern "C" TIK_PV_API int32_t pv_read_smask_tbl(const PVEnv* p_env, int64_t addr, void* buffer, int32_t len);
 extern "C" TIK_PV_API int32_t pv_write_smask_tbl(const PVEnv* p_env, int64_t addr, const void* buffer, int32_t len);
+
 
 #endif

@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/* !
+ * \file tuple.h
+ * \brief
+ */
+#ifndef AICORE_UTILS_STD_TUPLE_H
+#define AICORE_UTILS_STD_TUPLE_H
+
+#include "impl/utils/std/tuple/tuple_impl.h"
+
+namespace AscendC {
+namespace Std {
+
+// tuple
+template <typename ...Tps>
+class tuple;
+
+// tuple_size
+template <typename ...Tps>
+struct tuple_size;
+
+// tuple_element
+template <size_t N, typename ...Tps>
+struct tuple_element;
+
+// make_tuple
+template <typename ...Tps>
+ASCENDC_HOST_AICORE inline constexpr tuple<unwrap_decay_t<Tps>...> make_tuple(Tps&& ...args);
+
+// tie
+template <typename ...Tps>
+ASCENDC_HOST_AICORE inline constexpr tuple<Tps& ...> tie(Tps& ...args) noexcept;
+
+// get
+template <size_t N, typename ...Tps>
+ASCENDC_HOST_AICORE inline typename tuple_element<N, tuple<Tps...> >::type& get(tuple<Tps...>& t) noexcept;
+
+template <size_t N, typename ...Tps>
+ASCENDC_HOST_AICORE inline const typename tuple_element<N, tuple<Tps...> >::type& get(const tuple<Tps...>& t) noexcept;
+
+template <size_t N, typename ...Tps>
+ASCENDC_HOST_AICORE inline typename tuple_element<N, tuple<Tps...> >::type&& get(tuple<Tps...>&& t) noexcept;
+
+template <size_t N, typename ...Tps>
+ASCENDC_HOST_AICORE inline const typename tuple_element<N, tuple<Tps...> >::type&& get(const tuple<Tps...>&& t) noexcept;
+
+}
+}
+
+#endif // AICORE_UTILS_STD_TUPLE_H
