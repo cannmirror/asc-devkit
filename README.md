@@ -1,5 +1,10 @@
 # Ascend C
-## 概述
+
+## 🔥Latest News
+
+- [2025/11] Ascend C项目首次上线。
+
+## 🚀概述
 
 Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture for Neural Networks）针对算子开发场景推出的编程语言，原生支持C和C++标准规范，兼具开发效率和运行性能。基于Ascend C编写的算子程序，通过编译器编译和运行时调度，运行在昇腾AI处理器上。使用Ascend C，开发者可以基于昇腾AI硬件，高效的实现自定义的创新算法。
 
@@ -42,13 +47,7 @@ Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API
   算子工程用于调用Ascend C算子，包括Kernel Launch、 单算子API调用、算子入图、AI框架调用等功能。算子工程中的内置cmake用于完成算子编译和部署，其包含了多个Kernel编译脚本、编译过程所需要的一些工具，如用于生成算子信息库、原型库、单算子调用接口的opbuild可执行，用于动态库打包的elf工具等。
 
 
-## 版本配套说明
-
-- 本项目会创建与CANN软件版本适配的标签并发行，两者的配套关系请参见"[开放项目与CANN版本配套表](https://gitee.com/ascend/cann-community/blob/master/README.md#cannversionmap)"。**需注意，为确保您的源码定制开发顺利进行，请选择配套的CANN版本与GitCode标签源码，使用master分支可能存在版本不匹配风险。**
-
-- 本项目支持的固件驱动版本与配套CANN软件支持的固件驱动版本相同，开发者可通过“[昇腾社区-固件与驱动](https://www.hiascend.com/hardware/firmware-drivers/community?product=2&model=28)”，根据产品型号与CANN软件版本获取配套的固件与驱动。
-
-## 目录结构说明
+## 🔍目录结构说明
 
 本代码仓目录结构如下：
 
@@ -79,131 +78,16 @@ Ascend C提供一组类库API，开发者可以使用标准C++语法和类库API
 └── tools                               // Ascend C 工具源代码
 ```
 
-## 环境准备
-ascend-c项目支持由源码编译，进行源码编译前，请根据如下步骤完成相关环境准备。
+## ⚡️快速入门
 
-1. **获取CANN开发套件包**
+若您希望快速体验项目的构建和样例的执行，请访问如下文档获取简易教程。
 
-   请参见“[开放项目与CANN版本配套表](https://gitee.com/ascend/cann-community/blob/master/README.md#cannversionmap)”获取对应的CANN开发套件包`Ascend-cann-toolkit_<cann_version>_linux-<arch>.run`，CANN开发套件包支持的安装方式及操作系统请参见配套版本的[用户手册](https://hiascend.com/document/redirect/CannCommunityInstSoftware)。
+- [构建](docs/00_quick_start.md)：介绍搭建环境、编译执行、本地验证等操作。
+- [样例执行](examples/README.md)：介绍如何端到端执行样例代码。
 
-2. **安装依赖**<a name=dependence></a>
 
-   以下所列仅为ascend-c源码编译用到的依赖，其中python、gcc、cmake的安装方法请参见配套版本的[用户手册](https://hiascend.com/document/redirect/CannCommunityInstDepend)，选择安装场景后，参见“安装CANN > 安装依赖”章节进行相关依赖的安装。
 
-   - python >= 3.7.0
-
-   - gcc >= 7.3.0
-
-   - cmake >= 3.16.0
-
-   - googletest（可选，仅执行UT时依赖，建议版本[release-1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)）
-
-     下载[googletest源码](https://github.com/google/googletest.git)后，执行以下命令安装：
-
-     ```bash
-     mkdir temp && cd temp                 # 在googletest源码根目录下创建临时目录并进入
-     cmake .. -DCMAKE_CXX_FLAGS="-fPIC -D_GLIBCXX_USE_CXX11_ABI=0"
-     make
-     make install                         # root用户安装googletest
-     # sudo make install                  # 非root用户安装googletest
-     ```
-
-3. **安装CANN开发套件包**<a name=canninstall></a>
-
-   执行安装命令时，请确保安装用户对软件包具有可执行权限。
-
-   - 使用默认路径安装
-
-     ```bash
-     # CANN开发套件包安装命令示例：
-     ./Ascend-cann-toolkit_<cann_version>_linux-<arch>.run --install
-     ```
-
-     - 若使用root用户安装，安装完成后相关软件存储在`/usr/local/Ascend/ascend-toolkit/latest`路径下。
-     - 若使用非root用户安装，安装完成后相关软件存储在`$HOME/Ascend/ascend-toolkit/latest`路径下。
-
-   - 指定路径安装
-
-     ```bash
-     # CANN开发套件包安装命令示例：
-     ./Ascend-cann-toolkit_<cann_version>_linux-<arch>.run --install --install-path=${install_path}
-     ```
-
-     安装完成后，相关软件存储在\${install_path}指定路径下。
-
-4. **设置环境变量**<a name=envset></a>
-
-   - 默认路径，root用户安装
-
-     ```bash
-     source /usr/local/Ascend/ascend-toolkit/set_env.sh
-     ```
-
-   - 默认路径，非root用户安装
-
-     ```bash
-     source $HOME/Ascend/ascend-toolkit/set_env.sh
-     ```
-
-   - 指定路径安装
-
-     ```bash
-     source ${install_path}/ascend-toolkit/set_env.sh
-     ```
-
-   **注意：若环境中已安装多个版本的CANN软件包，设置上述环境变量时，请确保${install_path}/ascend-toolkit/latest目录指向的是配套版本的软件包。**
-   
-   
-## 源码下载
-执行如下命令，下载ascend-c仓源码：
-```bash
-git clone -b ${tag_version} https://gitcode.com/cann/ascend-c.git
-```
-${tag_version}请替换为具体的标签名称，本源码仓与CANN版本的配套关系可参见"开放项目与CANN版本配套表"。
-
-## 编译安装<a name=compile&install></a>
-
-1. 编译
-
-   ascend-c仓提供一键式编译安装能力，进入本开源仓代码根目录，执行如下命令：
-
-   ```bash
-   bash build.sh
-   ```
-
-   编译完成后会在`output`目录下生成CANN-ascend_c-*<cann_version>*-linux.*<arch>*.run软件包。
-2. 安装
-
-   在开源仓根目录下执行下列命令，根据设置的环境变量路径，将编译生成的run包安装到CANN包的装包路径，同时会覆盖原CANN包中的高阶API内容。
-
-   ```bash
-   # 设置CANN开发套件包环境变量，以root用户默认路径为例，如已设置，则可忽略该操作
-   source /usr/local/Ascend/ascend-toolkit/set_env.sh
-   # 切换到run包生成路径下
-   cd output
-   # 安装run包
-   ./CANN-ascend_c-<cann_version>-linux.<arch>.run
-   ```
-
-## UT测试（可选）
-
-在开源仓根目录执行下列命令之一，将依次批跑tests目录下的用例，得到结果日志，用于看护编译是否正常。
-
-```bash
-bash build.sh -t
-```
-
-或
-
-```bash
-bash build.sh --test
-```
-
-## 样例运行验证（可选）
-
-开发者调用高阶API实现自定义算子后，可通过单算子调用的方式验证算子功能。本代码仓提供部分算子实现及其调用样例，具体请参考[examples](./examples)目录下的样例。
-
-## 相关文档
+## 📖相关文档
 
 | 文档  |  说明   |
 |---------|--------|
@@ -216,14 +100,8 @@ bash build.sh --test
 |[HOST API列表](./docs/aicore/simt-api/README.md)|总览Ascend C HOST API。|
 |[变更日志](./CHANGELOG.md)|介绍各版本特性变更。|
 
-## 贡献指南<a name=contribute></a>
+## 📝相关信息
 
-ascend-c仓欢迎广大开发者体验并参与贡献，在参与社区贡献之前。请参见[cann-community](https://gitcode.com/ascend/cann-community)了解行为准则，进行CLA协议签署，以及参与开源仓贡献的详细流程。
-
-针对ascend-c仓，开发者准备本地代码与提交PR时需要重点关注如下几点：
-
-1. 提交PR时，请按照PR模板仔细填写本次PR的业务背景、目的、方案等信息。
-2. 若您的修改不是简单的bug修复，而是涉及到新增特性、新增接口、新增配置参数或者修改代码流程等，请务必先通过Issue进行方案讨论，以避免您的代码被拒绝合入。若您不确定本次修改是否可被归为“简单的bug修复”，亦可通过提交Issue进行方案讨论。
-
-## 许可证
-[CANN Open Software License Agreement Version 1.0](LICENSE)
+- [贡献指南](CONTRIBUTING.md)
+- [安全声明](SECURITY.md)
+- [许可证](LICENSE)
