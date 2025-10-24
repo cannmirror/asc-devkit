@@ -57,8 +57,8 @@ namespace optiling {
     TILING_DATA_FIELD_DEF(uint32_t, kBL1Tail);
     TILING_DATA_FIELD_DEF(uint32_t, nBL1);
     TILING_DATA_FIELD_DEF(uint32_t, mAL1);
-    TILING_DATA_FIELD_DEF(uint32_t, KBL1Divk0);
-    TILING_DATA_FIELD_DEF(uint32_t, KBL1TailDivk0);
+    TILING_DATA_FIELD_DEF(uint32_t, kBL1DivK0);
+    TILING_DATA_FIELD_DEF(uint32_t, kBL1TailDivK0);
     TILING_DATA_FIELD_DEF(uint32_t, nBL1DivnL0);
     TILING_DATA_FIELD_DEF(uint32_t, mAL1DivmL0);
     TILING_DATA_FIELD_DEF(uint32_t, cin1InAL1);

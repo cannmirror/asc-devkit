@@ -58,8 +58,8 @@ public:
     __aicore__ inline void SetAl02d()
     {
         // only support bf16 now, set pad value to be 0
-        al0Set2dSpacesize_ = currentML0_ * currentKL0_ * self_->ctx.sizeOfInput / ConvApi::BLOCK_SIZE;
-        AscendC::InitConstValueParams<typename Intf::InputT> initConstValueParams(1, (uint16_t)al0Set2dSpacesize_, 0, 0);
+        al0Set2dSpaceSize_ = currentML0_ * currentKL0_ * self_->ctx.sizeOfInput / ConvApi::BLOCK_SIZE;
+        AscendC::InitConstValueParams<typename Intf::InputT> initConstValueParams(1, (uint16_t)al0Set2dSpaceSize_, 0, 0);
         AscendC::InitConstValue<typename Intf::InputT>(self_->ctx.al0, initConstValueParams);
     }
 
@@ -90,7 +90,7 @@ private:
     LoadAL1Tools<Intf> *aL1Tools_;
     uint64_t currentML0_ = 0;
     uint64_t currentKL0_ = 0;
-    uint64_t al0Set2dSpacesize_ = 0;
+    uint64_t al0Set2dSpaceSize_ = 0;
 };
 
 template <class Intf>
@@ -114,16 +114,16 @@ public:
     __aicore__ inline void LoadBL0()
     {
         if constexpr (Intf::bl1bypass) {
-            tilingNBSrc_ = self_->ctx.orgCoAlignN0;
+            currentSrcN_ = self_->ctx.orgCoAlignN0;
         } else {
-            tilingNBSrc_ = self_->ctx.nBL1Iter == self_->ctx.maxNBL1Iter ? self_->ctx.nBL1TailAlign
+            currentSrcN_ = self_->ctx.nBL1Iter == self_->ctx.maxNBL1Iter ? self_->ctx.nBL1TailAlign
                                                                          : self_->ctx.conv3dTiling->nBL1;
         }
         uint64_t currentKL0 =
             self_->ctx.kIter == self_->ctx.maxKL0Iter ? self_->ctx.kL0Tail : self_->ctx.singleCoreKL0;
         // set LoadData2DParamsV2
         AscendC::LoadData2DParams loadData2dParams;
-        load2dSrcOffset = self_->ctx.kBL0Iter * self_->ctx.singleCoreKL0 * tilingNBSrc_ +
+        load2dSrcOffset = self_->ctx.kBL0Iter * self_->ctx.singleCoreKL0 * currentSrcN_ +
                           self_->ctx.nBL0Iter * self_->ctx.conv3dTiling->nL0xk0;
         KERNEL_LOG(KERNEL_DEBUG, "[LoadBL0] currentKL0: %u\n", currentKL0);
         if constexpr (!Intf::bl1bypass) {
@@ -133,7 +133,7 @@ public:
             } else {
                 SetLoadData2DParams(loadData2dParams, numNL0Block_);
                 uint64_t tmp1 = currentNL0_ * k0_;
-                uint64_t tmp2 = tilingNBSrc_ * k0_;
+                uint64_t tmp2 = currentSrcN_ * k0_;
                 for (uint32_t copy_part = 0; copy_part < currentKL0 / k0_; ++copy_part) {
                     AscendC::LoadData<typename Intf::WeightT>(self_->ctx.bl0[copy_part * tmp1],
                         self_->ctx.bl1[load2dSrcOffset + copy_part * tmp2],
@@ -147,7 +147,7 @@ public:
             } else {
                 SetLoadData2DParams(loadData2dParams, numNL0Block_);
                 uint64_t tmp1 = currentNL0_ * k0_;
-                uint64_t tmp2 = tilingNBSrc_ * k0_;
+                uint64_t tmp2 = currentSrcN_ * k0_;
                 for (uint32_t copy_part = 0; copy_part < currentKL0 / k0_; ++copy_part) {
                     AscendC::LoadData<typename Intf::WeightT>(self_->ctx.bl0[copy_part * tmp1],
                         self_->ctx.bgm[load2dSrcOffset + copy_part * tmp2],
@@ -167,11 +167,10 @@ private:
 
 private:
     Intf *self_ = nullptr;
-    uint64_t tilingNBSrc_ = 0;
     uint64_t k0_ = 16;
     uint64_t currentNL0_ = 0;
+    uint64_t currentSrcN_ = 0;
     uint64_t numNL0Block_ = 0;
-    uint64_t ratioOfNToN0_ = 0;
     uint64_t load2dSrcOffset = 0;
 };
 

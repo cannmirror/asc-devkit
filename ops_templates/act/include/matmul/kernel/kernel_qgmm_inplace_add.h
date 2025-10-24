@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,25 +13,25 @@
  * \brief
  */
 
-#ifndef ACT_KERNEL_QGMM_INPLACE_ADD_H
-#define ACT_KERNEL_QGMM_INPLACE_ADD_H
+#ifndef MATMUL_KERNEL_KERNEL_QGMM_INPLACE_ADD_H
+#define MATMUL_KERNEL_KERNEL_QGMM_INPLACE_ADD_H
 #define ASCENDC_CUBE_ONLY
 #include "kernel_operator.h"
 #include "kernel_operator_list_tensor_intf.h"
 #include "lib/matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/layout_utils.h"
-#include "include/utils/tuple_utils.h"
-#include "include/utils/coord_utils.h"
-#include "include/utils/tensor_utils.h"
-#include "include/utils/status_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/layout_utils.h"
+#include "../../utils/tuple_utils.h"
+#include "../../utils/coord_utils.h"
+#include "../../utils/tensor_utils.h"
+#include "../../utils/status_utils.h"
 
 #include "./semaphore.h"
-#include "include/matmul/block/block_quant_matmul_builder.h"
-#include "include/epilogue/block_epilogue_empty.h"
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/matmul/block/block_scheduler_gmm_aswt_with_tail_split.h"
+#include "../block/block_quant_matmul_builder.h"
+#include "../../epilogue/block_epilogue_empty.h"
+#include "../block/block_scheduler_utils.h"
+#include "../block/block_scheduler_gmm_aswt_with_tail_split.h"
 
 namespace Act {
 namespace Gemm {
@@ -62,8 +62,9 @@ class KernelQGmmInpaceAdd {
 };
 
 template <class ProblemShape_, class BlockMmadBuilder_, class BlockEpilogue_, class BlockScheduler_>
-class KernelQGmmInpaceAdd<ProblemShape_, BlockMmadBuilder_, BlockEpilogue_, BlockScheduler_,
-                          std::enable_if_t<std::is_same_v<BlockScheduler_, GroupedMatmulAswtWithTailSplitScheduler>>> {
+class KernelQGmmInpaceAdd<
+    ProblemShape_, BlockMmadBuilder_, BlockEpilogue_, BlockScheduler_,
+    AscendC::Std::enable_if_t<AscendC::Std::is_same_v<BlockScheduler_, GroupedMatmulAswtWithTailSplitScheduler>>> {
 public:
     __aicore__ inline KernelQGmmInpaceAdd() {}
 
@@ -92,14 +93,14 @@ public:
     using AType = typename BlockMmadBuilder::AType;
     using BType = typename BlockMmadBuilder::BType;
     using CType = typename BlockMmadBuilder::CType;
-    using TupleShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
+    using TupleShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
     // order by {x1, x2, scale1, scale2, bias, y}
-    using BlockOffset = Shape<int64_t, int64_t, int64_t, int64_t, int64_t, int64_t>;
+    using BlockOffset = AscendC::Shape<int64_t, int64_t, int64_t, int64_t, int64_t, int64_t>;
     // coordinate
     using CoordClass =
-        Coordinate<transA, transB, BlockMmadBuilder::FormatA, BlockMmadBuilder::FormatB, BlockMmadBuilder::FormatC>;
+        Coordinate<transA, transB, BlockMmadBuilder::formatA, BlockMmadBuilder::formatB, BlockMmadBuilder::formatC>;
 
     // attribute
     AscendC::GlobalTensor<AType> aGlobal_;
@@ -157,13 +158,13 @@ public:
         return splitValue;
     }
 
-    __aicore__ inline void UpdateGlobalBuffer(Params const& params)
+    __aicore__ inline void UpdateGlobalBuffer(const Params& params)
     {
         aGlobal_.SetGlobalBuffer((__gm__ AType*)params.mmadParams.aGmAddr + Get<IDX_A_OFFSET>(baseOffset_));
         bGlobal_.SetGlobalBuffer((__gm__ BType*)params.mmadParams.bGmAddr + Get<IDX_B_OFFSET>(baseOffset_));
-        x1ScaleGlobal_.SetGlobalBuffer((__gm__ fp8_e8m0_t*)params.mmadParams.x1ScaleGmAddr +
+        x1ScaleGlobal_.SetGlobalBuffer((__gm__ AscendC::fp8_e8m0_t*)params.mmadParams.x1ScaleGmAddr +
                                        Get<IDX_X1SCALE_OFFSET>(baseOffset_));
-        x2ScaleGlobal_.SetGlobalBuffer((__gm__ fp8_e8m0_t*)params.mmadParams.x2ScaleGmAddr +
+        x2ScaleGlobal_.SetGlobalBuffer((__gm__ AscendC::fp8_e8m0_t*)params.mmadParams.x2ScaleGmAddr +
                                        Get<IDX_X2SCALE_OFFSET>(baseOffset_));
         cGlobal_.SetGlobalBuffer((__gm__ CType*)params.mmadParams.cGmAddr + Get<IDX_C_OFFSET>(baseOffset_));
     }
@@ -190,7 +191,7 @@ public:
         Get<IDX_C_OFFSET>(baseOffset_) = Get<IDX_C_OFFSET>(baseOffset_) + m * n;
     }
 
-    __aicore__ inline bool UpdateGroupParams(Params const& params, uint32_t groupIdx)
+    __aicore__ inline bool UpdateGroupParams(const Params& params, uint32_t groupIdx)
     {
         UpdateOffset(groupIdx);
         int32_t splitValue = GetSplitValueFromGroupList(groupIdx, params.gmmParams.groupListType);
@@ -203,24 +204,23 @@ public:
         return true;
     }
 
-    __aicore__ inline void InitParamsAndTensor(Params const& params)
+    __aicore__ inline void InitParamsAndTensor(const Params& params)
     {
         Get<M_VALUE>(problemShape_) = params.gmmParams.matmulTiling->M;
         Get<N_VALUE>(problemShape_) = params.gmmParams.matmulTiling->N;
-        cGlobal_.SetL2CacheHint(CacheMode::CACHE_MODE_DISABLE);
+        cGlobal_.SetL2CacheHint(AscendC::CacheMode::CACHE_MODE_DISABLE);
         groupListGm_.SetGlobalBuffer(reinterpret_cast<__gm__ int64_t*>(params.mmadParams.groupListGmAddr));
     }
 
-    __aicore__ inline void ProcessSingleGroup(Params const& params, BlockSchedulerOp& bs, BlockMmadOp& blockMmadOp)
+    __aicore__ inline void ProcessSingleGroup(const Params& params, BlockSchedulerOp& bs, BlockMmadOp& blockMmadOp)
     {
         int64_t m = Get<M_VALUE>(problemShape_);
         int64_t n = Get<N_VALUE>(problemShape_);
         int64_t k = Get<K_VALUE>(problemShape_);
         CoordClass coord(m, n, k, params.gmmParams.baseM, params.gmmParams.baseN, params.gmmParams.baseK);
-        uint64_t round = bs.GetRound();
-        for (uint64_t roundIdx = 0; roundIdx < round; ++roundIdx) {
-            BlockShape tileIdx = bs.GetTileIdx(roundIdx);
-            BlockShape singleShape = bs.GetBlockShape(Get<IDX_M_TILEIDX>(tileIdx), Get<IDX_N_TILEIDX>(tileIdx));
+        BlockCoord tileIdx;
+        while (bs.GetTileIdx(tileIdx)) {
+            BlockShape singleShape = bs.GetBlockShape(tileIdx);
             blockOffset_ = coord.template GetQuantOffset<true, false>(
                 Get<IDX_M_TILEIDX>(tileIdx), Get<IDX_N_TILEIDX>(tileIdx), Get<IDX_M_TAIL_SPLIT_TILEIDX>(singleShape),
                 Get<IDX_N_TAIL_SPLIT_TILEIDX>(singleShape));
@@ -233,36 +233,7 @@ public:
         }
     }
 
-    __aicore__ inline void Run(Params const& params)
-    {
-        if ASCEND_IS_AIV {
-            return;
-        }
-        // Get blockIdx
-        int64_t curBlockIdx = AscendC::GetBlockIdx();
-        int64_t blockNum = AscendC::GetBlockNum();
-        SetAtomicAdd<float>(); // GMM res + yIn
-        // Instantiate mmadOp
-        BlockMmadOp blockMmadOp;
-        blockMmadOp.Init(const_cast<TCubeTiling* __restrict>(params.gmmParams.matmulTiling), GetTPipePtr());
-        InitParamsAndTensor(params);
-        uint32_t groupNum = params.gmmParams.groupNum;
-        int64_t m = Get<M_VALUE>(problemShape_);
-        int64_t n = Get<N_VALUE>(problemShape_);
-        BlockSchedulerOp bs(m, n, 0, params.gmmParams.baseM, params.gmmParams.baseN, params.gmmParams.baseK,
-                            curBlockIdx, blockNum);
-        for (uint32_t groupIdx = 0; groupIdx < groupNum; groupIdx++) {
-            if (!UpdateGroupParams(params, groupIdx)) {
-                continue;
-            }
-            int64_t k = Get<K_VALUE>(problemShape_);
-            bs.UpdateSplitKParams(k);
-            ProcessSingleGroup(params, bs, blockMmadOp);
-        }
-        SetAtomicNone();
-    }
-
-    __host_aicore__ static Status CheckShape(ProblemShape const& shape)
+    __host_aicore__ static Status CheckShape(const ProblemShape& shape)
     {
         int64_t m = shape.m;
         int64_t n = shape.n;
@@ -289,29 +260,29 @@ public:
         return Status::success;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(const Arguments& args)
     {
         // Check shape in kernel
         CHECK_AND_RETURN(CheckShape(args.problemShape));
         // Check mmad args
-        CHECK_AND_RETURN(BlockMmadBuilder::CheckArgs(args.mmadArgs));
+        CHECK_AND_RETURN(BlockMmadBuilder::CanImplement(args.mmadArgs));
         // Check args for block scheduler
-        CHECK_AND_RETURN(BlockSchedulerOp::CheckArgs(args.problemShape));
+        CHECK_AND_RETURN(BlockSchedulerOp::CanImplement(args.problemShape));
         // Check args for block epilogue
-        CHECK_AND_RETURN(BlockEpilogue::CheckArgs(args.epilogueArgs));
+        CHECK_AND_RETURN(BlockEpilogue::CanImplement(args.epilogueArgs));
         return Status::success;
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(ProblemShape shape, int64_t blockNum)
+    __host_aicore__ static size_t GetWorkspaceSize(ProblemShape shape, int64_t blockNum)
     {
         return 0;
     }
 
-    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
+    __host_aicore__ static Params InitParams(const Arguments& args, GM_ADDR workspace)
     {
         BlockMmadParams mmadParams = BlockMmadBuilder::InitParams(args.mmadArgs);
         // mmad params with epiligue takes workspaceGm as output
-        if constexpr (!std::is_same_v<BlockEpilogue, Block::BlockEpilogueEmpty>) {
+        if constexpr (!AscendC::Std::is_same_v<BlockEpilogue, Block::BlockEpilogueEmpty>) {
             mmadParams.cGmAddr = workspace;
         }
         // epilogue params takes workspaceGm as input
@@ -325,9 +296,29 @@ public:
         return BlockSchedulerOp::GetBlockNum(shape);
     }
 
-    __aicore__ inline void operator()(Params const& params)
+    __aicore__ inline void operator()(const Params& params)
     {
-        Run(params);
+        if ASCEND_IS_AIV {
+            return;
+        }
+        // Get blockIdx
+        int64_t curBlockIdx = AscendC::GetBlockIdx();
+        int64_t blockNum = AscendC::GetBlockNum();
+        AscendC::SetAtomicAdd<float>(); // GMM res + yIn
+        // Instantiate mmadOp
+        BlockMmadOp blockMmadOp;
+        blockMmadOp.Init(const_cast<TCubeTiling* __restrict>(params.gmmParams.matmulTiling), GetTPipePtr());
+        InitParamsAndTensor(params);
+        uint32_t groupNum = params.gmmParams.groupNum;
+        BlockSchedulerOp bs(params.gmmParams.baseM, params.gmmParams.baseN, params.gmmParams.baseK);
+        for (uint32_t groupIdx = 0; groupIdx < groupNum; groupIdx++) {
+            if (!UpdateGroupParams(params, groupIdx)) {
+                continue;
+            }
+            bs.UpdateNextProblem(problemShape_);
+            ProcessSingleGroup(params, bs, blockMmadOp);
+        }
+        AscendC::SetAtomicNone();
     }
 };
 } // namespace Kernel

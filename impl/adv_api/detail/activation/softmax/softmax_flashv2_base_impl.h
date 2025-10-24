@@ -134,8 +134,6 @@ __aicore__ inline void SoftmaxFlashV2Impl(const LocalTensor<T1>& dstTensor, cons
     CHECK_FUNC_HIGHLEVEL_API(SoftmaxFlashV2, (T1, T2, isUpdate, isReuseSource, isBasicBlock, isDataFormatNZ, config), (
         dstTensor, sumTensor, maxTensor, srcTensor, expMaxTensor, inSumTensor,
         inMaxTensor, workLocal, tiling, softmaxShapeInfo));
-    SetMaskNorm();
-    ResetMask();
 
     SoftMaxTiling newTiling = SoftmaxFlashV2UpdateTilingImpl<T1, T2, isUpdate, isBasicBlock, isDataFormatNZ, config>(
         srcTensor, workLocal, tiling, softmaxShapeInfo);
@@ -203,9 +201,6 @@ __aicore__ inline void SoftmaxFlashV2MaxImpl(const LocalTensor<T1>& dstTensor, c
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftmaxFlashV2, (T1, T2, isUpdate, isReuseSource, isBasicBlock, isDataFormatNZ, config),
     (dstTensor, outSum, outMax, srcTensor, outexpMax, inSum, inMax, workLocal, tiling, softmaxShapeInfo));
-
-    SetMaskNorm();
-    ResetMask();
 
     LastAxisShapeND originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
     if constexpr (config.mode == SoftmaxMode::SOFTMAX_OUTPUT_WITHOUT_BRC) {

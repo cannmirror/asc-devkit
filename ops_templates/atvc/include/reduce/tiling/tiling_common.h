@@ -1,23 +1,19 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
- #ifndef ATVC_TILING_COMMON_H
+#ifndef ATVC_TILING_COMMON_H
 #define ATVC_TILING_COMMON_H
 #include "reduce/common/patterns.h"
 
 namespace OpTiling {
-constexpr static int32_t BASIC_BLOCK = 48 * 1024;
-constexpr static int32_t CACHE_SIZE = 16 * 1024;              // cahce size for ub reduce
-constexpr static int32_t MAX_INNER_A = 128;
-constexpr static double THRES_HOLD = 0.85;
+constexpr static int32_t CACHE_SIZE = 16 * 1024;  // cahce size for ub reduce
 constexpr static int32_t A_STEP_LEN = 4;
 
 struct ReduceTilingUnit {
@@ -47,9 +43,13 @@ struct ReduceTilingInputParam {
     std::vector<int64_t> reduceShape = {};
     ge::DataType inputDtype = ge::DataType::DT_UNDEFINED;
     ge::DataType promoteDtpye = ge::DataType::DT_UNDEFINED;
+    ReduceTilingInputParam(std::vector<int64_t> reduceDim_, std::vector<int64_t> reduceShape_, ge::DataType inputDtype_,
+        ge::DataType promoteDtpye_)
+        : reduceDim(reduceDim_), reduceShape(reduceShape_), inputDtype(inputDtype_), promoteDtpye(promoteDtpye_)
+    {}
 };
 
-void MakeWrapDim(const std::vector<int64_t>& shape, std::vector<int64_t>& axes)
+void MakeWrapDim(const std::vector<int64_t> &shape, std::vector<int64_t> &axes)
 {
     // EnsureNotScalar at least return 1-D Tensor, so shapeSize cannot be 0
     size_t shapeSize = shape.size();
@@ -70,18 +70,18 @@ bool IsAxisA(int32_t idx)
     }
 }
 
-int32_t IsAxesValid(const std::vector<int64_t>& shape, const std::vector<int64_t>& axes)
+int32_t IsAxesValid(const std::vector<int64_t> &shape, const std::vector<int64_t> &axes)
 {
     size_t shapeSize = shape.size();
     size_t axesSize = axes.size();
     if (axesSize > shapeSize) {
-        printf("[ERROR] axis size is greater than shape size\n");
+        printf("[ERROR]: [ATVC][Reduce] Axis size is greater than shape size.\n");
         return -1;
     };
 
     for (size_t i = 0; i < axesSize; i++) {
         if (axes[i] >= static_cast<int64_t>(shapeSize) || axes[i] < 0) {
-            printf("[ERROR] axis size incorrect \n");
+            printf("[ERROR]: [ATVC][Reduce] Axis size incorrect.\n");
             return -1;
         };
     }
@@ -89,7 +89,7 @@ int32_t IsAxesValid(const std::vector<int64_t>& shape, const std::vector<int64_t
 }
 
 template <class Pattern>
-bool IsEmtpyTensor(const std::vector<uint64_t>& shape)
+bool IsEmtpyTensor(const std::vector<uint64_t> &shape)
 {
     for (int32_t i = 0; i < Pattern::Dim; i++) {
         if (shape[i] == 0) {
@@ -99,6 +99,18 @@ bool IsEmtpyTensor(const std::vector<uint64_t>& shape)
     return false;
 }
 
-}; // namespace OpTiling
+};  // namespace OpTiling
 
-#endif // ATVC_TILING_COMMON_H
+namespace ATVC {
+namespace Host {
+// Hyper param for reduce tiling.
+struct ReduceTilingHyperParam {
+    // Set the basic block memory size for Reduce, generally not exceeding 1/3 of the memory. It is recommended to set
+    // it between [48k-54k]
+    uint32_t basicBlock = 48 * 1024;
+    uint32_t maxInnerA = 128;         // [128, 256]
+    double balanceThreshHold = 0.85;  // Threshold level for multi-core equilibrium [0.8-0.95]
+};
+}  // namespace Host
+}  // namespace ATVC
+#endif  // ATVC_TILING_COMMON_H

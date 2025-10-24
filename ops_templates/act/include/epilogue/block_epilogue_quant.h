@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -9,17 +9,17 @@
  */
 
 /*!
- * \file block_epilogue_quant_matmul.h
+ * \file block_epilogue_quant.h
  * \brief
  */
 
-#ifndef ACT_BLOCK_EPILOGUE_QUANT_H
-#define ACT_BLOCK_EPILOGUE_QUANT_H
+#ifndef EPILOGUE_BLOCK_EPILOGUE_QUANT_H
+#define EPILOGUE_BLOCK_EPILOGUE_QUANT_H
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
-#include "include/epilogue/fusion/default_fusion_op.h"
-#include "include/utils/status_utils.h"
+#include "../utils/common_utils.h"
+#include "../utils/device_utils.h"
+#include "fusion/default_fusion_op.h"
+#include "../utils/status_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -69,22 +69,22 @@ public:
     static constexpr int64_t l0N = GetIntegralConstant<MNK_N, L0TileShape_>();
 
     // shape
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
-    using ProblemShape = Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
+    using ProblemShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
     // GM ADDR
     AscendC::GlobalTensor<DataTypeScale> scaleGlobal_;
     AscendC::GlobalTensor<DataTypePertokenScale> pertokenScaleGlobal_;
     AscendC::GlobalTensor<DataTypeIn> inGlobal_;
     AscendC::GlobalTensor<DataTypeOut> outGlobal_;
     // PIPE
-    TQue<QuePosition::VECIN, DOUBLE_BUFFER_COUNT> vecQueSrc_;
-    TQue<QuePosition::VECOUT, DOUBLE_BUFFER_COUNT> vecQueOut_;
-    TQue<QuePosition::VECIN, DOUBLE_BUFFER_COUNT> vecQueScale_;
-    TQue<QuePosition::VECIN, DOUBLE_BUFFER_COUNT> vecQuePertokenScale_;
-    TBuf<TPosition::VECCALC> vecQueTmp_;
-    TBuf<TPosition::VECCALC> outFp32Tmp_;
-    TBuf<TPosition::VECCALC> broadcastFp32Tmp_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, DOUBLE_BUFFER_COUNT> vecQueSrc_;
+    AscendC::TQue<AscendC::QuePosition::VECOUT, DOUBLE_BUFFER_COUNT> vecQueOut_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, DOUBLE_BUFFER_COUNT> vecQueScale_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, DOUBLE_BUFFER_COUNT> vecQuePertokenScale_;
+    AscendC::TBuf<AscendC::TPosition::VECCALC> vecQueTmp_;
+    AscendC::TBuf<AscendC::TPosition::VECCALC> outFp32Tmp_;
+    AscendC::TBuf<AscendC::TPosition::VECCALC> broadcastFp32Tmp_;
     // attribute
     FusionOp fusionOp_;
     ProblemShape problemShape_;
@@ -115,7 +115,7 @@ public:
         ubSizeOneM += sizeof(float) * ubCalcN_;
         // fusionOp
         ubSizeOneM += fusionOp_.GetUbSizeOneM(ubCalcN_);
-        ubCalcM_ = (TOTAL_UB_SIZE - needUbSize) / ubSizeOneM;
+        ubCalcM_ = (AscendC::TOTAL_UB_SIZE - needUbSize) / ubSizeOneM;
         return;
     }
     __aicore__ inline void InitBuffers()
@@ -144,7 +144,8 @@ public:
         InitBuffers();
         fusionOp_.Init(params.fusionParams, l1M, l1N, Get<MNK_N>(problemShape_));
     }
-    __aicore__ inline void CalcPerChannelDequantParams(DequantParams& dequantParams, int64_t curAivM, int64_t curAivN)
+    __aicore__ inline void CalcPerChannelDequantParams(DequantParams& dequantParams, int64_t curAivM,
+        int64_t curAivN)
     {
         int64_t computedAivN = CeilAlign(curAivN, UB_FLOAT_ALIGN_NUM); // 8: 32B aligned for int32_t
         int64_t ubResAlignedN = CeilAlign(curAivN, UB_BF16_ALIGN_NUM); // 16: sizeof(DataTypeOut) is 2, 32B / 2
@@ -162,11 +163,11 @@ public:
     }
 
     template <typename T>
-    __aicore__ inline void CopyTensorGM2UB(LocalTensor<T> srcLocal, GlobalTensor<T> mmOutGM, const int64_t realM,
+    __aicore__ inline void CopyTensorGM2UB(AscendC::LocalTensor<T> srcLocal, AscendC::GlobalTensor<T> mmOutGM, const int64_t realM,
                                            const int64_t realN)
     {
-        DataCopyParams gm2UbParams{1, 0, 0, 0};
-        DataCopyPadParams padParams;
+        AscendC::DataCopyParams gm2UbParams{1, 0, 0, 0};
+        AscendC::DataCopyPadParams padParams;
         // datacopypad 32B aligned
         gm2UbParams.blockLen = realN * sizeof(T);
         gm2UbParams.blockCount = realM;
@@ -175,72 +176,72 @@ public:
     }
 
     template <typename T>
-    __aicore__ inline void CopyTensorUB2GM(GlobalTensor<T> tensorCGM, LocalTensor<T> dstLocal, const int64_t realM,
+    __aicore__ inline void CopyTensorUB2GM(AscendC::GlobalTensor<T> tensorCGM, AscendC::LocalTensor<T> dstLocal, const int64_t realM,
                                            const int64_t realN, const int64_t strideN)
     {
-        DataCopyExtParams ub2GmParams{1, 0, 0, 0, 0};
+        AscendC::DataCopyExtParams ub2GmParams{1, 0, 0, 0, 0};
         ub2GmParams.blockLen = realN * sizeof(T);
         ub2GmParams.blockCount = realM;
         ub2GmParams.dstStride = (strideN - realN) * sizeof(T);
         DataCopyPad(tensorCGM, dstLocal, ub2GmParams);
     }
 
-    __aicore__ inline void run(BlockCoord& blockCoord, int64_t dstStartOffset, int64_t srcStartOffset)
+    __aicore__ inline void Run(BlockCoord& blockCoord, int64_t dstStartOffset, int64_t srcStartOffset)
     {
         int64_t blockShapeM = Get<0>(blockShape_);
         int64_t blockShapeN = Get<1>(blockShape_);
         int64_t mUbTileNum = Act::Gemm::CeilDiv(blockShapeM, ubCalcM_);
         for (int64_t mUbTileIdx = 0; mUbTileIdx < mUbTileNum; ++mUbTileIdx) {
             int64_t curUbM = mUbTileIdx == mUbTileNum - 1 ? blockShapeM - ubCalcM_ * (mUbTileNum - 1) : ubCalcM_;
-            LocalTensor<DataTypeIn> srcLocal = vecQueSrc_.AllocTensor<DataTypeIn>();
-            LocalTensor<DataTypeOut> dstLocal = vecQueOut_.AllocTensor<DataTypeOut>();
+            AscendC::LocalTensor<DataTypeIn> srcLocal = vecQueSrc_.AllocTensor<DataTypeIn>();
+            AscendC::LocalTensor<DataTypeOut> dstLocal = vecQueOut_.AllocTensor<DataTypeOut>();
             int64_t srcOffset = mUbTileIdx * ubCalcM_ * blockShapeN;
             int64_t dstOffset = dstStartOffset + mUbTileIdx * ubCalcM_ * Get<MNK_N>(problemShape_);
             CopyTensorGM2UB(srcLocal, inGlobal_[srcStartOffset + srcOffset], curUbM, blockShapeN);
-            TPipeSetWaitFlag<HardEvent::MTE2_V>();
+            TPipeSetWaitFlag<AscendC::HardEvent::MTE2_V>();
             CalcUb2Ub(dstLocal, srcLocal, curUbM, blockShapeN, blockCoord, mUbTileIdx);
             vecQueSrc_.FreeTensor(srcLocal);
-            TPipeSetWaitFlag<HardEvent::V_MTE3>();
+            TPipeSetWaitFlag<AscendC::HardEvent::V_MTE3>();
             CopyTensorUB2GM(outGlobal_[dstOffset], dstLocal, curUbM, blockShapeN, Get<MNK_N>(problemShape_));
             vecQueOut_.FreeTensor(dstLocal);
         }
     }
 
-    __aicore__ inline void CalcUb2Ub(LocalTensor<DataTypeOut> dstLocal, LocalTensor<DataTypeIn> srcLocal,
+    __aicore__ inline void CalcUb2Ub(AscendC::LocalTensor<DataTypeOut> dstLocal, AscendC::LocalTensor<DataTypeIn> srcLocal,
                                      int64_t curAivM, int64_t curAivN, BlockCoord blockCoord, int64_t mUbTileIdx)
     {
         int64_t mTotalIdx = Get<0>(blockCoord) + mUbTileIdx * ubCalcM_;
         int64_t nTotalIdx = Get<1>(blockCoord);
         DequantParams dequantParams;
         CalcPerChannelDequantParams(dequantParams, curAivM, curAivN);
-        LocalTensor<float> dstLocalFp32 = outFp32Tmp_.Get<float>();
-        LocalTensor<uint8_t> tmpLocal = vecQueTmp_.Get<uint8_t>();
+        AscendC::LocalTensor<float> dstLocalFp32 = outFp32Tmp_.Get<float>();
+        AscendC::LocalTensor<uint8_t> tmpLocal = vecQueTmp_.Get<uint8_t>();
         // 1. per channel dequant
         AscendC::DataCopyParams scale2UbParams{1, static_cast<uint16_t>(curAivN * sizeof(DataTypeScale)), 0, 0};
-        LocalTensor<DataTypeScale> scaleLocal = vecQueScale_.AllocTensor<DataTypeScale>();
-        DataCopyPadParams padParams;
+        AscendC::LocalTensor<DataTypeScale> scaleLocal = vecQueScale_.AllocTensor<DataTypeScale>();
+        AscendC::DataCopyPadParams padParams;
         DataCopyPad(scaleLocal, scaleGlobal_[nTotalIdx], scale2UbParams, padParams);
-        TPipeSetWaitFlag<HardEvent::MTE2_V>();
+        TPipeSetWaitFlag<AscendC::HardEvent::MTE2_V>();
         AscendDequant(dstLocalFp32, srcLocal, scaleLocal, tmpLocal,
                       {dequantParams.m, dequantParams.n, dequantParams.calCount});
         vecQueScale_.FreeTensor(scaleLocal);
         // 2. per token dequant
-        LocalTensor<float> pertokenScaleLocal = vecQuePertokenScale_.AllocTensor<float>();
+        AscendC::LocalTensor<float> pertokenScaleLocal = vecQuePertokenScale_.AllocTensor<float>();
         scale2UbParams.blockLen = curAivM * sizeof(DataTypePertokenScale);
         DataCopyPad(pertokenScaleLocal, pertokenScaleGlobal_[mTotalIdx], scale2UbParams, padParams);
-        TPipeSetWaitFlag<HardEvent::MTE2_V>();
+        TPipeSetWaitFlag<AscendC::HardEvent::MTE2_V>();
         // 2.1. broadcast
-        LocalTensor<float> broadcastFp32 = broadcastFp32Tmp_.Get<float>();
+        AscendC::LocalTensor<float> broadcastFp32 = broadcastFp32Tmp_.Get<float>();
         int64_t computedAivN = CeilAlign(curAivN, UB_FLOAT_ALIGN_NUM); // 8: 32B aligned for int32_t
         int64_t ubResAlignedN = CeilAlign(curAivN, UB_BF16_ALIGN_NUM); // 16: sizeof(DataTypeOut) is 2, 32B / 2
         // broadcast from [m, 1] to [m, n]
         const uint32_t broadcastDst[M_N_TWO_DIMS]{static_cast<uint32_t>(curAivM), static_cast<uint32_t>(computedAivN)};
         const uint32_t broadcastSrc[M_N_TWO_DIMS]{static_cast<uint32_t>(curAivM), 1};
-        BroadCast<float, M_N_TWO_DIMS, 1>(broadcastFp32, pertokenScaleLocal, broadcastDst, broadcastSrc);
+        AscendC::BroadCast<float, M_N_TWO_DIMS, 1>(broadcastFp32, pertokenScaleLocal, broadcastDst, broadcastSrc);
         vecQuePertokenScale_.FreeTensor(pertokenScaleLocal);
         AscendC::PipeBarrier<PIPE_V>();
         // 2.2 mul to do per token dequant
-        LocalTensor<float> tmpDstLocal = vecQueTmp_.Get<float>();
+        AscendC::LocalTensor<float> tmpDstLocal = vecQueTmp_.Get<float>();
         if (computedAivN == ubResAlignedN) {
             Mul(tmpDstLocal, broadcastFp32, dstLocalFp32, computedAivN * curAivM);
         } else {
@@ -251,7 +252,7 @@ public:
         }
         AscendC::PipeBarrier<PIPE_V>();
         // 3. cast from fp32 to outputDataType
-        Cast(dstLocal, tmpDstLocal, RoundMode::CAST_RINT, curAivM * ubResAlignedN);
+        Cast(dstLocal, tmpDstLocal, AscendC::RoundMode::CAST_RINT, curAivM * ubResAlignedN);
         fusionOp_(dstLocal, dstLocal, curAivM, curAivN, mTotalIdx, nTotalIdx);
         return;
     }
@@ -260,25 +261,25 @@ public:
                                       int64_t srcStartOffset = 0)
     {
         blockShape_ = blockShape;
-        run(blockCoord, dstStartOffset, srcStartOffset);
+        Run(blockCoord, dstStartOffset, srcStartOffset);
         return;
     }
 
     // static init
-    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspaceGm)
+    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
     {
-        Params params = {args.scaleGmAddr, args.pertokenScaleGmAddr, workspaceGm, args.outGmAddr, {}};
+        Params params = {args.scaleGmAddr, args.pertokenScaleGmAddr, workspace, args.outGmAddr, {}};
         return params;
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(int64_t blockNum, int64_t l1M, int64_t l1N)
+    __host_aicore__ static size_t GetWorkspaceSize(int64_t blockNum, int64_t l1M, int64_t l1N)
     {
         // only quant kernel need workspace
         size_t worksapceSize = blockNum * DOUBLE_BUFFER_COUNT * l1M * l1N * sizeof(int32_t);
         return worksapceSize;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(Arguments const& args)
     {
         if (l0M % MATMUL_MNK_ALIGN_INT8 != 0 || l0N % MATMUL_MNK_ALIGN_INT8 != 0) {
             return Status::l1L0ErrorNotAlignInt8;
@@ -289,4 +290,4 @@ public:
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_BLOCK_EPILOGUE_QUANT_H
+#endif // EPILOGUE_BLOCK_EPILOGUE_QUANT_H

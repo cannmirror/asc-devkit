@@ -94,7 +94,7 @@ __aicore__ inline constexpr bool IsSharedMatmul()
 
 __aicore__ inline constexpr bool NeedTransitByGm(TPosition tPos)
 {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     // supported UB->L1, no need through gm
     if (PhyPosIsUB(tPos)) {
         return false;
@@ -113,7 +113,6 @@ __aicore__ inline constexpr bool NeedTransitByGm(TPosition tPos)
     return true;
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
 template <const auto& MM_CFG = CFG_NORM>
 __aicore__ inline uint64_t GetBaseOffsetC(bool enSequentialWrite, int32_t baseM, int32_t baseN)
 {
@@ -123,6 +122,8 @@ __aicore__ inline uint64_t GetBaseOffsetC(bool enSequentialWrite, int32_t baseM,
         return (enSequentialWrite ? (baseM * baseN) : 0);
     }
 }
+
+#if defined(USE_SSBUF)
 // c310 msg stored in mmserver obj
 #define MsgTmpPos
 #else

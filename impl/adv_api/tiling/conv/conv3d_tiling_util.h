@@ -298,7 +298,7 @@ bool MulWithOverflowCheck(T &res, T a, T b)
     return false;
 }
 
-// 调用时控制传参个数，避免栈溢出
+// Control the number of parameters passed during invocation to avoid stack overflow
 template <typename T, typename... Args, typename = typename std::enable_if<std::is_integral<T>::value>::type>
 bool MulWithOverflowCheck(T &res, T a, T b, Args... args)
 {

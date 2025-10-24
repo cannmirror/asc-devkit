@@ -720,9 +720,9 @@ void Conv3dTilingAlgorithm::SetL1TilingRes()
     tilingIns_->l1TilingInfo.cin1InAL1 = this->l1TilingParams.kAL1 / this->l1TilingCalc.ci0HkWk;
     tilingIns_->l1TilingInfo.kAL1Tail = this->l1TilingParams.kAL1Tail;
     tilingIns_->l1TilingInfo.cin1InAL1Tail = this->l1TilingParams.kAL1Tail / this->l1TilingCalc.ci0HkWk;
-    tilingIns_->l1TilingInfo.KBL1Divk0 = this->l1TilingParams.kBL1 / tilingIns_->cubeInfo.k0;
+    tilingIns_->l1TilingInfo.kBL1DivK0 = this->l1TilingParams.kBL1 / tilingIns_->cubeInfo.k0;
     tilingIns_->l1TilingInfo.kBL1Tail = this->l1TilingParams.kBL1Tail;
-    tilingIns_->l1TilingInfo.KBL1TailDivk0 = this->l1TilingParams.kBL1Tail / tilingIns_->cubeInfo.k0;
+    tilingIns_->l1TilingInfo.kBL1TailDivK0 = this->l1TilingParams.kBL1Tail / tilingIns_->cubeInfo.k0;
     tilingIns_->l1TilingInfo.iterateMNOrder = this->l1TilingFlag.iterateMNOrder;
     tilingIns_->l1TilingInfo.biasFullLoadFlag = this->l1TilingFlag.isBiasFullLoad;
     tilingIns_->l1TilingInfo.fixpParamsFullLoadFlag = false;

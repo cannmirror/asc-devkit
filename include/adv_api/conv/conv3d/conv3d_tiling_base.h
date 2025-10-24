@@ -30,9 +30,9 @@ struct Conv3DL1Tiling {
     uint64_t cin1InAL1 = 0;
     uint64_t kAL1Tail = 0;
     uint64_t cin1InAL1Tail = 0;
-    uint64_t KBL1Divk0 = 0;
+    uint64_t kBL1DivK0 = 0;
     uint64_t kBL1Tail = 0;
-    uint64_t KBL1TailDivk0 = 0;
+    uint64_t kBL1TailDivK0 = 0;
 
     IterateMNOrder iterateMNOrder = IterateMNOrder::INVALID;
     bool isWeightBypass = false;

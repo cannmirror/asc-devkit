@@ -150,12 +150,12 @@ public:
         return (BASE_MODULE::outerIdx_ + 1) / (BASE_MODULE::kbStepFactor_ * scaleFactorKb_);
     }
  
-    __aicore__ inline int32_t GetTileShapeScaleA() const
+    __aicore__ inline int32_t GetTileShapeScaleKa() const
     {
         return tileShapeScaleKa_;
     }
  
-    __aicore__ inline int32_t GetTileShapeScaleB() const
+    __aicore__ inline int32_t GetTileShapeScaleKb() const
     {
         return tileShapeScaleKb_;
     }
@@ -252,4 +252,4 @@ private:
 }  // namespace Detail
 }  // namespace Impl
 }  // namespace AscendC
-#endif // IMPL_MATMUL_SCHEDULER_ITERATOR_K_LOOP_K_LOOP_MDL_MX_H
+#endif // _K_LOOP_MDL_MX_H_

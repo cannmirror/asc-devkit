@@ -603,7 +603,11 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::F
         return;
     }
     if (workingFlag_) {
-        int8_t reqId = handleInfo_[curHandleId_ - 1].reqId + handleInfo_[curHandleId_ - 1].repeatCnt;
+        HcclHandle handleId = curHandleId_ - 1;
+        while (handleInfo_[handleId].finishCnt < handleInfo_[handleId].commitCnt) {
+            Wait(handleId);
+        }
+        int8_t reqId = handleInfo_[handleId].reqId + handleInfo_[handleId].repeatCnt;
         uint8_t resourceId = reqId % CCU_MAX_MSG_NUM;
         ccuMsg_.commitCKEAddr = GetCommitCkeAddr(resourceId);
         ccuMsg_.xnAddr = hcclContext_->xnOffset + CCU_MSG_XN_NUM * CCU_MAX_MSG_NUM * resourceId;

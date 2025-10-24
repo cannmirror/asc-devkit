@@ -124,6 +124,7 @@ public:
     __aicore__ inline MatrixOffset GetOffsetC();
     __aicore__ inline void End();
     __aicore__ inline void SetHF32(bool enableHF32 = false, int32_t transMode = 0);
+    __aicore__ inline void SetHIF8(bool enableHIF8 = false);
     __aicore__ inline void SetSubBlockIdx(uint8_t subBlockIdx);
     __aicore__ inline uint8_t GetSubBlockIdx();
     template <class T> __aicore__ inline void SetWorkspace(__gm__ const T* addr, int size)
@@ -436,6 +437,19 @@ __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG,
         SetHF32TransMode(0);
     }
 }
+
+#if defined(__DAV_C310__)
+template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
+__aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetHIF8(bool enableHIF8)
+{
+    if (unlikely(enableHIF8)) {
+        SetCtrlSpr<45, 45>(1);
+    } else {
+        SetCtrlSpr<45, 45>(0);
+    }
+}
+#endif
 
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto &MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>

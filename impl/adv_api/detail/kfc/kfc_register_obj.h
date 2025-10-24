@@ -34,7 +34,7 @@ __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
     }
 #endif
 #endif
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
     SetAtomicNone();
     if ASCEND_IS_AIC {
         SetMaskNorm();
@@ -50,8 +50,27 @@ __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
         SetVectorMask<uint64_t, MaskMode::NORMAL>((uint64_t)-1, (uint64_t)-1);
         SetMaskNorm();
     }
+#elif defined(__DAV_C310__) && KFC_C310_SSBUF == 0
+#ifdef SPLIT_CORE_CUBE
+    SetAtomicNone();
+    SetMaskNorm();
+    SetLoadDataBoundary((uint64_t)0);
+    SetLoadDataPaddingValue((uint64_t)0);
+    // AIC wait the single from AIV
+    AscendC::WaitEvent(KFC_SYNC_ID);
+#else
+    // AIV clear gm memory
+    ClearWorkspaceImpl(workspace);
+    NotifyEvent<PIPE_MTE3>(KFC_SYNC_ID);
+#endif
 #endif
 }
+
+#if defined(__DAV_C310__) && KFC_C310_SSBUF == 0
+    constexpr bool DAV_310_ENABLE_GM = true;
+#else
+    constexpr bool DAV_310_ENABLE_GM = false;
+#endif
 
 #if defined(__DAV_310R6__)
     constexpr bool ENABLE_HARD_POOL = true;
@@ -125,13 +144,13 @@ __aicore__ inline void InitCurObj(AscendC::TPipe* tpipe, T& a, Args&&... b)
 }
 
 #ifdef ASCENDC_CPU_DEBUG
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if __CCE_AICORE__ == 220 || (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
 #ifdef ASCENDC_CUBE_ONLY
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...) \
     AscendC::InitCurObj(tpipe, __VA_ARGS__)
 
 #else
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
 template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC::TPipe* tpipe, T &a, Args &&... b);
 
 template <class T, class... Args> __aicore__ inline void CountMatmulObjSkip(AscendC::TPipe* tpipe, T *a, Args &&... b);
@@ -252,7 +271,7 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
 
 #define REGIST_CUBE_OBJ_REMOTE(tpipe, workspace, ...)
 #else
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...)                                                             \
     using ASCubeObjConfig = AscendC::GetCubeObjConfig<decltype(AscendC::GetObjType(__VA_ARGS__))>;         \
     constexpr int8_t enableHardPollKfc = AscendC::ENABLE_HARD_POOL ? AscendC::ENABLE_HARD_POOL             \
@@ -308,7 +327,7 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
 #ifdef ASCENDC_CUBE_ONLY
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...) \
     return
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#elif (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...)                                                     \
     using ASCubeObjConfig = AscendC::GetCubeObjConfig<decltype(AscendC::GetObjType(__VA_ARGS__))>; \
     constexpr int8_t enableHardPollKfc = AscendC::ENABLE_HARD_POOL ? AscendC::ENABLE_HARD_POOL     \
@@ -342,7 +361,11 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
     AscendC::SetMatrixKfc(tpipe, &__kfcClient__, 0, workspace, __VA_ARGS__);                              \
     AscendC::PrintTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_MATMUL_MATRIX_KFC));   \
     if constexpr (!asEnableMixDualMaster) {                                                               \
-        AscendC::WaitEvent(AscendC::WORKSPACE_SYNC_ID);                                                   \
+        if constexpr (AscendC::DAV_310_ENABLE_GM) {                                                       \
+            AscendC::ClearWorkspace(reinterpret_cast<__gm__ uint8_t *>(workspace));                       \
+        } else {                                                                                          \
+            AscendC::WaitEvent(AscendC::WORKSPACE_SYNC_ID);                                               \
+        }                                                                                                 \
     }                                                                                                     \
     AscendC::PrintTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_MATMUL_WAIT_EVE))
 #endif

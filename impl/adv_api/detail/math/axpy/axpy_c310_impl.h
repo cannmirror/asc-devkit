@@ -67,8 +67,8 @@ const U scalarValue , const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_
     CheckTensorPosition(srcLocal, "srcLocal", "VECIN, VECOUT, VECCALC");
     CheckCalCount(calCount, "calCount", dstLocal, "dstLocal", "Axpy");
     CheckCalCount(calCount, "calCount", srcLocal, "srcLocal", "Axpy");
-    static_assert((SupportType<T, half, float>(), "current dst data type is not supported on current device!"));
-    static_assert((SupportType<U, half, float>(), "current src data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "Axpy current dst data type is not supported on current device!");
+    static_assert(SupportType<U, half, float>(), "Axpy current src data type is not supported on current device!");
     __local_mem__ T *dst = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ U *src = (__local_mem__ U *)srcLocal.GetPhyAddr();
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);

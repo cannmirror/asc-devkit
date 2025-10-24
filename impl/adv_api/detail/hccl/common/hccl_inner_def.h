@@ -129,7 +129,7 @@ struct HcclOpResParam {
     uint32_t rWinStart;
     uint32_t rWinOffset;
     uint64_t version;
-    uint8_t reservedStrcut[2808];
+    uint8_t reservedStrcut[2472];
     uint8_t topoInfo[160];
     uint8_t config[48];
     uint64_t hostStateInfo;

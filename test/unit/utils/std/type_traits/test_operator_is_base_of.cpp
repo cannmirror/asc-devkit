@@ -25,57 +25,57 @@ protected:
     }
 };
 
-// 基础基类和派生类定义
+// base class and derived class definitions
 class Base1 {};
 class Derived1 : public Base1 {};
 
 class Base2 {};
 class Derived2 : public Base2 {};
 
-// 多级继承类
+// multi-level inheritance class
 class GrandBase {};
 class Intermediate : public GrandBase {};
 class DeepDerived : public Intermediate {};
 
-// 虚继承相关类
+// classes related to virtual inheritance
 class VirtualBase {};
 class VirtualDerived : virtual public VirtualBase {};
 
-// 私有继承类
+// private inheritance class
 class PrivateBase {};
 class PrivateDerived : private PrivateBase {};
 
-// 测试标准的基类和派生类关系
+// test standard Base and Derived class relationships
 TEST_F(IsBaseOfTest, StandardBaseDerived) {
     EXPECT_TRUE((AscendC::Std::is_base_of<Base1, Derived1>::value));
     EXPECT_TRUE((AscendC::Std::is_base_of_v<Base1, Derived1>));
 }
 
-// 测试不同基类和派生类对
+// testing different base classes and derived classes
 TEST_F(IsBaseOfTest, DifferentBaseDerivedPair) {
     EXPECT_TRUE((AscendC::Std::is_base_of<Base2, Derived2>::value));
     EXPECT_TRUE((AscendC::Std::is_base_of_v<Base2, Derived2>));
 }
 
-// 测试类和自身的基类关系
+// the relationships between the test class and its own base class
 TEST_F(IsBaseOfTest, ClassIsSelfBase) {
     EXPECT_TRUE((AscendC::Std::is_base_of<Base1, Base1>::value));
     EXPECT_TRUE((AscendC::Std::is_base_of_v<Base1, Base1>));
 }
 
-// 测试不相关类之间的基类关系
+// testing the base class relationships between unrelated classes
 TEST_F(IsBaseOfTest, UnrelatedClasses) {
     EXPECT_FALSE((AscendC::Std::is_base_of<Base1, Base2>::value));
     EXPECT_FALSE((AscendC::Std::is_base_of_v<Base1, Base2>));
 }
 
-// 测试派生类和基类的反向关系
+// testing the inverse relationship between derived classes and base classes
 TEST_F(IsBaseOfTest, DerivedToBaseReverse) {
     EXPECT_FALSE((AscendC::Std::is_base_of<Derived1, Base1>::value));
     EXPECT_FALSE((AscendC::Std::is_base_of_v<Derived1, Base1>));
 }
 
-// 测试多级继承关系
+// testing multi-level inheritance relationships
 TEST_F(IsBaseOfTest, MultiLevelInheritance) {
     EXPECT_TRUE((AscendC::Std::is_base_of<GrandBase, DeepDerived>::value));
     EXPECT_TRUE((AscendC::Std::is_base_of_v<GrandBase, DeepDerived>));
@@ -83,25 +83,25 @@ TEST_F(IsBaseOfTest, MultiLevelInheritance) {
     EXPECT_TRUE((AscendC::Std::is_base_of_v<Intermediate, DeepDerived>));
 }
 
-// 测试多级继承反向关系
+// testing multi-level inheritance reverse relationships
 TEST_F(IsBaseOfTest, MultiLevelInheritanceReverse) {
     EXPECT_FALSE((AscendC::Std::is_base_of<DeepDerived, GrandBase>::value));
     EXPECT_FALSE((AscendC::Std::is_base_of_v<DeepDerived, GrandBase>));
 }
 
-// 测试虚继承关系
+// testing virtual inheritance relationships
 TEST_F(IsBaseOfTest, VirtualInheritance) {
     EXPECT_TRUE((AscendC::Std::is_base_of<VirtualBase, VirtualDerived>::value));
     EXPECT_TRUE((AscendC::Std::is_base_of_v<VirtualBase, VirtualDerived>));
 }
 
-// 测试私有继承关系（AscendC::Std::is_base_of 不考虑访问权限）
+// testing private inheritance relationships (AscendC::Std::is_base_of does not consider access permissions)
 TEST_F(IsBaseOfTest, PrivateInheritance) {
     EXPECT_TRUE((AscendC::Std::is_base_of<PrivateBase, PrivateDerived>::value));
     EXPECT_TRUE((AscendC::Std::is_base_of_v<PrivateBase, PrivateDerived>));
 }
 
-// 测试模板类作为基类和派生类
+// test template class as base class and derived class
 template <typename T>
 class TemplateBase {};
 
@@ -113,7 +113,7 @@ TEST_F(IsBaseOfTest, TemplateClasses) {
     EXPECT_TRUE((AscendC::Std::is_base_of_v<TemplateBase<int>, TemplateDerived<int>>));
 }
 
-// 测试模板类不同类型参数情况
+// testing template class with different types of parameters
 TEST_F(IsBaseOfTest, TemplateClassesDifferentParams) {
     EXPECT_FALSE((AscendC::Std::is_base_of<TemplateBase<int>, TemplateDerived<double>>::value));
     EXPECT_FALSE((AscendC::Std::is_base_of_v<TemplateBase<int>, TemplateDerived<double>>));

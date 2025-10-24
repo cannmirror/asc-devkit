@@ -12,8 +12,6 @@
  * \file n_loop_mdl_outer_product.h
  * \brief
  */
-
-
 #ifndef IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_OUTER_PRODUCT_H
 #define IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_OUTER_PRODUCT_H
 
@@ -80,6 +78,26 @@ public:
     __aicore__ inline uint32_t GetL0DBLoopNum() const
     {
         return l0dbLoopNum;
+    }
+
+    __aicore__ inline int32_t GetOuterScaleNIdx() const
+    {
+        return BASE_MODULE::outerIndex_;
+    }
+
+    __aicore__ inline int32_t GetNextOuterScaleNIdx() const
+    {
+        return BASE_MODULE::outerIndex_ + 1;
+    }
+
+    __aicore__ inline int32_t GetTileShapeScaleN() const
+    {
+        return BASE_MODULE::GetTileShape();
+    }
+
+    __aicore__ inline int32_t GetScaleFactorN() const
+    {
+        return 1;
     }
 
 private:

@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -19,8 +19,9 @@
 #include <acl/acl.h>
 
 #include "tiling/platform/platform_ascendc.h"
+#include "include/matmul/matmul_intf.h"
 #include "include/matmul/block/block_scheduler_policy.h"
-#include "include/matmul/block/block_sparse_matmul_builder.h"
+#include "include/matmul/block/sparse_block_mmad_multi_block_on_kaxis_with_layout.h"
 #include "include/matmul/kernel/kernel_sparse_matmul.h"
 #include "include/matmul/device/device_matmul.h"
 #include "include/utils/host_utils.h"
@@ -32,7 +33,6 @@ namespace {
     bool IS_BIAS = false;
 }
 
-using namespace AscendC;
 using namespace Act;
 using namespace Act::Gemm;
 
@@ -52,10 +52,16 @@ using LayoutC = layout::RowMajor;
 // 定义scheduler类型
 using BlockScheduler = IterateKScheduler;
 
+// 定义MatmulLayoutType类型
+using AMatmulLayoutType = MatmulLayoutType<LayoutA, AType, AscendC::TPosition::GM>;
+using BMatmulLayoutType = MatmulLayoutType<LayoutB, BType, AscendC::TPosition::GM>;
+using CMatmulLayoutType = MatmulLayoutType<LayoutC, CType, AscendC::TPosition::GM>;
+using BiasMatmulLayoutType = MatmulLayoutType<LayoutC, CType, AscendC::TPosition::GM>;
+
 // 定义MMAD类型
-using BlockMmad = Block::BlockSparseMatmulBuilder<
-        AType, LayoutA, BType, LayoutB, CType, LayoutC, CType, LayoutC,
-        L1TileShape, L0TileShape, BlockScheduler, SparseMatmulMultiBlockOnKAxisWithLayout<>>;
+using BlockMmad = Block::BlockMmad<
+        SparseMatmulMultiBlockOnKAxisWithLayout<>,
+        L1TileShape, L0TileShape, AMatmulLayoutType, BMatmulLayoutType, CMatmulLayoutType, BiasMatmulLayoutType>;
 
 // 定义BlockEpilogue类型
 using BlockEpilogue = Block::BlockEpilogueEmpty;
@@ -92,7 +98,7 @@ void MatmulOp(uint8_t* x1, uint8_t* x2, uint8_t* y, uint8_t* bias, uint8_t* inde
     CHECK_ACL(aclrtMalloc((void **)&workspaceDevice, workspaceSize, ACL_MEM_MALLOC_HUGE_FIRST));
 
     // Check arguments
-    ACT_CHECK(mm.CheckArgs(args));
+    ACT_CHECK(mm.CanImplement(args));
 
     // Initialize kernel with arguments and workspace pointer
     mm.InitParams(args, workspaceDevice);

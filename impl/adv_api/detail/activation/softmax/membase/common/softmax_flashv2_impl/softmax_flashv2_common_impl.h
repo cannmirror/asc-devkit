@@ -23,6 +23,8 @@ __aicore__ inline void SoftMaxFlashV2NZImpl(const LocalTensor<T1>& dstTensor, co
     const LocalTensor<T2>& inSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     if constexpr (!isUpdate) {
         SoftmaxFlashV2NZNoUpdateImpl<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, workLocal,
             originalSrcShape, tiling);
@@ -38,6 +40,8 @@ __aicore__ inline void SoftMaxFlashV2NZImpl(const LocalTensor<half>& dstTensor, 
     const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     if constexpr (!isUpdate) {
         SoftmaxFlashV2NZNoUpdateImpl<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, workLocal,
             originalSrcShape, tiling);
@@ -276,6 +280,8 @@ __aicore__ inline void SoftmaxFlashV2PostProcess(const LocalTensor<T1>& dstTenso
     const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     if constexpr (!isUpdate) {
         SoftmaxFlashV2NoUpdate<T1, T2, isBasicBlock, config>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
             originalSrcShape, tiling);

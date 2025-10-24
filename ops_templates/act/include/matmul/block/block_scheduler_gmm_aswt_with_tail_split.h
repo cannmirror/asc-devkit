@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,11 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_MATMUL_BLOCK_SCHEDULER_GMM_ASWT_WITH_TAIL_SPLIT_H
-#define ACT_INCLUDE_MATMUL_BLOCK_SCHEDULER_GMM_ASWT_WITH_TAIL_SPLIT_H
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/matmul/block/block_scheduler_policy.h"
-#include "include/utils/status_utils.h"
+#ifndef MATMUL_BLOCK_BLOCK_SCHEDULER_GMM_ASWT_WITH_TAIL_SPLIT_H
+#define MATMUL_BLOCK_BLOCK_SCHEDULER_GMM_ASWT_WITH_TAIL_SPLIT_H
+#include "./block_scheduler_utils.h"
+#include "./block_scheduler_policy.h"
+#include "../../utils/status_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -25,10 +25,10 @@ namespace Block {
 constexpr int64_t INNER_AXIS_MIN_SPLIT_VAL = 128; // ND2NZ cacheline 128
 
 template <class ProblemShape_, class L1TileShape_, class L0TileShape_, bool TransA_, bool TransB_>
-class BlockSchedulerQuantGroupedMatmulAswt {
+class BlockSchedulerGmmAswtWithTailSplit {
 public:
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
+    using TupleShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
     using ProblemShape = ProblemShape_;
 
     static constexpr int64_t l1M = GetIntegralConstant<0, L1TileShape_>();
@@ -42,12 +42,9 @@ private:
     int64_t mCnt_;
     int64_t nCnt_;
     int64_t totalCnt_;
-    int64_t blockNum_;
-    int64_t blockIdx_;
-    int64_t m_;
-    int64_t n_;
+    int64_t m_{0};
+    int64_t n_{0};
     int64_t k_;
-    int64_t batch_{0};
     int32_t baseM_;
     int32_t baseN_;
     int32_t baseK_;
@@ -56,41 +53,37 @@ private:
     int64_t mTailCnt_{1};
     int64_t nTailCnt_{1};
     int64_t tailCnt_{1}; // only update when last group
-    int64_t perCoreBlockNum_;
     int64_t mainMWindow_;
     int64_t tailWindow_;
     int64_t mainRow_;
     int64_t round_;
+    int64_t roundIdx_;
+    uint32_t blockNum_ = AscendC::GetBlockNum();
+    uint32_t blockIdx_ = AscendC::GetBlockIdx() / AscendC::GetTaskRation();
     uint32_t startBlockIdx_;
-    uint32_t endBlockIdx_;
+    uint32_t endBlockIdx_{blockNum_ - 1};
 
 public:
-    __aicore__ inline BlockSchedulerQuantGroupedMatmulAswt(int64_t m, int64_t n, int64_t k, int32_t baseM,
-                                                           int32_t baseN, int32_t baseK, int64_t blockIdx,
-                                                           int64_t blockNum) :
-        m_(m), n_(n), k_(k), baseM_(baseM), baseN_(baseN), baseK_(baseK), blockNum_(blockNum), blockIdx_(blockIdx)
-    {
-        endBlockIdx_ = blockNum - 1;
-        mCnt_ = CeilDiv(m_, baseM_);
-        nCnt_ = CeilDiv(n_, baseN_);
-        mBaseTail_ = m_ - (mCnt_ - 1) * baseM_;
-        nBaseTail_ = n_ - (nCnt_ - 1) * baseN_;
-        perCoreBlockNum_ = GetPerBlockNum(blockNum_, mCnt_, nCnt_);
-        totalCnt_ = mCnt_ * nCnt_;
-        mainMWindow_ = WINDOW_LEN < mCnt_ ? WINDOW_LEN : mCnt_;
-        mainRow_ = mCnt_ / mainMWindow_ - 1;
-        tailWindow_ = mCnt_ - mainMWindow_ * mainRow_;
-    }
+    __aicore__ inline BlockSchedulerGmmAswtWithTailSplit(int32_t baseM, int32_t baseN, int32_t baseK) :
+        baseM_(baseM), baseN_(baseN), baseK_(baseK)
+    {}
 
-    __aicore__ inline int64_t GetRound()
+    __aicore__ inline void UpdateNextProblem(const TupleShape& problemShape)
     {
-        return round_;
-    }
-
-    // update k, round, startBlockIdx and endBlockIdx when split k
-    __aicore__ inline void UpdateSplitKParams(uint32_t k)
-    {
-        k_ = k;
+        k_ = Get<MNK_K>(problemShape);
+        if (m_ != Get<MNK_M>(problemShape) || n_ != Get<MNK_N>(problemShape)) {
+            m_ = Get<MNK_M>(problemShape);
+            n_ = Get<MNK_N>(problemShape);
+            mCnt_ = CeilDiv(m_, baseM_);
+            nCnt_ = CeilDiv(n_, baseN_);
+            mBaseTail_ = m_ - (mCnt_ - 1) * baseM_;
+            nBaseTail_ = n_ - (nCnt_ - 1) * baseN_;
+            totalCnt_ = mCnt_ * nCnt_;
+            mainMWindow_ = WINDOW_LEN < mCnt_ ? WINDOW_LEN : mCnt_;
+            mainRow_ = mCnt_ / mainMWindow_ - 1;
+            tailWindow_ = mCnt_ - mainMWindow_ * mainRow_;
+        }
+        roundIdx_ = 0;
         round_ = CeilDiv(totalCnt_, blockNum_);
         // the first of blockIdx for new group
         startBlockIdx_ = endBlockIdx_ == blockNum_ - 1 ? 0 : (endBlockIdx_ + 1);
@@ -113,15 +106,21 @@ public:
         if (blockIdx_ > endBlockIdx_ && blockIdx_ <= newEndBlockIdx) {
             round_ += 1;
         }
+        if (blockIdx_ > newEndBlockIdx) { // no need to tail split when blockIdx is not in last round
+            mTailCnt_ = 1;
+            nTailCnt_ = 1;
+            tailCnt_ = 1;
+        }
         endBlockIdx_ = newEndBlockIdx;
     }
 
-    __aicore__ inline BlockShape GetTileIdx(int64_t roundIdx)
+    __aicore__ inline bool GetTileIdx(BlockCoord& blockCoord)
     {
-        int64_t newBlockIdx = blockIdx_ / tailCnt_;
-        int64_t index = newBlockIdx + roundIdx * blockNum_;
-        int64_t mTileIdx = 0;
-        int64_t nTileIdx = 0;
+        if (roundIdx_ > round_ - 1) {
+            return false;
+        }
+        int64_t newBlockIdx = (roundIdx_ == round_ - 1) ? blockIdx_ / tailCnt_ : blockIdx_;
+        int64_t index = newBlockIdx + roundIdx_ * blockNum_;
         // add startBlockIdx
         if (blockIdx_ < startBlockIdx_) {
             index += blockNum_ - startBlockIdx_;
@@ -130,26 +129,27 @@ public:
         }
         int64_t rowIdx = index / nCnt_ / mainMWindow_;
         if (rowIdx < mainRow_) {
-            mTileIdx = rowIdx * mainMWindow_ + index % mainMWindow_;
-            nTileIdx = (index / mainMWindow_) % nCnt_;
+            Get<MNK_M>(blockCoord) = rowIdx * mainMWindow_ + index % mainMWindow_;
+            Get<MNK_N>(blockCoord) = (index / mainMWindow_) % nCnt_;
         } else {
             rowIdx = mainRow_;
             int64_t tailIndex = index - mainRow_ * mainMWindow_ * nCnt_;
-            mTileIdx = mainRow_ * mainMWindow_ + tailIndex % tailWindow_;
-            nTileIdx = (tailIndex / tailWindow_) % nCnt_;
+            Get<MNK_M>(blockCoord) = mainRow_ * mainMWindow_ + tailIndex % tailWindow_;
+            Get<MNK_N>(blockCoord) = (tailIndex / tailWindow_) % nCnt_;
         }
 
         if (rowIdx & 1) {
-            nTileIdx = nCnt_ - 1 - nTileIdx;
+            Get<MNK_N>(blockCoord) = nCnt_ - 1 - Get<MNK_N>(blockCoord);
         }
-        return {mTileIdx, nTileIdx, k_, batch_};
+        roundIdx_++;
+        return true;
     }
 
-    __aicore__ inline BlockShape GetBlockShape(int64_t mTileIdx, int64_t nTileIdx)
+    __aicore__ inline TupleShape GetBlockShape(const BlockCoord& blockCoord)
     {
-        int64_t singleCoreM = mTileIdx != (mCnt_ - 1) ? baseM_ : mBaseTail_;
-        int64_t singleCoreN = nTileIdx != (nCnt_ - 1) ? baseN_ : nBaseTail_;
-        if (mTailCnt_ == 1 && nTailCnt_ == 1) {
+        int64_t singleCoreM = Get<MNK_M>(blockCoord) != (mCnt_ - 1) ? baseM_ : mBaseTail_;
+        int64_t singleCoreN = Get<MNK_N>(blockCoord) != (nCnt_ - 1) ? baseN_ : nBaseTail_;
+        if (tailCnt_ == 1) {
             return {singleCoreM, singleCoreN, 0, 0};
         }
 
@@ -175,7 +175,7 @@ public:
 
     __aicore__ inline BlockCoord GetBlockCoord(int64_t mTileIdx, int64_t nTileIdx)
     {
-        return {mTileIdx * l1M, nTileIdx * l1N, 0, batch_};
+        return {mTileIdx * l1M, nTileIdx * l1N, 0, 0};
     }
 
     static int64_t GetBlockNum(ProblemShape shape)
@@ -183,12 +183,12 @@ public:
         return DoGetBlockNum(l1M, l1N, shape);
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(ProblemShape shape)
+    __host_aicore__ static size_t GetWorkspaceSize(ProblemShape shape)
     {
         return 0;
     }
 
-    __host_aicore__ static Status CheckArgs(ProblemShape shape)
+    __host_aicore__ static Status CanImplement(ProblemShape shape)
     {
         return Status::success;
     }
@@ -197,8 +197,7 @@ public:
 template <class ProblemShape_, class L1TileShape_, class L0TileShape_, bool TransA_, bool TransB_>
 struct BlockSchedulerSelector<ProblemShape_, L1TileShape_, L0TileShape_,
                               Act::Gemm::GroupedMatmulAswtWithTailSplitScheduler, TransA_, TransB_> {
-    using SchedulerOp =
-        BlockSchedulerQuantGroupedMatmulAswt<ProblemShape_, L1TileShape_, L0TileShape_, TransA_, TransB_>;
+    using SchedulerOp = BlockSchedulerGmmAswtWithTailSplit<ProblemShape_, L1TileShape_, L0TileShape_, TransA_, TransB_>;
 };
 } // namespace Block
 } // namespace Gemm

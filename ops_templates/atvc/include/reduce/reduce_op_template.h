@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -18,139 +17,211 @@
 #define ATVC_REDUCE_OP_TEMPLATE_H
 
 #include <type_traits>
+#include <tuple>
 #include "common/const_def.h"
+#include "common/kernel_check_debug.h"
 #include "kernel_operator.h"
 #include "reduce/common/patterns.h"
-#include "reduce/reduce_utils/reduce_block_aux_util.h"
-#include "reduce/reduce_utils/reduce_block_aux.h"
-#include "reduce/reduce_utils/reduce_util.h"
-#include "reduce/reduce_utils/reduce_buf_pool.h"
+#include "reduce/utils/reduce_block_aux_util.h"
+#include "reduce/utils/reduce_block_aux.h"
+#include "reduce/utils/reduce_util.h"
+#include "reduce/utils/reduce_buf_pool.h"
 #include "reduce/common/reduce_common.h"
 
 namespace ATVC {
 namespace Kernel {
-template <class ReduceCompute, const auto& SelectReducePolicy,
+/*!
+ * ReduceOpTemplate: Generic Reduce operator template.
+ * Reduce operators usually refer to operators that perform reduction operations on elements in tensors,
+ * such as summation and averaging. They can specify several dimensions for reduction calculations,
+ * or reduce all elements to a scalar.
+ */
+template <class ReduceCompute, const auto& SelectReducePolicy, 
             class PreCompute = void, class PostCompute = void>
 class ReduceOpTemplate {
 public:
-    constexpr static ReduceSchLoopInfo SchLoopInfo = KernelUtils::Reduce::GetSchLoopInfo<SelectReducePolicy>();
-    using Pattern = typename ReducePattern::GetPattern<SchLoopInfo.patternID>::T;
+    // for v-v fusion
+    constexpr static bool HAS_PRE_COMPUTE = !AscendC::Std::is_same_v<PreCompute, void>;
+    constexpr static bool HAS_POST_COMPUTE = !AscendC::Std::is_same_v<PostCompute, void>;
+    using PreComputeTraits = AscendC::Std::conditional_t<HAS_PRE_COMPUTE, typename GetFunctionTraits<PreCompute>::ComputeTraits, VoidComputeTraits>;
+    using PostComputeTraits = AscendC::Std::conditional_t<HAS_POST_COMPUTE, typename GetFunctionTraits<PostCompute>::ComputeTraits, VoidComputeTraits>;
+    using PreInputs = typename PreComputeTraits::In::types;
+    using PreOutputs = typename PreComputeTraits::Out::types;
+    using PreTemp = typename PreComputeTraits::Temp::types;
+    using PostInputs = typename PostComputeTraits::In::types;
+    using PostOutputs = typename PostComputeTraits::Out::types;
+    using PostTemp = typename PostComputeTraits::Temp::types;    
+    constexpr static uint32_t ReduceInputCount = 1;
+    constexpr static uint32_t ReduceOutputCount = 1;
+    constexpr static size_t PreInputCount = ATVC::TypeListSize<PreInputs>::VALUE;
+    constexpr static size_t PreOutputCount = ATVC::TypeListSize<PreOutputs>::VALUE;
+    constexpr static size_t PreTempCount = ATVC::TypeListSize<PreTemp>::VALUE;
+    constexpr static size_t PostInputCount = ATVC::TypeListSize<PostInputs>::VALUE;
+    constexpr static size_t PostOutputCount = ATVC::TypeListSize<PostOutputs>::VALUE;
+    constexpr static size_t PostTempCount = ATVC::TypeListSize<PostTemp>::VALUE;
+
+    constexpr static ReduceSchLoopInfo SCH_LOOP_INFO = KernelUtils::Reduce::GetSchLoopInfo<SelectReducePolicy>();
+    using Pattern = typename ReducePattern::GetPattern<SCH_LOOP_INFO.patternID>::T;
     using DataType = typename ReduceCompute::DataType;
     using PromoteDataType = typename ReduceCompute::PrompteDtype;
-    constexpr static int32_t ELEMENT_ONE_REPEAT_ORI = Platform::GetVRegSize() / sizeof(DataType);
-    constexpr static int32_t ELEMENT_ONE_REPEAT_COMPUTE = Platform::GetVRegSize() / sizeof(PromoteDataType);
-    constexpr static int32_t VL_LENGTH_B = Platform::GetVRegSize();
+    constexpr static int32_t ELEMENT_ONE_REPEAT_ORI = static_cast<int32_t>(Platform::GetVRegSize()) / sizeof(DataType);
+    constexpr static int32_t ELEMENT_ONE_REPEAT_COMPUTE =
+        static_cast<int32_t>(Platform::GetVRegSize()) / sizeof(PromoteDataType);
+    constexpr static int32_t VL_LENGTH_B = static_cast<int32_t>(Platform::GetVRegSize());
     constexpr static uint64_t BLOCK_SIZE_BYTE = Platform::GetUbBlockSize();
     constexpr static uint64_t CACHE_BUF_SIZE = 16 * 1024;
     constexpr static uint64_t RES_BUF_SIZE = 16 * 1024;
-    constexpr static uint32_t TBufSize = KernelUtils::GetCopyInCount<DataType>();
-    constexpr static uint32_t PromoteBufSize = KernelUtils::GetComputeCount<DataType>();
+    constexpr static uint32_t T_BUF_SIZE = KernelUtils::GetCopyInCount<DataType>();
+    constexpr static uint32_t PROMOTE_BUF_SIZE = KernelUtils::GetComputeCount<DataType>();
     AscendC::LocalTensor<PromoteDataType> tempBuf_;
     AscendC::LocalTensor<PromoteDataType> computeRes_;
-    // 算子开发者传入的计算对象
+    // The calculation object passed in by user
     ReduceCompute compute_;
 
 public:
     __aicore__ inline ReduceOpTemplate() {}
-    
-    // 按照输入、输出、ReduceParam、其他标量的顺序传入
-    // 内部根据ReduceParam进行数据调度并调用ReduceOpTemplate完成计算后搬出到GM
-    template<typename ...Args>
-    __aicore__ inline void Run(GM_ADDR x, GM_ADDR y, GM_ADDR param) {
-        param_ = reinterpret_cast<__gm__ ReduceParam*>(param);
-        // 完成一些编译期的检查，比如PreCompute和PostCompute的In、Out个数是否与args的个数匹配
-        tiling_ = &param_->tilingData;
 
-        Init((GM_ADDR)(param_->workspaceAddr), x, y);
+    /*!
+     * \brief The input order is: input tensor, output tensor, ReduceParam, Other scalars.
+     *        Internally schedule data based on ReduceParam and call ReduceOpTemplate to complete
+     *        the calculation before moving it out to GM.
+     * \param[in] x, GM address of the input tensor.
+     * \param[in] y, GM address of the output tensor.
+     * \param[in] param, tiling data and policy.
+     * \return void.
+     */
+    template<typename ...Args> 
+    __aicore__ inline void Run(Args&&... args) 
+    { 
+        ATVC::Kernel::DebugPrintf("[INFO]: [ATVC][Reduce] Start to run template function.\n");
+        constexpr size_t PRE_ARGS_COUNT = HAS_PRE_COMPUTE ? PreInputCount + PreOutputCount - ReduceInputCount : 0;
+        constexpr size_t REDUCE_ARGS_COUNT = ReduceInputCount + ReduceOutputCount - HAS_PRE_COMPUTE - HAS_POST_COMPUTE;
+        constexpr size_t POST_ARGS_COUNT = HAS_POST_COMPUTE ? PostInputCount + PostOutputCount - ReduceOutputCount : 0;
+        auto tuple = AscendC::Std::forward_as_tuple(args...);
+        
+        SplitAndCall<PRE_ARGS_COUNT, REDUCE_ARGS_COUNT, POST_ARGS_COUNT>(tuple,
+            AscendC::Std::make_index_sequence<PRE_ARGS_COUNT>{},
+            AscendC::Std::make_index_sequence<REDUCE_ARGS_COUNT>{},
+            AscendC::Std::make_index_sequence<POST_ARGS_COUNT>{},
+            AscendC::Std::make_index_sequence<sizeof...(args) - PRE_ARGS_COUNT - REDUCE_ARGS_COUNT - POST_ARGS_COUNT>{}
+        );
+        KernelUtils::PrintParam<ReduceParam, SelectReducePolicy>(param_);
+        if (!KernelUtils::CheckParam<ReduceParam>(param_)) {
+            return;
+        }
+        Init((GM_ADDR)(param_->workspaceAddr));
         Process();
+        pipeIn.Destroy();
+        ATVC::Kernel::DebugPrintf("[INFO]: [ATVC][Reduce] Template function execution completed.\n");
     }
 
 public:
-    template <class... Args>
-    __aicore__ inline void Init(GM_ADDR workspace, Args... args)
+    /*!
+     * \brief Initialise all pipes, queues and buffers.
+     * \param[in] workspace, GM address for the workspace buffer.
+     */
+    __aicore__ inline void Init(GM_ADDR workspace)
     {
-        pipe_ = GetTPipePtr();
-        basicBlockLen_ = tiling_->basicBlock;
-        bufPool_.template Init<DataType, PromoteDataType>(pipe_, TBufSize, PromoteBufSize, tiling_->basicBlock);
-
-        InitArgsInput<0>(args...);
+        if constexpr (!HAS_PRE_COMPUTE) {
+            input_[0].SetGlobalBuffer((__gm__ DataType *)src_);
+        }
+        if constexpr (!HAS_POST_COMPUTE) {
+            output_[0].SetGlobalBuffer((__gm__ DataType *)dst_);
+        }
         InitArgsWorkspace(workspace);
-        pipe_->InitBuffer(tempResQue_, RES_BUF_SIZE);
+        GetTPipePtr()->InitBuffer(tempResQue_, RES_BUF_SIZE);
         computeRes_ = tempResQue_.Get<PromoteDataType>();
-        pipe_->InitBuffer(tempBufQue_, CACHE_BUF_SIZE);
+        GetTPipePtr()->InitBuffer(tempBufQue_, CACHE_BUF_SIZE);
 
         tempBuf_ = tempBufQue_.template Get<PromoteDataType>();
 
-        pipe_->InitBuffer(tempUbQue_, BLOCK_SIZE_BYTE);
-        tempUb_ = tempUbQue_.template Get<PromoteDataType>();
+        GetTPipePtr()->InitBuffer(tempUbQue_, BLOCK_SIZE_BYTE);
     }
 
-    template <bool IsInput, bool needDup=true, typename T>
+    /*!
+     * \brief Allocate a tensor from the internal buffer pool.
+     * \tparam IsInput, true  – tensor will be used as input (read-only)
+     *                  false – tensor will be used as output (read-write)
+     * \tparam needDup, if true the buffer is duplicated (for double-buffering).
+     * \param[in] tensor, localTensor reference that receives the allocation.
+     */
+    template <bool IsInput, bool needDup = true, bool temp = false, typename T>
     __aicore__ inline void AllocTensorAux(AscendC::LocalTensor<T>& tensor)
     {
-        bufPool_.AllocTensor<IsInput, needDup>(tensor);
+        bufPool_.AllocTensor<IsInput, needDup, temp>(tensor);
     }
 
+    /*!
+     * \brief Release a tensor back to the buffer pool.
+     * \param[in] tensor, LocalTensor to free.
+     */
     template <typename T>
     __aicore__ inline void FreeTensorAux(const AscendC::LocalTensor<T>& tensor)
     {
         bufPool_.FreeTensor(tensor);
     }
 
+    /*!
+     * \brief Execute the reduction schedule.
+     */
     template <class... Args>
     __aicore__ inline void Process(Args... args)
     {
-        if constexpr (SelectReducePolicy.patternID == ATVC::AR_PATTERN::A) {
+        if constexpr (SelectReducePolicy.patternID == ATVC::AR_PATTERN::A && !HAS_PRE_COMPUTE && !HAS_POST_COMPUTE) {
             CopyInput2Output();
             return;
         }
-        if constexpr (SchLoopInfo.loopRCount == 0) {
+        if constexpr (SCH_LOOP_INFO.loopRCount == 0) {
             using SchTypeA = KernelUtils::Reduce::ReduceBlockAux<
-                __gm__ ATVC::ReduceTilingData, &SchLoopInfo,
+                ATVC::ReduceTilingData, &SCH_LOOP_INFO,
                 std::remove_reference_t<decltype(*this)>, DataType, DataType,
                 PreCompute, PostCompute>;
 
-            SchTypeA op(this, input_, output_, tiling_);
+            SchTypeA op(this, input_, output_, &(this->param_)->tilingData);
             op.Process(args...);
         } else {
-            // 完成第一阶段的Reduce
+            // Complete the first phase of Reduce
             using SchTypeR = KernelUtils::Reduce::ReduceBlockAux<
-                __gm__ ATVC::ReduceTilingData, &SchLoopInfo,
+                ATVC::ReduceTilingData, &SCH_LOOP_INFO,
                 std::remove_reference_t<decltype(*this)>, DataType,
                 PromoteDataType, PreCompute, void>;
-            SchTypeR op(this, input_, &workspace_, tiling_);
+            SchTypeR op(this, input_, &workspace_, &(this->param_)->tilingData);
             op.Process(args...);
             bufPool_.ResetEvent();
 
-            // 全核同步
+            // Full nuclear synchronization
             AscendC::SyncAll();
 
-            // 完成第二阶段的Reduce
+            // Complete the second phase of Reduce
             bufPool_.template ResetInputSize<PromoteDataType>(3);
             constexpr static ReduceSchLoopInfo groupSchLoopInfo = KernelUtils::Reduce::GetGroupSchLoopInfo();
             ATVC::ReduceTilingData groupTiling;
             SetGroupTiling(groupTiling);
-            using SchTypeA = KernelUtils::Reduce::ReduceBlockAux<
-                ATVC::ReduceTilingData, &groupSchLoopInfo,
-                std::remove_reference_t<decltype(*this)>, PromoteDataType,
-                DataType, void, PostCompute>;
+            using SchTypeA = KernelUtils::Reduce::ReduceBlockAux<ATVC::ReduceTilingData, &groupSchLoopInfo,
+                                                                 std::remove_reference_t<decltype(*this)>,
+                                                                 PromoteDataType, DataType, void, PostCompute>;
             SchTypeA groupOp(this, &workspace_, output_, &groupTiling);
             groupOp.Process(args...);
         }
     }
 
+    /*!
+     * \brief Populate tiling data for the second (group) reduction phase.
+     * \param[in] groupTiling, tiling structure to be filled.
+     * \return void.
+     */
     __aicore__ inline void SetGroupTiling(ATVC::ReduceTilingData& groupTiling)
     {
         groupTiling.ubFactorA = ELEMENT_ONE_REPEAT_COMPUTE;
-        groupTiling.ubFactorR = tiling_->groupR;
-        groupTiling.shape[0] = tiling_->groupR;
-        groupTiling.shape[1] = tiling_->outSize;
-        groupTiling.stride[0] = tiling_->outSize;
+        groupTiling.ubFactorR = this->param_->tilingData.groupR;
+        groupTiling.shape[0] = this->param_->tilingData.groupR;
+        groupTiling.shape[1] = this->param_->tilingData.outSize;
+        groupTiling.stride[0] = this->param_->tilingData.outSize;
         groupTiling.stride[1] = 1;
-        groupTiling.dstStride[0] = tiling_->outSize;
+        groupTiling.dstStride[0] = this->param_->tilingData.outSize;
         groupTiling.dstStride[1] = 1;
         groupTiling.groupR = 1;
-        groupTiling.outSize = tiling_->outSize;
+        groupTiling.outSize = this->param_->tilingData.outSize;
         groupTiling.factorRCntPerCore = 1;
         groupTiling.factorRTotalCnt = 1;
         groupTiling.factorATotalCnt = OpsUtils::CeilDiv(groupTiling.shape[1], groupTiling.ubFactorA);
@@ -158,25 +229,35 @@ public:
                                                           static_cast<uint64_t>(64));  // 按照64核计算，需要tiling传
     }
 
-    template <bool isPadding, class T, class U, class V>
-    __aicore__ inline void CopyInAux(const AscendC::GlobalTensor<T> &src,
-                                     U &view, V &shape,
-                                     const AscendC::LocalTensor<T> &ubTensor)
+    /*!
+     * \brief Copy input tensor to UB with optional padding.
+     * \tparam isPadding, true  – perform padding using PreCompute::GetPaddingValue
+     *                    false – no padding
+     * \param[in] src, globalTensor source in GM.
+     * \param[in] view, view descriptor describing the copy geometry.
+     * \param[in] shape, shape descriptor (modified when padding).
+     * \param[in] ubTensor, localTensor destination in UB.
+     */
+    template <bool isPadding, bool BLOCK_PRE_COMPUTE, class EleT, class ViewDescT, class ShapeDescT>
+    __aicore__ inline void CopyInAux(const AscendC::GlobalTensor<EleT> &src,
+                                     ViewDescT &view, ShapeDescT &shape,
+                                     const AscendC::LocalTensor<EleT> &ubTensor)
     {
-        T paddingValue = compute_.template GetPaddingValue<T>();
-        uint8_t padCnt = ((view.axis[0].dstStride - view.burstLen) * sizeof(T)) % BLOCK_SIZE_BYTE / sizeof(T);
+        EleT paddingValue = compute_.template GetPaddingValue<EleT>();
+        uint8_t padCnt = ((view.axis[0].dstStride - view.burstLen) * sizeof(EleT)) % BLOCK_SIZE_BYTE / sizeof(EleT);
         int32_t dupliCnt = view.axis[0].dstStride * view.axis[0].repeat;
-        AscendC::DataCopyPadExtParams<T> padParams{true, 0, padCnt, paddingValue};
+        AscendC::DataCopyPadExtParams<EleT> padParams{true, 0, padCnt, paddingValue};
         if constexpr (!isPadding) {
             padParams = {false, 0, 0, 0};
             shape.oriBurstLen = view.burstLen;
         }
         AscendC::DataCopyExtParams copyInParams;
         copyInParams.blockCount = view.axis[0].repeat;
-        copyInParams.blockLen = view.burstLen * sizeof(T);                              // unit Byte
-        copyInParams.srcStride = (view.axis[0].srcStride - view.burstLen) * sizeof(T);  // unit Byte
-        copyInParams.dstStride =
-            (view.axis[0].dstStride - view.burstLen) * sizeof(T) / BLOCK_SIZE_BYTE;  // unit block(32byte)
+        copyInParams.blockLen = view.burstLen * sizeof(EleT);                              // unit Byte
+        copyInParams.srcStride = (view.axis[0].srcStride - view.burstLen) * sizeof(EleT);  // unit Byte
+        copyInParams.dstStride = (view.axis[0].dstStride - view.burstLen) * sizeof(EleT) / BLOCK_SIZE_BYTE;  // unit block(32byte)
+            ATVC::Kernel::DebugPrintf("[INFO]: [ATVC][Reduce][CopyIn] Padding flag is %d, padding value is %d, block length is %u,"
+            " repeat count is %u.\n", isPadding, paddingValue, copyInParams.blockLen, copyInParams.blockCount);
         bufPool_.SyncTensor(ubTensor);
 
         const int32_t repeats[CONST6] = {static_cast<int32_t>(view.axis[CONST1].repeat),
@@ -193,8 +274,9 @@ public:
             static_cast<int32_t>(view.axis[CONST6].srcStride)};
 
         int32_t total = 1;
-        for (int32_t i = 0; i < CONST6; ++i)
+        for (int32_t i = 0; i < CONST6; ++i) {
             total *= repeats[i];
+        }
 
         for (int32_t idx = 0; idx < total; ++idx) {
             int32_t tmp = idx;
@@ -206,18 +288,27 @@ public:
                 dstOffset += coord * dstStrides[axis];
                 srcOffset += coord * srcStrides[axis];
             }
-            AscendC::DataCopyPad(ubTensor[dstOffset], src[view.addr + srcOffset], copyInParams, padParams);
-        }
+            if constexpr (BLOCK_PRE_COMPUTE) {
+                ProcessPreCompute(ubTensor, dstOffset, view.addr + srcOffset, copyInParams, padParams);
+            } else {
+                AscendC::DataCopyPad(ubTensor[dstOffset], src[view.addr + srcOffset], copyInParams, padParams);
+            }
+        } 
     }
 
+    /*!
+     * \brief Copy input tensor directly to output when no reduction is required.
+     * \param void.
+     * \return void.
+     */
     __aicore__ inline void CopyInput2Output()
     {
         uint32_t shapeSize = 1;
         for (uint8_t i = 0; i < MAX_DIM; i++) {
-            if (tiling_->shape[i] <= 1) {
+            if (this->param_->tilingData.shape[i] <= 1) {
                 break;
             }
-            shapeSize = shapeSize * tiling_->shape[i];
+            shapeSize = shapeSize * this->param_->tilingData.shape[i];
         }
         shapeSize = (shapeSize * sizeof(DataType) + UB_ALIGN_31) / UB_ALIGN_32 * UB_ALIGN_32 / sizeof(DataType);
         AscendC::LocalTensor<DataType> tmpLoc;
@@ -249,68 +340,177 @@ public:
         compute_.template Compute<needMask, Pattern>(view, computeRes_, ubTensor, args...);
     }
 
-    template <class T, class U>
-    __aicore__ inline void CopyOutAux(const AscendC::GlobalTensor<T>& dst, U& view, int64_t tmpBufOffest)
+    template <bool BLOCK_POST_COMPUTE, class T, class U>
+    __aicore__ inline void CopyOutAux(const AscendC::GlobalTensor<T>& dst, U& view, int64_t tmpBufOffset)
     {
         AscendC::DataCopyExtParams copyOutParams = {1, 1, 0, 0, 0};
         copyOutParams.blockCount = view.axis[0].repeat;
         copyOutParams.blockLen = view.burstLen * sizeof(T);
-
+        ATVC::Kernel::DebugPrintf("[INFO]: [ATVC][Reduce][CopyOut] Block length is %u, repeat count is %u.\n",
+                                  view.burstLen, copyOutParams.blockCount);
+        AscendC::LocalTensor<DataType> outputLocal = tempBuf_[tmpBufOffset].template ReinterpretCast<DataType>();
         if constexpr (AscendC::IsSameType<PromoteDataType, DataType>::value) {
+
             SetEvent<AscendC::HardEvent::V_MTE3>(AscendC::HardEvent::V_MTE3);
-            AscendC::DataCopyPad(dst[view.addr], tempBuf_[tmpBufOffest], copyOutParams);
+            if constexpr (BLOCK_POST_COMPUTE) {
+                ProcessPostCompute(tempBuf_[tmpBufOffset], view.addr, copyOutParams);
+            } else {
+                AscendC::DataCopyPad(dst[view.addr], tempBuf_[tmpBufOffset], copyOutParams);
+            }
         } else {
-            AscendC::LocalTensor<DataType> outputLocal = tempBuf_[tmpBufOffest].template ReinterpretCast<DataType>();
-            AscendC::Cast(outputLocal, tempBuf_[tmpBufOffest], AscendC::RoundMode::CAST_RINT,
+            AscendC::LocalTensor<DataType> outputLocal = tempBuf_[tmpBufOffset].template ReinterpretCast<DataType>();
+            AscendC::Cast(outputLocal, tempBuf_[tmpBufOffset], AscendC::RoundMode::CAST_RINT,
                     view.axis[0].repeat *
                         OpsUtils::CeilAlign(view.burstLen, static_cast<uint64_t>(ELEMENT_ONE_REPEAT_COMPUTE)));
             SetEvent<AscendC::HardEvent::V_MTE3>(AscendC::HardEvent::V_MTE3);
-            AscendC::DataCopyPad(dst[view.addr], outputLocal, copyOutParams);
+            if constexpr (BLOCK_POST_COMPUTE) {
+                ProcessPostCompute(outputLocal, view.addr, copyOutParams);
+            } else {
+                AscendC::DataCopyPad(dst[view.addr], outputLocal, copyOutParams);
+            }
         }
     }
 
     template <class T, class U>
-    __aicore__ inline void CopyOutAuxGroup(const AscendC::GlobalTensor<T>& dst, U& view, int64_t tmpBufOffest)
+    __aicore__ inline void CopyOutAuxGroup(const AscendC::GlobalTensor<T>& dst, U& view, int64_t tmpBufOffset)
     {
         SetEvent<AscendC::HardEvent::V_MTE3>(AscendC::HardEvent::V_MTE3);
         AscendC::DataCopyExtParams copyOutParams = {1, 1, 0, 0, 0};
         copyOutParams.blockCount = view.axis[0].repeat;
         copyOutParams.blockLen = view.burstLen * sizeof(T);
         copyOutParams.srcStride = (view.axis[0].srcStride - view.burstLen) * sizeof(T) / BLOCK_SIZE_BYTE;
-        AscendC::DataCopyPad(dst[view.addr], tempBuf_[tmpBufOffest], copyOutParams);
+        AscendC::DataCopyPad(dst[view.addr], tempBuf_[tmpBufOffset], copyOutParams);
         AscendC::PipeBarrier<PIPE_MTE3>();
-    }
+    } 
 
-protected:
+private:
+    template<size_t PRE_ARGS_COUNT, size_t REDUCE_ARGS_COUNT, size_t POST_ARGS_COUNT, typename Tuple,
+        size_t... I1, size_t... I2, size_t... I3, size_t... I4>
+    __aicore__ inline void SplitAndCall(Tuple&& t, AscendC::Std::index_sequence<I1...>, AscendC::Std::index_sequence<I2...>,
+        AscendC::Std::index_sequence<I3...>, AscendC::Std::index_sequence<I4...>)
+    {
+        SetScalar(AscendC::Std::get<I4 + PRE_ARGS_COUNT + REDUCE_ARGS_COUNT + POST_ARGS_COUNT>(AscendC::Std::forward<Tuple>(t))...);
+        bufPool_.template Init<DataType, PromoteDataType>(T_BUF_SIZE, PROMOTE_BUF_SIZE, basicBlockLen_, preCount, postCount);
+
+        if constexpr (HAS_PRE_COMPUTE) {
+            InitPreArgs(AscendC::Std::get<I1>(AscendC::Std::forward<Tuple>(t))...);
+        }
+        InitReduceArgs(AscendC::Std::get<I2 + PRE_ARGS_COUNT>(AscendC::Std::forward<Tuple>(t))...);
+        if constexpr (HAS_POST_COMPUTE) {
+            InitPostArgs(AscendC::Std::get<I3 + PRE_ARGS_COUNT + REDUCE_ARGS_COUNT>(AscendC::Std::forward<Tuple>(t))...);
+        }
+    }
+    template <class... Args>
+    __aicore__ inline void InitArgsOutput(void) {}
+
+    template <class... Args>
+    __aicore__ inline void InitArgsInput(void) {}
+
     template <class... Args>
     __aicore__ inline void InitArgsWorkspace(GM_ADDR workspace, Args... args)
     {
-        workspace_.SetGlobalBuffer((__gm__ PromoteDataType*)workspace);
+        workspace_.SetGlobalBuffer((__gm__ PromoteDataType *)workspace);
     }
 
-    template <int32_t start, class... Args>
-    __aicore__ inline void InitArgsOutput(GM_ADDR y, Args... args)
+    template <class... Args>
+    __aicore__ inline void InitArgsOutput(GM_ADDR dst, Args... args)
     {
-        output_[start].SetGlobalBuffer((__gm__ DataType*)y);
-        if constexpr (start + 1 < OutputSize) {
-            InitArgsOutput<start + 1>(args...);
-        }
+        dst_ = dst;
     }
 
-    template <int32_t start, class... Args>
-    __aicore__ inline void InitArgsInput(GM_ADDR x, Args... args)
+    template <class... Args>
+    __aicore__ inline void InitArgsInput(GM_ADDR src, Args... args)
     {
-        input_[start].SetGlobalBuffer((__gm__ DataType*)x);
-        if constexpr (start + 1 < InputSize) {
-            InitArgsInput<start + 1>(args...);
+        src_ = src;
+        InitArgsOutput(args...);
+    }
+
+    template<class... Args>
+    __aicore__ inline void InitReduceArgs(Args... args)
+    {
+        if constexpr (!HAS_PRE_COMPUTE) {
+            InitArgsInput(args...);
         } else {
-            InitArgsOutput<0>(args...);
+            InitArgsOutput(args...);
         }
     }
 
-private:
-    __gm__ ReduceParam* param_;   // CalcReduceTiling API计算出的运行态参数
-    AscendC::TPipe* pipe_;
+    template<class... Args>
+    __aicore__ inline void InitPreArgs(Args... args)
+    {
+        for (int i = 0; i < preCount; i++) {
+            AscendC::LocalTensor<DataType> tensor;
+            AllocTensorAux<true, false, true>(tensor);
+            preIn_[i] = tensor;
+        }
+        preCompute_.SetArgs(args...);
+    }
+
+    template<class... Args>
+    __aicore__ inline void InitPostArgs(Args... args)
+    {
+        for (int i = 0; i < postCount; i++) {
+            AscendC::LocalTensor<DataType> tensor;
+            AllocTensorAux<false, false, true>(tensor);
+            postOut_[i] = tensor;
+        }
+        postCompute_.SetArgs(args...);
+    }
+
+    template <class T1, class... Args>
+    __aicore__ inline void SetScalar(T1 param, Args... args)
+    {
+        param_ = param;
+        basicBlockLen_ = this->param_->tilingData.basicBlock;
+        static constexpr int size = sizeof...(args);
+        if constexpr (size == 0) {
+            return;
+        }
+        if constexpr (HAS_PRE_COMPUTE) {
+            preCompute_.SetScalar(args...);
+        }
+        if constexpr (HAS_POST_COMPUTE) {
+            postCompute_.SetScalar(args...);
+        }
+    }
+
+    template<int32_t idx, int32_t num, bool isPreCompute, class... Args>
+    __aicore__ inline void AllocLocalTensors(Args... args)
+    {
+        if constexpr (idx < num) {
+            AscendC::LocalTensor<DataType> tensor;
+            if (isPreCompute) {
+                 tensor = preIn_[idx];
+            } else {
+                 tensor = postOut_[idx];
+            }
+            AllocLocalTensors<idx + 1, num, isPreCompute>(tensor, args...);
+            FreeTensorAux(tensor);
+        } else {
+            if constexpr (isPreCompute) {
+                 preCompute_(args...);
+            } else {
+                 postCompute_(args...);
+            }
+        }
+    }
+
+    template<class... Args>
+    __aicore__ inline void ProcessPreCompute(Args... args)
+    {
+        // first arg of args is the first input of postCompute, so only need to alloc PostInputCount - 1 tensors
+        AllocLocalTensors<0, preCount, true>(args...);
+    }
+
+    template<class... Args>
+    __aicore__ inline void ProcessPostCompute(Args... args)
+    {
+        // first arg of args is the first input of postCompute, so only need to alloc PostInputCount - 1 tensors
+        AllocLocalTensors<0, postCount, false>(args...);
+    }
+
+    ATVC::ReduceParam* param_;   // The runtime parameters calculated by CalcReduceTiling API
+    AscendC::TPipe pipeIn;;
     AscendC::TBuf<> oriVecQue_;
     AscendC::TBuf<> tempResQue_;
     AscendC::TBuf<> tempBufQue_;
@@ -325,13 +525,21 @@ private:
     AscendC::GlobalTensor<PromoteDataType> workspace_;
 
     AscendC::LocalTensor<PromoteDataType> tempUb_;
-    const __gm__ ATVC::ReduceTilingData* tiling_;
-
+ 
     int64_t basicBlockLen_;
     int64_t oriBasicBlockLen_;
 
     KernelUtils::ReduceBufPool bufPool_;
+
+    GM_ADDR src_;
+    GM_ADDR dst_;
+    AscendC::Std::conditional_t<HAS_PRE_COMPUTE, PreCompute, void*> preCompute_;
+    AscendC::Std::conditional_t<HAS_POST_COMPUTE, PostCompute, void*> postCompute_;
+    constexpr static uint32_t preCount = HAS_PRE_COMPUTE ? PreInputCount - 1 + PreOutputCount + PreTempCount : 0;
+    constexpr static uint32_t postCount = HAS_POST_COMPUTE ? PostInputCount - 1 + PostOutputCount + PostTempCount : 0;
+    AscendC::LocalTensor<PromoteDataType> preIn_[preCount];
+    AscendC::LocalTensor<PromoteDataType> postOut_[postCount];
 };
-}
-}
+} // namespace Kernel
+} // namespace ATVC
 #endif // ATVC_REDUCE_OP_TEMPLATE_H

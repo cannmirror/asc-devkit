@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_COORD_UTILS_H
-#define ACT_INCLUDE_COORD_UTILS_H
+#ifndef UTILS_COORD_UTILS_H
+#define UTILS_COORD_UTILS_H
 
 #include "common_utils.h"
 namespace Act {
@@ -54,10 +54,10 @@ GetOffset(BlockCoord_ blockCoord, ProblemShape_ problemShape, ATensorType_ aTens
     return {offsetA, offsetB, offsetC};
 }
 // GetOffsetWithoutLayout
-template <class BlockCoord_, class ProblemShape_, class ATensorType_, class BTensorType_, class CTensorType_>
+template <class BlockCoord, class ProblemShape, class ATensorType, class BTensorType, class CTensorType>
 __aicore__ inline AscendC::Coord<int64_t, int64_t, int64_t, int64_t>
-GetOffsetWithoutLayout(BlockCoord_ blockCoord, ProblemShape_ problemShape, ATensorType_ aTensor, BTensorType_ bTensor,
-                       CTensorType_ cTensor, bool transA, bool transB, bool isBias)
+GetOffsetWithoutLayout(BlockCoord blockCoord, ProblemShape problemShape, ATensorType aTensor, BTensorType bTensor,
+                       CTensorType cTensor, bool transA, bool transB, bool isBias)
 {
     int64_t m = Get<MNK_M>(problemShape);
     int64_t n = Get<MNK_N>(problemShape);
@@ -83,11 +83,54 @@ GetOffsetWithoutLayout(BlockCoord_ blockCoord, ProblemShape_ problemShape, ATens
     return {offsetA, offsetB, offsetC, offsetBias};
 }
 
-// GetOffsetIterBatch
+// GetOffsetStreamK
 template <class BlockCoord_, class ProblemShape_, class ATensorType_, class BTensorType_, class CTensorType_>
+__aicore__ inline AscendC::Coord<int64_t, int64_t, int64_t, int64_t>
+GetOffsetStreamK(BlockCoord_ blockCoord, ProblemShape_ problemShape,
+                 AscendC::Shape<int64_t, int64_t, int64_t, int64_t> tileL1, int64_t kSingleCore,
+                 ATensorType_ aTensor, BTensorType_ bTensor, CTensorType_ cTensor,
+                 bool transA, bool transB, bool isBias)
+{
+    int64_t m = Get<MNK_M>(problemShape);
+    int64_t n = Get<MNK_N>(problemShape);
+    int64_t k = Get<MNK_K>(problemShape);
+    int64_t mL1 = Get<MNK_M>(tileL1);
+    int64_t nL1 = Get<MNK_N>(tileL1);
+
+    int64_t offsetA = 0;
+    int64_t offsetB = 0;
+    int64_t offsetC = Get<MNK_B>(blockCoord) * m * n + Get<MNK_M>(blockCoord) * mL1 * n + Get<MNK_N>(blockCoord) * nL1;
+    int64_t offsetBias = 0;
+    if (transA) {
+        offsetA = Get<MNK_B>(blockCoord) * m * k +
+                  Get<MNK_M>(blockCoord) * mL1 +
+                  Get<MNK_K>(blockCoord) * kSingleCore * m;
+    } else {
+        offsetA = Get<MNK_B>(blockCoord) * m * k +
+                  Get<MNK_M>(blockCoord) * mL1 * k +
+                  Get<MNK_K>(blockCoord) * kSingleCore;
+    }
+    if (transB) {
+        offsetB = Get<MNK_B>(blockCoord) * n * k +
+                  Get<MNK_N>(blockCoord) * nL1 * k +
+                  Get<MNK_K>(blockCoord) * kSingleCore;
+    } else {
+        offsetB = Get<MNK_B>(blockCoord) * n * k +
+                  Get<MNK_N>(blockCoord) * nL1 +
+                  Get<MNK_K>(blockCoord) * kSingleCore * n;
+    }
+    if (isBias) {
+        offsetBias = Get<MNK_B>(blockCoord) * n + Get<MNK_N>(blockCoord) * nL1;
+    }
+
+    return {offsetA, offsetB, offsetC, offsetBias};
+}
+
+// GetOffsetIterBatch
+template <class BlockCoord, class ProblemShape, class ATensorType, class BTensorType, class CTensorType>
 __aicore__ inline AscendC::Coord<int64_t, int64_t, int64_t>
-GetOffsetIterBatch(BlockCoord_ blockCoord, ProblemShape_ problemShape, ATensorType_ aTensor, BTensorType_ bTensor,
-                   CTensorType_ cTensor)
+GetOffsetIterBatch(BlockCoord blockCoord, ProblemShape problemShape, ATensorType aTensor, BTensorType bTensor,
+                   CTensorType cTensor)
 {
     int64_t m = Get<MNK_M>(problemShape);
     int64_t n = Get<MNK_N>(problemShape);
@@ -101,8 +144,8 @@ GetOffsetIterBatch(BlockCoord_ blockCoord, ProblemShape_ problemShape, ATensorTy
 template <bool isTransA_, bool isTransB_, CubeFormat layoutA_, CubeFormat layoutB_, CubeFormat layoutC_>
 class Coordinate {
 public:
-    __aicore__ inline Coordinate(int64_t m_, int64_t n_, int64_t k_, int64_t l1M_, int64_t l1N_, int64_t l1K_) :
-        m(m_), n(n_), k(k_), l1M(l1M_), l1N(l1N_), l1K(l1K_)
+    __aicore__ inline Coordinate(int64_t m, int64_t n, int64_t k, int64_t l1M, int64_t l1N, int64_t l1K) :
+        m(m), n(n), k(k), l1M(l1M), l1N(l1N), l1K(l1K)
     {}
 
     static constexpr bool isTransA = isTransA_;
@@ -126,11 +169,11 @@ public:
                 return 0;
             }
             if (isTransB) {
-                return batchTileIdx * CeilAlign(n, OUTER_SIZE) * CeilAlign(k, c0) +
-                       (nTileIdx * l1N + nSplitOffset) * c0 + kTileIdx * l1K * CeilAlign(n, OUTER_SIZE);
+                return batchTileIdx * CeilAlign(n, OUTER_SIZE) * CeilAlign(k, c0) + (nTileIdx * l1N + nSplitOffset) * c0
+                       + kTileIdx * l1K * CeilAlign(n, OUTER_SIZE);
             }
-            return batchTileIdx * CeilAlign(n, c0) * CeilAlign(k, OUTER_SIZE) + kTileIdx * l1K * c0 +
-                   (nTileIdx * l1N + nSplitOffset) * CeilAlign(k, OUTER_SIZE);
+            return batchTileIdx * CeilAlign(n, c0) * CeilAlign(k, OUTER_SIZE) + kTileIdx * l1K * c0
+                   + (nTileIdx * l1N + nSplitOffset) * CeilAlign(k, OUTER_SIZE);
         }
         if (isTransB) {
             return batchTileIdx * n * k + (nTileIdx * l1N + nSplitOffset) * k + kTileIdx * l1K;
@@ -153,8 +196,8 @@ public:
     __aicore__ inline AscendC::Std::tuple<int64_t, int64_t, int64_t, int64_t, int64_t, int64_t>
     GetQuantOffset(int64_t mTileIdx, int64_t nTileIdx, int64_t mSplitOffset = 0, int64_t nSplitOffset = 0)
     {
-        uint64_t mOffset = mTileIdx * l1M + mSplitOffset;
-        uint64_t nOffset = nTileIdx * l1N + nSplitOffset;
+        int64_t mOffset = mTileIdx * l1M + mSplitOffset;
+        int64_t nOffset = nTileIdx * l1N + nSplitOffset;
         AscendC::Std::tuple<int64_t, int64_t, int64_t, int64_t, int64_t, int64_t> offset{0, 0, 0, 0, 0, 0};
         if constexpr (isTransA) {
             Get<0>(offset) = mOffset;
@@ -168,22 +211,32 @@ public:
         }
         Get<5>(offset) = mOffset * n + nOffset; // 5: idx of y
         if constexpr (isGB) {
-            return offset;
-        }
-        if constexpr (isMx) {
+            if ASCEND_IS_AIV {
+                if constexpr (isTransA) {
+                    Get<2>(offset) = mOffset; // 2: idx of x1Scale
+                } else {
+                    Get<2>(offset) = mOffset * CeilDiv(k, PER_BLOCK_SIZE); // 2: idx of x1Scale
+                }
+                if constexpr (isTransB) {
+                    Get<3>(offset) = CeilDiv(nOffset, PER_BLOCK_SIZE) * CeilDiv(k, PER_BLOCK_SIZE); // 3: idx of x2Scale
+                } else {
+                    Get<3>(offset) = CeilDiv(nOffset, PER_BLOCK_SIZE); // 3: idx of x2Scale
+                }
+            }
+        } else if constexpr (isMx) {
             if constexpr (isTransA) {
-                Get<2>(offset) = mOffset * MXFP_MULTI_BASE_SIZE; // 2: idx of scale1
+                Get<2>(offset) = mOffset * MXFP_MULTI_BASE_SIZE; // 2: idx of x1Scale
             } else {
-                Get<2>(offset) = mOffset * CeilDiv(k, MXFP_DIVISOR_SIZE) * MXFP_MULTI_BASE_SIZE; // 2: idx of scale1
+                Get<2>(offset) = mOffset * CeilDiv(k, MXFP_DIVISOR_SIZE) * MXFP_MULTI_BASE_SIZE; // 2: idx of x1Scale
             }
             if constexpr (isTransB) {
-                Get<3>(offset) = nOffset * CeilDiv(k, MXFP_DIVISOR_SIZE) * MXFP_MULTI_BASE_SIZE; // 3: idx of scale2
+                Get<3>(offset) = nOffset * CeilDiv(k, MXFP_DIVISOR_SIZE) * MXFP_MULTI_BASE_SIZE; // 3: idx of x2Scale
             } else {
-                Get<3>(offset) = nOffset * MXFP_MULTI_BASE_SIZE; // 3: idx of scale2
+                Get<3>(offset) = nOffset * MXFP_MULTI_BASE_SIZE; // 3: idx of x2Scale
             }
         } else {
-            Get<2>(offset) = mOffset; // 2: idx of scale1
-            Get<3>(offset) = nOffset; // 3: idx of scale2
+            Get<2>(offset) = mOffset; // 2: idx of x1Scale
+            Get<3>(offset) = nOffset; // 3: idx of x2Scale
         }
         Get<4>(offset) = nOffset; // 4: idx of bias
         return offset;

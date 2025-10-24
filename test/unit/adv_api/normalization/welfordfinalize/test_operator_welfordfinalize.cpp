@@ -210,9 +210,9 @@ protected:
     {}
 };
 
-// 1、有尾块；
-// 2、有counts；
-// 3、 有buffer约束；
+// 1. with tail block;
+// 2. there is counts;
+// 3. there is buffer constraint;
 INSTANTIATE_TEST_CASE_P(TEST_PACKAGE_WelfordFinalize, WelfordFinalizeTestSuite,
    ::testing::Values(
    WelfordFinalizeTestParams { 4, 32, 4, 32, 4, 0, kernel_WelfordFinalize_test<float, false, false> }, // !1 + !2 + !3

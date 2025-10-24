@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,16 +13,16 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_SCHEDULER_L2_MISPLACE_CORE_H
-#define ACT_BLOCK_SCHEDULER_L2_MISPLACE_CORE_H
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/utils/status_utils.h"
+#ifndef MATMUL_BLOCK_BLOCK_SCHEDULER_L2_MISPLACE_CORE_H
+#define MATMUL_BLOCK_BLOCK_SCHEDULER_L2_MISPLACE_CORE_H
+#include "./block_scheduler_utils.h"
+#include "../../utils/status_utils.h"
 
 namespace Act {
 namespace Gemm {
 namespace Block {
 enum class L2TilePolicy {
-    L2_TILE_NORMAL = 0,   // calc mn l2 tile block nums based on mL2TileNum = nL2TileNum
+    L2_TILE_NORMAL = 0,   // calc mn l2 tile block nums based on mL2TileNum_ = nL2TileNum_
     L2_TILE_TAIL_OPT = 1, // traversal and find tail optimal solution
 };
 
@@ -34,30 +34,30 @@ template <class ProblemShape_, class L1TileShape_, class L0TileShape_,
           L2TilePolicy L2TilePolicy_ = L2TilePolicy::L2_TILE_NORMAL, bool TransA_ = false, bool TransB_ = false>
 class BlockSchedulerL2MisplaceCore {
 public:
-    int64_t mTileNum{0};
-    int64_t nTileNum{0};
-    int64_t kTileNum{0};
-    int64_t blockIdx{0};
-    int64_t perCoreBlockNum{0};
-    int64_t blockNum{0};
-    int64_t b{0};
-    int64_t m{0};
-    int64_t n{0};
-    int64_t k{0};
-    int64_t totalTileNum{0};
+    int64_t mTileNum_{0};
+    int64_t nTileNum_{0};
+    int64_t kTileNum_{0};
+    int64_t blockIdx_{0};
+    int64_t perCoreBlockNum_{0};
+    int64_t blockNum_{0};
+    int64_t b_{0};
+    int64_t m_{0};
+    int64_t n_{0};
+    int64_t k_{0};
+    int64_t totalTileNum_{0};
     // l2 spilit attribute
-    int64_t newBlockIdx{0};
-    int64_t mL2TileNumTmp{0};
-    int64_t nL2TileNumTmp{0};
-    int64_t nL2Idx{0};
-    int64_t mL2Idx{0};
-    int64_t mL2Num{0};     // l2 m block num
-    int64_t nL2Num{0};     // l2 n block num
-    int64_t mL2TileNum{0}; // a1b1 m tile num of one l2 block
-    int64_t nL2TileNum{0}; // a1b1 n tile num of one l2 block
+    int64_t newBlockIdx_{0};
+    int64_t mL2TileNumTmp_{0};
+    int64_t nL2TileNumTmp_{0};
+    int64_t nL2Idx_{0};
+    int64_t mL2Idx_{0};
+    int64_t mL2Num_{0};     // l2 m block num
+    int64_t nL2Num_{0};     // l2 n block num
+    int64_t mL2TileNum_{0}; // a1b1 m tile num of one l2 block
+    int64_t nL2TileNum_{0}; // a1b1 n tile num of one l2 block
 
-    using BlockShape = Std::tuple<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Std::tuple<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Std::tuple<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Std::tuple<int64_t, int64_t, int64_t, int64_t>;
     using ProblemShape = ProblemShape_;
 
     static constexpr bool isTransA = TransA_;
@@ -71,17 +71,17 @@ public:
     static constexpr L2TilePolicy l2TilePolicy = L2TilePolicy_;
 
     __aicore__ inline BlockSchedulerL2MisplaceCore(ProblemShape shape, int64_t blockIdx, int64_t blockNum) :
-        blockIdx(blockIdx), blockNum(blockNum)
+        blockIdx_(blockIdx), blockNum_(blockNum)
     {
-        m = shape.m;
-        n = shape.n;
-        k = shape.k;
-        b = shape.b ? shape.b : 1;
-        mTileNum = Act::Gemm::CeilDiv(m, l1M);
-        nTileNum = Act::Gemm::CeilDiv(n, l1N);
-        kTileNum = Act::Gemm::CeilDiv(k, l1K);
-        perCoreBlockNum = GetPerBlockNum(blockNum, mTileNum, nTileNum, b);
-        totalTileNum = mTileNum * nTileNum * b;
+        m_ = shape.m;
+        n_ = shape.n;
+        k_ = shape.k;
+        b_ = shape.b ? shape.b : 1;
+        mTileNum_ = Act::Gemm::CeilDiv(m_, l1M);
+        nTileNum_ = Act::Gemm::CeilDiv(n_, l1N);
+        kTileNum_ = Act::Gemm::CeilDiv(k_, l1K);
+        perCoreBlockNum_ = GetPerBlockNum(blockNum_, mTileNum_, nTileNum_, b_);
+        totalTileNum_ = mTileNum_ * nTileNum_ * b_;
         InitL2Tile();
     }
 
@@ -95,7 +95,7 @@ public:
 
     __aicore__ inline bool EnableL2Tile()
     {
-        return GetTotalSize(m, n, k) > L2_TILE_THRESHOLD;
+        return GetTotalSize(m_, n_, k_) > L2_TILE_THRESHOLD;
     }
 
     __aicore__ inline void InitL2TileTail()
@@ -108,124 +108,124 @@ public:
         int64_t maxj = 0;
         if (l1N > l1M) {
             isInnerBad = isTransA;
-            maxi = (blockNum > nTileNum) ? nTileNum : blockNum;
-            maxj = (blockNum > mTileNum) ? mTileNum : blockNum;
+            maxi = (blockNum_ > nTileNum_) ? nTileNum_ : blockNum_;
+            maxj = (blockNum_ > mTileNum_) ? mTileNum_ : blockNum_;
         } else {
             isInnerBad = !isTransB;
-            maxi = (blockNum > mTileNum) ? mTileNum : blockNum;
-            maxj = (blockNum > nTileNum) ? nTileNum : blockNum;
+            maxi = (blockNum_ > mTileNum_) ? mTileNum_ : blockNum_;
+            maxj = (blockNum_ > nTileNum_) ? nTileNum_ : blockNum_;
         }
         int64_t innerMinUseDim = isInnerBad ? L1_MAX_UST_DIM : L1_MIN_UST_DIM;
 
         for (int64_t i = maxi; i >= L1_MIN_UST_DIM; i--) { // if l1N greater than l1M, indicates n
             for (int64_t j = maxj; j >= innerMinUseDim; j--) {
-                if (GetTotalSize(j * l1M, i * l1N, k) <= L2_TILE_THRESHOLD) {
+                if (GetTotalSize(j * l1M, i * l1N, k_) <= L2_TILE_THRESHOLD) {
                     int64_t mL2TileNumTmp = (l1N > l1M) ? j : i;
                     int64_t nL2TileNumTmp = (l1N > l1M) ? i : j;
 
-                    int64_t mL2TileNumTailTmp = GetTailNum(mTileNum, mL2TileNumTmp);
-                    int64_t nL2TileNumTailTmp = GetTailNum(nTileNum, nL2TileNumTmp);
+                    int64_t mL2TileNumTailTmp = GetTailNum(mTileNum_, mL2TileNumTmp);
+                    int64_t nL2TileNumTailTmp = GetTailNum(nTileNum_, nL2TileNumTmp);
 
-                    uint64_t mConflictTmp = Act::Gemm::CeilDiv(blockNum, mL2TileNumTailTmp);
-                    uint64_t nConflictTmp = Act::Gemm::CeilDiv(blockNum, nL2TileNumTailTmp);
+                    uint64_t mConflictTmp = Act::Gemm::CeilDiv(blockNum_, mL2TileNumTailTmp);
+                    uint64_t nConflictTmp = Act::Gemm::CeilDiv(blockNum_, nL2TileNumTailTmp);
                     if (mConflict >= mConflictTmp && nConflict >= nConflictTmp) {
                         mConflict = mConflictTmp;
                         nConflict = nConflictTmp;
-                        mL2TileNum = mL2TileNumTmp;
-                        nL2TileNum = nL2TileNumTmp;
+                        mL2TileNum_ = mL2TileNumTmp;
+                        nL2TileNum_ = nL2TileNumTmp;
                     }
                 }
             }
         }
-        if (mL2TileNum == 0 || nL2TileNum == 0) {
-            mL2TileNum = mTileNum;
-            nL2TileNum = nTileNum;
+        if (mL2TileNum_ == 0 || nL2TileNum_ == 0) {
+            mL2TileNum_ = mTileNum_;
+            nL2TileNum_ = nTileNum_;
         }
     }
 
     __aicore__ inline void InitL2Tile()
     {
-        if ((mTileNum < L1_MIN_UST_DIM && nTileNum < L1_MIN_UST_DIM) || (!EnableL2Tile())) {
-            mL2TileNum = mTileNum;
-            nL2TileNum = nTileNum;
-            mL2Num = 1;
-            nL2Num = 1;
+        if ((mTileNum_ < L1_MIN_UST_DIM && nTileNum_ < L1_MIN_UST_DIM) || (!EnableL2Tile())) {
+            mL2TileNum_ = mTileNum_;
+            nL2TileNum_ = nTileNum_;
+            mL2Num_ = 1;
+            nL2Num_ = 1;
             return;
         }
 
         if constexpr (l2TilePolicy == L2TilePolicy::L2_TILE_NORMAL) {
-            float p = (l1M + l1N) * k / (l1M * l1N);
+            float p = (l1M + l1N) * k_ / (l1M * l1N);
             // calc x^2 + p * x + (p / 2) ^ 2 = L2_TILE_THRESHOLD / 2mn + (p / 2) ^ 2
             float sqrt_tmp = sqrt(L2_TILE_THRESHOLD / (2 * l1M * l1N) + p * p / 4);
             int64_t l2TileNum = static_cast<int64_t>(sqrt_tmp - p / 2);
-            mL2TileNum = mTileNum >= l2TileNum ? l2TileNum : mTileNum;
-            nL2TileNum = nTileNum >= l2TileNum ? l2TileNum : nTileNum;
+            mL2TileNum_ = mTileNum_ >= l2TileNum ? l2TileNum : mTileNum_;
+            nL2TileNum_ = nTileNum_ >= l2TileNum ? l2TileNum : nTileNum_;
         } else if constexpr (l2TilePolicy == L2TilePolicy::L2_TILE_TAIL_OPT) {
             InitL2TileTail();
         }
 
-        mL2Num = Act::Gemm::CeilDiv(mTileNum, mL2TileNum);
-        nL2Num = Act::Gemm::CeilDiv(nTileNum, nL2TileNum);
+        mL2Num_ = Act::Gemm::CeilDiv(mTileNum_, mL2TileNum_);
+        nL2Num_ = Act::Gemm::CeilDiv(nTileNum_, nL2TileNum_);
     }
 
     __aicore__ inline void GetCommonTileIndex(int64_t tileIdx)
     {
-        int64_t batchTileIdx = tileIdx / (nTileNum * mTileNum);
+        int64_t batchTileIdx = tileIdx / (nTileNum_ * mTileNum_);
         if (batchTileIdx != 0) {
-            tileIdx = tileIdx - batchTileIdx * nTileNum * mTileNum;
+            tileIdx = tileIdx - batchTileIdx * nTileNum_ * mTileNum_;
         }
-        mL2Idx = tileIdx / (mL2TileNum * nTileNum);
-        mL2TileNumTmp = (mL2Idx == mL2Num - 1) ? GetTailNum(mTileNum, mL2TileNum) : mL2TileNum;
+        mL2Idx_ = tileIdx / (mL2TileNum_ * nTileNum_);
+        mL2TileNumTmp_ = (mL2Idx_ == mL2Num_ - 1) ? GetTailNum(mTileNum_, mL2TileNum_) : mL2TileNum_;
 
-        nL2Idx = (tileIdx % (mL2TileNum * nTileNum)) / (mL2TileNumTmp * nL2TileNum);
-        nL2TileNumTmp = (nL2Idx == nL2Num - 1) ? GetTailNum(nTileNum, nL2TileNum) : nL2TileNum;
+        nL2Idx_ = (tileIdx % (mL2TileNum_ * nTileNum_)) / (mL2TileNumTmp_ * nL2TileNum_);
+        nL2TileNumTmp_ = (nL2Idx_ == nL2Num_ - 1) ? GetTailNum(nTileNum_, nL2TileNum_) : nL2TileNum_;
 
-        int64_t startIdx = mL2Idx * mL2TileNum * nTileNum + nL2Idx * nL2TileNum * mL2TileNumTmp;
-        int64_t startBlockIdx = startIdx % blockNum;
-        newBlockIdx = tileIdx - startIdx;
+        int64_t startIdx = mL2Idx_ * mL2TileNum_ * nTileNum_ + nL2Idx_ * nL2TileNum_ * mL2TileNumTmp_;
+        int64_t startBlockIdx = startIdx % blockNum_;
+        newBlockIdx_ = tileIdx - startIdx;
     }
 
     __aicore__ inline int64_t GetTileNum()
     {
-        return totalTileNum;
+        return totalTileNum_;
     }
 
-    __aicore__ inline BlockShape GetBlockShape(int tileIdx)
+    __aicore__ inline BlockShape GetBlockShape(int64_t tileIdx)
     {
         GetCommonTileIndex(tileIdx);
-        int64_t mTileIdx = newBlockIdx % mL2TileNumTmp;
-        mTileIdx = mTileIdx + mL2Idx * mL2TileNum;
+        int64_t mTileIdx = newBlockIdx_ % mL2TileNumTmp_;
+        mTileIdx = mTileIdx + mL2Idx_ * mL2TileNum_;
 
         int64_t nTileIdx = 0;
-        if (mL2TileNumTmp != 0 && nL2TileNumTmp != 0) {
-            int64_t tmp = newBlockIdx / MMLcm(mL2TileNumTmp, nL2TileNumTmp);
-            nTileIdx = (newBlockIdx + tmp) % nL2TileNumTmp;
+        if (mL2TileNumTmp_ != 0 && nL2TileNumTmp_ != 0) {
+            int64_t tmp = newBlockIdx_ / MMLcm(mL2TileNumTmp_, nL2TileNumTmp_);
+            nTileIdx = (newBlockIdx_ + tmp) % nL2TileNumTmp_;
         }
-        nTileIdx = nTileIdx + nL2Idx * nL2TileNum;
+        nTileIdx = nTileIdx + nL2Idx_ * nL2TileNum_;
 
         // calc tail l1block mnk
-        int64_t tailL1M = (m % l1M == 0) ? l1M : m % l1M;
-        int64_t tailL1N = (n % l1N == 0) ? l1N : n % l1N;
-        int64_t tailL1K = (k % l1K == 0) ? l1K : k % l1K;
-        int64_t blockShapeM = IsMTail(mTileIdx, mTileNum) ? tailL1M : l1M;
-        int64_t blockShapeN = IsNTail(nTileIdx, nTileNum) ? tailL1N : l1N;
+        int64_t tailL1M = (m_ % l1M == 0) ? l1M : m_ % l1M;
+        int64_t tailL1N = (n_ % l1N == 0) ? l1N : n_ % l1N;
+        int64_t tailL1K = (k_ % l1K == 0) ? l1K : k_ % l1K;
+        int64_t blockShapeM = IsMTail(mTileIdx, mTileNum_) ? tailL1M : l1M;
+        int64_t blockShapeN = IsNTail(nTileIdx, nTileNum_) ? tailL1N : l1N;
 
-        return {blockShapeM, blockShapeN, k, b};
+        return {blockShapeM, blockShapeN, k_, b_};
     }
 
-    __aicore__ inline BlockCoord GetBlockCoord(int tileIdx)
+    __aicore__ inline BlockCoord GetBlockCoord(int64_t tileIdx)
     {
-        int64_t batchTileIdx = tileIdx / (nTileNum * mTileNum);
+        int64_t batchTileIdx = tileIdx / (nTileNum_ * mTileNum_);
         GetCommonTileIndex(tileIdx);
-        int64_t mTileIdx = newBlockIdx % mL2TileNumTmp;
-        mTileIdx = mTileIdx + mL2Idx * mL2TileNum;
+        int64_t mTileIdx = newBlockIdx_ % mL2TileNumTmp_;
+        mTileIdx = mTileIdx + mL2Idx_ * mL2TileNum_;
 
         int64_t nTileIdx = 0;
-        if (mL2TileNumTmp != 0 && nL2TileNumTmp != 0) {
-            int64_t tmp = newBlockIdx / MMLcm(mL2TileNumTmp, nL2TileNumTmp);
-            nTileIdx = (newBlockIdx + tmp) % nL2TileNumTmp;
+        if (mL2TileNumTmp_ != 0 && nL2TileNumTmp_ != 0) {
+            int64_t tmp = newBlockIdx_ / MMLcm(mL2TileNumTmp_, nL2TileNumTmp_);
+            nTileIdx = (newBlockIdx_ + tmp) % nL2TileNumTmp_;
         }
-        nTileIdx = nTileIdx + nL2Idx * nL2TileNum;
+        nTileIdx = nTileIdx + nL2Idx_ * nL2TileNum_;
 
         return {mTileIdx * l1M, nTileIdx * l1N, 0, batchTileIdx};
     }
@@ -235,12 +235,12 @@ public:
         return DoGetBlockNum(l1M, l1N, shape);
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(ProblemShape shape)
+    __host_aicore__ static size_t GetWorkspaceSize(ProblemShape shape)
     {
         return 0;
     }
 
-    __host_aicore__ static Status CheckArgs(ProblemShape shape)
+    __host_aicore__ static Status CanImplement(ProblemShape shape)
     {
         return DoCheckArgs(shape, l1M, l1N, l1K, l0M, l0N, l0K);
     }

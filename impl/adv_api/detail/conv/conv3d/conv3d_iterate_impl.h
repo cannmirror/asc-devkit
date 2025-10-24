@@ -12,7 +12,6 @@
  * \file conv3d_iterate_impl.h
  * \brief
  */
-
 #ifndef API_CONV3D_ITERATE_IMPL_H
 #define API_CONV3D_ITERATE_IMPL_H
 
@@ -28,7 +27,7 @@ struct Iterate {
         return IterateImpl(self, enPartialSum);
     }
 
-    // K方向迭代首次(iter==0)加载L0A, L0B
+    // The first iteration in the K direction (iter==0) loads L0A and L0B
     template <bool isLast = false>
     static __aicore__ void inline ReduceKFirstIterLoadL0(Intf *self)
     {
@@ -74,7 +73,7 @@ struct Iterate {
         }
     }
 
-    // K方向迭代(iter>0)加载L0A, L0B
+    // K-direction iteration (iter>0) loading L0A, L0B
     template <bool isLast = false>
     static __aicore__ void inline ReduceKIterLoadL0(Intf *self, const uint16_t& isOdd)
     {
@@ -117,7 +116,7 @@ struct Iterate {
         }
     }
 
-    // K方向迭代的后处理, 当前只对bl1bypass需要添加AscendC::WaitFlag
+    // Post processing for K-direction iteration, currently only for bl1 bypass, AscendC:: WaitFlag needs to be added
     static __aicore__ void inline ReduceKPostProcessLoadL0(Intf *self)
     {
         if constexpr((Intf::l0pingpong == static_cast<int8_t>(Conv3dApi::ConvL0PingPong::ALL_CLOSE)) && Intf::bl1bypass) {

@@ -15,10 +15,9 @@
 #ifndef IMPL_MATMUL_KFC_MATMUL_SERVER_IMPL_C310_H
 #define IMPL_MATMUL_KFC_MATMUL_SERVER_IMPL_C310_H
 
-#include "matmul_server_impl_base.h"
+#include "matmul_server.h"
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto &MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::Init(MSG_POS KfcMsg *msg)
@@ -38,6 +37,14 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
         mul.Init(&tmpTiling_, nullptr);
         InitL1Addr();
     }
+}
+
+template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
+__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetHIF8(MSG_POS KfcMsg* msg)
+{
+    bool enableHIF8 = static_cast<bool>(msg->body.enHIF8);
+    mul.SetHIF8(enableHIF8);
 }
 
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
@@ -226,11 +233,8 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     } else {
         size = tiling_.GetSingleCoreM() * tiling_.GetSingleCoreN();
     }
-
-    uint32_t tmpBody = *(reinterpret_cast<MSG_POS uint32_t *>(&(msg->body)));
-    uint8_t enAtomic = (uint8_t)(tmpBody & 0xff);
-    bool enSequentialWrite = (tmpBody >> (sizeof(uint8_t) * ONE_BYTE_BIT_SIZE)) & 0x1;
-
+    uint8_t enAtomic = static_cast<uint8_t>(msg->body.enAtomic);
+    bool enSequentialWrite = static_cast<bool>(msg->body.enSequentialWrite);
     if constexpr (NeedTransitByGm(C_TYPE::pos)) {
         GlobalTensor<DstT> cGlobal;
         cGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ DstT *>(msg->body.cAddr), size);
@@ -374,12 +378,14 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     MatmulConfigParams &body)
 {
     // Make sure data copy done from UB->GM
-    if constexpr (GetPhyType(A_TYPE::pos) == Hardware::GM || GetPhyType(B_TYPE::pos) == Hardware::GM ||
-                  GetPhyType(BIAS_TYPE::pos) == Hardware::GM) {
-        if constexpr (!A_TYPE::ibShare && !B_TYPE::ibShare) {
-            // GM->L1 wait UB->GM
-            CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(
-                GetIntraFlagId(0, static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM), mul.GetSubBlockIdx()));
+    if constexpr ((GetPhyType(A_TYPE::pos) == Hardware::GM && GetPhyType(A_TYPE::srcPos) == Hardware::UB) ||
+        (GetPhyType(B_TYPE::pos) == Hardware::GM && GetPhyType(B_TYPE::srcPos) == Hardware::UB) ||
+        (GetPhyType(BIAS_TYPE::pos) == Hardware::GM && GetPhyType(BIAS_TYPE::srcPos) == Hardware::UB)) {
+        // GM->L1 wait UB->GM
+        CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(
+            GetIntraFlagId(0, static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM), mul.GetSubBlockIdx()));
+        if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
+            CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM) + INTRA_NUM);
         }
     }
 
@@ -522,6 +528,5 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     }
     return true;
 }
-#endif
 } // namespace AscendC
-#endif // __MATMUL_SERVER_IMPL_C310_H__
+#endif // IMPL_MATMUL_KFC_MATMUL_SERVER_IMPL_C310_H

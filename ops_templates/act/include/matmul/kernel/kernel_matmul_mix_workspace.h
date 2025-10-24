@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,29 +13,29 @@
  * \brief
  */
 
-#ifndef ACT_KERNEL_MATMUL_MIX_WORKSPACE_H
-#define ACT_KERNEL_MATMUL_MIX_WORKSPACE_H
+#ifndef MATMUL_KERNEL_KERNEL_MATMUL_MIX_WORKSPACE_H
+#define MATMUL_KERNEL_KERNEL_MATMUL_MIX_WORKSPACE_H
 
 #define ASCENDC_CUBE_ONLY
 #include "kernel_operator.h"
 #include "lib/matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/layout_utils.h"
-#include "include/utils/tuple_utils.h"
-#include "include/utils/coord_utils.h"
-#include "include/utils/tensor_utils.h"
-#include "include/utils/status_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/layout_utils.h"
+#include "../../utils/tuple_utils.h"
+#include "../../utils/coord_utils.h"
+#include "../../utils/tensor_utils.h"
+#include "../../utils/status_utils.h"
 
 #include "./semaphore.h"
-#include "include/matmul/matmul_intf.h"
-#include "include/matmul/block/block_mmad_builder.h"
-#include "include/epilogue/block_epilogue_empty.h"
-#include "include/epilogue/block_epilogue_quant.h"
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/matmul/block/block_scheduler_iterateK.h"
-#include "include/matmul/block/block_scheduler_misplace_core.h"
-#include "include/matmul/block/block_scheduler_l2_misplace_core.h"
+#include "../matmul_intf.h"
+#include "../block/block_mmad_builder.h"
+#include "../../epilogue/block_epilogue_empty.h"
+#include "../../epilogue/block_epilogue_quant.h"
+#include "../block/block_scheduler_utils.h"
+#include "../block/block_scheduler_iterateK.h"
+#include "../block/block_scheduler_misplace_core.h"
+#include "../block/block_scheduler_l2_misplace_core.h"
 
 namespace Act {
 namespace Gemm {
@@ -69,15 +69,15 @@ public:
     using AType = typename BlockMmadBuilder::AType;
     using BType = typename BlockMmadBuilder::BType;
     using CType = typename BlockMmadBuilder::CType;
-    using TupleShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
+    using TupleShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
 
     // ND layout
     using NDLayout = AscendC::Layout<AscendC::Shape<int64_t, int64_t>, AscendC::Stride<int64_t, int64_t>>;
-    using ATensorTrait = TensorTrait<AType, AscendC::TPosition::GM, NDLayout>;
-    using BTensorTrait = TensorTrait<BType, AscendC::TPosition::GM, NDLayout>;
-    using CTensorTrait = TensorTrait<CType, AscendC::TPosition::GM, NDLayout>;
+    using ATensorTrait = AscendC::TensorTrait<AType, AscendC::TPosition::GM, NDLayout>;
+    using BTensorTrait = AscendC::TensorTrait<BType, AscendC::TPosition::GM, NDLayout>;
+    using CTensorTrait = AscendC::TensorTrait<CType, AscendC::TPosition::GM, NDLayout>;
     using AGlobalTensorType = AscendC::GlobalTensor<ATensorTrait>;
     using BGlobalTensorType = AscendC::GlobalTensor<BTensorTrait>;
     using CGlobalTensorType = AscendC::GlobalTensor<CTensorTrait>;
@@ -124,7 +124,79 @@ public:
         InitGlobalTensorC<NDLayout, CGlobalTensorType, CTensorTrait, CType>(cGlobal_, blockMmadParams_.cGmAddr, m, n);
     }
 
-    __aicore__ inline void run(Params const& params)
+    __host_aicore__ static Status CheckShape(ProblemShape const& shape)
+    {
+        int64_t m = shape.m;
+        int64_t n = shape.n;
+        int64_t k = shape.k;
+        int64_t b = shape.b;
+        if (b > INT32_MAX) {
+            return Status::batchErrorExcceedsLimit;
+        }
+        // Check m, n, k overlimit data type
+        if (m > INT32_MAX || n > INT32_MAX || k > INT32_MAX) {
+            return Status::mnkErrorExceedsLimit;
+        }
+        // Check matrix size exceeds limit
+        if (!transA && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // mk matrix k limit
+            return Status::mkErrorMatrixExceedsLimit;
+        }
+
+        if (transA && m > MATRIX_INNER_DIM_LIMIT_SIZE) { // km matrix m limit
+            return Status::kmErrorMatrixExceedsLimit;
+        }
+        if (!transB && n > MATRIX_INNER_DIM_LIMIT_SIZE) { // kn matrix n limit
+            return Status::knErrorMatrixExceedsLimit;
+        }
+
+        if (transB && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // nk matrix k limit
+            return Status::nkErrorMatrixExceedsLimit;
+        }
+        return Status::success;
+    }
+
+    __host_aicore__ static Status CanImplement(Arguments const& args)
+    {
+        // Check shape in kernel
+        CHECK_AND_RETURN(CheckShape(args.problemShape));
+        // Check mmad args
+        CHECK_AND_RETURN(BlockMmadBuilder::CanImplement(args.mmadArgs));
+        // Check args for block scheduler
+        CHECK_AND_RETURN(BlockSchedulerOp::CanImplement(args.problemShape));
+        // Check args fro block epilogue
+        CHECK_AND_RETURN(BlockEpilogue::CanImplement(args.epilogueArgs));
+        return Status::success;
+    }
+
+    __host_aicore__ static size_t GetWorkspaceSize(ProblemShape shape, int64_t blockNum)
+    {
+        size_t workSpaceSize = 0;
+        // Calculate extra workspace size for mmad
+        workSpaceSize += BlockMmadBuilder::GetWorkspaceSize();
+        // Calculate extra workspace size for epilogue
+        workSpaceSize += BlockEpilogue::GetWorkspaceSize(blockNum, l1M, l1N);
+        // Calculate extra workspace size for block scheduler
+        workSpaceSize += BlockSchedulerOp::GetWorkspaceSize(shape);
+        return workSpaceSize;
+    }
+
+    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
+    {
+        BlockMmadParams mmadParams = BlockMmadBuilder::InitParams(args.mmadArgs);
+        // mmad params with epiligue takes workspaceGm as output
+        mmadParams.cGmAddr = workspace;
+        // epilogue params takes workspaceGm as input
+        BlockEpilogueParams epilogueParams = BlockEpilogue::InitParams(args.epilogueArgs, workspace);
+        Params params = {args.problemShape, mmadParams, epilogueParams};
+        return params;
+    }
+
+    static int64_t GetBlockNum(ProblemShape shape)
+    {
+        return BlockSchedulerOp::GetBlockNum(shape);
+    }
+
+    __aicore__ inline void operator()(Params const& params)
     {
         // Instantiate mmadOp and epilogueOp
         BlockMmadOp blockMmadOp;
@@ -146,7 +218,7 @@ public:
 
         int64_t tileNum = bs.GetTileNum();
         // Send event when using aiv_1
-        if (GetSubBlockIdx() > 0) {
+        if (AscendC::GetSubBlockIdx() > 0) {
             SendEvent<BlockEpilogue>(curBlockIdx, tileNum, blockNum);
             return;
         }
@@ -190,83 +262,6 @@ public:
         if ASCEND_IS_AIC {
             AicWaitEvent<BlockEpilogue>(loopIdx);
         }
-    }
-
-    __host_aicore__ static Status CheckShape(ProblemShape const& shape)
-    {
-        int64_t m = shape.m;
-        int64_t n = shape.n;
-        int64_t k = shape.k;
-        int64_t b = shape.b;
-        if (b > INT32_MAX) {
-            return Status::batchErrorExcceedsLimit;
-        }
-        // Check m, n, k overlimit data type
-        if (m > INT32_MAX || n > INT32_MAX || k > INT32_MAX) {
-            return Status::mnkErrorExceedsLimit;
-        }
-        // Check matrix size exceeds limit
-        if (!transA && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // mk matrix k limit
-            return Status::mkErrorMatrixExceedsLimit;
-        }
-
-        if (transA && m > MATRIX_INNER_DIM_LIMIT_SIZE) { // km matrix m limit
-            return Status::kmErrorMatrixExceedsLimit;
-        }
-        if (!transB && n > MATRIX_INNER_DIM_LIMIT_SIZE) { // kn matrix n limit
-            return Status::knErrorMatrixExceedsLimit;
-        }
-
-        if (transB && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // nk matrix k limit
-            return Status::nkErrorMatrixExceedsLimit;
-        }
-        return Status::success;
-    }
-
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
-    {
-        // Check shape in kernel
-        CHECK_AND_RETURN(CheckShape(args.problemShape));
-        // Check mmad args
-        CHECK_AND_RETURN(BlockMmadBuilder::CheckArgs(args.mmadArgs));
-        // Check args for block scheduler
-        CHECK_AND_RETURN(BlockSchedulerOp::CheckArgs(args.problemShape));
-        // Check args fro block epilogue
-        CHECK_AND_RETURN(BlockEpilogue::CheckArgs(args.epilogueArgs));
-        return Status::success;
-    }
-
-    __host_aicore__ static size_t GetWorkSpaceSize(ProblemShape shape, int64_t blockNum)
-    {
-        size_t workSpaceSize = 0;
-        // Calculate extra workspace size for mmad
-        workSpaceSize += BlockMmadBuilder::GetWorkSpaceSize();
-        // Calculate extra workspace size for epilogue
-        workSpaceSize += BlockEpilogue::GetWorkSpaceSize(blockNum, l1M, l1N);
-        // Calculate extra workspace size for block scheduler
-        workSpaceSize += BlockSchedulerOp::GetWorkSpaceSize(shape);
-        return workSpaceSize;
-    }
-
-    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
-    {
-        BlockMmadParams mmadParams = BlockMmadBuilder::InitParams(args.mmadArgs);
-        // mmad params with epiligue takes workspaceGm as output
-        mmadParams.cGmAddr = workspace;
-        // epilogue params takes workspaceGm as input
-        BlockEpilogueParams epilogueParams = BlockEpilogue::InitParams(args.epilogueArgs, workspace);
-        Params params = {args.problemShape, mmadParams, epilogueParams};
-        return params;
-    }
-
-    static int64_t GetBlockNum(ProblemShape shape)
-    {
-        return BlockSchedulerOp::GetBlockNum(shape);
-    }
-
-    __aicore__ inline void operator()(Params const& params)
-    {
-        run(params);
     }
 };
 

@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -35,14 +34,10 @@ struct PatternConstInfo {
     constexpr static int32_t Dim = dim;
 };
 
-struct A : public PatternConstInfo<PATTERN_A, true, true, CONST1> {
-};
-struct BA : public PatternConstInfo<PATTERN_BA, false, true, CONST2> {
-};
-struct AB : public PatternConstInfo<PATTERN_AB, true, false, CONST2> {
-};
-struct ABA : public PatternConstInfo<PATTERN_ABA, true, true, CONST3> {
-};
-}
-}
-#endif // ATVC_BROADCAST_PATTERNS_H
+struct A : public PatternConstInfo<PATTERN_A, true, true, CONST1> {};
+struct BA : public PatternConstInfo<PATTERN_BA, false, true, CONST2> {};
+struct AB : public PatternConstInfo<PATTERN_AB, true, false, CONST2> {};
+struct ABA : public PatternConstInfo<PATTERN_ABA, true, true, CONST3> {};
+}  // namespace BroadcastPattern
+}  // namespace ATVC
+#endif  // ATVC_BROADCAST_PATTERNS_H

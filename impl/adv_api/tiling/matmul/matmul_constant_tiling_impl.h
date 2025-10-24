@@ -12,8 +12,8 @@
  * \file matmul_constant_tiling_impl.h
  * \brief
  */
-#ifndef TILING_MATMUL_MATMUL_CONSTANT_TILING_IMPL_H
-#define TILING_MATMUL_MATMUL_CONSTANT_TILING_IMPL_H
+#ifndef IMPL_MATMUL_TILING_MATMUL_CONSTANT_TILING_IMPL_H
+#define IMPL_MATMUL_TILING_MATMUL_CONSTANT_TILING_IMPL_H
 
 #include "matmul_constant_tiling_utils.h"
 
@@ -394,59 +394,252 @@ __aicore__ constexpr bool CalcAL1FullLoadTiling(int32_t l1Size, MatmulApiStaticT
     return true;
 }
 
-template <typename A_TYPE, typename B_TYPE, typename C_TYPE, typename BIAS_TYPE>
-__aicore__ constexpr MxScaleStatus GetMxScaleFactor(const MatmulApiStaticTiling &tiling, int32_t l1Size)
+__aicore__ constexpr int32_t FixMxScaleFactor(int32_t factor, int32_t maxFactor)
+{
+    factor = factor < maxFactor ? factor : maxFactor;
+    // scaleFactor is in range of [1, 127]
+    factor = factor > 1 ? factor : 1;
+    factor = factor < Impl::SCALE_FACTOR_MAX_VALUE ? factor : Impl::SCALE_FACTOR_MAX_VALUE;
+    return factor;
+}
+
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetABaseHeightAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcAT = typename A_TYPE::T;
+    if (IsSameTypeV<SrcAT, float>) {
+        return Align<int32_t>(tiling.baseM, Impl::HW_C0);
+    } else if ((IsSupportB8<SrcAT>() || IsSupportB4<SrcAT>()) && A_TYPE::isTrans == true) {
+        return Align<int32_t>(tiling.baseM, GetReduceC0Size<SrcAT>());
+    } else {
+        return tiling.baseM;
+    }
+}
+
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetABaseWidthAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcAT = typename A_TYPE::T;
+    if (IsSameTypeV<SrcAT, float> && A_TYPE::isTrans == true) {
+        return Align<int32_t>(tiling.baseK, Impl::HW_C0);
+    } else if (IsSameTypeV<SrcAT, float> || (IsSupportB8<SrcAT>() || IsSupportB4<SrcAT>())) {
+        return Align<int32_t>(tiling.baseK, GetReduceC0Size<SrcAT>());
+    } else {
+        return tiling.baseK;
+    }
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetBBaseHeightAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcBT = typename B_TYPE::T;
+    if (IsSameTypeV<SrcBT, float> && B_TYPE::isTrans == false) {
+        return Align<int32_t>(tiling.baseK, Impl::HW_C0);
+    } else if ((IsSupportB8<SrcBT>() || IsSupportB4<SrcBT>())) {
+        return Align<int32_t>(tiling.baseK, GetReduceC0Size<SrcBT>());
+    } else {
+        return tiling.baseK;
+    }
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetBBaseWidthAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcBT = typename B_TYPE::T;
+    if (IsSameTypeV<SrcBT, float> || ((IsSupportB8<SrcBT>() || IsSupportB4<SrcBT>()) && B_TYPE::isTrans == false)) {
+        return Align<int32_t>(tiling.baseN, GetReduceC0Size<SrcBT>());
+    } else {
+        return tiling.baseN;
+    }
+}
+
+__aicore__ constexpr int32_t GetScaleABaseHeightAlign(const MatmulApiStaticTiling &tiling)
+{
+    return Align<int32_t>(tiling.baseM, GetReduceC0Size<fp8_e8m0_t>());
+}
+
+__aicore__ constexpr int32_t GetScaleABaseWidthAlign(const MatmulApiStaticTiling &tiling)
+{
+    return CeilNoLog<int32_t>(tiling.baseK, Impl::SCALE_K_SIZE);
+}
+
+__aicore__ constexpr int32_t GetScaleBBaseHeightAlign(const MatmulApiStaticTiling &tiling)
+{
+    return Align<int32_t>(CeilNoLog<int32_t>(tiling.baseK, Impl::SCALE_K_SIZE), GetReduceC0Size<fp8_e8m0_t>());
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetScaleBBaseWidthAlign(const MatmulApiStaticTiling &tiling)
+{
+    if (B_TYPE::isScaleTrans == false) {
+        return Align<int32_t>(tiling.baseN, GetReduceC0Size<fp8_e8m0_t>());
+    } else {
+        return tiling.baseN;
+    }
+}
+
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetMatrixAByteSize(const MatmulApiStaticTiling &tiling)
+{
+    if constexpr (PhyPosIsUB(A_TYPE::pos)) {
+        return Align<int32_t>(tiling.singleCoreM, Impl::HW_C0) *
+            Align<int32_t>(tiling.singleCoreK, Impl::C0_BYTE_SIZE);
+    } else if constexpr (PhyPosIsGM(A_TYPE::pos)) {
+        return GetABaseHeightAlign<A_TYPE>(tiling) * GetABaseWidthAlign<A_TYPE>(tiling);
+    } else {
+        return 0;
+    }
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetMatrixBByteSize(const MatmulApiStaticTiling &tiling)
+{
+    if constexpr (PhyPosIsUB(B_TYPE::pos)) {
+        return Align<int32_t>(tiling.singleCoreK, Impl::HW_C0) *
+            Align<int32_t>(tiling.singleCoreN, Impl::C0_BYTE_SIZE);
+    } else if constexpr (PhyPosIsGM(B_TYPE::pos)) {
+        return GetBBaseHeightAlign<B_TYPE>(tiling) * GetBBaseWidthAlign<B_TYPE>(tiling);
+    } else {
+        return 0;
+    }
+}
+
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetMatrixScaleAByteSize(const MatmulApiStaticTiling &tiling)
+{
+    if constexpr (PhyPosIsUB(A_TYPE::scalePosition)) {
+        return Align<int32_t>(tiling.singleCoreM, Impl::HW_C0) *
+            Align<int32_t>(CeilNoLog<int32_t>(tiling.singleCoreK, Impl::SCALE_K_SIZE), Impl::C0_BYTE_SIZE);
+    } else if constexpr (PhyPosIsGM(A_TYPE::scalePosition)) {
+        return GetScaleABaseHeightAlign(tiling) * GetScaleABaseWidthAlign(tiling);
+    } else {
+        return 0;
+    }
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetMatrixScaleBByteSize(const MatmulApiStaticTiling &tiling)
+{
+    if constexpr (PhyPosIsUB(B_TYPE::scalePosition)) {
+        return Align<int32_t>(CeilNoLog<int32_t>(tiling.singleCoreK, Impl::SCALE_K_SIZE), Impl::HW_C0) *
+            Align<int32_t>(tiling.singleCoreN, Impl::C0_BYTE_SIZE);
+    } else if constexpr (PhyPosIsGM(B_TYPE::scalePosition)) {
+        return GetScaleBBaseHeightAlign(tiling) * GetScaleBBaseWidthAlign<B_TYPE>(tiling);
+    } else {
+        return 0;
+    }
+}
+
+template <typename A_TYPE, typename B_TYPE, typename BIAS_TYPE>
+__aicore__ constexpr uint32_t GetL1UsedSize(const MatmulApiStaticTiling &tiling, const MxScaleStatus& mxScaleFactor)
 {
     using SrcAT = typename A_TYPE::T;
     using SrcBT = typename B_TYPE::T;
     using SrcBiasT = typename BIAS_TYPE::T;
-    MxScaleStatus mxScaleFactor{ 1, 1, 0 };
+    // A
+    int32_t matrixAByteSize = GetMatrixAByteSize<A_TYPE>(tiling) * GetBitSize<SrcAT>() / ONE_BYTE_BIT_SIZE;
+    int32_t stepSize = tiling.stepKa * tiling.stepM;
+    int32_t cacheFactor = (tiling.depthA1 / stepSize - 1) % Impl::DB_ON;
+    int32_t queDepth = cacheFactor == 0 ? Impl::DB_OFF : Impl::DB_ON;
+    uint32_t initBufferA1Size = static_cast<uint32_t>(queDepth * matrixAByteSize * stepSize);
+    // scaleA
+    int32_t matrixScaleAByteSize = GetMatrixScaleAByteSize<A_TYPE>(tiling) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE;
+    uint32_t initBufferScaleA1Size = static_cast<uint32_t>(mxScaleFactor.scaleFactorKa * mxScaleFactor.scaleFactorM * queDepth * matrixScaleAByteSize * stepSize);
 
-    int dataUsedL1Size = tiling.depthA1 * tiling.baseM * tiling.baseK * GetBitSize<SrcAT>() / ONE_BYTE_BIT_SIZE +
-        tiling.depthB1 * tiling.baseN * tiling.baseK * GetBitSize<SrcBT>() / ONE_BYTE_BIT_SIZE;
-    int bias = tiling.isBias ? 1 : 0;
-    int biasUsedL1Size = bias * tiling.baseN * GetBitSize<SrcBiasT>() / ONE_BYTE_BIT_SIZE;
-    int remainedL1Size = l1Size - (dataUsedL1Size + biasUsedL1Size);
+    // B
+    int32_t matrixBByteSize = GetMatrixBByteSize<B_TYPE>(tiling) * GetBitSize<SrcBT>() / ONE_BYTE_BIT_SIZE;
+    stepSize = tiling.stepKb * tiling.stepN;
+    cacheFactor = (tiling.depthB1 / stepSize - 1) % Impl::DB_ON;
+    queDepth = cacheFactor == 0 ? Impl::DB_OFF : Impl::DB_ON;
+    uint32_t initBufferB1Size = static_cast<uint32_t>(queDepth * matrixBByteSize * stepSize);
+    // scaleB
+    int32_t matrixScaleBByteSize = GetMatrixScaleBByteSize<B_TYPE>(tiling) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE;
+    uint32_t initBufferScaleB1Size = static_cast<uint32_t>(mxScaleFactor.scaleFactorKb * mxScaleFactor.scaleFactorN * queDepth * matrixScaleBByteSize * stepSize);
+
+    int32_t bias = tiling.isBias ? 1 : 0;
+    int32_t biasUsedL1Size = bias * tiling.baseN * GetBitSize<SrcBiasT>() / ONE_BYTE_BIT_SIZE;
+
+    return initBufferA1Size + initBufferB1Size + initBufferScaleA1Size + initBufferScaleB1Size + biasUsedL1Size;
+}
+
+template <typename A_TYPE, typename B_TYPE>
+__aicore__ constexpr void GetMxScaleSize(const MatmulApiStaticTiling &tiling, int& scaleA1Size, int& scaleB1Size)
+{
+    if constexpr (PhyPosIsL1(A_TYPE::scalePosition)) {
+        scaleA1Size = Align<int32_t>(tiling.singleCoreM, Impl::C0_BYTE_SIZE) *
+            (CeilNoLog<int32_t>(tiling.singleCoreK, Impl::MX_BASEK_FACTOR) * Impl::ALIGN_TWO);
+    } else {
+        scaleA1Size = tiling.stepKa * tiling.stepM * 
+            (GetMatrixScaleAByteSize<A_TYPE>(tiling) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE);
+    }
+
+    if constexpr (PhyPosIsL1(B_TYPE::scalePosition)) {
+        scaleB1Size = Align<int32_t>(tiling.singleCoreN, Impl::C0_BYTE_SIZE) *
+            (CeilNoLog<int32_t>(tiling.singleCoreK, Impl::MX_BASEK_FACTOR) * Impl::ALIGN_TWO);
+    } else {
+        scaleB1Size = tiling.stepKb * tiling.stepN * 
+            (GetMatrixScaleBByteSize<B_TYPE>(tiling) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE);
+    }
+}
+
+template <typename A_TYPE, typename B_TYPE, typename BIAS_TYPE>
+__aicore__ constexpr MxScaleStatus GetMxScaleFactor(const MatmulApiStaticTiling &tiling, int32_t l1Size)
+{
+    MxScaleStatus mxScaleFactor{ 1, 1, 1, 1, 0 };
+
+    int remainedL1BufferSize = (l1Size - GetL1UsedSize<A_TYPE, B_TYPE, BIAS_TYPE>(tiling, mxScaleFactor)) / Impl::MX_L1_BUFFER_NUM;
     int kStep = CeilNoLog<int32_t>(tiling.singleCoreK, tiling.baseK);
+
+    int scaleA1Size = 0;
+    int scaleB1Size = 0;
+    GetMxScaleSize<A_TYPE, B_TYPE>(tiling, scaleA1Size, scaleB1Size);
+    GetMxScaleSize<A_TYPE, B_TYPE>(tiling, scaleA1Size, scaleB1Size);
+
+    int oriScaleFactorKa = remainedL1BufferSize / scaleA1Size + 1;
     int maxScaleFactorKa = CeilNoLog<int32_t>(kStep, tiling.stepKa);
+    mxScaleFactor.scaleFactorKa = FixMxScaleFactor(oriScaleFactorKa, maxScaleFactorKa);
+
+    int oriScaleFactorKb = remainedL1BufferSize / scaleB1Size + 1;
     int maxScaleFactorKb = CeilNoLog<int32_t>(kStep, tiling.stepKb);
+    mxScaleFactor.scaleFactorKb = FixMxScaleFactor(oriScaleFactorKb, maxScaleFactorKb);
 
-    mxScaleFactor.scaleFactorKa =
-    remainedL1Size / Impl::MX_L1_BUFFER_NUM / (tiling.stepKa * tiling.baseM * tiling.baseK / Impl::SCALE_K_SIZE);
-    mxScaleFactor.scaleFactorKb =
-    remainedL1Size / Impl::MX_L1_BUFFER_NUM / (tiling.stepKb * tiling.baseN * tiling.baseK / Impl::SCALE_K_SIZE);
-    mxScaleFactor.scaleFactorKa =
-    mxScaleFactor.scaleFactorKa > maxScaleFactorKa ? maxScaleFactorKa : mxScaleFactor.scaleFactorKa;
-    mxScaleFactor.scaleFactorKb =
-    mxScaleFactor.scaleFactorKb > maxScaleFactorKb ? maxScaleFactorKb : mxScaleFactor.scaleFactorKb;
+    if (mxScaleFactor.scaleFactorKa == maxScaleFactorKa) {
+        int mStep = CeilNoLog<int32_t>(tiling.singleCoreM, tiling.baseM);
+        int oriScaleFactorM = remainedL1BufferSize / (mxScaleFactor.scaleFactorKa * scaleA1Size);
+        int maxScaleFactorM = CeilNoLog<int32_t>(mStep, tiling.stepM);
+        mxScaleFactor.scaleFactorM = FixMxScaleFactor(oriScaleFactorM, maxScaleFactorM);
+    }   
 
-    // scaleFactor is in range of [1, 127]
-    mxScaleFactor.scaleFactorKa = mxScaleFactor.scaleFactorKa >= 1 ? mxScaleFactor.scaleFactorKa : 1;
-    mxScaleFactor.scaleFactorKb = mxScaleFactor.scaleFactorKb >= 1 ? mxScaleFactor.scaleFactorKb : 1;
-    mxScaleFactor.scaleFactorKa =
-    mxScaleFactor.scaleFactorKa <= Impl::SCALE_FACTOR_MAX_VALUE ? mxScaleFactor.scaleFactorKa : Impl::SCALE_FACTOR_MAX_VALUE;
-    mxScaleFactor.scaleFactorKb =
-    mxScaleFactor.scaleFactorKb <= Impl::SCALE_FACTOR_MAX_VALUE ? mxScaleFactor.scaleFactorKb : Impl::SCALE_FACTOR_MAX_VALUE;
+    if (mxScaleFactor.scaleFactorKb == maxScaleFactorKb) {
+        int nStep = CeilNoLog<int32_t>(tiling.singleCoreN, tiling.baseN);
+        int oriScaleFactorN = remainedL1BufferSize / (mxScaleFactor.scaleFactorKb * scaleB1Size);
+        int maxScaleFactorN = CeilNoLog<int32_t>(nStep, tiling.stepN);
+        mxScaleFactor.scaleFactorN = FixMxScaleFactor(oriScaleFactorN, maxScaleFactorN);
+    }
 
     if constexpr ((A_TYPE::format == CubeFormat::ND && A_TYPE::isTrans == true && A_TYPE::scalePosition == TPosition::TSCM) &&
         (B_TYPE::format == CubeFormat::ND && B_TYPE::isTrans == false && B_TYPE::scalePosition == TPosition::TSCM)) {
+        mxScaleFactor.scaleFactorM = static_cast<uint8_t>(1);
+        mxScaleFactor.scaleFactorN = static_cast<uint8_t>(1);
         mxScaleFactor.scaleFactorKa = static_cast<uint8_t>(1);
         mxScaleFactor.scaleFactorKb = static_cast<uint8_t>(1);
     } else {
         if constexpr (A_TYPE::scalePosition == TPosition::TSCM) {
+            mxScaleFactor.scaleFactorM = static_cast<uint8_t>(1);
             mxScaleFactor.scaleFactorKa = static_cast<uint8_t>(1);
         }
 
         if constexpr (B_TYPE::scalePosition == TPosition::TSCM) {
+            mxScaleFactor.scaleFactorN = static_cast<uint8_t>(1);
             mxScaleFactor.scaleFactorKb = static_cast<uint8_t>(1);
         }
     }
 
     // 8bit: 0~6bit:scaleFactor, 7bit(reserved):double buffer flag
-    mxScaleFactor.scaleFactorKa = mxScaleFactor.scaleFactorKa & 0x7f;
-    mxScaleFactor.scaleFactorKb = mxScaleFactor.scaleFactorKb & 0x7f;
     mxScaleFactor.mxTypePara = static_cast<int32_t>(static_cast<uint32_t>(mxScaleFactor.mxTypePara) | mxScaleFactor.scaleFactorKa);
     mxScaleFactor.mxTypePara = static_cast<int32_t>(static_cast<uint32_t>(mxScaleFactor.mxTypePara) | (mxScaleFactor.scaleFactorKb << 8U));
+    mxScaleFactor.mxTypePara = static_cast<int32_t>(static_cast<uint32_t>(mxScaleFactor.mxTypePara) | (mxScaleFactor.scaleFactorM << 16U));
+    mxScaleFactor.mxTypePara = static_cast<int32_t>(static_cast<uint32_t>(mxScaleFactor.mxTypePara) | (mxScaleFactor.scaleFactorN << 24U));
     return mxScaleFactor;
 }
 
@@ -454,16 +647,13 @@ template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE>
 __aicore__ constexpr void GetMxMatmulApiTiling(MatmulApiStaticTiling &tiling, int32_t l1Size)
 {
 #if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    using SrcAT = typename A_TYPE::T;
+    using SrcBT = typename B_TYPE::T;
     if constexpr (HasScalePosition<A_TYPE>::value || HasScalePosition<B_TYPE>::value) {
-        MxScaleStatus mxScaleFactor = GetMxScaleFactor<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(tiling, l1Size);
+        MxScaleStatus mxScaleFactor = GetMxScaleFactor<A_TYPE, B_TYPE, BIAS_TYPE>(tiling, l1Size);
         tiling.mxTypePara = mxScaleFactor.mxTypePara;
         // For MxMatmul : usedL1Size = tensorASize + scaleASize + tensorBSize + scaleBSize + biasSize
-        int32_t needUsedL1Size = tiling.baseM * tiling.baseK * tiling.depthA1 * GetBitSize<typename A_TYPE::T>() /
-            ONE_BYTE_BIT_SIZE + tiling.baseM * tiling.baseK / Impl::SCALE_K_SIZE * tiling.depthA1 * mxScaleFactor.scaleFactorKa * 1 +
-            tiling.baseN * tiling.baseK * tiling.depthB1 * GetBitSize<typename B_TYPE::T>() /
-            ONE_BYTE_BIT_SIZE + tiling.baseN * tiling.baseK / Impl::SCALE_K_SIZE * tiling.depthB1 * mxScaleFactor.scaleFactorKb * 1 +
-            int32_t(tiling.isBias) * tiling.baseN * GetBitSize<typename BIAS_TYPE::T>() / ONE_BYTE_BIT_SIZE;
-        if (needUsedL1Size > l1Size) {
+        if (GetL1UsedSize<A_TYPE, B_TYPE, BIAS_TYPE>(tiling, mxScaleFactor) > l1Size) {
             tiling.stepM = 1;
             tiling.stepN = 1;
             tiling.stepKa = 1;

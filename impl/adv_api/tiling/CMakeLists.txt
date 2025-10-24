@@ -12,21 +12,23 @@ add_library(tiling_api_headers INTERFACE)
 target_include_directories(
   tiling_api_headers
   INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     $<BUILD_INTERFACE:${ASCENDC_DIR}>
-    $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/adv_api>
     $<BUILD_INTERFACE:${ASCENDC_DIR}/include>
-    $<BUILD_INTERFACE:${ASCENDC_DIR}/include/adv_api>
+    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/adv_api>>
+    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}>>
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include>>
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include/base>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/basic_api>>
-    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../framework/tikcfw/tiling>>
+    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../atc/opcompiler/ascendc_compiler/framework/tikcfw/tiling>>
+    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../atc/opcompiler/ascendc_compiler/framework>>
+    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../atc/opcompiler/ascendc_compiler/framework/include>>
+    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../atc/opcompiler/ascendc_compiler/framework/include/utils>>
+    $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../atc/opcompiler/ascendc_compiler/framework/include/utils/tiling>>
     $<INSTALL_INTERFACE:include>
     $<INSTALL_INTERFACE:include/ascendc>
     $<INSTALL_INTERFACE:include/ascendc/include/>
     $<INSTALL_INTERFACE:include/ascendc/include/highlevel_api>
-    $<INSTALL_INTERFACE:include/ascendc/include/aicore>
-    $<INSTALL_INTERFACE:include/ascendc/include/aicore/adv_api>
     $<INSTALL_INTERFACE:include/ascendc/include/highlevel_api/tiling>)
 
 target_link_libraries(tiling_api_headers
@@ -158,8 +160,6 @@ target_link_libraries(
           $<BUILD_INTERFACE:slog_headers>
           -Wl,--no-as-needed
           c_sec
-          $<$<STREQUAL:${PRODUCT_SIDE},host>:alog>
-          $<$<STREQUAL:${PRODUCT_SIDE},device>:slog>
           -Wl,--as-needed
           $<$<STREQUAL:${PRODUCT_SIDE},host>:platform>
           $<$<STREQUAL:${PRODUCT_SIDE},host>:exe_graph>
@@ -167,13 +167,24 @@ target_link_libraries(
   PUBLIC $<BUILD_INTERFACE:kernel_tiling_headers>
          $<$<STREQUAL:${PRODUCT_SIDE},host>:metadef_headers> tiling_api_headers)
 
-set(ASCENDC_API_ADV_INSTALL_DIR ${INSTALL_LIBRARY_DIR}/lib64)
-set(ASCENDC_API_ADV_MULT_INSTALL_DIR
-    ${INSTALL_LIBRARY_DIR}/devlib/${CMAKE_SYSTEM_PROCESSOR})
-set(ASCENDC_TILING_INCLUDE_INSTALL_DIR ${INSTALL_LIBRARY_DIR}/include)
+if(BUILD_OPEN_PROJECT)
+  set(ASCENDC_API_ADV_INSTALL_DIR ${INSTALL_LIBRARY_DIR}/lib64)
+  set(ASCENDC_API_ADV_MULT_INSTALL_DIR
+      ${INSTALL_LIBRARY_DIR}/devlib/${CMAKE_SYSTEM_PROCESSOR})
+  set(ASCENDC_TILING_INCLUDE_INSTALL_DIR ${INSTALL_LIBRARY_DIR}/include)
+else()
+  set(ASCENDC_API_ADV_INSTALL_DIR ${INSTALL_LIBRARY_DIR}/tiling/)
+  set(ASCENDC_API_ADV_MULT_INSTALL_DIR
+      ${INSTALL_LIBRARY_DIR}/${CMAKE_SYSTEM_PROCESSOR})
+  set(ASCENDC_TILING_INCLUDE_INSTALL_DIR ${INSTALL_LIBRARY_DIR}/asc/include)
+endif()
 
 install(TARGETS tiling_api ARCHIVE DESTINATION ${ASCENDC_API_ADV_INSTALL_DIR}
                                    OPTIONAL)
 
 install(TARGETS tiling_api
         ARCHIVE DESTINATION ${ASCENDC_API_ADV_MULT_INSTALL_DIR} OPTIONAL)
+
+configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/tiling_headers.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/tiling_headers.cmake @ONLY)
+install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/tiling_headers.cmake)

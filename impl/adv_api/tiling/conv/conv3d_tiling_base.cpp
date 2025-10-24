@@ -634,9 +634,9 @@ void Conv3dTilingBase::SetFinalTilingDecisionInfo(optiling::TConv3DApiTiling& ti
     tiling.set_cin1InAL1(this->l1TilingInfo.cin1InAL1);
     tiling.set_kAL1Tail(this->l1TilingInfo.kAL1Tail);
     tiling.set_cin1InAL1Tail(this->l1TilingInfo.cin1InAL1Tail);
-    tiling.set_KBL1Divk0(this->l1TilingInfo.KBL1Divk0);
+    tiling.set_kBL1DivK0(this->l1TilingInfo.kBL1DivK0);
     tiling.set_kBL1Tail(this->l1TilingInfo.kBL1Tail);
-    tiling.set_KBL1TailDivk0(this->l1TilingInfo.KBL1TailDivk0);
+    tiling.set_kBL1TailDivK0(this->l1TilingInfo.kBL1TailDivK0);
     tiling.set_iterateMNOrder(static_cast<uint8_t>(this->l1TilingInfo.iterateMNOrder));
     tiling.set_biasFullLoadFlag(static_cast<uint8_t>(this->l1TilingInfo.biasFullLoadFlag));
     tiling.set_fixpParamsFullLoadFlag(static_cast<uint8_t>(this->l1TilingInfo.fixpParamsFullLoadFlag));
@@ -701,9 +701,9 @@ void Conv3dTilingBase::PrintTilingDataBasicInfo() const
     TILING_LOG_DEBUG("cin1InAL1: %lu", this->l1TilingInfo.cin1InAL1);
     TILING_LOG_DEBUG("kAL1Tail: %lu", this->l1TilingInfo.kAL1Tail);
     TILING_LOG_DEBUG("cin1InAL1Tail: %lu", this->l1TilingInfo.cin1InAL1Tail);
-    TILING_LOG_DEBUG("KBL1Divk0: %lu", this->l1TilingInfo.KBL1Divk0);
+    TILING_LOG_DEBUG("kBL1DivK0: %lu", this->l1TilingInfo.kBL1DivK0);
     TILING_LOG_DEBUG("kBL1Tail: %lu", this->l1TilingInfo.kBL1Tail);
-    TILING_LOG_DEBUG("KBL1TailDivk0: %lu", this->l1TilingInfo.KBL1TailDivk0);
+    TILING_LOG_DEBUG("kBL1TailDivK0: %lu", this->l1TilingInfo.kBL1TailDivK0);
     TILING_LOG_DEBUG("nL0xk0: %lu", this->l0TilingInfo.nL0xk0);
     TILING_LOG_DEBUG("kL0xorgCoAlignN0: %lu", this->l0TilingInfo.kL0xorgCoAlignN0);
     TILING_LOG_DEBUG("offsetx: %d", this->attrInfo.offsetx);

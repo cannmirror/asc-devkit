@@ -309,17 +309,11 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
         PipeBarrier<PIPE_V>();
         Cast(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, splitSize);
     } else {
-        uint32_t splitK = 0;
-        if constexpr (config.oriSrcK % HALF_NUM_PER_BLK == 0) {
-            splitK = config.oriSrcK;
-        } else {
-            splitK = AlignUp(config.oriSrcK, HALF_NUM_PER_BLK);
-        }
         Cast(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, splitSize);
         Cast(tmpBuffer2, inMaxTensor[offset2], RoundMode::CAST_NONE, reduceSize);
         PipeBarrier<PIPE_V>();
 
-        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, splitK,
+        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, tiling.splitK,
             DEFAULT_REPEAT_STRIDE * HALF_FACTOR);
 
         PipeBarrier<PIPE_V>();
@@ -327,7 +321,7 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
 
         Cast(tmpBuffer2, inSumTensor[offset2], RoundMode::CAST_NONE, reduceSize);
         PipeBarrier<PIPE_V>();
-        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, splitK,
+        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, tmpBuffer2, curSplitM, tiling.splitK,
             DEFAULT_REPEAT_STRIDE * HALF_FACTOR);
 
         PipeBarrier<PIPE_V>();
@@ -349,18 +343,12 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst,
         PipeBarrier<PIPE_V>();
         GenericDivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
     } else {
-        uint32_t splitK = 0;
-        if constexpr (config.oriSrcK % FLOAT_NUM_PER_BLK == 0) {
-            splitK = config.oriSrcK;
-        } else {
-            splitK = AlignUp(config.oriSrcK, FLOAT_NUM_PER_BLK);
-        }
-        GenericSubNDImpl(dst[offset1], src[offset1], inMaxTensor[offset2], curSplitM, splitK,
+        GenericSubNDImpl(dst[offset1], src[offset1], inMaxTensor[offset2], curSplitM, tiling.splitK,
             DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
         Exp(dst[offset1], dst[offset1], splitSize);
         PipeBarrier<PIPE_V>();
-        GenericDivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, splitK,
+        GenericDivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.splitK,
             DEFAULT_REPEAT_STRIDE);
     }
 }
@@ -462,20 +450,14 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
         PipeBarrier<PIPE_V>();
         Cast(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, splitSize);
     } else {
-        uint32_t splitK = 0;
-        if constexpr (config.oriSrcK % FLOAT_NUM_PER_BLK == 0) {
-            splitK = config.oriSrcK;
-        } else {
-            splitK = AlignUp(config.oriSrcK, FLOAT_NUM_PER_BLK);
-        }
         Cast(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, splitSize);
         PipeBarrier<PIPE_V>();
-        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, splitK,
+        GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.splitK,
             DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
         Exp(tmpBuffer0, tmpBuffer0, tiling.splitSize);
         PipeBarrier<PIPE_V>();
-        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, splitK,
+        GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.splitK,
             DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
         Cast(dst[offset1], tmpBuffer0, FLOAT2HALF_ROUND_MODE, splitSize);

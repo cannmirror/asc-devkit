@@ -8159,8 +8159,8 @@ TEST_F(TestTiling, TestWelfordUpdateTiling)
     auto shape1d = ge::Shape(shapeDims1d);
     uint32_t maxsize = 0;
     uint32_t minsize = 0;
-    uint32_t dtypesizeT = 2;  // half类型
-    uint32_t dtypesizeU = 4;  // float类型
+    uint32_t dtypesizeT = 2;  // half type
+    uint32_t dtypesizeU = 4;  // float type
     bool isReuseSource = false;
     GetWelfordUpdateMaxMinTmpSize(shape1d, dtypesizeT, dtypesizeU, isReuseSource, false, maxsize, minsize);
     EXPECT_EQ(minsize, 3 * 256);
@@ -8168,8 +8168,8 @@ TEST_F(TestTiling, TestWelfordUpdateTiling)
 
     std::vector<int64_t> shapeDims2d = {1, 72};
     auto shape2d = ge::Shape(shapeDims2d);
-    dtypesizeT = 4;  // float类型
-    dtypesizeU = 4;  // float类型
+    dtypesizeT = 4;  // float type
+    dtypesizeU = 4;  // float type
     isReuseSource = false;
     GetWelfordUpdateMaxMinTmpSize(shape2d, dtypesizeT, dtypesizeU, isReuseSource, false, maxsize, minsize);
     EXPECT_EQ(minsize, 2 * 256);
@@ -8177,8 +8177,8 @@ TEST_F(TestTiling, TestWelfordUpdateTiling)
 
     std::vector<int64_t> shapeDims3d = {1, 256};
     auto shape3d = ge::Shape(shapeDims3d);
-    dtypesizeT = 4;  // float类型
-    dtypesizeU = 4;  // float类型
+    dtypesizeT = 4;  // float type
+    dtypesizeU = 4;  // float type
     isReuseSource = true;
     GetWelfordUpdateMaxMinTmpSize(shape3d, dtypesizeT, dtypesizeU, isReuseSource, false, maxsize, minsize);
     EXPECT_EQ(minsize, 1 * 256);
@@ -8191,7 +8191,7 @@ TEST_F(TestTiling, TestWelfordFinalizeTiling)
     auto shape_1d = ge::Shape(shape_dims_1d);
     uint32_t maxsize = 0;
     uint32_t minsize = 0;
-    uint32_t dtypesize = 4;  // float类型
+    uint32_t dtypesize = 4;  // float type
     bool isReuseSource = false;
     GetWelfordFinalizeMaxMinTmpSize(shape_1d, dtypesize, isReuseSource, maxsize, minsize);
     EXPECT_EQ(minsize, 4 * 256);
@@ -8225,7 +8225,7 @@ TEST_F(TestTiling, TestDropOutTiling)
     auto shape_1d = ge::Shape(shape_dims_1d);
     uint32_t maxsize = 0;
     uint32_t minsize = 0;
-    uint32_t dtypesize = 4;  // float类型
+    uint32_t dtypesize = 4;  // float type
     bool isReuseSource = true;
     GetDropOutMaxMinTmpSize(shape_1d, dtypesize, isReuseSource, maxsize, minsize);
     EXPECT_EQ(minsize, 512);

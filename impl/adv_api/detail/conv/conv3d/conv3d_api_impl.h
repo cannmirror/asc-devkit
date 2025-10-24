@@ -15,6 +15,7 @@
 #ifndef API_CONV3D_API_IMPL_H
 #define API_CONV3D_API_IMPL_H
 
+
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "kernel_utils.h"
@@ -154,32 +155,32 @@ public:
         AscendC::LocalTensor<typename Config::L0cT> bl0BiasB =
             AscendC::LocalTensor<typename Config::L0cT>(AscendC::TPosition::B2, 0, 0);
 
-        uint8_t enableBias = false;     // 是否有bias
-        uint8_t isFirstIterate = true;  // 是否第一次Iterate
-        uint8_t loadAL1Flag = true;     // 是否载入AL1的标志
-        uint8_t loadBL1Flag = true;     // 是否载入BL1的标志
-        uint8_t loadAL0Flag = true;     // 是否载入AL0的标志
-        uint8_t loadBL0Flag = true;     // 是否载入BL0的标志
+        uint8_t enableBias = false;
+        uint8_t isFirstIterate = true;
+        uint8_t loadAL1Flag = true;
+        uint8_t loadBL1Flag = true;
+        uint8_t loadAL0Flag = true;
+        uint8_t loadBL0Flag = true; 
         uint8_t kAL1fullload = false;
         uint8_t kBL1fullload = false;
         uint8_t biasFullLoadFlag = false;
-        uint8_t mL0IsDivisibleByWo = false; // mL0是否能整除wo的标志
+        uint8_t mL0IsDivisibleByWo = false;
 
         uint8_t freeAL1TensorFlag = false;
         uint8_t freeBL1TensorFlag = false;
         uint8_t isGroupOptDimTail = false;
         
-        uint64_t kAL1Iter = 0;  // AL1上k方向迭代器
-        uint64_t kBL1Iter = 0;  // BL1上k方向迭代器
+        uint64_t kAL1Iter = 0;
+        uint64_t kBL1Iter = 0;
         uint64_t mAL1Iter = 0;
-        uint64_t nBL1Iter = 0;  // BL1上n方向迭代器
+        uint64_t nBL1Iter = 0;
         uint64_t dOutIter = 0;
-        uint64_t kIter = 0;     // k方向迭代器，从DDR到L0
-        uint64_t kAL0Iter = 0;  // L1A 到L0方向的迭代器
-        uint64_t kBL0Iter = 0;  // L1B 到L0方向的迭代器
-        uint64_t mAL0Iter = 0;  // AL0上m方向迭代器
-        uint64_t nBL0Iter = 0;  // BL0上n方向迭代器
-        uint64_t groupOptIter = 0;  // groupopt方向迭代器
+        uint64_t kIter = 0;
+        uint64_t kAL0Iter = 0;
+        uint64_t kBL0Iter = 0;  
+        uint64_t mAL0Iter = 0;  
+        uint64_t nBL0Iter = 0;
+        uint64_t groupOptIter = 0;
 
         uint64_t maxKAL1Iter = 0;
         uint64_t maxMAL1Iter = 0;
@@ -199,17 +200,17 @@ public:
         uint64_t ddr2l0LoopK = 0;
 
         // conv3d shape info
-        uint64_t orgCi = 0;  //  input上cin大小
-        uint64_t orgCo = 0;  //  weight上cout大小
+        uint64_t orgCi = 0;
+        uint64_t orgCo = 0;
         uint64_t orgDi = 0;
-        uint64_t orgDo = 0;    //  weight上cout大小
-        uint64_t orgHi = 0;    //  input上h大小
-        uint64_t orgWi = 0;    //  input上w大小
-        uint64_t orgHo = 0;    //  output上h大小
-        uint64_t orgWo = 0;    //  output上w大小
-        uint64_t kernelD = 0;  //  weight上d大小
-        uint64_t kernelH = 0;  //  weight上h大小
-        uint64_t kernelW = 0;  //  weight上w大小
+        uint64_t orgDo = 0;
+        uint64_t orgHi = 0;
+        uint64_t orgWi = 0;
+        uint64_t orgHo = 0;
+        uint64_t orgWo = 0;
+        uint64_t kernelD = 0;
+        uint64_t kernelH = 0;
+        uint64_t kernelW = 0;
         uint64_t strideD = 0;
         uint64_t strideH = 0;
         uint64_t strideW = 0;
@@ -222,10 +223,10 @@ public:
         uint64_t padDown = 0;
         uint64_t padLeft = 0;
         uint64_t padRight = 0;
-        uint64_t singleCoreCin = 0;  // 单核上处理的Cin大小
-        uint64_t singleCoreCo = 0;   // 单核上处理的Co大小
-        uint64_t singleCoreM = 0;    // 单核上处理的M
-        uint64_t singleCoreDo = 0;  // 单核上处理的Dout
+        uint64_t singleCoreCin = 0;
+        uint64_t singleCoreCo = 0;
+        uint64_t singleCoreM = 0;
+        uint64_t singleCoreDo = 0;
 
         uint64_t dilatedKernelH = 0;
         uint64_t dilatedKernelW = 0;
@@ -263,9 +264,9 @@ public:
         uint64_t groupKBL1Tail = 0;
         uint64_t singleCoreKL0 = 0;
         uint64_t preCorePerGroupSumCout = 0;
-        uint64_t singleCoreGroupOpt = 0; // 单核上处理的GroutOpt
-        uint64_t singleCoreCinTail = 0; // GroutOpt场景尾core的Cin
-        uint64_t singleCoreCoutTail = 0; // GroutOpt场景尾core的Cout
+        uint64_t singleCoreGroupOpt = 0;
+        uint64_t singleCoreCinTail = 0;
+        uint64_t singleCoreCoutTail = 0;
 
         uint8_t preloadAL1DbFlag = false;
         uint8_t preloadABL1DbFlag = false;

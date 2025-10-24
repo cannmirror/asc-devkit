@@ -8,12 +8,12 @@
  * See LICENSE in the root of the software repository for the full text of the License.
  */
 
+#define ENABLE_CV_COMM_VIA_GM 0 // kfc 310 mode
+
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
 #include "impl/adv_api/detail/matmul/kfc/matmul_server_impl.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
 #include "impl/adv_api/detail/matmul/kfc/matmul_server_impl_c310.h"
-#endif
 #include "kfc_fake_modules.h"
 #include "../copy_cube_in/base_tiling_struct.h"
 

@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -17,30 +16,25 @@
 namespace ATVC {
 template <size_t N>
 struct SizeValue {
-    static const size_t value = N;
+    static const size_t VALUE = N;
 };
 
 template <typename Acc, typename T>
 struct SumSizes {
-    using Type = SizeValue<Acc::value + sizeof(T)>;
+    using Type = SizeValue<Acc::VALUE + sizeof(T)>;
 };
-/////////////////////////////////////////////////////////////////////////////////////
-// TypeList 定义
+
 template <typename... Ts>
 struct TypeList {};
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Size 元结构
 template <typename List>
 struct TypeListSize {};
 
 template <typename... Ts>
 struct TypeListSize<TypeList<Ts...>> {
-    static constexpr size_t value = sizeof...(Ts);
+    static constexpr size_t VALUE = sizeof...(Ts);
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Get 元结构
 template <typename TypeList, std::size_t N>
 struct TypeListGet {};
 
@@ -56,33 +50,26 @@ struct TypeListGet<TypeList<T, Ts...>, 0> {
 
 template <std::size_t N>
 struct TypeListGet<TypeList<>, N> {
-    static_assert(N < 0, "Index out of bounds in TypeListGet");
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// ByteOffset 元结构
 template <typename TypeList, std::size_t N>
 struct TypeListByteOffset {};
 
 template <std::size_t N>
 struct TypeListByteOffset<TypeList<>, N> {
-    static_assert(N < 0, "Index out of range for empty TypeList.");
-    static constexpr std::size_t value = 0;
+    static constexpr std::size_t VALUE = 0;
 };
 
 template <typename Head, typename... Tail>
 struct TypeListByteOffset<TypeList<Head, Tail...>, 0> {
-    static constexpr std::size_t value = 0;
+    static constexpr std::size_t VALUE = 0;
 };
 
 template <typename Head, typename... Tail, std::size_t N>
 struct TypeListByteOffset<TypeList<Head, Tail...>, N> {
-    static_assert(N < sizeof...(Tail) + 1, "Index out of range for TypeList.");
-    static constexpr std::size_t value = sizeof(Head) + TypeListByteOffset<TypeList<Tail...>, N - 1>::value;
+    static constexpr std::size_t VALUE = sizeof(Head) + TypeListByteOffset<TypeList<Tail...>, N - 1>::VALUE;
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Prepend 元结构
 template <typename T, typename List>
 struct TypeListPrepend {};
 
@@ -91,8 +78,6 @@ struct TypeListPrepend<T, TypeList<Ts...>> {
     using Type = TypeList<T, Ts...>;
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Map 元结构
 template <typename List, template <typename> class Mapper>
 struct TypeListMap {};
 
@@ -111,8 +96,6 @@ public:
     using Type = typename TypeListPrepend<MappedHead, MappedTail>::Type;
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// Reduce 元结构
 template <typename List, typename Init, template <typename, typename> class Reducer>
 struct TypeListReduce {};
 
@@ -130,5 +113,5 @@ private:
 public:
     using Type = ReducedTail;
 };
-}
+} // namespace ATVC
 #endif

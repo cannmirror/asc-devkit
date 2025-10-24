@@ -38,3 +38,31 @@ install(
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
   OPTIONAL
   PATTERN "OWNERS" EXCLUDE)
+
+configure_file(
+  ${ASCENDC_ADV_API_CMAKE_DIR}/kernel_headers.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake
+  @ONLY
+)
+install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake)
+
+configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_impl.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake @ONLY)
+install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_impl.cmake)
+
+if(NOT BUILD_OPEN_PROJECT)
+  install_package(
+    PACKAGE kernel_tiling
+    TARGETS kernel_tiling_headers
+    FILES ${KERNEL_TILING_HAED}
+    DESTINATION ${INSTALL_INCLUDE_DIR}/asc/include/adv_api/)
+
+  install(SCRIPT ${ASCENDC_DIR}/impl/adv_api/cmake/kernel_directory.cmake)
+endif()
+
+configure_file(
+    ${ASCENDC_ADV_API_CMAKE_DIR}/utils_headers.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake
+    @ONLY
+)
+install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake)

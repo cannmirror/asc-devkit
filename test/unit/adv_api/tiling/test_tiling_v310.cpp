@@ -168,9 +168,9 @@ TEST_F(TestTiling, TestMxMatmulFP8NDTiling_CaseTscm)
 TEST_F(TestTiling, TestMxMatmulTilingCeilKIsOdd)
 {
     MatmulApiTiling tiling;
-    tiling.SetAType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT8_E4M3FN, true);
-    tiling.SetBType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT8_E4M3FN, false);
-    tiling.SetScaleAType(TPosition::GM, CubeFormat::NZ, true);
+    tiling.SetAType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT8_E4M3FN, false);
+    tiling.SetBType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT8_E4M3FN, true);
+    tiling.SetScaleAType(TPosition::GM, CubeFormat::NZ, false);
     tiling.SetScaleBType(TPosition::GM, CubeFormat::NZ, true);
     tiling.SetCType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
     tiling.SetBiasType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
@@ -483,4 +483,121 @@ TEST_F(TestTiling, TestMxMatmulGemvbaseKalign1024Case)
 
     // MX Gemv baseK must align 1024,
     EXPECT_EQ(tilingData.get_baseK(), 1024);
+}
+
+TEST_F(TestTiling, TestMxMatmulL1)
+{
+    MatmulApiTiling tiling;
+    tiling.SetAType(TPosition::TSCM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, false);
+    tiling.SetBType(TPosition::TSCM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, true);
+    tiling.SetScaleAType(TPosition::TSCM, CubeFormat::NZ, false);
+    tiling.SetScaleBType(TPosition::TSCM, CubeFormat::NZ, true);
+    tiling.SetCType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+    tiling.SetBiasType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+
+    tiling.SetShape(256, 256, 256);
+    tiling.SetOrgShape(256, 256, 256);
+    tiling.SetBias(true);
+    tiling.SetBufferSpace(-1, -1, -1, -1);
+    tiling.SetFixSplit(-1, -1, -1);
+    tiling.SetMadType(MatrixMadType::MXMODE);
+
+    optiling::TCubeTiling tilingData;
+    int ret = tiling.GetTiling(tilingData);
+    tiling.PrintTilingData();
+    EXPECT_EQ(ret, 0);
+}
+
+TEST_F(TestTiling, TestMxMatmulUB)
+{
+    MatmulApiTiling tiling;
+    tiling.SetAType(TPosition::VECOUT, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, false);
+    tiling.SetBType(TPosition::VECOUT, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, true);
+    tiling.SetScaleAType(TPosition::VECOUT, CubeFormat::NZ, false);
+    tiling.SetScaleBType(TPosition::VECOUT, CubeFormat::NZ, true);
+    tiling.SetCType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+    tiling.SetBiasType(TPosition::VECOUT, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+
+    tiling.SetShape(256, 256, 256);
+    tiling.SetOrgShape(256, 256, 256);
+    tiling.SetBias(true);
+    tiling.SetBufferSpace(-1, -1, -1, -1);
+    tiling.SetFixSplit(-1, -1, -1);
+    tiling.SetMadType(MatrixMadType::MXMODE);
+
+    optiling::TCubeTiling tilingData;
+    int ret = tiling.GetTiling(tilingData);
+    tiling.PrintTilingData();
+    EXPECT_EQ(ret, 0);
+}
+
+TEST_F(TestTiling, TestMxMatmulMNInnerNZSmallSize)
+{
+    MatmulApiTiling tiling;
+    tiling.SetAType(TPosition::GM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, true);
+    tiling.SetBType(TPosition::GM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, false);
+    tiling.SetScaleAType(TPosition::GM, CubeFormat::NZ, false);
+    tiling.SetScaleBType(TPosition::GM, CubeFormat::NZ, true);
+    tiling.SetCType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+    tiling.SetBiasType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+
+    tiling.SetShape(32, 32, 32);
+    tiling.SetOrgShape(32, 32, 32);
+    tiling.SetBias(false);
+    tiling.SetBufferSpace(-1, -1, -1, -1);
+    tiling.SetFixSplit(-1, -1, -1);
+    tiling.SetMadType(MatrixMadType::MXMODE);
+
+    optiling::TCubeTiling tilingData;
+    int ret = tiling.GetTiling(tilingData);
+    tiling.PrintTilingData();
+    EXPECT_EQ(ret, 0);
+}
+
+TEST_F(TestTiling, TestMxMatmulL1GMLargeSize)
+{
+    MatmulApiTiling tiling;
+    tiling.SetAType(TPosition::TSCM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, true);
+    tiling.SetBType(TPosition::GM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, false);
+    tiling.SetScaleAType(TPosition::TSCM, CubeFormat::NZ, false);
+    tiling.SetScaleBType(TPosition::GM, CubeFormat::NZ, true);
+    tiling.SetCType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+    tiling.SetBiasType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+
+    tiling.SetShape(608, 192, 768);
+    tiling.SetOrgShape(608, 192, 768);
+    tiling.SetBias(false);
+    // A/scaleA is TSCM, remained L1Size: 524288 - 608*768 - 608*768/32 = 42752
+    tiling.SetBufferSpace(42752, -1, -1, -1);
+    tiling.SetFixSplit(-1, -1, -1);
+    tiling.SetMadType(MatrixMadType::MXMODE);
+
+    optiling::TCubeTiling tilingData;
+    int ret = tiling.GetTiling(tilingData);
+    tiling.PrintTilingData();
+    EXPECT_EQ(ret, 0);
+}
+
+TEST_F(TestTiling, TestMxMatmulGML1LargeSize)
+{
+    MatmulApiTiling tiling;
+    tiling.SetAType(TPosition::GM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, true);
+    tiling.SetBType(TPosition::TSCM, CubeFormat::NZ, matmul_tiling::DataType::DT_FLOAT8_E5M2, false);
+    tiling.SetScaleAType(TPosition::GM, CubeFormat::NZ, false);
+    tiling.SetScaleBType(TPosition::TSCM, CubeFormat::NZ, true);
+    tiling.SetCType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+    tiling.SetBiasType(TPosition::GM, CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+
+    tiling.SetShape(192, 672, 736);
+    tiling.SetOrgShape(192, 672, 736);
+    tiling.SetBias(false);
+    // B/scaleB is TSCM, remained L1Size: 524288 - 736*672 - 936*672/32 = 14240
+    tiling.SetBufferSpace(14240, -1, -1, -1);
+    tiling.SetFixSplit(-1, -1, -1);
+    tiling.SetMadType(MatrixMadType::MXMODE);
+
+    optiling::TCubeTiling tilingData;
+    int ret = tiling.GetTiling(tilingData);
+    tiling.PrintTilingData();
+    EXPECT_EQ(ret, 0);
 }

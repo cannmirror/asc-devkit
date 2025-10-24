@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,12 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_TENSOR_UTILS_H
-#define ACT_INCLUDE_TENSOR_UTILS_H
+#ifndef UTILS_TENSOR_UTILS_H
+#define UTILS_TENSOR_UTILS_H
 #include "integral_constant.h"
-#include "tuple_utils.h"
 #include "kernel_operator_list_tensor_intf.h"
+#include "lib/matmul_intf.h"
+#include "tuple_utils.h"
 
 namespace AscendC {
 template <typename Tp>
@@ -135,6 +136,151 @@ __aicore__ inline __gm__ T* GetTensorAddr(uint64_t index, GM_ADDR tensorPtr)
     AscendC::ListTensorDesc listTensorDesc(reinterpret_cast<__gm__ void*>(tensorPtr));
     return listTensorDesc.GetDataPtr<T>(index);
 }
+
+template <class T, AscendC::TPosition Pos, class Layout, class Coord, class Shape>
+__aicore__ inline constexpr auto GetTile(AscendC::GlobalTensor<AscendC::TensorTrait<T, Pos, Layout>> const &tensor,
+                                         Coord const &coord, Shape const &shape)
+{
+    auto layout = tensor.GetTensorTrait().GetLayout();
+    auto offset = layout(coord);
+    typename AscendC::Std::remove_cvref_t<decltype(tensor)> newTensor;
+#if defined(__CCE_AICORE__) && __CCE_AICORE__>=310
+    if constexpr (AscendC::IsSameTypeV<T, fp4x2_e2m1_t> || AscendC::IsSameTypeV<T, fp4x2_e1m2_t>) {
+        newTensor.address_ = (__gm__ T *)((__gm__ uint8_t *)tensor.address_ + (offset >> 1));
+    } else {
+        newTensor.address_ = (__gm__ T *)((__gm__ uint8_t *)tensor.address_ + offset * sizeof(T));
+    }
+#else
+    newTensor.address_ = (__gm__ T *)((__gm__ uint8_t *)tensor.address_ + offset * sizeof(T));
+#endif
+    newTensor.SetTensorTrait(
+        AscendC::MakeTensorTrait<T, Pos>(AscendC::MakeLayout(shape, tensor.GetTensorTrait().GetLayout().GetStride())));
+    return newTensor;
+}
+
+template <class T, class Layout, AscendC::TPosition Pos = AscendC::TPosition::GM>
+__aicore__ inline constexpr auto MakeTensor(__gm__ T *addr, Layout const &layout)
+{
+    using TensorTraitType = AscendC::TensorTrait<T, Pos, Layout>;
+    using TensorType =
+        AscendC::Std::conditional_t<Pos == AscendC::TPosition::GM, AscendC::GlobalTensor<TensorTraitType>,
+                                    AscendC::LocalTensor<TensorTraitType>>;
+    TensorType tensor;
+    tensor.address_ = addr;
+    tensor.SetTensorTrait(AscendC::MakeTensorTrait<T, Pos>(layout));
+    return tensor;
+}
+
+/**
+ * @brief Convert the input tensor to a standard tensor without layout information
+ * @param [in] DataType: data type of input tensor
+ * @param [in] Tensor: type of input tensor
+ * @param [in] tensor: input tensor to be converted
+ * @return Return the converted standard tensor
+ */
+template <class DataType, class Tensor>
+__aicore__ inline auto ConvertToTensorWithoutLayout(const Tensor& tensor)
+{
+    typename AscendC::Std::conditional_t<AscendC::is_global_tensor_v<Tensor>, AscendC::GlobalTensor<DataType>,
+                                         AscendC::LocalTensor<DataType>>
+        normalTensor;
+    if constexpr (AscendC::is_global_tensor_v<Tensor>) {
+        normalTensor.address_ = tensor.address_;
+    } else {
+        normalTensor.SetAddr(tensor.address_);
+    }
+    return normalTensor;
+}
+
+/**
+ * @brief Check if the given matrix type is ND format
+ * @param [in] MatmulType: matrix type
+ * @return Return true if the matrix type is ND format, otherwise false
+ */
+template <class MatmulType>
+__aicore__ inline constexpr bool IsNDOrAlign()
+{
+    return (MatmulType::format == CubeFormat::ND || MatmulType::format == CubeFormat::ND_ALIGN);
+}
+
+/**
+ * @brief Check if the given matrix type is NZ format
+ * @param [in] MatmulType: matrix type
+ * @return Return true if the matrix type is NZ format, otherwise false
+ */
+template <class MatmulType>
+__aicore__ inline constexpr bool IsNz()
+{
+    return MatmulType::format == CubeFormat::NZ;
+}
+
+/**
+ * @brief Check if physical position is L1
+ * @param [in] pos: TPosition
+ * @return Return true if pos is A1 or B1
+ */
+template <AscendC::TPosition pos>
+__aicore__ inline constexpr bool PosIsL1()
+{
+    return pos == AscendC::TPosition::A1 || pos == AscendC::TPosition::B1;
+}
+
+/**
+ * @brief Check if physical position is CO1
+ * @param [in] pos: TPosition
+ * @return Return true if pos is CO1
+ */
+template <AscendC::TPosition pos>
+__aicore__ inline constexpr bool PosIsCO1()
+{
+    return pos == AscendC::TPosition::CO1;
+}
+
+/**
+ * @brief Check if physical position is GM
+ * @param [in] pos: TPosition
+ * @return Return true if pos is GM
+ */
+template <AscendC::TPosition pos>
+__aicore__ inline constexpr bool PosIsGM()
+{
+    return pos == AscendC::TPosition::GM;
+}
+
+/**
+ * @brief Check if physical position is UB
+ * @param [in] pos: TPosition
+ * @return Return true if pos is UB
+ */
+template <AscendC::TPosition pos>
+__aicore__ inline constexpr bool PosIsUB()
+{
+    return AscendC::PhyPosIsUB(pos);
+}
+
+/**
+ * @brief Check if physical position is L0C
+ * @param [in] pos: TPosition
+ * @return Return true if pos is L0C
+ */
+template <AscendC::TPosition pos>
+__aicore__ inline constexpr bool PosIsL0C()
+{
+    return AscendC::PhyPosIsL0C(pos);
+}
+
+/**
+ * @brief Check if is quantization scenario
+ * @param [in] OutType: data type of output
+ * @param [in] InType: data type of input
+ * @return Return true if is quantization scenario
+ */
+template <class OutType, class InType>
+__aicore__ inline constexpr bool IsQuantSenario()
+{
+    return AscendC::Impl::Detail::IsQuantSenario<OutType, InType>();
+}
+
 } // namespace Gemm
 } // namespace Act
 #endif

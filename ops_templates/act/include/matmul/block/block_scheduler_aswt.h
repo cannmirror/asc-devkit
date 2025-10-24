@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the
  * "License").
  * Please refer to the License for details. You may not use this file except in
  * compliance with the License.
@@ -18,12 +18,12 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_SCHEDULER_ASWT_H
-#define ACT_BLOCK_SCHEDULER_ASWT_H
+#ifndef MATMUL_BLOCK_BLOCK_SCHEDULER_ASWT_H
+#define MATMUL_BLOCK_BLOCK_SCHEDULER_ASWT_H
 
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/matmul/block/block_scheduler_policy.h"
-#include "include/utils/status_utils.h"
+#include "./block_scheduler_utils.h"
+#include "./block_scheduler_policy.h"
+#include "../../utils/status_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -54,8 +54,8 @@ public:
     int64_t nSplitOffset_{0};
     int64_t mSplitOffset_{0};
 
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
     using ProblemShape = ProblemShape_;
 
     static constexpr int64_t l1M = GetIntegralConstant<MNK_M, L1TileShape_>();
@@ -167,7 +167,6 @@ template <class ProblemShape_, class L1TileShape_, class L0TileShape_, bool Tran
 struct BlockSchedulerSelector<ProblemShape_, L1TileShape_, L0TileShape_, Act::Gemm::AswtScheduler, TransA_, TransB_> {
     using SchedulerOp = BlockSchedulerAswt<ProblemShape_, L1TileShape_, L0TileShape_>;
 };
-
 } // namespace Block
 } // namespace Gemm
 } // namespace Act

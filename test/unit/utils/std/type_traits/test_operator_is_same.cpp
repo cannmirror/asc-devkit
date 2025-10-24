@@ -26,7 +26,7 @@ protected:
 };
 
 
-// 测试基本类型相同的情况
+// test the same basic type
 TEST_F(IsSameTest, BasicTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same<int, int>::value));
     EXPECT_TRUE((AscendC::Std::is_same_v<int, int>));
@@ -34,7 +34,7 @@ TEST_F(IsSameTest, BasicTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same_v<double, double>));
 }
 
-// 测试基本类型不同的情况
+// test different case of basic type
 TEST_F(IsSameTest, BasicTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same<int, double>::value));
     EXPECT_FALSE((AscendC::Std::is_same_v<int, double>));
@@ -42,21 +42,21 @@ TEST_F(IsSameTest, BasicTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same_v<char, long>));
 }
 
-// 测试自定义类相同的情况
+// test the same custom class
 class MyClass1 {};
 TEST_F(IsSameTest, CustomClassesSame) {
     EXPECT_TRUE((AscendC::Std::is_same<MyClass1, MyClass1>::value));
     EXPECT_TRUE((AscendC::Std::is_same_v<MyClass1, MyClass1>));
 }
 
-// 测试自定义类不同的情况
+// test different case of custom class
 class MyClass2 {};
 TEST_F(IsSameTest, CustomClassesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same<MyClass1, MyClass2>::value));
     EXPECT_FALSE((AscendC::Std::is_same_v<MyClass1, MyClass2>));
 }
 
-// 测试指针类型相同的情况
+// test the same pointer type
 TEST_F(IsSameTest, PointerTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same<int*, int*>::value));
     EXPECT_TRUE((AscendC::Std::is_same_v<int*, int*>));
@@ -64,7 +64,7 @@ TEST_F(IsSameTest, PointerTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same_v<MyClass1*, MyClass1*>));
 }
 
-// 测试指针类型不同的情况
+// test different case of pointer type
 TEST_F(IsSameTest, PointerTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same<int*, double*>::value));
     EXPECT_FALSE((AscendC::Std::is_same_v<int*, double*>));
@@ -72,7 +72,7 @@ TEST_F(IsSameTest, PointerTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same_v<MyClass1*, MyClass2*>));
 }
 
-// 测试引用类型相同的情况
+// test the same reference type
 TEST_F(IsSameTest, ReferenceTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same<int&, int&>::value));
     EXPECT_TRUE((AscendC::Std::is_same_v<int&, int&>));
@@ -80,7 +80,7 @@ TEST_F(IsSameTest, ReferenceTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same_v<MyClass1&, MyClass1&>));
 }
 
-// 测试引用类型不同的情况
+// test different case of reference type
 TEST_F(IsSameTest, ReferenceTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same<int&, double&>::value));
     EXPECT_FALSE((AscendC::Std::is_same_v<int&, double&>));
@@ -88,7 +88,7 @@ TEST_F(IsSameTest, ReferenceTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same_v<MyClass1&, MyClass2&>));
 }
 
-// 测试常量类型相同的情况
+// test the same constant type
 TEST_F(IsSameTest, ConstTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same<const int, const int>::value));
     EXPECT_TRUE((AscendC::Std::is_same_v<const int, const int>));
@@ -96,7 +96,7 @@ TEST_F(IsSameTest, ConstTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same_v<const MyClass1, const MyClass1>));
 }
 
-// 测试常量类型与非常量类型不同的情况
+// test different case of constant type and non-constant type
 TEST_F(IsSameTest, ConstAndNonConstDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same<int, const int>::value));
     EXPECT_FALSE((AscendC::Std::is_same_v<int, const int>));
@@ -104,7 +104,7 @@ TEST_F(IsSameTest, ConstAndNonConstDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same_v<MyClass1, const MyClass1>));
 }
 
-// 测试模板类型相同的情况
+// test the same template type
 template <typename T>
 class TemplateClass {};
 
@@ -113,7 +113,7 @@ TEST_F(IsSameTest, TemplateTypesSame) {
     EXPECT_TRUE((AscendC::Std::is_same_v<TemplateClass<int>, TemplateClass<int>>));
 }
 
-// 测试模板类型不同的情况
+// test different case of template type
 TEST_F(IsSameTest, TemplateTypesDifferent) {
     EXPECT_FALSE((AscendC::Std::is_same<TemplateClass<int>, TemplateClass<double>>::value));
     EXPECT_FALSE((AscendC::Std::is_same_v<TemplateClass<int>, TemplateClass<double>>));

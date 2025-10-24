@@ -31,10 +31,10 @@ public:
         src1Global.SetGlobalBuffer((__gm__ T*)src0Gm);
         dstGlobal.SetGlobalBuffer((__gm__ T*)dstGm);
         pipe.InitBuffer(inQueueSrc1, 1, 8 * 160 * sizeof(T));
-        pipe.InitBuffer(outQueueDst, 1, ONE_BLK_SIZE); // 8个数整体对齐
-        int32_t repeatTimes = (160 + elementNumPerRep - 1) / elementNumPerRep; // workSize = repeatTimes向上取整
+        pipe.InitBuffer(outQueueDst, 1, ONE_BLK_SIZE); // align the 8 numbers as a whole
+        int32_t repeatTimes = (160 + elementNumPerRep - 1) / elementNumPerRep; // workSize = ceil(repeatTimes)
         int32_t finalWorkSize = (repeatTimes + elementNumPerBlk - 1) / elementNumPerBlk * elementNumPerBlk * sizeof(T);
-        pipe.InitBuffer(workQueue, 1, finalWorkSize); // 向上取整
+        pipe.InitBuffer(workQueue, 1, finalWorkSize); // round up
     }
 
     __aicore__ inline void Process()
@@ -59,7 +59,7 @@ private:
         LocalTensor<uint8_t> workLocal = workQueue.AllocTensor<uint8_t>();
         LocalTensor<T> dstLocal = outQueueDst.AllocTensor<T>();
 
-        SumParams params {8, 160, 152}; // n是自己填的
+        SumParams params {8, 160, 152};
         Sum(dstLocal, srcLocal1, workLocal, params);
 
         outQueueDst.EnQue<T>(dstLocal);
@@ -75,11 +75,14 @@ private:
 
 private:
     TPipe pipe;
-    TQue<TPosition::VECIN, 1> inQueueSrc1; // 用于申请临时tensor
+    // used for applying a temporary tensor
+    TQue<TPosition::VECIN, 1> inQueueSrc1; 
     TQue<TPosition::VECIN, 1> workQueue;
 
     TQue<TPosition::VECOUT, 1> outQueueDst;
-    GlobalTensor<T> src1Global, dstGlobal; // 用于关联Gm
+    // used for associating Gm
+    GlobalTensor<T> src1Global;
+    GlobalTensor<T> dstGlobal; 
 };
 } // namespace AscendC
 
@@ -117,7 +120,7 @@ INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_SUM, SumTestsuite,
 TEST_P(SumTestsuite, SumOpTestCase)
 {
     auto param = GetParam();
-    uint8_t src0Gm[8 * 160 * param.typeSize]; // 外部保证inner是32B对齐
+    uint8_t src0Gm[8 * 160 * param.typeSize]; // external guarantee inner is 32B aligned
     uint32_t dstLen = (8 * param.typeSize + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE * ONE_BLK_SIZE;
     uint8_t dstGm[dstLen];
     param.cal_func(dstGm, src0Gm);

@@ -170,7 +170,10 @@ private:
             if constexpr (INPUT_TYPE::TAG == InputTypeTag::scaleA) {
                 return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa();
             } else {
-                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb();
+                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() *
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb() *
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorN();
             }
         } else {
             if constexpr (INPUT_TYPE::TAG == InputTypeTag::A) {

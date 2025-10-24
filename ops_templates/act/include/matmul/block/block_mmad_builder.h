@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,25 +12,23 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_MATMUL_BUILDER_H
-#define ACT_BLOCK_MATMUL_BUILDER_H
+#ifndef MATMUL_BLOCK_BLOCK_MATMUL_BUILDER_H
+#define MATMUL_BLOCK_BLOCK_MATMUL_BUILDER_H
 
 #include <type_traits>
 
 #define ASCENDC_CUBE_ONLY
-#include "include/utils/host_utils.h"
+#include "../../utils/host_utils.h"
 #include "kernel_operator.h"
-#include "include/matmul/matmul_intf.h"
+#include "../matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/layout_utils.h"
-#include "include/utils/status_utils.h"
-#include "include/utils/tuple_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/layout_utils.h"
+#include "../../utils/status_utils.h"
+#include "../../utils/tuple_utils.h"
 
-#include "include/matmul/block/block_mmad.h"
-#include "include/matmul/policy/dispatch_policy.h"
-
-using namespace AscendC;
+#include "block_mmad.h"
+#include "../policy/dispatch_policy.h"
 
 namespace Act {
 namespace Gemm {
@@ -47,12 +45,18 @@ template <class AType_, class LayoutA_, class BType_, class LayoutB_, class CTyp
           class LayoutBias_, class L1TileShape_, class L0TileShape_, class BlockScheduler_, class BlockMatmulPolicy_,
           class TileCopyParam_>
 class BlockMmadBuilder<AType_, LayoutA_, BType_, LayoutB_, CType_, LayoutC_, BiasType_, LayoutBias_, L1TileShape_,
-                       L0TileShape_, BlockScheduler_, BlockMatmulPolicy_, TileCopyParam_,
-                       std::enable_if_t<std::is_base_of_v<MatmulMultiBlockWithLayout<>, BlockMatmulPolicy_> ||
-                                        std::is_base_of_v<MatmulNaivePipelineWithLayout<>, BlockMatmulPolicy_> ||
-                                        std::is_base_of_v<MatmulMultiBlockWithOutQue<>, BlockMatmulPolicy_> ||
-                                        std::is_base_of_v<MatmulIterBatch<>, BlockMatmulPolicy_> ||
-                                        std::is_base_of_v<MatmulMultiBlock<>, BlockMatmulPolicy_>>> {
+    L0TileShape_, BlockScheduler_, BlockMatmulPolicy_, TileCopyParam_,
+    AscendC::Std::enable_if_t<AscendC::Std::is_base_of_v<MatmulMultiBlockWithLayout<>, BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulNaivePipelineWithLayout<>, BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulMultiBlockWithOutQue<>, BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulMultiBlockWithOutQue<AscendC::Shape<_0, _0, _0, _0>,
+                              B_FULL_LOAD_MODE>, BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulIterBatch<>, BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulMultiBlock<>, BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulMultiBlockWithStreamK<MatMulL0C2Out::ON_THE_FLY>,
+                                                         BlockMatmulPolicy_> ||
+                              AscendC::Std::is_base_of_v<MatmulMultiBlockWithStreamK<MatMulL0C2Out::ND_FIXPIPE_1_2>,
+                                                         BlockMatmulPolicy_>>> {
 public:
     using AType = AType_;
     using BType = BType_;
@@ -68,15 +72,15 @@ public:
     // transA and transB are deduced from LayoutA and LayoutB
     static constexpr bool transA = TagToTrans<LayoutA>::value;
     static constexpr bool transB = TagToTrans<LayoutB>::value;
-    static constexpr CubeFormat FormatA = TagToFormat<LayoutA>::format;
-    static constexpr CubeFormat FormatB = TagToFormat<LayoutB>::format;
-    static constexpr CubeFormat FormatC = TagToFormat<LayoutC>::format;
-    static constexpr CubeFormat FormatBias = TagToFormat<LayoutBias_>::format;
+    static constexpr CubeFormat formatA = TagToFormat<LayoutA>::format;
+    static constexpr CubeFormat formatB = TagToFormat<LayoutB>::format;
+    static constexpr CubeFormat formatC = TagToFormat<LayoutC>::format;
+    static constexpr CubeFormat formatBias = TagToFormat<LayoutBias_>::format;
 
-    using AMatmulType = MatmulType<AscendC::TPosition::GM, FormatA, AType, transA>;
-    using BMatmulType = MatmulType<AscendC::TPosition::GM, FormatB, BType, transB>;
-    using CMatmulType = MatmulType<AscendC::TPosition::VECIN, FormatC, CType>;
-    using BiasMatmulType = MatmulType<AscendC::TPosition::GM, FormatBias, BiasType>;
+    using AMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatA, AType, transA>;
+    using BMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatB, BType, transB>;
+    using CMatmulType = AscendC::MatmulType<AscendC::TPosition::VECIN, formatC, CType>;
+    using BiasMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatBias, BiasType>;
 
     using BlockMmadOp = Block::BlockMmad<BlockMatmulPolicy, L1TileShape, L0TileShape, AMatmulType, BMatmulType,
                                          CMatmulType, BiasMatmulType, TileCopyParam>;
@@ -95,6 +99,7 @@ public:
         GM_ADDR bGmAddr{nullptr};
         GM_ADDR cGmAddr{nullptr};
         GM_ADDR biasGmAddr{nullptr};
+        GM_ADDR workspaceGmAddr{nullptr};
         GM_ADDR groupListGmAddr{nullptr};
     };
 
@@ -105,14 +110,14 @@ public:
 
     __aicore__ inline ~BlockMmadBuilder() {}
 
-    __host_aicore__ static size_t GetWorkSpaceSize()
+    __host_aicore__ static size_t GetWorkspaceSize()
     {
         return 0;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(Arguments const& args)
     {
-        if (std::is_same_v<bfloat16_t, AType> && args.biasGmAddr != nullptr) {
+        if (AscendC::Std::is_same_v<bfloat16_t, AType> && args.biasGmAddr != nullptr) {
             return Status::bf16BiasErrorInvalidDataType;
         }
 

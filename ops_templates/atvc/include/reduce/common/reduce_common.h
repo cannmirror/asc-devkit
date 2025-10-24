@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -25,8 +24,8 @@ enum ShapeDim {
     DIM_7,
     DIM_8,
     DIM_9,
-    DIM_REDUCE,     // Reduce轴
-    DIM_BROADCAST   // Broadcast轴
+    DIM_REDUCE,     // Reduce axis
+    DIM_BROADCAST   // Broadcast axis
 };
 
 namespace AR_PATTERN {
@@ -76,15 +75,26 @@ namespace AR_COUNT {
     static constexpr uint32_t A5R9 = 59;
 };
 
+constexpr int32_t poly1 = 1000000;
+constexpr int32_t poly2 = 1000;
+
 struct ReducePolicy {
 public:
     int32_t patternID = -1;
     int32_t loopARCount = -1;
     int32_t loopInnerARCount = -1;
+    int32_t ID = -1;
+    constexpr ReducePolicy(int32_t patternID, int32_t loopARCount, int32_t loopInnerARCount)
+        : patternID(patternID), loopARCount(loopARCount), loopInnerARCount(loopInnerARCount), 
+            ID(poly1 * patternID + poly2 * loopARCount + loopInnerARCount)
+    {}
     bool operator==(const ReducePolicy& rhs) const
     {
         return this->patternID == rhs.patternID && this->loopARCount == rhs.loopARCount &&\
         this->loopInnerARCount == rhs.loopInnerARCount;
+    }
+    int32_t getID() {
+        return poly1 * this->patternID + poly2 * this->loopARCount + this->loopInnerARCount;
     }
 };
 
@@ -113,27 +123,30 @@ static constexpr ReducePolicy REDUCE_POLICY21 { AR_PATTERN::ARARA, AR_COUNT::A3R
 static constexpr ReducePolicy REDUCE_POLICY22 { AR_PATTERN::ARARA, AR_COUNT::A2R0, 0 };
 
 struct ReduceTilingData {
-    uint64_t factorACntPerCore;
-    uint64_t factorATotalCnt;
-    uint64_t ubFactorA;
-    uint64_t factorRCntPerCore;
-    uint64_t factorRTotalCnt;
-    uint64_t ubFactorR;
-    uint64_t groupR;
-    uint64_t outSize;
-    uint64_t basicBlock;
-    int32_t coreNum;
-    float meanVar;
-    uint64_t shape[MAX_DIM];
-    uint64_t stride[MAX_DIM];
-    uint64_t dstStride[MAX_DIM];
+    uint64_t factorACntPerCore; // The actual dimensions of non Reduce axes that do not participate
+                                // in computation on each core
+    uint64_t factorATotalCnt;   // The total dimension of non Reduce axes that do not participate in the calculation
+    uint64_t ubFactorA;         // The amount of data on non Reduce axes within a single UB
+    uint64_t factorRCntPerCore; // The actual dimension of the Reduce axis involved in computation on each core
+    uint64_t factorRTotalCnt;   // The total dimension of the Reduce axis involved in the calculation
+    uint64_t ubFactorR;         // Reduce axis dimension involved in calculation within a single UB
+    uint64_t groupR;            // The tangent axis is the R axis, and the relative data amount of R
+                                // outside the tangent point on this axis
+    uint64_t outSize;           // The total amount of AR data outside the cutting axis
+    uint64_t basicBlock;        // The basic data block size
+    int32_t coreNum;            // The number of running cores
+    float meanVar;              // Reserved
+    uint64_t shape[MAX_DIM];        //  Shape info
+    uint64_t stride[MAX_DIM];       //  Input data transfer step size
+    uint64_t dstStride[MAX_DIM];    // Output data transfer step size
 };
 
 struct ReduceParam {
-    uint64_t workspaceAddr;         // 申请空间在device上的地址
-    uint32_t workspaceSize = 0;     // 申请空间大小
-    ReduceTilingData tilingData;    // Reduce类算子的tiling数据
-    int32_t nBufferNum = 2;         // 每个Queue中的Tensor数量
+    uint64_t workspaceAddr;         // The address of the requested space on the device
+    uint32_t workspaceSize = 0;     // The size of the requested space
+    ReduceTilingData tilingData;    // tilingData
+    int32_t nBufferNum = 2;         // The number of Tensors in each Queue
+    int32_t policyId = -1;
 };
 
 struct ReduceSchLoopInfo {

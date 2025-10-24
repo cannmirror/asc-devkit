@@ -1,7 +1,7 @@
 /**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -16,7 +16,8 @@
 #include "elewise/common/elewise_common.h"
 #include "elewise/elewise_op_template.h"
 
-using ADD_OPTRAITS = ATVC::OpTraits<ATVC::OpInputs<float, float>, ATVC::OpOutputs<float>>;
+namespace ATVC {
+using ADD_OPTRAITS = OpTraits<OpInputs<float, float>, OpOutputs<float>>;
 
 template <typename Traits>
 struct AddComputeFunc {
@@ -28,18 +29,26 @@ struct AddComputeFunc {
 };
 
 template <class Traits>
-__global__ __aicore__ void AddCustom(GM_ADDR a, GM_ADDR b, GM_ADDR c, GM_ADDR param)
+__global__ __aicore__ void AddCustom(GM_ADDR a, GM_ADDR b, GM_ADDR c, EleWiseParam* param)
 {
     KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIV_ONLY);
-    auto op = ATVC::Kernel::EleWiseOpTemplate<AddComputeFunc<Traits>>();
+    auto op = Kernel::EleWiseOpTemplate<AddComputeFunc<Traits>>();
     op.Run(a, b, c, param);
+}
+
+void TestAddCustom(uint32_t *a, uint32_t *b, uint32_t *c, EleWiseParam *param)
+{
+    AddCustom<ADD_OPTRAITS>(reinterpret_cast<uint8_t *>(a),
+        reinterpret_cast<uint8_t *>(b),
+        reinterpret_cast<uint8_t *>(c),
+        param);
 }
 
 class AtvcAddTestsuite : public testing::Test {
 protected:
     void SetUp()
     {
-        AscendC::SetGCoreType(2);
+        AscendC::SetGCoreType(2U);
     }
 
     void TearDown()
@@ -50,22 +59,23 @@ protected:
 
 TEST_F(AtvcAddTestsuite, AtvcAddTestCase)
 {
-    uint8_t eleNum = 4;
-    uint8_t aGm[eleNum] = {0};
-    uint8_t bGm[eleNum] = {0};
-    uint8_t cGm[eleNum] = {0};
+    uint32_t eleNum = 4U;
+    uint32_t aGm[eleNum] = {0};
+    uint32_t bGm[eleNum] = {0};
+    uint32_t cGm[eleNum] = {0};
 
-    ATVC::EleWiseParam *eParam = new ATVC::EleWiseParam{};
-    eParam->nBufferNum = 2;
-    eParam->tilingData.blockNum = 1;
-    eParam->tilingData.numPerBlock = 0;
-    eParam->tilingData.tailBlockCnt = 0;
-    eParam->tilingData.tiledCnt = 32;
-    eParam->tilingData.tailElemCnt = 4;
-    eParam->totalCnt = 4;
+    EleWiseParam *param = new EleWiseParam{};
+    param->nBufferNum = 2U;
+    param->tilingData.blockNum = 1;
+    param->tilingData.numPerBlock = 0;
+    param->tilingData.tailBlockCnt = 0;
+    param->tilingData.tiledCnt = 32U;
+    param->tilingData.tailElemCnt = 4U;
+    param->totalCnt = 4U;
 
-    AddCustom<ADD_OPTRAITS>(aGm, bGm, cGm, reinterpret_cast<uint8_t *>(eParam));
+    TestAddCustom(aGm, bGm, cGm, param);
     for (int i = 0; i < eleNum; i++) {
         EXPECT_EQ(cGm[0], 0);
     }
 }
+}  // namespace ATVC

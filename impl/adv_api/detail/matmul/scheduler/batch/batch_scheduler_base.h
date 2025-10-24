@@ -501,10 +501,8 @@ private:
                 nLoop->GetBaseShape(), mLoop->GetBaseBlockShape(), nLoop->GetBaseBlockShape(), enAtomic, enSequentialWrite);
             int32_t baseUseM = (mLoop->GetOuterIdx() + 2 == mLoop->GetTotalIter()) ? mLoop->GetTail() : tiling.GetBaseM();
             int32_t blockUseM = Ceil(baseUseM, BLOCK_CUBE);
-            GetTensorCImpl(dst, co1Local[tiling.GetBaseM() * tiling.GetBaseN()],
-                mLoop->GetOuterIdx() + 1, nLoop->GetOuterIdx(), baseUseM, nLoop->GetBaseShape(),
-                blockUseM, nLoop->GetBaseBlockShape(), enAtomic, enSequentialWrite);
-
+            GetTensorCImpl(dst, co1Local[tiling.GetBaseM() * tiling.GetBaseN()], mLoop->GetOuterIdx() + 1, nLoop->GetOuterIdx(),
+                baseUseM, nLoop->GetBaseShape(), blockUseM, nLoop->GetBaseBlockShape(), enAtomic, enSequentialWrite);
         } else if (nLoop->GetL0DBLoopNum() > 1) {
             GetTensorCImpl(dst, co1Local, mLoop->GetOuterIdx(), nLoop->GetOuterIdx(), mLoop->GetBaseShape(),
                 nLoop->GetBaseShape(), mLoop->GetBaseBlockShape(), nLoop->GetBaseBlockShape(), enAtomic, enSequentialWrite);

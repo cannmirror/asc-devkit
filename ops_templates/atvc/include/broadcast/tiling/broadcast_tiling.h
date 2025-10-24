@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -32,35 +31,51 @@ struct BroadcastTilingInputParam {
     std::vector<int64_t> shapeIn;
     std::vector<int64_t> shapeOut;
     ge::DataType inputDtype = ge::DataType::DT_UNDEFINED;
+    BroadcastTilingInputParam(std::vector<int64_t> in,std::vector<int64_t> out,ge::DataType inDtype):
+    shapeIn(in),shapeOut(out),inputDtype(inDtype){}
 };
 }
 
 namespace OpTiling {
-constexpr static int32_t BRC_BASIC_NUM = 4;     // broadcast输入输出内存基本块分配个数
+
+template<class OpTraits, class PreComputeTraits, class PostComputeTraits>
 class BroadcastOpTiling {
-public:
+public:    
+    using OpInputs = typename OpTraits::In::types;
+    using OpOutputs = typename OpTraits::Out::types;
+    using OpTemp = typename OpTraits::Temp::types;
+    static constexpr size_t OP_INPUT_COUNT = ATVC::TypeListSize<OpInputs>::VALUE;
+    static constexpr size_t OP_OUTPUT_COUNT = ATVC::TypeListSize<OpOutputs>::VALUE;
+    static constexpr size_t OP_TEMP_COUNT = ATVC::TypeListSize<OpTemp>::VALUE;
+    static constexpr size_t BROADCAST_UB_NUM = OP_INPUT_COUNT + OP_OUTPUT_COUNT + OP_TEMP_COUNT;
+    
     BroadcastOpTiling(ATVC::BroadcastTilingInputParam& inputParam,
         ATVC::BroadcastPolicy* policy, ATVC::BroadcastParam* param)
         : opInput_(inputParam), param_(param), policy_(policy)
     {
         compileInfo_ = ATVC::GetOpCompileInfo();
+        /* Built-in tiling only support allocate unified memory evenly, so all we need to know is the definition of
+         * the complete operator. If you wants to allocate UB memory unevenly, you need to know the definitions of
+         * broadcast, pre-compute, post-compute separately, and extend tiling to support non-uniform distribution.
+         */
+        broadcast_basic_num_ = BROADCAST_UB_NUM * param->nBufferNum;
     }
 
     bool Run()
     {
         if (!IsAxesValid(opInput_.shapeIn, opInput_.shapeOut)) {
-            printf("[ERROR]Shape checkout failed!\n");
+            printf("[ERROR]: [ATVC][Broadcast] Shape checkout failed!\n");
             return false;
         }
         std::vector<uint64_t> newShapeIn;
         std::vector<uint64_t> newShapeOut;
         if (!EliminateOne(opInput_.shapeIn, opInput_.shapeOut, newShapeIn, newShapeOut)) {
-            printf("[ERROR]Failed to  eliminate shape!\n");
+            printf("[ERROR]: [ATVC][Broadcast] Failed to eliminate shape!\n");
             return false;
         }
 
         if (!DoTiling(newShapeIn, newShapeOut)) {
-            printf("[ERROR]Failed to Calculate Tiling param!\n");
+            printf("[ERROR]: [ATVC][Broadcast] Failed to Calculate Tiling param!\n");
             return false;
         }
         CalcWorkSpace();
@@ -69,7 +84,7 @@ public:
 
 private:
     template <class Pattern>
-    void ComputeStride(std::vector<uint64_t>& shapeIn, std::vector<uint64_t>& shapeOut)
+    void ComputeStride(const std::vector<uint64_t>& shapeIn, const std::vector<uint64_t>& shapeOut)
     {
         // shape
         if (shapeIn[0] == 1 && shapeOut[ATVC::DIM0] == 1) {
@@ -93,10 +108,10 @@ private:
             param_->tilingData.dstStride[ATVC::DIM0] = dimB * dimA;
             param_->tilingData.dstStride[ATVC::DIM1] = dimB;
         } else {
-            param_->tilingData.stride[ATVC::DIM0] = dimA * 1;
+            param_->tilingData.stride[ATVC::DIM0] = dimA;
             param_->tilingData.stride[ATVC::DIM1] = dimA;
             param_->tilingData.stride[ATVC::DIM2] = 1;
-            param_->tilingData.dstStride[ATVC::DIM0] = dimA * dimB * 1;
+            param_->tilingData.dstStride[ATVC::DIM0] = dimA * dimB;
             param_->tilingData.dstStride[ATVC::DIM1] = dimB;
             param_->tilingData.dstStride[ATVC::DIM2] = 1;
         }
@@ -121,26 +136,24 @@ private:
         size_t sizeIn = shapeIn.size();
         size_t sizeOut = shapeOut.size();
         if (sizeOut != sizeIn) {
-            printf("input dim in is not equel to output dim! \n");
+            printf("[ERROR]: [ATVC][Broadcast] input dim in is not equal to output dim!\n");
             return false;
         };
 
         for (size_t i = 0; i < sizeIn; i++) {
             if (shapeOut[i] != shapeIn[i] && shapeIn[i] != 1) {
-                printf("Input shape in broadcast dim should be 1\n");
+                printf("[ERROR]: [ATVC][Broadcast] Input shape in broadcast dim should be 1\n");
                 return false;
             } else if (shapeIn[i] <= 0) {
-                printf("Input and output shape should be more than 0\n");
-                return false; 
+                printf("[ERROR]: [ATVC][Broadcast] Input and output shape should be more than 0\n");
+                return false;
             }
         }
         return true;
     }
 
-    bool EliminateOne(std::vector<int64_t> &oriShapeIn,
-                      std::vector<int64_t> &oriShapeOut,
-                      std::vector<uint64_t> &shapeIn,
-                      std::vector<uint64_t> &shapeOut)
+    bool EliminateOne(std::vector<int64_t>& oriShapeIn, std::vector<int64_t>& oriShapeOut,
+                      std::vector<uint64_t>& shapeIn, std::vector<uint64_t>& shapeOut)
     {
         bool isCurB = false;
         bool haveA = false;
@@ -149,27 +162,27 @@ private:
         for (size_t i = 0; i < oriShapeIn.size(); i++) {
             if (oriShapeIn[i] == 1 && oriShapeOut[i] != oriShapeIn[i]) { // B轴
                 if (!isCurB && haveB) {
-                    printf("[ERROR]Only support AB/BA!\n");
+                    printf("[ERROR]: [ATVC][Broadcast] Only support AB/BA!\n");
                     return false;
                 }
                 if (!haveB) {
                     shapeIn.emplace_back(oriShapeIn[i]);
                     shapeOut.emplace_back(oriShapeOut[i]);
-                } else { // 连续B轴
+                } else { // Continuous B-axis
                     shapeIn.back() = 1;
                     shapeOut.back() *= oriShapeOut[i];
                 }
                 isCurB = true;
                 haveB = true;
-            } else { // A轴
+            } else { // A-axis
                 if (isCurB && haveA) {
-                    printf("[ERROR]Only support AB/BA!\n");
+                    printf("[ERROR]: [ATVC][Broadcast] Only support AB/BA!\n");
                     return false;
                 }
                 if (!haveA) {
                     shapeIn.emplace_back(oriShapeIn[i]);
                     shapeOut.emplace_back(oriShapeOut[i]);
-                } else { // 连续A轴
+                } else { // Continuous A-axis
                     shapeIn.back() *= oriShapeIn[i];
                     shapeOut.back() *= oriShapeOut[i];
                 }
@@ -177,8 +190,8 @@ private:
                 haveA = true;
             }
         }
-        if (shapeIn.size() !=2U && shapeOut.size() != 2U) {
-            printf("[ERROR] Shape after eliminate is not 2 dim!\n");
+        if (shapeIn.size() != 2U && shapeOut.size() != 2U) {
+            printf("[ERROR]: [ATVC][Broadcast] Shape after eliminate is not 2 dim!\n");
             return false;
         }
         if (shapeIn[0] != shapeOut[0]) {
@@ -191,9 +204,6 @@ private:
     bool DoTiling(std::vector<uint64_t>& shapeIn, std::vector<uint64_t>& shapeOut)
     {
         int32_t shapeSize = shapeIn.size();
-        for (int32_t i = 0; i < shapeSize; i++) {
-            printf("DoTiling shapeSize[%d]: shape[%d] %lu\n", shapeSize, i, shapeIn[i]);
-        }
         switch (shapeSize) {
             case ATVC::CONST1:
                 return ComputeTiling<ATVC::BroadcastPattern::A>(shapeIn, shapeOut);
@@ -202,7 +212,8 @@ private:
             case ATVC::CONST3:
                 return ComputeTiling<ATVC::BroadcastPattern::ABA>(shapeIn, shapeOut);
             default:
-                printf("[ERROR] Compute tiling error because of invalid input shape size[%d]\n", shapeSize);
+                printf("[ERROR]: [ATVC][Broadcast] Compute tiling error because of invalid input shape size[%d]\n",
+                    shapeSize);
                 return false;
         }
         return false;
@@ -212,7 +223,7 @@ private:
     bool ComputeTiling(std::vector<uint64_t>& shapeIn, std::vector<uint64_t>& shapeOut)
     {
         if (!CalcSplitParam<Pattern>(shapeOut)) {
-            printf("[ERROR] Calculate tiling param failed!\n");
+            printf("[ERROR]: [ATVC][Broadcast] Calculate tiling param failed!\n");
             return false;
         }
         ComputeStride<Pattern>(shapeIn, shapeOut);
@@ -222,7 +233,7 @@ private:
 
     uint64_t CalcBasicBlock()
     {
-        uint64_t basicBlock = OpsUtils::FloorAlign(compileInfo_.ubSize / BRC_BASIC_NUM, ATVC::UB_ALIGN_32);
+        uint64_t basicBlock = OpsUtils::FloorAlign(compileInfo_.ubSize / broadcast_basic_num_, ATVC::UB_ALIGN_32);
         if (basicBlock > ATVC::BLOCK_SIZE_64K) {
             basicBlock = ATVC::BLOCK_SIZE_64K;
         } else if (basicBlock > ATVC::BLOCK_SIZE_48K) {
@@ -249,29 +260,31 @@ private:
         ATVC::BroadcastOpTilingData& tilingData = param_->tilingData;
         uint64_t dSize = ge::GetSizeByDataType(opInput_.inputDtype);
         if (dSize == 0) {
-            printf("[ERROR] Data size is invalid, please check input data type!\n");
+            printf("[ERROR]: [ATVC][Broadcast] Data size is invalid, please check input data type!\n");
             return false;
         }
 
         if (tilingData.coreNum > compileInfo_.vectorCoreNum) {
-            printf("[ERROR] Check tiling failed, coreNum(%u) > vector Real Core count(%lu)\n",
-                tilingData.coreNum, compileInfo_.vectorCoreNum);
+            printf("[ERROR]: [ATVC][Broadcast] Check tiling failed, coreNum(%u) "
+                   "must be smaller than vector total core number(%lu)\n",
+                   tilingData.coreNum, compileInfo_.vectorCoreNum);
             return false;
         }
         if (tilingData.A2 * tilingData.A12 * tilingData.A11 * tilingData.A0 < dimA) {
-            printf("[ERROR] Check tiling failed, A2 * A12 * A11 * A0 < dimA(%u)\n", dimA);
+            printf("[ERROR]: [ATVC][Broadcast] Check tiling failed, A2 * A12 * A11 * A0 < dimA(%u)\n", dimA);
             return false;
         }
         if (tilingData.B2 * tilingData.B1 * tilingData.B0 < dimB) {
-            printf("[ERROR] Check tiling failed, B2 * B1 * B0 < dimB(%u)\n", dimB);
+            printf("[ERROR]: [ATVC][Broadcast] Check tiling failed, B2 * B1 * B0 < dimB(%u)\n", dimB);
             return false;
         }
         if (tilingData.B2 * dSize % ATVC::UB_ALIGN_32 != 0) {
-            printf("[ERROR] Check tiling failed, B2(%lu) is not aligined with 32B\n", tilingData.B2);
+            printf("[ERROR]: [ATVC][Broadcast] Check tiling failed, B2(%lu) is not aligned with 32B\n",
+                   tilingData.B2);
             return false;
         }
         if (tilingData.A2 * dSize % ATVC::UB_ALIGN_32 != 0) {
-            printf("[ERROR] Check tiling failed, A2(%lu) is not aligined with 32B\n", tilingData.A2);
+            printf("[ERROR]: [ATVC][Broadcast] Check tiling failed, A2(%lu) is not aligned with 32B\n", tilingData.A2);
             return false;
         }
         return true;
@@ -281,36 +294,36 @@ private:
     bool CalcSplitParam(const std::vector<uint64_t>& shape)
     {
         /*
-            BASIC_BLOCK = UB_TOTAL / 4  根据UB总大小动态分配,输入2份输出2份
-            A2 B2 32B对齐
-            A2 * B2 * sizeof(T) <= BASIC_BLOCK
-            A2 * A12 * size(T) <= BASIC_BLOCK
-            AB场景：B2尽量大
-            BA场景：A2尽量大
-        */
+         * BASIC_BLOCK = UB_TOTAL / 4 Dynamically allocate based on the total size of UB, with 2 inputs and 2 outputs
+         * A2 B2 32B alignment
+         * A2 * B2 * sizeof(T) <= BASIC_BLOCK
+         * A2 * A12 * size(T) <= BASIC_BLOCK
+         * AB scenario: B2 should be as large as possible
+         * BA scenario: A2 should be as large as possible
+         */
         uint64_t basicBlock = CalcBasicBlock();
         uint64_t dSize = ge::GetSizeByDataType(opInput_.inputDtype);
         if (dSize == 0) {
-            printf("[ERROR] Data size is invalid, please check input data type!\n");
+            printf("[ERROR]: [ATVC][Broadcast] Data size is invalid, please check input data type!\n");
             return false;
         }
         uint64_t dUint = ATVC::UB_ALIGN_32 / dSize;
         uint64_t cacheSize = OpsUtils::FloorDiv(basicBlock, dSize);
-        uint32_t dimA = Pattern::TailA ? Pattern::Dim - 1 :  Pattern::Dim - 2; // A
-        uint32_t dimB = Pattern::TailA ? Pattern::Dim - 2 :  Pattern::Dim - 1; // B
-        uint64_t i = OpsUtils::FloorAlign(shape[dimA], dUint); // 32B对齐
-        uint64_t j = OpsUtils::FloorAlign(shape[dimB], dUint); // 32B对齐
+        uint32_t dimA = Pattern::TailA ? Pattern::Dim - 1 : Pattern::Dim - 2; // A
+        uint32_t dimB = Pattern::TailA ? Pattern::Dim - 2 : Pattern::Dim - 1; // B
+        uint64_t i = OpsUtils::FloorAlign(shape[dimA], dUint); // 32B alignment
+        uint64_t j = OpsUtils::FloorAlign(shape[dimB], dUint); // 32B alignment
         ATVC::BroadcastOpTilingData& tilingData = param_->tilingData;
 
-        if (Pattern::TailA) {// 优先A轴打满
-            tilingData.B2 = dUint; // B2最小值
+        if constexpr (Pattern::TailA) { // Priority A-axis
+            tilingData.B2 = dUint; // B2 min value
             tilingData.A2 = i > OpsUtils::FloorDiv(cacheSize, dUint) ? OpsUtils::FloorDiv(cacheSize, dUint) : i;
             tilingData.B2 = OpsUtils::FloorAlign(OpsUtils::FloorDiv(cacheSize, tilingData.A2), dUint);
             if (tilingData.B2 > j) {
                 tilingData.B2 = j;
             }
-        } else { // 优先B轴打满
-            tilingData.A2 = dUint; // A2最小值
+        } else { // Priority B-axis
+            tilingData.A2 = dUint; // A2 min value
             tilingData.B2 = j > OpsUtils::FloorDiv(cacheSize, dUint) ? OpsUtils::FloorDiv(cacheSize, dUint) : j;
             tilingData.A2 = OpsUtils::FloorAlign(OpsUtils::FloorDiv(cacheSize, tilingData.B2), dUint);
             if (tilingData.A2 > i) {
@@ -318,31 +331,32 @@ private:
             }
         }
 
-        // 1.优先多核 A0 B0打满核后再计算核内循环
-        tilingData.A0 =  OpsUtils::CeilDiv(shape[dimA], tilingData.A2);
-        tilingData.B0 =  OpsUtils::CeilDiv(shape[dimB], tilingData.B2);
-        // A0*B0为实际的block num 必须小于vectorCoreNum
+        // 1. Prioritize multi-core A0 B0 to fill up the kernel before calculating the intra kernel loop
+        tilingData.A0 = OpsUtils::CeilDiv(shape[dimA], tilingData.A2);
+        tilingData.B0 = OpsUtils::CeilDiv(shape[dimB], tilingData.B2);
+        // A0 * B0 is the actual block num, which must be less than vectorCoreNum
         while (tilingData.A0 * tilingData.B0 > compileInfo_.vectorCoreNum) {
-            if (tilingData.B0 > 1) { // 优先A0切轴
+            if (tilingData.B0 > 1) { // Priority A0 axis cutting
                 --tilingData.B0;
             } else {
                 --tilingData.A0;
             }
         }
 
-        // 2.核内循环优先A12,因为A12只需要copyIn 1次
+        // 2.Kernel loop prioritizes A12, as A12 only needs to copy In once
         tilingData.A12 = OpsUtils::CeilDiv(shape[dimA], tilingData.A2 * tilingData.A0);
         if (tilingData.A12 * tilingData.A2 > cacheSize) {
-            tilingData.A12 = OpsUtils::FloorDiv(cacheSize , tilingData.A2);
+            tilingData.A12 = OpsUtils::FloorDiv(cacheSize, tilingData.A2);
         }
-        tilingData.A11 = OpsUtils::CeilDiv(shape[dimA], (tilingData.A0 * tilingData.A2 * tilingData.A12)); // 计算精确A11
-        tilingData.B1= OpsUtils::CeilDiv(shape[dimB], (tilingData.B0 * tilingData.B2));
+        tilingData.A11 =
+            OpsUtils::CeilDiv(shape[dimA], (tilingData.A0 * tilingData.A2 * tilingData.A12)); // Calculate Accurate A11
+        tilingData.B1 = OpsUtils::CeilDiv(shape[dimB], (tilingData.B0 * tilingData.B2));
 
-        // 3.最后重新计算A0  B0避免空核
-        tilingData.A0 =  OpsUtils::CeilDiv(shape[dimA], tilingData.A2 * tilingData.A11 * tilingData.A12);
-        tilingData.B0 =  OpsUtils::CeilDiv(shape[dimB], tilingData.B2 * tilingData.B1);
+        // 3.Finally recalculate A0 B0 to avoid empty nuclei
+        tilingData.A0 = OpsUtils::CeilDiv(shape[dimA], tilingData.A2 * tilingData.A11 * tilingData.A12);
+        tilingData.B0 = OpsUtils::CeilDiv(shape[dimB], tilingData.B2 * tilingData.B1);
 
-        // 4.写Tiling结果
+        // 4.Write Tiling Results
         ExpandTilingParam(basicBlock);
         return CheckTilingParam(shape[dimA], shape[dimB]);
     }
@@ -351,7 +365,8 @@ private:
     ATVC::BroadcastTilingInputParam opInput_;
     ATVC::BroadcastParam* param_ {nullptr};
     ATVC::BroadcastPolicy* policy_ {nullptr};
-    ATVC::OpCompileInfo compileInfo_;
+    ATVC::OpCompileInfo compileInfo_ = {0, 0, 0, 0};
+    uint32_t broadcast_basic_num_;
 };
 }  // namespace OpTiling
 #endif // ATVC_BROADCAST_TILING_H

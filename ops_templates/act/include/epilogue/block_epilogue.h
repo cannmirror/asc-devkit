@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,18 +13,18 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_EPILOGUE_H
-#define ACT_BLOCK_EPILOGUE_H
+#ifndef EPILOGUE_BLOCK_EPILOGUE_H
+#define EPILOGUE_BLOCK_EPILOGUE_H
 #if defined(__DAV_C310__)
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
-#include "include/epilogue/fusion/default_fusion_op.h"
-#include "include/epilogue/fusion/fusion_mul.h"
-#include "include/epilogue/fusion/fusion_add.h"
-#include "include/epilogue/fusion/fusion_gelu.h"
-#include "include/utils/status_utils.h"
-#include "include/matmul/tile/tile_copy_policy.h"
+#include "../utils/common_utils.h"
+#include "../utils/device_utils.h"
+#include "fusion/default_fusion_op.h"
+#include "fusion/fusion_mul.h"
+#include "fusion/fusion_add.h"
+#include "fusion/fusion_gelu.h"
+#include "../utils/status_utils.h"
+#include "../matmul/tile/tile_copy_policy.h"
 
 namespace Act {
 namespace Gemm {
@@ -55,20 +55,20 @@ public:
     static constexpr int64_t l0M = GetIntegralConstant<MNK_M, L0TileShape_>();
     static constexpr int64_t l0N = GetIntegralConstant<MNK_N, L0TileShape_>();
     // shape
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
-    using ProblemShape = Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
+    using ProblemShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
 
     // GM ADDR
     using NDLayout = AscendC::Layout<AscendC::Shape<int64_t, int64_t>, AscendC::Stride<int64_t, int64_t>>;
-    using InTrait = TensorTrait<DataTypeIn, AscendC::TPosition::VECIN, NDLayout>;
+    using InTrait = AscendC::TensorTrait<DataTypeIn, AscendC::TPosition::VECIN, NDLayout>;
     AscendC::LocalTensor<InTrait> cLocal_;
     AscendC::LocalTensor<DataTypeIn> inLocal_;
     AscendC::LocalTensor<DataTypeIn> ubLocal_;
     AscendC::LocalTensor<DataTypeIn> outputLocalTmp_;
     AscendC::LocalTensor<DataTypeOut> outputLocal_;
     AscendC::GlobalTensor<DataTypeOut> outputGlobal_;
-    TBuf<> tBuf_;
+    AscendC::TBuf<> tBuf_;
     int64_t stageSize_ = 0;
     // attribute
     FusionOp fusionOp_;
@@ -77,7 +77,7 @@ public:
     __aicore__ inline void Init(Params const& params, int64_t l1M, int64_t l1N, ProblemShape& problemShape)
     {
         int64_t l1NAlign = AlignBlock<half>(l1N);
-        GetTPipePtr()->InitBuffer(tBuf_, TOTAL_UB_SIZE);
+        GetTPipePtr()->InitBuffer(tBuf_, AscendC::TOTAL_UB_SIZE);
         ubLocal_ = tBuf_.template Get<DataTypeIn>();
         cLocal_.address_ = ubLocal_[0].address_;
         inLocal_ = ubLocal_[0];
@@ -88,11 +88,11 @@ public:
         outputGlobal_.SetGlobalBuffer(reinterpret_cast<__gm__ DataTypeOut*>(params.outGmAddr));
         problemShape_ = problemShape;
         ASCENDC_ASSERT(sizeof(DataTypeIn) >= sizeof(DataTypeOut), {
-            KERNEL_LOG(KERNEL_EORROR, "unsupport dtype size %zu, %zu!", sizeof(DataTypeIn), sizeof(DataTypeOut));
+            KERNEL_LOG(KERNEL_EORROR, "Unsupport dtype size %zu, %zu!", sizeof(DataTypeIn), sizeof(DataTypeOut));
         });
     }
 
-    __aicore__ inline void Run(BlockShape& blockShape, int64_t dstOffset, bool splitM)
+    __aicore__ inline void Run(BlockShape const& blockShape, int64_t dstOffset, bool splitM)
     {
         int64_t blockShapeM = Get<0>(blockShape);
         int64_t halfBlockShapeM = Act::Gemm::CeilDiv(blockShapeM, AscendC::GetTaskRation());
@@ -117,20 +117,20 @@ public:
             stageSize = AscendC::Std::min(stageSize, inputSize - stageOffset);
             fusionOp_(inLocal_[stageOffset], outputLocalTmp_, offset, blockShapeM, blockShapeN, N, stageSize);
             if (sizeof(DataTypeIn) >= sizeof(DataTypeOut)) {
-                Cast(outputLocal_, outputLocalTmp_, RoundMode::CAST_RINT, stageSize);
+                Cast(outputLocal_, outputLocalTmp_, AscendC::RoundMode::CAST_RINT, stageSize);
                 AscendC::PipeBarrier<PIPE_V>();
             }
-            TPipeSetWaitFlag<HardEvent::V_MTE3>();
-            DataCopyExtParams copyParams{static_cast<uint16_t>(stageSize / blockShapeNAlign),
+            TPipeSetWaitFlag<AscendC::HardEvent::V_MTE3>();
+            AscendC::DataCopyExtParams copyParams{static_cast<uint16_t>(stageSize / blockShapeNAlign),
                                          static_cast<uint32_t>(blockShapeN * sizeof(DataTypeOut)), 0,
                                          static_cast<uint32_t>((N - blockShapeN) * sizeof(DataTypeOut)), 0};
-            DataCopyPad<DataTypeOut>(outputGlobal_[offset], outputLocal_, copyParams);
+            AscendC::DataCopyPad<DataTypeOut>(outputGlobal_[offset], outputLocal_, copyParams);
             stageOffset += stageSize;
             loop++;
         }
     }
 
-    __aicore__ inline auto GetTensor(BlockShape& blockShape)
+    __aicore__ inline auto GetTensor(BlockShape const& blockShape)
     {
         NDLayout inLayout =
             AscendC::MakeLayout(AscendC::MakeShape(Get<0>(blockShape), AlignBlock<half>(Get<1>(blockShape))),
@@ -140,7 +140,7 @@ public:
         return cLocal_;
     }
 
-    __aicore__ inline void operator()(BlockShape& blockShape, int64_t dstOffset = 0, bool splitM = false)
+    __aicore__ inline void operator()(BlockShape const& blockShape, int64_t dstOffset = 0, bool splitM = false)
     {
         Run(blockShape, dstOffset, splitM);
         return;
@@ -154,15 +154,15 @@ public:
         return params;
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(int64_t blockNum, int64_t l1M, int64_t l1N)
+    __host_aicore__ static size_t GetWorkspaceSize(int64_t blockNum, int64_t l1M, int64_t l1N)
     {
         // only quant kernel need workspace
         return 0;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(Arguments const& args)
     {
-        if (l0M * l0N * sizeof(DataTypeIn_) > TOTAL_UB_SIZE) {
+        if (l0M * l0N * sizeof(DataTypeIn_) > AscendC::TOTAL_UB_SIZE) {
             return Status::l1L0ErrorExceedsLimit;
         }
         return Status::success;
@@ -171,5 +171,5 @@ public:
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_BLOCK_EPILOGUE_H
+#endif // EPILOGUE_BLOCK_EPILOGUE_H
 #endif

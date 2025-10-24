@@ -157,12 +157,13 @@ public:
 
     __aicore__ inline void ClearLoadDataA()
     {
-        if constexpr (!PhyPosIsL1(A_TYPE::pos)) {
-            if (MATMUL_MODULE(KLoop)->IsAKL1FullLoad()) {
+        if constexpr (!PhyPosIsL1OrUB(A_TYPE::pos)) {
+            if ((MATMUL_MODULE(KLoop)->IsAKL1FullLoad() && !MATMUL_MODULE(MLoop)->IsAML1FullLoad()) ||
+                (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
                 MATMUL_MODULE(CopyCubeInA)->ClearLoadData();
             }
         }
-        if constexpr (!PhyMxScalePosIsL1<A_TYPE>()) {
+        if constexpr (!(PhyMxScalePosIsL1<A_TYPE>() || PhyMxScalePosIsUB<A_TYPE>())) {
             if (MATMUL_MODULE(KLoop)->IsScaleAKL1FullLoad()) {
                 MATMUL_MODULE(CopyCubeInScaleA)->ClearLoadData();
             }
@@ -171,14 +172,17 @@ public:
 
     __aicore__ inline void ClearLoadDataB()
     {
-        if constexpr (!PhyPosIsL1(B_TYPE::pos)) {
-            if (MATMUL_MODULE(KLoop)->IsBKL1FullLoad()) {
+        if constexpr (!PhyPosIsL1OrUB(B_TYPE::pos)) {
+            if ((MATMUL_MODULE(KLoop)->IsBKL1FullLoad() && !MATMUL_MODULE(NLoop)->IsBNL1FullLoad()) ||
+                (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
                 MATMUL_MODULE(CopyCubeInB)->ClearLoadData();
             }
         }
-        if constexpr (!PhyMxScalePosIsL1<B_TYPE>()) {
+        if constexpr (!(PhyMxScalePosIsL1<B_TYPE>() || PhyMxScalePosIsUB<B_TYPE>())) {
             if (MATMUL_MODULE(KLoop)->IsScaleBKL1FullLoad()) {
-                MATMUL_MODULE(CopyCubeInScaleB)->ClearLoadData();
+                if (MATMUL_MODULE(NLoop)->GetOuterScaleNIdx() != MATMUL_MODULE(NLoop)->GetNextOuterScaleNIdx()) {
+                    MATMUL_MODULE(CopyCubeInScaleB)->ClearLoadData();
+                }
             }
         }
     }
@@ -223,15 +227,10 @@ protected:
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
             aL0Params.axisL1Offset = MATMUL_MODULE(MLoop)->GetInnerIdx() * tilingBaseM;
             // ds && 82 mdl support multi singleshape in l1
-            if constexpr (IsFullStaticTiling(MM_CFG) || MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
-                aL0Params.axisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() != -1 ?
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
-                aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ?
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
-            } else {
-                aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
-                aL0Params.axisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
-            }
+            aL0Params.axisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() != -1 ?
+            MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
+            aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ?
+            MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
         } else if constexpr (IsStaticPaddingEnable(MM_CFG)){
             aL0Params.axisL1Len = tiling.GetStepM() * tilingBaseM;
             aL0Params.kAxisL1Len = tiling.GetStepKa() * tiling.GetBaseK();
@@ -280,15 +279,10 @@ protected:
             if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
                 bL0Params.axisL1Offset = MATMUL_MODULE(NLoop)->GetInnerIdx() * tilingBaseN;
                 // ds && 82 mdl support multi singleshape in l1
-                if constexpr (IsFullStaticTiling(MM_CFG) || MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
-                    bL0Params.axisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() != -1 ?
-                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
-                    bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
-                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
-                } else {
-                    bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
-                    bL0Params.axisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
-                }
+                bL0Params.axisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() != -1 ?
+                MATMUL_MODULE(MatmulShapeInfo)->GetOrgN() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
+                bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
+                MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() : MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
             } else {
                 bL0Params.axisL1Len = MATMUL_MODULE(NLoop)->GetTileBlockShape() * BLOCK_CUBE;
                 bL0Params.axisL1Offset = GetBL1OffsetFromGM();
@@ -299,12 +293,44 @@ protected:
             bL0Params.auxMatrixL1Offset = MATMUL_MODULE(NLoop)->GetInnerIdx() * tilingBaseN;
             bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_K_FACTOR);
         } else {
-            bL0Params.auxMatrixL1Offset = (MATMUL_MODULE(NLoop)->GetInnerIdx() -
-                MATMUL_MODULE(NLoop)->GetOuterIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN()) * tilingBaseN;
+            int32_t nInnerIdx = MATMUL_MODULE(NLoop)->GetInnerIdx();
+            int32_t stepScaleN = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() * MATMUL_MODULE(NLoop)->GetScaleFactorN();
+            bL0Params.auxMatrixL1Offset = (nInnerIdx - nInnerIdx / stepScaleN * stepScaleN) * tilingBaseN;
         }
         return bL0Params;
     }
- 
+
+    __aicore__ inline void UpdateTransParams(MxSplitParams& aL0Params, MxSplitParams& bL0Params,
+        const bool isATranspose, const bool isBTranspose)
+    {
+        if (isATranspose) {
+            aL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(MLoop)->GetTileShape(), BASE_MODULE::c0Size_);
+            aL0Params.axisL0Len = CeilAlign(MATMUL_MODULE(MLoop)->GetBaseShape(), BASE_MODULE::c0Size_);
+            if constexpr(PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
+                aL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR);
+            } else {
+                aL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeA(), MX_BASEK_FACTOR);
+            }
+            if constexpr(IsScaleTransWithInlv<A_TYPE>) {
+                aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_EVEN_FACTOR;
+            }
+        }
+        if (!isBTranspose) {
+            bL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(NLoop)->GetTileShape(), BASE_MODULE::c0Size_);
+            if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
+                bL0Params.axisL0Len = CeilAlign(MATMUL_MODULE(NLoop)->GetBaseShape(), BASE_MODULE::c0Size_);
+            }
+            if constexpr(PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
+                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR);
+            } else if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
+                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), MX_BASEK_FACTOR);
+            }
+            if constexpr(IsScaleTransWithInlv<B_TYPE>) {
+                bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_EVEN_FACTOR;
+            }
+        }
+    }
+
     __aicore__ inline void CubeCompute(const LocalTensor<L0cT>& cMatrix, const LocalTensor<SrcA2T>& a2,
         const LocalTensor<SrcB2T>& b2, const uint16_t madM, const uint16_t madN, const uint16_t madK,
         const bool isATranspose, const bool isBTranspose, const bool sL0CInit, const bool sL0CLast)
@@ -395,4 +421,4 @@ protected:
 }  // namespace Detail
 }  // namespace Impl
 }  // namespace AscendC
-#endif 
+#endif

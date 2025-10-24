@@ -12,8 +12,8 @@
  * \file matmul_constant_tiling_struct.h
  * \brief
  */
-#ifndef TILING_MATMUL_MATMUL_CONSTANT_TILING_STRUCT_H
-#define TILING_MATMUL_MATMUL_CONSTANT_TILING_STRUCT_H
+#ifndef IMPL_MATMUL_TILING_MATMUL_CONSTANT_TILING_STRUCT_H
+#define IMPL_MATMUL_TILING_MATMUL_CONSTANT_TILING_STRUCT_H
 
 #include "kernel_operator.h"
 #include "include/adv_api/matmul/tiling.h"
@@ -429,10 +429,16 @@ struct MatmulTiling {
         constexpr static uint64_t scaleFactorMMask = 0x007f0000;
         constexpr static uint32_t scaleFactorMOffset = 16;
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
-            return (TILING.mxTypePara != -1) ? ((TILING.mxTypePara & scaleFactorMMask) >> scaleFactorMOffset) :
-                ((tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset);
+            if constexpr (TILING.mxTypePara != -1) {
+                constexpr uint32_t scaleFactorM = (TILING.mxTypePara & scaleFactorMMask) >> scaleFactorMOffset;
+                return (scaleFactorM == 0) ? 1 : scaleFactorM;
+            } else {
+                uint32_t scaleFactorM = (tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset;
+                return (scaleFactorM == 0) ? 1 : scaleFactorM;
+            }
         } else {
-            return (tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset ;
+            uint32_t scaleFactorM = (tiling_->mxTypePara & scaleFactorMMask) >> scaleFactorMOffset;
+            return (scaleFactorM == 0) ? 1 : scaleFactorM;
         }
     }
     __aicore__ inline uint8_t GetScaleFactorN() const
@@ -443,10 +449,16 @@ struct MatmulTiling {
         constexpr static uint64_t scaleFactorNMask = 0x7f000000;
         constexpr static uint32_t scaleFactorNOffset = 24;
         if constexpr (IsSameTypeV<TILING_TYPE, MatmulApiStaticTiling>) {
-            return (TILING.mxTypePara != -1) ? ((TILING.mxTypePara & scaleFactorNMask) >> scaleFactorNOffset) :
-                ((tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset);
+            if constexpr (TILING.mxTypePara != -1) {
+                constexpr uint32_t scaleFactorN = (TILING.mxTypePara & scaleFactorNMask) >> scaleFactorNOffset;
+                return (scaleFactorN == 0) ? 1 : scaleFactorN;
+            } else {
+                uint32_t scaleFactorN = (tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset;
+                return (scaleFactorN == 0) ? 1 : scaleFactorN;
+            }
         } else {
-            return (tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset ;
+            uint32_t scaleFactorN = (tiling_->mxTypePara & scaleFactorNMask) >> scaleFactorNOffset;
+            return (scaleFactorN == 0) ? 1 : scaleFactorN;
         }
     }
 

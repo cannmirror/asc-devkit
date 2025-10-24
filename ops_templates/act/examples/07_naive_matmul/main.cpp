@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -28,7 +28,6 @@
 #include "include/utils/status_utils.h"
 #include "../utils.h"
 
-using namespace AscendC;
 using namespace Act;
 using namespace Act::Gemm;
 
@@ -88,7 +87,7 @@ void MatmulOp(uint8_t* x1, uint8_t* x2, uint8_t* y, uint8_t* bias, int64_t m, in
     CHECK_ACL(aclrtMalloc((void **)&workspaceDevice, workspaceSize, ACL_MEM_MALLOC_HUGE_FIRST));
 
     // Check arguments
-    ACT_CHECK(mm.CheckArgs(args));
+    ACT_CHECK(mm.CanImplement(args));
 
     // Initialize kernel with arguments and workspace pointer
     mm.InitParams(args, workspaceDevice);

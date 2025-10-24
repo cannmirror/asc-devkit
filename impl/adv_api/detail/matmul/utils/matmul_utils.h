@@ -16,6 +16,23 @@
 #ifndef IMPL_MATMUL_UTILS_MATMUL_UTILS_H
 #define IMPL_MATMUL_UTILS_MATMUL_UTILS_H
 
+// USE_SSBUF       kfc 310 full capability mode (msg ssbuf + data ub2l1 + other new capability)
+// USE_WORKSPACE   kfc 220 or compatible mode of 310 (msg gm + data gm + no other new capability)
+#if defined(__DAV_310R6__)
+#define USE_SSBUF
+
+#elif defined(__DAV_C310__)
+#if (defined(KFC_C310_SSBUF) && KFC_C310_SSBUF == 0)
+#define USE_WORKSPACE
+#else
+#define USE_SSBUF
+#endif
+
+#else
+#define USE_WORKSPACE
+
+#endif
+
 #include "matmul_config_utils.h"
 #include "matmul_type_def.h"
 #include "../feature_trait/matmul_feature_trait.h"
@@ -208,7 +225,7 @@ __aicore__ inline void InitKfcClient(T &matmulClient, U *tiling, TPipe *tpipe, K
     matmulClient.client = client;
     matmulClient.instIdx = instIdx;
     matmulClient.InitStatic(tiling);
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     matmulClient.devEvtID = instIdx;
     matmulClient.waitFixpId = static_cast<uint8_t>(VEC_WAIT_INTRA_Enum::WAIT_FIXP) + instIdx;
 #else
@@ -292,19 +309,22 @@ template <bool AShare, bool BShare> __aicore__ __inline__ void SyncCubeWithVec()
     // This is needed because only V0 will communicate with Cube for kfc during ABshare, to prevent
     // V1 lags far behind V0 then the Cube output is overwritten by the next Cube calculation triggered by V0
     // before being consumed by V1.
-#if defined(__DAV_C220_CUBE__)
-    if constexpr (AShare && BShare) {
-        constexpr uint16_t eventID = 9U;
-        WaitEvent(eventID);
-        return;
+#if defined(USE_WORKSPACE)
+    if ASCEND_IS_AIC {
+        if constexpr (AShare && BShare) {
+            constexpr uint16_t eventID = 9U;
+            WaitEvent(eventID);
+            return;
+        }
     }
-#elif defined(__DAV_C220_VEC__)
-    if constexpr (AShare && BShare) {
-        constexpr uint16_t eventID = 9U;
-        NotifyEvent<PIPE_MTE3>(eventID);
-        return;
+
+    if ASCEND_IS_AIV {
+        if constexpr (AShare && BShare) {
+            constexpr uint16_t eventID = 9U;
+            NotifyEvent<PIPE_MTE3>(eventID);
+            return;
+        }
     }
-#else
 #endif
 }
 

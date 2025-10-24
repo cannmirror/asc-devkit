@@ -12,8 +12,6 @@
  * \file n_loop_mdl.h
  * \brief
  */
-
-
 #ifndef IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_H
 #define IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_H
 
@@ -30,8 +28,8 @@ namespace Detail {
 */
 template <typename IMPL, class A_TYPE, const auto& MM_CFG>
 class NLoop<IMPL, A_TYPE, MM_CFG,
-            enable_if_t<(DoMatmulMDL(MM_CFG) && !MatmulFeatureTrait<MM_CFG>().IsSupportMNL0DB()) ||
-                        DoMatmulSpecialMDL(MM_CFG)>>
+            enable_if_t<(DoMatmulMDL(MM_CFG) && !MatmulFeatureTrait<MM_CFG>().IsSupportMNL0DB() &&
+                        !HasScalePosition<A_TYPE>::value) || DoMatmulSpecialMDL(MM_CFG)>>
     : public NLoopMDLBase<IMPL, A_TYPE, MM_CFG>
 {
     MATMUL_USE_MODULE(MatmulShapeTiling);

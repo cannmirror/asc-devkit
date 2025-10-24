@@ -34,8 +34,8 @@ enum class ConvBL1ByPass : uint32_t {
 };
 
 enum class GroupConvType : uint32_t {
-    NoGroup_Conv = 0, // 非group卷积
-	GroupConv_Weight_Gfz // group卷积，weight数据为私有group_fractalz格式
+    NoGroup_Conv = 0,
+	GroupConv_Weight_Gfz
 };
 
 struct Conv3dParam : public ConvApi::ConvParam {

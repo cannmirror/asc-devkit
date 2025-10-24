@@ -33,12 +33,12 @@ namespace AscendC {
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
     const LocalTensor<OutputDataType> &offset, const LocalTensor<OutputDataType> &scale,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
+    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, K,
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, k,
         shapeInfo);
 }
 
@@ -54,13 +54,13 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, c
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
-    const LocalTensor<OutputDataType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+    const LocalTensor<OutputDataType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, K, shapeInfo);
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, k, shapeInfo);
 }
 
 /* !
@@ -75,13 +75,13 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, c
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
-    const LocalTensor<OutputDataType> &offset, const LocalTensor<OutputDataType> &scale, const uint32_t K,
+    const LocalTensor<OutputDataType> &offset, const LocalTensor<OutputDataType> &scale, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, K, shapeInfo);
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, k, shapeInfo);
 }
 
 /* !
@@ -98,12 +98,12 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, c
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
     const OutputDataType offset, const OutputDataType scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
+    const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, K,
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, k,
         shapeInfo);
 }
 
@@ -119,13 +119,13 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, c
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
-    const OutputDataType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+    const OutputDataType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, K, shapeInfo);
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, k, shapeInfo);
 }
 
 /* !
@@ -140,35 +140,35 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, c
  */
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
-    const OutputDataType offset, const OutputDataType scale, const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
+    const OutputDataType offset, const OutputDataType scale, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, K, shapeInfo);
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, k, shapeInfo);
 }
 
 #if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
-    const LocalTensor<fp8_e8m0_t> &scale, const uint32_t K,
+    const LocalTensor<fp8_e8m0_t> &scale, const uint32_t k,
     const AntiQuantShapeInfo &shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, K, shapeInfo);
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, k, shapeInfo);
 }
 
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, const LocalTensor<InputDataType> &src,
-    const LocalTensor<fp8_e8m0_t> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+    const LocalTensor<fp8_e8m0_t> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo &shapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;
     }
-    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, K, shapeInfo);
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, k, shapeInfo);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>

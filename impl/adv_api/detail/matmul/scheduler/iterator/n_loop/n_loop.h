@@ -12,7 +12,6 @@
 * \file n_loop.h
 * \brief
 */
-
 #ifndef IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_H
 #define IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_H
 
@@ -24,5 +23,8 @@
 #include "n_loop_basic.h"
 #include "n_loop_intrablock.h"
 #include "n_loop_norm_outer_product.h"
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#include "n_loop_mdl_mx.h"
+#endif
 
 #endif // IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_H

@@ -8,7 +8,18 @@
 # ======================================================================================================================
 
 install(
-  DIRECTORY ${ASCENDC_DIR}/ops_templates/atvc/include
-  DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/ops_templates/atvc/
+  DIRECTORY ${ASCENDC_DIR}/ops_templates/atvc
+  DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/ops_templates/
   OPTIONAL
   PATTERN "OWNERS" EXCLUDE)
+
+file(
+  CREATE_LINK
+  "ops_templates/atvc"
+  ${CMAKE_BINARY_DIR}/atvc
+  SYMBOLIC)
+
+install(
+  DIRECTORY ${CMAKE_BINARY_DIR}/atvc
+  DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/
+  OPTIONAL)                                                                                                                                                                                                                                                                           

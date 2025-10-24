@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,57 +12,79 @@
  * \file copy_in_with_params.h
  * \brief
  */
-#ifndef ACT_INCLUDE_MATMUL_TILE_COPY_IN_COPY_IN_WITH_PARAMS_H
-#define ACT_INCLUDE_MATMUL_TILE_COPY_IN_COPY_IN_WITH_PARAMS_H
+#ifndef MATMUL_TILE_COPY_IN_COPY_IN_WITH_PARAMS_H
+#define MATMUL_TILE_COPY_IN_COPY_IN_WITH_PARAMS_H
 
 #include "../tile_copy_policy.h"
+#include "../../../utils/tensor_utils.h"
 
 namespace Act {
 namespace Gemm {
 namespace Tile {
+/**
+ * @struct Copy
+ * @brief Define a Copy structure for data copying operations from global memory to local memory
+ * @param [in] ArchTag: architecture tag
+ * @param [in] InputType: input type
+ * @param [in] COPY_CFG: the copy configuration
+ * @note This structure is only valid when the input data is located in global memory and has the ND format
+ */
 template <class ArchTag, class InputType, const auto& COPY_CFG>
-struct Copy<ArchTag, CopyWithParams, void, void, InputType,
-            AscendC::Std::enable_if_t<InputType::pos == AscendC::TPosition::GM // input from GM
-                                      && InputType::format == CubeFormat::ND>, // ND
-            COPY_CFG> {
+struct Copy<
+    ArchTag, CopyWithParams, void, void, InputType,
+    AscendC::Std::enable_if_t<PosIsGM<InputType::pos>() && InputType::format == CubeFormat::ND>, // GM ND
+    COPY_CFG
+> {
 public:
     using TransT = typename InputType::TRANS_T;
     using SrcT = typename InputType::T;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
-    __aicore__ inline void operator()(const AscendC::LocalTensor<TransT>& dstLocal,
-                                      AscendC::GlobalTensor<SrcT> srcGlobal, int curRow, int curCol, int tileHeight,
-                                      int tileWidth, int baseHeight, int baseWidth, int orgHeight, int orgWidth,
-                                      bool iskRowDirec)
+    /**
+     * @brief Overloaded operator() function to perform the copy operation
+     * @param [in] dst: parameters for the problem
+     * @param [in] srcND: the source global tensor
+     * @param [in] curRow: the current row index
+     * @param [in] curCol: the current column index
+     * @param [in] tileHeight: the height of the tile
+     * @param [in] tileWidth: the width of the tile
+     * @param [in] baseHeight: the base height
+     * @param [in] baseWidth: the base width
+     * @param [in] orgHeight: the original height
+     * @param [in] orgWidth: the original width
+     * @param [in] iskRowDirec: whether to copy in the row direction
+     */
+    __aicore__ inline void operator()(const AscendC::LocalTensor<TransT>& dst, AscendC::GlobalTensor<SrcT> srcND,
+                                      int curRow, int curCol, int tileHeight, int tileWidth,
+                                      int baseHeight, int baseWidth, int orgHeight, int orgWidth, bool iskRowDirec)
     {
         if constexpr (sizeof(TransT) == sizeof(int8_t)) {
-            CopyND2NZ(dstLocal, srcGlobal, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgWidth, 1,
+            CopyND2NZ(dst, srcND, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgWidth, 1,
                       0, 0, iskRowDirec);
         } else {
-            CopyND2NZ(dstLocal, srcGlobal, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgWidth);
+            CopyND2NZ(dst, srcND, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgWidth);
         }
     }
 
 private:
+    /**
+     * @brief Copy ND2NZ data from global memory to local memory
+     * @param [in] dst: destination local tensor
+     * @param [in] src: source global tensor
+     * @param [in] row: matrix row count
+     * @param [in] col: matrix column count
+     * @param [in] height: matrix height
+     * @param [in] width: matrix width
+     * @param [in] gCol: global matrix column count
+     * @param [in] ndNum: number of NDs, default is 1
+     * @param [in] srcNdMatrixStride: source ND matrix stride, default is 0
+     * @param [in] dstNzMatrixStride: destination NZ matrix stride, default is 0
+     * @param [in] kAlignToC0Size: whether to align to C0 size, default is false
+     */
     __aicore__ inline void CopyND2NZ(const AscendC::LocalTensor<TransT>& dst, const AscendC::GlobalTensor<SrcT>& src,
                                      const int32_t row, const int32_t col, const int32_t height, const int32_t width,
                                      const int32_t gCol, const int32_t ndNum = 1, const int32_t srcNdMatrixStride = 0,
                                      const int32_t dstNzMatrixStride = 0, const bool kAlignToC0Size = false)
     {
-        ASCENDC_ASSERT((row >= 0), { KERNEL_LOG(KERNEL_ERROR, "row is %d, which should be no less than 0.", row); });
-        ASCENDC_ASSERT((col >= 0), { KERNEL_LOG(KERNEL_ERROR, "col is %d, which should be no less than 0.", col); });
-        ASCENDC_ASSERT((height > 0),
-                       { KERNEL_LOG(KERNEL_ERROR, "height is %d, which should be no less than 0.", height); });
-        ASCENDC_ASSERT((width > 0),
-                       { KERNEL_LOG(KERNEL_ERROR, "width is %d, which should be no less than 0.", width); });
-        ASCENDC_ASSERT((gCol >= width), {
-            KERNEL_LOG(
-                KERNEL_ERROR,
-                "ND2NZ width larger than origin matrix width, gCol is %d, which should be no less than width %d.", gCol,
-                width);
-        });
         constexpr static int32_t c0Size = AscendC::AuxGetC0Size<SrcT>();
         int32_t dstNzC0Stride = 0;
         int64_t srcOffset;
@@ -107,38 +129,63 @@ private:
     }
 };
 
+/**
+ * @struct Copy
+ * @brief Template struct for copying data from GM to local tensor in NZ format 
+ * @param [in] ArchTag: architecture tag
+ * @param [in] InputType: input type
+ * @param [in] COPY_CFG: the copy configuration
+ */
 template <class ArchTag, class InputType, const auto& COPY_CFG>
-struct Copy<ArchTag, CopyWithParams, void, void, InputType,
-            AscendC::Std::enable_if_t<InputType::pos == AscendC::TPosition::GM // input from GM
-                                      && InputType::format == CubeFormat::NZ>, // NZ
-            COPY_CFG> {
+struct Copy<
+    ArchTag, CopyWithParams, void, void, InputType,
+    AscendC::Std::enable_if_t<PosIsGM<InputType::pos>() && IsNz<InputType>()>, // GM NZ
+    COPY_CFG
+> {
 public:
     using TransT = typename InputType::TRANS_T;
     using SrcT = typename InputType::T;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
-    __aicore__ inline void operator()(const AscendC::LocalTensor<TransT>& dstLocal,
-                                      AscendC::GlobalTensor<SrcT> srcGlobal, int curRow, int curCol, int tileHeight,
-                                      int tileWidth, int baseHeight, int baseWidth, int orgHeight, int orgWidth,
-                                      bool iskRowDirec)
+    /**
+     * @brief Copy operator for transferring data from global tensor to local tensor
+     * @param [in] dst: parameters for the problem
+     * @param [in] srcNz: the source global tensor
+     * @param [in] curRow: the current row index
+     * @param [in] curCol: the current column index
+     * @param [in] tileHeight: the height of the tile
+     * @param [in] tileWidth: the width of the tile
+     * @param [in] baseHeight: the base height
+     * @param [in] baseWidth: the base width
+     * @param [in] orgHeight: the original height
+     * @param [in] orgWidth: the original width
+     * @param [in] iskRowDirec: whether to copy in the row direction
+     */
+    __aicore__ inline void operator()(const AscendC::LocalTensor<TransT>& dst, AscendC::GlobalTensor<SrcT> srcNz,
+                                      int curRow, int curCol, int tileHeight, int tileWidth,
+                                      int baseHeight, int baseWidth, int orgHeight, int orgWidth, bool iskRowDirec)
     {
-        CopyNZ2NZ(dstLocal, srcGlobal, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgHeight,
-                  iskRowDirec);
+        CopyNZ2NZ(dst, srcNz, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgHeight, iskRowDirec);
     }
 
 private:
+    /**
+     * @brief Copy NZ2NZ data from global memory to local memory
+     * @param [in] dst: destination local tensor
+     * @param [in] src: source global tensor
+     * @param [in] row: matrix row count
+     * @param [in] col: matrix column count
+     * @param [in] height: matrix height
+     * @param [in] width: matrix width
+     * @param [in] gCol: global matrix column count
+     * @param [in] ndNum: number of NDs, default is 1
+     * @param [in] srcNdMatrixStride: source ND matrix stride, default is 0
+     * @param [in] dstNzMatrixStride: destination NZ matrix stride, default is 0
+     * @param [in] kAlignToC0Size: whether to align to C0 size, default is false
+     */
     __aicore__ inline void CopyNZ2NZ(const AscendC::LocalTensor<TransT>& dst, const AscendC::GlobalTensor<SrcT>& src,
                                      const int32_t row, const int32_t col, const int32_t height, const int32_t width,
                                      const int32_t gRow, const bool kAlignToC0Size = false)
     {
-        ASCENDC_ASSERT((gRow >= height), {
-            KERNEL_LOG(
-                KERNEL_ERROR,
-                "NZ2NZ height larger than origin matrix height, gRow is %d, which should be no less than height %d.",
-                gRow, height);
-        });
         constexpr static int32_t c0Size = AscendC::AuxGetC0Size<SrcT>();
         int32_t alignedGRow = AscendC::Ceil(gRow, AscendC::BLOCK_CUBE) * AscendC::BLOCK_CUBE;
         int64_t srcOffset = (int64_t)row * (int64_t)c0Size + (int64_t)col * (int64_t)alignedGRow;
@@ -168,36 +215,57 @@ private:
     }
 };
 
+/**
+ * @struct Copy
+ * @brief Template struct for copying data from GM to local tensor in VECTOR format 
+ * @param [in] ArchTag: architecture tag
+ * @param [in] InputType: input type
+ * @param [in] COPY_CFG: the copy configuration
+ */
 template <class ArchTag, class InputType, const auto& COPY_CFG>
-struct Copy<ArchTag, CopyWithParams, void, void, InputType,
-            AscendC::Std::enable_if_t<InputType::pos == AscendC::TPosition::GM     // input from GM
-                                      && InputType::format == CubeFormat::VECTOR>, // VECTOR
-            COPY_CFG> {
+struct Copy<
+    ArchTag, CopyWithParams, void, void, InputType,
+    AscendC::Std::enable_if_t<PosIsGM<InputType::pos>() && InputType::format == CubeFormat::VECTOR>, // GM VECTOR
+    COPY_CFG
+> {
 public:
     using TransT = typename InputType::TRANS_T;
     using SrcT = typename InputType::T;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
-    __aicore__ inline void operator()(const AscendC::LocalTensor<TransT>& dstLocal,
-                                      AscendC::GlobalTensor<SrcT> srcGlobal, int curRow, int curCol, int tileHeight,
-                                      int tileWidth, int baseHeight, int baseWidth, int orgHeight, int orgWidth,
-                                      bool iskRowDirec)
+    /**
+     * @brief Copy operator for transferring data from global tensor to local tensor
+     * @param [in] dst: parameters for the problem
+     * @param [in] srcVec: the source global tensor
+     * @param [in] curRow: the current row index
+     * @param [in] curCol: the current column index
+     * @param [in] tileHeight: the height of the tile
+     * @param [in] tileWidth: the width of the tile
+     * @param [in] baseHeight: the base height
+     * @param [in] baseWidth: the base width
+     * @param [in] orgHeight: the original height
+     * @param [in] orgWidth: the original width
+     * @param [in] iskRowDirec: whether to copy in the row direction
+     */
+    __aicore__ inline void operator()(const AscendC::LocalTensor<TransT>& dst, AscendC::GlobalTensor<SrcT> srcVec,
+                                      int curRow, int curCol, int tileHeight, int tileWidth,
+                                      int baseHeight, int baseWidth, int orgHeight, int orgWidth, bool iskRowDirec)
     {
         constexpr static int32_t c0Size = AscendC::AuxGetC0Size<SrcT>();
-        CopyVector2A1(dstLocal, srcGlobal, curCol * baseWidth, AscendC::Ceil(tileWidth, c0Size));
+        CopyVector2A1(dst, srcVec, curCol * baseWidth, AscendC::Ceil(tileWidth, c0Size));
     }
 
 private:
+    /**
+     * @brief Copy data from VECTOR format global tensor to A1 format local tensor
+     * @param [in] dst: destination local tensor
+     * @param [in] src: source global tensor
+     * @param [in] col: matrix column count
+     * @param [in] blockLen: block length
+     */
     __aicore__ inline void CopyVector2A1(const AscendC::LocalTensor<TransT>& dst,
                                          const AscendC::GlobalTensor<SrcT>& src, const int32_t col,
                                          const int32_t blockLen)
     {
-        ASCENDC_ASSERT((col >= 0), { KERNEL_LOG(KERNEL_ERROR, "col is %d, which should be no less than 0.", col); });
-        ASCENDC_ASSERT((InputType::format == CubeFormat::VECTOR),
-                       { KERNEL_LOG(KERNEL_ERROR, "InputType::format should be CubeFormat::VECTOR."); });
-
         AscendC::DataCopyParams dataCopyInfo;
         dataCopyInfo.blockCount = 1;
         dataCopyInfo.blockLen = blockLen;

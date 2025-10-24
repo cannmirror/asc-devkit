@@ -12,7 +12,6 @@
  * \file conv3d_common_init_func.h
  * \brief
  */
-
 #ifndef API_CONV3D_COMMON_INIT_FUNC_H
 #define API_CONV3D_COMMON_INIT_FUNC_H
 
@@ -29,7 +28,7 @@ template <class Intf>
 __aicore__ inline void InitKDirectionBaseValue(
     Intf *self, uint64_t updateKAL1 = 0, uint64_t updateKBL1 = 0, uint64_t updateKL0 = 0)
 {
-    // K方向变量计算
+    // K-direction variable calculation
     uint64_t currentKAL1 = updateKAL1 == 0 ? self->ctx.conv3dTiling->kAL1 : updateKAL1;
     uint64_t currentKBL1 = updateKBL1 == 0 ? self->ctx.conv3dTiling->kBL1 : updateKBL1;
 
@@ -78,7 +77,7 @@ __aicore__ inline void InitKDirectionBaseValue(
 template <class Intf>
 __aicore__ inline void InitMDirectionBaseValue(Intf *self)
 {
-    // M方向变量计算
+    // M-direction variable calculation
     self->ctx.mAL1Tail = self->ctx.singleCoreM % self->ctx.conv3dTiling->mAL1;
     self->ctx.mAL1Tail = self->ctx.mAL1Tail == 0 ? self->ctx.conv3dTiling->mAL1 : self->ctx.mAL1Tail;
     self->ctx.ddr2l1LoopM = ConvApi::CeilDIV(self->ctx.singleCoreM, self->ctx.conv3dTiling->mAL1);
@@ -102,7 +101,7 @@ __aicore__ inline void InitCoutDirectionBaseValue(Intf *self)
         self->ctx.maxNL0Iter = self->ctx.l12l0LoopN - 1;
         return;
     }
-    // Cout方向变量计算
+    // N-direction variable calculation
     self->ctx.maxNBL1Iter = ConvApi::CeilDIV(self->ctx.singleCoreCo, self->ctx.conv3dTiling->nBL1) - 1;
     self->ctx.nBL1Tail = self->ctx.singleCoreCo % self->ctx.conv3dTiling->nBL1;
     self->ctx.nBL1Tail = self->ctx.nBL1Tail == 0 ? self->ctx.conv3dTiling->nBL1 : self->ctx.nBL1Tail;
@@ -117,14 +116,14 @@ __aicore__ inline void InitCoutDirectionBaseValue(Intf *self)
 template <class Intf>
 __aicore__ inline void InitDoutDirectionBaseValue(Intf *self)
 {
-    // Do方向变量计算
+    // Dout-direction variable calculation
     self->ctx.ddr2l1LoopD = self->ctx.singleCoreDo;
 }
 
 template <class Intf>
 __aicore__ inline void InitGroupOptDirectionValue(Intf *self)
 {
-    // GroupOpt方向变量计算
+    // GroupOpt-direction variable calculation
     self->ctx.maxGroupOptIter = self->ctx.singleCoreGroupOpt;
 }
 
@@ -214,7 +213,7 @@ struct Init {
         uint64_t cl0Spacesize = self->ctx.conv3dTiling->mL0 * self->ctx.conv3dTiling->nL0;
         uint64_t bl1Spacesize = self->ctx.conv3dTiling->nBL1 * self->ctx.conv3dTiling->kBL1;
         uint64_t biasl1Spacesize =
-            self->ctx.conv3dTiling->nL0 * sizeof(typename Intf::BiasT);  // 非全载时bias伴随L0C切分
+            self->ctx.conv3dTiling->nL0 * sizeof(typename Intf::BiasT);  // Bias accompanied by L0C splitting when not fully loaded
         if (self->ctx.biasFullLoadFlag) {
             biasl1Spacesize = ConvApi::AlignB(
                 self->ctx.singleCoreCo * sizeof(typename Intf::BiasT), ConvApi::BLOCK_L0_N * sizeof(typename Intf::BiasT));
@@ -238,7 +237,7 @@ struct Init {
         uint64_t cl0Spacesize = self->ctx.conv3dTiling->mL0 * self->ctx.conv3dTiling->nL0;
         uint64_t bl1Spacesize = self->ctx.conv3dTiling->nBL1 * self->ctx.conv3dTiling->kBL1;
         uint64_t biasl1Spacesize =
-            self->ctx.conv3dTiling->nL0 * sizeof(typename Intf::BiasT);  // 非全载时bias伴随L0C切分
+            self->ctx.conv3dTiling->nL0 * sizeof(typename Intf::BiasT);  // Bias accompanied by L0C splitting when not fully loaded
         if (self->ctx.biasFullLoadFlag) {
             biasl1Spacesize = ConvApi::AlignB(
                 self->ctx.singleCoreCo * sizeof(typename Intf::BiasT), ConvApi::BLOCK_L0_N * sizeof(typename Intf::BiasT));
