@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,16 +13,16 @@
  * \brief
  */
 
-#ifndef ACT_SEMAPHORE_H
-#define ACT_SEMAPHORE_H
+#ifndef MATMUL_KERNEL_SEMAPHORE_H
+#define MATMUL_KERNEL_SEMAPHORE_H
 
 #define ASCENDC_CUBE_ONLY
 #include "kernel_operator.h"
 #include "lib/matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/tuple_utils.h"
-#include "include/epilogue/block_epilogue_empty.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/tuple_utils.h"
+#include "../../epilogue/block_epilogue_empty.h"
 
 namespace Act {
 namespace Gemm {
@@ -49,7 +49,7 @@ __aicore__ inline int64_t GetWorkspaceOffset(int64_t pingPongIdx, int64_t curBlo
 template <typename BlockEpilogue_>
 __aicore__ inline void AicWaitAiv(const int64_t idx)
 {
-    if constexpr (!std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
+    if constexpr (!AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
         uint16_t pingPongFlag = static_cast<uint16_t>(idx & PINGPONG_FLAG);
         uint16_t c2vSyncFlag = C2V_PING_FLAG | pingPongFlag;
         AscendC::WaitEvent(c2vSyncFlag);
@@ -59,7 +59,7 @@ __aicore__ inline void AicWaitAiv(const int64_t idx)
 template <typename BlockEpilogue_>
 __aicore__ inline void AicNotifyAiv(const int64_t idx)
 {
-    if constexpr (!std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
+    if constexpr (!AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
         uint16_t pingPongFlag = static_cast<uint16_t>(idx & PINGPONG_FLAG);
         uint16_t v2cSyncFlag = V2C_PING_FLAG | pingPongFlag;
         AscendC::NotifyEvent<PIPE_FIX>(v2cSyncFlag);
@@ -69,7 +69,7 @@ __aicore__ inline void AicNotifyAiv(const int64_t idx)
 template <typename BlockEpilogue_>
 __aicore__ inline void AivWaitAic(const int64_t idx)
 {
-    if constexpr (!std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
+    if constexpr (!AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
         uint16_t pingPongFlag = static_cast<uint16_t>(idx & PINGPONG_FLAG);
         uint16_t v2cSyncFlag = V2C_PING_FLAG | pingPongFlag;
         AscendC::WaitEvent(v2cSyncFlag);
@@ -79,7 +79,7 @@ __aicore__ inline void AivWaitAic(const int64_t idx)
 template <typename BlockEpilogue_>
 __aicore__ inline void AivNotifyAic(const int64_t idx)
 {
-    if constexpr (!std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
+    if constexpr (!AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
         uint16_t pingPongFlag = static_cast<uint16_t>(idx & PINGPONG_FLAG);
         uint16_t c2vSyncFlag = C2V_PING_FLAG | pingPongFlag;
         AscendC::NotifyEvent<PIPE_MTE2>(c2vSyncFlag);
@@ -89,7 +89,7 @@ __aicore__ inline void AivNotifyAic(const int64_t idx)
 template <typename BlockEpilogue_>
 __aicore__ inline void AicWaitEvent(const int64_t loopIdx)
 {
-    if constexpr (!std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
+    if constexpr (!AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>) {
         if (loopIdx >= AIC_PING_START_IDX) {
             AscendC::WaitEvent(C2V_PING_FLAG);
         }

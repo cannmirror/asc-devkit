@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,81 +13,119 @@
  * \brief
  */
 
-#ifndef ACT_KERNEL_SPARSE_MATMUL_H
-#define ACT_KERNEL_SPARSE_MATMUL_H
+#ifndef MATMUL_KERNEL_KERNEL_SPARSE_MATMUL_H
+#define MATMUL_KERNEL_KERNEL_SPARSE_MATMUL_H
 
 #define ASCENDC_CUBE_ONLY
 #include "kernel_operator.h"
 #include "lib/matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/layout_utils.h"
-#include "include/utils/tuple_utils.h"
-#include "include/utils/coord_utils.h"
-#include "include/utils/tensor_utils.h"
-#include "include/utils/status_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/layout_utils.h"
+#include "../../utils/tuple_utils.h"
+#include "../../utils/coord_utils.h"
+#include "../../utils/tensor_utils.h"
+#include "../../utils/status_utils.h"
 
 #include "./semaphore.h"
-#include "include/matmul/matmul_intf.h"
-#include "include/matmul/block/block_sparse_matmul_builder.h"
-#include "include/epilogue/block_epilogue_empty.h"
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/matmul/block/block_scheduler_iterateK.h"
+#include "../matmul_intf.h"
+#include "../block/sparse_block_mmad_multi_block_on_kaxis_with_layout.h"
+#include "../../epilogue/block_epilogue_empty.h"
+#include "../block/block_scheduler_utils.h"
+#include "../block/block_scheduler_iterateK.h"
 
 namespace Act {
 namespace Gemm {
 namespace Kernel {
-
-template <class ProblemShape_, class BlockMmadBuilder_, class BlockEpilogue_, class BlockScheduler_,
+/**
+ * @class KernelSparseMatmul
+ * @brief A class template declaration for sparse matrix multiplication
+ * 
+ * This class is a template class that implements sparse matrix multiplication based on different template parameters
+ * 
+ * @param [in] ProblemShape_: the shape of the matrix multiplication problem
+ * @param [in] BlockMmad_: block MMAD (Matrix Multiply Add) operations
+ * @param [in] BlockEpilogue_: the epilogue operation for matrix multiplication
+ * @param [in] BlockScheduler_: the block scheduler for managing block processing in matrix multiplication
+ * @param [in] Enable_: the enable condition for template specialization
+ */
+template <class ProblemShape_, class BlockMmad_, class BlockEpilogue_, class BlockScheduler_,
           typename Enable_ = void>
 class KernelSparseMatmul {
     static_assert(AscendC::Std::always_false_v<BlockEpilogue_>,
                   "KernelSparseMatmul is not implemented for this BlockEpilogue");
 };
 
-template <class ProblemShape_, class BlockMmadBuilder_, class BlockEpilogue_, class BlockScheduler_>
-class KernelSparseMatmul<ProblemShape_, BlockMmadBuilder_, BlockEpilogue_, BlockScheduler_,
-                         std::enable_if_t<std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>>> {
+/**
+ * @class KernelSparseMatmul
+ * @brief Specialized implementation for BlockEpilogueEmpty
+ * 
+ * This specialization is used when BlockEpilogue_ is Block::BlockEpilogueEmpty
+ * 
+ * @param [in] ProblemShape_: the shape of the matrix multiplication problem
+ * @param [in] BlockMmad_: block MMAD (Matrix Multiply Add) operations
+ * @param [in] BlockEpilogue_: the epilogue operation for matrix multiplication
+ * @param [in] BlockScheduler_: the block scheduler for managing block processing in matrix multiplication
+ */
+template <class ProblemShape_, class BlockMmad_, class BlockEpilogue_, class BlockScheduler_>
+class KernelSparseMatmul<ProblemShape_, BlockMmad_, BlockEpilogue_, BlockScheduler_,
+    AscendC::Std::enable_if_t<AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>>> {
 public:
     __aicore__ inline KernelSparseMatmul() {}
     __aicore__ inline ~KernelSparseMatmul() {}
 
-    using BlockMmadBuilder = BlockMmadBuilder_;
+    using BlockMmad = BlockMmad_;
     using ProblemShape = ProblemShape_;
     using BlockScheduler = BlockScheduler_;
     using BlockEpilogue = BlockEpilogue_;
 
-    static constexpr bool TRANS_A = BlockMmadBuilder::transA;
-    static constexpr bool TRANS_B = BlockMmadBuilder::transB;
-    static constexpr int64_t L1_M = BlockMmadBuilder::l1M;
-    static constexpr int64_t L1_N = BlockMmadBuilder::l1N;
-    static constexpr int64_t L1_K = BlockMmadBuilder::l1K;
+    static constexpr bool TRANS_A = BlockMmad::AType::isTrans;
+    static constexpr bool TRANS_B = BlockMmad::BType::isTrans;
+    static constexpr int64_t L1_M = GetIntegralConstant<MNK_M, typename BlockMmad::L1Shape>();
+    static constexpr int64_t L1_N = GetIntegralConstant<MNK_N, typename BlockMmad::L1Shape>();
+    static constexpr int64_t L1_K = GetIntegralConstant<MNK_K, typename BlockMmad::L1Shape>();
+    static constexpr int64_t L0_M = GetIntegralConstant<MNK_M, typename BlockMmad::L0Shape>();
+    static constexpr int64_t L0_N = GetIntegralConstant<MNK_N, typename BlockMmad::L0Shape>();
+    static constexpr int64_t L0_K = GetIntegralConstant<MNK_K, typename BlockMmad::L0Shape>();
     static constexpr int64_t DENSE_MATRIX_B_OFFSET = 2;
     static constexpr int64_t INDEX_MATRIX_OFFSET = 8;
+
+    /**
+     * @struct BlockMmadArguments
+     * @brief Kernel arguments for the host side
+     */
+    struct BlockMmadArguments {
+        GM_ADDR aGmAddr{nullptr};       ///< The global memory address of matrix A
+        GM_ADDR bGmAddr{nullptr};       ///< The global memory address of matrix B
+        GM_ADDR cGmAddr{nullptr};       ///< The global memory address of matrix C
+        GM_ADDR biasGmAddr{nullptr};    ///< The global memory address of bias
+        GM_ADDR indexGmAddr{nullptr};   ///< The global memory address of index
+    };
+
     // schedulerOp
     using BlockSchedulerOp =
-        typename Block::BlockSchedulerSelector<ProblemShape, typename BlockMmadBuilder::L1TileShape,
-                                               typename BlockMmadBuilder::L0TileShape, BlockScheduler, TRANS_A,
+        typename Block::BlockSchedulerSelector<ProblemShape, typename BlockMmad::L1Shape,
+                                               typename BlockMmad::L0Shape, BlockScheduler, TRANS_A,
                                                TRANS_B>::SchedulerOp;
     // mmadOp
-    using BlockMmadOp = typename BlockMmadBuilder::BlockMmadOp;
-    using BlockMmadArguments = typename BlockMmadBuilder::Arguments;
+    using BlockMmadOp = BlockMmad;
+    using BlockMmadArguments = BlockMmadArguments;
     using BlockEpilogueArguments = typename BlockEpilogue::Arguments;
-    using BlockMmadParams = typename BlockMmadBuilder::Params;
+    using BlockMmadParams = BlockMmadArguments;
     using BlockEpilogueParams = typename BlockEpilogue::Params;
-    using AType = typename BlockMmadBuilder::AType;
-    using BType = typename BlockMmadBuilder::BType;
-    using CType = typename BlockMmadBuilder::CType;
-    using IndexType = typename BlockMmadBuilder::IndexType;
-    using TupleShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
+    using AType = typename BlockMmad::AType::T;
+    using BType = typename BlockMmad::BType::T;
+    using CType = typename BlockMmad::CType::T;
+    using IndexType = uint8_t;
+    using TupleShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
 
     // ND layout
     using NDLayout = AscendC::Layout<AscendC::Shape<int64_t, int64_t>, AscendC::Stride<int64_t, int64_t>>;
-    using ATensorTrait = TensorTrait<AType, AscendC::TPosition::GM, NDLayout>;
-    using BTensorTrait = TensorTrait<BType, AscendC::TPosition::GM, NDLayout>;
-    using CTensorTrait = TensorTrait<CType, AscendC::TPosition::GM, NDLayout>;
+    using ATensorTrait = AscendC::TensorTrait<AType, AscendC::TPosition::GM, NDLayout>;
+    using BTensorTrait = AscendC::TensorTrait<BType, AscendC::TPosition::GM, NDLayout>;
+    using CTensorTrait = AscendC::TensorTrait<CType, AscendC::TPosition::GM, NDLayout>;
     using AGlobalTensorType = AscendC::GlobalTensor<ATensorTrait>;
     using BGlobalTensorType = AscendC::GlobalTensor<BTensorTrait>;
     using CGlobalTensorType = AscendC::GlobalTensor<CTensorTrait>;
@@ -96,7 +134,7 @@ public:
         AscendC::Shape<AscendC::Shape<_16, int64_t>, AscendC::Shape<_8, int64_t>>, // 8 = 32 / (sizeof(uint8) * 4)
         AscendC::Stride<AscendC::Stride<_8, _128>, AscendC::Stride<_1, int64_t>>   // 128 = 16 * 8
         >;
-    using IndexTensorTrait = TensorTrait<IndexType, AscendC::TPosition::GM, NZLayout>;
+    using IndexTensorTrait = AscendC::TensorTrait<IndexType, AscendC::TPosition::GM, NZLayout>;
     using IndexGlobalTensorType = AscendC::GlobalTensor<IndexTensorTrait>;
 
     // attribute
@@ -110,25 +148,42 @@ public:
     // shape
     TupleShape problemShape_{};
 
+    /**
+     * @struct Arguments
+     * @brief Structure to hold arguments for the problem
+     */
     struct Arguments {
-        ProblemShape problemShape;
-        BlockMmadArguments mmadArgs;
-        BlockEpilogueArguments epilogueArgs;
-        Arguments() = default;
+        ProblemShape problemShape;              ///< Problem shape
+        BlockMmadArguments mmadArgs;            ///< MMAD parameters
+        BlockEpilogueArguments epilogueArgs;    ///< Epilogue parameters
+        Arguments() = default;                  ///< Default constructor
     };
 
+    /**
+     * @struct Params
+     * @brief Structure to hold parameters for the problem
+     */
     struct Params {
-        ProblemShape problemShape;
-        BlockMmadParams mmadParams;
-        BlockEpilogueParams epilogueParams;
-        Params() = default;
+        ProblemShape problemShape;              ///< Problem shape
+        BlockMmadParams mmadParams;             ///< MMAD parameters
+        BlockEpilogueParams epilogueParams;     ///< Epilogue parameters
+        Params() = default;                     ///< Default constructor
     };
 
+    /**
+     * @brief Convert ProblemShape to TupleShape
+     * @param [in] shape: ProblemShape to be converted
+     * @return TupleShape representation of the input ProblemShape
+     */
     __aicore__ inline static TupleShape ToShapeTuple(ProblemShape const& shape)
     {
         return {shape.m, shape.n, shape.k, shape.b};
     }
 
+    /**
+     * @brief Initialize the parameters for the problem
+     * @param [in] params: parameters to be initialized
+     */
     __aicore__ inline void Init(Params const& params)
     {
         problemShape_ = ToShapeTuple(params.problemShape);
@@ -152,6 +207,12 @@ public:
                                      n * k / INDEX_MATRIX_OFFSET);
     }
 
+    /**
+     * @brief Get the offset for the block
+     * @param [in] BlockCoord: type of the block coordinate
+     * @param [in] blockCoord: block coordinate
+     * @return Tuple of offsets for A, B, C, and index
+     */
     template <class BlockCoord>
     __aicore__ inline AscendC::Coord<int64_t, int64_t, int64_t, int64_t> GetOffset(const BlockCoord& blockCoord)
     {
@@ -177,7 +238,115 @@ public:
         return {offsetA, offsetB, offsetC, offsetIndex};
     }
 
-    __aicore__ inline void run(Params const& params)
+    /**
+     * @brief Check the shape of the problem
+     * @param [in] shape: problem shape to be checked
+     * @return Status of the check
+     */
+    __host_aicore__ static Status CheckShape(ProblemShape const& shape)
+    {
+        int64_t m = shape.m;
+        int64_t n = shape.n;
+        int64_t k = shape.k;
+        int64_t b = shape.b;
+        if (b > 1) { // Sparse only support batch 1
+            return Status::batchErrorExcceedsLimit;
+        }
+        if (k % 8 != 0) { // 8: Sparse k must be multiple of 8
+            return Status::nkErrorMatrixExceedsLimit;
+        }
+        // Check m, n, k overlimit data type
+        if (m > INT32_MAX || n > INT32_MAX || k > INT32_MAX) {
+            return Status::mnkErrorExceedsLimit;
+        }
+        // Check matrix size exceeds limit
+        if (!TRANS_A && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // mk matrix k limit
+            return Status::mkErrorMatrixExceedsLimit;
+        }
+
+        if (TRANS_A && m > MATRIX_INNER_DIM_LIMIT_SIZE) { // km matrix m limit
+            return Status::kmErrorMatrixExceedsLimit;
+        }
+        if (!TRANS_B && n > MATRIX_INNER_DIM_LIMIT_SIZE) { // kn matrix n limit
+            return Status::knErrorMatrixExceedsLimit;
+        }
+
+        if (TRANS_B && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // nk matrix k limit
+            return Status::nkErrorMatrixExceedsLimit;
+        }
+        return Status::success;
+    }
+
+    /**
+     * @brief Check if the problem can be implemented
+     * @param [in] args: arguments for the problem
+     * @return Status of the check
+     */
+    __host_aicore__ static Status CanImplement(Arguments const& args)
+    {
+        // Check shape in kernel
+        CHECK_AND_RETURN(CheckShape(args.problemShape));
+        // Check mmad args
+        Status BlockMmadCanImplement;
+        if (L0_M * L0_K * sizeof(AType) * DOUBLE_BUFFER_COUNT > L0A_SIZE ||
+            L0_N * L0_K * sizeof(BType) * DOUBLE_BUFFER_COUNT > L0B_SIZE || L0_M * L0_N * sizeof(CType) > L0C_SIZE ||
+            (L1_M * L1_K * sizeof(AType) + L1_K * L1_N * sizeof(BType)) * DOUBLE_BUFFER_COUNT > L1_SIZE) {
+            BlockMmadCanImplement = Status::tileShapeErrorExceedsLimit;
+        } else {
+            BlockMmadCanImplement = Status::success;
+		}
+        CHECK_AND_RETURN(BlockMmadCanImplement);
+        // Check args for block scheduler
+        CHECK_AND_RETURN(BlockSchedulerOp::CanImplement(args.problemShape));
+        return Status::success;
+    }
+
+    /**
+     * @brief Get the workspace size for the problem
+     * @param [in] shape: problem shape
+     * @param [in] blockNum: number of blocks
+     * @return Workspace size
+     */
+    __host_aicore__ static size_t GetWorkspaceSize(ProblemShape shape, int64_t blockNum)
+    {
+        size_t workSpaceSize = 0;
+        // Calculate extra workspace size for mmad
+        workSpaceSize += 0; // workspace size for mmad is zero
+        // Calculate extra workspace size for block scheduler
+        workSpaceSize += BlockSchedulerOp::GetWorkspaceSize(shape);
+        return workSpaceSize;
+    }
+
+    /**
+     * @brief Initialize the parameters for the problem
+     * @param [in] args: arguments for the problem
+     * @param [out] workspace: the address of the work space
+     * @return Initialized parameters
+     */
+    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
+    {
+        BlockMmadParams mmadParams = {args.mmadArgs.aGmAddr, args.mmadArgs.bGmAddr,
+                                      args.mmadArgs.cGmAddr, args.mmadArgs.biasGmAddr, args.mmadArgs.indexGmAddr};
+        // mmad params with epiligue takes workspaceGm as output
+        Params params = {args.problemShape, mmadParams, {}};
+        return params;
+    }
+
+    /**
+     * @brief Get the number of blocks for the problem
+     * @param [in] shape: problem shape
+     * @return Number of blocks
+     */
+    static int64_t GetBlockNum(ProblemShape shape)
+    {
+        return BlockSchedulerOp::GetBlockNum(shape);
+    }
+
+    /**
+     * @brief Overloaded operator() for the problem
+     * @param [in] params: parameters for the problem
+     */
+    __aicore__ inline void operator()(Params const& params)
     {
         if ASCEND_IS_AIV {
             return;
@@ -220,79 +389,6 @@ public:
             auto indexGlobalT = indexGlobal_[offsetIndex];
             blockMmadOp.IterateAll(cGlobalT, aGlobalT, bGlobalT, indexGlobalT, blockShape);
         }
-    }
-
-    __host_aicore__ static Status CheckShape(ProblemShape const& shape)
-    {
-        int64_t m = shape.m;
-        int64_t n = shape.n;
-        int64_t k = shape.k;
-        int64_t b = shape.b;
-        if (b > 1) { // Sparse only support batch 1
-            return Status::batchErrorExcceedsLimit;
-        }
-        if (k % 8 != 0) { // 8: Sparse k must be multiple of 8
-            return Status::nkErrorMatrixExceedsLimit;
-        }
-        // Check m, n, k overlimit data type
-        if (m > INT32_MAX || n > INT32_MAX || k > INT32_MAX) {
-            return Status::mnkErrorExceedsLimit;
-        }
-        // Check matrix size exceeds limit
-        if (!TRANS_A && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // mk matrix k limit
-            return Status::mkErrorMatrixExceedsLimit;
-        }
-
-        if (TRANS_A && m > MATRIX_INNER_DIM_LIMIT_SIZE) { // km matrix m limit
-            return Status::kmErrorMatrixExceedsLimit;
-        }
-        if (!TRANS_B && n > MATRIX_INNER_DIM_LIMIT_SIZE) { // kn matrix n limit
-            return Status::knErrorMatrixExceedsLimit;
-        }
-
-        if (TRANS_B && k > MATRIX_INNER_DIM_LIMIT_SIZE) { // nk matrix k limit
-            return Status::nkErrorMatrixExceedsLimit;
-        }
-        return Status::success;
-    }
-
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
-    {
-        // Check shape in kernel
-        CHECK_AND_RETURN(CheckShape(args.problemShape));
-        // Check mmad args
-        CHECK_AND_RETURN(BlockMmadBuilder::CheckArgs(args.mmadArgs));
-        // Check args for block scheduler
-        CHECK_AND_RETURN(BlockSchedulerOp::CheckArgs(args.problemShape));
-        return Status::success;
-    }
-
-    __host_aicore__ static size_t GetWorkSpaceSize(ProblemShape shape, int64_t blockNum)
-    {
-        size_t workSpaceSize = 0;
-        // Calculate extra workspace size for mmad
-        workSpaceSize += BlockMmadBuilder::GetWorkSpaceSize();
-        // Calculate extra workspace size for block scheduler
-        workSpaceSize += BlockSchedulerOp::GetWorkSpaceSize(shape);
-        return workSpaceSize;
-    }
-
-    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
-    {
-        BlockMmadParams mmadParams = BlockMmadBuilder::InitParams(args.mmadArgs);
-        // mmad params with epiligue takes workspaceGm as output
-        Params params = {args.problemShape, mmadParams, {}};
-        return params;
-    }
-
-    static int64_t GetBlockNum(ProblemShape shape)
-    {
-        return BlockSchedulerOp::GetBlockNum(shape);
-    }
-
-    __aicore__ inline void operator()(Params const& params)
-    {
-        run(params);
     }
 };
 

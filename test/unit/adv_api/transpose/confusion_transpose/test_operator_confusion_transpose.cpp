@@ -19,9 +19,9 @@
 using namespace std;
 using namespace AscendC;
 
-// 场景1
+// scene 1
 namespace AscendC {
-// 场景1、2: srcShape[B, A1, A2, A3]
+// scene1,2: srcShape[B, A1, A2, A3]
 __aicore__ inline void GetConfusionTranspose0213TilingInfo(const ShapeInfo srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, ConfusionTransposeTiling& tiling)
 {
@@ -32,7 +32,7 @@ __aicore__ inline void GetConfusionTranspose0213TilingInfo(const ShapeInfo srcSh
     uint32_t widthTiling = (srcShape.originalShape[3] + BLOCK_CUBE - 1) / BLOCK_CUBE;
     uint32_t alignA3 = widthTiling * BLOCK_CUBE;
 
-    // stackBuffer向 [16,16]对齐
+    // stackBuffer is aligned to [16,16]
     uint32_t newPopSize = (stackBufferSize / CUBE_MAX_SIZE) * CUBE_MAX_SIZE; // element
     uint32_t newPopH = newPopSize / BLOCK_CUBE;
     uint32_t needSize = alignA2 * BLOCK_CUBE;
@@ -62,7 +62,7 @@ __aicore__ inline void GetConfusionTranspose0213TilingInfo(const ShapeInfo srcSh
     tiling.param15 = mainOffset;
 }
 
-// 场景3：srcShape[B, N, S, H/N]
+// scene 3: srcShape[B, N, S, H/N]
 __aicore__ inline void GetConfusionTranspose2NZ012NTilingInfo(const ShapeInfo srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, ConfusionTransposeTiling& tiling)
 {
@@ -103,7 +103,7 @@ __aicore__ inline void GetConfusionTranspose2NZ012NTilingInfo(const ShapeInfo sr
     tiling.param16 = srcBatchOffset;
 }
 
-// 场景4：srcShape[B, N, S, H/N]
+// scene4: srcShape[B, N, S, H/N]
 __aicore__ inline void GetConfusionTranspose2ND012NTilingInfo(const ShapeInfo srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, ConfusionTransposeTiling& tiling)
 {
@@ -146,7 +146,7 @@ __aicore__ inline void GetConfusionTranspose2ND012NTilingInfo(const ShapeInfo sr
     tiling.param17 = blockNum;
 }
 
-// 场景5、6：srcShape[B, N, S, H/N]
+// scene5,6: srcShape[B, N, S, H/N]
 __aicore__ inline void GetConfusionTranspose012TilingInfo(const ShapeInfo srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, ConfusionTransposeTiling& tiling)
 {
@@ -183,7 +183,7 @@ __aicore__ inline void GetConfusionTranspose012TilingInfo(const ShapeInfo srcSha
     tiling.param14 = blockNum;
 }
 
-// 场景7：srcShape[height, width]
+// scene7: srcShape[height, width]
 __aicore__ inline void GetConfusionTransposeOnlyTilingInfo(const ShapeInfo srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, ConfusionTransposeTiling& tiling)
 {
@@ -335,7 +335,7 @@ TEST_P(ConfusionTransposeFirstTestsuite, ConfusionTransposeFirstTestCase)
     }
 }
 
-// 场景2
+// scene 2
 namespace AscendC {
 template <typename T>
 class KernelConfusionTransposeSecond {
@@ -458,7 +458,7 @@ TEST_P(ConfusionTransposeSecondTestsuite, ConfusionTransposeSecondTestCase)
     }
 }
 
-// 场景3
+// scene 3
 namespace AscendC {
 template <typename T>
 class KernelConfusionTransposeThird {
@@ -604,7 +604,7 @@ TEST_P(ConfusionTransposeThirdTestsuite, ConfusionTransposeThirdTestCase)
     }
 }
 
-// 场景4
+// scene 4
 namespace AscendC {
 template <typename T>
 class KernelConfusionTransposeFourth {
@@ -751,7 +751,7 @@ TEST_P(ConfusionTransposeFourthTestsuite, ConfusionTransposeFourthTestCase)
 }
 
 
-// 场景5
+// scene 5
 namespace AscendC {
 template <typename T>
 class KernelConfusionTransposeFifth {
@@ -897,7 +897,7 @@ TEST_P(ConfusionTransposeFifthTestsuite, ConfusionTransposeFifthTestCase)
 }
 
 
-// 场景6
+// scene 6
 namespace AscendC {
 template <typename T>
 class KernelConfusionTransposeSixth {
@@ -1042,7 +1042,7 @@ TEST_P(ConfusionTransposeSixthTestsuite, ConfusionTransposeSixthTestCase)
     }
 }
 
-// 场景7
+// scene 7
 namespace AscendC {
 template <typename T>
 class KernelConfusionTransposeSeventh {

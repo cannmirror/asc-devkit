@@ -15,8 +15,8 @@ file(
     ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/adv_api/detail/std
     SYMBOLIC)
 
-file(MAKE_DIRECTORY ${ASCENDC_INSTALL_BASE_PATH}/ascendc/include/basic_api/impl/utils/)
+file(MAKE_DIRECTORY ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils)
 file(
-    CREATE_LINK ../../../../../asc/impl/utils/std
-    ${ASCENDC_INSTALL_BASE_PATH}/ascendc/include/basic_api/impl/utils/std
+    CREATE_LINK ../../utils/std
+    ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/std
     SYMBOLIC)

@@ -28,7 +28,7 @@ enum ConvCfgTypeID {
     CONV_ID_Unknown,
     CONV_ID_Normal,
     CONV_ID_Test,
-    CONV_ID_END  // 由于编译器限制，最大为: 1024
+    CONV_ID_END
 };
 
 struct ConvParam {

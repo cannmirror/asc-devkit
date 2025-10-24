@@ -30,7 +30,7 @@ class MatmulService {
     using DstT = typename C_TYPE::T;
     using BiasT = typename BIAS_TYPE::T;
     using TILING_TYPE = typename std::remove_cv<typename std::remove_reference<decltype(MM_CFG)>::type>::type;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     using IMPL = MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
     using UserDefDataType = typename MATMUL_POLICY<MM_CFG, IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>::UserDefDataType;
 #endif
@@ -45,7 +45,7 @@ public:
             ASSERT(kfc != nullptr && "kfc cannot be nullptr when init kfc matmul server");
             this->kfcCommSrv = kfc;
             mul.SetSubBlockIdx(kfcCommSrv->subBlockID);
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
             ASSERT(workspace != nullptr && "workspace cannot be nullptr when init kfc matmul server");
             this->workspace = workspace;
             if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
@@ -77,13 +77,13 @@ public:
 #if !defined(ASCENDC_CPU_DEBUG) && defined(__CCE_IS_AICORE__)
             }
 #endif
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             InitL1Addr();
 #endif
         } else if (tiling) {
             tiling_.SetTiling((TCubeTiling *)tiling);
             mul.Init(tiling_.GetTiling(), nullptr);
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             InitL1Addr();
 #endif
         }
@@ -143,7 +143,7 @@ public:
         mul.SetBatchNum(body->batchA, body->batchB);
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     __aicore__ inline void SetUserDefInfo(MSG_POS KfcMsg* msg)
     {
         if (msg->userCustomData == 1) {
@@ -206,7 +206,7 @@ public:
     }
     __aicore__ inline void IterateSetMessage(MSG_POS KfcMsg* msg, MsgTmpPos MatmulConfigParams* body)
     {
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
         if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
             if (mul.GetSubBlockIdx() == 0 && msgAux.msg0.setOrgShape) {
                 mul.SetOrgShape(msgAux.msg0.orgM, msgAux.msg0.orgN, msgAux.msg0.orgKa,
@@ -235,7 +235,7 @@ public:
                     SetBatchNum(body);
                 }
             }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             if constexpr (ToMatmulConfig(MM_CFG).enableSetOrgShape) {
                 if (body->setOrgShape) {
                     mul.SetOrgShape(body->orgM, body->orgN, body->orgKa, body->orgKb, body->orgKc);
@@ -272,6 +272,7 @@ public:
             }
         }
     }
+    __aicore__ inline void SetHIF8(MSG_POS KfcMsg* msg);
     __aicore__ inline bool IterateBatch(MSG_POS KfcMsg* msg);
     __aicore__ inline void StartIterateNBatch(MsgTmpPos MatmulConfigParams* body, uint32_t &cntIterator);
     __aicore__ inline bool IterateNBatch(MSG_POS KfcMsg* msg);
@@ -348,7 +349,7 @@ public:
     template <uint8_t enableHardPoll = 0>
     __aicore__ inline bool SkipMsg(KFC_Enum funID, bool &freeMsg, int &lastMsgId, const int subBlockID)
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         if constexpr (enableHardPoll == 1) {
             return false;
         }
@@ -387,7 +388,7 @@ public:
     __aicore__ inline bool LockMsgQueue(KFC_Enum funID, bool &freeMsg, int &lastMsgId, const int subBlockID,
         MSG_POS KfcMsg *msg = nullptr)
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         if constexpr (!(A_TYPE::ibShare && B_TYPE::ibShare)) {
             if (funID == KFC_Enum::MMFUN_ITERATE) {
                 if (msg->body.cAddr == 0) {
@@ -413,7 +414,7 @@ public:
             if ((static_cast<uint16_t>(funID) & static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) ==
                 static_cast<uint16_t>(KFC_Enum::MMFUN_MASK)) {
                 if constexpr (ToMatmulConfig(MM_CFG).intraBlockPartSum) {
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
                     return IterateIntraBlockPartSum(msg, funID);
 #endif
                 } else {
@@ -437,7 +438,7 @@ public:
                 return GetTensorC(msg);
             }
         }
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
         if constexpr (ToMatmulConfig(MM_CFG).enableSetOrgShape) {
             if (funID == KFC_Enum::MMFUN_SET_ORG_SHAPE) {
                 SetOrgShape(msg);
@@ -467,6 +468,12 @@ public:
             SetHF32(msg);
             return true;
         }
+#if defined(USE_SSBUF)
+        if (funID == KFC_Enum::MMFUN_SET_HIF8) {
+            SetHIF8(msg);
+            return true;
+        }
+#endif
         ASSERT("illegal function ID.");
         return true;
     }
@@ -479,7 +486,7 @@ public:
         tbufOutTmp.logicPos = (uint8_t)(Tpos);
         tbufOutTmp.bufferAddr = addr;
 #if ASCENDC_CPU_DEBUG
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         if constexpr (Tpos == TPosition::TSCM) {
             // 8 bit for intraID, 32 bit for addr
             addr = addr & 0xffffffff;
@@ -501,7 +508,7 @@ public:
         return localTensor;
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     __aicore__ inline void GetMsgFromSSbuf(MSG_POS KfcMsg* msg, MatmulConfigParams &body);
     __aicore__ inline void InitL1Addr();
     __aicore__ inline void CopyL1Addr2SSBUF(MSG_POS MsgMatmulL1Addr *matmulL1AddrMsg_, MatrixL1Addr *matrixL1Addr_);
@@ -523,7 +530,7 @@ public:
     uint16_t instID;
 private:
     uint16_t devEvtID;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     uint8_t enPartialSum_;
     uint8_t isSyncIterate_;
 #endif

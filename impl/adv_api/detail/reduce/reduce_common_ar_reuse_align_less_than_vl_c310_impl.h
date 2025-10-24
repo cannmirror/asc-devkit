@@ -18,83 +18,76 @@
 namespace AscendC {
 template <class T, class U, const MicroAPI::RegTrait &Trait, const MicroAPI::CastTrait &CastTraitUppper,
     const MicroAPI::CastTrait &CastTraitLower, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
-__aicore__ inline void ReduceARCastLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA, uint32_t dimR)
+__simd_vf__ inline void ReduceARCastLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA, uint32_t dimR)
 {
     if (dimR <= (vlSize / 2)) {
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::RegTensor<U, Trait> vreg0CastUpper;
-            MicroAPI::RegTensor<U, Trait> vreg1CastUpper;
-            MicroAPI::UnalignReg uDst;
-            uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-            for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                if constexpr (IsSameType<T, bfloat16_t>::value) {
-                    DataCopy<T, MicroAPI::LoadDist::DIST_US_B16>(vreg0, srcAddr + loopA * dimR);
-                } else {
-                    DataCopy<T, MicroAPI::LoadDist::DIST_US_B8>(vreg0, srcAddr + loopA * dimR);
-                }
-                MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastUpper, vreg0, mask);
-                Reducefunc(vreg1CastUpper, vreg0CastUpper, mask);
-                MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastUpper, mask);
-                DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+        MicroAPI::RegTensor<T, Trait> vreg0;
+        MicroAPI::RegTensor<T, Trait> vreg1;
+        MicroAPI::RegTensor<U, Trait> vreg0CastUpper;
+        MicroAPI::RegTensor<U, Trait> vreg1CastUpper;
+        MicroAPI::UnalignReg uDst;
+        uint32_t sreg1 = dimR;
+        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
+        for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
+            if constexpr (IsSameType<T, bfloat16_t>::value) {
+                DataCopy<T, MicroAPI::LoadDist::DIST_US_B16>(vreg0, srcAddr + loopA * dimR);
+            } else {
+                DataCopy<T, MicroAPI::LoadDist::DIST_US_B8>(vreg0, srcAddr + loopA * dimR);
             }
-            MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastUpper, vreg0, mask);
+            Reducefunc(vreg1CastUpper, vreg0CastUpper, mask);
+            MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastUpper, mask);
+            DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
         }
+        MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     } else {
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::RegTensor<T, Trait> vreg2;
-            MicroAPI::RegTensor<U, Trait> vreg0CastB32;
-            MicroAPI::RegTensor<U, Trait> vreg1CastB32;
-            MicroAPI::UnalignReg uDst;
-            uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
-            mask = MicroAPI::UpdateMask<U>(sreg1);
-            MicroAPI::MaskPack(mask, mask);
-            for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                DataCopy(vreg0, srcAddr + loopA * dimR);
-                DataCopy(vreg1, srcAddr + vlSize / 2 + loopA * dimR);
-                Binaryfunc(vreg2, vreg0, vreg1, mask);
-                Select(vreg2, vreg2, vreg0, mask);
-                if constexpr (IsSameType<T, bfloat16_t>::value) {
-                    MicroAPI::UnPack((MicroAPI::RegTensor<uint32_t, Trait> &)vreg2,
-                        (MicroAPI::RegTensor<uint16_t, Trait> &)vreg2);
-                } else {
-                    MicroAPI::UnPack((MicroAPI::RegTensor<uint16_t, Trait> &)vreg2,
-                        (MicroAPI::RegTensor<uint8_t, Trait> &)vreg2);
-                }
-                MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg2, fullMask);
-                Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
-                MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
-                DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+        MicroAPI::RegTensor<T, Trait> vreg0;
+        MicroAPI::RegTensor<T, Trait> vreg1;
+        MicroAPI::RegTensor<T, Trait> vreg2;
+        MicroAPI::RegTensor<U, Trait> vreg0CastB32;
+        MicroAPI::RegTensor<U, Trait> vreg1CastB32;
+        MicroAPI::UnalignReg uDst;
+        uint32_t sreg1 = dimR;
+        MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL, Trait>();
+        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<U>(sreg1);
+        mask = MicroAPI::UpdateMask<U>(sreg1);
+        MicroAPI::MaskPack(mask, mask);
+        for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
+            DataCopy(vreg0, srcAddr + loopA * dimR);
+            DataCopy(vreg1, srcAddr + vlSize / 2 + loopA * dimR);
+            Binaryfunc(vreg2, vreg0, vreg1, mask);
+            Select(vreg2, vreg2, vreg0, mask);
+            if constexpr (IsSameType<T, bfloat16_t>::value) {
+                MicroAPI::UnPack((MicroAPI::RegTensor<uint32_t, Trait> &)vreg2,
+                    (MicroAPI::RegTensor<uint16_t, Trait> &)vreg2);
+            } else {
+                MicroAPI::UnPack((MicroAPI::RegTensor<uint16_t, Trait> &)vreg2,
+                    (MicroAPI::RegTensor<uint8_t, Trait> &)vreg2);
             }
-            MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
+            MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg2, fullMask);
+            Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
+            MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
+            DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
         }
+        MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
     }
 }
 
-template <class T>
-__aicore__ inline void ReduceCopyOutImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t calCount)
+template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
+__simd_vf__ inline void ReduceARReuseSourceLessThanVLVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
+    uint32_t dimR)
 {
-    uint16_t repeatElm = GetVecLen();
-    uint32_t sreg = calCount * sizeof(T);
-    uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(sreg, repeatElm));
-    __VEC_SCOPE__
-    {
-        MicroAPI::MaskReg preg;
-        MicroAPI::RegTensor<uint8_t> srcReg;
-        for (uint16_t i = 0; i < repeatTime; ++i) {
-            preg = MicroAPI::UpdateMask<uint8_t>(sreg);
-            MicroAPI::DataCopy(srcReg, (__ubuf__ uint8_t *)src + i * repeatElm);
-            MicroAPI::DataCopy((__ubuf__ uint8_t *)dst + i * repeatElm, srcReg, preg);
-        }
+    MicroAPI::RegTensor<T, Trait> vreg0;
+    MicroAPI::RegTensor<T, Trait> vreg1;
+    MicroAPI::UnalignReg uDst;
+    uint32_t sreg1 = dimR;
+    MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
+    for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
+        DataCopy(vreg0, srcAddr + loopA * dimR);
+        Reducefunc(vreg1, vreg0, mask);
+        DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
     }
+    MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
 template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
@@ -102,7 +95,7 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf
     uint32_t dimR)
 {
     if (dimR == 1) {
-        ReduceCopyOutImpl(dstAddr, srcAddr, dimA);
+        VF_CALL<ReduceOpInternal::ReduceCopyOutImpl<T>>(dstAddr, srcAddr, dimA);
     } else if constexpr (IsSameType<T, bfloat16_t>::value) {
         ReduceARCastLessThanVL<T, float, Trait, ReduceOpInternal::CastTraitBF16F32, ReduceOpInternal::CastTraitF32BF16,
             vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
@@ -110,20 +103,7 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf
         ReduceARCastLessThanVL<T, half, Trait, ReduceOpInternal::CastTraitB8F16, ReduceOpInternal::CastTraitF16B8,
             vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
     } else {
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T, Trait> vreg0;
-            MicroAPI::RegTensor<T, Trait> vreg1;
-            MicroAPI::UnalignReg uDst;
-            uint32_t sreg1 = dimR;
-            MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
-            for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
-                DataCopy(vreg0, srcAddr + loopA * dimR);
-                Reducefunc(vreg1, vreg0, mask);
-                DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
-            }
-            MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
-        }
+        ReduceARReuseSourceLessThanVLVF<T, Trait, vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
     }
 }
 } // namespace AscendC

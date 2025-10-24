@@ -12,7 +12,6 @@
  * \file conv3d_iterate_base_impl.h
  * \brief
  */
-
 #ifndef API_CONV3D_ITERATE_BASE_IMPL_H
 #define API_CONV3D_ITERATE_BASE_IMPL_H
 
@@ -42,7 +41,6 @@ __aicore__ inline uint64_t CalcL0CurrentM(Intf *self)
 template <class Intf>
 __aicore__ void inline FirstIterateImpl(Intf *self)
 {
-    // 先更新index再load，就需要加第一次处理。
     self->ctx.nBL0Iter = 0;
     self->ctx.mAL0Iter = 0;
     self->ctx.mAL1Iter = 0;
@@ -64,7 +62,7 @@ __aicore__ void inline FirstIterateImpl(Intf *self)
 template <class Intf>
 __aicore__ bool inline IterateMFirst(Intf *self)
 {
-    // ReorderN: 先往M轴方向偏移再往N轴方向偏移。Input复用Weight。
+    // ReorderN: First offset towards the M-axis direction and then offset towards the N-axis direction. Input Reuse Weight.
     //    M
     //    |
     //    |
@@ -106,7 +104,7 @@ __aicore__ bool inline IterateMFirst(Intf *self)
 template <class Intf>
 __aicore__ bool inline IterateNFirst(Intf *self)
 {
-    // ReorderM: 先往N轴方向偏移再往M轴方向偏移。Weight复用Input。
+    // ReorderM: Shift towards the N axis first and then towards the M axis. Weight reuse Input.
     //    ----------N-------->
     //                       |
     //                       |
@@ -319,7 +317,7 @@ __aicore__ void inline LoadAL1Process(Intf *self, uint64_t kAL1Iter)
     self->ctx.loadAl1Ins.LoadAL1();
     self->ctx.queueAL1.EnQue(self->ctx.al1);
     self->ctx.al1 = self->ctx.queueAL1.template DeQue<typename Intf::InputT>();
-    self->ctx.loadAL1Flag = false;  // LoopK中只有K方向可能重新载入。
+    self->ctx.loadAL1Flag = false;  // Only the K direction in LoopK can be reloaded.
     self->ctx.freeAL1TensorFlag = true;
 }
 
@@ -331,7 +329,7 @@ __aicore__ void inline LoadBL1Process(Intf *self, uint64_t kBL1Iter)
     self->ctx.loadBL1Ins.LoadBL1();
     self->ctx.queueBL1.EnQue(self->ctx.bl1);
     self->ctx.bl1 = self->ctx.queueBL1.template DeQue<typename Intf::WeightT>();
-    self->ctx.loadBL1Flag = false;  // LoopK中只有K方向可能重新载入。
+    self->ctx.loadBL1Flag = false;  // Only the K direction in LoopK can be reloaded.
     self->ctx.freeBL1TensorFlag = true;
 }
 

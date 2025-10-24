@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,15 +13,15 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_EPILOGUE_DEQUANT_H
-#define ACT_BLOCK_EPILOGUE_DEQUANT_H
+#ifndef EPILOGUE_BLOCK_EPILOGUE_DEQUANT_H
+#define EPILOGUE_BLOCK_EPILOGUE_DEQUANT_H
 #if defined(__DAV_C310__)
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
-#include "include/utils/status_utils.h"
-#include "include/utils/tensor_utils.h"
-#include "include/matmul/tile/tile_copy_policy.h"
+#include "../utils/common_utils.h"
+#include "../utils/device_utils.h"
+#include "../utils/status_utils.h"
+#include "../utils/tensor_utils.h"
+#include "../matmul/tile/tile_copy_policy.h"
 
 namespace Act {
 namespace Gemm {
@@ -109,10 +109,10 @@ public:
     static constexpr int64_t l0M = GetIntegralConstant<MNK_M, L0TileShape_>();
     static constexpr int64_t l0N = GetIntegralConstant<MNK_N, L0TileShape_>();
     // shape
-    using BlockShape = Shape<int64_t, int64_t, int64_t, int64_t>;
-    using BaseOffset = Coord<int64_t, int64_t, int64_t, int64_t>;
-    using BlockCoord = Coord<int64_t, int64_t, int64_t, int64_t>;
-    using ProblemShape = Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BlockShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
+    using BaseOffset = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
+    using BlockCoord = AscendC::Coord<int64_t, int64_t, int64_t, int64_t>;
+    using ProblemShape = AscendC::Shape<int64_t, int64_t, int64_t, int64_t>;
 
 public:
     __aicore__ inline void Init(Params const& params, ProblemShape& problemShape);
@@ -130,14 +130,14 @@ public:
         return params;
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(int64_t blockNum, int64_t l1M, int64_t l1N)
+    __host_aicore__ static size_t GetWorkspaceSize(int64_t blockNum, int64_t l1M, int64_t l1N)
     {
         return 0;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(Arguments const& args)
     {
-        if (l0M * l0N * sizeof(DataTypeIn_) > TOTAL_UB_SIZE) {
+        if (l0M * l0N * sizeof(DataTypeIn_) > AscendC::TOTAL_UB_SIZE) {
             return Status::l1L0ErrorExceedsLimit;
         }
         return Status::success;
@@ -182,11 +182,11 @@ private:
     float x2ScaleScalar_;
     float x1ScaleScalar_;
     // define the que
-    TQue<QuePosition::VECIN, 1> vecQueMMRes_;
-    TQue<QuePosition::VECIN, 1> vecQueX2Scale_;
-    TQue<QuePosition::VECIN, 1> vecQueX1Scale_;
-    TQue<QuePosition::VECIN, 1> vecQueBias_;
-    TQue<QuePosition::VECOUT, 1> vecQueOut_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, 1> vecQueMMRes_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, 1> vecQueX2Scale_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, 1> vecQueX1Scale_;
+    AscendC::TQue<AscendC::QuePosition::VECIN, 1> vecQueBias_;
+    AscendC::TQue<AscendC::QuePosition::VECOUT, 1> vecQueOut_;
     const Qmm::DequantTiling* dequantTiling_;
     ProblemShape problemShape_;
     uint32_t biasDtype_ = DT_FLOAT;
@@ -363,8 +363,8 @@ QMM_BLOCK_EPILOGUE_DEQUANT_CLASS_LOCAL_PARAMS
 __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCAL_PARAMS>::CopyX1ScaleFromGm2Ub(
     AscendC::LocalTensor<DataTypeX1Scale>& dst, uint64_t blockLen, uint64_t offset)
 {
-    DataCopyParams ptScale2UbParams{1, 0, 0, 0};
-    DataCopyPadParams padParams;
+    AscendC::DataCopyParams ptScale2UbParams{1, 0, 0, 0};
+    AscendC::DataCopyPadParams padParams;
     ptScale2UbParams.blockLen = blockLen;
     AscendC::DataCopyPad(dst, x1ScaleGlobal_[offset], ptScale2UbParams, padParams);
 }
@@ -373,8 +373,8 @@ QMM_BLOCK_EPILOGUE_DEQUANT_CLASS_LOCAL_PARAMS
 __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCAL_PARAMS>::CopyX2ScaleFromGm2Ub(
     AscendC::LocalTensor<DataTypeX2Scale>& dst)
 {
-    DataCopyParams scale2UbParams{1, 0, 0, 0};
-    DataCopyPadParams padParams;
+    AscendC::DataCopyParams scale2UbParams{1, 0, 0, 0};
+    AscendC::DataCopyPadParams padParams;
     scale2UbParams.blockLen = singleN_ * sizeof(DataTypeX2Scale);
     AscendC::DataCopyPad(dst, x2ScaleGlobal_[Get<X2SCALE_IDX>(blockCoord_)], scale2UbParams, padParams);
 }
@@ -384,9 +384,9 @@ template <class BiasDtype>
 __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCAL_PARAMS>::CopyBiasFromGm2Ub(
     AscendC::LocalTensor<BiasDtype>& dst)
 {
-    DataCopyParams bias2UbParams{1, 0, 0, 0};
-    DataCopyPadParams padParams;
-    if constexpr (IsSameType<BiasDtype, float>::value) {
+    AscendC::DataCopyParams bias2UbParams{1, 0, 0, 0};
+    AscendC::DataCopyPadParams padParams;
+    if constexpr (AscendC::IsSameType<BiasDtype, float>::value) {
         bias2UbParams.blockLen = singleN_ * sizeof(float);
         AscendC::DataCopyPad(dst, biasGlobalFloat_[Get<BIAS_IDX>(blockCoord_)], bias2UbParams, padParams);
     } else {
@@ -399,7 +399,7 @@ QMM_BLOCK_EPILOGUE_DEQUANT_CLASS_LOCAL_PARAMS
 __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCAL_PARAMS>::CopyDequantResFromUb2Gm(
     uint64_t blockCount, uint64_t offset, AscendC::LocalTensor<DataTypeOut>& src)
 {
-    DataCopyExtParams ub2GmParams{1, 0, 0, 0, 0};
+    AscendC::DataCopyExtParams ub2GmParams{1, 0, 0, 0, 0};
     ub2GmParams.blockLen = singleN_ * sizeof(DataTypeOut);
     ub2GmParams.blockCount = blockCount;
     ub2GmParams.dstStride = (Get<1>(problemShape_) - singleN_) * sizeof(DataTypeOut);
@@ -524,7 +524,7 @@ __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCA
     __ubuf__ DataTypeOut* dst, __ubuf__ DataTypeIn* l0cOut, __ubuf__ DataTypeX2Scale* scale2,
     __ubuf__ DataTypeX1Scale* x1Scale, __ubuf__ BiasDtype* bias, uint16_t mSize, uint16_t nSize)
 {
-    uint32_t eleNumPerVf = GetVRegSize() / sizeof(DataTypeIn);
+    uint32_t eleNumPerVf = AscendC::VECTOR_REG_WIDTH / sizeof(DataTypeIn);
     uint32_t nSrcUbAligned = Align(nSize, static_cast<uint16_t>(UB_ALIGN_SIZE / sizeof(DataTypeIn)));
     uint32_t nDstUbAligned = Align(nSize, static_cast<uint16_t>(UB_ALIGN_SIZE / sizeof(DataTypeOut)));
     uint16_t nLoopCnt = (nSize + eleNumPerVf - 1) / eleNumPerVf;
@@ -547,7 +547,7 @@ __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCA
                 uint32_t l0cOutOffset = mIdx * nSrcUbAligned + vfBlockIdx * eleNumPerVf;
                 AscendC::MicroAPI::DataCopy(l0cOutReg, l0cOut + l0cOutOffset);
                 // cast l0cOut from int32 to float
-                if constexpr (IsSameType<DataTypeIn, int32_t>::value) {
+                if constexpr (AscendC::IsSameType<DataTypeIn, int32_t>::value) {
                     AscendC::MicroAPI::Cast<float, DataTypeIn, ctInt322Fp32>(castSrcOutReg, l0cOutReg, maskN);
                 } else {
                     castSrcOutReg = l0cOutReg;
@@ -557,7 +557,7 @@ __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCA
                     AscendC::MicroAPI::Muls(mulScaleOutReg, castSrcOutReg, x2ScaleScalar_, maskN);
                 } else {
                     AscendC::MicroAPI::DataCopy(scaleReg, scale2 + vfBlockIdx * eleNumPerVf);
-                    if constexpr (!IsSameType<DataTypeX2Scale, float>::value) { // cast scale2 from bf16 to float
+                    if constexpr (!AscendC::IsSameType<DataTypeX2Scale, float>::value) { // cast scale2 from bf16 to float
                         AscendC::MicroAPI::Cast<float, DataTypeX2Scale, ctHalf2Fp32Zero>(castScaleReg, scaleReg, maskN);
                         AscendC::MicroAPI::Cast<float, DataTypeX2Scale, ctHalf2Fp32One>(castScaleOneReg, scaleReg,
                                                                                         maskN4B16);
@@ -581,7 +581,8 @@ __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCA
                 if constexpr (isBiasEpilogue) {
                     AscendC::MicroAPI::DataCopy(biasReg, bias + vfBlockIdx * eleNumPerVf);
                     // cast bias from bf16/fp16 to float
-                    if constexpr (IsSameType<BiasDtype, bfloat16_t>::value || IsSameType<BiasDtype, half>::value) {
+                    if constexpr (AscendC::IsSameType<BiasDtype, bfloat16_t>::value || 
+                                  AscendC::IsSameType<BiasDtype, half>::value) {
                         AscendC::MicroAPI::Cast<float, BiasDtype, ctHalf2Fp32Zero>(castBiasReg, biasReg, maskN);
                         AscendC::MicroAPI::Cast<float, BiasDtype, ctHalf2Fp32One>(castBiasOneReg, biasReg, maskN4B16);
                         AscendC::MicroAPI::Interleave(castBiasReg, castBiasOneReg, castBiasReg, castBiasOneReg);
@@ -593,14 +594,14 @@ __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCA
                     addBiasOutReg = mulPtScaleOutReg;
                 }
                 // cast dequant result from float to fp16/bf16
-                if constexpr (!IsSameType<DataTypeOut, float>::value) {
+                if constexpr (!AscendC::IsSameType<DataTypeOut, float>::value) {
                     AscendC::MicroAPI::Cast<DataTypeOut, float, ctFp322Half>(castResultOutReg, addBiasOutReg, maskN);
                 } else {
                     castResultOutReg = addBiasOutReg;
                 }
                 // copy out from register to ub
                 uint32_t dstUbOffset = mIdx * nDstUbAligned + vfBlockIdx * eleNumPerVf;
-                if constexpr (IsSameType<DataTypeOut, float>::value) {
+                if constexpr (AscendC::IsSameType<DataTypeOut, float>::value) {
                     AscendC::MicroAPI::DataCopy<DataTypeOut, AscendC::MicroAPI::StoreDist::DIST_NORM_B32>(
                         dst + dstUbOffset, castResultOutReg, maskN);
                 } else {
@@ -675,7 +676,7 @@ __aicore__ inline auto BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCA
 QMM_BLOCK_EPILOGUE_DEQUANT_CLASS_LOCAL_PARAMS
 __aicore__ inline void BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCAL_PARAMS>::SetOutL2CacheHint()
 {
-    yGlobal_.SetL2CacheHint(CacheMode::CACHE_MODE_DISABLE);
+    yGlobal_.SetL2CacheHint(AscendC::CacheMode::CACHE_MODE_DISABLE);
 }
 
 QMM_BLOCK_EPILOGUE_DEQUANT_CLASS_LOCAL_PARAMS
@@ -689,5 +690,5 @@ BlockEpilogueDequant<QMM_BLOCK_EPILOGUE_DEQUANT_FUNC_LOCAL_PARAMS>::operator()(B
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_BLOCK_EPILOGUE_DEQUANT_H
+#endif // EPILOGUE_BLOCK_EPILOGUE_DEQUANT_H
 #endif

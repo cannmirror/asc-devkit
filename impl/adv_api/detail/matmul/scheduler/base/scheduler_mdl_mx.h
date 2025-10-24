@@ -89,7 +89,7 @@ private:
     {
         UpdateSplitParams(aL0Params, bL0Params);
         BASE_MODULE::UpdateComputeParams(enPartialSum, sL0CInit, sL0CLast);
-        UpdateTransParams(aL0Params, bL0Params, isATranspose, isBTranspose);
+        BASE_MODULE::UpdateTransParams(aL0Params, bL0Params, isATranspose, isBTranspose);
         MATMUL_MODULE(LoadToA2)->Prepare(isATranspose, aL0Params.kAxisL1Len, aL0Params.axisL1Len);
         MATMUL_MODULE(LoadToB2)->Prepare(isBTranspose, bL0Params.kAxisL1Len);
     }
@@ -109,13 +109,14 @@ private:
 
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(A_TYPE::scalePosition)) {
             if constexpr (PhyPosIsL1(A_TYPE::scalePosition)) {
-                aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK() *
-                    MATMUL_MODULE(KLoop)->GetScaleFactorKa(), MX_K_FACTOR);
+                int16_t orgKa = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ? MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() :
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+                aL0Params.kAuxMatrixL1Len = Ceil(orgKa * MATMUL_MODULE(KLoop)->GetScaleFactorKa(), MX_K_FACTOR);
             }
             aL0Params.kAuxMatrixL1Offset = Ceil(kInnerIdx * tilingBaseK, MX_K_FACTOR);
         } else {
             int32_t tilingStepKa = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa();
-            aL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleA();
+            aL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleKa();
             aL0Params.kAuxMatrixL1Offset = (kInnerIdx - kInnerIdx / (tilingStepKa * MATMUL_MODULE(KLoop)->GetScaleFactorKa())
             * (tilingStepKa * MATMUL_MODULE(KLoop)->GetScaleFactorKa())) * Ceil(tilingBaseK, MX_K_FACTOR);
         }
@@ -133,46 +134,16 @@ private:
 
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::scalePosition)) {
             if constexpr (PhyPosIsL1(B_TYPE::scalePosition)) {
-                bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK() *
-                    MATMUL_MODULE(KLoop)->GetScaleFactorKb(), MX_K_FACTOR);
+                int16_t orgKb = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ? MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() :
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+                bL0Params.kAuxMatrixL1Len = Ceil(orgKb * MATMUL_MODULE(KLoop)->GetScaleFactorKb(), MX_K_FACTOR);
             }
             bL0Params.kAuxMatrixL1Offset = Ceil(kInnerIdx * tilingBaseK, MX_K_FACTOR);
         } else {
             int32_t tilingStepKb = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb();
-            bL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleB();
+            bL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleKb();
             bL0Params.kAuxMatrixL1Offset = (kInnerIdx - kInnerIdx / (tilingStepKb * MATMUL_MODULE(KLoop)->GetScaleFactorKb()) *
             (tilingStepKb * MATMUL_MODULE(KLoop)->GetScaleFactorKb()))* Ceil(tilingBaseK, MX_K_FACTOR);
-        }
-    }
-
-    __aicore__ inline void UpdateTransParams(MxSplitParams& aL0Params, MxSplitParams& bL0Params,
-        const bool isATranspose, const bool isBTranspose)
-    {
-        if (isATranspose) {
-            aL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(MLoop)->GetTileShape(), BASE_MODULE::c0Size_);
-            aL0Params.axisL0Len = CeilAlign(MATMUL_MODULE(MLoop)->GetBaseShape(), BASE_MODULE::c0Size_);
-            if constexpr(PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
-                aL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR);
-            } else {
-                aL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeA(), MX_BASEK_FACTOR);
-            }
-            if constexpr(IsScaleTransWithInlv<A_TYPE>) {
-                aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_EVEN_FACTOR;
-            }
-        }
-        if (!isBTranspose) {
-            bL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(NLoop)->GetTileShape(), BASE_MODULE::c0Size_);
-            if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
-                bL0Params.axisL0Len = CeilAlign(MATMUL_MODULE(NLoop)->GetBaseShape(), BASE_MODULE::c0Size_);
-            }
-            if constexpr(PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
-                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR);
-            } else if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
-                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), MX_BASEK_FACTOR);
-            }
-            if constexpr(IsScaleTransWithInlv<B_TYPE>) {
-                bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_EVEN_FACTOR;
-            }
         }
     }
 
@@ -183,9 +154,9 @@ private:
         b1 = MATMUL_MODULE(CopyCubeInB)->LoadData(MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
             MATMUL_MODULE(KLoop)->GetTileShapeB(), MATMUL_MODULE(NLoop)->GetTileShape());
         scaleA1 = MATMUL_MODULE(CopyCubeInScaleA)->LoadData(MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(KLoop)->GetInnerStartIdx(),
-            MATMUL_MODULE(MLoop)->GetTileShape(), MATMUL_MODULE(KLoop)->GetTileShapeScaleA());
+            MATMUL_MODULE(MLoop)->GetTileShape(), MATMUL_MODULE(KLoop)->GetTileShapeScaleKa());
         scaleB1 = MATMUL_MODULE(CopyCubeInScaleB)->LoadData(MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
-            MATMUL_MODULE(KLoop)->GetTileShapeScaleB(), MATMUL_MODULE(NLoop)->GetTileShape());
+            MATMUL_MODULE(KLoop)->GetTileShapeScaleKb(), MATMUL_MODULE(NLoop)->GetTileShapeScaleN());
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
             MATMUL_MODULE(MatmulCrossCoreSync)->WaitL1Ready();
         }
@@ -205,7 +176,7 @@ private:
                         MATMUL_MODULE(KLoop)->GetTileShapeA());
                     MATMUL_MODULE(CopyCubeInScaleA)->AsyncLoadData(nextInnerIdx, 0,
                         MATMUL_MODULE(MLoop)->GetTileShapeOf(MATMUL_MODULE(MLoop)->GetOuterIdx() + 1),
-                        MATMUL_MODULE(KLoop)->GetTileShapeScaleA());
+                        MATMUL_MODULE(KLoop)->GetTileShapeScaleKa());
                 }
             } else if constexpr (ToMatmulConfig(MM_CFG).doMTE2Preload == PRELOAD_N) {
                 uint32_t nextInnerIdx = MATMUL_MODULE(NLoop)->GetInnerIdx() + MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
@@ -216,7 +187,7 @@ private:
                         MATMUL_MODULE(KLoop)->GetTileShapeB(),
                         MATMUL_MODULE(NLoop)->GetTileShapeOf(MATMUL_MODULE(NLoop)->GetOuterIdx() + 1));
                     MATMUL_MODULE(CopyCubeInScaleB)->AsyncLoadData(0, nextInnerIdx,
-                        MATMUL_MODULE(KLoop)->GetTileShapeScaleB(),
+                        MATMUL_MODULE(KLoop)->GetTileShapeScaleKb(),
                         MATMUL_MODULE(NLoop)->GetTileShapeOf(MATMUL_MODULE(NLoop)->GetOuterIdx() + 1));
                 }
             }
@@ -491,47 +462,50 @@ private:
         aL0Params.kAuxMatrixL1Offset = 0;
         bL0Params.kAuxMatrixL1Offset = 0;
 
-        if constexpr (PhyPosIsL1OrUB<MM_CFG>((A_TYPE::pos)) && IsStaticPaddingEnable(MM_CFG)) {
-            aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
-        } else if constexpr (PhyPosIsL1OrUB<MM_CFG>((A_TYPE::pos)) && (IsFullStaticTiling(MM_CFG) || MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape())) {
-            aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ?
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() :
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+        if constexpr (PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
+            if constexpr (IsStaticPaddingEnable(MM_CFG)) {
+                aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+            } else {
+                aL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ?
+                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+            }
         } else {
-            aL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->GetTileBlockShapeA() * BASE_MODULE::c0Size_;
+            aL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeA(), MX_BASEK_FACTOR);
         }
 
-        if constexpr (PhyPosIsL1OrUB<MM_CFG>((A_TYPE::scalePosition)) && IsStaticPaddingEnable(MM_CFG)) {
-            aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
-        } else if constexpr (PhyPosIsL1OrUB<MM_CFG>((A_TYPE::scalePosition)) && (IsFullStaticTiling(MM_CFG) || MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape())) {
-            aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ?
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() :
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
-        } else if constexpr (IsStaticPaddingEnable(MM_CFG)) {
+        if constexpr (IsStaticPaddingEnable(MM_CFG)) {
             aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
         } else {
-            aL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleA();
+            if constexpr (PhyPosIsL1OrUB<MM_CFG>(A_TYPE::scalePosition)) {
+                aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() != -1 ?
+                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKa() : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
+            } else {
+                aL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleKa();
+            }
         }
 
-        if constexpr (PhyPosIsL1OrUB<MM_CFG>((B_TYPE::pos)) && IsStaticPaddingEnable(MM_CFG)) {
-            bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
-        } else if constexpr (PhyPosIsL1OrUB<MM_CFG>((B_TYPE::pos)) && (IsFullStaticTiling(MM_CFG) || MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape())) {
-            bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
-        } else if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
-            bL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->GetTileBlockShapeB() * BASE_MODULE::c0Size_;
-        }
-
-        if constexpr (PhyPosIsL1OrUB<MM_CFG>((B_TYPE::scalePosition)) && IsStaticPaddingEnable(MM_CFG)) {
-            bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
-        } else if constexpr (PhyPosIsL1OrUB<MM_CFG>((B_TYPE::scalePosition)) && (IsFullStaticTiling(MM_CFG) || MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape())) {
-            bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
-                MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() :
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
+        if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
+            if constexpr (IsStaticPaddingEnable(MM_CFG)) {
+                bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+            } else {
+                bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
+                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
+            }
         } else {
-            bL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleB();
+            bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), MX_BASEK_FACTOR);
         }
-        UpdateTransParams(aL0Params, bL0Params, isATranspose, isBTranspose);
+
+        if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::scalePosition)) {
+            if constexpr (IsStaticPaddingEnable(MM_CFG)) {
+                bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
+            } else {
+                bL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
+                    MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK(), MX_K_FACTOR);
+            }
+        } else {
+            bL0Params.kAuxMatrixL1Len = MATMUL_MODULE(KLoop)->GetTileShapeScaleKb();
+        }
+        BASE_MODULE::UpdateTransParams(aL0Params, bL0Params, isATranspose, isBTranspose);
     }
 
     __aicore__ inline void PartialCompute(const LocalTensor<SrcAT>& a1, const LocalTensor<SrcBT>& b1, LocalTensor<ScaleT>& scaleA1, LocalTensor<ScaleT>& scaleB1,

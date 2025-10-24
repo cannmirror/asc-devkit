@@ -156,7 +156,7 @@ private:
     __aicore__ inline void Set2DForDinPadHead(uint64_t &aL1Offset)
     {
         if (set2dFlagDHead) {
-            // 前di pad
+            // D-direction front pad
             AscendC::InitConstValueParams<typename Intf::InputT> initConstValueParams;
             SetInitConstValueParams(initConstValueParams,
                 cin1LoadL1PadHead / self_->ctx.cin1,
@@ -186,7 +186,7 @@ private:
     __aicore__ inline void Set2DForDinPadTail(uint64_t &aL1Offset)
     {
         if (set2dFlagDTail) {
-            // 后di pad
+            // D-direction rear pad
             AscendC::InitConstValueParams<typename Intf::InputT> initConstValueParams;
             SetInitConstValueParams(initConstValueParams,
                 cin1LoadL1PadTail / self_->ctx.cin1,
@@ -268,29 +268,29 @@ private:
         uint64_t hiEndIdxWithPad = hiStartIdxWithPad + hiLoadL1;
         hiIdx = hiStartIdxWithPad - self_->ctx.padUp - curCoreHiStartIdx;
         if (hiEndIdxWithPad <= self_->ctx.padUp) {
-            // hi开头全pad
+            // H-direction start with full pad
             aL1IsFullPad = true;
             return true;
         }
         if (hiStartIdxWithPad < self_->ctx.padUp) {
-            // hi开头一部分是pad
+            // The first part of h-direction is pad
             hiIdx = 0;
             hiLoadL1 = hiLoadL1 + hiStartIdxWithPad - self_->ctx.padUp;
             padTopL1 = self_->ctx.padUp - hiStartIdxWithPad;
             if (hiEndIdxWithPad >= self_->ctx.orgHi + self_->ctx.padUp) {
-                // m尾部部分是pad
+                // The tail part in the m-direction is a pad
                 hiLoadL1 = self_->ctx.orgHi - hiIdx;
                 padBottomL1 = hiEndIdxWithPad - (self_->ctx.orgHi + self_->ctx.padUp);
             }
             return true;
         }
         if (hiStartIdxWithPad >= self_->ctx.orgHi + self_->ctx.padUp) {
-            // m尾部全是pad
+            // The tail in the m-direction is full of pads
             aL1IsFullPad = true;
             return true;
         }
         if (hiEndIdxWithPad > self_->ctx.orgHi + self_->ctx.padUp) {
-            // m尾部部分是pad
+            // The tail part in the m-direction is a pad
             hiLoadL1 = self_->ctx.orgHi + self_->ctx.padUp - hiStartIdxWithPad;
             padBottomL1 = hiEndIdxWithPad - (self_->ctx.orgHi + self_->ctx.padUp);
             return true;
@@ -320,12 +320,12 @@ private:
         diIdx = self_->ctx.diStartPos <= self_->ctx.padHead ? diStartWithPad - self_->ctx.padHead
                                                             : diStartWithPad - self_->ctx.diStartPos;
         if (diEndWithPad <= self_->ctx.padHead) {
-            // di开头全pad
+            // Full pad at the beginning of the d-direction
             aL1IsFullPad = true;
             return true;
         }
         if (diStartWithPad < self_->ctx.padHead) {
-            // di开头一部分是pad，只有cin1LoadL1 > self_->ctx.cin1情况会进
+            // The first part of the d-direction is pad, only when cin1LoadL1>self_ ->ctx.cin1 will it enter
             set2dFlagDHead = true;
             uint64_t kdTmp = ConvApi::CeilDIV((self_->ctx.padHead - diStartWithPad), self_->ctx.dilationD);
             cin1LoadL1PadHead = kdTmp * self_->ctx.cin1;
@@ -333,9 +333,9 @@ private:
             cin1LoadL1 -= cin1LoadL1PadHead;
 
             if (diEndWithPad > self_->ctx.orgDi + self_->ctx.padHead) {
-                // dout尾部部分是pad
+                // The tail part in the d-direction is a pad
                 set2dFlagDTail = true;
-                // 计算真实应该载入多少kdTmp
+                // Calculate how much kdTmp should be loaded in reality
                 kdTmp = ConvApi::CeilDIV((self_->ctx.orgDi - diIdx), self_->ctx.dilationD);
                 cin1LoadL1PadTail = cin1LoadL1 - kdTmp * self_->ctx.cin1;
                 cin1LoadL1 = kdTmp * self_->ctx.cin1;
@@ -343,14 +343,14 @@ private:
             return true;
         }
         if (diStartWithPad >= self_->ctx.orgDi + self_->ctx.padHead) {
-            // dout尾部全是pad
+            // The tail of the d-direction is full of pads
             aL1IsFullPad = true;
             return true;
         }
         if (diEndWithPad > self_->ctx.orgDi + self_->ctx.padHead) {
-            // dout尾部部分是pad，只有cin1LoadL1 > self_->ctx.cin1情况会进
+            // The tail part of the D-direction is a pad, and only the situation where cin1LoadL1>self_ ->ctx.cin1 will enter
             set2dFlagDTail = true;
-            // 计算真实应该载入多少kdTmp
+            // Calculate how much kdTmp should be loaded in reality
             uint64_t kdTmp = ConvApi::CeilDIV((self_->ctx.orgDi + self_->ctx.padHead - diStartWithPad), self_->ctx.dilationD);
             cin1LoadL1PadTail = cin1LoadL1 - kdTmp * self_->ctx.cin1;
             cin1LoadL1 = kdTmp * self_->ctx.cin1;

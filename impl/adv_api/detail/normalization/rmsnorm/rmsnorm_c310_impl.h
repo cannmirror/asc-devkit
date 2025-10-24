@@ -47,7 +47,7 @@ __aicore__ inline void SaveDataWithT(
 
 template <typename T>
 __aicore__ inline void ComputeSum(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal,
-    uint32_t bLength, uint32_t sLength, uint32_t hLength, uint32_t oriHLength)
+    uint32_t bsLength, uint32_t hLength, uint32_t oriHLength)
 {
     uint16_t mainRepeatTime = static_cast<uint16_t>(oriHLength / oneRepSize);
     uint32_t tailCount = oriHLength % oneRepSize;
@@ -58,32 +58,30 @@ __aicore__ inline void ComputeSum(__local_mem__ float* dstLocal, __local_mem__ T
     MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::MaskReg maskOne = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
     MicroAPI::MaskReg maskReg = MicroAPI::UpdateMask<float>(tailCount);
-    for (uint16_t bIdx = 0; bIdx < bLength; bIdx++) {
-        for (uint16_t sIdx = 0; sIdx < sLength; sIdx++) {
-            MicroAPI::Duplicate(dstReg, static_cast<float>(0), maskFull);
-            for (uint16_t i = 0; i < mainRepeatTime; i++) {
-                LoadDataWithT(srcLocal, srcReg, maskFull, (bIdx * sLength + sIdx) * hLength + i * oneRepSize);
-                // step 1: x²
-                MicroAPI::Mul(srcReg, srcReg, srcReg, maskFull);
-                // step 2: ∑x²
-                MicroAPI::Add(dstReg, dstReg, srcReg, maskFull);
-            }
-            for (uint16_t i = 0; i < tailRepeatTime; i++) {
-                LoadDataWithT(srcLocal, srcReg, maskReg, (bIdx * sLength + sIdx) * hLength + mainRepeatTime * oneRepSize);
-                // step 1: x²
-                MicroAPI::Mul(srcReg, srcReg, srcReg, maskReg);
-                // step 2: ∑x²
-                MicroAPI::Add(dstTailReg, dstReg, srcReg, maskReg);
-                MicroAPI::Select(dstReg, dstTailReg, dstReg, maskReg);
-            }
-            MicroAPI::ReduceSum(dstReg, dstReg, maskFull);
-            DataCopy<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>((dstLocal + bIdx * sLength + sIdx), dstReg, maskOne);
+    for (uint16_t bsIdx = 0; bsIdx < bsLength; bsIdx++) {
+        MicroAPI::Duplicate(dstReg, static_cast<float>(0), maskFull);
+        for (uint16_t i = 0; i < mainRepeatTime; i++) {
+            LoadDataWithT(srcLocal, srcReg, maskFull, bsIdx * hLength + i * oneRepSize);
+            // step 1: x²
+            MicroAPI::Mul(srcReg, srcReg, srcReg, maskFull);
+            // step 2: ∑x²
+            MicroAPI::Add(dstReg, dstReg, srcReg, maskFull);
         }
+        for (uint16_t i = 0; i < tailRepeatTime; i++) {
+            LoadDataWithT(srcLocal, srcReg, maskReg, bsIdx * hLength + mainRepeatTime * oneRepSize);
+            // step 1: x²
+            MicroAPI::Mul(srcReg, srcReg, srcReg, maskReg);
+            // step 2: ∑x²
+            MicroAPI::Add(dstTailReg, dstReg, srcReg, maskReg);
+            MicroAPI::Select(dstReg, dstTailReg, dstReg, maskReg);
+        }
+        MicroAPI::ReduceSum(dstReg, dstReg, maskFull);
+        DataCopy<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(dstLocal + bsIdx, dstReg, maskOne);
     }
 }
 template <typename T>
 __aicore__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, __local_mem__ T* gammaLocal, __local_mem__ float* tmpLocal,
-    uint32_t bLength, uint32_t sLength, uint32_t hLength, uint32_t oriHLength, const T epsilon, float reciprocalOfHLength)
+    uint32_t bsLength, uint32_t hLength, uint32_t oriHLength, const float epsilon, float reciprocalOfHLength)
 {
     constexpr float rsqrtExponent = -0.5;
     MicroAPI::RegTensor<float> srcReg;
@@ -101,62 +99,74 @@ __aicore__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcL
     uint32_t tailCount = oriHLength % oneRepSize;
     uint16_t tailRepeatTime = static_cast<uint16_t>(CeilDivision(tailCount, oneRepSize));
     MicroAPI::MaskReg maskReg = MicroAPI::UpdateMask<float>(tailCount);
-    for (uint16_t bIdx = 0; bIdx < bLength; bIdx++) {
-        for (uint16_t sIdx = 0; sIdx < sLength; sIdx++) {
-            for (uint16_t i = 0; i < mainRepeatTime; i++) {
-                LoadDataWithT(srcLocal, srcReg, maskFull, (bIdx * sLength + sIdx) * hLength + i * oneRepSize);
-                LoadDataWithT(gammaLocal, gammaReg, maskFull, i * oneRepSize);
-                DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(src2Reg, tmpLocal + bIdx * sLength + sIdx);
-                // step 3: rms = 1/n*∑
-                MicroAPI::Muls(src2Reg, src2Reg, reciprocalOfHLength, maskFull);
-                // step 4: rms + e
-                MicroAPI::Adds(src2Reg, src2Reg, static_cast<float>(epsilon), maskFull);
-                // step 5: rsqrt: ln + muls + exp
-                MicroAPI::Ln<float, &lnMode>(src2Reg, src2Reg, maskFull);
-                MicroAPI::Muls(src2Reg, src2Reg, rsqrtExponent, maskFull);
-                MicroAPI::Exp<float, &expMode>(src2Reg, src2Reg, maskFull);
-                // step 6: rms = xi * rsqrt
-                MicroAPI::Mul(src2Reg, srcReg, src2Reg, maskFull);
-                // step 7: rms = rms * gamma
-                MicroAPI::Mul(src2Reg, src2Reg, gammaReg, maskFull);
-                // save
-                SaveDataWithT(dstLocal, src2Reg, maskFull, (bIdx * sLength + sIdx) * hLength + i * oneRepSize);
-            }
-            for (uint16_t i = 0; i < tailRepeatTime; i++) {
-                LoadDataWithT(srcLocal, srcReg, maskReg, (bIdx * sLength + sIdx) * hLength + mainRepeatTime * oneRepSize);
-                LoadDataWithT(gammaLocal, gammaReg, maskReg, mainRepeatTime * oneRepSize);
-                DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(src2Reg, tmpLocal + bIdx * sLength + sIdx);
-                // step 3: rms = 1/n*∑
-                MicroAPI::Muls(src2Reg, src2Reg, reciprocalOfHLength, maskReg);
-                // step 4: rms + e
-                MicroAPI::Adds(src2Reg, src2Reg, static_cast<float>(epsilon), maskReg);
-                // step 5: rsqrt: ln + muls + exp
-                MicroAPI::Ln<float, &lnMode>(src2Reg, src2Reg, maskReg);
-                MicroAPI::Muls(src2Reg, src2Reg, rsqrtExponent, maskReg);
-                MicroAPI::Exp<float, &expMode>(src2Reg, src2Reg, maskReg);
-                // step 6: rms = xi * rsqrt
-                MicroAPI::Mul(src2Reg, srcReg, src2Reg, maskReg);
-                // step 7: rms = rms * gamma
-                MicroAPI::Mul(src2Reg, src2Reg, gammaReg, maskReg);
-                // save
-                SaveDataWithT(dstLocal, src2Reg, maskReg, (bIdx * sLength + sIdx) * hLength + mainRepeatTime * oneRepSize);
-            }
+    for (uint16_t bsIdx = 0; bsIdx < bsLength; bsIdx++) {
+        for (uint16_t i = 0; i < mainRepeatTime; i++) {
+            LoadDataWithT(srcLocal, srcReg, maskFull, bsIdx * hLength + i * oneRepSize);
+            LoadDataWithT(gammaLocal, gammaReg, maskFull, i * oneRepSize);
+            DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(src2Reg, tmpLocal + bsIdx);
+            // step 3: rms = 1/n*∑
+            MicroAPI::Muls(src2Reg, src2Reg, reciprocalOfHLength, maskFull);
+            // step 4: rms + e
+            MicroAPI::Adds(src2Reg, src2Reg, epsilon, maskFull);
+            // step 5: rsqrt: ln + muls + exp
+            MicroAPI::Ln<float, &lnMode>(src2Reg, src2Reg, maskFull);
+            MicroAPI::Muls(src2Reg, src2Reg, rsqrtExponent, maskFull);
+            MicroAPI::Exp<float, &expMode>(src2Reg, src2Reg, maskFull);
+            // step 6: rms = xi * rsqrt
+            MicroAPI::Mul(src2Reg, srcReg, src2Reg, maskFull);
+            // step 7: rms = rms * gamma
+            MicroAPI::Mul(src2Reg, src2Reg, gammaReg, maskFull);
+            // save
+            SaveDataWithT(dstLocal, src2Reg, maskFull, bsIdx * hLength + i * oneRepSize);
+        }
+        for (uint16_t i = 0; i < tailRepeatTime; i++) {
+            LoadDataWithT(srcLocal, srcReg, maskReg, bsIdx * hLength + mainRepeatTime * oneRepSize);
+            LoadDataWithT(gammaLocal, gammaReg, maskReg, mainRepeatTime * oneRepSize);
+            DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(src2Reg, tmpLocal + bsIdx);
+            // step 3: rms = 1/n*∑
+            MicroAPI::Muls(src2Reg, src2Reg, reciprocalOfHLength, maskReg);
+            // step 4: rms + e
+            MicroAPI::Adds(src2Reg, src2Reg, epsilon, maskReg);
+            // step 5: rsqrt: ln + muls + exp
+            MicroAPI::Ln<float, &lnMode>(src2Reg, src2Reg, maskReg);
+            MicroAPI::Muls(src2Reg, src2Reg, rsqrtExponent, maskReg);
+            MicroAPI::Exp<float, &expMode>(src2Reg, src2Reg, maskReg);
+            // step 6: rms = xi * rsqrt
+            MicroAPI::Mul(src2Reg, srcReg, src2Reg, maskReg);
+            // step 7: rms = rms * gamma
+            MicroAPI::Mul(src2Reg, src2Reg, gammaReg, maskReg);
+            // save
+            SaveDataWithT(dstLocal, src2Reg, maskReg, bsIdx * hLength + mainRepeatTime * oneRepSize);
         }
     }
 }
 
 template <typename T>
 __aicore__ inline void RmsNormImplVf(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal,
-    __local_mem__ T* gammaLocal, __local_mem__ float* tmpLocal, const T epsilon, const RmsNormTiling& tiling)
+    __local_mem__ T* gammaLocal, __local_mem__ float* tmpLocal, const float epsilon, const RmsNormTiling& tiling)
 {
     uint32_t bLength = tiling.bLength;
     uint32_t sLength = tiling.sLength;
     uint32_t hLength = tiling.hLength;
     uint32_t oriHLength = tiling.originalHLength;
     float reciprocalOfHLength = tiling.reciprocalOfHLength;
-    ComputeSum(tmpLocal, srcLocal, bLength, sLength, hLength, oriHLength);
-    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-    ComputeY(dstLocal, srcLocal, gammaLocal, tmpLocal, bLength, sLength, hLength, oriHLength, epsilon, reciprocalOfHLength);
+    uint16_t loopRound = static_cast<uint16_t>(tiling.loopRound);
+    uint32_t mainBsLength = tiling.mainBsLength;
+    uint32_t mainBshLength = tiling.mainBshLength;
+
+    for (uint16_t i = 0; i < loopRound; i++) {
+        ComputeSum(tmpLocal, srcLocal + i * mainBshLength, mainBsLength, hLength, oriHLength);
+        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        ComputeY(dstLocal + i * mainBshLength, srcLocal + i * mainBshLength, gammaLocal, tmpLocal, mainBsLength, hLength, oriHLength, epsilon, reciprocalOfHLength); 
+    }
+    uint32_t inputTailPos = tiling.inputTailPos;
+    uint32_t tailBsLength = tiling.tailBsLength;
+    uint16_t tailRound = static_cast<uint16_t>(CeilDivision(tailBsLength, mainBsLength));
+    for (uint16_t i = 0; i < tailRound; i++) {
+        ComputeSum(tmpLocal, srcLocal + inputTailPos, tailBsLength, hLength, oriHLength);
+        MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+        ComputeY(dstLocal + inputTailPos, srcLocal + inputTailPos, gammaLocal, tmpLocal, tailBsLength, hLength, oriHLength, epsilon, reciprocalOfHLength); 
+    }
 }
 
 template <typename T, bool isBasicBlock = false>
@@ -170,8 +180,9 @@ __aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTe
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     CHECK_FUNC_HIGHLEVEL_API(RmsNorm, (T, isBasicBlock), (dstLocal, srcLocal, gammaLocal, sharedTmpBuffer, epsilon, tiling));
     LocalTensor<float> tmpLocal = sharedTmpBuffer.ReinterpretCast<float>();
+    float eps = static_cast<float>(epsilon);
     VF_CALL<RmsNormImplVf<T>>((__local_mem__ T*)dstLocal.GetPhyAddr(), (__local_mem__ T*)srcLocal.GetPhyAddr(),
-        (__local_mem__ T*)gammaLocal.GetPhyAddr(), (__local_mem__ float*)tmpLocal.GetPhyAddr(), epsilon, tiling);
+        (__local_mem__ T*)gammaLocal.GetPhyAddr(), (__local_mem__ float*)tmpLocal.GetPhyAddr(), eps, tiling);
 }
 } // namespace RmsNormAPI
 } // namespace AscendC

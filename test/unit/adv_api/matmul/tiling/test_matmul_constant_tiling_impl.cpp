@@ -46,7 +46,7 @@ private:
         GetCustomMatmulApiTiling<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(CFG_MX);
     bool TestMxMatmulApiTiling(const MatmulApiStaticTiling &tiling) {
         constexpr int32_t l1Size = 512*1024;
-        GetMxScaleFactor<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(tiling, l1Size);
+        GetMxScaleFactor<A_TYPE, B_TYPE, BIAS_TYPE>(tiling, l1Size);
         return true;
     }
 };

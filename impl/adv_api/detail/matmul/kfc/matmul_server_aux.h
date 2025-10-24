@@ -16,7 +16,10 @@
 #define IMPL_MATMUL_KFC_MATMUL_SERVER_AUX_H
 
 #include "matmul_server_impl.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
+#include "matmul_server_impl_c220.h"
+#endif
+#if defined(USE_SSBUF)
 #include "matmul_server_impl_c310.h"
 #endif
 
@@ -198,7 +201,7 @@ public:
             cubeObj.cubeObj[0].mul.ClearBias();
         }
     }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     template <class T>
     __aicore__ inline void SetSelfDefineData(T dataPtr){
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
@@ -255,12 +258,21 @@ public:
             "Iterate not support when enableMixDualMaster is enabled");
         return false;
     };
+
+    template <bool sync = true, typename T> __aicore__ inline bool Iterate(bool enPartialSum,
+        const LocalTensor<T>& localCmatrix)
+    {
+        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster && 
+            "Iterate not support when enableMixDualMaster is enabled");
+        return false;
+    };
     template <bool sync = true>
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             WaitAB();
             cubeObj.cubeObj[0].mul.IterateAll(gm, enAtomic, enSequentialWrite, waitIterateAll, fakeMsg);
             if (sync || waitIterateAll) {
@@ -281,11 +293,12 @@ public:
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
 #if (__CCE_AICORE__ == 220)
             ASSERT("IterateAll localTensor not support when enableMixDualMaster is enabled");
 #endif
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             WaitAB();
             if constexpr (GetPhyType(C_TYPE::pos) == Hardware::UB) {
                 CrossCoreWaitFlag<INTRA_MODE, PIPE_FIX>(GetIntraFlagId(
@@ -335,7 +348,7 @@ public:
     template <bool sync = true, bool waitIterateBatch = false>
     __aicore__ inline void IterateBatch(const GlobalTensor<DstT>& gm, uint32_t batchA, uint32_t batchB,
         bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0)
+        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
         ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
@@ -343,11 +356,28 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateBatch(const LocalTensor<DstT>& ubCmatrix, uint32_t batchA, uint32_t batchB,
         bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
-        const uint32_t matrixStrideC = 0)
+        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
     {
         ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "IterateBatch not support when enableMixDualMaster is enabled");
     }
+
+    __aicore__ inline void IterateBatch(const GlobalTensor<DstT>& gm,
+        bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite, const uint32_t matrixStrideA = 0,
+        const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
+    {
+        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+            "IterateBatch not support when enableMixDualMaster is enabled");
+    }
+
+    __aicore__ inline void IterateBatch(const LocalTensor<DstT>& ubCmatrix,
+        bool enPartialSum, uint8_t enAtomic, bool enSequentialWrite, const uint32_t matrixStrideA = 0,
+        const uint32_t matrixStrideB = 0, const uint32_t matrixStrideC = 0)
+    {
+        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
+            "IterateBatch not support when enableMixDualMaster is enabled");
+    }
+
     template <bool sync = true, bool waitIterateBatch = false>
     __aicore__ inline void IterateNBatch(const uint32_t batchLoop, uint32_t batchA, uint32_t batchB,
         bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
@@ -414,8 +444,14 @@ public:
             static_assert(!isTurnOnDebug, "Debug is not supported!");
         }
     }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
-        __aicore__ inline void SetTensorScaleA(const GlobalTensor<fp8_e8m0_t> &a, bool isTransposeScaleA = false)
+#if defined(USE_SSBUF)
+    __aicore__ inline void SetHIF8(bool enableHIF8 = false)
+    {
+        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
+            cubeObj.cubeObj[0].mul.SetHIF8(enableHIF8);
+        }
+    }
+    __aicore__ inline void SetTensorScaleA(const GlobalTensor<fp8_e8m0_t> &a, bool isTransposeScaleA = false)
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetTensorScaleA not support when enableMixDualMaster is enabled.");

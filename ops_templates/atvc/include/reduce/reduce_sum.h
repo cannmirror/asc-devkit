@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,7 +13,7 @@
 
 #include "common/kernel_utils.h"
 #include "reduce/common/patterns.h"
-#include "reduce/reduce_utils/reduce_block_aux_util.h"
+#include "reduce/utils/reduce_block_aux_util.h"
 
 namespace {
 struct ReduceARParam {
@@ -30,35 +29,51 @@ struct ReduceARParam {
 };
 }
 
-
 namespace ATVC {
-// OpTraits: 算子描述的ATVC::OpTraits结构体
+/*!
+ * ReduceSumCompute: This class provides the core arithmetic required to reduce
+ * tensors along either the inner-most (AR) or outer-most (RA) axis after
+ * the tensor has been copied to the Unified Buffer (UB).  Data movement between
+ * Global Memory (GM) and UB is not handled here; it is the responsibility of
+ * the surrounding scheduling template.
+ */
 template <typename OpTraits>
-// 计算模板，不感知数据从GM到UB上的搬运
 class ReduceSumCompute {
 public:
-    // 从OpTraits中萃取算子输入描述信息
+    // Extract operator input description information from OpTraits
     using inputDTypeList = typename OpTraits::In::types;
     using DataType = typename ATVC::TypeListGet<inputDTypeList, 0>::Type;
     using PrompteDtype = typename KernelUtils::GetPromoteType<DataType>::T;
     __aicore__ inline ReduceSumCompute() {}
 
+    /*!
+     * \brief Perform the actual reduction on a tile already resident in UB.
+     * \tparam needMask, true when UB alignment introduced invalid lanes.
+     * \tparam Pattern, one of ReducePattern::AR or ReducePattern::RA.
+     * \param[in] shape, {dimA, dimR} in elements; dimR may be padded.
+     * \param[out] dst, destination tensor (length == dimA)
+     * \param[in] src, source tensor (length == dimA * dimR)
+     */
     template <bool needMask, class Pattern>
     __aicore__ inline void
     Compute(KernelUtils::Shape<2> &shape,
             const AscendC::LocalTensor<PrompteDtype> &dst,
             const AscendC::LocalTensor<PrompteDtype> &src)
     {
-        // AR场景，硬件限制，R轴需要做UB上32B对齐，对齐方式有2种：
-        // 1. 高性能对齐(补充元素值不确定), 后续累加计算只能计算实际有效的元素个数
-        // 2. 补0对齐(补值是由用户实现的GetPaddingValue()接口决定的）
+        // AR scenario, hardware limitations, R-axis requires 32B alignment on UB, with 2 alignment methods available:
+        // 1. High performance alignment (with uncertain supplementary element values), subsequent cumulative
+        //    calculations can only calculate the actual number of effective elements
+        // 2. Alignment with zero padding (padding value is determined by the GetAddingValue() interface
+        //    implemented by the user)
         if (std::is_same<Pattern, ReducePattern::AR>::value) {
-            if constexpr (needMask) { // 1. 高性能对齐模式
-                // MainR(int64_t dimR, bool isAR)： 框架提供的计算R轴二分长度(元素个数)， dimR为原始的元素个数
+            if constexpr (needMask) { // 1. High performance alignment mode
+                // MainR (int64_t dimR, boolean isAR): The framework provides the calculation of the R-axis binary
+                // length (number of elements), where dimR is the original number of elements
                 int16_t mainR = KernelUtils::Reduce::MainR(shape.oriBurstLen, true);
                 ReduceAR(dst, src, shape.value[0], shape.value[1],  mainR, shape.oriBurstLen);
             } else {
-                // MainR：框架提供的计算R轴二分长度(元素个数)，dimR为补齐后的元素个数
+                // MainR: The framework provides the calculation of the R-axis binary length (number of elements),
+                // where dimR is the number of elements after completion
                 int16_t mainR = KernelUtils::Reduce::MainR(shape.value[1], true);
                 ReduceAR(dst, src, shape.value[0], shape.value[1],  mainR, shape.value[1]);
             }
@@ -69,6 +84,14 @@ public:
         }
     }
 
+    /*!
+     * \brief RA-pattern reduction: reduce along the outer-most (slowest-varying) axis.
+     * \param[out] dst, output tensor (length == dimA)
+     * \param[in] src, input tensor (length == dimR * dimA), already resident in UB
+     * \param[in] dimA, length of the non-reduced axis (A)
+     * \param[in] dimR, length of the reduced axis (R)
+     * \param[in] mainR, largest power-of-two ≤ dimR (computed by the caller)
+     */
     __aicore__ inline void
     ReduceRA(const AscendC::LocalTensor<PrompteDtype> &dst,
              const AscendC::LocalTensor<PrompteDtype> &src, uint16_t dimA,
@@ -76,45 +99,47 @@ public:
     {
         uint32_t totalNum = dimR * dimA;
         uint32_t mainNum = dimA * mainR;
-        uint32_t dtypeSize = sizeof(PrompteDtype);
+        constexpr uint32_t dtypeSize = sizeof(PrompteDtype);
         uint32_t tailNum = totalNum - mainNum;
-        // add mask最大值为256 bytes 且要满足32bytes对齐
-        uint32_t maskAddNum = UB_ALIGN_256 / dtypeSize / UB_ALIGN_32 * UB_ALIGN_32;
-        // 处理tail
+        // MaskAddNum has a maximum value of 256 bytes and must be aligned with 32 bytes
+        constexpr uint32_t maskAddNum = UB_ALIGN_256 / dtypeSize / UB_ALIGN_32 * UB_ALIGN_32;
         uint16_t repeatTimes = tailNum / maskAddNum;
         uint16_t repeatNum = repeatTimes * maskAddNum;
         uint16_t repTailNum = tailNum - repeatNum;
-        uint32_t repStride = dtypeSize * maskAddNum / UB_ALIGN_32; // 不同迭代间同一datablock步长
+        // Same data block step size between different iterations
+        uint32_t repStride = dtypeSize * maskAddNum / UB_ALIGN_32;
         // dstBlkStride, src0BlkStride,src1BlkStride, dstRepStride, src0RepStride, src1RepStride
         AscendC::BinaryRepeatParams repeatParams(1, 1, 1, repStride, repStride, repStride);
         if (repeatTimes > 0) {
             AscendC::Add(src, src[mainNum], src, maskAddNum, repeatTimes, repeatParams);
         }
         if (repTailNum > 0) {
-            repStride = dtypeSize * repTailNum / UB_ALIGN_32; // 不同迭代间同一datablock步长
+            // Same data block step size between different iterations
+            repStride = dtypeSize * repTailNum / UB_ALIGN_32;
             repeatParams.dstRepStride = repStride;
             repeatParams.src0RepStride = repStride;
             repeatParams.src1RepStride = repStride;
             AscendC::Add(src[repeatNum], src[repeatNum + mainNum], src[repeatNum], repTailNum, 1, repeatParams);
         }
         AscendC::PipeBarrier<PIPE_V>();
-        // 二分主体
         uint16_t loopRNum = mainR;
         while (loopRNum > 1) {
             loopRNum = loopRNum >> 1;
-            mainNum = loopRNum * dimA; // LoopR的前半部分数据量
+            mainNum = loopRNum * dimA; // The first half of LoopR's data volume
             repeatTimes = mainNum / maskAddNum;
             repeatNum = repeatTimes * maskAddNum;
             repTailNum = mainNum - repeatNum;
             if (repeatTimes > 0) {
-                repStride = dtypeSize * maskAddNum / UB_ALIGN_32; // 不同迭代间同一datablock步长
+                // Same data block step size between different iterations
+                repStride = dtypeSize * maskAddNum / UB_ALIGN_32;
                 repeatParams.dstRepStride = repStride;
                 repeatParams.src0RepStride = repStride;
                 repeatParams.src1RepStride = repStride;
                 AscendC::Add(src, src[mainNum], src, maskAddNum, repeatTimes, repeatParams);
             }
             if (repTailNum > 0) {
-                repStride = dtypeSize * repTailNum / UB_ALIGN_32; // 不同迭代间同一datablock步长
+                // Same data block step size between different iterations
+                repStride = dtypeSize * repTailNum / UB_ALIGN_32;
                 repeatParams.dstRepStride = repStride;
                 repeatParams.src0RepStride = repStride;
                 repeatParams.src1RepStride = repStride;
@@ -125,16 +150,25 @@ public:
         AscendC::DataCopy(dst, src, dimA);
     }
 
+    /*!
+     * \brief AR-pattern reduction: reduce along the inner-most (fastest-varying) axis.
+     * \param[out] dstTensor, output tensor (length == dimA)
+     * \param[in] srcTensor, input tensor (length == dimR * dimA), already resident in UB
+     * \param[in] dimA, length of the non-reduced axis (A)
+     * \param[in] dimR, padded length of the reduced axis (R)
+     * \param[in] mainR, largest power-of-two ≤ original R length
+     * \param[in] oriBurstLen, original (un-padded) R length used to compute tail
+     */
     __aicore__ inline void
     ReduceAR(const AscendC::LocalTensor<PrompteDtype> &dstTensor,
              const AscendC::LocalTensor<PrompteDtype> &srcTensor, uint16_t dimA,
              uint16_t dimR, uint16_t mainR, uint64_t oriBurstLen)
     {
         uint16_t tailR = oriBurstLen - mainR;
-        uint16_t dtypeSize = sizeof(PrompteDtype);
+        constexpr uint16_t dtypeSize = sizeof(PrompteDtype);
         uint32_t repStride = dtypeSize * dimR / UB_ALIGN_32;
         uint16_t dimMax = dimA * dimR;
-        uint64_t maskAddRNum = UB_ALIGN_256 / dtypeSize;
+        constexpr uint64_t maskAddRNum = UB_ALIGN_256 / dtypeSize;
 
         ReduceARParam param{
             .repStride   = repStride,
@@ -151,37 +185,44 @@ public:
             PerformInitialAdd(srcTensor, param);
         }
 
-        // 二分计算
         param.loopRNum = mainR;
         while (param.loopRNum > maskAddRNum) {
-            param.loopRNum = param.loopRNum / 2; // 除2二分
+            param.loopRNum = param.loopRNum / 2U;
             PerformBinaryReduction(srcTensor, param);
         }
-        if (param.loopRNum == 0) { // small shape, 直接reduce
+        if (param.loopRNum == 0) { // small shape, directly reduce
             param.loopRNum = tailR;
         }
         PerformFinalReduction(dstTensor, srcTensor, param);
     }
 
+    /*!
+     * \brief Merge the calculation results of different data base blocks within a single UB
+     * \tparam Pattern  Compile-time pattern tag that decides A vs. B orientation.
+     * \tparam V Shape descriptor (encodes dimA and dimB at runtime).
+     * \param[in] index, logical index identifying the data-base block.
+     * \param[in] shape, runtime tensor shape (dimA, dimB).
+     * \param[in] tempBuf, UB tensor serving as the reduction cache.
+     * \param[in] computeRes, UB tensor holding the newest partial result.
+     */
     template <class Pattern, class V>
     __aicore__ inline void UpdateCache(int64_t index, V& shape, const AscendC::LocalTensor<PrompteDtype>& tempBuf,
                                        const AscendC::LocalTensor<PrompteDtype>& computeRes)
     {
         int64_t cacheID = KernelUtils::Reduce::GetCacheID(index);
         int64_t dimA = Pattern::TailA ? shape.value[1] : shape.value[0];
-        int32_t element_one_repeat = Platform::GetVRegSize() / sizeof(PrompteDtype);
-        int64_t stride = OpsUtils::CeilDiv(dimA, static_cast<int64_t>(element_one_repeat)) * element_one_repeat;
-        // count A轴的大小 * VL
+        int32_t elementOneRepeat = Platform::GetVRegSize() / sizeof(PrompteDtype);
+        int64_t stride = OpsUtils::CeilDiv(dimA, static_cast<int64_t>(elementOneRepeat)) * elementOneRepeat;
         uint16_t outerLoopTimes = OpsUtils::CeilDiv(
             static_cast<int64_t>(dimA * sizeof(PrompteDtype)), static_cast<int64_t>(Platform::GetVRegSize()));
         uint16_t innerLoopTimes = cacheID;
-        uint32_t outerLoopStride = element_one_repeat;
-        uint32_t innerLoopStride = stride;  // cacahe的每一个idex的块的大小， A轴的大小
+        uint32_t outerLoopStride = elementOneRepeat;
+        uint32_t innerLoopStride = stride;  // The size of each idex block in cacahe and the size of the A-axis
         AscendC::LocalTensor<PrompteDtype> dstTensor = tempBuf;
         AscendC::LocalTensor<PrompteDtype> srcTensor = computeRes;
         uint32_t cah = cacheID * stride;
 
-        for (uint16_t i = 0; i < outerLoopTimes; ++i) {  // outerLoopTimes是dimA的大小
+        for (uint16_t i = 0; i < outerLoopTimes; ++i) {  // OuterLoopTimes is the size of dimA
             uint32_t srcIdx = i * outerLoopStride;
             for (uint16_t j = 0; j < innerLoopTimes; ++j) {
                 AscendC::Add(srcTensor[srcIdx], srcTensor[srcIdx],
@@ -193,6 +234,13 @@ public:
         }
     }
 
+    /*!
+     * \brief Binary reduction between two UB buffers.
+     * \      Used for inter-core result merging when workspace staging is required.
+     * \param[in] ubTensorLeft, left operand (in-place result).
+     * \param[in] ubTensorRight, right operand (read-only).
+     * \param[in] calCount, number of elements to reduce.
+     */
     __aicore__ inline void
     ReduceBetweenUB(const AscendC::LocalTensor<PrompteDtype> &ubTensorLeft,
                     const AscendC::LocalTensor<PrompteDtype> &ubTensorRight,
@@ -201,10 +249,18 @@ public:
         Add(ubTensorRight, ubTensorRight, ubTensorLeft, calCount);
     }
 
+    /*!
+     * \brief Return the value used for padding when UB alignment is required.
+     *        For SUM-reduction the neutral element is 0.
+     * \tparam U, scalar type identical to DataType or PromoteDataType.
+     * \return The padding value (always 0).
+     */
     template <typename U>
-    __aicore__ inline U GetPaddingValue() // 设置框架内每一次搬入UB的数据对齐补充的值
+    __aicore__ inline U GetPaddingValue()
     {
-        U paddingValue = 0; // 由于ReduceSum是累加R轴数据，补齐的元素值设为0，才能保证累加的结果不受影响
+        // Due to the fact that ReduceSum accumulates R-axis data, the values of the supplemented elements
+        // are set to 0 to ensure that the accumulated result is not affected
+        U paddingValue = 0;
         return paddingValue;
     }
 
@@ -269,7 +325,7 @@ private:
         if constexpr (AscendC::IsSameType<PrompteDtype, float>::value ||
                       AscendC::IsSameType<PrompteDtype, half>::value) {
             uint16_t reduceLoopTimes = UB_ALIGN_255 * param.dtypeSize / UB_ALIGN_32 * UB_ALIGN_32 / param.dtypeSize;
-            // WholeReduceSum repeattime最大值为255 255附近为了dimA需要分多次
+            // WholeReduceSum repeat-time limit is 255; split dimA into chunks
             for (uint16_t dimAIdx = 0; dimAIdx < param.dimA; dimAIdx += reduceLoopTimes) {
                 uint16_t curDimA = (dimAIdx + reduceLoopTimes < param.dimA) ? reduceLoopTimes : param.dimA - dimAIdx;
                 AscendC::WholeReduceSum(
@@ -278,15 +334,14 @@ private:
             AscendC::PipeBarrier<PIPE_V>();
         } else if constexpr (AscendC::IsSameType<PrompteDtype, int32_t>::value ||
                              AscendC::IsSameType<PrompteDtype, uint32_t>::value) {
-            // 尽量二分add到最后32bytes
-            // int32 -> float 都是4字,一把cast 用CAST_NONE
+            // Cast to float for higher-precision accumulation
             AscendC::LocalTensor<float> interpreSrc = srcTensor.template ReinterpretCast<float>();
             AscendC::LocalTensor<float> interpreDst = dstTensor.template ReinterpretCast<float>();
             AscendC::Cast(interpreSrc, srcTensor, AscendC::RoundMode::CAST_NONE, param.dimA * param.dimR);
             AscendC::PipeBarrier<PIPE_V>();
 
             uint16_t reduceLoopTimes = 255 * param.dtypeSize / UB_ALIGN_32 * UB_ALIGN_32 / param.dtypeSize;
-            // WholeReduceSum repeattime最大值为255 255附近为了dimA需要分多次
+            // WholeReduceSum repeat-time limit is 255; split dimA into chunks
             for (uint16_t dimAIdx = 0; dimAIdx < param.dimA; dimAIdx += reduceLoopTimes) {
                 uint16_t curDimA = (dimAIdx + reduceLoopTimes < param.dimA) ? reduceLoopTimes : param.dimA - dimAIdx;
                 AscendC::WholeReduceSum(

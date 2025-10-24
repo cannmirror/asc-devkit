@@ -12,8 +12,8 @@
  * \file matmul_constant_tiling_utils.h
  * \brief
  */
-#ifndef TILING_MATMUL_MATMUL_CONSTANT_TILING_UTILS_H
-#define TILING_MATMUL_MATMUL_CONSTANT_TILING_UTILS_H
+#ifndef IMPL_MATMUL_TILING_MATMUL_CONSTANT_TILING_UTILS_H
+#define IMPL_MATMUL_TILING_MATMUL_CONSTANT_TILING_UTILS_H
 
 #include "matmul_constant_tiling_struct.h"
 
@@ -28,6 +28,7 @@ constexpr int32_t OUTER_STEP = 2;
 constexpr int32_t BT_SIZE = 1024;
 constexpr int32_t MIN_MN_SIZE = 16;
 constexpr int32_t BITS_PER_BYTE = 8;
+constexpr int32_t ALIGN_TWO = 2;
 #if __CCE_AICORE__ < 220 || (__NPU_ARCH__ == 5102)
 constexpr int32_t L1_SIZE = 1024 * 1024;
 #elif __CCE_AICORE__ == 300
@@ -62,6 +63,8 @@ struct L1Status {
 struct MxScaleStatus {
     uint8_t scaleFactorKa;
     uint8_t scaleFactorKb;
+    uint8_t scaleFactorM;
+    uint8_t scaleFactorN;
     int32_t mxTypePara;
 };
 
@@ -194,6 +197,8 @@ __aicore__ constexpr int32_t GetAL1Size(const L1Status &l1Status, const MatmulCo
     int32_t kL0 = GetKL0<A_TYPE>(mmCFG);
     if constexpr (PhyPosIsL1(A_TYPE::pos)) {
         curA1Size = 0;
+    } else if constexpr (PhyPosIsUB(A_TYPE::pos)) {
+        curA1Size = mmCFG.singleCoreM * mmCFG.singleCoreK * GetBitSize<typename A_TYPE::T>() / ONE_BYTE_BIT_SIZE;
     } else {
         // be consistent with initbuffer
         curA1Size = l1Status.dbAL1 * l1Status.mAL1 * mmCFG.basicM * CeilNoLog<int32_t>(l1Status.kAL1, kL0) *
@@ -211,6 +216,8 @@ __aicore__ constexpr int32_t GetBL1Size(const L1Status &l1Status, const MatmulCo
     int32_t kL0 = GetKL0<A_TYPE>(mmCFG);
     if constexpr (PhyPosIsL1(B_TYPE::pos)) {
         curB1Size = 0;
+    } else if constexpr (PhyPosIsUB(B_TYPE::pos)) {
+        curB1Size = mmCFG.singleCoreK * mmCFG.singleCoreN * GetBitSize<typename B_TYPE::T>() / ONE_BYTE_BIT_SIZE;
     } else {
         // be consistent with initbuffer
         curB1Size = l1Status.dbBL1 * l1Status.nBL1 * mmCFG.basicN * CeilNoLog<int32_t>(l1Status.kBL1, kL0) *
@@ -220,6 +227,40 @@ __aicore__ constexpr int32_t GetBL1Size(const L1Status &l1Status, const MatmulCo
     return curB1Size;
 }
 
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetScaleAL1Size(const L1Status &l1Status, const MatmulConfig &mmCFG)
+{
+    int32_t curScaleA1Size = 0;
+    int32_t kL0 = GetKL0<A_TYPE>(mmCFG);
+    if constexpr (PhyPosIsL1(A_TYPE::scalePosition)) {
+        curScaleA1Size = 0;
+    } else if constexpr (PhyPosIsUB(A_TYPE::scalePosition)) {
+        curScaleA1Size = mmCFG.singleCoreM * CeilNoLog<int32_t>(mmCFG.singleCoreK, Impl::MX_BASEK_FACTOR) * Impl::ALIGN_TWO;
+    } else {
+        // be consistent with initbuffer
+        curScaleA1Size = l1Status.dbAL1 * l1Status.mAL1 * mmCFG.basicM * CeilNoLog<int32_t>(l1Status.kAL1, kL0) *
+            CeilNoLog<int32_t>(mmCFG.basicK, Impl::C0_BYTE_SIZE) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE;
+    }
+    return curScaleA1Size;
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetScaleBL1Size(const L1Status &l1Status, const MatmulConfig &mmCFG)
+{
+    int32_t curScaleB1Size = 0;
+    int32_t kL0 = GetKL0<B_TYPE>(mmCFG);
+    if constexpr (PhyPosIsL1(B_TYPE::scalePosition)) {
+        curScaleB1Size = 0;
+    } else if constexpr (PhyPosIsUB(B_TYPE::scalePosition)) {
+        curScaleB1Size = mmCFG.singleCoreN * CeilNoLog<int32_t>(mmCFG.singleCoreK, Impl::MX_BASEK_FACTOR) * Impl::ALIGN_TWO;
+    } else {
+        // be consistent with initbuffer
+        curScaleB1Size = l1Status.dbBL1 * l1Status.nBL1 * mmCFG.basicN * CeilNoLog<int32_t>(l1Status.kBL1, kL0) *
+            CeilNoLog<int32_t>(mmCFG.basicK, Impl::C0_BYTE_SIZE) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE;
+    }
+    return curScaleB1Size;
+}
+
 template <typename A_TYPE, typename B_TYPE, typename C_TYPE, typename BIAS_TYPE>
 __aicore__ constexpr int32_t GetL1Size(const L1Status &l1Status, const MatmulConfig &mmCFG)
 {
@@ -227,8 +268,14 @@ __aicore__ constexpr int32_t GetL1Size(const L1Status &l1Status, const MatmulCon
     int32_t curB1Size = GetBL1Size<A_TYPE, B_TYPE>(l1Status, mmCFG);
     int32_t biasSize = GetBiasL1Size<BIAS_TYPE>(l1Status, mmCFG);
     int32_t dequantSize = GetDeQuantSize(l1Status, mmCFG);
+    int32_t curScaleA1Size = 0;
+    int32_t curScaleB1Size = 0;
+    if constexpr (HasScalePosition<A_TYPE>::value || HasScalePosition<B_TYPE>::value) {
+        curScaleA1Size = GetScaleAL1Size<A_TYPE>(l1Status, mmCFG);
+        curScaleB1Size = GetScaleBL1Size<B_TYPE>(l1Status, mmCFG);
+    }
     // overflow will generate complier error
-    return curA1Size + curB1Size + biasSize + dequantSize;
+    return curA1Size + curB1Size + biasSize + dequantSize + curScaleA1Size + curScaleB1Size;
 }
 
 template <typename A_TYPE, typename B_TYPE, typename BIAS_TYPE>

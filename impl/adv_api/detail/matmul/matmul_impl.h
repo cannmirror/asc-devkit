@@ -55,6 +55,7 @@ public:
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
 #if __CCE_AICORE__ == 200
         GlobalTensor<uint64_t> global;
         global.SetGlobalBuffer((__gm__ uint64_t*)0);
@@ -82,6 +83,7 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
 #if __CCE_AICORE__ == 200
         GlobalTensor<uint64_t> global;
         global.SetGlobalBuffer((__gm__ uint64_t*)0);
@@ -101,6 +103,7 @@ public:
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         if constexpr(BASE_MODULE::POLICY::POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33) {
             static_assert(DoMatmulMDL(MM_CFG), "NBuffer33MatmulPolicy only support MDL config.");
             MATMUL_MODULE(Scheduler)->Schedule(gm, enAtomic, enSequentialWrite);
@@ -120,6 +123,7 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         if constexpr(BASE_MODULE::POLICY::POLICY_TYPE == PolicyType::MATMUL_NBUFFER_33) {
             static_assert(DoMatmulMDL(MM_CFG), "NBuffer33MatmulPolicy only support MDL config.");
             MATMUL_MODULE(Scheduler)->Schedule(ubCmatrix, enAtomic);

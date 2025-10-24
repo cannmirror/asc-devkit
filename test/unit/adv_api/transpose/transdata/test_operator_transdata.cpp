@@ -260,7 +260,7 @@ TEST_P(TransDataTestsuite, TransDataOpTestCase)
         srcShapeSize = n * c1 * c0 * d * h * w;
         dstShapeSize = n * d * c * hw0;
     }
-    uint8_t srcGm[srcShapeSize * sizeof(half)] = {0}; // 外部保证inner是32B对齐
+    uint8_t srcGm[srcShapeSize * sizeof(half)] = {0}; // external guarantee inner is 32B aligned
     uint8_t dstGm[dstShapeSize * sizeof(half)] = {0};
     params.cal_func(dstGm, srcGm, n, c, d, h, w);
     EXPECT_EQ(dstGm[0], 0);

@@ -171,7 +171,7 @@ TEST_P(MinTestsuite, MinOpTestCase)
     auto last = param.last;
     constexpr uint32_t BLK_SIZE = 32;
     auto padLast = (last * param.typeSize + BLK_SIZE - 1) / BLK_SIZE * BLK_SIZE;
-    uint8_t srcGm[first * padLast] = {0}; // 外部保证inner是32B对齐
+    uint8_t srcGm[first * padLast] = {0}; // external guarantee inner is 32B aligned
     uint32_t dstLen = param.isAr ? first : last;
     auto padDst = (dstLen * param.typeSize + BLK_SIZE - 1) / BLK_SIZE * BLK_SIZE;
     uint8_t dstGm[padDst] = {0};

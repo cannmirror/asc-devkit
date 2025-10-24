@@ -12,11 +12,10 @@
  * \file copy_cube_in_params_mx.h
  * \brief copy cube in variable manager module
  */
-
-#ifndef IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_PARAMS_MX_H
-#define IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_PARAMS_MX_H
-
-#include "../../../param/matmul_shape_tiling.h"
+ #ifndef IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_PARAMS_MX_H
+ #define IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_PARAMS_MX_H
+ 
+ #include "../../../param/matmul_shape_tiling.h"
  
  namespace AscendC {
  namespace Impl {
@@ -214,7 +213,7 @@
      __aicore__ inline int32_t GetBufferPos()
      {
          if constexpr (DoMatmulMDL(MM_CFG) || DoMatmulSpecialMDL(MM_CFG)) {
-             return MATMUL_MODULE(KLoop)->IsScaleBKL1FullLoad() ? MATMUL_MODULE(NLoop)->GetOuterIdx() :
+             return MATMUL_MODULE(KLoop)->IsScaleBKL1FullLoad() ? MATMUL_MODULE(NLoop)->GetOuterScaleNIdx() :
                  MATMUL_MODULE(KLoop)->GetOuterScaleKbIdx();
          } else {
              return 0;
@@ -237,7 +236,8 @@
  
      __aicore__ inline int GetScaleFactor() const
      {
-         return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb();
+         return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKb() *
+            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorN();
      }
  
      template <bool IS_TRANS = false, bool IS_INTRA_BLOCK = false>
@@ -360,5 +360,5 @@
  } // namespace Detail
  } // namespace Impl
  } // namespace AscendC
- #endif //IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_PARAMS_MX_H
+ #endif // IMPL_MATMUL_STAGE_COPY_CUBE_IN_BASE_COPY_CUBE_IN_PARAMS_MX_H
  

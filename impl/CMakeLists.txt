@@ -11,6 +11,28 @@
 add_subdirectory(adv_api)
 add_subdirectory(utils)
 
+if(NOT BUILD_OPEN_PROJECT)
+  install_package(
+    PACKAGE
+    tiling_api
+    TARGETS
+    tiling_api
+    tiling_api_headers
+    DIRECTORY
+    ${ASCENDC_DIR}/include
+    DESTINATION
+    ${INSTALL_INCLUDE_DIR}/asc
+    DIRECTORY
+    ${ASCENDC_DIR}/impl
+    DESTINATION
+    ${INSTALL_INCLUDE_DIR}/asc
+    FILES
+    ${ASCENDC_DIR}/include/adv_api/tiling_api.h
+    DESTINATION
+    ${INSTALL_INCLUDE_DIR}/asc/include/adv_api)
+
+  install(SCRIPT ${ASCENDC_DIR}/impl/adv_api/cmake/tiling_directory.cmake)
+endif()
 
 if(BUILD_OPEN_PROJECT)
   set(install_script_dir ${CMAKE_CURRENT_BINARY_DIR}/install_scripts/)

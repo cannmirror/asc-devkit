@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,8 +12,8 @@
  * \file block_mmad_naive_pipeline_with_layout.h
  * \brief
  */
-#ifndef ACT_INCLUDE_MATMUL_BLOCK_BLOCK_MMAD_NAIVE_PIPELINE_WITH_LAYOUT_H
-#define ACT_INCLUDE_MATMUL_BLOCK_BLOCK_MMAD_NAIVE_PIPELINE_WITH_LAYOUT_H
+#ifndef MATMUL_BLOCK_BLOCK_MMAD_NAIVE_PIPELINE_WITH_LAYOUT_H
+#define MATMUL_BLOCK_BLOCK_MMAD_NAIVE_PIPELINE_WITH_LAYOUT_H
 
 #include "./block_mmad.h"
 #include "./block_mmad_utils.h"
@@ -27,10 +27,32 @@
 namespace Act {
 namespace Gemm {
 namespace Block {
+template <class L1TileShape, class L0TileShape, class AT, class BT, class CT, class BiasT, class TileCopy>
+class BlockMmad<MatmulNaivePipelineWithLayout<>, L1TileShape, L0TileShape, AT, BT, CT, BiasT, TileCopy,
+    AscendC::Std::enable_if_t<IsMatmulLayoutTypeV<AT>>>
+    : public BlockMmad<MatmulNaivePipelineWithLayout<>, L1TileShape, L0TileShape,
+        ToMatmulTypeT<AT>, ToMatmulTypeT<BT>, ToMatmulTypeT<CT>, ToMatmulTypeT<BiasT>, TileCopy> {
+    using Base = BlockMmad<MatmulNaivePipelineWithLayout<>, L1TileShape, L0TileShape,
+                           ToMatmulTypeT<AT>, ToMatmulTypeT<BT>, ToMatmulTypeT<CT>, ToMatmulTypeT<BiasT>, TileCopy>;
+    using Base::Base;
+};
+
+/**
+* @class BlockMmad
+* @brief Implementation class for matrix multiplication operations, supporting matrix multiplication with specific layouts
+* @param [in] MatmulNaivePipelineWithLayout<>: policy type
+* @param [in] L1TileShape_: the shape of the L1 tile
+* @param [in] L0TileShape_: the shape of the L0 tile
+* @param [in] AType_: the data type of matrix A
+* @param [in] BType_: the data type of matrix B
+* @param [in] CType_: the data type of matrix C
+* @param [in] BiasType_: the data type of the bias
+* @param [in] TileCopy_: tile copy strategy
+*/
 template <class L1TileShape_, class L0TileShape_, class AType_, class BType_, class CType_, class BiasType_,
           class TileCopy_>
 class BlockMmad<MatmulNaivePipelineWithLayout<>, L1TileShape_, L0TileShape_, AType_, BType_, CType_, BiasType_,
-                TileCopy_> {
+                TileCopy_, AscendC::Std::enable_if_t<!IsMatmulLayoutTypeV<AType_>>> {
 public:
     using DispatchPolicy = MatmulNaivePipelineWithLayout<>;
     using L1Shape = L1TileShape_;
@@ -39,8 +61,18 @@ public:
     using BType = BType_;
     using CType = CType_;
     using BiasType = BiasType_;
-    using TileCopy = AscendC::Std::conditional_t<AscendC::Std::is_same_v<TileCopy_, void>,
-                                                 Tile::TileCopy<Arch::Ascend910B, Tile::CopyWithLayout>, TileCopy_>;
+
+    constexpr static bool useL0CUnitFlag = (DispatchPolicy::l0CStages == 1) && DispatchPolicy::enalbeL0CUnitFlag;
+    using CopyType = AscendC::Std::conditional_t<
+        useL0CUnitFlag,
+        Tile::CopyEnUnitFlagWithLayout,
+        Tile::CopyWithLayout
+    >;
+    using TileCopy = AscendC::Std::conditional_t<
+        AscendC::Std::is_same_v<TileCopy_, void>,
+        Tile::TileCopy<Arch::Ascend910B, CopyType>,
+        TileCopy_
+    >;
 
     using L1ALayout = FormatToLayoutT<typename AType::T, CubeFormat::NZ>;
     using L1BLayout = FormatToLayoutT<typename BType::T, CubeFormat::NZ>;
@@ -58,21 +90,20 @@ public:
                                                 AscendC::TPosition::CO1, L0CLayout>;
 
 public:
-    static_assert(IsF16F16F16<AType, BType, CType>() || IsF16F16F32<AType, BType, CType>() ||
-                      IsBf16Bf16Bf16<AType, BType, CType>() || IsBf16Bf16F32<AType, BType, CType>() ||
-                      IsF32F32F32<AType, BType, CType>(),
-                  "Unsupported dtype");
-    static_assert(IsND<AType>() && IsND<BType>() && IsND<CType>(), "Only support ND format");
-    static_assert(IsTileShapeValid<L1Shape, L0Shape>(), "L1Shape or L0Shape is invalid");
-    static_assert(IsL1BufferValid<AType, BType, L1Shape>(), "L1 buffer overflow");
-    static_assert(IsL0BufferValid<AType, BType, L0Shape>(), "L0 buffer overflow");
+    static_assert(IsF16OrBf16AB<AType, BType, CType>() || IsF32F32F32<AType, BType, CType>(), "Unsupported dtype");
+    static_assert(IsNDOrAlign<AType>() && IsNDOrAlign<BType>() && IsNDOrAlign<CType>(), "Only support ND format");
+    static_assert(IsTileShapeValid<AType, BType, L1Shape, L0Shape>(), "L1Shape or L0Shape is invalid");
 
-    __aicore__ BlockMmad() = default;
     __aicore__ ~BlockMmad()
     {
         End();
     }
 
+    /**
+    * @brief Initialization function
+    * 
+    * This function initializes the buffers and parameters required for matrix multiplication operations
+    */
     __aicore__ inline void Init()
     {
         constexpr static int32_t aMatrixByteSize =
@@ -82,8 +113,8 @@ public:
         constexpr static int32_t cMatrixByteSize =
             L0_M * L0_N * sizeof(typename AscendC::GetMmDstType<typename AType::T>::Type);
 
-        constexpr static int dbL0AFlag = (aMatrixByteSize * DOUBLE_BUFFER_COUNT > L0A_SIZE) ? 1 : DOUBLE_BUFFER_COUNT;
-        constexpr static int dbL0BFlag = (bMatrixByteSize * DOUBLE_BUFFER_COUNT > L0B_SIZE) ? 1 : DOUBLE_BUFFER_COUNT;
+        constexpr static int32_t dbL0AFlag = (aMatrixByteSize * DOUBLE_BUFFER_COUNT > L0A_SIZE) ? 1 : DOUBLE_BUFFER_COUNT;
+        constexpr static int32_t dbL0BFlag = (bMatrixByteSize * DOUBLE_BUFFER_COUNT > L0B_SIZE) ? 1 : DOUBLE_BUFFER_COUNT;
 
         tbufPoolL0_.Init((dbL0AFlag - 1) & (dbL0BFlag - 1));
         auto tpipe = GetTPipePtr();
@@ -92,11 +123,22 @@ public:
 
         tpipe->InitBuffer(qidL1A_, 1, aMatrixByteSize);
         tpipe->InitBuffer(qidL1B_, 1, bMatrixByteSize);
-        tpipe->InitBuffer(qidL0C_, 1, cMatrixByteSize);
+        tpipe->InitBuffer(qidL0C_, DispatchPolicy::l0CStages, cMatrixByteSize);
 
         InitShareBufEnd(tpipe);
     }
 
+    /**
+    * @brief Perform the matrix multiplication operations
+    * @param [out] DstTensor: destination tensor type
+    * @param [in] SrcATensor: matrix A source tensor type
+    * @param [in] SrcBTensor: matrix B source tensor type
+    * @param [in] Shape: shape type
+    * @param [out] c: destination tensor
+    * @param [in] a: matrix A source tensor
+    * @param [in] b: matrix B source tensor
+    * @param [in] actualShape: actual shape
+    */
     template <class DstTensor, class SrcATensor, class SrcBTensor, class Shape>
     __aicore__ inline void IterateAll(DstTensor& c, const SrcATensor& a, const SrcBTensor& b, const Shape& actualShape)
     {
@@ -119,19 +161,19 @@ public:
 
         for (auto mIndex = 0; mIndex < mIter; ++mIndex) {
             for (auto nIndex = 0; nIndex < nIter; ++nIndex) {
-                int baseM = (mIndex + 1 == mIter) ? tailBaseM : L0_M;
-                int baseN = (nIndex + 1 == nIter) ? tailBaseN : L0_N;
+                int32_t baseM = (mIndex + 1 == mIter) ? tailBaseM : L0_M;
+                int32_t baseN = (nIndex + 1 == nIter) ? tailBaseN : L0_N;
 
                 auto l0CLayout = AscendC::MakeLayout(
-                    AscendC::MakeShape(AscendC::MakeShape(_16{}, AscendC::Ceil(baseM, 16)),
-                                       AscendC::MakeShape(_16{}, AscendC::Ceil(baseN, 16))),
+                    AscendC::MakeShape(AscendC::MakeShape(_16{}, AscendC::Ceil(baseM, C0_NUM_PER_FRACTAL)),
+                                       AscendC::MakeShape(_16{}, AscendC::Ceil(baseN, C0_SIZE_L0C))),
                     AscendC::MakeStride(AscendC::MakeStride(_16{}, _256{}),
-                                        AscendC::MakeStride(_1{}, AscendC::CeilAlign(baseM, 16) * 16)));
+                                        AscendC::MakeStride(_1{}, AscendC::CeilAlign(baseM, C0_NUM_PER_FRACTAL) * C0_SIZE_L0C)));
                 auto l0C = qidL0C_.template AllocTensor<L0CTensorTrait>();
                 l0C.SetTensorTrait(L0CTensorTrait(l0CLayout));
 
                 for (auto kIndex = 0; kIndex < kIter; ++kIndex) {
-                    int baseK = (kIndex + 1 == kIter) ? tailBaseK : L0_K;
+                    int32_t baseK = (kIndex + 1 == kIter) ? tailBaseK : L0_K;
                     // -----------------Step1: GM -> L1 -----------------
                     auto aTileHeight = AType::isTrans ? baseK : baseM;
                     auto aTileWidth = AType::isTrans ? baseM : baseK;
@@ -210,6 +252,10 @@ public:
     }
 
 private:
+    /**
+    * @brief Get the size of L1 cache that has been used
+    * @return Return the size of L1 cache that has been used
+    */
     __aicore__ inline constexpr int32_t GetL1UsedSize()
     {
         int32_t sharedl1Size = 0;
@@ -226,6 +272,9 @@ private:
         return sharedl1Size;
     }
 
+    /**
+     * @brief End function, release all events
+     */
     __aicore__ inline void End()
     {
         qidL1A_.FreeAllEvent();
@@ -234,27 +283,24 @@ private:
     }
 
 private:
-    constexpr static uint16_t ALIGN_NUM = 16;
-    constexpr static uint16_t LIMIT_MNSIZE = 10;
-    constexpr static int32_t C0_SIZE = AscendC::AuxGetC0Size<typename AType::T>();
     constexpr static auto L1_M = GetIntegralConstant<MNK_M, L1Shape>();
     constexpr static auto L1_N = GetIntegralConstant<MNK_N, L1Shape>();
     constexpr static auto L1_K = GetIntegralConstant<MNK_K, L1Shape>();
     constexpr static auto L0_M = GetIntegralConstant<MNK_M, L0Shape>();
     constexpr static auto L0_N = GetIntegralConstant<MNK_N, L0Shape>();
     constexpr static auto L0_K = GetIntegralConstant<MNK_K, L0Shape>();
+    constexpr static uint16_t ALIGN_NUM = 16;
+    constexpr static uint16_t LIMIT_MNSIZE = 10;
+    constexpr static int32_t C0_SIZE = AscendC::AuxGetC0Size<typename AType::T>();
 
     typename TileCopy::template CopyA1ToA2<AType, L0ATensorTrait, L1ATensorTrait> copyA1ToA2_;
     typename TileCopy::template CopyB1ToB2<AscendC::MatmulInputBType<BType, typename AType::T>, L0BTensorTrait,
-                                           L1BTensorTrait>
-        copyB1ToB2_;
+                                           L1BTensorTrait> copyB1ToB2_;
 
     AscendC::TQueBind<AscendC::TPosition::GM, AscendC::TPosition::A1, 1,
-                      AscendC::GetNdNzMask(CubeFormat::NZ, AType::format)>
-        qidL1A_;
+                      AscendC::GetNdNzMask(CubeFormat::NZ, AType::format)> qidL1A_;
     AscendC::TQueBind<AscendC::TPosition::GM, AscendC::TPosition::B1, 1,
-                      AscendC::GetNdNzMask(CubeFormat::NZ, BType::format)>
-        qidL1B_;
+                      AscendC::GetNdNzMask(CubeFormat::NZ, BType::format)> qidL1B_;
     AscendC::TQue<AscendC::TPosition::CO1, 1> qidL0C_;
     Tile::TBufPoolL0 tbufPoolL0_;
 };

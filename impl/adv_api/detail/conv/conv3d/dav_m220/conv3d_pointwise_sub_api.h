@@ -116,7 +116,7 @@ public:
         AscendC::LoadData<typename Intf::BiasT>(self_->ctx.al0BiasB, self_->ctx.biasL1[offset], loadData2dParams);
 
         AscendC::InitConstValueParams<typename Intf::BiasT> initConstValueParams;
-        // 在B2中，最小处理单元是512B
+        // In B2, the smallest processing unit is 512B
         SetInitConstValueParams(initConstValueParams, 1, currentNL0_ / ConvApi::BLOCK_L0_N);
         AscendC::InitConstValue<typename Intf::BiasT>(self_->ctx.bl0BiasB, initConstValueParams);
     }
@@ -302,7 +302,7 @@ private:
     __aicore__ inline uint64_t CalcFixpipeOffset()
     {
         uint64_t offsetM = tilingMAL1_ * self_->ctx.mAL1Iter + self_->ctx.conv3dTiling->mL0 * self_->ctx.mAL0Iter;
-        // 当前每次只出一个dout
+        // Currently, only one dout is produced each time
         uint64_t offsetDout = self_->ctx.dOutIter;
         return (tilingNBL1_ * self_->ctx.nBL1Iter  + self_->ctx.conv3dTiling->nL0 * self_->ctx.nBL0Iter) *
                 self_->ctx.orgDo * valueHoWo_ + offsetDout * valueHoWo_ + offsetM;

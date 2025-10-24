@@ -12,8 +12,6 @@
  * \file n_loop_mdl_base.h
  * \brief n_loop base class for mdl and mdl_outer_product
  */
-
-
 #ifndef IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_BASE_H
 #define IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_MDL_BASE_H
 
@@ -211,6 +209,7 @@ private:
         isB1NFullLoad_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() >= totalIter_;
     }
 
+protected:
     __aicore__ inline void UpdateOuterParams()
     {
         if constexpr (IsBasicN(MM_CFG)) {
@@ -226,7 +225,6 @@ private:
         tileBlockShape_ = Ceil(tileShape_, BLOCK_CUBE);
     }
 
-protected:
     uint32_t totalIter_;
     // OuterLoop
     uint32_t outerIndex_ = 0;

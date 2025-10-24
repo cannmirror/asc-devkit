@@ -385,6 +385,8 @@ __aicore__ inline void LogSoftMaxNZImpl(const LocalTensor<T>& dst, const LocalTe
     const LocalTensor<T>& maxTensor, const LocalTensor<T>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.reduceM, tiling.reduceK };
     uint32_t offset1 = 0;
@@ -417,6 +419,8 @@ __aicore__ inline void LogSoftMaxNZImpl(const LocalTensor<half>& dst, const Loca
     const LocalTensor<half>& maxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     const ReduceLastND& mainReduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.splitM,      SOFTMAX_SHAPE_NZ_BASIC_COUNT };
     const ReduceLastND& tailReduceParam = { tiling.tailM,  originalSrcShape.k, tiling.splitM,
@@ -450,6 +454,8 @@ __aicore__ inline void LogSoftMaxNDImpl(const LocalTensor<half>& dst, const Loca
     const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     PipeBarrier<PIPE_V>();
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.reduceM, tiling.reduceK };
@@ -483,6 +489,8 @@ __aicore__ inline void LogSoftMaxNDImpl(const LocalTensor<T>& dst, const LocalTe
     const LocalTensor<T>& maxTensor, const LocalTensor<T>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.reduceM, tiling.reduceK };
     uint32_t offset1 = 0;

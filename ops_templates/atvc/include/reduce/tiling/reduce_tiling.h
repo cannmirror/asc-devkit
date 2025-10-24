@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -21,49 +20,78 @@
 #include "tiling_common.h"
 
 namespace OpTiling {
+/*!
+ * ReduceOpTiling: High-level tiling engine for Ascend Reduce kernels.
+ * Computes cache-friendly UB blocks, multi-core split factors, loop counts and required workspace size.
+ * Writes everything into the user-supplied `ReduceParam` and `ReducePolicy` structures so the runtime
+ * can launch the kernel.
+ */
+template<class OpTraits, class PreComputeTraits, class PostComputeTraits>
 class ReduceOpTiling {
 public:
-ReduceOpTiling(ReduceTilingInputParam& inputParam,
-    ATVC::ReducePolicy* policy, ATVC::ReduceParam* param)
-    : param_(param), policy_(policy), opInput_(inputParam)
+    using InputTypes = typename OpTraits::In::types;
+    using OutputTypes = typename OpTraits::Out::types;
+    using TempTypes = typename OpTraits::Temp::types;
+    static constexpr size_t OP_INPUT_COUNT = ATVC::TypeListSize<InputTypes>::VALUE;
+    static constexpr size_t OP_OUTPUT_COUNT = ATVC::TypeListSize<OutputTypes>::VALUE;
+    static constexpr size_t OP_TEMP_COUNT = ATVC::TypeListSize<TempTypes>::VALUE;
+    static constexpr size_t REDUCE_UB_NUM = OP_INPUT_COUNT + OP_OUTPUT_COUNT + OP_TEMP_COUNT;
+    /*!
+     * \brief constructor that binds the engine to user-supplied output structures and input descriptor.
+     * \param[in] inputParam, compile-time description of the Reduce op
+     * \param[out] policy, static policy of Reduce Template
+     * \param[out] param, dynamic param of Reduce Template
+     */
+    ReduceOpTiling(ReduceTilingInputParam &inputParam, ATVC::ReducePolicy *policy, ATVC::ReduceParam *param,
+        ATVC::Host::ReduceTilingHyperParam &hyperParam)
+        : param_(param), policy_(policy), opInput_(inputParam), hyperParam_(hyperParam)
     {
         compileInfo_ = ATVC::GetOpCompileInfo();
+        /* Built-in tiling only support allocate unified memory evenly, so all we need to know is the definition of
+        the complete operator. If you wants to allocate UB memory unevenly, you need to know the definitions of
+        reduce, pre-compute, post-compute separately, and extend tiling to support non-uniform distribution. */
+        reduce_basic_num_ = REDUCE_UB_NUM * param->nBufferNum;
     };
 
-int32_t Run()
-{
-    MakeWrapDim(opInput_.reduceShape, opInput_.reduceDim);
-    if (IsAxesValid(opInput_.reduceShape, opInput_.reduceDim) == -1) {
-        return -1;
+    /*!
+     * \brief Orchestrates the full tiling workflow; returns 0 on success, ‑1 otherwise.
+     * \param void
+     * \return 0 success, 1 failure
+     */
+    int32_t Run()
+    {
+        MakeWrapDim(opInput_.reduceShape, opInput_.reduceDim);
+        if (IsAxesValid(opInput_.reduceShape, opInput_.reduceDim) == -1) {
+            return -1;
+        }
+        std::vector<uint64_t> newShape(ATVC::MAX_DIM, 1);
+        int32_t newShapeSize = 0;
+        EliminateOne(opInput_.reduceShape, opInput_.reduceDim, newShape, newShapeSize);
+        MergeAxis(opInput_.reduceDim, newShape, newShapeSize);
+        if (!DoTiling(newShape, newShapeSize)) {
+            printf("[ERROR]: [ATVC][Reduce][Tiling] Do tiling failed!\n");
+            return -1;
+        }
+        CalcWorkSpace();
+        printf("[INFO]: [ATVC][Reduce][Tiling] ReduceOpTiling Run success!\n");
+        return 0;
     }
-    std::vector<uint64_t> newShape(ATVC::MAX_DIM, 1);
-    int32_t newShapeSize = 0;
-    EliminateOne(opInput_.reduceShape, opInput_.reduceDim, newShape, newShapeSize);
-    MergeAxis(opInput_.reduceDim, newShape, newShapeSize);
-    if (!DoTiling(newShape, newShapeSize)) {
-        printf("Do tiling failed!\n");
-        return -1;
-    }
-    CalcWorkSpace();
-    printf("ReduceOpTiling Run success!\n");
-    return 0;
-}
 
 private:
 template <class Pattern>
 void ComputeStride(std::vector<uint64_t>& shape)
 {
-    uint64_t s = 1;
+    uint64_t accDim = 1;
     uint64_t ds = 1;
     for (int32_t dim = Pattern::Dim - 1; dim > -1; dim--) {
-        param_->tilingData.stride[dim] = s;
+        param_->tilingData.stride[dim] = accDim;
         param_->tilingData.dstStride[dim] = ds;
-        s *= shape[dim];
+        accDim *= shape[dim];
         if (IsAxisA<Pattern>(dim)) {
             ds *= shape[dim];
         }
     }
-    double meanVar = static_cast<double>(1) / static_cast<double>(s / ds);
+    double meanVar = static_cast<double>(1) / static_cast<double>(accDim / ds);
     param_->tilingData.outSize = ds;
     param_->tilingData.meanVar = static_cast<float>(meanVar);
 }
@@ -112,9 +140,9 @@ void CalcWorkSpace()
 void EliminateOne(const std::vector<int64_t>& oriShape, std::vector<int64_t>& axes, std::vector<uint64_t>& shape,
                                   int32_t& shapeSize)
 {
-    int32_t dstIdx = 1;  // shape中第一个数给了1, 跳过第一个数
+    int32_t dstIdx = 1;  // The first number in the shape is given as 1, so the first number is skipped.
     for (size_t i = 0; i < axes.size(); i++) {
-        // 前面补了一维，所有的axes需要加1
+        // The front dimension is filled, and all axes need to be increased by 1
         axes[i] = axes[i] + 1;
     }
     int32_t eraseNum = 0;
@@ -151,7 +179,7 @@ void MergeAxis(std::vector<int64_t>& axes, std::vector<uint64_t>& shape, int32_t
             }
             s *= shape[j];
             if (isRAxis1) {
-                // 连续的R轴, 需要擦除后续R轴的索引
+                // Continuous R-axis, need to erase the index of subsequent R-axis
                 axes.erase(iter1);
             }
         }
@@ -172,7 +200,7 @@ bool DoTiling(std::vector<uint64_t>& shape, int32_t shapeSize)
     switch (shapeSize) {
         case ATVC::CONST1:
             return ComputeTiling<ATVC::ReducePattern::A>(shape);
-            param_->tilingData.coreNum = 1; // A 場景：不用reduce 只用1個core copydata
+            param_->tilingData.coreNum = 1; // Scenario A: No reduce, only one core copydata
         case ATVC::CONST2:
             return ComputeTiling<ATVC::ReducePattern::AR>(shape);
         case ATVC::CONST3:
@@ -208,21 +236,21 @@ bool ComputeExtraUnitA(const std::vector<uint64_t>& shape)
     uint64_t dTypeSize = ge::GetSizeByDataType(opInput_.inputDtype);
     uint64_t promoteDtypeSize = ge::GetSizeByDataType(opInput_.promoteDtpye);
     if (dTypeSize == 0 || promoteDtypeSize == 0) {
-        printf("[Reduce Tiling] input dtype size cannot be zero!\n");
+        printf("[ERROR]: [ATVC][Reduce][Tiling] Input dtype size cannot be zero!\n");
         return false;
     }
     uint64_t bBlockNum = basicBlock_ / dTypeSize;
     uint64_t maxInnerA = CACHE_SIZE / promoteDtypeSize;
     uint64_t step = 1;
-    int32_t iA;
-    for (iA = unitA_.idx; iA > -1; iA -= ATVC::CONST2) {
-        uint64_t axislen = (iA == cBlock_.axis ? cBlock_.cacheLineOuter : shape[iA]);
+    int32_t idxA;
+    for (idxA = unitA_.idx; idxA > -1; idxA -= ATVC::CONST2) {
+        uint64_t axislen = (idxA == cBlock_.axis ? cBlock_.cacheLineOuter : shape[idxA]);
         bool splitHere = false;
-        for (step = (iA == unitA_.idx ? unitA_.step : 1); step <= axislen; step += 1) {
+        for (step = (idxA == unitA_.idx ? unitA_.step : 1); step <= axislen; step += 1) {
             uint64_t tmpInnerA = innerA * step;
             uint64_t tmpOuterA = outerA / axislen * OpsUtils::CeilDiv(axislen, step);
             double rate = (double)tmpOuterA / (double)(OpsUtils::CeilAlign(tmpOuterA, compileInfo_.vectorCoreNum));
-            bool isContinue = (rate > THRES_HOLD && tmpInnerA * innerR * cBlock_.size <= bBlockNum &&
+            bool isContinue = (rate > hyperParam_.balanceThreshHold && tmpInnerA * innerR * cBlock_.size <= bBlockNum &&
                                tmpInnerA * cBlock_.aSize < maxInnerA);
             if (isContinue) {
                 continue;
@@ -240,7 +268,7 @@ bool ComputeExtraUnitA(const std::vector<uint64_t>& shape)
         innerA *= axislen;
         outerA /= axislen;
     }
-    unitA_.Update(iA, innerA, outerA, step);
+    unitA_.Update(idxA, innerA, outerA, step);
     return true;
 }
 
@@ -248,13 +276,14 @@ template <class Pattern>
 void CalcBasicBlock()
 {
     if (Pattern::ID == ATVC::ReducePattern::PATTERN_A) {
-        basicBlock_ = BASIC_BLOCK;
-        return;
-    }
-    if (opInput_.inputDtype != opInput_.promoteDtpye) {
-        basicBlock_ = BASIC_BLOCK / ATVC::CONST2;
+        basicBlock_ = hyperParam_.basicBlock;
+    } else if (opInput_.inputDtype != opInput_.promoteDtpye) {
+        basicBlock_ = hyperParam_.basicBlock / ATVC::CONST2;
     } else {
-        basicBlock_ = BASIC_BLOCK;
+        basicBlock_ = hyperParam_.basicBlock;
+    }
+    if (basicBlock_ > OpsUtils::FloorAlign(compileInfo_.ubSize / reduce_basic_num_, ATVC::UB_ALIGN_32)) {
+        basicBlock_ = OpsUtils::FloorAlign(compileInfo_.ubSize / reduce_basic_num_, ATVC::UB_ALIGN_32);
     }
 }
 
@@ -271,7 +300,10 @@ bool ComputeEmptyTiling(std::vector<uint64_t>& shape)
     if (s == 0) {
         return true;
     }
-    basicBlock_ = BASIC_BLOCK;
+    basicBlock_ = hyperParam_.basicBlock;
+    if (basicBlock_ > OpsUtils::FloorAlign(compileInfo_.ubSize / reduce_basic_num_, ATVC::UB_ALIGN_32)) {
+        basicBlock_ = OpsUtils::FloorAlign(compileInfo_.ubSize / reduce_basic_num_, ATVC::UB_ALIGN_32);
+    }
     std::vector<uint64_t> newshape(ATVC::MAX_DIM, s);
     if (!CalcCacheLineStep<ATVC::ReducePattern::A>(newshape)) { return false; }
     unitA_.outer *= cBlock_.cacheLineOuter;
@@ -374,7 +406,7 @@ bool CalcCacheLineStep(const std::vector<uint64_t>& shape)
     // cacheLineStep record cacheLine-aligned axis's shape, while left is cacheLineOuter
     uint64_t dTypeSize = ge::GetSizeByDataType(opInput_.inputDtype);
     if (dTypeSize == 0) {
-        printf("[Reduce Tiling] input dtype size cannot be zero!\n");
+        printf("[ERROR]: [ATVC][Reduce][Tiling] Input dtype size cannot be zero!\n");
         return false;
     }
     uint64_t cacheSize = compileInfo_.cacheLineSize / dTypeSize;
@@ -421,11 +453,11 @@ void ComputeUnitA(const std::vector<uint64_t>& shape)
     int32_t axisInCacheLine = cBlock_.axis;
     uint64_t outerA = unitA_.outer;
     uint64_t innerA = unitA_.inner;
-    uint64_t maxCacheA = MAX_INNER_A * sizeof(float) / ge::GetSizeByDataType(opInput_.promoteDtpye);
+    uint64_t maxCacheA = hyperParam_.maxInnerA * sizeof(float) / ge::GetSizeByDataType(opInput_.promoteDtpye);
     const bool isPatternA = (Pattern::ID == ATVC::ReducePattern::PATTERN_A);
     const uint64_t patternABlockSize = basicBlock_ / ge::GetSizeByDataType(opInput_.inputDtype);
     uint64_t maxInnerA = isPatternA ? patternABlockSize : maxCacheA;
-    uint64_t stepLen = Pattern::ID == ATVC::ReducePattern::PATTERN_A ? A_STEP_LEN : 1;  // 纯A的步长为4, 减少循环次数
+    uint64_t stepLen = Pattern::ID == ATVC::ReducePattern::PATTERN_A ? A_STEP_LEN : 1;
     bool basicSplitA = (axisInCacheLine + (Pattern::FirstA ? 1 : 0)) % ATVC::CONST2;
     uint64_t bBlockNum = basicBlock_ / ge::GetSizeByDataType(opInput_.inputDtype);
     uint64_t step = 1;
@@ -444,7 +476,7 @@ void ComputeUnitA(const std::vector<uint64_t>& shape)
                 aSize = (cBlock_.aSize / cBlock_.cacheLineStep) * std::min(cBlock_.cacheLineStep * s, shape[iA]);
             }
             if (aSize <= maxInnerA && tmpInnerA * cBlock_.size <= bBlockNum) {
-                maxStep = rate > THRES_HOLD ? step : maxStep;
+                maxStep = rate > hyperParam_.balanceThreshHold ? step : maxStep;
             } else {
                 step = step > 1 ? step - 1 : step;
                 splitHere = true;
@@ -493,7 +525,7 @@ void ComputeUnitR(std::vector<uint64_t>& shape)
             auto tmpOuterR = outerR / axislen * OpsUtils::CeilDiv(axislen, step);
             double rate = (double)(outerA * tmpOuterR) /
                           (double)(OpsUtils::CeilAlign(outerA * tmpOuterR, compileInfo_.vectorCoreNum));
-            if (rate > THRES_HOLD) {
+            if (rate > hyperParam_.balanceThreshHold) {
                 innerR *= step;
                 outerR = outerR / axislen * OpsUtils::CeilDiv(axislen, step);
                 break;
@@ -508,11 +540,13 @@ private:
     int32_t basicBlock_ = 0;
     ATVC::ReduceParam* param_ {nullptr};
     ATVC::ReducePolicy* policy_ {nullptr};
-    ATVC::OpCompileInfo compileInfo_;
+    ATVC::OpCompileInfo compileInfo_ = {0, 0, 0, 0};
     CacheLineBlock cBlock_;
     ReduceTilingUnit unitA_;
     ReduceTilingUnit unitR_;
     ReduceTilingInputParam opInput_;
+    ATVC::Host::ReduceTilingHyperParam hyperParam_;
+    uint32_t reduce_basic_num_;
 };  // class ReduceOpTiling
 }  // namespace OpTiling
 

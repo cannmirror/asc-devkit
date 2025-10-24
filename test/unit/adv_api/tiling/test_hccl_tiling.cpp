@@ -66,7 +66,7 @@ TEST_F(TestHcclTiling, Mc2CcTilingConfig_normal)
 
 TEST_F(TestHcclTiling, Mc2CcTilingConfig_failed1)
 {
-    // 成员变量边界值校验用例
+    // member variable boundary value validation use case
     ::Mc2CcTiling ccTilingInner;
     string groupName = "test";
     uint32_t opType = 1;
@@ -88,7 +88,7 @@ TEST_F(TestHcclTiling, Mc2CcTilingConfig_failed1)
 
 TEST_F(TestHcclTiling, Mc2CcTilingConfig_failed2)
 {
-    // opType是reduce类型是，reduceType要符合范围的校验用例
+    // when opType is of the reduce type, reduceType must comply with the range validation cases
     ::Mc2InitTiling initTilingInner;
     string groupName = "test";
     uint32_t opType = static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALLREDUCE);
@@ -98,7 +98,7 @@ TEST_F(TestHcclTiling, Mc2CcTilingConfig_failed2)
     uint32_t ret = ccTilingConfig.GetTiling(initTilingInner);
     EXPECT_NE(ret, EXIT_SUCCESS);
 
-    // opType是非reduce类型是，reduceType没有范围要求
+    // when opType is not of the reduce type, there are not range requirements for reduceType
     EXPECT_EQ(ccTilingConfig.SetOpType(static_cast<uint32_t>(HcclCMDType::HCCL_CMD_SEND)), EXIT_SUCCESS);
     ret = ccTilingConfig.GetTiling(initTilingInner);
     EXPECT_EQ(ret, EXIT_SUCCESS);
@@ -106,7 +106,7 @@ TEST_F(TestHcclTiling, Mc2CcTilingConfig_failed2)
 
 TEST_F(TestHcclTiling, Mc2CcTilingConfig_failed3)
 {
-    // 不调用初始化的校验用例
+    // do not invoke the initilazation validation test case
     ::Mc2InitTiling initTilingInner;
     ::Mc2CcTiling ccTilingInner;
     string groupName = "test";

@@ -529,7 +529,6 @@ __simd_vf__ inline void ComputePowFSpecialCaseImpl(__ubuf__ T* dst, __ubuf__ T* 
         LoadSrcData(tmpExpReg, src1, i, mask);
         MicroAPI::DataCopy(castDstReg, tmpExpBuffer + i * B32_DATA_NUM_PER_REPEAT);
         ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, mask);
-        mask = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
         StoreDstData(dst, castDstReg, i, mask);
     }
 }
@@ -538,15 +537,14 @@ template<typename T>
 __simd_vf__ inline void ComputePowFSpecialCaseImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T scalarValue,
     __ubuf__ float* tmpExpBuffer, uint32_t calCount, uint16_t repeatTime)
 {
-    MicroAPI::MaskReg mask, tmpMask;
+    MicroAPI::MaskReg mask;
     MicroAPI::RegTensor<float> tmpBaseReg, tmpExpReg, castDstReg;
     LoadSrcScalarData(tmpExpReg, scalarValue);
     for(uint16_t i = 0; i < repeatTime; i++) {
         mask = MicroAPI::UpdateMask<float>(calCount);
-        tmpMask = mask;
         LoadSrcData(tmpBaseReg, src0, i, mask);
         MicroAPI::DataCopy(castDstReg, tmpExpBuffer + i * B32_DATA_NUM_PER_REPEAT);
-        ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, tmpMask);
+        ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, mask);
         StoreDstData(dst, castDstReg, i, mask);
     }
 }
@@ -555,15 +553,14 @@ template<typename T>
 __simd_vf__ inline void ComputePowFSpecialCaseImpl(__ubuf__ T* dst, const T scalarValue, __ubuf__ T* src1,
     __ubuf__ float* tmpExpBuffer, uint32_t calCount, uint16_t repeatTime)
 {
-    MicroAPI::MaskReg mask, tmpMask;
+    MicroAPI::MaskReg mask;
     MicroAPI::RegTensor<float> tmpBaseReg, tmpExpReg, castDstReg;
     LoadSrcScalarData(tmpBaseReg, scalarValue);
     for(uint16_t i = 0; i < repeatTime; i++) {
         mask = MicroAPI::UpdateMask<float>(calCount);
-        tmpMask = mask;
         LoadSrcData(tmpExpReg, src1, i, mask);
         MicroAPI::DataCopy(castDstReg, tmpExpBuffer + i * B32_DATA_NUM_PER_REPEAT);
-        ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, tmpMask);
+        ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, mask);
         StoreDstData(dst, castDstReg, i, mask);
     }
 }

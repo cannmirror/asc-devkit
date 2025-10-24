@@ -180,7 +180,7 @@ __aicore__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst, 
 
 template <typename SrcType, typename OutputDataType>
 __aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<OutputDataType>& dst,
-    const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale, const uint32_t K, const uint32_t N)
+    const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale, const uint32_t k, const uint32_t n)
 {
     MicroAPI::RegTensor<uint16_t> bf16Zero;
     MicroAPI::RegTensor<uint16_t> bf16Nan;
@@ -190,15 +190,15 @@ __aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<OutputDataTy
     Duplicate(bf16Nan, (uint16_t)0x7fff);  // if e8m0 = 0b11111111, use 0x7fff as bf16 nan
     Duplicate(e8m0Zero, 0);
     Duplicate(e8m0Nan, (uint16_t)0x7f80); // if e8m0 = 0b11111111, after << 7 is 0x7f80
-    uint16_t repeatTimes = CeilDivision(K, ANTIQUANT_FP4_PERGROUP_SIZE);
+    uint16_t repeatTimes = CeilDivision(k, ANTIQUANT_FP4_PERGROUP_SIZE);
     for (uint16_t i = 0; i < repeatTimes; i++) {
         for (uint16_t j = 0; j < ANTIQUANT_FP4_PERGROUP_SIZE; j++) {
             __local_mem__ OutputDataType* dstUb =
-                (__local_mem__ OutputDataType*)dst[i * ANTIQUANT_FP4_PERGROUP_SIZE * N + j * N].GetPhyAddr();
+                (__local_mem__ OutputDataType*)dst[i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n].GetPhyAddr();
             __local_mem__ SrcType* srcUb =
-                (__local_mem__ SrcType*)src[i * ANTIQUANT_FP4_PERGROUP_SIZE * N + j * N].GetPhyAddr();
-            __local_mem__ fp8_e8m0_t* scaleUb = (__local_mem__ fp8_e8m0_t*)scale[i * N].GetPhyAddr();
-            AntiQuantProcessByLine<SrcType, OutputDataType>(dstUb, srcUb, scaleUb, N, bf16Zero, bf16Nan, e8m0Zero,
+                (__local_mem__ SrcType*)src[i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n].GetPhyAddr();
+            __local_mem__ fp8_e8m0_t* scaleUb = (__local_mem__ fp8_e8m0_t*)scale[i * n].GetPhyAddr();
+            AntiQuantProcessByLine<SrcType, OutputDataType>(dstUb, srcUb, scaleUb, n, bf16Zero, bf16Nan, e8m0Zero,
                 e8m0Nan);
         }
     }
@@ -218,7 +218,7 @@ __aicore__ inline uint32_t GetAscendAntiQuantTmpBufferSize(const LocalTensor<uin
 template <typename SrcType, typename OutputDataType>
 __aicore__ inline void AscendAntiQuantTranspose(const LocalTensor<OutputDataType>& dst,
     const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K, const uint32_t N)
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const uint32_t n)
 {
     __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
     __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
@@ -226,7 +226,7 @@ __aicore__ inline void AscendAntiQuantTranspose(const LocalTensor<OutputDataType
     auto tmpbuffer = sharedTmpBuffer.ReinterpretCast<OutputDataType>();
     __local_mem__ OutputDataType* tmpbufferUb = (__local_mem__ OutputDataType*)tmpbuffer.GetPhyAddr();
 
-    uint32_t srcCalCount = N * K;
+    uint32_t srcCalCount = n * k;
     if (scale.GetSize() == 1) {
         uint32_t sharedTmpBufferSize = GetAscendAntiQuantTmpBufferSize<SrcType>(sharedTmpBuffer);
         uint32_t count = srcCalCount;
@@ -252,22 +252,22 @@ __aicore__ inline void AscendAntiQuantTranspose(const LocalTensor<OutputDataType
 template <typename SrcType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& dst,
     const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
     static_assert(SupportType<SrcType, fp4x2_e2m1_t, fp4x2_e1m2_t>(),
         "This AscendAntiQuant only support fp4 input dtype");
     static_assert(SupportType<OutputDataType, half, bfloat16_t>(),
         "This AscendAntiQuant only support half/bf16 output dtype");
     if constexpr (isTranspose) {
-        ASCENDC_ASSERT((K != 0 && (K / HALF_FACTOR) % ONE_BLK_SIZE == 0),
+        ASCENDC_ASSERT((k != 0 && (k / HALF_FACTOR) % ONE_BLK_SIZE == 0),
                        { KERNEL_LOG(KERNEL_ERROR, "K should be larger than 0 && should be 32B aligned!"); });
-        uint32_t N = (shapeInfo.scaleHeight == 0 ? scale.GetShapeInfo().shape[0] : shapeInfo.scaleHeight);
-        AscendAntiQuantTranspose(dst, src, scale, sharedTmpBuffer, K, N);
+        uint32_t n = (shapeInfo.scaleHeight == 0 ? scale.GetShapeInfo().shape[0] : shapeInfo.scaleHeight);
+        AscendAntiQuantTranspose(dst, src, scale, sharedTmpBuffer, k, n);
     } else {
-        uint32_t N = (shapeInfo.scaleWidth == 0 ? scale.GetShapeInfo().shape[1] : shapeInfo.scaleWidth);
-        ASCENDC_ASSERT((N != 0 && (N / HALF_FACTOR) % ONE_BLK_SIZE == 0),
-                       { KERNEL_LOG(KERNEL_ERROR, "K should be larger than 0 && should be 32B aligned!"); });
-        VF_CALL<AscendAntiQuantNoTranspose<SrcType, OutputDataType>>(dst, src, scale, K, N);
+        uint32_t n1 = (shapeInfo.scaleWidth == 0 ? scale.GetShapeInfo().shape[1] : shapeInfo.scaleWidth);
+        ASCENDC_ASSERT((n1 != 0 && (n1 / HALF_FACTOR) % ONE_BLK_SIZE == 0),
+                       { KERNEL_LOG(KERNEL_ERROR, "k should be larger than 0 && should be 32B aligned!"); });
+        VF_CALL<AscendAntiQuantNoTranspose<SrcType, OutputDataType>>(dst, src, scale, k, n1);
     }
 }
 
@@ -719,7 +719,7 @@ __aicore__ inline void AntiQuantPerchannelTranspose(const LocalTensor<OutputData
 template <typename SrcType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AntiQuantPerchannelImpl(const LocalTensor<OutputDataType>& dst,
     const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& offset,
-    const LocalTensor<OutputDataType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
+    const LocalTensor<OutputDataType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     static_assert(SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t, int8_t>(),
@@ -727,16 +727,16 @@ __aicore__ inline void AntiQuantPerchannelImpl(const LocalTensor<OutputDataType>
     static_assert(SupportType<OutputDataType, half, bfloat16_t>(),
         "This AscendAntiQuant only support f16/bf16 output dtype");
 
-    if constexpr (isTranspose) { // src [N,K] offset [N,1]
-        uint32_t N = (shapeInfo.offsetWidth == 0 ? offset.GetShapeInfo().shape[0] : shapeInfo.offsetWidth);
-        AntiQuantPerchannelTranspose(dst, src, offset, scale, sharedTmpBuffer, K, N);
-    } else { // src [K,N] offset [1,N]
-        uint32_t N = (shapeInfo.offsetWidth == 0 ? offset.GetShapeInfo().shape[1] : shapeInfo.offsetWidth);
-        if (N < 32) { // b8 input single line is not 32B aligned such as input N == 16
-            ASCENDC_ASSERT((K % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "input calculate size must be 32B aligned!"); });
-            AntiQuantUnlignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, K, N);
+    if constexpr (isTranspose) { // src [n,k] offset [n,1]
+        uint32_t n = (shapeInfo.offsetWidth == 0 ? offset.GetShapeInfo().shape[0] : shapeInfo.offsetWidth);
+        AntiQuantPerchannelTranspose(dst, src, offset, scale, sharedTmpBuffer, k, n);
+    } else { // src [k,n] offset [1,n]
+        uint32_t n = (shapeInfo.offsetWidth == 0 ? offset.GetShapeInfo().shape[1] : shapeInfo.offsetWidth);
+        if (n < 32) { // b8 input single line is not 32B aligned such as input n == 16
+            ASCENDC_ASSERT((k % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "input calculate size must be 32B aligned!"); });
+            AntiQuantUnlignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
         } else {
-            AntiQuantPerchannelNoTranspose<SrcType, OutputDataType>(dst, src, offset, scale, K, N);
+            AntiQuantPerchannelNoTranspose<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
         }
     }
 }
@@ -1052,13 +1052,13 @@ __aicore__ inline void CastAndBrcb(const LocalTensor<OutputDataType> &offset, co
 // For now, calCount must equal to N * K then can use brcb   calCount: 64 * N
 template <typename SrcType, typename OutputDataType, bool withOffset>
 __aicore__ inline void CalculationMin(const LocalTensor<SrcType> &src, const LocalTensor<OutputDataType> &dst,
-    AntiquantParams<float> &params, const uint32_t calCount, const uint32_t N, const uint32_t srcN, const uint32_t K)
+    AntiquantParams<float> &params, const uint32_t calCount, const uint32_t n, const uint32_t srcN, const uint32_t k)
 {
     // store FP16 result in second half of FP32 tmpTensor to avoid input FP16 being replaced
     uint32_t srcFp16Pos = calCount / ANTIQUANT_TWO; // therefore start from (calCount / 2)th FP32 tmpTensor
-    uint32_t n = K / ANTIQUANT_SINGLE_N_SIZE;       // K = 64 * n
+    uint32_t n1 = k / ANTIQUANT_SINGLE_N_SIZE;       // K = 64 * n1
     UnaryRepeatParams unaryParamsInt8Fp16;
-    unaryParamsInt8Fp16.srcRepStride = ANTIQUANT_TWO * n; // K(num) / 32(num per block)
+    unaryParamsInt8Fp16.srcRepStride = ANTIQUANT_TWO * n1; // K(num) / 32(num per block)
     // one repeat calculate 64 int8 -> 64 fp16, 4 block
     unaryParamsInt8Fp16.dstRepStride = ANTIQUANT_SINGLE_N_SIZE / (ONE_BLK_SIZE / sizeof(half));
     UnaryRepeatParams unaryParamsFp16Fp32;
@@ -1069,10 +1069,10 @@ __aicore__ inline void CalculationMin(const LocalTensor<SrcType> &src, const Loc
     SetVectorMask<half, MaskMode::NORMAL>(0, FULL_MASK); // the first 64 num for calculation
     // INT8 -> FP16
     auto fp16TmpBuffer = params.tempTensorInput[srcFp16Pos].ReinterpretCast<half>();
-    Cast<half, int8_t, false>(fp16TmpBuffer, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, N, unaryParamsInt8Fp16);
+    Cast<half, int8_t, false>(fp16TmpBuffer, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, n, unaryParamsInt8Fp16);
     PipeBarrier<PIPE_V>();
     // FP16 -> FP32
-    Cast<float, half, false>(params.tempTensorInput, fp16TmpBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, N,
+    Cast<float, half, false>(params.tempTensorInput, fp16TmpBuffer, RoundMode::CAST_NONE, MASK_PLACEHOLDER, n,
         unaryParamsFp16Fp32);
     PipeBarrier<PIPE_V>();
 
@@ -1081,21 +1081,21 @@ __aicore__ inline void CalculationMin(const LocalTensor<SrcType> &src, const Loc
     binaryParams.src1BlkStride = 0; // same line for add and mul
     binaryParams.src1RepStride = 1; // one line for 64 num calculation
 
-    SetVectorMask<float, MaskMode::COUNTER>(0, ANTIQUANT_SINGLE_N_SIZE * N);
+    SetVectorMask<float, MaskMode::COUNTER>(0, ANTIQUANT_SINGLE_N_SIZE * n);
     // scale * (src + offset)
     if constexpr (withOffset) {
         Add<float>(params.tempTensorInput, params.tempTensorInput, params.tempTensorOffset,
-            ANTIQUANT_SINGLE_N_SIZE * N);
+            ANTIQUANT_SINGLE_N_SIZE * n);
         PipeBarrier<PIPE_V>();
     }
-    Mul<float>(params.tempTensorInput, params.tempTensorInput, params.tempTensorScale, ANTIQUANT_SINGLE_N_SIZE * N);
+    Mul<float>(params.tempTensorInput, params.tempTensorInput, params.tempTensorScale, ANTIQUANT_SINGLE_N_SIZE * n);
     PipeBarrier<PIPE_V>();
 
     // FP32 -> BF16
     SetMaskNorm();
     SetVectorMask<float, MaskMode::NORMAL>(0, FULL_MASK);
     UnaryRepeatParams f322f16Params;
-    f322f16Params.dstRepStride = ANTIQUANT_SINGLE_N_SIZE * n / (ONE_BLK_SIZE / sizeof(half));
+    f322f16Params.dstRepStride = ANTIQUANT_SINGLE_N_SIZE * n1 / (ONE_BLK_SIZE / sizeof(half));
     Cast<OutputDataType, float, false>(dst, params.tempTensorInput, RoundMode::CAST_RINT, MASK_PLACEHOLDER, srcN,
         f322f16Params);
     PipeBarrier<PIPE_V>();
@@ -1105,51 +1105,51 @@ __aicore__ inline void CalculationMin(const LocalTensor<SrcType> &src, const Loc
 template <typename SrcType, typename OutputDataType>
 __aicore__ inline void CalculateByBrcbMin(const LocalTensor<OutputDataType> &dst, const LocalTensor<SrcType> &src,
     const LocalTensor<OutputDataType> &offset, const LocalTensor<OutputDataType> &scale,
-    const LocalTensor<float> &stackBuffer, const uint32_t calCount, const uint32_t N, const uint32_t K)
+    const LocalTensor<float> &stackBuffer, const uint32_t calCount, const uint32_t n, const uint32_t k)
 {
     AntiquantParams<float> antiquantParams;
     GetAntiquantTensorInfo<OutputDataType>(scale, stackBuffer, antiquantParams);
 
     SetMaskCount();
-    CastAndBrcb<OutputDataType, true>(offset, scale, antiquantParams, N); // store FP32 offset and scale into params
+    CastAndBrcb<OutputDataType, true>(offset, scale, antiquantParams, n); // store FP32 offset and scale into params
 
     uint32_t curNKOffset = 0;
-    uint32_t loopNum = K / ANTIQUANT_SINGLE_N_SIZE;
-    uint32_t srcN = src.GetSize() / K;
+    uint32_t loopNum = k / ANTIQUANT_SINGLE_N_SIZE;
+    uint32_t srcN = src.GetSize() / k;
     // calculate  N * 64
     for (uint32_t i = 0; i < loopNum; i++) {
         curNKOffset = ANTIQUANT_SINGLE_N_SIZE * i;
         CalculationMin<SrcType, OutputDataType, true>(src[curNKOffset], dst[curNKOffset], antiquantParams,
-            ANTIQUANT_SINGLE_N_SIZE * N, N, srcN, K);
+            ANTIQUANT_SINGLE_N_SIZE * n, n, srcN, k);
     }
 }
 
 template <typename SrcType, typename OutputDataType>
 __aicore__ inline void CalculateByBrcbMin(const LocalTensor<OutputDataType> &dst, const LocalTensor<SrcType> &src,
     const LocalTensor<OutputDataType> &scale, const LocalTensor<float> &stackBuffer, const uint32_t calCount,
-    const uint32_t N, const uint32_t K)
+    const uint32_t n, const uint32_t k)
 {
     AntiquantParams<float> antiquantParams;
     GetAntiquantTensorInfo<OutputDataType>(scale, stackBuffer, antiquantParams);
 
     SetMaskCount();
-    CastAndBrcb<OutputDataType, false>(scale, scale, antiquantParams, N); // store FP32 offset and scale into params
+    CastAndBrcb<OutputDataType, false>(scale, scale, antiquantParams, n); // store FP32 offset and scale into params
 
     uint32_t curNKOffset = 0;
-    uint32_t loopNum = K / ANTIQUANT_SINGLE_N_SIZE;
-    uint32_t srcN = src.GetSize() / K;
+    uint32_t loopNum = k / ANTIQUANT_SINGLE_N_SIZE;
+    uint32_t srcN = src.GetSize() / k;
     // calculate  N * 64
     for (uint32_t i = 0; i < loopNum; i++) {
         curNKOffset = ANTIQUANT_SINGLE_N_SIZE * i;
         CalculationMin<SrcType, OutputDataType, false>(src[curNKOffset], dst[curNKOffset], antiquantParams,
-            ANTIQUANT_SINGLE_N_SIZE * N, N, srcN, K);
+            ANTIQUANT_SINGLE_N_SIZE * n, n, srcN, k);
     }
 }
 
 template <typename OutputDataType>
 __aicore__ inline void CalculateByBrcbMin(const LocalTensor<OutputDataType> &dst, const LocalTensor<int4b_t> &src,
     const LocalTensor<OutputDataType> &scale, const LocalTensor<float> &stackBuffer, const uint32_t calCount,
-    const uint32_t N, const uint32_t K)
+    const uint32_t n, const uint32_t k)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported type: int4b_t for AntiQuant"); });
 }
@@ -1157,7 +1157,7 @@ __aicore__ inline void CalculateByBrcbMin(const LocalTensor<OutputDataType> &dst
 template <typename OutputDataType>
 __aicore__ inline void CalculateByBrcbMin(const LocalTensor<OutputDataType> &dst, const LocalTensor<int4b_t> &src,
     const LocalTensor<OutputDataType> &offset, const LocalTensor<OutputDataType> &scale,
-    const LocalTensor<float> &stackBuffer, const uint32_t calCount, const uint32_t N, const uint32_t K)
+    const LocalTensor<float> &stackBuffer, const uint32_t calCount, const uint32_t n, const uint32_t k)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported type: int4b_t for AntiQuant"); });
 }
@@ -2188,17 +2188,17 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<dstT> &dstTensor, c
 template <typename SrcType, typename DstType, bool isTranspose>
 __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
     const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
+    const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
-    AntiQuantPerchannelImpl<SrcType, DstType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, K, shapeInfo);
+    AntiQuantPerchannelImpl<SrcType, DstType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, k, shapeInfo);
 }
 
 template <typename SrcType, typename DstType, bool isTranspose>
 __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
-    AntiQuantPertensorImpl<SrcType, DstType>(dst, src, offset, scale, sharedTmpBuffer, K, shapeInfo);
+    AntiQuantPertensorImpl<SrcType, DstType>(dst, src, offset, scale, sharedTmpBuffer, k, shapeInfo);
 }
 }  // namespace AscendC
 #endif  // IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_C310_IMPL_H

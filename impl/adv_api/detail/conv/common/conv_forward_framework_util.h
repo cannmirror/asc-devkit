@@ -36,7 +36,6 @@
     struct __##MEMBER<true, T> { using Type = typename T::template MEMBER<Intf, ImplType>; };             \
     using MEMBER = typename __##MEMBER<Current::__AuxCheckImpl::_has_impl_##MEMBER<Config, Intf>::value, Config>::Type
 
-// 接口调用校验
 #define CONV_DECLARE_CHECK_FUN(T, NAMESPACE)                                                                          \
     template<class... Ts>                                                                                             \
     static __aicore__ inline NAMESPACE::TypeFalse call(Intf* self, Ts... args) { return (NAMESPACE::TypeFalse){0}; }
@@ -47,7 +46,6 @@
 #define CONV_CHECK_FUN_TEMPLATE(T, NAMESPACE, ARG, ...)                                                               \
     (!AscendC::IsSameType<decltype(T::template call<ARG>(__VA_ARGS__)), NAMESPACE::TypeFalse>::value)
 
-// 检查是否定义成员变量， 或者函数
 #define CONV_DECLARE_CHECK_MEMBER(MEMBER) namespace __AuxCheck {                                                      \
     template <typename T>                                                                                             \
     struct _has_member_##MEMBER {                                                                                     \
@@ -75,7 +73,6 @@
 #define CONV_DEFINE_MEMBER(NAMESPACE, OBJ, MEMBER, DEFAULT, TYPE)                                                     \
     constexpr static TYPE MEMBER = NAMESPACE::_get_##MEMBER##_value<OBJ>(DEFAULT)                                     \
 
-// 数据常量化定义
 #define CONV_DECLARE_DEFINE_STRUCT(T, M, U) namespace __AuxTiling {                                                   \
     template <typename T>                                                                                             \
     struct T##_##M {                                                                                                  \
@@ -97,12 +94,6 @@
 
 #define CONV_DEFINE_STUCT(T, M) public decltype(__AuxTiling::T##_##M##_checkdefine<T>())
 
-// 数据自定义
-#define CONV_DEFINE_STUCT_FIELD(T, FIELD)                                                                             \
-  T FIELD;                                                                                                            \
-  constexpr static bool __CONST_TYPE_##FIELD = false
-
-// 数据常量化校验
 #define CONV_CHECK_CONST(T,M) (T::__CONST_TYPE_##M)
 
 #endif

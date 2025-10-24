@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,9 +13,10 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_UTILS_COMMON_UTILS_H
-#define ACT_INCLUDE_UTILS_COMMON_UTILS_H
+#ifndef UTILS_COMMON_UTILS_H
+#define UTILS_COMMON_UTILS_H
 
+#include "integral_constant.h"
 namespace Act {
 namespace Gemm {
 constexpr int64_t MATRIX_INNER_DIM_LIMIT_SIZE = 65536;
@@ -29,7 +30,10 @@ constexpr int MNK_M = 0;
 constexpr int MNK_N = 1;
 constexpr int MNK_K = 2;
 constexpr int MNK_B = 3;
+constexpr int MNK_M0 = 4;
+constexpr int MNK_N0 = 5;
 constexpr static uint64_t B_FULL_LOAD_MODE = 2UL;
+constexpr static int64_t PER_BLOCK_SIZE = 128L;
 
 struct MatmulShape {
     int64_t m;
@@ -83,16 +87,34 @@ __aicore__ inline uint64_t Align(uint64_t a, uint64_t b)
 }
 
 /**
- * Get the size of vector registers in bytes
+ * Get the aiv corenum from aic in different platforms
  */
-__aicore__ inline constexpr uint32_t GetVRegSize()
+__aicore__ inline uint32_t GetAicAivTaskRation()
 {
-#if __CCE_AICORE__ == 310
-    return AscendC::VECTOR_REG_WIDTH;
+#if defined(__DAV_C310__) || __CCE_AICORE__ == 220
+    return 2U; // 2: aic:aiv = 1:2
 #else
-    return 256U;
+    return 1U;
 #endif
 }
+
+template <class T>
+struct is_static : AscendC::Std::bool_constant<std::is_empty<T>::value> {};
+
+template <class T>
+constexpr bool is_static_v = is_static<AscendC::Std::remove_cvref_t<T>>::value;
+
+template <typename Stride>
+struct is_2d_nz_c0_32_impl : AscendC::Std::false_type {};
+
+template <typename T0, typename T1, typename U0, typename U1>
+struct is_2d_nz_c0_32_impl<AscendC::Std::tuple<AscendC::Std::tuple<T0, T1>, AscendC::Std::tuple<U0, U1>>>
+    : AscendC::Std::bool_constant<AscendC::Std::is_same_v<T0, Act::Gemm::_32> &&
+                                  AscendC::Std::is_same_v<T1, Act::Gemm::_512> &&
+                                  AscendC::Std::is_same_v<U0, Act::Gemm::_1> && !is_static_v<U1>> {};
+
+template <class Stride>
+struct is_2d_nz_c0_32 : is_2d_nz_c0_32_impl<typename AscendC::Std::remove_cvref_t<Stride>> {};
 } // namespace Gemm
 } // namespace Act
 #endif

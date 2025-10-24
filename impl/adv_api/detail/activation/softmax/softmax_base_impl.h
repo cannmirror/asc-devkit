@@ -33,8 +33,7 @@ __aicore__ inline void SoftMaxImpl(const LocalTensor<T>& dst, const LocalTensor<
     const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling, const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftMax, (T, isReuseSource, isBasicBlock, config), (dst, src, workLocal, tiling, softmaxShapeInfo));
-    SetMaskNorm();
-    ResetMask();
+
     ShapeInfo srcShape = src.GetShapeInfo();
     LastAxisShapeND srcNDinfo;
     LastAxisShapeND originalSrcShape;
@@ -81,8 +80,7 @@ __aicore__ inline void SoftMaxImpl(const LocalTensor<T1>& dst, const LocalTensor
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftMax, (T1, T2, isReuseSource, isBasicBlock, isDataFormatNZ, config),
         (dst, sumTensor, maxTensor, src, workLocal, tiling, softmaxShapeInfo));
-    SetMaskNorm();
-    ResetMask();
+
     ShapeInfo srcShape = src.GetShapeInfo();
     LastAxisShapeND srcNDinfo;
     LastAxisShapeND originalSrcShape;

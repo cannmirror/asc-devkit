@@ -76,6 +76,7 @@
 #include "math/where.h"
 #include "math/axpy.h"
 #include "normalization/layernorm.h"
+#include "normalization/layernormgrad.h"
 #include "normalization/layernormgradbeta.h"
 #include "normalization/welfordfinalize.h"
 #include "normalization/normalize.h"

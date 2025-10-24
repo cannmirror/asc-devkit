@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,11 @@
  * \brief
  */
 
-#ifndef ACT_FUSION_GELU_H
-#define ACT_FUSION_GELU_H
+#ifndef EPILOGUE_FUSION_FUSION_GELU_H
+#define EPILOGUE_FUSION_FUSION_GELU_H
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/device_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -56,7 +56,7 @@ public:
                                 int64_t& ubOffset, int64_t& stageSize)
     {
         static constexpr int64_t stageNum = (approxiMate == GeluApproxiMate::ERF) ? 2 : 1;
-        int64_t lastUBSize = TOTAL_UB_SIZE - ubOffset * sizeof(DataTypeIn);
+        int64_t lastUBSize = AscendC::TOTAL_UB_SIZE - ubOffset * sizeof(DataTypeIn);
         ASCENDC_ASSERT((lastUBSize > ubCalcN * sizeof(DataTypeIn)), {
             KERNEL_LOG(KERNEL_ERROR, , "ub size limit %ld, %ld!", lastUBSize, ubCalcN * sizeof(DataTypeIn));
         });
@@ -71,7 +71,7 @@ public:
                                       AscendC::LocalTensor<DataTypeIn>& outputLocal, int64_t offset, int64_t curAivM,
                                       int64_t curAivN, int64_t strideN, int64_t stageSize)
     {
-        TPipeSetWaitFlag<HardEvent::MTE3_V>();
+        TPipeSetWaitFlag<AscendC::HardEvent::MTE3_V>();
         if constexpr (approxiMate == GeluApproxiMate::ERF) {
             AscendC::Muls(inputLocal_, srcLocal, REQ_SQRT2, stageSize);
             AscendC::PipeBarrier<PIPE_V>();
@@ -111,4 +111,4 @@ public:
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_FUSION_GELU_OP_H
+#endif // ACT_INCLUDE_EPILOGUE_FUSION_GELU_OP_H

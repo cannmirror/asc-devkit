@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -23,13 +22,14 @@
 #include "tuple.h"
 
 namespace ATVC {
-// 记录一个LocalTensor在In/Out/Local中的偏移位置，以及自己的类型
-template<typename T>
+/**
+ * Record the offset position of a LocalTensor in In/Out/Local, as well as its own type
+ */
+template <typename T>
 struct TensorInfo {
-    __aicore__ inline TensorInfo() {}
-    using Dtype = T;
+    using DataType = T;
     AscendC::GlobalTensor<T> gmTensor;
-    int32_t local_offset;
+    int32_t localOffset;
 };
 
 template <typename T>
@@ -41,17 +41,20 @@ template <typename List>
 struct TensorTuple {
 private:
     using Tensors = typename ATVC::TypeListMap<List, TypeToTensor>::Type;
+
 public:
     using Type = typename ATVC::TupleFromTypeList<Tensors>::Type;
 };
 
-/////////////////////////////////////////////////////////////////////////////////////
-// 获取特定索引的 Tuple 元素的对应的LocalTensor
+/**
+ * Get the LocalTensor corresponding to the Tuple element at a specific index
+ */
 template <std::size_t N, typename TupleType>
-__aicore__ inline auto TupleElemGetLocalTensor(AscendC::LocalTensor<uint8_t> local, TupleType& tuple, uint32_t size) {
-    using Dtype = typename ATVC::TupleElemType<N, TupleType>::Type::Dtype;
+__aicore__ inline auto TupleElemGetLocalTensor(AscendC::LocalTensor<uint8_t> local, TupleType& tuple, uint32_t size)
+{
+    using DataType = typename ATVC::TupleElemType<N, TupleType>::Type::DataType;
     if constexpr (N == 0) {
-        auto tensor = local[tuple.head.local_offset].template ReinterpretCast<Dtype>();
+        auto tensor = local[tuple.head.localOffset].template ReinterpretCast<DataType>();
         tensor.SetSize(size);
         return tensor;
     } else {
@@ -59,9 +62,6 @@ __aicore__ inline auto TupleElemGetLocalTensor(AscendC::LocalTensor<uint8_t> loc
     }
 }
 
-/////////////////////////////////////////////////////////////////////////////////////
-
-}
+} // namespace ATVC
 
 #endif // ATVC_TENSOR_INFO_H
-

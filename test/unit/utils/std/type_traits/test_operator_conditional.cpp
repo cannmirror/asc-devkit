@@ -25,70 +25,70 @@ protected:
     }
 };
 
-// 测试 AscendC::Std::conditional 在布尔条件为 true 时选择第一个类型（int 和 double）
+// test AscendC::Std::conditional to select the first type when the boolean condition is true (int & double)
 TEST_F(ConditionalTest, ConditionalTrueIntDouble) {
     constexpr bool condition = true;
     using ResultType = typename AscendC::Std::conditional<condition, int, double>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, int>::value));
 }
 
-// 测试 AscendC::Std::conditional 在布尔条件为 false 时选择第二个类型（int 和 double）
+// test AscendC::Std::conditional to select the second type when the boolean condition is false (int & double)
 TEST_F(ConditionalTest, ConditionalFalseIntDouble) {
     constexpr bool condition = false;
     using ResultType = typename AscendC::Std::conditional<condition, int, double>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, double>::value));
 }
 
-// 测试 AscendC::Std::conditional 在布尔条件为 true 时选择第一个类型（short 和 long）
+// test AscendC::Std::conditional to select the first type when the boolean condition is true (short & long)
 TEST_F(ConditionalTest, ConditionalTrueShortLong) {
     constexpr bool condition = true;
     using ResultType = typename AscendC::Std::conditional<condition, short, long>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, short>::value));
 }
 
-// 测试 AscendC::Std::conditional 在布尔条件为 false 时选择第二个类型（short 和 long）
+// test AscendC::Std::conditional to select the second type when the boolean condition is false (short & long)
 TEST_F(ConditionalTest, ConditionalFalseShortLong) {
     constexpr bool condition = false;
     using ResultType = typename AscendC::Std::conditional<condition, short, long>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, long>::value));
 }
 
-// 测试 AscendC::Std::conditional 在布尔条件为 true 时选择第一个类型（char 和 float）
+// test AscendC::Std::conditional to select the first type when the boolean condition is true (char & float)
 TEST_F(ConditionalTest, ConditionalTrueCharFloat) {
     constexpr bool condition = true;
     using ResultType = typename AscendC::Std::conditional<condition, char, float>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, char>::value));
 }
 
-// 测试 AscendC::Std::conditional 在布尔条件为 false 时选择第二个类型（char 和 float）
+// test AscendC::Std::conditional to select the second type when the boolean condition is false (char & float)
 TEST_F(ConditionalTest, ConditionalFalseCharFloat) {
     constexpr bool condition = false;
     using ResultType = typename AscendC::Std::conditional<condition, char, float>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, float>::value));
 }
 
-// 测试使用常量表达式函数作为条件，结果为 true
+// the test uses a constant expression function as a condition, and the result is true
 constexpr bool constantTrueFunction() { return true; }
 TEST_F(ConditionalTest, ConditionalTrueFromFunction) {
     using ResultType = typename AscendC::Std::conditional<constantTrueFunction(), int, long long>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, int>::value));
 }
 
-// 测试使用常量表达式函数作为条件，结果为 false
+// the test uses a constant expression function as a condition, and the result is false
 constexpr bool constantFalseFunction() { return false; }
 TEST_F(ConditionalTest, ConditionalFalseFromFunction) {
     using ResultType = typename AscendC::Std::conditional<constantFalseFunction(), int, long long>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, long long>::value));
 }
 
-// 测试使用枚举类型作为条件，结果为 true
+// the test uses a enum expression as a condition, and the result is true
 enum class ConditionEnum { TrueValue = true, FalseValue = false };
 TEST_F(ConditionalTest, ConditionalTrueFromEnum) {
     using ResultType = typename AscendC::Std::conditional<static_cast<bool>(ConditionEnum::TrueValue), short, double>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, short>::value));
 }
 
-// 测试使用枚举类型作为条件，结果为 false
+// the test uses a enum expression as a condition, and the result is false
 TEST_F(ConditionalTest, ConditionalFalseFromEnum) {
     using ResultType = typename AscendC::Std::conditional<static_cast<bool>(ConditionEnum::FalseValue), short, double>::type;
     EXPECT_TRUE((AscendC::Std::is_same<ResultType, double>::value));

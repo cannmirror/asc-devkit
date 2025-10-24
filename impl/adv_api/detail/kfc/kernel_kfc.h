@@ -29,7 +29,7 @@ namespace AscendC {
 constexpr uint16_t WORKSPACE_SYNC_ID = 15;
 __aicore__ inline void clearWorkspace(__gm__ uint8_t *workspace)
 {
-#if __CCE_AICORE__ == 220
+#if __CCE_AICORE__ == 220 || (defined(__DAV_C310__) && KFC_C310_SSBUF == 0)
     AscendC::SetAtomicNone();
     if ASCEND_IS_AIC {
         AscendC::SetMaskNorm();
@@ -62,7 +62,7 @@ public:
         // The function exits when all AIVs exit. The client sends a Quit message when the destructor ends.
         return quitSize < MIX_NUM;
     }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
     template <class T, class... Args> __aicore__ inline void Run(T &a, Args &&... b)
     {
         TRACE_START(TraceId::KFC_SERVER_RUN);
@@ -254,7 +254,7 @@ private:
         ASSERT(msg != nullptr && "msg cannot be nullptr when kfc server run aux");
         ASSERT(subBlockID >= 0 && subBlockID < MIX_NUM && "sub block id should be [0, MIX_NUM)");
         if (a.cubeObj.cubeObj[0].IsSharedObj()) {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
             if constexpr ((sizeof...(b) == 1)) {
                 // b == 1 and is tiling, a process, b == 1 and is mm, instID continue judge, may b
                 if constexpr (isTiling<Args...>()) {
@@ -295,7 +295,7 @@ private:
             }
             return true;
         } else {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
             if (a.cubeObj.cubeObj[subBlockID].GetInstID() == KfcMsgGetInstID(msgHead)) {
 #else
             if (a.cubeObj.cubeObj[subBlockID].GetInstID() == KfcMsgGetInstID(msg->head)) {
@@ -381,7 +381,7 @@ private:
     GM_ADDR workspace;
     uint8_t quitSize;
     int lastMsgId = 1;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
     uint32_t msgHead;
 #endif
 };

@@ -6,7 +6,49 @@ template <typename IMPL, class A_TYPE, const auto &MM_CFG, typename = void>
 class CustomMxLoop : public CustomLoop<IMPL, A_TYPE, MM_CFG>
 {
 public:
-    __aicore__ inline int32_t GetOuterScaleKaIdx()
+    __aicore__ inline int32_t GetTileShapeScaleM() const
+    {
+        // 64 is mocked M size
+        return 64;
+    }
+
+    __aicore__ inline int32_t GetTileShapeScaleN() const
+    {
+        // 64 is mocked N size
+        return 64;
+    }
+
+    __aicore__ inline int32_t GetScaleFactorM() const
+    {
+        return 1;
+    }
+
+    __aicore__ inline int32_t GetScaleFactorN() const
+    {
+        return 1;
+    }
+
+    __aicore__ inline bool IsScaleAML1FullLoad() const
+    {
+        return false;
+    }
+
+    __aicore__ inline int32_t GetOuterScaleMIdx() const
+    {
+        return 0;
+    }
+
+    __aicore__ inline int32_t GetOuterScaleNIdx() const
+    {
+        return 0;
+    }
+
+    __aicore__ inline int32_t GetNextOuterScaleMIdx() const
+    {
+        return 0;
+    }
+
+    __aicore__ inline int32_t GetNextOuterScaleNIdx() const
     {
         return 0;
     }
@@ -45,12 +87,12 @@ public:
         return 1;
     }
 
-    __aicore__ inline int32_t GetTileShapeScaleA() const
+    __aicore__ inline int32_t GetTileShapeScaleKa() const
     {
         return 0;
     }
 
-    __aicore__ inline int32_t GetTileShapeScaleB() const
+    __aicore__ inline int32_t GetTileShapeScaleKb() const
     {
         return 0;
     }

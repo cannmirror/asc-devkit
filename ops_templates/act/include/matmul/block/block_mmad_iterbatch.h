@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef INCLUE_MATMUL_BLOCK_BLOCK_MMAD_ITERBATCH_H
-#define INCLUE_MATMUL_BLOCK_BLOCK_MMAD_ITERBATCH_H
+#ifndef MATMUL_BLOCK_BLOCK_MMAD_ITERBATCH_H
+#define MATMUL_BLOCK_BLOCK_MMAD_ITERBATCH_H
 #include "./block_mmad.h"
 #include "../../utils/layout_utils.h"
 #include "../../utils/tuple_utils.h"
@@ -25,9 +25,20 @@
 namespace Act {
 namespace Gemm {
 namespace Block {
+template <class L1TileShape, class L0TileShape, class AT, class BT, class CT, class BiasT, class TileCopy>
+class BlockMmad<MatmulIterBatch<>, L1TileShape, L0TileShape, AT, BT, CT, BiasT, TileCopy,
+    AscendC::Std::enable_if_t<IsMatmulLayoutTypeV<AT>>>
+    : public BlockMmad<MatmulIterBatch<>, L1TileShape, L0TileShape,
+        ToMatmulTypeT<AT>, ToMatmulTypeT<BT>, ToMatmulTypeT<CT>, ToMatmulTypeT<BiasT>, TileCopy> {
+    using Base = BlockMmad<MatmulIterBatch<>, L1TileShape, L0TileShape,
+                           ToMatmulTypeT<AT>, ToMatmulTypeT<BT>, ToMatmulTypeT<CT>, ToMatmulTypeT<BiasT>, TileCopy>;
+    using Base::Base;
+};
+
 template <class L1TileShape_, class L0TileShape_, class AType_, class BType_, class CType_, class BiasType_,
           class TileCopy_>
-class BlockMmad<MatmulIterBatch<>, L1TileShape_, L0TileShape_, AType_, BType_, CType_, BiasType_, TileCopy_> {
+class BlockMmad<MatmulIterBatch<>, L1TileShape_, L0TileShape_, AType_, BType_, CType_, BiasType_, TileCopy_,
+    AscendC::Std::enable_if_t<!IsMatmulLayoutTypeV<AType_>>> {
 public:
     using AType = AType_;
     using BType = BType_;
@@ -45,8 +56,8 @@ public:
     uint64_t alignedKa_{1};
     uint64_t alignedKb_{1};
     constexpr static uint64_t BUFFER_NUM = 2;
-    uint64_t abL1PingPong_{0};
-    uint64_t l0PingPong_{0};
+    uint64_t abL1EventID_{0};
+    uint64_t l0EventID_{0};
 
     __aicore__ inline BlockMmad()
     {
@@ -80,8 +91,8 @@ public:
         alignedN_ = CeilAlign(n_, AscendC::BLOCK_CUBE);
         alignedKa_ = AType::isTrans ? CeilAlign(k_, AscendC::BLOCK_CUBE) : CeilAlign(k_, AscendC::AuxGetC0Size<A_T>());
         alignedKb_ = BType::isTrans ? CeilAlign(k_, AscendC::AuxGetC0Size<B_T>()) : CeilAlign(k_, AscendC::BLOCK_CUBE);
-        l0PingPong_ = 0;
-        abL1PingPong_ = 0;
+        l0EventID_ = 0;
+        abL1EventID_ = 0;
     }
     __aicore__ inline void CopyInA1(const AscendC::GlobalTensor<A_T>& aGlobal,
                                     const AscendC::LocalTensor<A_T>& al1Local, const uint64_t curIterBatchL1,
@@ -121,14 +132,14 @@ public:
     }
 
     __aicore__ inline void CopyInA2(const AscendC::LocalTensor<A_T>& a2Local, const AscendC::LocalTensor<A_T>& al1Local,
-                                    uint64_t mInNZ, uint64_t kaInNZWithIter)
+        uint64_t mInL1A, uint64_t kaInL1A, uint64_t curIterBatchL0)
     {
         if constexpr (!AType::isTrans) {
             AscendC::LoadData2DParamsV2 loadDataParams;
             loadDataParams.mStartPosition = 0;
             loadDataParams.kStartPosition = 0;
-            loadDataParams.mStep = CeilDiv(mInNZ, AscendC::BLOCK_CUBE);
-            loadDataParams.kStep = CeilDiv(kaInNZWithIter, AscendC::AuxGetC0Size<A_T>());
+            loadDataParams.mStep = CeilDiv(mInL1A, AscendC::BLOCK_CUBE);
+            loadDataParams.kStep = CeilDiv(kaInL1A * curIterBatchL0, AscendC::AuxGetC0Size<A_T>());
             loadDataParams.srcStride = loadDataParams.mStep;
             loadDataParams.dstStride = loadDataParams.mStep;
             loadDataParams.ifTranspose = false;
@@ -141,28 +152,32 @@ public:
             AscendC::LoadData2DParamsV2 loadDataParams;
             loadDataParams.mStartPosition = 0;
             loadDataParams.kStartPosition = 0;
-            loadDataParams.mStep = CeilDiv(kaInNZWithIter, AscendC::BLOCK_CUBE);
-            loadDataParams.kStep = CeilDiv(mInNZ, AscendC::AuxGetC0Size<A_T>());
-            loadDataParams.srcStride = CeilDiv(kaInNZWithIter, AscendC::BLOCK_CUBE);
-            loadDataParams.dstStride = CeilDiv(mInNZ, AscendC::BLOCK_CUBE);
+            loadDataParams.mStep = CeilDiv(kaInL1A, AscendC::BLOCK_CUBE);
+            loadDataParams.kStep = CeilDiv(mInL1A, AscendC::AuxGetC0Size<A_T>());
+            loadDataParams.srcStride = CeilDiv(kaInL1A, AscendC::BLOCK_CUBE);
+            loadDataParams.dstStride = CeilDiv(mInL1A, AscendC::BLOCK_CUBE);
             loadDataParams.ifTranspose = true;
-            if constexpr (AscendC::IsSameType<A_T, bfloat16_t>::value) {
-                AscendC::LoadData(a2Local, al1Local, loadDataParams);
-            } else {
-                AscendC::LoadData<A_T>(a2Local, al1Local, loadDataParams);
+            for (uint64_t iterL0AIndex = 0; iterL0AIndex < curIterBatchL0; iterL0AIndex++) {
+                if constexpr (AscendC::IsSameType<A_T, bfloat16_t>::value) {
+                    AscendC::LoadData(a2Local[iterL0AIndex * mInL1A * kaInL1A],
+                                      al1Local[iterL0AIndex * mInL1A * kaInL1A], loadDataParams);
+                } else {
+                    AscendC::LoadData<A_T>(a2Local[iterL0AIndex * mInL1A * kaInL1A],
+                                           al1Local[iterL0AIndex * mInL1A * kaInL1A], loadDataParams);
+                }
             }
         }
     }
 
     __aicore__ inline void CopyInB2(const AscendC::LocalTensor<B_T>& b2Local, const AscendC::LocalTensor<B_T>& bl1Local,
-                                    uint64_t nInNZ, uint64_t kbInNZWithIter)
+                                    uint64_t nInL1B, uint64_t kbInL1B, uint64_t curIterBatchL0)
     {
         if constexpr (BType::isTrans) {
             AscendC::LoadData2DParamsV2 loadDataParams;
             loadDataParams.mStartPosition = 0;
             loadDataParams.kStartPosition = 0;
-            loadDataParams.mStep = CeilDiv(nInNZ, AscendC::BLOCK_CUBE);
-            loadDataParams.kStep = CeilDiv(kbInNZWithIter, AscendC::AuxGetC0Size<B_T>());
+            loadDataParams.mStep = CeilDiv(nInL1B, AscendC::BLOCK_CUBE);
+            loadDataParams.kStep = CeilDiv(kbInL1B * curIterBatchL0, AscendC::AuxGetC0Size<B_T>());
             loadDataParams.srcStride = loadDataParams.mStep;
             loadDataParams.dstStride = loadDataParams.mStep;
             loadDataParams.ifTranspose = false;
@@ -175,16 +190,43 @@ public:
             AscendC::LoadData2DParamsV2 loadDataParams;
             loadDataParams.mStartPosition = 0;
             loadDataParams.kStartPosition = 0;
-            loadDataParams.mStep = CeilDiv(kbInNZWithIter, AscendC::BLOCK_CUBE);
-            loadDataParams.kStep = CeilDiv(nInNZ, AscendC::AuxGetC0Size<B_T>());
-            loadDataParams.srcStride = CeilDiv(kbInNZWithIter, AscendC::BLOCK_CUBE);
-            loadDataParams.dstStride = CeilDiv(nInNZ, AscendC::BLOCK_CUBE);
+            loadDataParams.mStep = CeilDiv(kbInL1B, AscendC::BLOCK_CUBE);
+            loadDataParams.kStep = CeilDiv(nInL1B, AscendC::AuxGetC0Size<B_T>());
+            loadDataParams.srcStride = CeilDiv(kbInL1B, AscendC::BLOCK_CUBE);
+            loadDataParams.dstStride = CeilDiv(nInL1B, AscendC::BLOCK_CUBE);
             loadDataParams.ifTranspose = true;
-            if constexpr (AscendC::IsSameType<B_T, bfloat16_t>::value) {
-                AscendC::LoadData(b2Local, bl1Local, loadDataParams);
-            } else {
-                AscendC::LoadData<B_T>(b2Local, bl1Local, loadDataParams);
+            for (uint64_t iterL0BIndex = 0; iterL0BIndex < curIterBatchL0; iterL0BIndex++) {
+                if constexpr (AscendC::IsSameType<B_T, bfloat16_t>::value) {
+                    AscendC::LoadData(b2Local[iterL0BIndex * kbInL1B * nInL1B],
+                                      bl1Local[iterL0BIndex * kbInL1B * nInL1B], loadDataParams);
+                } else {
+                    AscendC::LoadData<B_T>(b2Local[iterL0BIndex * kbInL1B * nInL1B],
+                                           bl1Local[iterL0BIndex * kbInL1B * nInL1B], loadDataParams);
+                }
             }
+        }
+    }
+
+    __aicore__ inline void Mmad(const AscendC::LocalTensor<A_T>& l0a,
+                                const AscendC::LocalTensor<B_T>& l0b,
+                                const AscendC::LocalTensor<float>& l0c,
+                                const uint64_t mInGM, const uint64_t nInGM, const uint64_t kInGM,
+                                const uint64_t mInL0a, const uint64_t kaInL0a,
+                                const uint64_t kbInL0b, const uint64_t nInL0b,
+                                const uint64_t mInL0c, const uint64_t nInL0c,
+                                const uint64_t curIterBatchL0)
+    {
+        AscendC::MmadParams mmadParams;
+        mmadParams.m = mInGM;
+        mmadParams.n = nInGM;
+        mmadParams.k = kInGM;
+        mmadParams.unitFlag = 0; // each l0 only process one block, disable unit flag.
+        mmadParams.cmatrixInitVal = true;
+        mmadParams.disableGemv = true; // disable gemv when m equals 1, which is not capable.
+        for (uint64_t iterL0CIndex = 0; iterL0CIndex < curIterBatchL0; iterL0CIndex++) {
+            AscendC::Mmad(l0c[iterL0CIndex * mInL0c * nInL0c],
+                          l0a[iterL0CIndex * mInL0a * kaInL0a],
+                          l0b[iterL0CIndex * kbInL0b * nInL0b], mmadParams);
         }
     }
 
@@ -204,14 +246,22 @@ public:
         }
         intriParams.nz2ndEn = true;
         intriParams.unitFlag = 0;
+
         // When nz2nd loop in copyout, src stride is unit of c0Size, dst stride is unit of one element.
         AscendC::SetFixpipeNz2ndFlag(curIterBatchL0, mInL0C * nInL0C / AscendC::BLOCK_CUBE, mInGM * nInGM);
         AscendC::DataCopy(cGlobal, l0c, intriParams);
     }
 
-    __aicore__ inline void operator()(AscendC::GlobalTensor<C_T> cGlobal, AscendC::GlobalTensor<A_T> aGlobal,
-                                      AscendC::GlobalTensor<B_T> bGlobal, uint64_t curIterBatchL1,
-                                      uint64_t mainIterBatchL1, uint64_t mainIterBatchL0)
+    __aicore__ inline void operator()(AscendC::GlobalTensor<C_T> cGlobal,
+                                      AscendC::GlobalTensor<A_T> aGlobal,
+                                      AscendC::GlobalTensor<B_T> bGlobal,
+                                      uint64_t blockNum,
+                                      uint64_t curIterBatchL1,
+                                      uint64_t nextIterBatchL1,
+                                      uint64_t mainIterBatchL1,
+                                      uint64_t mainIterBatchL0,
+                                      bool isPreLoadRound,
+                                      bool isFinalRound)
     {
         AscendC::LocalTensor<A_T> al1Local(AscendC::TPosition::A1, 0, L1_SIZE); // start of l1
         AscendC::LocalTensor<B_T> bl1Local = al1Local[alignedM_ * alignedKa_ * BUFFER_NUM * mainIterBatchL1];
@@ -220,88 +270,78 @@ public:
         AscendC::LocalTensor<float> l0c(AscendC::TPosition::CO1, 0, L0C_SIZE);
 
         // mov align to L1 with pingpong
-        al1Local = al1Local[alignedM_ * alignedKa_ * mainIterBatchL1 * (abL1PingPong_ & 0x1)];
-        AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>(abL1PingPong_ & 0x1); // mte2 wait pre loop of mte1
+        if (isPreLoadRound) { // first round, copy first loop of data
+            AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>(abL1EventID_ & 0x1); // wait last loop mte1 to finish
+            CopyInA1(aGlobal, al1Local[alignedM_ * alignedKa_ * mainIterBatchL1 * (abL1EventID_ & 0x1)],
+                     curIterBatchL1, m_, k_, alignedM_, alignedKa_);
+            AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>(abL1EventID_ & 0x1); // set current loop mte1 to wait
 
-        CopyInA1(aGlobal, al1Local, curIterBatchL1, m_, k_, alignedM_, alignedKa_);
-        AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>(abL1PingPong_ & 0x1);
-        AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>(abL1PingPong_ & 0x1);
+            AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
+            CopyInB1(bGlobal, bl1Local[alignedN_ * alignedKb_ * mainIterBatchL1 * (abL1EventID_ & 0x1)],
+                     curIterBatchL1, k_, n_, alignedKb_, alignedN_);
+            AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
+        }
+        if (!isFinalRound) { // before last round need to precopy next loop of data
+            AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>((abL1EventID_ + 1) & 0x1); // wait last loop mte1 to finish
+            CopyInA1(aGlobal[m_ * k_ * mainIterBatchL1 * blockNum], al1Local[alignedM_ * alignedKa_ *
+                     mainIterBatchL1 * ((abL1EventID_ + 1) & 0x1)], nextIterBatchL1, m_, k_, alignedM_, alignedKa_);
+            AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>((abL1EventID_ + 1) & 0x1); // set current loop mte1 to wait
 
-        bl1Local = bl1Local[alignedN_ * alignedKb_ * mainIterBatchL1 * (abL1PingPong_ & 0x1)];
-        AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>((abL1PingPong_ & 0x1) + L1_EVENT_ID_OFFSET);
-
-        CopyInB1(bGlobal, bl1Local, curIterBatchL1, k_, n_, alignedKb_, alignedN_);
-        AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>((abL1PingPong_ & 0x1) + L1_EVENT_ID_OFFSET);
-
+            AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>(((abL1EventID_ + 1) & 0x1) + L1_EVENT_ID_OFFSET);
+            CopyInB1(bGlobal[k_ * n_ * mainIterBatchL1 * blockNum], bl1Local[alignedN_ * alignedKb_ *
+                     mainIterBatchL1 * ((abL1EventID_ + 1) & 0x1)], nextIterBatchL1, k_, n_, alignedKb_, alignedN_);
+            AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>(((abL1EventID_ + 1) & 0x1) + L1_EVENT_ID_OFFSET);
+        }
         // calculate how much loop needed between l1 and l0.
         uint64_t stepIterBatchL1L0 = CeilDiv(curIterBatchL1, mainIterBatchL0);
 
         for (uint64_t iter1 = 0; iter1 < stepIterBatchL1L0; ++iter1) {
             uint64_t curIterBatchL0 = (iter1 + 1 == stepIterBatchL1L0) ? // if tailloop of l1 and l0, cal tail iter num.
-                                          (curIterBatchL1 - mainIterBatchL0 * iter1) :
-                                          mainIterBatchL0;
-            AscendC::WaitFlag<AscendC::HardEvent::M_MTE1>(l0PingPong_ & 0x1);
-            if constexpr (AType::isTrans) { // if noncontinous, need multi load2d for each batch
-                for (uint64_t iterL0AIndex = 0; iterL0AIndex < curIterBatchL0; iterL0AIndex++) {
-                    CopyInA2(l0a[L0A_SIZE / BUFFER_NUM / sizeof(A_T) * (l0PingPong_ & 0x1) +
-                                 iterL0AIndex * alignedM_ * alignedKa_],
-                             al1Local[iter1 * mainIterBatchL0 * alignedM_ * alignedKa_ +
-                                      iterL0AIndex * alignedM_ * alignedKa_],
-                             alignedM_, alignedKa_);
-                }
-            } else { // if continous, load2d can load full num of batch in l0
-                CopyInA2(l0a[L0A_SIZE / BUFFER_NUM / sizeof(A_T) * (l0PingPong_ & 0x1)],
-                         al1Local[iter1 * mainIterBatchL0 * alignedM_ * alignedKa_], alignedM_,
-                         alignedKa_ * curIterBatchL0);
-            }
-            if (iter1 == 0) {
-                AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>((abL1PingPong_ & 0x1) + L1_EVENT_ID_OFFSET);
-            }
-            if constexpr (!BType::isTrans) { // if noncontinous, need multi load2d for each batch
-                for (uint64_t iterL0BIndex = 0; iterL0BIndex < curIterBatchL0; iterL0BIndex++) {
-                    CopyInB2(l0b[L0B_SIZE / BUFFER_NUM / sizeof(B_T) * (l0PingPong_ & 0x1) +
-                                 iterL0BIndex * alignedKb_ * alignedN_],
-                             bl1Local[iter1 * mainIterBatchL0 * alignedKb_ * alignedN_ +
-                                      iterL0BIndex * alignedKb_ * alignedN_],
-                             alignedN_, alignedKb_);
-                }
-            } else { // if continous, load2d can load full num of batch in l0
-                CopyInB2(l0b[L0B_SIZE / BUFFER_NUM / sizeof(B_T) * (l0PingPong_ & 0x1)],
-                         bl1Local[iter1 * mainIterBatchL0 * alignedKb_ * alignedN_], alignedN_,
-                         alignedKb_ * curIterBatchL0);
-            }
-            AscendC::SetFlag<AscendC::HardEvent::MTE1_M>(l0PingPong_ & 0x1);
-            AscendC::WaitFlag<AscendC::HardEvent::MTE1_M>(l0PingPong_ & 0x1);
+                                      (curIterBatchL1 - mainIterBatchL0 * iter1) : mainIterBatchL0;
 
-            AscendC::MmadParams mmadParams;
-            mmadParams.m = m_;
-            mmadParams.n = n_;
-            mmadParams.k = k_;
-            mmadParams.unitFlag = 0; // each l0 only process one block, disable unit flag.
-            mmadParams.cmatrixInitVal = true;
-            mmadParams.disableGemv = true; // disable gemv when m equals 1, which is not capable.
-            AscendC::WaitFlag<AscendC::HardEvent::FIX_M>(l0PingPong_ & 0x1);
-            for (uint64_t iterL0CIndex = 0; iterL0CIndex < curIterBatchL0; iterL0CIndex++) {
-                AscendC::Mmad(l0c[L0C_SIZE / BUFFER_NUM / sizeof(float) * (l0PingPong_ & 0x1) +
-                                  iterL0CIndex * alignedM_ * alignedN_],
-                              l0a[L0A_SIZE / BUFFER_NUM / sizeof(A_T) * (l0PingPong_ & 0x1) +
-                                  iterL0CIndex * alignedM_ * alignedKa_],
-                              l0b[L0B_SIZE / BUFFER_NUM / sizeof(B_T) * (l0PingPong_ & 0x1) +
-                                  iterL0CIndex * alignedKb_ * alignedN_],
-                              mmadParams);
+            if (iter1 == 0) { // In first loop, notice Mte1 to wait Mte2
+                AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>(abL1EventID_ & 0x1);
             }
-            AscendC::SetFlag<AscendC::HardEvent::M_MTE1>(l0PingPong_ & 0x1);
-            AscendC::SetFlag<AscendC::HardEvent::M_FIX>(l0PingPong_ & 0x1);
-            AscendC::WaitFlag<AscendC::HardEvent::M_FIX>(l0PingPong_ & 0x1);
+            AscendC::WaitFlag<AscendC::HardEvent::M_MTE1>(l0EventID_ & 0x1);
+            CopyInA2(l0a[L0A_SIZE / BUFFER_NUM / sizeof(A_T) * (l0EventID_ & 0x1)],
+                     al1Local[alignedM_ * alignedKa_ * mainIterBatchL1 * (abL1EventID_ & 0x1) +
+                     iter1 * mainIterBatchL0 * alignedM_ * alignedKa_],
+                     alignedM_, alignedKa_, curIterBatchL0);
+            if (iter1 == stepIterBatchL1L0 - 1) { // after last loop, notice Mte2 to wait Mte1
+                AscendC::SetFlag<AscendC::HardEvent::MTE1_MTE2>(abL1EventID_ & 0x1);
+            }
+
+            if (iter1 == 0) {
+                AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
+            }
+            CopyInB2(l0b[L0B_SIZE / BUFFER_NUM / sizeof(B_T) * (l0EventID_ & 0x1)],
+                     bl1Local[alignedN_ * alignedKb_ * mainIterBatchL1 * (abL1EventID_ & 0x1) +
+                     iter1 * mainIterBatchL0 * alignedKb_ * alignedN_],
+                     alignedN_, alignedKb_, curIterBatchL0);
+            AscendC::SetFlag<AscendC::HardEvent::MTE1_M>(l0EventID_ & 0x1);
+            if (iter1 == stepIterBatchL1L0 - 1) {
+                AscendC::SetFlag<AscendC::HardEvent::MTE1_MTE2>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
+            }
+
+            AscendC::WaitFlag<AscendC::HardEvent::MTE1_M>(l0EventID_ & 0x1);
+            AscendC::WaitFlag<AscendC::HardEvent::FIX_M>(l0EventID_ & 0x1);
+            Mmad(l0a[L0A_SIZE / BUFFER_NUM / sizeof(A_T) * (l0EventID_ & 0x1)],
+                 l0b[L0B_SIZE / BUFFER_NUM / sizeof(B_T) * (l0EventID_ & 0x1)],
+                 l0c[L0C_SIZE / BUFFER_NUM / sizeof(float) * (l0EventID_ & 0x1)],
+                 m_, n_, k_, alignedM_, alignedKa_, alignedKb_, alignedN_, alignedM_, alignedN_,
+                 curIterBatchL0);
+            AscendC::SetFlag<AscendC::HardEvent::M_MTE1>(l0EventID_ & 0x1);
+            AscendC::SetFlag<AscendC::HardEvent::M_FIX>(l0EventID_ & 0x1);
+
+            AscendC::WaitFlag<AscendC::HardEvent::M_FIX>(l0EventID_ & 0x1);
             CopyOut(cGlobal[iter1 * mainIterBatchL0 * m_ * n_],
-                    l0c[L0C_SIZE / BUFFER_NUM / sizeof(float) * (l0PingPong_ & 0x1)], curIterBatchL0, m_, n_, alignedM_,
-                    alignedN_);
-            AscendC::SetFlag<AscendC::HardEvent::FIX_M>(l0PingPong_ & 0x1);
-            l0PingPong_++;
+                    l0c[L0C_SIZE / BUFFER_NUM / sizeof(float) * (l0EventID_ & 0x1)], curIterBatchL0, m_, n_,
+                    alignedM_, alignedN_);
+            AscendC::SetFlag<AscendC::HardEvent::FIX_M>(l0EventID_ & 0x1);
+
+            l0EventID_++;
         }
-        AscendC::SetFlag<AscendC::HardEvent::MTE1_MTE2>(abL1PingPong_ & 0x1);
-        AscendC::SetFlag<AscendC::HardEvent::MTE1_MTE2>((abL1PingPong_ & 0x1) + L1_EVENT_ID_OFFSET);
-        abL1PingPong_++;
+        abL1EventID_++;
     }
 
 private:

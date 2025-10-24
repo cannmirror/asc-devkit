@@ -306,6 +306,8 @@ __aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, co
     const LocalTensor<U>& inMaxTensor, const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape,
     const SoftMaxTiling& tiling, const SoftMaxParams& params)
 {
+    SetMaskNorm();
+    ResetMask();
     ASCENDC_ASSERT((params.srcK >= SOFTMAX_FLOAT_SPECIAL_BLOCKREDUCE_LEN),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check shape in SoftmaxFlashV3, it should be greater than 512.");});
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM, tiling.splitK, tiling.reduceM,

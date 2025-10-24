@@ -151,6 +151,7 @@ public:
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         while (BASE_MODULE::Iterate()) {
             BASE_MODULE::GetTensorC(gm, enAtomic);
         }
@@ -160,6 +161,7 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         int64_t dstOffset = 0;
         while (BASE_MODULE::Iterate(false, ubCmatrix[dstOffset])) {
             if constexpr (PhyPosIsL0C(C_TYPE::pos)) {

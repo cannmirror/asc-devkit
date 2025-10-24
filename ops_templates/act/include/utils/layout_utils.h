@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_UTILS_LAYOUT_UTILS_H
-#define ACT_INCLUDE_UTILS_LAYOUT_UTILS_H
+#ifndef UTILS_LAYOUT_UTILS_H
+#define UTILS_LAYOUT_UTILS_H
 
 #include "./integral_constant.h"
 
@@ -22,18 +22,19 @@ namespace Act {
 namespace Gemm {
 namespace layout {
 struct RowMajor {};
-struct RowMajorAlign {};
+struct RowMajorAlign {}; // ND_ALIGN align to 32
 struct ColumnMajor {};
 struct ColumnMajorAlign {};
 struct Nz {};
 struct Zn {};
 } // namespace layout
 
-static constexpr int32_t C0_BYTE_SIZE = 32;
-static constexpr int32_t C0_SIZE_FP16 = C0_BYTE_SIZE / sizeof(half);       // 16
-static constexpr int32_t C0_SIZE_BF16 = C0_BYTE_SIZE / sizeof(bfloat16_t); // 16
-static constexpr int32_t C0_SIZE_FP32 = C0_BYTE_SIZE / sizeof(float);      // 8
-static constexpr int32_t C0_NUM_PER_FRACTAL = 16;
+constexpr int32_t C0_BYTE_SIZE = 32;
+constexpr int32_t C0_SIZE_FP16 = C0_BYTE_SIZE / sizeof(half);       // 16
+constexpr int32_t C0_SIZE_BF16 = C0_BYTE_SIZE / sizeof(bfloat16_t); // 16
+constexpr int32_t C0_SIZE_FP32 = C0_BYTE_SIZE / sizeof(float);      // 8
+constexpr int32_t C0_NUM_PER_FRACTAL = 16;
+constexpr int32_t C0_SIZE_L0C = 16;
 
 // TagToFormat
 template <typename T>
@@ -213,31 +214,25 @@ __aicore__ constexpr inline decltype(auto) MakeLayoutByFormat(int row, int col)
 
     constexpr int c0Size = C0_BYTE_SIZE / sizeof(T);
     if constexpr (format == CubeFormat::ND || format == CubeFormat::ND_ALIGN) {
-        FormatToLayoutT<T, format> layout =
-            AscendC::MakeLayout(AscendC::MakeShape(row, col), AscendC::MakeStride(col, _1{}));
-        return layout;
+        return AscendC::MakeLayout(AscendC::MakeShape(row, col), AscendC::MakeStride(col, _1{}));
     } else if constexpr (format == CubeFormat::NZ) {
-        FormatToLayoutT<T, format> layout = AscendC::MakeLayout(
+        return AscendC::MakeLayout(
             AscendC::MakeShape(AscendC::MakeShape(_16{}, AscendC::Ceil(row, C0_NUM_PER_FRACTAL)),
                                AscendC::MakeShape(Int<c0Size>{}, AscendC::Ceil(col, c0Size))),
             AscendC::MakeStride(AscendC::MakeStride(Int<c0Size>{}, Int<C0_NUM_PER_FRACTAL * c0Size>{}),
                                 AscendC::MakeStride(_1{}, AscendC::CeilAlign(row, C0_NUM_PER_FRACTAL) * c0Size)));
-        return layout;
     } else if constexpr (format == CubeFormat::ZN) {
-        FormatToLayoutT<T, format> layout = AscendC::MakeLayout(
+        return AscendC::MakeLayout(
             AscendC::MakeShape(AscendC::MakeShape(Int<c0Size>{}, AscendC::Ceil(row, c0Size)),
                                AscendC::MakeShape(_16{}, AscendC::Ceil(col, C0_NUM_PER_FRACTAL))),
             AscendC::MakeStride(AscendC::MakeStride(_1{}, AscendC::CeilAlign(col, C0_NUM_PER_FRACTAL) * c0Size),
                                 AscendC::MakeStride(Int<c0Size>{}, Int<C0_NUM_PER_FRACTAL * c0Size>{})));
-        return layout;
     } else { // CubeFormat:ZZ
-        FormatToLayoutT<T, format> layout =
-            AscendC::MakeLayout(AscendC::MakeShape(AscendC::MakeShape(_16{}, AscendC::Ceil(row, C0_NUM_PER_FRACTAL)),
+        return AscendC::MakeLayout(AscendC::MakeShape(AscendC::MakeShape(_16{}, AscendC::Ceil(row, C0_NUM_PER_FRACTAL)),
                                                    AscendC::MakeShape(Int<c0Size>{}, AscendC::Ceil(col, c0Size))),
                                 AscendC::MakeStride(AscendC::MakeStride(Int<c0Size>{}, AscendC::CeilAlign(col, c0Size) *
                                                                                            C0_NUM_PER_FRACTAL),
                                                     AscendC::MakeStride(_1{}, Int<C0_NUM_PER_FRACTAL * c0Size>{})));
-        return layout;
     }
 }
 } // namespace Gemm

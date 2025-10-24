@@ -25,64 +25,64 @@ protected:
     }
 };
 
-// 测试基本类型的可转换性
+// testing the convertibility of basic types
 TEST_F(IsConvertibleTest, BasicTypes) {
-    // int 可以隐式转换为 double
+    // int can be implicitly converted to double
     EXPECT_TRUE((AscendC::Std::is_convertible<int, double>::value));
-    // double 可以隐式转换为 int（会有精度损失，此处测试隐式转换）
+    // double can be implicitly converted to int (loss of precision)
     EXPECT_TRUE((AscendC::Std::is_convertible<double, int>::value));
-    // char 可以隐式转换为 int
+    // char can be implicitly converted to int
     EXPECT_TRUE((AscendC::Std::is_convertible<char, int>::value));
-    // bool 可以隐式转换为 int
+    // bool can be implicitly converted to int
     EXPECT_TRUE((AscendC::Std::is_convertible<bool, int>::value));
 }
 
-// 测试自定义类的可转换性
+// testing the convertibility of custom class
 class Base {};
 class Derived : public Base {};
 
 TEST_F(IsConvertibleTest, CustomClasses) {
-    // Derived 可以隐式转换为 Base
+    // Derived can be implicitly converted to Base
     EXPECT_TRUE((AscendC::Std::is_convertible<Derived, Base>::value));
-    // Base 不能隐式转换为 Derived
+    // Base can't be implicitly converted to Derived
     EXPECT_FALSE((AscendC::Std::is_convertible<Base, Derived>::value));
 }
 
-// 测试带有转换运算符的类
+// test a class with a conversion opertor
 class ConvertibleToInt {
 public:
     operator int() const { return 0; }
 };
 
 TEST_F(IsConvertibleTest, ClassWithConversionOperator) {
-    // ConvertibleToInt 可以隐式转换为 int
+    // ConvertibleToInt can be implicitly converted to int
     EXPECT_TRUE((AscendC::Std::is_convertible<ConvertibleToInt, int>::value));
 }
 
-// 测试带有接受其他类型构造函数的类
+// test a class that accepts other types of constructors
 class ConvertibleFromInt {
 public:
     ConvertibleFromInt(int) {}
 };
 
 TEST_F(IsConvertibleTest, ClassWithConstructor) {
-    // int 可以隐式转换为 ConvertibleFromInt
+    // int can be implicitly converted to ConvertibleFromInt
     EXPECT_TRUE((AscendC::Std::is_convertible<int, ConvertibleFromInt>::value));
 }
 
-// 测试数组和指针的可转换性
+// testing the convertibility of arrays and pointers
 TEST_F(IsConvertibleTest, ArraysAndPointers) {
-    // 数组可以隐式转换为指向其首元素的指针
+    // an array can be implicitly converted to a pointer to its first element
     EXPECT_TRUE((AscendC::Std::is_convertible<int[5], int*>::value));
-    // 指向基类的指针可以隐式转换为指向 void 的指针
+    // a pointer to a base class can be implicitly converted to a pointer to void
     EXPECT_TRUE((AscendC::Std::is_convertible<Base*, void*>::value));
 }
 
-// 测试函数指针的可转换性
+// testing the convertibility of function pointers
 void func() {}
 void (*funcPtr)() = func;
 
 TEST_F(IsConvertibleTest, FunctionPointers) {
-    // 函数指针类型相同，可以转换
+    // function pointers of the same type can be converted
     EXPECT_TRUE((AscendC::Std::is_convertible<decltype(funcPtr), void (*)()>::value));
 }

@@ -452,9 +452,6 @@ void CheckTopKHostCommon(const char *apiName, const char *hostFuncName,
     if (mode == TopKMode::TOPK_NSMALL) {
         ASCENDC_HOST_ASSERT(inner == 32, return, 
             "[%s][%s] In Small mode, the length of the inner axis must be 32!", apiName, hostFuncName);
-    } else if (mode == TopKMode::TOPK_NORMAL) {
-        ASCENDC_HOST_ASSERT(inner <= 4096, return, 
-            "[%s][%s] In Normal mode, the maximum length of the inner axis is 4096!", apiName, hostFuncName);
     }
     if (socVersion == platform_ascendc::SocVersion::ASCEND310P && isInitIndex == false) {
         ASCENDC_HOST_ASSERT(inner <= 2048, return, 

@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,17 +12,27 @@
  * \file tbuf_pool_l0_default.h
  * \brief
  */
-#ifndef ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_TBUF_POOL_L0_DEFAULT_H
-#define ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_TBUF_POOL_L0_DEFAULT_H
+#ifndef MATMUL_TILE_LOAD_DATA_TBUF_POOL_L0_DEFAULT_H
+#define MATMUL_TILE_LOAD_DATA_TBUF_POOL_L0_DEFAULT_H
 
 namespace Act {
 namespace Gemm {
 namespace Tile {
+/**
+ * @class TBufPoolL0
+ * @brief Class for managing L0 buffer pool operations
+ * 
+ * This class provides methods for initializing, allocating, and managing L0 buffers
+ */
 class TBufPoolL0 {
 public:
     __aicore__ inline TBufPoolL0(){};
     __aicore__ inline ~TBufPoolL0(){};
 
+    /**
+     * @brief Initialize the L0 buffer pool
+     * @param [in] isL0Db: boolean flag to indicate if L0 double buffering is used
+     */
     __aicore__ inline void Init(bool isL0Db = true)
     {
         useL0PingPong_ = static_cast<uint16_t>(isL0Db);
@@ -30,17 +40,32 @@ public:
         GetTPipePtr()->InitBuffer(l0bBuf_, L0B_SIZE);
     }
 
+    /**
+     * @brief Set the double buffering flag for L0
+     * @param [in] isL0Db: boolean flag to indicate if L0 double buffering is used
+     */
     __aicore__ inline void SetDBFlag(bool isL0Db = true)
     {
         useL0PingPong_ = static_cast<uint16_t>(isL0Db);
     }
 
+    /**
+     * @brief Allocate an L0 buffer
+     * @return Reference to the current TBufPoolL0 instance
+     */
     __aicore__ inline TBufPoolL0& Allocate()
     {
         AscendC::WaitFlag<AscendC::HardEvent::M_MTE1>(l0PingPongFlag_);
         return *this;
     }
 
+    /**
+     * @brief Get a L0 buffer
+     * @param [in] Pos: the position of the buffer
+     * @param [in] T: the type of the buffer
+     * @param [in] subIdx: the sub-index of the buffer
+     * @return LocalTensor of type T
+     */
     template <AscendC::TPosition Pos, typename T>
     __aicore__ inline AscendC::LocalTensor<T> GetBuffer(uint8_t subIdx = 0)
     {
@@ -61,24 +86,42 @@ public:
         return retTensor;
     }
 
+    /**
+     * @brief Check if a buffer is hit
+     * @param [in] Pos: the position of the buffer
+     * @param [in] pos: the position to check
+     * @return Boolean indicating if the buffer is hit
+     */
     template <AscendC::TPosition Pos>
     __aicore__ inline bool Hit(uint32_t pos = 0)
     {
         return false;
     }
 
+    /**
+     * @brief Reset the cache
+     */
     __aicore__ inline void ResetCache() {}
 
+    /**
+     * @brief Enqueue a buffer
+     */
     __aicore__ inline void EnQue()
     {
         AscendC::SetFlag<AscendC::HardEvent::MTE1_M>(l0PingPongFlag_);
     }
 
+    /**
+     * @brief Dequeue a buffer
+     */
     __aicore__ inline void DeQue()
     {
         AscendC::WaitFlag<AscendC::HardEvent::MTE1_M>(l0PingPongFlag_);
     }
 
+    /**
+     * @brief Free a buffer
+     */
     __aicore__ inline void Free()
     {
         AscendC::SetFlag<AscendC::HardEvent::M_MTE1>(l0PingPongFlag_);
@@ -95,4 +138,4 @@ private:
 } // namespace Tile
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_TBUF_POOL_L0_DEFAULT_H
+#endif // MATMUL_TILE_LOAD_DATA_TBUF_POOL_L0_DEFAULT_H

@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,11 @@
  * \brief
  */
 
-#ifndef ACT_FUSION_MUL_H
-#define ACT_FUSION_MUL_H
+#ifndef EPILOGUE_FUSION_FUSION_MUL_H
+#define EPILOGUE_FUSION_FUSION_MUL_H
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/device_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -50,7 +50,7 @@ public:
     {
         static constexpr int64_t stageNum = 2;
         inputGlobal_.SetGlobalBuffer(reinterpret_cast<__gm__ DataTypeIn*>(params.inputGmAddr));
-        int64_t lastUBSize = TOTAL_UB_SIZE - ubOffset * sizeof(DataTypeIn);
+        int64_t lastUBSize = AscendC::TOTAL_UB_SIZE - ubOffset * sizeof(DataTypeIn);
         ASCENDC_ASSERT((lastUBSize > ubCalcN * sizeof(DataTypeIn)), {
             KERNEL_LOG(KERNEL_ERROR, , "ub size limit %ld, %ld!", lastUBSize, ubCalcN * sizeof(DataTypeIn));
         });
@@ -66,13 +66,13 @@ public:
                                       int64_t curAivN, int strideN, int64_t stageSize)
     {
         int64_t curAivNAlign = AlignBlock<DataTypeIn>(curAivN);
-        TPipeSetWaitFlag<HardEvent::MTE3_MTE2>();
-        DataCopyExtParams copyParams{static_cast<uint16_t>(stageSize / curAivNAlign),
+        TPipeSetWaitFlag<AscendC::HardEvent::MTE3_MTE2>();
+        AscendC::DataCopyExtParams copyParams{static_cast<uint16_t>(stageSize / curAivNAlign),
                                      static_cast<uint32_t>(curAivN * sizeof(DataTypeOut)),
                                      static_cast<uint32_t>((strideN - curAivN) * sizeof(DataTypeIn)), 0, 0};
         AscendC::DataCopyPadExtParams<DataTypeIn> padParams{true, 0, 0, 0};
         AscendC::DataCopyPad(inputLocal_, inputGlobal_[offset], copyParams, padParams);
-        TPipeSetWaitFlag<HardEvent::MTE2_V>();
+        TPipeSetWaitFlag<AscendC::HardEvent::MTE2_V>();
         AscendC::Mul(outputLocal, inputLocal_, srcLocal, stageSize);
         AscendC::PipeBarrier<PIPE_V>();
     }
@@ -85,4 +85,4 @@ public:
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_FUSION_MUL_OP_H
+#endif // ACT_INCLUDE_EPILOGUE_FUSION_MUL_OP_H

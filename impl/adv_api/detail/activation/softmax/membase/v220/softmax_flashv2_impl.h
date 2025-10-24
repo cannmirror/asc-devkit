@@ -574,6 +574,8 @@ __aicore__ inline void SoftmaxFlashV2M1PostProcess(const LocalTensor<T1>& dstTen
     const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
     const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM, tiling.splitK, tiling.reduceM, tiling.reduceK};
     ReduceLastND tailParam = { tiling.tailM, originalSrcShape.k, tiling.tailM, tiling.splitK, tiling.tailM, tiling.reduceK};
 

@@ -174,51 +174,85 @@ class BlockMmad {};
 
 - `DispatchPolicy`：流水策略，Block层重要参数之一，使`BlockMmad`可以根据不同的流水策略进行特化；
 - `L1TileShape`和`L0TileShape`：对应L1 Buffer和L0 Buffer上使用的基本块大小，由`(L1M, L1N, L0K)`和`(L0M, L0N, L0K)`表示；
-- `AType`、`BType`、`CType`、`BiasType`：MatmulType的实例，其中包含了A、B、C矩阵和Bias向量的内存逻辑位置、物理排布格式、数据类型和是否转置等信息；MatmulType的说明详见[《Ascend C算子开发接口》](https://www.hiascend.com/document/redirect/CannCommunityAscendCApi)中的“高阶API > Matmul > Matmul > 使用说明 > MatmulType参数说明”。
+
+  模板参数`L1TileShape`和`L0TileShape`的限制如下：
+
+  <table>
+      <tr>
+          <th>模板参数</th>
+          <th>限制</th>
+      </tr>
+      <tr>
+          <td rowspan="4"><code>L1TileShape</code></td>
+          <td><code>L1M % 16 == 0</code> 且 <code>L1M &lt;= 128</code></td>
+      </tr>
+      <tr>
+          <td><code>L1N % 16 == 0</code> 且 <code>L1N &lt;= 256</code> </td>
+      </tr>
+      <tr>
+          <td><code>L1K % 16 == 0</code></td>
+      </tr>
+      <tr>
+          <td><code>(L1M * L1K * sizeof(AType) + L1K * L1N * sizeof(BType)) * 2 &lt;= L1Size</code></td>
+      </tr>
+      <tr>
+          <td rowspan="6"><code>L0TileShape</code></td>
+          <td><code>L0M == L1M</code></td>
+      </tr>
+      <tr>
+          <td><code>L0N == L1N</code></td>
+      </tr>
+      <tr>
+          <td><code>L0K % 16 == 0</code> 且 <code>L1K % L0K == 0</code></td>
+      </tr>
+      <tr>
+          <td><code>L0M * L0K * sizeof(AType) &lt;= L0ASize</code></td>
+      </tr>
+      <tr>
+          <td><code>L0K * L0N * sizeof(BType) &lt;= L0BSize</code></td>
+      </tr>
+      <tr>
+          <td><code>L0M * L0N * sizeof(CType) &lt;= L0CSize</code></td>
+      </tr>
+  </table>
+
+- `AType`、`BType`、`CType`、`BiasType`：支持以下两种实例，但是不可混用；
+  - MatmulType的实例，其中包含了A、B、C矩阵和Bias向量的内存逻辑位置、物理排布格式、数据类型和是否转置等信息；MatmulType的说明详见[《Ascend C算子开发接口》](https://www.hiascend.com/document/redirect/CannCommunityAscendCApi)中的“高阶API > Matmul > Matmul Kernel侧接口 > 使用说明 > MatmulType参数说明  ”；
+  - MatmulLayoutType的实例，MatmulLayoutType的参数说明如下：
+
+    <table>
+        <tr>
+            <th>参数</th>
+            <th>说明</th>
+        </tr>
+        <tr>
+            <td>LAYOUT</td>
+            <td>
+            矩阵的数据排布格式，具体为：<br>
+            行优先（RowMajor）：矩阵的每一行数据在内存中是连续存储的。<br>
+            列优先（ColMajor）：矩阵的每一列数据在内存中是连续存储的。<br>
+            行优先对齐（RowMajorAlign）：矩阵的每一行数据在内存中是连续存储的，每行数据不足32字节时，将行方向上补齐数据至32字节。<br>
+            列优先对齐（ColumnMajorAlign）：矩阵的每一列数据在内存中是连续存储的，每列数据不足32字节时，将列方向上补齐数据至32字节。<br>
+            FRACTAL_NZ（Nz）：FRACTAL_NZ数据排布格式。<br>
+            FRACTAL_ZN（Zn）：FRACTAL_ZN数据排布格式。<br>
+            </td>
+        </tr>
+        <tr>
+            <td>TYPE</td>
+            <td>
+            数据类型。支持的范围与MatmulType中的TYPE参数相同。
+            </td>
+        </tr>
+        <tr>
+            <td>POSITION</td>
+            <td>
+            内存逻辑位置。支持的范围与MatmulType中的POSITION参数相同。
+            </td>
+        </tr>
+    </table>
+
 - `TileCopy`: Tile层`TileCopy`的实例，包含了不同访存层级间的数据拷贝，如GlobalMemory到L1 Buffer，L1 Buffer到L0 Buffer，L0 Buffer到GlobalMemory等。
 - `typename = void`：支持利用[`SFINAE`](https://en.cppreference.com/w/cpp/language/sfinae.html)机制实现不同的模板特化。
-
-其中模板参数`L1TileShape`和`L0TileShape`的限制如下：
-
-<table>
-    <tr>
-        <th>模板参数</th>
-        <th>限制</th>
-    </tr>
-    <tr>
-        <td rowspan="4"><code>L1TileShape</code></td>
-        <td><code>L1M % 16 == 0</code> 且 <code>L1M &lt;= 128</code></td>
-    </tr>
-    <tr>
-        <td><code>L1N % 16 == 0</code> 且 <code>L1N &lt;= 256</code> </td>
-    </tr>
-    <tr>
-        <td><code>L1K % 16 == 0</code></td>
-    </tr>
-    <tr>
-        <td><code>(L1M * L1K * sizeof(AType) + L1K * L1N * sizeof(BType)) * 2 &lt;= L1Size</code></td>
-    </tr>
-    <tr>
-        <td rowspan="6"><code>L0TileShape</code></td>
-        <td><code>L0M == L1M</code></td>
-    </tr>
-    <tr>
-        <td><code>L0N == L1N</code></td>
-    </tr>
-    <tr>
-        <td><code>L0K % 16 == 0</code> 且 <code>L1K % L0K == 0</code></td>
-    </tr>
-    <tr>
-        <td><code>L0M * L0K * sizeof(AType) &lt;= L0ASize</code></td>
-    </tr>
-    <tr>
-        <td><code>L0K * L0N * sizeof(BType) &lt;= L0BSize</code></td>
-    </tr>
-    <tr>
-        <td><code>L0M * L0N * sizeof(CType) &lt;= L0CSize</code></td>
-    </tr>
-</table>
-
 
 ### DispatchPolicy
 

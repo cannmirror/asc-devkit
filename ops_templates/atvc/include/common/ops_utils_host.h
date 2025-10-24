@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -14,8 +13,8 @@
  * \brief
  */
 
-#ifndef ATVC_COMMON_OPS_UTILS_HOST_H
-#define ATVC_COMMON_OPS_UTILS_HOST_H
+#ifndef ATVC_OPS_UTILS_HOST_H
+#define ATVC_OPS_UTILS_HOST_H
 
 namespace OpsUtils {
 template <typename T>
@@ -67,10 +66,11 @@ inline T Aligned(T value, T alignment)
  * if align is 0, return 0
  */
 template <typename T, typename U>
-inline typename std::enable_if <std::is_integral<T>::value, T>::type FloorAlign(T x, U align) {
+inline typename std::enable_if<std::is_integral<T>::value, T>::type FloorAlign(T x, U align)
+{
     return align == 0 ? 0 : x / align * align;
 }
 
-}
+} // namespace OpsUtils
 
-#endif  // ATVC_COMMON_OPS_UTILS_HOST_H
+#endif // ATVC_OPS_UTILS_HOST_H

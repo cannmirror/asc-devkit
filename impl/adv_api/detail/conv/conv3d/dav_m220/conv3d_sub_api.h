@@ -43,7 +43,7 @@ public:
         uint64_t srcDValue =
             self_->ctx.biasFullLoadFlag ? ConvApi::AlignB(self_->ctx.singleCoreCo, ConvApi::BLOCK_L0_N) : ConvApi::AlignB(currentNL0_, ConvApi::BLOCK_L0_N);
         if (currentNL0_ != srcDValue) {
-            // 非16对齐场景补0, 尾块
+            // Non 16 aligned scene with 0, tail block
             AscendC::InitConstValueParams<DataTypeT> initConstValueParams;
             initConstValueParams.repeatTimes = 1;
             initConstValueParams.blockNum = srcDValue * sizeof(DataTypeT) / ConvApi::AL1_BLOCK_SIZE;
@@ -289,7 +289,7 @@ private:
     {
         uint64_t offsetCout = tilingNBL1_ * self_->ctx.nBL1Iter + self_->ctx.conv3dTiling->nL0 * self_->ctx.nBL0Iter;
         uint64_t offsetM = tilingMAL1_ * self_->ctx.mAL1Iter + self_->ctx.conv3dTiling->mL0 * self_->ctx.mAL0Iter;
-        // 当前每次只出一个dout
+        // Currently, only one dout is produced each time
         uint64_t offsetDout = self_->ctx.dOutIter;
         if constexpr (Intf::groupConvType) {
             return offsetDout * ConvApi::AlignB(self_->ctx.conv3dTiling->orgCo, self_->ctx.cin0) * valueHoWo_ +

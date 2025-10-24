@@ -43,7 +43,7 @@ public:
     {
         PreProcess();
         if (IsMTail() || IsKAL1Tail()) {
-            // L1 刷零，大小按照L0B对齐
+            // L1 brush zero, align size according to L0B
             AscendC::InitConstValueParams<typename Intf::InputT> initConstValueParams;
             SetInitConstValueParams(initConstValueParams, 1, 
                 alignCurrentMAL1 * alignCurrentKAL1 / al1BlockNum);
@@ -218,7 +218,7 @@ public:
     {
         PreProcess();
         if (IsNTail() || IsKBL1Tail()) {
-            // L1 刷零
+            // L1 brush zero
             AscendC::InitConstValueParams<typename Intf::WeightT> initConstValueParams;
             SetInitConstValueParams(initConstValueParams, 1, 
                 alignCurrentNBL1 * alignCurrentKBL1 / bl1BlockNum);

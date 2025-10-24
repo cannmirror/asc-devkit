@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_COPY_B1_TO_B2_WITH_LAYOUT_H
-#define ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_COPY_B1_TO_B2_WITH_LAYOUT_H
+#ifndef MATMUL_TILE_LOAD_DATA_COPY_B1_TO_B2_WITH_LAYOUT_H
+#define MATMUL_TILE_LOAD_DATA_COPY_B1_TO_B2_WITH_LAYOUT_H
 
 #include "../tile_copy_policy.h"
 #include "./load_to_l0_utils.h"
@@ -22,6 +22,17 @@
 namespace Act {
 namespace Gemm {
 namespace Tile {
+/**
+ * @struct Copy
+ * @brief Template structure for copying data from B1 to B2 with layout for Ascend910B
+ * 
+ * This template structure provides the functionality to copy data from B1 to B2 with specific layout configuration
+ * It supports different architectures and provides optimized load operations based on the architectures and data layout
+ * 
+ * @param [in] BType: the data type to be copied
+ * @param [in] DstTrait: the trait of destination tensor
+ * @param [in] SrcTrait: the trait of source tensor
+ */
 template <class BType, class DstTrait, class SrcTrait>
 struct Copy<
     Arch::Ascend910B, CopyWithLayout, BType, DstTrait, SrcTrait,
@@ -30,11 +41,19 @@ public:
     using DstTensor = AscendC::LocalTensor<DstTrait>;
     using SrcTensor = AscendC::LocalTensor<SrcTrait>;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
+    /**
+     * @brief Operator to perform the copy operation for Ascend910B
+     * 
+     * This operator performs the copy operation from B1 to B2 based on the provided coordinates
+     * It checks the architecture and performs the appropriate load operation
+     * 
+     * @param [in] Coord: the type of the coordinate
+     * @param [in] l0B: the destination tensor
+     * @param [in] l1B: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void operator()(DstTensor& l0B, SrcTensor& l1B, const Coord& coord)
+    __aicore__ inline void operator()(const DstTensor& l0B, const SrcTensor& l1B, const Coord& coord)
     {
 #if __CCE_AICORE__ == 220
         if constexpr (BType::isTrans) {
@@ -49,8 +68,19 @@ public:
 
 private:
 #if __CCE_AICORE__ == 220
+    /**
+     * @brief Load data from B1 to B2 with transpose for Ascend910B
+     * 
+     * This function performs the load operation from B1 to B2 with transpose
+     * It calculates the necessary parameters and performs the load operation using `LoadData2dParams`
+     * 
+     * @param [in] Coord: the type of the coordinate
+     * @param [in] l0B: the destination tensor
+     * @param [in] l1B: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void TransposeLoadB2(DstTensor& l0B, SrcTensor& l1B, const Coord& coord)
+    __aicore__ inline void TransposeLoadB2(const DstTensor& l0B, const SrcTensor& l1B, const Coord& coord)
     {
         auto srcShape = l1B.GetTensorTrait().GetLayout().GetShape();
         auto srcStride = l1B.GetTensorTrait().GetLayout().GetStride();
@@ -106,8 +136,19 @@ private:
         }
     }
 
+    /**
+     * @brief Load data from B1 to B2 without transpose for Ascend910B
+     * 
+     * This function performs the load operation from B1 to B2 without transpose
+     * It calculates the necessary parameters and performs the load operation using `LoadData3DParamsV2Pro`
+     * 
+     * @param [in] Coord: the type of the coordinate
+     * @param [in] l0B: the destination tensor
+     * @param [in] l1B: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void NoneTransposeLoadB2(DstTensor& l0B, SrcTensor& l1B, const Coord& coord)
+    __aicore__ inline void NoneTransposeLoadB2(const DstTensor& l0B, const SrcTensor& l1B, const Coord& coord)
     {
         auto srcShape = l1B.GetTensorTrait().GetLayout().GetShape();
         auto srcStride = l1B.GetTensorTrait().GetLayout().GetStride();
@@ -134,6 +175,13 @@ private:
         AscendC::LoadData(dstLocal, srcLocal, loadData3DV2);
     }
 
+    /**
+     * @brief Set the Fmatrix for loading data for Ascend910B
+     * 
+     * This function sets the Fmatrix for loading data based on the provided parameters
+     * 
+     * @param [in] bL1K: the size of the block in B1
+     */
     __aicore__ inline void SetFmatrix(uint16_t bL1K)
     {
         if constexpr (!BType::isTrans) {
@@ -144,6 +192,17 @@ private:
 #endif
 };
 
+/**
+ * @struct Copy
+ * @brief Template structure for copying data from B1 to B2 with layout for Ascend910_95
+ * 
+ * This template structure provides the functionality to copy data from B1 to B2 with specific layout configuration
+ * for the Ascend910_95 architecture
+ * 
+ * @param [in] BType: the data type to be copied
+ * @param [in] DstTrait: the trait of destination tensor
+ * @param [in] SrcTrait: the trait of source tensor
+ */
 template <class BType, class DstTrait, class SrcTrait>
 struct Copy<
     Arch::Ascend910_95, CopyWithLayout, BType, DstTrait, SrcTrait,
@@ -152,11 +211,19 @@ public:
     using DstTensor = AscendC::LocalTensor<DstTrait>;
     using SrcTensor = AscendC::LocalTensor<SrcTrait>;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
+    /**
+     * @brief Operator to perform the copy operation for Ascend910_95
+     * 
+     * This operator performs the copy operation from B1 to B2 based on the provided coordinates
+     * It checks the architecture and performs the appropriate load operation
+     * 
+     * @param [in] Coord: the type of the coordinate
+     * @param [in] l0B: the destination tensor
+     * @param [in] l1B: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void operator()(DstTensor& l0B, SrcTensor& l1B, const Coord& coord)
+    __aicore__ inline void operator()(const DstTensor& l0B, const SrcTensor& l1B, const Coord& coord)
     {
 #if defined(__DAV_C310__)
         if constexpr (BType::isTrans) {
@@ -173,8 +240,19 @@ private:
 #if defined(__DAV_C310__)
     constexpr static int32_t C0_SIZE = AscendC::AuxGetC0Size<typename BType::T>();
 
+    /**
+     * @brief Load data from B1 to B2 with transpose for Ascend910_95
+     * 
+     * This function performs the load operation from B1 to B2 with transpose 
+     * It calculates the necessary parameters and performs the load operation using `LoadData2DParamsV2`
+     * 
+     * @param [in] Coord: the type of the coordinate
+     * @param [in] l0B: the destination tensor
+     * @param [in] l1B: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void TransposeLoadB2(DstTensor& l0B, SrcTensor& l1B, const Coord& coord)
+    __aicore__ inline void TransposeLoadB2(const DstTensor& l0B, const SrcTensor& l1B, const Coord& coord)
     {
         auto srcShape = l1B.GetTensorTrait().GetLayout().GetShape();
         auto dstShape = l0B.GetTensorTrait().GetLayout().GetShape();
@@ -199,8 +277,19 @@ private:
         AscendC::LoadData(dstLocal, srcLocal, loadDataParams);
     }
 
+    /**
+     * @brief Load data from B1 to B2 without transpose for Ascend910_95
+     * 
+     * This function performs the load operation from B1 to B2 without transpose
+     * It calculates the necessary parameters and performs the load operation using `LoadData2DParamsV2`
+     * 
+     * @param [in] Coord: the type of the coordinate
+     * @param [in] l0B: the destination tensor
+     * @param [in] l1B: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void NoneTransposeLoadB2(DstTensor& l0B, SrcTensor& l1B, const Coord& coord)
+    __aicore__ inline void NoneTransposeLoadB2(const DstTensor& l0B, const SrcTensor& l1B, const Coord& coord)
     {
         auto srcShape = l1B.GetTensorTrait().GetLayout().GetShape();
         auto dstShape = l0B.GetTensorTrait().GetLayout().GetShape();

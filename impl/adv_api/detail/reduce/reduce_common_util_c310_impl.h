@@ -82,7 +82,7 @@ __aicore__ inline uint16_t CalculateFolds(const uint16_t count)
 
 template <class T, class U, const MicroAPI::RegTrait &Trait, const MicroAPI::CastTrait &CastTraitUppper,
     const MicroAPI::CastTrait &CastTraitLower, auto Binaryfunc, auto Reducefunc>
-__aicore__ inline void ReduceARCastfoldOneToThree(MicroAPI::RegTensor<T, Trait> &vreg0,
+__simd_callee__ inline void ReduceARCastfoldOneToThree(MicroAPI::RegTensor<T, Trait> &vreg0,
     MicroAPI::RegTensor<T, Trait> &vreg1, MicroAPI::MaskReg &fullMask)
 {
     MicroAPI::RegTensor<U, Trait> vreg0CastB32;
@@ -96,6 +96,21 @@ __aicore__ inline void ReduceARCastfoldOneToThree(MicroAPI::RegTensor<T, Trait> 
     MicroAPI::Cast<U, T, CastTraitUppper>(vreg0CastB32, vreg0, fullMask);
     Reducefunc(vreg1CastB32, vreg0CastB32, fullMask);
     MicroAPI::Cast<T, U, CastTraitLower>(vreg1, vreg1CastB32, fullMask);
+}
+
+template <class T>
+__aicore__ inline void ReduceCopyOutImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t calCount)
+{
+    uint16_t repeatElm = GetVecLen();
+    uint32_t sreg = calCount * sizeof(T);
+    uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(sreg, repeatElm));
+    MicroAPI::MaskReg preg;
+    MicroAPI::RegTensor<uint8_t> srcReg;
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        preg = MicroAPI::UpdateMask<uint8_t>(sreg);
+        MicroAPI::DataCopy(srcReg, (__ubuf__ uint8_t *)src + i * repeatElm);
+        MicroAPI::DataCopy((__ubuf__ uint8_t *)dst + i * repeatElm, srcReg, preg);
+    }
 }
 
 template <typename T> struct ExtractReduceCastType {

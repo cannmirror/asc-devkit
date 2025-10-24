@@ -79,8 +79,8 @@ public:
         EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetOuterScaleKbIdx()), 0);
         EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetNextOuterScaleKaIdx()), 2);
         EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetNextOuterScaleKbIdx()), 0);
-        EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetTileShapeScaleA()), 3);
-        EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetTileShapeScaleB()), 8);
+        EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetTileShapeScaleKa()), 3);
+        EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetTileShapeScaleKb()), 8);
         EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetScaleFactorKa()), 1);
         EXPECT_EQ((MATMUL_MODULE(KLoop)->template GetScaleFactorKb()), 1);
     }

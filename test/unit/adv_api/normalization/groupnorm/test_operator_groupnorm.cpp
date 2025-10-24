@@ -70,11 +70,12 @@ __aicore__ inline void GetGroupNormNDTillingInfo(const ShapeInfo& inputShapeInfo
     tiling.tmpBufSize = stackBufferSize / ONE_BLK_SIZE * ONE_BLK_SIZE / B32_BYTE_SIZE;
     tiling.oneTmpSize = (tiling.tmpBufSize - meanVarTotalSize) / tiling.numberOfTmpBuf;
 
-    // 为了使 MeanVarTensor 可以直接使用 Add 而不需使用 GetValue, 需保证每个迭代至少有8的整数倍组 group
+    // to enable MeanVarTensor to directly use Add without need to use GetValue
+    // it is necessary to ensure that each iteration has at least 8 integer multiples of groups
     tiling.bsCurLength = tiling.oneTmpSize / (GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION * tiling.d * tiling.hwAlignSize) *
         GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION;
 
-    // 判断是否满足 smallShape 计算
+    // determine whether the condition for smallShape is met
     uint32_t k = GROUPNORM_REDUCESUM_MAX_REPEAT_SMALLSHAPE;
     while ((tiling.dhwAlignSize / (ONE_BLK_SIZE / B32_BYTE_SIZE)) % k != 0) {
         k--;
@@ -82,7 +83,9 @@ __aicore__ inline void GetGroupNormNDTillingInfo(const ShapeInfo& inputShapeInfo
     tiling.smallShape = (tiling.hwAlignSize <= GROUPNORM_REDUCESUM_MAX_FLOAT_NUM) && 
     (tiling.hwAlignSize * tiling.d <= GROUPNORM_REDUCESUM_MAX_FLOAT_NUM * k);
 
-    // ReduceSum0级接口带来的约束, 根据DHW计算2次 ReduceSum 的 mask/repeat, 以及 DHW/bsCurLength 取值范围
+    // the constraints instroduced by the ReduceSum0 interface
+    // based one the DHW calculation of the mask/repeat for 2 ReduceSum operations,
+    // as well as the value range of DHW/bsCurLength
     if (tiling.smallShape) {
         uint32_t mask1{GROUPNORM_MAX_MASK_VAL};
         if (tiling.dhwAlignSize > GROUPNORM_MAX_MASK_VAL) {

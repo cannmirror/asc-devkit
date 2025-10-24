@@ -393,30 +393,32 @@ private:
     void GetL0FactorsCand(L0Factors& resFactors, const CoreStatusPack& coreStatus, SingleCoreStatus& singleCoreStatus,
         int32_t* parasCombo, const MatmulRunParas& param) const;
     MKNParasCombo GetParasCombo(const int32_t& index, const MatmulRunParas& param) const;
-    void GetL0cDB(const L0Factors (&resFactors)[L0PARAS_COMBO_LEN], const CoreStatusPack& coreStatus,
-        L0StatusPack& l0Status) const;
+    void GetL0cDB(const L0Factors (&resFactors)[L0PARAS_COMBO_LEN], const CoreStatusPack& coreStatus, L0StatusPack& l0Status) const;
+    int32_t GetMxCurL1Size(SingleCoreStatus& singleCoreStatus) const;
     void GetL0Factors(const std::string& opType, const MatmulRunParas& param, const CoreStatusPack& coreStatus,
         SingleCoreStatus& singleCoreStatus) const;
     void AdjustSparseL0Factors(SingleCoreStatus& singleCoreStatus) const;
     void AdjustMxL0Factors(SingleCoreStatus& singleCoreStatus) const;
     void UpdateBaseKForMxGemv(int32_t &baseK, SingleCoreStatus& singleCoreStatus) const;
-    void AdjustMxL1Factors(SingleCoreStatus& singleCoreStatus, const int32_t k0Size) const;
-    void GetMxScaleFactor(const SingleCoreStatus& singleCoreStatus, const int32_t k0Size, int32_t& mxTypePara) const;
+    void AdjustMxL1Factors(SingleCoreStatus& singleCoreStatus) const;
+    void FixMxScaleFactorByRange(uint8_t& factor, uint8_t maxFactor) const;
+    void FixMxScaleFactorByPosition(uint8_t& scaleFactorM, uint8_t& scaleFactorN, uint8_t& scaleFactorKa, uint8_t& scaleFactorKb) const;
+    void GetMxScaleSize(int32_t& scaleA1Size, int32_t& scaleB1Size) const;
+    void GetMxScaleFactor(const SingleCoreStatus& singleCoreStatus, int32_t& mxTypePara) const;
     void CheckL0DB(SingleCoreStatus& singleCoreStatus, const int32_t baseK) const;
     void CheckL0DB(int32_t baseM, int32_t baseN, int32_t baseK, SingleCoreStatus &singleCoreStatus) const;
-    void GetMxUsedL1Size(const SingleCoreStatus& singleCoreStatus, const int32_t k0Size,
+    void GetMxUsedL1Size(const SingleCoreStatus& singleCoreStatus,
         int32_t& dataUsedL1Size, int32_t& scaleUsedL1Size, int32_t& biasUsedL1Size) const;
-    bool AdjustNBuffer33L0Factors(const MatmulRunParas &param, const CoreStatusPack &coreStatus,
-        SingleCoreStatus &singleCoreStatus) const;
+    bool AdjustNBuffer33L0Factors(const MatmulRunParas &param, const CoreStatusPack &coreStatus, SingleCoreStatus &singleCoreStatus) const;
     bool AdjustNBuffer33L1Factors(const CoreStatusPack &coreStatus, SingleCoreStatus &singleCoreStatus) const;
     bool CheckFixSplitInputs(int32_t singleCoreM) const;
-    void CalcBaseShape(const SingleCoreStatus &singleCoreStatus,
-        int32_t &baseM, int32_t &baseN, int32_t &baseK, int32_t &reduceSize) const;
+    void CalcBaseShape(const SingleCoreStatus &singleCoreStatus, int32_t &baseM, int32_t &baseN, int32_t &baseK, int32_t &reduceSize) const;
     bool CheckL0ASize(int32_t singleCoreM, int32_t singleCoreK, int32_t &baseM, int32_t &baseK) const;
     bool CheckL0BSize(int32_t singleCoreN, int32_t singleCoreK, int32_t &baseN, int32_t &baseK) const;
     bool CheckL0CSize(int32_t singleCoreM, int32_t singleCoreN, int32_t &baseM, int32_t &baseN) const;
     int32_t GetNBuffer33L1Size(const SingleCoreStatus &singleCoreStatus) const;
     bool IsNeedAlign(bool isA) const;
+    void GetABL1Const(int32_t& aL1Const, int32_t& bL1Const, const L1StatusPack& l1Status) const;
     int32_t GetL1Size(const L1StatusPack& l1Status, const L0StatusPack& l0Status) const;
     int32_t CalL1MaxLen(int32_t resL1Size, L1StatusPack& l1Status, const L0StatusPack& l0Status,
         const int32_t alignValue, const L1TilingType axisName) const;
@@ -429,20 +431,16 @@ private:
         int32_t res[][7]) const;
     void NeitherFullLoadDb(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
         const int32_t& kbl1Db) const;
-    void NeitherFullLoadMN(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-        L1StatusPack& l1Status) const;
-    void NeitherFullLoadKforNZ(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status,
-        L1StatusPack& l1Status) const;
-    void NeitherFullLoadKforND(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
-        const int32_t& kMaxAxis) const;
+    void NeitherFullLoadMN(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const;
+    void NeitherFullLoadKforNZ(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const;
+    void NeitherFullLoadKforND(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status, const int32_t& kMaxAxis) const;
     void NeitherFullLoadK(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status) const;
     void L1StatusNeitherFullLoad(const CoreStatusPack& coreStatus, const L0StatusPack& l0Status, L1StatusPack& l1Status,
         int32_t res[][7]) const;
     void GetL1Factors(const std::string& opType, const MatmulRunParas& param, const CoreStatusPack& coreStatus,
         const L0StatusPack& l0Status, L1StatusPack& l1Status) const;
     bool CheckL1Size(int32_t amat, int32_t bmat, int32_t curBiasL1Size = 0) const;
-    void GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32_t& ubSize,
-                     int32_t a1LengthCache, int32_t b1LengthCache) const;
+    void GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32_t& ubSize, int32_t a1LengthCache, int32_t b1LengthCache) const;
     void GetBankConflictSize(int32_t& length, bool isAMatrix) const;
     void GetBankConflictSize(const L1StatusPack& l1Status, const L0StatusPack& l0Status, int32_t& length, bool isAMatrix) const;
     int32_t GetAL1UbSize(const L1StatusPack& l1Status, const L0StatusPack& l0Status) const;
@@ -486,17 +484,14 @@ private:
         const MatmulRunParas& params) const;
     void FillParam(MatmulRunParas& param);
     bool IsInvalidFactor(int32_t factor) const;
-    void AddOptimalFactors(const std::string& opType, const MatmulRunParas& params,
-        BlockDimCalculator& blockDimRes) const;
+    void AddOptimalFactors(const std::string& opType, const MatmulRunParas& params, BlockDimCalculator& blockDimRes) const;
     int32_t LoopNumFromSingleCoreToL0(const CoreStatusPack& coreStatus, const DimFactor& blockDimsFactor) const;
-    void GenBlockDimsMapFactors(const std::string& opType, MatmulRunParas& params,
-        BlockDimCalculator& blockDimRes) const;
+    void GenBlockDimsMapFactors(const std::string& opType, MatmulRunParas& params, BlockDimCalculator& blockDimRes) const;
     void UpdateBufferSize(const TilingPolicy policy, const CoreStatusPack& coreStatus) const;
     bool UserPolicy(const TilingPolicy policy, const CoreStatusPack& coreStatus, const BlockDimCalculator& blockDimRes) const;
     void PreprocessL0DB();
     void GetL0bAlign(std::vector<int32_t>& factors) const;
-    int32_t GetBigPackageCondition(const CoreStatusPack &coreStatus,
-        const BlockDimCalculator &blockDimRes, const MatmulRunParas &params) const;
+    int32_t GetBigPackageCondition(const CoreStatusPack &coreStatus, const BlockDimCalculator &blockDimRes, const MatmulRunParas &params) const;
     int UpdateDepthB1(const SingleCoreStatus& singleCoreStatus) const;
     void GetSingleShape(const CoreStatusPack &coreStatus, const MatmulRunParas &param, int32_t &singleCoreM,
         int32_t &singleCoreN, int32_t &singleCoreK) const;
@@ -532,6 +527,10 @@ private:
     int32_t GetScaleABaseWidthAlign() const;
     int32_t GetScaleBBaseHeightAlign() const;
     int32_t GetScaleBBaseWidthAlign() const;
+    int32_t GetMatrixAByteSize() const;
+    int32_t GetMatrixBByteSize() const;
+    int32_t GetMatrixScaleAByteSize() const;
+    int32_t GetMatrixScaleBByteSize() const;
     void CalABAndScaleABL1Space(int32_t matrixByteSize, int32_t cacheNum, int32_t stepSize,
         uint32_t &curL1UpperHalfAddr, uint32_t &curL1LowerHalfAddr) const;
 private:

@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,8 +12,8 @@
  * \file grouped_matmul_constant.h
  * \brief
  */
-#ifndef ACT_UTILS_QGMM_CONSTANT_H
-#define ACT_UTILS_QGMM_CONSTANT_H
+#ifndef UTILS_GROUPED_MATMUL_CONSTANT_H
+#define UTILS_GROUPED_MATMUL_CONSTANT_H
 namespace Act {
 namespace Gemm {
 namespace GroupedMatmul {
@@ -33,10 +33,9 @@ constexpr uint64_t GMM_INNER_AXIS_MIN_SPLIT_VAL = 128; // ND2NZ cacheline 128
 constexpr int32_t GMM_MKN_LIST_LEN = 128;              // 128: predefined array legnth
 
 constexpr uint32_t GMM_BMM_BLOCK_NUM = 16;
-constexpr uint32_t GMM_K0_INT8 = 32;
+constexpr uint32_t K0_B8 = 32;
 constexpr uint32_t GMM_k0_FLOAT16 = 16;
 constexpr uint16_t GMM_DATA_BLOCK = 32;
-
 } // namespace GroupedMatmul
 } // namespace Gemm
 } // namespace Act

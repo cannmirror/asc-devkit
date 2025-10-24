@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,11 @@
  * \brief
  */
 
-#ifndef ACT_DEFAULT_FUSION_OP_H
-#define ACT_DEFAULT_FUSION_OP_H
+#ifndef EPILOGUE_FUSION_DEFAULT_FUSION_OP_H
+#define EPILOGUE_FUSION_DEFAULT_FUSION_OP_H
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/device_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -39,7 +39,7 @@ public:
     {
         return 0;
     }
-    __aicore__ inline void run(AscendC::LocalTensor<DataTypeOut>& dstLocal, AscendC::LocalTensor<DataTypeIn>& srcLocal,
+    __aicore__ inline void Run(AscendC::LocalTensor<DataTypeOut>& dstLocal, AscendC::LocalTensor<DataTypeIn>& srcLocal,
                                int64_t curAivM, int64_t curAivN, int64_t mIdx, int64_t nIdx)
     {
         dstLocal = srcLocal;
@@ -50,10 +50,10 @@ public:
                                       AscendC::LocalTensor<DataTypeIn>& srcLocal, int64_t curAivM, int64_t curAivN,
                                       int64_t mIdx, int64_t nIdx)
     {
-        run(dstLocal, srcLocal, curAivM, curAivN, mIdx, nIdx);
+        Run(dstLocal, srcLocal, curAivM, curAivN, mIdx, nIdx);
     }
 };
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_DEFAULT_FUSION_OP_H
+#endif // EPILOGUE_FUSION_DEFAULT_FUSION_OP_H

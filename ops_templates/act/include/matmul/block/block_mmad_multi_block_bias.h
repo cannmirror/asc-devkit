@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -12,132 +12,103 @@
  * \file block_mmad_multi_block_bias.h
  * \brief
  */
-#ifndef ACT_INCLUDE_MATMUL_BLOCK_BLOCK_MMAD_MULTI_BLOCK_BIAS_H
-#define ACT_INCLUDE_MATMUL_BLOCK_BLOCK_MMAD_MULTI_BLOCK_BIAS_H
+#ifndef MATMUL_BLOCK_BLOCK_MMAD_MULTI_BLOCK_BIAS_H
+#define MATMUL_BLOCK_BLOCK_MMAD_MULTI_BLOCK_BIAS_H
 
 #include "lib/matmul/matmul.h"
 #include "lib/matmul/tiling.h"
 #include "lib/matmul/constant_tiling.h"
 
-#include "./block_mmad.h"
-#include "./block_mmad_utils.h"
-#include "../../utils/tensor_utils.h"
-#include "../../utils/tuple_utils.h"
 #include "../policy/dispatch_policy.h"
-#include "../tile/tile_copy.h"
+#include "./matmul_impl_traits.h"
+#include "./block_mmad_with_params.h"
 
 namespace Act {
 namespace Gemm {
 namespace Block {
-template <class L1TileShape_, class L0TileShape_, class AType_, class BType_, class CType_, class BiasType_,
-          class TileCopy_>
-class BlockMmad<MatmulMultiBlockBias<>, L1TileShape_, L0TileShape_, AType_, BType_, CType_, BiasType_, TileCopy_> {
+template <class L1TileShape, class L0TileShape, class AT, class BT, class CT, class BiasT, class TileCopy>
+class BlockMmad<MatmulMultiBlockBias<>, L1TileShape, L0TileShape, AT, BT, CT, BiasT, TileCopy,
+    AscendC::Std::enable_if_t<IsMatmulLayoutTypeV<AT>>>
+    : public BlockMmad<MatmulMultiBlockBias<>, L1TileShape, L0TileShape,
+        ToMatmulTypeT<AT>, ToMatmulTypeT<BT>, ToMatmulTypeT<CT>, ToMatmulTypeT<BiasT>, TileCopy> {
+    using Base = BlockMmad<MatmulMultiBlockBias<>, L1TileShape, L0TileShape,
+                           ToMatmulTypeT<AT>, ToMatmulTypeT<BT>, ToMatmulTypeT<CT>, ToMatmulTypeT<BiasT>, TileCopy>;
+    using Base::Base;
+};
+
+/**
+* @class BlockMmad
+* @brief A template class BlockMmad for performing multi-block matrix multiplication operations
+*
+* The class is specialized base on MatmulMultiBlockBias<>
+*/
+template <class L1Shape, class L0Shape, class AType, class BType, class CType, class BiasType, class TileCopy_>
+class BlockMmad<MatmulMultiBlockBias<>, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy_,
+    AscendC::Std::enable_if_t<!IsMatmulLayoutTypeV<AType>>>
+    : public BlockMmadWithParams<
+        BlockMmad<MatmulMultiBlockBias<>, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy_>,
+        MatmulMultiBlockBias<>, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy_
+    > {
 public:
     using DispatchPolicy = MatmulMultiBlockBias<>;
-    using L1Shape = L1TileShape_;
-    using L0Shape = L0TileShape_;
-    using AType = AType_;
-    using BType = BType_;
-    using CType = CType_;
-    using BiasType = BiasType_;
+    using Self = BlockMmad<DispatchPolicy, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy_>;
+    using Base = BlockMmadWithParams<Self, DispatchPolicy, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy_>;
+    friend class BlockMmadWithParams<Self, DispatchPolicy, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy_>;
+
     using TileCopy = AscendC::Std::conditional_t<AscendC::Std::is_same_v<TileCopy_, void>,
                                                  Tile::TileCopy<Arch::Ascend910B, Tile::CopyWithParams>, TileCopy_>;
+    using MM = MatmulImplTraitsT<DispatchPolicy, L1Shape, L0Shape, AType, BType, CType, BiasType, TileCopy>;
+
+    static_assert(
+        IsF16OrBf16AB<AType, BType, CType>() || IsI8I8I32<AType, BType, CType>() || IsF32F32F32<AType, BType, CType>(),
+        "Unsupported dtype"
+    );
+    static_assert(IsNDOrAlign<AType>() && IsNDOrAlign<CType>(), "Only support ND format");
 
 public:
-    static_assert(IsF16F16F16<AType, BType, CType>() || IsF16F16F32<AType, BType, CType>() ||
-                      IsBf16Bf16Bf16<AType, BType, CType>() || IsBf16Bf16F32<AType, BType, CType>() ||
-                      IsI8I8I32<AType, BType, CType>() || IsF32F32F32<AType, BType, CType>(),
-                  "Unsupported dtype");
-    static_assert(IsND<AType>() && IsND<CType>(), "Only support ND format");
-    static_assert(IsTileShapeValid<L1Shape, L0Shape>(), "L1Shape or L0Shape is invalid");
-    static_assert(IsL1BufferValid<AType, BType, L1Shape>(), "L1 buffer overflow");
-    static_assert(IsL0BufferValid<AType, BType, L0Shape>(), "L0 buffer overflow");
-
-    __aicore__ BlockMmad() = default;
-    __aicore__ ~BlockMmad() = default;
-
-    template <const auto& MM_CFG, typename Impl, typename InputAType, typename InputBType, typename OutputCType,
-              typename InputBiasType>
-    struct MatmulPolicyNew
-        : public AscendC::Impl::Detail::MatmulPolicy<MM_CFG, Impl, InputAType, InputBType, OutputCType, InputBiasType> {
-    public:
-        template <class InputType, const auto& COPY_CFG>
-        using AdaptedCubeInA = typename TileCopy::template CopyGmToA1<InputType, COPY_CFG>;
-        using CopyCubeInA =
-            AscendC::Impl::Detail::CopyCubeIn<Impl, AscendC::MatmulInputAType<InputAType, typename InputAType::T>,
-                                              MM_CFG, void, AdaptedCubeInA>;
-
-        template <class InputType, const auto& COPY_CFG>
-        using AdaptedCubeInB = typename TileCopy::template CopyGmToB1<InputType, COPY_CFG>;
-        using CopyCubeInB =
-            AscendC::Impl::Detail::CopyCubeIn<Impl, AscendC::MatmulInputBType<InputBType, typename InputAType::T>,
-                                              MM_CFG, void, AdaptedCubeInB>;
-
-        template <class InputType, class OutputType, typename T = void>
-        using AdaptedCubeOut = typename TileCopy::template CopyCo1ToOut<InputType, OutputType>;
-        using CopyCubeOut =
-            AscendC::Impl::Detail::CopyCubeOut<Impl, InputAType, InputBType, OutputCType, MM_CFG,
-                                               AscendC::McgShfMode::SINGLE_DST_MODE, void, AdaptedCubeOut>;
-    };
-    constexpr static MatmulShapeParams shapeParams =
-        GetMatmulShapeParams<typename DispatchPolicy::SingleShape, L0Shape>();
-    constexpr static MatmulConfig cfg = GetMMConfig<MatmulConfigMode::CONFIG_MDL>(
-        shapeParams, GetFuncParams(DispatchPolicy::enableInputDataLenCheck), GetBiasParams(true));
-    constexpr static MatmulApiStaticTiling staticTiling =
-        AscendC::GetMatmulApiTiling<AType, BType, CType, BiasType, typename DispatchPolicy::SingleShape, L1Shape,
-                                    L0Shape>(cfg);
-
-    using MM = AscendC::MatmulImpl<AType, BType, CType, BiasType, staticTiling,
-                                   AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>, MatmulPolicyNew>;
-
-public:
-    __aicore__ inline void Init(TCubeTiling* __restrict cubeTiling, AscendC::TPipe* tpipe = nullptr)
-    {
-        matmul_.Init(cubeTiling, tpipe);
-    }
-    __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgK)
-    {
-        matmul_.SetOrgShape(orgM, orgN, orgK);
-    }
-    __aicore__ inline void SetSingleShape(int singleM, int singleN, int singleK)
-    {
-        matmul_.SetSingleShape(singleM, singleN, singleK);
-    }
+    /**
+    * @brief Set tensor A for matrix multiplication
+    * @param [in] gm: global tensor for matrix A
+    * @param [in] isTransposeA: whether to transpose matrix A, default is false
+    */
     __aicore__ inline void SetTensorA(const AscendC::GlobalTensor<typename AType::T>& gm, bool isTransposeA = false)
     {
         matmul_.SetTensorA(gm, isTransposeA);
     }
+    /**
+    * @brief Set tensor B for matrix multiplication
+    * @param [in] gm: global tensor for matrix B
+    * @param [in] isTransposeB: whether to transpose matrix B, default is false
+    */
     __aicore__ inline void SetTensorB(const AscendC::GlobalTensor<typename BType::T>& gm, bool isTransposeB = false)
     {
         matmul_.SetTensorB(gm, isTransposeB);
     }
+    /**
+    * @brief Set tensor bias for matrix multiplication
+    * @param [in] biasGlobal: global tensor for matrix bias
+    */
     __aicore__ inline void SetBias(const AscendC::GlobalTensor<typename BiasType::T>& biasGlobal)
     {
         matmul_.SetBias(biasGlobal);
     }
-    __aicore__ inline void SetSubBlockIdx(uint8_t subBlockIdx)
+    /**
+    * @brief Iterate over all elements and perform matrix multiplication
+    * @param [out] cGm: global memory tensor C
+    * @param [in] enAtomic: whether to enable atomic operations
+    */
+    __aicore__ inline void IterateAll(const AscendC::GlobalTensor<typename CType::T>& cGm, uint8_t enAtomic = 0)
     {
-        matmul_.SetSubBlockIdx(subBlockIdx);
+        matmul_.IterateAll(cGm, enAtomic);
     }
-    __aicore__ inline void IterateAll(const AscendC::GlobalTensor<typename CType::T>& gm, uint8_t enAtomic = 0)
-    {
-        matmul_.IterateAll(gm, enAtomic);
-    }
+    /**
+    * @brief Iterate over all elements and store the result in local memory
+    * @param [out] ubCmatrix: local memory tensor C matrix
+    * @param [in] enAtomic: whether to enable atomic operations
+    */
     __aicore__ inline void IterateAll(const AscendC::LocalTensor<typename CType::T>& ubCmatrix, uint8_t enAtomic = 0)
     {
         matmul_.IterateAll(ubCmatrix, enAtomic);
-    }
-    __aicore__ inline bool Iterate(bool enPartialSum = false)
-    {
-        return matmul_.Iterate(enPartialSum);
-    }
-    __aicore__ inline void GetTensorC(const AscendC::GlobalTensor<typename CType::T>& gm, uint8_t enAtomic = 0)
-    {
-        matmul_.GetTensorC(gm, enAtomic);
-    }
-    __aicore__ inline void End()
-    {
-        matmul_.End();
     }
 
 private:

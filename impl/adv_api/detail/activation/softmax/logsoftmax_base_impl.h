@@ -30,8 +30,7 @@ __aicore__ inline void LogSoftMaxImpl(const LocalTensor<T>& dst, const LocalTens
 {
     CHECK_FUNC_HIGHLEVEL_API(LogSoftMax, (T, isReuseSource, isDataFormatNZ), (dst, sumTensor, maxTensor, src,
                             sharedTmpBuffer, tiling, softmaxShapeInfo));
-    SetMaskNorm();
-    ResetMask();
+
     LocalTensor<float> tempBuffer = sharedTmpBuffer.ReinterpretCast<float>();
     tempBuffer.SetSize(sharedTmpBuffer.GetSize() / B32_BYTE_SIZE);
     ShapeInfo srcShape = src.GetShapeInfo();

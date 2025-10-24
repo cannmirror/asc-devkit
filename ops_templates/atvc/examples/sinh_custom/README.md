@@ -2,17 +2,15 @@
 
 ## 概述
 
-本样例介绍了如何利用ATVC实现临时Tensor参与计算的SinhCustom单算子并完成算子验证
+样例概述：本样例介绍了如何利用ATVC实现临时Tensor参与计算的SinhCustom单算子并完成算子验证
+- 算子功能：sinh
+- 使用的ATVC模板：Elementwise
+- 调用方式：Kernel直调
 
 
 ## 样例支持产品型号：
-- Atlas A2训练系列产品
+- Atlas A2训练系列产品/Atlas 800I A2推理产品/A200I A2 Box 异构组件
 
-## 目录结构
-
-| 文件名                                                         | 描述                                                         |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| [sinh_custom.cpp](./sinh_custom.cpp) | SinhCustom算子代码实现以及调用样例               |
 
 ## 算子描述
 
@@ -34,13 +32,16 @@ SinhCustom算子规格：
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">SinhCustom</td></tr>
 </table>
 
+## 目录结构
+
+| 文件名                                                         | 描述                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [sinh_custom.cpp](./sinh_custom.cpp) | SinhCustom算子代码实现以及调用样例               |
+
+
 ## 算子运行
 在ascendc-api-adv代码仓目录下执行：
 ```bash
-$ cd ./atvc/tests
-$ bash run_test.sh sinh_custom
-...
-Generate golden data successfully.
-...
-Accuracy verification passed.
+cd ./ops_templates/atvc/examples
+bash run_examples.sh sinh_custom
 ```

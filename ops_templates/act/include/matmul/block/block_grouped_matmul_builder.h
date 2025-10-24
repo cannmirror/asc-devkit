@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,22 +13,20 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_GROUPED_MATMUL_BUILDER_H
-#define ACT_BLOCK_GROUPED_MATMUL_BUILDER_H
+#ifndef MATMUL_BLOCK_BLOCK_GROUPED_MATMUL_BUILDER_H
+#define MATMUL_BLOCK_BLOCK_GROUPED_MATMUL_BUILDER_H
 
 #define ASCENDC_CUBE_ONLY
 #include "kernel_operator.h"
-#include "include/matmul/matmul_intf.h"
+#include "../matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/layout_utils.h"
-#include "include/utils/status_utils.h"
-#include "include/utils/tuple_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/layout_utils.h"
+#include "../../utils/status_utils.h"
+#include "../../utils/tuple_utils.h"
 
-#include "include/matmul/block/block_mmad.h"
-#include "include/matmul/policy/dispatch_policy.h"
-
-using namespace AscendC;
+#include "../block/block_mmad.h"
+#include "../policy/dispatch_policy.h"
 
 namespace Act {
 namespace Gemm {
@@ -45,8 +43,10 @@ template <class AType_, class LayoutA_, class BType_, class LayoutB_, class CTyp
           class LayoutBias_, class L1TileShape_, class L0TileShape_, class BlockScheduler_, class BlockMatmulPolicy_>
 class BlockGroupedMatmulBuilder<AType_, LayoutA_, BType_, LayoutB_, CType_, LayoutC_, BiasType_, LayoutBias_,
                                 L1TileShape_, L0TileShape_, BlockScheduler_, BlockMatmulPolicy_,
-                                std::enable_if_t<std::is_base_of_v<MatmulMultiBlockWithLayout<>, BlockMatmulPolicy_> ||
-                                                 std::is_base_of_v<MatmulMultiBlockBias<>, BlockMatmulPolicy_>>> {
+                                AscendC::Std::enable_if_t<AscendC::Std::is_base_of_v<MatmulMultiBlockWithLayout<>,
+                                                          BlockMatmulPolicy_> ||
+                                                          AscendC::Std::is_base_of_v<MatmulMultiBlockBias<>,
+                                                          BlockMatmulPolicy_>>> {
 public:
     using AType = AType_;
     using BType = BType_;
@@ -63,15 +63,15 @@ public:
     // transA and transB are deduced from LayoutA and LayoutB
     static constexpr bool transA = TagToTrans<LayoutA>::value;
     static constexpr bool transB = TagToTrans<LayoutB>::value;
-    static constexpr CubeFormat FormatA = TagToFormat<LayoutA>::format;
-    static constexpr CubeFormat FormatB = TagToFormat<LayoutB>::format;
-    static constexpr CubeFormat FormatC = TagToFormat<LayoutC>::format;
-    static constexpr CubeFormat FormatBias = TagToFormat<LayoutBias>::format;
+    static constexpr CubeFormat formatA = TagToFormat<LayoutA>::format;
+    static constexpr CubeFormat formatB = TagToFormat<LayoutB>::format;
+    static constexpr CubeFormat formatC = TagToFormat<LayoutC>::format;
+    static constexpr CubeFormat formatBias = TagToFormat<LayoutBias>::format;
 
-    using AMatmulType = MatmulType<AscendC::TPosition::GM, FormatA, AType, transA>;
-    using BMatmulType = MatmulType<AscendC::TPosition::GM, FormatB, BType, transB>;
-    using CMatmulType = MatmulType<AscendC::TPosition::GM, FormatC, CType>;
-    using BiasMatmulType = MatmulType<AscendC::TPosition::GM, FormatBias, BiasType>;
+    using AMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatA, AType, transA>;
+    using BMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatB, BType, transB>;
+    using CMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatC, CType>;
+    using BiasMatmulType = AscendC::MatmulType<AscendC::TPosition::GM, formatBias, BiasType>;
 
     using BlockMmadOp =
         Block::BlockMmad<BlockMatmulPolicy, L1TileShape, L0TileShape, AMatmulType, BMatmulType, CMatmulType,
@@ -101,12 +101,12 @@ public:
 
     __aicore__ inline ~BlockGroupedMatmulBuilder() {}
 
-    __host_aicore__ static size_t GetWorkSpaceSize()
+    __host_aicore__ static size_t GetWorkspaceSize()
     {
         return 0;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(Arguments const& args)
     {
         if (l0M * l0K * sizeof(AType) * DOUBLE_BUFFER_COUNT > L0A_SIZE ||
             l0N * l0K * sizeof(BType) * DOUBLE_BUFFER_COUNT > L0B_SIZE || l0M * l0N * sizeof(CType) > L0C_SIZE ||

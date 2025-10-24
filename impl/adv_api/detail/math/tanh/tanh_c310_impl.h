@@ -20,20 +20,26 @@
 
 namespace AscendC {
 namespace TanhInternal {
+constexpr float FP32_ZERO_015 = 0.0157296831;
+constexpr float FP32_ZERO_NEG_052 = -0.0523029624;
+constexpr float FP32_ZERO_133 = 0.133152977;
+constexpr float FP32_ZERO_NEG_333 = -0.333327681;
+constexpr float FP32_TWENTY = 20.0;
+constexpr float FP32_TWO = 2.0;
+constexpr float FP32_ZERO_55 = 0.55;
+constexpr float FP32_MIN_EXP = -8.8;
+constexpr float FP32_MAX_EXP = 8.8;
+
 constexpr MicroAPI::CastTrait tanhCastTraitF162F32 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 constexpr MicroAPI::CastTrait tanhCastTraitF322F16 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 }
 
-template <typename T, bool isReuseSource = false>
-__simd_vf__ inline void TanhVFImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
-    const uint32_t calCount)
+template <typename T>
+__simd_vf__ inline void TanhIntrinsicImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+    const uint32_t calCount, const uint16_t repeatTimes)
 {
-    constexpr float DOUBLE_X = 2;
-    constexpr float FP32_MIN_EXP = -8.8;
-    constexpr float FP32_MAX_EXP = 8.8;
-    uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
     uint32_t sreg = calCount;
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<T> srcReg;
@@ -49,9 +55,9 @@ __simd_vf__ inline void TanhVFImpl(__local_mem__ T *dstUb, __local_mem__ T *srcU
         } else {
             MicroAPI::DataCopy(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
         }
-        MicroAPI::Mins(castReg, castReg, FP32_MAX_EXP, preg);
-        MicroAPI::Maxs(castReg, castReg, FP32_MIN_EXP, preg);
-        MicroAPI::Muls(tmpReg, castReg, DOUBLE_X, preg);
+        MicroAPI::Mins(castReg, castReg, TanhInternal::FP32_MAX_EXP, preg);
+        MicroAPI::Maxs(castReg, castReg, TanhInternal::FP32_MIN_EXP, preg);
+        MicroAPI::Muls(tmpReg, castReg, TanhInternal::FP32_TWO, preg);
         MicroAPI::Exp(castReg, tmpReg, preg);
 
         MicroAPI::Adds(dstReg, castReg, -1.0f, preg);
@@ -66,10 +72,60 @@ __simd_vf__ inline void TanhVFImpl(__local_mem__ T *dstUb, __local_mem__ T *srcU
     }
 }
 
+template <typename T>
+__simd_vf__ inline void TanhCompensationImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+    const uint32_t calCount, const uint16_t repeatTimes)
+{
+    uint32_t sreg = calCount;
+    MicroAPI::MaskReg preg, cmpMaskReg;
+    MicroAPI::RegTensor<T> srcReg;
+    MicroAPI::RegTensor<float> vregInput, vregInputAbs;
+    MicroAPI::RegTensor<float> vregInputSqr, vregInputMid;
+    MicroAPI::RegTensor<float> vregOutput;
+    MicroAPI::RegTensor<float> vregScalar1, vregScalar2;
+
+    MicroAPI::Duplicate(vregScalar1, TanhInternal::FP32_ZERO_133);
+    MicroAPI::Duplicate(vregScalar2, TanhInternal::FP32_ZERO_NEG_333);
+    for (uint16_t i = 0; i < repeatTimes; ++i) {
+        preg = MicroAPI::UpdateMask<float>(sreg);
+        if constexpr (sizeof(T) == sizeof(half)) {
+            MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            MicroAPI::Cast<float, T, TanhInternal::tanhCastTraitF162F32>(vregInput, srcReg, preg);
+        } else {
+            MicroAPI::DataCopy(vregInput, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+        }
+        MicroAPI::Mul(vregInputSqr, vregInput, vregInput, preg);
+        MicroAPI::Muls(vregOutput, vregInputSqr, TanhInternal::FP32_ZERO_015, preg);
+        MicroAPI::Adds(vregOutput, vregOutput, TanhInternal::FP32_ZERO_NEG_052, preg);
+        MicroAPI::FusedMulDstAdd(vregOutput, vregInputSqr, vregScalar1, preg);
+        MicroAPI::FusedMulDstAdd(vregOutput, vregInputSqr, vregScalar2, preg);
+        MicroAPI::Mul(vregOutput, vregOutput, vregInputSqr, preg);
+        MicroAPI::FusedMulDstAdd(vregOutput, vregInput, vregInput, preg);
+
+        MicroAPI::Abs(vregInputAbs, vregInput, preg);
+        MicroAPI::Mins(vregInput, vregInput, TanhInternal::FP32_TWENTY, preg);
+        MicroAPI::Muls(vregInput, vregInput, TanhInternal::FP32_TWO, preg);
+        MicroAPI::Exp(vregInput, vregInput, preg);
+        MicroAPI::Adds(vregInputMid, vregInput, -1.0f, preg);
+        MicroAPI::Adds(vregInputSqr, vregInput, 1.0f, preg);
+        MicroAPI::Div(vregInputMid, vregInputMid, vregInputSqr, preg);
+
+        MicroAPI::CompareScalar<float, CMPMODE::LT>(cmpMaskReg, vregInputAbs, TanhInternal::FP32_ZERO_55, preg);
+        MicroAPI::Select(vregOutput, vregOutput, vregInputMid, cmpMaskReg);
+
+        if constexpr (sizeof(T) == sizeof(half)) {
+            MicroAPI::Cast<T, float, TanhInternal::tanhCastTraitF322F16>(srcReg, vregOutput, preg);
+            MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, preg);
+        } else {
+            MicroAPI::DataCopy(dstUb + i * B32_DATA_NUM_PER_REPEAT, vregOutput, preg);
+        }
+    }
+}
+
 /*
  * Formula is y= (e^(2x)-1)/(e^(2x)+1)
  */
-template <typename T, bool isReuseSource = false>
+template <typename T, bool isReuseSource = false, const TanhConfig &config = DEFAULT_TANH_CONFIG>
 __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const uint32_t calCount)
 {
@@ -83,16 +139,19 @@ __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTens
     }
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
-    
-    TanhVFImpl<T, isReuseSource>(dstUb, srcUb, calCount);
-
+    uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
+    if constexpr (config.algo == TanhAlgo::INTRINSIC) {
+        VF_CALL<TanhIntrinsicImpl<T>>(dstUb, srcUb, calCount, repeatTimes);
+    } else {
+        VF_CALL<TanhCompensationImpl<T>>(dstUb, srcUb, calCount, repeatTimes);
+    }
 }
 
-template <typename T, bool isReuseSource = false>
+template <typename T, bool isReuseSource = false, const TanhConfig &config = DEFAULT_TANH_CONFIG>
 __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
-    TanhImpl(dstTensor, srcTensor, calCount);
+    TanhImpl<T, isReuseSource, config>(dstTensor, srcTensor, calCount);
 }
 } // namespace AscendC
 

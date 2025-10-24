@@ -202,24 +202,24 @@ public:
     __aicore__ inline void LoadBL0()
     {
         if constexpr (Intf::bl1bypass) {
-            tilingNBSrc_ = self_->ctx.orgCoAlignN0;
+            currentSrcN_ = self_->ctx.orgCoAlignN0;
         } else {
-            tilingNBSrc_ = self_->ctx.nBL1Iter == self_->ctx.maxNBL1Iter ? self_->ctx.nBL1TailAlign
+            currentSrcN_ = self_->ctx.nBL1Iter == self_->ctx.maxNBL1Iter ? self_->ctx.nBL1TailAlign
                                                                          : self_->ctx.conv3dTiling->nBL1;
         }
         currentKL0 = self_->ctx.kIter == self_->ctx.maxKL0Iter ? self_->ctx.kL0Tail : self_->ctx.singleCoreKL0;
         // set LoadData2DParamsV2
-        load2dSrcOffset = self_->ctx.kBL0Iter * self_->ctx.singleCoreKL0 * tilingNBSrc_ +
+        load2dSrcOffset = self_->ctx.kBL0Iter * self_->ctx.singleCoreKL0 * currentSrcN_ +
                           self_->ctx.nBL0Iter * self_->ctx.conv3dTiling->nL0 * k0_;
         KERNEL_LOG(KERNEL_DEBUG, "[LoadBL0WithGroupOptTools] currentKL0: %u\n", currentKL0);
         if constexpr (!Intf::bl1bypass) {
-            if (tilingNBSrc_ == currentNL0_) {
+            if (currentSrcN_ == currentNL0_) {
                 SetLoadData2DParams(loadData2dParams, numNL0Block_ * (currentKL0 / k0_));
                 AscendC::LoadData<typename Intf::WeightT>(self_->ctx.bl0, self_->ctx.bl1[load2dSrcOffset], loadData2dParams);
             } else {
                 SetLoadData2DParams(loadData2dParams, numNL0Block_);
                 uint64_t tmp1 = currentNL0_ * k0_;
-                uint64_t tmp2 = tilingNBSrc_ * k0_;
+                uint64_t tmp2 = currentSrcN_ * k0_;
                 for (uint32_t copy_part = 0; copy_part < currentKL0 / k0_; ++copy_part) {
                     AscendC::LoadData<typename Intf::WeightT>(self_->ctx.bl0[copy_part * tmp1],
                         self_->ctx.bl1[load2dSrcOffset + copy_part * tmp2],
@@ -238,7 +238,7 @@ public:
                 KERNEL_LOG(KERNEL_DEBUG, "[LoadBL0WithGroupOptTools] Process multi instruction weight \n");
                 SetLoadData2DParams(loadData2dParams, numNL0Block_);
                 uint64_t tmp1 = currentNL0_ * k0_;
-                uint64_t tmp2 = tilingNBSrc_ * k0_;
+                uint64_t tmp2 = currentSrcN_ * k0_;
                 for (uint32_t copy_part = 0; copy_part < currentKL0 / k0_; ++copy_part) {
                     AscendC::LoadData<typename Intf::WeightT>(self_->ctx.bl0[copy_part * tmp1],
                         self_->ctx.bgm[load2dSrcOffset + copy_part * tmp2],
@@ -269,7 +269,7 @@ private:
         KERNEL_LOG(KERNEL_DEBUG, "[LoadBL0WithGroupOptTools] Process groupdimtail weight \n");
         SetLoadData2DParams(loadData2dParams, numNL0Block_);
         uint64_t tmp1 = currentNL0_ * k0_;
-        uint64_t tmp2 = tilingNBSrc_ * k0_;
+        uint64_t tmp2 = currentSrcN_ * k0_;
         uint64_t bgmOffset = 0;
         uint64_t bl0Offset = 0;
         uint64_t cin0xKhxKw = self_->ctx.cin0 * self_->ctx.kernelHxkernelW;
@@ -280,13 +280,13 @@ private:
             uint64_t skipCinRepeats =
                 (self_->ctx.kBL0Iter * self_->ctx.conv3dTiling->kL0) / (self_->ctx.cin1 * cin0xKhxKw);
             uint64_t skipCinOffset = (ConvApi::AlignB(self_->ctx.orgCi, self_->ctx.cin0) - self_->ctx.cin1 * self_->ctx.cin0) *
-                                     self_->ctx.kernelHxkernelW * tilingNBSrc_;
+                                     self_->ctx.kernelHxkernelW * currentSrcN_;
             if (skipCinRepeats > 0) {
                 load2dSrcOffset += (skipCinOffset * skipCinRepeats);
             }
         } else {
             load2dSrcOffset = self_->ctx.kBL0Iter * (self_->ctx.conv3dTiling->kL0 / (k0_ * self_->ctx.cin1)) *
-                                  self_->ctx.orgCi * tilingNBSrc_ +
+                                  self_->ctx.orgCi * currentSrcN_ +
                               self_->ctx.nBL0Iter * self_->ctx.conv3dTiling->nL0 * k0_;
         }
         KERNEL_LOG(KERNEL_DEBUG, "[LoadBL0WithGroupOptTools] currentKd %d cin1xKhxKw %d\n", currentKd, cin1xKhxKw);
@@ -308,12 +308,11 @@ private:
 
 private:
     Intf *self_ = nullptr;
-    uint64_t tilingNBSrc_ = 0;
+    uint64_t currentSrcN_ = 0;
     uint64_t k0_ = 16;
     uint64_t currentNL0_ = 0;
     uint64_t currentKL0 = 0;
     uint64_t numNL0Block_ = 0;
-    uint64_t ratioOfNToN0_ = 0;
     uint64_t load2dSrcOffset = 0;
     AscendC::LoadData2DParams loadData2dParams;
 };

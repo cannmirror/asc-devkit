@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_SCHEDULER_SCHEDULER_POLICY_H
-#define ACT_BLOCK_SCHEDULER_SCHEDULER_POLICY_H
+#ifndef MATMUL_BLOCK_BLOCK_SCHEDULER_POLICY_H
+#define MATMUL_BLOCK_BLOCK_SCHEDULER_POLICY_H
 
 namespace Act {
 namespace Gemm {
@@ -24,6 +24,7 @@ template <uint64_t FULL_LOAD_MODE_ = 0>
 struct BuiltInAswtScheduler {
     static constexpr uint64_t FULL_LOAD_MODE = FULL_LOAD_MODE_;
 };
+struct BuiltInStreamKScheduler {};
 struct BuiltInIterBatchScheduler {};
 struct IterateKScheduler {};
 struct MisplaceCoreScheduler {};

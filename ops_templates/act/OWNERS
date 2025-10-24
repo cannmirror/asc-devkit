@@ -1,0 +1,38 @@
+approvers:
+- chq317
+- chen-kang30
+- huaweitommy
+- wuzhaolinhuawei
+- dengjing_aoe
+- YeZZzzz
+- jiang-xinyu3
+- zhengjia_gaffey
+- shangxiaobo154714
+- yangyang016
+- fang-guocan
+- xiao-ting624
+
+reviewers:
+- chq317
+- chen-kang30
+- huaweitommy
+- chaotang233
+- pzyy99
+- hhystc
+- zhengjia_gaffey
+- zcheng_lumos
+- wuzhaolinhuawei
+- dengjing_aoe
+- YeZZzzz
+- jiang-xinyu3
+- shangxiaobo154714
+- chenbinbin199309
+- shi-ray
+- xu-binglin
+- wuyi_huawei
+- zhao-yingchao
+- fanqirui
+- lin-pengxiang
+
+options:
+    no_parent_owners: true

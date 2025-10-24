@@ -51,7 +51,7 @@ class MatmulClientBase {
     using BiasT = typename BIAS_TYPE::T;
 
 public:
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     __aicore__ inline void Init(const TCubeTiling* __restrict cubeTiling, TPipe* tpipe = nullptr)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
@@ -196,7 +196,7 @@ public:
 #endif
             return;
         }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         kfcMsg_.body.orgM = orgM;
         kfcMsg_.body.orgN = orgN;
         kfcMsg_.body.orgKa = orgKa;
@@ -249,7 +249,7 @@ public:
         } else {
             mnIter_ = nIter_ * mIter_;
         }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         singleCoreM_ = tailM != -1 ? tailM : singleCoreM_;
         singleCoreN_ = tailN != -1 ? tailN : singleCoreN_;
         singleCoreK_ = tailK != -1 ? tailK : singleCoreK_;
@@ -279,7 +279,21 @@ public:
         PostMessage<KFC_Enum::MMFUN_SET_HF32, false>();
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
+    __aicore__ inline void SetHIF8(bool enableHIF8 = false)
+    {
+        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
+    #if ASCENDC_CPU_DEBUG
+            if ASCEND_IS_AIC {
+                cubeObj.cubeObj[0].mul.SetHIF8(enableHIF8);
+            }
+    #endif
+            return;
+        }
+        kfcMsg_.body.enHIF8 = enableHIF8;
+        PostMessage<KFC_Enum::MMFUN_SET_HIF8, false>();
+    }
+
     __aicore__ inline void SetTensorA(const LocalTensor<SrcAT>& leftMatrix, bool isTransposeA = false)
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
@@ -339,7 +353,7 @@ public:
         kfcMsg_.body.isTransA = static_cast<uint32_t>(isTransposeA);
         kfcMsg_.body.setTensorA = 1;
         kfcMsg_.body.isFirstIter = 1;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         // C220 using RTS to control cahce mode, C310 using hardware instructions to control.
         kfcMsg_.body.aAddr = GetGMAddrAndCopyUB(gm.address_, leftMatrix); // cache mode switch hide in address
         sizeAmatrix_ = leftMatrix.GetSize() * sizeof(SrcAT);
@@ -349,7 +363,7 @@ public:
 #endif
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     __aicore__ inline void SetTensorB(const LocalTensor<SrcBT>& rightMatrix, bool isTransposeB = false)
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
@@ -410,7 +424,7 @@ public:
         kfcMsg_.body.isTransB = static_cast<uint32_t>(isTransposeB);
         kfcMsg_.body.setTensorB = 1;
         kfcMsg_.body.isFirstIter = 1;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         kfcMsg_.body.bAddr = GetGMAddrAndCopyUB(gm.address_, rightMatrix);
         sizeBmatrix_ = rightMatrix.GetSize() * sizeof(SrcBT);
 #else
@@ -419,7 +433,7 @@ public:
 #endif
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     __aicore__ inline void SetBias(const LocalTensor<BiasT>& inputBias)
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
@@ -467,7 +481,7 @@ public:
 #endif
             return;
         }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         static_assert((GetPhyType(A_TYPE::pos) == Hardware::GM),
             "SetTensorA GlobalTensor not support when A_TYPE position is not GM");
 #endif
@@ -476,7 +490,7 @@ public:
         kfcMsg_.body.isTransA = static_cast<uint32_t>(isTransposeA);
         kfcMsg_.body.setTensorA = 1;
         kfcMsg_.body.isFirstIter = 1;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         kfcMsg_.body.aAddr = reinterpret_cast<uint64_t>(gm.address_);
         sizeAmatrix_ = gm.GetSize() * sizeof(SrcAT);
 #else
@@ -495,7 +509,7 @@ public:
 #endif
             return;
         }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         static_assert((GetPhyType(B_TYPE::pos) == Hardware::GM),
             "SetTensorB GlobalTensor not support when B_TYPE position is not GM");
 #endif
@@ -504,7 +518,7 @@ public:
         kfcMsg_.body.isTransB = static_cast<uint32_t>(isTransposeB);
         kfcMsg_.body.setTensorB = 1;
         kfcMsg_.body.isFirstIter = 1;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         kfcMsg_.body.bAddr = reinterpret_cast<uint64_t>(gm.address_);
         sizeBmatrix_ = gm.GetSize() * sizeof(SrcBT);
 #else
@@ -513,7 +527,7 @@ public:
 #endif
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     template <class T>
     __aicore__ inline void SetSelfDefineData(T dataPtr)
     {
@@ -569,7 +583,7 @@ public:
             return;
         }
         kfcMsg_.userDefInfo.tilingPtr = tilingPtr;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         kfcMsg_.userCustomData = 1;
 #endif
         PostMessage<KFC_Enum::MMFUN_SET_USER_DEF_INFO, false>();
@@ -727,7 +741,7 @@ public:
         }
 
         if constexpr (!sync) {  // Asynchronous mode. Only UB.
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
             ASSERT(cacheWorkspaceAddr != 0);  // The cache address must be configured in asynchronous mode.
             ASSERT(PhyPosIsUB(C_TYPE::pos));  // Asynchronous mode. Only UB.
 #endif
@@ -739,7 +753,7 @@ public:
         kfcMsg_.body.enPartialSum = enPartialSum;
         kfcMsg_.body.sync = sync;
         kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(cacheWorkspaceAddr);
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         kfcMsg_.body.hasSetWorkspace = (cacheWorkspaceAddr != 0);
         PrepareABFromGM();
         const bool isTransA = kfcMsg_.body.isTransA;  // kfcMsg body will be reset after postMessage
@@ -750,7 +764,7 @@ public:
 #endif
         PostMessage<KFC_Enum::MMFUN_ITERATE, false>();
         SyncCubeWithVec<A_TYPE::ibShare, B_TYPE::ibShare>();
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         // wait and copy data from UB->L1
         PrepareABFromUb(isTransA, isTransB, isBias, isTransScaleA, isTransScaleB);
 #endif
@@ -772,7 +786,7 @@ public:
             WaitEvent(this->instIdx);
             return;
         }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         if constexpr (GetPhyType(C_TYPE::pos) == Hardware::UB) {
             CrossCoreWaitFlag<INTRA_MODE, PIPE_V>(waitFixpId);
         } else {
@@ -796,20 +810,20 @@ public:
         ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "WaitIterateBatch not support when enableMixDualMaster is enabled");
         ASSERT(!isSyncGetC); // Must be asynchronous mode
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId);
 #else
         WaitEvent(this->devEvtID);
 #endif
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     template <bool sync = true>
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
-        static_assert(!(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)),
-            "IBShare in A/BTYPE should be true when enableMixDualMaster is enabled.");
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
+        static_assert(!(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)), "IBShare in A/BTYPE should be true when enableMixDualMaster is enabled.");
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
 #if ASCENDC_CPU_DEBUG
             if ASCEND_IS_AIC {
@@ -864,6 +878,7 @@ public:
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         static_assert(!(ToMatmulConfig(MM_CFG).enableMixDualMaster && !(A_TYPE::ibShare && B_TYPE::ibShare)),
             "IBShare in A/BTYPE should be true when enableMixDualMaster is enabled.");
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
@@ -909,6 +924,7 @@ public:
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
             constexpr uint16_t eventID = 9U;
 #if ASCENDC_CPU_DEBUG
@@ -954,6 +970,7 @@ public:
     template <bool sync = true>
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
+        ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster){
 #if (__CCE_AICORE__ == 220)
             ASSERT("IterateAll localTensor not support when enableMixDualMaster is enabled");
@@ -1012,13 +1029,13 @@ public:
         kfcMsg_.body.enAtomic = (uint8_t)(enAtomic);
         kfcMsg_.body.setBatch = 1;
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         PrepareABFromGM();
 #endif
         PostMessage<KFC_Enum::MMFUN_ITERATE_BATCH_ALL, sync>();
 
         if constexpr (sync) {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId);
 #else
             WaitEvent(this->devEvtID);
@@ -1043,7 +1060,7 @@ public:
             kfcMsg_.body.cAddr = GetTscmAddr(ubCmatrix);
             kfcMsg_.body.cIsTscm = 1;
         } else {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(ubCmatrix.GetPhyAddr());
 #else
             kfcMsg_.body.cAddr = GetGlobalAddr<typename C_TYPE::T, false>(ubCmatrix);
@@ -1060,14 +1077,14 @@ public:
         kfcMsg_.body.enAtomic = (uint8_t)(enAtomic);
         kfcMsg_.body.setBatch = 1;
         GM_ADDR gmDataAddr = reinterpret_cast<GM_ADDR>(kfcMsg_.body.cAddr);
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         PrepareABFromGM();
         CrossCoreSetFlag<INTRA_MODE, PIPE_V>(static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::WAIT_FIXP) + this->instIdx);
 #endif
         PostMessage<KFC_Enum::MMFUN_ITERATE_BATCH_ALL, sync>();
 
         if constexpr (sync) {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             if constexpr (GetPhyType(C_TYPE::pos) == Hardware::UB) {
                 CrossCoreWaitFlag<INTRA_MODE, PIPE_V>(waitFixpId);
             }
@@ -1114,12 +1131,12 @@ public:
         kfcMsg_.body.enAtomic = (uint8_t)(enAtomic);
         kfcMsg_.body.setBatch = 1;
         kfcMsg_.body.waitIterateBatch = waitIterateBatch;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         PrepareABFromGM();
 #endif
         PostMessage<KFC_Enum::MMFUN_ITERATE_N_BATCH_ALL, sync>();
         if constexpr (sync) {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId);
 #else
             WaitEvent(this->devEvtID);
@@ -1129,7 +1146,7 @@ public:
         TRACE_STOP(TraceId::KFC_CLIENT_POST_MSG);
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     template <bool sync = true>
     __aicore__ inline void GetTensorC(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false)
@@ -1150,11 +1167,8 @@ public:
             }
             auto msg = client->AllocMessage();
             msg->body.cAddr = reinterpret_cast<uint64_t>(gm.GetPhyAddr());
-            uint32_t flag = 0;
-            flag |= enAtomic;
-            flag |= (enSequentialWrite << (sizeof(uint8_t) * ONE_BYTE_BIT_SIZE));
-            __ssbuf__ uint32_t *ptrMsg = reinterpret_cast<__ssbuf__ uint32_t *>(&(msg->body));
-            *ptrMsg = flag;
+            msg->body.enAtomic = (uint8_t)(enAtomic);
+            msg->body.enSequentialWrite = enSequentialWrite;
             msg->head = KfcMsgMakeFlag(KFC_Enum::MMFUN_GET_TENSOR_C, this->instIdx);
             client->PostMessage<false>(msg);
             if constexpr (!(IsBasic(ToMatmulConfig(MM_CFG)) && (A_TYPE::ibShare && B_TYPE::ibShare))) {
@@ -1336,7 +1350,7 @@ public:
         PostMessage<KFC_Enum::MMFUN_GET_TENSOR_C, sync>();
 
         if constexpr (sync) {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId);
 #else
             WaitEvent(this->devEvtID);
@@ -1358,7 +1372,7 @@ public:
         ASSERT(cacheWorkspaceAddr);
         if (curProcess < INC_PROCESS_CHECK) {
             ++curProcess;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId);
 #else
             auto intraId = this->devEvtID;
@@ -1401,7 +1415,7 @@ public:
         ASSERT(cacheWorkspaceAddr);
         if (curProcess < INC_PROCESS_CHECK) {
             ++curProcess;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId);
 #else
             WaitEvent(this->devEvtID);
@@ -1443,7 +1457,7 @@ public:
 
         if (curProcess < INC_PROCESS_CHECK) {
             ++curProcess;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_MTE2>(waitFixpId); // GM to UB
 #else
             WaitEvent(this->devEvtID);
@@ -1478,7 +1492,7 @@ public:
 
         if (curProcess < INC_PROCESS_CHECK) {
             ++curProcess;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
             CrossCoreWaitFlag<INTRA_MODE, PIPE_V>(waitFixpId);
 #else
             WaitEvent(this->devEvtID);
@@ -1511,14 +1525,14 @@ public:
 
     __aicore__ inline void SetLocalWorkspace(const LocalTensor<uint8_t>& tmpBuffer)
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
             "SetLocalWorkspace not support when enableMixDualMaster is enabled.");
         localWorkspace_ = tmpBuffer;
 #endif
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     using ScaleT = fp8_e8m0_t;
 
     __aicore__ inline void SetTensorScaleA(const GlobalTensor<ScaleT>& gm, bool isTransposeScaleA = false)
@@ -1624,7 +1638,7 @@ private:
     uint64_t cOffset_;
     uint32_t nbatchIter_;
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     uint32_t sizeAmatrix_;
     uint32_t sizeBmatrix_;
     LocalTensor<uint8_t> localWorkspace_ = LocalTensor<uint8_t>();
@@ -1679,14 +1693,14 @@ private:
             mnIter_ = nIter_ * mIter_;
         }
         cacheWorkspaceAddr = nullptr;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
         singleCoreM_ = this->cubeTiling.GetSingleCoreM();
         singleCoreN_ = this->cubeTiling.GetSingleCoreN();
         singleCoreK_ = this->cubeTiling.GetSingleCoreK();
 #endif
     }
 
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__)
+#if defined(USE_WORKSPACE)
     template <class T> __aicore__ inline uint64_t CopyGlobalAddr(GM_ADDR& gmDataAddr, const LocalTensor<T>& data)
     {
         event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
@@ -1728,7 +1742,7 @@ private:
 #endif
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     template <KFC_Enum funID, bool isAck> __aicore__ inline void PostMessage()
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
@@ -1798,7 +1812,7 @@ private:
     }
 #endif
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(USE_SSBUF)
     template <bool sync = true>
     __aicore__ inline void IterateAllCPU(const LocalTensor<DstT> &ubCmatrix, uint8_t enAtomic = 0,
                                          bool enSequentialWrite = false, bool waitIterateAll = false)
@@ -1842,11 +1856,8 @@ private:
         if constexpr (!ToMatmulConfig(MM_CFG).enableMixDualMaster) {
             auto msg = client->AllocMessage();
             msg->body.cAddr = reinterpret_cast<uint64_t>(c.GetPhyAddr());
-            uint32_t flag = 0;
-            flag |= enAtomic;
-            flag |= (enSequentialWrite << (sizeof(uint8_t) * ONE_BYTE_BIT_SIZE));
-            __ssbuf__ uint32_t *ptrMsg = reinterpret_cast<__ssbuf__ uint32_t *>(&(msg->body));
-            *ptrMsg = flag;
+            msg->body.enAtomic = (uint8_t)(enAtomic);
+            msg->body.enSequentialWrite = enSequentialWrite;
             msg->head = KfcMsgMakeFlag(KFC_Enum::MMFUN_GET_TENSOR_C, this->instIdx);
             client->PostMessage<false>(msg);
         }
@@ -1857,13 +1868,12 @@ private:
 
     __aicore__ inline void PrepareABFromGM()
     {
-        // there is hidden logic in c220, so only C310 need to check if gm is ready
-        if constexpr (GetPhyType(A_TYPE::pos) == Hardware::GM || GetPhyType(B_TYPE::pos) == Hardware::GM ||
-                      GetPhyType(BIAS_TYPE::pos) == Hardware::GM) {
-            if constexpr (!A_TYPE::ibShare && !B_TYPE::ibShare) {
-                // Op sometimes execute ub ->gm in MTE3 before using iterate, can find matched wait flag in matmul server
-                CrossCoreSetFlag<INTRA_MODE, PIPE_MTE3>(static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM));
-            }
+        // there is hidden logic in c220, so only when use ssbuf need to check if gm is ready
+        if constexpr ((GetPhyType(A_TYPE::pos) == Hardware::GM && GetPhyType(A_TYPE::srcPos) == Hardware::UB) ||
+            (GetPhyType(B_TYPE::pos) == Hardware::GM && GetPhyType(B_TYPE::srcPos) == Hardware::UB) ||
+            (GetPhyType(BIAS_TYPE::pos) == Hardware::GM && GetPhyType(BIAS_TYPE::srcPos) == Hardware::UB)) {
+            // Op sometimes execute ub->gm in MTE3 before using iterate, can find matched wait flag in matmul server
+            CrossCoreSetFlag<INTRA_MODE, PIPE_MTE3>(static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM));
         }
     }
 
@@ -2518,11 +2528,7 @@ private:
             }
 
             DataCopyPadParams padParams{ true, 0, static_cast<uint8_t>(padSize), 0};
-#if defined(__DAV_C310__)
-            DataCopyPad<T, PaddingMode::Normal>(data[idx * offset], globalTensor[idx * offset], copyParams, padParams);
-#else
             DataCopyPad(data[idx * offset], globalTensor[idx * offset], copyParams, padParams);
-#endif
         }
     }
 

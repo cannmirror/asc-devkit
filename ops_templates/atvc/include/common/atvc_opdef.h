@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,6 +12,7 @@
 #define ATVC_COMMON_OPDEF_H
 
 #include "type_list.h"
+#include "common/dtype_utils.h"
 namespace ATVC {
 enum class ParamType {
     INPUT,
@@ -20,37 +20,48 @@ enum class ParamType {
     TEMP,
 };
 
-template<ParamType paramType_, typename ... Ts>
+enum class TemplateType {
+    ELE_WISE,
+    REDUCE,
+    BROADCAST,
+};
+
+template <ParamType paramType_, typename... Ts>
 struct ParamTypes {
     using types = ATVC::TypeList<Ts...>;
     static constexpr ParamType usage = paramType_;
 };
 
-template<typename ... Ts>
+template <typename... Ts>
 using OpInputs = ParamTypes<ParamType::INPUT, Ts...>;
 
-template<typename ... Ts>
+template <typename... Ts>
 using OpOutputs = ParamTypes<ParamType::OUTPUT, Ts...>;
 
-template<typename ... Ts>
+template <typename... Ts>
 using OpTemps = ParamTypes<ParamType::TEMP, Ts...>;
 
-
-template<typename InTypeList, typename OutTypeList, typename TempTypeList=ATVC::OpTemps<>>
+template <typename InTypeList, typename OutTypeList, typename TempTypeList = ATVC::OpTemps<>>
 struct OpTraits {
     using In = InTypeList;
     using Out = OutTypeList;
     using Temp = TempTypeList;
 };
 
-template<typename TileCompute>
-struct GetFunctionTraits {};
+struct VoidComputeTraits {
+    using In = OpInputs<>;
+    using Out = OpOutputs<>;
+    using Temp = OpTemps<>;
+};
 
-// 专门化处理函数A的模板实例
-template<template<typename> class TileCompute, typename Traits>
+template<typename TileCompute>
+struct GetFunctionTraits {
+    using ComputeTraits = VoidComputeTraits;
+};
+
+template <template <typename> class TileCompute, typename Traits>
 struct GetFunctionTraits<TileCompute<Traits>> {
     using ComputeTraits = Traits;
 };
-}
+} // namespace ATVC
 #endif
-

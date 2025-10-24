@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,11 @@
  * \brief
  */
 
-#ifndef ACT_MUL_FUSION_OP_H
-#define ACT_MUL_FUSION_OP_H
+#ifndef EPILOGUE_FUSION_MUL_FUSION_OP_H
+#define EPILOGUE_FUSION_MUL_FUSION_OP_H
 #include "kernel_operator.h"
-#include "include/utils/common_utils.h"
-#include "include/utils/device_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/device_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -68,7 +68,7 @@ public:
         return mIdx * strideN_ + nIdx;
     }
 
-    __aicore__ inline void run(LocalTensor<DataTypeOut>& dstLocal, LocalTensor<DataTypeIn>& srcLocal, int64_t curAivM,
+    __aicore__ inline void Run(LocalTensor<DataTypeOut>& dstLocal, LocalTensor<DataTypeIn>& srcLocal, int64_t curAivM,
                                int64_t curAivN, int64_t mIdx, int64_t nIdx)
     {
         AscendC::PipeBarrier<PIPE_V>();
@@ -80,17 +80,17 @@ public:
         DataCopyPad(inputLocal, inputGlobal_[GetInputOffset(mIdx, nIdx)], gm2UbParams, padParams);
         TPipeSetWaitFlag<HardEvent::MTE2_V>();
         int64_t computedAivN = CeilAlign(curAivN, UB_FLOAT_ALIGN_NUM);
-        Mul(dstLocal, srcLocal, inputLocal, computedAivN * curAivM);
+        Mul(dstLocal, srcLocal, inputLocal, static_cast<int32_t>(computedAivN * curAivM));
         return;
     }
 
     __aicore__ inline void operator()(LocalTensor<DataTypeOut>& dstLocal, LocalTensor<DataTypeIn>& srcLocal,
                                       int64_t curAivM, int64_t curAivN, int64_t mIdx, int64_t nIdx)
     {
-        run(dstLocal, srcLocal, curAivM, curAivN, mIdx, nIdx);
+        Run(dstLocal, srcLocal, curAivM, curAivN, mIdx, nIdx);
     }
 };
 } // namespace Block
 } // namespace Gemm
 } // namespace Act
-#endif // ACT_MUL_FUSION_OP_H
+#endif // EPILOGUE_FUSION_MUL_FUSION_OP_H

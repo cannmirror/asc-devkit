@@ -351,7 +351,7 @@ __aicore__ inline void BlkReduceForLoop(const LocalTensor<T>& dst,
     }
     if (tailNBlkNum > 0) {
         dstOffset = nMaxRepBlkNum * MAX_REPEAT_TIMES * blkReduceDstStride;
-        blkReduceSrcOffset = srcOffset + nMaxRepBlkNum * MAX_REPEAT_TIMES * srcPerBlkElements;
+        blkReduceSrcOffset = srcOffset + nMaxRepBlkNum * MAX_REPEAT_TIMES * DEFAULT_BLK_NUM * srcPerBlkElements;
         BlockReduceCompute<T, apiMode>(dst[dstOffset], tmp[blkReduceSrcOffset], tailNBlkNum, blkReduceMask,
             DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();

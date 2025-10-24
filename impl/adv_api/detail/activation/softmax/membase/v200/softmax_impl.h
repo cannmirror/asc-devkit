@@ -29,6 +29,8 @@ __aicore__ inline void SoftMaxNDImpl(const LocalTensor<T1>& dst, const LocalTens
     const LocalTensor<T1>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.reduceM,     tiling.reduceK };
     PipeBarrier<PIPE_V>();
@@ -44,6 +46,8 @@ __aicore__ inline void SoftMaxNDImpl(const LocalTensor<half>& dst, const LocalTe
     const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     PipeBarrier<PIPE_V>();
     if constexpr (isBasicBlock) {
         SoftMaxBasicBlock(dst, sumTensor, maxTensor, src, workLocal, tiling);
@@ -103,6 +107,8 @@ template <typename T, bool isReuseSource = false, bool isBasicBlock = false,
 __aicore__ inline void SoftMaxNDImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+    SetMaskNorm();
+    ResetMask();
     uint32_t offset = 0;
     uint32_t splitSize = tiling.splitSize;
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,

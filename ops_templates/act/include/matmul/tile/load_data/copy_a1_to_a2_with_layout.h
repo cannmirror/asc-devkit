@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2024 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_COPY_A1_TO_A2_WITH_LAYOUT_H
-#define ACT_INCLUDE_MATMUL_TILE_LOAD_DATA_COPY_A1_TO_A2_WITH_LAYOUT_H
+#ifndef MATMUL_TILE_LOAD_DATA_COPY_A1_TO_A2_WITH_LAYOUT_H
+#define MATMUL_TILE_LOAD_DATA_COPY_A1_TO_A2_WITH_LAYOUT_H
 
 #include "../tile_copy_policy.h"
 #include "./load_to_l0_utils.h"
@@ -22,6 +22,13 @@
 namespace Act {
 namespace Gemm {
 namespace Tile {
+/**
+ * @struct Copy
+ * @brief Define a Copy structure for tensor copy operations on Ascend910B architecture
+ * @param [in] AType: the operation type, such as transpose or non-transpose
+ * @param [in] DstTrait: the traits of the destination tensor, including data type and position
+ * @param [in] SrcTrait: the traits of the source tensor, including data type and position
+ */
 template <class AType, class DstTrait, class SrcTrait>
 struct Copy<
     Arch::Ascend910B, CopyWithLayout, AType, DstTrait, SrcTrait,
@@ -30,15 +37,19 @@ public:
     using DstTensor = AscendC::LocalTensor<DstTrait>;
     using SrcTensor = AscendC::LocalTensor<SrcTrait>;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
+    /**
+     * @brief Overloaded operator() function to perform tensor copy operations
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate
+     */
     template <class Coord>
-    __aicore__ inline void operator()(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void operator()(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
 #if __CCE_AICORE__ == 220
         ASCENDC_ASSERT((AscendC::Std::is_same_v<typename DstTrait::LiteType, typename SrcTrait::LiteType>),
-                       { KERNEL_LOG(KERNEL_ERROR, "l0A l1A type must be same"); });
+                       { KERNEL_LOG(KERNEL_ERROR, "Type of l0A l1A must be same"); });
         if constexpr (AType::isTrans) {
             if constexpr (AscendC::IsSameTypeV<typename AType::T, int8_t>) {
                 TransposeLoadA2Int8(l0A, l1A, coord);
@@ -55,8 +66,19 @@ public:
 
 private:
 #if __CCE_AICORE__ == 220
+    /**
+     * @brief Transpose load A2 to Int8 function
+     * 
+     * This function loads data from source tensor l1A to destination tensor l0A with transpose operation
+     * K_axis is m direction, and M_axis is k direction in load3d intrin
+     * 
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate 
+     */
     template <class Coord>
-    __aicore__ inline void TransposeLoadA2Int8(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void TransposeLoadA2Int8(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
         // K_axis is m direction, and M_axis is k direction in load3d intrin
         auto srcShape = l1A.GetTensorTrait().GetLayout().GetShape();
@@ -89,8 +111,19 @@ private:
         }
     }
 
+    /**
+     * @brief Transpose load A2 function
+     * 
+     * This function loads data from source tensor l1A to destination tensor l0A with transpose operation
+     * K_axis is m direction, and M_axis is k direction in load3d intrin
+     * 
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate 
+     */
     template <class Coord>
-    __aicore__ inline void TransposeLoadA2(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void TransposeLoadA2(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
         // K_axis is m direction, and M_axis is k direction in load3d intrin
         auto srcShape = l1A.GetTensorTrait().GetLayout().GetShape();
@@ -114,8 +147,19 @@ private:
         AscendC::LoadData(dstLocal, srcLocal, loadData3DV2);
     }
 
+    /**
+     * @brief Non-transpose load A2 function
+     * 
+     * This function loads data from source tensor l1A to destination tensor l0A without transpose operation
+     * K_axis is m direction, and M_axis is k direction in load3d intrin
+     * 
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate 
+     */
     template <class Coord>
-    __aicore__ inline void NoneTransposeLoadA2(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void NoneTransposeLoadA2(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
         auto srcShape = l1A.GetTensorTrait().GetLayout().GetShape();
         auto dstShape = l0A.GetTensorTrait().GetLayout().GetShape();
@@ -137,6 +181,12 @@ private:
         AscendC::LoadData(dstLocal, srcLocal, loadData3DV2);
     }
 
+    /**
+     * @brief Set Fmatrix function
+     * @param [in] aL1K: K-axis length
+     * @param [in] aL1M: M-axis length
+     * @note This function sets the parameters for Fmatrix calculation
+     */
     __aicore__ inline void SetFmatrix(uint16_t aL1K, uint16_t aL1M)
     {
         // fmatrix w should be 16 aligned
@@ -151,6 +201,13 @@ private:
 #endif
 };
 
+/**
+ * @struct Copy
+ * @brief Define a Copy structure for tensor copy operations on the Ascend910_95 architecture based on position traits
+ * @param [in] AType: template parameter indicating whether to perform a transpose operation
+ * @param [in] DstTrait: traits of the destination tensor
+ * @param [in] SrcTrait: traits of the source tensor
+ */
 template <class AType, class DstTrait, class SrcTrait>
 struct Copy<
     Arch::Ascend910_95, CopyWithLayout, AType, DstTrait, SrcTrait,
@@ -159,11 +216,15 @@ public:
     using DstTensor = AscendC::LocalTensor<DstTrait>;
     using SrcTensor = AscendC::LocalTensor<SrcTrait>;
 
-    __aicore__ Copy() = default;
-    __aicore__ ~Copy() = default;
-
+    /**
+     * @brief Overload the operator() to perform tensor copy operations, either with or without transpose based on AType
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate 
+     */
     template <class Coord>
-    __aicore__ inline void operator()(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void operator()(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
 #if defined(__DAV_C310__)
         ASCENDC_ASSERT((AscendC::Std::is_same_v<typename DstTrait::LiteType, typename SrcTrait::LiteType>),
@@ -182,8 +243,16 @@ private:
 #if defined(__DAV_C310__)
     constexpr static int32_t C0_SIZE = AscendC::AuxGetC0Size<typename AType::T>();
 
+    /**
+     * @brief Template function for transposed loading of A2
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate 
+     * @note This function is used to load data from global memory to local memory with transposition
+     */
     template <class Coord>
-    __aicore__ inline void TransposeLoadA2(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void TransposeLoadA2(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
         // K_axis is m direction, and M_axis is k direction in load3d intrin
         auto srcShape = l1A.GetTensorTrait().GetLayout().GetShape();
@@ -213,8 +282,16 @@ private:
         AscendC::LoadData(dstLocal, srcLocal, loadDataParams);
     }
 
+    /**
+     * @brief Template function for non-transposed loading of A2
+     * @param [in] Coord: the coordinate type
+     * @param [in] l0A: the destination tensor
+     * @param [in] l1A: the source tensor
+     * @param [in] coord: the coordinate 
+     * @note This function is used to load data from global memory to local memory without transposition
+     */
     template <class Coord>
-    __aicore__ inline void NoneTransposeLoadA2(DstTensor& l0A, SrcTensor& l1A, const Coord& coord)
+    __aicore__ inline void NoneTransposeLoadA2(const DstTensor& l0A, const SrcTensor& l1A, const Coord& coord)
     {
         auto srcShape = l1A.GetTensorTrait().GetLayout().GetShape();
         auto dstShape = l0A.GetTensorTrait().GetLayout().GetShape();

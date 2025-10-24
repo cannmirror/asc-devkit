@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -20,22 +19,24 @@
 
 namespace ATVC {
 namespace AB_PATTERN {
-    static constexpr uint32_t A = 100;
-    static constexpr uint32_t AB = 11;
-    static constexpr uint32_t ABA = 20;
-    static constexpr uint32_t ABAB = 31;
-    static constexpr uint32_t ABABA = 40;
-};
+static constexpr uint32_t A = 100;
+static constexpr uint32_t AB = 11;
+static constexpr uint32_t ABA = 20;
+static constexpr uint32_t ABAB = 31;
+static constexpr uint32_t ABABA = 40;
+};  // namespace AB_PATTERN
 
 struct BroadcastPolicy {
 public:
     int32_t patternID = -1;
     int32_t loopABCount = -1;
     int32_t loopInnerABCount = -1;
+    constexpr BroadcastPolicy(int patternID, int loopABCount, int loopInnerABCount):
+    patternID(patternID), loopABCount(loopABCount),loopInnerABCount(loopInnerABCount){}
     bool operator==(const BroadcastPolicy& rhs) const
     {
-        return this->patternID == rhs.patternID && this->loopABCount == rhs.loopABCount &&\
-        this->loopInnerABCount == rhs.loopInnerABCount;
+        return this->patternID == rhs.patternID && this->loopABCount == rhs.loopABCount &&
+               this->loopInnerABCount == rhs.loopInnerABCount;
     }
 };
 
@@ -66,8 +67,8 @@ struct BroadcastParam {
     int32_t nBufferNum = 2;
 };
 
-static constexpr BroadcastPolicy BROADCAST_POLICY0 { ATVC::AB_PATTERN::AB, 10, 1 };
-static constexpr BroadcastPolicy BROADCAST_POLICY1 { ATVC::AB_PATTERN::ABA, 10, 1 };
-};
+static constexpr BroadcastPolicy BROADCAST_POLICY0{ATVC::AB_PATTERN::AB, 10, 1};
+static constexpr BroadcastPolicy BROADCAST_POLICY1{ATVC::AB_PATTERN::ABA, 10, 1};
+};  // namespace ATVC
 
-#endif // ATVC_BROADCAST_COMMON_H
+#endif  // ATVC_BROADCAST_COMMON_H

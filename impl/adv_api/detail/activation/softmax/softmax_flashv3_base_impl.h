@@ -37,8 +37,7 @@ __aicore__ inline void SoftmaxFlashV3Impl(const LocalTensor<T>& dstTensor, const
         inMeanTensor, inexpSumTensor, inMaxTensor, workLocal, tiling, params));
     static_assert((SupportType<Tuple<T, U>, Tuple<half, float>>()), "Failed to check dtype in SoftmaxFlashV3, "
         "Current api support dtype combination is T : half, U : float");
-    SetMaskNorm();
-    ResetMask();
+
     LastAxisShapeND originalSrcShape = { params.oriSrcM, params.oriSrcK };
     if (params.srcM == 0 || params.srcK == 0) {
         ShapeInfo srcShape = srcTensor.GetShapeInfo();

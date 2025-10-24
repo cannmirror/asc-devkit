@@ -1,8 +1,7 @@
 /**
  * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
- *
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -34,30 +33,19 @@ struct PatternConstInfo {
     constexpr static int32_t Dim = dim;
 };
 
-struct A : public PatternConstInfo<PATTERN_A, true, true, CONST1> {
-};
-struct RA : public PatternConstInfo<PATTERN_RA, false, true, CONST2> {
-};
-struct AR : public PatternConstInfo<PATTERN_AR, true, false, CONST2> {
-};
-struct ARA : public PatternConstInfo<PATTERN_ARA, true, true, CONST3> {
-};
-struct ARAR : public PatternConstInfo<PATTERN_ARAR, true, false, CONST4> {
-};
-struct ARARA : public PatternConstInfo<PATTERN_ARARA, true, true, CONST5> {
-};
-struct ARARAR : public PatternConstInfo<PATTERN_ARARAR, true, false, CONST6> {
-};
-struct ARARARA : public PatternConstInfo<PATTERN_ARARARA, true, true, CONST7> {
-};
-struct ARARARAR : public PatternConstInfo<PATTERN_ARARARAR, true, false, CONST8> {
-};
-struct ARARARARA : public PatternConstInfo<PATTERN_ARARARARA, true, true, CONST9> {
-};
+struct A : public PatternConstInfo<PATTERN_A, true, true, CONST1> {};
+struct RA : public PatternConstInfo<PATTERN_RA, false, true, CONST2> {};
+struct AR : public PatternConstInfo<PATTERN_AR, true, false, CONST2> {};
+struct ARA : public PatternConstInfo<PATTERN_ARA, true, true, CONST3> {};
+struct ARAR : public PatternConstInfo<PATTERN_ARAR, true, false, CONST4> {};
+struct ARARA : public PatternConstInfo<PATTERN_ARARA, true, true, CONST5> {};
+struct ARARAR : public PatternConstInfo<PATTERN_ARARAR, true, false, CONST6> {};
+struct ARARARA : public PatternConstInfo<PATTERN_ARARARA, true, true, CONST7> {};
+struct ARARARAR : public PatternConstInfo<PATTERN_ARARARAR, true, false, CONST8> {};
+struct ARARARARA : public PatternConstInfo<PATTERN_ARARARARA, true, true, CONST9> {};
 
 template <int32_t id>
-struct GetPattern {
-};
+struct GetPattern {};
 
 template <>
 struct GetPattern<PATTERN_A> {
@@ -99,6 +87,6 @@ template <>
 struct GetPattern<PATTERN_ARARARARA> {
     using T = ARARARARA;
 };
-}  // namespace ReducePattern
+} // namespace ReducePattern
 } // namespace ATVC
 #endif

@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,25 +13,26 @@
  * \brief
  */
 
-#ifndef ACT_KERNEL_MATMUL_ITERBATCH_H
-#define ACT_KERNEL_MATMUL_ITERBATCH_H
+#ifndef MATMUL_KERNEL_KERNEL_MATMUL_ITERBATCH_H
+#define MATMUL_KERNEL_KERNEL_MATMUL_ITERBATCH_H
 
 #define ASCENDC_CUBE_ONLY
 #include "kernel_operator.h"
 #include "lib/matmul_intf.h"
 
-#include "include/utils/common_utils.h"
-#include "include/utils/layout_utils.h"
-#include "include/utils/tuple_utils.h"
-#include "include/utils/coord_utils.h"
-#include "include/utils/tensor_utils.h"
-#include "include/utils/status_utils.h"
+#include "../../utils/common_utils.h"
+#include "../../utils/layout_utils.h"
+#include "../../utils/tuple_utils.h"
+#include "../../utils/coord_utils.h"
+#include "../../utils/tensor_utils.h"
+#include "../../utils/status_utils.h"
 #include "./semaphore.h"
-#include "include/matmul/matmul_intf.h"
-#include "include/matmul/block/block_mmad_builder.h"
-#include "include/epilogue/block_epilogue_empty.h"
-#include "include/matmul/block/block_scheduler_utils.h"
-#include "include/matmul/block/block_scheduler_aswt.h"
+#include "../matmul_intf.h"
+#include "../block/block_mmad_builder.h"
+#include "../../epilogue/block_epilogue_empty.h"
+#include "../block/block_scheduler_utils.h"
+#include "../block/block_scheduler_aswt.h"
+
 namespace Act {
 namespace Gemm {
 namespace Kernel {
@@ -44,8 +45,8 @@ class KernelMatMulIterBatch {
 };
 
 template <class ProblemShape_, class BlockMmadBuilder_, class BlockEpilogue_, class BlockScheduler_>
-class KernelMatMulIterBatch<ProblemShape_, BlockMmadBuilder_, BlockEpilogue_, BlockScheduler_,
-                            std::enable_if_t<std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>>> {
+class KernelMatMulIterBatch <ProblemShape_, BlockMmadBuilder_, BlockEpilogue_, BlockScheduler_,
+    AscendC::Std::enable_if_t<AscendC::Std::is_same_v<BlockEpilogue_, Block::BlockEpilogueEmpty>>> {
 public:
     __aicore__ inline KernelMatMulIterBatch() {}
     __aicore__ inline ~KernelMatMulIterBatch() {}
@@ -125,53 +126,6 @@ public:
         cGlobal_.SetGlobalBuffer(reinterpret_cast<__gm__ CType*>(blockMmadParams_.cGmAddr));
     }
 
-    __aicore__ inline void run(Params const& params)
-    {
-        if ASCEND_IS_AIV {
-            return;
-        }
-        // Instantiate mmadOp
-        BlockMmadOp blockMmadOp;
-        // Get blockIdx 这里是硬件获得的blockidx
-        int64_t curBlockIdx = AscendC::GetBlockIdx();
-        // Get BlockNum 这里是rts获得的核数
-        int64_t blockNum = AscendC::GetBlockNum();
-        // Init
-        Init(params);
-
-        BlockSchedulerOp bs(params.problemShape, curBlockIdx, blockNum, params.schParams);
-        int64_t tileNum = bs.GetTileNum();
-        TupleShape iterBatchTuple = bs.GetIterBatchTuple();
-        uint64_t mainIterBatchL1 = Get<0>(iterBatchTuple);
-        uint64_t mainIterBatchL0 = Get<1>(iterBatchTuple);
-        int64_t realBlockNum = bs.GetBlockNum(params.problemShape, blockNum);
-        if (curBlockIdx >= realBlockNum) {
-            return;
-        }
-        blockMmadOp.Init(problemShape_);
-        if (bs.GetHf32Flag()) {
-            AscendC::SetHF32Mode(1);
-            AscendC::SetHF32TransMode(1);
-        }
-        // Process tiles in ping-pong mode
-        for (int64_t tileIdx = curBlockIdx; tileIdx < tileNum; tileIdx += blockNum) {
-            auto blockShape = bs.GetBlockShape(tileIdx);
-            auto blockCoord = bs.GetBlockCoord(tileIdx);
-            auto blockOffset = GetOffsetIterBatch(blockCoord, problemShape_, aGlobal_, bGlobal_, cGlobal_);
-            // calculate block-level offset
-            int64_t offsetA = Get<0>(blockOffset);
-            int64_t offsetB = Get<1>(blockOffset);
-            int64_t offsetC = Get<2>(blockOffset);
-            uint64_t curIterBatchL1 = (tileIdx + 1 == tileNum) ? (b_ - tileIdx * mainIterBatchL1) : mainIterBatchL1;
-            blockMmadOp(cGlobal_[offsetC], aGlobal_[offsetA], bGlobal_[offsetB], curIterBatchL1, mainIterBatchL1,
-                        mainIterBatchL0);
-        }
-        if (bs.GetHf32Flag()) {
-            AscendC::SetHF32Mode(0);
-            AscendC::SetHF32TransMode(0);
-        }
-    }
-
     __host_aicore__ static Status CheckShape(ProblemShape const& shape)
     {
         int64_t m = shape.m;
@@ -203,26 +157,26 @@ public:
         return Status::success;
     }
 
-    __host_aicore__ static Status CheckArgs(Arguments const& args)
+    __host_aicore__ static Status CanImplement(Arguments const &args)
     {
         // Check shape in kernel
         CHECK_AND_RETURN(CheckShape(args.problemShape));
         // Check mmad args
-        CHECK_AND_RETURN(BlockMmadBuilder::CheckArgs(args.mmadArgs));
+        CHECK_AND_RETURN(BlockMmadBuilder::CanImplement(args.mmadArgs));
 
         return Status::success;
     }
 
-    __host_aicore__ static size_t GetWorkSpaceSize(ProblemShape shape, int64_t blockNum)
+    __host_aicore__ static size_t GetWorkspaceSize(ProblemShape shape, int64_t blockNum)
     {
         size_t workSpaceSize = 0;
         // Calculate extra workspace size for mmad
-        workSpaceSize += BlockMmadBuilder::GetWorkSpaceSize();
+        workSpaceSize += BlockMmadBuilder::GetWorkspaceSize();
 
         return workSpaceSize;
     }
 
-    __host_aicore__ static Params InitParams(Arguments const& args, GM_ADDR workspace)
+    __host_aicore__ static Params InitParams(Arguments const &args, GM_ADDR workspace)
     {
         BlockMmadParams mmadParams = BlockMmadBuilder::InitParams(args.mmadArgs);
         // mmad params with epiligue takes workspaceGm as output
@@ -232,7 +186,56 @@ public:
 
     __aicore__ inline void operator()(Params const& params)
     {
-        run(params);
+        if ASCEND_IS_AIV {
+            return;
+        }
+        // Instantiate mmadOp
+        BlockMmadOp blockMmadOp;
+        // Get blockIdx 这里是硬件获得的blockidx
+        int64_t curBlockIdx = AscendC::GetBlockIdx();
+        // Get BlockNum 这里是rts获得的核数
+        int64_t blockNum = AscendC::GetBlockNum();
+        // Init
+        Init(params);
+
+        BlockSchedulerOp bs(params.problemShape, curBlockIdx, blockNum, params.schParams);
+        int64_t tileNum = bs.GetTileNum();
+        TupleShape iterBatchTuple = bs.GetIterBatchTuple();
+        uint64_t mainIterBatchL1 = Get<0>(iterBatchTuple);
+        uint64_t mainIterBatchL0 = Get<1>(iterBatchTuple);
+        int64_t realBlockNum = bs.GetBlockNum(params.problemShape, blockNum);
+        if (curBlockIdx >= realBlockNum) {
+            return;
+        }
+        blockMmadOp.Init(problemShape_);
+        if (bs.GetHf32Flag()) {
+            AscendC::SetHF32Mode(1);
+            AscendC::SetHF32TransMode(1);
+        }
+        // Process tiles in ping-pong mode
+        bool isPreLoadRound = true; // records if first loop, which need copy double buffer data parts to L1.
+        bool isFinalRound = false; // records if last loop, which do not need copy any data.
+        for (int64_t tileIdx = curBlockIdx; tileIdx < tileNum; tileIdx += blockNum) {
+            auto blockShape = bs.GetBlockShape(tileIdx);
+            auto blockCoord = bs.GetBlockCoord(tileIdx);
+            auto blockOffset = GetOffsetIterBatch(blockCoord, problemShape_, aGlobal_, bGlobal_, cGlobal_);
+            // calculate block-level offset
+            int64_t offsetA = Get<0>(blockOffset);
+            int64_t offsetB = Get<1>(blockOffset);
+            int64_t offsetC = Get<2>(blockOffset);
+            uint64_t curIterBatchL1 = (tileIdx + 1 == tileNum) ? (b_ - tileIdx * mainIterBatchL1) : mainIterBatchL1;
+            uint64_t nextIterBatchL1 = (tileIdx + 1 + blockNum == tileNum) ? // if next loop is tail loop, copy tailsize
+                                       (b_ - (tileIdx + blockNum) * mainIterBatchL1) : mainIterBatchL1;
+            if (tileIdx + blockNum >= tileNum) {
+                isFinalRound = true;
+            }
+            blockMmadOp(cGlobal_[offsetC], aGlobal_[offsetA], bGlobal_[offsetB], blockNum, curIterBatchL1,
+                        nextIterBatchL1, mainIterBatchL1, mainIterBatchL0, isPreLoadRound, isFinalRound);
+            isPreLoadRound = false;
+        }
+        if (bs.GetHf32Flag()) {
+            AscendC::SetHF32Mode(0);
+        }
     }
 };
 

@@ -1,7 +1,7 @@
-/**
- * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+/*
+ * Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
  * This file is a part of the CANN Open Software.
- * Licensed under CANN Open Software License Agreement Version 1.0 (the "License").
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
  * Please refer to the License for details. You may not use this file except in compliance with the License.
  * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
@@ -13,11 +13,11 @@
  * \brief
  */
 
-#ifndef ACT_BLOCK_SCHEDULER_BASE_H
-#define ACT_BLOCK_SCHEDULER_BASE_H
-#include "include/utils/common_utils.h"
-#include "include/utils/status_utils.h"
-#include "include/utils/host_utils.h"
+#ifndef MATMUL_BLOCK_BLOCK_SCHEDULER_UTILS_H
+#define MATMUL_BLOCK_BLOCK_SCHEDULER_UTILS_H
+#include "../../utils/common_utils.h"
+#include "../../utils/status_utils.h"
+#include "../../utils/host_utils.h"
 
 namespace Act {
 namespace Gemm {
@@ -28,9 +28,7 @@ constexpr uint64_t WINDOW_LEN = 4UL;
 // Base template definition for BlockSchedulerSelector
 template <class ProblemShape, class L1TileShape, class L0TileShape, class BlockScheduler = void,
           bool TransA = false, bool TransB = false>
-struct BlockSchedulerSelector {
-    static_assert(AscendC::Std::always_false_v<BlockScheduler>, "BlockScheduler is not implemented for this selector.");
-};
+struct BlockSchedulerSelector;
 
 __aicore__ inline int64_t GetPerBlockNum(int64_t coreNum, int64_t mTileNum, int64_t nTileNum, int64_t b = 1)
 {
@@ -62,15 +60,15 @@ __aicore__ inline bool IsKTail(int64_t kTileIdx, int64_t kTileNum)
     return false;
 }
 
-__aicore__ inline int64_t GetTailNum(int64_t totalNum, int64_t nomalNum)
+__aicore__ inline int64_t GetTailNum(int64_t totalNum, int64_t normalNum)
 {
-    if (nomalNum == 0) {
+    if (normalNum == 0) {
         return 0;
     }
-    if (totalNum % nomalNum == 0) {
-        return nomalNum;
+    if (totalNum % normalNum == 0) {
+        return normalNum;
     }
-    return totalNum % nomalNum;
+    return totalNum % normalNum;
 }
 
 __aicore__ inline int64_t MMLcm(int64_t m, int64_t n)
@@ -90,7 +88,7 @@ __aicore__ inline int64_t MMLcm(int64_t m, int64_t n)
 }
 
 // device -> kernel -> scheduler
-static int64_t DoGetBlockNum(int64_t l1M, int64_t l1N, MatmulShape shape)
+static int64_t DoGetBlockNum(int64_t l1M, int64_t l1N, const MatmulShape &shape)
 {
     int maxCoreNum = GetCoreNum();
     int64_t mTotalCnt = Act::Gemm::CeilDiv(shape.m, l1M);
@@ -108,8 +106,8 @@ static int64_t DoGetBlockNum(int64_t l1M, int64_t l1N, MatmulShape shape)
 }
 
 template <class ProblemShape_>
-__host_aicore__ static Status DoCheckArgs(ProblemShape_ shape, int64_t l1M, int64_t l1N, int64_t l1K, int64_t l0M,
-                                          int64_t l0N, int64_t l0K)
+__host_aicore__ static Status DoCheckArgs(const ProblemShape_ &shape, int64_t l1M, int64_t l1N, int64_t l1K,
+                                          int64_t l0M, int64_t l0N, int64_t l0K)
 {
     if (l1M > 128 || l0M > 128 || l1N > 256 || l0N > 256) { // 128,256: input limit
         return Status::l1L0ErrorExceedsLimit;
