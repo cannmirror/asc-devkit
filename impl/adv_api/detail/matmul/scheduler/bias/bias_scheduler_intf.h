@@ -104,7 +104,7 @@ public:
      */
     __aicore__ inline void SetSingleOffset(int32_t offset = 0) {}
 
-    __aicore__ inline void Destroy(LocalTensor<BiasT>& bias = NULL_TENSOR<BiasT>) {}
+    __aicore__ inline void Destroy(LocalTensor<BiasT>& bias = LocalTensor<BiasT>{}) {}
 
     __aicore__ inline void StopBias(LocalTensor<BiasT> &bias) {}
 };

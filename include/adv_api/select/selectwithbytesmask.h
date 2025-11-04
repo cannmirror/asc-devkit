@@ -15,10 +15,10 @@
  */
 #ifndef LIB_SELECT_SELECT_WITH_BYTES_MASK_H
 #define LIB_SELECT_SELECT_WITH_BYTES_MASK_H
-#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #include "kernel_utils.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/select/selectwithbytesmask/selectwithbytesmask_c310_impl.h"
 #else
 #include "../../../impl/adv_api/detail/select/selectwithbytesmask/selectwithbytesmask_impl.h"
@@ -27,7 +27,7 @@
 namespace AscendC {
 #pragma begin_pipe(V)
 /*!
- * \ingroup SelectWithBytesMask
+ * \ingroup Select
  * \brief Selects values from two sources(tensor/scalar) and put into dst tensor elementwisely according to the mask
  * Tensor Value.
  * True: mask tensor position value == 1, select src1 scalar.
@@ -47,14 +47,14 @@ namespace AscendC {
  * \param [in] info: shape information of input/mask tensors
  */
 template <typename T, typename U, bool isReuseMask = true>
-__aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
+__aicore__ inline void Select(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
     const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
 {
     SelectWithBytesMaskImpl<T, U, isReuseMask, false>(dst, src0, src1, mask, sharedTmpBuffer, info);
 }
 
 /*!
- * \ingroup SelectWithBytesMask
+ * \ingroup Select
  * \brief Selects values from two sources(tensor/scalar) and put into dst tensor elementwisely according to the mask
  * Tensor Value.
  * True: mask tensor position value == 1, select src1 Tensor correspoding value.
@@ -74,7 +74,7 @@ __aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, const Loca
  * \param [in] info: shape information of input/mask tensors
  */
 template <typename T, typename U, bool isReuseMask = true>
-__aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, T src0, const LocalTensor<T> &src1,
+__aicore__ inline void Select(const LocalTensor<T> &dst, T src0, const LocalTensor<T> &src1,
     const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
 {
     SelectWithBytesMaskImpl<T, U, isReuseMask, true>(dst, src1, src0, mask, sharedTmpBuffer, info);

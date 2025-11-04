@@ -16,7 +16,9 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASHV3_BASE_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASHV3_BASE_IMPL_H
 
-#if __CCE_AICORE__ == 300
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#include "regbase/c310/softmax_flashv3_impl.h"
+#elif __CCE_AICORE__ == 300
 #include "regbase/v300/softmax_flashv3_impl.h"
 #elif __CCE_AICORE__ == 220
 #include "membase/v220/softmax_flashv3_impl.h"

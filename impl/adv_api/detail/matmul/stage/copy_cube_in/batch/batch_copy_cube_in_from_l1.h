@@ -73,7 +73,7 @@ public:
         int32_t curRow, int32_t curCol, int32_t tileHeight, int32_t tileWidth, const ScheduleContext& context = 0)
     {}
 
-    __aicore__ inline void BatchDestroy(LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>) {}
+    __aicore__ inline void BatchDestroy(LocalTensor<TransT>& tensor = LocalTensor<TransT>{}) {}
 
     __aicore__ inline LocalTensor<TransT> AllocTensor(int32_t iterIndex = 0)
     {
@@ -82,7 +82,7 @@ public:
         return localTensor;
     }
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>,
+    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
         int32_t curRow = 0, int32_t curCol = 0)
     {}
 

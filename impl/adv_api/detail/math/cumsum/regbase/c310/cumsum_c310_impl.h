@@ -162,6 +162,7 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
         return;
     }
 
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     CHECK_FUNC_HIGHLEVEL_API(CumSum, (T, config), (dstTensor, lastRowTensor, srcTensor, sharedTmpBuffer, cumSumInfo));
 
     if constexpr (config.isLastAxis) {

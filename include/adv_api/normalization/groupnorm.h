@@ -16,10 +16,14 @@
 
 #ifndef LIB_NORMALIZATION_GROUPNORM_H
 #define LIB_NORMALIZATION_GROUPNORM_H
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 
 #include "kernel_tensor.h"
+#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
 #include "../../../impl/adv_api/detail/normalization/groupnorm/groupnorm_common_impl.h"
+#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#include "../../../impl/adv_api/detail/normalization/groupnorm/groupnorm_c310_impl.h"
+#endif
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 #pragma begin_pipe(V)

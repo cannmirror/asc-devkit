@@ -109,26 +109,25 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
 {
     if constexpr (!ToMatmulConfig(MM_CFG).enableInit) {
         return;
-    } else {
-        ASSERT(msg != nullptr && "msg cannot be nullptr when init matmul server");
-        ASSERT(msg->tilingInfo.tilingAddr != nullptr && "tiling cannot be nullptr when init matmul server");
-        auto temp1 = ((__gm__ uint32_t*)(msg->tilingInfo.tilingAddr));
-        tiling_.SetTiling(&tmpTiling_);
-        auto temp2 = (uint32_t*)(tiling_.GetTiling());
-
-        constexpr uint32_t tCubeTilingSize = ConstCeil(sizeof(TCubeTiling), CACHE_LINE_SIZE) * CACHE_LINE_SIZE;
-        GlobalTensor<int64_t> tilingGlobal;
-        for (int i = 0; i < tCubeTilingSize; i += CACHE_LINE_SIZE) {
-            Barrier();
-            tilingGlobal.SetGlobalBuffer((__gm__ int64_t *)(msg->tilingInfo.tilingAddr + i));
-            DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(tilingGlobal);
-        }
-
-        for (int i = 0; i < sizeof(TCubeTiling) / sizeof(uint32_t); i++, temp1++, temp2++) {
-            *temp2 = *temp1;
-        }
-        mul.Init(this->tiling_.GetTiling(), nullptr);
     }
+    ASSERT(msg != nullptr && "msg cannot be nullptr when init matmul server");
+    ASSERT(msg->tilingInfo.tilingAddr != nullptr && "tiling cannot be nullptr when init matmul server");
+    auto temp1 = ((__gm__ uint32_t*)(msg->tilingInfo.tilingAddr));
+    tiling_.SetTiling(&tmpTiling_);
+    auto temp2 = (uint32_t*)(tiling_.GetTiling());
+
+    constexpr uint32_t tCubeTilingSize = ConstCeil(sizeof(TCubeTiling), CACHE_LINE_SIZE) * CACHE_LINE_SIZE;
+    GlobalTensor<int64_t> tilingGlobal;
+    for (int i = 0; i < tCubeTilingSize; i += CACHE_LINE_SIZE) {
+        Barrier();
+        tilingGlobal.SetGlobalBuffer((__gm__ int64_t *)(msg->tilingInfo.tilingAddr + i));
+        DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(tilingGlobal);
+    }
+
+    for (int i = 0; i < sizeof(TCubeTiling) / sizeof(uint32_t); i++, temp1++, temp2++) {
+        *temp2 = *temp1;
+    }
+    mul.Init(this->tiling_.GetTiling(), nullptr);
 }
 
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,

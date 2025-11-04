@@ -63,6 +63,9 @@ template <typename dstT, typename scaleT, DeQuantMode mode>
 __aicore__ inline void DequantPerchannelImpl(const LocalTensor<half>& dstTensor, const LocalTensor<int32_t>& srcTensor,
     const LocalTensor<uint64_t>& deqScale, DequantParams& params)
 {
+    CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(deqScale, "deqScale", "VECIN, VECOUT, VECCALC");
     __local_mem__ half* dstUb = (__local_mem__ half*)dstTensor.GetPhyAddr();
     __local_mem__ int32_t* srcUb = (__local_mem__ int32_t*)srcTensor.GetPhyAddr();
     __local_mem__ float* scaleUb = reinterpret_cast<__local_mem__ float*>(deqScale.GetPhyAddr());
@@ -123,6 +126,9 @@ template <typename dstT, typename scaleT, DeQuantMode mode>
 __aicore__ inline void DequantPerchannelImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
     const LocalTensor<scaleT>& deqScale, DequantParams& params)
 {
+    CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(deqScale, "deqScale", "VECIN, VECOUT, VECCALC");
     __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
     __local_mem__ int32_t* srcUb = (__local_mem__ int32_t*)srcTensor.GetPhyAddr();
     __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)deqScale.GetPhyAddr();
@@ -176,6 +182,8 @@ template <typename dstT, typename scaleT, DeQuantMode mode>
 __aicore__ inline void DequantPertensorImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<int32_t>& srcTensor,
     const scaleT deqScale, DequantParams& params)
 {
+    CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
     __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
     __local_mem__ int32_t* srcUb = (__local_mem__ int32_t*)srcTensor.GetPhyAddr();
     DequantPertensorVFImpl<dstT, scaleT, mode>(dstUb, srcUb,deqScale, params);
@@ -562,6 +570,10 @@ __aicore__ inline void AscendDequantImpl(const LocalTensor<dstT>& dstTensor, con
     if ASCEND_IS_AIC {
         return;
     }
+    CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(scaleTensor, "scaleTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(offsetTensor, "offsetTensor", "VECIN, VECOUT, VECCALC");
     static_assert(SupportType<srcT, int32_t, float>(),
         "AscendDequant only support int32_t/float input dtype");
     static_assert(SupportType<dstT, bfloat16_t, half, float>(),

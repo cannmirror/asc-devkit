@@ -52,7 +52,7 @@ public:
                 width);
         });
 
-        ASCENDC_ASSERT(IsStaticPaddingEnable(MM_CFG),
+        ASCENDC_ASSERT(!IsStaticPaddingEnable(MM_CFG),
             { KERNEL_LOG(KERNEL_ERROR, "Unsupported Static Padding for DN2NZ."); });
         int64_t srcOffset = (static_cast<int64_t>(row) * static_cast<int64_t>(gCol)  + static_cast<int64_t>(col));
         Dn2NzParams dn2nzParams;

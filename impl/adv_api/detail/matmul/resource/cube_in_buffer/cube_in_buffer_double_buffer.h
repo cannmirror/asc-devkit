@@ -96,7 +96,7 @@ public:
         return tensor;
     }
 
-    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         ASCENDC_ASSERT(bufferPos != -1,
             { KERNEL_LOG(KERNEL_ERROR, "bufferPos in FreeTensor for only db version should not be -1."); });
@@ -169,7 +169,8 @@ private:
             INPUT_TYPE::TAG == InputTypeTag::scaleB);
         if constexpr (isScaleTag) {
             if constexpr (INPUT_TYPE::TAG == InputTypeTag::scaleA) {
-                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa();
+                return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() *
+                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorM();
             } else {
                 return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb() *
                     MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN() *

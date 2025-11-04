@@ -48,14 +48,14 @@ public:
      */
     __aicore__ inline LocalTensor<BiasT> AllocTensor()
     {
-        return NULL_TENSOR<BiasT>;
+        return LocalTensor<BiasT>{};
     }
     /**
      * @description: Free tensor, should be called after AllocTensor
-     * @param: tensor: tensor allocated by AllocTensor or NULL_TENSOR
+     * @param: tensor: tensor allocated by AllocTensor or null tensor
      * @return: void
      */
-    __aicore__ inline void FreeTensor(const LocalTensor<BiasT>& tensor = NULL_TENSOR<BiasT>) {}
+    __aicore__ inline void FreeTensor(const LocalTensor<BiasT>& tensor = LocalTensor<BiasT>{}) {}
     /**
      * @description: Put tensor to buffer que
      * @param: tensor: target tensor on L1
@@ -69,7 +69,7 @@ public:
      */
     __aicore__ inline LocalTensor<BiasT> DeQue()
     {
-        return NULL_TENSOR<BiasT>;
+        return LocalTensor<BiasT>{};
     }
     /**
      * @description: Reset all should be called when matmul end

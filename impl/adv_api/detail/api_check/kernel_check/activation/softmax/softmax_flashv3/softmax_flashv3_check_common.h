@@ -64,9 +64,11 @@ private:
         ASCENDC_ASSERT((dstTensor.GetSize() == srcTensor.GetSize() || HighLevelAPIParametersPrint), {
             KERNEL_LOG(KERNEL_ERROR, "[SoftMaxFlashV3] The dstTensor size is %u, should be equal to srcTensor size %u.",
             dstTensor.GetSize(), srcTensor.GetSize()); });
-        ASCENDC_ASSERT((params.loopCnt >= 1 || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[SoftMaxFlashV3] The params.loopCnt is %u, should be larger than 0.",
-            params.loopCnt); });
+        if constexpr (isUpdate) {
+            ASCENDC_ASSERT((params.loopCnt >= 1 || HighLevelAPIParametersPrint), {
+                KERNEL_LOG(KERNEL_ERROR, "[SoftMaxFlashV3] The params.loopCnt is %u, should be no less than 1 when isUpdate is true.",
+                params.loopCnt); });
+        }
         ASCENDC_ASSERT((params.splitMeanCnt == 8 || HighLevelAPIParametersPrint), {
             KERNEL_LOG(KERNEL_ERROR, "[SoftMaxFlashV3] The params.splitMeanCnt is %u, should be equal to 8.",
             params.splitMeanCnt); });

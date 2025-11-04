@@ -10,7 +10,7 @@
  */
 #ifndef LIB_TRANSPOSE_TRANSDATA_H
 #define LIB_TRANSPOSE_TRANSDATA_H
-#if __CCE_AICORE__ == 220
+#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 #include "transdata_common.h"
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"

@@ -13,8 +13,6 @@
  * \file copy_cube_in_ubtol1_singleshape.h
  * \brief
  */
-
-
 #ifndef IMPL_MATMUL_MODULES_STAGE_COPY_CUBE_IN_UBTOL1_SINGLESHAPE_H
 #define IMPL_MATMUL_MODULES_STAGE_COPY_CUBE_IN_UBTOL1_SINGLESHAPE_H
 
@@ -76,11 +74,37 @@ public:
         tbuffTmp.bufferAddr = MATMUL_MODULE(CubeInBuffer)->GetBufferHeadAddr();
 
 #ifdef ASCENDC_CPU_DEBUG
+        int32_t orgWidth;
+        int32_t orgHeight;
+        constexpr static int32_t c0Size_ = AuxGetC0Size<TransT>();
         if constexpr (INPUT_TYPE::TAG == InputTypeTag::A) {
-            tbuffTmp.dataLen = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM() * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK() * sizeof(TransT);
+            if constexpr ((IsSupportB8<SrcT>() && !IsSameTypeV<SrcT, int8_t>) || (IsSupportB4<SrcT>() && !IsSameTypeV<SrcT, int4b_t>)) {
+                if constexpr (INPUT_TYPE::isTrans) {
+                    orgHeight = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_BASEK_FACTOR;
+                    orgWidth = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM(), c0Size_) * c0Size_;
+                } else {
+                    orgHeight = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM(), BLOCK_CUBE) * BLOCK_CUBE;
+                    orgWidth = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_BASEK_FACTOR;
+                }
+            } else {
+                orgWidth = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
+                orgHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
+            }
         } else {
-            tbuffTmp.dataLen = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK() * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN() * sizeof(TransT);
+            if constexpr ((IsSupportB8<SrcT>() && !IsSameTypeV<SrcT, int8_t>) || (IsSupportB4<SrcT>() && !IsSameTypeV<SrcT, int4b_t>)) {
+                if constexpr (INPUT_TYPE::isTrans) {
+                    orgHeight = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN(), BLOCK_CUBE) * BLOCK_CUBE;
+                    orgWidth = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_BASEK_FACTOR;
+                } else {
+                    orgHeight = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_BASEK_FACTOR;
+                    orgWidth = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN(), c0Size_) * c0Size_;
+                }
+            } else {
+                orgWidth = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
+                orgHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
+            }
         }
+        tbuffTmp.dataLen = orgHeight * orgWidth * sizeof(TransT);
         tbuffTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::A1)) + tbuffTmp.bufferAddr;
 #endif
 
@@ -90,7 +114,7 @@ public:
 
     __aicore__ inline void AllocTensor(int32_t iterIndex = 0) {}
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>,
+    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
         int32_t curRow = 0, int32_t curCol = 0) {}
 
     __aicore__ inline void Destroy() {}

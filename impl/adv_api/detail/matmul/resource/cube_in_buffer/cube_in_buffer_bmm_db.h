@@ -54,7 +54,7 @@ public:
         return cacheHead_[0];
     }
 
-    __aicore__ inline void FreeTensor(int32_t needCache = 0, const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void FreeTensor(int32_t needCache = 0, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         if (!needCache) {
             qid_.FreeTensor(cacheHead_);

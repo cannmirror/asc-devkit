@@ -190,6 +190,9 @@ __aicore__ inline void VFDropOutByteModeCalc(__local_mem__ T* dstUb, __local_mem
             if constexpr (SupportType<T, half>()) {
                 MicroAPI::Mul(vDstReg, vFP16Reg, vSrcReg, maskReg);
             } else {
+#if defined(__DAV_L300__)
+                ASCENDC_ASSERT(0, "L300 Platform not support BF16");
+#endif
                 MicroAPI::Cast<bfloat16_t, half, MrgZRndR>(vBF16Reg, vFP16Reg, maskReg);
                 MicroAPI::Mul(vDstReg, vBF16Reg, vSrcReg, maskReg);
             }
@@ -231,6 +234,9 @@ __aicore__ inline void VFDropOutByteModeCalcInfo(__local_mem__ T* dstUb, __local
                 if constexpr (SupportType<T, half>()) {
                     MicroAPI::Mul(vDstReg, vFP16Reg, vSrcReg, maskReg);
                 } else {
+#if defined(__DAV_L300__)
+                    ASCENDC_ASSERT(0, "L300 Platform not support BF16");
+#endif
                     MicroAPI::Cast<bfloat16_t, half, MrgZRndR>(vBF16Reg, vFP16Reg, maskReg);
                     MicroAPI::Mul(vDstReg, vBF16Reg, vSrcReg, maskReg);
                 }
@@ -253,7 +259,7 @@ __aicore__ inline void DropOutBitMode(const LocalTensor<T>& dstLocal, const Loca
     const LocalTensor<uint8_t>& maskLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T divValue,
     const uint32_t dataSize)
 {
-    static_assert((SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
     (void)sharedTmpBuffer;
     __local_mem__ T *srcUb = (__local_mem__ T *)srcLocal.GetPhyAddr();
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
@@ -267,7 +273,7 @@ __aicore__ inline void DropOutBitMode(const LocalTensor<T>& dstLocal, const Loca
     const LocalTensor<uint8_t>& maskLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T divValue,
     const DropOutShapeInfo& info)
 {
-    static_assert((SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
     __local_mem__ T *srcUb = (__local_mem__ T *)srcLocal.GetPhyAddr();
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ uint8_t *maskUb = (__local_mem__ uint8_t *)maskLocal.GetPhyAddr();
@@ -280,7 +286,7 @@ __aicore__ inline void DropOutByteMode(const LocalTensor<T>& dstLocal, const Loc
     const LocalTensor<uint8_t>& maskLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T divValue,
     const uint32_t dataSize)
 {
-    static_assert((SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
     (void)sharedTmpBuffer;
     __local_mem__ T *srcUb = (__local_mem__ T *)srcLocal.GetPhyAddr();
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
@@ -294,7 +300,7 @@ __aicore__ inline void DropOutByteMode(const LocalTensor<T>& dstLocal, const Loc
     const LocalTensor<uint8_t>& maskLocal, const LocalTensor<uint8_t>& sharedTmpBuffer, const T divValue,
     const DropOutShapeInfo& info)
 {
-    static_assert((SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
     (void)sharedTmpBuffer;
     __local_mem__ T *srcUb = (__local_mem__ T *)srcLocal.GetPhyAddr();
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();

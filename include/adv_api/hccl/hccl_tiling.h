@@ -25,7 +25,8 @@ namespace AscendC {
 class Mc2CcTilingConfig {
 public:
     explicit Mc2CcTilingConfig(const std::string &groupName, uint32_t opType, const std::string &algConfig,
-                               uint32_t reduceType = 0, uint8_t dstDataType = 0, uint8_t srcDataType = 0);
+                               uint32_t reduceType = 0, uint8_t dstDataType = 0, uint8_t srcDataType = 0,
+                               uint8_t commEngine = 0);
     virtual ~Mc2CcTilingConfig();
 
 public:
@@ -43,6 +44,7 @@ public:
     uint32_t SetDebugMode(uint8_t debugMode);
     uint32_t SetQueueNum(uint16_t num);
     uint32_t SetCommBlockNum(uint16_t num);
+    uint32_t SetCommEngine(uint8_t commEngine);
 
 private:
     HcclTilingImpl impl_;

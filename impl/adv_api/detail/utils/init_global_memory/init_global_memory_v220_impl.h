@@ -58,5 +58,12 @@ __aicore__ inline void InitGlobalMemoryImpl(GlobalTensor<T> &gmWorkspaceAddr, co
     }
     PipeBarrier<PIPE_MTE3>();
 }
+
+template <typename T>
+__aicore__ inline __in_pipe__(V)
+    __out_pipe__(MTE3) void InitGlobalMemory(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
+{
+    InitGlobalMemoryImpl<T>(gmWorkspaceAddr, size, value);
+}
 } // namespace AscendC
 #endif // IMPL_UTILS_INIT_GLOBAL_MEMORY_INIT_GLOBAL_MEMORY_V220_IMPL_H

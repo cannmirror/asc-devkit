@@ -433,7 +433,7 @@ file(
 )
 file(
   CREATE_LINK
-  ../../utils/init_global_memory.h
+  ../utils/init_global_memory.h
   ${ASCENDC_INSTALL_BASE_PATH}/asc/include/adv_api/init_global_memory/init_global_memory.h
   SYMBOLIC)
 

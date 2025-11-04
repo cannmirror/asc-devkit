@@ -56,7 +56,8 @@ public:
 
     using DstT = typename C_TYPE::T;
     using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type; 
-    using SrcT = typename A_TYPE::T;
+    using SrcAT = typename A_TYPE::T;
+    using SrcBT = typename B_TYPE::T;
 
     __aicore__ inline void Init(const TCubeTiling *__restrict cubeTiling, TPipe *tpipe)
     {
@@ -65,7 +66,7 @@ public:
             return;
         }
         MATMUL_MODULE(MatmulShapeTiling)->SetTiling(cubeTiling);
-        MATMUL_MODULE(MatmulShapeTiling)->template CheckTiling<SrcT, L0cT>();
+        MATMUL_MODULE(MatmulShapeTiling)->template CheckTiling<SrcAT, L0cT>();
         auto& var = MATMUL_PARAM_VAR;
         var.tpipe_ = tpipe;
 
@@ -116,7 +117,7 @@ public:
         }
         MATMUL_MODULE(MatmulQuantProcessor)->Init(tiling.GetBaseN());
 #if __NPU_ARCH__ == 5102
-        if constexpr (IsSameTypeV<SrcT, half> && (IsSameTypeV<DstT, half> || IsSameTypeV<DstT, bfloat16_t>)) {
+        if constexpr (IsSameTypeV<SrcAT, half> && (IsSameTypeV<DstT, half> || IsSameTypeV<DstT, bfloat16_t>)) {
             constexpr float FIX_VAL_RECIPROCAL = 1.0f / (1 << 16);
             const uint64_t quantScalar = static_cast<const uint64_t>(*reinterpret_cast<const int32_t *>(&FIX_VAL_RECIPROCAL));
             MATMUL_MODULE(MatmulQuantProcessor)->SetQuantScalar(quantScalar);
@@ -214,8 +215,114 @@ public:
         GetResultImpl(gm, co2Local, enAtomic, enSequentialWrite);
     }
 #endif
-
+private:
+    constexpr static uint8_t multiOfB16b8 = 2;
+    constexpr static uint8_t multiOfB16b4 = 4;
 protected:
+
+    __aicore__ inline void StaticPadCommon(const LocalTensor<uint16_t>& padTensor, const int32_t repeatTimes,
+        const int32_t blockNum, const int32_t dstGap, const int32_t offset)
+    {
+        InitConstValueParams<uint16_t> initConstValueParams;
+        initConstValueParams.repeatTimes = repeatTimes;
+        initConstValueParams.blockNum = blockNum;
+        initConstValueParams.dstGap = dstGap;
+        initConstValueParams.initValue = 0;
+        InitConstValue(padTensor[offset], initConstValueParams);
+    }
+
+    __aicore__ inline void PadZeroForAInL1(const LocalTensor<SrcAT>& a1)
+    {
+        int32_t aSingleHeight;
+        int32_t aSingleWidth;
+        int32_t aSingleCeilHeight;
+        int32_t aSingleCeilWidth;
+        constexpr static int32_t c0Size_ = AuxGetC0Size<SrcAT>();
+        if constexpr (A_TYPE::isTrans) {
+            aSingleHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
+            aSingleCeilHeight = CeilAlign(aSingleHeight, MX_BASEK_FACTOR);
+            aSingleWidth = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
+            int32_t tileWidthC0 = Ceil(aSingleWidth, c0Size_);
+            auto padTensor = a1.template ReinterpretCast<uint16_t>();
+            if (aSingleCeilHeight > aSingleHeight) {
+                if constexpr (IsSupportB8<SrcAT>() && !IsSameTypeV<SrcAT, int8_t>) {
+                    StaticPadCommon(padTensor, tileWidthC0, aSingleCeilHeight - aSingleHeight, aSingleHeight, aSingleHeight * c0Size_ / multiOfB16b8);
+                } else if constexpr (IsSupportB4<SrcAT>() && !IsSameTypeV<SrcAT, int4b_t>) {
+                    StaticPadCommon(padTensor, tileWidthC0, aSingleCeilHeight - aSingleHeight, aSingleHeight, aSingleHeight * c0Size_ / multiOfB16b4);
+                }
+            }
+        } else {
+            aSingleHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
+            aSingleCeilHeight = CeilAlign(aSingleHeight, BLOCK_CUBE);
+            aSingleWidth = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
+            aSingleCeilWidth = CeilAlign(aSingleWidth, MX_BASEK_FACTOR);
+            int32_t tileWidthC0 = Ceil(aSingleWidth, c0Size_);
+            int32_t staticWidthC0 = Ceil(aSingleCeilWidth, c0Size_);
+            auto padTensor = a1.template ReinterpretCast<uint16_t>();
+            if (staticWidthC0 > tileWidthC0) {
+                if constexpr (IsSupportB8<SrcAT>() && !IsSameTypeV<SrcAT, int8_t>) {
+                    StaticPadCommon(padTensor, 1, (staticWidthC0 - tileWidthC0) * aSingleHeight, 0, aSingleCeilHeight * tileWidthC0 * c0Size_ / multiOfB16b8);
+                } else if constexpr (IsSupportB4<SrcAT>() && !IsSameTypeV<SrcAT, int4b_t>) {
+                    StaticPadCommon(padTensor, 1, (staticWidthC0 - tileWidthC0) * aSingleHeight, 0, aSingleCeilHeight * tileWidthC0 * c0Size_ / multiOfB16b4);
+                }
+            }
+        }
+    }
+
+    __aicore__ inline void PadZeroForBInL1(const LocalTensor<SrcBT>& b1)
+    {
+        int32_t bSingleHeight;
+        int32_t bSingleWidth;
+        int32_t bSingleCeilHeight;
+        int32_t bSingleCeilWidth;
+        constexpr static int32_t c0Size_ = AuxGetC0Size<SrcBT>();
+        if constexpr (!B_TYPE::isTrans) {
+            bSingleHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
+            bSingleCeilHeight = CeilAlign(bSingleHeight, MX_BASEK_FACTOR);
+            bSingleWidth = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
+            int32_t tileWidthC0 = Ceil(bSingleWidth, c0Size_);
+            auto padTensor = b1.template ReinterpretCast<uint16_t>();
+            if (bSingleCeilHeight > bSingleHeight) {
+                if constexpr (IsSupportB8<SrcBT>() && !IsSameTypeV<SrcBT, int8_t>) {
+                    StaticPadCommon(padTensor, tileWidthC0, bSingleCeilHeight - bSingleHeight, bSingleHeight, bSingleHeight * c0Size_ / multiOfB16b8);
+                } else if constexpr (IsSupportB4<SrcBT>() && !IsSameTypeV<SrcBT, int4b_t>) {
+                    StaticPadCommon(padTensor, tileWidthC0, bSingleCeilHeight - bSingleHeight, bSingleHeight, bSingleHeight * c0Size_ / multiOfB16b4);
+                }
+            }
+        } else {
+            bSingleHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
+            bSingleCeilHeight = CeilAlign(bSingleHeight, BLOCK_CUBE);
+            bSingleWidth = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK();
+            bSingleCeilWidth = CeilAlign(bSingleWidth, MX_BASEK_FACTOR);
+            int32_t tileWidthC0 = Ceil(bSingleWidth, c0Size_);
+            int32_t staticWidthC0 = Ceil(bSingleCeilWidth, c0Size_);
+            auto padTensor = b1.template ReinterpretCast<uint16_t>();
+            if (staticWidthC0 > tileWidthC0) {
+                if constexpr (IsSupportB8<SrcBT>() && !IsSameTypeV<SrcBT, int8_t>) {
+                    StaticPadCommon(padTensor, 1, (staticWidthC0 - tileWidthC0) * bSingleHeight, 0, bSingleCeilHeight * tileWidthC0 * c0Size_ / multiOfB16b8);
+                } else if constexpr (IsSupportB4<SrcBT>() && !IsSameTypeV<SrcBT, int4b_t>) {
+                    StaticPadCommon(padTensor, 1, (staticWidthC0 - tileWidthC0) * bSingleHeight, 0, bSingleCeilHeight * tileWidthC0 * c0Size_ / multiOfB16b4);
+                }
+            }
+        }
+    }
+
+    __aicore__ inline void PadZeroForABL1(const LocalTensor<SrcAT>& a1, const LocalTensor<SrcBT>& b1) 
+    {
+        if constexpr (PhyPosIsUB(A_TYPE::pos)) {
+            PadZeroForAInL1(a1);
+            event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE3_MTE1));
+            SetFlag<HardEvent::MTE3_MTE1>(eventID);
+            WaitFlag<HardEvent::MTE3_MTE1>(eventID);
+        }
+        if constexpr (PhyPosIsUB(B_TYPE::pos)) {
+            PadZeroForBInL1(b1);
+            event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE3_MTE1));
+            SetFlag<HardEvent::MTE3_MTE1>(eventID);
+            WaitFlag<HardEvent::MTE3_MTE1>(eventID);
+        }
+    }
+
 #if __NPU_ARCH__ == 5102
     __aicore__ inline void InitQtableProcessor()
     {

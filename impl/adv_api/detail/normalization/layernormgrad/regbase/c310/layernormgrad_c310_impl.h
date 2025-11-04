@@ -280,6 +280,7 @@ __aicore__ inline void LayerNormGradImpl(const LocalTensor<T>& outputPdX, const 
     const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& tmpBuffer, T epsilon,
     LayerNormGradTiling& tiling, const LayerNormGradShapeInfo& shapeInfo = {})
 {
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     CHECK_FUNC_HIGHLEVEL_API(LayerNormGrad, (T, isReuseSource),
         (outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma, tmpBuffer, epsilon, tiling,
             shapeInfo));

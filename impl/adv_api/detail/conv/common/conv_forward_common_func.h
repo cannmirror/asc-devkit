@@ -17,8 +17,8 @@
 #ifndef API_CONV_COMMON_FUNC_H
 #define API_CONV_COMMON_FUNC_H
 
-#include "include/adv_api/conv_forward_util.h"
-#include "include/adv_api/conv_forward_framework_util.h"
+#include "conv_forward_util.h"
+#include "conv_forward_framework_util.h"
 
 namespace ConvApiFunc {
 

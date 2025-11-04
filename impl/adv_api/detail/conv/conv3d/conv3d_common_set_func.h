@@ -18,7 +18,7 @@
 #define API_CONV3D_COMMON_SET_FUNC_H
 
 #include "../common/conv_forward_framework_util.h"
-#include "include/adv_api/conv3d_common_sub_api.h"
+#include "conv3d_common_sub_api.h"
 #include "include/adv_api/conv/conv3d/conv3d_config.h"
 #include "kernel_operator.h"
 #include "kernel_tiling/kernel_tiling.h"

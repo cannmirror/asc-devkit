@@ -17,10 +17,10 @@
 #include "kernel_tiling/kernel_tiling.h"
 #if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200
 #include "../../../impl/adv_api/detail/normalization/rmsnorm/rmsnorm_common_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__)
 #include "../../../impl/adv_api/detail/normalization/rmsnorm/rmsnorm_c310_impl.h"
 #endif
-#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__)
 namespace AscendC {
 #pragma begin_pipe(V)
 /*!

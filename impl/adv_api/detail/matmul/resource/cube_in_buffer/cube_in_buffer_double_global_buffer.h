@@ -68,7 +68,7 @@ public:
         }
     }
 
-    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         (void) bufferPos;
         (void) tensor;
@@ -96,7 +96,7 @@ public:
             return groupCache1_.template GetCacheHead<TransT>()[bufferPos * baseBlockSize_];
         } else {
             ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Please call GetBuffer only when Hit is true."); });
-            return NULL_TENSOR<TransT>;
+            return LocalTensor<TransT>{};
         }
     }
 

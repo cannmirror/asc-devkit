@@ -40,13 +40,8 @@ enum class HcclCMDType {  // use enum class to differentiate from enum AicpuComT
     HCCL_CMD_ALLGATHER_V,
     HCCL_CMD_REDUCE_SCATTER_V,
     HCCL_CMD_BATCH_WRITE,
-    HCCL_CMD_ALL,
-    HCCL_CMD_HALF_ALLTOALLV,
-    HCCL_CMD_FINALIZE = 100, // control task start from enum value 100, reserving for comm tasks
-    HCCL_CMD_INTER_GROUP_SYNC,
-    HCCL_CMD_INIT,
-    HCCL_CMD_BARRIER,
-    HCCL_CMD_MAX
+    HCCL_CMD_HALF_ALLTOALLV = 20,
+    HCCL_CMD_ALL
 };
 
 enum HcclReduceOp {

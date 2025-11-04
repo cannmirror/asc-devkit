@@ -32,6 +32,7 @@ public:
     uint16_t commBlockNum_ = 0U;
     uint8_t srcDataType_;
     uint8_t dstDataType_;
+    uint8_t commEngine_;
 };
 }  // namespace AscendC
 #endif  // IMPL_HCCL_HCCL_TILING_IMPL_DEF_H

@@ -790,7 +790,7 @@ void SoftMaxFlashV2TilingFunc(const ge::Shape& srcShape, const uint32_t dataType
 }
 
 void GetSoftMaxFlashV3MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t dataTypeSize1,
-                                    const uint32_t dataTypeSize2, uint32_t &maxValue, uint32_t &minValue, UNUSED const bool isUpdate,
+                                    const uint32_t dataTypeSize2, uint32_t &maxValue, uint32_t &minValue, const bool isUpdate,
                                     UNUSED const bool isBasicBlock)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_V3_GET_MAX_MIN>(srcShape.GetShapeSize(),
@@ -813,10 +813,23 @@ void GetSoftMaxFlashV3MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t da
         return;
     }
     const uint32_t elementNumPerBlk = SOFTMAX_DEFAULT_BLK_SIZE / dataTypeSize2;
-
-    minValue = elementNumPerBlk * SOFTMAXV3_TMPBUFFER_COUNT + SOFTMAX_TMPBUFFER_COUNT * srcK + SOFTMAX_BASICBLOCK_UNIT;
-    minValue = minValue * SOFTMAX_FLOAT_SIZE;
-    maxValue = srcM * minValue;
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
+    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
+        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+        socVersion == platform_ascendc::SocVersion::MC62CM12A) {
+        if (!isUpdate) {
+            minValue = (srcM * SOFTMAX_BASICBLOCK_UNIT + srcM * srcK) * SOFTMAX_FLOAT_SIZE;
+        } else {
+            minValue = (srcM * SOFTMAX_BASICBLOCK_UNIT + srcM * srcK + srcM * elementNumPerBlk) * SOFTMAX_FLOAT_SIZE;
+        }
+        maxValue = minValue;
+    } else {
+        minValue = elementNumPerBlk * SOFTMAXV3_TMPBUFFER_COUNT + SOFTMAX_TMPBUFFER_COUNT * srcK + SOFTMAX_BASICBLOCK_UNIT;
+        minValue = minValue * SOFTMAX_FLOAT_SIZE;
+        maxValue = srcM * minValue;
+    }
 }
 
 void SoftMaxFlashV3TilingFunc(const ge::Shape &srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,

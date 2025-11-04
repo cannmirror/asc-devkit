@@ -1656,6 +1656,7 @@ private:
     uint64_t aScaleAddr_;
     uint64_t bScaleAddr_;
     uint32_t sizeBiasmatrix_;
+    uint32_t scaleTmpBufSize_ = 0;
 #endif
     template <class T, class U>
     friend __aicore__ inline void InitKfcClient(T& cubeObj, U *tiling, TPipe *tpipe, KfcCommClient *client, int instIdx,
@@ -2042,9 +2043,9 @@ private:
         WaitFlag<HardEvent::MTE2_V>((event_t)enQueEvtID);
     }
 
-    template <class T, InputTypeTag TAG>
+    template <class T, InputTypeTag TAG, typename INPUT_TYPE>
     __aicore__ inline void CopyUB2L1ND2NZ(LocalTensor<T>& dst, LocalTensor<T>& src,
-        const int32_t row, const int32_t col, const int32_t gCol, bool isTrans)
+        const int32_t row, const int32_t col, const int32_t gCol, bool isTrans, const int32_t dstHeight)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enVecND2NZ) {
             LocalTensor<T> srcTensor = localWorkspace_[0].template ReinterpretCast<T>();
@@ -2057,45 +2058,48 @@ private:
             CopyUBND2UBNZ(tmpBuffer, srcTensor, row, col, gCol);
             DataCopy(dst, tmpBuffer, size);
         } else {
-            CopyND2NZOnTheFly<T, TAG>(dst, src, row, col, gCol, isTrans);
+            CopyND2NZOnTheFly<T, TAG, INPUT_TYPE>(dst, src, row, col, gCol, isTrans, dstHeight);
         }
     }
 
     // borrowed from the same func in data_copy_wrapper_using_ub_nd.h, with only small adjustments.
-    template <class T, InputTypeTag TAG>
+    template <class T, InputTypeTag TAG, typename INPUT_TYPE>
     __aicore__ inline void CopyND2NZOnTheFly(const LocalTensor<T> &dst, LocalTensor<T> &src, const int32_t height,
-        const int32_t width, const int32_t gCol, bool isTrans)
+        const int32_t width, const int32_t gCol, bool isTrans, const int32_t dstHeight)
     {
         int tail = width % c0Size_;
         int calcWidthExr = Ceil(width, c0Size_);
         int calcHeightExr = Ceil(height, BLOCK_CUBE);
 
-        // set2d, pad tail zero
-        if (height % BLOCK_CUBE != 0) {
-            int64_t repeat = calcWidthExr * calcHeightExr;
-            if constexpr (IsTypeOneOfV<T, int8_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t>) {
-                LocalTensor<int16_t> tmp = dst.template ReinterpretCast<int16_t>();
-                InitConstValueParams<int16_t> initConstValueParams;
-                initConstValueParams.repeatTimes = (uint16_t)repeat;
-                initConstValueParams.initValue = 0;
-                InitConstValue(tmp, initConstValueParams);
-            } else {
-                InitConstValueParams<T> initConstValueParams;
-                initConstValueParams.repeatTimes = (uint16_t)repeat;
-                initConstValueParams.initValue = 0;
-                InitConstValue(dst, initConstValueParams);
+        if constexpr (!PhyMxScalePosIsUB<INPUT_TYPE>()) {
+            // set2d, pad tail zero
+            if (height % BLOCK_CUBE != 0) {
+                int64_t repeat = calcWidthExr * calcHeightExr;
+                if constexpr (IsTypeOneOfV<T, int8_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t>) {
+                    LocalTensor<int16_t> tmp = dst.template ReinterpretCast<int16_t>();
+                    InitConstValueParams<int16_t> initConstValueParams;
+                    initConstValueParams.repeatTimes = (uint16_t)repeat;
+                    initConstValueParams.initValue = 0;
+                    InitConstValue(tmp, initConstValueParams);
+                } else {
+                    InitConstValueParams<T> initConstValueParams;
+                    initConstValueParams.repeatTimes = (uint16_t)repeat;
+                    initConstValueParams.initValue = 0;
+                    InitConstValue(dst, initConstValueParams);
+                }
+
+                event_t eventIDMte2ToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE2_MTE3));
+                SetFlag<HardEvent::MTE2_MTE3>(eventIDMte2ToMte3);
+                WaitFlag<HardEvent::MTE2_MTE3>(eventIDMte2ToMte3);
             }
-
-            event_t eventIDMte2ToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE2_MTE3));
-            SetFlag<HardEvent::MTE2_MTE3>(eventIDMte2ToMte3);
-            WaitFlag<HardEvent::MTE2_MTE3>(eventIDMte2ToMte3);
         }
-
         // gCol unaligned, can not use dma copy repeat stride
         if (tail != 0) {
-            CopyND2NZOnTheFlyWithTail<T, TAG>(dst, src, height, width, gCol, isTrans);
+            if constexpr (!PhyMxScalePosIsUB<INPUT_TYPE>()) {
+                CopyND2NZOnTheFlyWithTail<T, TAG>(dst, src, height, width, gCol, isTrans);
+            }
         } else {
-            CopyND2NZOnTheFlyWithoutTail(dst, src, height, width, gCol);
+            CopyND2NZOnTheFlyWithoutTail(dst, src, height, width, gCol, dstHeight);
         }
     }
 
@@ -2188,7 +2192,7 @@ private:
 
     template <class T>
     __aicore__ inline void CopyND2NZOnTheFlyWithoutTail(const LocalTensor<T> &dst, LocalTensor<T> &src,
-        const int32_t height, const int32_t width, const int32_t gCol)
+        const int32_t height, const int32_t width, const int32_t gCol, const int32_t dstHeight)
     {
         int calcWidth = width / c0Size_; // cube block numbers that do not need to be pad zero
         int dstOffset = 0;
@@ -2213,11 +2217,28 @@ private:
             }
         } else {
             // data copy stride is aligned
+            int32_t repDstOffset;
+            if constexpr ((IsSupportB8<T>() && !IsSameTypeV<T, int8_t>) || (IsSupportB4<T>() && !IsSameTypeV<T, int4b_t>)) {
+                repDstOffset = dstHeight * c0Size_;
+            } else {
+                repDstOffset = calcHeightExr * BLOCK_CUBE * c0Size_;
+            }
+            constexpr int32_t maxRepTimes = 4095;
+            int32_t mainHeight = height > maxRepTimes ? maxRepTimes : height;
+            int32_t tailHeight = height % maxRepTimes;
             for (int i = 0; i < calcWidth; i++) {
-                DataCopy(dst[dstOffset], src[srcOffset],
-                    { static_cast<uint16_t>(height), 1, static_cast<uint16_t>(srcGap), 0 }, enhancedParams);
-                dstOffset += calcHeightExr * BLOCK_CUBE * c0Size_;
+                DataCopy(dst[dstOffset], src[srcOffset], { static_cast<uint16_t>(mainHeight), 1, static_cast<uint16_t>(srcGap), 0 }, enhancedParams);
+                dstOffset += repDstOffset;
                 srcOffset += c0Size_;
+            }
+            if (tailHeight > 0 && height > maxRepTimes) {
+                dstOffset = maxRepTimes * c0Size_;
+                srcOffset = maxRepTimes * width;
+                for (int i = 0; i < calcWidth; i++) {
+                    DataCopy(dst[dstOffset], src[srcOffset], { static_cast<uint16_t>(tailHeight), 1, static_cast<uint16_t>(srcGap), 0 }, enhancedParams);
+                    dstOffset += repDstOffset;
+                    srcOffset += c0Size_;
+                }
             }
         }
     }
@@ -2252,19 +2273,60 @@ private:
         }
     }
 
+    __aicore__ inline void CopyUbAToL1ForND(LocalTensor<SrcAT>& leftMatrix, LocalTensor<SrcAT>& srcTensor, bool isTrans)
+    {
+        constexpr uint8_t multiOfB8b4 = 2;
+        if (isTrans) {
+            int32_t dstHeight;
+            if constexpr (IsSupportB8<SrcAT>() && !IsSameTypeV<SrcAT, int8_t>) {
+                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
+            } else if constexpr (IsSupportB4<SrcAT>() && !IsSameTypeV<SrcAT, int4b_t>) {
+                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                auto leftMatrixS8 = leftMatrix.template ReinterpretCast<int8_t>();
+                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
+                CopyUB2L1ND2NZ<int8_t, InputTypeTag::A, A_TYPE>(leftMatrixS8, srcS8, singleCoreK_, singleCoreM_/multiOfB8b4, singleCoreM_/multiOfB8b4, isTrans, dstHeight);
+            } else {
+                dstHeight = singleCoreK_;
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
+            }
+        } else {
+            if constexpr (IsSupportB4<SrcAT>() && !IsSameTypeV<SrcAT, int4b_t>) {
+                auto leftMatrixS8 = leftMatrix.template ReinterpretCast<int8_t>();
+                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
+                CopyUB2L1ND2NZ<int8_t, InputTypeTag::A, A_TYPE>(leftMatrixS8, srcS8, singleCoreM_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4, isTrans,  Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
+            } else {
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreM_, singleCoreK_, singleCoreK_, isTrans,
+                    Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
+            }
+        }
+    }
+
     __aicore__ inline void CopyUbAToL1(bool isTrans)
     {
         c0Size_ = AscendCUtils::GetC0Count(sizeof(SrcAT));
         auto bitSize = AscendC::GetBitSize<SrcAT>();
-        int32_t OrgHeightAlign = (IsNeedC0Align<SrcAT>() && A_TYPE::isTrans) ?
+        int32_t orgHeightAlign = (IsNeedC0Align<SrcAT>() && A_TYPE::isTrans) ?
             Ceil(singleCoreM_, c0Size_) * c0Size_ :
             Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
-        int32_t OrgWidthAlign = (IsTypeOneOfV<SrcAT, float> || IsNeedC0Align<SrcAT>()) ?
+        int32_t orgWidthAlign = (IsTypeOneOfV<SrcAT, float> || IsNeedC0Align<SrcAT>()) ?
             Ceil(singleCoreK_, c0Size_) * c0Size_ :
             Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::A1);
-        tbufOutTmp.dataLen = OrgHeightAlign * OrgWidthAlign * bitSize;
+        if constexpr (PhyMxScalePosIsUB<A_TYPE>() && A_TYPE::format == CubeFormat::ND) {
+            if constexpr (A_TYPE::isTrans) {
+                orgHeightAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                orgWidthAlign = Ceil(this->cubeTiling.GetBaseM(), c0Size_) * c0Size_ * this->cubeTiling.GetStepM();
+            } else {
+                orgHeightAlign = Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
+                orgWidthAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+            }
+            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(SrcAT);
+        } else {
+            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
+        }
+        
         tbufOutTmp.bufferAddr = kfcMsg_.body.aAddr;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::A1)) + kfcMsg_.body.aAddr;
@@ -2272,13 +2334,9 @@ private:
 
         LocalTensor<SrcAT> leftMatrix;
         leftMatrix.SetAddr(tbufOutTmp);
-        LocalTensor<SrcAT> srcTensor = GetVecTensor<SrcAT>(aAddr_, sizeAmatrix_ / bitSize);
+        LocalTensor<SrcAT> srcTensor = GetVecTensor<SrcAT>(aAddr_, sizeAmatrix_ / sizeof(SrcAT));
         if constexpr (A_TYPE::format == CubeFormat::ND) {
-            if (isTrans) {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans);
-            } else {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A>(leftMatrix, srcTensor, singleCoreM_, singleCoreK_, singleCoreK_, isTrans);
-            }
+            CopyUbAToL1ForND(leftMatrix, srcTensor, isTrans);
         } else if constexpr (A_TYPE::format == CubeFormat::NZ) {
             if (isTrans) {
                 CopyUB2L1NZ2NZ(leftMatrix, srcTensor, singleCoreK_, singleCoreM_);
@@ -2298,15 +2356,15 @@ private:
     {
         c0Size_ = AscendCUtils::GetC0Count(sizeof(SrcAT));
         auto bitSize = AscendC::GetBitSize<SrcAT>();
-        int32_t OrgHeightAlign = (IsNeedC0Align<SrcAT>() && A_TYPE::isTrans) ?
+        int32_t orgHeightAlign = (IsNeedC0Align<SrcAT>() && A_TYPE::isTrans) ?
             Ceil(ToMatmulConfig(MM_CFG).singleCoreM, c0Size_) * c0Size_ :
             Ceil(ToMatmulConfig(MM_CFG).singleCoreM, BLOCK_CUBE) * BLOCK_CUBE;
-        int32_t OrgWidthAlign = (IsTypeOneOfV<SrcAT, float> || IsNeedC0Align<SrcAT>()) ?
+        int32_t orgWidthAlign = (IsTypeOneOfV<SrcAT, float> || IsNeedC0Align<SrcAT>()) ?
             Ceil(ToMatmulConfig(MM_CFG).singleCoreK, c0Size_) * c0Size_ :
             Ceil(ToMatmulConfig(MM_CFG).singleCoreK, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::A1);
-        tbufOutTmp.dataLen = OrgHeightAlign * OrgWidthAlign * bitSize;
+        tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
         tbufOutTmp.bufferAddr = kfcMsg_.body.aAddr;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::A1));
@@ -2317,10 +2375,10 @@ private:
         LocalTensor<SrcAT> srcTensor = GetVecTensor<SrcAT>(aAddr_, sizeAmatrix_ / bitSize);
         if constexpr (A_TYPE::format == CubeFormat::ND) {
             if (isTrans) {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A>(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreK,
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreK,
                     ToMatmulConfig(MM_CFG).singleCoreM, singleCoreM_, isTrans);
             } else {
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A>(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreM,
+                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, ToMatmulConfig(MM_CFG).singleCoreM,
                     ToMatmulConfig(MM_CFG).singleCoreK, singleCoreK_, isTrans);
             }
         } else if constexpr (A_TYPE::format == CubeFormat::NZ) {
@@ -2338,35 +2396,73 @@ private:
         }
     }
 
+    __aicore__ inline void CopyUbBToL1ForND(LocalTensor<SrcBT>& rightMatrix, LocalTensor<SrcBT>& srcTensor, bool isTrans)
+    {
+        constexpr uint8_t multiOfB8b4 = 2;
+        if (isTrans) {
+            if constexpr (IsSupportB4<SrcBT>() && !IsSameTypeV<SrcBT, int4b_t>) {
+                auto rightMatrixS8 = rightMatrix.template ReinterpretCast<int8_t>();
+                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
+                CopyUB2L1ND2NZ<int8_t, InputTypeTag::B, B_TYPE>(rightMatrixS8, srcS8, singleCoreN_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4,
+                                                    isTrans, Ceil(singleCoreN_, BLOCK_CUBE)*BLOCK_CUBE);
+            } else {
+                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreN_, singleCoreK_, singleCoreK_,
+                                                    isTrans, Ceil(singleCoreN_, BLOCK_CUBE)*BLOCK_CUBE);
+            }
+        } else {
+            int32_t dstHeight;
+            if constexpr (IsSupportB8<SrcBT>() && !IsSameTypeV<SrcBT, int8_t>) {
+                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
+                                                    isTrans, dstHeight);
+            } else if constexpr (IsSupportB4<SrcBT>() && !IsSameTypeV<SrcBT, int4b_t>) {
+                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                auto rightMatrixS8 = rightMatrix.template ReinterpretCast<int8_t>();
+                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
+                CopyUB2L1ND2NZ<int8_t, InputTypeTag::B, B_TYPE>(rightMatrixS8, srcS8, singleCoreK_, singleCoreN_/multiOfB8b4, singleCoreN_/multiOfB8b4,
+                                                    isTrans, dstHeight);
+            } else {
+                dstHeight = singleCoreK_;
+                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
+                                                    isTrans, dstHeight);
+            }
+        }
+    }
+
     __aicore__ inline void CopyUbBToL1(bool isTrans)
     {
         c0Size_ = AscendCUtils::GetC0Count(sizeof(SrcBT));
         auto bitSize = AscendC::GetBitSize<SrcBT>();
-        int32_t OrgHeightAlign = (IsNeedC0Align<SrcBT>()) ?
+        int32_t orgHeightAlign = (IsNeedC0Align<SrcBT>()) ?
             Ceil(singleCoreK_, c0Size_) * c0Size_ :
             Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
-        int32_t OrgWidthAlign = (IsSameTypeV<SrcBT, float> || (IsNeedC0Align<SrcBT>() && !B_TYPE::isTrans)) ?
+        int32_t orgWidthAlign = (IsSameTypeV<SrcBT, float> || (IsNeedC0Align<SrcBT>() && !B_TYPE::isTrans)) ?
             Ceil(singleCoreN_, c0Size_) * c0Size_ :
             Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::B1);
-        tbufOutTmp.dataLen = OrgHeightAlign * OrgWidthAlign * bitSize;
+        if constexpr (PhyMxScalePosIsUB<B_TYPE>() && B_TYPE::format == CubeFormat::ND) {
+            if constexpr (B_TYPE::isTrans) {
+                orgHeightAlign = Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
+                orgWidthAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+            } else {
+                orgHeightAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                orgWidthAlign = Ceil(singleCoreN_, c0Size_) * c0Size_;
+            }
+            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(SrcBT);
+        } else {
+            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
+        }
+        
         tbufOutTmp.bufferAddr = kfcMsg_.body.bAddr;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::B1)) + kfcMsg_.body.bAddr;
 #endif
-
         LocalTensor<SrcBT> rightMatrix;
         rightMatrix.SetAddr(tbufOutTmp);
         LocalTensor<SrcBT> srcTensor = GetVecTensor<SrcBT>(bAddr_, sizeBmatrix_ / sizeof(SrcBT));
         if constexpr (B_TYPE::format == CubeFormat::ND) {
-            if (isTrans) {
-                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B>(rightMatrix, srcTensor, singleCoreN_, singleCoreK_, singleCoreK_,
-                                                       isTrans);
-            } else {
-                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
-                                                       isTrans);
-            }
+            CopyUbBToL1ForND(rightMatrix, srcTensor, isTrans);
         } else if constexpr (B_TYPE::format == CubeFormat::NZ) {
             if (isTrans) {
                 CopyUB2L1NZ2NZ(rightMatrix, srcTensor, singleCoreN_, singleCoreK_);
@@ -2393,18 +2489,122 @@ private:
         DataCopy(biasMatrix, bias, {1, static_cast<uint16_t>(Ceil(singleCoreN_, c0Size_)), 0, 0});
     }
 
+    __aicore__ inline void TransDataForScale(const LocalTensor<uint16_t>& dstU16,
+        const LocalTensor<uint16_t>& srcU16, const uint32_t h, const uint32_t w)
+    {
+        constexpr int32_t dftTransData5hdLen = 16;
+        constexpr int32_t h0 = 16;
+        constexpr int32_t w0 = 16;
+        int32_t h1 = Ceil(h, h0);
+        int32_t curH = h;
+        TransDataTo5HDParams transDataParams;
+        transDataParams.dstHighHalf = false;
+        transDataParams.srcHighHalf = false;
+        transDataParams.repeatTimes = Ceil(w, w0);
+        if (transDataParams.repeatTimes == 1) {
+            transDataParams.srcRepStride = 0;
+            transDataParams.dstRepStride = 0;
+        } else {
+            transDataParams.dstRepStride = h0;
+            transDataParams.srcRepStride = 1;
+        }
+        uint64_t dstLocalList[dftTransData5hdLen];
+        uint64_t srcLocalList[dftTransData5hdLen];
+        uint64_t srcAddr = (uint64_t)srcU16.GetPhyAddr();
+        uint64_t dstAddr = (uint64_t)dstU16.GetPhyAddr();
+        for (int j = 0; j < h1; j++) {
+            for (int i = 0; i < dftTransData5hdLen; i++) {
+                dstLocalList[i] = (uint64_t)(dstAddr + (j * h0 * w + w0 * i) * sizeof(uint16_t));
+                if (i < curH) {
+                    srcLocalList[i] = (uint64_t)(srcAddr + (j * h0 * w + w * i) * sizeof(uint16_t));
+                } else {
+                    srcLocalList[i] = srcAddr;
+                }
+            }
+            TransDataTo5HD<uint16_t>(dstLocalList, srcLocalList, transDataParams);
+            curH -= h0;
+        }
+    }
+
+    __aicore__ inline void ND2ScaleZZ(const LocalTensor<uint8_t>& l1Matrix, const LocalTensor<uint8_t>& src, 
+        uint32_t height, uint32_t width, uint32_t scaleK, uint32_t offset) 
+    {
+        auto dst = localWorkspace_[offset].template ReinterpretCast<uint8_t>();
+        LocalTensor<uint16_t> dstTmpBuff = dst.template ReinterpretCast<uint16_t>();
+        LocalTensor<uint16_t> srcTmpBuff = src.template ReinterpretCast<uint16_t>();
+        constexpr uint32_t factor = 2;
+        uint32_t b16W = width / factor;
+        TransDataForScale(dstTmpBuff, srcTmpBuff, height, b16W);
+        event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
+        SetFlag<HardEvent::V_MTE3>(eventID);
+        WaitFlag<HardEvent::V_MTE3>(eventID);
+        LocalTensor<uint8_t> dstU8 = dstTmpBuff.template ReinterpretCast<uint8_t>();
+        uint16_t actualW = scaleK / factor;
+        uint16_t blockCount = Ceil(height, BLOCK_CUBE);
+        uint16_t blockLen = actualW;
+        uint16_t srcGap = b16W - actualW;
+        uint16_t dstGap = 0;
+        DataCopyParams dataCopyParams = { blockCount, blockLen, srcGap, dstGap };
+        DataCopy(l1Matrix, dstU8, dataCopyParams);
+    }
+
+    __aicore__ inline void CopyUbNZ2NZForScale(const LocalTensor<uint8_t>& l1Matrix, 
+        const LocalTensor<uint8_t>& src, uint32_t height, uint32_t width, uint32_t offset) 
+    {
+        uint32_t dstSize = Ceil(height, BLOCK_CUBE) * BLOCK_CUBE * Ceil(width, BLOCK_CUBE) * BLOCK_CUBE * sizeof(uint8_t);
+        auto dst = localWorkspace_[offset].template ReinterpretCast<uint8_t>();
+        dst.SetSize(dstSize);
+        constexpr int32_t factor = 2;
+        uint32_t b16H = height / factor;
+        uint32_t srcOffset = 0;
+        uint32_t dstOffset = 0;
+        constexpr uint32_t ONE_BLK_ELEMS = 16;
+        LocalTensor<uint16_t> dstTmpBuff = dst.template ReinterpretCast<uint16_t>();
+        LocalTensor<uint16_t> srcTmpBuff = src.template ReinterpretCast<uint16_t>();
+        uint16_t repeat = b16H;
+        uint16_t blkLen = 1;
+        uint16_t srcGap = (width / ONE_BLK_ELEMS) - 1;
+        uint16_t dstGap = 0;
+        uint16_t wAlignRep = width / ONE_BLK_ELEMS;
+        DataCopyParams copyParams{ repeat, blkLen, srcGap, dstGap };
+        for (int32_t i = 0; i < wAlignRep; i++) {
+            srcOffset = i * ONE_BLK_ELEMS;
+            dstOffset = i * ONE_BLK_ELEMS * b16H;
+            DataCopy(dstTmpBuff[dstOffset], srcTmpBuff[srcOffset], copyParams);
+        }
+        event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
+        SetFlag<HardEvent::V_MTE3>(eventID);
+        WaitFlag<HardEvent::V_MTE3>(eventID);
+        LocalTensor<uint8_t> dstU8 = dstTmpBuff.template ReinterpretCast<uint8_t>();
+        CopyUB2L1NZ2NZ(l1Matrix, dstU8, height, width);
+    }
+
     __aicore__ inline void CopyScaleUbAToL1(bool isTrans)
     {
+        int32_t scaleK = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * 2;
         c0Size_ = AscendCUtils::GetC0Count(sizeof(ScaleT));
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::A1);
-        tbufOutTmp.dataLen =
+        if constexpr (A_TYPE::scaleFormat == CubeFormat::ND) {
+            int32_t orgHeightAlign;
+            int32_t orgWidthAlign;
+            if (isTrans) {
+                orgHeightAlign = scaleK;
+                orgWidthAlign = Ceil(singleCoreM_, c0Size_) * c0Size_;
+            } else {
+                orgHeightAlign = Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
+                orgWidthAlign = Ceil(scaleK, c0Size_) * c0Size_;
+            }
+            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(ScaleT);
+        } else {
+            tbufOutTmp.dataLen =
             Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE * Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE * sizeof(ScaleT);
+        }
+
         tbufOutTmp.bufferAddr = kfcMsg_.body.quantAddr;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::A1)) + tbufOutTmp.bufferAddr;
 #endif
-
         LocalTensor<ScaleT> leftMatrix;
         leftMatrix.SetAddr(tbufOutTmp);
         LocalTensor<ScaleT> srcTensor = GetVecTensor<ScaleT>(aScaleAddr_, sizeScaleAmatrix_ / sizeof(ScaleT));
@@ -2418,32 +2618,59 @@ private:
             } else if constexpr(A_TYPE::scaleFormat == CubeFormat::VECTOR) {
                 DataCopy(leftMatrix, srcTensor,
                     {1, static_cast<uint16_t>(Ceil(singleCoreK_ / NUM_THIRTYTWO, c0Size_)), 0, 0});
+            } else if constexpr (A_TYPE::scaleFormat == CubeFormat::ND) {
+                if (isTrans) {
+                    CopyUbNZ2NZForScale(leftMatrix, srcTensor, scaleK, Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
+                } else {
+                    ND2ScaleZZ(leftMatrix, srcTensor, singleCoreM_, Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
+                }
+                scaleTmpBufSize_ += isTrans ? (Ceil(singleCoreM_, c0Size_) * c0Size_ * scaleK) : (Ceil(scaleK, c0Size_) * c0Size_ * singleCoreM_);
             }
         }
     }
 
-    __aicore__ inline void CopyScaleUbBToL1(bool isTrans)
+    __aicore__ inline void CopyScaleUbBToL1(bool isBTrans)
     {
+        int32_t scaleK = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * 2;
         c0Size_ = AscendCUtils::GetC0Count(sizeof(ScaleT));
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::B1);
-        tbufOutTmp.dataLen = Ceil(singleCoreK_ / NUM_THIRTYTWO, BLOCK_CUBE) * BLOCK_CUBE *
+        if constexpr (B_TYPE::scaleFormat == CubeFormat::ND) {
+            int32_t orgHeightAlign;
+            int32_t orgWidthAlign;
+            if (isBTrans) {
+                orgHeightAlign = Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
+                orgWidthAlign = Ceil(scaleK, c0Size_) * c0Size_;
+            } else {
+                orgHeightAlign = Ceil(scaleK, BLOCK_CUBE) * BLOCK_CUBE;
+                orgWidthAlign = Ceil(singleCoreN_, c0Size_) * c0Size_;
+            }
+            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(ScaleT);
+        } else {
+            tbufOutTmp.dataLen = Ceil(singleCoreK_ / NUM_THIRTYTWO, BLOCK_CUBE) * BLOCK_CUBE *
             Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE * sizeof(ScaleT);
+        }
         tbufOutTmp.bufferAddr = kfcMsg_.body.quantScalar;
 #if ASCENDC_CPU_DEBUG
         tbufOutTmp.absAddr = GetTPipePtr()->GetBaseAddr(static_cast<uint8_t>(TPosition::B1)) + tbufOutTmp.bufferAddr;
 #endif
-
         LocalTensor<ScaleT> rightMatrix;
         rightMatrix.SetAddr(tbufOutTmp);
         LocalTensor<ScaleT> srcTensor = GetVecTensor<ScaleT>(bScaleAddr_, sizeScaleBmatrix_ / sizeof(ScaleT));
         if constexpr (PhyMxScalePosIsUB<B_TYPE>()) {
             if constexpr(B_TYPE::scaleFormat == CubeFormat::NZ) {
-                if (isTrans) {
+                if (isBTrans) {
                     CopyUB2L1NZ2NZ(rightMatrix, srcTensor, singleCoreN_, singleCoreK_ / NUM_THIRTYTWO);
                 } else {
                     CopyUB2L1NZ2NZ(rightMatrix, srcTensor, singleCoreK_ / NUM_THIRTYTWO, singleCoreN_);
                 }
+            } else if constexpr (B_TYPE::scaleFormat == CubeFormat::ND) {
+                if (isBTrans) {
+                    ND2ScaleZZ(rightMatrix, srcTensor, singleCoreN_, Ceil(scaleK, c0Size_) * c0Size_, scaleK, scaleTmpBufSize_);
+                } else {
+                    CopyUbNZ2NZForScale(rightMatrix, srcTensor, scaleK, Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE, scaleTmpBufSize_);
+                }
+                scaleTmpBufSize_ += isBTrans ? (Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE * Ceil(scaleK, c0Size_) * c0Size_) : (scaleK * Ceil(singleCoreN_, c0Size_) * c0Size_);
             }
         }
     }

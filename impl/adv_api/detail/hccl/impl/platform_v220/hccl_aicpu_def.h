@@ -110,7 +110,7 @@ private:
 
     __aicore__ inline uint16_t GetStepCntsPerRepeatByHandle(HcclHandle handle);
 
-    __aicore__ inline void SetCommitTurnCntToGm(uint8_t msgPos, uint64_t turnCnt);
+    __aicore__ inline void SetCommitTurnCntToGm(uint8_t msgPos, uint64_t turnCnt, HcclHandle handleId);
 
     __aicore__ inline uint64_t WaitFinishCntFromGm(uint8_t msgPos, uint64_t expectedCnt);
 
@@ -119,7 +119,7 @@ private:
     __aicore__ inline void InitInner(GM_ADDR context, HcclTilingVersion version);
 
 private:
-    uint64_t ccOpTilingDataTable_[static_cast<uint32_t>(HcclCMDType::HCCL_CMD_HALF_ALLTOALLV)] = {0UL};
+    uint64_t ccOpTilingDataTable_[static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL)] = {0UL};
     __gm__ HcclCombineOpParam *hcclContext_;
     __gm__ HcclMsgArea *hcclMsgArea_;
     uint64_t tilingBaseAddr_;
@@ -139,7 +139,7 @@ private:
     HcclTilingVersion curVersion_ = HcclTilingVersion::INVALID_TILING_VERSION;
     uint8_t workingFlag_ = false;
     uint8_t debugMode_ = 0U;
-    uint8_t devType_ = 0U;
+    uint8_t devType_;
 };
 }
 

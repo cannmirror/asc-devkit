@@ -327,12 +327,17 @@ private:
         ASCENDC_ASSERT((isTransposeScaleA <= INPUT_TYPE::isScaleTrans), {
             KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix scaleA transpose when matmul scaleA transpose is not defined.");
         });
-        ASCENDC_ASSERT((!isTransposeScaleA || INPUT_TYPE::format != CubeFormat::VECTOR), {
-            KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix scaleA transpose when scaleA format is vector.");
-            });
+        // The following are the limitations for using mx gemv.
         ASCENDC_ASSERT(!(INPUT_TYPE::format == CubeFormat::VECTOR ^ INPUT_TYPE::scaleFormat == CubeFormat::VECTOR), {
-            KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set one of matrix A format and scaleA format to vector.");
-            });
+            KERNEL_LOG(KERNEL_ERROR, "In GEMV mode, the Format for matrix A and scale A must be a vector.");
+        });
+        ASCENDC_ASSERT((INPUT_TYPE::scaleFormat != CubeFormat::VECTOR || !isTransposeScaleA), {
+            KERNEL_LOG(KERNEL_ERROR, "In GEMV mode, matrix scale A do not support transposition.");
+        });
+        ASCENDC_ASSERT((INPUT_TYPE::scaleFormat != CubeFormat::VECTOR || 
+                        (INPUT_TYPE::pos == TPosition::GM && INPUT_TYPE::scalePosition == TPosition::GM)), {
+            KERNEL_LOG(KERNEL_ERROR, "In GEMV mode, the TPosition of matrix A and scale A must be in GM.");
+        });
     }
 
     __aicore__ inline void CheckMatrixScaleAFromLocalMemory() {}

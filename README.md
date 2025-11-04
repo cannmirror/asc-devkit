@@ -38,9 +38,6 @@ Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工
 │       ├── micro_api                   // Ascend C 微指令API声明源代码
 │       ├── simt_api                    // Ascend C SIMT API声明源代码
 │       └── utils                       // Ascend C 工具类声明源代码
-├── ops_templates                       // Ascend C 算子模板库源代码
-│   ├── act                             // Ascend C 高性能Cube类算子模板库源代码
-│   └── atvc                            // Ascend C 典型Vector算子模板库源代码
 ├── test                                // Ascend C API的UT用例
 └── tools                               // Ascend C 工具源代码
 ```

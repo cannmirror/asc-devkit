@@ -25,5 +25,7 @@
 #include "m_loop_basic.h"
 #include "m_loop_intrablock.h"
 #include "m_loop_norm_outer_product.h"
-
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#include "m_loop_mdl_mx.h"
+#endif
 #endif // IMPL_MATMUL_SCHEDULER_ITERATOR_M_LOOP_M_LOOP_H

@@ -28,6 +28,7 @@
 #include "ascend_quant_v100_impl.h"
 #elif defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 #include "ascend_quant_c310_impl.h"
+#include "ascend_quant_per_group_c310_impl.h"
 #endif
 
 namespace AscendC {

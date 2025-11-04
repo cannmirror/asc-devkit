@@ -16,7 +16,7 @@
 #ifndef LIB_ARITHPROGRESSION_H
 #define LIB_ARITHPROGRESSION_H
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
 #include "../../../impl/adv_api/detail/index/arithprogression/arithprogression_c310_impl.h"
 #else
 #include "../../../impl/adv_api/detail/index/arithprogression/arithprogression_common_impl.h"
@@ -36,7 +36,7 @@ namespace AscendC {
  * \param [in] count, length of the sequence
  */
 template <typename T>
-__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void ArithProgression(const LocalTensor<T> &dstLocal,
+__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void Arange(const LocalTensor<T> &dstLocal,
     const T firstValue, const T diffValue, const int32_t count)
 {
     ArithProgressionImpl(dstLocal, firstValue, diffValue, count);

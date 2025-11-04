@@ -22,18 +22,18 @@
 #ifndef LIB_MATH_ATAN_H
 #define LIB_MATH_ATAN_H
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
 
 #include "kernel_tensor.h"
 #if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
 #include "../../../impl/adv_api/detail/math/atan/atan_common_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/math/atan/atan_c310_impl.h"
 #endif
 
 namespace AscendC {
 #pragma begin_pipe(V)
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
  /*!
  * \ingroup Atan
  * \brief compute Atan elementwisely

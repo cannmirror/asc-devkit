@@ -293,21 +293,6 @@ private:
         isA1MFullLoad_ = true;
     }
 
-    __aicore__ inline void UpdateOuterParams()
-    {
-        if constexpr (IsBasicM(MM_CFG)) {
-            innerStartIdx_ = 0;
-            innerIter_ = 1;
-            tileShape_ = tailTileShape_;
-        } else {
-            innerStartIdx_ = outerIndex_ * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
-            innerIter_ = (totalIter_ - innerStartIdx_) > MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() ?
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() : (totalIter_ - innerStartIdx_);
-            tileShape_ = (outerIndex_ + 1 >= outerIter_) ? tailTileShape_ : mainTileShape_;
-        }
-        tileBlockShape_ = Ceil(tileShape_, BLOCK_CUBE);
-    }
-
     template <PolicyType P>
     __aicore__ inline enable_if_t<P != PolicyType::MATMUL_NBUFFER_33, void>
     UpdateInnerParamsImpl(AscendC::Std::integral_constant<PolicyType, P>)
@@ -336,6 +321,20 @@ private:
     }
 
 protected:
+    __aicore__ inline void UpdateOuterParams()
+    {
+        if constexpr (IsBasicM(MM_CFG)) {
+            innerStartIdx_ = 0;
+            innerIter_ = 1;
+            tileShape_ = tailTileShape_;
+        } else {
+            innerStartIdx_ = outerIndex_ * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
+            innerIter_ = (totalIter_ - innerStartIdx_) > MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() ?
+                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM() : (totalIter_ - innerStartIdx_);
+            tileShape_ = (outerIndex_ + 1 >= outerIter_) ? tailTileShape_ : mainTileShape_;
+        }
+        tileBlockShape_ = Ceil(tileShape_, BLOCK_CUBE);
+    }
     uint32_t totalIter_;
     // OuterLoop
     uint32_t outerIndex_ = 0;

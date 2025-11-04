@@ -166,7 +166,9 @@ public:
         }
         if constexpr (!(PhyMxScalePosIsL1<A_TYPE>() || PhyMxScalePosIsUB<A_TYPE>())) {
             if (MATMUL_MODULE(KLoop)->IsScaleAKL1FullLoad()) {
-                MATMUL_MODULE(CopyCubeInScaleA)->ClearLoadData();
+                if (MATMUL_MODULE(MLoop)->GetOuterScaleMIdx() != MATMUL_MODULE(MLoop)->GetNextOuterScaleMIdx()) {
+                    MATMUL_MODULE(CopyCubeInScaleA)->ClearLoadData();
+                }
             }
         }
     }
@@ -246,8 +248,9 @@ protected:
             aL0Params.auxMatrixL1Offset = MATMUL_MODULE(MLoop)->GetInnerIdx() * tilingBaseM;
             aL0Params.kAuxMatrixL1Len = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_K_FACTOR);
         } else {
-            aL0Params.auxMatrixL1Offset = (MATMUL_MODULE(MLoop)->GetInnerIdx() - MATMUL_MODULE(MLoop)->GetOuterIdx() *
-                tiling.GetStepM()) * tilingBaseM;
+            int32_t mInnerIdx = MATMUL_MODULE(MLoop)->GetInnerIdx();
+            int32_t stepScaleM = tiling.GetStepM() * MATMUL_MODULE(MLoop)->GetScaleFactorM();
+            aL0Params.auxMatrixL1Offset = (mInnerIdx - mInnerIdx / stepScaleM * stepScaleM) * tilingBaseM;
         }
         if constexpr (IsStaticPaddingEnable(MM_CFG)) {
             aL0Params.axisL0Len = tilingBaseM;

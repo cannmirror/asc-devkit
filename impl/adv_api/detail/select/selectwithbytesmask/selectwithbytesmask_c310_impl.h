@@ -109,14 +109,14 @@ __aicore__ inline __inout_pipe__(V) void SelectWithBytesMaskImpl(const LocalTens
     if ASCEND_IS_AIC {
         return;
     }
-    static_assert(SupportType<T, float, half>(), "SelectWithBytesMask do not support this type on current device");
+    static_assert(SupportType<T, float, half>(), "Select do not support this type on current device");
     static_assert(SupportType<U, bool, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "SelectWithBytesMask do not support this type on current device");
-    CheckTensorPos<T>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "SelectWithBytesMask");
-    CheckTensorPos<T>(src0, Hardware::UB, "src", "VECIN / VECCALC / VECOUT", "SelectWithBytesMask");
-    CheckTensorPos<U>(mask, Hardware::UB, "mask", "VECIN / VECCALC / VECOUT", "SelectWithBytesMask");
+        "Select do not support this type on current device");
+    CheckTensorPos<T>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "Select");
+    CheckTensorPos<T>(src0, Hardware::UB, "src", "VECIN / VECCALC / VECOUT", "Select");
+    CheckTensorPos<U>(mask, Hardware::UB, "mask", "VECIN / VECCALC / VECOUT", "Select");
     CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT",
-        "SelectWithBytesMask");
+        "Select");
     ASCENDC_ASSERT((info.srcLastAxis * sizeof(T) % ONE_BLK_SIZE == 0), {
         KERNEL_LOG(KERNEL_ERROR, "srcLastAxis should be 32B aligned, current srcLastAxis is %u", info.srcLastAxis);
     });
@@ -141,6 +141,20 @@ __aicore__ inline __inout_pipe__(V) void SelectWithBytesMaskImpl(const LocalTens
                    { KERNEL_LOG(KERNEL_ERROR, "maskLastAxis must be greater than or equal to srcLastAxis."); });
 
     SelectWithBytesMaskProcess<T, U, reverse>(dst, src0, src1, mask, info);
+}
+
+template <typename T, typename U, bool isReuseMask = true>
+__aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
+    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+{
+    SelectWithBytesMaskImpl<T, U, isReuseMask, false>(dst, src0, src1, mask, sharedTmpBuffer, info);
+}
+
+template <typename T, typename U, bool isReuseMask = true>
+__aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, T src0, const LocalTensor<T> &src1,
+    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+{
+    SelectWithBytesMaskImpl<T, U, isReuseMask, true>(dst, src1, src0, mask, sharedTmpBuffer, info);
 }
 } // namespace AscendC
 #endif // LIB_SELECT_SELECT_WITH_BYTES_MASK_C310_IMPL_H

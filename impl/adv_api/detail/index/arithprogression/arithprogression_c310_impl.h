@@ -55,7 +55,7 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
     const int32_t count)
 {
     ASCENDC_ASSERT((dstLocal.GetSize() >= count),
-                   { KERNEL_LOG(KERNEL_ERROR, "dst length must equal with ArithProgression length"); });
+                   { KERNEL_LOG(KERNEL_ERROR, "dst length must equal with Arange length"); });
     ASCENDC_ASSERT((static_cast<float>(diffValue) >= static_cast<float>(0)),
                    { KERNEL_LOG(KERNEL_ERROR, "diff value mast bigger then 0"); });
     static_assert(SupportType<T, int16_t, int32_t, half, float, int64_t>(),
@@ -69,6 +69,13 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
         uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, 2 * ONE_REPEAT_BYTE_SIZE / sizeof(T)));
         VfCallArithProgression<T, MicroAPI::RegTraitNumTwo>(dstLocalAddr, firstValue, diffValue, count, repeatTimes);
     }
+}
+
+template <typename T>
+__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void ArithProgression(const LocalTensor<T> &dstLocal,
+    const T firstValue, const T diffValue, const int32_t count)
+{
+    ArithProgressionImpl(dstLocal, firstValue, diffValue, count);
 }
 } // namespace AscendC
 

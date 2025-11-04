@@ -148,17 +148,22 @@ private:
         }
     }
 
-    __aicore__ inline void CopyIn(LocalTensor<SrcAT>& a1, LocalTensor<SrcBT>& b1, LocalTensor<ScaleT>& scaleA1, LocalTensor<ScaleT>& scaleB1)
+    __aicore__ inline void CopyIn(LocalTensor<SrcAT>& a1, LocalTensor<SrcBT>& b1, LocalTensor<ScaleT>& scaleA1, LocalTensor<ScaleT>& scaleB1, 
+        int32_t& padCount)
     {
         a1 = MATMUL_MODULE(CopyCubeInA)->LoadData(MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(KLoop)->GetInnerStartIdx(),
             MATMUL_MODULE(MLoop)->GetTileShape(), MATMUL_MODULE(KLoop)->GetTileShapeA());
         b1 = MATMUL_MODULE(CopyCubeInB)->LoadData(MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
             MATMUL_MODULE(KLoop)->GetTileShapeB(), MATMUL_MODULE(NLoop)->GetTileShape());
         scaleA1 = MATMUL_MODULE(CopyCubeInScaleA)->LoadData(MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(KLoop)->GetInnerStartIdx(),
-            MATMUL_MODULE(MLoop)->GetTileShape(), MATMUL_MODULE(KLoop)->GetTileShapeScaleKa());
+            MATMUL_MODULE(MLoop)->GetTileShapeScaleM(), MATMUL_MODULE(KLoop)->GetTileShapeScaleKa());
         scaleB1 = MATMUL_MODULE(CopyCubeInScaleB)->LoadData(MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
             MATMUL_MODULE(KLoop)->GetTileShapeScaleKb(), MATMUL_MODULE(NLoop)->GetTileShapeScaleN());
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
+            if (padCount == 0) {
+                BASE_MODULE::PadZeroForABL1(a1, b1);
+            }
+            padCount += 1;
             MATMUL_MODULE(MatmulCrossCoreSync)->WaitL1Ready();
         }
         DoPreloadLoad();
@@ -225,7 +230,8 @@ private:
         LocalTensor<SrcBT> b1;
         LocalTensor<ScaleT> scaleA1;
         LocalTensor<ScaleT> scaleB1;
-        CopyIn(a1, b1, scaleA1, scaleB1);
+        int32_t padCount = 0;
+        CopyIn(a1, b1, scaleA1, scaleB1, padCount);
         bool isATranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeA();
         bool isBTranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeB();
         bool isScaleATranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeScaleA();
@@ -286,13 +292,14 @@ private:
         int32_t curKbOuterIdx = MATMUL_MODULE(KLoop)->GetOuterKbIdx();
         int32_t curScaleKaOuterIdx = MATMUL_MODULE(KLoop)->GetOuterScaleKaIdx();
         int32_t curScaleKbOuterIdx = MATMUL_MODULE(KLoop)->GetOuterScaleKbIdx();
+        int32_t padCount = 0;
         do {
             // CopyIn
             LocalTensor<SrcAT> a1;
             LocalTensor<SrcBT> b1;
             LocalTensor<ScaleT> scaleA1;
             LocalTensor<ScaleT> scaleB1;
-            CopyIn(a1, b1, scaleA1, scaleB1);
+            CopyIn(a1, b1, scaleA1, scaleB1, padCount);
             LocalTensor<BiasT> bias = BASE_MODULE::SplitBias(bL0Params.axisL0Len);
             Compute(a1, b1, scaleA1, scaleB1, bias, enPartialSum, isATranspose, isBTranspose, aL0Params, bL0Params);
             if constexpr (MatmulFeatureTrait<MM_CFG>().IsSupportMNL0DB()) {
@@ -544,7 +551,8 @@ private:
         LocalTensor<SrcBT> b1;
         LocalTensor<ScaleT> scaleA1;
         LocalTensor<ScaleT> scaleB1;
-        CopyIn(a1, b1, scaleA1, scaleB1);
+        int32_t padCount = 0;
+        CopyIn(a1, b1, scaleA1, scaleB1, padCount);
         LocalTensor<BiasT> bias = BASE_MODULE::SplitBias(bL0Params.axisL0Len);
         PartialCompute(a1, b1, scaleA1, scaleB1, bias, enPartialSum, isATranspose, isBTranspose, aL0Params, bL0Params);
         BASE_MODULE::DoPreloadAWait();

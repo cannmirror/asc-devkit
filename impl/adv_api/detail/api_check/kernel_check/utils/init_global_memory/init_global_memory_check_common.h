@@ -35,17 +35,17 @@ private:
     template <typename T>
     __aicore__ inline void VerifyingParameters(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value) {
         ASCENDC_ASSERT((gmWorkspaceAddr.GetSize() > 0 || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[InitGlobalMemory] Failed to check tensor size of gmWorkspaceAddr, current tensor size is %lu, "
+            KERNEL_LOG(KERNEL_ERROR, "[Fill] Failed to check tensor size of gmWorkspaceAddr, current tensor size is %lu, "
             "should be greater than 0.", gmWorkspaceAddr.GetSize()); });
 
         ASCENDC_ASSERT(((size <= gmWorkspaceAddr.GetSize()) || HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
-            "[InitGlobalMemory] The value of size is %lu, should not be greater than gmWorkspaceAddr size %lu",
+            "[Fill] The value of size is %lu, should not be greater than gmWorkspaceAddr size %lu",
             size, gmWorkspaceAddr.GetSize()); });
     }
 
     template <typename T>
     __aicore__ inline void PrintParameters(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value) {
-        KERNEL_LOG(KERNEL_INFO, "[InitGlobalMemory] The size of gmWorkspaceAddr is %lu.", gmWorkspaceAddr.GetSize());
+        KERNEL_LOG(KERNEL_INFO, "[Fill] The size of gmWorkspaceAddr is %lu.", gmWorkspaceAddr.GetSize());
     }
 };
 

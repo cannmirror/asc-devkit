@@ -26,56 +26,37 @@ namespace Internal {
 template <typename T>
 __aicore__ inline void ReduceProd(MicroAPI::RegTensor<T>& dst, MicroAPI::RegTensor<T> src, MicroAPI::MaskReg mask)
 {
-    MicroAPI::RegTensor<T> tempLow;
-    MicroAPI::Duplicate(tempLow, 1);
-    MicroAPI::Select(tempLow, src, tempLow, mask);
-
-    MicroAPI::RegTensor<T> tempHigh;
-    MicroAPI::MaskReg maskAll = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::RegTensor<T> tempOne;
+    // mask invalid data in src to one
+    MicroAPI::Duplicate(tempOne, 1);
+    MicroAPI::Select(src, src, tempOne, mask);
 
     if constexpr(sizeof(T) == 1) {
-        MicroAPI::MaskReg maskHigh = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL128>();
-        MicroAPI::MaskNot(maskHigh, maskHigh, maskAll);
-        MicroAPI::GatherMask(tempHigh, tempLow, maskHigh);
-        MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
+        // fold to 128
+        MicroAPI::DeInterleave(dst, src, src, tempOne);
+        MicroAPI::Mul(src, dst, src, mask);
     }
-
     if constexpr(sizeof(T) <= 2) {
-        MicroAPI::MaskReg maskHigh = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL64>();
-        MicroAPI::MaskNot(maskHigh, maskHigh, maskAll);
-        MicroAPI::GatherMask(tempHigh, tempLow, maskHigh);
-        MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
+        // fold to 64
+        MicroAPI::DeInterleave(dst, src, src, tempOne);
+        MicroAPI::Mul(src, dst, src, mask);
     }
-
-    MicroAPI::MaskReg maskHigh32 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL32>();
-    MicroAPI::MaskNot(maskHigh32, maskHigh32, maskAll);
-    MicroAPI::GatherMask(tempHigh, tempLow, maskHigh32);
-    MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
-
-    MicroAPI::MaskReg maskHigh16 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL16>();
-    MicroAPI::MaskNot(maskHigh16, maskHigh16, maskAll);
-    MicroAPI::GatherMask(tempHigh, tempLow, maskHigh16);
-    MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
-
-    MicroAPI::MaskReg maskHigh8 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL8>();
-    MicroAPI::MaskNot(maskHigh8, maskHigh8, maskAll);
-    MicroAPI::GatherMask(tempHigh, tempLow, maskHigh8);
-    MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
-
-    MicroAPI::MaskReg maskHigh4 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL4>();
-    MicroAPI::MaskNot(maskHigh4, maskHigh4, maskAll);
-    MicroAPI::GatherMask(tempHigh, tempLow, maskHigh4);
-    MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
-
-    MicroAPI::MaskReg maskHigh2 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL2>();
-    MicroAPI::MaskNot(maskHigh2, maskHigh2, maskAll);
-    MicroAPI::GatherMask(tempHigh, tempLow, maskHigh2);
-    MicroAPI::Mul(tempLow, tempLow, tempHigh, maskAll);
-
-    MicroAPI::MaskReg maskHigh1 = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL1>();
-    MicroAPI::MaskNot(maskHigh1, maskHigh1, maskAll);
-    MicroAPI::GatherMask(tempHigh, tempLow, maskHigh1);
-    MicroAPI::Mul(dst, tempLow, tempHigh, maskAll);
+    // fold from 64 to 2
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(src, dst, src, mask);
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(src, dst, src, mask);
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(src, dst, src, mask);
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(src, dst, src, mask);
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(src, dst, src, mask);
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(src, dst, src, mask);
+    // fold to 1
+    MicroAPI::DeInterleave(dst, src, src, tempOne);
+    MicroAPI::Mul(dst, dst, src, mask);
 }
 
 template <class T, bool isReuseSource = false>

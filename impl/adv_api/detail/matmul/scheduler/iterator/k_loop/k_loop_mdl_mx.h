@@ -67,6 +67,12 @@ public:
         int32_t baseK = tiling.GetBaseK();
         scaleFactorKa_ = tiling.GetScaleFactorKa();
         scaleFactorKb_ = tiling.GetScaleFactorKb();
+        if (BASE_MODULE::kIter_ > stepKa * scaleFactorKa_) {
+            if constexpr (!DoMatmulSpecialMDL(MM_CFG)) {
+                ASCENDC_ASSERT(tiling.GetScaleFactorM() == 1,
+                    { KERNEL_LOG(KERNEL_ERROR, "scaleFactorM is %d, which can only be 1.", tiling.GetScaleFactorM()); });
+            }
+        }
         // originTailScaleStepKa_ represents the origin size of the GM -> L1 tail blok
         tailScaleStepKa_ = singleShape % (baseK * stepKa * scaleFactorKa_);
         tailScaleStepKb_ = singleShape % (baseK * stepKb * scaleFactorKb_);

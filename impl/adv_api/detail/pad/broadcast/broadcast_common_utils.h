@@ -20,7 +20,7 @@
 #include "kernel_operator_intf.h"
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
 namespace BroadcastInternal {
 constexpr uint32_t U16_MAX = 65536;
 

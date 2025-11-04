@@ -62,8 +62,26 @@ public:
     using BASE_MODULE =
         AscendC::Impl::Detail::MatmulNormSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE>;
 
+    __aicore__ inline void CheckBasicBlock()
+    {
+        ASCENDC_ASSERT((MM_CFG.basicM == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()), { 
+            KERNEL_LOG(KERNEL_ERROR, "The basicM of MatmulConfig is %d, which should be consistent with the parameter baseM %d in Matmul Tiling.", MM_CFG.basicM, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()); 
+        });
+        ASCENDC_ASSERT((MM_CFG.basicN == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()), { 
+            KERNEL_LOG(KERNEL_ERROR, "The basicN of MatmulConfig is %d, which should be consistent with the parameter baseN %d in Matmul Tiling.", MM_CFG.basicN, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()); 
+        });
+        ASCENDC_ASSERT((MM_CFG.basicK == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()), { 
+            KERNEL_LOG(KERNEL_ERROR, "The basicK of MatmulConfig is %d, which should be consistent with the parameter baseK %d in Matmul Tiling.", MM_CFG.basicK, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()); 
+        });
+        ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreM() % MM_CFG.basicM == 0) && ((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreN() % MM_CFG.basicN == 0)), { 
+            KERNEL_LOG(KERNEL_ERROR, "The BasicBlockConfig only supports conditions without tail basic blocks."); 
+        });
+    }    
     __aicore__ inline bool ScheduleOnce(bool enPartialSum)
     {
+        if constexpr (DoMatmulBasicBlock(MM_CFG)) {
+            CheckBasicBlock();
+        }
         MATMUL_MODULE(BiasScheduler)->SetBias(MATMUL_MODULE(BiasScheduler)->IsBias() && !enPartialSum);
         if (!BASE_MODULE::MoveNext()) {
             return false;

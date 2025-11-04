@@ -131,16 +131,9 @@ struct CopyGMParams {
     bool isComputeLineByLine { false };
 };
 
-template <typename T>
-const LocalTensor<T> NULL_TENSOR;
-
-template <typename T>
-const GlobalTensor<T> GLOBAL_NULL_TENSOR;
-
 template <> struct GetMmDstType<float> {
     using Type = float;
 };
-
 
 template <> struct GetMmDstType<int8_t> {
     using Type = int32_t;
@@ -234,11 +227,11 @@ __aicore__ inline void InitKfcClient(T &matmulClient, U *tiling, TPipe *tpipe, K
 #endif
 }
 #endif
+
 __aicore__ constexpr bool PhyPosIsL1(TPosition pos)
 {
     ASSERT(pos != TPosition::MAX);
-    if (pos == TPosition::A1 || pos == TPosition::B1 ||
-        pos == TPosition::SHM || pos == TPosition::TSCM) {
+    if (pos == TPosition::A1 || pos == TPosition::B1 || pos == TPosition::SHM || pos == TPosition::TSCM) {
         return true;
     }
 #if (__CCE_AICORE__ == 220 || __CCE_AICORE__ == 300)
@@ -262,8 +255,7 @@ __aicore__ constexpr bool PhyPosIsUB(TPosition pos)
         return false;
     }
 #elif (__CCE_AICORE__ == 220)
-    if (pos == TPosition::C1 || pos == TPosition::C2 || pos == TPosition::CO2 ||
-        pos == TPosition::C2PIPE2GM) {
+    if (pos == TPosition::C1 || pos == TPosition::C2 || pos == TPosition::CO2 || pos == TPosition::C2PIPE2GM) {
         return false;
     }
 #elif (__CCE_AICORE__ == 300)
@@ -297,10 +289,7 @@ __aicore__ constexpr bool PhyPosIsL1OrUB(TPosition pos)
 
 __aicore__ constexpr bool PhyPosIsL0C(TPosition pos)
 {
-    if (pos == TPosition::CO1) {
-        return true;
-    }
-    return false;
+    return (pos == TPosition::CO1);
 }
 
 template <bool AShare, bool BShare> __aicore__ __inline__ void SyncCubeWithVec()

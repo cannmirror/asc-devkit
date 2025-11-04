@@ -79,5 +79,19 @@ __aicore__ inline __inout_pipe__(V) void SelectWithBytesMaskImpl(const LocalTens
     SetMaskNorm();
     ResetMask();
 }
+
+template <typename T, typename U, bool isReuseMask = true>
+__aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
+    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+{
+    SelectWithBytesMaskImpl<T, U, isReuseMask, false>(dst, src0, src1, mask, sharedTmpBuffer, info);
+}
+
+template <typename T, typename U, bool isReuseMask = true>
+__aicore__ inline void SelectWithBytesMask(const LocalTensor<T> &dst, T src0, const LocalTensor<T> &src1,
+    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+{
+    SelectWithBytesMaskImpl<T, U, isReuseMask, true>(dst, src1, src0, mask, sharedTmpBuffer, info);
+}
 } // namespace AscendC
 #endif // IMPL_SELECT_SELECT_WITH_BYTES_MASK_IMPL_H

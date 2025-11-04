@@ -20,6 +20,7 @@
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
+namespace BatchNormAPI {
 constexpr uint32_t FLOAT_BLOCK_NUM_V200 = 8;
 constexpr uint32_t TRANSDATA_ADDS_LOOP = 3;
 constexpr uint32_t TRANSDATA_ADDS_OFFSET = 16;
@@ -84,5 +85,6 @@ __aicore__ inline void BrcFirstDimByTransData(const LocalTensor<float>& dst, con
     addsUnaryParams.srcRepStride = (uint8_t)tiling.shCurLengthBlockNum;
     BrcFirstBlockByAdds(dst, TRANSDATA_ADDS_LOOP, TRANSDATA_ADDS_OFFSET, addsUnaryParams, batchnormParams);
 }
+} // namespace BatchNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_V200_IMPL_H

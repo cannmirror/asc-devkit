@@ -210,11 +210,9 @@ __aicore__ inline void ReduceRAOverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
     uint16_t loopANum = CeilDivision(dimA, vlSize);
     // move by fold zero only if R axis is 1
     uint16_t loopANumFinal = loopANum;
-    if constexpr (!isReuseSource) {
-        if (mainR == 1) {
-            VF_CALL<ReduceOpInternal::ReduceCopyOutImpl<T>>(dstAddr, srcAddr, dimA);
-            return;
-        }
+    if (mainR == 1) {
+        ReduceOpInternal::ReduceCopyOutImpl<T>(dstAddr, srcAddr, dimA);
+        return;
     }
 
     if constexpr (!isReuseSource) {
@@ -705,7 +703,7 @@ __simd_vf__ inline void ReduceRAB64ReuseSourceVF(__ubuf__ T *dstAddr, __ubuf__ T
 
     // Reduce to 1
     for (uint16_t i = 0; i < foldZero; i++) {
-        for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+        for (uint16_t loopA = 0; loopA < loopANumFinal; loopA++) {
             mask = MicroAPI::UpdateMask<T, Trait>(processA);
             DataCopy(b64Vreg0, addr + loopA * vlSize);
             DataCopy(dstAddr + loopA * vlSize, b64Vreg0, mask);
@@ -724,11 +722,9 @@ __aicore__ inline void ReduceRAB64ReuseSource(__ubuf__ T *dstAddr, __ubuf__ T *s
     uint16_t loopANum = (dimA + vlSize - 1) / vlSize;
     // move by fold zero only if R axis is 1
     uint16_t loopANumFinal = loopANum;
-    if constexpr (!isReuseSource) {
-        if (mainR == 1) {
-            loopANum = 0;
-            tmpAddr = srcAddr;
-        }
+    if (mainR == 1) {
+        ReduceOpInternal::ReduceCopyOutImpl<T>(dstAddr, srcAddr, dimA);
+        return;
     }
     
     if constexpr (!isReuseSource) {

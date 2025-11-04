@@ -15,10 +15,10 @@
  */
 #ifndef LIB_REGLU_REGLU_H
 #define LIB_REGLU_REGLU_H
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__) || defined(__DAV_L311__)
 
 #include "kernel_tensor.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__) || defined(__DAV_L311__)
 #include "../../../impl/adv_api/detail/activation/reglu/reglu_c310_impl.h"
 #else
 #include "../../../impl/adv_api/detail/activation/reglu/reglu_common_impl.h"

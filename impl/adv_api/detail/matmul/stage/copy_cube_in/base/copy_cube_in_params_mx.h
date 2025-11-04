@@ -35,7 +35,7 @@
      __aicore__ inline int32_t GetBufferPos()
      {
          if constexpr (DoMatmulMDL(MM_CFG) || DoMatmulSpecialMDL(MM_CFG)) {
-             return MATMUL_MODULE(KLoop)->IsScaleAKL1FullLoad() ? MATMUL_MODULE(MLoop)->GetOuterIdx() :
+             return MATMUL_MODULE(KLoop)->IsScaleAKL1FullLoad() ? MATMUL_MODULE(MLoop)->GetOuterScaleMIdx() :
                  MATMUL_MODULE(KLoop)->GetOuterScaleKaIdx();
          } else {
              return 0;
@@ -64,7 +64,8 @@
  
      __aicore__ inline int GetScaleFactor() const
      {
-         return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa();
+         return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorKa() *
+         MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetScaleFactorM();
      }
    
      template <bool IS_TRANS = false, bool IS_INTRA_BLOCK = false>

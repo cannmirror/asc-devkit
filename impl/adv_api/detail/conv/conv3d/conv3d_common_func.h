@@ -17,7 +17,7 @@
 #ifndef API_CONV3D_COMMON_FUNC_H
 #define API_CONV3D_COMMON_FUNC_H
 
-#include "include/adv_api/conv3d_iterate_impl.h"
+#include "conv3d_iterate_impl.h"
 
 namespace Conv3dApiFunc {
 

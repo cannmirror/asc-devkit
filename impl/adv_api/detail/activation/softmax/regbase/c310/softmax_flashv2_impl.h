@@ -13,8 +13,8 @@
  * \file softmax_flashv2_impl.h
  * \brief
  */
-#ifndef IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_FLASHV2_IMPL_H
-#define IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_FLASHV2_IMPL_H
+#ifndef IMPL_ACTIVATION_SOFTMAX_C310_SOFTMAX_FLASHV2_IMPL_H
+#define IMPL_ACTIVATION_SOFTMAX_C310_SOFTMAX_FLASHV2_IMPL_H
 
 #include "softmax_common_impl.h"
 
@@ -988,4 +988,4 @@ __aicore__ inline void SoftmaxFlashV2PostProcess(const LocalTensor<T1>& dstTenso
     }
 }
 }
-#endif // IMPL_ACTIVATION_SOFTMAX_V220_SOFTMAX_FLASHV2_IMPL_H
+#endif // IMPL_ACTIVATION_SOFTMAX_C310_SOFTMAX_FLASHV2_IMPL_H

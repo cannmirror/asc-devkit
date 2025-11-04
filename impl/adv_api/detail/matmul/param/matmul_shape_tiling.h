@@ -256,6 +256,13 @@ private:
                     tiling_.GetDepthB1(), tiling_.GetStepN(), tiling_.GetStepKb());
             });
         }
+        if constexpr (DoMatmulSpecialMDL(MM_CFG)) {
+            if (tiling_.GetSingleCoreK() / tiling_.GetBaseK() > tiling_.GetStepKb()) {
+                ASCENDC_ASSERT(tiling_.GetStepN() <= 2, {KERNEL_LOG(KERNEL_ERROR,
+                    "In SpecialMDL scene, when k-axis isn't full loaded, stepN should be <= 2.");
+                });
+            }
+        }
 #endif
     }
 
@@ -437,6 +444,10 @@ private:
                                           IMPL::CType::layout == LayoutMode::NORMAL;
 
             static_assert(IsNormalLayout, "When BATCH_LARGE_THAN_L1 or SINGLE_LARGE_THAN_L1 BMM mode, layout of A, B and C must be NORMAL.");
+        }
+        if constexpr (DoMatmulSpecialMDL(MM_CFG)) {
+            static_assert(MM_CFG.doMultiDataLoad == false,
+                "In SpecialMDL scene, MatmulConfig.doMultiDataLoad must be false.");
         }
 #endif
 

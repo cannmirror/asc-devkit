@@ -130,7 +130,7 @@ template <typename T, bool isReuseSource = false, const TanhConfig &config = DEF
 __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const uint32_t calCount)
 {
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     bool ret = (calCount <= srcTensor.GetSize()) && (calCount <= dstTensor.GetSize()) && (calCount >= 0);
     ASCENDC_ASSERT(
         ret, { KERNEL_LOG(KERNEL_ERROR, "calCount must be no less than 0 and smaller than or equal to src & dst tensor."); });

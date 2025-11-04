@@ -17,7 +17,7 @@
 #ifndef LIB_SIGMOID_SIGMOID_H
 #define LIB_SIGMOID_SIGMOID_H
 #if __CCE_AICORE__ == 100 || __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || \
-    defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+    defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
 
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/activation/sigmoid/sigmoid_common_impl.h"

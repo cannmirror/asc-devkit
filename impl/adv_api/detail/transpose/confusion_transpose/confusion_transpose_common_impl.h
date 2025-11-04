@@ -33,7 +33,7 @@ __aicore__ inline void CheckCompatibleTransposeTypeDataType() {
     ASCENDC_ASSERT(
         (std::is_same<T, int16_t>::value || std::is_same<T, uint16_t>::value || std::is_same<T, half>::value ||
          std::is_same<T, int32_t>::value || std::is_same<T, uint32_t>::value || std::is_same<T, float>::value), {
-        KERNEL_LOG(KERNEL_ERROR, "ConfusionTranspose current TransposeType only support "
+        KERNEL_LOG(KERNEL_ERROR, "Transpose current TransposeType only support "
             "int16_t/uint16_t/half/int32_t/uint32_t/float data type on current device!");
     });
 }
@@ -43,12 +43,12 @@ __aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, c
     const LocalTensor<uint8_t>& sharedTmpBuffer, TransposeType transposeType, ConfusionTransposeTiling& tiling)
 {
     static_assert(SupportType<T, int8_t, uint8_t, int16_t, uint16_t, half, bfloat16_t, int32_t, uint32_t, float>(),
-        "ConfusionTranspose only support int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float "
+        "Transpose only support int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float "
         "data type on current device!");
-    CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "ConfusionTranspose");
-    CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "ConfusionTranspose");
+    CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "Transpose");
+    CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "Transpose");
     CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT",
-        "ConfusionTranspose");
+        "Transpose");
 
     if (transposeType == TransposeType::TRANSPOSE_NZ2ND_0213 || transposeType == TransposeType::TRANSPOSE_NZ2NZ_0213) {
         CheckCompatibleTransposeTypeDataType<T>();
@@ -80,7 +80,7 @@ __aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, c
         ConfusionTransposeND2NZWithInlv(dstTensor, srcTensor, reinterpret_cast<ConfusionTranspose210Tiling &>(tiling));
     } else {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR,
-            "ConfusionTranspose do not support current TransposeType on current device!"); });
+            "Transpose do not support current TransposeType on current device!"); });
     }
 }
 #else
@@ -132,5 +132,23 @@ __aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, c
     }
 }
 #endif
+
+template <typename T>
+__aicore__ inline void ConfusionTranspose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeType, ConfusionTransposeTiling& tiling)
+{
+    ConfusionTransposeImpl<T>(dstTensor, srcTensor, sharedTmpBuffer, transposeType, tiling);
+}
+
+template <typename T>
+__aicore__ inline void ConfusionTranspose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    TransposeType transposeType, ConfusionTransposeTiling& tiling)
+{
+    LocalTensor<uint8_t> tmpBuffer;
+    bool res = PopStackBuffer<uint8_t, TPosition::LCM>(tmpBuffer);
+    ASCENDC_ASSERT(res, { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+
+    ConfusionTransposeImpl<T>(dstTensor, srcTensor, tmpBuffer, transposeType, tiling);
+}
 } // namespace AscendC
 #endif // IMPL_TRANSPOSE_CONFUSION_TRANSPOSE_CONFUSION_TRANSPOSE_COMMON_IMPL_H

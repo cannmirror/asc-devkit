@@ -203,8 +203,8 @@ template <typename T, bool isReuseSource = false>
 __aicore__ inline void HypotImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &src0Tensor,
     const LocalTensor<T> &src1Tensor, const uint32_t calCount)
 {
-    static_assert((SupportType<T, half, bfloat16_t, float>(),
-        "Hypot only support half/bfloat16_t/float data type on current device!"));
+    static_assert(SupportType<T, half, bfloat16_t, float>(),
+        "Hypot only support half/bfloat16_t/float data type on current device!");
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;

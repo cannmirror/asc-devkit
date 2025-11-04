@@ -76,7 +76,8 @@ public:
 
 private:
     __aicore__ constexpr auto OneBlockSize() const {
-        return MATMUL_MODULE(MLoop)->GetBaseBlockShape() * MATMUL_MODULE(NLoop)->GetBaseBlockShape() * CUBE_MAX_SIZE;
+        return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() *
+            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
     }
 
     template <typename L1In, typename GMOut>
@@ -85,7 +86,8 @@ private:
         auto loopModule = MATMUL_MODULE(NLoop);
         loopModule->InnerStart();
         do {
-            auto offset = loopModule->GetInnerIdx() * OneBlockSize();
+            auto offset = (loopModule->GetInnerIdx() - loopModule->GetOuterIdx() * loopModule->GetInnerIter()) *
+                OneBlockSize();
             if (enSequentialWrite) {
                 MATMUL_MODULE(CopyCubeOut)
                     ->template Copy<true>(
@@ -145,7 +147,8 @@ private:
             int32_t kL1Stride = MATMUL_MODULE(KLoop)->GetBaseBlockShape() * BASE_MODULE::c0Size_;
             // start k inner loop
             MATMUL_MODULE(KLoop)->InnerStart();
-            auto offset = loopModule->GetInnerIdx() * OneBlockSize();
+            auto offset = (loopModule->GetInnerIdx() - loopModule->GetOuterIdx() * loopModule->GetInnerIter()) *
+                OneBlockSize();
             do {
                 // allocate L0 buffer
                 ComputeKDB(a1, b1, aL1, bL1, offset, isATranspose, isBTranspose, sL0CInit, sL0CLast);

@@ -255,6 +255,9 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& ds
     const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
+    CheckTensorPosition(dst, "dst", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(src, "src", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(scale, "scale", "VECIN, VECOUT, VECCALC");
     static_assert(SupportType<SrcType, fp4x2_e2m1_t, fp4x2_e1m2_t>(),
         "This AscendAntiQuant only support fp4 input dtype");
     static_assert(SupportType<OutputDataType, half, bfloat16_t>(),
@@ -2150,6 +2153,10 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<dstT> &dstTensor, c
     if ASCEND_IS_AIC {
         return;
     }
+    CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(scaleTensor, "scaleTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(offsetTensor, "offsetTensor", "VECIN, VECOUT, VECCALC");
     static_assert(SupportType<dstT, bfloat16_t, half, float>(),
         "AscendAntiQuant only support bfloat16_t/half/float output dtype");
     static_assert(SupportType<scaleT, bfloat16_t, half, float, fp8_e8m0_t>(),
@@ -2191,6 +2198,10 @@ __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst
     const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
     const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
 {
+    CheckTensorPosition(dst, "dst", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(src, "src", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(offset, "offset", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(scale, "scale", "VECIN, VECOUT, VECCALC");
     AntiQuantPerchannelImpl<SrcType, DstType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, k, shapeInfo);
 }
 
@@ -2199,6 +2210,8 @@ __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst
     const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t k,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
+    CheckTensorPosition(dst, "dst", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(src, "src", "VECIN, VECOUT, VECCALC");
     AntiQuantPertensorImpl<SrcType, DstType>(dst, src, offset, scale, sharedTmpBuffer, k, shapeInfo);
 }
 }  // namespace AscendC

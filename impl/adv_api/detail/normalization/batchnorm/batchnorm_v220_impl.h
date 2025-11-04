@@ -20,6 +20,7 @@
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
+namespace BatchNormAPI {
 constexpr uint32_t FLOAT_BLOCK_NUM_V220 = 8;
 constexpr uint32_t BRC_ADDS_LOOP = 7;
 constexpr uint32_t BASIC_BLOCK_LEN_V220 = 64;
@@ -73,5 +74,6 @@ __aicore__ inline void BrcFirstDimByBrcb(const LocalTensor<float>& dst, const Lo
     addsUnaryParams.srcRepStride = (uint8_t)tiling.shCurLengthBlockNum;
     BrcFirstBlockByAdds(dst, BRC_ADDS_LOOP, FLOAT_BLOCK_NUM_V220, addsUnaryParams, params);
 }
+} // namespace BatchNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H

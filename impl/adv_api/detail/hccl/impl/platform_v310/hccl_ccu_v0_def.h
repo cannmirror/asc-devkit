@@ -16,6 +16,8 @@
 #ifndef IMPL_V310_HCCL_CCU_D100_DEF_H
 #define IMPL_V310_HCCL_CCU_D100_DEF_H
 
+#include "../../ccu/hccl_ccu_msg_prepare.h"
+
 namespace AscendC {
 
 template<const auto &config>
@@ -85,11 +87,6 @@ private:
     template<bool commit = false>
     __aicore__ inline void CCUPrepareInner(const CommonPrepareParam &commonPrepareParam, const HcclHandle handleId);
 
-    __aicore__ inline void
-    CCUPrepare(const CommonPrepareParam &commonPrepareParam, uint8_t reqId, uint64_t sendbuf, uint64_t recvBuf);
-
-    __aicore__ inline uint64_t GetOpId(const CommonPrepareParam &commonPrepareParam);
-
     __aicore__ inline void DataCopy2XnAddr(GM_ADDR dstGmAddr, GM_ADDR srcGmAddr, uint32_t size);
 
     __aicore__ inline void CcuSendMsg(uint8_t reqId);
@@ -102,15 +99,13 @@ private:
 
     __aicore__ inline bool CheckNeedPush();
 
-    __aicore__ inline uint64_t GetParallelParam(uint64_t repeatNum, uint64_t repeatLoopIndex, uint64_t totalLoopNum);
-
     __aicore__ inline void FlushDataCacheForCopy(GM_ADDR gmAddr, uint32_t size);
-
-    __aicore__ inline void AssembleHcclMsgExtForCCU(const CommonPrepareParam &commonPrepareParam, uint32_t repeatIndex);
 
     __aicore__ inline void InitCommReq(uint8_t reqId);
 
     __aicore__ inline void InitHandleInfo(uint8_t handleId);
+
+    __aicore__ inline void InitCcuParam(const CommonPrepareParam &commonPrepareParam);
 
     __aicore__ inline void CommitMsg(HcclHandle handleId, uint8_t reqId);
 
@@ -123,10 +118,9 @@ private:
     uint8_t workingFlag_ = false;
     bool needResetDataType_ = false;
     uint8_t commitCnt_;
-    uint8_t alltoallvCnt_ = 0;
     bool isInited_ = false;
     __gm__ uint32_t *finishCntGM_;
-    __gm__ CCUMsgExt *ccuMsgExt_;
+    uint32_t finishCnt_ = 0;
 
     CCUConfig ccuConfig_;
     CCUMsg ccuMsg_;
@@ -140,6 +134,7 @@ private:
     uint64_t ccOpTilingDataTable_[static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL)] = {0UL};
     HcclTilingVersion curVersion_ = HcclTilingVersion::INVALID_TILING_VERSION;
     uint64_t tilingBaseAddr_;
+    CCUParam ccuParam_;
 };
 } // namespace AscendC
 

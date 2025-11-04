@@ -17,7 +17,7 @@
 #ifndef API_CONV3D_POINTWISE_SUB_API_H
 #define API_CONV3D_POINTWISE_SUB_API_H
 
-#include "include/adv_api/conv3d_mte1_pointwise_sub_api.h"
+#include "conv3d_mte1_pointwise_sub_api.h"
 
 namespace Conv3dApiFunc {
 
