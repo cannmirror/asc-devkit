@@ -62,7 +62,7 @@ public:
                                                    const ScheduleContext& context = 0)
     {
         ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "Matching error. This is an empty implementation."); });
-        return NULL_TENSOR<TransT>;
+        return LocalTensor<TransT>{};
     }
 
     /**
@@ -72,7 +72,7 @@ public:
      * @param: curCol: The column index of the matrixA/B at current iterate
      * @return: void
      */
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>,
+    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
         int32_t curRow = 0, int32_t curCol = 0) {}
 
     /*

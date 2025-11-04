@@ -20,7 +20,7 @@
 #include "../../../impl/adv_api/detail/utils/init_global_memory/init_global_memory_v200_impl.h"
 #elif __CCE_AICORE__ == 220
 #include "../../../impl/adv_api/detail/utils/init_global_memory/init_global_memory_v220_impl.h"
-#elif __CCE_AICORE__ == 310 || __NPU_ARCH__==5102
+#elif __CCE_AICORE__ == 310 || __NPU_ARCH__==5102 || defined(__DAV_L311__) || defined(__DAV_L300__)
 #include "../../../impl/adv_api/detail/utils/init_global_memory/init_global_memory_v310_impl.h"
 #endif
 
@@ -37,7 +37,7 @@ namespace AscendC {
 #if __CCE_AICORE__ == 200
 template <typename T>
 __aicore__ inline __in_pipe__(V)
-    __out_pipe__(MTE3, S) void InitGlobalMemory(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
+    __out_pipe__(MTE3, S) void Fill(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
 {
     InitGlobalMemoryImpl<T>(gmWorkspaceAddr, size, value);
 }
@@ -45,7 +45,7 @@ __aicore__ inline __in_pipe__(V)
 #elif __CCE_AICORE__ == 220
 template <typename T>
 __aicore__ inline __in_pipe__(V)
-    __out_pipe__(MTE3) void InitGlobalMemory(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
+    __out_pipe__(MTE3) void Fill(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
 {
     InitGlobalMemoryImpl<T>(gmWorkspaceAddr, size, value);
 }
@@ -63,7 +63,7 @@ __aicore__ inline __in_pipe__(V)
 #if  __CCE_AICORE__ == 310 || __NPU_ARCH__ == 5102
 template <typename T>
 __aicore__ inline __in_pipe__(V)
-    __out_pipe__(MTE3) void InitGlobalMemory(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
+    __out_pipe__(MTE3) void Fill(GlobalTensor<T> &gmWorkspaceAddr, const uint64_t size, const T value)
 {
     InitGlobalMemoryImpl<T>(gmWorkspaceAddr, size, value);
 }

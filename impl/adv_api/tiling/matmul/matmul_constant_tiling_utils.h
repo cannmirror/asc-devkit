@@ -37,11 +37,6 @@ constexpr int32_t L1_SIZE = 1024 * 1024;
 #else
 constexpr int32_t L1_SIZE = 512 * 1024;
 #endif
-
-constexpr int32_t SCALE_K_SIZE = 32;
-constexpr int32_t MIN_MX_PARAM = 257;// scaleFactorKa = 1, scaleFactorKb = 1
-constexpr int32_t MX_L1_BUFFER_NUM = 4;// A/B/scaleA/scaleB buffer
-constexpr uint32_t SCALE_FACTOR_MAX_VALUE = 127;// scaleFactorKa/scaleFactorKb is 7 bit, max value is 127
 }
 
 enum class L1TilingType : uint8_t {
@@ -59,14 +54,6 @@ struct L1Status {
     int32_t dbAL1;
     int32_t dbBL1;
     int32_t loadSize;
-};
-
-struct MxScaleStatus {
-    uint8_t scaleFactorKa;
-    uint8_t scaleFactorKb;
-    uint8_t scaleFactorM;
-    uint8_t scaleFactorN;
-    int32_t mxTypePara;
 };
 
 template <typename T>
@@ -226,57 +213,6 @@ __aicore__ constexpr int32_t GetBL1Size(const L1Status &l1Status, const MatmulCo
             GetBitSize<typename B_TYPE::T>() / ONE_BYTE_BIT_SIZE;
     }
     return curB1Size;
-}
-
-template <typename A_TYPE>
-__aicore__ constexpr int32_t GetScaleAL1Size(const L1Status &l1Status, const MatmulConfig &mmCFG)
-{
-    int32_t curScaleA1Size = 0;
-    int32_t kL0 = GetKL0<A_TYPE>(mmCFG);
-    if constexpr (PhyPosIsL1(A_TYPE::scalePosition)) {
-        curScaleA1Size = 0;
-    } else if constexpr (PhyPosIsUB(A_TYPE::scalePosition)) {
-        curScaleA1Size = mmCFG.singleCoreM * CeilNoLog<int32_t>(mmCFG.singleCoreK, Impl::MX_BASEK_FACTOR) * Impl::ALIGN_TWO;
-    } else {
-        // be consistent with initbuffer
-        curScaleA1Size = l1Status.dbAL1 * l1Status.mAL1 * mmCFG.basicM * CeilNoLog<int32_t>(l1Status.kAL1, kL0) *
-            CeilNoLog<int32_t>(mmCFG.basicK, Impl::C0_BYTE_SIZE) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE;
-    }
-    return curScaleA1Size;
-}
-
-template <typename B_TYPE>
-__aicore__ constexpr int32_t GetScaleBL1Size(const L1Status &l1Status, const MatmulConfig &mmCFG)
-{
-    int32_t curScaleB1Size = 0;
-    int32_t kL0 = GetKL0<B_TYPE>(mmCFG);
-    if constexpr (PhyPosIsL1(B_TYPE::scalePosition)) {
-        curScaleB1Size = 0;
-    } else if constexpr (PhyPosIsUB(B_TYPE::scalePosition)) {
-        curScaleB1Size = mmCFG.singleCoreN * CeilNoLog<int32_t>(mmCFG.singleCoreK, Impl::MX_BASEK_FACTOR) * Impl::ALIGN_TWO;
-    } else {
-        // be consistent with initbuffer
-        curScaleB1Size = l1Status.dbBL1 * l1Status.nBL1 * mmCFG.basicN * CeilNoLog<int32_t>(l1Status.kBL1, kL0) *
-            CeilNoLog<int32_t>(mmCFG.basicK, Impl::C0_BYTE_SIZE) * GetBitSize<fp8_e8m0_t>() / ONE_BYTE_BIT_SIZE;
-    }
-    return curScaleB1Size;
-}
-
-template <typename A_TYPE, typename B_TYPE, typename C_TYPE, typename BIAS_TYPE>
-__aicore__ constexpr int32_t GetL1Size(const L1Status &l1Status, const MatmulConfig &mmCFG)
-{
-    int32_t curA1Size = GetAL1Size<A_TYPE>(l1Status, mmCFG);
-    int32_t curB1Size = GetBL1Size<A_TYPE, B_TYPE>(l1Status, mmCFG);
-    int32_t biasSize = GetBiasL1Size<BIAS_TYPE>(l1Status, mmCFG);
-    int32_t dequantSize = GetDeQuantSize(l1Status, mmCFG);
-    int32_t curScaleA1Size = 0;
-    int32_t curScaleB1Size = 0;
-    if constexpr (HasScalePosition<A_TYPE>::value || HasScalePosition<B_TYPE>::value) {
-        curScaleA1Size = GetScaleAL1Size<A_TYPE>(l1Status, mmCFG);
-        curScaleB1Size = GetScaleBL1Size<B_TYPE>(l1Status, mmCFG);
-    }
-    // overflow will generate complier error
-    return curA1Size + curB1Size + biasSize + dequantSize + curScaleA1Size + curScaleB1Size;
 }
 
 template <typename A_TYPE, typename B_TYPE, typename BIAS_TYPE>
@@ -457,78 +393,135 @@ __aicore__ constexpr int32_t GetTransLength(const MatmulConfig &mmCFG, const L1S
     return MaxValue<int32_t>(a1Length, b1Length, c1Length, biasLength);
 }
 
-template <typename A_TYPE, typename B_TYPE, typename C_TYPE, typename BIAS_TYPE>
-__aicore__ constexpr L1Status GetL1StatusBothFullLoad(const MatmulConfig &mmCFG, int32_t l1Size)
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetABaseHeightAlign(const MatmulApiStaticTiling &tiling)
 {
-    int32_t reduceC0Size = GetReduceC0Size<typename A_TYPE::T>();
-    int32_t k = CeilNoLog<int32_t>(mmCFG.singleCoreK, reduceC0Size);
-    int32_t kL0 = GetKL0<A_TYPE>(mmCFG);
-    int32_t kAL1 = Align<int32_t>(k, kL0);
-    int32_t kBL1 = kAL1;
-    if constexpr (PhyPosIsL1(A_TYPE::pos) && PhyPosIsL1(B_TYPE::pos)) {
-        return {kAL1, kBL1, 1, 1, 1, 1, 0};
+    using SrcAT = typename A_TYPE::T;
+    if (IsSameTypeV<SrcAT, float>) {
+        return Align<int32_t>(tiling.baseM, Impl::HW_C0);
+    } else if ((IsSupportB8<SrcAT>() || IsSupportB4<SrcAT>()) && A_TYPE::isTrans == true) {
+        return Align<int32_t>(tiling.baseM, GetReduceC0Size<SrcAT>());
+    } else {
+        return tiling.baseM;
     }
-    L1Status l1Status {kAL1, kBL1, GetMaxMAL1(mmCFG), GetMaxNBL1(mmCFG), 1, 1, INT32_MAX};
-    int32_t m = CeilNoLog<int32_t>(mmCFG.singleCoreM, Impl::HW_C0);
-    int32_t n = CeilNoLog<int32_t>(mmCFG.singleCoreN, Impl::HW_C0);
-    if (GetL1Size<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(l1Status, mmCFG) <= l1Size) {
-        int32_t loadSize = (PhyPosIsL1(A_TYPE::pos) ? 0 : m) + (PhyPosIsL1(B_TYPE::pos) ? 0 : n);
-        return {kAL1, kBL1, GetMaxMAL1(mmCFG), GetMaxNBL1(mmCFG), 1, 1, loadSize};
+}
+
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetABaseWidthAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcAT = typename A_TYPE::T;
+    if (IsSameTypeV<SrcAT, float> && A_TYPE::isTrans == true) {
+        return Align<int32_t>(tiling.baseK, Impl::HW_C0);
+    } else if (IsSameTypeV<SrcAT, float> || (IsSupportB8<SrcAT>() || IsSupportB4<SrcAT>())) {
+        return Align<int32_t>(tiling.baseK, GetReduceC0Size<SrcAT>());
+    } else {
+        return tiling.baseK;
     }
-    return {0, 0, 0, 0, 0, 0, INT32_MAX};
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetBBaseHeightAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcBT = typename B_TYPE::T;
+    if (IsSameTypeV<SrcBT, float> && B_TYPE::isTrans == false) {
+        return Align<int32_t>(tiling.baseK, Impl::HW_C0);
+    } else if ((IsSupportB8<SrcBT>() || IsSupportB4<SrcBT>())) {
+        return Align<int32_t>(tiling.baseK, GetReduceC0Size<SrcBT>());
+    } else {
+        return tiling.baseK;
+    }
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetBBaseWidthAlign(const MatmulApiStaticTiling &tiling)
+{
+    using SrcBT = typename B_TYPE::T;
+    if (IsSameTypeV<SrcBT, float> || ((IsSupportB8<SrcBT>() || IsSupportB4<SrcBT>()) && B_TYPE::isTrans == false)) {
+        return Align<int32_t>(tiling.baseN, GetReduceC0Size<SrcBT>());
+    } else {
+        return tiling.baseN;
+    }
+}
+
+template <typename A_TYPE>
+__aicore__ constexpr int32_t GetMatrixAByteSize(const MatmulApiStaticTiling &tiling)
+{
+    if constexpr (PhyPosIsUB(A_TYPE::pos)) {
+        return Align<int32_t>(tiling.singleCoreM, Impl::HW_C0) *
+            Align<int32_t>(tiling.singleCoreK, Impl::C0_BYTE_SIZE);
+    } else if constexpr (PhyPosIsGM(A_TYPE::pos)) {
+        return GetABaseHeightAlign<A_TYPE>(tiling) * GetABaseWidthAlign<A_TYPE>(tiling);
+    } else {
+        return 0;
+    }
+}
+
+template <typename B_TYPE>
+__aicore__ constexpr int32_t GetMatrixBByteSize(const MatmulApiStaticTiling &tiling)
+{
+    if constexpr (PhyPosIsUB(B_TYPE::pos)) {
+        return Align<int32_t>(tiling.singleCoreK, Impl::HW_C0) *
+            Align<int32_t>(tiling.singleCoreN, Impl::C0_BYTE_SIZE);
+    } else if constexpr (PhyPosIsGM(B_TYPE::pos)) {
+        return GetBBaseHeightAlign<B_TYPE>(tiling) * GetBBaseWidthAlign<B_TYPE>(tiling);
+    } else {
+        return 0;
+    }
 }
 
 template <typename A_TYPE, typename B_TYPE, typename C_TYPE, typename BIAS_TYPE>
-__aicore__ constexpr L1Status GetL1StatusAL1FullLoad(const MatmulConfig &mmCFG, int32_t l1Size)
+__aicore__ constexpr L1Status GetL1StatusMFirst(const L1Status &l1Status, const MatmulConfig &mmCFG, int32_t l1Size)
 {
-    int32_t reduceC0Size = GetReduceC0Size<typename A_TYPE::T>();
-    int32_t k = CeilNoLog<int32_t>(mmCFG.singleCoreK, reduceC0Size);
-    int32_t kL0 = GetKL0<A_TYPE>(mmCFG);
-    int32_t kAL1 = Align<int32_t>(k, kL0);
-    int32_t maxMAL1 = GetMaxMAL1(mmCFG);
-    L1Status l1Status {kAL1, kL0, maxMAL1, 1, 1, 1, 0};
-    // if mmCFG use OUTER_PRODUCT, stepM > 1 in ORDER_M and stepN > 1 in ORDER_N
-    if (((mmCFG.doNorm && A_TYPE::layout == LayoutMode::NONE) || mmCFG.doMultiDataLoad) &&
-        (mmCFG.scheduleType == ScheduleType::OUTER_PRODUCT && mmCFG.iterateOrder == IterateOrder::ORDER_M)) {
-        l1Status.nBL1 = Impl::OUTER_STEP;
-    }
-    if (GetL1Size<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(l1Status, mmCFG) > l1Size) {
-        return {0, 0, 0, 0, 0, 0, INT32_MAX};
-    }
-    int32_t kaAlignValue = GetKAAlignValue<A_TYPE>();
-    int32_t m = CeilNoLog<int32_t>(mmCFG.singleCoreM, Impl::HW_C0);
-    // be consistent with initbuffer
-    int32_t aL1Size = MaxValue<int32_t>(maxMAL1 * mmCFG.basicM, m * Impl::HW_C0) *
-        CeilNoLog<int32_t>(k, kL0) * Align(mmCFG.basicK, static_cast<uint32_t>(kaAlignValue * reduceC0Size)) *
-        GetBitSize<typename A_TYPE::T>() / ONE_BYTE_BIT_SIZE;
-    int32_t bL1Size = PhyPosIsL1(A_TYPE::pos) ? l1Size : l1Size - aL1Size;
-    l1Status.dbBL1 = Impl::DB_ON;
-    l1Status.dbBL1 = GetL1Size<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>(l1Status, mmCFG) > l1Size ?
-        Impl::DB_OFF : l1Status.dbBL1;
-    int32_t biasSize = GetBiasL1Size<BIAS_TYPE>(l1Status, mmCFG);
-    int32_t dequantSize = GetDeQuantSize(l1Status, mmCFG);
-    int32_t kbAlignValue = GetKBAlignValue<A_TYPE, B_TYPE>();
-    l1Status.kBL1 = MinValue<int32_t>(CalcL1MaxLen<A_TYPE, B_TYPE, BIAS_TYPE>((bL1Size - biasSize - dequantSize),
-        l1Status, mmCFG, kbAlignValue, L1TilingType::KBL1_16), k);
-    int32_t bL1Times = MinValue<int32_t>(l1Status.kBL1 / kL0, GetMaxKBL1<A_TYPE>(mmCFG));
-    int32_t aL1Times = CeilNoLog<int32_t>(k, kL0);
-    bL1Times = GetNearestFactor(aL1Times, bL1Times);
-    l1Status.kBL1 = bL1Times * kL0;
-    if (l1Status.kBL1 == k) {
-        l1Status.nBL1 = MinValue<int32_t>(CalcL1MaxLen<A_TYPE, B_TYPE, BIAS_TYPE>(bL1Size, l1Status, mmCFG,
-            kbAlignValue, L1TilingType::N_BL1), GetMaxNBL1(mmCFG));
-        int32_t nRepeat = CeilNoLog<int32_t>(mmCFG.singleCoreN, mmCFG.basicN);
-        l1Status.nBL1 = GetNearestFactor(nRepeat, l1Status.nBL1);
-        if (l1Status.nBL1 * mmCFG.basicN == mmCFG.singleCoreN) {
-            l1Status.dbBL1 = Impl::DB_OFF;
-        }
-    }
-    bool invalidL1Status = (l1Status.nBL1 == 0 || l1Status.kBL1 == 0);
+    int32_t nRepeat = CeilNoLog<int32_t>(mmCFG.singleCoreN, mmCFG.basicN);
     int32_t mRepeat = CeilNoLog<int32_t>(mmCFG.singleCoreM, mmCFG.basicM);
-    int32_t possibleMRepeat = (l1Status.kBL1 == k) ? 1 : mRepeat;
+    L1Status l1MFirst {l1Status};
+    int32_t bL1Size = GetBL1Size<A_TYPE, B_TYPE>(l1MFirst, mmCFG);
+    int32_t aL1Size = l1Size - bL1Size;
+    int32_t kaAlignValue = GetKAAlignValue<A_TYPE>();
+    int32_t kbAlignValue = GetKBAlignValue<A_TYPE, B_TYPE>();
+    int32_t biasSize = GetBiasL1Size<BIAS_TYPE>(l1MFirst, mmCFG);
+    int32_t dequantSize = GetDeQuantSize(l1MFirst, mmCFG);
+    l1MFirst.mAL1 = MaxValue<int32_t>(MinValue<int32_t>(CalcL1MaxLen<A_TYPE, B_TYPE, BIAS_TYPE>(aL1Size - biasSize - dequantSize,
+        l1MFirst, mmCFG, kaAlignValue, L1TilingType::M_AL1), GetMaxMAL1(mmCFG), mRepeat), 1);
+    l1MFirst.mAL1 = GetNearestFactor(mRepeat, l1MFirst.mAL1);
+    aL1Size = GetAL1Size<A_TYPE>(l1MFirst, mmCFG);
+    bL1Size = l1Size - aL1Size;
+    l1MFirst.nBL1 = MaxValue<int32_t>(MinValue<int32_t>(CalcL1MaxLen<A_TYPE, B_TYPE, BIAS_TYPE>(bL1Size - biasSize - dequantSize,
+        l1MFirst, mmCFG, kbAlignValue, L1TilingType::N_BL1), GetMaxNBL1(mmCFG), nRepeat), 1);
+    l1MFirst.nBL1 = GetNearestFactor(mRepeat, l1MFirst.nBL1);
+    int32_t mL0 = GetML0(mmCFG);
+    int32_t m = CeilNoLog<int32_t>(mmCFG.singleCoreM, Impl::HW_C0);
     int32_t n = CeilNoLog<int32_t>(mmCFG.singleCoreN, Impl::HW_C0);
-    l1Status.loadSize = invalidL1Status ? INT32_MAX : (PhyPosIsL1(A_TYPE::pos) ? 0 : m) + possibleMRepeat * n;
-    return l1Status;
+    l1MFirst.loadSize = m + n * CeilNoLog<int32_t>(m, l1MFirst.mAL1 * mL0);
+    return l1MFirst;
+}
+
+template <typename A_TYPE, typename B_TYPE, typename C_TYPE, typename BIAS_TYPE>
+__aicore__ constexpr L1Status GetL1StatusNFirst(const L1Status &l1Status, const MatmulConfig &mmCFG, int32_t l1Size)
+{
+    int32_t nRepeat = CeilNoLog<int32_t>(mmCFG.singleCoreN, mmCFG.basicN);
+    int32_t mRepeat = CeilNoLog<int32_t>(mmCFG.singleCoreM, mmCFG.basicM);
+    L1Status l1NFirst {l1Status};
+    int32_t aL1Size = GetAL1Size<A_TYPE>(l1NFirst, mmCFG);
+    int32_t bL1Size = l1Size - aL1Size;
+    int32_t kbAlignValue = GetKBAlignValue<A_TYPE, B_TYPE>();
+    int32_t biasSize = GetBiasL1Size<BIAS_TYPE>(l1NFirst, mmCFG);
+    int32_t dequantSize = GetDeQuantSize(l1NFirst, mmCFG);
+    l1NFirst.nBL1 = MaxValue<int32_t>(MinValue<int32_t>(CalcL1MaxLen<A_TYPE, B_TYPE, BIAS_TYPE>(bL1Size - biasSize - dequantSize,
+        l1Status, mmCFG, kbAlignValue, L1TilingType::N_BL1), GetMaxNBL1(mmCFG), nRepeat), 1);
+    l1NFirst.nBL1 = GetNearestFactor(nRepeat, l1NFirst.nBL1);
+    bL1Size = GetBL1Size<A_TYPE, B_TYPE>(l1NFirst, mmCFG);
+    aL1Size = l1Size - bL1Size;
+    int32_t kaAlignValue = GetKAAlignValue<A_TYPE>();
+    l1NFirst.mAL1 = MaxValue<int32_t>(MinValue<int32_t>(CalcL1MaxLen<A_TYPE, B_TYPE, BIAS_TYPE>(aL1Size - biasSize - dequantSize,
+        l1NFirst, mmCFG, kaAlignValue, L1TilingType::M_AL1), GetMaxMAL1(mmCFG), mRepeat), 1);
+    l1NFirst.mAL1 = GetNearestFactor(mRepeat, l1NFirst.mAL1);
+    l1NFirst.nBL1 = GetNearestFactor(mRepeat, l1NFirst.nBL1);
+    int32_t nL0 = GetNL0(mmCFG);
+    int32_t m = CeilNoLog<int32_t>(mmCFG.singleCoreM, Impl::HW_C0);
+    int32_t n = CeilNoLog<int32_t>(mmCFG.singleCoreN, Impl::HW_C0);
+    l1NFirst.loadSize = n + m * CeilNoLog<int32_t>(n, l1NFirst.nBL1 * nL0);
+    return l1NFirst;
 }
 } // namespace AscendC
 #endif // _MATMUL_CONSTANT_TILING_UTILS_H_

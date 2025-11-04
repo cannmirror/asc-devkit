@@ -50,7 +50,7 @@ __aicore__ inline void XorImpl(const LocalTensor<T>& dstTensor, const LocalTenso
    IsXorParamValid(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
 #endif
 
-    static_assert((SupportType<T, uint16_t, int16_t>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, uint16_t, int16_t>(), "current data type is not supported on current device!");
     __local_mem__ T *dst = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *src0 = (__local_mem__ T *)src0Tensor.GetPhyAddr();
     __local_mem__ T *src1 = (__local_mem__ T *)src1Tensor.GetPhyAddr();

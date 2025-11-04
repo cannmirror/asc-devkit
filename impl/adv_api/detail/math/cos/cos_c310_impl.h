@@ -17,8 +17,10 @@
 #define LIB_MATH_COS_C310_IMPL_H
 
 #include "kernel_tensor.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#ifndef __DAV_L300__
 #include "../sincos/sincos_c310_impl.h"
+#endif
 #include "cos_common_utils.h"
 #endif
 
@@ -173,7 +175,7 @@ __aicore__ inline void CosImpl(const LocalTensor<T>& dstTensor, const LocalTenso
         return;
     }
 
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "Cos");
     CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "Cos");
     CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT", "Cos");

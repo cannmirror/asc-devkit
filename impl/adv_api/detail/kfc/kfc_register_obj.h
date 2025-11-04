@@ -145,7 +145,7 @@ __aicore__ inline void InitCurObj(AscendC::TPipe* tpipe, T& a, Args&&... b)
 }
 
 #ifdef ASCENDC_CPU_DEBUG
-#if __CCE_AICORE__ == 220 || (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
+#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
 #ifdef ASCENDC_CUBE_ONLY
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...) \
     AscendC::InitCurObj(tpipe, __VA_ARGS__)

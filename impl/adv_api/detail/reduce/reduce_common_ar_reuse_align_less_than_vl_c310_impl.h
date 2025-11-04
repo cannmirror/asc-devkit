@@ -96,7 +96,7 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf
     uint32_t dimR)
 {
     if (dimR == 1) {
-        VF_CALL<ReduceOpInternal::ReduceCopyOutImpl<T>>(dstAddr, srcAddr, dimA);
+        ReduceOpInternal::ReduceCopyOutImpl<T>(dstAddr, srcAddr, dimA);
     } else if constexpr (IsSameType<T, bfloat16_t>::value) {
         ReduceARCastLessThanVL<T, float, Trait, ReduceOpInternal::CastTraitBF16F32, ReduceOpInternal::CastTraitF32BF16,
             vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);

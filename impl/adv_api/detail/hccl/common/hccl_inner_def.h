@@ -24,7 +24,7 @@ namespace AscendC {
 constexpr int32_t HCCL_FAILED = -1;
 constexpr int32_t HCCL_SUCCESS = 0;
 constexpr uint8_t HCCL_ONLY_COMPUTE = 1U;
-constexpr uint8_t HCCL_ASCEND910_93 = 12U;
+constexpr uint8_t HCCL_ASCEND910B = 1U;
 constexpr uint32_t MAX_DCCI_CNT = 64U;
 constexpr uint64_t DATA_TYPE_MAP[] = {1, 2, 4, 2, 4, 8, 8, 1, 8, 4, 8, 2, 0, 0, 1, 1, 1, 1, 0};
 
@@ -46,6 +46,7 @@ struct CommonPrepareParam {
     GM_ADDR recvBuf;
     uint64_t count;
     HcclDataType dataType;
+    HcclDataType dstDataType;
     HcclReduceOp op;
     uint64_t strideCount;
     uint8_t repeat = 1U;
@@ -93,27 +94,17 @@ struct HcclCombineOpParam {
 };
 
 namespace HcclContextDef {
-constexpr uint32_t AICPU_MAX_RANK_NUM = 128 * 1024;
-
-struct ListCommon {
-    uint64_t nextHost;
-    uint64_t preHost;
-    uint64_t nextDevice;
-    uint64_t preDevice;
-};
-
 struct HcclRankRelationResV2 {
     uint32_t remoteUsrRankId = 0;
     uint32_t remoteWorldRank = 0;
     uint64_t windowsIn = 0;
     uint64_t windowsOut = 0;
     uint64_t windowsExp = 0;
-    ListCommon nextTagRes = {0};
 };
 
 struct RemoteResPtr {
-    uint64_t nextHostPtr;
-    uint64_t nextDevicePtr;
+    HcclRankRelationResV2 *nextHostPtr;
+    HcclRankRelationResV2 *nextDevicePtr;
 };
 
 struct HcclOpResParam {
@@ -128,19 +119,6 @@ struct HcclOpResParam {
     uint64_t winExpSize;
     uint64_t localWindowsExp;
     uint32_t rWinStart;
-    uint32_t rWinOffset;
-    uint64_t version;
-    uint8_t reservedStrcut[2472];
-    uint8_t topoInfo[160];
-    uint8_t config[48];
-    uint64_t hostStateInfo;
-    uint64_t aicpuStateInfo;
-    uint64_t lockAddr;
-    uint32_t rsv[16];
-    uint32_t notifysize;
-    uint32_t remoteResNum;
-    RemoteResPtr remoteRes[AICPU_MAX_RANK_NUM]; // Array pointer pointing to HcclRankRelationResV2, 
-                                                // subscripted as remoteUserRankId
 };
 }
 constexpr uint16_t CCU_CKE_SIZE = 8;
@@ -260,6 +238,15 @@ struct HandleCommOp {
     uint8_t waitCnt;
     uint8_t finishCnt;
     uint8_t reserved[3];
+};
+
+struct CCUParam {
+    uint32_t rankNum;
+    uint32_t rankId;
+    CommonPrepareParam commParam;
+    uint32_t repeatIndex;
+    uint8_t alltoallvCnt = 0;
+    __gm__ CCUMsgExt *ccuMsgExt;
 };
 
 constexpr uint64_t CCU_MSG_EXT_RANK_OFFSET = sizeof(CCUMsgExt) * HCCL_MAX_RANK_NUM_V2;

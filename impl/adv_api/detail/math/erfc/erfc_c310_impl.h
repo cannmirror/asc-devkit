@@ -166,7 +166,7 @@ __aicore__ inline void ErfcImpl(const LocalTensor<T>& dstTensor, const LocalTens
         return;
     }
 
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "ERFC");
     CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "ERFC");
     ASCENDC_ASSERT((calCount <= srcTensor.GetSize()), {

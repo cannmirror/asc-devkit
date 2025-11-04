@@ -19,7 +19,7 @@
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
 #include "include/adv_api/reduce/sum_utils.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/reduce/sum/sum_c310_impl.h"
 #else
 #include "../../../impl/adv_api/detail/reduce/sum/sum_common_impl.h"

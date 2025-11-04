@@ -56,7 +56,7 @@ public:
         return localTensor;
     }
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>,
+    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
         int32_t curRow = 0, int32_t curCol = 0)
     {}
 

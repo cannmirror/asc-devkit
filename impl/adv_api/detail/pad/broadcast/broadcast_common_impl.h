@@ -20,7 +20,7 @@
 #include "kernel_operator_intf.h"
 #include "broadcast_common_utils.h"
 #include "../../api_check/kernel_api_check.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
 #include "broadcast_c310_impl.h"
 #elif __CCE_AICORE__ == 220
 #include "broadcast_v220_impl.h"
@@ -33,7 +33,7 @@ namespace AscendC {
 constexpr uint32_t TWO_DIM = 2;
 constexpr uint32_t HALF_ONE_BLK_SIZE = 16;
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
 struct BroadcastTiling {
     uint32_t oriRank;
     uint32_t rank;
@@ -282,6 +282,8 @@ template <typename T, int constRank = -1, uint32_t *constDstShape = nullptr, uin
 __aicore__ inline void BroadcastImpl(const LocalTensor<T> &dst, const LocalTensor<T> &src, const uint32_t *dstShape,
     const uint32_t *srcShape, BroadcastTiling *tiling)
 {
+    CheckTensorPos<T>(dst, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "Broadcast");
+    CheckTensorPos<T>(src, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "Broadcast");
     static_assert((constRank == -1) || (constRank <= 9 && constRank > 0),
         "constRank only supports -1 and the range between 1 and 9");
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "Broadcast only supports type b8/b16/b32/b64 on current device");
@@ -376,7 +378,7 @@ template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCast(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<uint8_t> &sharedTmpBuffer);
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCastCommon(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim])

@@ -29,6 +29,7 @@
 #include "batchnorm_common_pre_impl.h"
 
 namespace AscendC {
+namespace BatchNormAPI {
 __aicore__ inline void GetBatchNormOutputBasicBlock(const LocalTensor<float>& src, const LocalTensor<float>& output,
     const LocalTensor<float>& gamm, const LocalTensor<float>& beta, const BatchNormTiling& tiling,
     const BatchNormParams<float>& params)
@@ -327,5 +328,6 @@ __aicore__ inline void BatchNormImpl(const LocalTensor<T>& output, const LocalTe
     BatchNormImpl<T, isReuseSource, isBasicBlock>(output, outputMean, outputVariance, inputX, gamm, beta,
         sharedTmpBuffer, epsilon, tiling);
 }
+} // namespace BatchNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_IMPL_H

@@ -106,7 +106,7 @@ __aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor
     CheckTensorPosition(srcLocal, "srcLocal", "VECIN, VECOUT, VECCALC");
     CheckCalCount(calCount, "calCount", dstLocal, "dstLocal", "Exp");
     CheckCalCount(calCount, "calCount", srcLocal, "srcLocal", "Exp");
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
 
     if constexpr (taylorExpandLevel == 0) {
         Exp<T>(dstLocal, srcLocal, calCount);

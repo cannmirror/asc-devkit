@@ -19,6 +19,8 @@
 #include "kernel_tiling/kernel_tiling.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "deepnorm_check_common.h"
+#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#include "deepnorm_check_c310.h"
 #else
 #include "deepnorm_check_aicore.h"
 #endif

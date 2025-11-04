@@ -77,7 +77,7 @@ __aicore__ inline void FracImpl(const LocalTensor<T>& dstTensor, const LocalTens
         return;
     }
 
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "Frac");
     CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "Frac");
     ASCENDC_ASSERT((calCount <= srcTensor.GetSize()), {

@@ -45,11 +45,11 @@ public:
      */
     __aicore__ inline LocalTensor<L0cT> Allocate()
     {
-        return NULL_TENSOR<L0cT>;
+        return LocalTensor<L0cT>{};
     }
     /**
      * @description: Free tensor, should be called after AllocTensor
-     * @param: tensor: tensor allocated by AllocTensor or NULL_TENSOR
+     * @param: tensor: tensor allocated by AllocTensor or null tensor
      * @return: void
      */
     __aicore__ inline void Free() {}

@@ -16,13 +16,15 @@
 #ifndef IMPL_MATH_DIGAMMA_DIGAMMA_COMMOM_BASIC_IMPL_H
 #define IMPL_MATH_DIGAMMA_DIGAMMA_COMMOM_BASIC_IMPL_H
 
-#if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
+#if defined(__DAV_C310__) || (__NPU_ARCH__ == 5102)
+#include "digamma_c310_impl.h"
+#elif __CCE_AICORE__ >= 220
 #include "digamma_v220_impl.h"
 #elif __CCE_AICORE__ == 200
 #include "digamma_v200_impl.h"
 #endif
 
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200 && !defined(__DAV_C310__)
 namespace AscendC {
 namespace {
 constexpr float MIN_NEG_WITH_FLOAT = -8388608.0;

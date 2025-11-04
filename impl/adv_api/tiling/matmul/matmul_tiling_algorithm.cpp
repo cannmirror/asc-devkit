@@ -602,7 +602,7 @@ void MatmulTilingAlgorithm::GetL0cDB(const L0Factors (&resFactors)[L0PARAS_COMBO
     }
 }
 
-int32_t MatmulTilingAlgorithm::GetMxCurL1Size(SingleCoreStatus& singleCoreStatus) const
+int32_t MatmulTilingAlgorithm::GetMxCurL1Size(const SingleCoreStatus& singleCoreStatus) const
 {
     int32_t curAL1Size = 0;
     int32_t curBL1Size = 0;
@@ -2499,9 +2499,16 @@ void MatmulTilingAlgorithm::CalcL1Tiling(const ComputeBaseBlock &baseBlock, int3
         DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType);
     int32_t depthB1Size = ((l1Size + reservedL1Size) / DB_ON / baseBlock.baseN / baseBlock.baseK) * BITS_PER_BYTE /
         DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType);
-    int32_t btSize = tilingIns_->isBias ? tilingIns_->bufferPool_.btSize / BITS_PER_BYTE : 0;
-    if (depthA1Size + depthB1Size > l1Size - btSize) {
-        if (baseBlock.baseM <= baseBlock.baseN) {
+    int32_t btSize = 0;
+    if (tilingIns_->isBias) {
+        btSize = baseBlock.baseN * DTYPE_BIT_TAB.at(tilingIns_->biasType_.dataType) / BITS_PER_BYTE;
+    }
+    int32_t baseAByteSize = GetABaseHeightAlign(baseBlock.baseM) * GetABaseWidthAlign(baseBlock.baseK) *
+        DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+    int32_t baseBByteSize = GetBBaseHeightAlign(baseBlock.baseK) * GetBBaseWidthAlign(baseBlock.baseN) *
+        DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+    if (depthA1Size * baseAByteSize + depthB1Size * baseBByteSize > l1Size - btSize) {
+        if (GetABaseHeightAlign(baseBlock.baseM) <= GetBBaseWidthAlign(baseBlock.baseN)) {
             depthA1Size = depthA1Size / DB_ON;
         } else {
             depthB1Size = depthB1Size / DB_ON;
@@ -4027,49 +4034,49 @@ int32_t MatmulTilingAlgorithm::GetC0Size(DataType dataType) const
     return REDUCE_BLOCK_SIZE;
 }
 
-int32_t MatmulTilingAlgorithm::GetABaseHeightAlign() const
+int32_t MatmulTilingAlgorithm::GetABaseHeightAlign(int32_t baseHeight) const
 {
     if (tilingIns_->aType_.dataType == DataType::DT_FLOAT) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseM(), BLOCK_CUBE);
+        return MathUtil::Align(baseHeight, BLOCK_CUBE);
     } else if ((DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
         DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) && tilingIns_->aType_.isTrans) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseM(), GetC0Size(tilingIns_->aType_.dataType));
+        return MathUtil::Align(baseHeight, GetC0Size(tilingIns_->aType_.dataType));
     } else {
-        return tilingIns_->tiling_.get_baseM();
+        return baseHeight;
     }
 }
 
-int32_t MatmulTilingAlgorithm::GetABaseWidthAlign() const
+int32_t MatmulTilingAlgorithm::GetABaseWidthAlign(int32_t baseWidth) const
 {
     if (tilingIns_->aType_.dataType == DataType::DT_FLOAT && tilingIns_->aType_.isTrans) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseK(), BLOCK_CUBE);
+        return MathUtil::Align(baseWidth, BLOCK_CUBE);
     } else if (tilingIns_->aType_.dataType == DataType::DT_FLOAT || (DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
         DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4))) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseK(), GetC0Size(tilingIns_->aType_.dataType));
+        return MathUtil::Align(baseWidth, GetC0Size(tilingIns_->aType_.dataType));
     } else {
-        return tilingIns_->tiling_.get_baseK();
+        return baseWidth;
     }
 }
 
-int32_t MatmulTilingAlgorithm::GetBBaseHeightAlign() const
+int32_t MatmulTilingAlgorithm::GetBBaseHeightAlign(int32_t baseHeight) const
 {
     if (tilingIns_->bType_.dataType == DataType::DT_FLOAT && !tilingIns_->bType_.isTrans) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseK(), BLOCK_CUBE);
+        return MathUtil::Align(baseHeight, BLOCK_CUBE);
     } else if (DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
         DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseK(), GetC0Size(tilingIns_->bType_.dataType));
+        return MathUtil::Align(baseHeight, GetC0Size(tilingIns_->bType_.dataType));
     } else {
-        return tilingIns_->tiling_.get_baseK();
+        return baseHeight;
     }
 }
 
-int32_t MatmulTilingAlgorithm::GetBBaseWidthAlign() const
+int32_t MatmulTilingAlgorithm::GetBBaseWidthAlign(int32_t baseWidth) const
 {
     if (tilingIns_->bType_.dataType == DataType::DT_FLOAT || ((DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT8) ||
         DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) == DTYPE_BIT_TAB.at(DataType::DT_INT4)) && !tilingIns_->bType_.isTrans)) {
-        return MathUtil::Align(tilingIns_->tiling_.get_baseN(), GetC0Size(tilingIns_->bType_.dataType));
+        return MathUtil::Align(baseWidth, GetC0Size(tilingIns_->bType_.dataType));
     } else {
-        return tilingIns_->tiling_.get_baseN();
+        return baseWidth;
     }
 }
 
@@ -4103,7 +4110,7 @@ int32_t MatmulTilingAlgorithm::GetMatrixAByteSize() const
         return MathUtil::Align(tilingIns_->tiling_.get_singleCoreM(), BLOCK_CUBE) *
             MathUtil::Align(tilingIns_->tiling_.get_singleCoreK(), C0_SIZE);
     } else if (tilingIns_->aType_.pos == TPosition::GM) {
-        return GetABaseHeightAlign() * GetABaseWidthAlign();
+        return GetABaseHeightAlign(tilingIns_->tiling_.get_baseM()) * GetABaseWidthAlign(tilingIns_->tiling_.get_baseK());
     } else {
         return 0;
     }
@@ -4115,7 +4122,7 @@ int32_t MatmulTilingAlgorithm::GetMatrixBByteSize() const
         return MathUtil::Align(tilingIns_->tiling_.get_singleCoreK(), BLOCK_CUBE) *
             MathUtil::Align(tilingIns_->tiling_.get_singleCoreN(), C0_SIZE);
     } else if (tilingIns_->bType_.pos == TPosition::GM) {
-        return GetBBaseHeightAlign() * GetBBaseWidthAlign();
+        return GetBBaseHeightAlign(tilingIns_->tiling_.get_baseK()) * GetBBaseWidthAlign(tilingIns_->tiling_.get_baseN());
     } else {
         return 0;
     }
@@ -4184,13 +4191,13 @@ bool MatmulTilingAlgorithm::EnableL1BankConflictOptimise() const
     uint32_t curL1LowerHalfAddr = tilingIns_->oriBufferPool_.l1Size / NUM_TWO;
 
     // A
-    int32_t matrixByteSize = GetABaseHeightAlign() * GetABaseWidthAlign() * DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
+    int32_t matrixByteSize = GetABaseHeightAlign(tilingIns_->tiling_.get_baseM()) * GetABaseWidthAlign(tilingIns_->tiling_.get_baseK()) * DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) / BITS_PER_BYTE;
     int32_t cacheNum = tilingIns_->tiling_.get_depthA1();
     int32_t stepSize = tilingIns_->tiling_.get_stepKa() * tilingIns_->tiling_.get_stepM();
     CalABAndScaleABL1Space(matrixByteSize, cacheNum, stepSize, curL1UpperHalfAddr, curL1LowerHalfAddr);
 
     // B
-    matrixByteSize = GetBBaseHeightAlign() * GetBBaseWidthAlign() * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
+    matrixByteSize = GetBBaseHeightAlign(tilingIns_->tiling_.get_baseK()) * GetBBaseWidthAlign(tilingIns_->tiling_.get_baseN()) * DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) / BITS_PER_BYTE;
     cacheNum = tilingIns_->tiling_.get_depthB1();
     stepSize = tilingIns_->tiling_.get_stepKb() * tilingIns_->tiling_.get_stepN();
     CalABAndScaleABL1Space(matrixByteSize, cacheNum, stepSize, curL1UpperHalfAddr, curL1LowerHalfAddr);

@@ -26,37 +26,37 @@ namespace AscendC {
 #pragma begin_pipe(V)
 
 /* **************************************************************************************************
- * ConfusionTranspose                                              *
+ * Transpose                                              *
  * ************************************************************************************************* */
 /*
- * @ingroup ConfusionTranspose
+ * @ingroup Transpose
  * @arrange and reshape the data from src to dst.
  * @param [out] dstTensor output LocalTensor
  * @param [in] srcTensor input LocalTensor
  * @param [in] sharedTmpBuffer tmp buffer LocalTensor
  * @param [in] transposeType
- * @param [in] tiling ConfusionTranspose tiling
+ * @param [in] tiling Transpose tiling
  */
 template <typename T>
-__aicore__ inline void ConfusionTranspose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+__aicore__ inline void Transpose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeType, ConfusionTransposeTiling& tiling)
 {
     ConfusionTransposeImpl<T>(dstTensor, srcTensor, sharedTmpBuffer, transposeType, tiling);
 }
 
 /* **************************************************************************************************
- * ConfusionTranspose                                              *
+ * Transpose                                              *
  * ************************************************************************************************* */
 /*
- * @ingroup ConfusionTranspose
+ * @ingroup Transpose
  * @arrange and reshape the data from src to dst.
  * @param [out] dstTensor output LocalTensor
  * @param [in] srcTensor input LocalTensor
  * @param [in] transposeType
- * @param [in] tiling ConfusionTranspose tiling
+ * @param [in] tiling Transpose tiling
  */
 template <typename T>
-__aicore__ inline void ConfusionTranspose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+__aicore__ inline void Transpose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     TransposeType transposeType, ConfusionTransposeTiling& tiling)
 {
     LocalTensor<uint8_t> tmpBuffer;

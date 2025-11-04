@@ -27,6 +27,7 @@
 #include "activation/simplesoftmax.h"
 #include "activation/softmaxflash.h"
 #include "activation/softmaxflashv2.h"
+#include "activation/softmaxflashv3.h"
 #include "activation/softmaxgrad.h"
 #include "activation/gelu.h"
 #include "activation/swish.h"
@@ -90,9 +91,11 @@
 #include "quantization/dequantize.h"
 #include "quantization/antiquantize.h"
 #include "utils/init_global_memory.h"
+#include "math/digamma.h"
 #include "sort/sort.h"
 #include "sort/topk.h"
 #include "transpose/confusion_transpose.h"
+#include "transpose/transdata.h"
 #include "select/selectwithbytesmask.h"
 #include "reduce/reduce.h"
 #include "reduce/sum.h"
@@ -107,6 +110,9 @@
 #include "math/bitwise_xor.h"
 #include "math/logical_xor.h"
 #include "normalization/rmsnorm.h"
+#include "normalization/deepnorm.h"
+#include "normalization/batchnorm.h"
+#include "normalization/groupnorm.h"
 #endif // __CCE_AICORE__ == 310
 
 #if defined(__CCE_AICORE__) && (__CCE_AICORE__ != 310) && (__NPU_ARCH__ != 5102)

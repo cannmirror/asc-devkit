@@ -118,6 +118,159 @@ struct LGammaParams {
     uint32_t splitSize;
 };
 
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+namespace LgammaInternal {
+constexpr MicroAPI::CastTrait LGAMMA_CAST_TRAIT_F162F32 = {
+        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr MicroAPI::CastTrait LGAMMA_CAST_TRAIT_F322F16 = {
+        MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+constexpr uint32_t POW_70 = 0x1c800000;
+constexpr uint32_t NEG_POW_70 = 0x9c800000;
+constexpr uint32_t F023 = 0x3e6d3308;
+constexpr uint32_t F07 = 0x3f333333;
+constexpr uint32_t F123 = 0x3f9da620;
+constexpr uint32_t F173 = 0x3fdda618;
+constexpr uint32_t F22 = 0x400ccccd;
+constexpr uint32_t F25 = 0x40200000;
+constexpr uint32_t POW_58 = 0x5c800000;
+constexpr float F4 = 4.0;
+constexpr float F5 = 5.0;
+constexpr float F6 = 6.0;
+constexpr float F7 = 7.0;
+constexpr float F8 = 8.0;
+struct MulAddsParams {
+    float r0;
+    float r1;
+    float r2;
+    float r3;
+    float r4;
+    __aicore__ constexpr MulAddsParams(const float r0In, const float r1In, const float r2In, const float r3In,
+                                       const float r4In)
+    : r0(r0In), r1(r1In), r2(r2In), r3(r3In), r4(r4In) {}
+};
+
+__aicore__ inline constexpr MulAddsParams GetConstantsPow70To023()
+{
+    constexpr float r4 = 6.32827064025093366517e-01;
+    constexpr float r3 = 1.45492250137234768737e+00;
+    constexpr float r2 = 9.77717527963372745603e-01;
+    constexpr float r1 = 2.28963728064692451092e-01;
+    constexpr float r0 = 1.33810918536787660377e-02;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstantsPow70To023V2()
+{
+    constexpr float r4 = 2.45597793713041134822e+00;
+    constexpr float r3 = 2.12848976379893395361e+00;
+    constexpr float r2 = 7.69285150456672783825e-01;
+    constexpr float r1 = 1.04222645593369134254e-01;
+    constexpr float r0 = 3.21709242282423911810e-03;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants123To173()
+{
+    constexpr float r4 = 5.73642027e-07;
+    constexpr float r3 = -1.47723704e-06;
+    constexpr float r2 = 1.45738871e-06;
+    constexpr float r1 = -6.47978282e-07;
+    constexpr float r0 = 1.08704044e-07;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants123To173V2()
+{
+    constexpr float r4 = 4.83836122723810047042e-01;
+    constexpr float r3 = -3.27885410759859649565e-02;
+    constexpr float r2 = 6.10053870246291332635e-03;
+    constexpr float r1 = -1.40346469989232843813e-03;
+    constexpr float r0 = 3.15632070903625950361e-04;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants123To173V3()
+{
+    constexpr float r4 = -1.47587722994593911752e-01;
+    constexpr float r3 = 1.79706750811820387126e-02;
+    constexpr float r2 = -3.68452016781138256760e-03;
+    constexpr float r1 = 8.81081882437654011382e-04;
+    constexpr float r0 = -3.12754168375120860518e-04;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants123To173V4()
+{
+    constexpr float r4 = 6.46249402391333854778e-02;
+    constexpr float r3 = -1.03142241298341437450e-02;
+    constexpr float r2 = 2.25964780900612472250e-03;
+    constexpr float r1 = -5.38595305356740546715e-04;
+    constexpr float r0 = 3.35529192635519073543e-04;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants3To8()
+{
+    constexpr float r4 = 3.25778796408930981787e-01;
+    constexpr float r3 = 1.46350472652464452805e-01;
+    constexpr float r2 = 2.66422703033638609560e-02;
+    constexpr float r1 = 1.84028451407337715652e-03;
+    constexpr float r0 = 3.19475326584100867617e-05;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants3To8V2()
+{
+    constexpr float r4 = 7.21935547567138069525e-01;
+    constexpr float r3 = 1.71933865632803078993e-01;
+    constexpr float r2 = 1.86459191715652901344e-02;
+    constexpr float r1 = 7.77942496381893596434e-04;
+    constexpr float r0 = 7.32668430744625636189e-06;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline constexpr MulAddsParams GetConstants8ToPow58()
+{
+    constexpr float r4 = -2.77777777728775536470e-03;
+    constexpr float r3 = 7.93650558643019558500e-04;
+    constexpr float r2 = -5.95187557450339963135e-04;
+    constexpr float r1 = 8.36339918996282139126e-04;
+    constexpr float r0 = -1.63092934096575273989e-03;
+
+    constexpr MulAddsParams params(r0, r1, r2, r3, r4);
+    return params;
+}
+
+__aicore__ inline void LGammaCalcMulAdd(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg,
+    MicroAPI::MaskReg mask, const MulAddsParams& params)
+{
+    MicroAPI::Muls(resReg, tmpReg, params.r0, mask);
+    MicroAPI::Adds(resReg, resReg, params.r1, mask);
+    MicroAPI::Mul(resReg, resReg, tmpReg, mask);
+    MicroAPI::Adds(resReg, resReg, params.r2, mask);
+    MicroAPI::Mul(resReg, resReg, tmpReg, mask);
+    MicroAPI::Adds(resReg, resReg, params.r3, mask);
+    MicroAPI::Mul(resReg, resReg, tmpReg, mask);
+    MicroAPI::Adds(resReg, resReg, params.r4, mask);
+}
+}  // LgammaInternal
+#endif
 }  // namespace AscendC
 #endif
 #endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMOM_utils_H

@@ -81,7 +81,7 @@ public:
         }
     }
 
-    __aicore__ inline void BatchDestroy(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void BatchDestroy(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) {
             MATMUL_MODULE(CubeInBuffer)->FreeTensor(MATMUL_MODULE(BatchLoop)->template NeedCache<INPUT_TYPE::TAG>(), tensor);
@@ -342,7 +342,7 @@ public:
         }
     }
 
-    __aicore__ inline void BatchDestroy(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void BatchDestroy(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) {
             MATMUL_MODULE(CubeInBuffer)->FreeTensor(MATMUL_MODULE(BatchLoop)->template NeedCache<INPUT_TYPE::TAG>(), tensor);

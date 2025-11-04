@@ -100,7 +100,7 @@ __simd_callee__ inline void ReduceARCastfoldOneToThree(MicroAPI::RegTensor<T, Tr
 }
 
 template <class T>
-__aicore__ inline void ReduceCopyOutImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t calCount)
+__simd_vf__ inline void ReduceCopyOutImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t calCount)
 {
     uint16_t repeatElm = GetVecLen();
     uint32_t sreg = calCount * sizeof(T);

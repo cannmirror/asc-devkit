@@ -39,16 +39,16 @@ private:
     __aicore__ inline void VerifyingParameters(const LocalTensor<T> &dstLocal, const T firstValue, const T diffValue,
         const int32_t count) {
         ASCENDC_ASSERT((count > 0 || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[ArithProgression] The count parameter cannot be %d, should be greater than 0.", count); });
+            KERNEL_LOG(KERNEL_ERROR, "[Arange] The count parameter cannot be %d, should be greater than 0.", count); });
         ASCENDC_ASSERT((static_cast<float>(diffValue) >= static_cast<float>(0) || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[ArithProgression] The diffValue parameter cannot be %f, should be greater than or equal to 0.",
+            KERNEL_LOG(KERNEL_ERROR, "[Arange] The diffValue parameter cannot be %f, should be greater than or equal to 0.",
             static_cast<float>(diffValue)); });
     }
 
     template <typename T>
     __aicore__ inline void PrintParameters(const LocalTensor<T> &dstLocal, const T firstValue, const T diffValue,
         const int32_t count) {   
-        KERNEL_LOG(KERNEL_INFO, "[ArithProgression] The diffValue parameter is %f, firstValue is %f.",
+        KERNEL_LOG(KERNEL_INFO, "[Arange] The diffValue parameter is %f, firstValue is %f.",
             static_cast<float>(diffValue), static_cast<float>(firstValue));
     }
 };

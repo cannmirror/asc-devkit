@@ -43,23 +43,23 @@ private:
         const SelectWithBytesMaskShapeInfo &info) {
         ASCENDC_ASSERT((srcTensor.GetSize() == info.firstAxis * info.srcLastAxis || HighLevelAPIParametersPrint), {
             KERNEL_LOG(KERNEL_ERROR,
-            "[SelectWithBytesMask] The result of info.firstAxis * info.srcLastAxis is %u, should be equal to srcTensor size %u.",
+            "[Select] The result of info.firstAxis * info.srcLastAxis is %u, should be equal to srcTensor size %u.",
             info.firstAxis * info.srcLastAxis, srcTensor.GetSize()); });
         ASCENDC_ASSERT((mask.GetSize() == info.firstAxis * info.maskLastAxis || HighLevelAPIParametersPrint), {
             KERNEL_LOG(KERNEL_ERROR,
-            "[SelectWithBytesMask] The result of info.firstAxis * info.maskLastAxis is %u, should be equal to mask size %u.",
+            "[Select] The result of info.firstAxis * info.maskLastAxis is %u, should be equal to mask size %u.",
             info.firstAxis * info.maskLastAxis, mask.GetSize()); });
         ASCENDC_ASSERT((info.maskLastAxis >= info.srcLastAxis || HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
-            "[SelectWithBytesMask] The info.maskLastAxis %u must be greater than or equal to info.srcLastAxis %u.",
+            "[Select] The info.maskLastAxis %u must be greater than or equal to info.srcLastAxis %u.",
             info.maskLastAxis, info.srcLastAxis); });
         ASCENDC_ASSERT((info.maskLastAxis * sizeof(U) % ONE_BLK_SIZE == 0 || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[SelectWithBytesMask] The info.maskLastAxis %u must be 32-byte aligned.",
+            KERNEL_LOG(KERNEL_ERROR, "[Select] The info.maskLastAxis %u must be 32-byte aligned.",
             info.maskLastAxis); });
         ASCENDC_ASSERT((info.maskLastAxis % CHECK_SELECT_WITH_BYTES_MASK == 0 || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[SelectWithBytesMask] The info.maskLastAxis %u must be an integer multiple of 16.",
+            KERNEL_LOG(KERNEL_ERROR, "[Select] The info.maskLastAxis %u must be an integer multiple of 16.",
             info.maskLastAxis); });
         ASCENDC_ASSERT((info.srcLastAxis * sizeof(T) % ONE_BLK_SIZE == 0 || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_ERROR, "[SelectWithBytesMask] The info.srcLastAxis %u must be 32-byte aligned.",
+            KERNEL_LOG(KERNEL_ERROR, "[Select] The info.srcLastAxis %u must be 32-byte aligned.",
             info.srcLastAxis); });
     }
 
@@ -68,7 +68,7 @@ private:
         T srcScalar, const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer,
         const SelectWithBytesMaskShapeInfo &info) {
         KERNEL_LOG(KERNEL_INFO,
-            "[SelectWithBytesMask] The info.firstAxis is %u, info.srcLastAxis is %u, info.maskLastAxis is %u.",
+            "[Select] The info.firstAxis is %u, info.srcLastAxis is %u, info.maskLastAxis is %u.",
             info.firstAxis, info.srcLastAxis, info.maskLastAxis);
     }
 };

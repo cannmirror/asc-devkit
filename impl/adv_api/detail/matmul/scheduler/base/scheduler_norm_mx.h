@@ -235,6 +235,7 @@ private:
             0, 0, Ceil(MATMUL_MODULE(KLoop)->GetTileShapeB(), MX_K_FACTOR), MATMUL_MODULE(NLoop)->GetTileShape());
 
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
+            BASE_MODULE::PadZeroForABL1(a1, b1);
             MATMUL_MODULE(MatmulCrossCoreSync)->WaitL1Ready();
         }
         BASE_MODULE::SplitBias(bL0Params.axisL0Len);
@@ -271,6 +272,7 @@ private:
  
         // start K outer loop
         MATMUL_MODULE(KLoop)->OuterStart();
+        int32_t padCount = 0;
         do {
             int32_t kOuterIdx = MATMUL_MODULE(KLoop)->GetOuterIdx();
             // CopyIn
@@ -288,13 +290,18 @@ private:
                 kOuterIdx, MATMUL_MODULE(NLoop)->GetInnerIdx(),
                 Ceil(MATMUL_MODULE(KLoop)->GetTileShapeB(), MX_K_FACTOR), MATMUL_MODULE(NLoop)->GetTileShape());
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
+                if (padCount == 0) {
+                    BASE_MODULE::PadZeroForABL1(a1, b1);
+                }
                 MATMUL_MODULE(MatmulCrossCoreSync)->WaitL1Ready();
             }
             // update some params in MxSplitParams which is related to k loop
             bool sL0CInit = false;
             bool sL0CLast = false;
             BASE_MODULE::UpdateComputeParams(enPartialSum, sL0CInit, sL0CLast);
-            BASE_MODULE::SplitBias(bL0Params.axisL0Len);
+            if (MATMUL_MODULE(BiasScheduler)->IsBias()) {
+                BASE_MODULE::SplitBias(bL0Params.axisL0Len);
+            }
             bool isATranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeA();
             bool isBTranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeB();
             bool isScaleATranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeScaleA();

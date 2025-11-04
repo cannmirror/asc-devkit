@@ -83,6 +83,26 @@ public:
         return l0dbLoopNum;
     }
 
+    __aicore__ inline int32_t GetTileShapeScaleM() const
+    {
+        return BASE_MODULE::GetTileShape();
+    }
+
+    __aicore__ inline int32_t GetScaleFactorM() const
+    {
+        return 1;
+    }
+
+    __aicore__ inline int32_t GetOuterScaleMIdx() const
+    {
+        return BASE_MODULE::outerIndex_;
+    }
+
+    __aicore__ inline int32_t GetNextOuterScaleMIdx() const
+    {
+        return BASE_MODULE::outerIndex_ + 1;
+    }
+
 private:
     __aicore__ inline void CalcDBLoopNum()
     {

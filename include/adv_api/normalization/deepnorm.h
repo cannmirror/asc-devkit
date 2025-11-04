@@ -20,7 +20,10 @@
 #if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/normalization/deepnorm/deepnorm_common_impl.h"
-
+#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#include "../../../impl/adv_api/detail/normalization/deepnorm/deepnorm_c310_impl.h"
+#endif
+#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
 namespace AscendC {
 #pragma begin_pipe(V)
 

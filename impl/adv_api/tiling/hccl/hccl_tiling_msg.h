@@ -40,7 +40,8 @@ struct Mc2CcTilingInner {
     uint8_t skipBufferWindowCopy;
     uint8_t stepSize;
     uint8_t version;
-    char reserved[10];
+    char reserved[9];
+    uint8_t commEngine;
     uint8_t srcDataType;
     uint8_t dstDataType;
     char groupName[GROUP_NAME_SIZE];

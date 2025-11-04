@@ -69,7 +69,7 @@ public:
     __aicore__ inline void BatchLoad(const uint32_t matrixStride, const int32_t outerIdx,
         const int32_t splitIdx, const int32_t splitSize) {}
 
-    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>,
+    __aicore__ inline void ClearLoadData(const LocalTensor<TransT>& tensor = LocalTensor<TransT>{},
         int32_t curRow = 0, int32_t curCol = 0) {}
 
     __aicore__ inline void Destroy() {}

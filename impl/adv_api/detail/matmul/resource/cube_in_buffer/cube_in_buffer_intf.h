@@ -74,7 +74,7 @@ public:
      */
     __aicore__ inline LocalTensor<TransT> GetBuffer(int32_t iterIndex, int32_t bufferPos = -1)
     {
-        return NULL_TENSOR<TransT>;
+        return LocalTensor<TransT>{};
     }
 
     /**
@@ -84,16 +84,16 @@ public:
      */
     __aicore__ inline LocalTensor<TransT> AllocTensor(int32_t bufferPos = -1)
     {
-        return NULL_TENSOR<TransT>;
+        return LocalTensor<TransT>{};
     }
 
     /**
      * @description: Free tensor, should be called after AllocTensor
      * @param: bufferPos: current buffer position
-     * @param: tensor: tensor allocated by AllocTensor or NULL_TENSOR
+     * @param: tensor: tensor allocated by AllocTensor or null tensor
      * @return: void
      */
-    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>) {}
+    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{}) {}
 
     /**
      * @description: Reset the status of que in CubeInBuffer

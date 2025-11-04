@@ -106,7 +106,7 @@ public:
         return cacheHead_[bufferPos * baseBlockSize_];
     }
 
-    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         ASCENDC_ASSERT(bufferPos != -1,
                        { KERNEL_LOG(KERNEL_ERROR, "bufferPos in FreeTensor for normal version should not be -1."); });

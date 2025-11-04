@@ -311,12 +311,12 @@ __aicore__ inline void AtanImpl(const LocalTensor<T> &dstTensor, const LocalTens
     });
 
     if constexpr (config.algo == defaultAtanConfig.algo) {
-        static_assert((SupportType<T, half, float>(),
-            "Atan with TAYLOR_EXPANSION algorithm only support half/float data type on current device!"));
+        static_assert(SupportType<T, half, float>(),
+            "Atan with TAYLOR_EXPANSION algorithm only support half/float data type on current device!");
         Internal::AtanTaylorImpl(dstTensor, srcTensor, calCount);
     } else {
-        static_assert((SupportType<T, float>(),
-            "Atan with POLYNOMIAL_APPROXIMATION algorithm only support float data type on current device!!"));
+        static_assert(SupportType<T, float>(),
+            "Atan with POLYNOMIAL_APPROXIMATION algorithm only support float data type on current device!!");
         Internal::AtanPolynomialImpl(dstTensor, srcTensor, calCount);
     }
 }

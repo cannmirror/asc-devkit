@@ -29,7 +29,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::AllReduce(GM_ADDR sendBu
     ASCENDC_HCCL_API_ASSERT(op >= HCCL_REDUCE_SUM && op < HCCL_REDUCE_RESERVED, { return INVALID_HANDLE_ID; },
                             "Call AllReduce failed, param HcclReduceOp is %d, invalid.", static_cast<int32_t>(op));
 
-    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLREDUCE, sendBuf, recvBuf, count, dataType,
+    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLREDUCE, sendBuf, recvBuf, count, dataType, dataType,
                                        op, 0, repeat });
 }
 
@@ -39,7 +39,7 @@ __aicore__ inline HcclHandle
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::AllGather(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t sendCount,
                 HcclDataType dataType, uint64_t strideCount, uint8_t repeat)
 {
-    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLGATHER, sendBuf, recvBuf, sendCount, dataType,
+    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLGATHER, sendBuf, recvBuf, sendCount, dataType, dataType,
                                        HCCL_REDUCE_RESERVED, strideCount, repeat });
 }
 
@@ -52,7 +52,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::ReduceScatter(GM_ADDR se
     ASCENDC_HCCL_API_ASSERT(op >= HCCL_REDUCE_SUM && op < HCCL_REDUCE_RESERVED, { return INVALID_HANDLE_ID; },
                             "Call ReduceScatter failed, param HcclReduceOp is %d, invalid.", static_cast<int32_t>(op));
     return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_REDUCE_SCATTER, sendBuf, recvBuf, recvCount,
-                                       dataType, op, strideCount, repeat });
+                                       dataType, dataType, op, strideCount, repeat });
 }
 
 template<const auto &config>
@@ -61,7 +61,7 @@ __aicore__ inline HcclHandle
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::AlltoAll(GM_ADDR sendBuf, GM_ADDR recvBuf, uint64_t dataCount,
                                     HcclDataType dataType, uint64_t strideCount, uint8_t repeat)
 {
-    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLTOALL, sendBuf, recvBuf, dataCount, dataType,
+    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLTOALL, sendBuf, recvBuf, dataCount, dataType, dataType,
                                        HCCL_REDUCE_RESERVED, strideCount, repeat });
 }
 
@@ -75,7 +75,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::AlltoAllV(GM_ADDR sendBu
     ASCENDC_HCCL_API_ASSERT(sendType == recvType, { return INVALID_HANDLE_ID; },
                             "Call AlltoAllV failed, param sendType[%d] is not equal to recvType[%d], invalid.",
                             static_cast<int32_t>(sendType), static_cast<int32_t>(recvType));
-    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLTOALLV, sendBuf, recvBuf, 0U, sendType,
+    return CommonPrepareImpl<commit>({ HcclCMDType::HCCL_CMD_ALLTOALLV, sendBuf, recvBuf, 0U, sendType, recvType,
                                        HCCL_REDUCE_RESERVED, 0U, repeat,
                                        {static_cast<uint64_t *>(sendCounts), static_cast<uint64_t *>(sdispls),
                                         static_cast<uint64_t *>(recvCounts), static_cast<uint64_t *>(rdispls)} });
@@ -91,6 +91,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::AlltoAllvWrite(GM_ADDR u
         usrIn,
         usrIn,
         localDataSize,
+        HCCL_DATA_TYPE_INT8,
         HCCL_DATA_TYPE_INT8,
         HCCL_REDUCE_RESERVED,
         0,
@@ -152,8 +153,8 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
     if (msgAddr & 0x1ff) {
         msgAddr = (msgAddr & (~((uint64_t)0x1ff))) + 0x200;
     }
-    ccuMsgExt_ = reinterpret_cast<__gm__ CCUMsgExt*>(msgAddr);
-
+    KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner msgAddr:0x%llx, workSpaceSize:0x%llx", msgAddr, hcclContext_->workSpaceSize);
+    ccuParam_.ccuMsgExt = reinterpret_cast<__gm__ CCUMsgExt*>(msgAddr);
     ccuConfig_.xnAddr = hcclContext_->xnOffset;
     ccuConfig_.ckeAddr = hcclContext_->ckeOffset;
 #ifndef __CCE_KT_TEST__
@@ -164,6 +165,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
     finishCntGM_ = reinterpret_cast<__gm__ uint32_t*>(hcclContext_->workSpace + CCU_MSG_EXT_MAX_OFFSET +
             (CCU_MSG_XN_NUM * CCU_MAX_MSG_NUM * CCU_XN_DATA_SIZE));
     commitCnt_ = 0;
+    finishCnt_ = 0;
     if (ccuConfig_.xnAddr == nullptr || ccuConfig_.ckeAddr == nullptr || ccuMsg_.xnData == nullptr) {
         KERNEL_LOG(KERNEL_ERROR, "Init Hccl failed,"
                    "ccuConfig_.xnAddr or ccuConfig_.ckeAddr or ccuMsg_.xnData is nullptr");
@@ -174,6 +176,9 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
     curVersion_ = version;
     curHandleId_ = 0;
     isInited_ = true;
+    KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner rankId:%d, rankNum:%d, xnAddr:0x%llx, ckeAddr:0x%llx, ccuMsgExt:0x%llx",
+                    hcclContext_->rankId, hcclContext_->rankNum, ccuConfig_.xnAddr, ccuConfig_.ckeAddr,
+                    reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt));
 }
 
 template<const auto &config>
@@ -189,9 +194,10 @@ template <const auto &config>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitV2(GM_ADDR context, const void *initTiling)
 {
-    HcclTilingVersion version =
-        (initTiling != nullptr ? HcclTilingVersion::NEW_TILING_VERSION : HcclTilingVersion::DEPRECATED_TILING_VERSION);
+    HcclTilingVersion version = (initTiling != nullptr ? HcclTilingVersion::ONLINE_COMPILATION_TILING_VERSION
+                                                       : HcclTilingVersion::DEPRECATED_TILING_VERSION);
     InitInner(context, version);
+    tilingBaseAddr_ = reinterpret_cast<uint64_t>(initTiling);
 }
 
 template<const auto &config>
@@ -224,121 +230,6 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
 }
 
 template<const auto &config>
-__aicore__ inline uint64_t
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::GetOpId(const CommonPrepareParam &commonPrepareParam)
-{
-    if (commonPrepareParam.commType.msgType == ControlMsgType::HCCL_CMD_FINALIZE) {
-        return 0xffffffffffffffff;
-    }
-
-    uint64_t algoType = 0U;
-    uint64_t commType = static_cast<uint64_t>(commonPrepareParam.commType.prepareType);
-    uint64_t outDataType = static_cast<uint64_t>(commonPrepareParam.dataType);
-    uint64_t dataType = static_cast<uint64_t>(commonPrepareParam.dataType);
-    bool isReduceType = (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_REDUCE) ||
-                        (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_REDUCE_SCATTER) ||
-                        (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_ALLREDUCE);
-    uint64_t reduceType = isReduceType ? static_cast<uint64_t>(commonPrepareParam.op) : 0U;
-    uint64_t ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(commonPrepareParam.commType.prepareType)];
-    if (needResetDataType_) {
-        outDataType = static_cast<uint64_t>(ccuDataType_.dstDataType);
-        dataType = static_cast<uint64_t>(ccuDataType_.srcDataType);
-        reduceType = isReduceType ? static_cast<uint64_t>(ccuDataType_.op) : reduceType;
-    } else if (ccTiling != 0) {
-        __gm__ Mc2CcTilingInner *tilingPtr = reinterpret_cast<__gm__ Mc2CcTilingInner *>(ccTiling);
-        outDataType = tilingPtr->dstDataType;
-        dataType = tilingPtr->srcDataType;
-        reduceType = isReduceType ? tilingPtr->reduceType : reduceType;
-    }
-    return (((algoType & 0x7f) << 32) | ((outDataType & 0x7f) << 24 ) | ((reduceType & 0x7f) << 16) |
-            ((dataType & 0x7f) << 8) | (commType & 0x7f));
-}
-
-template<const auto &config>
-__aicore__ inline uint64_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::GetParallelParam(uint64_t repeatNum,
-    uint64_t repeatLoopIndex, uint64_t totalLoopNum)
-{
-    return ((repeatNum & 0x7f) << 55) | ((repeatLoopIndex & 0x7f) << 48) | ((totalLoopNum & 0x7f) << 41);
-}
-
-template<const auto &config>
-__aicore__ inline void
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CCUPrepare(const CommonPrepareParam &commonPrepareParam,
-    uint8_t reqId, uint64_t sendBuf, uint64_t recvBuf)
-{
-    auto& commOp = commReqBuf_[reqId];
-    commOp.xnData[0] = GetOpId(commonPrepareParam);
-    commOp.xnData[1] = sendBuf;
-    commOp.xnData[2] = recvBuf;
-    if (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_ALLTOALLV) {
-        commOp.xnData[3] = 0;
-        commOp.xnData[4] = 0;
-        // Group by rank, sendSize, sendOffset, recvSize, recvOffset in bytes * DataSzie(DataType)
-        commOp.xnData[5] = reinterpret_cast<uint64_t>(ccuMsgExt_) + CCU_MSG_EXT_RANK_OFFSET * alltoallvCnt_++;
-        return;
-    }
-
-    uint64_t sliceCount = 0;
-    uint64_t tmpCount = commonPrepareParam.count / hcclContext_->rankNum;
-    uint64_t loopCount = CCU_LOOP_COUNT;
-
-    if (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_ALLGATHER ||
-        commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_REDUCE_SCATTER) {
-        sliceCount = commonPrepareParam.count;
-    } else if (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_ALLREDUCE) {
-        sliceCount = (hcclContext_->rankId == hcclContext_->rankNum - 1) ?
-                         (commonPrepareParam.count - (hcclContext_->rankNum - 1) * tmpCount) : tmpCount;
-    }
-
-    uint64_t sliceSize = sliceCount * DATA_TYPE_MAP[commonPrepareParam.dataType];
-
-    if (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_HALF_ALLTOALLV) {
-        commOp.xnData[1] = reinterpret_cast<uint64_t>(commonPrepareParam.sendBuf);
-        commOp.xnData[2] = commonPrepareParam.wParamExt.sendSizes;
-        commOp.xnData[8] = commonPrepareParam.wParamExt.remoteWinOffset;
-        sliceSize = commonPrepareParam.count;
-        loopCount = CCU_LOOP_COUNT_ATAVW;
-    }
-
-    uint64_t loopSize = loopCount * CCU_MEMSLICE_SIZE;
-    uint64_t m = sliceSize / loopSize;
-    uint64_t n = (sliceSize - m * loopSize) / CCU_MEMSLICE_SIZE;
-    uint64_t p = sliceSize - m * loopSize - n * CCU_MEMSLICE_SIZE;
-
-    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commonPrepareParam.dataType)];
-
-    if (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_ALLREDUCE) {
-        commOp.xnData[3] = (commonPrepareParam.strideCount == 0) ? tmpCount * dataSize * hcclContext_->rankId : 
-            (commonPrepareParam.strideCount * dataSize * hcclContext_->rankId);
-    } else if (commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_HALF_ALLTOALLV) {
-        commOp.xnData[3] = commonPrepareParam.wParamExt.sendOffsets;
-    } else {
-        commOp.xnData[3] = (commonPrepareParam.strideCount == 0) ? sliceSize * hcclContext_->rankId : 
-            (commonPrepareParam.strideCount * dataSize * hcclContext_->rankId);
-    }
-    commOp.xnData[4] = loopSize * m;
-    commOp.xnData[5] = m;
-
-    if (n == 0 && p == 0) {
-        // If the data volume is an integer multiple of loopSize, skip LoopGroup1.
-        commOp.xnData[6] = 0;
-        commOp.xnData[7] = 0;
-    } else if (n != 0 && p == 0) {
-        // The data volume is 256K * m + CCU_MEMSLICE_SIZE * n
-        commOp.xnData[6] = GetParallelParam(n - 1, 0, 1);
-        commOp.xnData[7] = CCU_MEMSLICE_SIZE;
-    } else if (n == 0 && p != 0) {
-        // The data volume is loopSize * m + p
-        commOp.xnData[6] = GetParallelParam(0, 0, 1);
-        commOp.xnData[7] = p;
-    } else {
-        // The data volume is loopSize * m + CCU_MEMSLICE_SIZE * n + p
-        commOp.xnData[6] = GetParallelParam(n - 1, 1, 2);
-        commOp.xnData[7] = p;
-    }
-}
-
-template<const auto &config>
 template<bool commit>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CCUPrepareInner(const CommonPrepareParam &commonPrepareParam,
@@ -346,18 +237,21 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CCUPrepareInner(const Co
 {
     uint64_t sendBuf = (uint64_t)commonPrepareParam.sendBuf;
     uint64_t recvBuf = (uint64_t)commonPrepareParam.recvBuf;
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CCUPrepareInner handleId = %d, sendBuf:0x%llx, recvBuf:0x%llx, repeatCnt:%d",
+               handleId, sendBuf, recvBuf, handleInfo_[handleId].repeatCnt);
     uint8_t reqId = handleInfo_[handleId].reqId + handleInfo_[handleId].commitCnt;
+    if (workingFlag_) {
+        InitCcuParam(commonPrepareParam);
+    }
     for (uint32_t i = 0U; i < handleInfo_[handleId].repeatCnt; ++i) {
-        KERNEL_LOG(KERNEL_INFO, "do ccu prepare repeatIdx = %d, repeatCnt = %d, handleId = %d, reqId = %d.",
-                   i, handleInfo_[handleId].repeatCnt, handleId, reqId);
-        // recv send buf + offset
-        uint64_t offset = commonPrepareParam.count * i * DATA_TYPE_MAP[commonPrepareParam.dataType];
-        if (workingFlag_ && commonPrepareParam.commType.prepareType == HcclCMDType::HCCL_CMD_ALLTOALLV) {
-            KERNEL_LOG(KERNEL_INFO, "Only block idx[%ld] assemble msg ext when prepare alltoallv.", GetBlockIdx());
-            AssembleHcclMsgExtForCCU(commonPrepareParam, i);
-        }
+        KERNEL_LOG(KERNEL_INFO, "ApiClient do ccu prepare repeatIdx = %d, reqId = %d.", i, reqId);
         InitCommReq(reqId);
-        CCUPrepare(commonPrepareParam, reqId, sendBuf + offset, recvBuf + offset); 
+
+        if (workingFlag_) {
+            ccuParam_.repeatIndex = i;
+            CCUPrepare(ccuParam_, &commReqBuf_[reqId].xnData[0]);
+        }
+
         if (commit) {
             KERNEL_LOG(KERNEL_INFO, "commit flag is true. repeatIdx = %d, repeatCnt = %d, handleId = %d.",
                        i, handleInfo_[handleId].repeatCnt, handleId);
@@ -369,34 +263,30 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CCUPrepareInner(const Co
 
 template<const auto &config>
 __aicore__ inline void
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::
-AssembleHcclMsgExtForCCU(const CommonPrepareParam &commonPrepareParam, uint32_t repeatIndex)
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitCcuParam(const CommonPrepareParam &commonPrepareParam)
 {
-    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commonPrepareParam.dataType)];
-
-    __gm__ CCUMsgExt *ccuMsgExt = reinterpret_cast<__gm__ CCUMsgExt*>(reinterpret_cast<uint64_t>(ccuMsgExt_) +
-        CCU_MSG_EXT_RANK_OFFSET * alltoallvCnt_);
-
-    const uint32_t kRankNum = hcclContext_->rankNum;
-    for (uint32_t i = 0U; i < kRankNum; ++i) {
-        ccuMsgExt[i].sendSize = commonPrepareParam.paramExt.sendCounts[i] * dataSize;
-        ccuMsgExt[i].recvSize = commonPrepareParam.paramExt.recvCounts[i] * dataSize;
-        
-        ccuMsgExt[i].sendOffset = commonPrepareParam.paramExt.sdispls[i] * dataSize +
-            ccuMsgExt[i].sendSize * repeatIndex;
-        ccuMsgExt[i].recvOffset = commonPrepareParam.paramExt.rdispls[i] * dataSize +
-            ccuMsgExt[i].recvSize * repeatIndex;
+    ccuParam_.commParam = commonPrepareParam;
+    if (needResetDataType_) {
+        ccuParam_.commParam.dataType = ccuDataType_.srcDataType;
+        ccuParam_.commParam.dstDataType = ccuDataType_.dstDataType;
+        ccuParam_.commParam.op = ccuDataType_.op;
+    } else  {
+        uint64_t ccTiling = 0;
+        if (curVersion_ == HcclTilingVersion::NEW_TILING_VERSION) {
+            ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(commonPrepareParam.commType.prepareType)];
+        } else if (curVersion_ == HcclTilingVersion::ONLINE_COMPILATION_TILING_VERSION) {
+            ccTiling = ccOpTilingDataTable_[static_cast<uint32_t>(commonPrepareParam.commType.prepareType)] +
+                       tilingBaseAddr_;
+        }
+        if (ccTiling != 0) {
+            __gm__ Mc2CcTilingInner *tilingPtr = reinterpret_cast<__gm__ Mc2CcTilingInner *>(ccTiling);
+            ccuParam_.commParam.dataType = static_cast<HcclDataType>(tilingPtr->srcDataType);
+            ccuParam_.commParam.dstDataType = static_cast<HcclDataType>(tilingPtr->dstDataType);
+            ccuParam_.commParam.op = static_cast<HcclReduceOp>(tilingPtr->reduceType);
+        }
     }
- 
-    uint32_t tmpCnt = (sizeof(CCUMsgExt) * kRankNum) / MAX_DCCI_CNT;
-    uint32_t copyCnt = (sizeof(CCUMsgExt) * kRankNum) % MAX_DCCI_CNT ? tmpCnt + 1 : tmpCnt;
-    GlobalTensor<int64_t> globalHcclMsgArea;
- 
-    uint64_t tmpSize = 0;
-    for (uint32_t i = 0U; i < copyCnt ; ++i) {
-        FlushDataCache(globalHcclMsgArea, (ccuMsgExt + tmpSize));
-        tmpSize += MAX_DCCI_CNT;
-    }
+    ccuParam_.rankNum = hcclContext_->rankNum;
+    ccuParam_.rankId = hcclContext_->rankId;
 }
 
 template<const auto &config>
@@ -437,6 +327,9 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CommonPrepareImpl(const 
     handleInfo_[handleId].repeatCnt = commonPrepareParam.repeat;
     handleInfo_[handleId].reqId = (handleId == 0) ? 0 :
         handleInfo_[handleId - 1].reqId + handleInfo_[handleId - 1].repeatCnt;
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CommonPrepareImpl handleId:%d, reqId:%d, repeat:%d",
+               handleId, handleInfo_[handleId].reqId, commonPrepareParam.repeat);
+
     CCUPrepareInner<commit>(commonPrepareParam, handleId);
 
     curHandleId_++;
@@ -447,6 +340,8 @@ template<const auto &config>
 __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuSendMsg(uint8_t reqId)
 {
     int8_t resourceId = reqId % CCU_MAX_MSG_NUM;
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuSendMsg reqId:%d, resourceId:%d", reqId, resourceId);
+
     if (resourceId >= 8 || resourceId < 0) {
         KERNEL_LOG(KERNEL_ERROR, "CcuSendMsg resourceId %d is invalid.", resourceId);
         return;
@@ -454,12 +349,20 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::C
     ccuMsg_.xnAddr = ccuConfig_.xnAddr + static_cast<uint64_t>(resourceId) * CCU_MSG_XN_NUM * CCU_MAX_MSG_NUM;
     ccuMsg_.commitCKEAddr = GetCommitCkeAddr(resourceId);
     ccuMsg_.waitCKEAddr = GetWaitCkeAddr(resourceId);
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuSendMsg xnAddr:0x%llx, commitCKEAddr:0x%llx, value:%d, waitCKEAddr:0x%llx, value:%d",
+        ccuMsg_.xnAddr, ccuMsg_.commitCKEAddr, *(ccuMsg_.commitCKEAddr), ccuMsg_.waitCKEAddr, *(ccuMsg_.waitCKEAddr));
+
     auto ptr = ccuMsg_.xnData;
     for (int i = 0; i < CCU_USED_XN_NUM; i++) {
         *reinterpret_cast<__gm__ uint64_t*>(ptr) = commReqBuf_[reqId].xnData[i];
         ptr += 8; // 8 is sizeof(uint64)
     }
     DataCopy2XnAddr(ccuMsg_.xnAddr, ccuMsg_.xnData, (CCU_XN_DATA_SIZE * CCU_USED_XN_NUM));
+
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuSendMsg ccuMsg_.xnAddr, Id0: 0x%llx, Id1: 0x%llx, Id2: 0x%llx, Id3: 0x%llx, Id4: 0x%llx, Id5: 0x%llx, Id6: 0x%llx, Id7: 0x%llx, Id8: 0x%llx",
+        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 8), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 16),
+        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 24), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 32), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 40),
+        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 48), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 56), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 64));
 
     WriteGmByPassDCache(ccuMsg_.commitCKEAddr, CCU_MSG_CKE_SET_VALUE);
 }
@@ -487,6 +390,7 @@ template<const auto &config>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CommitMsg(HcclHandle handleId, uint8_t reqId)
 {
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CommitMsg handleId:%d, reqId:%d ", handleId, reqId);
     handleInfo_[handleId].commitCnt++;
     commitCnt_++;
     committedReqFifo_.push(reqId);
@@ -512,6 +416,7 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::C
 
     auto reqId = handleInfo_[handleId].reqId + handleInfo_[handleId].commitCnt;
 
+    KERNEL_LOG(KERNEL_INFO, "ApiClient Commit handleId:%d, reqId:%d", handleId, reqId);
     CommitMsg(handleId, reqId);
 }
 
@@ -556,13 +461,15 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
 #endif
     uint8_t reqId = handleInfo_[handleId].reqId + handleInfo_[handleId].waitCnt;
     GM_ADDR waitCKEAddr = GetWaitCkeAddr(reqId % CCU_MAX_MSG_NUM);
+    KERNEL_LOG(KERNEL_INFO, "ApiClient Wait handleId:%d, reqId:%d, waitCKEAddr:0x%llx", handleId, reqId, waitCKEAddr);
     handleInfo_[handleId].waitCnt++;
     do {
         if (!workingFlag_) {
-            uint64_t fCnt = handleId == 0 ? handleInfo_[handleId].waitCnt : handleInfo_[handleId - 1].finishCnt + handleInfo_[handleId].waitCnt;
             FlushDataCache(finishCntGM_);
-            if (*finishCntGM_ >= fCnt) {
-                return true;
+            if (*finishCntGM_ > finishCnt_) {
+                KERNEL_LOG(KERNEL_INFO, "Wait break block:%d, finishCntGM_:%d, finishCnt_:%d",
+                           GetBlockIdx(), *finishCntGM_, finishCnt_);
+                break;
             }
         }
         int32_t waitCKEAddrValue = ReadGmByPassDCache(waitCKEAddr);
@@ -575,6 +482,7 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
                 WriteGmByPassDCache(waitCKEAddr, CCU_MSG_CKE_INIT_VALUE);
                 uint8_t popReqId = 0;
                 ccuMsgFifo_.pop(popReqId);
+                KERNEL_LOG(KERNEL_INFO, "ApiClient Wait success finishCntGM_:%d, popReqId:%d", *finishCntGM_, popReqId);
             }
             break;
         }
@@ -585,11 +493,15 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>
             uint8_t pushReqId = 0;
             (void)committedReqFifo_.pop(pushReqId);
             commReqBuf_[pushReqId].resourceId = pushReqId % CCU_MAX_MSG_NUM;
+            KERNEL_LOG(KERNEL_INFO, "ApiClient Wait push req:%d, resourceId:%d", pushReqId, commReqBuf_[pushReqId].resourceId);
             (void)ccuMsgFifo_.push(pushReqId);
             CcuSendMsg(pushReqId);
         }
     }
     handleInfo_[handleId].finishCnt++;
+    finishCnt_++;
+
+    KERNEL_LOG(KERNEL_INFO, "ApiClient Wait finish finishCntGM_:%d, finishCnt_:%d", *finishCntGM_, finishCnt_);
     return HCCL_SUCCESS;
 }
 
@@ -610,14 +522,20 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::F
         }
         int8_t reqId = handleInfo_[handleId].reqId + handleInfo_[handleId].repeatCnt;
         uint8_t resourceId = reqId % CCU_MAX_MSG_NUM;
+        KERNEL_LOG(KERNEL_INFO, "ApiClient Finalize handleId:%d, reqId:%d, resourceId:%d", handleId, reqId, resourceId);
+
         ccuMsg_.commitCKEAddr = GetCommitCkeAddr(resourceId);
         ccuMsg_.xnAddr = hcclContext_->xnOffset + CCU_MSG_XN_NUM * CCU_MAX_MSG_NUM * resourceId;
         *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr) = 0xffffffffffffffff;
         FlushDataCache(ccuMsg_.xnAddr);
 
         WriteGmByPassDCache(ccuMsg_.commitCKEAddr, CCU_MSG_CKE_SET_VALUE);
+
+        KERNEL_LOG(KERNEL_INFO, "ApiClient Finalize commitCKEAddr:0x%llx, xnAddr:0x%llx", ccuMsg_.commitCKEAddr, ccuMsg_.xnAddr);
+
         *finishCntGM_ = 0;
         FlushDataCache(finishCntGM_);
+        KERNEL_LOG(KERNEL_INFO, "ApiClient Finalize success handleId:%d, reqId:%d, resourceId:%d", handleId, reqId, resourceId);
     }
 }
 

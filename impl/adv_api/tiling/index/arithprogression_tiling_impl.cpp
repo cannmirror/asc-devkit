@@ -12,11 +12,16 @@
 #include "include/adv_api/index/arithprogression_tiling.h"
 
 namespace AscendC {
-// ArithProgression does not require temporary space. Therefore, the obtained maximum and minimum temporary space sizes
+// Arange does not require temporary space. Therefore, the obtained maximum and minimum temporary space sizes
 // are both 0.
-void GetArithProgressionMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue)
+void GetArangeMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue)
 {
     maxValue = 0;
     minValue = 0;
+}
+
+void GetArithProgressionMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue)
+{
+    GetArangeMaxMinTmpSize(maxValue, minValue);
 }
 } // namespace AscendC

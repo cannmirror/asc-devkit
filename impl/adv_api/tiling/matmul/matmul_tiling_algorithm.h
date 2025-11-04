@@ -395,7 +395,7 @@ private:
         int32_t* parasCombo, const MatmulRunParas& param) const;
     MKNParasCombo GetParasCombo(const int32_t& index, const MatmulRunParas& param) const;
     void GetL0cDB(const L0Factors (&resFactors)[L0PARAS_COMBO_LEN], const CoreStatusPack& coreStatus, L0StatusPack& l0Status) const;
-    int32_t GetMxCurL1Size(SingleCoreStatus& singleCoreStatus) const;
+    int32_t GetMxCurL1Size(const SingleCoreStatus& singleCoreStatus) const;
     void GetL0Factors(const std::string& opType, const MatmulRunParas& param, const CoreStatusPack& coreStatus,
         SingleCoreStatus& singleCoreStatus) const;
     void AdjustSparseL0Factors(SingleCoreStatus& singleCoreStatus) const;
@@ -520,10 +520,10 @@ private:
 
     // L1BankConflictOptimise
     int32_t GetC0Size(DataType dataType) const;
-    int32_t GetABaseHeightAlign() const;
-    int32_t GetABaseWidthAlign() const;
-    int32_t GetBBaseHeightAlign() const;
-    int32_t GetBBaseWidthAlign() const;
+    int32_t GetABaseHeightAlign(int32_t baseHeight) const;
+    int32_t GetABaseWidthAlign(int32_t baseWidth) const;
+    int32_t GetBBaseHeightAlign(int32_t baseHeight) const;
+    int32_t GetBBaseWidthAlign(int32_t baseWidth) const;
     int32_t GetScaleABaseHeightAlign() const;
     int32_t GetScaleABaseWidthAlign() const;
     int32_t GetScaleBBaseHeightAlign() const;

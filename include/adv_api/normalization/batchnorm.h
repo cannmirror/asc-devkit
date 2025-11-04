@@ -20,8 +20,12 @@
 #include "kernel_operator_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
-#include "../../../impl/adv_api/detail/normalization/batchnorm/batchnorm_common_impl.h"
 #if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#include "../../../impl/adv_api/detail/normalization/batchnorm/batchnorm_common_impl.h"
+#elif defined(__DAV_C310__) || defined(__DAV__310R6)
+#include "../../../impl/adv_api/detail/normalization/batchnorm/batchnorm_c310_impl.h"
+#endif
+#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV__310R6)
 namespace AscendC {
 #pragma begin_pipe(V)
 /* **************************************************************************************************
@@ -50,7 +54,7 @@ __aicore__ inline void BatchNorm(const LocalTensor<T>& output, const LocalTensor
     if ASCEND_IS_AIC {
         return;
     }
-    BatchNormImpl<T, isReuseSource, isBasicBlock>(output, outputMean, outputVariance, inputX, gamm, beta,
+    BatchNormAPI::BatchNormImpl<T, isReuseSource, isBasicBlock>(output, outputMean, outputVariance, inputX, gamm, beta,
         sharedTmpBuffer, epsilon, tiling);
 }
 
@@ -62,8 +66,8 @@ __aicore__ inline void BatchNorm(const LocalTensor<T>& output, const LocalTensor
     if ASCEND_IS_AIC {
         return;
     }
-    BatchNormImpl<T, isReuseSource, isBasicBlock>(output, outputMean, outputVariance, inputX, gamm, beta, epsilon,
-        tiling);
+    BatchNormAPI::BatchNormImpl<T, isReuseSource, isBasicBlock>(output, outputMean, outputVariance, inputX, gamm, beta,
+        epsilon, tiling);
 }
 #pragma end_pipe
 } // namespace AscendC

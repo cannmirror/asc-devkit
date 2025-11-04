@@ -56,6 +56,7 @@ void PrintMc2CcTiling(const Mc2CcTilingInner &tiling)
     TILING_LOG_DEBUG("Mc2CcTiling msg reduceType:%u", tiling.reduceType);
     TILING_LOG_DEBUG("Mc2CcTiling msg dstDataType:%u", tiling.dstDataType);
     TILING_LOG_DEBUG("Mc2CcTiling msg srcDataType:%u", tiling.srcDataType);
+    TILING_LOG_DEBUG("Mc2CcTiling msg commEngine:%u", tiling.commEngine);
     TILING_LOG_DEBUG("Mc2CcTiling msg end.");
 }
 
@@ -76,8 +77,8 @@ uint32_t SetDevType(Mc2InitTilingInner *tilingInner)
     (void)dlclose(handle);
 
     std::string devType = std::string(socVersion);
-    tilingInner->devType = (devType.find("Ascend910_93") != std::string::npos)
-                         ? static_cast<uint8_t>(platform_ascendc::SocVersion::ASCEND910_93)
+    tilingInner->devType = (devType.find("Ascend910B") != std::string::npos)
+                         ? static_cast<uint8_t>(platform_ascendc::SocVersion::ASCEND910B)
                          : UINT8_MAX;
     return EXIT_SUCCESS;
 }
@@ -97,7 +98,7 @@ uint32_t UpdateMc2InitTiling(uint64_t initTilingAddr, uint64_t ccTilingAddr)
 }
 
 Mc2CcTilingConfig::Mc2CcTilingConfig(const std::string &groupName, uint32_t opType, const std::string &algConfig,
-                                     uint32_t reduceType, uint8_t dstDataType, uint8_t srcDataType)
+                                     uint32_t reduceType, uint8_t dstDataType, uint8_t srcDataType, uint8_t commEngine)
 {
     impl_.groupName_ = groupName;
     impl_.opType_ = opType;
@@ -105,8 +106,10 @@ Mc2CcTilingConfig::Mc2CcTilingConfig(const std::string &groupName, uint32_t opTy
     impl_.reduceType_ = reduceType;
     impl_.srcDataType_ = srcDataType;
     impl_.dstDataType_ = dstDataType;
-    TILING_LOG_INFO("Init groupName_:%s, opType_:%u, algConfig_:%s, reduceType_:%u.",
-                    impl_.groupName_.c_str(), impl_.opType_, impl_.algConfig_.c_str(), impl_.reduceType_);
+    impl_.commEngine_ = commEngine;
+    TILING_LOG_INFO("Init groupName_:%s, opType_:%u, algConfig_:%s, reduceType_:%u, srcDataType_:%u, dstDataType_:%u, commEngine_:%u.",
+                    impl_.groupName_.c_str(), impl_.opType_, impl_.algConfig_.c_str(), impl_.reduceType_,
+                    impl_.srcDataType_, impl_.dstDataType_, impl_.commEngine_);
 }
 
 Mc2CcTilingConfig::~Mc2CcTilingConfig() = default;
@@ -147,9 +150,9 @@ uint32_t Mc2CcTilingConfig::GetTiling(::Mc2CcTiling &tiling)
                         "groupName(%s) must be less than or equal %u.", impl_.groupName_.c_str(), GROUP_NAME_SIZE);
     ASCENDC_HOST_ASSERT(impl_.algConfig_.length() <= ALG_CONFIG_SIZE, return EXIT_FAILURE,
                         "algConfig(%s) must be less than or equal %u.", impl_.algConfig_.c_str(), ALG_CONFIG_SIZE);
-    bool isValid = (0 < impl_.opType_) && (impl_.opType_ < static_cast<uint8_t>(HcclCMDType::HCCL_CMD_MAX));
+    bool isValid = (0 < impl_.opType_) && (impl_.opType_ < static_cast<uint8_t>(HcclCMDType::HCCL_CMD_ALL));
     ASCENDC_HOST_ASSERT(isValid, return EXIT_FAILURE, "opType(%u) must be less than %u, and not 0.", impl_.opType_,
-                        static_cast<uint8_t>(HcclCMDType::HCCL_CMD_MAX));
+                        static_cast<uint8_t>(HcclCMDType::HCCL_CMD_ALL));
     ASCENDC_HOST_ASSERT(impl_.reduceType_ < HCCL_REDUCE_RESERVED, return EXIT_FAILURE,
                         "reduceType(%u) must be less than %u.", impl_.reduceType_,
                         static_cast<uint8_t>(HCCL_REDUCE_RESERVED));
@@ -174,6 +177,7 @@ uint32_t Mc2CcTilingConfig::GetTiling(::Mc2CcTiling &tiling)
     tilingInner->reduceType = impl_.reduceType_;
     tilingInner->srcDataType = impl_.srcDataType_;
     tilingInner->dstDataType = impl_.dstDataType_;
+    tilingInner->commEngine = impl_.commEngine_;
     PrintMc2CcTiling(*tilingInner);
 
     uint64_t ccTilingAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&tiling));
@@ -182,9 +186,9 @@ uint32_t Mc2CcTilingConfig::GetTiling(::Mc2CcTiling &tiling)
 
 uint32_t Mc2CcTilingConfig::SetOpType(uint32_t opType)
 {
-    bool isValid = (0 < opType) && (opType < static_cast<uint8_t>(HcclCMDType::HCCL_CMD_MAX));
+    bool isValid = (0 < opType) && (opType < static_cast<uint8_t>(HcclCMDType::HCCL_CMD_ALL));
     ASCENDC_HOST_ASSERT(isValid, return EXIT_FAILURE, "opType(%u) must be less than %u, and not 0.",
-                        opType, static_cast<uint8_t>(HcclCMDType::HCCL_CMD_MAX));
+                        opType, static_cast<uint8_t>(HcclCMDType::HCCL_CMD_ALL));
     impl_.opType_ = opType;
     return EXIT_SUCCESS;
 }
@@ -252,6 +256,12 @@ uint32_t Mc2CcTilingConfig::SetQueueNum(uint16_t num)
 uint32_t Mc2CcTilingConfig::SetCommBlockNum(uint16_t num)
 {
     impl_.commBlockNum_ = num;
+    return EXIT_SUCCESS;
+}
+
+uint32_t Mc2CcTilingConfig::SetCommEngine(uint8_t commEngine)
+{
+    impl_.commEngine_ = commEngine;
     return EXIT_SUCCESS;
 }
 } // namespace AscendC

@@ -119,6 +119,13 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
         WaitFlag<HardEvent::S_V>(eventIdSToV);
     }
 }
+
+template <typename T>
+__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void ArithProgression(const LocalTensor<T> &dstLocal,
+    const T firstValue, const T diffValue, const int32_t count)
+{
+    ArithProgressionImpl(dstLocal, firstValue, diffValue, count);
+}
 } // namespace AscendC
 
 #endif // IMPL_INDEX_ARITHPROGRESSION_ARITHPROGRESSION_COMMON_IMPL_H

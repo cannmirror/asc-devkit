@@ -102,7 +102,7 @@ public:
         }
     }
 
-    __aicore__ inline void Destroy(LocalTensor<BiasT>& bias = NULL_TENSOR<BiasT>)
+    __aicore__ inline void Destroy(LocalTensor<BiasT>& bias = LocalTensor<BiasT>{})
     {
         if (BASE_MODULE::enableBias_) {
             MATMUL_MODULE(C1Buffer)->FreeTensor(bias);

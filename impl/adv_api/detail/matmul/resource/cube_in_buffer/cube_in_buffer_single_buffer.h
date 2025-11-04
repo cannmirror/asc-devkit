@@ -59,7 +59,7 @@ public:
         return cacheHead_[0];
     }
 
-    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = NULL_TENSOR<TransT>)
+    __aicore__ inline void FreeTensor(int32_t bufferPos = -1, const LocalTensor<TransT>& tensor = LocalTensor<TransT>{})
     {
         if (cacheProc_ > 0) {
             cacheProc_ = 0;
@@ -81,7 +81,7 @@ public:
 
     __aicore__ inline LocalTensor<TransT> GetBuffer(int32_t iterIndex, int32_t bufferPos = -1)
     {
-        return NULL_TENSOR<TransT>;
+        return LocalTensor<TransT>{};
     }
 
     __aicore__ inline void EnQue(LocalTensor<TransT>& tensor)

@@ -212,7 +212,7 @@ __aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     CheckCalCount(calCount, "calCount", srcTensor, "srcTensor", "Tan");
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "Tan");
 
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, stride);
 

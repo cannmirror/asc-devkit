@@ -55,7 +55,7 @@ const int32_t CUBE_MAX_SIZE = 256;
 
 #endif // __NPU_DEVICE__
 /*!
- * \brief calculate max and min tmp buffer size for ConfusionTranspose interface.
+ * \brief calculate max and min tmp buffer size for Transpose interface.
    tmp buffer size is a input for GetConfusionTransposeTilingInfo
  *
  * \param [in] srcShape input shape
@@ -67,21 +67,30 @@ const int32_t CUBE_MAX_SIZE = 256;
 void GetConfusionTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
     const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue);
 
+void GetTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue);
+
 /*!
- * \brief calculate tiling params for ConfusionTranspose interface
+ * \brief calculate tiling params for Transpose interface
  *
- * \note stackBufferSize should be greater than min tmpSize from GetConfusionTransposeMaxMinTmpSize
+ * \note stackBufferSize should be greater than min tmpSize from GetTransposeMaxMinTmpSize
  *
  * \param [in] srcShape input shape
  * \param [in] stackBufferSize input stack buffer size in uint of Byte, used as tmp buffer size for tiling
  * \param [in] typeSize data type size: sizeof(TYPE)
  * \param [in] transposeTypeIn transpose type.
- * \param [out] tiling ConfusionTranspose tiling
+ * \param [out] tiling Transpose tiling
  */
 void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling);
 
+void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling);
+
 void GetConfusionTransposeOnlyTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling);
+
+void GetTransposeOnlyTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling);
 }
 #endif // LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H

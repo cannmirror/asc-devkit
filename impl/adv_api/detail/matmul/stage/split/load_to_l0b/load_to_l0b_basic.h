@@ -43,7 +43,7 @@ public:
 
     __aicore__ inline void Load(const LocalTensor<TransT> &l0B, const LocalTensor<TransT> &l1B,
      uint16_t bL1N, uint16_t bL1K, uint16_t madN, uint16_t madK, uint16_t bL1NOffset, uint16_t bL1KOffset,
-     bool isBTranspose, const LocalTensor<AuxDtype> &l1BAuxMatrix = NULL_TENSOR<AuxDtype>, uint16_t bAuxL1K = 0,
+     bool isBTranspose, const LocalTensor<AuxDtype> &l1BAuxMatrix = LocalTensor<AuxDtype>{}, uint16_t bAuxL1K = 0,
      uint16_t bAuxL1KOffset = 0) const
     {
         constexpr uint16_t typeSize = sizeof(TransT);

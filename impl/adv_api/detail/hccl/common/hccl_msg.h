@@ -65,8 +65,11 @@ enum class ControlMsgType: uint32_t {
     HCCL_CMD_FINALIZE = 100,
     HCCL_CMD_INTER_GROUP_SYNC,
     HCCL_CMD_INIT,
-    HCCL_CMD_BARRIER
+    HCCL_CMD_BARRIER,
+    HCCL_CMD_MAX
 };
+constexpr uint32_t HCCL_MSG_TYPE_CNT = static_cast<uint32_t>(ControlMsgType::HCCL_CMD_MAX) -
+        static_cast<uint32_t>(ControlMsgType::HCCL_CMD_FINALIZE);
 
 union HcclCommType {
     AscendC::HcclCMDType prepareType;
@@ -153,12 +156,21 @@ struct ControlHcclMsg {
     uint8_t reserved[60];
 };
 
+constexpr uint32_t HCCL_API_SNAPSHOTS_CNT = 15U;
+struct ApiStates {
+    TurnCnt commitStats[static_cast<uint32_t>(AscendC::HcclCMDType::HCCL_CMD_ALL)];
+    TurnCnt waitStats[static_cast<uint32_t>(AscendC::HcclCMDType::HCCL_CMD_ALL)];
+    TurnCnt msgStats[HCCL_MSG_TYPE_CNT];
+    TurnCnt snapshots[HCCL_API_SNAPSHOTS_CNT + 1U];
+};
+
 struct HcclMsgArea {
     union {
         SingleQueueMsg singleMsg;
         MultiQueueMsg multiMsg;
     } commMsg;
     ControlHcclMsg controlMsg;
+    ApiStates apiStats;
 };
 }
 

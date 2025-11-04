@@ -58,7 +58,7 @@ public:
         return qidBias_.template AllocTensor<BiasT>();
     }
 
-    __aicore__ inline void FreeTensor(const LocalTensor<BiasT>& tensor = NULL_TENSOR<BiasT>)
+    __aicore__ inline void FreeTensor(const LocalTensor<BiasT>& tensor = LocalTensor<BiasT>{})
     {
         qidBias_.FreeTensor(const_cast<LocalTensor<BiasT>&>(tensor));
     }

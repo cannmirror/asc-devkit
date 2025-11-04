@@ -27,6 +27,7 @@
 #endif
 
 namespace AscendC {
+namespace BatchNormAPI {
 constexpr uint32_t FLOAT_BLOCK_NUMBER = 8;
 constexpr uint32_t BASIC_BLOCK_LEN = 64;
 
@@ -406,5 +407,6 @@ __aicore__ inline void GetBatchNormOutputPre(const LocalTensor<float>& src, cons
         GetBatchNormOutputPreNorm(src, params.tempTensorA, params.tempTensorB, dst, epsilon, tiling, params);
     }
 }
+} // namespace BatchNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H

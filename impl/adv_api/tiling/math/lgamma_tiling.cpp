@@ -14,6 +14,7 @@
  * \brief
  */
 #include "include/adv_api/math/lgamma_tiling.h"
+#include "tiling/platform/platform_ascendc.h"
 #include "../../detail/host_log.h"
 
 namespace AscendC {
@@ -23,6 +24,7 @@ constexpr uint32_t HALF_CALC_FAC = 13U;
 constexpr uint32_t FLOAT_NOREUSE_CALC_PROC = 8U;
 constexpr uint32_t FLOAT_REUSE_CALC_PROC = 7U;
 constexpr uint32_t NUM_TWO = 2U;
+constexpr uint32_t LGAMMA_FLOAT_SIZE = 4;
 
 inline uint32_t GetMaxTmpSize(const uint32_t inputSize, const uint32_t typeSize, const bool isReuseSource)
 {
@@ -57,9 +59,18 @@ void GetLgammaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, 
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");
-
-    maxValue = GetMaxTmpSize(inputSize, typeSize, isReuseSource);
-    minValue = GetMinTmpSize(typeSize, isReuseSource);
-    maxValue = std::max(maxValue, minValue);
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
+    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
+        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+        socVersion == platform_ascendc::SocVersion::MC62CM12A) {
+        minValue = inputSize * LGAMMA_FLOAT_SIZE;
+        maxValue = minValue;
+    } else {
+        maxValue = GetMaxTmpSize(inputSize, typeSize, isReuseSource);
+        minValue = GetMinTmpSize(typeSize, isReuseSource);
+        maxValue = std::max(maxValue, minValue);
+    }
 }
 }  // namespace AscendC

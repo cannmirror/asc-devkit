@@ -24,6 +24,7 @@ constexpr uint32_t ONE_BLK_SIZE = 32;
 constexpr uint32_t ONE_REPEAT_BYTE_SIZE = 256;
 constexpr uint32_t HALF_TYPE_SIZE = 2;
 constexpr uint32_t FLOAT_TYPE_SIZE = 4;
+constexpr uint32_t INT32_TYPE_SIZE = 4;
 constexpr uint32_t ALLOWED_SHAPE_DIM = 2;
 constexpr uint32_t B32_ELEM_NUM_PER_REPEAT = 64;
 
@@ -33,6 +34,8 @@ uint32_t GetTypeSize(const ge::DataType dataType)
         return FLOAT_TYPE_SIZE;
     } else if (dataType == ge::DT_FLOAT16) {
         return HALF_TYPE_SIZE;
+    } else if (dataType == ge::DT_INT32) {
+        return INT32_TYPE_SIZE;
     }
     return 1;
 }
@@ -209,9 +212,23 @@ void GetReduceMaxMaxMinTmpSize(const ge::Shape &srcShape,
                                 ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
                                 uint32_t &maxValue, uint32_t &minValue) 
 {
-    ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16,
-        return,
-        "[ReduceMax][GetReduceMaxMaxMinTmpSize] it only supports float and half type on this platform.");
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
+    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+        ASCENDC_HOST_ASSERT(dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
+                            dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
+                            dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
+                            dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
+            return,
+            "[ReduceMax][GetReduceMaxMaxMinTmpSize] it only supports \
+                int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t \
+                type on this platform.");
+    } else {
+        ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16,
+            return,
+            "[ReduceMax][GetReduceMaxMaxMinTmpSize] it only supports float and half type on this platform.");
+    }
     GetReduceCommonMaxMinTmpSize(srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false,
         "ReduceMax", "GetReduceMaxMaxMinTmpSize");
 }
@@ -221,9 +238,23 @@ void GetReduceMinMaxMinTmpSize(const ge::Shape &srcShape,
                                 ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
                                 uint32_t &maxValue, uint32_t &minValue) 
 {
-    ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16,
-        return,
-        "[ReduceMin][GetReduceMinMaxMinTmpSize] it only supports float and half type on this platform.");
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
+    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+        ASCENDC_HOST_ASSERT(dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
+                            dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
+                            dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
+                            dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
+            return,
+            "[ReduceMin][GetReduceMinMaxMinTmpSize] it only supports \
+                int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/int64_t/uint64_t \
+                type on this platform.");
+    } else {
+        ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_FLOAT16,
+            return,
+            "[ReduceMin][GetReduceMinMaxMinTmpSize] it only supports float and half type on this platform.");
+    }
     GetReduceCommonMaxMinTmpSize(srcShape, dataType, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue, false,
         "ReduceMin", "GetReduceMinMaxMinTmpSize");
 }
@@ -266,8 +297,18 @@ void GetReduceSumMaxMinTmpSize(const ge::Shape &srcShape,
                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
                                uint32_t &maxValue, uint32_t &minValue)
 {
-    ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
-        "[ReduceSum][GetReduceSumMaxMinTmpSize] it only supports float type on this platform.");
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
+    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+        ASCENDC_HOST_ASSERT(dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
+                            dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
+            return,
+            "[ReduceSum][GetReduceSumMaxMinTmpSize] it only supports int32_t/uint32_t/float/int64_t/uint64_t type on this platform.");
+    } else {
+        ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
+            "[ReduceSum][GetReduceSumMaxMinTmpSize] it only supports float type on this platform.");
+    }
     GetReduceSumMeanCommonTmpSize(srcShape, pattern, isSrcInnerPad, isReuseSource, maxValue, minValue,
         "ReduceSum", "GetReduceSumMaxMinTmpSize");
 }
