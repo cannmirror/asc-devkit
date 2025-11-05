@@ -41,6 +41,12 @@ done
 
 current_dir=$(dirname "$(realpath "\$0")")
 echo "current_dir directory is :$current_dir"
+
+# replace params
+sed -i 's/[[:space:]]*KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIC_ONLY)/KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_MIX_AIC_1_2)/g' ../../include/matmul/device/device_matmul.h
+sed -i 's/IS_TRANS_B[[:space:]]*=[[:space:]]*False/IS_TRANS_B = True/g' ../scripts/exec_test.py
+sed -i 's/DATA_TYPE_STR[[:space:]]*=[[:space:]]*"[^"]*"/DATA_TYPE_STR = "quant_int8_bf16"/g' ../scripts/exec_test.py
+
 cd ../../
 act_dir=$(dirname "$(realpath "\$0")")
 echo "act_dir directory is :$act_dir"
@@ -65,3 +71,9 @@ if [ "${IS_PERF}" = "1" ]; then
 else
     python3 -u ../../scripts/exec_test.py npu "normal"
 fi
+
+# restore params
+cd $current_dir
+sed -i 's/[[:space:]]*KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_MIX_AIC_1_2)/KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIC_ONLY)/g' ../../include/matmul/device/device_matmul.h
+sed -i 's/IS_TRANS_B[[:space:]]*=[[:space:]]*True/IS_TRANS_B = False/g' ../scripts/exec_test.py
+sed -i 's/DATA_TYPE_STR[[:space:]]*=[[:space:]]*"[^"]*"/DATA_TYPE_STR = "float16"/g' ../scripts/exec_test.py

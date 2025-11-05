@@ -64,9 +64,9 @@ __aicore__ inline void InitGlobalTensorA(AGlobalTensor_& aGlobal, GM_ADDR aGmAdd
 {
     Layout_ aLayout;
     if (!transA) {
-        aLayout = AscendC::MakeLayout(AscendC::MakeShape(m, k), AscendC::MakeStride(k, int64_t(1)));
+        aLayout = AscendC::MakeLayout(AscendC::MakeShape(m, k), AscendC::MakeStride(k, static_cast<int64_t>(1)));
     } else {
-        aLayout = AscendC::MakeLayout(AscendC::MakeShape(k, m), AscendC::MakeStride(m, int64_t(1)));
+        aLayout = AscendC::MakeLayout(AscendC::MakeShape(k, m), AscendC::MakeStride(m, static_cast<int64_t>(1)));
     }
     aGlobal.SetTensorTrait(ATensorTrait_(aLayout));
 #if defined(__DAV_C310__)
@@ -83,9 +83,9 @@ __aicore__ inline void InitGlobalTensorB(BGlobalTensor_& bGlobal, GM_ADDR bGmAdd
 {
     Layout_ bLayout;
     if (!transB) {
-        bLayout = AscendC::MakeLayout(AscendC::MakeShape(k, n), AscendC::MakeStride(n, int64_t(1)));
+        bLayout = AscendC::MakeLayout(AscendC::MakeShape(k, n), AscendC::MakeStride(n, static_cast<int64_t>(1)));
     } else {
-        bLayout = AscendC::MakeLayout(AscendC::MakeShape(n, k), AscendC::MakeStride(k, int64_t(1)));
+        bLayout = AscendC::MakeLayout(AscendC::MakeShape(n, k), AscendC::MakeStride(k, static_cast<int64_t>(1)));
     }
     bGlobal.SetTensorTrait(BTensorTrait_(bLayout));
 #if defined(__DAV_C310__)
@@ -100,7 +100,7 @@ __aicore__ inline void InitGlobalTensorB(BGlobalTensor_& bGlobal, GM_ADDR bGmAdd
 template <class Layout_, class CGlobalTensor_, class CTensorTrait_, class CType_>
 __aicore__ inline void InitGlobalTensorC(CGlobalTensor_& cGlobal, GM_ADDR cGmAddr, int64_t m, int64_t n)
 {
-    Layout_ cLayout = AscendC::MakeLayout(AscendC::MakeShape(m, n), AscendC::MakeStride(n, int64_t(1)));
+    Layout_ cLayout = AscendC::MakeLayout(AscendC::MakeShape(m, n), AscendC::MakeStride(n, static_cast<int64_t>(1)));
     cGlobal.SetTensorTrait(CTensorTrait_(cLayout));
 #if defined(__DAV_C310__)
     AscendC::GlobalTensor<CType_> cTmp;
@@ -116,8 +116,8 @@ __aicore__ inline AscendC::GlobalTensor<CTensorTrait_> GetWorkSpaceGlobal(BlockS
 {
     int64_t blockShapeM = Get<0>(blockShape);
     int64_t blockShapeN = Get<1>(blockShape);
-    Layout_ cLayout =
-        AscendC::MakeLayout(AscendC::MakeShape(blockShapeM, blockShapeN), AscendC::MakeStride(blockShapeN, int64_t(1)));
+    Layout_ cLayout = AscendC::MakeLayout(AscendC::MakeShape(blockShapeM, blockShapeN), 
+                        AscendC::MakeStride(blockShapeN, static_cast<int64_t>(1)));
     CTensorTrait_ cTensorTrait = AscendC::MakeTensorTrait<CType_, AscendC::TPosition::GM>(cLayout);
     AscendC::GlobalTensor<CTensorTrait_> workspaceGlobal;
     workspaceGlobal.SetTensorTrait(cTensorTrait);

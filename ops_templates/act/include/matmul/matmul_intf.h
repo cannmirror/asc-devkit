@@ -41,6 +41,7 @@
 #include "block/block_mmad_pingpong_without_que.h"
 #include "block/block_mmad_iterbatch.h"
 #include "block/block_mmad_streamk.h"
+#include "block/block_batch_matmul_to_mul.h"
 #endif
 
 #endif

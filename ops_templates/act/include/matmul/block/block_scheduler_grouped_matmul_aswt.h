@@ -132,13 +132,13 @@ public:
         if (cureBlock / blockNum_ != (perCoreBlockNum_ - 1) || tailCnt_ == 1) {
             return {blockShapeM, blockShapeN, mSplitAddrOffset, nSplitAddrOffset};
         }
-        int64_t singleCoreMSplit = Act::Gemm::CeilDiv(baseM_, mTailCnt_);
-        int64_t singleCoreNSplit = Act::Gemm::CeilDiv(baseN_, nTailCnt_);
+        int64_t singleCoreMSplit = Act::Gemm::CeilDiv(blockShapeM, static_cast<int64_t>(mTailCnt_));
+        int64_t singleCoreNSplit = Act::Gemm::CeilDiv(blockShapeN, static_cast<int64_t>(nTailCnt_));
         if (weightNzFlag) {
             singleCoreNSplit = Act::Gemm::CeilDiv(singleCoreNSplit, c0);
         }
-        mTailCnt_ = Act::Gemm::CeilDiv(baseM_, singleCoreMSplit);
-        nTailCnt_ = Act::Gemm::CeilDiv(baseN_, singleCoreNSplit);
+        mTailCnt_ = Act::Gemm::CeilDiv(blockShapeM, singleCoreMSplit);
+        nTailCnt_ = Act::Gemm::CeilDiv(blockShapeN, singleCoreNSplit);
         int64_t mSplitIdx = (blockIdx_ % tailCnt_) % mTailCnt_;
         int64_t nSplitIdx = (blockIdx_ % tailCnt_) / mTailCnt_;
         mSplitAddrOffset = mSplitIdx * singleCoreMSplit;
@@ -146,8 +146,8 @@ public:
         if (mSplitAddrOffset >= baseM_ || nSplitAddrOffset >= baseN_) {
             return {0, 0, 0, 0};
         }
-        tailL1M = AscendC::Std::min(baseM_ - mSplitAddrOffset, singleCoreMSplit);
-        tailL1N = AscendC::Std::min(baseN_ - nSplitAddrOffset, singleCoreNSplit);
+        tailL1M = AscendC::Std::min(blockShapeM - mSplitAddrOffset, singleCoreMSplit);
+        tailL1N = AscendC::Std::min(blockShapeN - nSplitAddrOffset, singleCoreNSplit);
         return {tailL1M, tailL1N, mSplitAddrOffset, nSplitAddrOffset};
     }
 

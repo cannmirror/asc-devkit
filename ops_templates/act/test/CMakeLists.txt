@@ -18,5 +18,8 @@ set(ASCENDC_TEST_ascend910B1_ACT_HEADER_FILES
 
 set(ASCENDC_TEST_ascend910B1_ACT_CASE_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/block/test_block_mmad_multi_block_with_layout.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block/test_block_mmad_multi_block_bias.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block/test_block_mmad_multi_matmul_naive_pipeline_with_layout.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/block/test_block_sparse.cpp
     PARENT_SCOPE
 )

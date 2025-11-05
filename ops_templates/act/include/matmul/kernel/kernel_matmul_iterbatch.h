@@ -93,6 +93,12 @@ public:
     uint64_t k_{0};
     uint64_t b_{0};
 
+    static constexpr int ITERBATCH_L1_IDX = 0;
+    static constexpr int ITERBATCH_L0_IDX = 1;
+    static constexpr int ITERBATCH_BASEM_IDX = 0;
+    static constexpr int ITERBATCH_BASEN_IDX = 1;
+    static constexpr int ITERBATCH_BASEK_IDX = 2;
+
     struct Arguments {
         ProblemShape problemShape;
         BlockMmadArguments mmadArgs;
@@ -202,8 +208,12 @@ public:
         BlockSchedulerOp bs(params.problemShape, curBlockIdx, blockNum, params.schParams);
         int64_t tileNum = bs.GetTileNum();
         TupleShape iterBatchTuple = bs.GetIterBatchTuple();
-        uint64_t mainIterBatchL1 = Get<0>(iterBatchTuple);
-        uint64_t mainIterBatchL0 = Get<1>(iterBatchTuple);
+        TupleShape tileL0Tuple = bs.GetTileL0Tuple();
+        uint64_t mainIterBatchL1 = Get<ITERBATCH_L1_IDX>(iterBatchTuple);
+        uint64_t mainIterBatchL0 = Get<ITERBATCH_L0_IDX>(iterBatchTuple);
+        uint64_t baseM = Get<ITERBATCH_BASEM_IDX>(tileL0Tuple);
+        uint64_t baseN = Get<ITERBATCH_BASEN_IDX>(tileL0Tuple);
+        uint64_t baseK = Get<ITERBATCH_BASEK_IDX>(tileL0Tuple);
         int64_t realBlockNum = bs.GetBlockNum(params.problemShape, blockNum);
         if (curBlockIdx >= realBlockNum) {
             return;
@@ -231,7 +241,8 @@ public:
                 isFinalRound = true;
             }
             blockMmadOp(cGlobal_[offsetC], aGlobal_[offsetA], bGlobal_[offsetB], blockNum, curIterBatchL1,
-                        nextIterBatchL1, mainIterBatchL1, mainIterBatchL0, isPreLoadRound, isFinalRound);
+                        nextIterBatchL1, mainIterBatchL1, mainIterBatchL0, baseM, baseN, baseK, isPreLoadRound,
+                        isFinalRound);
             isPreLoadRound = false;
         }
         if (bs.GetHf32Flag()) {

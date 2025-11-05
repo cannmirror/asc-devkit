@@ -79,3 +79,10 @@ if [ "${IS_PERF}" = "1" ]; then
 else
     python3 -u ../../scripts/exec_test.py npu "normal"
 fi
+
+# restore params
+cd $current_dir
+sed -i 's/IS_TRANS_A[[:space:]]*=[[:space:]]*True/IS_TRANS_A = False/g' ../scripts/exec_test.py
+sed -i 's/IS_TRANS_B[[:space:]]*=[[:space:]]*True/IS_TRANS_B = False/g' ../scripts/exec_test.py
+sed -i 's/IS_SPARSE[[:space:]]*=[[:space:]]*True/IS_SPARSE = False/g' ../scripts/exec_test.py
+sed -i 's/DATA_TYPE_STR[[:space:]]*=[[:space:]]*"[^"]*"/DATA_TYPE_STR = "float16"/g' ../scripts/exec_test.py
