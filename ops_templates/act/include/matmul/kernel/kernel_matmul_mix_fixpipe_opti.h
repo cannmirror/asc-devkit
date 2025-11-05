@@ -172,59 +172,76 @@ public:
         }
         epilogueOp.Init(params.epilogueParams, problemShape_);
         if ASCEND_IS_AIC {
-            blockMmadOp.Init(problemShape_, tileL1, tileL0, isBias_, bs.GetL1BuferNum_(), bs.GetL0cDB());
+            blockMmadOp.template Init<BlockScheduler::FULL_LOAD_MODE>(
+                problemShape_, tileL1, tileL0, isBias_, bs.GetL1BuferNum_(), bs.GetL0cDB());
             blockMmadOp.SetDualParam(enable2UB);
-            // Process tiles in ping-pong mode
             if constexpr (BlockScheduler::FULL_LOAD_MODE == B_FULL_LOAD_MODE) {
                 blockMmadOp.CopyInB1(bGlobal_, Get<MNK_N>(problemShape_), Get<MNK_K>(problemShape_));
                 blockMmadOp.CopyInC1(biasGlobal_, Get<MNK_N>(problemShape_));
+            } else if constexpr (BlockScheduler::FULL_LOAD_MODE == A_FULL_LOAD_MODE) {
+                blockMmadOp.CopyInA1(aGlobal_, Get<MNK_M>(problemShape_), Get<MNK_K>(problemShape_));
             }
         }
-        uint64_t curNL1 = Get<MNK_N>(tileL1);
+
         uint64_t cvIndex = 0;
         uint64_t cvPingPongBit = enableUbDB ? 1 : 0;
+        uint64_t curML1 = Get<MNK_M>(tileL1);
+        uint64_t curNL1 = Get<MNK_N>(tileL1);
+        int64_t n = Get<MNK_N>(problemShape_);
+        // Process tiles in ping-pong mode
         for (int64_t tileIdx = curBlockIdx; tileIdx < tileNum; tileIdx += blockNum) {
-            for (uint64_t nOffset = 0; nOffset < curNL1; nOffset += Get<1>(tileL0)) {  // bl1全载场景的n循环
-                TupleL1L0Shape blockShape = bs.GetBlockShape(tileIdx, 0, nOffset);
-                auto blockCoord = bs.GetBlockCoord(tileIdx);
-                auto blockOffset = GetOffsetWithoutLayout(
-                    blockCoord, problemShape_, aGlobal_, bGlobal_, cGlobal_, transA, transB, isBias_);
-                // calculate block-level offset
-                if (Get<0>(blockShape) <= 0 || Get<1>(blockShape) <= 0) {
-                    if (isHf32) {
-                        AscendC::SetHF32Mode(0);
+            // mIter
+            for (uint64_t mOffset = 0; mOffset < curML1; mOffset += Get<0>(tileL0)) {
+                // nIter
+                for (uint64_t nOffset = 0; nOffset < curNL1; nOffset += Get<1>(tileL0)) {
+                    TupleL1L0Shape blockShape = bs.GetBlockShape(tileIdx, mOffset, nOffset);
+                    auto blockCoord = bs.GetBlockCoord(tileIdx);
+                    auto blockOffset = GetOffsetWithoutLayout(
+                        blockCoord, problemShape_, aGlobal_, bGlobal_, cGlobal_, transA, transB, isBias_);
+                    // calculate block-level offset
+                    if (Get<0>(blockShape) <= 0 || Get<1>(blockShape) <= 0) {
+                        if (isHf32) {
+                            AscendC::SetHF32Mode(0);
+                        }
+                        return;
                     }
-                    return;
-                }
-                int64_t offsetA = Get<0>(blockOffset);
-                int64_t offsetB = Get<1>(blockOffset);
-                int64_t offsetC = Get<2>(blockOffset);
-                int64_t offsetBias = Get<3>(blockOffset);
-                offsetC = offsetC + nOffset;
-                uint16_t pingPongIdx = cvIndex & cvPingPongBit;
-                auto cLocal = epilogueOp.GetTensor(pingPongIdx);
-                if ASCEND_IS_AIC {
-                    CrossCoreWaitFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(AIV_SYNC_AIC_FLAG + (pingPongIdx));
-                    if (enable2UB) {
-                        CrossCoreWaitFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(
-                            AIV_SYNC_AIC_FLAG + (pingPongIdx) + FLAG_ID_MAX);
+                    int64_t offsetA = Get<0>(blockOffset);
+                    int64_t offsetB = Get<1>(blockOffset);
+                    int64_t offsetC = Get<2>(blockOffset);
+                    int64_t offsetBias = Get<3>(blockOffset);
+                    // real offset C
+                    offsetC += mOffset * n + nOffset;
+                    uint16_t pingPongIdx = cvIndex & cvPingPongBit;
+                    auto cLocal = epilogueOp.GetTensor(pingPongIdx);
+                    if ASCEND_IS_AIC {
+                        CrossCoreWaitFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(AIV_SYNC_AIC_FLAG + (pingPongIdx));
+                        if (enable2UB) {
+                            CrossCoreWaitFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(
+                                AIV_SYNC_AIC_FLAG + (pingPongIdx) + FLAG_ID_MAX);
+                        }
+                        blockMmadOp(cLocal,
+                            aGlobal_[offsetA],
+                            bGlobal_[offsetB],
+                            biasGlobal_[offsetBias],
+                            blockShape,
+                            mOffset,
+                            nOffset);
+                        CrossCoreSetFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(AIC_SYNC_AIV_FLAG + (pingPongIdx));
+                        if (enable2UB) {
+                            CrossCoreSetFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(
+                                AIC_SYNC_AIV_FLAG + (pingPongIdx) + FLAG_ID_MAX);
+                        }
                     }
-                    blockMmadOp(
-                        cLocal, aGlobal_[offsetA], bGlobal_[offsetB], biasGlobal_[offsetBias], blockShape, nOffset);
-                    CrossCoreSetFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(AIC_SYNC_AIV_FLAG + (pingPongIdx));
-                    if (enable2UB) {
-                        CrossCoreSetFlag<AIC_SYNC_AIV_MODE_4, PIPE_FIX>(AIC_SYNC_AIV_FLAG + (pingPongIdx) + FLAG_ID_MAX);
+                    if ASCEND_IS_AIV {
+                        // Synchronize with aic
+                        CrossCoreWaitFlag<AIC_SYNC_AIV_MODE_4, PIPE_MTE3>(AIC_SYNC_AIV_FLAG + (pingPongIdx));
+                        // Calulate epilogue
+                        epilogueOp(blockShape, offsetC, enable2UB);
+                        // Notify aic
+                        CrossCoreSetFlag<AIC_SYNC_AIV_MODE_4, PIPE_MTE3>(AIV_SYNC_AIC_FLAG + (pingPongIdx));
                     }
+                    cvIndex++;
                 }
-                if ASCEND_IS_AIV {
-                    // Synchronize with aic
-                    CrossCoreWaitFlag<AIC_SYNC_AIV_MODE_4, PIPE_MTE3>(AIC_SYNC_AIV_FLAG + (pingPongIdx));
-                    // Calulate epilogue
-                    epilogueOp(blockShape, offsetC, enable2UB);
-                    // Notify aic
-                    CrossCoreSetFlag<AIC_SYNC_AIV_MODE_4, PIPE_MTE3>(AIV_SYNC_AIC_FLAG + (pingPongIdx));
-                }
-                cvIndex++;
             }
         }
         if (isHf32) {

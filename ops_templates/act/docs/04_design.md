@@ -184,26 +184,26 @@ class BlockMmad {};
       </tr>
       <tr>
           <td rowspan="4"><code>L1TileShape</code></td>
-          <td><code>L1M % 16 == 0</code> 且 <code>L1M &lt;= 128</code></td>
+          <td><code>L1M % 16 = 0</code> 且 <code>L1M &lt;= 128</code></td>
       </tr>
       <tr>
-          <td><code>L1N % 16 == 0</code> 且 <code>L1N &lt;= 256</code> </td>
+          <td><code>L1N % 16 = 0</code> 且 <code>L1N &lt;= 256</code> </td>
       </tr>
       <tr>
-          <td><code>L1K % 16 == 0</code></td>
+          <td><code>L1K % 16 = 0</code></td>
       </tr>
       <tr>
           <td><code>(L1M * L1K * sizeof(AType) + L1K * L1N * sizeof(BType)) * 2 &lt;= L1Size</code></td>
       </tr>
       <tr>
           <td rowspan="6"><code>L0TileShape</code></td>
-          <td><code>L0M == L1M</code></td>
+          <td><code>L0M = L1M</code></td>
       </tr>
       <tr>
-          <td><code>L0N == L1N</code></td>
+          <td><code>L0N = L1N</code></td>
       </tr>
       <tr>
-          <td><code>L0K % 16 == 0</code> 且 <code>L1K % L0K == 0</code></td>
+          <td><code>L0K % 16 = 0</code> 且 <code>L1K % L0K = 0</code></td>
       </tr>
       <tr>
           <td><code>L0M * L0K * sizeof(AType) &lt;= L0ASize</code></td>
@@ -273,61 +273,7 @@ struct MatmulMultiBlockWithLayout {
 - SingleShape：单核内shape大小，单位为元素，默认为0，表示后续动态设置；更多介绍详见[《Ascend C算子开发接口》](https://www.hiascend.com/document/redirect/CannCommunityAscendCApi)的“高阶API > Matmul > Matmul Tiling > Matmul Tiling类 > TCubeTiling结构体”章节中的singleCoreM, singleCoreN, singleCoreK。
 - enableInputDataLenCheck：默认为false，表明不使能循环执行数据搬入，详见[《Ascend C算子开发接口》](https://www.hiascend.com/document/redirect/CannCommunityAscendCApi)的“高阶API > Matmul > Matmul > GetMDLConfig”章节中的intrinsicsLimit参数。
 
-采用DispatchPolicy设计避免了代码重复，主循环可以被多个不同的Kernel使用；同时提供了一个清晰、单一的扩展点，方便用户定制拓展。目前支持的DispatchPolicy及其对应的调度策略、使用限制如下表所列。
-
-<table>
-    <tr>
-        <th><code>DispatchPolicy</code></th>
-        <th>调度策略</th>
-        <th>使用限制</th>
-    </tr>
-    <tr>
-        <td><code>MatmulNaivePipelineWithLayout</code></td>
-        <td>简单流水，未做优化</td>
-        <td>
-            <b>输入/输出类型：</b>bf16输入，bf16/fp32输出；fp16输入，fp16/fp32输出；fp32输入，fp32输出。<br>
-            <b>输入/输出Format：</b>ND/ND_ALIGN输入，ND/ND_ALIGN输出。<br>
-            <b>不支持bias。</b>
-        </td>
-    </tr>
-    <tr>
-        <td><code>MatmulMultiBlockWithLayout</code></td>
-        <td>使能MDL特性</td>
-        <td>
-            <b>输入/输出类型：</b>bf16输入，bf16/fp32输出；fp16输入，fp16/fp32输出；fp32输入，fp32输出；int8输入，int32输出。<br>
-            <b>输入/输出Format：</b>A矩阵ND/ND_ALIGN，B矩阵ND/ND_ALIGN/NZ，ND/ND_ALIGN输出。<br>
-            <b>不支持bias。</b>
-        </td>
-    </tr>
-    <tr>
-        <td><code>MatmulMultiBlockBiasWithLayout</code></td>
-        <td>使能MDL特性</td>
-        <td>
-            <b>输入/输出类型：</b>bf16输入，bf16/fp32输出；fp16输入，fp16/fp32输出；fp32输入，fp32输出；int8输入，int32输出。<br>
-            <b>输入/输出Format：</b>A矩阵ND/ND_ALIGN，B矩阵ND/ND_ALIGN/NZ，ND/ND_ALIGN输出。<br>
-        </td>
-    </tr>
-    <tr>
-        <td><code>MatmulMultiBlockOnKAxisWithLayout</code></td>
-        <td>使能MDL特性，在k轴实现缓存</td>
-        <td>
-            <b>输入/输出类型：</b>bf16输入，bf16输出；fp16输入，fp16输出。<br>
-            <b>输入/输出Format：</b>ND/ND_ALIGN输入，ND/ND_ALIGN输出。<br>
-            <b>不支持bias。</b>
-        </td>
-    </tr>
-    <tr>
-        <td><code>SparseMatmulMultiBlockOnKAxisWithLayout</code></td>
-        <td>使能MDL特性，在k轴实现缓存<br>4:2稀疏矩阵专用</td>
-        <td>
-            <b>输入/输出类型：</b>int8输入，int32输出；稀疏索引矩阵uint8。<br>
-            <b>输入/输出Format：</b>A/B矩阵ND/ND_ALIGN，稀疏索引矩阵NZ，C矩阵ND/ND_ALIGN。<br>
-            <b>输入Shape：</b><code>N % 16 == 0</code>，<code>K % 64 == 0</code>。<br>
-            <b>B矩阵只支持转置输入。</b><br>
-            <b>不支持bias。</b>
-        </td>
-    </tr>
-</table>
+采用DispatchPolicy设计避免了代码重复，主循环可以被多个不同的Kernel使用；同时提供了一个清晰、单一的扩展点，方便用户定制拓展。目前支持的DispatchPolicy及其对应的功能、使用限制见[Block Dispatch Policies说明](./05_dispatch_policies.md)。
 
 ### BlockEpilogue
 
@@ -372,15 +318,12 @@ struct TileCopy<ArchTag, CopyPolicy> {
 ```
 
 - [ArchTag](../include/utils/arch.h)：硬件平台tag；
-- [CopyPolicy](../include/matmul/tile/tile_copy_policy.h)：拷贝策略，支持通过不同拷贝策略进行特化`Copy`，并在`TileCopy`中替换不同访存层级的拷贝操作，以实现自定义拓展，当前支持的拷贝策略如下：
-  - CopyWithLayout：基础拷贝策略；
-  - CopyEnUnitFlagWithLayout：带`unitFlag`参数的`CopyCo1ToOut`，详见[《Ascend C算子开发接口》](https://www.hiascend.com/document/redirect/CannCommunityAscendCApi)的“基础API > 矩阵计算(ISASI) > Fixpipe”章节中的`unitFlag`参数。
-  - CopySparseWithLayout：SparseMatmul专用，支持从L1 buffer搬运B矩阵到L0buffer的同时搬运稀疏索引矩阵；
-- CopyGmToA1：将A矩阵从GlobalMemory搬运到L1buffer，支持使用特化的`Copy`结构体替换；
-- CopyGmToB1：将B矩阵从GlobalMemory搬运到L1buffer，支持使用特化的`Copy`结构体替换；
-- CopyCo1ToOut：将Mmad计算结果从L0c buffer搬运到指定输出访存，支持使用特化的`Copy`结构体替换；
-- CopyA1ToA2：将A矩阵从L1 buffer搬运到L0 buffer，支持使用特化的`Copy`结构体替换；
-- CopyB1ToB2：将B矩阵从L1 buffer搬运到L0 buffer，支持使用特化的`Copy`结构体替换。
+- [CopyPolicy](../include/matmul/tile/tile_copy_policy.h)：拷贝策略，支持通过不同拷贝策略进行特化`Copy`，并在`TileCopy`中替换不同访存层级的拷贝操作，以实现自定义拓展，当前支持的拷贝策略见[Copy Policies说明](./06_copy_policies.md)。
+- CopyGmToA1：将A矩阵从GlobalMemory搬运到L1 Buffer，支持使用特化的`Copy`结构体替换；
+- CopyGmToB1：将B矩阵从GlobalMemory搬运到L1 Buffer，支持使用特化的`Copy`结构体替换；
+- CopyCo1ToOut：将Mmad计算结果从L0C Buffer搬运到指定输出访存，支持使用特化的`Copy`结构体替换；
+- CopyA1ToA2：将A矩阵从L1 Buffer搬运到L0A Buffer，支持使用特化的`Copy`结构体替换；
+- CopyB1ToB2：将B矩阵从L1 Buffer搬运到L0B Buffer，支持使用特化的`Copy`结构体替换。
 
 ### Copy结构体
 
@@ -397,12 +340,12 @@ struct Copy {
 
 - ArchTag：同[`TileCopy`](#tilecopy)中的定义；
 - CopyPolicy：拷贝策略，详见[`TileCopy`](#tilecopy)；
-- DataType：输入或输出的数据类型，对GlobalMemory->L1 buffer和L1 buffer->L0 buffer，表示输入的数据类型；对L0C buffer->output，表示输出的数据类型；
+- DataType：输入或输出的数据类型，对GlobalMemory->L1 Buffer和L1 Buffer->L0A Buffer/L0B Buffer，表示输入的数据类型；对L0C Buffer->output，表示输出的数据类型；
 - DstTrait：目的Tensor的TensorTrait 表达，包含了Layout等信息，具体数据类型详见[ACT Layout概念](./03_layout.md)中的TensorTrait章节；
 - SrcTrait：源Tensor的TensorTrait表达；
 - typename T = void：支持利用[`SFINAE`](https://en.cppreference.com/w/cpp/language/sfinae.html)机制实现不同的模板特化，如针对排布类型（如NZ）或物理位置（如UB）进行定制拷贝操作；
 - cfg：预留参数，当前未使用；
-- Coord：源或目的Tensor中的坐标，对GlobalMemory->L1 buffer和L1 buffer->L0 buffer，表示源Tensor中的坐标；对L0C buffer->output，表示目的Tensor中的坐标。
+- Coord：源或目的Tensor中的坐标，对GlobalMemory->L1 Buffer和L1 Buffer->L0A Buffer/L0B Buffer，表示源Tensor中的坐标；对L0C Buffer->output，表示目的Tensor中的坐标。
 
 ## Basic层
 

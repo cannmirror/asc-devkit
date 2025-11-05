@@ -135,7 +135,7 @@ public:
     {
         NDLayout inLayout =
             AscendC::MakeLayout(AscendC::MakeShape(Get<0>(blockShape), AlignBlock<half>(Get<1>(blockShape))),
-                                AscendC::MakeStride(AlignBlock<half>(Get<1>(blockShape)), int64_t(1)));
+                                AscendC::MakeStride(AlignBlock<half>(Get<1>(blockShape)), static_cast<int64_t>(1)));
         auto inTensorTrait = InTrait(inLayout);
         cLocal_.SetTensorTrait(inTensorTrait);
         return cLocal_;

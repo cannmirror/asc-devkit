@@ -218,34 +218,45 @@ public:
             AscendC::SetHF32Mode(1);
             AscendC::SetHF32TransMode(1);
         }
-        blockMmadOp.Init(problemShape_, tileL1, tileL0, isBias_, bs.GetL1BuferNum_(), bs.GetL0cDB());
+        blockMmadOp.template Init<BlockScheduler::FULL_LOAD_MODE>(
+            problemShape_, tileL1, tileL0, isBias_, bs.GetL1BuferNum_(), bs.GetL0cDB());
         // Process tiles in ping-pong mode
         if constexpr (BlockScheduler::FULL_LOAD_MODE == B_FULL_LOAD_MODE) {
             blockMmadOp.CopyInB1(bGlobal_, Get<MNK_N>(problemShape_), Get<MNK_K>(problemShape_));
             blockMmadOp.CopyInC1(biasGlobal_, Get<MNK_N>(problemShape_));
+        } else if constexpr (BlockScheduler::FULL_LOAD_MODE == A_FULL_LOAD_MODE) {
+            blockMmadOp.CopyInA1(aGlobal_, Get<MNK_M>(problemShape_), Get<MNK_K>(problemShape_));
         }
+        uint64_t curML1 = Get<MNK_M>(tileL1);
         uint64_t curNL1 = Get<MNK_N>(tileL1);
+        int64_t n = Get<MNK_N>(problemShape_);
         for (int64_t tileIdx = curBlockIdx; tileIdx < tileNum; tileIdx += blockNum) {
-            for (uint64_t nOffset = 0; nOffset < curNL1; nOffset += Get<1>(tileL0)) {
-                TupleL1L0Shape blockShape = bs.GetBlockShape(tileIdx, 0, nOffset);
-                auto blockCoord = bs.GetBlockCoord(tileIdx);
-                auto blockOffset = GetOffsetWithoutLayout(
-                    blockCoord, problemShape_, aGlobal_, bGlobal_, cGlobal_, transA, transB, isBias_);
-                if (Get<0>(blockShape) <= 0 || Get<1>(blockShape) <= 0) {
-                    UnsetHf32(isHf32);
-                    return;
+            // mIter
+            for (uint64_t mOffset = 0; mOffset < curML1; mOffset += Get<0>(tileL0)) {
+                // nIter
+                for (uint64_t nOffset = 0; nOffset < curNL1; nOffset += Get<1>(tileL0)) {
+                    TupleL1L0Shape blockShape = bs.GetBlockShape(tileIdx, mOffset, nOffset);
+                    auto blockCoord = bs.GetBlockCoord(tileIdx);
+                    auto blockOffset = GetOffsetWithoutLayout(
+                        blockCoord, problemShape_, aGlobal_, bGlobal_, cGlobal_, transA, transB, isBias_);
+                    if (Get<0>(blockShape) <= 0 || Get<1>(blockShape) <= 0) {
+                        UnsetHf32(isHf32);
+                        return;
+                    }
+                    int64_t offsetA = Get<0>(blockOffset);
+                    int64_t offsetB = Get<1>(blockOffset);
+                    int64_t offsetC = Get<2>(blockOffset);
+                    int64_t offsetBias = Get<3>(blockOffset);
+                    offsetC += mOffset * n + nOffset;
+                    blockMmadOp(cGlobal_[offsetC],
+                        aGlobal_[offsetA],
+                        bGlobal_[offsetB],
+                        biasGlobal_[offsetBias],
+                        blockShape,
+                        mOffset,
+                        nOffset,
+                        tileIdx == curBlockIdx);
                 }
-                int64_t offsetA = Get<0>(blockOffset);
-                int64_t offsetB = Get<1>(blockOffset);
-                int64_t offsetC = Get<2>(blockOffset);
-                int64_t offsetBias = Get<3>(blockOffset);
-                offsetC = offsetC + nOffset;
-                blockMmadOp(cGlobal_[offsetC],
-                    aGlobal_[offsetA],
-                    bGlobal_[offsetB],
-                    biasGlobal_[offsetBias],
-                    blockShape,
-                    nOffset);
             }
         }
         UnsetHf32(isHf32);
