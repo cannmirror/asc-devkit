@@ -6,6 +6,10 @@ if(BUILD_OPEN_PROJECT)
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
     ${ASCEND_CANN_PACKAGE_PATH}/include/base
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
     ${ASCEND_CANN_PACKAGE_PATH}/include/ge
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
@@ -38,6 +42,7 @@ target_compile_options(ascend_runtime_base PRIVATE
 
 target_link_libraries(ascend_runtime_base PRIVATE
     $<BUILD_INTERFACE:intf_pub>
+    mmpa
     alog
     ascendcl
 )

@@ -19,6 +19,7 @@ if(BUILD_OPEN_PROJECT)
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment
     ${ASCEND_CANN_PACKAGE_PATH}/include/base
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
     ${ASCEND_CANN_PACKAGE_PATH}/include/ge
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
     ${CMAKE_CURRENT_SOURCE_DIR}/../build/common

@@ -9,8 +9,8 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------
 
-if (slog_FOUND)
-    message(STATUS "Package slog has been found.")
+if (alog_FOUND)
+    message(STATUS "Package alog has been found.")
     return()
 endif()
 
@@ -45,8 +45,9 @@ unset(_cmake_targets_defined)
 unset(_cmake_targets_not_defined)
 unset(_cmake_expected_targets)
 
-find_path(_INCLUDE_DIR
+find_path(alog_INCLUDE_DIR
     NAMES base/alog_pub.h
+    PATH_SUFFIXES pkg_inc
     NO_CMAKE_SYSTEM_PATH
     NO_CMAKE_FIND_ROOT_PATH)
 
@@ -67,13 +68,13 @@ find_package_handle_standard_args(alog
     FOUND_VAR
         alog_FOUND
     REQUIRED_VARS
-        _INCLUDE_DIR
+        alog_INCLUDE_DIR
         slog_a_SHARED_LIBRARY
         alog_a_SHARED_LIBRARY
 )
 
 if(alog_FOUND)
-    set(alog_a_INCLUDE_DIR "${_INCLUDE_DIR}")
+    set(alog_a_INCLUDE_DIR "${alog_INCLUDE_DIR}")
     include(CMakePrintHelpers)
     message(STATUS "Variables in alog module:")
     cmake_print_variables(alog_a_INCLUDE_DIR)
@@ -112,4 +113,4 @@ if(alog_FOUND)
 endif()
 
 # Cleanup temporary variables.
-set(_INCLUDE_DIR)
+set(alog_INCLUDE_DIR)

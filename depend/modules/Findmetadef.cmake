@@ -25,12 +25,12 @@ set(METADEF_LIB_SEARCH_PATHS
   ${ASCEND_DIR}/${SYSTEM_PREFIX}
 )
 
-find_path(METADEF_INC_DIR
-  NAMES register/register.h
-  PATHS ${METADEF_HEAD_SEARCH_PATHS}
-  NO_CMAKE_SYSTEM_PATH
-  NO_CMAKE_FIND_ROOT_PATH
-)
+# find_path(METADEF_INC_DIR
+#   NAMES register/register.h
+#   PATHS ${METADEF_HEAD_SEARCH_PATHS}
+#   NO_CMAKE_SYSTEM_PATH
+#   NO_CMAKE_FIND_ROOT_PATH
+# )
 
 find_library(REGISTER_LIB_DIR
   NAME register
@@ -44,7 +44,7 @@ if(REGISTER_LIB_DIR)
   get_filename_component(REGISTER_LIB_DIR ${REGISTER_LIB_DIR} REALPATH)
   add_library(register SHARED IMPORTED)
   set_target_properties(register PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}
+    # INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}
     IMPORTED_LOCATION ${REGISTER_LIB_DIR}
   )
   message(STATUS "Found register library:${REGISTER_LIB_DIR}")
@@ -66,7 +66,7 @@ if(OPP_REGISTRY_LIB_DIR)
   get_filename_component(OPP_REGISTRY_LIB_DIR ${OPP_REGISTRY_LIB_DIR} REALPATH)
   add_library(opp_registry SHARED IMPORTED)
   set_target_properties(opp_registry PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}
+    # INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}
     IMPORTED_LOCATION ${OPP_REGISTRY_LIB_DIR}
   )
   message(STATUS "Found opp_registry library:${OPP_REGISTRY_LIB_DIR}")
@@ -88,7 +88,7 @@ if(EXEGRAPH_LIB_DIR)
   get_filename_component(EXEGRAPH_LIB_DIR ${EXEGRAPH_LIB_DIR} REALPATH)
   add_library(exe_graph SHARED IMPORTED)
   set_target_properties(exe_graph PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}/exe_graph
+    # INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}/exe_graph
     IMPORTED_LOCATION ${EXEGRAPH_LIB_DIR}
   )
   message(STATUS "Found exe_graph library:${EXEGRAPH_LIB_DIR}")
@@ -199,7 +199,7 @@ if(REGISTER_STATIC_LIB_DIR)
   get_filename_component(REGISTER_STATIC_LIB_DIR ${REGISTER_STATIC_LIB_DIR} REALPATH)
   add_library(rt2_registry_static STATIC IMPORTED)
   set_target_properties(rt2_registry_static PROPERTIES
-    INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}
+    # INTERFACE_INCLUDE_DIRECTORIES ${METADEF_INC_DIR}
     IMPORTED_LOCATION ${REGISTER_STATIC_LIB_DIR}
   )
   message(STATUS "Found rt2_registry library:${REGISTER_STATIC_LIB_DIR}")
@@ -209,18 +209,18 @@ else()
   endif()
 endif()
 
-find_package_handle_standard_args(metadef
-      REQUIRED_VARS METADEF_INC_DIR)
+# find_package_handle_standard_args(metadef
+#       REQUIRED_VARS METADEF_INC_DIR)
 
-get_filename_component(METADEF_INC_DIR ${METADEF_INC_DIR} REALPATH)
-if(metadef_FOUND)
-  set(METADEF_INCLUDE_DIRS
-    ${METADEF_INC_DIR}/
-    ${METADEF_INC_DIR}/exe_graph
-  )
+# get_filename_component(METADEF_INC_DIR ${METADEF_INC_DIR} REALPATH)
+# if(metadef_FOUND)
+#   set(METADEF_INCLUDE_DIRS
+#     ${METADEF_INC_DIR}/
+#     ${METADEF_INC_DIR}/exe_graph
+#   )
 
-  if(NOT BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG)
-    set(METADEF_INCLUDE_DIRS ${METADEF_INC_DIR}/../ ${METADEF_INCLUDE_DIRS})
-  endif()
-  message(STATUS "Found source metadef include dir:  ${METADEF_INCLUDE_DIRS}")
-endif()
+#   if(NOT BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG)
+#     set(METADEF_INCLUDE_DIRS ${METADEF_INC_DIR}/../ ${METADEF_INCLUDE_DIRS})
+#   endif()
+#   message(STATUS "Found source metadef include dir:  ${METADEF_INCLUDE_DIRS}")
+# endif()

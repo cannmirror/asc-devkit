@@ -217,18 +217,32 @@ if(LLVM_CLANG_FOUND AND NOT FORCE_REBUILD_CANN_3RD)
     add_library(llvm_clang INTERFACE)
 else()
     if (NOT EXISTS "${LLVM_CLANG_SOURCE_PATH}")
-        set(LLVM_CLANG_URL "https://gitcode.com/cann-src-third-party/llvm/releases/download/15.0.4/llvm-project-llvmorg-15.0.4.tar.gz")
+        set(LLVM_FILE llvm-project-llvmorg-15.0.4.tar.gz)
+        set(LLVM_CLANG_URL "https://gitcode.com/cann-src-third-party/llvm/releases/download/15.0.4/${LLVM_FILE}")
         message(STATUS "Downloading ${LLVM_CLANG_NAME} from ${LLVM_CLANG_URL}")
         include(FetchContent)
         FetchContent_Declare(
-            ${LLVM_CLAN_NAME}
+            ${LLVM_CLANG_NAME}
             URL ${LLVM_CLANG_URL}
-        #     TLS_VERIFY FALSE
-        #     URL_HASH SHA256=e24b4d3bf7821dcb1c901d1e09096c1f88fb00095c5a6ef893baab4836975e52
+            TLS_VERIFY FALSE
+            URL_HASH SHA256=e24b4d3bf7821dcb1c901d1e09096c1f88fb00095c5a6ef893baab4836975e52
             DOWNLOAD_DIR ${LLVM_CLANG_DOWNLOAD_PATH}
-            SOURCE_DIR ${LLVM_CLANG_NAME}
+            SOURCE_DIR ${LLVM_CLANG_SOURCE_PATH}
         )
         FetchContent_MakeAvailable(${LLVM_CLANG_NAME})
+
+
+        # file(DOWNLOAD
+        #     ${LLVM_CLANG_URL}
+        #     ${LLVM_CLANG_SOURCE_PATH}/${LLVM_FILE}
+        # #     URL_HASH SHA256=e24b4d3bf7821dcb1c901d1e09096c1f88fb00095c5a6ef893baab4836975e52
+        #     SHOW_PROGRESS
+        # )
+        # execute_process(
+        #     COMMAND mkdir -p ${LLVM_CLANG_SOURCE_PATH}
+        #     COMMAND chmod 755 -R ${LLVM_CLANG_SOURCE_PATH}
+        #     COMMAND tar -xf ${LLVM_CLANG_SOURCE_PATH}/${LLVM_FILE} --overwrite --strip-components=1 -C ${LLVM_CLANG_SOURCE_PATH}
+        # )
     endif()
 
     set(LLVM_C_COMPILE_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -fvisibility=hidden -fstack-protector-all -fPIE")
