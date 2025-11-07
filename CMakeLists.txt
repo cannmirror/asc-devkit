@@ -444,7 +444,7 @@ add_custom_command(
   COMMAND cp -rf ${CMAKE_CURRENT_SOURCE_DIR}/tools/ascc/cmake/. ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake
   COMMAND cp -rf ${CMAKE_CURRENT_SOURCE_DIR}/tools/build/scripts/AICPU_CMake ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake
 )
-add_custom_target(ascendc_kernel_cmake DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake)
+add_custom_target(ascendc_kernel_cmake ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake)
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake
   DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL

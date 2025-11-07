@@ -64,4 +64,4 @@ set_target_properties(${ASCENDC_API_ADV_OBJ} PROPERTIES
     )
 
 get_filename_component(ASCENDC_API_ADV_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
-include(${ASCENDC_API_ADV_CMAKE_DIR}/intf_pub_linux.cmake)
+# include(${ASCENDC_API_ADV_CMAKE_DIR}/intf_pub_linux.cmake)

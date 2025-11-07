@@ -45,8 +45,9 @@ unset(_cmake_targets_defined)
 unset(_cmake_targets_not_defined)
 unset(_cmake_expected_targets)
 
-find_path(_INCLUDE_DIR
-    NAMES experiment/mmpa/mmpa_api.h
+find_path(mmpa_INCLUDE_DIR
+    NAMES mmpa/mmpa_api.h
+    PATH_SUFFIXES experiment
     NO_CMAKE_SYSTEM_PATH
     NO_CMAKE_FIND_ROOT_PATH)
 
@@ -67,13 +68,13 @@ find_package_handle_standard_args(mmpa
     FOUND_VAR
         mmpa_FOUND
     REQUIRED_VARS
-        _INCLUDE_DIR
+        mmpa_INCLUDE_DIR
         mmpa_SHARED_LIBRARY
         mmpa_STATIC_LIBRARY
 )
 
 if(mmpa_FOUND)
-    set(mmpa_INCLUDE_DIR "${_INCLUDE_DIR}/experiment")
+    set(mmpa_INCLUDE_DIR "${mmpa_INCLUDE_DIR}")
     include(CMakePrintHelpers)
     message(STATUS "Variables in mmpa module:")
     cmake_print_variables(mmpa_INCLUDE_DIR)
@@ -110,4 +111,4 @@ if(mmpa_FOUND)
 endif()
 
 # Cleanup temporary variables.
-set(_INCLUDE_DIR)
+set(mmpa_INCLUDE_DIR)
