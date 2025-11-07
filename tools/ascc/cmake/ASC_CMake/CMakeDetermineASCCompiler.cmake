@@ -27,7 +27,8 @@ set(CMAKE_ASC_COMPILER_ENV_VAR "ASC")        # Language命名为ASC
 #    Need to store value of CCE_AICORE_ARCH
 set(ascend910b_list Ascend910B1 Ascend910B2 Ascend910B2C Ascend910B3 Ascend910B4 Ascend910B4-1 Ascend910_9391
                     Ascend910_9381 Ascend910_9372 Ascend910_9392 Ascend910_9382 Ascend910_9362)
-set(ascend310p_list Ascend310P1 Ascend310P3)
+set(ascend310p_list Ascend310P1 Ascend310P3 Ascend310P5 Ascend310P7
+                    Ascend310P3Vir01 Ascend310P3Vir02 Ascend310P3Vir04 Ascend310P3Vir08)
 if(DEFINED SOC_VERSION)
     if(NOT ((SOC_VERSION IN_LIST ascend910b_list) OR (SOC_VERSION IN_LIST ascend310p_list)))
         message(FATAL_ERROR "SOC_VERSION ${SOC_VERSION} is unsupported, support list is ${ascend910b_list} ${ascend310p_list}")

@@ -63,6 +63,31 @@ void UpdateCompileArgArray(std::vector<std::string>& argsArray, std::vector<std:
         argsArray.emplace_back(*it);
     }
 }
+} // namespace
+
+void InfoManager::ReportCompileArgs()
+{
+    for (const auto& def : compileArgs_.definitions) {
+        ASC_LOGD("Compile args has definition: %s.", def.c_str());
+    }
+    for (const auto& hostDef : compileArgs_.hostDefinitions) {
+        ASC_LOGD("Compile args has host definition: %s.", hostDef.c_str());
+    }
+    for (const auto& incPath : compileArgs_.includePaths) {
+        ASC_LOGD("Compile args has include path: %s.", incPath.c_str());
+    }
+    for (const auto& opt : compileArgs_.options) {
+        ASC_LOGD("Compile args has compile option: %s.", opt.c_str());
+    }
+    for (const auto& incFile : compileArgs_.includeFiles) {
+        ASC_LOGD("Compile args has include file: %s.", incFile.c_str());
+    }
+    for (const auto& linkFile : compileArgs_.linkFiles) {
+        ASC_LOGD("Compile args has link file: %s.", linkFile.c_str());
+    }
+    for (const auto& linkPath : compileArgs_.linkPaths) {
+        ASC_LOGD("Compile args has link path: %s.", linkPath.c_str());
+    }
 }
 
 void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>::const_iterator& it)
@@ -79,37 +104,43 @@ void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>:
         content = *it;
     }
 
+    if (StartsWith(content, "GEN_ACLRT")) {
+        SetAclrtHeaderPath(content.substr(10)); // GEN_ACLRT= length is 10.  GEN_ACLRT={header path}
+    }
+
+    // extract the macro part
+    std::string macroContent = content;
     const int32_t invalidIndex = GetFirstInvalidChar(content, prefix == "-U");
     if (invalidIndex != -1) {
-        content = content.substr(0, invalidIndex);
+        macroContent = content.substr(0, invalidIndex);
     }
 
     if (!hasHostStart) {
         compileArgs_.definitions.emplace_back(prefix + content);
         if (prefix != "-D") { // when prefix is -U
-            if (content == "ASCENDC_DUMP") {
+            if (macroContent == "ASCENDC_DUMP") {
                 userDumpStatus_ = true;
-            } else if (content == "HAVE_WORKSPACE") {
+            } else if (macroContent == "HAVE_WORKSPACE") {
                 hasWorkspace_ = false;
-            } else if (content == "HAVE_TILING") {
+            } else if (macroContent == "HAVE_TILING") {
                 hasTiling_ = false;
-            } else if (content == "ASCENDC_TIME_STAMP_ON") {
+            } else if (macroContent == "ASCENDC_TIME_STAMP_ON") {
                 hasTimeStamp_ = false;
-            } else if (content == "ASCENDC_DEBUG") {
+            } else if (macroContent == "ASCENDC_DEBUG") {
                 enableL2Cache_ = true;
             }
         } else {
-            if (content == "ASCENDC_DUMP=0") {
+            if (macroContent == "ASCENDC_DUMP=0") {
                 userDumpStatus_ = false;
-            } else if (content == "ASCENDC_DUMP=1") {
+            } else if (macroContent == "ASCENDC_DUMP=1") {
                 userDumpStatus_ = true;
-            } else if (content == "HAVE_WORKSPACE") {
+            } else if (macroContent == "HAVE_WORKSPACE") {
                 hasWorkspace_ = true;
-            } else if (content == "HAVE_TILING") {
+            } else if (macroContent == "HAVE_TILING") {
                 hasTiling_ = true;
-            } else if (content == "ASCENDC_TIME_STAMP_ON") {
+            } else if (macroContent == "ASCENDC_TIME_STAMP_ON") {
                 hasTimeStamp_ = true;
-            } else if (content == "ASCENDC_DEBUG") {
+            } else if (macroContent == "ASCENDC_DEBUG") {
                 enableL2Cache_ = false;
             }
         }
@@ -159,6 +190,14 @@ void InfoManager::SetCompileArgs(const std::vector<std::string>& compileArgs)
             compileArgs_.options.emplace_back(compileArg);
         }
     }
+
+    ReportCompileArgs();
+}
+
+void InfoManager::SetAclrtHeaderPath(const std::string& headerPath)
+{
+    aclrtLaunchHeaderPath_ = headerPath;
+    ASC_LOGD("ACLRT_LAUNCH_KERNEL header path is set up as %s.", headerPath.c_str());
 }
 
 void InfoManager::SetCannPath(const std::string& cannPath)
@@ -269,6 +308,11 @@ const CompileArgs& InfoManager::GetCompileArgs() const
 ShortSocVersion InfoManager::GetShortSocVersion() const
 {
     return shortSocVersion_;
+}
+
+const std::string& InfoManager::GetAclrtHeaderPath() const
+{
+    return aclrtLaunchHeaderPath_;
 }
 
 const std::string& InfoManager::GetCannPath() const

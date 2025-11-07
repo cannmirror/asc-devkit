@@ -18,12 +18,12 @@
 #define __INCLUDE_INTERNAL_ASC_DEV_SECTION_GENERATE_H__
 
 #include <tuple>
-
+#include <unordered_set>
 #include "asc_struct.h"
 #include "asc_utils.h"
 
 namespace AscPlugin {
 std::tuple<int32_t, std::string, std::string> GetDeviceCode(const KernelInfo& kernelInfo,
-    const std::vector<KernelMetaType>& kernelType, const KfcScene& kfcScene);
+    const std::unordered_set<KernelMetaType>& kernelType, const KfcScene& kfcScene);
 } // namespace AscPlugin
 #endif // __INCLUDE_INTERNAL_ASC_DEV_SECTION_GENERATE_H__

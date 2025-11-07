@@ -15,12 +15,11 @@ opc single op compile
 import copy
 import inspect
 
-import tbe.common.utils.log as logger
+import asc_op_compile_base.common.utils.log as logger
 
-from tbe.common.buildcfg import build_config
-from tbe.tvm._api_config import api_config
-from tbe.common.context import op_context
-from tbe.common.context import op_info as operator_info
+from asc_op_compile_base.common.buildcfg import build_config
+from asc_op_compile_base.common.context import op_context
+from asc_op_compile_base.common.context import op_info as operator_info
 
 from simplified_key_utils import infer_simplified_key_mode
 from constant import (OpcOptions, CompileParam, GraphDefParam, OpModeType)
@@ -230,11 +229,6 @@ class SingleOpCompile:
                           status_check=status_check, enable_deterministic_mode=deterministic,
                           jit_compile_mode=jit_compile_mode, enable_vector_core=enable_vector_core,
                           enable_super_kernel=op_relocatable_bin):
-            if self.__op_info.get(OpcOptions.INT64_MODE):
-                with api_config.bit_width_64():
-                    json_file_path = self.__call_op()
-            else:
-                with api_config.bit_width_32():
-                    json_file_path = self.__call_op()
+            json_file_path = self.__call_op()
 
             return json_file_path

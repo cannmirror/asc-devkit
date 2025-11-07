@@ -15,7 +15,7 @@ single_op_post_compile
 import json
 import copy
 
-from tbe.common.utils import log as logger
+from asc_op_compile_base.common.utils import log as logger
 from opc_common import (str_to_sha256_hash, opc_log_full, LogLevel)
 from opc_common import (read_json_file, update_json_file)
 from simplified_key_utils import generate_simplified_key

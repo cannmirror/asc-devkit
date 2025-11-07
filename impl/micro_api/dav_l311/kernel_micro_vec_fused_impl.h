@@ -51,7 +51,9 @@ __aicore__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg
 template <typename T, typename U, RegLayout layout, MaskMergeMode mode, typename RegT, typename RegU>
 __aicore__ inline void FusedExpSubImpl(RegT &dstReg, RegU &srcReg0, RegU &srcReg1, MaskReg &mask)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "FusedExpSub is not supported on current device"); });
+    constexpr auto modeValue = GetMaskMergeMode<mode>();
+    vsub(srcReg0, srcReg0, srcReg1, mask, modeValue);
+    vexp(dstReg, srcReg0, mask, modeValue);
 }
 }
 } // namespace AscendC

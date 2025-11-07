@@ -20,6 +20,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <map>
 #include <utility>
 #include <sys/stat.h>
@@ -130,6 +131,12 @@ const std::unordered_map<std::string, AscPlugin::ShortSocVersion> SOC_VERSION_MA
     {"Ascend910PremiumA", AscPlugin::ShortSocVersion::ASCEND910},
     {"Ascend310P1", AscPlugin::ShortSocVersion::ASCEND310P},     // ascend310p_list
     {"Ascend310P3", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"Ascend310P5", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"Ascend310P7", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"Ascend310P3Vir01", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"Ascend310P3Vir02", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"Ascend310P3Vir04", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"Ascend310P3Vir08", AscPlugin::ShortSocVersion::ASCEND310P},
     {"Ascend310B1", AscPlugin::ShortSocVersion::ASCEND310B},     // ascend310b_list
     {"Ascend310B2", AscPlugin::ShortSocVersion::ASCEND310B},
     {"Ascend310B3", AscPlugin::ShortSocVersion::ASCEND310B},
@@ -201,6 +208,11 @@ constexpr uint32_t ASC_L2CACHE_HINT_MASK = 0x04;
 inline constexpr char ORIGIN_KERNEL_PREFIX[] = "__origin__";
 inline constexpr char DEVICE_STUB_PREFIX[] = "__device_stub__";
 inline constexpr size_t DEVICE_STUB_PREFIX_LEN = 15;
+
+// key: kernel manglename
+// value: {kernel original name, variable1 type, variable1 name, variable2 type, variable2 name ....}
+inline std::unordered_map<std::string, std::vector<std::string>> g_kernelVarMap;
+
 /**
  * @brief Validates path and accessibility
  * @param path Null-terminated C-style path string
@@ -301,6 +313,20 @@ std::vector<std::string> SplitLines(const std::string& str);
  */
 KernelMetaType GetBishengKTypeByCoreRatio(const CoreRatio& ratio,
     const KernelMetaType& defaultKType =  KernelMetaType::KERNEL_TYPE_MAX);
+
+/**
+ * @brief Get kernel type from the kernel type set
+ * @param kTypeSet kernel type to be returned when core ratio is invalid
+ * @return return kernel type
+ */
+KernelMetaType ExtractKernelType(const std::unordered_set<KernelMetaType> kTypeSet);
+
+/**
+ * @brief Convert string to upper case
+ * @param str input string
+ * @return return string with all upper case
+ */
+std::string ToUpper(const std::string& str);
 
 } // namespace AscPlugin
 #endif // __INCLUDE_INTERNAL_ASC_UTILS_H__

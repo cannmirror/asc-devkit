@@ -22,14 +22,14 @@
 #include <utility>
 #include <string>
 #include <vector>
-
+#include <unordered_set>
 #include "asc_utils.h"
 #include "asc_struct.h"
 
 namespace AscPlugin {
 class AscDevStubGenerator {
 public:
-    AscDevStubGenerator(const KernelInfo& kernelInfo, const std::vector<KernelMetaType>& kernelType,
+    AscDevStubGenerator(const KernelInfo& kernelInfo, const std::unordered_set<KernelMetaType>& kernelType,
         const KfcScene& kfcScene);
     std::string GenCode();
 
@@ -50,7 +50,7 @@ private:
     void GenCodeForL2Cache();
 
     KernelInfo kernelInfo_;
-    std::vector<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
+    std::unordered_set<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
     ShortSocVersion socVersion_ = ShortSocVersion::ASCEND910B;
     bool dumpTypeIsNotNone_ = false;
     bool dumpAscendCStamp_ = false;

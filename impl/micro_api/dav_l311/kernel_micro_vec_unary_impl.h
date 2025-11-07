@@ -25,7 +25,7 @@ __aicore__ inline void AbsImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, int16_t, int32_t, half, float>(),
-        "current data type is not supported on current device!");
+        "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vabs(dstReg, srcReg, mask, modeValue);
@@ -37,7 +37,7 @@ __aicore__ inline void ReluImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int32_t, half, float>(),
-        "current data type is not supported on current device!");
+        "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vrelu(dstReg, srcReg, mask, modeValue);
@@ -48,7 +48,7 @@ __aicore__ inline void ExpImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
+    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vexp(dstReg, srcReg, mask, modeValue);
@@ -59,7 +59,7 @@ __aicore__ inline void SqrtImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
+    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vsqrt(dstReg, srcReg, mask, modeValue);
@@ -81,7 +81,7 @@ __aicore__ inline void RecImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
+    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vrec(dstReg, srcReg, mask, modeValue);
@@ -181,7 +181,7 @@ __aicore__ inline void NegImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, int16_t, int32_t, half, float>(),
-        "current data type is not supported on current device!");
+        "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vneg(dstReg, srcReg, mask, modeValue);
@@ -193,7 +193,7 @@ __aicore__ inline void NotImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
-        "current data type is not supported on current device!");
+        "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vnot(dstReg, srcReg, mask, modeValue);
@@ -207,9 +207,9 @@ __aicore__ inline void CountBitImpl(RegT &dstReg, RegSrcT &srcReg, MaskReg &mask
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     using ActualSrcT = typename RegSrcT::ActualT;
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current dst data type is not supported on current device!");
+        "current dst data type is not supported in on current device!");
     static_assert(SupportType<ActualSrcT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current src data type is not supported on current device!");
+        "current src data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vbcnt(dstReg, srcReg, mask, modeValue);
@@ -221,7 +221,7 @@ __aicore__ inline void CountLeadingSignBitsImpl(RegT &dstReg, RegT &srcReg, Mask
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current data type is not supported on current device!");
+        "current data type is not supported in on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vcls(dstReg, srcReg, mask, modeValue);

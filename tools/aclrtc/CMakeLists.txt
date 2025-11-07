@@ -4,19 +4,11 @@ add_library(acl_rtc SHARED
     ${SRC}
 )
 
-if(BUILD_OPEN_PROJECT)
-    target_include_directories(acl_rtc PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${ASCEND_CANN_PACKAGE_PATH}/include/acl
-        ${CCEC_PATH}/../include
-    )
-else()
-    target_include_directories(acl_rtc PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${TOP_DIR}/ace/npuruntime/acl/inc/external/acl/
-        ${CCEC_PATH}/../include
-    )
-endif()
+target_include_directories(acl_rtc PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${TOP_DIR}/ace/npuruntime/acl/inc/external/acl/
+    ${CCEC_PATH}/../include
+)
 
 target_link_directories(acl_rtc PRIVATE
     ${CCEC_PATH}/../lib

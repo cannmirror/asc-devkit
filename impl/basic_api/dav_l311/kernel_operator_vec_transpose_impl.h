@@ -200,58 +200,58 @@ template <typename T> __aicore__ inline void TransposeImpl(__ubuf__ T* dst, __ub
 }
 
 template <typename T>
-typename std::enable_if<(sizeof(T) == 1)>::type __aicore__ inline Transpose4DImpl(const LocalTensor<T> &dst,
-    const LocalTensor<T> &src, const LocalTensor<uint8_t> &sharedTmpBuffer, const TransposeParamsExt &transposeParams)
+typename std::enable_if<(sizeof(T) == 1)>::type __aicore__ inline Transpose4DImpl(const LocalTensor<T> &dstLocal,
+    const LocalTensor<T> &srcLocal, const LocalTensor<uint8_t> &sharedTmpBuffer, const TransposeParamsExt &transposeParams)
 {
     uint16_t imageSize = transposeParams.hSize * transposeParams.wSize;
     uint32_t channelImageSize = imageSize * transposeParams.cSize;
     if (transposeParams.transposeType == TransposeType::TRANSPOSE_NCHW2NHWC) {
         for (int i = 0; i < transposeParams.nSize; i++) {
-            v4dtrans((__ubuf__ uint8_t *)dst[channelImageSize * i].GetPhyAddr(),
-                (__ubuf__ uint8_t *)src[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, false);
+            v4dtrans((__ubuf__ uint8_t *)dstLocal[channelImageSize * i].GetPhyAddr(),
+                (__ubuf__ uint8_t *)srcLocal[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, false);
         }
     } else if (transposeParams.transposeType == TransposeType::TRANSPOSE_NHWC2NCHW) {
         for (int i = 0; i < transposeParams.nSize; i++) {
-            v4dtrans((__ubuf__ uint8_t *)dst[channelImageSize * i].GetPhyAddr(),
-                (__ubuf__ uint8_t *)src[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, true);
+            v4dtrans((__ubuf__ uint8_t *)dstLocal[channelImageSize * i].GetPhyAddr(),
+                (__ubuf__ uint8_t *)srcLocal[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, true);
         }
     }
 }
 
 template <typename T>
-typename std::enable_if<(sizeof(T) == 2)>::type __aicore__ inline Transpose4DImpl(const LocalTensor<T> &dst,
-    const LocalTensor<T> &src, const LocalTensor<uint8_t> &sharedTmpBuffer, const TransposeParamsExt &transposeParams)
+typename std::enable_if<(sizeof(T) == 2)>::type __aicore__ inline Transpose4DImpl(const LocalTensor<T> &dstLocal,
+    const LocalTensor<T> &srcLocal, const LocalTensor<uint8_t> &sharedTmpBuffer, const TransposeParamsExt &transposeParams)
 {
     uint16_t imageSize = transposeParams.hSize * transposeParams.wSize;
     uint32_t channelImageSize = imageSize * transposeParams.cSize;
     if (transposeParams.transposeType == TransposeType::TRANSPOSE_NCHW2NHWC) {
         for (int i = 0; i < transposeParams.nSize; i++) {
-            v4dtrans((__ubuf__ uint16_t *)dst[channelImageSize * i].GetPhyAddr(),
-                (__ubuf__ uint16_t *)src[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, false);
+            v4dtrans((__ubuf__ uint16_t *)dstLocal[channelImageSize * i].GetPhyAddr(),
+                (__ubuf__ uint16_t *)srcLocal[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, false);
         }
     } else if (transposeParams.transposeType == TransposeType::TRANSPOSE_NHWC2NCHW) {
         for (int i = 0; i < transposeParams.nSize; i++) {
-            v4dtrans((__ubuf__ uint16_t *)dst[channelImageSize * i].GetPhyAddr(),
-                (__ubuf__ uint16_t *)src[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, true);
+            v4dtrans((__ubuf__ uint16_t *)dstLocal[channelImageSize * i].GetPhyAddr(),
+                (__ubuf__ uint16_t *)srcLocal[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, true);
         }
     }
 }
 
 template <typename T>
-typename std::enable_if<(sizeof(T) == 4)>::type __aicore__ inline Transpose4DImpl(const LocalTensor<T> &dst,
-    const LocalTensor<T> &src, const LocalTensor<uint8_t> &sharedTmpBuffer, const TransposeParamsExt &transposeParams)
+typename std::enable_if<(sizeof(T) == 4)>::type __aicore__ inline Transpose4DImpl(const LocalTensor<T> &dstLocal,
+    const LocalTensor<T> &srcLocal, const LocalTensor<uint8_t> &sharedTmpBuffer, const TransposeParamsExt &transposeParams)
 {
     uint16_t imageSize = transposeParams.hSize * transposeParams.wSize;
     uint32_t channelImageSize = imageSize * transposeParams.cSize;
     if (transposeParams.transposeType == TransposeType::TRANSPOSE_NCHW2NHWC) {
         for (int i = 0; i < transposeParams.nSize; i++) {
-            v4dtrans((__ubuf__ uint32_t *)dst[channelImageSize * i].GetPhyAddr(),
-                (__ubuf__ uint32_t *)src[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, false);
+            v4dtrans((__ubuf__ uint32_t *)dstLocal[channelImageSize * i].GetPhyAddr(),
+                (__ubuf__ uint32_t *)srcLocal[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, false);
         }
     } else if (transposeParams.transposeType == TransposeType::TRANSPOSE_NHWC2NCHW) {
         for (int i = 0; i < transposeParams.nSize; i++) {
-            v4dtrans((__ubuf__ uint32_t *)dst[channelImageSize * i].GetPhyAddr(),
-                (__ubuf__ uint32_t *)src[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, true);
+            v4dtrans((__ubuf__ uint32_t *)dstLocal[channelImageSize * i].GetPhyAddr(),
+                (__ubuf__ uint32_t *)srcLocal[channelImageSize * i].GetPhyAddr(), imageSize, transposeParams.cSize, true);
         }
     }
 }

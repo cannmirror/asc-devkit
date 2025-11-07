@@ -11,7 +11,7 @@
 
 
 import json
-from tbe.common.utils import log as logger
+from asc_op_compile_base.common.utils import log as logger
 from op_manager import get_inout_info_from_opstore
 from constant import (CompileParam, OpcOptions, OptionalInOutMode, OpParamType)
 

@@ -16,12 +16,15 @@
 
 #include "op_generator.h"
 #include <mutex>
+#include <unordered_set>
 #include "ascendc_tool_log.h"
 
 namespace ops {
 static std::string g_outputPath = ".";
+static std::string g_cpuArg = ".";
 static std::vector<std::string> g_errorInfo;
 std::mutex g_opbuildMtx;
+std::mutex g_opbuildCPUMtx;
 
 Generator::Generator(std::vector<std::string>& ops)
 {
@@ -65,6 +68,32 @@ void Generator::GetGenPath(std::string& path)
 {
     const std::lock_guard<std::mutex> lock(g_opbuildMtx);
     path = g_outputPath;
+}
+
+opbuild::Status Generator::SetCPUMode(const std::string& arg)
+{
+    if (arg.empty()) {
+        ASCENDLOGE("arg is empty");
+        return opbuild::OPBUILD_FAILED;
+    }
+    static const std::unordered_set<std::string> validCpuModes = {
+        "--aicpu",
+        "--aicore",
+        "--hostcpu"
+    };
+    if (validCpuModes.find(arg) == validCpuModes.end()) {
+        ASCENDLOGE("Invalid CPU mode: %s, must be one of: --aicpu, --aicore, --hostcpu", arg.c_str());
+        return opbuild::OPBUILD_FAILED;
+    }
+    const std::lock_guard<std::mutex> lock(g_opbuildCPUMtx);
+    g_cpuArg = arg;
+    return opbuild::OPBUILD_SUCCESS;
+}
+ 
+void Generator::GetCPUMode(std::string& arg)
+{
+    const std::lock_guard<std::mutex> lock(g_opbuildCPUMtx);
+    arg = g_cpuArg;
 }
 
 void Generator::SetErrorMessage(const std::string& info)

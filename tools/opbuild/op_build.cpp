@@ -27,6 +27,7 @@ constexpr uint32_t ARG_NUM_BIN = 0;
 constexpr uint32_t ARG_NUM_LIB = 1;
 constexpr uint32_t ARG_NUM_PATH = 2;
 constexpr uint32_t ARG_NUM_VALID = 3;
+const std::string DEFAULT_CPU_MODE = "--aicore";
 }
 
 #ifndef UT_TEST
@@ -35,8 +36,8 @@ int main(int argc, char* argv[])
 #else
 int opbuild_main(int argc, std::vector<std::string> args)
 {
-    char* argv[ARG_NUM_VALID];
-    for (int ind = 0; ind < args.size() && ind < ARG_NUM_VALID; ind++) {
+    char* argv[argc];
+    for (int ind = 0; ind < args.size() && ind < argc; ind++) {
         argv[ind] = (char*)args[ind].c_str();
     }
 #endif
@@ -67,8 +68,33 @@ use the PascalCase format.", opType.c_str());
     opbuild::Status result = ops::GeneratorFactory::SetGenPath(static_cast<const char*>(argv[ARG_NUM_PATH]));
     if (result == opbuild::OPBUILD_FAILED) {
         dlclose(handle);
-        ASCENDLOGE("set generate path faield!");
+        ASCENDLOGE("set generate path failed!");
         return 1;
+    }
+    opbuild::Status resultCPUMode = ops::GeneratorFactory::SetCPUMode(DEFAULT_CPU_MODE);
+    for (int i = ARG_NUM_VALID; i < argc; ++i) {
+        ASCENDLOGE("usage: <bin> <op shared library> <default directory> <mode> <output directory>");
+        std::string arg = argv[i];
+        if (arg.substr(0, 2) == "--" && arg.find("=") == std::string::npos) {
+            resultCPUMode = ops::GeneratorFactory::SetCPUMode(arg);
+            if (resultCPUMode == opbuild::OPBUILD_FAILED) {
+                dlclose(handle);
+                ASCENDLOGE("set generate mode failed!");
+                return 1;
+            }
+        } else if (arg.substr(0, 2) == "--" && arg.find("=") != std::string::npos) {
+            size_t eqPos = arg.find("=");
+            std::string key = arg.substr(0, eqPos);
+            std::string value = arg.substr(eqPos + 1);
+            if (key == "--output_file") {
+                opbuild::Status resultOut = ops::GeneratorFactory::SetGenPath(value);
+                if (resultOut == opbuild::OPBUILD_FAILED) {
+                    dlclose(handle);
+                    ASCENDLOGE("set output file path faield!");
+                    return 1;
+                }
+            }
+        }
     }
     result = ops::GeneratorFactory::Build(stdOps);
     if (result == opbuild::OPBUILD_FAILED) {

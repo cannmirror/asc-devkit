@@ -60,7 +60,7 @@ struct AscendCMetaInfo {
 }
 
 std::tuple<int32_t, std::string, std::string> GetDeviceCode(const KernelInfo& kernelInfo,
-    const std::vector<KernelMetaType>& kernelType, const KfcScene& kfcScene)
+    const std::unordered_set<KernelMetaType>& kernelType, const KfcScene& kfcScene)
 {
     if (kernelInfo.kernelMangledNameConsiderPrefix.empty()) {
         ASC_LOGE("Kernel function info has no kernel mangling name consider prefix!");

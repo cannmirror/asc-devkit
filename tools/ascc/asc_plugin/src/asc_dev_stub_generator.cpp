@@ -76,7 +76,7 @@ inline std::string JoinStringWithDelimiter(const std::vector<std::string>& param
 }
 }
 
-AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std::vector<KernelMetaType>& kernelType,
+AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std::unordered_set<KernelMetaType>& kernelType,
     const KfcScene &kfcScene) : kernelInfo_(kernelInfo), kernelType_(kernelType), kfcScene_(kfcScene)
 {
     // init stringstream
@@ -229,11 +229,12 @@ std::pair<bool, bool> AscDevStubGenerator::GetArchInfo(const ShortSocVersion& so
 {
     bool isMix = false;
     bool isHardSync = false;
+    KernelMetaType curKernelType = ExtractKernelType(kernelType_);
     if (socVersion == ShortSocVersion::ASCEND910B) {
         if (kernelType_.size() > 1) { // core_ratio(x, y) is always mix
             isMix = true;
         } else {
-            KernelMetaType kernelType = kernelType_[0];
+            KernelMetaType kernelType = curKernelType;
             isMix = kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0 ||
                 kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0 ||
                 kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1 ||
@@ -279,10 +280,11 @@ void AscDevStubGenerator::UpdateParams()
 
 void AscDevStubGenerator::GenStubKernelFunc(const bool& isMix, const bool& isHardSync)
 {
+    KernelMetaType curKernelType = ExtractKernelType(kernelType_);
     if (!kernelInfo_.namespaces.empty()) {
         codeStream_ << "namespace " << JoinStringWithDelimiter(kernelInfo_.namespaces, "::") << " {\n";
     }
-    GenStubFuncDecl(kernelInfo_.kernelMangledName, kernelInfo_.kernelParameters, kernelType_[0]);
+    GenStubFuncDecl(kernelInfo_.kernelMangledName, kernelInfo_.kernelParameters, curKernelType);
     GenStubFuncImpl(isMix, isHardSync, "");
     if (!kernelInfo_.namespaces.empty()) {
         codeStream_ << "}\n";
@@ -307,8 +309,9 @@ void AscDevStubGenerator::GenStubKernelFunc(const bool& isMix, const bool& isHar
     if (!kernelInfo_.namespaces.empty()) {
         codeStream_ << "namespace " << JoinStringWithDelimiter(kernelInfo_.namespaces, "::") << " {\n";
     }
+    KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     GenStubFuncDecl(tempInst.instanceMangledName, tempInst.instanceKernelParameters,
-        GetBishengKTypeByCoreRatio(tempInst.ratio, kernelType_[0]));
+        GetBishengKTypeByCoreRatio(tempInst.ratio, defaultKtype));
     const std::string& templateArgs = GetTempArgsList(tempInst);
     GenStubFuncImpl(isMix, isHardSync, templateArgs);
     if (!kernelInfo_.namespaces.empty()) {

@@ -303,7 +303,11 @@ __aicore__ inline void MmadCal(
 {
     bool cmatrixInitVal = mmadParams.cmatrixInitVal && (!mmadParams.isBias);
     // Xd[31:0]: matrix c addr in L0C, Xd[63:32]: bias addr in bias table buffer;
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    uint64_t xd = (uint64_t)c;
+#else
     uint64_t xd = ((uint64_t)c) & 0xffffffffULL | ((bias & 0xffffffffULL) << 32);
+#endif
     // f162s32,f16s8, e4m3e4m3, e4m3s8, e4m3s4 algorithm will need configure fixval, others don`t
     if constexpr (SupportType<Tuple<Src0T, Src1T, DstT>, Tuple<half, half, int32_t>>()) {
         // f162s32

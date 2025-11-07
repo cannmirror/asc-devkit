@@ -27,6 +27,7 @@
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
+#include <algorithm>
 #include <memory>
 #include <sys/wait.h>
 
@@ -283,8 +284,7 @@ std::vector<std::string> SplitLines(const std::string& str) {
 }
 
 
-KernelMetaType GetBishengKTypeByCoreRatio(const CoreRatio& ratio,
-    const KernelMetaType& defaultKType)
+KernelMetaType GetBishengKTypeByCoreRatio(const CoreRatio& ratio, const KernelMetaType& defaultKType)
 {
     if (ratio.cubeNum == 1) {
         if (ratio.vecNum == 0) {
@@ -302,6 +302,25 @@ KernelMetaType GetBishengKTypeByCoreRatio(const CoreRatio& ratio,
         ASC_LOGE("Invalid core ratio: cubeNum %u, vecNum %u", ratio.cubeNum, ratio.vecNum);
     }
     return defaultKType;
+}
+
+KernelMetaType ExtractKernelType(const std::unordered_set<KernelMetaType> kTypeSet)
+{
+    // If kTypeSet has multiple kernel type, it means involving core ratio(cube, vec)
+    // It will need template instance's ratio to confirm the exact kernel type.
+    // Otherwise, it will always has one kernel type or return Max when empty
+    if (kTypeSet.size() == 0) {
+        return KernelMetaType::KERNEL_TYPE_MAX;
+    }
+    auto it = kTypeSet.begin();
+    return *it;
+}
+
+std::string ToUpper(const std::string& str)
+{
+    std::string tmpStr(str);
+    std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), ::toupper);
+    return tmpStr;
 }
 
 } // namespace AscPlugin

@@ -10,7 +10,7 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 
 
-from tbe.common.utils import log as logger
+from asc_op_compile_base.common.utils import log as logger
 from constant import (OpcOptions, CompileParam, OpImplType, OpFormatType, OpDataType, OpParamType)
 from opc_common import (check_input_and_output_for_simplified_key, check_attr_for_simpilified_key)
 

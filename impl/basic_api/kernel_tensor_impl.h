@@ -846,7 +846,7 @@ template <typename T> __aicore__ inline void LocalTensor<T>::SetSize(const uint3
         this->address_.dataLen = size / INT4_TWO;
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-        return this->address_.dataLen * INT2_FOUR;
+        this->address_.dataLen = size / INT2_FOUR;
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))

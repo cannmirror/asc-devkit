@@ -50,8 +50,8 @@ static const std::unordered_map<KernelMetaType, std::array<const char*, META_INF
             "{{F_TYPE_KTYPE, sizeof(unsigned int)}, K_TYPE_MIX_AIC_MAIN}",
             "{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 2}"}}};
 
-AscDevMetaGenerator::AscDevMetaGenerator(const KernelInfo &kernelInfo, const std::vector<KernelMetaType>& kernelType)
-    : kernelInfo_(kernelInfo), kernelType_(kernelType)
+AscDevMetaGenerator::AscDevMetaGenerator(const KernelInfo &kernelInfo,
+    const std::unordered_set<KernelMetaType>& kernelType) : kernelInfo_(kernelInfo), kernelType_(kernelType)
 {
     std::string buffer;
     buffer.reserve(CODE_BUFFER_LEN);
@@ -105,13 +105,14 @@ void AscDevMetaGenerator::GenMetaSection(const char* globalSymbol, const KernelM
 std::string AscDevMetaGenerator::GenCode()
 {
     ASC_LOGI("Kernel [%s] : generate meta section.", kernelInfo_.kernelName.c_str());
+    auto defaultKtype = ExtractKernelType(kernelType_);
     if (kernelInfo_.isTemplate) {
         for (const auto& inst : kernelInfo_.templateInstances) {
-            GenMetaSection(inst.instanceMangledName.c_str(), GetBishengKTypeByCoreRatio(inst.ratio, kernelType_[0]));
+            GenMetaSection(inst.instanceMangledName.c_str(), GetBishengKTypeByCoreRatio(inst.ratio, defaultKtype));
         }
     } else {
         // when no template involved, always have 1 kernel type
-        GenMetaSection(kernelInfo_.kernelMangledName.c_str(), kernelType_[0]);
+        GenMetaSection(kernelInfo_.kernelMangledName.c_str(), defaultKtype);
     }
     ASC_LOGD(
             "Kernel [%s] : meta section is [\n%s\n]", kernelInfo_.kernelName.c_str(), codeStream_.str().c_str());

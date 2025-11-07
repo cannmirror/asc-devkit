@@ -66,7 +66,7 @@ upgrade()
 	          while true
             do
                 read mrn
-                if [ "$mrn" = m ]; then
+                if [ "$mrn" = o ]; then
                     break
                 elif [ "$mrn" = r ]; then
                     [ -n "$vendor_installed_file"] && rm -rf "$vendor_installed_file"
@@ -150,4 +150,3 @@ fi
 
 echo "SUCCESS"
 exit 0
-

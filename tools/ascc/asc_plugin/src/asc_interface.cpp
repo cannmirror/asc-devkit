@@ -27,6 +27,7 @@
 #include "asc_compile_options.h"
 #include <dlfcn.h>
 #include <limits.h>
+#include <fstream>
 
 namespace AscPlugin {
 
@@ -121,8 +122,54 @@ void UpdateManglingNameSuffix(std::vector<std::string>& compileOptions, const Co
             compileOptions.emplace_back("-D" + manglingName + "=" + manglingName.substr(DEVICE_STUB_PREFIX_LEN));
         }
     }
-
 }
+
+void GenerateAclrtHeader(const std::string& headerPath)
+{
+    if (PathCheck(headerPath.c_str(), true) == PathStatus::NOT_EXIST) {
+        ASC_LOGE("GenerateAclrtHeader Path [%s]: path not exist.", headerPath.c_str());
+        return;
+    }
+
+    for (const auto& pair : g_kernelVarMap) {
+        std::vector<std::string> kernelVarList = pair.second;
+        std::string kernelName = kernelVarList[0];   // {func name, variable1 type, variable1 name..}
+        std::string fileName = headerPath + "/aclrtlaunch_" + kernelName + ".h";
+        std::string upperKernelName = ToUpper(kernelName);
+        ASC_LOGD("Generate ACLRT_LAUNCH_KERNEL header for %s.", fileName.c_str());
+
+        std::string variableStr;
+        uint32_t varListSize = kernelVarList.size();
+        // {func name, variable1 type, variable1 name..}
+        for (uint32_t i = 1; i < varListSize; i +=2) { // var list starts from index 1. 2 means in pair var type + name
+            variableStr += kernelVarList[i] + " " + kernelVarList[i+1];
+            if (i != varListSize - 2) {   // 2 means in pair {variable type, variable name}
+                variableStr += ", ";
+            }
+        }
+        ASC_LOGD("variableStr is %s.", variableStr.c_str());
+
+        std::ofstream outFile;
+        outFile.open(fileName, std::ios::app);
+        if (!outFile) {
+            ASC_LOGE("Failed to create outFile[%s]!", fileName.c_str());
+            return;
+        }
+        outFile << "#ifndef HEADER_ACLRTLAUNCH_" << upperKernelName << "_H\n";
+        outFile << "#define HEADER_ACLRTLAUNCH_" << upperKernelName << "_H\n";
+        outFile << "#include \"acl/acl_base.h\"\n\n";
+        outFile << "#ifndef ACLRT_LAUNCH_KERNEL\n";
+        outFile << "#define ACLRT_LAUNCH_KERNEL(kernel_func) aclrtlaunch_##kernel_func\n\n";
+        outFile << "#define aclrtlaunch_" << kernelName <<"(blockdim, ...) " << kernelName <<
+            "(blockdim, nullptr, __VA_ARGS__)\n";
+        outFile << "#endif\n\n";
+        outFile << "void " << kernelName << "(uint32_t __ascc_blockDim__, void* __ascc_hold__, void* __ascc_stream__, "
+            << variableStr << ");\n";
+        outFile << "#endif\n";
+        outFile.close();
+    }
+}
+
 
 } // namespace
 
@@ -209,6 +256,11 @@ int32_t PluginPrologue(const char** result, const char* config)
     if (manager.IsDumpOn()) {
         manager.SetAscendMetaFlag(ASC_PRINT_MASK);
     }
+
+    if (!manager.GetAclrtHeaderPath().empty()) {
+        GenerateAclrtHeader(manager.GetAclrtHeaderPath());
+    }
+
     manager.UpdateOneCoreDumpSize();
     ASC_LOGD("After AST analysis, hasPrintf_ is %d, hasAssert_ is %d, oneCoreDumpSize_ is %u.", manager.HasPrintf(),
         manager.HasAssert(), manager.GetOneCoreDumpSize());
@@ -251,7 +303,8 @@ int32_t PluginGenKernel(const char** result, const char* info)
 
     PluginKernelType pluginKtype = PluginKernelType::MIX; // if multi kernel type means core_ratio(x, y) => mix
     if (kernelType.size() == 1) {
-        pluginKtype = META_KTYPE_TO_KTYPE.at(kernelType[0]);
+        KernelMetaType curKernelType = ExtractKernelType(kernelType);
+        pluginKtype = META_KTYPE_TO_KTYPE.at(curKernelType);
     }
     GenKernelResult res = {hostStub, deviceStub, metaInfo, pluginKtype};
     return DumpResultInfo(res, result);

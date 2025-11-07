@@ -15,8 +15,8 @@ Parse ops-info and store op info
 import os
 import json
 from pathlib import Path
-from tbe.common.platform import platform_info
-from tbe.common.utils import log as logger
+from asc_op_compile_base.common.platform import platform_info
+from asc_op_compile_base.common.utils import log as logger
 from constant import (OpParamType, AttrtypeMapDict)
 from opc_common import read_json_file
 

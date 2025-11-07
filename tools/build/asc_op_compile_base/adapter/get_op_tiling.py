@@ -974,7 +974,7 @@ def _get_tiling_data_without_time_stamp(class_name):
 def _get_tiling_data_with_time_stamp(class_name):
     class_body = "#ifdef ASCENDC_TIME_STAMP_ON\n"
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
-        class_body = "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
     else:
         class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                            \\\n"
         class_body += f"    {class_name} tiling_data;                                    \\\n"
@@ -996,7 +996,7 @@ def _get_tiling_data_with_time_stamp(class_name):
     class_body += "#else\n"
 
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
-        class_body = "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
     else:
         class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                            \\\n"
         class_body += f"    {class_name} tiling_data;                                    \\\n"
@@ -1117,7 +1117,7 @@ def _gen_class_body(short_soc_version, tiling_size, tiling_arr_data, tiling_stru
     else:
         tiling_assign_str = f"const uint64_t  __ascendc_arr_##%s[{tiling_size}] = {{{tiling_arr_data_str}}};"
         if global_var_storage.get_variable("ascendc_tiling_no_register"):
-            class_body = "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+            class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
         else:
             class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                                       \\\n"
             class_body += \
@@ -1170,18 +1170,18 @@ def gen_static_shape_v2(optype:str, tiling_struct: str, tiling_raw_data: str):
     class_body += "#define __aicore__ [aicore]\n"
     class_body += "#endif\n"
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
-        class_body += "#define STR(x) #x \n"
-        class_body += "#define EXPAND_AND_STRINGIFY(x) STR(x) \n"
-        class_body += "#define PASTE(x, y) x##y \n"
-        class_body += "#define EXPAND_AND_PASTE(x, y) PASTE(x, y) \n"
+        class_body += "#define ASCENDC_INTERNAL_STR(x) #x \n"
+        class_body += "#define ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(x) ASCENDC_INTERNAL_STR(x) \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT_IMPL(x, y) x##y \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT(x, y) ASCENDC_INTERNAL_CONCAT_IMPL(x, y) \n"
         class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \\\n"
-        class_body += "    static constexpr uint64_t EXPAND_AND_PASTE(__ascend_tiling_struct_, \
-            EXPAND_AND_PASTE(TILING_KEY_VAR, counter)) \\\n"
+        class_body += "    static constexpr uint64_t ASCENDC_INTERNAL_CONCAT(__ascend_tiling_struct_, \
+            ASCENDC_INTERNAL_CONCAT(TILING_KEY_VAR, counter)) \\\n"
         class_body += "__attribute__((used, section( \\\n"
         class_body += "        \".ascendc_tiling.\" \\\n"
-        class_body += "        STR(tiling_struct) \"_\" \\\n"
-        class_body += "        EXPAND_AND_STRINGIFY(TILING_KEY_VAR) \".\" \\\n"
-        class_body += "        EXPAND_AND_STRINGIFY(counter) \\\n"
+        class_body += "        ASCENDC_INTERNAL_STR(tiling_struct) \"_\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(TILING_KEY_VAR) \".\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(counter) \\\n"
         class_body += "    ))) = sizeof(tiling_struct); \n"
     else:
         class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n"
@@ -1206,18 +1206,18 @@ def gen_dynamic_shape_v2(optype:str, tiling_struct: str):
     class_body += "#define __aicore__ [aicore]\n"
     class_body += "#endif\n"
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
-        class_body += "#define STR(x) #x \n"
-        class_body += "#define EXPAND_AND_STRINGIFY(x) STR(x) \n"
-        class_body += "#define PASTE(x, y) x##y \n"
-        class_body += "#define EXPAND_AND_PASTE(x, y) PASTE(x, y) \n"
+        class_body += "#define ASCENDC_INTERNAL_STR(x) #x \n"
+        class_body += "#define ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(x) ASCENDC_INTERNAL_STR(x) \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT_IMPL(x, y) x##y \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT(x, y) ASCENDC_INTERNAL_CONCAT_IMPL(x, y) \n"
         class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \\\n"
-        class_body += "    static constexpr uint64_t EXPAND_AND_PASTE(__ascend_tiling_struct_, \
-            EXPAND_AND_PASTE(TILING_KEY_VAR, counter)) \\\n"
+        class_body += "    static constexpr uint64_t ASCENDC_INTERNAL_CONCAT(__ascend_tiling_struct_, \
+            ASCENDC_INTERNAL_CONCAT(TILING_KEY_VAR, counter)) \\\n"
         class_body += "__attribute__((used, section( \\\n"
         class_body += "        \".ascendc_tiling.\" \\\n"
-        class_body += "        STR(tiling_struct) \"_\" \\\n"
-        class_body += "        EXPAND_AND_STRINGIFY(TILING_KEY_VAR) \".\" \\\n"
-        class_body += "        EXPAND_AND_STRINGIFY(counter) \\\n"
+        class_body += "        ASCENDC_INTERNAL_STR(tiling_struct) \"_\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(TILING_KEY_VAR) \".\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(counter) \\\n"
         class_body += "    ))) = sizeof(tiling_struct); \n"
     else:
         class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n"

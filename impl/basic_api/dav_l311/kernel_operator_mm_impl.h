@@ -500,7 +500,7 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ uint8_t* dst, __cbuf__ uint8
  * BroadCastVecToMM                                             *
  * ************************************************************************************************* */
 template <typename T>
-__aicore__ inline void BroadCastVecToMMCal(__cc__ T* dst, __ubuf__ T* src, const int32_t blockCount,
+__aicore__ inline void BroadCastVecToMMCal(__cc__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t blockCount,
     const uint8_t blockLen, const uint8_t srcGap, const uint8_t dstGap)
 {
     ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupported broadcast from ub to l0c in Ascend910B1"); });

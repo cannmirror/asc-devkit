@@ -16,6 +16,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
 #include "kernel_operator_common_impl.h"
+#include "kernel_operator_vec_template_impl.h"
 namespace AscendC {
 /* **************************************************************************************************
  * DataCopy                                             *
@@ -52,7 +53,7 @@ __aicore__ inline void CopyGmToUbufAlignV2(__ubuf__ T* dst, __gm__ T* src, const
         copy_gm_to_ubuf_align_v2((__ubuf__ uint8_t*)dst, (__gm__ uint8_t*)src, sid, blockCount, burstLength,
             leftPaddingCount, rightPaddingCount, isPad, srcStride310, dstStride310);
     } else {
-        ASSERT(false && "unsupported data type of copy from gm to ubuf on current device");
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from gm to ubuf on current device"); });
     }
 }
 
@@ -99,7 +100,7 @@ __aicore__ inline void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, const
         copy_gm_to_cbuf_align_v2((__cbuf__ uint8_t*)dst, (__gm__ uint8_t*)src, (uint8_t)sid, blockCount, burstLength,
             leftPadding, rightPadding, isPad, actSrcStride, actDstStride);
     } else {
-        ASSERT(false && "unsupported data type of copy from gm to cbuf on current device");
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from gm to cbuf on current device"); });
     }
 }
 
@@ -176,7 +177,7 @@ __aicore__ inline void DataCopyL12BTImpl(const uint64_t dst, __cbuf__ T* src, co
         copy_cbuf_to_bt(dst, src, (bool)isenableConv, intriParams.blockCount, blockLenAlign,
             intriParams.srcStride, dstStrideAlign);
     } else {
-        ASSERT(false && "unsupported data type of copy from cbuf to bt on this version");
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from cbuf to bt on this version"); });
     }
 }
 
@@ -228,7 +229,7 @@ __aicore__ inline void DataCopyL12PTImpl(const uint64_t dst, __cbuf__ T* src, co
 template <typename T>
 __aicore__ inline void TransND2NZ(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t high, uint16_t width, T scalar)
 {
-    ASSERT(false && "unsupported data copy from ub to gm nd2nz on this version");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from ub to gm nd2nz on this version"); });
 }
 
 template <typename T>
@@ -359,92 +360,108 @@ template <typename T>
 __aicore__ inline void DataCopyUB2GMNZ2NDImplBase(__gm__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t high, uint16_t width,
     uint16_t srcNStride, uint16_t dstDStride)
 {
-    ASSERT(false && "unsupported data copy from ub to gm nz2nd on this version");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from ub to gm nz2nd on this version"); });
 }
 
 template <typename T>
 __aicore__ inline void DataCopyUB2GMNZ2NDImpl(__gm__ T* dst, __ubuf__ T* src, const Nz2NdParamsFull& intriParams)
 {
-    ASSERT(false && "unsupported data copy from ub to gm nz2nd on this version");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from ub to gm nz2nd on this version"); });
 }
 
 template <typename T>
 __aicore__ inline void DataCopyL12GMNZ2NDImpl(__gm__ T* dst, __cbuf__ T* src, const Nz2NdParamsFull& intriParams)
 {
-    ASSERT(false && "unsupported data copy from cbuf to gm with nz2nd");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from cbuf to gm with nz2nd"); });
 }
 
 /* **************************************************************************************************
  * Copy                                             *
  * ************************************************************************************************* */
-// Copy::Level 0 - mask bit mode
-template <typename T, bool isSetMask = true>
-__aicore__ inline void CopyImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask[2], const uint8_t repeatTime,
-    const CopyRepeatParams &repeatParams)
+ template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
+__aicore__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTimes, const CopyRepeatParams &repeatParams,
+    __ubuf__ uint64_t *maskBuf)
 {
-    ASCENDC_ASSERT((sizeof(T) == B16_BYTE_SIZE || sizeof(T) == B32_BYTE_SIZE),
-                   { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from ubuf to ubuf on this version"); });
-    __ubuf__ uint8_t *maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
-    *((__ubuf__ uint64_t*)maskBuf) = mask[0];
-    *((__ubuf__ uint64_t*)maskBuf + 1) = mask[1];
-
-    event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
-    SetFlag<HardEvent::S_V>(eventIdSToV);
-    WaitFlag<HardEvent::S_V>(eventIdSToV);
-    if constexpr (sizeof(T) == B16_BYTE_SIZE) {
-        __VEC_SCOPE__
-        {
-            RegTensor<T> vreg;
-            MaskReg preg;
-            plds(preg, ((__ubuf__ uint32_t *)maskBuf), 0, US);
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-                DataCopy<T, PostLiteral::POST_MODE_UPDATE>(
-                    vreg, src, repeatParams.srcStride, repeatParams.srcRepeatSize, preg);
-                DataCopy<T, PostLiteral::POST_MODE_UPDATE>(
-                    dst, vreg, repeatParams.dstStride, repeatParams.dstRepeatSize, preg);
-            }
+    uint32_t count = Internal::VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint16_t newRepeatTimes = 0;
+    newRepeatTimes = Internal::VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTimes);
+    MicroAPI::MaskReg maskReg;
+    constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
+    if constexpr (isNormalMode) {
+        maskReg = Internal::VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
+        for (uint16_t index = 0; index < newRepeatTimes; ++index) {
+            MicroAPI::RegTensor<T> srcVreg;
+            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+                src + index * repeatParams.srcRepeatSize * ElePerBlkT, repeatParams.srcStride, maskReg);
+            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+                dst + index * repeatParams.dstRepeatSize * ElePerBlkT, srcVreg, repeatParams.dstStride, maskReg);
         }
-    } else if constexpr (sizeof(T) == B32_BYTE_SIZE) {
-        __VEC_SCOPE__
-        {
-            RegTensor<T> vreg;
-            MaskReg preg;
-            plds(preg, ((__ubuf__ uint32_t *)maskBuf), 0, US);
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
+    } else {
+        MicroAPI::RegTensor<T> srcReg;
+        MicroAPI::MaskReg maskReg;
+        uint32_t sreg;
+        __ubuf__ T *dstTmp = dst;
+        __ubuf__ T *srcTmp = src;
+        uint32_t srcRepeatStride = repeatParams.srcStride * DEFAULT_BLK_NUM;
+        uint32_t dstRepeatStride = repeatParams.dstStride * DEFAULT_BLK_NUM;
+        sreg = static_cast<uint32_t>(count);
+        for (uint16_t i = 0; i < static_cast<uint16_t>(newRepeatTimes); ++i) {
+                maskReg = MicroAPI::UpdateMask<T>(sreg);
                 MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-                DataCopy<T, PostLiteral::POST_MODE_UPDATE>(
-                    vreg, src, repeatParams.srcStride, repeatParams.srcRepeatSize, preg);
-                DataCopy<T, PostLiteral::POST_MODE_UPDATE>(
-                    dst, vreg, repeatParams.dstStride, repeatParams.dstRepeatSize, preg);
-            }
+                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                    srcReg, src, repeatParams.srcStride, srcRepeatStride, maskReg);
+                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                    dst, srcReg, repeatParams.dstStride, dstRepeatStride, maskReg);
         }
     }
-    AscendCUtils::FreeTemporaryBuffer<uint8_t>(maskBuf);
 }
 
-// Copy::Level 0 - mask count mode
+template <bool isSetMask, bool isMaskBitMode, typename T>
+__aicore__ inline void VecCopyLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTimes, const CopyRepeatParams &repeatParams)
+{
+    if constexpr (isMaskBitMode) {
+        ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+    } else {
+        ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
+    }
+    __ubuf__ uint64_t *maskBuf = nullptr;
+
+    if (Internal::IsCounterMode()) {
+        if constexpr (!isSetMask) {
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
+        }
+        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, src, maskArray, maskCount, repeatTimes,
+            repeatParams, maskBuf);
+        if constexpr (!isSetMask) {
+            AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
+        }
+    } else {
+        if constexpr (isMaskBitMode && isSetMask) {
+            SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
+        }
+        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, true, T>(dst, src, maskArray, maskCount, repeatTimes,
+            repeatParams, maskBuf);
+    }
+}
+
+// Copy::Level 0 - mask bit mode
 template <typename T, bool isSetMask = true>
-__aicore__ inline void CopyImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask, const uint8_t repeatTime,
+__aicore__ inline void CopyImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask[], const uint8_t repeatTimes,
     const CopyRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT((sizeof(T) == B16_BYTE_SIZE || sizeof(T) == B32_BYTE_SIZE),
-                   { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from ubuf to ubuf on this version"); });
-    if constexpr (sizeof(T) == B16_BYTE_SIZE || sizeof(T) == B32_BYTE_SIZE) {
-        __VEC_SCOPE__
-        {
-            RegTensor<T> vreg;
-            uint32_t sreg = (uint32_t)mask;
-            MaskReg preg = CreatePredicate<T>(sreg);
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-                DataCopy<T, PostLiteral::POST_MODE_UPDATE>(
-                    vreg, src, repeatParams.srcStride, repeatParams.srcRepeatSize, preg);
-                DataCopy<T, PostLiteral::POST_MODE_UPDATE>(
-                    dst, vreg, repeatParams.dstStride, repeatParams.dstRepeatSize, preg);
-            }
-        }
-    }
+    static_assert(SupportBytes<T, 2, 4>(), "Copy from ubuf to ubuf only support type b16/b32 on current device");
+    VecCopyLevel0Template<isSetMask, true>(dst, src, mask, 0, repeatTimes, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void CopyImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t mask, const uint8_t repeatTimes,
+    const CopyRepeatParams &repeatParams)
+{
+    static_assert(SupportBytes<T, 2, 4>(), "Copy from ubuf to ubuf only support type b16/b32 on current device");
+    VecCopyLevel0Template<isSetMask, false>(dst, src, nullptr, mask, repeatTimes, repeatParams);
 }
 
 /* **************************************************************************************************
@@ -455,7 +472,7 @@ template <typename T, typename U>
 __aicore__ inline void DataCopyL12L0CImpl(__cc__ T* dst, __cbuf__ U* src, const DataCopyParams& intriParams,
     const DataCopyEnhancedParams& enhancedParams)
 {
-    ASSERT(false && "unsupported data copy from cbuf to l0c on this version");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from cbuf to l0c on this version"); });
 }
 
 /* **************************************************************************************************
@@ -642,81 +659,81 @@ __aicore__ inline void DataCopyPadL12GMImpl(__gm__ T* dst, __cbuf__ T* src, cons
 template <typename T>
 __aicore__ inline void DataCopyGM2UBND2NZImpl(__ubuf__ T* dst, __gm__ T* src, const Nd2NzParams& intriParams)
 {
-    ASSERT(false && "unsupported data copy from gm to ubuf nd2nz on this version");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from gm to ubuf nd2nz on this version"); });
 }
 
 template <typename T>
 __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, const DataCopyParams& intriParams)
 {
-    ASSERT(false && "unsupported data copy from ubuf to cbuf with pad on this version");
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data copy from ubuf to cbuf with pad on this version"); });
 }
 
 template <typename T>
 __aicore__ inline void DataCopyUB2L1Intf(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyParams &intriParams)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const DataCopyParams &intriParams)
 {
-    DataCopyUB2L1Impl((__cbuf__ T *)dst.GetPhyAddr(), (__ubuf__ T *)src.GetPhyAddr(), intriParams);
+    DataCopyUB2L1Impl((__cbuf__ T *)dstLocal.GetPhyAddr(), (__ubuf__ T *)srcLocal.GetPhyAddr(), intriParams);
 }
 
 template <typename T>
-__aicore__ inline void DataCopyUB2L0CIntf(const LocalTensor<T> &dst, const LocalTensor<T> &src,
+__aicore__ inline void DataCopyUB2L0CIntf(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
     DataCopyUB2L0CImpl(
-        (__cc__ T *)dst.GetPhyAddr(), (__ubuf__ T *)src.GetPhyAddr(), intriParams, enhancedParams);
+        (__cc__ T *)dstLocal.GetPhyAddr(), (__ubuf__ T *)srcLocal.GetPhyAddr(), intriParams, enhancedParams);
 }
 
 #pragma begin_pipe(V)
 template <typename T>
 __aicore__ inline void DataCopyUB2UBIntf(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyParams &intriParams)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const DataCopyParams &intriParams)
 {
-    DataCopyUB2UBImpl((__ubuf__ T *)dst.GetPhyAddr(), (__ubuf__ T *)src.GetPhyAddr(), intriParams);
+    DataCopyUB2UBImpl((__ubuf__ T *)dstLocal.GetPhyAddr(), (__ubuf__ T *)srcLocal.GetPhyAddr(), intriParams);
 }
 #pragma end_pipe
 
 template <typename T>
 __aicore__ inline void DataCopyL12UBIntf(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyParams &intriParams)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const DataCopyParams &intriParams)
 {
-    DataCopyL12UBImpl((__ubuf__ T *)dst.GetPhyAddr(), (__cbuf__ T *)src.GetPhyAddr(), intriParams);
+    DataCopyL12UBImpl((__ubuf__ T *)dstLocal.GetPhyAddr(), (__cbuf__ T *)srcLocal.GetPhyAddr(), intriParams);
 }
 
 template <typename T>
-__aicore__ inline void __in_pipe__(MTE1) __out_pipe__(MTE1) DataCopyL12L0CIntf(const LocalTensor<T> &dst,
-    const LocalTensor<T> &src, const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
+__aicore__ inline void __in_pipe__(MTE1) __out_pipe__(MTE1) DataCopyL12L0CIntf(const LocalTensor<T> &dstLocal,
+    const LocalTensor<T> &srcLocal, const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
     DataCopyL12L0CImpl(
-        (__cc__ T *)dst.GetPhyAddr(), (__cbuf__ T *)src.GetPhyAddr(), intriParams, enhancedParams);
+        (__cc__ T *)dstLocal.GetPhyAddr(), (__cbuf__ T *)srcLocal.GetPhyAddr(), intriParams, enhancedParams);
 }
 
 template <typename T>
-__aicore__ inline void DataCopyL0C2UBIntf(const LocalTensor<T> &dst, const LocalTensor<T> &src,
+__aicore__ inline void DataCopyL0C2UBIntf(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
     DataCopyL0C2UBImpl(
-        (__ubuf__ T *)dst.GetPhyAddr(), (__cc__ T *)src.GetPhyAddr(), intriParams, enhancedParams);
+        (__ubuf__ T *)dstLocal.GetPhyAddr(), (__cc__ T *)srcLocal.GetPhyAddr(), intriParams, enhancedParams);
 }
 
 template <typename T>
 __aicore__ inline __in_pipe__(MTE1) __out_pipe__(MTE1) void DataCopyL12BTIntf(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyParams &repeatParams)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const DataCopyParams &repeatParams)
 {
-    DataCopyL12BTImpl((uint64_t)dst.GetPhyAddr(), (__cbuf__ T *)src.GetPhyAddr(), (uint16_t)0, repeatParams);
+    DataCopyL12BTImpl((uint64_t)dstLocal.GetPhyAddr(), (__cbuf__ T *)srcLocal.GetPhyAddr(), (uint16_t)0, repeatParams);
 }
 
 template <typename T>
 __aicore__ inline __in_pipe__(FIX) __out_pipe__(FIX) void DataCopyL12FBIntf(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyParams &repeatParams)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const DataCopyParams &repeatParams)
 {
-    DataCopyL12FBImpl((__fbuf__ T *)dst.GetPhyAddr(), (__cbuf__ T *)src.GetPhyAddr(), repeatParams);
+    DataCopyL12FBImpl((__fbuf__ T *)dstLocal.GetPhyAddr(), (__cbuf__ T *)srcLocal.GetPhyAddr(), repeatParams);
 }
 
 template <typename T>
 __aicore__ inline __in_pipe__(FIX) __out_pipe__(FIX) void DataCopyL12PTIntf(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyParams &repeatParams)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const DataCopyParams &repeatParams)
 {
-    DataCopyL12PTImpl((uint64_t)dst.GetPhyAddr(), (__cbuf__ T *)src.GetPhyAddr(), repeatParams);
+    DataCopyL12PTImpl((uint64_t)dstLocal.GetPhyAddr(), (__cbuf__ T *)srcLocal.GetPhyAddr(), repeatParams);
 }
 
 } // namespace AscendC

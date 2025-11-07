@@ -1,4 +1,17 @@
-find_program(CMAKE_AICPU_COMPILER NAMES "bisheng" PATHS "$ENV{ASCEND_HOME_PATH}/compiler/ccec_compiler/bin" DOC "AICPU Compiler")
+set(DEFAULT_ASCEND_PATH "/usr/local/Ascend/ascend-toolkit/latest/")
+if(NOT DEFINED ASCEND_CANN_PACKAGE_PATH)
+    message(WARNING "ASCEND_CANN_PACKAGE_PATH is not set. Set to env variable ASCEND_HOME_PATH.")
+    if(NOT EXISTS $ENV{ASCEND_HOME_PATH})
+        message(WARNING "Env variable ASCEND_HOME_PATH is not set. Set to default value ${DEFAULT_ASCEND_PATH}.")
+        set(ASCEND_CANN_PACKAGE_PATH ${DEFAULT_ASCEND_PATH} CACHE PATH "Path for CANN package")
+    else()
+        set(ASCEND_CANN_PACKAGE_PATH $ENV{ASCEND_HOME_PATH} CACHE PATH "Path for CANN package")
+    endif()
+else()
+    set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_CANN_PACKAGE_PATH} CACHE PATH "Path for CANN package")
+endif()
+
+find_program(CMAKE_AICPU_COMPILER NAMES "bisheng" PATHS "$ENV{ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler/bin" DOC "AICPU Compiler")
 mark_as_advanced(CMAKE_AICPU_COMPILER)
 
 message(STATUS "Detecting AICPU compiler: " ${CMAKE_AICPU_COMPILER})

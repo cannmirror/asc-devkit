@@ -17,7 +17,7 @@
 #define __INCLUDE_ASC_AST_DEVICE_CONSUMER_H__
 
 #include <utility>
-
+#include <unordered_set>
 #include <clang/AST/ASTConsumer.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 #include <clang/Frontend/CompilerInstance.h>
@@ -59,11 +59,11 @@ struct DenseMapInfo<AscPlugin::KernelFuncInfo> {
 namespace AscPlugin {
 
 void StoreFuncKernelType(const AscPlugin::KernelFuncInfo &kernelKey, const std::string &kernelTypeStr);
-std::vector<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo);
-std::pair<std::vector<KernelMetaType>, KfcScene> GetKernelFuncScene(const AscPlugin::KernelInfo& kernelInfo);
+std::unordered_set<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo);
+std::pair<std::unordered_set<KernelMetaType>, KfcScene> GetKernelFuncScene(const AscPlugin::KernelInfo& kernelInfo);
 void GetMangledName(const clang::FunctionDecl *funcDecl);
 KernelFuncInfo GetKernelInfo(const clang::FunctionDecl *funcDecl);
-extern llvm::DenseMap<KernelFuncInfo, std::pair<std::vector<KernelMetaType>, KfcScene>> g_kernelFuncType;
+extern llvm::DenseMap<KernelFuncInfo, std::pair<std::unordered_set<KernelMetaType>, KfcScene>> g_kernelFuncType;
 
 class ASTDeviceVisitor : public clang::RecursiveASTVisitor<ASTDeviceVisitor> {
 public:

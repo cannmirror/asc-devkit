@@ -62,8 +62,6 @@ private:
         "-O3",
         "-mllvm -cce-aicore-stack-size=0x8000",
         "-mllvm -cce-aicore-function-stack-size=0x8000",
-        "-mllvm -cce-aicore-record-overflow=true",
-        "-mllvm -cce-aicore-addr-transform",
         "-mllvm -cce-aicore-dcci-insert-for-scalar=false"
     };
     const std::vector<std::string> aicOptions_ = {
@@ -79,8 +77,6 @@ private:
         "-O3",
         "-mllvm -cce-aicore-stack-size=0x8000",
         "-mllvm -cce-aicore-function-stack-size=0x8000",
-        "-mllvm -cce-aicore-record-overflow=true",
-        "-mllvm -cce-aicore-addr-transform",
         "-mllvm -cce-aicore-dcci-insert-for-scalar=false"
     };
     CompileArgs args_;

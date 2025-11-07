@@ -118,17 +118,17 @@ __aicore__ inline FixpipeParams<half> GetFixpipeParamImpl(uint32_t dumpSize)
 }
 
 template <typename T>
-__aicore__ inline uint32_t CheckValidPosition(const LocalTensor<T>& cachedData)
+__aicore__ inline uint32_t CheckValidPosition(const LocalTensor<T>& tensor)
 {
     // set the head struct value
     uint32_t position = 0;
-    if ((Hardware)GetPhyType((TPosition)cachedData.GetPosition()) == Hardware::UB) {
+    if ((Hardware)GetPhyType((TPosition)tensor.GetPosition()) == Hardware::UB) {
         position = static_cast<uint32_t>(AscendC::Hardware::UB);
         return position;
-    } else if ((Hardware)GetPhyType((TPosition)cachedData.GetPosition()) == Hardware::L1) {
+    } else if ((Hardware)GetPhyType((TPosition)tensor.GetPosition()) == Hardware::L1) {
         position = static_cast<uint32_t>(AscendC::Hardware::L1);
         return position;
-    } else if ((Hardware)GetPhyType((TPosition)cachedData.GetPosition()) == Hardware::L0C) {
+    } else if ((Hardware)GetPhyType((TPosition)tensor.GetPosition()) == Hardware::L0C) {
         position = static_cast<uint32_t>(AscendC::Hardware::L0C);
         return position;
     } else {
@@ -170,9 +170,9 @@ __aicore__ inline void DumpShapeImpl(const ShapeInfo& shapeInfo)
 }
 
 template <typename T>
-__aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& tensor, uint32_t desc, uint32_t dumpSize)
 {
-    uint32_t position = CheckValidPosition(src);
+    uint32_t position = CheckValidPosition(tensor);
     // set the head struct value
     if (position == 0) {
         ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "dump tensor only support dump tensor from local to gm"); });
@@ -209,7 +209,7 @@ __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_TYPE_POS) = static_cast<uint32_t>(DumpType::DUMP_TENSOR);
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_LEN_POS) = offset + DUMP_MSG_HEAD_SIZE;
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_ADDR_POS) =
-        static_cast<uint32_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr()));
+        static_cast<uint32_t>(reinterpret_cast<uintptr_t>(tensor.GetPhyAddr()));
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DATA_TYPE_POS) = GetDataType(data);
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DESC_POS) = desc;
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_BUFFERID_POS) = 0;
@@ -220,17 +220,17 @@ __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_
     ptr->dumpOffset -= sizeof(DumpMessageHead);
     dcci((__gm__ uint64_t *)ptr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     DataCopyParams repeatParams = GetDataCopyParamImpl(offset);
-    const Hardware srcHWPos = GetPhyType((QuePosition)src.GetPosition());
+    const Hardware srcHWPos = GetPhyType((QuePosition)tensor.GetPosition());
 
     PipeBarrier<PIPE_ALL>();
     if (srcHWPos == Hardware::UB) {
-        DataCopyUB2GMImpl((__gm__ T *)(ptr->dumpAddr), (__ubuf__ T *)src.GetPhyAddr(), repeatParams);  // UB to GM
+        DataCopyUB2GMImpl((__gm__ T *)(ptr->dumpAddr), (__ubuf__ T *)tensor.GetPhyAddr(), repeatParams);  // UB to GM
     } else if (srcHWPos == Hardware::L1) {
-        DataCopyL12GMImpl((__gm__ T *)(ptr->dumpAddr), (__cbuf__ T *)src.GetPhyAddr(), repeatParams);  // L1 to GM
+        DataCopyL12GMImpl((__gm__ T *)(ptr->dumpAddr), (__cbuf__ T *)tensor.GetPhyAddr(), repeatParams);  // L1 to GM
     } else if (srcHWPos == Hardware::L0C) {
         // L0C to GM
         FixpipeParams<half> fixpipeParams = GetFixpipeParamImpl(dumpSize);
-        copy_matrix_cc_to_gm((__gm__ half *)(ptr->dumpAddr), (__cc__ half *)(src.GetPhyAddr()), 0,
+        copy_matrix_cc_to_gm((__gm__ half *)(ptr->dumpAddr), (__cc__ half *)(tensor.GetPhyAddr()), 0,
             fixpipeParams.nSize, fixpipeParams.mSize, fixpipeParams.dstStride,
             fixpipeParams.srcStride, (uint8_t)fixpipeParams.preClipReluMode, fixpipeParams.unitFlag,
             fixpipeParams.quantParams.preQuantMode, fixpipeParams.preReluMode, fixpipeParams.channelSplitEnable,
@@ -257,17 +257,17 @@ __aicore__ inline uint32_t GetLoopCount(uint32_t offset)
 }
 
 template <typename T>
-__aicore__ inline void InitTmpTensor(LocalTensor<T>& tmp, uint8_t quePos)
+__aicore__ inline void InitTmpTensor(LocalTensor<T>& tmpLocal, uint8_t quePos)
 {
-    TBuffAddr tbuf_tmp;
-    tbuf_tmp.logicPos = quePos;
-    tmp.SetAddr(tbuf_tmp);
+    TBuffAddr tbuf_tmpLocal;
+    tbuf_tmpLocal.logicPos = quePos;
+    tmpLocal.SetAddr(tbuf_tmpLocal);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    tmp.address_.absAddr = reinterpret_cast<uint8_t *>(ConstDefiner::Instance().cpuUB);
+    tmpLocal.address_.absAddr = reinterpret_cast<uint8_t *>(ConstDefiner::Instance().cpuUB);
 #else
-    tmp.address_.bufferAddr = get_imm(0);
+    tmpLocal.address_.bufferAddr = get_imm(0);
 #endif
-    tmp.address_.dataLen = ONE_DUMP_BACKUP_SIZE;
+    tmpLocal.address_.dataLen = ONE_DUMP_BACKUP_SIZE;
 }
 __aicore__ inline bool CheckDumpValid(uint32_t offset)
 {
@@ -299,7 +299,7 @@ __aicore__ inline bool CheckDumpValid(uint32_t offset)
 }
 
 template <typename T>
-__aicore__ inline void DumpBlockInfoImpl(const GlobalTensor<T>& glob, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpBlockInfoImpl(const GlobalTensor<T>& globTensor, uint32_t desc, uint32_t dumpSize)
 {
     uint64_t dumpWorkspaceStart = reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved) - DUMP_WORKSPACE_SIZE;
     uint32_t position =  static_cast<uint32_t>(AscendC::Hardware::GM);
@@ -310,7 +310,7 @@ __aicore__ inline void DumpBlockInfoImpl(const GlobalTensor<T>& glob, uint32_t d
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_TYPE_POS) = static_cast<uint32_t>(DumpType::DUMP_TENSOR);
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_LEN_POS) = dataOffset + DUMP_MSG_HEAD_SIZE;
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_ADDR_POS) =
-        static_cast<uint32_t>(reinterpret_cast<uintptr_t>(glob.GetPhyAddr()));
+        static_cast<uint32_t>(reinterpret_cast<uintptr_t>(globTensor.GetPhyAddr()));
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DATA_TYPE_POS) = GetDataType(data);
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DESC_POS) = desc;
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_BUFFERID_POS) = 0;
@@ -323,18 +323,18 @@ __aicore__ inline void DumpBlockInfoImpl(const GlobalTensor<T>& glob, uint32_t d
 }
 
 template <typename T>
-__aicore__ inline void DumpGMTailImpl(LocalTensor<T>& tmp, uint32_t alignSize, uint64_t tmpAddr,
+__aicore__ inline void DumpGMTailImpl(LocalTensor<T>& tmpLocal, uint32_t alignSize, uint64_t tmpAddr,
                                       uint64_t gmAddr, uint32_t offset)
 {
     DataCopyParams tailParams = GetDataCopyParamImpl((alignSize + ONE_BLK_SIZE - 1) & (~(ONE_BLK_SIZE - 1)));
-    DataCopyGM2UBImpl((__ubuf__ T *)tmp.GetPhyAddr(), (__gm__ T *)(tmpAddr + offset - alignSize), tailParams);
+    DataCopyGM2UBImpl((__ubuf__ T *)tmpLocal.GetPhyAddr(), (__gm__ T *)(tmpAddr + offset - alignSize), tailParams);
     PipeBarrier<PIPE_ALL>();
-    DataCopyUB2GMImpl((__gm__ T *)gmAddr, (__ubuf__ T *)tmp.GetPhyAddr(), tailParams);
+    DataCopyUB2GMImpl((__gm__ T *)gmAddr, (__ubuf__ T *)tmpLocal.GetPhyAddr(), tailParams);
     PipeBarrier<PIPE_ALL>();
 }
 
 template <typename T>
-__aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& tensor, uint32_t desc, uint32_t dumpSize)
 {
     uint32_t position = static_cast<uint32_t>(AscendC::Hardware::GM);
     T data;
@@ -342,35 +342,35 @@ __aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t 
     if (!CheckDumpValid(offset)) {
         return;
     }
-    DumpBlockInfoImpl(src, desc, dumpSize);
+    DumpBlockInfoImpl(tensor, desc, dumpSize);
     uint64_t dumpWorkspaceStart = reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved) - DUMP_WORKSPACE_SIZE;
     __gm__ BlockInfo *ptr = (__gm__ BlockInfo *)(dumpWorkspaceStart + DUMP_UINTSIZE * GetDumpBlockIdx());
     DataCopyParams backupParams = GetDataCopyParamImpl(ONE_DUMP_BACKUP_SIZE);  // 1K unit
-    LocalTensor<T> tmp;
+    LocalTensor<T> tmpLocal;
     uint64_t gmBackAddr = dumpWorkspaceStart + DUMP_UINTSIZE * (GetDumpBlockIdx() + 1) - ONE_DUMP_BACKUP_SIZE;
 
     // 1、alloc 1k UB 2、 backup static GM addr 3、loop copy 4、recover
     PipeBarrier<PIPE_ALL>();
-    InitTmpTensor(tmp, (uint8_t)QuePosition::VECIN);
-    DataCopyUB2GMImpl((__gm__ T *)(gmBackAddr), (__ubuf__ T *)tmp.GetPhyAddr(), backupParams);
+    InitTmpTensor(tmpLocal, (uint8_t)QuePosition::VECIN);
+    DataCopyUB2GMImpl((__gm__ T *)(gmBackAddr), (__ubuf__ T *)tmpLocal.GetPhyAddr(), backupParams);
     PipeBarrier<PIPE_ALL>();
     dcci((__gm__ uint64_t *)gmBackAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 
     uint32_t alignSize = offset % ONE_DUMP_BACKUP_SIZE;
-    uint64_t tmpAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr()));
+    uint64_t tmpAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(tensor.GetPhyAddr()));
     uint64_t gmAddr = ptr->dumpAddr;
     for (int i = 0; i < offset / ONE_DUMP_BACKUP_SIZE; i++) {
         DataCopyGM2UBImpl(
-                (__ubuf__ T *)tmp.GetPhyAddr(), (__gm__ T *)(tmpAddr + ONE_DUMP_BACKUP_SIZE * i), backupParams);
+                (__ubuf__ T *)tmpLocal.GetPhyAddr(), (__gm__ T *)(tmpAddr + ONE_DUMP_BACKUP_SIZE * i), backupParams);
         PipeBarrier<PIPE_ALL>();
-        DataCopyUB2GMImpl((__gm__ T *)gmAddr, (__ubuf__ T *)tmp.GetPhyAddr(), backupParams);
+        DataCopyUB2GMImpl((__gm__ T *)gmAddr, (__ubuf__ T *)tmpLocal.GetPhyAddr(), backupParams);
         gmAddr += ONE_DUMP_BACKUP_SIZE;
         PipeBarrier<PIPE_ALL>();
     }
     if (alignSize != 0) {
-        DumpGMTailImpl(tmp, alignSize, tmpAddr, gmAddr, offset);
+        DumpGMTailImpl(tmpLocal, alignSize, tmpAddr, gmAddr, offset);
     }
-    DataCopyGM2UBImpl((__ubuf__ T *)tmp.GetPhyAddr(), (__gm__ T *)gmBackAddr, backupParams);
+    DataCopyGM2UBImpl((__ubuf__ T *)tmpLocal.GetPhyAddr(), (__gm__ T *)gmBackAddr, backupParams);
     PipeBarrier<PIPE_ALL>();
     ptr->dumpOffset -= offset;
     ptr->dumpAddr += offset;

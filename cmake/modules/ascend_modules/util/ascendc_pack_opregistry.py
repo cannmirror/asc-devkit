@@ -17,7 +17,7 @@ import argparse
 import math
 import shutil
 import const_var
-from tbe.tikcpp.log_utils import LogUtil, AscendCLogLevel
+from asc_op_compile_base.common.utils.log_utils import LogUtil, AscendCLogLevel
 
 
 class PackKernel:

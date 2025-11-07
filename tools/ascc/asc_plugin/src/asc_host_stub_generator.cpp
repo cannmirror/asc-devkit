@@ -45,8 +45,8 @@ public:
         return prefix + std::to_string(counter++);
     }
 };
-AscHostStubGenerator::AscHostStubGenerator(const KernelInfo& kernelInfo, const std::vector<KernelMetaType>& kernelType)
-    : kernelInfo_(kernelInfo), kernelType_(kernelType) {}
+AscHostStubGenerator::AscHostStubGenerator(const KernelInfo& kernelInfo,
+    const std::unordered_set<KernelMetaType>& kernelType) : kernelInfo_(kernelInfo), kernelType_(kernelType) {}
 
 std::string AscHostStubGenerator::GenStubFuncDecl(bool hasNameSpace) const
 {
@@ -91,9 +91,10 @@ std::string AscHostStubGenerator::ManglingNameJudgeCode()
         judgeCode += "    __ascendc_manglingName = \"" + kernelInfo_.kernelMangledName + "\";\n";
         return judgeCode;
     }
+    KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     for (size_t j = 0; j < kernelInfo_.templateInstances.size(); j++) {
         TemplateInstance instFuncInfo = kernelInfo_.templateInstances[j];
-        KernelMetaType kType = GetBishengKTypeByCoreRatio(instFuncInfo.ratio, kernelType_[0]);
+        KernelMetaType kType = GetBishengKTypeByCoreRatio(instFuncInfo.ratio, defaultKtype);
         judgeCode += "    if constexpr (";
         for (size_t i = 0; i < instFuncInfo.templateInstantiationArguments.size(); ++i) {
             if (i > 0) {
@@ -133,7 +134,7 @@ static std::string MapParamTypeToVoid(std::string paramType)
 void AscHostStubGenerator::GenStubFuncImpl()
 {
     auto &infoManager = InfoManager::GetInstance();
-
+    KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     std::ostringstream funcImplCode;
     funcImplCode << GenStubFuncDecl(/* hasNameSpace = */true) << "\n{\n";
     funcImplCode << "    struct {\n";
@@ -171,7 +172,7 @@ void AscHostStubGenerator::GenStubFuncImpl()
 
     funcImplCode << "    const char* __ascendc_manglingName = nullptr;\n";
     // when no template, only has 1 kernel type
-    funcImplCode << "    uint32_t __ascendc_kType = " << KTYPE_TO_LAUNCH_PARAMS.at(kernelType_[0]) << ";\n";
+    funcImplCode << "    uint32_t __ascendc_kType = " << KTYPE_TO_LAUNCH_PARAMS.at(defaultKtype) << ";\n";
     funcImplCode << ManglingNameJudgeCode();
     funcImplCode << "    if (__ascendc_manglingName == nullptr) {\n";
     funcImplCode << "        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "

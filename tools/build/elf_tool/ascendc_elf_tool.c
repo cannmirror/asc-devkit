@@ -15,30 +15,37 @@
  */
 
 #include "ascendc_elf_tool.h"
-#include <stdbool.h>
 
 // Check whether the elf file is valid.
+#if !defined(UT_TEST) && !defined(ST_TEST)
 static int32_t ElfHeaderCheck(uint8_t* elf, size_t elfSize, bool checkProgHeader)
+#else
+int32_t ElfHeaderCheck(uint8_t* elf, size_t elfSize, bool checkProgHeader)
+#endif
 {
+    if (elf == NULL) {
+        printf("[Error] input elf buffer is NULL.\n");
+        return ELF_ERR_NULL_POINTER;
+    }
     // check elf min size
     if (elfSize <= EI_CLASS) {
-        printf("[Error] elf file size %lu is too small!\n", elfSize);
-        return 1;
+        printf("[Error] elf file size %zu is too small!\n", elfSize);
+        return ELF_ERR_BUFFER_TOO_SMALL;
     }
 
     if (elf[EI_CLASS] != ELFCLASS64) {
         printf("[Error] elf CLASS %u\n", elf[EI_CLASS]);
-        return 1;
+        return ELF_ERR_NOT_64BIT;
     }
 
     // check keyword e_phoff
     if (!checkProgHeader) {
         if (((Elf_Ehdr*)(elf))->e_phoff != 0) {
             printf("[Error] Contain Program header!\n");
-            return 1;
+            return ELF_ERR_UNEXPECTED_PROG_HEADER;
         }
     }
-    return 0;
+    return ELF_SUCCESS;
 }
 
 size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize, uint8_t* sec, size_t secSize,
@@ -109,7 +116,9 @@ size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize,
 
 int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName, size_t* offset, size_t* size)
 {
-    ElfHeaderCheck(elf, elfSize, true);
+    if (ElfHeaderCheck(elf, elfSize, true) == ELF_ERR_NULL_POINTER) {
+        return ELF_NO_TABLE;
+    }
     size_t symbolNameLen = strnlen(symbolName, MAX_SYMNAME_LEN);
     Elf_Ehdr* eh = (Elf_Ehdr*)elf;
     char* sec_header_tab = (char*)(elf + eh->e_shoff);
