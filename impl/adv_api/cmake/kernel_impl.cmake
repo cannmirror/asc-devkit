@@ -8,7 +8,9 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 
 set(ASCENDC_API_PATH @INSTALL_LIBRARY_DIR@)
-set(ASCENDC_INSTALL_BASE_PATH ${CMAKE_INSTALL_PREFIX}/${ASCENDC_API_PATH})
+set(ASCENDC_INSTALL_BASE_PATH @CMAKE_INSTALL_PREFIX@/${ASCENDC_API_PATH})
+
+file(MAKE_DIRECTORY ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/adv_api/detail)
 file(
     CREATE_LINK ../../utils/std
     ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/adv_api/detail/std
