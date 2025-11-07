@@ -27,6 +27,8 @@ public:
     explicit Generator(std::vector<std::string>& ops);
     static opbuild::Status SetGenPath(const std::string& path);
     static void GetGenPath(std::string& path);
+    static opbuild::Status SetCPUMode(const std::string& arg);
+    static void GetCPUMode(std::string& arg);
     static void SetErrorMessage(const std::string& info);
     static const std::vector<std::string>& GetErrorMessage();
     const std::vector<std::string>& GetAllOp(void);

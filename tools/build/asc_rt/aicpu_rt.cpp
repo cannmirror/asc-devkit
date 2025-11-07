@@ -17,8 +17,7 @@
 #ifndef __AICPU_DEVICE__
 #include "acl/acl.h"
 #include "securec.h"
-#include "aicpu_dump_utils.h"
-#include "aicpu_api/aicpu_api.h"
+#include "aicpu_rt.h"
 #include "ascendc_tool_log.h"
 #include <unistd.h>
 #include <stdio.h>
@@ -26,6 +25,7 @@
 #include <cstring>
 #include <cstdint>
 #include <mutex>
+#include <chrono>
 
 #define CHECK_ACL_PTR(x)                                                                    \
     do {                                                                                    \
@@ -54,64 +54,10 @@
         }                                                                                   \
     } while (0)
 
-constexpr int32_t REFRESH_RATE = 0.1;
 constexpr size_t DUMP_SIZE = 1048576;
-constexpr uint32_t MAX_NAME_LEN = 256;
 
 extern "C" {
-void StartAscendProf(const char *name, uint64_t *startTime);
-void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
-int AscendProfRegister();
-bool GetAscendProfStatus();
 int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName, size_t* offset, size_t* size);
-
-static int __aicpu_profiling_registered = AscendProfRegister();
-size_t* AicpuSetDumpConfig(const unsigned long *aicpuFileBuf, size_t fileSize);
-int AicpuGetDumpConfig(void **addr, size_t *size);
-
-aclrtBinHandle AicpuLoadBinaryFromBuffer(const unsigned long *aicpuFileBuf, size_t fileSize)
-{
-    size_t *kernelBuf = AicpuSetDumpConfig(aicpuFileBuf, fileSize);
-    aclrtBinaryLoadOption bopt;
-    bopt.type = ACL_RT_BINARY_LOAD_OPT_CPU_KERNEL_MODE;
-    bopt.value.cpuKernelMode = 2;  // 2 means without op.ini and op.lf
-    aclrtBinaryLoadOptions bcfg = {0};
-    bcfg.options = &bopt;
-    bcfg.numOpt = 1;
-    aclrtBinHandle bhdl = nullptr;
-    CHECK_ACL_PTR(aclrtBinaryLoadFromData(reinterpret_cast<const char*>(kernelBuf), fileSize, &bcfg, &bhdl));
-    free(kernelBuf);
-    return bhdl;
-}
-
-aclrtFuncHandle AicpuRegFunctionByName(const aclrtBinHandle binHandle, const char *funcName)
-{
-    aclrtFuncHandle fhdl;
-    CHECK_ACL_PTR(aclrtRegisterCpuFunc(binHandle, funcName, funcName, &fhdl));
-    return fhdl;
-}
-
-void AicpuLaunchKernel(aclrtFuncHandle funcHandle, uint32_t blockDim, aclrtStream stream, void *arg, size_t argSize)
-{
-    uint64_t startTime = 0;
-    char funcName[MAX_NAME_LEN];
-    funcName[0] = 0;
-    if (GetAscendProfStatus()) {
-        CHECK_ACL(aclrtGetFunctionName(funcHandle, MAX_NAME_LEN, funcName));
-        StartAscendProf(funcName, &startTime);
-    }
-    aclrtArgsHandle ahdl = nullptr;
-    CHECK_ACL(aclrtKernelArgsInit(funcHandle, &ahdl));
-    if (argSize != 0 && arg != nullptr) {
-        aclrtParamHandle phdl = nullptr;
-        CHECK_ACL(aclrtKernelArgsAppend(ahdl, arg, argSize, &phdl));
-    }
-    CHECK_ACL(aclrtKernelArgsFinalize(ahdl));
-    CHECK_ACL(aclrtLaunchKernelWithConfig(funcHandle, blockDim, stream, nullptr, ahdl, nullptr));
-    if (GetAscendProfStatus()) {
-        ReportAscendProf(funcName, blockDim, 11, startTime);   // 11 is means AICPU
-    }
-}
 
 void AicpuDumpPrintBuffer(const void *dumpBuffer, const size_t bufSize)
 {
@@ -131,45 +77,20 @@ void AicpuDumpPrintBuffer(const void *dumpBuffer, const size_t bufSize)
     free(bufHost);
 }
 
-size_t* AicpuSetDumpConfig(const unsigned long *aicpuFileBuf, size_t fileSize) {
-    void *dumpAddr = nullptr;
-    size_t dumpSize = 0;
-    AicpuGetDumpConfig(&dumpAddr, &dumpSize);
-    size_t *kernelBuf = reinterpret_cast<size_t*>(malloc(fileSize));
-    memcpy_s(kernelBuf, fileSize, aicpuFileBuf, fileSize);
-    size_t startIndex = 0, symbolSize = 0;
-    int32_t ret = ElfGetSymbolOffset(reinterpret_cast<uint8_t*>(kernelBuf), fileSize, "g_aicpuDumpConfig", &startIndex,
-        &symbolSize);
-    if (ret != 0) {
-        if (ret == 1) {
-            free(kernelBuf);
-            ASCENDLOGE("elf is not legal, please check log!");
-            return nullptr;
-        } else if (ret == 2) {  // 2 means no symbol: g_aicpuDumpConfig
-            ASCENDLOGI("dump switch is off.");
-        }
-    } else {
-        startIndex /= sizeof(size_t);
-        kernelBuf[startIndex] = static_cast<size_t>(reinterpret_cast<uintptr_t>(dumpAddr));
-        kernelBuf[startIndex + 1] = dumpSize;
-    }
-    return kernelBuf;
-}
-
 AicpuDumpThreadRes::AicpuDumpThreadRes(const void* dumpAddr, const size_t dumpSize, const int32_t deviceId)
-    : thread_([](const void* dumpAddr, const size_t dumpSize, const int32_t deviceId, const AicpuDumpThreadMutex* args)
+    : thread_([dumpAddr, dumpSize, deviceId, args = &mutex_]()
     {
         CHECK_ACL(aclrtSetDevice(deviceId));
-        while (!args->stop) {
+        while (!args->stop.load(std::memory_order_relaxed)) {
             AicpuDumpPrintBuffer(dumpAddr, dumpSize);
-            sleep(REFRESH_RATE);
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));  // 100 means 100 ms
         }
         CHECK_ACL(aclrtResetDevice(deviceId));
-    }, dumpAddr, dumpSize, deviceId, &mutex_) {}
+    }) {}
 
 AicpuDumpThreadRes::~AicpuDumpThreadRes()
 {
-    mutex_.stop = true;
+    mutex_.stop.store(true, std::memory_order_relaxed);
     thread_.join();
 }
 
@@ -199,6 +120,31 @@ int AicpuGetDumpConfig(void **addr, size_t *size)
         }
     }
     return 0;
+}
+
+size_t* AicpuSetDumpConfig(const unsigned long *aicpuFileBuf, size_t fileSize) {
+    void *dumpAddr = nullptr;
+    size_t dumpSize = 0;
+    AicpuGetDumpConfig(&dumpAddr, &dumpSize);
+    size_t *kernelBuf = reinterpret_cast<size_t*>(malloc(fileSize));
+    memcpy_s(kernelBuf, fileSize, aicpuFileBuf, fileSize);
+    size_t startIndex = 0, symbolSize = 0;
+    int32_t ret = ElfGetSymbolOffset(reinterpret_cast<uint8_t*>(kernelBuf), fileSize, "g_aicpuDumpConfig", &startIndex,
+        &symbolSize);
+    if (ret != 0) {
+        if (ret == 1) {
+            free(kernelBuf);
+            ASCENDLOGE("elf is not legal, please check log!");
+            return nullptr;
+        } else if (ret == 2) {  // 2 means no symbol: g_aicpuDumpConfig
+            ASCENDLOGI("dump switch is off.");
+        }
+    } else {
+        startIndex /= sizeof(size_t);
+        kernelBuf[startIndex] = static_cast<size_t>(reinterpret_cast<uintptr_t>(dumpAddr));
+        kernelBuf[startIndex + 1] = dumpSize;
+    }
+    return kernelBuf;
 }
 }
 #endif

@@ -15,8 +15,8 @@ import getopt
 import os
 import sys
 
-from tbe.common.utils import log as logger
-from tbe.common.utils.AscendLog import AscendLog
+from asc_op_compile_base.common.utils import log as logger
+from asc_op_compile_base.common.utils.AscendLog import AscendLog
 
 from constant import (OpcOptions, OpcCompileMode, OptionalInOutMode)
 from opc_common import compiling_option_keys, check_and_normalize_impl_mode

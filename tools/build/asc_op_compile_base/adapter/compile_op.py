@@ -22,6 +22,7 @@ import re
 import shutil
 import sys
 import struct
+from typing import List
 from tbe.tvm.contrib.ccec import CCECInfo
 from tbe.tvm.runtime.cce_runtime import tvm_callback_cce_postproc
 from tbe.common.buildcfg import get_current_build_config
@@ -31,7 +32,7 @@ from tbe.tvm.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_COD
 from tbe.tvm import var
 from tbe.common.context import get_context
 from .get_op_tiling import TilingInfo, is_static_shape, OpInfo
-from .template_tiling import extract_template_tiling_info, decode_tiling
+from .template_tiling import extract_template_tiling_info, decode_tiling, extract_decl_param_options
 from .log_utils import LogUtil, AscendCLogLevel, CompileStage, COMPILE_STAGE_MSG_INFO
 from .global_storage import global_var_storage
 from .ascendc_constants import InferChannelParamsFromIFile, InferChannelParams, KernelMetaType, \
@@ -349,12 +350,18 @@ REGISTER_TILING_DEFAULT')
         return tiling_key_struct_map
 
     @staticmethod
-    def infer_info_from_ifile(dst_i_file: str, compile_log_path, cce_file: str, origin_func_name: str):
+    def infer_info_from_ifile(
+        op_info: OpInfo,
+        dst_i_file: str,
+        compile_log_path,
+        cce_file: str,
+        origin_func_name: str,
+    ):
         tiling_key_list = []
         declare_param_str = ""
         select_param_str = ""
         decode_tiling_result = {}
-        code_channel:int = -1
+        code_channel: int = -1
         no_kfc_server_flag = False
         find_kfc_server = False
         default_tiling_struct = ""
@@ -447,11 +454,11 @@ REGISTER_TILING_DEFAULT')
             extract_template_tiling_info(declare_param_str, select_param_str)
             decode_tiling_result = decode_tiling()
             tiling_key_list = [str(k) for k in decode_tiling_result.keys()]
-            tpl_set_kernel_type = False
+            tpl_set_kernel_type_cnt = 0
             for k in decode_tiling_result.keys():
                 internal_dict = decode_tiling_result[k]
                 if "kernelType" in internal_dict:
-                    tpl_set_kernel_type = True
+                    tpl_set_kernel_type_cnt += 1
                     tpl_kernel_type = KernelInfoInfer.get_kernel_meta_type(internal_dict['kernelType'])
                     if tpl_kernel_type is not None:
                         tiling_key_kernel_type[str(k)] = tpl_kernel_type
@@ -459,10 +466,10 @@ REGISTER_TILING_DEFAULT')
                         CommonUtility.print_compile_log("", \
                             "get_kernel_meta_type return tpl_kernel_type is None, kernel_type value is {}".\
                             format(internal_dict['kernelType']), AscendCLogLevel.LOG_ERROR)
-                elif tpl_set_kernel_type == True:
-                    CommonUtility.print_compile_log("", \
-                        "All ASCENDC_TPL_ARGS_SEL must set kernel type simultaneously!", \
-                        AscendCLogLevel.LOG_ERROR)
+            if tpl_set_kernel_type_cnt != 0 and tpl_set_kernel_type_cnt != len(tiling_key_list):
+                CommonUtility.print_compile_log("", 
+                    "All ASCENDC_TPL_ARGS_SEL must set ASCENDC_TPL_KERNEL_TYPE_SEL simultaneously!", \
+                    AscendCLogLevel.LOG_ERROR)
 
             for k, v in decode_tiling_result.items():
                 if "deterministic" in v:
@@ -513,6 +520,27 @@ REGISTER_TILING_DEFAULT')
         if len(expect_tilingkey_set) > 0 and len(decode_tiling_result) > 0:
             tiling_key_list = [x for x in tiling_key_list if x in expect_tilingkey_set]
             decode_tiling_result = {k: v for k, v in decode_tiling_result.items() if str(k) in expect_tilingkey_set}
+        # filter uesless tilingkey
+        decl_dtype_indexes, decl_dtype_select_indexes = extract_decl_param_options(op_info, "dtype")
+        decl_format_indexes, decl_format_select_indexes = extract_decl_param_options(op_info, "format")
+        post_filter_tilingkey_list = []
+        for x in tiling_key_list:
+            if _check_sel_match_by_verifyParams(
+                x,
+                decode_tiling_result,
+                decl_dtype_indexes,
+                verifyParams="dtypeParams",
+                verify_indexes=decl_dtype_select_indexes,
+            ) and _check_sel_match_by_verifyParams(
+                x,
+                decode_tiling_result,
+                decl_format_indexes,
+                verifyParams="formatParams",
+                verify_indexes=decl_format_select_indexes,
+            ):
+                post_filter_tilingkey_list.append(x)
+        tiling_key_list = post_filter_tilingkey_list
+        decode_tiling_result = {k: v for k, v in decode_tiling_result.items() if str(k) in tiling_key_list}
 
         return InferChannelParamsFromIFile(tiling_key_list, code_channel, hard_sync, no_kfc_server_flag, \
                                            enable_deterministic, tiling_key_kernel_type, no_set_kernel_type,\
@@ -521,7 +549,7 @@ REGISTER_TILING_DEFAULT')
                                            set_task_bar, wait_task_bar, tiling_key_deterministic)
 
     @staticmethod
-    def get_tiling_key_list_and_simple_infer_code_channel(cce_file: str, dst_i_file: str, \
+    def get_tiling_key_list_and_simple_infer_code_channel(op_info: OpInfo, cce_file: str, dst_i_file: str, \
         compile_option_tuple: CompileOptionTuple, compile_log_path, origin_func_name):
         """
         get tiling key list and simple infer code channel
@@ -564,7 +592,44 @@ REGISTER_TILING_DEFAULT')
             raise Exception(f"Geneate file {dst_i_file} failed, probably due to error in compile")
         os.chmod(dst_i_file, stat.S_IRUSR + stat.S_IWUSR)
         # get tiling key list and simpel infer code channel
-        return KernelInfoInfer.infer_info_from_ifile(dst_i_file, compile_log_path, cce_file, origin_func_name)
+        return KernelInfoInfer.infer_info_from_ifile(op_info, dst_i_file, compile_log_path, cce_file, origin_func_name)
+
+
+def _check_sel_match_by_verifyParams(
+    tiling_key: str,
+    decode_tiling_map: dict,
+    value_list: List[str] = None,
+    verifyParams: str = "dtypeParams",
+    verify_indexes: List[bool] = None,
+) -> bool:
+    if value_list is None:
+        return True
+    if (
+        int(tiling_key) not in decode_tiling_map
+        or verifyParams not in decode_tiling_map[int(tiling_key)]
+        or not decode_tiling_map[int(tiling_key)][verifyParams]
+    ):
+        return True
+    support_option_list = ["dtypeParams", "formatParams"]
+    assert verifyParams in support_option_list, f"now the function verifyParams only support : {support_option_list}"
+    target_params = value_list
+    verify_params = decode_tiling_map[int(tiling_key)][verifyParams]
+    if verify_indexes is not None:
+        verify_params = [verify_params[i] for i, x in enumerate(verify_indexes) if x == True]
+    if "unknown" in verify_params:
+        CommonUtility.print_compile_log(
+            "",
+            f"Tiling key: '{tiling_key}' {verifyParams} exist 'unknown' Params, please check it. {verify_params}",
+            AscendCLogLevel.LOG_ERROR,
+        )
+    if len(target_params) != len(verify_params):
+        CommonUtility.print_compile_log(
+            "",
+            f"Tiling key: '{tiling_key}' {verifyParams} length do not match, "
+            f"expect is {len(target_params)}, but is {len(verify_params)}",
+            AscendCLogLevel.LOG_ERROR,
+        )
+    return target_params == verify_params
 
 
 def _check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
@@ -1490,67 +1555,23 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
         compile_options.append(extend_options.get('opp_kernel_hidden_dat_path'))
 
 
-def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_options: list = None,
-        code_channel: int = -1, op_compile_option: str = "{}", extend_options: dict = {}):
-    """get tiling_data/ generate tiling_data file/ compile cce to .o / generate .json file
-    Args:
-        cce_file (str): cce file to be compiled
-        origin_func_name (str): func_name written by user, without md5
-        op_info (OpInfo): operator info
-        compile_options (list): compile options for bisheng
-        code_channel (int): one of CORE_TYPE_MIX/CORE_TYPE_CUBE/CORE_TYPE_VEC
-    """
-    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["compile_op_start"], AscendCLogLevel.LOG_INFO)
-    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_start"], AscendCLogLevel.LOG_INFO)
-    process_ascendc_api_version(cce_file, compile_options, extend_options)
-    # online compile reuses thread, dfx infos need to be reset.
-    global_var_storage.global_storage_reset()
-    if extend_options.get('opp_kernel_hidden_dat_path', None) is None and not os.path.exists(cce_file):
-        raise Exception(f"input cce file is not exists, file name: " + cce_file)
-
-    compile_option_tuple = CompileOptionTuple([] if compile_options is None else compile_options, [])
-    need_impl_mode_macro = (CommonUtility.is_c310() or CommonUtility.is_m510()) and \
-        isinstance(op_info.impl_mode, str) and op_info.impl_mode != ""
-    if need_impl_mode_macro:
-        impl_mode_def = f"-D{op_info.impl_mode.upper()}_"  # IMPL_MODE_IS
-        if impl_mode_def not in compile_option_tuple.compile_options:
-            compile_option_tuple.compile_options.append(impl_mode_def)
-
-    _add_op_compile_options_by_customized_json(op_compile_option, compile_option_tuple)
-
-    compile_option_tuple.compile_options = compile_pre_process(op_info, compile_option_tuple.compile_options)
-
-    DFXSectionGenerator().dfx_info_reset(op_info)
-
-    _update_compile_option(op_info.kernel_name, compile_option_tuple.compile_options, extend_options)
-
-    input_gen_placehoder = _check_if_gen_placehoder(op_info, True)
-    output_gen_placehoder = _check_if_gen_placehoder(op_info, False)
+def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_option_tuple,
+                           infered_info_from_ifile: InferChannelParamsFromIFile, extend_options: dict):
     value_depend_dict = extend_options.get("valueDepend")
-    _set_compile_info(op_info, value_depend_dict)
     kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
-
-    compile_option_tuple.compile_options.append('-DASCENDC_TPL_KERNEL')
     distinct_tag =  CommonUtility.get_distinct_filename_tag()
     compile_log_path = None
     if global_var_storage.get_variable("ascendc_compile_debug_config"):
         compile_log_path = os.path.join(kernel_meta_dir, op_info.kernel_name + distinct_tag + '.log')
 
-    # get tilingkeylist and simple infer code_channel
-    CommonUtility.print_compile_log(op_info.kernel_name, \
-        "precompile to get some simple kernel info...", AscendCLogLevel.LOG_INFO)
-    infered_info_from_ifile = KernelInfoInfer.get_tiling_key_list_and_simple_infer_code_channel(cce_file, \
-        os.path.join(kernel_meta_dir, op_info.kernel_name + ".i"), \
-        compile_option_tuple, compile_log_path, origin_func_name)
-    CommonUtility.print_compile_log(op_info.kernel_name, \
-        "precompile to get some simple kernel info success", AscendCLogLevel.LOG_INFO)
-    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_end"], AscendCLogLevel.LOG_INFO)
+    input_gen_placehoder = _check_if_gen_placehoder(op_info, True)
+    output_gen_placehoder = _check_if_gen_placehoder(op_info, False)
+
     LogUtil.detail_log_print(
         op_info.kernel_name,
         COMPILE_STAGE_MSG_INFO["generate_tiling_start"],
         AscendCLogLevel.LOG_INFO
     )
-
     tiling_info: TilingInfo = CommonUtility.get_tiling_info_by_tiling(
                                 op_info, infered_info_from_ifile, value_depend_dict)
 
@@ -1563,6 +1584,10 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
     # replace tiling key when tiling_key is set in compile params
     tiling_key_list = infered_info_from_ifile.tiling_key_list
     context_tiling_key = get_context().get_addition("tiling_key")
+    # override customized tiling key list if the input is passed from
+    customize_tiling_key = "customized_tiling_key_list" 
+    if customize_tiling_key in extend_options and isinstance(extend_options[customize_tiling_key], list):
+        context_tiling_key = extend_options[customize_tiling_key]
     if context_tiling_key:
         new_tiling_keys = []
         for tiling_key in context_tiling_key:
@@ -1590,6 +1615,8 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
         CommonUtility.print_compile_log(op_info.kernel_name, \
             "get kernel type by infer channel success", AscendCLogLevel.LOG_INFO)
 
+    default_dump_info = {'dump_type': '', 'dump_size': 1024}
+
     compile_info = CompileInfo()
     compile_info.src_file = cce_file
     compile_info.dst_file = os.path.join(kernel_meta_dir, op_info.kernel_name + ".o")
@@ -1605,7 +1632,10 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
     compile_info.tiling_key_kernel_type = infered_info_from_ifile.tiling_key_kernel_type
     compile_info.no_set_kernel_type = infered_info_from_ifile.no_set_kernel_type
     compile_info.default_kernel_type = infered_info_from_ifile.default_kernel_type
-    compile_info.dump_info = infered_info_from_ifile.dump_info
+    compile_info.dump_info = infered_info_from_ifile.dump_info \
+        if (infered_info_from_ifile.dump_info.get('dump_type') is not None
+            and infered_info_from_ifile.dump_info.get('dump_size') is not None) \
+        else default_dump_info
     compile_info.template_tiling_info = infered_info_from_ifile.template_tiling_info
     compile_info.tiling_key_struct_map = infered_info_from_ifile.tiling_key_struct_map
 
@@ -1641,7 +1671,7 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
         compile_info.tiling_and_dfx_utils_bin_path = os.path.join(kernel_meta_dir, op_info.kernel_name + \
             file_name_tag)
 
-    ascendc_dump_on = "-DASCENDC_DUMP=0" not in compile_options
+    ascendc_dump_on = "-DASCENDC_DUMP=0" not in compile_option_tuple.compile_options
     dump_info = compile_info.dump_info["dump_type"] != "" and ascendc_dump_on
     compile_info.raw_tiling_key_kernel_type = copy.deepcopy(compile_info.tiling_key_kernel_type)
     if (CommonUtility.is_c310()) and dump_info:
@@ -1654,10 +1684,10 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
     handle_dump_options(compile_info, compile_option_tuple)
 
     # dump or acc or timestamp or recognize_simtvf will need extra workspace
-    ascendc_enable_dump_workspace = ("-DASCENDC_DUMP=0" not in compile_options) or \
+    ascendc_enable_dump_workspace = ("-DASCENDC_DUMP=0" not in compile_option_tuple.compile_options) or \
         ("assert" == compile_info.dump_info["dump_type"]) or \
         (global_var_storage.get_variable("ascendc_time_stamp_compile_options") is True) or \
-        "-DASCENDC_ACC_DUMP" in compile_options or \
+        "-DASCENDC_ACC_DUMP" in compile_option_tuple.compile_options or \
         (global_var_storage.get_variable("ascendc_recognize_simtvf") is True)
     global_var_storage.set_variable("ascendc_enable_dump_workspace", ascendc_enable_dump_workspace)
 
@@ -1752,6 +1782,107 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
         "compile Ascend C operator {} success".format(op_info.op_type), AscendCLogLevel.LOG_INFO)
     msg_info = "<{}> <{}> compile op end".format(compile_info.op_type, compile_info.tiling_key_list)
     LogUtil.detail_log_print(op_info.kernel_name, msg_info, AscendCLogLevel.LOG_INFO)
+
+
+def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_options: list = None,
+        code_channel: int = -1, op_compile_option: str = "{}", extend_options: dict = {}):
+    """get tiling_data/ generate tiling_data file/ compile cce to .o / generate .json file
+    Args:
+        cce_file (str): cce file to be compiled
+        origin_func_name (str): func_name written by user, without md5
+        op_info (OpInfo): operator info
+        compile_options (list): compile options for bisheng
+        code_channel (int): one of CORE_TYPE_MIX/CORE_TYPE_CUBE/CORE_TYPE_VEC
+    """
+    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["compile_op_start"], AscendCLogLevel.LOG_INFO)
+    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_start"], AscendCLogLevel.LOG_INFO)
+    process_ascendc_api_version(cce_file, compile_options, extend_options)
+    # online compile reuses thread, dfx infos need to be reset.
+    global_var_storage.global_storage_reset()
+    if extend_options.get('opp_kernel_hidden_dat_path', None) is None and not os.path.exists(cce_file):
+        raise Exception(f"input cce file is not exists, file name: " + cce_file)
+
+    compile_option_tuple = CompileOptionTuple([] if compile_options is None else compile_options, [])
+    need_impl_mode_macro = (CommonUtility.is_c310() or CommonUtility.is_m510()) and \
+        isinstance(op_info.impl_mode, str) and op_info.impl_mode != ""
+    if need_impl_mode_macro:
+        impl_mode_def = f"-D{op_info.impl_mode.upper()}_"  # IMPL_MODE_IS
+        if impl_mode_def not in compile_option_tuple.compile_options:
+            compile_option_tuple.compile_options.append(impl_mode_def)
+
+    _add_op_compile_options_by_customized_json(op_compile_option, compile_option_tuple)
+
+    compile_option_tuple.compile_options = compile_pre_process(op_info, compile_option_tuple.compile_options)
+
+    DFXSectionGenerator().dfx_info_reset(op_info)
+
+    _update_compile_option(op_info.kernel_name, compile_option_tuple.compile_options, extend_options)
+
+    value_depend_dict = extend_options.get("valueDepend")
+    _set_compile_info(op_info, value_depend_dict)
+    kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
+
+    compile_option_tuple.compile_options.append('-DASCENDC_TPL_KERNEL')
+    distinct_tag = CommonUtility.get_distinct_filename_tag()
+    compile_log_path = None
+    if global_var_storage.get_variable("ascendc_compile_debug_config"):
+        compile_log_path = os.path.join(kernel_meta_dir, op_info.kernel_name + distinct_tag + '.log')
+
+    # get tilingkeylist and simple infer code_channel
+    CommonUtility.print_compile_log(op_info.kernel_name, \
+        "precompile to get some simple kernel info...", AscendCLogLevel.LOG_INFO)
+    infered_info_from_ifile = KernelInfoInfer.get_tiling_key_list_and_simple_infer_code_channel(op_info, cce_file, \
+        os.path.join(kernel_meta_dir, op_info.kernel_name + ".i"), \
+        compile_option_tuple, compile_log_path, origin_func_name)
+    CommonUtility.print_compile_log(op_info.kernel_name, \
+        "precompile to get some simple kernel info success", AscendCLogLevel.LOG_INFO)
+    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_end"], AscendCLogLevel.LOG_INFO)
+
+    compile_op_common_part(cce_file, origin_func_name, op_info, compile_option_tuple, infered_info_from_ifile,
+                            extend_options)
+
+
+def compile_op_with_inferinfo(cce_file: str, origin_func_name: str, op_info: OpInfo,
+        compile_options: list = None, code_channel: int = -1, op_compile_option: str = "{}",
+        extend_options: dict = {}, infered_info_from_ifile: InferChannelParamsFromIFile = None):
+    """get tiling_data/ generate tiling_data file/ compile cce to .o / generate .json file
+    Args:
+        cce_file (str): cce file to be compiled
+        origin_func_name (str): func_name written by user, without md5
+        op_info (OpInfo): operator info
+        compile_options (list): compile options for bisheng
+        code_channel (int): one of CORE_TYPE_MIX/CORE_TYPE_CUBE/CORE_TYPE_VEC
+    """
+    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["compile_op_start"], AscendCLogLevel.LOG_INFO)
+    LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_start"], AscendCLogLevel.LOG_INFO)
+    process_ascendc_api_version(cce_file, compile_options, extend_options)
+    # online compile reuses thread, dfx infos need to be reset.
+    global_var_storage.global_storage_reset()
+    if extend_options.get('opp_kernel_hidden_dat_path', None) is None and not os.path.exists(cce_file):
+        raise Exception(f"input cce file is not exists, file name: " + cce_file)
+
+    compile_option_tuple = CompileOptionTuple([] if compile_options is None else compile_options, [])
+    need_impl_mode_macro = (CommonUtility.is_c310() or CommonUtility.is_m510()) and \
+        isinstance(op_info.impl_mode, str) and op_info.impl_mode != ""
+    if need_impl_mode_macro:
+        impl_mode_def = f"-D{op_info.impl_mode.upper()}_"  # IMPL_MODE_IS
+        if impl_mode_def not in compile_option_tuple.compile_options:
+            compile_option_tuple.compile_options.append(impl_mode_def)
+
+    _add_op_compile_options_by_customized_json(op_compile_option, compile_option_tuple)
+
+    compile_option_tuple.compile_options = compile_pre_process(op_info, compile_option_tuple.compile_options)
+
+    DFXSectionGenerator().dfx_info_reset(op_info)
+
+    _update_compile_option(op_info.kernel_name, compile_option_tuple.compile_options, extend_options)
+
+    compile_option_tuple.compile_options.append('-DASCENDC_TPL_KERNEL')
+    value_depend_dict = extend_options.get("valueDepend")
+    _set_compile_info(op_info, value_depend_dict)
+
+    compile_op_common_part(cce_file, origin_func_name, op_info, compile_option_tuple, infered_info_from_ifile,
+                            extend_options)
 
 
 def handle_dump_options(compile_info, compile_option_tuple):

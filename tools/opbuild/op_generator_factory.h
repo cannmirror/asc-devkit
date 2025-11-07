@@ -37,6 +37,7 @@ public:
     static opbuild::Status SetGenPath(const std::string& path);
     static const std::vector<std::string>& GetErrorMessage();
     static std::vector<ge::AscendString>& FactoryGetAllOp();
+    static opbuild::Status SetCPUMode(const std::string& arg);
 };
 }
 #endif

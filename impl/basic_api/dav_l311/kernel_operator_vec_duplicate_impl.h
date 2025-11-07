@@ -28,6 +28,90 @@ template <typename T> constexpr __aicore__ inline void CheckDuplicateSupportedTy
         "Duplicate instr only support uint8_t/int8_t/half/int16_t/uint16_t/int32_t/uint32_t/float type");
 }
 
+template <typename T> constexpr __aicore__ inline void CheckDuplicateL0SupportedType()
+{
+    static_assert(SupportType<T, half, int16_t, uint16_t,
+        int32_t, uint32_t, float>(),
+        "Duplicate instr only support half/int16_t/uint16_t/int32_t/"
+        "uint32_t/float type on current device");
+}
+
+namespace Internal {
+template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
+__aicore__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T& scalarValue, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride,
+    __ubuf__ uint64_t *maskBuf)
+{
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint16_t newRepeatTimes = 0;
+    newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
+    MicroAPI::MaskReg maskReg;
+    MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::RegTensor<T> dstVreg;
+    if constexpr (isNormalMode) {
+        maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
+    }
+    constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
+
+    MicroAPI::Duplicate(dstVreg, scalarValue, maskFull);
+    for (uint16_t index = 0; index < newRepeatTimes; ++index) {
+        if constexpr (!isNormalMode) {
+            maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
+        }
+        MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+                dst + index * dstRepeatStride * ElePerBlkT, dstVreg, dstBlockStride, maskReg);
+    }
+}
+
+template <bool isSetMask, bool isMaskBitMode, typename T>
+__aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValue, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
+{
+    if constexpr (isMaskBitMode) {
+        ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+    } else {
+        ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
+    }
+    __ubuf__ uint64_t *maskBuf = nullptr;
+ 
+    if (Internal::IsCounterMode()) {
+        if constexpr (!isSetMask) {
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
+        }
+        VF_CALL<VecDupLevel0VFImpl<isSetMask, isMaskBitMode, false, T>>(dst, scalarValue, maskArray, maskCount,
+            repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
+        if constexpr (!isSetMask) {
+            AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
+        }
+    } else {
+        if constexpr (isMaskBitMode) {
+            if constexpr (SupportBytes<T, 1>()) {
+                ASCENDC_ASSERT(isSetMask, "mask must be set when sizeof(T) is 1.");
+                auto eventIDV2S = GetTPipePtr()->FetchEventID(HardEvent::V_S);
+                SetFlag<HardEvent::V_S>(eventIDV2S);
+                WaitFlag<HardEvent::V_S>(eventIDV2S);
+                maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
+                maskBuf[0] = maskArray[0];
+                maskBuf[1] = maskArray[1];
+                maskBuf[2] = maskArray[2];
+                maskBuf[3] = maskArray[3];
+                auto eventIDS2V = GetTPipePtr()->FetchEventID(HardEvent::S_V);
+                SetFlag<HardEvent::S_V>(eventIDS2V);
+                WaitFlag<HardEvent::S_V>(eventIDS2V);
+            } else if constexpr (isSetMask) {
+                SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
+            }
+        }
+        // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
+        VF_CALL<VecDupLevel0VFImpl<isSetMask, isMaskBitMode, true, T>>(dst, scalarValue, maskArray, maskCount,
+            repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
+        if constexpr (isMaskBitMode && SupportBytes<T, 1>()) {
+            AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
+        }
+    }
+}
+}
+
 // level 2
 template <typename T>
 typename std::enable_if_t<
@@ -40,7 +124,7 @@ typename std::enable_if_t<
 !std::is_same<T, int32_t>::value &&
 !std::is_same<T, float>::value
 >
-__aicore__ inline DuplicateImpl(__ubuf__ T* dst, const T scalarValue, const int32_t& count)
+__aicore__ inline DuplicateImpl(__ubuf__ T* dstLocal, const T scalarValue, const int32_t& count)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
@@ -56,7 +140,7 @@ std::is_same<T, uint32_t>::value ||
 std::is_same<T, int32_t>::value ||
 std::is_same<T, float>::value
 >
-__aicore__ inline DuplicateImpl(__ubuf__ T* dst, const T scalarValue, const int32_t& count)
+__aicore__ inline DuplicateImpl(__ubuf__ T* dstLocal, const T scalarValue, const int32_t& count)
 {
     __VEC_SCOPE__
     {
@@ -64,103 +148,33 @@ __aicore__ inline DuplicateImpl(__ubuf__ T* dst, const T scalarValue, const int3
         uint32_t sreg = (uint32_t)count;
         MaskReg preg;
         uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
-        uint16_t repeatTime = CeilDivision(count, sregLower);
-        for (uint16_t i = 0; i < repeatTime; ++i) {
+        uint16_t repeatTimes = CeilDivision(count, sregLower);
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
             preg = CreatePredicate<T>(sreg);
             Duplicate(vDst, scalarValue, preg);
-            DataCopy(dst, vDst, i * sregLower, preg);
+            DataCopy(dstLocal, vDst, i * sregLower, preg);
         }
     }
 }
 
 // level 0, continuous mode
 template <typename T, bool isSetMask = true>
-typename std::enable_if_t<
-std::is_same<T, uint8_t>::value ||
-std::is_same<T, int8_t>::value ||
-std::is_same<T, uint16_t>::value ||
-std::is_same<T, int16_t>::value ||
-std::is_same<T, half>::value ||
-std::is_same<T, uint32_t>::value ||
-std::is_same<T, int32_t>::value ||
-std::is_same<T, float>::value
->
-__aicore__ inline DuplicateImpl(__ubuf__ T* dst, const T scalarValue, uint64_t mask,
+__aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue, uint64_t mask,
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
-    __VEC_SCOPE__
-    {
-        RegTensor<T> vDst;
-        uint32_t sreg = (uint32_t)mask;
-        MaskReg preg = CreatePredicate<T>(sreg);
-        for (uint16_t i = 0; i < repeatTime; ++i) {
-            Duplicate(vDst, scalarValue, preg);
-            DataCopy(dst, vDst, dstBlockStride, i * dstRepeatStride, preg);
-        }
-    }
+    CheckDuplicateL0SupportedType<T>();
+    Internal::VecDupLevel0Template<isSetMask, false>(dstLocal, scalarValue, nullptr, mask,
+                                    repeatTime, dstBlockStride, dstRepeatStride);
 }
 
-// level 0, bit mode
+// level 0, mask bit mode
 template <typename T, bool isSetMask = true>
-typename std::enable_if_t<
-std::is_same<T, uint16_t>::value ||
-std::is_same<T, int16_t>::value ||
-std::is_same<T, half>::value
->
-__aicore__ inline DuplicateImpl(__ubuf__ T* dst, const T scalarValue, uint64_t mask[2],
+__aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue, uint64_t mask[],
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
-    __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
-    *((__ubuf__ uint64_t*)tempBuf) = mask[0];
-    *((__ubuf__ uint64_t*)tempBuf + 1) = mask[1];
-
-    event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
-    SetFlag<HardEvent::S_V>(eventIdSToV);
-    WaitFlag<HardEvent::S_V>(eventIdSToV);
-
-    __VEC_SCOPE__
-    {
-        RegTensor<T> vDst;
-        MaskReg preg;
-        DataCopy<uint32_t, Dist::DIST_US>(preg, ((__ubuf__ uint32_t *)tempBuf), 0);
-        for (uint16_t i = 0; i < repeatTime; ++i) {
-            Duplicate(vDst, scalarValue, preg);
-            DataCopy(dst, vDst, dstBlockStride, i * dstRepeatStride, preg);
-        }
-    }
-    AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
-}
-
-template <typename T, bool isSetMask = true>
-typename std::enable_if_t<
-std::is_same<T, uint32_t>::value ||
-std::is_same<T, int32_t>::value ||
-std::is_same<T, float>::value
->
-__aicore__ inline DuplicateImpl(__ubuf__ T* dst, const T scalarValue, uint64_t mask[2],
-    const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
-{
-    __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
-    *((__ubuf__ uint64_t*)tempBuf) = mask[0];
-    *((__ubuf__ uint64_t*)tempBuf + 1) = mask[1];
-
-    event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
-    SetFlag<HardEvent::S_V>(eventIdSToV);
-    WaitFlag<HardEvent::S_V>(eventIdSToV);
-
-    __VEC_SCOPE__
-    {
-        RegTensor<T> vDst;
-        MaskReg preg;
-        MaskReg preg1;
-        DataCopy<uint32_t, Dist::DIST_US>(preg, ((__ubuf__ uint32_t *)tempBuf), 0);
-        PredicateUnPack(preg1, preg);
-        for (uint16_t i = 0; i < repeatTime; ++i) {
-            Duplicate(vDst, scalarValue, preg1);
-            DataCopy(dst, vDst, dstBlockStride, i * dstRepeatStride, preg1);
-        }
-    }
-    AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
+    CheckDuplicateL0SupportedType<T>();
+    Internal::VecDupLevel0Template<isSetMask, true>(dstLocal, scalarValue, mask, 0,
+                                        repeatTime, dstBlockStride, dstRepeatStride);
 }
 
 } // namespace AscendC

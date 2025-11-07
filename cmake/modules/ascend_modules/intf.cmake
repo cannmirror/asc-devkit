@@ -19,8 +19,7 @@ target_compile_definitions(intf_pub INTERFACE
     $<$<CONFIG:Release>:_FORTIFY_SOURCE=2>
 )
 
-target_include_directories(intf_pub INTERFACE ${ASCEND_CANN_PACKAGE_PATH}/include
-)
+target_include_directories(intf_pub INTERFACE ${ASCEND_CANN_PACKAGE_PATH}/include)
 
 target_link_options(intf_pub INTERFACE
     $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,EXECUTABLE>:-pie>

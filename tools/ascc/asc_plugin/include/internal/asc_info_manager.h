@@ -82,6 +82,7 @@ public:
     void SetSourceFile(const std::string& sourceFile);
     void UpdateDefinitions(bool hasHostStart, std::vector<std::string>::const_iterator& it);
     void SetCompileArgs(const std::vector<std::string>& compileArgs);
+    void SetAclrtHeaderPath(const std::string& headerPath);
     void SetCannPath(const std::string& cannPath);        // update cannPath_ + pathInfo_
     void SetTempPath(const std::string& tempPath);
     void SetLogPath(const std::string& logPath);
@@ -99,10 +100,12 @@ public:
     void SetFirstKernel (const bool isFirstKernel);
     void SetAscendMetaFlag(const uint32_t& flag);
     size_t SetAndGetMetaFlagCounter();
+    void ReportCompileArgs();
 
     const PathInfo& GetPathInfo() const;
     const CompileArgs& GetCompileArgs() const;
     ShortSocVersion GetShortSocVersion() const;
+    const std::string& GetAclrtHeaderPath() const;
     const std::string& GetCannPath() const;
     const std::string& GetLogPath() const;
     const std::string& GetTempPath() const;             // path for saving temp files
@@ -137,6 +140,7 @@ private:
     PathInfo pathInfo_;
     CompileArgs compileArgs_;
     ShortSocVersion shortSocVersion_ = ShortSocVersion::ASCEND910B;   // example: Ascend910B / Ascend310P
+    std::string aclrtLaunchHeaderPath_;                               // for ACLRT_LAUNCH_KERNEL
     std::string cannPath_;
     std::string tmpPath_;
     std::string logPath_;
@@ -150,7 +154,7 @@ private:
     bool hasTiling_ = false;                    // for -DHAVE_TILING in KernelLaunch
     bool hasPrintf_ = false;
     bool hasAssert_ = false;
-    bool enableL2Cache_ = true;                // default enable
+    bool enableL2Cache_ = true;                 // default enable
     bool hasOpSystemCfg_ =false;
     uint32_t oneCoreDumpSize_ = 1048576;        // 1024 K
     bool isFirstKernel_ = false;

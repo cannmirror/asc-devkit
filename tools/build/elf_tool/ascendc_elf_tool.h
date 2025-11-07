@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "securec.h"
+#include <stdbool.h>
 
 /*
  * ***************************
@@ -86,6 +87,11 @@ typedef unsigned long Elf_Xword;
 #define SHT_NOBITS 8
 
 #define MAX_SYMNAME_LEN 512
+
+#define ELF_ERR_NULL_POINTER 1
+#define ELF_ERR_BUFFER_TOO_SMALL 2
+#define ELF_ERR_NOT_64BIT  3
+#define ELF_ERR_UNEXPECTED_PROG_HEADER 4
 
 #define ELF_SUCCESS 0
 #define ELF_NO_TABLE 1
@@ -173,6 +179,9 @@ size_t ElfAddSection(uint8_t* elf, size_t elfSize, uint8_t* jit, size_t jitSize,
     uint32_t type);
 
 int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName, size_t* offset, size_t* size);
+#if defined(UT_TEST) || defined(ST_TEST)
+int32_t ElfHeaderCheck(uint8_t* elf, size_t elfSize, bool checkProgHeader);
+#endif
 #ifdef __cplusplus
 }
 #endif

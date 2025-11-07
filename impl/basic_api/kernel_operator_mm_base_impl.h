@@ -187,6 +187,15 @@ __aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor
             "Failed to check dtype in LoadData with LoadData3DParamsV2 when dst position is B2, current api support "
             "dtype combination is src and dst both: half / bfloat16_t / float / uint32_t / int32_t.");});
     }
+#elif __NPU_ARCH__ == 3101
+    ASCENDC_ASSERT(loadDataParams.kExtension * sizeof(T) % ONE_BLK_SIZE == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "kExtension * sizeof(T) must be a multiple of 32");});
+    ASCENDC_ASSERT(loadDataParams.mExtension % 16 == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "mExtension should be a multiple of 16");});
+    ASCENDC_ASSERT(loadDataParams.kStartPt * sizeof(T) % ONE_BLK_SIZE == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "kStartPt * sizeof(T) must be a multiple of 32");});
+    ASCENDC_ASSERT(loadDataParams.mStartPt % 16 == 0, {
+        KERNEL_LOG(KERNEL_ERROR, "mStartPt should be a multiple of 16");});
 #elif __NPU_ARCH__ == 3102
     if (dstScope == Hardware::L0A) {
         ASCENDC_ASSERT((SupportType<PrimT<T>, uint8_t, int8_t, half, uint16_t, int16_t, int4b_t>()),

@@ -13,8 +13,6 @@ set(TE_FUSION_DIR ${CMAKE_CURRENT_LIST_DIR}/../../../../../atc/opcompiler/te_fus
 add_custom_target(${OPC_WHL_NAME}
   COMMAND echo "[OPC] Build target ${OPC_WHL_NAME}" &&
     mkdir -p ${OPC_DIR}/asc_opc_tool && rm -rf ${OPC_DIR}/asc_opc_tool/* &&
-    ${PROTOC_PROGRAM} -I=${METADEF_DIR}/proto/ --python_out=${OPC_BASE}/python/asc_opc_tool ${METADEF_DIR}/proto/ge_ir.proto &&
-    cp ${TE_FUSION_DIR}/python/*_classify_fusion.py ${OPC_BASE}/python/asc_opc_tool &&
     cp -rf ${OPC_BASE}/python/asc_opc_tool/* ${OPC_DIR}/asc_opc_tool/ &&
     cp -rf ${OPC_BASE}/setup.py ${OPC_DIR}/ &&
     cd ${OPC_DIR} && ${HI_PYTHON} setup.py bdist_wheel && cd - &&

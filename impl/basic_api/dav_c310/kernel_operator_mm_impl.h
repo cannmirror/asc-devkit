@@ -45,7 +45,7 @@ __aicore__ inline void LoadData2DGM2L1Cal(__cbuf__ T* dst, __gm__ T* src, const 
     if ASCEND_IS_AIC {
         uint16_t mStartPosition = 0;
         uint16_t kStartPosition = loadDataParam.startIndex;
-        uint8_t mStep = 1;
+        uint8_t mStep = loadDataParam.srcStride;
         uint8_t kStep = loadDataParam.repeatTimes;
         int16_t srcStride = static_cast<int16_t>(loadDataParam.srcStride);
         uint16_t dstStride = loadDataParam.dstGap + 1;
@@ -62,7 +62,7 @@ __aicore__ inline void LoadData2DL12L0ACal(__ca__ T* dst, __cbuf__ T* src, const
     if ASCEND_IS_AIC {
         uint16_t mStartPosition = 0;
         uint16_t kStartPosition = loadDataParam.startIndex;
-        uint8_t mStep = 1;
+        uint8_t mStep = loadDataParam.srcStride;
         uint8_t kStep = loadDataParam.repeatTimes;
         int16_t srcStride = static_cast<int16_t>(loadDataParam.srcStride);
         uint16_t dstStride = loadDataParam.dstGap + 1;
@@ -83,7 +83,7 @@ __aicore__ inline void LoadData2DL12L0BCal(__cb__ T* dst, __cbuf__ T* src, const
     if ASCEND_IS_AIC {
         uint16_t mStartPosition = 0;
         uint16_t kStartPosition = loadDataParam.startIndex;
-        uint8_t mStep = 1;
+        uint8_t mStep = loadDataParam.srcStride;
         uint8_t kStep = loadDataParam.repeatTimes;
         int16_t srcStride = static_cast<int16_t>(loadDataParam.srcStride);
         uint16_t dstStride = loadDataParam.dstGap + 1;
@@ -715,6 +715,10 @@ template <typename T>
 __aicore__ inline void LoadData3DV2L12L0ACal(__ca__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV2<T>& loadDataParams)
 {
+    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t, uint16_t,
+                int16_t, float, int32_t, uint32_t>(),
+        "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+         half, bfloat16_t, uint16_t, int16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
         img2colv2_cbuf_to_ca(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
@@ -728,6 +732,10 @@ template <typename T>
 __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV2<T>& loadDataParams)
 {
+    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t, uint16_t,
+                int16_t, float, int32_t, uint32_t>(),
+        "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+         half, bfloat16_t, uint16_t, int16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
         img2colv2_cbuf_to_cb(dst, src, loadDataParams.kExtension, loadDataParams.mExtension, loadDataParams.kStartPt,
             loadDataParams.mStartPt, loadDataParams.strideW, loadDataParams.strideH, loadDataParams.filterW,
@@ -776,7 +784,7 @@ __aicore__ inline void LoadData3DV2L12L0ACal(__ca__ T *dst, __cbuf__ T *src,
 {
     static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
                 float, int32_t, uint32_t>(),
-        "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+        "LoadData 3dv2Pro only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
         img2colv2_cbuf_to_ca(dst, src, loadDataParams.extConfig, loadDataParams.extConfig >> LOAD_M_EXTENSION,
@@ -813,7 +821,7 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ T *dst, __cbuf__ T *src,
 {
     static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
             float, int32_t, uint32_t>(),
-        "LoadData 3dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+        "LoadData 3dv2Pro only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
             img2colv2_cbuf_to_cb(dst, src, loadDataParams.extConfig, loadDataParams.extConfig >> LOAD_M_EXTENSION,

@@ -18,8 +18,8 @@ import copy
 import os
 import sys
 from pathlib import Path
-import tbe.common.register as tbe_register
-from tbe.common.utils import log as logger
+import asc_op_compile_base.common.register as tbe_register
+from asc_op_compile_base.common.utils import log as logger
 from constant import OpcOptions
 from opc_common import (normalize_func_name, get_file_real_path, LogLevel, opc_log_full)
 from op_info_store import SubOpInfoStore, OpPathParse
@@ -256,41 +256,7 @@ def get_dynamic_compile_static_from_kb(op_type, op_info):
     """
     get_dynamic_compile_static_from_cann
     """
-    from tbe.common.repository_manager.interface import cann_kb_search
-    from tbe.common.utils.create_kb_query_key import get_op_compile_unique_key
-    impl_mode = {}
-    impl_mode["impl_mode"] = op_info.get(OpcOptions.IMPL_MODE, None)
-    extra_params = impl_mode
-    inputs = copy.deepcopy(op_info.get("inputs"))
-    for input_param in inputs:
-        if "dtype" in input_param:
-            input_param["data_type"] = input_param.pop("dtype")
-
-    outputs = copy.deepcopy(op_info.get("outputs"))
-    for output_param in outputs:
-        if "range" in output_param:
-            output_param.pop("range")
-
-    logger.debug("op_type: %s extra_params is %s.", op_type, str(extra_params))
-    op_compile_unique_keys = get_op_compile_unique_key(op_type, inputs, outputs,
-                                                       op_info.get("attrs"), extra_params, False)
-    if not isinstance(op_compile_unique_keys, list):
-        logger.error("[%s] get_op_compile_unique_key return type not in str or list.", op_type)
-        return None, None
-    search_config = {"op_type": "impl_type"}
-    for index, unique_key in enumerate(op_compile_unique_keys):
-        opc_log_full(LogLevel.DEBUG, "op_type: %s  op_compile_unique_key[%d] is %s.", op_type, index, str(unique_key))
-    knowledge_info_list = cann_kb_search(op_compile_unique_keys[0], search_config)
-    if not knowledge_info_list:
-        logger.warn("op_type: %s search bank info return null.", op_type)
-        return None, None
-
-    knowledge_info = knowledge_info_list[0].get('knowledge')
-    dynamic_compile_static = knowledge_info.get("dynamic_compile_static", None)
-    op_impl_switch = knowledge_info.get("op_impl_switch", None)
-    logger.debug("op_type: %s dynamic_compile_static is %s, op_impl_switch is %s.",
-                op_type, dynamic_compile_static, op_impl_switch)
-    return dynamic_compile_static, op_impl_switch
+    return None, None
 
 
 def get_built_in_op_operator(op_type, dynamic_compile_static, is_dynamic):

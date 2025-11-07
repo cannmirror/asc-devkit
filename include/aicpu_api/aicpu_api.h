@@ -49,13 +49,4 @@ static inline void DataStoreBarrier(void) {
 }
 }
 
-#else
-
-#ifdef ACLRT_LAUNCH_AICPU
-#undef ACLRT_LAUNCH_AICPU
-#endif
-using KernelStubFunc = void (*)(uint32_t, void*, void*, size_t);
-
-#define ACLRT_LAUNCH_AICPU(fun, ...) ((KernelStubFunc)fun, ##__VA_ARGS__)
-
 #endif

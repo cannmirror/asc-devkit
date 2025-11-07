@@ -6,6 +6,8 @@ target_compile_options(aicpu_api PRIVATE
     -std=c++17
     -fvisibility=hidden
     -fvisibility-inlines-hidden
+    -fstack-protector-strong
+    -ftrapv
 )
 
 if(BUILD_OPEN_PROJECT)
@@ -22,8 +24,8 @@ endif()
 
 target_compile_definitions(aicpu_api PRIVATE
     $<$<STREQUAL:${PRODUCT_SIDE},device>:__AICPU_DEVICE__>
-    $<$<STREQUAL:${PRODUCT_SIDE},device>:_GLIBCXX_USE_CXX11_ABI=0>
-    $<$<STREQUAL:${PRODUCT_SIDE},device>:_FORTIFY_SOURCE=2>
+    _GLIBCXX_USE_CXX11_ABI=0>
+    _FORTIFY_SOURCE=2>
 )
 
 install(TARGETS aicpu_api
@@ -32,14 +34,7 @@ install(TARGETS aicpu_api
     RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR} OPTIONAL
 )
 
-if(BUILD_OPEN_PROJECT)
-    install(FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/../../include/aicpu_api/aicpu_api.h
-        DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/aicpu_api OPTIONAL
-    )
-else()
-    install(FILES
-        ${TOP_DIR}/asc/asc-devkit/include/aicpu_api/aicpu_api.h
-        DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/aicpu_api OPTIONAL
-    )
-endif()
+install(FILES
+    ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/aicpu_api/aicpu_api.h
+    DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/aicpu_api OPTIONAL
+)

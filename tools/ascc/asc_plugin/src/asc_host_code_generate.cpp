@@ -17,7 +17,7 @@
 #include "asc_host_code_generate.h"
 
 #include <string>
-
+#include <unordered_set>
 #include "asc_log.h"
 #include "asc_struct.h"
 #include "asc_host_binary_generator.h"
@@ -30,7 +30,7 @@ std::string GetBinaryRegisterCode()
     return hostBinaryGenerator.GenCode();
 }
 
-std::string GetHostStubCode(const KernelInfo& kernelInfo, const std::vector<KernelMetaType>& kernelType)
+std::string GetHostStubCode(const KernelInfo& kernelInfo, const std::unordered_set<KernelMetaType>& kernelType)
 {
     AscHostStubGenerator hostStubGenerator = AscHostStubGenerator(kernelInfo, kernelType);
     return hostStubGenerator.GenCode();

@@ -19,14 +19,14 @@
 
 #include <string>
 #include <sstream>
-
+#include <unordered_set>
 #include "asc_struct.h"
 #include "asc_utils.h"
 
 namespace AscPlugin {
 class AscDevMetaGenerator {
 public:
-    AscDevMetaGenerator(const KernelInfo& kernelInfo, const std::vector<KernelMetaType>& kernelType);
+    AscDevMetaGenerator(const KernelInfo& kernelInfo, const std::unordered_set<KernelMetaType>& kernelType);
     std::string GenCode();
 
 private:
@@ -34,7 +34,7 @@ private:
     void GenKtypeStruct(const KernelMetaType &kernelType, const char *globalSymbol, const char *kernelTypeSuffix);
 
     KernelInfo kernelInfo_;
-    std::vector<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
+    std::unordered_set<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
     std::stringstream codeStream_;
 };
 

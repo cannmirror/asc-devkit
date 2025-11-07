@@ -18,13 +18,13 @@
 #define __INCLUDE_INTERNAL_ASC_HOST_CODE_GENERATE_H__
 
 #include <string>
-
+#include <unordered_set>
 #include "asc_utils.h"
 #include "asc_struct.h"
 
 namespace AscPlugin {
 std::string GetBinaryRegisterCode();
-std::string GetHostStubCode(const KernelInfo& kernelInfo, const std::vector<KernelMetaType>& kernelType);
+std::string GetHostStubCode(const KernelInfo& kernelInfo, const std::unordered_set<KernelMetaType>& kernelType);
 
 } // namespace AscPlugin
 #endif // __INCLUDE_INTERNAL_ASC_HOST_CODE_GENERATE_H__

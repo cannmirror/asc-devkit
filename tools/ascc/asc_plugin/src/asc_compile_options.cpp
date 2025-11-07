@@ -96,8 +96,7 @@ std::vector<std::string> GetDeviceCommonCompileOptions(const KernelTypeResult& k
         }
 
         deviceCommonOptions.insert(deviceCommonOptions.end(), {"-mllvm", "-cce-aicore-stack-size=0x8000",
-            "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-            "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false"});
+            "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false"});
 
         if(manager.IsL2CacheEnabled()) {
             deviceCommonOptions.emplace_back("-DL2_CACHE_HINT");

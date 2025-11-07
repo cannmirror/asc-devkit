@@ -15,7 +15,7 @@ import glob
 import shutil
 import argparse
 import subprocess
-from tbe.tikcpp.log_utils import LogUtil, AscendCLogLevel
+from asc_op_compile_base.common.utils.log_utils import LogUtil, AscendCLogLevel
 
 
 def run_command(args, **others):

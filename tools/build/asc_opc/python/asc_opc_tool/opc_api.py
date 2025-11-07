@@ -13,7 +13,7 @@
 opc api
 """
 import sys
-from tbe.common.utils import log as logger
+from asc_op_compile_base.common.utils import log as logger
 from opc import OpcOptionParser
 from op_compilation import OpCompilation
 from op_info_store import load_op_info_store

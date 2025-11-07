@@ -136,7 +136,7 @@ class LogUtil:
         if kernel_name != "":
             log_msg += " {}".format(kernel_name)
         log_msg += " {}".format(msg_info)
-        print(log_msg)
+        print(log_msg, flush=True)
 
     @staticmethod
     def detail_log_print(kernel_name: str, msg_info: str, log_level: AscendCLogLevel, option: Option = Option.DEFAULT):
@@ -165,7 +165,7 @@ class LogUtil:
     
             log_msg += " {} [tid: {}] {}".format(file_line, thread_id, msg_info)
             log_msg += " , timestamp: {}ns".format(nanoseconds)
-            print(log_msg)
+            print(log_msg, flush=True)
 
             
     @staticmethod

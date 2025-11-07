@@ -64,7 +64,7 @@ if [ -n "${INSTALL_PATH}" ]; then
     targetdir=${INSTALL_PATH}
 elif [ -n "${ASCEND_CUSTOM_OPP_PATH}" ]; then
     if [[ "${ASCEND_CUSTOM_OPP_PATH}" == *:* ]]; then
-        log "[ERROR] environment variable ASCEND_CUSTOM_OPP_PATH=$ASCEND_CUSTOM_OPP_PATH is set and \
+        log "[ERROR] environment variable ASCEND_CUSTOM_OPP_PATH=${ASCEND_CUSTOM_OPP_PATH} is set and \
         has multiple path in it (colon inside), which will cause the custom op installed incorrectly. \
         Please use the --install-path option to specify an installation path instead."
         exit 1
@@ -125,6 +125,7 @@ upgrade()
             fi
         done
         if [ 0 -eq $has_same_file ]; then
+            echo
             if test $QUIET = "n"; then
                 echo "[INFO]: has old version in ${targetdir}/$vendordir/$1, \
                 you want to Overlay Installation , please enter:[o]; \
@@ -136,21 +137,23 @@ upgrade()
                     read orn
                     if [ "$orn" = n ]; then
                         return 0
-                    elif [ "$orn" = m ]; then
+                    elif [ "$orn" = o ]; then
                         break;
-                    elif [ "$0rn" = r ]; then
+                    elif [ "$orn" = r ]; then
                         [ -n "${targetdir}/$vendordir/$1/" ] && rm -rf "${targetdir}/$vendordir/$1"/*
                         break;
                     else
                         log "[ERROR] input error, please input again!"
                     fi
                 done
+            else
+                [ -n "${targetdir}/$vendordir/$1/" ] && rm -rf "${targetdir}/$vendordir/$1"/*
             fi
         fi
-        log "[INFO] replace or merge old ops $1 files .g....."
+        log "[INFO] replace or merge old ops $1 files ......"
     fi
 
-    log "copy new ops $1 files ......"
+    log "[INFO] copy new ops $1 files ......"
     if [ -d ${targetdir}/$vendordir/$1/ ]; then
         chmod -R +w "$targetdir/$vendordir/$1/" >/dev/null 2>&1
     fi
@@ -215,7 +218,7 @@ upgrade_file()
         return 0
     fi
 
-    log "copy new $1 files ......"
+    log "[INFO] copy new $1 files ......"
     cp -f ${sourcedir}/$vendordir/$1 $targetdir/$vendordir/$1
     if [ $? -ne 0 ];then
         log "[ERROR] copy new $1 file failed"
@@ -338,4 +341,3 @@ fi
 
 echo "SUCCESS"
 exit 0
-

@@ -1182,8 +1182,6 @@ struct FixPipeConfigParamsV311Gen {
     bool unitFlag = false;
 };
 
-
-
 #if ((__NPU_ARCH__ == 3113))
 using FixPipeConfigParams = FixPipeConfigParamsV311Gen;
 #elif ((__NPU_ARCH__ == 3103))

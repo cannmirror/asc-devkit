@@ -369,9 +369,13 @@ __aicore__ inline void ClearWorkspaceImpl(__gm__ uint8_t* workspace)
     __gm__ uint8_t* msgStartAddr = (__gm__ uint8_t*)(workspace + (size + msgOffset11) * GetBlockIdxImpl());
     __gm__ uint8_t* ubMsgStartAddr =
         (__gm__ uint8_t*)(workspace + offsetUbMsg + (sizeUbmsg + ubOffset11) * GetBlockIdxImpl());
- 
- 
+
+#if ASCENDC_CPU_DEBUG
+    auto ubMsg = reinterpret_cast<__ubuf__ uint64_t *>(GetTPipePtr()->GetBaseAddr((int8_t)TPosition::VECIN) +
+                TOTAL_UB_SIZE - sizeof(KfcMsg));
+#else
     auto ubMsg = reinterpret_cast<__ubuf__ uint64_t *>(0);
+#endif
     for (int i = 0; i < 16; i++) {
         *(ubMsg + i) = 0;
     };

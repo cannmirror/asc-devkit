@@ -25,7 +25,7 @@ import copy
 from enum import Enum
 from enum import unique
 
-from tbe.common.utils import log as logger
+from asc_op_compile_base.common.utils import log as logger
 
 from constant import (CompileParam, OpcOptions, OpImplType, OpcCompileMode, GraphDefParam,
                       OpDataType, OpFormatType, OpParamType)

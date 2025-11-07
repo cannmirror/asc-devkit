@@ -46,7 +46,7 @@ uint32_t ASTDeviceVisitor::GetLineNumber(const clang::Stmt *stmt) const
     return static_cast<uint32_t>(srcManager_.getExpansionLineNumber(stmt->getBeginLoc()));
 }
 
-llvm::DenseMap<KernelFuncInfo, std::pair<std::vector<KernelMetaType>, KfcScene>> g_kernelFuncType;
+llvm::DenseMap<KernelFuncInfo, std::pair<std::unordered_set<KernelMetaType>, KfcScene>> g_kernelFuncType;
 
 bool ASTDeviceVisitor::VisitFunctionDecl(const clang::FunctionDecl *funcDecl)
 {
@@ -74,6 +74,17 @@ bool ASTDeviceVisitor::VisitFunctionDecl(const clang::FunctionDecl *funcDecl)
             ASC_LOGD("Found global aicore function: %s, mangledName: %s at %s:%u, col:%u", funcName.data(),
                 kernelKey.mangledName.c_str(), kernelKey.fileName.c_str(), kernelKey.lineNum, kernelKey.colNum);
         }
+
+        std::vector<std::string> kernelVarInfo = {funcName.data()};
+        for (clang::ParmVarDecl *param : funcDecl->parameters()) {
+            std::string typeStr = param->getType().getAsString(); // variable type string
+            std::string nameStr = param->getNameAsString();       // variable name string
+            kernelVarInfo.insert(kernelVarInfo.end(), {typeStr, nameStr});
+            ASC_LOGD("Global aicore function: %s, mangledName: %s, has variable type %s, variable name %s.",
+                funcName.data(), kernelKey.mangledName.c_str(), typeStr.c_str(), nameStr.c_str());
+        }
+        AscPlugin::g_kernelVarMap.insert({kernelKey.mangledName, kernelVarInfo});
+
         kernelFuncsKernelType_[kernelKey] = "";
         g_kernelFuncType[kernelKey] = {{KernelMetaType::KERNEL_TYPE_MAX}, KfcScene::Close};
     }
@@ -167,15 +178,15 @@ void StoreFuncKernelType(const AscPlugin::KernelFuncInfo& kernelKey, const std::
     }
 }
 
-std::vector<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo)
+std::unordered_set<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo)
 {
-    std::vector<KernelMetaType> res;
+    std::unordered_set<KernelMetaType> res;
     // aiv only / aic only
     for (const auto& kernelAttr : kernelInfo.kernelAttributes) {
         if (kernelAttr == "aiv") {
-            res.emplace_back(KernelMetaType::KERNEL_TYPE_AIV_ONLY);
+            res.insert(KernelMetaType::KERNEL_TYPE_AIV_ONLY);
         } else if (kernelAttr == "aic") {
-            res.emplace_back(KernelMetaType::KERNEL_TYPE_AIC_ONLY);
+            res.insert(KernelMetaType::KERNEL_TYPE_AIC_ONLY);
         }
     }
     // core ratio for mix
@@ -183,7 +194,7 @@ std::vector<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo)
         if (kernelInfo.ratio.isCoreRatio) {
             auto kType = GetBishengKTypeByCoreRatio(kernelInfo.ratio);
             if (kType != KernelMetaType::KERNEL_TYPE_MAX) {
-                res.emplace_back(kType);
+                res.insert(kType);
             }
         }
     } else {
@@ -191,7 +202,7 @@ std::vector<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo)
             if (instance.ratio.isCoreRatio) {
                 auto kType = GetBishengKTypeByCoreRatio(instance.ratio);
                 if (kType != KernelMetaType::KERNEL_TYPE_MAX) {
-                    res.emplace_back(kType);
+                    res.insert(kType);
                 }
             }
         }
@@ -221,18 +232,18 @@ std::vector<KernelMetaType> GetBishengKType(const KernelInfo& kernelInfo)
     return res;
 }
 
-std::pair<std::vector<KernelMetaType>, KfcScene> GetKernelFuncScene(const AscPlugin::KernelInfo& kernelInfo)
+std::pair<std::unordered_set<KernelMetaType>, KfcScene> GetKernelFuncScene(const AscPlugin::KernelInfo& kernelInfo)
 {
     KernelFuncInfo kernelKey = {kernelInfo.kernelMangledName, kernelInfo.fileName, kernelInfo.lineNum,
         kernelInfo.colNum};
-    std::vector<KernelMetaType> defaultKType = {AscPlugin::KernelMetaType::KERNEL_TYPE_MAX};
+    std::unordered_set<KernelMetaType> defaultKType = {AscPlugin::KernelMetaType::KERNEL_TYPE_MAX};
     auto it = g_kernelFuncType.find(kernelKey);
     ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
     KernelMetaType socDefaultKtype = DEFAULT_KERNEL_TYPE_MAP.at(shortSoc);
     if (it != g_kernelFuncType.end()) {
-        const auto& [ktypeList, kfcFlag] = it->second;
-        std::vector<KernelMetaType> bishengKtype = GetBishengKType(kernelInfo);
-        if (ktypeList == defaultKType) { // user does not set Ascendc Kernel type. May need ascendc auto identification
+        const auto& [ktypeSet, kfcFlag] = it->second;
+        std::unordered_set<KernelMetaType> bishengKtype = GetBishengKType(kernelInfo);
+        if (ktypeSet == defaultKType) { // user does not set Ascendc Kernel type. May need ascendc auto identification
             // 310P does not need automatic kernel type identification
             if (shortSoc == ShortSocVersion::ASCEND310P) {
                 ASC_LOGD("Can not find Kernel type, kernel func mangled name: %s at %s:%u, col:%u, using default "
@@ -263,7 +274,7 @@ std::pair<std::vector<KernelMetaType>, KfcScene> GetKernelFuncScene(const AscPlu
                 kernelKey.lineNum, kernelKey.colNum);
             return {{socDefaultKtype}, KfcScene::Close};
         } else {
-            KernelMetaType ascKType = ktypeList[0];  // ascend only has 1 kernel type for each kernel
+            KernelMetaType ascKType = ExtractKernelType(ktypeSet); // ascend only has 1 kernel type for each kernel
             // 310P only supports KERNEL_TYPE_AICORE for now
             if (shortSoc == ShortSocVersion::ASCEND310P && ascKType != AscPlugin::KernelMetaType::KERNEL_TYPE_AICORE) {
                 ASC_LOGE("Unsupported kernel type %s for kernel func mangled name: %s at %s:%u, col:%u. Current soc "
@@ -272,13 +283,14 @@ std::pair<std::vector<KernelMetaType>, KfcScene> GetKernelFuncScene(const AscPlu
                 return {{socDefaultKtype}, KfcScene::Close};
             }
             // If has core ratio, check whether bisheng kernel type is consistent with ascendc kernel type
+            KernelMetaType curBishengKType = ExtractKernelType(bishengKtype);
             if (bishengKtype.size() > 1) {
                 ASC_LOGE("Has more than 1 kernel type for kernel func mangled name: %s at %s:%u, col:%u, contradicts "
                     "with Ascendc kernel type %s", kernelKey.mangledName.c_str(), kernelKey.fileName.c_str(),
                     kernelKey.lineNum, kernelKey.colNum, KTYPE_STR_MAP.at(ascKType).c_str());
-            } else if (bishengKtype.size() == 1 && bishengKtype[0] != ascKType) {
+            } else if (bishengKtype.size() == 1 && curBishengKType != ascKType) {
                 ASC_LOGE("Bisheng kernel type %s contradicts with Ascendc kernel type %s for kernel func mangled name:"
-                    " %s at %s:%u, col:%u", KTYPE_STR_MAP.at(bishengKtype[0]).c_str(),
+                    " %s at %s:%u, col:%u", KTYPE_STR_MAP.at(curBishengKType).c_str(),
                     KTYPE_STR_MAP.at(ascKType).c_str(), kernelKey.mangledName.c_str(), kernelKey.fileName.c_str(),
                     kernelKey.lineNum, kernelKey.colNum);
             }
@@ -304,6 +316,7 @@ AscPlugin::KernelFuncInfo GetKernelInfo(const clang::FunctionDecl *funcDecl)
         }
         delete mangleContext;
     }
+
     clang::SourceLocation loc = funcDecl->getLocation();
     clang::SourceManager &srcMgr = funcDecl->getASTContext().getSourceManager();
     std::string fileName = CheckAndGetFullPath(srcMgr.getFilename(loc).str());

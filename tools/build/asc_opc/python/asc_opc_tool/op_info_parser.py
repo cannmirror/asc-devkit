@@ -15,7 +15,7 @@ Paser op json info and generate kernel name
 
 import json
 import hashlib
-import tbe.common.utils.log as logger
+import asc_op_compile_base.common.utils.log as logger
 from opc_common import LogLevel
 from opc_common import opc_log_full
 from constant import (CompileParam, OpcOptions, OpParamType)

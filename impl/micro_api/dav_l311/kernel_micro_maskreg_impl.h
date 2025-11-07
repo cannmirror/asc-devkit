@@ -35,10 +35,19 @@ __aicore__ inline MaskReg UpdateMaskImpl(uint32_t &scalar)
     return reg;
 }
 
-template <typename RegT>
-__aicore__ inline void MaskGenWithRegTensorImpl(MaskReg &dstMask, RegT &srcReg, int16_t bitOffset)
+template <typename T = DefaultType, int16_t Offset, typename RegT>
+__aicore__ inline void MaskGenWithRegTensorImpl(MaskReg &dstMask, RegT &srcReg)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "MaskGenWithRegTensor is not supported on current device!"); });
+    using ActualT = typename RegT::ActualT;
+    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(SupportBytes<ActualT, 2, 4>(), "MaskGenWithRegTensor only support type b16/b32 on current device");
+    if constexpr (sizeof(ActualT) == 2) {
+        static_assert((Offset >= 0) && (Offset <= 15), "MaskGenWithRegTensor Offset must be in 0~15 when T is b16");
+        movvp(dstMask, (RegTensor<uint16_t> &)srcReg, Offset);
+    } else if constexpr (sizeof(ActualT) == 4) {
+        static_assert((Offset >= 0) && (Offset <= 31), "MaskGenWithRegTensor Offset must be in 0~31 when T is b32");
+        movvp(dstMask, (RegTensor<uint32_t> &)srcReg, Offset);
+    }
 }
 
 template <typename T, MaskPattern mode = MaskPattern::ALL, const RegTrait &regTrait = RegTraitNumOne>

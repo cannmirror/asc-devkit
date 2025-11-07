@@ -20,12 +20,10 @@ import importlib
 import inspect
 import re
 
-from tbe.common.buildcfg import build_config
-from tbe.common.context import op_context
-from tbe.common.platform import platform_info
-from tbe.common.utils import log as logger
-from te.platform.vector_random_buff import vector_random_buff
-from te.platform.cube_random_buff import cube_random_buff
+from asc_op_compile_base.common.buildcfg import build_config
+from asc_op_compile_base.common.context import op_context
+from asc_op_compile_base.common.platform import platform_info
+from asc_op_compile_base.common.utils import log as logger
 from constant import (CompileParam, OpcOptions, OpcCompileMode, GraphDefParam,
                       OptionalInOutMode, OpImplType)
 
@@ -298,13 +296,6 @@ class OpCompilation:
             tbe_debug_level_value = int(self.__opc_compile_args.get(OpcOptions.OP_DEBUG_LEVEL, 0))
             if tbe_debug_level_value == 3:
                 tbe_debug_level_value = 0
-            with build_config(tbe_debug_level=tbe_debug_level_value,
-                              kernel_meta_parent_dir=debug_dir,
-                              compatible=True,
-                              random_cce_file_location=False):
-                # 1980 virtual computing force grouping
-                vector_random_buff()
-                cube_random_buff()
 
             single_op_obj = SingleOpCompile(op, op_info, self.__opc_compile_args)
             logger.debug("Call SingleOpCompile.")
@@ -675,5 +666,7 @@ class OpCompilation:
 
 
 def asc_op_compile(opc_compile_args) -> bool:
+    from op_info_store import load_op_info_store
+    load_op_info_store(opc_compile_args.get(OpcOptions.SOC_VERSION))
     op_compile = OpCompilation(opc_compile_args)
     return op_compile.op_compilation()

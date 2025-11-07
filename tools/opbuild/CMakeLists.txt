@@ -8,6 +8,7 @@
 #
 add_executable(op_build op_build.cpp op_generator.cpp op_generator_factory.cpp op_cfg_generator.cpp
   op_proto_generator.cpp op_aclnn_generator.cpp op_custom_registry_generator.cpp op_aclnn_fallback_generator.cpp
+  op_cpu_cfg_generator.cpp
 )
 
 #target_compile_options(op_build PRIVATE -g -D_GLIBCXX_USE_CXX11_ABI=0)

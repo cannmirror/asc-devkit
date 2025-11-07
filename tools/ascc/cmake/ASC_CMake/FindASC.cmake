@@ -3,6 +3,7 @@ set(LIB_SUPPORT_TYPES SHARED STATIC)
 function(library_interface_setup target_name)
     target_include_directories(${target_name} INTERFACE
         ${ASCEND_CANN_PACKAGE_PATH}/include
+        ${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/
     )
     target_link_directories(${target_name} INTERFACE
         ${ASCEND_CANN_PACKAGE_PATH}/lib64
@@ -22,6 +23,20 @@ function(library_interface_setup target_name)
         ascend_dump
         c_sec
     )
+
+    # for ACLRT_LAUNCH_KERNEL
+    if (ENABLE_ACLRT_LAUNCH)
+        set(ACLRT_HEADER_INCLUDE_PATH ${CMAKE_BINARY_DIR}/include/${target_name} CACHE PATH "Path for aclrt header files")
+        file(MAKE_DIRECTORY ${ACLRT_HEADER_INCLUDE_PATH})
+
+        target_include_directories(${target_name} INTERFACE
+            ${ACLRT_HEADER_INCLUDE_PATH}
+        )
+
+        target_compile_definitions(${target_name} PRIVATE
+            GEN_ACLRT=${ACLRT_HEADER_INCLUDE_PATH}
+        )
+    endif()
 endfunction()
 
 function(ascendc_library target_name target_type)

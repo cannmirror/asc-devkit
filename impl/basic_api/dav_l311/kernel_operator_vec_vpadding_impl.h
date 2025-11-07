@@ -16,18 +16,19 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_VPADDING_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_VPADDING_IMPL_H
 #include "kernel_utils.h"
+#include "kernel_struct_unary.h"
 
 namespace AscendC {
 template <typename T, bool isSetMask>
 __aicore__ inline void VectorPaddingImpl(__ubuf__ T* dst, __ubuf__ T* src, uint8_t padMode, bool padSide,
-    const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+    const uint64_t mask, uint8_t repeatTimes, const UnaryRepeatParams& repeatParams)
 {
     ASCENDC_ASSERT((false), "VectorPadding is not supported");
 }
 
 template <typename T, bool isSetMask>
 __aicore__ inline void VectorPaddingImpl(__ubuf__ T* dst, __ubuf__ T* src, uint8_t padMode, bool padSide,
-    const uint64_t mask[2], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+    const uint64_t mask[2], uint8_t repeatTimes, const UnaryRepeatParams& repeatParams)
 {
     ASCENDC_ASSERT((false), "VectorPadding is not supported");
 }
