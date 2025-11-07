@@ -12,7 +12,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(ascend-c-dev)
 
-option(BUILD_OPEN_PROJECT "Build open ascendc lib project" ON)
+option(BUILD_OPEN_PROJECT "Build open asc-devkit lib project" ON)
 
 set(ASCENDC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(ASCENDC_INCLUDE_DIR ${ASCENDC_DIR}/include)
@@ -23,7 +23,7 @@ set(ASCENDC_ADV_API_CMAKE_DIR ${ASCENDC_ADV_API_IMPL_DIR}/cmake)
 
 if(BUILD_OPEN_PROJECT)
   include(${ASCENDC_ADV_API_CMAKE_DIR}/config.cmake)
-  set(INSTALL_LIBRARY_DIR packages/${CMAKE_SYSTEM_PROCESSOR}-linux)
+  set(INSTALL_LIBRARY_DIR ${CMAKE_SYSTEM_PROCESSOR}-linux)
 else()
   set(INSTALL_LIBRARY_DIR lib)
 endif()
@@ -48,11 +48,21 @@ if(NOT BUILD_OPEN_PROJECT)
 endif()
 
 # generate kernel_tiling/kernel_tiling.h
-add_custom_command(
-  OUTPUT ${KERNEL_TILING_HAED}
-  COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
-          ${KERNEL_TILING_HAED}
-  DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+if(NOT BUILD_OPEN_PROJECT)
+  add_custom_command(
+    OUTPUT ${KERNEL_TILING_HAED}
+    COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
+            ${KERNEL_TILING_HAED}
+    COMMAND mkdir -p ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
+    COMMAND cp ${KERNEL_TILING_HAED} ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
+    DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+else()
+  add_custom_command(
+    OUTPUT ${KERNEL_TILING_HAED}
+    COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
+            ${KERNEL_TILING_HAED}
+    DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+endif()
 
 add_custom_target(gen_kernel_tiling ALL DEPENDS ${KERNEL_TILING_HAED})
 
@@ -441,10 +451,10 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake
   PATTERN "test_*" EXCLUDE
 )
 
-# if(PACKAGE_OPEN_PROJECT)
-#   cmake_minimum_required(VERSION 3.16)
-#   project(ascendc VERSION 1.0.0)
-#   include(CMakePrintHelpers)
-#   set(CMAKE_CXX_STANDARD 17)
-#   include(tools/package.cmake)
-# endif()
+if(PACKAGE_OPEN_PROJECT)
+  cmake_minimum_required(VERSION 3.16)
+  project(asc-devkit VERSION 1.0.0)
+  include(CMakePrintHelpers)
+  set(CMAKE_CXX_STANDARD 17)
+  include(cmake/package.cmake)
+endif()

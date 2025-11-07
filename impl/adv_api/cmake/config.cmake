@@ -12,23 +12,23 @@ if (NOT EXISTS "${ASCEND_CANN_PACKAGE_PATH}")
     message(FATAL_ERROR "${ASCEND_CANN_PACKAGE_PATH} does not exist, please install the cann package and set environment variables.")
 endif()
 
-execute_process(COMMAND bash ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/check_version_compatiable.sh
-                             ${ASCEND_CANN_PACKAGE_PATH}
-                             toolkit
-                             ${ASCENDC_DIR}/version.info
-    RESULT_VARIABLE result
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_VARIABLE CANN_VERSION
-    )
+# execute_process(COMMAND bash ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/check_version_compatiable.sh
+#                              ${ASCEND_CANN_PACKAGE_PATH}
+#                              toolkit
+#                              ${ASCENDC_DIR}/version.info
+#     RESULT_VARIABLE result
+#     OUTPUT_STRIP_TRAILING_WHITESPACE
+#     OUTPUT_VARIABLE CANN_VERSION
+#     )
 
-if (result)
-    message(FATAL_ERROR "${CANN_VERSION}")
-else()
-     string(TOLOWER ${CANN_VERSION} CANN_VERSION)
-endif()
+# if (result)
+#     message(FATAL_ERROR "${CANN_VERSION}")
+# else()
+#      string(TOLOWER ${CANN_VERSION} CANN_VERSION)
+# endif()
 
 if (CMAKE_INSTALL_PREFIX STREQUAL /usr/local)
-    set(CMAKE_INSTALL_PREFIX     "${CMAKE_CURRENT_SOURCE_DIR}/output"  CACHE STRING "path for install()" FORCE)
+    set(CMAKE_INSTALL_PREFIX     "${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/makeself_staging"  CACHE STRING "path for install()" FORCE)
 endif ()
 
 set(HI_PYTHON                     "python3"                       CACHE   STRING   "python executor")

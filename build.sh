@@ -13,13 +13,13 @@ set -e
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 BUILD_DIR=${CURRENT_DIR}/build
-OUTPUT_DIR=${CURRENT_DIR}/output
+OUTPUT_DIR=${CURRENT_DIR}/build_out
+CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
 CPU_NUM=$(($(cat /proc/cpuinfo | grep "^processor" | wc -l)))
 JOB_NUM="-j${CPU_NUM}"
 ASAN="false"
 COV="false"
-CUSTOM_OPTION="-DCMAKE_INSTALL_PREFIX=${OUTPUT_DIR} -DPACKAGE_OPEN_PROJECT=ON"
 
 if [ "${USER_ID}" != "0" ]; then
     DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
@@ -70,6 +70,7 @@ function build()
 function build_package(){
     cmake_config
     build package
+    cp ${BUILD_DIR}/_CPack_Packages/makeself_staging/*.run ${OUTPUT_DIR}
 }
 
 function build_test() {
@@ -99,6 +100,14 @@ while [[ $# -gt 0 ]]; do
         COV="true"
         shift
         ;;
+    --pkg)
+        PKG="true"
+        shift
+        ;;
+    --cann_3rd_lib_path=*)
+        CANN_3RD_LIB_PATH="${1#*=}"
+        shift
+        ;;
     *)
         break
         ;;
@@ -115,6 +124,14 @@ fi
 
 if [ "${COV}" == "true" ];then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_GCOV=true"
+fi
+
+if [ "${PKG}" == "true" ];then
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DPACKAGE_OPEN_PROJECT=ON"
+fi
+
+if [ -n "${CANN_3RD_LIB_PATH}" ];then
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DCANN_3RD_LIB_PATH=${CANN_3RD_LIB_PATH}"
 fi
 
 if [ -n "${ascend_package_path}" ];then
