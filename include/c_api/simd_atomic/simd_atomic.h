@@ -1,0 +1,38 @@
+/*
+ * This program is free software, you can redistribute it and/or modify it.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+ 
+#ifndef C_API_SIMD_AOTMIC_H
+#define C_API_SIMD_AOTMIC_H
+ 
+#include "impl/c_api/instr/simd_atomic/simd_atomic.h"
+ 
+__aicore__ inline void asc_DataCacheCleanAndInvalid(__gm__ void *dst, uint64_t entire);
+ 
+__aicore__ inline void asc_SetAtomicAdd();
+ 
+__aicore__ inline void asc_SetAtomicBfloat16();
+ 
+__aicore__ inline void asc_SetAtomicHalf();
+ 
+__aicore__ inline void asc_SetAtomicFloat();
+ 
+__aicore__ inline void asc_SetAtomicMax();
+ 
+__aicore__ inline void asc_SetAtomicMin();
+ 
+__aicore__ inline void asc_SetAtomicNone();
+ 
+__aicore__ inline void asc_SetAtomicS16();
+ 
+__aicore__ inline void asc_SetAtomicS32();
+ 
+__aicore__ inline void asc_SetAtomicS8();
+ 
+#endif

@@ -1,0 +1,5 @@
+if(NOT BUILD_OPEN_PROJECT)
+    add_subdirectory(ascc)
+    add_subdirectory(ascendfe)
+endif()
+add_subdirectory(asc_plugin)

@@ -1,0 +1,91 @@
+/*
+ * This program is free software, you can redistribute it and/or modify it.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+/*!
+ * \file kernel_operator_vec_gather_intf.h
+ * \brief
+ */
+#ifndef ASCENDC_MODULE_OPERATOR_VEC_GATHER_INTERFACE_H
+#define ASCENDC_MODULE_OPERATOR_VEC_GATHER_INTERFACE_H
+#include "kernel_tensor.h"
+#include "kernel_struct_gather.h"
+
+#if ASCENDC_CPU_DEBUG
+#include "kernel_check.h"
+#endif
+
+#pragma begin_pipe(V)
+namespace AscendC {
+/*
+ * @ingroup gatherb Level 0
+ * @brief this function fetches N addresses from offset,then accesses these N addresses(plus the src0 address)
+ * @brief to get N 32Byte block, and finally writes these N blocks into dst.
+ * @brief gather element in the uint of block
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] offset input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] repeatParams.dstBlkStride dst block stride
+ * @param [in] repeatParams.dstRepStride dst repeat stride
+ */
+template <typename T>
+__aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<uint32_t>& offset, const uint8_t repeatTime, const GatherRepeatParams& repeatParams);
+
+/*
+ * @ingroup gather Level 0
+ * @brief gather element from src according to srcOffset
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] srcOffset input LocalTensor
+ * @param [in] srcBaseAddr base address of src
+ * @param [in] mask valid element count
+ * @param [in] repeatTime repeat times
+ * @param [in] dstRepStride dst repeat stride
+ */
+template <typename T>
+__aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint64_t mask,
+    const uint8_t repeatTime, const uint16_t dstRepStride);
+
+/*
+ * @ingroup gather Level 0
+ * @brief gather element from src according to srcOffset
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] srcOffset input LocalTensor
+ * @param [in] srcBaseAddr base address of src
+ * @param [in] mask valid element count(bit mode)
+ * @param [in] repeatTime repeat times
+ * @param [in] dstRepStride dst repeat stride
+ */
+template <typename T>
+__aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint64_t mask[],
+    const uint8_t repeatTime, const uint16_t dstRepStride);
+
+/*
+ * @ingroup gather Level 2
+ * @brief gather element from src according to srcOffset
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] srcOffset input LocalTensor
+ * @param [in] srcBaseAddr base address of src
+ * @param [in] count element count
+ */
+template <typename T>
+__aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<uint32_t>& srcOffset, const uint32_t srcBaseAddr, const uint32_t count);
+} // namespace AscendC
+#pragma end_pipe
+
+#include "../../impl/basic_api/kernel_operator_vec_gather_intf_impl.h"
+#endif // ASCENDC_MODULE_OPERATOR_VEC_GATHER_INTERFACE_H
