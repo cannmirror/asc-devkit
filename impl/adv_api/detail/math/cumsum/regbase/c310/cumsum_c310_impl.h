@@ -22,7 +22,7 @@
 #include "cumsum_c310_utils.h"
 
 namespace AscendC {
-    template <typename T>
+template <typename T>
 __simd_vf__ inline void CumSumCopyLastRowVF(__local_mem__ T* dst, __local_mem__ T* src, uint32_t len)
 {
     constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(T));
@@ -48,78 +48,58 @@ __aicore__ inline void CumSumCopyLastRow(const LocalTensor<T>& dstTensor, const 
 
 template <typename T, const CumSumConfig& config>
 __aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    LocalTensor<T> tempBuffer, const CumSumInfo& cumSumInfo)
+                                     LocalTensor<T> tempBuffer, const CumSumInfo& cumSumInfo)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
 
 template <typename T = float, const CumSumConfig& config>
 __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    LocalTensor<float> tempBuffer, const CumSumInfo& cumSumInfo)
+                                     LocalTensor<float> tempBuffer, const CumSumInfo& cumSumInfo)
 {
     uint16_t alignOutter =
         (cumSumInfo.outter + NCHW_CONV_ADDR_LIST_SIZE - 1) / NCHW_CONV_ADDR_LIST_SIZE * NCHW_CONV_ADDR_LIST_SIZE;
-    const uint32_t minTmpBufferSize = alignOutter * cumSumInfo.inner * 2 * sizeof(float); // 2: tempBuffer + tempBuffer2
-    const uint32_t tmpBufferSize = tempBuffer.GetSize() * sizeof(float);
-#if ASCENDC_CPU_DEBUG
-    ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
-        KERNEL_LOG(KERNEL_ERROR,
-            "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
-            tmpBufferSize, minTmpBufferSize);
-    });
-#endif
     LocalTensor<float> tempBuffer2 = tempBuffer[alignOutter * cumSumInfo.inner];
-    Internal::TransposeAB(tempBuffer, srcTensor, alignOutter, cumSumInfo.inner);
+    Internal::Transpose5HDAB(tempBuffer, srcTensor, cumSumInfo);
     if constexpr (config.algorithm == CumSumAlgorithm::CUMSUM_ALGORITHM_SKLANSKY) {
         Internal::CumSumFirstDimSklansky(tempBuffer, cumSumInfo.inner, alignOutter);
     } else {
-        // basic implementation
         Internal::CumSumFirstDimBasic(tempBuffer, cumSumInfo.inner, alignOutter);
     }
-    Internal::TransposeAB(tempBuffer2, tempBuffer, cumSumInfo.inner, alignOutter);
+    Internal::Transpose5HDBA(tempBuffer2, tempBuffer, cumSumInfo);
     Internal::CumSumCopyOut(dstTensor, tempBuffer2, cumSumInfo.outter, cumSumInfo.inner);
 }
 
 template <typename T = half, const CumSumConfig& config>
 __aicore__ inline void CumSumLastDim(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-    LocalTensor<half> tempBufferHalf, const CumSumInfo& cumSumInfo)
+                                     LocalTensor<half> tempBuffer, const CumSumInfo& cumSumInfo)
 {
     uint16_t alignOutter =
         (cumSumInfo.outter + NCHW_CONV_ADDR_LIST_SIZE - 1) / NCHW_CONV_ADDR_LIST_SIZE * NCHW_CONV_ADDR_LIST_SIZE;
-
-    const uint32_t minTmpBufferSize = alignOutter * cumSumInfo.inner * 2 * sizeof(half); // 2: tempBuffer + tempBuffer2
-    LocalTensor<float> tempBuffer = tempBufferHalf.ReinterpretCast<float>();
-    const uint32_t tmpBufferSize = tempBuffer.GetSize() * sizeof(float);
-#if ASCENDC_CPU_DEBUG
-    ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
-        KERNEL_LOG(KERNEL_ERROR,
-            "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
-            tmpBufferSize, minTmpBufferSize);
-    });
-#endif
-    LocalTensor<float> tempBuffer2 = tempBuffer[alignOutter * cumSumInfo.inner];
-    LocalTensor<half> tempBuffer2Half = tempBuffer2.ReinterpretCast<half>();
-    Internal::TransposeAB(tempBuffer, srcTensor, alignOutter, cumSumInfo.inner);
+    LocalTensor<half> tempBuffer2 = tempBuffer[alignOutter * cumSumInfo.inner];
+    LocalTensor<float> floatTempBuffer = tempBuffer[alignOutter * cumSumInfo.inner].ReinterpretCast<float>();
+    Internal::Transpose5HDAB(tempBuffer, srcTensor, cumSumInfo);
+    Internal::CumSumCopyWithCast(floatTempBuffer, tempBuffer, cumSumInfo.inner, alignOutter);
     if constexpr (config.algorithm == CumSumAlgorithm::CUMSUM_ALGORITHM_SKLANSKY) {
-        Internal::CumSumFirstDimSklansky(tempBuffer, cumSumInfo.inner, alignOutter);
+        Internal::CumSumFirstDimSklansky(floatTempBuffer, cumSumInfo.inner, alignOutter);
     } else {
-        // basic implementation
-        Internal::CumSumFirstDimBasic(tempBuffer, cumSumInfo.inner, alignOutter);
+        Internal::CumSumFirstDimBasic(floatTempBuffer, cumSumInfo.inner, alignOutter);
     }
-    Internal::TransposeAB(tempBuffer2Half, tempBuffer, cumSumInfo.inner, alignOutter);
-    Internal::CumSumCopyOut(dstTensor, tempBuffer2Half, cumSumInfo.outter, cumSumInfo.inner);
+    Internal::CumSumCopyWithCast(tempBuffer, floatTempBuffer, cumSumInfo.inner, alignOutter);
+    Internal::Transpose5HDBA(tempBuffer2, tempBuffer, cumSumInfo);
+    Internal::CumSumCopyOut(dstTensor, tempBuffer2, cumSumInfo.outter, cumSumInfo.inner);
 }
 
 template <typename T, const CumSumConfig& config>
 __aicore__ inline void CumSumFirstDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
-    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+                                      LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
 
 template <typename T = float, const CumSumConfig& config>
 __aicore__ inline void CumSumFirstDim(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
-    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+                                      LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     Internal::CumSumCopyOut(dstTensor, srcTensor, cumSumInfo.outter, cumSumInfo.inner);
     if constexpr (config.algorithm == CumSumAlgorithm::CUMSUM_ALGORITHM_SKLANSKY) {
@@ -132,15 +112,15 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<float>& dstTensor, const
 
 template <typename T = half, const CumSumConfig& config>
 __aicore__ inline void CumSumFirstDim(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
-    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+                                      LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     const uint32_t minTmpBufferSize = cumSumInfo.outter * cumSumInfo.inner * sizeof(float);
     const uint32_t tmpBufferSize = sharedTmpBuffer.GetSize();
 #if ASCENDC_CPU_DEBUG
     ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
         KERNEL_LOG(KERNEL_ERROR,
-            "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
-            tmpBufferSize, minTmpBufferSize);
+                   "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
+                   tmpBufferSize, minTmpBufferSize);
     });
 #endif
     LocalTensor<float> tmpBuffer = sharedTmpBuffer.ReinterpretCast<float>();
@@ -156,7 +136,8 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<half>& dstTensor, const 
 
 template <typename T, const CumSumConfig& config>
 __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor,
-    const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
+                                  const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer,
+                                  const CumSumInfo& cumSumInfo)
 {
     if ASCEND_IS_AIC {
         return;
@@ -176,7 +157,8 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
         const uint32_t tmpBufferSize = sharedTmpBuffer.GetSize();
 #if ASCENDC_CPU_DEBUG
         ASCENDC_ASSERT((tmpBufferSize >= minTmpBufferSize), {
-            KERNEL_LOG(KERNEL_ERROR,
+            KERNEL_LOG(
+                KERNEL_ERROR,
                 "tmpBufferSize can't smaller than minTmpBufferSize, tmpBufferSize is %u, minTmpBufferSize is %u!",
                 tmpBufferSize, minTmpBufferSize);
         });
@@ -189,15 +171,15 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
         uint32_t srcLocalOffset = 0;
         LocalTensor<T> tmpBuffer = sharedTmpBuffer.ReinterpretCast<T>();
         for (uint32_t i = 0; i < rangeM; i++) {
-            CumSumLastDim<T, config>(
-                dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer, {oneRepeateSize, cumSumInfo.inner});
+            CumSumLastDim<T, config>(dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer,
+                                     {oneRepeateSize, cumSumInfo.inner});
             dstLocalOffset += cumSumInfo.inner * oneRepeateSize;
             srcLocalOffset += cumSumInfo.inner * oneRepeateSize;
         }
 
         if (tailM != 0) {
-            CumSumLastDim<T, config>(
-                dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer, {tailM, cumSumInfo.inner});
+            CumSumLastDim<T, config>(dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer,
+                                     {tailM, cumSumInfo.inner});
         }
     } else {
         CumSumFirstDim<T, config>(dstTensor, srcTensor, sharedTmpBuffer, cumSumInfo);

@@ -25,6 +25,8 @@ namespace AscendC {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
+[[deprecated("NOTICE: GetArithProgressionMaxMinTmpSize has been deprecated and will be removed in the next version. "
+             "please do not use it!")]]
 void GetArithProgressionMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue);
 
 void GetArangeMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue);

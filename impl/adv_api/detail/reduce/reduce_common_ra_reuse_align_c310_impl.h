@@ -24,6 +24,7 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
     uint16_t needInplaceAdd = tailR > 0 ? 1 : 0;
+    uint16_t noNeedCopy = mainR > 1 ? 0 : 1;
     uint16_t mainTimes = folds / avgFolds;
     // Process vlSize axisA each time
     uint32_t inplaceA = dimA;
@@ -52,6 +53,16 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
     MicroAPI::RegTensor<T, Trait> vregMain;
     MicroAPI::RegTensor<T, Trait> vregTail;
     MicroAPI::MaskReg mask;
+    for (uint16_t i = 0; i < noNeedCopy; i++) {
+        for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+            mask = MicroAPI::UpdateMask<T, Trait>(inplaceA);
+            DataCopy(vregMain, srcAddr + loopA * vlSize);
+            DataCopy(vregTail, srcAddr + loopA * vlSize + aTailOffset);
+            Binaryfunc(vregMain, vregMain, vregTail, mask);
+            DataCopy(dstAddr + loopA * vlSize, vregMain, mask);
+        }
+        return;
+    }
     // Process mainR and tailR
     for (uint16_t i = 0; i < needInplaceAdd; i++) {
         for (uint16_t loopA = 0; loopA < loopANum; loopA++) {

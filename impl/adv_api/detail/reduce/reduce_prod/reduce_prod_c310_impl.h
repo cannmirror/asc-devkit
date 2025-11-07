@@ -52,11 +52,46 @@ __aicore__ inline void ReduceProd(MicroAPI::RegTensor<T>& dst, MicroAPI::RegTens
     MicroAPI::Mul(src, dst, src, mask);
     MicroAPI::DeInterleave(dst, src, src, tempOne);
     MicroAPI::Mul(src, dst, src, mask);
-    MicroAPI::DeInterleave(dst, src, src, tempOne);
-    MicroAPI::Mul(src, dst, src, mask);
     // fold to 1
     MicroAPI::DeInterleave(dst, src, src, tempOne);
     MicroAPI::Mul(dst, dst, src, mask);
+}
+
+template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize>
+__simd_vf__ inline void ReduceProdARLessThanVLVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
+    uint32_t dimR, const uint16_t repeatTime)
+{
+    MicroAPI::RegTensor<T, Trait> vreg0;
+    MicroAPI::RegTensor<T, Trait> vreg1;
+    MicroAPI::UnalignReg uDst;
+    MicroAPI::RegTensor<T> tempOne;
+    // mask invalid data in src to one
+    MicroAPI::Duplicate(tempOne, 1);
+    uint32_t sreg1 = dimR;
+    MicroAPI::MaskReg mask = MicroAPI::UpdateMask<T, Trait>(sreg1);
+    for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
+        DataCopy(vreg0, srcAddr + loopA * dimR);
+        MicroAPI::Select(vreg0, vreg0, tempOne, mask);
+        if constexpr(sizeof(T) == 1) {
+            // fold to 128
+            MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+            MicroAPI::Mul(vreg0, vreg1, vreg0, mask);
+        }
+        if constexpr(sizeof(T) <= 2) {
+            // fold to 64
+            MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+            MicroAPI::Mul(vreg0, vreg1, vreg0, mask);
+        }
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+            MicroAPI::Mul(vreg0, vreg1, vreg0, mask);
+        }
+        // fold to 1
+        MicroAPI::DeInterleave(vreg1, vreg0, vreg0, tempOne);
+        MicroAPI::Mul(vreg1, vreg1, vreg0, mask);
+        DataCopyUnAlign((__ubuf__ T *&)dstAddr, vreg1, uDst, 1);
+    }
+    MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
 template <class T, bool isReuseSource = false>
@@ -64,10 +99,13 @@ __aicore__ inline void ReduceProdARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr
     uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = GetVecLen() / sizeof(T);
-    if (dimR <= vlSize) {
-        ReduceARReuseSourceLessThanVL<T, MicroAPI::RegTraitNumOne, vlSize,
-            MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            ReduceProd<T>>(dstAddr, srcAddr, dimA, dimR);
+    if (dimR == 1) {
+        ReduceOpInternal::ReduceCopyOutImpl<T>(dstAddr, srcAddr, dimA);
+    } else if (dimR <= vlSize) {
+        uint16_t repeatTime = FindClosestPowerOfTwo(dimR);
+        repeatTime = (1 << repeatTime) < dimR ? repeatTime : repeatTime - 1;
+        ReduceProdARLessThanVLVF<T, MicroAPI::RegTraitNumOne, vlSize>
+            (dstAddr, srcAddr, dimA, dimR, repeatTime);
     } else {
         ReduceAROverVLImpl<T, MicroAPI::RegTraitNumOne, vlSize,
             MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,

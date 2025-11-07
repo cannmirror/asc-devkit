@@ -48,23 +48,6 @@ struct NormalizeConfig {
     bool isOnlyOutput = false;
 };
 
-__aicore__ constexpr NormalizeConfig GetNormalizeConfig(bool isNoBeta, bool isNoGamma)
-{
-    return {.reducePattern = ReducePattern::AR,
-        .aLength = -1,
-        .isNoBeta = isNoBeta,
-        .isNoGamma = isNoGamma,
-        .isOnlyOutput = false};
-}
-
-constexpr NormalizeConfig NLCFG_NORM = GetNormalizeConfig(false, false);
-
-constexpr NormalizeConfig NLCFG_NOBETA = GetNormalizeConfig(true, false);
-
-constexpr NormalizeConfig NLCFG_NOGAMMA = GetNormalizeConfig(false, true);
-
-constexpr NormalizeConfig NLCFG_NOOPT = GetNormalizeConfig(true, true);
-
 struct NormalizePara {
     uint32_t aLength;
     uint32_t rLength;

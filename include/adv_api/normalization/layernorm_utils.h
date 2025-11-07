@@ -25,13 +25,6 @@ struct LayerNormConfig {
     bool isOutputRstd = true;
 };
 
-__aicore__ constexpr LayerNormConfig GetLayerNormNormalConfig()
-{
-    return {.isNoBeta = false, .isNoGamma = false, .isOnlyOutput = false, .isOutputRstd = true};
-}
-
-constexpr LayerNormConfig LNCFG_NORM = GetLayerNormNormalConfig();
-
 struct WelfordUpdateConfig {
     __aicore__ constexpr WelfordUpdateConfig(const bool isInplaceIn): isInplace(isInplaceIn) {}
     bool isInplace = false;

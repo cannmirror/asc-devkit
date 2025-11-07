@@ -148,7 +148,7 @@ struct MatmulParamsMDLSparse : public MatmulParamsBase<A_TYPE, B_TYPE, C_TYPE, B
     int baseMN_;
 };
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__ASC_NPU_HOST__)
 template<class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto &MM_CFG>
 struct MatmulParamsMxNorm : public MatmulParamsBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> {
     using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
@@ -244,7 +244,7 @@ struct MatmulParams<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, GetMatmulMode(CFG
     using PARAMS = MatmulParamsMDLSparse<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG>;
 };
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__ASC_NPU_HOST__)
 // MX_CFG_NORM
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG>
 struct MatmulParams<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, GetMatmulMode(CFG_NORM),

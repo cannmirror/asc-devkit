@@ -112,7 +112,7 @@ __aicore__ inline void QuantPertensorForB8(const LocalTensor<dstT>& dstTensor, c
     QuantPertensorForB8VF<dstT, srcT>(dstUb, srcUb, scale, offset, calCount);
 }
 
-template <typename T, bool isReuseSource = false>
+template <typename T, bool isReuseSource = false, const AscendQuantConfig &config>
 __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const float scale, const float offset, const uint32_t calCount)
 {
@@ -123,11 +123,13 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
     CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
     static_assert(SupportType<T, half, float, bfloat16_t>(),
         "This AscendQuant only support half/float/bfloat16_t input dtype");
-    ASCENDC_ASSERT((calCount <= srcTensor.GetSize() && calCount <= dstTensor.GetSize() && calCount >= 0), {
+    
+    const uint32_t calCountReal = config.calcCount != 0 ? config.calcCount : calCount;
+    ASCENDC_ASSERT((calCountReal <= srcTensor.GetSize() && calCountReal <= dstTensor.GetSize() && calCountReal >= 0), {
         KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should be in [0, min(%u, %u)]",
-            calCount, srcTensor.GetSize(), dstTensor.GetSize());
+            calCountReal, srcTensor.GetSize(), dstTensor.GetSize());
     });
-    QuantPertensorForB8<int8_t, T>(dstTensor, srcTensor, scale, offset, calCount);
+    QuantPertensorForB8<int8_t, T>(dstTensor, srcTensor, scale, offset, calCountReal);
 }
 
 template <typename dstT, typename srcT>
@@ -617,7 +619,7 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const
     }
 }
 
-template <typename T, bool isReuseSource = false>
+template <typename T, bool isReuseSource = false, const AscendQuantConfig &config>
 __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor, const T offset,
     const uint32_t scaleCount, const uint32_t calCount)
@@ -630,20 +632,25 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
     CheckTensorPosition(scaleTensor, "scaleTensor", "VECIN, VECOUT, VECCALC");
     static_assert(SupportType<T, half, float, bfloat16_t>(),
         "This AscendQuant only support half/float/bfloat16_t input dtype");
-    ASCENDC_ASSERT((calCount <= srcTensor.GetSize() && calCount <= dstTensor.GetSize() && calCount >= 0), {
+
+    constexpr bool enableConfig = config.calcCount != 0 && config.scaleCount != 0;
+    const uint32_t calCountReal = enableConfig ? config.calcCount : calCount;
+    const uint32_t scaleCountReal = enableConfig ? config.scaleCount : scaleCount;
+
+    ASCENDC_ASSERT((calCountReal <= srcTensor.GetSize() && calCountReal <= dstTensor.GetSize() && calCountReal >= 0), {
         KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should be in [0, min(%u, %u)]",
-            calCount, srcTensor.GetSize(), dstTensor.GetSize());
+            calCountReal, srcTensor.GetSize(), dstTensor.GetSize());
     });
-    ASCENDC_ASSERT((scaleCount > 0),
+    ASCENDC_ASSERT((scaleCountReal > 0),
             { KERNEL_LOG(KERNEL_ERROR, "scaleCount must be greater than 0"); });
-    ASCENDC_ASSERT((calCount % 32 == 0 && calCount % scaleCount == 0),
+    ASCENDC_ASSERT((calCountReal % 32 == 0 && calCountReal % scaleCountReal == 0),
             { KERNEL_LOG(KERNEL_ERROR, "calCount must be an integer multiple of 32 and scaleCount!"); });
-    const uint32_t rowNum = calCount / scaleCount;
-    QuantPerchannelForB8<int8_t, T>(dstTensor, srcTensor, scaleTensor, offset, scaleCount,
+    const uint32_t rowNum = calCountReal / scaleCountReal;
+    QuantPerchannelForB8<int8_t, T>(dstTensor, srcTensor, scaleTensor, offset, scaleCountReal,
         rowNum); // for int8/hif8 output
 }
 
-template <typename T, bool isReuseSource = false>
+template <typename T, bool isReuseSource = false, const AscendQuantConfig &config>
 __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor, const LocalTensor<T>& offsetTensor,
     const uint32_t scaleCount, const uint32_t offsetCount, const uint32_t calCount)
@@ -657,16 +664,22 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
     CheckTensorPosition(offsetTensor, "offsetTensor", "VECIN, VECOUT, VECCALC");
     static_assert(SupportType<T, half, float, bfloat16_t>(),
         "This AscendQuant only support half/float/bfloat16_t input dtype");
-    ASCENDC_ASSERT((calCount <= srcTensor.GetSize() && calCount <= dstTensor.GetSize() && calCount >= 0), {
+
+    constexpr bool enableConfig = config.calcCount != 0 && config.scaleCount != 0 && config.offsetCount != 0;
+    const uint32_t calCountReal = enableConfig ? config.calcCount : calCount;
+    const uint32_t scaleCountReal = enableConfig ? config.scaleCount : scaleCount;
+    const uint32_t offsetCountReal = enableConfig ? config.offsetCount : offsetCount;
+
+    ASCENDC_ASSERT((calCountReal <= srcTensor.GetSize() && calCountReal <= dstTensor.GetSize() && calCountReal >= 0), {
         KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should be in [0, min(%u, %u)]",
-            calCount, srcTensor.GetSize(), dstTensor.GetSize());
+            calCountReal, srcTensor.GetSize(), dstTensor.GetSize());
     });
-    ASCENDC_ASSERT((scaleCount > 0 && scaleCount  == offsetCount),
+    ASCENDC_ASSERT((scaleCountReal > 0 && scaleCountReal  == offsetCountReal),
             { KERNEL_LOG(KERNEL_ERROR, "scaleCount must be greater than 0 and equal to offsetCount!"); });
-    ASCENDC_ASSERT((calCount % 32 == 0 && calCount % scaleCount == 0),
+    ASCENDC_ASSERT((calCountReal % 32 == 0 && calCountReal % scaleCountReal == 0),
             { KERNEL_LOG(KERNEL_ERROR, "calCount must be an integer multiple of 32 and scaleCount!"); });
-    const uint32_t rowNum = calCount / scaleCount;
-    QuantPerchannelForB8<int8_t, T>(dstTensor, srcTensor, scaleTensor, offsetTensor, scaleCount,
+    const uint32_t rowNum = calCountReal / scaleCountReal;
+    QuantPerchannelForB8<int8_t, T>(dstTensor, srcTensor, scaleTensor, offsetTensor, scaleCountReal,
         rowNum); // for int8/hif8 output
 }
 
