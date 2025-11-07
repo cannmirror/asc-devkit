@@ -1,0 +1,10 @@
+extern "C" __global__ __aicore__ void (__attribute__((cce_global)) uint8_t* a, __attribute__((cce_global)) uint8_t* b, __attribute__((cce_global)) uint8_t* workspace)
+{
+AsccTestFoo(a, b, workspace);
+}
+
+extern "C" __global__ __aicore__ void aaaa(__attribute__((cce_global)) uint8_t* a, __attribute__((cce_global)) uint8_t* b, __attribute__((cce_global)) uint8_t* workspace, __attribute__((cce_global)) uint8_t* b, __attribute__((cce_global)) uint8_t* workspace)
+{
+AsccTestFoo<typename, typename>(a, b, workspace, b, workspace);
+}
+

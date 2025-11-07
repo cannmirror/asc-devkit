@@ -40,10 +40,11 @@ set(ASCENDC_TEST_HEADER_FILES
     ${ASCENDC_TESTS_DIR}/matmul/utils
     ${ASCENDC_DIR}
     ${KERNEL_TILING_DIR}
-    ${ASCENDC_SYS_DIR}/../../8.3.RC1/x86_64-linux/asc/include/adv_api
-    ${ASCENDC_SYS_DIR}/tikcpp/tikcfw
-    ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/interface
-    ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/impl
+    ${ASCENDC_DIR}/include
+    ${ASCENDC_DIR}/include/adv_api
+    ${ASCENDC_DIR}/include/basic_api
+    ${ASCENDC_DIR}/impl
+    ${ASCENDC_DIR}/impl/basic_api
 )
 
 # ascend610 test cases

@@ -1,0 +1,111 @@
+/*
+ * This program is free software, you can redistribute it and/or modify it.
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This file is a part of the CANN Open Software.
+ * Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
+
+#ifndef ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_IMPL_H
+#define ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_IMPL_H
+
+#include "kernel_simt_common_intf_impl.h"
+
+namespace AscendC {
+namespace Simt {
+__aicore__ inline int32_t WarpAllSync(int32_t predicate)
+{
+    return AllSyncImpl(predicate);
+}
+
+__aicore__ inline int32_t WarpAnySync(int32_t predicate)
+{
+    return AnySyncImpl(predicate);
+}
+
+__aicore__ inline int32_t Uni(int32_t predicate)
+{
+    return UniImpl(predicate);
+}
+
+__aicore__ inline uint32_t WarpBallotSync(int32_t predicate)
+{
+    return BallotSyncImpl(predicate);
+}
+
+__aicore__ inline uint32_t WarpActiveMask()
+{
+    return ActiveMaskImpl();
+}
+
+template <typename T>
+__aicore__ inline T WarpShflSync(T var, int32_t srcLane, int32_t width)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+        "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
+    return ShflSyncImpl(var, srcLane, width);
+}
+
+template <typename T>
+__aicore__ inline T WarpShflUpSync(T var, uint32_t delta, int32_t width)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+        "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
+    return ShflUpSyncImpl(var, delta, width);
+}
+
+template <typename T>
+__aicore__ inline T WarpShflDownSync(T var, uint32_t delta, int32_t width)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+        "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
+    return ShflDownSyncImpl(var, delta, width);
+}
+
+template <typename T>
+__aicore__ inline T WarpShflXorSync(T var, int32_t laneMask, int32_t width)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, int64_t, uint64_t, half, half2, float>(),
+        "Input type of var only supports int32_t, uint32_t, int64_t, uint64_t, half, half2, float.");
+    return ShflXorSyncImpl(var, laneMask, width);
+}
+
+template <typename T>
+__aicore__ inline T WarpReduceAddSync(T val)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+        "Input type of val only supports int32_t, uint32_t, half, float.");
+    return ReduceAddSyncImpl(val);
+}
+
+template <typename T>
+__aicore__ inline T WarpReduceMaxSync(T val)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+        "Input type of val only supports int32_t, uint32_t, half, float.");
+    return ReduceMaxSyncImpl(val);
+}
+
+template <typename T>
+__aicore__ inline T WarpReduceMinSync(T val)
+{
+    static_assert(SupportType<T, int32_t, uint32_t, half, float>(),
+        "Input type of val only supports int32_t, uint32_t, half, float.");
+    return ReduceMinSyncImpl(val);
+}
+
+__aicore__ inline void ThreadBarrier()
+{
+    ThreadBarrierImpl();
+}
+
+__aicore__ inline void ThreadFence()
+{
+    ThreadFenceImpl();
+}
+}  // namespace Simt
+}  // namespace AscendC
+#endif  // ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_IMPL_H

@@ -1,0 +1,3 @@
+add_subdirectory(elf_tool)
+add_subdirectory(asc_pack_kernel)
+add_subdirectory(asc_rt)

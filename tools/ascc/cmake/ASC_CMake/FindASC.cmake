@@ -1,0 +1,99 @@
+set(LIB_SUPPORT_TYPES SHARED STATIC)
+
+function(library_interface_setup target_name)
+    target_include_directories(${target_name} INTERFACE
+        ${ASCEND_CANN_PACKAGE_PATH}/include
+    )
+    target_link_directories(${target_name} INTERFACE
+        ${ASCEND_CANN_PACKAGE_PATH}/lib64
+    )
+    # consistent with default lib in kernellaunch
+    target_link_libraries(${target_name} INTERFACE
+        ascendc_runtime
+        ascendcl
+        runtime
+        register
+        error_manager
+        profapi
+        ge_common_base
+        ascendalog
+        mmpa
+        dl
+        ascend_dump
+        c_sec
+    )
+endfunction()
+
+function(ascendc_library target_name target_type)
+    if(NOT target_type IN_LIST LIB_SUPPORT_TYPES)
+        message(FATAL_ERROR "target_type ${target_type} is unsupported, the support list is ${LIB_SUPPORT_TYPES}")
+    endif()
+
+    set_source_files_properties(${ARGN} PROPERTIES LANGUAGE ASC)
+    add_library(${target_name} ${target_type} ${ARGN})
+
+    library_interface_setup(${target_name})
+
+    include(GNUInstallDirs)
+    install(TARGETS ${target_name}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endfunction()
+
+function(ascendc_fatbin_library target_name)
+    set_source_files_properties(${ARGN} PROPERTIES LANGUAGE ASC)
+    file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/fatbin/${target_name}/)
+    file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX}/single_objects/${target_name}/)
+
+    add_library(${target_name} OBJECT ${ARGN})
+
+    target_compile_options(${target_name} PRIVATE
+        --aicore-only           # compile device.o
+    )
+    library_interface_setup(${target_name})
+
+    set(output_path ${CMAKE_INSTALL_PREFIX}/fatbin/${target_name}/${target_name}.o)
+    add_custom_target(lld_copy_${target_name} ALL
+        COMMAND ${CMAKE_ASC_LLD_LINKER} -m aicorelinux -Ttext=0 $<TARGET_OBJECTS:${target_name}> -static -o ${output_path}
+        COMMAND cp $<TARGET_OBJECTS:${target_name}> ${CMAKE_INSTALL_PREFIX}/single_objects/${target_name}/
+        COMMAND_EXPAND_LISTS
+        COMMENT "Generate final device.o from ascendc_fatbin_library"
+    )
+
+    add_dependencies(lld_copy_${target_name} ${target_name})
+endfunction()
+
+function(ascendc_compile_definitions target_name target_scope)
+    target_compile_definitions(${target_name} ${target_scope} ${ARGN})
+endfunction()
+
+function(ascendc_compile_options target_name target_scope)
+    if(ARGN)
+        set(kernel_compile_options_list)
+        set(host_compile_options_list)
+        set(find_host_compile_options_flag OFF)
+        # compile options are split by "-forward-options-to-host-compiler",
+        # options after this all belong to host compile options
+        foreach(arg ${ARGN})
+            if (find_host_compile_options_flag)
+                list(APPEND host_compile_options_list ${arg})
+            else()
+                if (${arg} STREQUAL "-forward-options-to-host-compiler")
+                    set(find_host_compile_options_flag ON)
+                else()
+                    list(APPEND kernel_compile_options_list ${arg})
+                endif()
+            endif()
+        endforeach()
+
+        target_compile_options(${target_name} ${target_scope}
+            -Xaicore-start ${kernel_compile_options_list} -Xaicore-end
+            -Xhost-start ${host_compile_options_list} -Xhost-end
+        )
+    endif()
+endfunction()
+
+function(ascendc_include_directories target_name target_scope)
+    target_include_directories(${target_name} ${target_scope} ${ARGN})
+endfunction()

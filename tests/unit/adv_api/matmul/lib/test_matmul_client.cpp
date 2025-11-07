@@ -18,7 +18,7 @@
 
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
-#include "lib/matmul_intf.h"
+#include "include/adv_api/matmul/matmul_intf.h"
 #include "../copy_cube_in/base_tiling_struct.h"
 
 using namespace std;
