@@ -16,6 +16,7 @@
 #ifndef LIB_NORMALIZATION_LAYERNORM_H
 #define LIB_NORMALIZATION_LAYERNORM_H
 #include "include/adv_api/normalization/layernorm_utils.h"
+#include "../../../impl/adv_api/detail/normalization/layernorm/layernorm_normal_config.h"
 #if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220

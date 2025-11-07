@@ -18,6 +18,7 @@
 
 #include "kernel_tiling/kernel_tiling.h"
 #include "include/adv_api/normalization/layernorm_utils.h"
+#include "../../../../normalization/layernorm/layernorm_normal_config.h"
 
 namespace AscendC {
 namespace HighLevelApiCheck {

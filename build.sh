@@ -159,6 +159,9 @@ cd ${BUILD_DIR}
 
 if [ -n "${TEST}" ];then
     build_test
-else
+elif [ -n "${PKG}" ];then
     build_package
+else
+    cmake_config
+    build all
 fi

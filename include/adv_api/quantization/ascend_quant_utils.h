@@ -17,13 +17,40 @@
 #define LIB_QUANTIZATION_ASCEND_QUANT_UTILS_H
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 struct AscendQuantConfig {
-    bool hasOffset;
+    __aicore__ constexpr AscendQuantConfig(const uint32_t calcCount, const uint32_t offsetCount,
+        const uint32_t scaleCount, const uint32_t workLocalSize): calcCount(calcCount), offsetCount(offsetCount),
+        scaleCount(scaleCount), workLocalSize(workLocalSize) {}
+    uint32_t calcCount = 0;
+    uint32_t offsetCount = 0;
+    uint32_t scaleCount = 0;
+    uint32_t workLocalSize = 0;
+
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+    __aicore__ constexpr AscendQuantConfig(const uint32_t calcCount, const uint32_t offsetCount,
+        const uint32_t scaleCount, const uint32_t workLocalSize, const bool hasOffset, const int32_t kDim,
+        const RoundMode roundMode): calcCount(calcCount), offsetCount(offsetCount), scaleCount(scaleCount),
+        workLocalSize(workLocalSize), hasOffset(hasOffset), kDim(kDim), roundMode(roundMode) {}
+    __aicore__ constexpr AscendQuantConfig(const bool hasOffset, const int32_t kDim, const RoundMode roundMode):
+        hasOffset(hasOffset), kDim(kDim), roundMode(roundMode) {}
+    __aicore__ constexpr AscendQuantConfig(const bool hasOffset, const int32_t kDim):
+        hasOffset(hasOffset), kDim(kDim) {}
+    __aicore__ constexpr AscendQuantConfig(const bool hasOffset):
+        hasOffset(hasOffset) {}
+
+    bool hasOffset = false;
     int32_t kDim = 1;
     RoundMode roundMode = RoundMode::CAST_RINT;
+#endif
 };
 
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+constexpr AscendQuantConfig ASCEND_QUANT_DEFAULT_CFG = {0, 0, 0, 0, false, 1, RoundMode::CAST_RINT};
+#else
+constexpr AscendQuantConfig ASCEND_QUANT_DEFAULT_CFG = {0, 0, 0, 0};
+#endif
+
+#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
 enum class AscendQuantPolicy : int32_t {
     PER_TENSOR,
     PER_CHANNEL,
@@ -39,18 +66,6 @@ struct AscendQuantParam {
   uint32_t calCount;
   uint32_t groupSize = 0;
 };
-#else
-struct AscendQuantConfig {
-    __aicore__ constexpr AscendQuantConfig(const uint32_t calcCount, const uint32_t offsetCount,
-        const uint32_t scaleCount, const uint32_t workLocalSize): calcCount(calcCount), offsetCount(offsetCount),
-        scaleCount(scaleCount), workLocalSize(workLocalSize) {}
-    uint32_t calcCount = 0;
-    uint32_t offsetCount = 0;
-    uint32_t scaleCount = 0;
-    uint32_t workLocalSize = 0;
-};
-
-constexpr AscendQuantConfig ASCEND_QUANT_DEFAULT_CFG = {0, 0, 0, 0};
 #endif
 }; // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_QUANT_UTILS_H

@@ -31,17 +31,17 @@ namespace AscendC {
 /*
  * @ingroup Transpose
  * @arrange and reshape the data from src to dst.
- * @param [out] dstTensor output LocalTensor
- * @param [in] srcTensor input LocalTensor
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
  * @param [in] sharedTmpBuffer tmp buffer LocalTensor
  * @param [in] transposeType
  * @param [in] tiling Transpose tiling
  */
 template <typename T>
-__aicore__ inline void Transpose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+__aicore__ inline void Transpose(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeType, ConfusionTransposeTiling& tiling)
 {
-    ConfusionTransposeImpl<T>(dstTensor, srcTensor, sharedTmpBuffer, transposeType, tiling);
+    ConfusionTransposeImpl<T>(dst, src, sharedTmpBuffer, transposeType, tiling);
 }
 
 /* **************************************************************************************************
@@ -50,20 +50,20 @@ __aicore__ inline void Transpose(const LocalTensor<T>& dstTensor, const LocalTen
 /*
  * @ingroup Transpose
  * @arrange and reshape the data from src to dst.
- * @param [out] dstTensor output LocalTensor
- * @param [in] srcTensor input LocalTensor
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
  * @param [in] transposeType
  * @param [in] tiling Transpose tiling
  */
 template <typename T>
-__aicore__ inline void Transpose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+__aicore__ inline void Transpose(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     TransposeType transposeType, ConfusionTransposeTiling& tiling)
 {
     LocalTensor<uint8_t> tmpBuffer;
     bool res = PopStackBuffer<uint8_t, TPosition::LCM>(tmpBuffer);
     ASCENDC_ASSERT(res, { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
 
-    ConfusionTransposeImpl<T>(dstTensor, srcTensor, tmpBuffer, transposeType, tiling);
+    ConfusionTransposeImpl<T>(dst, src, tmpBuffer, transposeType, tiling);
 }
 #pragma end_pipe
 } // namespace AscendC

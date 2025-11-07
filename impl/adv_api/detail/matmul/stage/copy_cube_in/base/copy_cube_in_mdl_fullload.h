@@ -39,11 +39,18 @@ class CopyCubeIn<IMPL, INPUT_TYPE, MM_CFG, enable_if_t<
     MATMUL_USE_MODULE_ON(CopyCubeInParams, INPUT_TYPE::TAG);
     MATMUL_USE_MODULE_ON(DataCopyUtils, INPUT_TYPE::TAG);
     using TransT = typename INPUT_TYPE::TRANS_T;
+    using SrcT = typename Conditional<IsSameType<TransT, fp8_e8m0_t>::value, fp8_e8m0_t, typename INPUT_TYPE::T>::type;
 
 public:
     using BASE_MODULE = AscendC::Impl::Detail::CopyCubeInMDLBase<IMPL, MM_CFG, INPUT_TYPE>;
     __aicore__ inline CopyCubeIn() = default;
     __aicore__ inline ~CopyCubeIn() = default;
+
+    __aicore__ inline void SetInput(const GlobalTensor<SrcT>& globalMatrix, bool isTranspose = false)
+    {
+        isFirstIter_ = true;
+        BASE_MODULE::SetInput(globalMatrix, isTranspose);
+    }
 
     template <typename ScheduleContext = int>
     __aicore__ inline LocalTensor<TransT> LoadData(

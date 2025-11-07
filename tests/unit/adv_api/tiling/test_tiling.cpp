@@ -36,6 +36,104 @@ protected:
 
 
 #if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+TEST_F(TestTiling, testTransDataTilingUnalignedHw)
+{
+    uint32_t maxSize;
+    uint32_t minSize;
+    int32_t n = 16;
+    int32_t c = 16;
+    int32_t d = 3;
+    int32_t h = 3;
+    int32_t w = 3;
+    int32_t c0 = 16;
+    int32_t n0 = 16;
+    int32_t c1 = (c + c0 - 1) / c0;
+    int32_t n1 = (n + n0 - 1) / n0;
+    int32_t hw0 = 16;
+    int32_t hw1 = (h * w + hw0 - 1) / hw0;
+    auto ncdhwShape = ge::Shape({ n, c, d, h, w });
+    auto ndc1hwc0Shape = ge::Shape({ n, d, c1, h, w, c0});
+    auto fractalzShape = ge::Shape({ d, c1, h, w, n1, n0, c0});
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    TransDataConfig config = {DataFormat::NCDHW, DataFormat::NDC1HWC0};
+    bool ret = GetTransDataMaxMinTmpSize(plat, ncdhwShape, ndc1hwc0Shape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, 1632);
+    EXPECT_EQ(minSize, 1632);
+
+    config = {DataFormat::NDC1HWC0, DataFormat::NCDHW};
+    ret = GetTransDataMaxMinTmpSize(plat, ndc1hwc0Shape, ncdhwShape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, 2048);
+    EXPECT_EQ(minSize, 2048);
+
+    config = {DataFormat::NCDHW, DataFormat::FRACTAL_Z_3D};
+    ret = GetTransDataMaxMinTmpSize(plat, ncdhwShape, fractalzShape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, 26112);
+    EXPECT_EQ(minSize, 26112);
+
+    config = {DataFormat::FRACTAL_Z_3D, DataFormat::NCDHW};
+    ret = GetTransDataMaxMinTmpSize(plat, fractalzShape, ncdhwShape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, n1 * n0 * c1 * c0 * d * hw0 * hw1 * 2);
+    EXPECT_EQ(minSize, n1 * n0 * c1 * c0 * d * hw0 * hw1 * 2);
+}
+
+TEST_F(TestTiling, testTransDataTilingAlignedHw)
+{
+    uint32_t maxSize;
+    uint32_t minSize;
+    int32_t n = 5;
+    int32_t c = 30;
+    int32_t d = 2;
+    int32_t h = 4;
+    int32_t w = 8;
+    int32_t c0 = 16;
+    int32_t n0 = 16;
+    int32_t c1 = (c + c0 - 1) / c0;
+    int32_t n1 = (n + n0 - 1) / n0;
+    int32_t hw0 = 16;
+    int32_t hw1 = (h * w + hw0 - 1) / hw0;
+    auto ncdhwShape = ge::Shape({ n, c, d, h, w });
+    auto ndc1hwc0Shape = ge::Shape({ n, d, c1, h, w, c0});
+    auto fractalzShape = ge::Shape({ d, c1, h, w, n1, n0, c0});
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    TransDataConfig config = {DataFormat::NCDHW, DataFormat::NDC1HWC0};
+    bool ret = GetTransDataMaxMinTmpSize(plat, ncdhwShape, ndc1hwc0Shape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, 4224);
+    EXPECT_EQ(minSize, 4224);
+
+    config = {DataFormat::NDC1HWC0, DataFormat::NCDHW};
+    ret = GetTransDataMaxMinTmpSize(plat, ndc1hwc0Shape, ncdhwShape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, 4608);
+    EXPECT_EQ(minSize, 4608);
+
+    config = {DataFormat::NCDHW, DataFormat::FRACTAL_Z_3D};
+    ret = GetTransDataMaxMinTmpSize(plat, ncdhwShape, fractalzShape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, 69376);
+    EXPECT_EQ(minSize, 69376);
+
+    config = {DataFormat::FRACTAL_Z_3D, DataFormat::NCDHW};
+    ret = GetTransDataMaxMinTmpSize(plat, fractalzShape, ncdhwShape, ge::DataType::DT_FLOAT16, config, maxSize, minSize);
+
+    EXPECT_TRUE(ret);
+    EXPECT_EQ(maxSize, n1 * n0 * c1 * c0 * d * hw0 * hw1 * 2 * 2);
+    EXPECT_EQ(minSize, n1 * n0 * c1 * c0 * d * hw0 * hw1 * 2 * 2);
+}
+
 TEST_F(TestTiling, TestLgammaTiling)
 {
     std::vector<int64_t> shapeDims = { 128, 128 };

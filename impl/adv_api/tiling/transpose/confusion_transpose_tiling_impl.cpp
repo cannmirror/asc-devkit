@@ -225,7 +225,7 @@ inline void GetConfusionTranspose012TilingInfo(const ge::Shape& srcShape, const 
 }
 
 // scene7：srcShape[H, W]
-void GetTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
+void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
@@ -244,12 +244,6 @@ void GetTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackB
     tiling.set_param3(highBlock);
     tiling.set_param4(stride);
     tiling.set_param5(repeat);
-}
-
-void GetConfusionTransposeOnlyTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling)
-{
-    GetTransposeOnlyTilingInfo(srcShape, stackBufferSize, typeSize, tiling);
 }
 
 // scene13

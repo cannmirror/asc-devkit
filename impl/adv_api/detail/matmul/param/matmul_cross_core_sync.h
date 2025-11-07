@@ -103,7 +103,6 @@ public:
     
     __aicore__ inline void WaitL1Ready()
     {
-#if defined(USE_SSBUF)
         WaitL1ReadyForInputUB();
         if constexpr (GetPhyType(A_TYPE::pos) == Hardware::L1 && GetPhyType(A_TYPE::srcPos) == Hardware::UB) {
             if (needWaitIntra_) {
@@ -144,7 +143,6 @@ public:
             }
         }
         needWaitIntra_ = false;
-#endif
     }
 
     __aicore__ inline void SetL1FinishedUse()
@@ -186,11 +184,9 @@ public:
 
     __aicore__ inline void End()
     {
-#if defined(USE_SSBUF)
         SetL1FinishedUse();
         needWaitIntra_ = true;
         needSetIntra_ = true;
-#endif
     }
 
 private:

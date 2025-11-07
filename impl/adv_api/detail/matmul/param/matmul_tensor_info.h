@@ -88,6 +88,10 @@ private:
         ASCENDC_ASSERT((isTransposeA <= INPUT_TYPE::isTrans), {
             KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix A transpose when matmul A transpose is not defined.");
         });
+        if constexpr (INPUT_TYPE::format == CubeFormat::VECTOR) {
+            ASCENDC_ASSERT(!isTransposeA, { KERNEL_LOG(KERNEL_ERROR,
+                "In GEMV mode, matrix A should not be transposed.");});
+        }
 #if __CCE_AICORE__ == 220
         if constexpr (IsSameType<SrcT, int4b_t>::value) {
             ASCENDC_ASSERT(!isTransposeA, { KERNEL_LOG(KERNEL_ERROR,

@@ -185,7 +185,10 @@ bool GetTransDataMaxMinTmpSize(const platform_ascendc::PlatformAscendC &platform
          "(NCDHW, FRACTAL_Z_3D)/(FRACTAL_Z_3D, NCDHW)/(NCDHW, NDC1HWC0)/(NDC1HWC0, NCDHW)!");
 
     platform_ascendc::SocVersion socVersion = platform.GetSocVersion();
-    ASCENDC_HOST_ASSERT(socVersion == platform_ascendc::SocVersion::ASCEND910B, return false,
+    ASCENDC_HOST_ASSERT((socVersion == platform_ascendc::SocVersion::ASCEND910B ||
+                         socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
+                         socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+                         socVersion == platform_ascendc::SocVersion::MC62CM12A), return false,
                         "[TransData][GetTransDataMaxMinTmpSize] Unsupported SocVersion for TransData API.");
 
     TmpTransDataParams tmpParam;

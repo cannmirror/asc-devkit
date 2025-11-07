@@ -86,7 +86,11 @@ public:
 
     __aicore__ inline constexpr static bool IsSupportUBToL1Singleshape()
     {
+#if defined(__DAV_C310__) && defined(USE_WORKSPACE)
+        return false;
+#else
         return MatmulChipCap::GetFeatures().ifSupportUBToL1Singleshape;
+#endif
     }
 
     __aicore__ inline constexpr static bool IsMmadInstrSupportAntiQuant()
@@ -96,7 +100,11 @@ public:
 
     __aicore__ inline constexpr static bool IsSupportL0CToUB()
     {
+#if defined(__DAV_C310__) && defined(USE_WORKSPACE)
+        return false;
+#else
         return MatmulChipCap::GetFeatures().ifSupportL0CToUB;
+#endif
     }
 
     __aicore__ inline constexpr static bool IsSupportTrianMatmul()

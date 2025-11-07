@@ -30,16 +30,16 @@ namespace AscendC {
  * \note support data type: half, float, int16_t, int32_t
  * \note Ascend910 support data type: half, float, int16_t, int32_t, int64_t
  *
- * \param [out] dstTensor, output LocalTensor
+ * \param [out] dst, output LocalTensor
  * \param [in] firstValue, first value of arithmetic sequence
  * \param [in] diffValue, diff value of arithmetic sequence
  * \param [in] count, length of the sequence
  */
 template <typename T>
-__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void Arange(const LocalTensor<T> &dstLocal,
+__aicore__ inline __in_pipe__(S) __out_pipe__(V, S) void Arange(const LocalTensor<T> &dst,
     const T firstValue, const T diffValue, const int32_t count)
 {
-    ArithProgressionImpl(dstLocal, firstValue, diffValue, count);
+    ArithProgressionImpl(dst, firstValue, diffValue, count);
 }
 } // namespace AscendC
 
