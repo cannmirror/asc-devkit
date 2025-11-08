@@ -27,8 +27,8 @@
 #define DT_INT64 9            // int64
 #define DT_UINT32 8           // u32
 #define DT_UINT64 10          // u64
-#define DT_DOUBLE 11          // double
-#define DT_BOOL 12            // bool
+#define DT_BOOL 11
+#define DT_DOUBLE 12
 #define DT_STRING 13          // string
 #define DT_DUAL_SUB_INT8 14   // dual output int8
 #define DT_DUAL_SUB_UINT8 15  // dual output u8

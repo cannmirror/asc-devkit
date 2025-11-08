@@ -23,8 +23,8 @@
 #pragma begin_pipe(V)
 namespace AscendC {
 template <typename T>
-__aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dstLocal, const LocalTensor<T> &src0Local,
-    const LocalTensor<uint32_t> &src0OffsetLocal, const LocalTensor<T> &src1Local, uint64_t mask, uint8_t hRepeat,
+__aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dst, const LocalTensor<T> &src0,
+    const LocalTensor<uint32_t> &src0Offset, const LocalTensor<T> &src1, uint64_t mask, uint8_t hRepeat,
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
 {
@@ -33,8 +33,8 @@ __aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dstLocal,
 }
 
 template <typename T>
-__aicore__ inline void BilinearInterpolationCalc(LocalTensor<T> &dstLocal, LocalTensor<T> &src0Local,
-    LocalTensor<uint32_t> &src0OffsetLocal, LocalTensor<T> &src1Local, uint64_t mask[2], uint8_t hRepeat,
+__aicore__ inline void BilinearInterpolationCalc(LocalTensor<T> &dst, LocalTensor<T> &src0,
+    LocalTensor<uint32_t> &src0Offset, LocalTensor<T> &src1, uint64_t mask[2], uint8_t hRepeat,
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
 {

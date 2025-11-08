@@ -21,19 +21,15 @@ namespace AscendC {
 namespace MicroAPI {
 #define SPR_AR_VALUE 74
 
-template <typename T = DefaultType, typename U = DefaultType, typename RegT, typename RegU>
+template <typename T = DefaultType, typename RegT, typename RegU>
 __aicore__ inline void GatherImpl(RegT &dstReg, RegT &srcReg0, RegU &srcReg1)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>,
-        "Gather T data type is not correct on current device!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>,
-        "Gather U data type is not correct  on current device!");
-    static_assert(SupportBytes<ActualT, 1, 2>(),
-        "current data type is not supported on current device!");
-    static_assert(SupportBytes<ActualU, 1, 2>(),
-        "current data type is not supported on current device!");
+    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT> || std::is_same_v<T, ActualU>,
+        "data type is not correct!");
+    static_assert(SupportBytes<ActualT, 1, 2>(), "current data type is not supported on current device!");
+    static_assert(SupportBytes<ActualU, 1, 2>(), "current data type is not supported on current device!");
     if constexpr (sizeof(ActualT) == 1) {
         vselr((RegTensor<uint8_t> &)dstReg, (RegTensor<uint8_t> &)srcReg0, (RegTensor<uint8_t> &)srcReg1);
     } else if constexpr (sizeof(ActualT) == 2) {
@@ -78,7 +74,6 @@ __aicore__ inline void ClearSprImpl()
     constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
     sprclr(sprValue);
 }
-
 }  // namespace MicroAPI
 }  // namespace AscendC
 #endif

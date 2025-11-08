@@ -267,18 +267,16 @@ inline std::string GenBlockStr()
 namespace AscendC {
 template <class... Args>
 __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args);
-
 template <class... Args>
 __aicore__ static __attribute__ ((noinline)) void AssertPrint(__gm__ const char* fmt, Args&&... args)
 {
     AscendC::AssertImpl(fmt, args...);
 }
-
 #ifdef __NPU_DEVICE__
 __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ char *assertion, const __gm__ char *file,
                         unsigned int line)
 {
-        AscendC::AssertImpl("[ASSERT] %s:%u: Assertion `%s' " "\n", file, line, assertion);
+        AscendC::AssertImpl("[ASSERT] %s:%u:  Assertion `%s' \n" "\n", file, line, assertion);
         trap();
 }
 #endif
@@ -287,13 +285,13 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 #define NPU_ASSERT_MSG(expr)                                                                                   \
     do {                                                                                                       \
         if (!(expr)) {                                                                                         \
-            fprintf(stderr, "[ASSERT] %s:%u: Assertion `%s' " "\n", __FILE__, __LINE__, #expr);                \
+            fprintf(stderr, "[ASSERT] %s:%u: Assertion `%s' ", __FILE__, __LINE__, #expr);                     \
             abort();                                                                                           \
         }                                                                                                      \
     } while (0)
 #endif
-
 #ifdef __NPU_DEVICE__
+
 #define NPU_ASSERT_MSG(expr)                                                                                      \
     do {                                                                                                          \
         ENABLE_ASSERT();                                                                                          \
@@ -306,33 +304,34 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 
 // assert define
 #ifdef ASCENDC_CPU_DEBUG
-#define ASSERT_MSG(prompt, expr, fmt, ...)                                                                             \
+#define ASSERT_MSG(expr, fmt, ...)                                                                             \
     do {                                                                                                       \
         if (!(expr)) {                                                                                         \
-            fprintf(stderr, "%s[ASSERT] %s:%u: Assertion `%s' " fmt, prompt, __FILE__, __LINE__, #expr, ## __VA_ARGS__); \
+            fprintf(stderr, "[ASSERT] %s:%u: Assertion `%s' " fmt, __FILE__, __LINE__, #expr, ## __VA_ARGS__); \
             abort();                                                                                           \
         }                                                                                                      \
     } while (0)
 #else
+
 #if defined(CANN_VERSION_STR) && defined(CANN_TIMESTAMP)
-#define ASSERT_MSG(prompt, expr, fmt, ...)  \
+#define ASSERT_MSG(expr, fmt, ...)  \
     do {                                                                                                   \
         ENABLE_ASSERT();                                                                                   \
         ENABLE_ASSERT_DUMP_SIZE();                                                                         \
         if (!(expr)) {                                                                                     \
-            AscendC::AssertPrint("%s[ASSERT] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt, prompt,\
+            AscendC::AssertPrint("[ASSERT] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt, \
             (__gm__ const char*)(CANN_VERSION_STR), static_cast<uint64_t>(CANN_TIMESTAMP),                 \
             __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                                     \
             trap();                                                                                        \
         }                                                                                                  \
     } while (0)
 #else
-#define ASSERT_MSG(prompt, expr, fmt, ...)                                                                                \
+#define ASSERT_MSG(expr, fmt, ...)                                                                                \
     do {                                                                                                          \
         ENABLE_ASSERT();                                                                                          \
         ENABLE_ASSERT_DUMP_SIZE();                                                                                \
         if (!(expr)) {                                                                                            \
-            AscendC::AssertPrint("%s[ASSERT] %s:%u: Assertion `%s' " fmt, prompt, __FILE__, __LINE__, #expr, ##__VA_ARGS__); \
+            AscendC::AssertPrint("[ASSERT] %s:%u: Assertion `%s' " fmt, __FILE__, __LINE__, #expr, ##__VA_ARGS__); \
             trap();                                                                                               \
         }                                                                                                         \
     } while (0)
@@ -342,50 +341,49 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 #if defined(__NPU_DEVICE__) || defined(__NPU_HOST__)
 #define ASCENDC_NPU_DEBUG_ASSERT_IMPL(expr) NPU_ASSERT_MSG(expr)
 #endif
-
 #ifdef ASCENDC_DUMP
 #define VA_ARGS_IS_EMPTY(...) (sizeof(#__VA_ARGS__) == 1)
+
 #define ASCENDC_DEBUG_ASSERT_IMPL(expr, ...)      \
     do {                                          \
-        __gm__ const char* prompt = "";\
-        if (!(expr)) {                                                     \
-            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {      \
-                ASSERT_MSG(prompt, expr, "\n");               \
-            } else {                                  \
-                ASSERT_MSG(prompt, expr, __VA_ARGS__);        \
-            }                                         \
-        }\
+        if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {      \
+            ASSERT_MSG(expr, "\n");               \
+        } else {                                  \
+            ASSERT_MSG(expr, __VA_ARGS__);        \
+        }                                         \
     } while (0)
-
 #ifdef ASCENDC_CPU_DEBUG
-#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(expr, ...)                        \
-    do {                                                                      \
-        __gm__ const char* prompt = VA_ARGS_IS_EMPTY(__VA_ARGS__) ? "" :      \
-            "[deprecated] NOTICE:assert has been deprecated, "                \
-            "please use ascendc_assert instead! \n";                          \
-        if (!(expr)) {                                                     \
-            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                                  \
-                ASSERT_MSG(prompt,expr, "\n");                                           \
-            } else {                                                              \
-                ASSERT_MSG(prompt, expr, __VA_ARGS__);                                    \
-            }                                                                     \
-        }\
+#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(expr, ...)                       \
+    do {                                                                     \
+        if (!(expr)) {                                                        \
+            if (!VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                                                       \
+                fprintf(stderr, "[deprecated]NOTICE:assert has been deprecated," \
+                " please use ascendc_assert instead ");                          \
+            }                                                                   \
+        }                                                                    \
+        if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                                 \
+            ASSERT_MSG(expr, "\n");                                          \
+        } else {                                                             \
+            ASSERT_MSG(expr, __VA_ARGS__);                                   \
+        }                                                                    \
     } while (0)
 #else
-#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(expr, ...)                     \
-    do {\
-       __gm__ const char* prompt = VA_ARGS_IS_EMPTY(__VA_ARGS__) ? "" :      \
-            "[deprecated] NOTICE:assert has been deprecated, "                \
-            "please use ascendc_assert instead! \n";                          \
-        if (!(expr)) {                                                     \
-            ENABLE_ASSERT();                                               \
-            ENABLE_ASSERT_DUMP_SIZE();                                     \
-            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                           \
-                ASSERT_MSG(prompt, expr, "\n");                                    \
-            } else {                                                       \
-                ASSERT_MSG(prompt, expr, __VA_ARGS__);                             \
-            }                                                              \
-        }                                                                  \
+#define ASCENDC_DEBUG_DEPRECATE_ASSERT_IMPL(expr, ...)                           \
+    do {                                                                         \
+        if (!(expr)) {                                                           \
+            ENABLE_ASSERT();                                                     \
+            ENABLE_ASSERT_DUMP_SIZE();                                           \
+            if (VA_ARGS_IS_EMPTY(__VA_ARGS__)) {                                              \
+                AscendC::AssertPrint("[ASSERT] %s:%u: Assertion `%s' " "\n", \
+                __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                    \
+                trap();                                                                       \
+            } else {                                                                          \
+              AscendC::AssertPrint("[deprecated] NOTICE:assert has been deprecated,"        \
+                " please use ascendc_assert instead!");\
+                 ASSERT_MSG(expr, __VA_ARGS__);                                   \
+                trap();                                                                              \
+            }                                                                                        \
+        }                                                                                            \
     } while (0)
 #endif
 #else

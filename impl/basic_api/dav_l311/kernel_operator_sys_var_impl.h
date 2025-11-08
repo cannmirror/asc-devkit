@@ -72,17 +72,7 @@ __aicore__ inline int64_t GetProgramCounterImpl()
 
 __aicore__ inline int64_t GetSystemCycleImpl()
 {
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    const int32_t timeExp = 1000000000;
-    struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    int64_t timeStamp = (int64_t)ts.tv_sec * timeExp + ts.tv_nsec;
-    return timeStamp;
-#else
-    uint64_t sysCnt = 0;
-    asm volatile("MOV %0, SYS_CNT\n" : "+l"(sysCnt));
-    return (int64_t)(sysCnt);
-#endif
+    ASCENDC_ASSERT((false), "unsupported GetSystemCycle!");
     return 0;
 }
 
