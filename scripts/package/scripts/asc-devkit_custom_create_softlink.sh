@@ -55,7 +55,7 @@ do_create_stub_softlink() {
     create_stub_softlink "$arch_linux_path/devlib" "linux/$arch_name"
     create_stub_softlink "$arch_linux_path/lib64/stub" "linux/$arch_name"
     if [ -d "$install_path/$version_dir/tools" ]; then
-        ln-sr "$install_path/$version_dir/tools" "$install_path/$latest_dir/tools"
+        ln -sr "$install_path/$version_dir/tools" "$install_path/$latest_dir/tools"
     fi
 }
 

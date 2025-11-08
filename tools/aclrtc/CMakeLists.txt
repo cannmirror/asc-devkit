@@ -9,6 +9,7 @@ if(BUILD_OPEN_PROJECT)
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${ASCEND_CANN_PACKAGE_PATH}/include
         ${ASCEND_CANN_PACKAGE_PATH}/include/acl
+        ${ASCEND_CANN_PACKAGE_PATH}/include/pkg_inc/base/
         ${CCEC_PATH}/../include
     )
 else()

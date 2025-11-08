@@ -35,6 +35,6 @@ install(TARGETS aicpu_api
 )
 
 install(FILES
-    ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/aicpu_api/aicpu_api.h
-    DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/aicpu_api OPTIONAL
+    ${ASCENDC_DIR}/include/aicpu_api/aicpu_api.h
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/aicpu_api OPTIONAL
 )
