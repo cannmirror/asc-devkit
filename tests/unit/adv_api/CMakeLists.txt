@@ -25,6 +25,7 @@ set(ASCENDC_SYS_DIR ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux)
 set(ASCENDC_DEP_HEADER_DIR
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/base
+    ${ASCENDC_SYS_DIR}/pkg_inc/base
     ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/include
 )
 
