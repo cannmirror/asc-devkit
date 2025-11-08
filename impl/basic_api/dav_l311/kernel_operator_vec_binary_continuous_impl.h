@@ -41,8 +41,8 @@ namespace AscendC {
             uint32_t sreg = (uint32_t)count;                                                                    \
             MaskReg preg;                                                                                          \
             uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(DataType));                                  \
-            uint16_t repeatTimes = CeilDivision(count, sregLower);                                              \
-            for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {                                                 \
+            uint16_t repeatTime = CeilDivision(count, sregLower);                                              \
+            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {                                                 \
                 preg = CreatePredicate<DataType>(sreg);                                                            \
                 DataCopy(vreg0, src0, i * sregLower);                                                              \
                 DataCopy(vreg1, src1, i * sregLower);                                                              \

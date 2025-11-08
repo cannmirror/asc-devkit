@@ -22,7 +22,7 @@
 namespace AscendC {
 template <typename T>
 __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T scalarValue,
-                                          uint64_t mask[2], const uint8_t repeatTimes,
+                                          uint64_t mask[2], const uint8_t repeatTime,
                                           const UnaryRepeatParams& repeatParams)
 {
     __VEC_SCOPE__
@@ -34,7 +34,7 @@ __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T sc
         uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
         uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
         uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             DataCopy<T, PostLiteral::POST_MODE_UPDATE>(vreg0, src, srcBlkStride, srcRepStride, preg);
             DataCopy(vreg1, dst, dstBlkStride, 0, preg);
             Axpy(vreg1, vreg0, scalarValue, preg);
@@ -45,7 +45,7 @@ __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T sc
 
 template <typename T>
 __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T scalarValue,
-                                          uint64_t mask, const uint8_t repeatTimes,
+                                          uint64_t mask, const uint8_t repeatTime,
                                           const UnaryRepeatParams& repeatParams)
 {
     __VEC_SCOPE__
@@ -59,7 +59,7 @@ __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T sc
         uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
         uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
         uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             DataCopy<T, PostLiteral::POST_MODE_UPDATE>(vreg0, src, srcBlkStride, srcRepStride, preg);
             DataCopy(vreg1, dst, dstBlkStride, 0, preg);
             Axpy(vreg1, vreg0, scalarValue, preg);
@@ -78,8 +78,8 @@ __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T sc
         MaskReg preg;
         uint32_t sreg = (uint32_t)count;
         constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
-        uint16_t repeatTimes = CeilDivision(count, sregLower);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        uint16_t repeatTime = CeilDivision(count, sregLower);
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             preg = CreatePredicate<T>(sreg);
             DataCopy(vreg0, src, i * sregLower);
             DataCopy(vreg1, dst, i * sregLower);
@@ -90,7 +90,7 @@ __aicore__ inline void AxpyIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src, T sc
 }
 
 __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, half scalarValue,
-                                    uint64_t mask[2], const uint8_t repeatTimes,
+                                    uint64_t mask[2], const uint8_t repeatTime,
                                     const UnaryRepeatParams& repeatParams)
 {
     __VEC_SCOPE__
@@ -109,7 +109,7 @@ __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, hal
         uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
         uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
         uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             DataCopy<half, PostLiteral::POST_MODE_UPDATE>(src_vreg, src, srcBlkStride, srcRepStride, preg);
             Interleave(src_vreg, tmp_vreg, src_vreg, zero_vreg);
             Cast<float, half, Mode::ZEROING, PartMode::EVEN>(cvt_vreg, src_vreg, preg);
@@ -121,7 +121,7 @@ __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, hal
 }
 
 __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, half scalarValue,
-                                    uint64_t mask, const uint8_t repeatTimes,
+                                    uint64_t mask, const uint8_t repeatTime,
                                     const UnaryRepeatParams& repeatParams)
 {
     __VEC_SCOPE__
@@ -142,7 +142,7 @@ __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, hal
         uint32_t dstBlkStride = static_cast<uint32_t>(repeatParams.dstBlkStride);
         uint32_t srcRepStride = static_cast<uint32_t>(repeatParams.srcRepStride);
         uint32_t dstRepStride = static_cast<uint32_t>(repeatParams.dstRepStride);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             DataCopy<half, PostLiteral::POST_MODE_UPDATE>(src_vreg, src, srcBlkStride, srcRepStride, preg);
             Interleave(src_vreg, tmp_vreg, src_vreg, zero_vreg);
             Cast<float, half, Mode::ZEROING, PartMode::EVEN>(cvt_vreg, src_vreg, preg);
@@ -168,8 +168,8 @@ __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, hal
         full_preg = CreatePredicate<half>(full_sreg);
         Duplicate(zero_vreg, (half)0, full_preg);
         uint32_t sreg = (uint32_t)count;
-        uint16_t repeatTimes = CeilDivision(count, B32_DATA_NUM_PER_REPEAT);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        uint16_t repeatTime = CeilDivision(count, B32_DATA_NUM_PER_REPEAT);
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             preg = CreatePredicate<float>(sreg);
             DataCopy(src_vreg, src, i * B32_DATA_NUM_PER_REPEAT);
             Interleave(src_vreg, tmp_vreg, src_vreg, zero_vreg);
@@ -184,29 +184,29 @@ __aicore__ inline void AxpyFmixImpl(__ubuf__ float* dst, __ubuf__ half* src, hal
 // Axpy::Level 0
 template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue,
-                                uint64_t mask[2], const uint8_t repeatTimes,
+                                uint64_t mask[2], const uint8_t repeatTime,
                                 const UnaryRepeatParams& repeatParams)
 {
     if constexpr (isSetMask) {
         SetVectorMask<T>(mask[1], mask[0]);
     }
     if constexpr ((sizeof(T) == sizeof(U)) && (std::is_same_v<T, half> || std::is_same_v<T, float>)) {
-        return AxpyIntrinsicsImpl(dst, src, scalarValue, mask, repeatTimes, repeatParams);
+        return AxpyIntrinsicsImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
     } else if constexpr (std::is_same_v<T, float> && std::is_same_v<U, half>) {
-        return AxpyFmixImpl(dst, src, scalarValue, mask, repeatTimes, repeatParams);
+        return AxpyFmixImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
     }
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }
 
 template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue,
-                                uint64_t mask, const uint8_t repeatTimes,
+                                uint64_t mask, const uint8_t repeatTime,
                                 const UnaryRepeatParams& repeatParams)
 {
     if constexpr ((sizeof(T) == sizeof(U)) && (std::is_same_v<T, half> || std::is_same_v<T, float>)) {
-        return AxpyIntrinsicsImpl(dst, src, scalarValue, mask, repeatTimes, repeatParams);
+        return AxpyIntrinsicsImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
     } else if constexpr (std::is_same_v<T, float> && std::is_same_v<U, half>) {
-        return AxpyFmixImpl(dst, src, scalarValue, mask, repeatTimes, repeatParams);
+        return AxpyFmixImpl(dst, src, scalarValue, mask, repeatTime, repeatParams);
     }
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
 }

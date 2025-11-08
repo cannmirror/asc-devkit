@@ -37,7 +37,7 @@ __aicore__ inline void SetFixPipeConfigImpl(
 }
 
 template <typename T, bool setRelu = false>
-__aicore__ inline void SetFixPipeConfigImpl(const LocalTensor<T> &preTensor, bool isUnitFlag = false)
+__aicore__ inline void SetFixPipeConfigImpl(const LocalTensor<T> &pre, bool isUnitFlag = false)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "SetFixPipeConfig is not support on this version!"); });
 }
@@ -356,7 +356,7 @@ __aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ T *dst, __cc__ U *src, const F
 // L0C->L1/UB
 template <typename T, typename U>
 __aicore__ inline void Fixpipe(
-    const LocalTensor<T> &dstLocal, const LocalTensor<U> &srcLocal, const FixpipeParams<U> &intriParams)
+    const LocalTensor<T> &dst, const LocalTensor<U> &src, const FixpipeParams<U> &intriParams)
 {
     if constexpr ((!IsSameType<U, int32_t>::value) && (!IsSameType<U, half>::value)) {
         ASCENDC_ASSERT(
@@ -366,13 +366,13 @@ __aicore__ inline void Fixpipe(
         ASCENDC_ASSERT(false,
             { KERNEL_LOG(KERNEL_ERROR, "Fixpipe dst data type only support fp16/s8/s16/s32 on this version!"); });
     } else {
-        const Hardware dstHWPos = GetPhyType((QuePosition)dstLocal.GetPosition());
+        const Hardware dstHWPos = GetPhyType((QuePosition)dst.GetPosition());
         if (dstHWPos == Hardware::UB) {
             FixpipeL0C2UBImpl(
-                (__ubuf__ T *)dstLocal.GetPhyAddr(), (__cc__ U *)srcLocal.GetPhyAddr(), intriParams);
+                (__ubuf__ T *)dst.GetPhyAddr(), (__cc__ U *)src.GetPhyAddr(), intriParams);
         } else {
             FixpipeL0C2L1Impl(
-                (__cbuf__ T *)dstLocal.GetPhyAddr(), (__cc__ U *)srcLocal.GetPhyAddr(), intriParams);
+                (__cbuf__ T *)dst.GetPhyAddr(), (__cc__ U *)src.GetPhyAddr(), intriParams);
         }
     }
 }
@@ -380,7 +380,7 @@ __aicore__ inline void Fixpipe(
 // L0C->GM
 template <typename T, typename U>
 __aicore__ inline void Fixpipe(
-    const GlobalTensor<T> &dstGlobal, const LocalTensor<U> &srcLocal, const FixpipeParams<U> &intriParams)
+    const GlobalTensor<T> &dst, const LocalTensor<U> &src, const FixpipeParams<U> &intriParams)
 {
 #ifdef __CCE_KT_TEST__
     bool isUsedProcessLock = false;
@@ -397,7 +397,7 @@ __aicore__ inline void Fixpipe(
         ASCENDC_ASSERT(false,
             { KERNEL_LOG(KERNEL_ERROR, "Fixpipe dst data type only support fp16/s8/s16/s32 on this version!"); });
     } else {
-        FixpipeL0C2GMImpl((__gm__ T *)dstGlobal.GetPhyAddr(), (__cc__ U *)srcLocal.GetPhyAddr(), intriParams);
+        FixpipeL0C2GMImpl((__gm__ T *)dst.GetPhyAddr(), (__cc__ U *)src.GetPhyAddr(), intriParams);
     }
 #ifdef __CCE_KT_TEST__
     if (isUsedProcessLock == true) {
@@ -576,7 +576,7 @@ __aicore__ inline void FixpipeL0C2L1Impl(__cbuf__ T *dst, __cc__ U *src, const F
 }
 
 template <typename T, typename U>
-__aicore__ inline void FixpipeL0C2GMImplN(const GlobalTensor<T> &dstGlobal, const LocalTensor<U> &srcLocal,
+__aicore__ inline void FixpipeL0C2GMImplN(const GlobalTensor<T> &dst, const LocalTensor<U> &src,
     const FixpipeInfoParams<U> &fixpipeInfo, const FixpipeParams<U> &intriParams, uint16_t calNSize,
     uint16_t nIterIndex)
 {
@@ -584,14 +584,14 @@ __aicore__ inline void FixpipeL0C2GMImplN(const GlobalTensor<T> &dstGlobal, cons
     PipeBarrier<PIPE_FIX>();
     uint32_t srcOffset = nIterIndex * fixpipeInfo.srcOffset;
     uint32_t dstOffset = nIterIndex * fixpipeInfo.dstOffset;
-    FixpipeL0C2GMImpl((__gm__ T *)(dstGlobal.GetPhyAddr() + dstOffset),
-        (__cc__ U *)(srcLocal.GetPhyAddr() + srcOffset),
+    FixpipeL0C2GMImpl((__gm__ T *)(dst.GetPhyAddr() + dstOffset),
+        (__cc__ U *)(src.GetPhyAddr() + srcOffset),
         intriParams,
         fixpipeInfo);
 }
 
 template <typename T, typename U>
-__aicore__ inline void FixpipeL0C2UBImplN(const LocalTensor<T> &dstGlobal, const LocalTensor<U> &srcLocal,
+__aicore__ inline void FixpipeL0C2UBImplN(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const FixpipeInfoParams<U> &fixpipeInfo, const FixpipeParams<U> &intriParams, uint16_t calNSize,
     uint16_t nIterIndex)
 {
@@ -599,14 +599,14 @@ __aicore__ inline void FixpipeL0C2UBImplN(const LocalTensor<T> &dstGlobal, const
     PipeBarrier<PIPE_FIX>();
     uint32_t srcOffset = nIterIndex * fixpipeInfo.srcOffset;
     uint32_t dstOffset = nIterIndex * fixpipeInfo.dstOffset;
-    FixpipeL0C2UBImpl((__ubuf__ T *)(dstGlobal.GetPhyAddr() + dstOffset),
-        (__cc__ U *)(srcLocal.GetPhyAddr() + srcOffset),
+    FixpipeL0C2UBImpl((__ubuf__ T *)(dst.GetPhyAddr() + dstOffset),
+        (__cc__ U *)(src.GetPhyAddr() + srcOffset),
         intriParams,
         fixpipeInfo);
 }
 
 template <typename T, typename U>
-__aicore__ inline void FixpipeL0C2L1ImplN(const LocalTensor<T> &dstGlobal, const LocalTensor<U> &srcLocal,
+__aicore__ inline void FixpipeL0C2L1ImplN(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const FixpipeInfoParams<U> &fixpipeInfo, const FixpipeParams<U> &intriParams, uint16_t calNSize,
     uint16_t nIterIndex)
 {
@@ -614,14 +614,14 @@ __aicore__ inline void FixpipeL0C2L1ImplN(const LocalTensor<T> &dstGlobal, const
     PipeBarrier<PIPE_FIX>();
     uint32_t srcOffset = nIterIndex * fixpipeInfo.srcOffset;
     uint32_t dstOffset = nIterIndex * fixpipeInfo.dstOffset;
-    FixpipeL0C2L1Impl((__cbuf__ T *)(dstGlobal.GetPhyAddr() + dstOffset),
-        (__cc__ U *)(srcLocal.GetPhyAddr() + srcOffset),
+    FixpipeL0C2L1Impl((__cbuf__ T *)(dst.GetPhyAddr() + dstOffset),
+        (__cc__ U *)(src.GetPhyAddr() + srcOffset),
         intriParams,
         fixpipeInfo);
 }
 
 template <typename T, typename U>
-__aicore__ inline void Fixpipe(const GlobalTensor<T> &dstGlobal, const LocalTensor<U> &srcLocal,
+__aicore__ inline void Fixpipe(const GlobalTensor<T> &dst, const LocalTensor<U> &src,
     const LocalTensor<uint64_t> &cbufWorkspace, const FixpipeParams<U> &intriParams)
 {
     if constexpr ((!IsSameType<U, int32_t>::value) && (!IsSameType<U, half>::value)) {
@@ -635,11 +635,11 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T> &dstGlobal, const LocalTens
         FixpipeInfoParams<U> fixpipeInfo(intriParams, sizeof(U), sizeof(T));
         fixpipeInfo.cbufWorkspace = (__cbuf__ uint64_t *)cbufWorkspace.GetPhyAddr();
         for (uint16_t i = 0; i < fixpipeInfo.tiling.nIterNum; ++i) {
-            FixpipeL0C2GMImplN(dstGlobal, srcLocal, fixpipeInfo, intriParams, fixpipeInfo.tiling.nSize, i);
+            FixpipeL0C2GMImplN(dst, src, fixpipeInfo, intriParams, fixpipeInfo.tiling.nSize, i);
         }
         if (fixpipeInfo.tiling.tailNSize > 0) {
-            FixpipeL0C2GMImplN(dstGlobal,
-                srcLocal,
+            FixpipeL0C2GMImplN(dst,
+                src,
                 fixpipeInfo,
                 intriParams,
                 fixpipeInfo.tiling.tailNSize,
@@ -650,7 +650,7 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T> &dstGlobal, const LocalTens
 
 // L0C->L1/UB deq tensor quant
 template <typename T, typename U>
-__aicore__ inline void Fixpipe(const LocalTensor<T> &dstLocal, const LocalTensor<U> &srcLocal,
+__aicore__ inline void Fixpipe(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const LocalTensor<uint64_t> &cbufWorkspace, const FixpipeParams<U> &intriParams)
 {
     if constexpr ((!IsSameType<U, int32_t>::value) && (!IsSameType<U, half>::value)) {
@@ -661,16 +661,16 @@ __aicore__ inline void Fixpipe(const LocalTensor<T> &dstLocal, const LocalTensor
         ASCENDC_ASSERT(false,
             { KERNEL_LOG(KERNEL_ERROR, "Fixpipe dst data type only support fp16/s8/s16/s32 on this version!"); });
     } else {
-        const Hardware dstHWPos = GetPhyType((QuePosition)dstLocal.GetPosition());
+        const Hardware dstHWPos = GetPhyType((QuePosition)dst.GetPosition());
         FixpipeInfoParams<U> fixpipeInfo(intriParams, sizeof(U), sizeof(T));
         fixpipeInfo.cbufWorkspace = (__cbuf__ uint64_t *)cbufWorkspace.GetPhyAddr();
         if (dstHWPos == Hardware::UB) {
             for (uint16_t i = 0; i < fixpipeInfo.tiling.nIterNum; ++i) {
-                FixpipeL0C2UBImplN(dstLocal, srcLocal, fixpipeInfo, intriParams, fixpipeInfo.tiling.nSize, i);
+                FixpipeL0C2UBImplN(dst, src, fixpipeInfo, intriParams, fixpipeInfo.tiling.nSize, i);
             }
             if (fixpipeInfo.tiling.tailNSize > 0) {
-                FixpipeL0C2UBImplN(dstLocal,
-                    srcLocal,
+                FixpipeL0C2UBImplN(dst,
+                    src,
                     fixpipeInfo,
                     intriParams,
                     fixpipeInfo.tiling.tailNSize,
@@ -678,11 +678,11 @@ __aicore__ inline void Fixpipe(const LocalTensor<T> &dstLocal, const LocalTensor
             }
         } else {
             for (uint16_t i = 0; i < fixpipeInfo.tiling.nIterNum; ++i) {
-                FixpipeL0C2L1ImplN(dstLocal, srcLocal, fixpipeInfo, intriParams, fixpipeInfo.tiling.nSize, i);
+                FixpipeL0C2L1ImplN(dst, src, fixpipeInfo, intriParams, fixpipeInfo.tiling.nSize, i);
             }
             if (fixpipeInfo.tiling.tailNSize > 0) {
-                FixpipeL0C2L1ImplN(dstLocal,
-                    srcLocal,
+                FixpipeL0C2L1ImplN(dst,
+                    src,
                     fixpipeInfo,
                     intriParams,
                     fixpipeInfo.tiling.tailNSize,

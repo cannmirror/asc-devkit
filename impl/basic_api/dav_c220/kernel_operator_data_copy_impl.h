@@ -182,9 +182,7 @@ __aicore__ inline void DataCopyUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, const
             "l1AddrDst is 0x%lx, which should be in range of [0, %u)", l1AddrDst, TOTAL_L1_SIZE); });
         ScmDataCopyMsg((__cbuf__ void*)l1AddrDst, (__gm__ void*)gmAddr, intriParams, ubAddr);
 #else
-#ifndef __NO_KFC_SERVER__
         ScmDataCopyMsg((__cbuf__ void*)dst, (__gm__ void*)gmAddr, intriParams, ubAddr);
-#endif
 #endif
     }
 }
@@ -225,9 +223,7 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
 #if ASCENDC_CPU_DEBUG
         ScmDataCopyND2NZMsg((__cbuf__ void*)absL1Addr, (__gm__ void*)gmAddr, sizeof(T), intriParams, ubAddr);
 #else
-#ifndef __NO_KFC_SERVER__
         ScmDataCopyND2NZMsg((__cbuf__ void*)dst, (__gm__ void*)gmAddr, sizeof(T), intriParams, ubAddr);
-#endif
 #endif
     }
 }
@@ -287,9 +283,7 @@ __aicore__ inline void DataCopyGM2L1ND2NZImplBase(__cbuf__ T* dst, __gm__ T* src
         uint64_t l1Addr = (uint8_t*)dst - tscmCpuBaseAddr;
         ScmDataCopyND2NZMsg((__cbuf__ void*)l1Addr, (__gm__ void*)src, sizeof(T), intriParams, -1);
 #else
-#ifndef __NO_KFC_SERVER__
         ScmDataCopyND2NZMsg(dst, src, sizeof(T), intriParams, -1);
-#endif
 #endif
     }
 }
@@ -604,9 +598,7 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, co
 #if ASCENDC_CPU_DEBUG
         ScmDataCopyND2NZMsg((__cbuf__ void*)absL1Addr, (__gm__ void*)gmAddr, sizeof(T), nd2nzParams, ubAddr);
 #else
-#ifndef __NO_KFC_SERVER__
         ScmDataCopyND2NZMsg((__cbuf__ void*)dst, (__gm__ void*)gmAddr, sizeof(T), nd2nzParams, ubAddr);
-#endif
 #endif
     }
 }
@@ -653,9 +645,7 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, co
 #if ASCENDC_CPU_DEBUG
         ScmDataCopyND2NZMsg((__cbuf__ void*)absL1Addr, (__gm__ void*)gmAddr, sizeof(T), nd2nzParams, ubAddr);
 #else
-#ifndef __NO_KFC_SERVER__
         ScmDataCopyND2NZMsg((__cbuf__ void*)dst, (__gm__ void*)gmAddr, sizeof(T), nd2nzParams, ubAddr);
-#endif
 #endif
     }
 }

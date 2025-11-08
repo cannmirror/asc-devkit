@@ -19,11 +19,11 @@
 #include <stdexcept>
 #include <iostream>
 #include <csignal>
-#include <vector>
-#include <map>
-#include <string>
-#include <set>
-#include <algorithm>
+#include "vector"
+#include "map"
+#include "string"
+#include "set"
+#include "algorithm"
 
 using namespace std;
 namespace {
@@ -42,15 +42,17 @@ namespace AscendC {
 constexpr uint8_t MAX_BITS_NUM = 64;
 constexpr size_t VAL_PAIR = 2;
 constexpr uint64_t INVALID_TILING_KEY = 0XFFFFFFFFFFFFFFFF;
-const std::map<uint32_t, const char *> TPL_TYPE_2_STR = {
-    {0, "DTYPE"}, {1, "FORMAT"}, {2, "UINT"}, {3, "BOOL"}, {4, "KERNEL_TYPE"}, {5, "DETERMINISTIC"}};
+const std::map<uint32_t, const char *> TPL_TYPE_2_STR = { { 0, "DTYPE" },
+                                                          { 1, "FORMAT" },
+                                                          { 2, "UINT" },
+                                                          { 3, "BOOL" },
+                                                          { 5, "DETERMINISTIC"}, };
 static bool CheckParamStructValid(ParamStruct &paramStruct)
 {
     auto it = TPL_TYPE_2_STR.find(paramStruct.paramType);
     if (it == TPL_TYPE_2_STR.cend()) {
-        printf("[ERROR] ASCENDC_TPL_*_%s: %s type value is invalid! Type value should be in [0, 1, 2, 3, 4, 5]\n",
-            paramStruct.macroType,
-            paramStruct.name);
+        printf("[ERROR] ASCENDC_TPL_*_%s: %s type value is invalid! Type value should be in [0, 1, 2, 3]\n",
+            paramStruct.macroType, paramStruct.name);
         return false;
     }
     if (paramStruct.vals.empty()) {
@@ -122,11 +124,16 @@ static bool ParseTplUintValue(ParamStruct &paramStruct, uint8_t setBitWidth = 0)
 static bool CheckSelectParamValid(const TilingDeclareParams &declareParams, const ParamStruct &selectParam)
 {
     auto it = TPL_TYPE_2_STR.find(selectParam.paramType);
+    if (it == TPL_TYPE_2_STR.cend()) {
+        printf("[ERROR] ASCENDC_TPL_*_SEL: %s type:%u value is invalid! Type value should be in [0, 1, 2, 3].\n",
+            selectParam.name, selectParam.paramType);
+        return false;
+    }
     for (const auto &declareParam : declareParams) {
         if (declareParam.name == selectParam.name) {
             auto declareType = declareParam.paramType;
             auto declareBitWidth = declareParam.bitWidth;
-            set<uint64_t> declareVals = {declareParam.vals.begin(), declareParam.vals.end()};
+            auto declareVals = declareParam.vals;
             if (declareBitWidth != selectParam.bitWidth) {
                 printf("[ERROR] ASCENDC_TPL_%s_SEL: %s has different bitwidth: %u!\n", it->second, selectParam.name,
                     selectParam.bitWidth);
@@ -137,9 +144,10 @@ static bool CheckSelectParamValid(const TilingDeclareParams &declareParams, cons
                 return false;
             }
             for (auto val : selectParam.vals) {
-                if (declareVals.count(val) == 0) {
-                    printf("[ERROR] ASCENDC_TPL_%s_SEL %s value %lu does not exist in ASCENDC_TPL_%s_DECL, "
-                        "please check it!\n", it->second, selectParam.name, val, it->second);
+                if (std::find(declareVals.begin(), declareVals.end(), val) == declareVals.cend()) {
+                    printf("[ERROR] ASCENDC_TPL_%s_SEL %s value %lu"
+                        " does not exist in ASCENDC_TPL_%s_DECL, please check!\n", it->second, selectParam.name, val,
+                        it->second);
                     return false;
                 }
             }
@@ -248,11 +256,6 @@ uint64_t EncodeTilingKey(TilingDeclareParams declareParams, TilingSelectParams s
         return INVALID_TILING_KEY;
     }
     for (auto &declareParam : declareParams) {
-        if (declareParam.paramType == ASCENDC_TPL_DTYPE) {
-            declareParam.vals.erase(std::remove_if(declareParam.vals.begin(), declareParam.vals.end(),
-                [](uint64_t val) { return val >= ASCENDC_TPL_INPUT_BIAS; }),
-                declareParam.vals.end());
-        }
         if (!ParseTplUintValue(declareParam, 0)) {
             printf("[ERROR] ASCENDC_TPL_DECL:%s parses value failed!\n", declareParam.name);
             return INVALID_TILING_KEY;
@@ -307,4 +310,4 @@ uint64_t EncodeTilingKey(TilingDeclareParams declareParams, TilingSelectParams s
     }
     return tilingKey;
 }
-}  // namespace AscendC
+}

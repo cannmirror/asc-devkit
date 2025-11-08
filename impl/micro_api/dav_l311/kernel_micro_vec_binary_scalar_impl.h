@@ -114,14 +114,13 @@ __aicore__ inline void RoundsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, M
     vrnds(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
+__aicore__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, T scalar, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, half, float>(), "current scalar data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
+
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vlrelu(dstReg, srcReg0, scalar, mask, modeValue);
 }

@@ -22,17 +22,17 @@
 
 #pragma begin_pipe(V)
 namespace AscendC {
-template <typename T, typename U>
-__aicore__ inline void MulCastCalc(const LocalTensor<T> &dstLocal, const LocalTensor<U> &src0Local,
-    const LocalTensor<U> &src1Local, uint64_t mask, const uint8_t repeatTimes, const BinaryRepeatParams &repeatParams)
+template <typename T, typename U, bool isSetMask = true>
+__aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
+    const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
     ASCENDC_ASSERT(false,
     { KERNEL_LOG(KERNEL_ERROR, "unsupported MulCast"); });
 }
 
-template <typename T, typename U>
-__aicore__ inline void MulCastCalc(const LocalTensor<T> &dstLocal, const LocalTensor<U> &src0Local,
-    const LocalTensor<U> &src1Local, uint64_t mask[2], const uint8_t repeatTimes,
+template <typename T, typename U, bool isSetMask = true>
+__aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
+    const LocalTensor<U> &src1, uint64_t mask[2], const uint8_t repeatTime,
     const BinaryRepeatParams &repeatParams)
 {
     ASCENDC_ASSERT(false,
@@ -40,8 +40,8 @@ __aicore__ inline void MulCastCalc(const LocalTensor<T> &dstLocal, const LocalTe
 }
 
 template <typename T, typename U>
-__aicore__ inline void MulCastCalc(const LocalTensor<T> &dstLocal, const LocalTensor<U> &src0Local,
-    const LocalTensor<U> &src1Local, uint32_t count)
+__aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
+    const LocalTensor<U> &src1, uint32_t count)
 {
     ASCENDC_ASSERT(false,
     { KERNEL_LOG(KERNEL_ERROR, "unsupported MulCast"); });

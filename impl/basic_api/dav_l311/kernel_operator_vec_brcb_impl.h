@@ -27,7 +27,7 @@ typename std::enable_if_t<
 !std::is_same<T, uint32_t>::value &&
 !std::is_same<T, float>::value
 >
-__aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTimes,
+__aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
@@ -38,7 +38,7 @@ typename std::enable_if_t<
 std::is_same<T, uint16_t>::value ||
 std::is_same<T, half>::value
 >
-__aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTimes,
+__aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
     __VEC_SCOPE__
@@ -50,7 +50,7 @@ __aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repe
         uint32_t blockElm = ONE_BLOCK_SIZE / sizeof(T);
         uint32_t maskNum = ONE_BLOCK_SIZE / sizeof(T);
         MaskReg preg = CreatePredicate<T>(maskNum);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             sreg0 = ((int32_t)repeatParams.dstRepStride * i * blockElm);
             sreg1 = (int32_t)BRCB_BROADCAST_NUMBER * i;
             for (uint16_t j = 0; j < (uint16_t)BRCB_BROADCAST_NUMBER; ++j) {
@@ -67,7 +67,7 @@ typename std::enable_if_t<
 std::is_same<T, uint32_t>::value ||
 std::is_same<T, float>::value
 >
-__aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTimes,
+__aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
     __VEC_SCOPE__
@@ -79,7 +79,7 @@ __aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repe
         uint32_t blockElm = ONE_BLOCK_SIZE / sizeof(T);
         uint32_t maskNum = ONE_BLOCK_SIZE / sizeof(T);
         MaskReg preg = CreatePredicate<T>(maskNum);
-        for (uint16_t i = 0; i < (uint16_t)repeatTimes; ++i) {
+        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
             sreg0 = ((int32_t)repeatParams.dstRepStride * i * blockElm);
             sreg1 = (int32_t)BRCB_BROADCAST_NUMBER * i;
             for (uint16_t j = 0; j < (uint16_t)BRCB_BROADCAST_NUMBER; ++j) {

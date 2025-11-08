@@ -19,14 +19,6 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T> struct TypeGet;
-
-template <> struct TypeGet<uint64_t> {
-    using T = vector_u64;
-};
-template <> struct TypeGet<int64_t> {
-    using T = vector_s64;
-};
-
 template <> struct TypeGet<uint32_t> {
     using T = vector_u32;
 };
@@ -51,17 +43,8 @@ template <> struct TypeGet<uint8_t> {
 template <> struct TypeGet<int8_t> {
     using T = vector_s8;
 };
-
-template <> struct TypeGet<bool> {
-    using T = vector_s8;
-};
-
 template <> struct TypeGet<int4x2_t> {
     using T = vector_s4x2;
-};
-
-template <> struct TypeGet<bfloat16_t> {
-    using T = vector_bf16;
 };
 } // namespace MicroAPI
 } // namespace AscendC
