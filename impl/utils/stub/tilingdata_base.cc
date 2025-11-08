@@ -11,9 +11,6 @@
 #include "register/tilingdata_base.h"
 #include <cstring>
 #include <securec.h>
-#ifndef ASCENDC_DEVICE_REG_STATIC
-#include "common/ge_common/debug/ge_log.h"
-#endif
 #include "graph/ascend_string.h"
 
 namespace optiling {
@@ -76,9 +73,6 @@ uint32_t __attribute__((weak)) TilingDataStructBase::RecordTilingStruct(const ch
 }
 
 void TilingDef::GeLogError(const std::string &str) const {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-  GELOGE(ge::GRAPH_FAILED, "%s", str.c_str());
-#endif
 }
 
 void TilingDef::SetDataPtr(void *dataPtr) {
@@ -97,19 +91,11 @@ void TilingDef::SetDataPtr(void *dataPtr) {
 
 void TilingDef::SaveToBuffer(void *pdata, size_t capacity) {
   if (inited_data_ptr) {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-    GELOGD("TilingDef::SaveToBuffer, op %s, data had been saved.", class_name_);
-#endif
     return;
   }
   // copy tilingdata to buffer without struct tiling data.
   auto mem_ret = memcpy_s(pdata, capacity, data_ptr_, data_size_);
   if (mem_ret != EOK) {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-    GELOGE(ge::GRAPH_FAILED,
-           "TilingDef::SaveToBuffer failed: memcpy_s return op [%s] [%d], capacity = [%zu], data_size_ = [%zu].",
-           class_name_, mem_ret, capacity, data_size_);
-#endif
   }
 }
 
@@ -124,14 +110,8 @@ void TilingDef::CheckAlignAndGenPlaceHolder(const char *name, size_t typeSize) {
 }
 
 void TilingDef::InitData() {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-    GELOGD("TilingDef::InitData, op %s, data size %d.", class_name_, data_size_);
-#endif
     data_ptr_ = new (std::nothrow)uint8_t[data_size_]();
     if (data_ptr_ == nullptr) {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-          GELOGE(ge::GRAPH_FAILED, "TilingDef::InitData failed: op %s, init data size %d.", class_name_, data_size_);
-#endif
           return;
     }
     for (auto &ptr : saveBufferPtr) {
@@ -151,25 +131,16 @@ CTilingDataClassFactory &CTilingDataClassFactory::GetInstance()
 void CTilingDataClassFactory::RegisterTilingData(const char *op_type,
                                                  const TilingDataConstructor constructor) {
   instance_.emplace(op_type, constructor);
-#ifndef ASCENDC_DEVICE_REG_STATIC
-  GELOGD("op_type: %s, registered count: %zu.", op_type, instance_.size());
-#endif
 }
 
 std::shared_ptr<TilingDef> CTilingDataClassFactory::CreateTilingDataInstance(const char *op_type) {
   const auto it = instance_.find(op_type);
   if (it == instance_.end()) {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-    GELOGW("cannot find op_type:%s.", op_type);
-#endif
     return nullptr;
   }
 
   const TilingDataConstructor constructor = it->second;
   if (constructor == nullptr) {
-#ifndef ASCENDC_DEVICE_REG_STATIC
-    GELOGW("CreateTilingDataInstance: constructor is nullptr.");
-#endif
     return nullptr;
   }
 

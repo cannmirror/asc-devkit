@@ -15,8 +15,7 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 #include <inttypes.h>
-#include "external/ge_common/ge_api_error_codes.h"
-#include "slog.h"
+#include "dlog_pub.h"
 
 #define GE_MODULE_NAME static_cast<int32_t>(GE)
 
@@ -25,7 +24,7 @@
     do {                                                                                              \
         dlog_error(GE_MODULE_NAME, "%" PRIu64 " %s: ErrorNo: %" PRIuLEAST8 "(%s) " fmt,                 \
         syscall(SYS_gettid), &__FUNCTION__[0U],                                                  \
-            (ERROR_CODE), ((GE_GET_ERRORNO_STR(ERROR_CODE)).c_str()), ##__VA_ARGS__);            \
+            (ERROR_CODE), ("Ascend Log Tiling Sink"), ##__VA_ARGS__);            \
     } while (false)
 
 #define GELOGW(fmt, ...)                                                                          \
