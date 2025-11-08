@@ -18,6 +18,8 @@ target_include_directories(
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}>>
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include>>
     $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/include/base>>
+    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux/pkg_inc>>
+    $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<BUILD_INTERFACE:${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux/pkg_inc/base>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/basic_api>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../asc/asc-devkit>>
     $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${ASCENDC_DIR}/../../asc/asc-devkit/include>>
@@ -132,7 +134,27 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/conv_backprop/conv3d_bp_input_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/conv_backprop/conv3d_bp_input_tiling_base.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/../detail/host_log.cpp
-  $<$<BOOL:${BUILD_OPEN_PROJECT}>:$<TARGET_OBJECTS:${ASCENDC_API_ADV_OBJ}>>)
+  ${ASCENDC_DIR}/impl/utils/tiling/platform/platform_ascendc.cpp
+  ${ASCENDC_DIR}/impl/utils/tiling/template_argument.cpp
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},host>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/context/context_builder.cpp>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},host>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/context/context_builder_impl.cpp>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/stub/shape.cpp>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/stub/tilingdata_base.cc>
+  $<$<AND:$<BOOL:${BUILD_OPEN_PROJECT}>,$<NOT:$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>>:$<TARGET_OBJECTS:${ASCENDC_API_ADV_OBJ}>>
+  )
+
+target_include_directories(tiling_api PRIVATE
+  $<$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>:${ASCENDC_DIR}>
+  ${ASCENDC_DIR}/include/utils/context
+  ${ASCENDC_DIR}/include/utils/tiling/platform
+  ${ASCENDC_DIR}/include/utils
+  $<$<STREQUAL:${PRODUCT_SIDE},device>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/utils/stub>>
+  $<$<STREQUAL:${PRODUCT_SIDE},device>:$<BUILD_INTERFACE:${ASCENDC_DIR}/include/utils/stub/common/ge_common>>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:$<BUILD_INTERFACE:${TOP_DIR}/metadef/inc/external>>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:$<BUILD_INTERFACE:${TOP_DIR}/metadef/inc>>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:$<BUILD_INTERFACE:${TOP_DIR}/ace/npuruntime/runtime/platform/inc>>
+  $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${TOP_DIR}/ace/npuruntime/runtime/dfx/include/log/toolchain>>
+)
 
 target_compile_options(
   tiling_api
@@ -147,6 +169,7 @@ target_compile_options(
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fstack-protector-all>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-std=c++11>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fvisibility-inlines-hidden>
+          $<$<STREQUAL:${PRODUCT_SIDE},device>:-DASCEND_IS_AICPU>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fvisibility=hidden>)
 
 target_compile_definitions(

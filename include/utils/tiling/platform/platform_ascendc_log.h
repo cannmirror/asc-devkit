@@ -17,7 +17,7 @@
 #ifndef __PLATFORM_ASCENDC_LOG_H__
 #define __PLATFORM_ASCENDC_LOG_H__
 
-#include "toolchain/slog.h"
+#include "dlog_pub.h"
 
 #define ASCENDC_MODULE_NAME static_cast<int32_t>(ASCENDCKERNEL)
 

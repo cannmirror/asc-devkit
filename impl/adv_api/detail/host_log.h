@@ -16,7 +16,7 @@
 #ifndef IMPL_HOST_LOG_H
 #define IMPL_HOST_LOG_H
 #include <mutex>
-#include "toolchain/dlog_pub.h"
+#include "dlog_pub.h"
 
 namespace AscendC {
 namespace UnifiedLog {

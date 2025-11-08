@@ -18,7 +18,7 @@
 #define ASC_CPU_LOG_H
 #include <cassert>
 #include <cstdint>
-#include "toolchain/slog.h"
+#include "dlog_pub.h"
 #include "base/alog_pub.h"
 #include "aicpu/cust_cpu_utils.h"
 

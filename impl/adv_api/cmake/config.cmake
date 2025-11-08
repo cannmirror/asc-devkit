@@ -33,17 +33,14 @@ endif ()
 
 set(HI_PYTHON                     "python3"                       CACHE   STRING   "python executor")
 set(PRODUCT_SIDE                  host)
+set(COMPILE_BASE_ON_SUBGROUP OFF BOOL)
+
+if (NOT COMPILE_BASE_ON_SUBGROUP)
 
 set(TILING_API_LIB ${ASCEND_CANN_PACKAGE_PATH}/lib64/libtiling_api.a)
 if (NOT EXISTS "${TILING_API_LIB}")
     message(FATAL_ERROR "${TILING_API_LIB} does not exist, please check whether the toolkit package is installed.")
 endif()
-
-if (ENABLE_TEST)
-    set(CMAKE_SKIP_RPATH FALSE)
-else ()
-    set(CMAKE_SKIP_RPATH TRUE)
-endif ()
 
 set(ASCENDC_API_ADV_OBJ      ascendc_api_adv_obj)
 set(ASCENDC_API_ADV_OBJ_PATH ${CMAKE_CURRENT_BINARY_DIR}/ascendc_api_adv_objs)
@@ -62,6 +59,14 @@ add_library(${ASCENDC_API_ADV_OBJ} OBJECT IMPORTED)
 set_target_properties(${ASCENDC_API_ADV_OBJ} PROPERTIES
     IMPORTED_OBJECTS "${ASCENDC_API_ADV_OBJ_PATH}/platform_ascendc.cpp.o;${ASCENDC_API_ADV_OBJ_PATH}/context_builder.cpp.o;${ASCENDC_API_ADV_OBJ_PATH}/context_builder_impl.cpp.o;${ASCENDC_API_ADV_OBJ_PATH}/template_argument.cpp.o"
     )
+endif()
+
+if (ENABLE_TEST)
+    set(CMAKE_SKIP_RPATH FALSE)
+else ()
+    set(CMAKE_SKIP_RPATH TRUE)
+endif ()
+
 
 get_filename_component(ASCENDC_API_ADV_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 # include(${ASCENDC_API_ADV_CMAKE_DIR}/intf_pub_linux.cmake)
