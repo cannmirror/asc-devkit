@@ -18,7 +18,6 @@
 #include "mmpa/mmpa_api.h"
 #include "external/ge_common/ge_api_error_codes.h"
 #include "alog_pub.h"
-#include "common/util/error_manager/error_manager.h"
 
 #define ASCENDC_MODULE_NAME static_cast<int32_t>(ASCENDCKERNEL)
 
@@ -26,32 +25,32 @@
 #define ASCENDLOGE(format, ...)                                                                                        \
     do {                                                                                                               \
         if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_ERROR) == 1) {                                               \
-            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_ERROR, "  %d %s:%s" format "\n", mmGetTid(),         \
-                       __FUNCTION__, ErrorManager::GetInstance().GetLogHeader().c_str(), ##__VA_ARGS__);               \
+            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_ERROR, "  %d [%s:%d][%s]" format "\n", mmGetTid(),         \
+                       __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);               \
         }                                                                                                              \
     } while (0)
 
 #define ASCENDLOGW(format, ...)                                                                                        \
     do {                                                                                                               \
         if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_WARN) == 1) {                                                \
-            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_WARN, "  %d %s:%s" format "\n", mmGetTid(),          \
-                       __FUNCTION__, ErrorManager::GetInstance().GetLogHeader().c_str(), ##__VA_ARGS__);               \
+            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_WARN, "  %d [%s:%d][%s]" format "\n", mmGetTid(),          \
+                       __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);               \
         }                                                                                                              \
     } while (0)
 
 #define ASCENDLOGI(format, ...)                                                                                        \
     do {                                                                                                               \
         if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_INFO) == 1) {                                                \
-            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_INFO, "  %d %s:%s" format "\n", mmGetTid(),          \
-                       __FUNCTION__, ErrorManager::GetInstance().GetLogHeader().c_str(), ##__VA_ARGS__);               \
+            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_INFO, "  %d [%s:%d][%s]" format "\n", mmGetTid(),          \
+                       __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);               \
         }                                                                                                              \
     } while (0)
 
 #define ASCENDLOGD(format, ...)                                                                                        \
     do {                                                                                                               \
         if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_DEBUG) == 1) {                                               \
-            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_DEBUG, " %d %s:%s" format "\n", mmGetTid(),          \
-                       __FUNCTION__, ErrorManager::GetInstance().GetLogHeader().c_str(), ##__VA_ARGS__);               \
+            AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_DEBUG, " %d [%s:%d][%s]" format "\n", mmGetTid(),          \
+                       __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);               \
         }                                                                                                              \
     } while (0)
 #else

@@ -34,7 +34,6 @@
         <path value="$(TARGET_ENV)/ascendc"/>
         <path value="$(TARGET_ENV)/ascendc/include"/>
         <path value="$(TARGET_ENV)/ascendc/include/basic_api"/>
-        <path value="$(TARGET_ENV)/ascendc/include/aicpu_api"/>
         <path value="$(TARGET_ENV)/ascendc/include/c_api"/>
         <path value="$(TARGET_ENV)/ascendc/include/highlevel_api"/>
         <path value="$(TARGET_ENV)/ascendc/include/highlevel_api/kernel_tiling"/>
@@ -45,7 +44,6 @@
         <path value="$(TARGET_ENV)/include/ascendc/highlevel_api"/>
         <path value="$(TARGET_ENV)/include/ascendc/basic_api"/>
         <path value="$(TARGET_ENV)/include/ascendc/host_api"/>
-        <path value="$(TARGET_ENV)/include/ascendc/aicpu_api"/>
         <path value="$(TARGET_ENV)/include/ascendc/c_api"/>
         <path value="$(TARGET_ENV)/include/utils"/>
         <path value="$(TARGET_ENV)/include/utils/log"/>
@@ -84,6 +82,7 @@
         <file value="interface" install_softlink="$(TARGET_ENV)/ascendc/include/basic_api/interface;$(TARGET_ENV)/tikcpp/tikcfw/interface;$(TARGET_ENV)/include/ascendc/basic_api/interface" install_mod="550" entity="true"/>
         <file value="kernel_operator.h" install_softlink="$(TARGET_ENV)/ascendc/include/basic_api/kernel_operator.h;$(TARGET_ENV)/tikcpp/tikcfw/kernel_operator.h;$(TARGET_ENV)/include/ascendc/basic_api/kernel_operator.h" install_mod="550" entity="true"/>
         <file value="basic_api" install_mod="550" entity="true"/>
+        <file value="aicpu_api" install_softlink="$(TARGET_ENV)/ascendc/include/aicpu_api;$(TARGET_ENV)/include/ascendc/aicpu_api" install_mod="550" entity="true"/>
         <file value="simt_api" install_mod="550" entity="true"/>
         <file value="micro_api" install_mod="550" entity="true"/>
         <file value="c_api" install_mod="550" entity="true"/>
@@ -101,9 +100,9 @@
         <file value="op_frame" install_softlink="$(TARGET_ENV)/tikcpp/tikcfw/op_frame" install_mod="550" entity="true"/>
     </file_info>
 
-    <file_info copy_type="delivery" src_path="lib/host/ascendc/include/aicpu_api" dst_path="$(TARGET_ENV)/ascendc/include/aicpu_api" install_path="$(TARGET_ENV)/ascendc/include/aicpu_api" install_type="all">
+    <!-- <file_info copy_type="delivery" src_path="lib/host/ascendc/include/aicpu_api" dst_path="$(TARGET_ENV)/ascendc/include/aicpu_api" install_path="$(TARGET_ENV)/ascendc/include/aicpu_api" install_type="all">
         <file value="aicpu_api.h" install_softlink="$(TARGET_ENV)/include/ascendc/aicpu_api/aicpu_api.h" install_mod="550" entity="true"/>
-    </file_info>
+    </file_info> -->
 
     <file_info copy_type="delivery" src_path="lib/host/ascendc/include/highlevel_api/utils/log" dst_path="$(TARGET_ENV)/ascendc/include/highlevel_api/utils/log" install_path="$(TARGET_ENV)/ascendc/include/highlevel_api/utils/log" install_type="all">
         <file value="asc_cpu_log.h" install_softlink="$(TARGET_ENV)/include/utils/log/asc_cpu_log.h" install_mod="550" entity="true"/>
@@ -119,10 +118,6 @@
 
     <file_info copy_type="delivery" src_path="lib/device" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64/device/lib64" pkg_feature="filter_florence">
         <file value="libaicpu_api.a" file_type="static"/>
-    </file_info>
-
-    <file_info value="op_build" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/../lib" install_path="tools/opbuild" install_mod="550">
-        <file value="op_build" file_type="executable"/>
     </file_info>
 
     <file_info value="ascendc_scripts" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="tools/ascendc_tools" install_mod="550" feature="ascendc">
