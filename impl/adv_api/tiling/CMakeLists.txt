@@ -136,10 +136,10 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/../detail/host_log.cpp
   ${ASCENDC_DIR}/impl/utils/tiling/platform/platform_ascendc.cpp
   ${ASCENDC_DIR}/impl/utils/tiling/template_argument.cpp
-  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},host>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/context/context_builder.cpp>
-  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},host>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/context/context_builder_impl.cpp>
-  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/stub/shape.cpp>
-  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>:${ASCENDC_DIR}/impl/utils/stub/tilingdata_base.cc>
+  $<$<STREQUAL:${PRODUCT_SIDE},host>:${ASCENDC_DIR}/impl/utils/context/context_builder.cpp>
+  $<$<STREQUAL:${PRODUCT_SIDE},host>:${ASCENDC_DIR}/impl/utils/context/context_builder_impl.cpp>
+  $<$<STREQUAL:${PRODUCT_SIDE},device>:${ASCENDC_DIR}/impl/utils/stub/shape.cpp>
+  $<$<STREQUAL:${PRODUCT_SIDE},device>:${ASCENDC_DIR}/impl/utils/stub/tilingdata_base.cc>
   $<$<AND:$<BOOL:${BUILD_OPEN_PROJECT}>,$<NOT:$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>>:$<TARGET_OBJECTS:${ASCENDC_API_ADV_OBJ}>>
   )
 

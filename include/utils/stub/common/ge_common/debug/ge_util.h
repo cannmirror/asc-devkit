@@ -30,7 +30,7 @@ static inline std::shared_ptr<T> ComGraphMakeShared(Args &&...args)
         ret = std::make_shared<Tn>(std::forward<Args>(args)...);
     } catch (const std::bad_alloc &) {
         ret = nullptr;
-        GELOGE(ge::FAILED, "Make shared failed");
+        GELOGE(GRAPH_FAILED, "Make shared failed");
     }
     return ret;
 }
