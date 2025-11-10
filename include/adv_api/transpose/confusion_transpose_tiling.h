@@ -64,8 +64,6 @@ const int32_t CUBE_MAX_SIZE = 256;
  * \param [out] maxValue max size of tmp buffer
  * \param [out] minValue min size of tmp buffer
  */
-[[deprecated("NOTICE: GetConfusionTransposeMaxMinTmpSize has been deprecated and will be removed in the next version. "
-             "please do not use it!")]]
 void GetConfusionTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
     const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue);
 
@@ -83,15 +81,12 @@ void GetTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSiz
  * \param [in] transposeTypeIn transpose type.
  * \param [out] tiling Transpose tiling
  */
-[[deprecated("NOTICE: GetConfusionTransposeTilingInfo has been deprecated and will be removed in the next version. "
-             "please do not use it!")]]
 void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling);
 
 void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling);
-[[deprecated("NOTICE: GetConfusionTransposeOnlyTilingInfo has been deprecated and will be removed in the next version. "
-             "please do not use it!")]]
+
 void GetConfusionTransposeOnlyTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling);
 }

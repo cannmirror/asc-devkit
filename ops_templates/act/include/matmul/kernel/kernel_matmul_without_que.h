@@ -205,6 +205,12 @@ public:
         Init(params);
 
         BlockSchedulerOp bs(params.problemShape, curBlockIdx, blockNum, params.schParams);
+        if (bs.GetBL2CacheDisable()) {
+            bGlobal_.SetL2CacheHint(AscendC::CacheMode::CACHE_MODE_DISABLE);
+        }
+        if (bs.GetAL2CacheDisable()) {
+            aGlobal_.SetL2CacheHint(AscendC::CacheMode::CACHE_MODE_DISABLE);
+        }
         int64_t tileNum = bs.GetTileNum();
         TupleShape tileL1 = bs.GetTileL1Shape();
         TupleShape tileL0 = bs.GetTileL0Shape();

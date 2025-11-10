@@ -54,8 +54,7 @@ public:
     uint64_t k_;
     uint64_t alignedM_{1};
     uint64_t alignedN_{1};
-    uint64_t alignedKa_{1};
-    uint64_t alignedKb_{1};
+    uint64_t alignedK_{1};
     constexpr static uint64_t BUFFER_NUM = 2;
     uint64_t abL1EventID_{0};
     uint64_t l0EventID_{0};
@@ -94,8 +93,7 @@ public:
         alignedM_ = CeilAlign(m_, AscendC::BLOCK_CUBE);
         // when fp16 or (fp32 and n,k), m align to 16; when fp32 and k,n, n align to 8 * 2 for frac combine in loadtol0b
         alignedN_ = CeilAlign(n_, AscendC::BLOCK_CUBE);
-        alignedKa_ = AType::isTrans ? CeilAlign(k_, AscendC::BLOCK_CUBE) : CeilAlign(k_, AscendC::AuxGetC0Size<A_T>());
-        alignedKb_ = BType::isTrans ? CeilAlign(k_, AscendC::AuxGetC0Size<B_T>()) : CeilAlign(k_, AscendC::BLOCK_CUBE);
+        alignedK_ = CeilAlign(k_, AscendC::BLOCK_CUBE);
         l0EventID_ = 0;
         abL1EventID_ = 0;
     }
@@ -144,14 +142,18 @@ public:
             loadDataParams.mStartPosition = 0;
             loadDataParams.kStartPosition = 0;
             loadDataParams.mStep = CeilDiv(mInL0A, AscendC::BLOCK_CUBE);
-            loadDataParams.kStep = CeilDiv(kaInL0A, AscendC::AuxGetC0Size<A_T>()) * curIterBatchL0;
+            loadDataParams.kStep = CeilDiv(kaInL0A, AscendC::AuxGetC0Size<A_T>());
             loadDataParams.srcStride = CeilDiv(mInL1A, AscendC::BLOCK_CUBE);
             loadDataParams.dstStride = loadDataParams.mStep;
             loadDataParams.ifTranspose = false;
-            if constexpr (AscendC::IsSameType<A_T, bfloat16_t>::value) {
-                AscendC::LoadData(a2Local, al1Local, loadDataParams);
-            } else {
-                AscendC::LoadData<A_T>(a2Local, al1Local, loadDataParams);
+            for (uint64_t iterL0AIndex = 0; iterL0AIndex < curIterBatchL0; iterL0AIndex++) {
+                if constexpr (AscendC::IsSameType<A_T, bfloat16_t>::value) {
+                    AscendC::LoadData(a2Local[iterL0AIndex * mInL1A * kaInL1A],
+                                      al1Local[iterL0AIndex * mInL1A * kaInL1A], loadDataParams);
+                } else {
+                    AscendC::LoadData<A_T>(a2Local[iterL0AIndex * mInL1A * kaInL1A],
+                                           al1Local[iterL0AIndex * mInL1A * kaInL1A], loadDataParams);
+                }
             }
         } else {
             AscendC::LoadData2DParamsV2 loadDataParams;
@@ -182,14 +184,18 @@ public:
             loadDataParams.mStartPosition = 0;
             loadDataParams.kStartPosition = 0;
             loadDataParams.mStep = CeilDiv(nInL0B, AscendC::BLOCK_CUBE);
-            loadDataParams.kStep = CeilDiv(kbInL0B, AscendC::AuxGetC0Size<B_T>()) * curIterBatchL0;
+            loadDataParams.kStep = CeilDiv(kbInL0B, AscendC::AuxGetC0Size<B_T>());
             loadDataParams.srcStride = CeilDiv(nInL1B, AscendC::BLOCK_CUBE);
             loadDataParams.dstStride = loadDataParams.mStep;
             loadDataParams.ifTranspose = false;
-            if constexpr (AscendC::IsSameType<B_T, bfloat16_t>::value) {
-                AscendC::LoadData(b2Local, bl1Local, loadDataParams);
-            } else {
-                AscendC::LoadData<B_T>(b2Local, bl1Local, loadDataParams);
+            for (uint64_t iterL0BIndex = 0; iterL0BIndex < curIterBatchL0; iterL0BIndex++) {
+                if constexpr (AscendC::IsSameType<B_T, bfloat16_t>::value) {
+                    AscendC::LoadData(b2Local[iterL0BIndex * kbInL1B * nInL1B],
+                                      bl1Local[iterL0BIndex * kbInL1B * nInL1B], loadDataParams);
+                } else {
+                    AscendC::LoadData<B_T>(b2Local[iterL0BIndex * kbInL1B * nInL1B],
+                                           bl1Local[iterL0BIndex * kbInL1B * nInL1B], loadDataParams);
+                }
             }
         } else {
             AscendC::LoadData2DParamsV2 loadDataParams;
@@ -272,7 +278,7 @@ public:
                                       bool isFinalRound)
     {
         AscendC::LocalTensor<A_T> al1Local(AscendC::TPosition::A1, 0, L1_SIZE); // start of l1
-        AscendC::LocalTensor<B_T> bl1Local = al1Local[alignedM_ * alignedKa_ * BUFFER_NUM * mainIterBatchL1];
+        AscendC::LocalTensor<B_T> bl1Local = al1Local[alignedM_ * alignedK_ * BUFFER_NUM * mainIterBatchL1];
         AscendC::LocalTensor<A_T> l0a(AscendC::TPosition::A2, 0, L0A_SIZE);
         AscendC::LocalTensor<B_T> l0b(AscendC::TPosition::B2, 0, L0B_SIZE);
         AscendC::LocalTensor<float> l0c(AscendC::TPosition::CO1, 0, L0C_SIZE);
@@ -280,24 +286,24 @@ public:
         // mov align to L1 with pingpong
         if (isPreLoadRound) { // first round, copy first loop of data
             AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>(abL1EventID_ & 0x1); // wait last loop mte1 to finish
-            CopyInA1(aGlobal, al1Local[alignedM_ * alignedKa_ * mainIterBatchL1 * (abL1EventID_ & 0x1)],
-                     curIterBatchL1, m_, k_, alignedM_, alignedKa_);
+            CopyInA1(aGlobal, al1Local[alignedM_ * alignedK_ * mainIterBatchL1 * (abL1EventID_ & 0x1)],
+                     curIterBatchL1, m_, k_, alignedM_, alignedK_);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>(abL1EventID_ & 0x1); // set current loop mte1 to wait
 
             AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
-            CopyInB1(bGlobal, bl1Local[alignedN_ * alignedKb_ * mainIterBatchL1 * (abL1EventID_ & 0x1)],
-                     curIterBatchL1, k_, n_, alignedKb_, alignedN_);
+            CopyInB1(bGlobal, bl1Local[alignedN_ * alignedK_ * mainIterBatchL1 * (abL1EventID_ & 0x1)],
+                     curIterBatchL1, k_, n_, alignedK_, alignedN_);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
         }
         if (!isFinalRound) { // before last round need to precopy next loop of data
             AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>((abL1EventID_ + 1) & 0x1); // wait last loop mte1 to finish
-            CopyInA1(aGlobal[m_ * k_ * mainIterBatchL1 * blockNum], al1Local[alignedM_ * alignedKa_ *
-                     mainIterBatchL1 * ((abL1EventID_ + 1) & 0x1)], nextIterBatchL1, m_, k_, alignedM_, alignedKa_);
+            CopyInA1(aGlobal[m_ * k_ * mainIterBatchL1 * blockNum], al1Local[alignedM_ * alignedK_ *
+                     mainIterBatchL1 * ((abL1EventID_ + 1) & 0x1)], nextIterBatchL1, m_, k_, alignedM_, alignedK_);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>((abL1EventID_ + 1) & 0x1); // set current loop mte1 to wait
 
             AscendC::WaitFlag<AscendC::HardEvent::MTE1_MTE2>(((abL1EventID_ + 1) & 0x1) + L1_EVENT_ID_OFFSET);
-            CopyInB1(bGlobal[k_ * n_ * mainIterBatchL1 * blockNum], bl1Local[alignedN_ * alignedKb_ *
-                     mainIterBatchL1 * ((abL1EventID_ + 1) & 0x1)], nextIterBatchL1, k_, n_, alignedKb_, alignedN_);
+            CopyInB1(bGlobal[k_ * n_ * mainIterBatchL1 * blockNum], bl1Local[alignedN_ * alignedK_ *
+                     mainIterBatchL1 * ((abL1EventID_ + 1) & 0x1)], nextIterBatchL1, k_, n_, alignedK_, alignedN_);
             AscendC::SetFlag<AscendC::HardEvent::MTE2_MTE1>(((abL1EventID_ + 1) & 0x1) + L1_EVENT_ID_OFFSET);
         }
 
@@ -320,14 +326,14 @@ public:
                             AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>(abL1EventID_ & 0x1);
                         }
                         AscendC::WaitFlag<AscendC::HardEvent::M_MTE1>(l0EventID_ & 0x1);
-                        uint64_t offsetL1AOfCopyInA2 = alignedM_ * alignedKa_ * mainIterBatchL1 * (abL1EventID_ & 0x1) +
-                                                       iter1 * mainIterBatchL0 * alignedM_ * alignedKa_ +
-                                                       (AType::isTrans ? (iterML0 * alignedKa_ * baseM +
+                        uint64_t offsetL1AOfCopyInA2 = alignedM_ * alignedK_ * mainIterBatchL1 * (abL1EventID_ & 0x1) +
+                                                       iter1 * mainIterBatchL0 * alignedM_ * alignedK_ +
+                                                       (AType::isTrans ? (iterML0 * alignedK_ * baseM +
                                                        iterKL0 * baseK * AscendC::AuxGetC0Size<A_T>()) :
                                                        (iterML0 * AscendC::AuxGetC0Size<A_T>() * baseM +
                                                        iterKL0 * alignedM_ * baseK));
                         CopyInA2(l0a[l0AOffset_ * (l0EventID_ & 0x1)], al1Local[offsetL1AOfCopyInA2],
-                                 curKL0, curML0, alignedKa_, alignedM_, curIterBatchL0);
+                                 curKL0, curML0, alignedK_, alignedM_, curIterBatchL0);
                         if ((iter1 == stepIterBatchL1L0 - 1) && (iterNL0 == nL0Cnt - 1) && (iterML0 == mL0Cnt - 1) &&
                              (iterKL0 == kL0Cnt - 1)) {
                             // after last loop, notice Mte2 to wait Mte1
@@ -337,15 +343,15 @@ public:
                         if (iter1 == 0 && iterNL0 == 0 && iterML0 == 0 && iterKL0 == 0) {
                             AscendC::WaitFlag<AscendC::HardEvent::MTE2_MTE1>((abL1EventID_ & 0x1) + L1_EVENT_ID_OFFSET);
                         }
-                        uint64_t offsetL1BOfCopyInB2 = alignedN_ * alignedKb_ * mainIterBatchL1 * (abL1EventID_ & 0x1) +
-                                                       iter1 * mainIterBatchL0 * alignedKb_ * alignedN_ +
+                        uint64_t offsetL1BOfCopyInB2 = alignedN_ * alignedK_ * mainIterBatchL1 * (abL1EventID_ & 0x1) +
+                                                       iter1 * mainIterBatchL0 * alignedK_ * alignedN_ +
                                                        (BType::isTrans ?
                                                        (iterNL0 * AscendC::AuxGetC0Size<B_T>() * baseN +
                                                        iterKL0 * baseK * alignedN_) :
-                                                       (iterNL0 * alignedKb_ * baseN +
+                                                       (iterNL0 * alignedK_ * baseN +
                                                        iterKL0 * baseK * AscendC::AuxGetC0Size<B_T>()));
                         CopyInB2(l0b[l0BOffset_ * (l0EventID_ & 0x1)], bl1Local[offsetL1BOfCopyInB2],
-                                 curKL0, curNL0, alignedKb_, alignedN_, curIterBatchL0);
+                                 curKL0, curNL0, alignedK_, alignedN_, curIterBatchL0);
                         AscendC::SetFlag<AscendC::HardEvent::MTE1_M>(l0EventID_ & 0x1);
                         if ((iter1 == stepIterBatchL1L0 - 1) && (iterNL0 == nL0Cnt - 1) && (iterML0 == mL0Cnt - 1) &&
                             (iterKL0 == kL0Cnt - 1)) {
@@ -360,7 +366,7 @@ public:
                         Mmad(l0a[l0AOffset_ * (l0EventID_ & 0x1)],
                              l0b[l0BOffset_ * (l0EventID_ & 0x1)],
                              l0c[l0COffset_ * (l0CEventID_ & 0x1)],
-                             curML0, curNL0, curKL0, alignedM_, alignedKa_, alignedKb_, alignedN_, alignedM_, alignedN_,
+                             curML0, curNL0, curKL0, alignedM_, alignedK_, alignedK_, alignedN_, alignedM_, alignedN_,
                              curIterBatchL0, cmatrixInitVal);
                         AscendC::SetFlag<AscendC::HardEvent::M_MTE1>(l0EventID_ & 0x1);
                         l0EventID_++;

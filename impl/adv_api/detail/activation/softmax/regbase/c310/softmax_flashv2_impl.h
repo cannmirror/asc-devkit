@@ -20,13 +20,162 @@
 
 namespace AscendC {
 
-template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false, bool isOutputReduceMax = false>
-__aicore__ inline void SoftmaxFlashV2M1PostProcess(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& outReduceMax,
+template <typename T1, typename T2, bool isOutputReduceMax = false>
+__simd_vf__ inline void SoftmaxFlashV2M1NDUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* reduceMaxUb,
+    __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb, __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb,
+    __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
+{
+    uint16_t srcM = originalSrcShape.m;
+    uint16_t srcK = tiling.srcK;
+    uint16_t originK = originalSrcShape.k;
+    uint16_t repeatTimes = CeilDivision(originK, FLOAT_REPEAT_SIZE);
+    NotNumUnion notNum;
+    notNum.i = F32_NEG_INF;
+
+    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::MaskReg pregOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
+    MicroAPI::RegTensor<float> srcVreg;
+    MicroAPI::RegTensor<float> maxVreg;
+    MicroAPI::RegTensor<float> expMaxVreg;
+    MicroAPI::RegTensor<float> sumVreg;
+    MicroAPI::RegTensor<float> tmpVreg;
+    MicroAPI::RegTensor<float> dstVreg;
+
+    for (uint16_t i = 0; i < srcM; ++i) {
+        Duplicate(maxVreg, notNum.f);
+        for (uint16_t j = 0; j < repeatTimes; ++j) {
+            LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
+            MicroAPI::Max(maxVreg, maxVreg, srcVreg, pregFull);
+        }
+        MicroAPI::ReduceMax(maxVreg, maxVreg, pregFull);
+        if constexpr (isOutputReduceMax) {
+            StoreIfNeedCastM1<T2>(reduceMaxUb + i, maxVreg, pregOnePt);
+        }
+        LoadIfNeedCastM1<T2>(tmpVreg, inMaxUb + i, pregOnePt);
+        MicroAPI::Max(maxVreg, maxVreg, tmpVreg, pregOnePt);
+        StoreIfNeedCastM1<T2>(maxUb + i, maxVreg, pregOnePt);
+
+        MicroAPI::FusedExpSub(expMaxVreg, tmpVreg, maxVreg, pregOnePt);
+        StoreIfNeedCastM1<T1>(expMaxUb + i, expMaxVreg, pregOnePt);
+
+        Duplicate(sumVreg, 0);
+        Duplicate(maxVreg, maxVreg, pregFull);
+        for (uint16_t j = 0; j < repeatTimes; ++j) {
+            LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
+            MicroAPI::FusedExpSub(tmpVreg, srcVreg, maxVreg, pregFull);
+            StoreIfNeedCast<T1>(dstUb + i * srcK + j * FLOAT_REPEAT_SIZE, tmpVreg, pregFull);
+            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+        }
+        MicroAPI::ReduceSum(sumVreg, sumVreg, pregFull);
+        LoadIfNeedCastM1<T2>(tmpVreg, inExpSumUb + i, pregOnePt);
+        MicroAPI::Mul(tmpVreg, expMaxVreg, tmpVreg, pregOnePt);
+        MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregOnePt);
+        StoreIfNeedCastM1<T2>(expSumUb + i, sumVreg, pregOnePt);
+    }
+}
+
+template <typename T1, typename T2, bool isOutputReduceMax = false>
+__aicore__ inline void SoftmaxFlashV2M1NDUpdateImpl(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& outReduceMax,
     const LocalTensor<T2>& expSumTensor, const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor,
     const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
     const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "softmaxflashv2 current data struct is not supported on current device!"); });
+    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
+    __local_mem__ T2* reduceMaxUb = (__local_mem__ T2*)outReduceMax.GetPhyAddr();
+    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
+    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
+    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
+    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
+    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
+    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
+
+    SoftmaxFlashV2M1NDUpdateVFImpl<T1, T2, isOutputReduceMax>(dstUb, reduceMaxUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb,
+        expMaxUb, originalSrcShape, tiling);
+}
+
+template <typename T1, typename T2, bool isOutputReduceMax = false>
+__simd_vf__ inline void SoftmaxFlashV2M1NDWithTailUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* reduceMaxUb,
+    __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb, __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb,
+    __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
+{
+    uint16_t srcM = originalSrcShape.m;
+    uint16_t srcK = tiling.srcK;
+    uint16_t originK = originalSrcShape.k;
+    uint16_t repeatTimes = CeilDivision(originK, FLOAT_REPEAT_SIZE);
+    NotNumUnion notNum;
+    notNum.i = F32_NEG_INF;
+
+    MicroAPI::MaskReg pregCnt;
+    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::MaskReg pregOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
+    MicroAPI::RegTensor<float> srcVreg;
+    MicroAPI::RegTensor<float> maxVreg;
+    MicroAPI::RegTensor<float> expMaxVreg;
+    MicroAPI::RegTensor<float> sumVreg;
+    MicroAPI::RegTensor<float> tmpVreg;
+    MicroAPI::RegTensor<float> minVreg;
+    MicroAPI::RegTensor<float> dstVreg;
+
+    Duplicate(minVreg, notNum.f);
+    for (uint16_t i = 0; i < srcM; ++i) {
+        uint32_t sreg = originK;
+        Duplicate(maxVreg, notNum.f);
+        for (uint16_t j = 0; j < static_cast<uint16_t>(repeatTimes - 1); ++j) {
+            pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
+            MicroAPI::Max(maxVreg, maxVreg, srcVreg, pregCnt);
+        }
+        pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+        LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + (repeatTimes - 1) * FLOAT_REPEAT_SIZE, pregFull);
+        MicroAPI::Select(srcVreg, srcVreg, minVreg, pregCnt);
+        MicroAPI::Max(maxVreg, maxVreg, srcVreg, pregFull);
+
+        MicroAPI::ReduceMax(maxVreg, maxVreg, pregFull);
+        if constexpr (isOutputReduceMax) {
+            StoreIfNeedCastM1<T2>(reduceMaxUb + i, maxVreg, pregOnePt);
+        }
+        LoadIfNeedCastM1<T2>(tmpVreg, inMaxUb + i, pregOnePt);
+        MicroAPI::Max(maxVreg, maxVreg, tmpVreg, pregOnePt);
+        StoreIfNeedCastM1<T2>(maxUb + i, maxVreg, pregOnePt);
+
+        MicroAPI::FusedExpSub(expMaxVreg, tmpVreg, maxVreg, pregOnePt);
+        StoreIfNeedCastM1<T1>(expMaxUb + i, expMaxVreg, pregOnePt);
+
+        Duplicate(sumVreg, 0);
+        Duplicate(maxVreg, maxVreg, pregFull);
+        sreg = originK;
+        for (uint16_t j = 0; j < repeatTimes; ++j) {
+            pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
+            LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK + j * FLOAT_REPEAT_SIZE, pregFull);
+            MicroAPI::FusedExpSub(tmpVreg, srcVreg, maxVreg, pregCnt);
+            StoreIfNeedCast<T1>(dstUb + i * srcK + j * FLOAT_REPEAT_SIZE, tmpVreg, pregCnt);
+            MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
+        }
+        MicroAPI::ReduceSum(sumVreg, sumVreg, pregFull);
+        LoadIfNeedCastM1<T2>(tmpVreg, inExpSumUb + i, pregOnePt);
+        MicroAPI::Mul(tmpVreg, expMaxVreg, tmpVreg, pregOnePt);
+        MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregOnePt);
+        StoreIfNeedCastM1<T2>(expSumUb + i, sumVreg, pregOnePt);
+    }
+}
+
+template <typename T1, typename T2, bool isOutputReduceMax = false>
+__aicore__ inline void SoftmaxFlashV2M1NDWithTailUpdateImpl(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& outReduceMax,
+    const LocalTensor<T2>& expSumTensor, const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor,
+    const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+{
+    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
+    __local_mem__ T2* reduceMaxUb = (__local_mem__ T2*)outReduceMax.GetPhyAddr();
+    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
+    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
+    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
+    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
+    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
+    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
+
+    SoftmaxFlashV2M1NDWithTailUpdateVFImpl<T1, T2, isOutputReduceMax>(dstUb, reduceMaxUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb,
+        expMaxUb, originalSrcShape, tiling);
 }
 
 template <typename T1, typename T2>
@@ -931,30 +1080,59 @@ __aicore__ inline void SoftmaxFlashV2NDWithTailUpdateImpl(const LocalTensor<T1>&
         expMaxUb, originalSrcShape, tiling);
 }
 
-template <typename T1, typename T2, bool isBasicBlock = false>
+template <typename T1, typename T2, bool isBasicBlock = false, bool outputBrc = true>
 __aicore__ inline void SoftmaxFlashV2NDNoUpdateImpl(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& expSumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
     if constexpr (isBasicBlock) {
-        SoftMaxGenericNDImpl<T1, T2, true>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+        SoftMaxGenericNDImpl<T1, T2, true, false, outputBrc>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
             originalSrcShape, tiling);
     } else {
         if (tiling.srcK == B32_DATA_NUM_PER_BLOCK && IsSameType<T1, float>::value) {
-            SingleSoftMaxGenericNDForBlkImpl<T1, T2, true>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+            SingleSoftMaxGenericNDForBlkImpl<T1, T2, true, false, outputBrc>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
                 originalSrcShape, tiling);
         } else if (tiling.srcK == B32_DATA_NUM_PER_BLOCK * 2) {
-            SingleSoftMaxGenericNDAlignedWithBlkImpl<T1, T2, true>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+            SingleSoftMaxGenericNDAlignedWithBlkImpl<T1, T2, true, false, outputBrc>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
                 originalSrcShape, tiling);
         } else if (originalSrcShape.k <= FLOAT_REPEAT_SIZE) {
-            SingleSoftMaxGenericNDImpl<T1, T2, true>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+            SingleSoftMaxGenericNDImpl<T1, T2, true, false, outputBrc>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
                 originalSrcShape, tiling);
         } else if (originalSrcShape.k % FLOAT_REPEAT_SIZE != 0) {
-            SoftMaxGenericNDWithTailImpl<T1, T2, true>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+            SoftMaxGenericNDWithTailImpl<T1, T2, true, false, outputBrc>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
                 originalSrcShape, tiling);
         } else {
-            SoftMaxGenericNDImpl<T1, T2, true>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+            SoftMaxGenericNDImpl<T1, T2, true, false, outputBrc>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
                 originalSrcShape, tiling);
+        }
+    }
+}
+
+template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false, bool isOutputReduceMax = false>
+__aicore__ inline void SoftmaxFlashV2M1PostProcess(const LocalTensor<T1>& dstTensor, const LocalTensor<T2>& outReduceMax,
+    const LocalTensor<T2>& expSumTensor, const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& srcTensor,
+    const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
+    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+{
+    static_assert((SupportType<T1, float>() && SupportType<T2, float>()) ||
+                  (SupportType<T1, half>() && SupportType<T2, half>()) ||
+                  (SupportType<T1, half>() && SupportType<T2, float>()),
+                  "SoftMaxFlashV2 api only support half/float on current device");
+    if constexpr (isBasicBlock && isUpdate) {
+        SoftmaxFlashV2M1NDUpdateImpl<T1, T2, isOutputReduceMax>(dstTensor, outReduceMax, expSumTensor, maxTensor, srcTensor, expMaxTensor,
+            inExpSumTensor, inMaxTensor, workLocal, originalSrcShape, tiling);
+    } else {
+        if constexpr (!isUpdate) {
+            SoftmaxFlashV2NDNoUpdateImpl<T1, T2, isBasicBlock, false>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+                originalSrcShape, tiling);
+        } else {
+            if (originalSrcShape.k % FLOAT_REPEAT_SIZE) {
+                SoftmaxFlashV2M1NDWithTailUpdateImpl<T1, T2, isOutputReduceMax>(dstTensor, outReduceMax, expSumTensor, maxTensor, srcTensor,
+                    expMaxTensor, inExpSumTensor, inMaxTensor, workLocal, originalSrcShape, tiling);
+            } else {
+                SoftmaxFlashV2M1NDUpdateImpl<T1, T2, isOutputReduceMax>(dstTensor, outReduceMax, expSumTensor, maxTensor, srcTensor, expMaxTensor,
+                    inExpSumTensor, inMaxTensor, workLocal, originalSrcShape, tiling);
+            }
         }
     }
 }
@@ -974,7 +1152,7 @@ __aicore__ inline void SoftmaxFlashV2PostProcess(const LocalTensor<T1>& dstTenso
             inExpSumTensor, inMaxTensor, workLocal, originalSrcShape, tiling);
     } else {
         if constexpr (!isUpdate) {
-            SoftmaxFlashV2NDNoUpdateImpl<T1, T2>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
+            SoftmaxFlashV2NDNoUpdateImpl<T1, T2, isBasicBlock>(dstTensor, expSumTensor, maxTensor, srcTensor, workLocal,
                 originalSrcShape, tiling);
         } else {
             if (originalSrcShape.k % FLOAT_REPEAT_SIZE) {

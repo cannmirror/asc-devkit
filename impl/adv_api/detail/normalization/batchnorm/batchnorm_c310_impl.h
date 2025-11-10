@@ -43,7 +43,7 @@ __aicore__ inline void LoadDataWithGammBeta(
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
-        DataCopy<T, MicroAPI::LoadDist::DIST_BRC_B32>(srcOrigin, src + offset);
+        DataCopy<T, MicroAPI::LoadDist::DIST_BRC_B16>(srcOrigin, src + offset);
         Cast<float, T, layoutZMrgZ>(dstReg, srcOrigin, mask);
     } else {
         DataCopy<T, MicroAPI::LoadDist::DIST_BRC_B32>(dstReg, src + offset);
@@ -167,11 +167,7 @@ __aicore__ inline void ComputeOutputVariance(__local_mem__ T* dstLocal, __local_
         }
         // step 4: ∑(x - u)² / N
         MicroAPI::Muls(dstReg, dstReg, firstDimValueBack, maskFull);
-        if constexpr (IsSameType<T, half>::value) {
-            SaveDataWithT(dstLocal, dstReg, maskFull, i * oneRepSize);
-        } else {
-            MicroAPI::DataCopy(dstLocal + i * oneRepSize, dstReg, maskFull);
-        }
+        SaveDataWithT(dstLocal, dstReg, maskFull, i * oneRepSize);
     }
     for (uint16_t i = 0; i < tailRepeatTime; i++) {
         MicroAPI::Duplicate(dstReg, static_cast<float>(0), maskFull);
@@ -335,7 +331,7 @@ __aicore__ inline void BatchNormImpl(const LocalTensor<T>& output, const LocalTe
     if constexpr (isBasicBlock) {
         ASCENDC_ASSERT((oriBLength % 8 == 0),
             {KERNEL_LOG(KERNEL_ERROR, "BatchNorm buffer size error: oriBLength is %u not a multiple of 8", oriBLength);});
-        ASCENDC_ASSERT(((featureLength) % 64 == 0 && featureLength <= 2048),
+        ASCENDC_ASSERT((featureLength % 64 == 0 && featureLength <= 2048),
             {KERNEL_LOG(KERNEL_ERROR, "BatchNorm buffer size error: current sLength * hLength is %u not a multiple of 64"
             "AND <= 2048.", featureLength);});
     }

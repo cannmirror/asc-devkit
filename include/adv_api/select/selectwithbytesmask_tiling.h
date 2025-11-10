@@ -33,8 +33,6 @@ namespace AscendC {
  * \param [in] isReuseMask, whether to reuse the input space of the mask operand
  * \return minValue, minimum temporary space required
  */
-[[deprecated("NOTICE: GetSelectWithBytesMaskMinTmpSize has been deprecated and will be removed in the next version. "
-             "please do not use it!")]]
 uint32_t GetSelectWithBytesMaskMinTmpSize(
     const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape,
     const uint32_t maskTypeSize, const bool isReuseMask);
@@ -56,8 +54,6 @@ uint32_t GetSelectMinTmpSize(
  * \param [in] isReuseMask, whether to reuse the input space of the mask operand
  * \return maxValue, maximum temporary space required
  */
-[[deprecated("NOTICE: GetSelectWithBytesMaskMaxTmpSize has been deprecated and will be removed in the next version. "
-             "please do not use it!")]]
 uint32_t GetSelectWithBytesMaskMaxTmpSize(
     const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape,
     const uint32_t maskTypeSize, const bool isReuseMask);
@@ -80,8 +76,6 @@ uint32_t GetSelecMaxTmpSize(
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-[[deprecated("NOTICE: GetSelectWithBytesMaskMaxMinTmpSize has been deprecated and will be removed in the next version. "
-             "please do not use it!")]]
 void GetSelectWithBytesMaskMaxMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape,
     const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask,
     uint32_t &maxValue, uint32_t &minValue);
