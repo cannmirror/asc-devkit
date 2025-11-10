@@ -52,9 +52,9 @@ enum class TransposeType : uint8_t {
 };
 
 struct TransDataTo5HDParams {
-    __aicore__ TransDataTo5HDParams() {}
+    constexpr __aicore__ TransDataTo5HDParams() = default;
 
-    __aicore__ TransDataTo5HDParams(const bool dstHighHalfIn, const bool srcHighHalfIn, const uint8_t repeatTimesIn,
+    constexpr __aicore__ TransDataTo5HDParams(const bool dstHighHalfIn, const bool srcHighHalfIn, const uint8_t repeatTimesIn,
         const uint16_t dstRepStrideIn, const uint16_t srcRepStrideIn)
         : dstHighHalf(dstHighHalfIn),
           srcHighHalf(srcHighHalfIn),
@@ -71,9 +71,9 @@ struct TransDataTo5HDParams {
 };
 
 struct TransposeParamsExt {
-    __aicore__ TransposeParamsExt() {}
+    constexpr __aicore__ TransposeParamsExt() = default;
 
-    __aicore__ TransposeParamsExt(const uint16_t nSizeIn, const uint16_t cSizeIn, const uint16_t hSizeIn,
+    constexpr __aicore__ TransposeParamsExt(const uint16_t nSizeIn, const uint16_t cSizeIn, const uint16_t hSizeIn,
         const uint16_t wSizeIn, const TransposeType transposeTypeIn)
         : nSize(nSizeIn),
           cSize(cSizeIn),
