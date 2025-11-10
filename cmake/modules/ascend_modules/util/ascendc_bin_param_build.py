@@ -337,7 +337,12 @@ class BinParamBuilder(opdesc_parser.OpDesc):
     def gen_input_json(self: any, auto_gen_path: str):
         key_map = {}
         self.for_bin_list_match()
-        count = len(self.input_dtype[0].split(','))
+        if len(self.input_dtype) == 0:
+            count = len(self.output_dtype[0].split(','))
+        else:
+            count = len(self.input_dtype[0].split(','))
+        if count == 0:
+            raise RuntimeError(f'Op {self.op_type} must have at least one input or output')
         required_parameters = set()
         index_value = -1
 
