@@ -153,12 +153,12 @@ add_subdirectory(tools)
 
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils/tiling/platform/platform_ascendc.h
-    DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/highlevel_api/tiling/platform OPTIONAL
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/tiling/platform OPTIONAL
 )
 
 install(FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/include/utils/context/context_builder.h
-    DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/highlevel_api/tiling/context OPTIONAL
+    DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/tiling/context OPTIONAL
 )
 # End:tikcfw/tiling
 
