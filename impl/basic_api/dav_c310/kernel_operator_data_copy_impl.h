@@ -595,7 +595,7 @@ __aicore__ inline __in_pipe__(MTE3)
         // 2.copy ub->GM
         if constexpr (g_gm_overflow_check) {
             __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
-            AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, false, intriParams);
+            AscendCUtils::CheckGmMemOverflowNormal(gmAddr, workSpace, false, false, intriParams);
         }
         CopyUbufToGmAlignV2((__gm__ T*)gmAddr, src, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride,
                             intriParams.dstStride, false, 0);
