@@ -33,6 +33,36 @@ __simd_callee__ inline void LoadIfNeedCast(
 }
 
 template <typename T>
+__simd_callee__ inline void LoadIfNeedCastM1(
+    MicroAPI::RegTensor<float>& dstReg, __local_mem__ T* srcUb, MicroAPI::MaskReg& preg)
+{
+    if constexpr (sizeof(T) == 2) {
+        MicroAPI::RegTensor<T> castVreg;
+        MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_BRC_B16>(castVreg, srcUb);
+        MicroAPI::UnPack<uint32_t, uint16_t>(
+            (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
+        MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(dstReg, castVreg, preg);
+    } else {
+        MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(dstReg, srcUb);
+    }
+}
+
+template <typename T>
+__simd_callee__ inline void StoreIfNeedCastM1(
+    __local_mem__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
+{
+    if constexpr (sizeof(T) == 2) {
+        MicroAPI::RegTensor<T> castVreg;
+        MicroAPI::Cast<T, float, Internal::castTraitB32ToB16>(castVreg, srcReg, preg);
+        MicroAPI::Pack<uint16_t, uint32_t>(
+            (MicroAPI::RegTensor<uint16_t>&)castVreg, (MicroAPI::RegTensor<uint32_t>&)castVreg);
+        MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B16>(dstUb, castVreg, preg);
+    } else {
+        MicroAPI::DataCopy<float, MicroAPI::StoreDist::DIST_FIRST_ELEMENT_B32>(dstUb, srcReg, preg);
+    }
+}
+
+template <typename T>
 __simd_callee__ inline void StoreIfNeedCast(
     __local_mem__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
 {

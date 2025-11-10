@@ -324,7 +324,7 @@ __aicore__ inline void SoftMaxNZImpl(const LocalTensor<T1>& dst, const LocalTens
     }
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t repeatTimes, uint16_t blockStride)
@@ -334,6 +334,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem
 
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
     MicroAPI::MaskReg pregOneBlk;
+    MicroAPI::MaskReg pregOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
     if constexpr (IsSameType<T2, half>::value) {
         pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
     } else {
@@ -352,8 +353,12 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem
             MicroAPI::Max(maxVreg, maxVreg, srcVreg, pregFull);
         }
         MicroAPI::ReduceMax(maxVreg, maxVreg, pregFull);
-        Duplicate(maxVreg, maxVreg, pregOneBlk);
-        StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, pregOneBlk);
+        if constexpr (outputBrc) {
+            Duplicate(maxVreg, maxVreg, pregOneBlk);
+            StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, pregOneBlk);
+        } else {
+            StoreIfNeedCastM1<T2>(maxUb + i, maxVreg, pregOnePt);
+        }
 
         Duplicate(sumVreg, 0);
         Duplicate(maxVreg, maxVreg, pregFull);
@@ -369,8 +374,12 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem
             MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         }
         MicroAPI::ReduceSum(sumVreg, sumVreg, pregFull);
-        Duplicate(sumVreg, sumVreg, pregOneBlk);
-        StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, pregOneBlk);
+        if constexpr (outputBrc) {
+            Duplicate(sumVreg, sumVreg, pregOneBlk);
+            StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, pregOneBlk);
+        } else {
+            StoreIfNeedCastM1<T2>(sumUb + i, sumVreg, pregOnePt);
+        }
         if constexpr (!isFlashV2 && sizeof(T2) == sizeof(half)) {
             MicroAPI::DataCopy(tmpUb + i * blockStride, sumVreg, pregOneBlk);
         }
@@ -397,7 +406,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem
     }
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __aicore__ inline void SoftMaxGenericNDImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& sumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
@@ -416,11 +425,11 @@ __aicore__ inline void SoftMaxGenericNDImpl(const LocalTensor<T1>& dst, const Lo
     __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
     __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
-    SoftMaxGenericNDVFImpl<T1, T2, isFlashV2, isLog>(dstUb, sumUb,
+    SoftMaxGenericNDVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
          maxUb, srcUb, tmpUb, workUb, srcM, srcK, repeatTimes, blockStride);
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t repeatTimes, uint16_t blockStride)
@@ -430,6 +439,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__l
 
     MicroAPI::MaskReg pregCnt;
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::MaskReg pregOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
     MicroAPI::MaskReg pregOneBlk;
     if constexpr (IsSameType<T2, half>::value) {
         pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
@@ -458,8 +468,12 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__l
         MicroAPI::Max(maxVreg, maxVreg, srcVreg, pregFull);
 
         MicroAPI::ReduceMax(maxVreg, maxVreg, pregFull);
-        Duplicate(maxVreg, maxVreg, pregOneBlk);
-        StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, pregOneBlk);
+        if constexpr (outputBrc) {
+            Duplicate(maxVreg, maxVreg, pregOneBlk);
+            StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, pregOneBlk);
+        } else {
+            StoreIfNeedCastM1<T2>(maxUb + i, maxVreg, pregOnePt);
+        }
 
         Duplicate(sumVreg, 0);
         Duplicate(maxVreg, maxVreg, pregFull);
@@ -477,8 +491,12 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__l
             MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
         }
         MicroAPI::ReduceSum(sumVreg, sumVreg, pregFull);
-        Duplicate(sumVreg, sumVreg, pregOneBlk);
-        StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, pregOneBlk);
+        if constexpr (outputBrc) {
+            Duplicate(sumVreg, sumVreg, pregOneBlk);
+            StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, pregOneBlk);
+        } else {
+            StoreIfNeedCastM1<T2>(sumUb + i, sumVreg, pregOnePt);
+        }
         if constexpr (!isFlashV2 && sizeof(T2) == sizeof(half)) {
             MicroAPI::DataCopy(tmpUb + i * blockStride, sumVreg, pregOneBlk);
         }
@@ -507,7 +525,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__l
     }
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __aicore__ inline void SoftMaxGenericNDWithTailImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& sumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
@@ -526,11 +544,11 @@ __aicore__ inline void SoftMaxGenericNDWithTailImpl(const LocalTensor<T1>& dst, 
     __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
     __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
-    SoftMaxGenericNDWithTailVFImpl<T1, T2, isFlashV2, isLog>(dstUb, sumUb,
+    SoftMaxGenericNDWithTailVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb, workUb, srcM, srcK, originK, repeatTimes, blockStride);
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb0, __local_mem__ float* tmpUb1, __local_mem__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t factorRow, uint16_t factor, uint16_t blockStride)
@@ -546,12 +564,25 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl
     MicroAPI::RegTensor<float> sumVreg;
     MicroAPI::RegTensor<float> tmpVreg;
     MicroAPI::RegTensor<float> dstVreg;
+    MicroAPI::UnalignReg ureg0;
 
     for (uint16_t i = 0; i < factor; ++i) {
         LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK * factorRow, pregFull);
 
         MicroAPI::ReduceMaxWithDataBlock(maxVreg, srcVreg, pregCnt);
         MicroAPI::DataCopy(tmpUb0 + i * factorRow, maxVreg, pregOneBlk);
+        if constexpr (!outputBrc) {
+            if constexpr (SupportType<T2, half>()) {
+                MicroAPI::RegTensor<T2> castVreg;
+                MicroAPI::Cast<T2, float, Internal::castTraitB32ToB16>(castVreg, maxVreg, pregOneBlk);
+                MicroAPI::Pack<uint16_t, uint32_t>(
+                    (MicroAPI::RegTensor<uint16_t>&)castVreg, (MicroAPI::RegTensor<uint32_t>&)castVreg);
+                MicroAPI::DataCopyUnAlign(maxUb, castVreg, ureg0, factorRow);
+                MicroAPI::DataCopyUnAlignPost(maxUb, ureg0, 0);
+            } else {
+                MicroAPI::DataCopy<float>(maxUb + i * factorRow, maxVreg, pregOneBlk);
+            }
+        }
     }
 
     MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
@@ -559,7 +590,9 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl
     for (uint16_t i = 0; i < factor; ++i) {
         pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
         LoadE2B<float>(maxVreg, tmpUb0 + i * factorRow);
-        StoreIfNeedCast<T2>(maxUb + i * blockStride * factorRow, maxVreg, pregOut);
+        if constexpr (outputBrc) {
+            StoreIfNeedCast<T2>(maxUb + i * blockStride * factorRow, maxVreg, pregOut);
+        }
 
         LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK * factorRow, pregFull);
         MicroAPI::Sub(dstVreg, srcVreg, maxVreg, pregFull);
@@ -573,15 +606,29 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl
 
         MicroAPI::ReduceSumWithDataBlock(sumVreg, tmpVreg, pregCnt);
         MicroAPI::DataCopy(tmpUb1 + i * factorRow, sumVreg, pregOneBlk);
+        if constexpr (!outputBrc) {
+            if constexpr (SupportType<T2, half>()) {
+                MicroAPI::RegTensor<T2> castVreg;
+                MicroAPI::Cast<T2, float, Internal::castTraitB32ToB16>(castVreg, sumVreg, pregOneBlk);
+                MicroAPI::Pack<uint16_t, uint32_t>(
+                    (MicroAPI::RegTensor<uint16_t>&)castVreg, (MicroAPI::RegTensor<uint32_t>&)castVreg);
+                MicroAPI::DataCopyUnAlign(sumUb, castVreg, ureg0, factorRow);
+                MicroAPI::DataCopyUnAlignPost(sumUb, ureg0, 0);
+            } else {
+                MicroAPI::DataCopy<float>(sumUb + i * factorRow, sumVreg, pregOneBlk);
+            }
+        }
     }
 
     MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
 
-    sreg = srcK * srcM;
-    for (uint16_t i = 0; i < factor; ++i) {
-        pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
-        LoadE2B<float>(tmpVreg, tmpUb1 + i * factorRow);
-        StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, tmpVreg, pregOut);
+    if constexpr (isFlashV2 && outputBrc) {
+        sreg = srcK * srcM;
+        for (uint16_t i = 0; i < factor; ++i) {
+            pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
+            LoadE2B<float>(tmpVreg, tmpUb1 + i * factorRow);
+            StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, tmpVreg, pregOut);
+        }
     }
 
     if constexpr (!isFlashV2) {
@@ -589,6 +636,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl
         for (uint16_t i = 0; i < factor; ++i) {
             pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
             LoadE2B<float>(sumVreg, tmpUb1 + i * factorRow);
+            StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, tmpVreg, pregOut);
             MicroAPI::DataCopy(tmpVreg, workUb + i * srcK * factorRow);
             MicroAPI::MaskAnd(pregDst, pregCnt, pregOut, pregFull);
             MicroAPI::Div(dstVreg, tmpVreg, sumVreg, pregDst);
@@ -600,7 +648,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl
     }
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __aicore__ inline void SingleSoftMaxGenericNDForBlkImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& sumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
@@ -624,11 +672,11 @@ __aicore__ inline void SingleSoftMaxGenericNDForBlkImpl(const LocalTensor<T1>& d
     __local_mem__ float* tmpUb1 = (__local_mem__ float*)workLocal.GetPhyAddr(factorRow * factor);
     __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(factorRow * factor * 2);
 
-    SingleSoftMaxGenericNDForBlkVFImpl<T1, T2, isFlashV2, isLog>(dstUb, sumUb,
+    SingleSoftMaxGenericNDForBlkVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb0, tmpUb1, workUb, srcM, srcK, factorRow, factor, blockStride);
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithBlkVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb0, __local_mem__ float* tmpUb, __local_mem__ float* tmpUb1,
     __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t factorRow, uint16_t factor, uint16_t originK, uint16_t blockStride)
@@ -652,6 +700,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithB
     MicroAPI::RegTensor<float> dstVreg;
     MicroAPI::UnalignReg ureg0;
     MicroAPI::UnalignReg ureg1;
+    MicroAPI::UnalignReg ureg2;
 
     for (uint16_t i = 0; i < factor; ++i) {
         LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK * factorRow, pregFull);
@@ -661,19 +710,32 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithB
         Duplicate(tmpVreg, 0);
         MicroAPI::DeInterleave(maxVreg, tmpVreg, maxVreg, tmpVreg);
         MicroAPI::Max(maxVreg, maxVreg, tmpVreg, pregFull);
-        if constexpr (sizeof(T2) == sizeof(float)) {
+        if constexpr (!outputBrc) {
+            if constexpr (SupportType<T2, half>()) {
+                MicroAPI::RegTensor<T2> castVreg;
+                MicroAPI::Cast<T2, float, Internal::castTraitB32ToB16>(castVreg, maxVreg, pregOneBlk);
+                MicroAPI::Pack<uint16_t, uint32_t>(
+                    (MicroAPI::RegTensor<uint16_t>&)castVreg, (MicroAPI::RegTensor<uint32_t>&)castVreg);
+                MicroAPI::DataCopyUnAlign(maxUb, castVreg, ureg2, factorRow);
+            } else {
+                MicroAPI::DataCopyUnAlign(maxUb, maxVreg, ureg2, factorRow);
+            }
+        }
+        if constexpr (sizeof(T2) == sizeof(float) && outputBrc) {
             MicroAPI::DataCopyUnAlign(tmpUb0Tmp0, maxVreg, ureg0, factorRow);
         }
         MicroAPI::Interleave(maxVreg, tmpVreg, maxVreg, maxVreg);
         MicroAPI::DataCopy(tmpUb1 + i * 2 * factorRow, maxVreg, pregOneBlk);
     }
-    if constexpr (sizeof(T2) == sizeof(float)) {
+    if constexpr (sizeof(T2) == sizeof(float) && outputBrc) {
         MicroAPI::DataCopyUnAlignPost(tmpUb0Tmp0, ureg0, 0);
+    } else if constexpr (!outputBrc) {
+        MicroAPI::DataCopyUnAlignPost(maxUb, ureg2, 0);
     }
 
     MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
 
-    if constexpr (sizeof(T2) == sizeof(float)) {
+    if constexpr (sizeof(T2) == sizeof(float) && outputBrc) {
         for (uint16_t i = 0; i < halfFactor; ++i) {
             pregTmp = MicroAPI::UpdateMask<uint32_t>(sreg1);
             LoadE2B<float>(tmpVreg, tmpUb0 + i * DEFAULT_BLK_NUM);
@@ -685,7 +747,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithB
     for (uint16_t i = 0; i < factor; ++i) {
         pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
         LoadE2B<float>(maxVreg, tmpUb1 + i * DEFAULT_BLK_NUM);
-        if constexpr (sizeof(T2) == sizeof(half)) {
+        if constexpr (sizeof(T2) == sizeof(half) && outputBrc) {
             StoreIfNeedCast<T2>(maxUb + i * blockStride * factorRow, maxVreg, pregOut);
         }
 
@@ -704,31 +766,46 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithB
         Duplicate(tmpVreg, 0);
         MicroAPI::DeInterleave(sumVreg, tmpVreg, sumVreg, tmpVreg);
         MicroAPI::Add(sumVreg, sumVreg, tmpVreg, pregFull);
-        if constexpr (sizeof(T2) == sizeof(float)) {
+        if constexpr (!outputBrc) {
+            if constexpr (SupportType<T2, half>()) {
+                MicroAPI::RegTensor<T2> castVreg;
+                MicroAPI::Cast<T2, float, Internal::castTraitB32ToB16>(castVreg, sumVreg, pregOneBlk);
+                MicroAPI::Pack<uint16_t, uint32_t>(
+                    (MicroAPI::RegTensor<uint16_t>&)castVreg, (MicroAPI::RegTensor<uint32_t>&)castVreg);
+                MicroAPI::DataCopyUnAlign(sumUb, castVreg, ureg2, factorRow);
+            } else {
+                MicroAPI::DataCopyUnAlign(sumUb, sumVreg, ureg2, factorRow);
+            }
+        }
+        if constexpr (sizeof(T2) == sizeof(float) && outputBrc) {
             MicroAPI::DataCopyUnAlign(tmpUb0Tmp1, sumVreg, ureg1, factorRow);
         }
         MicroAPI::Interleave(sumVreg, tmpVreg, sumVreg, sumVreg);
         MicroAPI::DataCopy(tmpUb + i * 2 * factorRow, sumVreg, pregOneBlk);
     }
-    if constexpr (sizeof(T2) == sizeof(float)) {
+    if constexpr (sizeof(T2) == sizeof(float) && outputBrc) {
         MicroAPI::DataCopyUnAlignPost(tmpUb0Tmp1, ureg1, 0);
+    } else if (!outputBrc) {
+        MicroAPI::DataCopyUnAlignPost(sumUb, ureg2, 0);
     }
 
     MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
 
-    if constexpr (sizeof(T2) == sizeof(float)) {
-        sreg1 = srcM * blockStride;
-        for (uint16_t i = 0; i < halfFactor; ++i) {
-            pregTmp = MicroAPI::UpdateMask<uint32_t>(sreg1);
-            LoadE2B<float>(tmpVreg, tmpUb0 + i * DEFAULT_BLK_NUM);
-            StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow * 2, tmpVreg, pregTmp);
-        }
-    } else if constexpr (sizeof(T2) == sizeof(half)) {
-        sreg = srcM * blockStride;
-        for (uint16_t i = 0; i < factor; ++i) {
-            pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
-            LoadE2B<float>(tmpVreg, tmpUb + i * DEFAULT_BLK_NUM);
-            StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, tmpVreg, pregOut);
+    if constexpr (outputBrc) {
+        if constexpr (sizeof(T2) == sizeof(float)) {
+            sreg1 = srcM * blockStride;
+            for (uint16_t i = 0; i < halfFactor; ++i) {
+                pregTmp = MicroAPI::UpdateMask<uint32_t>(sreg1);
+                LoadE2B<float>(tmpVreg, tmpUb0 + i * DEFAULT_BLK_NUM);
+                StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow * 2, tmpVreg, pregTmp);
+            }
+        } else if constexpr (sizeof(T2) == sizeof(half)) {
+            sreg = srcM * blockStride;
+            for (uint16_t i = 0; i < factor; ++i) {
+                pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
+                LoadE2B<float>(tmpVreg, tmpUb + i * DEFAULT_BLK_NUM);
+                StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, tmpVreg, pregOut);
+            }
         }
     }
 
@@ -748,7 +825,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithB
     }
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __aicore__ inline void SingleSoftMaxGenericNDAlignedWithBlkImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& sumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
@@ -775,11 +852,11 @@ __aicore__ inline void SingleSoftMaxGenericNDAlignedWithBlkImpl(const LocalTenso
     __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK + offset);
     __local_mem__ float* tmpUb1 = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK + offset + offset1);
 
-    SingleSoftMaxGenericNDAlignedWithBlkVFImpl<T1, T2, isFlashV2, isLog>(dstUb, sumUb,
+    SingleSoftMaxGenericNDAlignedWithBlkVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb0, tmpUb, tmpUb1, workUb, srcM, srcK, factorRow, factor, originK, blockStride);
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t blockStride)
@@ -790,6 +867,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__loc
 
     MicroAPI::MaskReg pregCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::MaskReg pregOnePt = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL1>();
     MicroAPI::MaskReg pregOneBlk;
     if constexpr (IsSameType<T2, half>::value) {
         pregOneBlk = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::VL16>();
@@ -806,8 +884,12 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__loc
         LoadIfNeedCast<T1>(srcVreg, srcUb + i * srcK, pregFull);
 
         MicroAPI::ReduceMax(maxVreg, srcVreg, pregCnt);
-        Duplicate(maxVreg, maxVreg, pregOneBlk);
-        StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, pregOneBlk);
+        if constexpr (!outputBrc) {
+            StoreIfNeedCastM1<T2>(maxUb + i, maxVreg, pregOnePt);
+        } else {
+            Duplicate(maxVreg, maxVreg, pregOneBlk);
+            StoreIfNeedCast<T2>(maxUb + i * blockStride, maxVreg, pregOneBlk);
+        }
 
         Duplicate(maxVreg, maxVreg, pregFull);
         MicroAPI::Sub(dstVreg, srcVreg, maxVreg, pregCnt);
@@ -818,8 +900,12 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__loc
             StoreIfNeedCast<T1>(dstUb + i * srcK, tmpVreg, pregCnt);
         }
         MicroAPI::ReduceSum(sumVreg, tmpVreg, pregCnt);
-        Duplicate(sumVreg, sumVreg, pregOneBlk);
-        StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, pregOneBlk);
+        if constexpr (!outputBrc) {
+            StoreIfNeedCastM1<T2>(sumUb + i, sumVreg, pregOnePt);
+        } else {
+            Duplicate(sumVreg, sumVreg, pregOneBlk);
+            StoreIfNeedCast<T2>(sumUb + i * blockStride, sumVreg, pregOneBlk);
+        }
         if constexpr (!isFlashV2 && sizeof(T2) == sizeof(half)) {
             MicroAPI::DataCopy(tmpUb + i * blockStride, sumVreg, pregOneBlk);
         }
@@ -844,7 +930,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__loc
     }
 }
 
-template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false>
+template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
 __aicore__ inline void SingleSoftMaxGenericNDImpl(const LocalTensor<T1>& dst, const LocalTensor<T2>& sumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
@@ -862,7 +948,7 @@ __aicore__ inline void SingleSoftMaxGenericNDImpl(const LocalTensor<T1>& dst, co
     __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
     __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
-    SingleSoftMaxGenericNDVFImpl<T1, T2, isFlashV2, isLog>(dstUb, sumUb,
+    SingleSoftMaxGenericNDVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb, workUb, srcM, srcK, originK, blockStride);
 }
 

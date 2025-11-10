@@ -13,8 +13,8 @@
  * \file batchnorm_check_c310.h
  * \brief
  */
-#ifndef IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_COMMON_H_
-#define IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_COMMON_H_
+#ifndef IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_C310_H_
+#define IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_C310_H_
 
 #include "../../basic_check/datatype_check.h"
 #include "../../basic_check/reuse_source_check.h"
@@ -37,35 +37,16 @@ private:
     template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
     __aicore__ inline void VerifyingParameters(const LocalTensor<T>& output, const LocalTensor<T>& outputMean,
         const LocalTensor<T>& outputVariance, const LocalTensor<T>& inputX, const LocalTensor<T>& gamm,
-        const LocalTensor<T>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, BatchNormTiling& tiling){
-        ShapeInfo outputShape = output.GetShapeInfo();
-        ShapeInfo outputMeanShape = outputMean.GetShapeInfo();
-        ShapeInfo outputVarianceShape = outputVariance.GetShapeInfo();
-        ShapeInfo inputXShape = inputX.GetShapeInfo();
-        ShapeInfo gammShape = gamm.GetShapeInfo();
-        ShapeInfo betaShape = beta.GetShapeInfo();
-        ASCENDC_ASSERT((((outputShape.shape[0] == inputXShape.shape[0]) && (outputShape.shape[0] == gammShape.shape[0]) &&
-            (outputShape.shape[0] == betaShape.shape[0])) || HighLevelAPIParametersPrint), {KERNEL_LOG(KERNEL_ERROR,
-            "[BatchNorm] The B dims of output, inputX, gamm, beta are %u, %u, %u, %u. They should be same.",
-            outputShape.shape[0], inputXShape.shape[0], gammShape.shape[0], betaShape.shape[0]); });
-        ASCENDC_ASSERT((((outputShape.shape[1] == inputXShape.shape[1]) && (outputShape.shape[1] == outputMeanShape.shape[1]) &&
-            (outputShape.shape[1] == outputVarianceShape.shape[1])) || HighLevelAPIParametersPrint), {KERNEL_LOG(KERNEL_ERROR,
-            "[BatchNorm] The S dims of output, inputX, outputMean, outputVariance are %u, %u, %u, %u. They should be same.",
-            outputShape.shape[1], inputXShape.shape[1], outputMeanShape.shape[1], outputVarianceShape.shape[1]); });
-        ASCENDC_ASSERT((((outputShape.shape[2] == inputXShape.shape[2]) && (outputShape.shape[2] == outputMeanShape.shape[2]) &&
-            (outputShape.shape[2] == outputVarianceShape.shape[2])) || HighLevelAPIParametersPrint), {KERNEL_LOG(KERNEL_ERROR,
-            "[BatchNorm] The H dims of output, inputX, outputMean, outputVariance are %u, %u, %u, %u. They should be same.",
-            outputShape.shape[2], inputXShape.shape[2], outputMeanShape.shape[2], outputVarianceShape.shape[2]); });
-        ASCENDC_ASSERT(((inputXShape.shape[1] * inputXShape.shape[2] * sizeof(T) % ONE_BLK_SIZE == 0) ||
-            HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
-            "[BatchNorm] The inputX slength, hlength are %u, %u, slength * hlength should be 32B aligned.",
-            inputXShape.shape[1] * sizeof(T), inputXShape.shape[2]* sizeof(T)); });
-        ASCENDC_ASSERT(((gammShape.shape[0] * sizeof(T) % ONE_BLK_SIZE == 0) ||
-            HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
-            "[BatchNorm] The gamm length is %u, should be 32B aligned.", gammShape.shape[0] * sizeof(T)); });
-        ASCENDC_ASSERT(((betaShape.shape[0] * sizeof(T) % ONE_BLK_SIZE == 0) ||
-            HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
-            "[BatchNorm] The beta length is %u, should be 32B aligned.", betaShape.shape[0] * sizeof(T)); });
+        const LocalTensor<T>& beta, const LocalTensor<uint8_t>& sharedTmpBuffer, const T epsilon, BatchNormTiling& tiling) {
+        ASCENDC_ASSERT(((outputMean.GetSize() * sizeof(T) % ONE_BLK_SIZE == 0) || HighLevelAPIParametersPrint), {
+            KERNEL_LOG(KERNEL_ERROR,
+            "[BatchNorm] slength * hlength is %u, should be 32B aligned.", outputMean.GetSize() * sizeof(T)); });
+        ASCENDC_ASSERT(((gamm.GetSize() * sizeof(T) % ONE_BLK_SIZE == 0) || HighLevelAPIParametersPrint), {
+            KERNEL_LOG(KERNEL_ERROR,
+            "[BatchNorm] The gamm length is %u, should be 32B aligned.", gamm.GetSize() * sizeof(T)); });
+        ASCENDC_ASSERT(((beta.GetSize() * sizeof(T) % ONE_BLK_SIZE == 0) || HighLevelAPIParametersPrint), {
+            KERNEL_LOG(KERNEL_ERROR,
+            "[BatchNorm] The beta length is %u, should be 32B aligned.", beta.GetSize() * sizeof(T)); });
     }
 };
 
@@ -96,4 +77,4 @@ public:
 };
 } // namespace HeighLevelApiCheck
 } // namespace AscendC
-#endif // IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_COMMON_H_
+#endif // IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_C310_H_

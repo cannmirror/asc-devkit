@@ -54,7 +54,7 @@ __aicore__ inline void GetDeepnormPara(DeepnormPara& para, DeepNormTiling& tilin
 }
 
 template <typename T>
-__aicore__ inline void CopyInFloat(MicroAPI::RegTensor<float>& reg, __local_mem__ T* ub,
+__simd_callee__ inline void CopyInFloat(MicroAPI::RegTensor<float>& reg, __local_mem__ T* ub,
     MicroAPI::MaskReg& hFloatAllMask)
 {
     MicroAPI::DataCopy(reg, ub);
@@ -128,8 +128,8 @@ __simd_vf__ inline void ComputeSum(__local_mem__ T* srcLocal, __local_mem__ T* g
     }
 }
 
-__aicore__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __local_mem__ float* inputX,
-    Internal::DeepnormPara& para)
+__simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __local_mem__ float* inputX,
+    Internal::DeepnormPara para)
 {
     MicroAPI::RegTensor<float> hDim;
     MicroAPI::Duplicate(hDim, para.hDim);
@@ -165,8 +165,8 @@ __aicore__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __local
     MicroAPI::ReduceSum(outputMean, sumResultH, hFloatAllMask);
 }
 
-__aicore__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVariance, MicroAPI::RegTensor<float>& meanReg,
-    __local_mem__ float* inputX, Internal::DeepnormPara& para)
+__simd_callee__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVariance, MicroAPI::RegTensor<float>& meanReg,
+    __local_mem__ float* inputX, Internal::DeepnormPara para)
 {
     MicroAPI::RegTensor<float> sumVarianceResultH;
     MicroAPI::Duplicate(sumVarianceResultH, 0);
@@ -215,7 +215,7 @@ __aicore__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVariance,
 }
 
 template <typename T>
-__aicore__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
+__simd_callee__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
     MicroAPI::RegTensor<float>& varianceReg, __local_mem__ float* inputX, __local_mem__ T* gamma, __local_mem__ T* beta,
     MicroAPI::RegTensor<float>& sdReg, MicroAPI::MaskReg& hFloatMask)
 {
@@ -260,9 +260,9 @@ __aicore__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, MicroAPI:
 }
 
 template <typename T>
-__aicore__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
+__simd_callee__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
     MicroAPI::RegTensor<float>& varianceReg, __local_mem__ float* inputX, __local_mem__ T* gamma,
-    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara& para)
+    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara para)
 {
     MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> sdReg;    // The standard deviation.
@@ -284,9 +284,9 @@ __aicore__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTensor<
 }
 
 template <typename T>
-__aicore__ inline void DeepNormImplVfHalf(__local_mem__ T* output, __local_mem__ T* outputMean,
+__simd_vf__ inline void DeepNormImplVfHalf(__local_mem__ T* output, __local_mem__ T* outputMean,
     __local_mem__ T* outputVariance, __local_mem__ float* inputX, __local_mem__ T* gamma,
-    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara& para, DeepNormTiling& tiling)
+    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara para, DeepNormTiling tiling)
 {
     MicroAPI::MaskReg floatLowestMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
     MicroAPI::MaskReg srcLowestMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL1>();
@@ -379,6 +379,9 @@ __aicore__ inline void DeepNormImpl(const LocalTensor<T>& dstLocal, const LocalT
     const T alpha, const T epsilon, DeepNormTiling& tiling)
 {
     static_assert(SupportType<T, half, float>(), "template parameter (T) is not half or float");
+    if constexpr (isReuseSrc) {
+        static_assert(SupportType<T, float>(), "isReuseSrc is only supported for float on current device!");
+    }
     CHECK_FUNC_HIGHLEVEL_API(DeepNorm, (T, isReuseSrc, isBasicBlock), (dstLocal, meanLocal, rstdLocal, srcLocal, gxLocal, betaLocal, gammaLocal,
         sharedTmpBuffer, alpha, epsilon, tiling));
     if (!DeepNormAPI::IsDeepNormParamValid<T, isBasicBlock>(tiling)) {
