@@ -87,7 +87,7 @@ public:
         __mstx_dfx_report_stub(1, sizeof(MstxCrossRecord), &record);
 #endif
         // 添加scalar写gm，dcci刷新清零
-        *((__gm__ uint32_t *)ubAvalidTail) = 0;
+        *((__gm__ uint32_t *)ubAvalidTail) = addr;
         dcci(reinterpret_cast<__gm__ int64_t *>(ubAvalidTail), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
     }
  

@@ -90,7 +90,7 @@ constexpr int ALIGN_SIZE = 32;
 constexpr int BIDIRECTION_NUM = 2;
 constexpr bool KFC_APPLY_MSG = true;
 constexpr uint64_t INC_PROCESS_CHECK = 14;
-constexpr uint64_t WORKSPACE_UB_SIZE = TOTAL_UB_SIZE;
+constexpr uint64_t WORKSPACE_UB_SIZE = TOTAL_UB_SIZE + 8 * 1024;
 constexpr int32_t MAX_GROUP_ID = 32;
 constexpr int32_t MM_CNT_MAX = 1024;
 constexpr int32_t QUIT_CNT = 4;
@@ -353,9 +353,9 @@ struct SysWorkspaceDesc {
  
 __aicore__ inline void ClearWorkspaceImpl(__gm__ uint8_t* workspace)
 {
-    // v0 清除  0~size / 2 ;v1 清楚 size/2 ~ size
-    constexpr uint32_t size = BIDIRECTION_NUM * MAX_MSG_COUNT * AlignTo32(sizeof(KfcMsg)) * MIX_NUM;
-    constexpr uint32_t sizeUbmsg = MIX_NUM * AlignTo32(sizeof(MsgUBAvalied));
+    // v0 清除  vec0: 0~size;v1 清除 vec1:size1 ~ size2; v2 清除 vec3:size2 ~ size3
+    constexpr uint32_t size = BIDIRECTION_NUM * MAX_MSG_COUNT * AlignTo32(sizeof(KfcMsg));
+    constexpr uint32_t sizeUbmsg = AlignTo32(sizeof(MsgUBAvalied));
     constexpr uint32_t offsetUbMsg = MAX_AIV_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT *
         MIX_COEFFICIENT * AlignTo32(sizeof(KfcMsg)) + MAX_AIV_NUM * MIX_COEFFICIENT *
         MAX_MATMUL_OBJ * AlignTo32(sizeof(MsgMatmulCnt));
