@@ -89,6 +89,7 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
         }
     } else {
         addr = tmpAddr;
+        uint16_t dimRTmp = mainR;
         MicroAPI::RegTensor<T, Trait> b64VregMain;
         MicroAPI::RegTensor<T, Trait> b64VregTail;
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
@@ -97,12 +98,12 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
                 DataCopy(b64VregMain, srcAddr + loopA * dimRAxis + loopR * vlSize);
                 DataCopy(b64VregTail, srcAddr + loopA * dimRAxis + mainR + loopR * vlSize);
                 Binaryfunc(b64VregMain, b64VregMain, b64VregTail, fullMask);
-                DataCopy(addr + loopA * dimRAxis + loopR * vlSize, b64VregMain, fullMask);
+                DataCopy(addr + loopA * dimRTmp + loopR * vlSize, b64VregMain, fullMask);
             }
             // do copy main if tail < main
             for (uint16_t loopR = inplaceRepeats; loopR < copyRepeats; loopR++) {
                 DataCopy(b64VregMain, srcAddr + loopA * dimRAxis + loopR * vlSize);
-                DataCopy(addr + loopA * dimRAxis + loopR * vlSize, b64VregMain, fullMask);
+                DataCopy(addr + loopA * dimRTmp + loopR * vlSize, b64VregMain, fullMask);
             }
         }
         // add remainer in tail with first element for each R axis
@@ -112,11 +113,12 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
             MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
                 DataCopy(b64VregTail, srcAddr + loopA * dimRAxis + mainR + inplaceRepeats * vlSize);
-                DataCopy(b64VregMain, addr + loopA * dimRAxis);
+                DataCopy(b64VregMain, addr + loopA * dimRTmp);
                 Binaryfunc(b64VregMain, b64VregMain, b64VregTail, mask);
-                DataCopy(addr + loopA * dimRAxis, b64VregMain, mask);
+                DataCopy(addr + loopA * dimRTmp, b64VregMain, mask);
             }
         }
+        dimR = mainR;
         MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
     }
 
@@ -279,6 +281,7 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
         }
     } else {
         addr = tmpAddr;
+        uint16_t dimRTmp = mainR;
         MicroAPI::RegTensor<T, Trait> vregMain;
         MicroAPI::RegTensor<T, Trait> vregTail;
         for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
@@ -287,12 +290,12 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
                 DataCopy(vregMain, srcAddr + loopA * dimRAxis + loopR * vlSize);
                 DataCopy(vregTail, srcAddr + loopA * dimRAxis + mainR + loopR * vlSize);
                 Binaryfunc(vregMain, vregMain, vregTail, fullMask);
-                DataCopy(addr + loopA * dimRAxis + loopR * vlSize, vregMain, fullMask);
+                DataCopy(addr + loopA * dimRTmp + loopR * vlSize, vregMain, fullMask);
             }
             // do copy main if tail < main
             for (uint16_t loopR = inplaceRepeats; loopR < copyRepeats; loopR++) {
                 DataCopy(vregMain, srcAddr + loopA * dimRAxis + loopR * vlSize);
-                DataCopy(addr + loopA * dimRAxis + loopR * vlSize, vregMain, fullMask);
+                DataCopy(addr + loopA * dimRTmp + loopR * vlSize, vregMain, fullMask);
             }
         }
         // add remainer in tail with first element for each R axis
@@ -302,11 +305,12 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
             MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
             for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(dimA); loopA++) {
                 DataCopy(vregTail, srcAddr + loopA * dimRAxis + mainR + inplaceRepeats * vlSize);
-                DataCopy(vregMain, addr + loopA * dimRAxis);
+                DataCopy(vregMain, addr + loopA * dimRTmp);
                 Binaryfunc(vregMain, vregMain, vregTail, mask);
-                DataCopy(addr + loopA * dimRAxis, vregMain, mask);
+                DataCopy(addr + loopA * dimRTmp, vregMain, mask);
             }
         }
+        dimR = mainR;
         MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
     }
 
