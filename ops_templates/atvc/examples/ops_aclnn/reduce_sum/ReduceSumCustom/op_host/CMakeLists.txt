@@ -92,7 +92,11 @@ if(ENABLE_CROSS_COMPILE)
     )
 endif()
 if(NOT ASCEND_PACK_SHARED_LIBRARY)
-    target_link_libraries(cust_opapi PRIVATE intf_pub ascendcl nnopbase)
+    target_link_libraries(cust_opapi PRIVATE
+    intf_pub
+    $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+    $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
+    nnopbase)
 else()
     add_library(cust_op_proto_obj OBJECT
                 $<$<TARGET_EXISTS:group_proto_src>:${group_proto_src}>
@@ -143,7 +147,10 @@ else()
     target_compile_options(cust_opapi PRIVATE -DLOG_CPP)
     target_include_directories(cust_opapi INTERFACE ${ATVC_PATH})
     target_include_directories(cust_opapi INTERFACE ${CMAKE_SOURCE_DIR}/build_out/binary/)
-    target_link_libraries(cust_opapi PRIVATE intf_pub ascendcl nnopbase cust_optiling_obj cust_op_proto_obj ascend_opregistry ascend_kernels)
+    target_link_libraries(cust_opapi PRIVATE intf_pub
+    $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+    $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
+    nnopbase cust_optiling_obj cust_op_proto_obj ascend_opregistry ascend_kernels)
     add_dependencies(cust_opapi ascend_opregistry)
 endif()
 

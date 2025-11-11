@@ -13,7 +13,10 @@ target_include_directories(aicpu_host_base_intf INTERFACE
     $ENV{ASCEND_HOME_PATH}/include ${__CUR_LIST_DIR}/..
     ${ASCEND_CANN_PACKAGE_PATH}/include/ascendc/aicpu_api)
 target_link_directories(aicpu_host_base_intf INTERFACE $ENV{ASCEND_HOME_PATH}/lib64)
-target_link_libraries(aicpu_host_base_intf INTERFACE ascendc_runtime profapi ascendalog runtime ascendcl c_sec mmpa error_manager)
+target_link_libraries(aicpu_host_base_intf INTERFACE ascendc_runtime profapi ascendalog runtime
+$<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+$<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
+c_sec mmpa error_manager)
 target_compile_options(aicpu_host_base_intf INTERFACE
     -fPIC
     -O2

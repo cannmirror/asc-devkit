@@ -349,7 +349,8 @@ function(ascendc_library target_name target_type)
             $<BUILD_INTERFACE:$<$<AND:$<STREQUAL:${RUN_MODE},sim>,$<STREQUAL:${BUILD_MODE},c100>>:pem_davinci>>
             $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:runtime_camodel>>
             $<BUILD_INTERFACE:$<$<AND:$<STREQUAL:${RUN_MODE},sim>,$<STREQUAL:${DYNAMIC_MODE},ON>>:npu_drv>>
-            ascendcl
+            $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+            $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
             $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},npu>:runtime>>
             register
             error_manager
