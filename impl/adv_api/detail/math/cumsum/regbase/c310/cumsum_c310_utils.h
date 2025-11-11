@@ -428,17 +428,14 @@ __aicore__ inline void CumSumFirstDimBasicVF(__local_mem__ float* dst, uint16_t 
         }
     }
 
-    MicroAPI::DataCopy(dstRightReg, dst + innerTailOffset1);
-    for (uint16_t i = 0; i < outerRepeatTime; ++i) {
-        for (uint16_t j = 0; j < mainTailRepeatTime; ++j) {
-            MicroAPI::DataCopy(srcRightReg, dst + (i + 1) * inner + innerTailOffset1);
-            MicroAPI::Add(dstRightReg, srcRightReg, dstRightReg, pregFull);
-            MicroAPI::DataCopy(dst + (i + 1) * inner + innerTailOffset1, dstRightReg, pregFull);
-        }
-    }
-
+    MicroAPI::DataCopy(dstLeftReg, dst + innerTailOffset1);
     MicroAPI::DataCopy(dstRightReg, dst + innerTailOffset2);
     for (uint16_t i = 0; i < outerRepeatTime; ++i) {
+        for (uint16_t j = 0; j < mainTailRepeatTime; ++j) {
+            MicroAPI::DataCopy(srcLeftReg, dst + (i + 1) * inner + innerTailOffset1);
+            MicroAPI::Add(dstLeftReg, srcLeftReg, dstLeftReg, pregFull);
+            MicroAPI::DataCopy(dst + (i + 1) * inner + innerTailOffset1, dstLeftReg, pregFull);
+        }
         for (uint16_t j = 0; j < tailTime; ++j) {
             MicroAPI::DataCopy(srcRightReg, dst + (i + 1) * inner + innerTailOffset2);
             MicroAPI::Add(dstRightReg, srcRightReg, dstRightReg, pregTail);
