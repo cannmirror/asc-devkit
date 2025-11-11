@@ -11,7 +11,8 @@ function(library_interface_setup target_name)
     # consistent with default lib in kernellaunch
     target_link_libraries(${target_name} INTERFACE
         ascendc_runtime
-        ascendcl
+        $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+        $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
         runtime
         register
         error_manager

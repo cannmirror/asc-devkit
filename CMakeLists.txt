@@ -14,6 +14,14 @@ project(asc-devkit)
 
 option(BUILD_OPEN_PROJECT "Build open asc-devkit lib project" ON)
 
+if(PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+  message(STATUS "compile project asc-devkit with library")
+  option(BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG "Build asc-devkit with cann pkg" ON)
+else()
+  message(STATUS "compile project asc-devkit with src")
+  option(BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG "Build asc-devkit with cann source" OFF)
+endif()
+
 set(ASCENDC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(ASCENDC_INCLUDE_DIR ${ASCENDC_DIR}/include)
 set(ASCENDC_IMPL_DIR ${ASCENDC_DIR}/impl)

@@ -44,7 +44,8 @@ target_link_libraries(ascend_runtime_base PRIVATE
     $<BUILD_INTERFACE:intf_pub>
     mmpa
     alog
-    ascendcl
+    $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+    $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
 )
 
 add_library(ascendc_runtime STATIC

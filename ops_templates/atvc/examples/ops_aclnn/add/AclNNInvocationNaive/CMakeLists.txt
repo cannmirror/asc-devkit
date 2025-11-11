@@ -57,7 +57,8 @@ add_executable(execute_add_op
 )
 
 target_link_libraries(execute_add_op
-    ascendcl
+    $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+    $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
     cust_opapi
     acl_op_compiler
     nnopbase

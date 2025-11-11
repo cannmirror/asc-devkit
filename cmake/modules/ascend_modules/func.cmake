@@ -398,7 +398,8 @@ function(npu_op_package target_package_name)
     target_sources(${target_package_name} PRIVATE ${ascendc_static_file})
     add_dependencies(${target_package_name} ${target_package_name}_ascendc_static_file_target)
     target_link_libraries(${target_package_name} PUBLIC
-      ascendcl
+      $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+      $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
       nnopbase
       exe_graph
       register
@@ -435,7 +436,8 @@ function(npu_op_package target_package_name)
     target_link_libraries(${target_package_name} PRIVATE
       intf_pub
       $<IF:$<TARGET_EXISTS:cust_intf_pub>,cust_intf_pub,>
-      ascendcl
+      $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+      $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
       nnopbase
       exe_graph
       register
@@ -587,7 +589,8 @@ function(npu_op_library target_name target_type)
     target_link_libraries(${target_name} PRIVATE
       intf_pub
       $<IF:$<TARGET_EXISTS:cust_intf_pub>,cust_intf_pub,>
-      ascendcl
+      $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+      $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
       nnopbase
     )
     get_property(tmp_aclnn_target GLOBAL PROPERTY ASCENDC_ACLNN_TARGET)
