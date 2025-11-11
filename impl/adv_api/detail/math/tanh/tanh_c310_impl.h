@@ -131,9 +131,12 @@ __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTens
     const uint32_t calCount)
 {
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
-    bool ret = (calCount <= srcTensor.GetSize()) && (calCount <= dstTensor.GetSize()) && (calCount >= 0);
-    ASCENDC_ASSERT(
-        ret, { KERNEL_LOG(KERNEL_ERROR, "calCount must be no less than 0 and smaller than or equal to src & dst tensor."); });
+    CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
+    CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
+
+    CheckCalCount(calCount, "calCount", srcTensor, "srcTensor", "Tanh");
+    CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "Tanh");
+
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;
@@ -152,6 +155,7 @@ template <typename T, bool isReuseSource = false, const TanhConfig &config = DEF
 __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
+    CheckTensorPosition(sharedTmpBuffer, "sharedTmpBuffer", "VECIN, VECOUT, VECCALC");
     TanhImpl<T, isReuseSource, config>(dstTensor, srcTensor, calCount);
 }
 } // namespace AscendC
