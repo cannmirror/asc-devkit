@@ -144,7 +144,6 @@ add_library(
   )
 
 target_include_directories(tiling_api PRIVATE
-  $<$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>:${ASCENDC_DIR}>
   ${ASCENDC_DIR}/include/utils/context
   ${ASCENDC_DIR}/include/utils/tiling/platform
   ${ASCENDC_DIR}/include/utils
