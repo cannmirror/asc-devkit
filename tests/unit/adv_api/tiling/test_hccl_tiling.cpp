@@ -15,7 +15,7 @@
 #define protected public
 #include "tiling_api.h"
 #include "platform_stub.h"
-#include "impl/adv_api/tiling/hccl/hccl_tiling_msg.h"
+#include "include/adv_api/hccl/internal/hccl_tiling_msg.h"
 #include "include/adv_api/hccl/hccl_tiling.h"
 #include "include/adv_api/hccl/hccl_common.h"
 #include "tiling/platform/platform_ascendc.h"

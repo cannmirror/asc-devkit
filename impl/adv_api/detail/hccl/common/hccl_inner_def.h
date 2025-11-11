@@ -16,8 +16,8 @@
 #ifndef IMPL_HCCL_HCCL_INNER_DEF_H
 #define IMPL_HCCL_HCCL_INNER_DEF_H
 
-#include "hccl_msg.h"
-#include "../../../tiling/hccl/hccl_tiling_msg.h"
+#include "include/adv_api/hccl/internal/hccl_msg.h"
+#include "include/adv_api/hccl/internal/hccl_tiling_msg.h"
 
 using namespace HcclApi;
 namespace AscendC {
