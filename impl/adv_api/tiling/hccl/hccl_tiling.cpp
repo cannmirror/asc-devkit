@@ -18,8 +18,8 @@
 #include "include/adv_api/hccl/hccl_common.h"
 #include "securec.h"
 #include "../../detail/host_log.h"
-#include "../../detail/hccl/common/hccl_msg.h"
-#include "../../tiling/hccl/hccl_tiling_msg.h"
+#include "include/adv_api/hccl/internal/hccl_msg.h"
+#include "include/adv_api/hccl/internal/hccl_tiling_msg.h"
 #include "tiling/platform/platform_ascendc.h"
 
 using namespace std;
