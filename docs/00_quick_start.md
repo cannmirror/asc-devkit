@@ -30,8 +30,8 @@
 
 1. **安装社区尝鲜版CANN toolkit包**
 
-    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/8.5.0.alpha001/Ascend-cann-toolkit_8.5.0.alpha001_linux-x86_64.run)、[toolkit aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/8.5.0.alpha001/Ascend-cann-toolkit_8.5.0.alpha001_linux-aarch64.run)。
-    
+    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ge/Ascend-cann-toolkit_8.5.0.alpha001_linux-x86_64.run)、[toolkit aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ge/Ascend-cann-toolkit_8.5.0.alpha001_linux-aarch64.run)。
+
     ```bash
     # 确保安装包具有可执行权限
     chmod +x Ascend-cann-toolkit_${cann_version}_linux-${arch}.run
@@ -40,17 +40,26 @@
     ```
     - \$\{cann\_version\}：表示CANN包版本号。
     - \$\{arch\}：表示CPU架构，如aarch64、x86_64。
-    - \$\{install\_path\}：表示指定安装路径，默认安装在`/usr/local/Ascend`目录。
+    - \$\{install\_path\}：表示指定安装路径。
+    - 缺省--install-path时， 则使用默认路径安装。
+    若使用root用户安装，安装完成后相关软件存储在“/usr/local/Ascend/latest”路径下；若使用非root用户安装，安装完成后相关软件存储在“$HOME/Ascend/latest”路径下。
 
 2. **配置环境变量**
 
-	根据实际场景，选择合适的命令。
+- 默认路径，root用户安装
 
     ```bash
-    # 默认路径安装，以root用户为例（非root用户，将/usr/local替换为${HOME}）
-    source /usr/local/Ascend/set_env.sh
-    # 指定路径安装
-    # source ${install_path}/set_env.sh
+    source /usr/local/Ascend/8.5.0.alpha001/set_env.sh
+    ```
+
+- 默认路径，非root用户安装
+    ```bash
+    source $HOME/Ascend/8.5.0.alpha001/set_env.sh
+    ```
+
+- 指定路径安装
+    ```bash
+    source ${install_path}/8.5.0.alpha001/set_env.sh
     ```
 
 3. **下载源码**
@@ -58,7 +67,7 @@
     开发者可通过如下命令下载本仓源码：
     ```bash
     # 下载项目源码，以master分支为例
-    git clone https://gitcode.com/cann/ascend-c-dev.git
+    git clone https://gitcode.com/cann/asc-devkit-dev.git
     ``` 
 
 
@@ -69,19 +78,21 @@
    本开源仓提供一键式编译安装能力，进入本开源仓代码根目录，执行如下命令：
 
    ```bash
-   bash build.sh
+   bash build.sh --pkg
    ```
 
-   编译完成后会在`output`目录下生成CANN-ascend_c-*<cann_version>*-linux.*<arch>*.run软件包。
+   编译完成后会在`output`目录下生成cann-asc-devkit_*<cann_version>*_linux-*<arch>*.run软件包。
 2. 安装
 
    在开源仓根目录下执行下列命令，根据设置的环境变量路径，将编译生成的run包安装到CANN包的装包路径，同时会覆盖原CANN包中的Ascend C内容。
 
    ```bash
    # 切换到run包生成路径下
-   cd output
-   # 安装run包
-   ./CANN-ascend_c-<cann_version>-linux.<arch>.run
+   cd build_output
+   # 默认路径安装run包
+   ./cann-asc-devkit_<cann_version>_linux-<arch>.run --full
+   # 指定路径安装run包
+   ./cann-asc-devkit_<cann_version>_linux-<arch>.run --full --install-path=${install_path}
    ```
 
 ## 本地验证
