@@ -1681,7 +1681,10 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
         tiling_key_struct_size_map = _get_tiling_struct_without_register_size(compile_info)
         gen_tiling_struct_size_and_dfx_section_file(compile_info, tiling_info, tiling_key_struct_size_map)
         chip_version = CommonUtility.get_chip_version()
-        arch = f"dav-{chip_version}-vec"
+        if CommonUtility.is_c310() or CommonUtility.is_v220():
+            arch = f"dav-{chip_version}-vec"
+        else:
+            arch = f"dav-{chip_version}"
         compile_cmd = gen_compile_cmd_for_meta_info(compile_info.tiling_and_dfx_utils_file, \
             compile_info.tiling_and_dfx_utils_bin_path, compile_option_tuple, arch)
         CommonUtility.run_cmd_inner(compile_cmd, CompileStage.COMPILE, compile_info.compile_log_path)
