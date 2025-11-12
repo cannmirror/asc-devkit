@@ -29,22 +29,23 @@ union LastDimValue {
 void CheckSrcShape(std::vector<int64_t> shapeDims)
 {
     constexpr uint32_t LAYERNORM_GRAD_SHAPE_SIZE = 4;
-    ASCENDC_HOST_ASSERT(
-        shapeDims.size() >= LAYERNORM_GRAD_SHAPE_SIZE, return, "srcShape dims must not be less than 4.");
+    ASCENDC_HOST_ASSERT(shapeDims.size() >= LAYERNORM_GRAD_SHAPE_SIZE, return,
+                        "srcShape dims must not be less than 4.");
     ASCENDC_HOST_ASSERT(shapeDims[0] > 0, return, "srcShape[0] must be greater than 0.");
     ASCENDC_HOST_ASSERT(shapeDims[1] > 0, return, "srcShape[1] must be greater than 0.");
     ASCENDC_HOST_ASSERT(shapeDims[2] > 0, return, "srcShape[2] must be greater than 0.");
     ASCENDC_HOST_ASSERT(shapeDims[3] > 0, return, "srcShape[3] must be greater than 0.");
 }
 
-void CheckLayerNormGradHostCommon(
-    const char* apiName, const char* hostFuncName, const ge::Shape& srcShape, const uint32_t typeSize)
+void CheckLayerNormGradHostCommon(const char* apiName, const char* hostFuncName, const ge::Shape& srcShape,
+                                  const uint32_t typeSize)
 {
     ASCENDC_HOST_ASSERT(typeSize == LAYERNORM_GRAD_HALF_SIZE || typeSize == LAYERNORM_GRAD_FLOAT_SIZE, return,
-        "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
+                        "[%s][%s] Type size %u is unsupported!", apiName, hostFuncName, typeSize);
     ASCENDC_HOST_ASSERT(srcShape.GetShapeSize() > 0, return, "[%s][%s] Input Shape size must be greater than 0.",
-        apiName, hostFuncName);
-    ASCENDC_HOST_ASSERT(srcShape.GetDimNum() == LAYERNORM_GRAD_SRC_DIM_NUM, return,
+                        apiName, hostFuncName);
+    ASCENDC_HOST_ASSERT(
+        srcShape.GetDimNum() == LAYERNORM_GRAD_SRC_DIM_NUM, return,
         "[%s][%s] The dims of srcShape is %zu, should be 4 (e.g. [B, S, storageHLength, originHLength])!", apiName,
         hostFuncName, srcShape.GetDimNum());
     return;
@@ -83,7 +84,7 @@ void SetTensorInfo(optiling::LayerNormGradTiling& tiling, uint32_t oneCalSize, u
 }
 
 void SetTilingData(optiling::LayerNormGradTiling& tiling, const uint32_t oneCalSize, const uint32_t typeSize,
-    const bool isReuseSource)
+                   const bool isReuseSource)
 {
     SetTensorInfo(tiling, oneCalSize, typeSize, isReuseSource);
     tiling.set_tmpTensorBSHSize(oneCalSize);
@@ -99,7 +100,7 @@ void SetTilingData(optiling::LayerNormGradTiling& tiling, const uint32_t oneCalS
 } // namespace
 
 void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t& maxValue, uint32_t& minValue)
+                                   uint32_t& maxValue, uint32_t& minValue)
 {
     CheckLayerNormGradHostCommon("LayerNormGrad", "GetLayerNormGradMaxMinTmpSize", srcShape, typeSize);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -143,7 +144,7 @@ void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
 }
 
 void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const bool isReuseSource, optiling::LayerNormGradTiling& tiling)
+                                  const bool isReuseSource, optiling::LayerNormGradTiling& tiling)
 {
     CheckLayerNormGradHostCommon("LayerNormGrad", "GetLayerNormGradNDTilingInfo", srcShape, typeSize);
     std::vector<int64_t> shapeDims = srcShape.GetDims();
@@ -153,19 +154,26 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
     uint32_t hLength = shapeDims[2];
     uint32_t originalHLength = shapeDims[3];
     uint32_t inputXSize = bLength * sLength * hLength;
-    uint32_t needBufferBlock = (typeSize == LAYERNORM_GRAD_B16_BYTE_SIZE) ? LAYERNORM_GRAD_HALF_BUF_NUM :
-        (isReuseSource ? LAYERNORM_GRAD_REUSE_FLOAT_BUF_NUM : LAYERNORM_GRAD_FLOAT_BUF_NUM);
-    uint32_t oneCalSize = stackBufferSize * sizeof(uint8_t) / sizeof(float) / needBufferBlock;
-    oneCalSize = oneCalSize / hLength * hLength;
-    ASCENDC_HOST_ASSERT(oneCalSize > 0, return, "stackBufferSize is not enough.");
-    uint32_t nohCalSize = oneCalSize / hLength;
-    uint32_t dataNumPerBlock = (typeSize == LAYERNORM_GRAD_B32_BYTE_SIZE) ?
-        LAYERNORM_GRAD_B32_DATA_NUM_PER_BLOCK : LAYERNORM_GRAD_B16_DATA_NUM_PER_BLOCK;
-    nohCalSize = (nohCalSize + dataNumPerBlock - 1) / dataNumPerBlock * dataNumPerBlock;
-    oneCalSize = nohCalSize * hLength;
-
+    uint32_t needBufferBlock = (typeSize == LAYERNORM_GRAD_B16_BYTE_SIZE) ?
+                                   LAYERNORM_GRAD_HALF_BUF_NUM :
+                                   (isReuseSource ? LAYERNORM_GRAD_REUSE_FLOAT_BUF_NUM : LAYERNORM_GRAD_FLOAT_BUF_NUM);
+    platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
+    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    uint32_t oneCalSize = 0;
+    uint32_t nohCalSize = 0;
+    if (socVersion != platform_ascendc::SocVersion::ASCEND910_95
+        && socVersion != platform_ascendc::SocVersion::ASCEND910_55) {
+        oneCalSize = stackBufferSize * static_cast<uint32_t>(sizeof(uint8_t)) / static_cast<uint32_t>(sizeof(float)) / needBufferBlock;
+        oneCalSize = oneCalSize / hLength * hLength;
+        ASCENDC_HOST_ASSERT(oneCalSize > static_cast<uint32_t>(0), return, "stackBufferSize is not enough.");
+        nohCalSize = oneCalSize / hLength;
+        uint32_t dataNumPerBlock = (typeSize == LAYERNORM_GRAD_B32_BYTE_SIZE) ? LAYERNORM_GRAD_B32_DATA_NUM_PER_BLOCK :
+                                                                                LAYERNORM_GRAD_B16_DATA_NUM_PER_BLOCK;
+        nohCalSize = (nohCalSize + dataNumPerBlock - static_cast<uint32_t>(1)) / dataNumPerBlock * dataNumPerBlock;
+        oneCalSize = nohCalSize * hLength;
+    }
     SetTilingData(tiling, oneCalSize, typeSize, isReuseSource);
-
     LastDimValue lastDimValueBack;
     lastDimValueBack.floatValue = 1.0f / static_cast<float>(originalHLength);
     LastDimValue lastDimValueBackMulTwo;
