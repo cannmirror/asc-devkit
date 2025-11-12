@@ -52,6 +52,20 @@ set(SCRIPTS_FILES
 install(FILES ${SCRIPTS_FILES}
     DESTINATION asc-devkit/script
 )
+
+set(BIN_FILES
+    ${CMAKE_SOURCE_DIR}/scripts/package/scripts/prereq_check.bash
+    ${CMAKE_SOURCE_DIR}/scripts/package/scripts/prereq_check.csh
+    ${CMAKE_SOURCE_DIR}/scripts/package/scripts/prereq_check.fish
+    ${CMAKE_SOURCE_DIR}/scripts/package/scripts/setenv.bash
+    ${CMAKE_SOURCE_DIR}/scripts/package/scripts/setenv.csh
+    ${CMAKE_SOURCE_DIR}/scripts/package/scripts/setenv.fish
+)
+
+install(FILES ${BIN_FILES}
+    DESTINATION asc-devkit/bin
+)
+
 set(COMMON_FILES
     ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/install_common_parser.sh
     ${CMAKE_SOURCE_DIR}/scripts/package/common/sh/common_func_v2.inc
