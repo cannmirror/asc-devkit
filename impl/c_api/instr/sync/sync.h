@@ -15,4 +15,14 @@
 #include "set_flag/asc_2201/set_flag_impl.h"
 #include "wait_flag/asc_2201/wait_flag_impl.h"
  
+__aicore__ inline void asc_SyncNotify(pipe_t pipe, pipe_t tpipe, int id)
+{
+    CApiInternal::asc_SyncNotify(pipe, tpipe, id);
+}
+
+__aicore__ inline void asc_SyncWait(pipe_t pipe, pipe_t tpipe, int id)
+{
+    CApiInternal::asc_SyncWait(pipe, tpipe, id);
+}
+
 #endif

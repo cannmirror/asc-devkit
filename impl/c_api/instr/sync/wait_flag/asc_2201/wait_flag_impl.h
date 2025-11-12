@@ -20,9 +20,4 @@ __aicore__ inline void asc_SyncWait(pipe_t pipe, pipe_t tpipe, int id)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SyncWait(pipe_t pipe, pipe_t tpipe, int id)
-{
-    CApiInternal::asc_SyncWait(pipe, tpipe, id);
-}
-
 #endif

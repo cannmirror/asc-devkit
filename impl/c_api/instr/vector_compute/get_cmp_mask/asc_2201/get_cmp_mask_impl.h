@@ -20,9 +20,4 @@ __aicore__ inline void asc_GetCmpMask(__ubuf__ void* dst)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_GetCmpMask(__ubuf__ void* dst)
-{
-    CApiInternal::asc_GetCmpMask(dst);
-}
-
 #endif

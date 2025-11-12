@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetSubBlockId()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetSubBlockId()
-{
-    return CApiInternal::asc_GetSubBlockId();
-}
-
 #endif

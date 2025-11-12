@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetMovPadVal(uint64_t val)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetMovPadVal(uint64_t val)
-{
-    CApiInternal::asc_SetMovPadVal(val);
-}
-
 #endif

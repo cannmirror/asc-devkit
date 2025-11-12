@@ -20,9 +20,4 @@ __aicore__ inline void asc_DataCacheCleanAndInvalid(__gm__ void *dst, uint64_t e
  
 } // namespace CApiInternal
  
-__aicore__ inline void asc_DataCacheCleanAndInvalid(__gm__ void *dst, uint64_t entire)
-{
-    CApiInternal::asc_DataCacheCleanAndInvalid(dst, entire);
-}
- 
 #endif

@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetAccVal()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetAccVal()
-{
-    return CApiInternal::asc_GetAccVal();
-}
-
 #endif

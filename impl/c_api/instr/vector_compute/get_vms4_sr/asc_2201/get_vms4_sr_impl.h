@@ -15,18 +15,14 @@ namespace CApiInternal {
 
 __aicore__ inline void asc_GetVms4Sr(uint16_t sortedNum[4])
 {
+    uint8_t offsetStep = 16;
     uint64_t vms4_sr = (uint64_t)get_vms4_sr();
     sortedNum[0] = 0xffff & vms4_sr;
-    sortedNum[1] = 0xffff & (vms4_sr >> 16);
-    sortedNum[2] = 0xffff & (vms4_sr >> 32);
-    sortedNum[3] = 0xffff & (vms4_sr >> 48);
+    sortedNum[1] = 0xffff & (vms4_sr >> offsetStep); // >> 16
+    sortedNum[2] = 0xffff & (vms4_sr >> (offsetStep * 2)); // >> 32
+    sortedNum[3] = 0xffff & (vms4_sr >> (offsetStep * 3)); // >> 48
 }
 
 } // namespace CApiInternal
-
-__aicore__ inline void asc_GetVms4Sr(uint16_t sortedNum[4])
-{
-    CApiInternal::asc_GetVms4Sr(sortedNum);
-}
 
 #endif

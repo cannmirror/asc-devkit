@@ -23,4 +23,59 @@
 #include "set_atomic_s16/asc_2201/set_atomic_s16_impl.h"
 #include "set_atomic_s32/asc_2201/set_atomic_s32_impl.h"
 
+__aicore__ inline void asc_DataCacheCleanAndInvalid(__gm__ void *dst, uint64_t entire)
+{
+    CApiInternal::asc_DataCacheCleanAndInvalid(dst, entire);
+}
+
+__aicore__ inline void asc_SetAtomicAdd()
+{
+    CApiInternal::asc_SetAtomicAdd();
+}
+
+__aicore__ inline void asc_SetAtomicBfloat16()
+{
+    CApiInternal::asc_SetAtomicBfloat16();
+}
+
+__aicore__ inline void asc_SetAtomicHalf()
+{
+    CApiInternal::asc_SetAtomicHalf();
+}
+
+__aicore__ inline void asc_SetAtomicFloat()
+{
+    CApiInternal::asc_SetAtomicFloat();
+}
+
+__aicore__ inline void asc_SetAtomicMax()
+{
+    CApiInternal::asc_SetAtomicMax();
+}
+
+__aicore__ inline void asc_SetAtomicMin()
+{
+    CApiInternal::asc_SetAtomicMin();
+}
+
+__aicore__ inline void asc_SetAtomicNone()
+{
+    CApiInternal::asc_SetAtomicNone();
+}
+
+__aicore__ inline void asc_SetAtomicS8()
+{
+    CApiInternal::asc_SetAtomicS8();
+}
+
+__aicore__ inline void asc_SetAtomicS16()
+{
+    CApiInternal::asc_SetAtomicS16();
+}
+
+__aicore__ inline void asc_SetAtomicS32()
+{
+    CApiInternal::asc_SetAtomicS32();
+}
+
 #endif

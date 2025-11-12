@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetFftsBaseAddr()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetFftsBaseAddr()
-{
-    return CApiInternal::asc_GetFftsBaseAddr();
-}
-
 #endif

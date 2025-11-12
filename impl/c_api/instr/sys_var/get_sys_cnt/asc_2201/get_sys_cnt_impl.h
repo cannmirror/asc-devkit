@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetSystemCycle()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetSystemCycle()
-{
-    return CApiInternal::asc_GetSystemCycle();
-}
-
 #endif

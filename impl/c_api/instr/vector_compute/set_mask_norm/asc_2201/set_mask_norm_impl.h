@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetMaskNorm()
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetMaskNorm()
-{
-    CApiInternal::asc_SetMaskNorm();
-}
-
 #endif

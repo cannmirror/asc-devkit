@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicS8()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicS8()
-{
-    CApiInternal::asc_SetAtomicS8();
-}
-
 #endif

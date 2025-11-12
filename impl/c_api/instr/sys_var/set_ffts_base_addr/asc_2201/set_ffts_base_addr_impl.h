@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetFftsBaseAddr(uint64_t config)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetFftsBaseAddr(uint64_t config)
-{
-    CApiInternal::asc_SetFftsBaseAddr(config);
-}
-
 #endif

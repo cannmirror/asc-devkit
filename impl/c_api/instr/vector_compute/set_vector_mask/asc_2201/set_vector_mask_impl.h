@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetVectorMask(uint64_t mask1, uint64_t mask0)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetVectorMask(uint64_t mask1, uint64_t mask0)
-{
-    CApiInternal::asc_SetVectorMask(mask1, mask0);
-}
-
 #endif

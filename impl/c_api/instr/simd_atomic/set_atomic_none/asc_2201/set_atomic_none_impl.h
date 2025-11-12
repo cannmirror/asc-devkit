@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicNone()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicNone()
-{
-    CApiInternal::asc_SetAtomicNone();
-}
-
 #endif

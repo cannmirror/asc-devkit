@@ -13,4 +13,9 @@
  
 #include "set_mov_pad_val/asc_2201/set_mov_pad_val_impl.h"
  
+__aicore__ inline void asc_SetMovPadVal(uint64_t val)
+{
+    CApiInternal::asc_SetMovPadVal(val);
+}
+
 #endif

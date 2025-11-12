@@ -20,9 +20,4 @@ __aicore__ inline uint64_t asc_GetPhyBufAddr(uint64_t offset)
 
 } // namespace CApiInternal
 
-__aicore__ inline uint64_t asc_GetPhyBufAddr(uint64_t offset)
-{
-    return CApiInternal::asc_GetPhyBufAddr(offset);
-}
-
 #endif
