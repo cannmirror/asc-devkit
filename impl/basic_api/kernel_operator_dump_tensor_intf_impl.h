@@ -46,7 +46,7 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void DumpTensor(const LocalTensor<T> &tensor, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpTensor(const LocalTensor<T> &input, uint32_t desc, uint32_t dumpSize)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || \
     (__NPU_ARCH__ == 3103))
@@ -54,12 +54,12 @@ __aicore__ inline void DumpTensor(const LocalTensor<T> &tensor, uint32_t desc, u
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #endif
 #ifdef ASCENDC_DUMP
-    DumpTensorLocal2GMImpl(tensor, desc, dumpSize);
+    DumpTensorLocal2GMImpl(input, desc, dumpSize);
 #endif
     return;
 }
 template <typename T>
-__aicore__ inline void DumpTensor(const GlobalTensor<T>& tensor, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpTensor(const GlobalTensor<T>& input, uint32_t desc, uint32_t dumpSize)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || \
     (__NPU_ARCH__ == 3103))
@@ -67,12 +67,12 @@ __aicore__ inline void DumpTensor(const GlobalTensor<T>& tensor, uint32_t desc, 
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #endif
 #ifdef ASCENDC_DUMP
-    DumpTensorGM2GMImpl(tensor, desc, dumpSize);
+    DumpTensorGM2GMImpl(input, desc, dumpSize);
 #endif
     return;
 }
 template <typename T>
-__aicore__ inline void DumpTensor(const GlobalTensor<T>& tensor, uint32_t desc, uint32_t dumpSize, const ShapeInfo& shapeInfo)
+__aicore__ inline void DumpTensor(const GlobalTensor<T>& input, uint32_t desc, uint32_t dumpSize, const ShapeInfo& shapeInfo)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || \
     (__NPU_ARCH__ == 3103))
@@ -81,12 +81,12 @@ __aicore__ inline void DumpTensor(const GlobalTensor<T>& tensor, uint32_t desc, 
 #endif
 #ifdef ASCENDC_DUMP
     DumpShapeImpl(shapeInfo);
-    DumpTensorGM2GMImpl(tensor, desc, dumpSize);
+    DumpTensorGM2GMImpl(input, desc, dumpSize);
 #endif
     return;
 }
 template <typename T>
-__aicore__ inline void DumpTensor(const LocalTensor<T>& tensor, uint32_t desc, uint32_t dumpSize, const ShapeInfo& shapeInfo)
+__aicore__ inline void DumpTensor(const LocalTensor<T>& input, uint32_t desc, uint32_t dumpSize, const ShapeInfo& shapeInfo)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || \
     (__NPU_ARCH__ == 3103))
@@ -95,13 +95,13 @@ __aicore__ inline void DumpTensor(const LocalTensor<T>& tensor, uint32_t desc, u
 #endif
 #ifdef ASCENDC_DUMP
     DumpShapeImpl(shapeInfo);
-    DumpTensorLocal2GMImpl(tensor, desc, dumpSize);
+    DumpTensorLocal2GMImpl(input, desc, dumpSize);
 #endif
     return;
 }
 
 template <typename T>
-__aicore__ inline void DumpAccChkPoint(const LocalTensor<T> &tensor, uint32_t index, uint32_t countOff, uint32_t dumpSize)
+__aicore__ inline void DumpAccChkPoint(const LocalTensor<T> &input, uint32_t index, uint32_t countOff, uint32_t dumpSize)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || \
     (__NPU_ARCH__ == 3103))
@@ -109,19 +109,19 @@ __aicore__ inline void DumpAccChkPoint(const LocalTensor<T> &tensor, uint32_t in
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
 #endif
 #if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
-    if (countOff > tensor.GetSize()) {
+    if (countOff > input.GetSize()) {
         ASCENDC_ASSERT((false),
             { KERNEL_LOG(KERNEL_ERROR, "tensor offset [%d] exceeds limit [%d]",
-                        countOff, tensor.GetSize()); });
+                        countOff, input.GetSize()); });
         return;
     }
-    LocalTensor<T> tmpTensor = tensor[countOff];
-    DumpTensorLocal2GMImpl(tmpTensor, index, dumpSize);
+    LocalTensor<T> tmp = input[countOff];
+    DumpTensorLocal2GMImpl(tmp, index, dumpSize);
 #endif
     return;
 }
 template <typename T>
-__aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &tensor, uint32_t index, uint32_t countOff, uint32_t dumpSize)
+__aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &input, uint32_t index, uint32_t countOff, uint32_t dumpSize)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || \
     (__NPU_ARCH__ == 3103))
@@ -129,14 +129,14 @@ __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &tensor, uint32_t i
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
 #endif
 #if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
-    if (countOff > tensor.GetSize()) {
+    if (countOff > input.GetSize()) {
         ASCENDC_ASSERT((false),
             { KERNEL_LOG(KERNEL_ERROR, "tensor offset [%d] exceeds limit [%d]",
-                        countOff, tensor.GetSize()); });
+                        countOff, input.GetSize()); });
         return;
     }
-    GlobalTensor<T> tmpTensor = tensor[countOff];
-    DumpTensorGM2GMImpl(tmpTensor, index, dumpSize);
+    GlobalTensor<T> tmp = input[countOff];
+    DumpTensorGM2GMImpl(tmp, index, dumpSize);
 #endif
     return;
 }

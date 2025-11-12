@@ -317,25 +317,25 @@ inline uint8_t* GetBaseAddrCpu(int8_t logicPos);
  * Common check function for NPU / CPU
  * ************************************************************************************************* */
 template <typename T>
-__aicore__ inline void CheckTensorAlign(const LocalTensor<T>& tensor, uint32_t alignByte, __gm__ const char* tensorName,
+__aicore__ inline void CheckTensorAlign(const LocalTensor<T>& input, uint32_t alignByte, __gm__ const char* tensorName,
     __gm__ const char* apiMsg)
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    int8_t tensorTpos = int8_t(tensor.GetPosition());
-    uint64_t tensorAddr = (uint8_t*)(tensor.GetPhyAddr()) - (uint8_t*)(GetBaseAddrCpu(tensorTpos));
+    int8_t tensorTpos = int8_t(input.GetPosition());
+    uint64_t tensorAddr = (uint8_t*)(input.GetPhyAddr()) - (uint8_t*)(GetBaseAddrCpu(tensorTpos));
     ASCENDC_ASSERT((tensorAddr % alignByte == 0), {KERNEL_LOG(KERNEL_ERROR, "Failed to check %s start address "
         "alignment in %s, its start address must align with %uB.", tensorName, apiMsg, alignByte);});
 #endif
 }
 
 template <typename T>
-__aicore__ inline void CheckTensorPos(const LocalTensor<T>& tensor, const Hardware expectPos,
+__aicore__ inline void CheckTensorPos(const LocalTensor<T>& input, const Hardware expectPos,
     __gm__ const char* tensorName, __gm__ const char* tPosName, __gm__ const char* apiMsg)
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    const Hardware scope = GetPhyType(static_cast<TPosition>(tensor.GetPosition()));
+    const Hardware scope = GetPhyType(static_cast<TPosition>(input.GetPosition()));
     ASCENDC_CHECK_TPOSITION(scope == expectPos, tensorName, tPosName, apiMsg,
-        ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(tensor.GetPosition())));
+        ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(input.GetPosition())));
 #endif
 }
 }

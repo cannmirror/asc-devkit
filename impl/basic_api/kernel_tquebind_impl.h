@@ -82,7 +82,7 @@ __aicore__ inline __sync_alias__ LocalTensor<T> TQueBind<src, dst, depth, mask>:
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
 template <typename T>
-__aicore__ inline __sync_alias__ void TQueBind<src, dst, depth, mask>::AllocTensor(LocalTensor<T>& tensor) {
+__aicore__ inline __sync_alias__ void TQueBind<src, dst, depth, mask>::AllocTensor(LocalTensor<T>& input) {
     static_assert((depth == 0), "can not AllocTensor in place while tque's depth is non zero");
     TBufType* ret;
     do {
@@ -100,7 +100,7 @@ __aicore__ inline __sync_alias__ void TQueBind<src, dst, depth, mask>::AllocTens
     } while (true);
     WaitFlag<freeBufEvt>(ret->freeBufEvtID);
     TBuffAddr addr = GetBufferAddr(reinterpret_cast<TBufHandle>(ret));
-    tensor.SetAddr(addr);
+    input.SetAddr(addr);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     constexpr Hardware bufferType = GetBufferPos(src, dst);
     auto absAddr = GetTPipePtr()->g_tpipeImpl.bufPoolBaseAddr_[static_cast<uint8_t>(bufferType)].absAddr;
@@ -119,25 +119,25 @@ __aicore__ inline __sync_alias__ void TQueBind<src, dst, depth, mask>::AllocTens
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
 template <typename T>
-__aicore__ inline void TQueBind<src, dst, depth, mask>::FreeTensor(LocalTensor<T>& tensor)
+__aicore__ inline void TQueBind<src, dst, depth, mask>::FreeTensor(LocalTensor<T>& input)
 {
-    FreeBuffer(tensor.GetBufferHandle());
+    FreeBuffer(input.GetBufferHandle());
     return;
 }
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
 template <typename T>
-__aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(const LocalTensor<T>& tensor)
+__aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(const LocalTensor<T>& input)
 {
-    auto buf = tensor.GetBufferHandle();
+    auto buf = input.GetBufferHandle();
     return EnQue(reinterpret_cast<TBufHandle>(buf));
 }
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
 template <TPosition srcUserPos, TPosition dstUserPos, typename T>
-__aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(const LocalTensor<T>& tensor)
+__aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(const LocalTensor<T>& input)
 {
-    auto buf = tensor.GetBufferHandle();
+    auto buf = input.GetBufferHandle();
     return EnQue<srcUserPos, dstUserPos>(reinterpret_cast<TBufHandle>(buf));
 }
 
@@ -276,9 +276,9 @@ __aicore__ inline __sync_alias__ LocalTensor<T> TQueBind<src, dst, depth, mask>:
 }
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
-template <typename T> __aicore__ inline void TQueBind<src, dst, depth, mask>::DeQue(LocalTensor<T>& tensor) {
+template <typename T> __aicore__ inline void TQueBind<src, dst, depth, mask>::DeQue(LocalTensor<T>& input) {
     static_assert((depth == 0), "can not DeQue tensor in place while tque's depth is non zero");
-    auto bufHandle = tensor.GetBufferHandle();
+    auto bufHandle = input.GetBufferHandle();
     auto ptr = reinterpret_cast<TBufType*>(bufHandle);
     WaitFlag<enQueEvt>(ptr->enQueEvtID);
 }
@@ -608,9 +608,9 @@ __aicore__ inline TBuffAddr TQueBind<src, dst, depth, mask>::GetBufferAddr(TBufH
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
 template <typename T>
-__aicore__ inline TBufState TQueBind<src, dst, depth, mask>::GetState(const LocalTensor<T>& tensor) const
+__aicore__ inline TBufState TQueBind<src, dst, depth, mask>::GetState(const LocalTensor<T>& input) const
 {
-    return GetState(tensor.GetBufferHandle());
+    return GetState(input.GetBufferHandle());
 }
 
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
@@ -653,9 +653,9 @@ template <typename T>
 __aicore__ inline __sync_alias__ LocalTensor<T> TQueBind<src, dst, depth, mask>::Buf2Tensor(TBufHandle buf)
 {
     TBuffAddr addr = GetBufferAddr(buf);
-    LocalTensor<T> tensor;
-    tensor.SetAddr(addr);
-    return tensor;
+    LocalTensor<T> output;
+    output.SetAddr(addr);
+    return output;
 }
 }
 #endif // ASCENDC_MODULE_TQUEBIND_IMPL_H

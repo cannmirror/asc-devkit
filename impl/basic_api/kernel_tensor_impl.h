@@ -142,8 +142,8 @@ __inout_pipe__(S) typename LocalTensor<T>::PrimType LocalTensor<T>::GetValue(con
             static_cast<uint32_t>(this->address_.dataLen * INT4_TWO));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(offset / INT4_TWO);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(offset / INT4_TWO);
         return static_cast<int4b_t>(val >> (4 * (offset % INT4_TWO)));
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
@@ -152,8 +152,8 @@ __inout_pipe__(S) typename LocalTensor<T>::PrimType LocalTensor<T>::GetValue(con
             static_cast<uint32_t>(this->address_.dataLen * INT2_FOUR));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(offset / INT2_FOUR);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(offset / INT2_FOUR);
         return static_cast<int2b_t>(val >> (2 * (offset % INT2_FOUR)));
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
@@ -164,8 +164,8 @@ __inout_pipe__(S) typename LocalTensor<T>::PrimType LocalTensor<T>::GetValue(con
             static_cast<uint32_t>(this->address_.dataLen * INT2_FOUR));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(offset / INT2_FOUR);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(offset / INT2_FOUR);
         return static_cast<uint2b_t>(val >> (2 * (offset % INT2_FOUR)));
 #endif
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
@@ -175,18 +175,18 @@ __inout_pipe__(S) typename LocalTensor<T>::PrimType LocalTensor<T>::GetValue(con
                 static_cast<uint32_t>(this->address_.dataLen * ConstantsInternal::ASCENDC_B4_TWO));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(offset / ConstantsInternal::ASCENDC_B4_TWO);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(offset / ConstantsInternal::ASCENDC_B4_TWO);
         PrimType ret;
         ret.val = static_cast<uint8_t>((val >> (ConstantsInternal::ASCENDC_B4_BIT_NUM * (offset % ConstantsInternal::ASCENDC_B4_TWO))) & 0xf);
         return ret;
     } else if constexpr (SupportType<PrimType, complex32>()) {
-        LocalTensor<uint32_t> tmpLocalTensor = this->ReinterpretCast<uint32_t>();
-        uint32_t val = tmpLocalTensor.GetValue(offset);
+        LocalTensor<uint32_t> tmp = this->ReinterpretCast<uint32_t>();
+        uint32_t val = tmp.GetValue(offset);
         return *(reinterpret_cast<PrimType*>(&val));
     }  else if constexpr (SupportType<PrimType, complex64>()) {
-        LocalTensor<uint64_t> tmpLocalTensor = this->ReinterpretCast<uint64_t>();
-        uint64_t val = tmpLocalTensor.GetValue(offset);
+        LocalTensor<uint64_t> tmp = this->ReinterpretCast<uint64_t>();
+        uint64_t val = tmp.GetValue(offset);
         return *(reinterpret_cast<PrimType*>(&val));
 #endif
     } else {
@@ -208,39 +208,39 @@ __inout_pipe__(S) typename LocalTensor<T>::PrimType& LocalTensor<T>::operator()(
     return *(GetPhyAddr(offset));
 }
 template <typename T>
-template <typename CAST_T> __aicore__ inline LocalTensor<CAST_T> LocalTensor<T>::ReinterpretCast() const
+template <typename U> __aicore__ inline LocalTensor<U> LocalTensor<T>::ReinterpretCast() const
 {
-    LocalTensor<CAST_T> tensorOut;
-    tensorOut.address_.logicPos = static_cast<uint8_t>(this->GetPosition());
-    tensorOut.address_.bufferHandle = this->GetBufferHandle();
+    LocalTensor<U> output;
+    output.address_.logicPos = static_cast<uint8_t>(this->GetPosition());
+    output.address_.bufferHandle = this->GetBufferHandle();
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
     if constexpr (SupportType<PrimType, int4b_t, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
 #else
     if constexpr (IsSameType<PrimType, int4b_t>::value) {
 #endif
-        tensorOut.address_.dataLen = this->GetSize() / INT4_TWO;
+        output.address_.dataLen = this->GetSize() / INT4_TWO;
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-        tensorOut.address_.dataLen = this->GetSize() / INT2_FOUR;
+        output.address_.dataLen = this->GetSize() / INT2_FOUR;
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<PrimType, uint2b_t>::value) {
-        tensorOut.address_.dataLen = this->GetSize() / INT2_FOUR;
+        output.address_.dataLen = this->GetSize() / INT2_FOUR;
 #endif
     } else {
-        tensorOut.address_.dataLen = this->GetSize() * sizeof(PrimType);
+        output.address_.dataLen = this->GetSize() * sizeof(PrimType);
     }
-    tensorOut.address_.bufferAddr = this->address_.bufferAddr;
-    tensorOut.address_.absAddr = this->address_.absAddr;
-    if constexpr (is_tensorTrait_v<T> && is_tensorTrait_v<CAST_T>) {
-        tensorOut.GetTensorTrait().SetLayout(this->GetTensorTrait().GetLayout());
+    output.address_.bufferAddr = this->address_.bufferAddr;
+    output.address_.absAddr = this->address_.absAddr;
+    if constexpr (is_tensorTrait_v<T> && is_tensorTrait_v<U>) {
+        output.GetTensorTrait().SetLayout(this->GetTensorTrait().GetLayout());
     }
-    return tensorOut;
+    return output;
 }
 
 template <typename T>
-template <typename T1> __inout_pipe__(S) void LocalTensor<T>::SetValue(const uint32_t index, const T1 value) const
+template <typename U> __inout_pipe__(S) void LocalTensor<T>::SetValue(const uint32_t index, const U value) const
 {
     if ASCEND_IS_AIC {
         if (GetPhyType(AscendC::TPosition(this->GetPosition())) == Hardware::UB) {
@@ -253,11 +253,11 @@ template <typename T1> __inout_pipe__(S) void LocalTensor<T>::SetValue(const uin
             static_cast<uint32_t>(this->address_.dataLen * INT4_TWO));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint8_t shift = (index % INT4_TWO == 0)? 0 : 4;
         uint32_t idx = index / INT4_TWO;
-        uint8_t val = tmpLocalTensor.GetValue(idx) & (0xf << (INT4_BIT_NUM - shift));
-        tmpLocalTensor.SetValue(idx, val + (value.storage << shift));
+        uint8_t val = tmp.GetValue(idx) & (0xf << (INT4_BIT_NUM - shift));
+        tmp.SetValue(idx, val + (value.storage << shift));
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
         ASCENDC_ASSERT((this->address_.dataLen * INT2_FOUR > (index / INT2_FOUR)), {
@@ -265,12 +265,12 @@ template <typename T1> __inout_pipe__(S) void LocalTensor<T>::SetValue(const uin
             static_cast<uint32_t>(this->address_.dataLen * INT2_FOUR));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint8_t shift = (index % INT2_FOUR) * 2;
         uint32_t idx = index / INT2_FOUR;
         uint8_t mask = (0x3) << shift;
-        uint8_t maskedVal = tmpLocalTensor.GetValue(idx) & (~mask);
-        tmpLocalTensor.SetValue(idx, maskedVal + (value.storage << shift));
+        uint8_t maskedVal = tmp.GetValue(idx) & (~mask);
+        tmp.SetValue(idx, maskedVal + (value.storage << shift));
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
@@ -280,20 +280,20 @@ template <typename T1> __inout_pipe__(S) void LocalTensor<T>::SetValue(const uin
             static_cast<uint32_t>(this->address_.dataLen * INT2_FOUR));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint32_t idx = index / INT2_FOUR;
         uint8_t shift = 2 * (index % INT2_FOUR);
         uint8_t val;
         if (index % INT2_FOUR == 0) {
-            val = tmpLocalTensor.GetValue(idx) & 0xFC;
+            val = tmp.GetValue(idx) & 0xFC;
         } else if (index % INT2_FOUR == 1) {
-            val = tmpLocalTensor.GetValue(idx) & 0xF3;
+            val = tmp.GetValue(idx) & 0xF3;
         } else if (index % INT2_FOUR == 2) {
-            val = tmpLocalTensor.GetValue(idx) & 0xCF;
+            val = tmp.GetValue(idx) & 0xCF;
         } else {
-            val = tmpLocalTensor.GetValue(idx) & 0x3F;
+            val = tmp.GetValue(idx) & 0x3F;
         }
-        tmpLocalTensor.SetValue(idx, val + (value.storage << shift));
+        tmp.SetValue(idx, val + (value.storage << shift));
 #endif
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
     } else if constexpr (SupportType<PrimType, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
@@ -302,11 +302,11 @@ template <typename T1> __inout_pipe__(S) void LocalTensor<T>::SetValue(const uin
                 static_cast<uint32_t>(this->address_.dataLen * ConstantsInternal::ASCENDC_B4_TWO));
         });
 
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint8_t shift = (index % ConstantsInternal::ASCENDC_B4_TWO == 0)? 0 : ConstantsInternal::ASCENDC_B4_BIT_NUM;
         uint32_t idx = index / ConstantsInternal::ASCENDC_B4_TWO;
-        uint8_t val = tmpLocalTensor.GetValue(idx) & (0xf << (ConstantsInternal::ASCENDC_B4_BIT_NUM - shift));
-        tmpLocalTensor.SetValue(idx, val + (value << shift));
+        uint8_t val = tmp.GetValue(idx) & (0xf << (ConstantsInternal::ASCENDC_B4_BIT_NUM - shift));
+        tmp.SetValue(idx, val + (value << shift));
 #endif
     } else {
         ASCENDC_ASSERT((this->address_.dataLen > (index * sizeof(PrimType))), {
@@ -350,46 +350,46 @@ template <typename T> LocalTensor<T> LocalTensor<T>::operator[](const uint32_t o
         });
     }
 
-    LocalTensor retLocalTensor = *this;
+    LocalTensor result = *this;
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
     if constexpr (SupportType<PrimType, int4b_t, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
 #else
     if constexpr (IsSameType<PrimType, int4b_t>::value) {
 #endif
-        retLocalTensor.address_.dataLen -= (offset / INT4_TWO);
-        retLocalTensor.address_.absAddr = retLocalTensor.address_.absAddr + offset / INT4_TWO;
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset / INT4_TWO;
+        result.address_.dataLen -= (offset / INT4_TWO);
+        result.address_.absAddr = result.address_.absAddr + offset / INT4_TWO;
+        result.address_.bufferAddr = result.address_.bufferAddr + offset / INT4_TWO;
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-        retLocalTensor.address_.dataLen -= (offset / INT2_FOUR);
-        retLocalTensor.address_.absAddr = retLocalTensor.address_.absAddr + offset / INT2_FOUR;
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset / INT2_FOUR;
+        result.address_.dataLen -= (offset / INT2_FOUR);
+        result.address_.absAddr = result.address_.absAddr + offset / INT2_FOUR;
+        result.address_.bufferAddr = result.address_.bufferAddr + offset / INT2_FOUR;
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<PrimType, uint2b_t>::value) {
-        retLocalTensor.address_.dataLen -= (offset / INT2_FOUR);
-        retLocalTensor.address_.absAddr = retLocalTensor.address_.absAddr + offset / INT2_FOUR;
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset / INT2_FOUR;
+        result.address_.dataLen -= (offset / INT2_FOUR);
+        result.address_.absAddr = result.address_.absAddr + offset / INT2_FOUR;
+        result.address_.bufferAddr = result.address_.bufferAddr + offset / INT2_FOUR;
 #endif
     } else {
-        retLocalTensor.address_.dataLen -= (offset * sizeof(PrimType));
-        retLocalTensor.address_.absAddr = retLocalTensor.address_.absAddr + offset * sizeof(PrimType);
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset * sizeof(PrimType);
+        result.address_.dataLen -= (offset * sizeof(PrimType));
+        result.address_.absAddr = result.address_.absAddr + offset * sizeof(PrimType);
+        result.address_.bufferAddr = result.address_.bufferAddr + offset * sizeof(PrimType);
     }
-    retLocalTensor.os_.str("");
-    return retLocalTensor;
+    result.os_.str("");
+    return result;
 }
 
 template <typename T>
-template <typename T1>
+template <typename U>
 [[deprecated("NOTICE: SetAddrWithOffset has been deprecated and will be removed in the next version. "
     "Please do not use it!")]]
-void LocalTensor<T>::SetAddrWithOffset(LocalTensor<T1> &src, uint32_t offset)
+void LocalTensor<T>::SetAddrWithOffset(LocalTensor<U> &src, uint32_t offset)
 {
     this->address_ = src.address_;
-    this->address_.bufferAddr += offset * sizeof(PrimT<T1>);
-    this->address_.absAddr += offset * sizeof(PrimT<T1>);
+    this->address_.bufferAddr += offset * sizeof(PrimT<U>);
+    this->address_.absAddr += offset * sizeof(PrimT<U>);
 }
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
@@ -666,30 +666,30 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
         }
     }
     if constexpr (IsSameType<PrimType, int4b_t>::value) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(index / INT4_TWO);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(index / INT4_TWO);
         return static_cast<int4b_t>(val >> (INT4_BIT_NUM * (index % INT4_TWO)));
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(index / INT2_FOUR);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(index / INT2_FOUR);
         return static_cast<int2b_t>(val >> (INT2_BIT_NUM * (index % INT2_FOUR)));
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<T, uint2b_t>::value) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
-        uint8_t val = tmpLocalTensor.GetValue(index / INT2_FOUR);
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
+        uint8_t val = tmp.GetValue(index / INT2_FOUR);
         return static_cast<uint2b_t>(val >> (INT2_BIT_NUM * (index % INT2_FOUR)));
 #endif
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
     } else if constexpr (SupportType<PrimType, complex32>()) {
-        LocalTensor<uint32_t> tmpLocalTensor = this->ReinterpretCast<uint32_t>();
-        uint32_t val = tmpLocalTensor.GetValue(index);
+        LocalTensor<uint32_t> tmp = this->ReinterpretCast<uint32_t>();
+        uint32_t val = tmp.GetValue(index);
         return *(reinterpret_cast<PrimType*>(&val));
     }  else if constexpr (SupportType<PrimType, complex64>()) {
-        LocalTensor<uint64_t> tmpLocalTensor = this->ReinterpretCast<uint64_t>();
-        uint64_t val = tmpLocalTensor.GetValue(index);
+        LocalTensor<uint64_t> tmp = this->ReinterpretCast<uint64_t>();
+        uint64_t val = tmp.GetValue(index);
         return *(reinterpret_cast<PrimType*>(&val));
 #endif
     } else {
@@ -703,35 +703,35 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
 }
 
 template <typename T>
-template <typename CAST_T> __aicore__ inline __sync_alias__ LocalTensor<CAST_T> LocalTensor<T>::ReinterpretCast() const
+template <typename U> __aicore__ inline __sync_alias__ LocalTensor<U> LocalTensor<T>::ReinterpretCast() const
 {
-    LocalTensor<CAST_T> tensorOut;
-    tensorOut.address_.logicPos = static_cast<uint8_t>(this->GetPosition());
-    tensorOut.address_.bufferHandle = this->GetBufferHandle();
+    LocalTensor<U> output;
+    output.address_.logicPos = static_cast<uint8_t>(this->GetPosition());
+    output.address_.bufferHandle = this->GetBufferHandle();
     if constexpr (IsHalfByteDataType<PrimType>()) {
-        tensorOut.address_.dataLen = this->GetSize() / INT4_TWO;
+        output.address_.dataLen = this->GetSize() / INT4_TWO;
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr(IsSameType<PrimType, int2b_t>::value) {
-        tensorOut.address_.dataLen = this->GetSize() / INT2_FOUR;
+        output.address_.dataLen = this->GetSize() / INT2_FOUR;
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<T, uint2b_t>::value) {
-        tensorOut.address_.dataLen = this->GetSize() / INT2_FOUR;
+        output.address_.dataLen = this->GetSize() / INT2_FOUR;
 #endif
     } else {
-        tensorOut.address_.dataLen = this->GetSize() * sizeof(PrimType);
+        output.address_.dataLen = this->GetSize() * sizeof(PrimType);
     }
-    tensorOut.address_.bufferAddr = this->address_.bufferAddr;
-    if constexpr (is_tensorTrait_v<T> && is_tensorTrait_v<CAST_T>) {
-        tensorOut.SetTensorTrait(this->GetTensorTrait());
+    output.address_.bufferAddr = this->address_.bufferAddr;
+    if constexpr (is_tensorTrait_v<T> && is_tensorTrait_v<U>) {
+        output.SetTensorTrait(this->GetTensorTrait());
     }
-    return tensorOut;
+    return output;
 }
 
 template <typename T>
-template <typename T1> __aicore__ inline __inout_pipe__(S)
-    void LocalTensor<T>::SetValue(const uint32_t index, const T1 value) const
+template <typename U> __aicore__ inline __inout_pipe__(S)
+    void LocalTensor<T>::SetValue(const uint32_t index, const U value) const
 {
     if ASCEND_IS_AIC {
         if (GetPhyType(AscendC::TPosition(this->GetPosition())) == Hardware::UB) {
@@ -739,47 +739,47 @@ template <typename T1> __aicore__ inline __inout_pipe__(S)
         }
     }
     if constexpr (IsSameType<PrimType, int4b_t>::value) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint8_t mask = (index % INT4_TWO == 0)? 0xf0 : 0xf;
         uint32_t idx = index / INT4_TWO;
-        uint8_t val = tmpLocalTensor.GetValue(idx) & mask;
+        uint8_t val = tmp.GetValue(idx) & mask;
         uint8_t shift = (index % INT4_TWO == 0)? 0 : INT4_BIT_NUM;
-        tmpLocalTensor.SetValue(idx, val + (value.storage << shift));
+        tmp.SetValue(idx, val + (value.storage << shift));
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint8_t shift = (index % INT2_FOUR ) * 2;
         uint32_t idx = index / INT2_FOUR;
         uint8_t mask = (0x3) << shift;
-        uint8_t maskedVal = tmpLocalTensor.GetValue(idx) & (~mask);
-        tmpLocalTensor.SetValue(idx, maskedVal + (value.storage << shift));
+        uint8_t maskedVal = tmp.GetValue(idx) & (~mask);
+        tmp.SetValue(idx, maskedVal + (value.storage << shift));
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<PrimType, uint2b_t>::value) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint32_t idx = index / INT2_FOUR;
         uint8_t shift = 2 * (index % INT2_FOUR);
         uint8_t val;
         if (index % INT2_FOUR == 0) {
-            val = tmpLocalTensor.GetValue(idx) & 0xFC;
+            val = tmp.GetValue(idx) & 0xFC;
         } else if (index % INT2_FOUR == 1) {
-            val = tmpLocalTensor.GetValue(idx) & 0xF3;
+            val = tmp.GetValue(idx) & 0xF3;
         } else if (index % INT2_FOUR == 2) {
-            val = tmpLocalTensor.GetValue(idx) & 0xCF;
+            val = tmp.GetValue(idx) & 0xCF;
         } else {
-            val = tmpLocalTensor.GetValue(idx) & 0x3F;
+            val = tmp.GetValue(idx) & 0x3F;
         }
-        tmpLocalTensor.SetValue(idx, val + (value.storage << shift));
+        tmp.SetValue(idx, val + (value.storage << shift));
 #endif
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
     } else if constexpr (SupportType<PrimType, fp4x2_e2m1_t, fp4x2_e1m2_t>()) {
-        LocalTensor<uint8_t> tmpLocalTensor = this->ReinterpretCast<uint8_t>();
+        LocalTensor<uint8_t> tmp = this->ReinterpretCast<uint8_t>();
         uint8_t mask = (index % ConstantsInternal::ASCENDC_B4_TWO == 0)? 0xf0 : 0xf;
         uint32_t idx = index / ConstantsInternal::ASCENDC_B4_TWO;
-        uint8_t val = tmpLocalTensor.GetValue(idx) & mask;
+        uint8_t val = tmp.GetValue(idx) & mask;
         uint8_t shift = (index % ConstantsInternal::ASCENDC_B4_TWO == 0)? 0 : ConstantsInternal::ASCENDC_B4_BIT_NUM;
-        tmpLocalTensor.SetValue(idx, val + (value << shift));
+        tmp.SetValue(idx, val + (value << shift));
     } else if constexpr (SupportType<PrimType, complex32, complex64>()) {
         __ubuf__ PrimType* tmpAddr = reinterpret_cast<__ubuf__ T*>(static_cast<uint64_t>(this->address_.bufferAddr))
             + index;
@@ -795,36 +795,36 @@ template <typename T1> __aicore__ inline __inout_pipe__(S)
 
 template <typename T> __aicore__ inline LocalTensor<T> LocalTensor<T>::operator[](const uint32_t offset) const
 {
-    LocalTensor retLocalTensor = *this;
+    LocalTensor result = *this;
     if constexpr (IsHalfByteDataType<PrimType>()) {
-        retLocalTensor.address_.dataLen -= (offset / INT4_TWO);
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset / INT4_TWO;
+        result.address_.dataLen -= (offset / INT4_TWO);
+        result.address_.bufferAddr = result.address_.bufferAddr + offset / INT4_TWO;
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
-        retLocalTensor.address_.dataLen -= (offset / INT2_FOUR);
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset / INT2_FOUR;
+        result.address_.dataLen -= (offset / INT2_FOUR);
+        result.address_.bufferAddr = result.address_.bufferAddr + offset / INT2_FOUR;
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<PrimType, uint2b_t>::value) {
-        retLocalTensor.address_.dataLen -= (offset / INT2_FOUR);
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset / INT2_FOUR;
+        result.address_.dataLen -= (offset / INT2_FOUR);
+        result.address_.bufferAddr = result.address_.bufferAddr + offset / INT2_FOUR;
 #endif
     } else {
-        retLocalTensor.address_.dataLen -= (offset * sizeof(PrimType));
-        retLocalTensor.address_.bufferAddr = retLocalTensor.address_.bufferAddr + offset * sizeof(PrimType);
+        result.address_.dataLen -= (offset * sizeof(PrimType));
+        result.address_.bufferAddr = result.address_.bufferAddr + offset * sizeof(PrimType);
     }
-    return retLocalTensor;
+    return result;
 }
 
 template <typename T>
-template <typename T1>
+template <typename U>
 [[deprecated("NOTICE: SetAddrWithOffset has been deprecated and will be removed in the next version. "
     "Please do not use it!")]]
-__aicore__ inline void LocalTensor<T>::SetAddrWithOffset(LocalTensor<T1> &src, uint32_t offset)
+__aicore__ inline void LocalTensor<T>::SetAddrWithOffset(LocalTensor<U> &src, uint32_t offset)
 {
     this->address_ = src.address_;
-    this->address_.bufferAddr += offset * sizeof(PrimT<T1>);
+    this->address_.bufferAddr += offset * sizeof(PrimT<U>);
 }
 #endif
 template <typename T> __aicore__ inline int32_t LocalTensor<T>::GetPosition() const
@@ -910,7 +910,7 @@ template <typename T> __aicore__ inline TTagType LocalTensor<T>::GetUserTag() co
 }
 
 template <typename T>
-template <typename T1>
+template <typename U>
 __aicore__ inline void LocalTensor<T>::CreateTensor(AscendC::TPosition pos, uint32_t addr, uint32_t tileSize)
 {
 #if ASCENDC_CPU_DEBUG
@@ -928,12 +928,12 @@ __aicore__ inline void LocalTensor<T>::CreateTensor(AscendC::TPosition pos, uint
                 tileSize, maxLen * INT4_TWO);
         });
     } else {
-        ASCENDC_ASSERT(((tileSize > 0) && (tileSize * sizeof(T1)) <= maxLen), {
+        ASCENDC_ASSERT(((tileSize > 0) && (tileSize * sizeof(U)) <= maxLen), {
             KERNEL_LOG(KERNEL_ERROR, "tensor size input is %u, which shoule be in range (0, %u]",
-                tileSize, maxLen / sizeof(T1));
+                tileSize, maxLen / sizeof(U));
         });
     }
-    uint32_t tensorLength = tileSize * SizeOfBits<T1>::value / SizeOfBits<uint8_t>::value;
+    uint32_t tensorLength = tileSize * SizeOfBits<U>::value / SizeOfBits<uint8_t>::value;
     ASCENDC_ASSERT((tensorLength % ONE_BLK_SIZE == 0), {
             KERNEL_LOG(KERNEL_ERROR, "tensor length is %u bytes, which shoule be 32 bytes align", tensorLength);
     });
@@ -947,7 +947,7 @@ __aicore__ inline void LocalTensor<T>::CreateTensor(AscendC::TPosition pos, uint
     this->address_.bufferHandle = nullptr;
     this->address_.absAddr = GetBaseAddrCpu(static_cast<int8_t>(pos)) + addr;
 #endif
-    this->address_.dataLen = SizeOfBits<T1>::value * tileSize / SizeOfBits<uint8_t>::value;
+    this->address_.dataLen = SizeOfBits<U>::value * tileSize / SizeOfBits<uint8_t>::value;
     this->address_.bufferAddr = addr;
     this->address_.logicPos = static_cast<uint8_t>(pos);
 }
@@ -1444,26 +1444,26 @@ template <typename T> __aicore__ inline uint64_t GlobalTensor<T>::GetSize() cons
 
 template <typename T> __aicore__ inline GlobalTensor<T> GlobalTensor<T>::operator[](const uint64_t offset) const
 {
-    GlobalTensor retLocalTensor = *this;
+    GlobalTensor result = *this;
     if constexpr (IsHalfByteDataType<PrimType>()) {
-        retLocalTensor.address_ = retLocalTensor.address_ + offset / INT4_TWO;
-        retLocalTensor.oriAddress_ = retLocalTensor.oriAddress_ + offset / INT4_TWO;
+        result.address_ = result.address_ + offset / INT4_TWO;
+        result.oriAddress_ = result.oriAddress_ + offset / INT4_TWO;
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (SupportType<PrimType, int2b_t>()) {
-        retLocalTensor.address_ = retLocalTensor.address_ + offset / INT2_FOUR;
-        retLocalTensor.oriAddress_ = retLocalTensor.oriAddress_ + offset / INT2_FOUR;
+        result.address_ = result.address_ + offset / INT2_FOUR;
+        result.oriAddress_ = result.oriAddress_ + offset / INT2_FOUR;
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
     } else if constexpr (IsSameType<PrimType, uint2b_t>::value) {
-        retLocalTensor.address_ = retLocalTensor.address_ + offset / INT2_FOUR;
-        retLocalTensor.oriAddress_ = retLocalTensor.oriAddress_ + offset / INT2_FOUR;
+        result.address_ = result.address_ + offset / INT2_FOUR;
+        result.oriAddress_ = result.oriAddress_ + offset / INT2_FOUR;
 #endif
     } else {
-        retLocalTensor.address_ = retLocalTensor.address_ + offset;
-        retLocalTensor.oriAddress_ = retLocalTensor.oriAddress_ + offset;
+        result.address_ = result.address_ + offset;
+        result.oriAddress_ = result.oriAddress_ + offset;
     }
-    return retLocalTensor;
+    return result;
 }
 
 template <typename T> __aicore__ inline void GlobalTensor<T>::SetShapeInfo(const ShapeInfo& shapeInfo)
@@ -1505,17 +1505,17 @@ __aicore__ inline void GlobalTensor<T>::SetL2CacheHint(CacheMode mode) {
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 template <typename T>
-template <typename CAST_T> __aicore__ inline GlobalTensor<CAST_T> GlobalTensor<T>::ReinterpretCast() const
+template <typename U> __aicore__ inline GlobalTensor<U> GlobalTensor<T>::ReinterpretCast() const
 {
-    GlobalTensor<CAST_T> tensorOut;
-    tensorOut.address_ = reinterpret_cast<__gm__ CAST_T*>(reinterpret_cast<__gm__ int64_t*>(this->address_));
-    tensorOut.oriAddress_ = reinterpret_cast<__gm__ CAST_T*>(reinterpret_cast<__gm__ int64_t*>(this->oriAddress_));
-    tensorOut.bufferSize_ = this->GetSize() * SizeOfBits<T>::value / SizeOfBits<CAST_T>::value;
-    tensorOut.cacheMode_ = this->cacheMode_;
+    GlobalTensor<U> output;
+    output.address_ = reinterpret_cast<__gm__ U*>(reinterpret_cast<__gm__ int64_t*>(this->address_));
+    output.oriAddress_ = reinterpret_cast<__gm__ U*>(reinterpret_cast<__gm__ int64_t*>(this->oriAddress_));
+    output.bufferSize_ = this->GetSize() * SizeOfBits<T>::value / SizeOfBits<U>::value;
+    output.cacheMode_ = this->cacheMode_;
 #ifndef SPLIT_CORE_CUBE
-    tensorOut.shapeInfo_ = this->shapeInfo_;
+    output.shapeInfo_ = this->shapeInfo_;
 #endif
-    return tensorOut;
+    return output;
 }
 #endif
 
@@ -1541,9 +1541,9 @@ __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc()
 {
     static_assert(!is_tensorTrait_v<DataType>, "currently not support TensorTrait type!");
     static_assert(GetPhyType(pos) == hard, "logic pos and hardware pos not matched.");
-    LocalTensor<DataType> tensorOut(pos, head_, tileSize);
+    LocalTensor<DataType> output(pos, head_, tileSize);
     head_ += SizeOfBits<DataType>::value * tileSize / SizeOfBits<uint8_t>::value;
-    return tensorOut;
+    return output;
 }
 
 template <Hardware hard>
@@ -1551,9 +1551,9 @@ template <class DataType, uint32_t tileSize>
 __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc()
 {
     static_assert(!is_tensorTrait_v<DataType>, "currently not support TensorTrait type!");
-    LocalTensor<DataType> tensorOut(GetDefaultPosition(hard), head_, tileSize);
+    LocalTensor<DataType> output(GetDefaultPosition(hard), head_, tileSize);
     head_ += SizeOfBits<DataType>::value * tileSize / SizeOfBits<uint8_t>::value;
-    return tensorOut;
+    return output;
 }
 
 template <Hardware hard>
@@ -1562,9 +1562,9 @@ __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc(uint32_t 
 {
     static_assert(!is_tensorTrait_v<DataType>, "currently not support TensorTrait type!");
     static_assert(GetPhyType(pos) == hard, "logic pos and hardware pos not matched.");
-    LocalTensor<DataType> tensorOut(pos, head_, tileSize);
+    LocalTensor<DataType> output(pos, head_, tileSize);
     head_ += SizeOfBits<DataType>::value * tileSize / SizeOfBits<uint8_t>::value;
-    return tensorOut;
+    return output;
 }
 
 template <Hardware hard>
@@ -1572,9 +1572,9 @@ template <class DataType>
 __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc(uint32_t tileSize)
 {
     static_assert(!is_tensorTrait_v<DataType>, "currently not support TensorTrait type!");
-    LocalTensor<DataType> tensorOut(GetDefaultPosition(hard), head_, tileSize);
+    LocalTensor<DataType> output(GetDefaultPosition(hard), head_, tileSize);
     head_ += SizeOfBits<DataType>::value * tileSize / SizeOfBits<uint8_t>::value;
-    return tensorOut;
+    return output;
 }
 
 template <Hardware hard>
@@ -1583,9 +1583,9 @@ __aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc()
 {
     static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
     static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
-    LocalTensor<TensorTraitType> tensorOut(head_);
-    head_ += SizeOfBits<typename TensorTraitType::LiteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
-    return tensorOut;
+    LocalTensor<TensorTraitType> output(head_);
+    head_ += SizeOfBits<typename TensorTraitType::LiteType>::value * output.GetSize() / SizeOfBits<uint8_t>::value;
+    return output;
 }
 }
 #endif // KERNEL_TENSOR_H
