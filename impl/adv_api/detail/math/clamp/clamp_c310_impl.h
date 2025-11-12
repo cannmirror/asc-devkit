@@ -27,21 +27,14 @@ __aicore__ inline void ClampCompute(__local_mem__ T* dstUb, __local_mem__ T* src
     MicroAPI::RegTensor<T> srcReg;
     MicroAPI::RegTensor<T> dstReg;
     MicroAPI::MaskReg maskReg;
-    MicroAPI::MaskReg selMask;
-    MicroAPI::MaskReg nanMask;
-    MicroAPI::RegTensor<T> scalarReg;
-    MicroAPI::Duplicate(scalarReg, scalar);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         maskReg = MicroAPI::UpdateMask<T>(calCount);
         MicroAPI::DataCopy<T>(srcReg, srcUb + i * repeatElm);
-        MicroAPI::Compare<T, CMPMODE::NE>(nanMask, srcReg, srcReg, maskReg);
         if constexpr (selMode == CLAMPMODE::CLAMP_MAX) {
-            MicroAPI::CompareScalar<T, CMPMODE::LT>(selMask, srcReg, scalar, maskReg);
+            MicroAPI::Mins(dstReg, srcReg, scalar, maskReg);
         } else {
-            MicroAPI::CompareScalar<T, CMPMODE::GE>(selMask, srcReg, scalar, maskReg);
+            MicroAPI::Maxs(dstReg, srcReg, scalar, maskReg);
         }
-        MicroAPI::MaskOr(selMask, nanMask, selMask, maskReg);
-        MicroAPI::Select(dstReg, srcReg, scalarReg, selMask);
         MicroAPI::DataCopy<T>(dstUb + i * repeatElm, dstReg, maskReg);
     }
 }
