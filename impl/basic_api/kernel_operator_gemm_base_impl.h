@@ -28,7 +28,7 @@ namespace AscendC {
 
 const std::unordered_set<std::string> MATMUL_SUPPORT_TYPE { "s8s8s32", "f16f16f32", "f16f16f16" };
 
-template <typename T> __aicore__ inline std::string GetTypeStr(const LocalTensor<T>& tensor)
+template <typename T> __aicore__ inline std::string GetTypeStr(const LocalTensor<T>& input)
 {
     if (std::is_same<PrimT<T>, uint8_t>::value) {
         return "u8";

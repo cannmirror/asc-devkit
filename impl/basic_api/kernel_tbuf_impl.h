@@ -59,9 +59,9 @@ __aicore__ inline __sync_alias__ LocalTensor<T> TBuf<pos>::Get(uint32_t len)
             this->bufPoolHandle);
     }
 #endif
-    LocalTensor<T> tensor;
-    tensor.SetAddr(addr);
-    return tensor;
+    LocalTensor<T> output;
+    output.SetAddr(addr);
+    return output;
 }
 
 template <TPosition pos> template <typename T> __aicore__ inline __sync_alias__ LocalTensor<T> TBuf<pos>::Get()
@@ -93,9 +93,9 @@ __aicore__ inline __sync_alias__ LocalTensor<T> TBuf<pos>::GetWithOffset(uint32_
     auto absAddr = GetTPipePtr()->GetBaseAddr(static_cast<int8_t>(pos));
     addr.absAddr = absAddr + addr.bufferAddr;
 #endif
-    LocalTensor<T> tensor;
-    tensor.SetAddr(addr);
-    return tensor;
+    LocalTensor<T> output;
+    output.SetAddr(addr);
+    return output;
 }
 
 template <TPosition pos> __aicore__ inline void TBuf<pos>::SetTpipeBuf(TBufType* bufStartIn, uint32_t bufLenIn)
@@ -105,7 +105,7 @@ template <TPosition pos> __aicore__ inline void TBuf<pos>::SetTpipeBuf(TBufType*
     this->offset = 0;
 }
 
-template <TPosition pos> template <typename T> __aicore__ inline void TBuf<pos>::EnQue(const LocalTensor<T>& tensor)
+template <TPosition pos> template <typename T> __aicore__ inline void TBuf<pos>::EnQue(const LocalTensor<T>& input)
 {
     (void)(0);
 }
@@ -122,16 +122,16 @@ __aicore__ inline __sync_alias__ LocalTensor<T> TBuf<pos>::AllocTensor()
     return Get<T>();
 }
 
-template <TPosition pos> template <typename T> __aicore__ inline void TBuf<pos>::FreeTensor(LocalTensor<T>& tensor)
+template <TPosition pos> template <typename T> __aicore__ inline void TBuf<pos>::FreeTensor(LocalTensor<T>& input)
 {
     (void)(0);
 }
 
 template <TPosition pos>
 template <typename T>
-__aicore__ inline TBufState TBuf<pos>::GetState(const LocalTensor<T>& tensor) const
+__aicore__ inline TBufState TBuf<pos>::GetState(const LocalTensor<T>& input) const
 {
-    TBufHandle handle = tensor.GetBufferHandle();
+    TBufHandle handle = input.GetBufferHandle();
     if (handle == nullptr) {
         return TBufState::FREE;
     }

@@ -804,27 +804,27 @@ template <TPosition pos, typename T>
 __aicore__ inline __sync_alias__ LocalTensor<T> TPipe::GetAbsAddr(int32_t offset, int32_t size) const
 {
     TBuffAddr addr = GetAbsAddr<pos>(offset, static_cast<int32_t>((size * sizeof(T))));
-    LocalTensor<T> tensor;
-    tensor.SetAddr(addr);
-    return tensor;
+    LocalTensor<T> output;
+    output.SetAddr(addr);
+    return output;
 }
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 template <typename T>
 [[deprecated("NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. "
         "Please do not use it!")]]
-inline uint64_t TPipe::GetAbsAddr(const LocalTensor<T>& tensor)
+inline uint64_t TPipe::GetAbsAddr(const LocalTensor<T>& input)
 {
     // Translates the CPU address to the actual physical address.
     // Currently, only L1 or UB address translation is supported.
-    int8_t logicPos = tensor.GetPosition();
+    int8_t logicPos = input.GetPosition();
     auto positionHardMap = ConstDefiner::Instance().positionHardMap;
     ASCENDC_ASSERT((positionHardMap.find((TPosition)logicPos) != positionHardMap.end()),
                     { KERNEL_LOG(KERNEL_ERROR, "illegal logicPos %d ", static_cast<int32_t>(logicPos)); });
     Hardware hardType = positionHardMap.at((TPosition)logicPos);
     ASCENDC_ASSERT(((hardType == Hardware::UB) || (hardType == Hardware::L1)),
                     { KERNEL_LOG(KERNEL_ERROR, "illegal hardType %d ", static_cast<int32_t>(hardType)); });
-    uint8_t* phyAddr = reinterpret_cast<uint8_t*>(tensor.GetPhyAddr());
+    uint8_t* phyAddr = reinterpret_cast<uint8_t*>(input.GetPhyAddr());
     uint8_t* baseAddr =
         static_cast<uint8_t*>(g_tpipeImpl.bufPoolBaseAddr_[static_cast<uint32_t>(hardType)].absAddr);
     ASCENDC_ASSERT((phyAddr >= baseAddr), {
@@ -842,18 +842,18 @@ inline uint64_t TPipe::GetAbsAddr(const LocalTensor<T>& tensor)
     return delta;
 }
 
-template <typename T> inline uint64_t GetAbsAddr(TPipe* tpipe, const LocalTensor<T>& tensor)
+template <typename T> inline uint64_t GetAbsAddr(TPipe* tpipe, const LocalTensor<T>& input)
 {
     // Translates the CPU address to the actual physical address.
     // Currently, only L1 or UB address translation is supported.
-    int8_t logicPos = tensor.GetPosition();
+    int8_t logicPos = input.GetPosition();
     auto positionHardMap = ConstDefiner::Instance().positionHardMap;
     ASCENDC_ASSERT((positionHardMap.find((TPosition)logicPos) != positionHardMap.end()),
                     { KERNEL_LOG(KERNEL_ERROR, "illegal logicPos %d ", static_cast<int32_t>(logicPos)); });
     Hardware hardType = positionHardMap.at((TPosition)logicPos);
     ASCENDC_ASSERT(((hardType == Hardware::UB) || (hardType == Hardware::L1)),
                     { KERNEL_LOG(KERNEL_ERROR, "illegal hardType %d ", static_cast<int32_t>(hardType)); });
-    uint8_t* phyAddr = reinterpret_cast<uint8_t*>(tensor.GetPhyAddr());
+    uint8_t* phyAddr = reinterpret_cast<uint8_t*>(input.GetPhyAddr());
     uint8_t* baseAddr =
         static_cast<uint8_t*>(tpipe->g_tpipeImpl.bufPoolBaseAddr_[static_cast<uint32_t>(hardType)].absAddr);
     ASCENDC_ASSERT((phyAddr >= baseAddr), {
