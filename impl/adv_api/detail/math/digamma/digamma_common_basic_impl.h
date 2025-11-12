@@ -24,7 +24,7 @@
 #include "digamma_v200_impl.h"
 #endif
 
-#if __CCE_AICORE__ >= 200 && !defined(__DAV_C310__)
+#if __CCE_AICORE__ >= 200 && !defined(__DAV_C310__) && (__NPU_ARCH__ != 5102)
 namespace AscendC {
 namespace {
 constexpr float MIN_NEG_WITH_FLOAT = -8388608.0;
