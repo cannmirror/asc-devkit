@@ -38,8 +38,8 @@ constexpr float tmp1HalfCalcConst[] = {1.0, 2.0};
 constexpr float picotCalcConst[] = {0.00326538085938f, 0.0242919921875f, 0.053466796875f,
                                     0.133377909660f, 0.333332300186f};
 
-static constexpr MicroAPI::CastTrait FLOAT_TO_FLOAT_CAST_TRAIT = {MicroAPI::RegLayout::UNKNOWN, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
-static constexpr MicroAPI::CastTrait HALF_TO_FLOAT_CAST_TRAIT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+static constexpr MicroAPI::CastTrait FLOAT_TO_INT_CAST_TRAIT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
+static constexpr MicroAPI::CastTrait INT_TO_FLOAT_CAST_TRAIT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
 template <CMPMODE cmpMode>
 __aicore__ inline void DigammaGenCompareMask(MicroAPI::MaskReg& maskDst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::MaskReg& mask) {
@@ -151,13 +151,14 @@ __aicore__ inline void DigammaNegPicotPix(MicroAPI::RegTensor<float>& dstReg, Mi
     MicroAPI::RegTensor<float> tmpScalarReg;
     MicroAPI::RegTensor<int32_t> tmpReg2s32;
     MicroAPI::Add(tmpReg1, srcReg, srcReg, mask);
-    MicroAPI::Cast<float, float, FLOAT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg1, mask);
+    MicroAPI::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg1, mask);
+    MicroAPI::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
     MicroAPI::Sub(tmpReg1, tmpReg1, tmpReg2, mask);
     MicroAPI::Muls(tmpReg1, tmpReg1, 1.5707963267948966f, mask);
-    MicroAPI::Cast<int32_t, float, FLOAT_TO_FLOAT_CAST_TRAIT>(tmpReg2s32, tmpReg2, mask);
+    MicroAPI::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, tmpReg2, mask);
     MicroAPI::Duplicate((MicroAPI::RegTensor<int32_t> &)tmpReg3, 1, mask);
     MicroAPI::And<uint16_t>((MicroAPI::RegTensor<uint16_t> &)tmpReg2s32, (MicroAPI::RegTensor<uint16_t> &)tmpReg2s32, (MicroAPI::RegTensor<uint16_t> &)tmpReg3, mask);
-    MicroAPI::Cast<float, int32_t, FLOAT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
+    MicroAPI::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpReg2, tmpReg2s32, mask);
     DigammaGenCompareMask<CMPMODE::LT>(mask1, tmpReg2, 0.5f, mask);
     DigammaGenCompareMask<CMPMODE::GE>(mask2, tmpReg2, 0.5f, mask);
     MicroAPI::Mul(tmpReg2, tmpReg1, tmpReg1, mask);
@@ -200,10 +201,12 @@ __aicore__ inline void DigammaGenNegIntMask(MicroAPI::MaskReg& maskdst, MicroAPI
     MicroAPI::MaskReg tmpmask;
     MicroAPI::MaskReg mask1;
     MicroAPI::MaskReg mask2;
+    MicroAPI::RegTensor<int32_t> tmpReg2s32;
     DigammaGenCompareMask<CMPMODE::LT>(mask1, srcReg, 0.0f, mask);
     DigammaGenCompareMask<CMPMODE::GT>(mask2, srcReg, MIN_NEG_FLOAT, mask);
-    MicroAPI::MaskAnd(mask1, mask1, mask, mask);
-    MicroAPI::Cast<float, float, FLOAT_TO_FLOAT_CAST_TRAIT>(tmpCal1, srcReg, mask);
+    MicroAPI::MaskAnd(mask1, mask1, mask2, mask);
+    MicroAPI::Cast<int32_t, float, FLOAT_TO_INT_CAST_TRAIT>(tmpReg2s32, srcReg, mask);
+    MicroAPI::Cast<float, int32_t, INT_TO_FLOAT_CAST_TRAIT>(tmpCal1, tmpReg2s32, mask);
     MicroAPI::Compare<float, CMPMODE::EQ>(mask2, srcReg, tmpCal1, mask);
     MicroAPI::MaskAnd(maskdst, mask1, mask2, mask);
 }
@@ -241,7 +244,7 @@ __aicore__ inline void DigammaComputeImpl(
     DigammaSelect(dstReg, resultReg, tmpCal3, mask1);
 
     DigammaGenNanMask(mask0, srcReg, mask1, mask2, mask);
-    DigammaSelect(dstReg, srcReg, tmpCal3, mask0);
+    DigammaSelect(dstReg, resultReg, tmpCal3, mask0);
     DigammaGenCompareMask<CMPMODE::GE>(mask0, srcReg, 0.0f, mask);
     DigammaPositive(resultReg, srcReg, mask);
     DigammaSelect(dstReg, resultReg, tmpCal3, mask0);
@@ -279,12 +282,16 @@ __aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTens
     CheckCalCount(calCount, "calCount", src, "srcTensor", "Digamma");
     CheckCalCount(calCount, "calCount", dst, "dstTensor", "Digamma");
 
-    static_assert((SupportType<T, half, float>(), "current data type is not supported on current device!"));
-    if constexpr (SupportType<T, float>()){
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
+    if constexpr (Std::is_same<T, float>::value) {
+
         __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
         __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
         VF_CALL<DigammaInternal::DigammaImpl<T, isReuseSource>>(dstUb, srcUb, calCount);
-    } else if constexpr(SupportType<T, half>()) {
+    } else if constexpr(Std::is_same<T, half>::value) {
+        if constexpr (isReuseSource) {
+            static_assert(SupportType<T, float>(), "isReuseSource is only supported for float on current device!");
+        }
         constexpr uint32_t oneBlockElm = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
         uint16_t countAlign = static_cast<uint16_t>(CeilDivision(calCount, oneBlockElm)) * oneBlockElm;
         LocalTensor<float> tmpBuffer = tmp.ReinterpretCast<float>();
