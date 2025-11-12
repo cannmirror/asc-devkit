@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetSubBlockDim()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetSubBlockDim()
-{
-    return CApiInternal::asc_GetSubBlockDim();
-}
-
 #endif

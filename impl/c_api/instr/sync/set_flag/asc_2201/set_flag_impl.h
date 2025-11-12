@@ -20,9 +20,4 @@ __aicore__ inline void asc_SyncNotify(pipe_t pipe, pipe_t tpipe, int id)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SyncNotify(pipe_t pipe, pipe_t tpipe, int id)
-{
-    CApiInternal::asc_SyncNotify(pipe, tpipe, id);
-}
-
 #endif

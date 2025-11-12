@@ -22,4 +22,69 @@
 #include "set_mask_norm/asc_2201/set_mask_norm_impl.h"
 #include "set_vector_mask/asc_2201/set_vector_mask_impl.h"
 
+__aicore__ inline int64_t asc_GetAccVal()
+{
+    return CApiInternal::asc_GetAccVal();
+}
+
+__aicore__ inline void asc_GetCmpMask(__ubuf__ void* dst)
+{
+    CApiInternal::asc_GetCmpMask(dst);
+}
+
+__aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
+{
+    CApiInternal::asc_GetReduceMaxMinCnt(val, index);
+}
+
+__aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
+{
+    CApiInternal::asc_GetReduceMaxMinCnt(val, index);
+}
+
+__aicore__ inline int64_t asc_GetRsvdCount()
+{
+    return CApiInternal::asc_GetRsvdCount();
+}
+
+__aicore__ inline void asc_GetVms4Sr(uint16_t sortedNum[4])
+{
+    CApiInternal::asc_GetVms4Sr(sortedNum);
+}
+
+__aicore__ inline void asc_SetCmpMask(__ubuf__ void *src)
+{
+    CApiInternal::asc_SetCmpMask(src);
+}
+
+__aicore__ inline void asc_SetDeqScale(half scaleValue)
+{
+    CApiInternal::asc_SetDeqScale(scaleValue);
+}
+
+__aicore__ inline void asc_SetDeqScale(const DeqScaleConfig config)
+{
+    CApiInternal::asc_SetDeqScale(config);
+}
+
+__aicore__ inline void asc_SetDeqScale(__ubuf__ uint64_t* config)
+{
+    CApiInternal::asc_SetDeqScale(config);
+}
+
+__aicore__ inline void asc_SetMaskCount()
+{
+    CApiInternal::asc_SetMaskCount();
+}
+
+__aicore__ inline void asc_SetMaskNorm()
+{
+    CApiInternal::asc_SetMaskNorm();
+}
+
+__aicore__ inline void asc_SetVectorMask(uint64_t mask1, uint64_t mask0)
+{
+    CApiInternal::asc_SetVectorMask(mask1, mask0);
+}
+
 #endif

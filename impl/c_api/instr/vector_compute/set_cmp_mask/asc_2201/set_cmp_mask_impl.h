@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetCmpMask(__ubuf__ void *src)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetCmpMask(__ubuf__ void *src)
-{
-    CApiInternal::asc_SetCmpMask(src);
-}
-
 #endif

@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicMax()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicMax()
-{
-    CApiInternal::asc_SetAtomicMax();
-}
-
 #endif

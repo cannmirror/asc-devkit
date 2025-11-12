@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicS32()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicS32()
-{
-    CApiInternal::asc_SetAtomicS32();
-}
-
 #endif

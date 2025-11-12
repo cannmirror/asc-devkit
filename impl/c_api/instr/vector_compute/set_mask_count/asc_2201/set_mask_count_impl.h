@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetMaskCount()
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetMaskCount()
-{
-    CApiInternal::asc_SetMaskCount();
-}
-
 #endif

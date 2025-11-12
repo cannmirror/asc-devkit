@@ -20,9 +20,4 @@ __aicore__ inline uint64_t asc_GetOverflowStatus()
 
 } // namespace CApiInternal
 
-__aicore__ inline uint64_t asc_GetOverflowStatus()
-{
-    return CApiInternal::asc_GetOverflowStatus();
-}
-
 #endif

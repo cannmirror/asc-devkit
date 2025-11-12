@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicS16()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicS16()
-{
-    CApiInternal::asc_SetAtomicS16();
-}
-
 #endif

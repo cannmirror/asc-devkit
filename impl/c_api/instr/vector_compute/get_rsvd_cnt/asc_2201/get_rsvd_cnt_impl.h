@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetRsvdCount()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetRsvdCount()
-{
-    return CApiInternal::asc_GetRsvdCount();
-}
-
 #endif

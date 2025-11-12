@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicHalf()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicHalf()
-{
-    CApiInternal::asc_SetAtomicHalf();
-}
-
 #endif

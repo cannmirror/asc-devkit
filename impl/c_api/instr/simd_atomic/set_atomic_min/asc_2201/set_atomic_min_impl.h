@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicMin()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicMin()
-{
-    CApiInternal::asc_SetAtomicMin();
-}
-
 #endif

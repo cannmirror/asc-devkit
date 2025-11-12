@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicBfloat16()
  
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicBfloat16()
-{
-    CApiInternal::asc_SetAtomicBfloat16();
-}
-
 #endif

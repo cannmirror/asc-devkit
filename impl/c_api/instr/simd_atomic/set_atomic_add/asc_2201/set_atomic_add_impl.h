@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicAdd()
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicAdd()
-{
-    CApiInternal::asc_SetAtomicAdd();
-}
-
 #endif

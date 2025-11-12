@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetCtrl()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetCtrl()
-{
-    return CApiInternal::asc_GetCtrl();
-}
-
 #endif

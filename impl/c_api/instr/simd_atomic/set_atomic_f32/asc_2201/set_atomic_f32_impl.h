@@ -20,9 +20,4 @@ __aicore__ inline void asc_SetAtomicFloat()
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetAtomicFloat()
-{
-    CApiInternal::asc_SetAtomicFloat();
-}
-
 #endif

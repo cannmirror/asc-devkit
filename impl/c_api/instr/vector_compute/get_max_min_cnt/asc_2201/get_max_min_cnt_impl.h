@@ -13,6 +13,8 @@
 
 namespace CApiInternal {
 
+constexpr uint8_t offset = 32;
+
 __aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
 {
     int64_t max_min_cnt = get_max_min_cnt();
@@ -21,7 +23,7 @@ __aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
         uint16_t u;
     } u162half = {.u = 0xffff & max_min_cnt};
     val = u162half.h;
-    index = 0xffffffff & (max_min_cnt >> 32);
+    index = 0xffffffff & (max_min_cnt >> offset);
 }
 
 __aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
@@ -32,19 +34,9 @@ __aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
         uint32_t u;
     } u322float = {.u = 0xffffffff & max_min_cnt};
     val = u322float.f;
-    index = 0xffffffff & (max_min_cnt >> 32);
+    index = 0xffffffff & (max_min_cnt >> offset);
 }
 
 } // namespace CApiInternal
-
-__aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
-{
-    CApiInternal::asc_GetReduceMaxMinCnt(val, index);
-}
-
-__aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
-{
-    CApiInternal::asc_GetReduceMaxMinCnt(val, index);
-}
 
 #endif

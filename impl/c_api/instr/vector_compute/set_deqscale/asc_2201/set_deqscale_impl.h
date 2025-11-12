@@ -33,19 +33,4 @@ __aicore__ inline void asc_SetDeqScale(__ubuf__ uint64_t* config)
 
 } // namespace CApiInternal
 
-__aicore__ inline void asc_SetDeqScale(half scaleValue)
-{
-    CApiInternal::asc_SetDeqScale(scaleValue);
-}
-
-__aicore__ inline void asc_SetDeqScale(const DeqScaleConfig config)
-{
-    CApiInternal::asc_SetDeqScale(config);
-}
-
-__aicore__ inline void asc_SetDeqScale(__ubuf__ uint64_t* config)
-{
-    CApiInternal::asc_SetDeqScale(config);
-}
-
 #endif

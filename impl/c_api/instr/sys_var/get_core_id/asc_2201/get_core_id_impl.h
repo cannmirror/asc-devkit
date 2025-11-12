@@ -20,9 +20,4 @@ __aicore__ inline int64_t asc_GetCoreId()
 
 } // namespace CApiInternal
 
-__aicore__ inline int64_t asc_GetCoreId()
-{
-    return CApiInternal::asc_GetCoreId();
-}
-
 #endif

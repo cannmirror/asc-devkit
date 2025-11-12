@@ -19,5 +19,57 @@
 #include "get_sub_block_id/asc_2201/get_sub_block_id_impl.h"
 #include "get_sys_cnt/asc_2201/get_sys_cnt_impl.h"
 #include "set_ctrl/asc_2201/set_ctrl_impl.h"
- 
+#include "get_ffts_base_addr/asc_2201/get_ffts_base_addr_impl.h"
+#include "set_ffts_base_addr/asc_2201/set_ffts_base_addr_impl.h"
+
+__aicore__ inline int64_t asc_GetCoreId()
+{
+    return CApiInternal::asc_GetCoreId();
+}
+
+__aicore__ inline int64_t asc_GetCtrl()
+{
+    return CApiInternal::asc_GetCtrl();
+}
+
+__aicore__ inline int64_t asc_GetFftsBaseAddr()
+{
+    return CApiInternal::asc_GetFftsBaseAddr();
+}
+
+__aicore__ inline uint64_t asc_GetPhyBufAddr(uint64_t offset)
+{
+    return CApiInternal::asc_GetPhyBufAddr(offset);
+}
+
+__aicore__ inline uint64_t asc_GetOverflowStatus()
+{
+    return CApiInternal::asc_GetOverflowStatus();
+}
+
+__aicore__ inline int64_t asc_GetSubBlockDim()
+{
+    return CApiInternal::asc_GetSubBlockDim();
+}
+
+__aicore__ inline int64_t asc_GetSubBlockId()
+{
+    return CApiInternal::asc_GetSubBlockId();
+}
+
+__aicore__ inline int64_t asc_GetSystemCycle()
+{
+    return CApiInternal::asc_GetSystemCycle();
+}
+
+__aicore__ inline void asc_SetCtrl(uint64_t config)
+{
+    CApiInternal::asc_SetCtrl(config);
+}
+
+__aicore__ inline void asc_SetFftsBaseAddr(uint64_t config)
+{
+    CApiInternal::asc_SetFftsBaseAddr(config);
+}
+
 #endif
