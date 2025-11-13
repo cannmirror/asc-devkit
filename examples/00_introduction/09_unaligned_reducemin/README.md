@@ -42,7 +42,7 @@
 
   ReduceMin算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入inputGM搬运到Local Memory，存储在inputLocal中。Compute任务负责对inputLocal执行轴规约的ReduceMin操作，调用ReduceMin基础API时需要指定mask掩盖脏数据，计算结果存储在outputLocal中。CopyOut任务负责将输出数据从outputLocal搬运至Global Memory上的输出outputGM中，为防止数据踩踏本例使用原子加进行搬出。
   - 调用实现  
-    使用内核调用符<<<>>>调用核函数
+    使用内核调用符<<<>>>调用核函数。
 ## 编译运行
   - 配置环境变量  
     以命令行方式下载样例代码，master分支为例。

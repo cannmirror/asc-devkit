@@ -86,7 +86,7 @@
     cmake ..;make -j;             # 编译工程
     ```
 
-    执行add.asc、basic_api_tque_add.asc样例
+    执行add.asc、basic_api_tque_add.asc样例的命令如下所示：
     ```bash
     ./add_tque                        # 执行样例
     ./add                        # 执行样例
@@ -96,7 +96,7 @@
     [Success] Case accurary is verification passed.
     ```
 
-    执行basic_api_memory_allocator_add.asc样例
+    执行basic_api_memory_allocator_add.asc样例的命令如下所示：
     ```bash
     python3 ../scripts/gen_data.py   # 生成测试输入数据
     ./add_basic                        # 执行编译生成的可执行程序，执行样例
