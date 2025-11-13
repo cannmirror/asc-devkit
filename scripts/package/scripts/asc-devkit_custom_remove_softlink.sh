@@ -56,8 +56,12 @@ do_remove_stub_softlink() {
     local ref_dir="$install_path/$version_dir/asc-devkit/lib64/stub/linux/$arch_name"
     remove_stub_softlink "$ref_dir" "$arch_linux_path/devlib"
     remove_stub_softlink "$ref_dir" "$arch_linux_path/lib64/stub"
-    if [ -d "$install_path/$latest_dir/tools" ]; then
-        rm -f "$install_path/$latest_dir/tools"
+    if [ -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
+        if [ -z "$(ls -A "$install_path/$latest_dir/tools/ascendc_tools")" ]; then
+            rm -f "$install_path/$latest_dir/tools/ascendc_tools/"
+        else
+            rm -f "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
+        fi
     fi
     if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
         rm -rf "$arch_linux_path/pkg_inc/asc"
