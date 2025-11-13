@@ -60,7 +60,10 @@ do_create_stub_softlink() {
     create_stub_softlink "$arch_linux_path/devlib" "linux/$arch_name"
     create_stub_softlink "$arch_linux_path/lib64/stub" "linux/$arch_name"
     if [ -d "$install_path/$version_dir/tools" ]; then
-        ln -sr "$install_path/$version_dir/tools" "$install_path/$latest_dir/tools"
+        if [ ! -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
+            mkdir -p "$install_path/$latest_dir/tools/ascendc_tools"
+        fi
+        ln -sr "$install_path/$version_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
     fi
     if [ ! -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
         mkdir -p "$arch_linux_path/pkg_inc/asc/hccl"
