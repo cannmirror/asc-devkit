@@ -1,0 +1,20 @@
+find_package(GTest CONFIG)
+if (NOT ${GTest_FOUND})
+    if (EXISTS "${ASCEND_HOME_PATH}/opensdk/opensdk/gtest")
+        list(APPEND CMAKE_PREFIX_PATH ${ASCEND_HOME_PATH}/opensdk/opensdk/gtest)
+        find_package(GTest CONFIG)
+    endif ()
+endif ()
+if (NOT ${GTest_FOUND})
+    message(FATAL_ERROR "Can't find any googletest.")
+endif ()
+
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
+set(third_party_TEM_DIR ${ASCENDC_TOOLS_ROOT_DIR}/build/tmp)
+
+include(${ASCENDC_TOOLS_ROOT_DIR}/third_party/json.cmake)
+include(${ASCENDC_TOOLS_ROOT_DIR}/third_party/boost.cmake)
+include(${ASCENDC_TOOLS_ROOT_DIR}/third_party/mockcpp.cmake)

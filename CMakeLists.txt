@@ -44,6 +44,7 @@ set(TILING_DATA_DEF_DIR ${ASCENDC_INCLUDE_DIR}/adv_api)
 set(KERNEL_TILING_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(KERNEL_TILING_HAED ${KERNEL_TILING_DIR}/kernel_tiling/kernel_tiling.h)
 
+set(ASCENDC_FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 if(NOT BUILD_OPEN_PROJECT)
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/tiling/tiling_api.h
@@ -98,7 +99,6 @@ if(BUILD_OPEN_PROJECT)
   include(depend/dependencies.cmake)
 endif()
 
-set(ASCENDC_FRAMEWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_custom_target(hostapi_headers
     COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/include/ascendc/host_api/tiling
     COMMAND cp -rf ${CMAKE_CURRENT_SOURCE_DIR}/include/utils/tiling/template_argument.h ${CMAKE_CURRENT_BINARY_DIR}/include/ascendc/host_api/tiling
