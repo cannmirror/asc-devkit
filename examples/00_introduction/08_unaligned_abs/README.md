@@ -49,7 +49,7 @@
 
   Abs算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputGM搬运到Local Memory，存储在inputLocal中，Compute任务负责对inputLocal执行取绝对值操作，主块和尾块计算结果分别存储在outputLocal和tailLocal中，尾块的结果需要使用GatherMask借位搬运，CopyOut任务负责将输出数据从outputLocal和tailLocal搬运至Global Memory上的输出Tensor outputGM中。
   - 调用实现  
-    使用内核调用符<<<>>>调用核函数
+    使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
   - 配置环境变量  

@@ -42,7 +42,7 @@
   Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
   - 调用实现  
-    使用内核调用符<<<>>>调用核函数
+    使用内核调用符<<<>>>调用核函数。
 ## 编译运行
   - 配置环境变量  
     以命令行方式下载样例代码，master分支为例。

@@ -44,7 +44,7 @@
     
   TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本示例算子使用了3个tiling参数：totalLength，rows，cols 。totalLength是指需要计算的数据量大小，rows是指二维输入Tensor的行数，cols则是指每行的数据个数。通过将totalLength，rows，cols传递到kernel侧，就可以实现将输入数据按行切分，然后规约求和。tiling实现代码中通过上下文获取输入输出的shape信息，并对应设置TilingData。
   - 调用实现    
-    使用内核调用符<<<>>>调用核函数
+    使用内核调用符<<<>>>调用核函数。
 ## 编译运行
   - 配置环境变量  
     以命令行方式下载样例代码，master分支为例。
