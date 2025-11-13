@@ -71,7 +71,7 @@
     ``` 
 
 
-## 编译安装
+## 编译安装<a name="compile&install"></a>
 
 1. 编译
 

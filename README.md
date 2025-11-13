@@ -46,7 +46,7 @@ Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工
 
 若您希望快速体验项目的构建和样例的执行，请访问如下文档获取简易教程。
 
-- [构建](docs/00_quick_start.md)：介绍搭建环境、编译执行、本地验证等操作。
+- [构建](docs/quick_start.md)：介绍搭建环境、编译执行、本地验证等操作。
 - [样例执行](examples/README.md)：介绍如何端到端执行样例代码。
 
 
@@ -56,9 +56,9 @@ Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工
 | 文档  |  说明   |
 |---------|--------|
 |[Ascend C资料书架](./docs/README.md)|总览Ascend C相关文档及视频资料。|
-|[自定义开发API指南](./docs/01_adv_api_programming_guide.md)|介绍如何基于Ascend C开发高阶API。|
+|[自定义开发API指南](./docs/adv_api_programming_guide.md)|介绍如何基于Ascend C开发高阶API。|
 |[API列表](./docs/api/README.md)|Ascend C API列表。|
-|[变更日志](./CHANGELOG.md)|介绍各版本特性变更。|
+
 
 ## 📝相关信息
 
