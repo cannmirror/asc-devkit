@@ -91,6 +91,12 @@ chmod_end() {
     chmod_single_dir "$default_dir/script" 550 dir 2> /dev/null
     chmod_recur "$default_dir/script" 550 file 2> /dev/null
     chmod_single_dir "$default_dir/script/install.sh" 500 file 2> /dev/null
+
+    chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base" 550 dir
+    chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base" 550 file
+    chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base-0.1.0.dist-info" 550 dir
+    chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base-0.1.0.dist-info" 550 file
+
     if [ $(id -u) -eq 0 ]; then
         chown "root:root" "$default_dir" 2> /dev/null
         chmod 755 "$default_dir" 2> /dev/null
@@ -630,7 +636,8 @@ prompt_set_env() {
         install_path="$install_path/$pkg_version_dir"
     fi
     echo "Please make sure that
-        - LD_LIBRARY_PATH includes ${install_path}/asc-devkit/lib64"
+        - LD_LIBRARY_PATH includes ${install_path}/asc-devkit/lib64
+        - PYTHONPATH includes ${install_path}/asc-devkit/python/site-packages"
 }
 
 check_docker_path() {

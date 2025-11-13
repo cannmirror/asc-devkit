@@ -53,6 +53,11 @@ while true; do
     esac
 done
 
+WHL_INSTALL_DIR_PATH="${common_parse_dir}/python/site-packages"
+WHL_SOFTLINK_INSTALL_DIR_PATH="${common_parse_dir}/asc-devkit/python/site-packages"
+PYTHON_ASC_OP_COMPILE_BASE_NAME="asc_op_compile_base"
+PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH="${sourcedir}/../lib/asc_op_compile_base-0.1.0-py3-none-any.whl"
+
 # 写日志
 log() {
     local cur_date="$(date +'%Y-%m-%d %H:%M:%S')"
@@ -87,6 +92,26 @@ create_stub_softlink() {
     cd $pwdbak
 }
 
+install_whl_package() {
+    local _package_path="$1"
+    local _package_name="$2"
+    local _pythonlocalpath="$3"
+    log "INFO" "start install python module package ${_package_name}."
+    if [ -f "$_package_path" ]; then
+        pip3 install --disable-pip-version-check --upgrade --no-deps --force-reinstall "${_package_path}" -t "${_pythonlocalpath}" 1> /dev/null
+        local ret=$?
+        if [ $ret -ne 0 ]; then
+            log "WARNING" "install ${_package_name} failed, error code: $ret."
+            exit 1
+        else
+            log "INFO" "${_package_name} installed successfully!"
+        fi
+    else
+        log "ERROR" "ERR_NO:0x0080;ERR_DES:install ${_package_name} failed, can not find the matched package for this platform."
+        exit 1
+    fi
+}
+
 custom_install() {
     if [ -z "$common_parse_dir/asc-devkit" ]; then
         log "ERROR" "ERR_NO:0x0001;ERR_DES:asc-devkit directory is empty"
@@ -96,6 +121,11 @@ custom_install() {
         create_stub_softlink "$common_parse_dir/asc-devkit/lib64/stub" "linux/$arch_name"
         create_stub_softlink "$common_parse_dir/$arch_name-linux/devlib" "linux/$arch_name"
         create_stub_softlink "$common_parse_dir/$arch_name-linux/lib64/stub" "linux/$arch_name"
+
+        install_whl_package "${PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH}" "${PYTHON_ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
+        mkdir -p "${WHL_SOFTLINK_INSTALL_DIR_PATH}"
+        create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_op_compile_base"
+        create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_op_compile_base-*.dist-info"
     else
         local arch_name="$(get_arch_name $common_parse_dir/asc-devkit)"
         create_stub_softlink "$common_parse_dir/asc-devkit/lib64/stub" "linux/$arch_name"

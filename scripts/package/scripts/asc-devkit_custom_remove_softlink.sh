@@ -65,3 +65,38 @@ do_remove_stub_softlink() {
 }
 
 do_remove_stub_softlink
+
+python_dir_chmod_set() {
+    local dir="$1"
+    if [ ! -d "$dir" ]; then
+        return
+    fi
+    chmod u+w "$dir" > /dev/null 2>&1
+}
+
+remove_softlink() {
+    rm -rf $WHL_SOFTLINK_INSTALL_DIR_PATH/$1 > /dev/null 2>&1
+}
+
+remove_empty_dir() {
+    local _path="$1"
+    if [ -d "${_path}" ]; then
+        local is_empty=$(ls "${_path}" | wc -l)
+        if [ "$is_empty" -eq 0 ]; then
+            prev_path=$(dirname "${_path}")
+            chmod +w "${prev_path}" > /dev/null 2>&1
+            rm -rf "${_path}" > /dev/null 2>&1
+        fi
+    fi
+}
+
+WHL_SOFTLINK_INSTALL_DIR_PATH="$install_path/$latest_dir/python/site-packages"
+
+python_dir_chmod_set "$WHL_SOFTLINK_INSTALL_DIR_PATH"
+
+remove_softlink "asc_op_compile_base"
+remove_softlink "asc_op_compile_base-*.dist-info"
+
+remove_empty_dir "$WHL_SOFTLINK_INSTALL_DIR_PATH"
+remove_empty_dir "$install_path/$latest_dir/python"
+remove_empty_dir "$install_path/$latest_dir"
