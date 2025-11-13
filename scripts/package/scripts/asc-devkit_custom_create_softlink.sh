@@ -57,6 +57,10 @@ do_create_stub_softlink() {
     if [ -d "$install_path/$version_dir/tools" ]; then
         ln -sr "$install_path/$version_dir/tools" "$install_path/$latest_dir/tools"
     fi
+    if [ ! -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
+        mkdir -p "$arch_linux_path/pkg_inc/asc/hccl"
+        ln -sr "$arch_linux_path/asc/include/adv_api/hccl/internal" "$arch_linux_path/pkg_inc/asc/hccl/internal"
+    fi
 }
 
 do_create_stub_softlink
