@@ -1,3 +1,6 @@
 add_subdirectory(elf_tool)
 add_subdirectory(asc_pack_kernel)
 add_subdirectory(asc_rt)
+if(BUILD_OPEN_PROJECT)
+    add_subdirectory(asc_op_compile_base)
+endif()
