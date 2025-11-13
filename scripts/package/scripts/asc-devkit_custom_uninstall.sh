@@ -85,6 +85,54 @@ remove_stub_softlink() {
     cd $pwdbak
 }
 
+whl_uninstall_package() {
+    local _module="$1"
+    local _module_path="$2"
+    if [ ! -d "$WHL_INSTALL_DIR_PATH/${_module}" ]; then
+        pip3 show "${_module}" > /dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            log "WARNING" "${_module} is not exist."
+        else
+            pip3 uninstall -y "${_module}" 1> /dev/null 2>&1
+            local ret=$?
+            if [ $ret -ne 0 ]; then
+                log "WARNING" "uninstall ${_module} failed, error code: $ret."
+                exit 1
+            else
+                log "INFO" "${_module} uninstalled successfully!"
+            fi
+        fi
+    else
+        export PYTHONPATH="${_module_path}"
+        pip3 uninstall -y "${_module}" > /dev/null 2>&1
+        local ret=$?
+        if [ $ret -ne 0 ]; then
+            log "WARNING" "uninstall ${_module} failed, error code: $ret."
+            exit 1
+        else
+            log "INFO" "${_module} uninstalled successfully!"
+        fi
+    fi
+}
+
+remove_empty_dir() {
+    local _path="$1"
+    if [ -d "${_path}" ]; then
+        local is_empty=$(ls "${_path}" | wc -l)
+        if [ "$is_empty" -ne 0 ]; then
+            log "INFO" "${_path} dir is not empty."
+        else
+            prev_path=$(dirname "${_path}")
+            chmod +w "${prev_path}" > /dev/null 2>&1
+            rm -rf "${_path}" > /dev/null 2>&1
+        fi
+    fi
+}
+
+WHL_SOFTLINK_INSTALL_DIR_PATH="${common_parse_dir}/asc-devkit/python/site-packages"
+WHL_INSTALL_DIR_PATH="${common_parse_dir}/python/site-packages"
+ASC_OP_COMPILE_BASE_NAME="asc_op_compile_base"
+
 custom_uninstall() {
     if [ -z "$common_parse_dir/asc-devkit" ]; then
         log "ERROR" "ERR_NO:0x0001;ERR_DES:asc-devkit directory is empty"
@@ -101,6 +149,22 @@ custom_uninstall() {
         remove_stub_softlink "$ref_dir" "$common_parse_dir/asc-devkit/lib64/stub"
         remove_stub_softlink "$ref_dir" "$common_parse_dir/../devlib"
         remove_stub_softlink "$ref_dir" "$common_parse_dir/../lib64/stub"
+    fi
+
+    test -d "$WHL_SOFTLINK_INSTALL_DIR_PATH" && rm -rf "$WHL_SOFTLINK_INSTALL_DIR_PATH" > /dev/null 2>&1
+    remove_empty_dir "${common_parse_dir}/asc-devkit/python"
+    if [ "$hetero_arch" != "y" ]; then
+        chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base" 2> /dev/null
+        chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base-0.1.0.dist-info" 2> /dev/null
+        whl_uninstall_package "${ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
+
+        if [ -d "${WHL_INSTALL_DIR_PATH}" ]; then
+            local python_path=$(dirname "${WHL_INSTALL_DIR_PATH}")
+            chmod +w "${python_path}"
+        fi
+
+        remove_empty_dir "${WHL_INSTALL_DIR_PATH}"
+        remove_empty_dir "${common_parse_dir}/python"
     fi
     return 0
 }

@@ -2,6 +2,11 @@
 # Perform custom create softlink script for asc-devkit package
 # Copyright (c) Huawei Technologies Co., Ltd. 2025. All rights reserved.
 
+curpath=$(dirname $(readlink -f "$0"))
+common_func_path="${curpath}/common_func.inc"
+
+. "${common_func_path}"
+
 while true; do
     case "$1" in
     --install-path=*)
@@ -64,3 +69,20 @@ do_create_stub_softlink() {
 }
 
 do_create_stub_softlink
+
+python_dir_chmod_reset() {
+    local dir="$1"
+    if [ ! -d "$dir" ]; then
+        return
+    fi
+    chmod u+w "$dir" > /dev/null 2>&1
+}
+
+WHL_INSTALL_DIR_PATH="$install_path/$version_dir/python/site-packages"
+WHL_SOFTLINK_INSTALL_DIR_PATH="$install_path/$latest_dir/python/site-packages"
+
+mkdir -p "$WHL_SOFTLINK_INSTALL_DIR_PATH"
+python_dir_chmod_reset "$WHL_SOFTLINK_INSTALL_DIR_PATH"
+
+create_softlink_if_exists "$WHL_INSTALL_DIR_PATH" "$WHL_SOFTLINK_INSTALL_DIR_PATH" "asc_op_compile_base"
+create_softlink_if_exists "$WHL_INSTALL_DIR_PATH" "$WHL_SOFTLINK_INSTALL_DIR_PATH" "asc_op_compile_base-*.dist-info"
