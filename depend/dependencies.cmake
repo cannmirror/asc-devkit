@@ -36,6 +36,7 @@ find_package(alog MODULE REQUIRED)
 find_package(securec MODULE REQUIRED)
 find_package(mmpa MODULE REQUIRED)
 find_package(metadef MODULE REQUIRED)
+find_package(platform MODULE REQUIRED)
 
 if(ENABLE_TEST)
   find_package(pvmodel MODULE REQUIRED)

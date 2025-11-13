@@ -25,8 +25,11 @@
 #include <vector>
 
 #include "platform/platform_info.h"
+#include "ascendc_tool_log.h"
 
-#define CHECK(...)
+#define CHECK(x, message)                             \
+  if (!(x))                                           \
+    ASCENDLOGE("Check failed: %s, %s", #x, message)   \
 
 namespace tvm {
 namespace platformconf {

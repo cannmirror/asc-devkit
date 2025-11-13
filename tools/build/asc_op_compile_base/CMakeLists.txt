@@ -5,16 +5,38 @@ message(STATUS "CMAKE_BINARY_DIR=" ${CMAKE_BINARY_DIR})
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR=" ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(ASC_OP_COMPILE_BASE_WHL_NAME "asc_op_compile_base-0.1.0-py3-none-any.whl")
+# set(ASC_OP_COMPILE_CHECK_WHL "checkwhl")
+# set(ASC_OP_COMPILE_MOVE_WHL "movewhl")
 set(ASC_OP_COMPILE_BASE_DIR "./asc_op_compile_base_python")
 set(ASC_OP_COMPILE_BASE_SRC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 add_library(asc_platform SHARED ${CMAKE_CURRENT_SOURCE_DIR}/c_api/asc_platform.cc ${CMAKE_CURRENT_SOURCE_DIR}/c_api/asc_platform_api.cpp)
-target_include_directories(asc_platform PRIVATE 
-  ${CMAKE_CURRENT_SOURCE_DIR}/c_api
-  ${TOP_DIR}/abl/libc_sec/include
-)
+if(BUILD_OPEN_PROJECT)
+  target_include_directories(asc_platform PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/c_api
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common
+    ${ASCEND_CANN_PACKAGE_PATH}/include
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment
+    ${ASCEND_CANN_PACKAGE_PATH}/include/base
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
+  )
+else()
+  target_include_directories(asc_platform PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/c_api
+    ${TOP_DIR}/asc/asc-devkit/tools/build/common
+    ${TOP_DIR}/abl/libc_sec/include
+    ${TOP_DIR}/abl/mmpa/inc
+    ${TOP_DIR}/metadef/inc
+    ${TOP_DIR}/abl/slog/inc/toolchain
+  )
+endif()
 
-target_link_libraries(asc_platform PRIVATE platform)
+target_link_libraries(asc_platform PRIVATE 
+  platform
+  mmpa
+  alog
+  error_manager
+)
 target_compile_options(asc_platform PRIVATE -fPIC -D_GLIBCXX_USE_CXX11_ABI=0)
 
 # 将共享库复制到 asc_op_compile_base 包的根目录下
@@ -31,18 +53,32 @@ add_custom_command(
 )
 
 # 生成 Python 轮子包
-add_custom_target(${ASC_OP_COMPILE_BASE_WHL_NAME}
+add_custom_target(${ASC_OP_COMPILE_BASE_WHL_NAME} ALL
   COMMAND echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME}" && pwd && 
-    mkdir ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler && 
+    mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler && 
     cp -rf ${ASC_OP_COMPILE_BASE_SRC}/asc_op_compiler/* ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler/ &&
     cp -rf ${ASC_OP_COMPILE_BASE_SRC}/c_api/*.py ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/ &&
-    mkdir ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/common && 
+    mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/common && 
     cp -rf ${ASC_OP_COMPILE_BASE_SRC}/common/* ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/common/ &&
     cp ${ASC_OP_COMPILE_BASE_SRC}/__init__.py ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base &&
     cp ${ASC_OP_COMPILE_BASE_SRC}/setup.py ${ASC_OP_COMPILE_BASE_DIR}/ &&
     cd ${ASC_OP_COMPILE_BASE_DIR} && ${HI_PYTHON} setup.py bdist_wheel && cd - &&
     ls && pwd &&
-    ${CMAKE_COMMAND} -E rename  ${ASC_OP_COMPILE_BASE_DIR}/dist/asc_op_compile_base*.whl ${CMAKE_INSTALL_PREFIX}/lib/${ASC_OP_COMPILE_BASE_WHL_NAME} &&
-    echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAMEs} end"
+    mkdir ${CMAKE_INSTALL_PREFIX}/lib -p &&
+    ${CMAKE_COMMAND} -E rename ${ASC_OP_COMPILE_BASE_DIR}/dist/asc_op_compile_base*.whl ${CMAKE_INSTALL_PREFIX}/lib/${ASC_OP_COMPILE_BASE_WHL_NAME} &&
+    echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME} end"
   DEPENDS asc_platform
 )
+
+# add_custom_target(${ASC_OP_COMPILE_CHECK_WHL} ALL
+#   COMMAND /bin/sh -c "[ -n \"\$(find ${ASC_OP_COMPILE_BASE_DIR}/dist -name '*.whl' -type f)\" ] && echo \"[ASC_OP_COMPILE_BASE]: FIND .whl FILE\" || echo \"[ASC_OP_COMPILE_BASE]: NOT FIND .whl FILE\""
+#   DEPENDS ${ASC_OP_COMPILE_BASE_WHL_NAME}
+#   VERBATIM
+# )
+
+# add_custom_target(${ASC_OP_COMPILE_MOVE_WHL} ALL
+#   COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/lib -p &&
+#     ${CMAKE_COMMAND} -E rename ${ASC_OP_COMPILE_BASE_DIR}/dist/asc_op_compile_base*.whl ${CMAKE_INSTALL_PREFIX}/lib/${ASC_OP_COMPILE_BASE_WHL_NAME} &&
+#     echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME} end"
+#   DEPENDS ${ASC_OP_COMPILE_CHECK_WHL}
+# )
