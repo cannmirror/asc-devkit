@@ -14,7 +14,6 @@
 #include "kernel_utils.h"
 #include "kernel_struct_aipp.h"
 #include "kernel_struct_mm.h"
-#include "simt_api/kernel_simt_intf.h"
 
 namespace AscendC {
 /* **************************************************************************************************
