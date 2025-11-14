@@ -27,7 +27,7 @@ namespace AscendC {
 
 // Unified helper function for repeated WelfordUpdateImplForB16VF/B32VF core logic
 template <typename T, bool IsB16>
-__aicore__ inline void WelfordUpdateImplForVFCommon(MicroAPI::MaskReg& preg, MicroAPI::RegTensor<float>& meanVreg,
+__simd_callee__ inline void WelfordUpdateImplForVFCommon(MicroAPI::MaskReg& preg, MicroAPI::RegTensor<float>& meanVreg,
     MicroAPI::RegTensor<float>& varVreg, MicroAPI::RegTensor<float>& tmpVreg,
     typename std::conditional<IsB16, MicroAPI::RegTensor<float>&, MicroAPI::RegTensor<T>&>::type srcVreg,
     MicroAPI::RegTensor<float>& outMeanreg, MicroAPI::RegTensor<float>& outVarreg, MicroAPI::RegTensor<float>& f32vreg,
@@ -48,7 +48,7 @@ __aicore__ inline void WelfordUpdateImplForVFCommon(MicroAPI::MaskReg& preg, Mic
 }
 
 // Helper for in-place copy logic in B16/B32
-__aicore__ inline void WelfordUpdateImplInplaceCopy(MicroAPI::MaskReg& preg, MicroAPI::RegTensor<float>& meanVreg,
+__simd_callee__ inline void WelfordUpdateImplInplaceCopy(MicroAPI::MaskReg& preg, MicroAPI::RegTensor<float>& meanVreg,
     MicroAPI::RegTensor<float>& varVreg, __local_mem__ float* const outMean, __local_mem__ float* const outVar,
     __local_mem__ float* const inMean, __local_mem__ float* const inVar, uint32_t abLength, uint32_t inPlaceLength,
     uint16_t repeatInplace, uint32_t sregLower, uint32_t dstOffset)
@@ -71,9 +71,9 @@ __aicore__ inline void WelfordUpdateImplInplaceCopy(MicroAPI::MaskReg& preg, Mic
 
 // VF helper extracted from WelfordUpdateImplForB16
 template <typename T, const WelfordUpdateConfig& config = WFUPDATE_DEFAULT_CFG>
-__aicore__ inline void WelfordUpdateImplForB16VF(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
+__simd_vf__ inline void WelfordUpdateImplForB16VF(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
     __local_mem__ T* const src, __local_mem__ float* const inMean, __local_mem__ float* const inVar,
-    const WelfordUpdateParam& para, const uint16_t sregLowerB32, const uint32_t sregLower, const uint32_t K)
+    const WelfordUpdateParam para, const uint16_t sregLowerB32, const uint32_t sregLower, const uint32_t K)
 {
     MicroAPI::MaskReg preg;
 
@@ -118,9 +118,9 @@ __aicore__ inline void WelfordUpdateImplForB16VF(__local_mem__ float* const outM
 
 // VF helper extracted from WelfordUpdateImplForB32
 template <typename T, const WelfordUpdateConfig& config = WFUPDATE_DEFAULT_CFG>
-__aicore__ inline void WelfordUpdateImplForB32VF(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
+__simd_vf__ inline void WelfordUpdateImplForB32VF(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
     __local_mem__ T* const src, __local_mem__ float* const inMean, __local_mem__ float* const inVar,
-    const WelfordUpdateParam& para, const uint32_t sregLower, const uint32_t K)
+    const WelfordUpdateParam para, const uint32_t sregLower, const uint32_t K)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<T> srcVreg;
@@ -163,7 +163,7 @@ __aicore__ inline void WelfordUpdateImplForB16(__local_mem__ float* const outMea
     const uint32_t sregLower = static_cast<uint32_t>(Internal::LAYERNORM_B16_VF_LEN);
     const uint32_t K = para.abComputeLength;
 
-    VF_CALL<WelfordUpdateImplForB16VF<T, config>>(
+    WelfordUpdateImplForB16VF<T, config>(
         outMean, outVar, src, inMean, inVar, para, sregLowerB32, sregLower, K);
 }
 
@@ -175,7 +175,7 @@ __aicore__ inline void WelfordUpdateImplForB32(__local_mem__ float* const outMea
     const uint32_t sregLower = static_cast<uint32_t>(Internal::LAYERNORM_B32_VF_LEN);
     const uint32_t K = para.abComputeLength;
 
-    VF_CALL<WelfordUpdateImplForB32VF<T, config>>(outMean, outVar, src, inMean, inVar, para, sregLower, K);
+    WelfordUpdateImplForB32VF<T, config>(outMean, outVar, src, inMean, inVar, para, sregLower, K);
 }
 
 template <typename T, typename U = float, bool isReuseSource = false,

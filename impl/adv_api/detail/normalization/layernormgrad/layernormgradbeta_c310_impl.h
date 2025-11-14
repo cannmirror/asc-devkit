@@ -28,7 +28,7 @@ constexpr MicroAPI::CastTrait castTraitF32F16 = {MicroAPI::RegLayout::ZERO, Micr
                                                  MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 template <typename T>
-__aicore__ inline void LoadSrcData(MicroAPI::RegTensor<float>& srcReg, __ubuf__ T* src0, uint16_t index,
+__simd_callee__ inline void LoadSrcData(MicroAPI::RegTensor<float>& srcReg, __ubuf__ T* src0, uint16_t index,
                                    MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> srcTmpReg;
@@ -42,7 +42,7 @@ __aicore__ inline void LoadSrcData(MicroAPI::RegTensor<float>& srcReg, __ubuf__ 
 }
 
 template <typename T>
-__aicore__ inline void StoreDstData(__ubuf__ T* dst, MicroAPI::RegTensor<float>& dstReg, uint16_t index,
+__simd_callee__ inline void StoreDstData(__ubuf__ T* dst, MicroAPI::RegTensor<float>& dstReg, uint16_t index,
                                     MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> dstTmpReg;
@@ -61,7 +61,7 @@ __aicore__ inline void StoreDstData(__ubuf__ T* dst, MicroAPI::RegTensor<float>&
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumN(__ubuf__ T* outputPdGamma, __ubuf__ T* outputPdBeta, __ubuf__ T* resForGamma,
+__simd_vf__ inline void ReduceSumN(__ubuf__ T* outputPdGamma, __ubuf__ T* outputPdBeta, __ubuf__ T* resForGamma,
                                   __ubuf__ T* inputDy, const uint32_t bsLength, const uint32_t hLength)
 {
     MicroAPI::MaskReg mask;
@@ -124,7 +124,7 @@ __aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma
     __local_mem__ T* resForGammaSrc = (__local_mem__ T*)resForGamma.GetPhyAddr();
     __local_mem__ T* inputDySrc = (__local_mem__ T*)inputDy.GetPhyAddr();
 
-    VF_CALL<LayerNormGradBetaAPI::ReduceSumN<T>>(outputPdGammaDst, outputPdBetaDst, resForGammaSrc, inputDySrc,
+    LayerNormGradBetaAPI::ReduceSumN<T>(outputPdGammaDst, outputPdBetaDst, resForGammaSrc, inputDySrc,
                                                  tiling.bsLength, tiling.hLength);
 }
 

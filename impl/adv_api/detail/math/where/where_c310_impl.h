@@ -34,7 +34,7 @@ template <> struct ExtractDataTypeBySize<sizeof(uint32_t)> {
 };
 }
 template <bool src0Val, bool src1Val, typename T, typename V, const MicroAPI::RegTrait& regTrait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void WhereCompute(__local_mem__ T* dstUb, __local_mem__ T* src0Ub,
+__simd_vf__ inline void WhereCompute(__local_mem__ T* dstUb, __local_mem__ T* src0Ub,
     __local_mem__ T* src1Ub, const T src0, const T src1, __local_mem__ V* conditionUb,
     uint32_t count, const uint16_t repeatTime)
 {
@@ -89,40 +89,40 @@ __aicore__ inline void WhereImpl(const LocalTensor<T>& dst, const U& src0, const
         static_assert(Std::is_same<U, S>::value);
         static_assert(Std::is_same<T, typename U::PrimType>::value);
         if constexpr (sizeof(T) != 8) {
-            VF_CALL<WhereCompute<false, false, WhereType, V>>((__local_mem__ WhereType*)dst.GetPhyAddr(),
+            WhereCompute<false, false, WhereType, V>((__local_mem__ WhereType*)dst.GetPhyAddr(),
             (__local_mem__ WhereType*)src0.GetPhyAddr(), (__local_mem__ WhereType*)src1.GetPhyAddr(), 0, 0, conditionUb, count, repeatTime);
         } else {
-            VF_CALL<WhereCompute<false, false, uint64_t, V, MicroAPI::RegTraitNumTwo>>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<false, false, uint64_t, V, MicroAPI::RegTraitNumTwo>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
             (__local_mem__ uint64_t*)src0.GetPhyAddr(), (__local_mem__ uint64_t*)src1.GetPhyAddr(), 0, 0, conditionUb, count, repeatTime);
         }
     } else if constexpr (TypeUtils::IsLocalTensorType<U>() && TypeUtils::IsInnerDefaultType<S>()) {
         static_assert(Std::is_same<T, S>::value);
         static_assert(Std::is_same<T, typename U::PrimType>::value);
         if constexpr (sizeof(T) != 8) {
-            VF_CALL<WhereCompute<false, true, WhereType, V>>((__local_mem__ WhereType*)dst.GetPhyAddr(),
+            WhereCompute<false, true, WhereType, V>((__local_mem__ WhereType*)dst.GetPhyAddr(),
             (__local_mem__ WhereType*)src0.GetPhyAddr(), nullptr, 0, (WhereType&)src1, conditionUb, count, repeatTime);
         } else {
-            VF_CALL<WhereCompute<false, true, uint64_t, V, MicroAPI::RegTraitNumTwo>>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<false, true, uint64_t, V, MicroAPI::RegTraitNumTwo>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
             (__local_mem__ uint64_t*)src0.GetPhyAddr(), nullptr, 0, (uint64_t&)src1, conditionUb, count, repeatTime);
         }
     } else if constexpr (TypeUtils::IsLocalTensorType<S>() && TypeUtils::IsInnerDefaultType<U>()) {
         static_assert(Std::is_same<T, U>::value);
         static_assert(Std::is_same<T, typename S::PrimType>::value);
         if constexpr (sizeof(T) != 8) {
-            VF_CALL<WhereCompute<true, false, WhereType, V>>((__local_mem__ WhereType*)dst.GetPhyAddr(),
+            WhereCompute<true, false, WhereType, V>((__local_mem__ WhereType*)dst.GetPhyAddr(),
             nullptr, (__local_mem__ WhereType*)src1.GetPhyAddr(), (WhereType&)src0, 0, conditionUb, count, repeatTime);
         } else {
-            VF_CALL<WhereCompute<true, false, uint64_t, V, MicroAPI::RegTraitNumTwo>>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<true, false, uint64_t, V, MicroAPI::RegTraitNumTwo>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
             nullptr, (__local_mem__ uint64_t*)src1.GetPhyAddr(), (uint64_t&)src0, 0, conditionUb, count, repeatTime);
         }
     } else {
         static_assert(Std::is_same<T, U>::value);
         static_assert(Std::is_same<T, S>::value);
         if constexpr (sizeof(T) != 8) {
-            VF_CALL<WhereCompute<true, true, WhereType, V>>((__local_mem__ WhereType*)dst.GetPhyAddr(),
+            WhereCompute<true, true, WhereType, V>((__local_mem__ WhereType*)dst.GetPhyAddr(),
             nullptr, nullptr, (WhereType&)src0, (WhereType&)src1, conditionUb, count, repeatTime);
         } else {
-            VF_CALL<WhereCompute<true, true, uint64_t, V, MicroAPI::RegTraitNumTwo>>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
+            WhereCompute<true, true, uint64_t, V, MicroAPI::RegTraitNumTwo>((__local_mem__ uint64_t*)dst.GetPhyAddr(),
             nullptr, nullptr, (uint64_t&)src0, (uint64_t&)src1, conditionUb, count, repeatTime);
         }
     }

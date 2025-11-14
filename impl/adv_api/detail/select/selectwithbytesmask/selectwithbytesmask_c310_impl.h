@@ -16,7 +16,7 @@
 
 namespace AscendC {
 template <typename T, typename U, CMPMODE cmpMode>
-__aicore__ inline void RegTensorToMaskReg(MicroAPI::RegTensor<U> &vMaskReg0, MicroAPI::RegTensor<U> &vMaskReg1,
+__simd_callee__ inline void RegTensorToMaskReg(MicroAPI::RegTensor<U> &vMaskReg0, MicroAPI::RegTensor<U> &vMaskReg1,
     MicroAPI::MaskReg &localMask0, MicroAPI::MaskReg &maskReg0)
 {
     MicroAPI::MaskReg maskReg1;
@@ -35,7 +35,7 @@ __aicore__ inline void RegTensorToMaskReg(MicroAPI::RegTensor<U> &vMaskReg0, Mic
 }
 
 template <typename T, typename U, bool reverse = false>
-__aicore__ inline void SelectWithBytesMaskPerAxisImpl(__local_mem__ T *dstUb, __local_mem__ T *src0Ub, T src1,
+__simd_vf__ inline void SelectWithBytesMaskPerAxisImpl(__local_mem__ T *dstUb, __local_mem__ T *src0Ub, T src1,
     __local_mem__ U *maskUb, const uint32_t firstAxis, const uint32_t srcLastAxis, const uint32_t maskLastAxis)
 {
     MicroAPI::RegTensor<T> vSrcReg0;
@@ -94,7 +94,7 @@ __aicore__ inline void SelectWithBytesMaskProcess(const LocalTensor<T> &dst, con
     const uint32_t firstAxis = static_cast<uint32_t>(info.firstAxis);
     const uint32_t srcLastAxis = static_cast<uint32_t>(info.srcLastAxis);
     const uint32_t maskLastAxis = static_cast<uint32_t>(info.maskLastAxis);
-    VF_CALL<SelectWithBytesMaskPerAxisImpl<T, U, reverse>>(dstUb, src0Ub, src1, maskUb, firstAxis, srcLastAxis,
+    SelectWithBytesMaskPerAxisImpl<T, U, reverse>(dstUb, src0Ub, src1, maskUb, firstAxis, srcLastAxis,
         maskLastAxis);
 }
 

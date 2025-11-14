@@ -844,11 +844,11 @@ __aicore__ inline void DataCopyL0C2UBImpl(__ubuf__ T* dst, __cc__ U* src, const 
  * ************************************************************************************************* */
 namespace Internal {
 template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_callee__ inline void VecCopyLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src, const uint64_t maskArray[],
+__simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src, const maskStruct maskArrayStruct,
                                            const uint64_t maskCount, const uint8_t repeatTime,
-                                           const CopyRepeatParams& repeatParams, __ubuf__ uint64_t* maskBuf)
+                                           const CopyRepeatParams repeatParams, __ubuf__ uint64_t* maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
@@ -904,11 +904,16 @@ __aicore__ inline void VecCopyLevel0Template(__ubuf__ T* dst, __ubuf__ T* src, c
     }
     __ubuf__ uint64_t* maskBuf = nullptr;
 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, false, T>>(dst, src, maskArray, maskCount, repeatTime,
+        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, src, maskArrayStruct, maskCount, repeatTime,
                                                                          repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -917,7 +922,7 @@ __aicore__ inline void VecCopyLevel0Template(__ubuf__ T* dst, __ubuf__ T* src, c
         if constexpr (isMaskBitMode && isSetMask) {
             SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
         }
-        VF_CALL<VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, true, T>>(dst, src, maskArray, maskCount, repeatTime,
+        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, true, T>(dst, src, maskArrayStruct, maskCount, repeatTime,
                                                                         repeatParams, maskBuf);
     }
 }

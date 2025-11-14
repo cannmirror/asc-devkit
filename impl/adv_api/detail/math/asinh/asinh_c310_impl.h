@@ -28,7 +28,7 @@ constexpr float ASINH_ZERO = 0;
     when x > 0 : asinh = ln(x + sqrt(x ^ 2 - 1))
 */
 template <typename T>
-__aicore__ inline void AsinhImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void AsinhImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcVreg;
     MicroAPI::RegTensor<T> dstVreg;
@@ -81,7 +81,7 @@ __aicore__ inline void AsinhImpl(const LocalTensor<T>& dstTensor, const LocalTen
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "Asinh");
     constexpr int32_t oneRepElm = static_cast<int32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, oneRepElm));
-    VF_CALL<Internal::AsinhImplVF<T>>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor.GetPhyAddr(), calCount, repeatTimes);
+    Internal::AsinhImplVF<T>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor.GetPhyAddr(), calCount, repeatTimes);
 }
 
 template <typename T, bool isReuseSource = false>

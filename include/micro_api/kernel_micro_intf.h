@@ -30,7 +30,7 @@
 #include "kernel_micro_datacopy_intf.h"
 #include "kernel_micro_gather_mask_intf.h"
 #include "kernel_micro_pack_intf.h"
-#include "kernel_micro_vec_createvecindex_intf.h"
+#include "kernel_micro_vec_arange_intf.h"
 #include "kernel_micro_vec_reduce_intf.h"
 #include "kernel_micro_vec_ternary_scalar_intf.h"
 #include "kernel_micro_vec_unary_intf.h"

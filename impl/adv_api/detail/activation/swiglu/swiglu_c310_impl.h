@@ -24,7 +24,7 @@
 namespace AscendC {
 namespace Internal {
 template <typename T>
-__aicore__ inline void SwiGLUImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
+__simd_vf__ inline void SwiGLUImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     const float scalarValue, uint32_t count, const uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<float> srcVreg0;
@@ -82,7 +82,7 @@ __aicore__ inline void SwiGLUImpl(const LocalTensor<T>& dstTensor, const LocalTe
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
     const float scalar = static_cast<float>(static_cast<float>(-1.0) * static_cast<float>(scalarValue));
-    VF_CALL<Internal::SwiGLUImplVF<T>>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
+    Internal::SwiGLUImplVF<T>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
         (__ubuf__ T*)srcTensor1.GetPhyAddr(), scalar, count, repeatTimes);
 }
 

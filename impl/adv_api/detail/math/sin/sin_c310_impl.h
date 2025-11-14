@@ -48,7 +48,7 @@ constexpr MicroAPI::CastTrait sinCastTraitF16F32 = { MicroAPI::RegLayout::ZERO, 
 constexpr MicroAPI::CastTrait sinCastTraitF32F16 = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT,
                                                      MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT };
 
-__aicore__ inline void SinPolynomialApproximation(MicroAPI::RegTensor<float> &dstReg,
+__simd_callee__ inline void SinPolynomialApproximation(MicroAPI::RegTensor<float> &dstReg,
     MicroAPI::RegTensor<float> &srcReg, MicroAPI::RegTensor<float> &x, MicroAPI::RegTensor<float> &round,
     MicroAPI::RegTensor<float> &kpi, MicroAPI::MaskReg mask)
 {
@@ -104,7 +104,7 @@ __aicore__ inline void SinPolynomialApproximation(MicroAPI::RegTensor<float> &ds
 }
 
 template <typename T>
-__aicore__ inline void SinPolynomial(__ubuf__ T *dst, __ubuf__ T *src, uint32_t calCount, uint16_t repeat)
+__simd_vf__ inline void SinPolynomial(__ubuf__ T *dst, __ubuf__ T *src, uint32_t calCount, uint16_t repeat)
 {
     MicroAPI::RegTensor<T> x;
     MicroAPI::RegTensor<float> xTmp;
@@ -137,7 +137,7 @@ template <typename T> __aicore__ inline void SinPolynomialImpl(__ubuf__ T *dst, 
 {
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeat = CeilDivision(calCount, oneRepSize);
-    VF_CALL<SinPolynomial<T>>(dst, src, calCount, repeat);
+    SinPolynomial<T>(dst, src, calCount, repeat);
 }
 } // namespace MicroAPI
 } // namespace Sin

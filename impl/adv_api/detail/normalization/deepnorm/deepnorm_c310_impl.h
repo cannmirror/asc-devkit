@@ -89,10 +89,9 @@ __simd_callee__ inline void SaveDataWithT(
 //tmpLocal = alpha * srcLocal + gxLocal
 template <typename T>
 __simd_vf__ inline void ComputeSum(__local_mem__ T* srcLocal, __local_mem__ T* gxLocal, __local_mem__ float* tmpLocal,
-    const float alpha, uint32_t bLength, uint32_t sLength, uint32_t hLength, uint32_t oriHLength)
+    const float alpha, uint32_t bLength, uint32_t sLength, uint32_t hLength, uint32_t oriHLength, uint32_t tailCount)
 {
     uint16_t mainRepeatTime = static_cast<uint16_t>(oriHLength / oneRepSize);
-    uint32_t tailCount = oriHLength % oneRepSize;
     uint16_t tailRepeatTime = static_cast<uint16_t>(CeilDivision(tailCount, oneRepSize));
     MicroAPI::RegTensor<float> srcReg;
     MicroAPI::RegTensor<float> tmpReg;
@@ -337,11 +336,12 @@ __aicore__ inline void DeepNormImplVf(__local_mem__ T* srcLocal, __local_mem__ T
     uint32_t sLength = tiling.sLength;
     uint32_t hLength = tiling.hLength;
     uint32_t oriHLength = tiling.originalHLength;
+    uint32_t tailCount = oriHLength % oneRepSize;
     if constexpr (IsSameType<T, half>::value) {
         float alp = static_cast<float>(alpha);
-        VF_CALL<ComputeSum<T>>(srcLocal, gxLocal, tmpLocal, alp, bLength, sLength, hLength, oriHLength);
+        ComputeSum<T>(srcLocal, gxLocal, tmpLocal, alp, bLength, sLength, hLength, oriHLength, tailCount);
     } else {
-        VF_CALL<ComputeSum<T>>(srcLocal, gxLocal, tmpLocal, alpha, bLength, sLength, hLength, oriHLength);
+        ComputeSum<T>(srcLocal, gxLocal, tmpLocal, alpha, bLength, sLength, hLength, oriHLength, tailCount);
     }
 }
 
@@ -368,7 +368,7 @@ __aicore__ inline void DeepNormImplHalf(__local_mem__ T* output, __local_mem__ T
     __local_mem__ T* outputVariance, __local_mem__ float* inputX, __local_mem__ T* gamma, 
     __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara& para, DeepNormTiling& tiling)
 {
-    VF_CALL<DeepNormImplVfHalf<T>>(output, outputMean, outputVariance, inputX, gamma,
+    DeepNormImplVfHalf<T>(output, outputMean, outputVariance, inputX, gamma,
         beta, epsilon, para, tiling);
 }
 

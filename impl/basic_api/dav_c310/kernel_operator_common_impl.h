@@ -162,7 +162,7 @@ __aicore__ inline int64_t GetSprImpl()
     return get_ar();
 }
  
-__aicore__ inline void ClearARImpl()
+__simd_vf__ inline void ClearARImpl()
 {
     constexpr uint8_t SPR_AR_VALUE = 74;
     constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
@@ -176,7 +176,7 @@ __aicore__ inline void ClearSprImpl()
         "current ClearSpr api only support SpecialPurposeReg AR on current device!");
     
     if constexpr (spr == SpecialPurposeReg::AR) {
-        VF_CALL<ClearARImpl>();
+        ClearARImpl();
     }
 }
 

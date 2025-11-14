@@ -30,7 +30,7 @@
 #include "kernel_micro_vec_binary_scalar_intf_impl.h"
 #include "kernel_micro_vec_binary_intf_impl.h"
 #include "kernel_micro_vec_cmpsel_intf_impl.h"
-#include "kernel_micro_vec_createvecindex_intf_impl.h"
+#include "kernel_micro_vec_arange_intf_impl.h"
 #include "kernel_micro_vec_reduce_intf_impl.h"
 #include "kernel_micro_vec_ternary_scalar_intf_impl.h"
 #include "kernel_micro_vec_unary_intf_impl.h"

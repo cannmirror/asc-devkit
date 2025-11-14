@@ -25,7 +25,7 @@ namespace AscendC {
 namespace Internal {
 
 template <typename T, bool highPrecision>
-__aicore__ inline void GeluImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const uint16_t repeatTimes)
+__simd_vf__ inline void GeluImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     constexpr float coefficientsA = 0.044715;
@@ -275,12 +275,12 @@ __aicore__ inline void GeluImpl(const LocalTensor<T>& dstLocal, const LocalTenso
     if constexpr (highPrecision && sizeof(T) == sizeof(half)) {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(float));
         uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-        VF_CALL<Internal::GeluImplVF<float, true>>(
+        Internal::GeluImplVF<float, true>(
             (__ubuf__ float*)dstLocal.GetPhyAddr(), (__ubuf__ float*)srcLocal.GetPhyAddr(), count, repeatTimes);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-        VF_CALL<Internal::GeluImplVF<T, false>>(
+        Internal::GeluImplVF<T, false>(
             (__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)srcLocal.GetPhyAddr(), count, repeatTimes);
     }
 }

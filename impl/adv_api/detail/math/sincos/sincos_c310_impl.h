@@ -36,7 +36,7 @@ constexpr MicroAPI::CastTrait castTraitI32F32 = { MicroAPI::RegLayout::UNKNOWN, 
                                                   MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND };
 
 template <typename T, typename U>
-__aicore__ inline void AndScalar(MicroAPI::RegTensor<T> &dstReg, MicroAPI::RegTensor<U> &srcReg, 
+__simd_callee__ inline void AndScalar(MicroAPI::RegTensor<T> &dstReg, MicroAPI::RegTensor<U> &srcReg, 
     T val, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> tmpReg;
@@ -44,7 +44,7 @@ __aicore__ inline void AndScalar(MicroAPI::RegTensor<T> &dstReg, MicroAPI::RegTe
     MicroAPI::And(dstReg, (MicroAPI::RegTensor<T>&)srcReg, tmpReg, mask);
 }
 
-__aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
     float scalarValue, MicroAPI::MaskReg& mask)
 {
     // dst = dst * src + scalarValue
@@ -53,7 +53,7 @@ __aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTen
     MicroAPI::FusedMulDstAdd(dstReg, srcReg, tmpReg, mask);
 }
 
-__aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
+__simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     MicroAPI::RegTensor<float>& srcReg2, MicroAPI::RegTensor<float>& srcReg3, MicroAPI::MaskReg& mask)
 {
     // dst = src1 * src2 + src3
@@ -62,7 +62,7 @@ __aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTen
     dstReg = tmpReg;
 }
 
-__aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
+__simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     MicroAPI::RegTensor<float>& srcReg2, float scalarValue, MicroAPI::MaskReg& mask)
 {
     // dst = src1 * src2 + scalerValue
@@ -71,7 +71,7 @@ __aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTen
     FMaf(dstReg, srcReg1, srcReg2, tmpReg, mask);
 }
 
-__aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
+__simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     float scalarValue, MicroAPI::RegTensor<float>& srcReg2, MicroAPI::MaskReg& mask)
 {
     // dst = src1 * scalarValue + src2
@@ -80,7 +80,7 @@ __aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTen
     FMaf(dstReg, srcReg1, tmpReg, srcReg2, mask);
 }
 
-__aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
+__simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     float scalarValue, float scalarValue2, MicroAPI::MaskReg& mask)
 {
     // dst = src1 * scalarValue + scalarValue2
@@ -90,7 +90,7 @@ __aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTen
     FMaf(dstReg, srcReg1, tmpReg, tmpReg2, mask);
 }
 
-__aicore__ inline void BitShiftCombine(MicroAPI::RegTensor<uint32_t> &dstReg, MicroAPI::RegTensor<uint32_t> &srcReg1,
+__simd_callee__ inline void BitShiftCombine(MicroAPI::RegTensor<uint32_t> &dstReg, MicroAPI::RegTensor<uint32_t> &srcReg1,
     MicroAPI::RegTensor<uint32_t> &srcReg2, MicroAPI::RegTensor<int32_t> &srcRegE, MicroAPI::MaskReg& mask)
 {
     // dst = (src1  << e) | (src2 >> (32 - e));
@@ -110,7 +110,7 @@ __aicore__ inline void GenerateZeroVreg(MicroAPI::RegTensor<uint32_t>& zeroReg)
     MicroAPI::Duplicate(zeroReg, 0, b32FullMask);
 }
 
-__aicore__ inline void ReinterpretedU32ToFloatAndCastToU32(MicroAPI::RegTensor<uint32_t> &dstReg,
+__simd_callee__ inline void ReinterpretedU32ToFloatAndCastToU32(MicroAPI::RegTensor<uint32_t> &dstReg,
     MicroAPI::RegTensor<uint32_t> &srcReg, MicroAPI::MaskReg &mask)
 {
     // dst = (unsigned int) reinterpret_cast<float &>(src);
@@ -122,7 +122,7 @@ __aicore__ inline void ReinterpretedU32ToFloatAndCastToU32(MicroAPI::RegTensor<u
     dstReg = (MicroAPI::RegTensor<uint32_t>&)tmpI64Reg.reg[0];
 }
 
-__aicore__ inline void TrigComputeP(MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow,
+__simd_callee__ inline void TrigComputeP(MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow,
     MicroAPI::RegTensor<uint32_t> &regIa, MicroAPI::RegTensor<uint32_t> &regMid, MicroAPI::RegTensor<uint32_t> &regLo,
     MicroAPI::RegTensor<uint32_t> &regHi, MicroAPI::MaskReg &mask)
 {
@@ -150,7 +150,7 @@ __aicore__ inline void TrigComputeP(MicroAPI::RegTensor<uint32_t> &regPHigh, Mic
         (MicroAPI::RegTensor<uint32_t>&)regPHigh, tmpU32Reg, mask);
 }
 
-__aicore__ inline void TrigComputeHLQ(MicroAPI::RegTensor<float> &regDh, MicroAPI::RegTensor<float> &regDl,
+__simd_callee__ inline void TrigComputeHLQ(MicroAPI::RegTensor<float> &regDh, MicroAPI::RegTensor<float> &regDl,
     MicroAPI::RegTensor<int32_t> &regQ, MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow,
     MicroAPI::MaskReg &mask)
 {
@@ -216,7 +216,7 @@ __aicore__ inline void TrigComputeHLQ(MicroAPI::RegTensor<float> &regDh, MicroAP
     MicroAPI::Muls(regDh, tmpRegDH, B64_SHIFT_BITS, mask);
 }
 
-__aicore__ inline void TrigRedSlowpathFComputeP(MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow,
+__simd_callee__ inline void TrigRedSlowpathFComputeP(MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow,
     MicroAPI::RegTensor<float> &srcReg, MicroAPI::RegTensor<uint32_t>& oneOverPiFReg, MicroAPI::MaskReg& mask)
 {
     constexpr uint32_t TA_AND_COEFF = 0x007fffff;
@@ -290,7 +290,7 @@ __aicore__ inline void TrigRedSlowpathFComputeP(MicroAPI::RegTensor<uint32_t> &r
     TrigComputeP(regPHigh, regPLow, regIa, regMid, regLo, regHi, mask);
 }
 
-__aicore__ inline void TrigRedSlowpathFComputeRI(MicroAPI::RegTensor<float> &dstRegR, MicroAPI::RegTensor<int32_t> &dstRegI,
+__simd_callee__ inline void TrigRedSlowpathFComputeRI(MicroAPI::RegTensor<float> &dstRegR, MicroAPI::RegTensor<int32_t> &dstRegI,
     MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow, MicroAPI::RegTensor<float> &srcReg,
     MicroAPI::MaskReg& mask)
 {
@@ -327,7 +327,7 @@ __aicore__ inline void TrigRedSlowpathFComputeRI(MicroAPI::RegTensor<float> &dst
     dstRegI = regQ;
 }
 
-__aicore__ inline void SinfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAPI::RegTensor<float> &srcRegA,
+__simd_callee__ inline void SinfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAPI::RegTensor<float> &srcRegA,
     MicroAPI::RegTensor<float> &srcRegS, MicroAPI::MaskReg& mask)
 {
     constexpr float SIN_POLY_COEFF0 = 2.86567956e-6f;
@@ -351,7 +351,7 @@ __aicore__ inline void SinfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAPI::Re
     MicroAPI::FusedMulDstAdd(dstReg, tmpRegT, srcRegA, mask);
 }
 
-__aicore__ inline void CosfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAPI::RegTensor<float> &srcRegS,
+__simd_callee__ inline void CosfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAPI::RegTensor<float> &srcRegS,
     MicroAPI::MaskReg& mask)
 {
     constexpr float COS_POLY_COEFF0 = 2.44677067e-5f;
@@ -372,7 +372,7 @@ __aicore__ inline void CosfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAPI::Re
     FMaf(dstReg, srcRegS, COS_POLY_COEFF4, mask);
 }
 
-__aicore__ inline void TrigRedFPreporcessForHalf(MicroAPI::RegTensor<float> &regR, MicroAPI::RegTensor<int32_t> &regI,
+__simd_callee__ inline void TrigRedFPreporcessForHalf(MicroAPI::RegTensor<float> &regR, MicroAPI::RegTensor<int32_t> &regI,
     MicroAPI::RegTensor<float> &srcRegA, MicroAPI::MaskReg& mask)
 {
     constexpr float J_MUL_COEFF = 0.636619747f;
@@ -405,7 +405,7 @@ __aicore__ inline void TrigRedFPreporcessForHalf(MicroAPI::RegTensor<float> &reg
     MicroAPI::MulAddDst(regR, regJ, tmpF32Reg, mask);
 }
 
-__aicore__ inline void TrigRedFComputeP(MicroAPI::MaskReg& tmpMask, MicroAPI::RegTensor<uint32_t> &regPHigh,
+__simd_callee__ inline void TrigRedFComputeP(MicroAPI::MaskReg& tmpMask, MicroAPI::RegTensor<uint32_t> &regPHigh,
     MicroAPI::RegTensor<uint32_t> &regPLow, MicroAPI::RegTensor<float> &srcRegA,
     MicroAPI::RegTensor<uint32_t> &oneOverPiFReg, MicroAPI::MaskReg& mask)
 {
@@ -422,7 +422,7 @@ __aicore__ inline void TrigRedFComputeP(MicroAPI::MaskReg& tmpMask, MicroAPI::Re
     TrigRedSlowpathFComputeP(regPHigh, regPLow, srcRegA, oneOverPiFReg, mask);
 }
 
-__aicore__ inline void TrigRedFComputeRI(MicroAPI::MaskReg& tmpMask, MicroAPI::RegTensor<float> &dstRegR,
+__simd_callee__ inline void TrigRedFComputeRI(MicroAPI::MaskReg& tmpMask, MicroAPI::RegTensor<float> &dstRegR,
     MicroAPI::RegTensor<int32_t> &dstRegI, MicroAPI::RegTensor<uint32_t> &regPHigh, MicroAPI::RegTensor<uint32_t> &regPLow,
     MicroAPI::RegTensor<float> &srcRegA, MicroAPI::MaskReg& mask)
 {
@@ -440,7 +440,7 @@ __aicore__ inline void TrigRedFComputeRI(MicroAPI::MaskReg& tmpMask, MicroAPI::R
 }
 
 /* Compute sine and cosine simultaneously, based on quadrant */
-__aicore__ inline void SCFCore(MicroAPI::RegTensor<float> &dstRegSin, MicroAPI::RegTensor<float> &dstRegCos,
+__simd_callee__ inline void SCFCore(MicroAPI::RegTensor<float> &dstRegSin, MicroAPI::RegTensor<float> &dstRegCos,
     MicroAPI::RegTensor<int32_t> &regI, MicroAPI::RegTensor<float> &regR, MicroAPI::MaskReg& mask)
 {
     constexpr int32_t I_AND_CONDITION = 2;
@@ -521,7 +521,7 @@ __aicore__ inline void InitializeHalfTempBuffer(__ubuf__ uint32_t *&tmpBuffer, _
 }
 
 template <typename T>
-__aicore__ inline void TrigRedFPreProcessImpl(__ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
+__simd_vf__ inline void TrigRedFPreProcessImpl(__ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
     __ubuf__ T *src,  uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcReg;
@@ -540,7 +540,7 @@ __aicore__ inline void TrigRedFPreProcessImpl(__ubuf__ float *tmpBufferR, __ubuf
 }
 
 template <typename T>
-__aicore__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHigh, __ubuf__ uint32_t *tmpBufferRegPLow,
+__simd_vf__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHigh, __ubuf__ uint32_t *tmpBufferRegPLow,
     __ubuf__ T *src, __ubuf__ uint32_t *tmpBuffer, uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcReg;
@@ -572,7 +572,7 @@ __aicore__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHigh
 }
 
 template <typename T>
-__aicore__ inline void TrigRedFComputeRIImpl(__ubuf__ uint32_t *tmpBufferRegPHigh, __ubuf__ uint32_t *tmpBufferRegPLow,
+__simd_vf__ inline void TrigRedFComputeRIImpl(__ubuf__ uint32_t *tmpBufferRegPHigh, __ubuf__ uint32_t *tmpBufferRegPLow,
     __ubuf__ T *src, __ubuf__ uint32_t *tmpBuffer, uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcReg;
@@ -598,7 +598,7 @@ __aicore__ inline void TrigRedFComputeRIImpl(__ubuf__ uint32_t *tmpBufferRegPHig
 }
 
 template <typename T, int mode = 0>
-__aicore__ inline void SCFCoreImpl(__ubuf__ T *dst, __ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
+__simd_vf__ inline void SCFCoreImpl(__ubuf__ T *dst, __ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
     uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcReg;
@@ -629,7 +629,7 @@ __aicore__ inline void SCFCoreImpl(__ubuf__ T *dst, __ubuf__ float *tmpBufferR, 
 }
 
 template <typename T>
-__aicore__ inline void BSCFCoreImpl(__ubuf__ T *dstSin, __ubuf__ T *dstCos, __ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
+__simd_vf__ inline void BSCFCoreImpl(__ubuf__ T *dstSin, __ubuf__ T *dstCos, __ubuf__ float *tmpBufferR, __ubuf__ int32_t *tmpBufferI,
     uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcReg;
@@ -670,15 +670,15 @@ __aicore__ inline void SinRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, 
 
     if constexpr (std::is_same_v<T, float>) {
         SinCosImpl::InitializeFloatTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
-        VF_CALL<SinCosImpl::TrigRedFComputePImpl<T>>(
+        SinCosImpl::TrigRedFComputePImpl<T>(
             (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
-        VF_CALL<SinCosImpl::TrigRedFComputeRIImpl<T>>(
+        SinCosImpl::TrigRedFComputeRIImpl<T>(
             (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
     } else if constexpr (std::is_same_v<T, half>) {
         SinCosImpl::InitializeHalfTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
-        VF_CALL<SinCosImpl::TrigRedFPreProcessImpl<T>>(tmpBufferR, tmpBufferI, src, calCount, repeatTimes);
+        SinCosImpl::TrigRedFPreProcessImpl<T>(tmpBufferR, tmpBufferI, src, calCount, repeatTimes);
     }
-    VF_CALL<SinCosImpl::SCFCoreImpl<T, 0>>(dst, tmpBufferR, tmpBufferI, calCount, repeatTimes);
+    SinCosImpl::SCFCoreImpl<T, 0>(dst, tmpBufferR, tmpBufferI, calCount, repeatTimes);
 }
 
 template <typename T> 
@@ -694,15 +694,15 @@ __aicore__ inline void CosRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, 
 
     if constexpr (std::is_same_v<T, float>) {
         SinCosImpl::InitializeFloatTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
-        VF_CALL<SinCosImpl::TrigRedFComputePImpl<T>>(
+        SinCosImpl::TrigRedFComputePImpl<T>(
             (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
-        VF_CALL<SinCosImpl::TrigRedFComputeRIImpl<T>>(
+        SinCosImpl::TrigRedFComputeRIImpl<T>(
             (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, src, tmpBuffer, calCount, repeatTimes);
     } else if constexpr (std::is_same_v<T, half>) {
         SinCosImpl::InitializeHalfTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
-        VF_CALL<SinCosImpl::TrigRedFPreProcessImpl<T>>(tmpBufferR, tmpBufferI, src, calCount, repeatTimes);
+        SinCosImpl::TrigRedFPreProcessImpl<T>(tmpBufferR, tmpBufferI, src, calCount, repeatTimes);
     }
-    VF_CALL<SinCosImpl::SCFCoreImpl<T, 1>>(dst, tmpBufferR, tmpBufferI, calCount, repeatTimes);
+    SinCosImpl::SCFCoreImpl<T, 1>(dst, tmpBufferR, tmpBufferI, calCount, repeatTimes);
 }
 
 template <const SinCosConfig& config, typename T>
@@ -728,15 +728,15 @@ __aicore__ inline void SinCosRadianReductionImpl(const LocalTensor<T>& dst0, con
 
     if constexpr (std::is_same_v<T, float>) {
         SinCosImpl::InitializeFloatTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
-        VF_CALL<SinCosImpl::TrigRedFComputePImpl<T>>(
+        SinCosImpl::TrigRedFComputePImpl<T>(
             (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, srcAddr, tmpBuffer, calCount, repeatTimes);
-        VF_CALL<SinCosImpl::TrigRedFComputeRIImpl<T>>(
+        SinCosImpl::TrigRedFComputeRIImpl<T>(
             (__ubuf__ uint32_t *)tmpBufferR, (__ubuf__ uint32_t *)tmpBufferI, srcAddr, tmpBuffer, calCount, repeatTimes);
     } else if constexpr (std::is_same_v<T, half>) {
         SinCosImpl::InitializeHalfTempBuffer(tmpBuffer, tmpBufferR, tmpBufferI, alignCount);
-        VF_CALL<SinCosImpl::TrigRedFPreProcessImpl<T>>(tmpBufferR, tmpBufferI, srcAddr, calCount, repeatTimes);
+        SinCosImpl::TrigRedFPreProcessImpl<T>(tmpBufferR, tmpBufferI, srcAddr, calCount, repeatTimes);
     }
-    VF_CALL<SinCosImpl::BSCFCoreImpl<T>>(dstSinAddr, dstCosAddr, tmpBufferR, tmpBufferI, calCount, repeatTimes);
+    SinCosImpl::BSCFCoreImpl<T>(dstSinAddr, dstCosAddr, tmpBufferR, tmpBufferI, calCount, repeatTimes);
 }
 
 template <const SinCosConfig& config, typename T>

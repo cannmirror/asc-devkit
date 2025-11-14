@@ -21,7 +21,7 @@
 
 namespace AscendC {
 template <auto func, typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void BitwiseTemplateImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint16_t repeatTime,
+__simd_vf__ inline void BitwiseTemplateImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint16_t repeatTime,
                                              uint32_t count, uint32_t oneRepElm, uint32_t offset)
 {
     RegT dstVreg;
@@ -62,15 +62,14 @@ __aicore__ inline void BitwiseTemplateImpl(const LocalTensor<T>& dst, const Loca
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * 2);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
-        uint32_t offset = static_cast<uint32_t>(repeatTime * oneRepElm);
-        VF_CALL<
-            BitwiseTemplateImplVF<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTraitNumTwo>>(
+        uint32_t offset = static_cast<uint32_t>(repeatTime * oneRepElm);    
+        BitwiseTemplateImplVF<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTraitNumTwo>(
             dstTensor, src0Tensor, src1Tensor, repeatTime, count, oneRepElm, offset);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = static_cast<uint32_t>(repeatTime * oneRepElm);
-        VF_CALL<BitwiseTemplateImplVF<func, T, MicroAPI::RegTensor<T>>>(dstTensor, src0Tensor, src1Tensor, repeatTime,
+        BitwiseTemplateImplVF<func, T, MicroAPI::RegTensor<T>>(dstTensor, src0Tensor, src1Tensor, repeatTime,
                                                                         count, oneRepElm, offset);
     }
 }

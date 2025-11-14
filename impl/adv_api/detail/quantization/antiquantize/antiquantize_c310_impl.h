@@ -245,7 +245,7 @@ __aicore__ inline void AntiQuantizePerTokenCommon(const LocalTensor<dstT>& dstTe
  * PER_TENSOR for B8                                             *
  * ************************************************************************************************* */
 template <bool hasOffset, typename SrcT, typename DstT>
-__aicore__ inline void PerTensorProcessCommon(__local_mem__ DstT* dst, __local_mem__ SrcT* src,
+__simd_vf__ inline void PerTensorProcessCommon(__local_mem__ DstT* dst, __local_mem__ SrcT* src,
     const DstT offset, const DstT scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -293,14 +293,14 @@ __aicore__ inline void AntiQuantizePerTensor(const LocalTensor<DstT>& dst,
     auto tmpbuffer = sharedTmpBuffer.ReinterpretCast<DstT>();
     __local_mem__ DstT* tmpbufferUb = (__local_mem__ DstT*)tmpbuffer.GetPhyAddr();
 
-    VF_CALL<PerTensorProcessCommon<config.hasOffset, SrcT, DstT>>(dstUb, srcUb, offset, scale, params.m * params.n);
+    PerTensorProcessCommon<config.hasOffset, SrcT, DstT>(dstUb, srcUb, offset, scale, params.m * params.n);
 }
 
 /* **************************************************************************************************
  * PER_CHANNEL for B8                                             *
  * ************************************************************************************************* */
 template <bool hasOffset, typename SrcT, typename DstT>
-__aicore__ inline void PerChannelNoTransposeCommon(__local_mem__ DstT* dst, __local_mem__ SrcT* src,
+__simd_vf__ inline void PerChannelNoTransposeCommon(__local_mem__ DstT* dst, __local_mem__ SrcT* src,
     __local_mem__ DstT* offset, __local_mem__ DstT* scale, const uint32_t M, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
@@ -350,7 +350,7 @@ __aicore__ inline void AntiQuantPerChannelNoTranspose(const LocalTensor<DstT>& d
     __local_mem__ DstT* offsetUb = (__local_mem__ DstT*)offset.GetPhyAddr();
     __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dst.GetPhyAddr();
     __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)src.GetPhyAddr();
-    VF_CALL<PerChannelNoTransposeCommon<hasOffset, SrcT, DstT>>(dstUb, srcUb, offsetUb, scaleUb, M, N);
+    PerChannelNoTransposeCommon<hasOffset, SrcT, DstT>(dstUb, srcUb, offsetUb, scaleUb, M, N);
 }
 
 /* **************************************************************************************************

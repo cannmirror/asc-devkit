@@ -24,7 +24,7 @@ namespace SinhInternal {
 // Computes sinh values based on input types.
 // According formula: sinh(x) = (e^x - e^(-x))/2 = e^(x-ln2) - 0.25/(e^(x-ln2)).
 template <typename T>
-__aicore__ inline void SinhCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void SinhCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t calCount, uint16_t repeatTimes)
 {
     constexpr float scalarNegLnTwo = -0.6931472;
     constexpr float scalarBrc = 0.25;
@@ -96,7 +96,7 @@ __aicore__ inline void SinhImpl(const LocalTensor<T>& dstTensor, const LocalTens
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
     constexpr int32_t vlSize = static_cast<int32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, vlSize));
-    VF_CALL<SinhInternal::SinhCompute<T>>(dstUb, srcUb, calCount, repeatTimes);
+    SinhInternal::SinhCompute<T>(dstUb, srcUb, calCount, repeatTimes);
 }
 } // namespace AscendC
 

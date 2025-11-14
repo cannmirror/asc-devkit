@@ -24,7 +24,7 @@ namespace Internal {
 // Computes cosh values based on input types.
 // According formula: cosh(x) = (e^x + e^(-x))/2 = e^(x-ln2) + 0.25/(e^(x-ln2)).
 template <typename T>
-__aicore__ inline void CoshCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void CoshCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t calCount, uint16_t repeatTimes)
 {
     constexpr float scalarNegLnTwo = -0.6931472;
     constexpr float scalarBrc = 0.25;
@@ -92,7 +92,7 @@ __aicore__ inline void CoshImpl(const LocalTensor<T>& dstTensor, const LocalTens
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
     constexpr int32_t vlSize = static_cast<int32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, vlSize));
-    VF_CALL<Internal::CoshCompute<T>>(dstUb, srcUb, calCount, repeatTimes);
+    Internal::CoshCompute<T>(dstUb, srcUb, calCount, repeatTimes);
 }
 } // namespace AscendC
 

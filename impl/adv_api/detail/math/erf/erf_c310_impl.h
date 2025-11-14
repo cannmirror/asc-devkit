@@ -39,7 +39,7 @@ constexpr uint32_t ERF_P2[] = {
 };
 
 // Clip x to [-3.92, 3.92]
-__aicore__ inline void ErfClip(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void ErfClip(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
 {
     constexpr float ERF_BOUNDARY_MAX = 3.92;
     MicroAPI::Mins(dstReg, srcReg,  ERF_BOUNDARY_MAX, mask);
@@ -48,7 +48,7 @@ __aicore__ inline void ErfClip(MicroAPI::RegTensor<float>& dstReg, MicroAPI::Reg
 
 // P(x) = (((((0.053443748819x^2+0.75517016694e1)x^2+0.10162808918e3)x^2
 //          +0.13938061484e4)x^2+0.50637915060e4)x^2+0.29639384698e5)x
-__aicore__ inline void ErfComputeP(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void ErfComputeP(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
 {
     constexpr float SCALAR_P0 = 0.29639384698e5;
     constexpr float SCALAR_P1 = 0.50637915060e4;
@@ -73,7 +73,7 @@ __aicore__ inline void ErfComputeP(MicroAPI::RegTensor<float>& dstReg, MicroAPI:
 }
 
 // Q(x) = ((((x^2+0.31212858877e2)x^2+0.39856963806e3)x^2+0.30231248150e4)x^2+0.13243365831e5)x^2+0.26267224157e5
-__aicore__ inline void ErfComputeQ(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void ErfComputeQ(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
      MicroAPI::MaskReg& mask)
 {
     constexpr float SCALAR_Q0 = 0.26267224157e5;
@@ -95,7 +95,7 @@ __aicore__ inline void ErfComputeQ(MicroAPI::RegTensor<float>& dstReg, MicroAPI:
     MicroAPI::Adds(dstReg, dstReg, SCALAR_Q0, mask);
 }
 
-__aicore__ inline void ErfPadeCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void ErfPadeCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::MaskReg& mask)
 {
     // x = Clip(x), Erf(x) = P(x) / Q(x)
@@ -107,7 +107,7 @@ __aicore__ inline void ErfPadeCompute(MicroAPI::RegTensor<float>& dstReg, MicroA
     MicroAPI::Div(dstReg, tmpReg, dstReg, mask);
 }
 
-__aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
+__simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     MicroAPI::RegTensor<float>& srcReg2, MicroAPI::RegTensor<float>& srcReg3, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> tmpReg = srcReg1;
@@ -115,7 +115,7 @@ __aicore__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTen
     dstReg = tmpReg;
 }
 
-__aicore__ inline void ErfSpecialCaseCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void ErfSpecialCaseCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg& mask)
 {
     /*
@@ -155,7 +155,7 @@ __aicore__ inline void ErfSpecialCaseCompute(MicroAPI::RegTensor<float>& dstReg,
     MicroAPI::Select(dstReg, tmpReg, (MicroAPI::RegTensor<float> &)tmpU32Reg, cmpMask);
 }
 
-__aicore__ inline void ErfSubsectionCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void ErfSubsectionCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
      MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> tmpF5Reg, tmpF32Reg, tmpF32Reg1, tmpF32Reg2;
@@ -245,7 +245,7 @@ __aicore__ inline void ErfSubsectionCompute(MicroAPI::RegTensor<float>& dstReg, 
 }
 
 template <typename T, bool isReuseSource = false, const ErfConfig &config = defaultErfConfig>
-__aicore__ inline void ErfCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void ErfCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::MaskReg mask;
     MicroAPI::RegTensor<T> srcReg;
@@ -301,7 +301,7 @@ __aicore__ inline void ErfImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
-    VF_CALL<ErfAPI::ErfCoreImpl<T, isReuseSource, config>>(dstUb, srcUb, calCount, repeatTimes);
+    ErfAPI::ErfCoreImpl<T, isReuseSource, config>(dstUb, srcUb, calCount, repeatTimes);
 }
 
 template <typename T, bool isReuseSource = false, const ErfConfig &config = defaultErfConfig>

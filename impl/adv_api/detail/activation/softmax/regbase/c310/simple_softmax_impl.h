@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Internal {
 template <typename T1, typename T2>
-__aicore__ inline void SimpleSoftMaxGenericNZImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
+__simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, const uint16_t mRepeatTimes,
     const uint16_t kRepeatTimes, const uint16_t outNum, const uint16_t dataBlock)
 {
@@ -69,7 +69,7 @@ __aicore__ inline void SimpleSoftMaxGenericNZImpl(__local_mem__ T1* dstUb, __loc
 }
 
 template <typename T1, typename T2>
-__aicore__ inline void SimpleSoftMaxGenericNDImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
+__simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t repeatTimes, const uint16_t blockStride)
 {
@@ -96,7 +96,7 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(__local_mem__ T1* dstUb, __loc
 }
 
 template <typename T1, typename T2>
-__aicore__ inline void SimpleSoftMaxGenericNDWithTailImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
+__simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t repeatTimes, const uint16_t blockStride)
 {
@@ -150,7 +150,7 @@ __aicore__ inline void SimpleSoftMaxNZImpl(const LocalTensor<T1>& dst, const Loc
     __local_mem__ T2* maxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
     __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
 
-    VF_CALL<Internal::SimpleSoftMaxGenericNZImpl<T1, T2>>(dstUb, sumUb, maxUb, srcUb, mRepeatTimes,
+    Internal::SimpleSoftMaxGenericNZImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, mRepeatTimes,
                                                 kRepeatTimes, sreg, dataBlock);
 }
 
@@ -175,22 +175,22 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T1>& dst, const Loc
     __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
 
     if constexpr (isBasicBlock) {
-        VF_CALL<Internal::SimpleSoftMaxGenericNDImpl<T1, T2>>(
+        Internal::SimpleSoftMaxGenericNDImpl<T1, T2>(
             dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
     } else {
         if constexpr (config.oriSrcM == 0 || config.oriSrcK == 0) {
             if (tiling.srcK % FLOAT_REPEAT_SIZE != 0) {
-                VF_CALL<Internal::SimpleSoftMaxGenericNDWithTailImpl<T1, T2>>(
+                Internal::SimpleSoftMaxGenericNDWithTailImpl<T1, T2>(
                     dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
             } else {
-                VF_CALL<Internal::SimpleSoftMaxGenericNDImpl<T1, T2>>(
+                Internal::SimpleSoftMaxGenericNDImpl<T1, T2>(
                     dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
             }
         } else if constexpr (config.oriSrcK % FLOAT_REPEAT_SIZE != 0) {
-            VF_CALL<Internal::SimpleSoftMaxGenericNDWithTailImpl<T1, T2>>(
+            Internal::SimpleSoftMaxGenericNDWithTailImpl<T1, T2>(
                 dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
         } else {
-            VF_CALL<Internal::SimpleSoftMaxGenericNDImpl<T1, T2>>(
+            Internal::SimpleSoftMaxGenericNDImpl<T1, T2>(
                 dstUb, sumUb, maxUb, srcUb, srcM, srcK, repeatTimes, blockStride);
         }
     }

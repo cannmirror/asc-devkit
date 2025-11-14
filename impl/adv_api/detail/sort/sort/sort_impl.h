@@ -788,7 +788,7 @@ __aicore__ inline void ArrangeCommonTmpBuffer(const LocalTensor<uint8_t> &shared
 }
 
 template <typename T>
-__aicore__ inline void DescendProcess(__ubuf__ T* dst, uint32_t count)
+__simd_vf__ inline void DescendProcess(__ubuf__ T* dst, uint32_t count)
 {
     constexpr uint32_t halfTypeMask = 0x80008000;
     constexpr uint32_t floatTypeMask = 0x80000000;
@@ -836,14 +836,14 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, const LocalTensor<T> &
             { KERNEL_LOG(KERNEL_ERROR, "dstLocal size should be greater equal to 8 * count!"); });
         const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCountC310);
         if constexpr (!isDescend) {
-            VF_CALL<DescendProcess<T>>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
+            DescendProcess<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
         }
         Sort32(dstLocal, srcLocal, (const LocalTensor<uint32_t>&)srcLocal, repeatTime);
         DoFullSort(dstLocal, (const LocalTensor<T>&)sharedTmpBuffer, (const LocalTensor<uint32_t>&)sharedTmpBuffer,
             (LocalTensor<T>&)sharedTmpBuffer, repeatTime);
         Extract(dstLocal, (const LocalTensor<uint32_t>&)sharedTmpBuffer, dstLocal, repeatTime);
         if constexpr (!isDescend) {
-            VF_CALL<DescendProcess<T>>((__ubuf__ T*)dstLocal.GetPhyAddr(), count);
+            DescendProcess<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), count);
         }
      } else {
         static_assert(SupportBytes<T, 2, 4, 8>() || SupportType<T, uint8_t, int8_t>(),
@@ -944,7 +944,7 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, const LocalTensor<T> &
     }
 }
 
-__aicore__ inline void GenSrcIndex(__ubuf__ uint32_t* dst, uint32_t count)
+__simd_vf__ inline void GenSrcIndex(__ubuf__ uint32_t* dst, uint32_t count)
 {
     MicroAPI::RegTensor<uint32_t> vreg;
     MicroAPI::MaskReg mask;
@@ -987,15 +987,15 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, LocalTensor<uint32_t> 
             { KERNEL_LOG(KERNEL_ERROR, "dstLocal size should be greater equal to 8 * count!"); });
         const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCountC310);
         if constexpr (!isDescend) {
-            VF_CALL<DescendProcess<T>>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
+            DescendProcess<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
         }
-        VF_CALL<GenSrcIndex>((__ubuf__ uint32_t*)sharedTmpBuffer.GetPhyAddr(), count);
+        GenSrcIndex((__ubuf__ uint32_t*)sharedTmpBuffer.GetPhyAddr(), count);
         Sort32(dstLocal, srcLocal, (const LocalTensor<uint32_t>&)sharedTmpBuffer, repeatTime);
         DoFullSort(dstLocal, (const LocalTensor<T>&)sharedTmpBuffer, (const LocalTensor<uint32_t>&)sharedTmpBuffer,
             (LocalTensor<T>&)sharedTmpBuffer, repeatTime);
         Extract(dstLocal, dstIndexLocal, dstLocal, repeatTime);
         if constexpr (!isDescend) {
-            VF_CALL<DescendProcess<T>>((__ubuf__ T*)dstLocal.GetPhyAddr(), count);
+            DescendProcess<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), count);
         }
     } else {
         static_assert(SupportBytes<T, 2, 4, 8>() || SupportType<T, uint8_t, int8_t>(),
@@ -1150,14 +1150,14 @@ __aicore__ inline void SortImpl(const LocalTensor<T> &dstLocal, const LocalTenso
             { KERNEL_LOG(KERNEL_ERROR, "dstLocal size should be greater equal to 8 * count!"); });
         const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCountC310);
         if constexpr (!isDescend) {
-            VF_CALL<DescendProcess<T>>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
+            DescendProcess<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
         }
         Sort32(dstLocal, srcLocal, srcIndexLocal, repeatTime);
         DoFullSort(dstLocal, (const LocalTensor<T>&)sharedTmpBuffer, (const LocalTensor<uint32_t>&)sharedTmpBuffer,
             (LocalTensor<T>&)sharedTmpBuffer, repeatTime);
         Extract(dstLocal, dstIndexLocal, dstLocal, repeatTime);
         if constexpr (!isDescend) {
-            VF_CALL<DescendProcess<T>>((__ubuf__ T*)dstLocal.GetPhyAddr(), count);
+            DescendProcess<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), count);
         }
     } else {
         static_assert(SupportBytes<T, 2, 4, 8>() || SupportType<T, uint8_t, int8_t>(),

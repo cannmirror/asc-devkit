@@ -38,7 +38,7 @@ constexpr MicroAPI::CastTrait HYPOT_CAST_TRAIT_RINT = { MicroAPI::RegLayout::ZER
 }
 
 template <typename T, typename U>
-__aicore__ inline void CompareScalar(MicroAPI::MaskReg &cmpMaskZero, MicroAPI::MaskReg &cmpMaskSrcInf,
+__simd_callee__ inline void CompareScalar(MicroAPI::MaskReg &cmpMaskZero, MicroAPI::MaskReg &cmpMaskSrcInf,
     MicroAPI::RegTensor<T> &vSrcTmpReg0, MicroAPI::RegTensor<T> &vSrcTmpReg1, MicroAPI::MaskReg &cmpMaskSrc0NAN,
     MicroAPI::MaskReg &cmpMaskSrc1NAN, MicroAPI::RegTensor<T> &vRegOne, MicroAPI::RegTensor<T> &vSrcReg0,
     MicroAPI::RegTensor<T> &vSrcReg1, const U INF, const U NEG_INF, MicroAPI::MaskReg maskReg)
@@ -69,7 +69,7 @@ __aicore__ inline void CompareScalar(MicroAPI::MaskReg &cmpMaskZero, MicroAPI::M
     MicroAPI::Select(vSrcTmpReg1, vRegOne, vSrcReg1, cmpMaskSrcInf);
 }
 
-__aicore__ inline void HypotCommonProcess(MicroAPI::RegTensor<float> &vSrcTmpReg0, MicroAPI::RegTensor<float> &vSrcTmpReg1,
+__simd_callee__ inline void HypotCommonProcess(MicroAPI::RegTensor<float> &vSrcTmpReg0, MicroAPI::RegTensor<float> &vSrcTmpReg1,
     MicroAPI::RegTensor<float> &vDstReg0, MicroAPI::MaskReg maskReg)
 {
     MicroAPI::RegTensor<float> vTmpReg0, vTmpReg1, vTmpReg2, vTmpReg3;
@@ -94,7 +94,7 @@ __aicore__ inline void HypotCommonProcess(MicroAPI::RegTensor<float> &vSrcTmpReg
 }
 
 template <typename T>
-__aicore__ inline void HypotCompute(MicroAPI::RegTensor<T> &vSrcTmpReg0, MicroAPI::RegTensor<T> &vSrcTmpReg1,
+__simd_callee__ inline void HypotCompute(MicroAPI::RegTensor<T> &vSrcTmpReg0, MicroAPI::RegTensor<T> &vSrcTmpReg1,
     MicroAPI::RegTensor<T> &vDstReg0, MicroAPI::MaskReg maskReg)
 {
     if constexpr (IsSameType<T, bfloat16_t>::value) {
@@ -119,7 +119,7 @@ __aicore__ inline void HypotCompute(MicroAPI::RegTensor<T> &vSrcTmpReg0, MicroAP
 }
 
 template <typename T>
-__aicore__ inline void VfHypotImpl(__local_mem__ T *dstUb, __local_mem__ T *src0Ub, __local_mem__ T *src1Ub,
+__simd_vf__ inline void VfHypotImpl(__local_mem__ T *dstUb, __local_mem__ T *src0Ub, __local_mem__ T *src1Ub,
     const uint32_t calCount)
 {
     MicroAPI::RegTensor<T> vSrcReg0;
@@ -230,7 +230,7 @@ __aicore__ inline void HypotImpl(const LocalTensor<T> &dstTensor, const LocalTen
     __local_mem__ T *src1Ub = (__local_mem__ T *)src1Tensor.GetPhyAddr();
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
 
-    VF_CALL<VfHypotImpl<T>>(dstUb, src0Ub, src1Ub, calCount);
+    VfHypotImpl<T>(dstUb, src0Ub, src1Ub, calCount);
 }
 
 template <typename T, bool isReuseSource = false>

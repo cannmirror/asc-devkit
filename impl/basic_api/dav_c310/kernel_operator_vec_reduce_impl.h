@@ -57,7 +57,7 @@ __simd_callee__ inline void ReduceCommonCall(MicroAPI::MaskReg& mask, uint16_t& 
 }
 
 template <bool isSetMask, bool isBitMask, bool isCounterMode, auto func, typename T>
-__simd_callee__ inline void ReduceAlignCall(__ubuf__ T *dst, __ubuf__ T *src, int32_t repeat, uint32_t dstRepOffset,
+__simd_vf__ inline void ReduceAlignCall(__ubuf__ T *dst, __ubuf__ T *src, int32_t repeat, uint32_t dstRepOffset,
     uint32_t srcBlkStride, uint32_t srcRepStride, uint32_t maskReg, __ubuf__ uint64_t *maskBuf)
 {
     MicroAPI::MaskReg stMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::H>();
@@ -79,7 +79,7 @@ __simd_callee__ inline void ReduceAlignCall(__ubuf__ T *dst, __ubuf__ T *src, in
 }
 
 template <bool isSetMask, bool isBitMask, bool isCounterMode, bool withStride, auto func, typename T, typename U = T>
-__simd_callee__ inline void ReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src, int32_t repeat, uint32_t oneRepOffset,
+__simd_vf__ inline void ReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src, int32_t repeat, uint32_t oneRepOffset,
     uint32_t dstRepOffsetPost, uint32_t srcBlkStride, uint32_t srcRepStride, uint32_t maskReg, __ubuf__ uint64_t *maskBuf)
 {
     MicroAPI::MaskReg mask;
@@ -107,7 +107,7 @@ __simd_callee__ inline void ReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src, 
 }
 
 template <bool isSetMask, bool isBitMask, bool isCounterMode, bool withStride, auto func, typename T, typename U = T>
-__simd_callee__ inline void WholeReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src, int32_t repeat, uint32_t oneRepOffset,
+__simd_vf__ inline void WholeReduceUnalignCall(__ubuf__ U *dst, __ubuf__ T *src, int32_t repeat, uint32_t oneRepOffset,
     uint32_t dstRepOffsetPost, uint32_t srcBlkStride, uint32_t srcRepStride, uint32_t maskReg,
     __ubuf__ uint64_t *maskBuf, const ReduceOrder order)
 {
@@ -165,13 +165,13 @@ __aicore__ inline void PairReduceTemplate(__ubuf__ T *dst, __ubuf__ T *src, int3
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
-        VF_CALL<ReduceAlignCall<isSetMask, isBitMask, true, func, T>>(
+        ReduceAlignCall<isSetMask, isBitMask, true, func, T>(
             dst, newSrc, newRepeat, dstRepOffset, srcBlkStride, srcRepStride, maskReg, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
         }
     } else {
-        VF_CALL<ReduceAlignCall<isSetMask, isBitMask, false, func, T>>(
+        ReduceAlignCall<isSetMask, isBitMask, false, func, T>(
             dst, newSrc, newRepeat, dstRepOffset, srcBlkStride, srcRepStride, maskReg, maskBuf);
     }
 }
@@ -190,14 +190,14 @@ __aicore__ inline void ReduceTemplate(__ubuf__ U *dst, __ubuf__ T *src, int32_t 
         if (dstRepStride == 0 && repeat > 0) {
             uint32_t srcStrideOffset = srcRepStride * ONE_BLK_ELEMENT_NUM;
             __ubuf__ T *newSrc = src + srcStrideOffset * (repeat - 1);
-            VF_CALL<ReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>>(
+            ReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>(
                 dst, newSrc, 1, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf);
         } else if (dstRepStride == 1 && repeat > 0) {
-            VF_CALL<ReduceUnalignCall<isSetMask, isBitMask, true, false, func, T, U>>(
+            ReduceUnalignCall<isSetMask, isBitMask, true, false, func, T, U>(
                 dst, src, repeat, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf);
         } else {
             uint32_t dstRepOffsetPost = oneRepOffset * (dstRepStride - 1);
-            VF_CALL<ReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>>(
+            ReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>(
                 dst, src, repeat, oneRepOffset, dstRepOffsetPost, srcBlkStride, srcRepStride, maskReg, maskBuf);
         }
         if constexpr (!isSetMask) {
@@ -207,14 +207,14 @@ __aicore__ inline void ReduceTemplate(__ubuf__ U *dst, __ubuf__ T *src, int32_t 
         if (dstRepStride == 0 && repeat > 0) {
             uint32_t srcStrideOffset = srcRepStride * ONE_BLK_ELEMENT_NUM;
             __ubuf__ T *newSrc = src + srcStrideOffset * (repeat - 1);
-            VF_CALL<ReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>>(
+            ReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>(
                 dst, newSrc, 1, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf);
         } else if (dstRepStride == 1 && repeat > 0) {
-            VF_CALL<ReduceUnalignCall<isSetMask, isBitMask, false, false, func, T, U>>(
+            ReduceUnalignCall<isSetMask, isBitMask, false, false, func, T, U>(
                 dst, src, repeat, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf);
         } else {
             uint32_t dstRepOffsetPost = oneRepOffset * (dstRepStride - 1);
-            VF_CALL<ReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>>(
+            ReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>(
                 dst, src, repeat, oneRepOffset, dstRepOffsetPost, srcBlkStride, srcRepStride, maskReg, maskBuf);
         }
     }
@@ -234,14 +234,14 @@ __aicore__ inline void ReduceTemplate(__ubuf__ U *dst, __ubuf__ T *src, int32_t 
         if (dstRepStride == 0 && repeat > 0) {
             uint32_t srcStrideOffset = srcRepStride * ONE_BLK_ELEMENT_NUM;
             __ubuf__ T *newSrc = src + srcStrideOffset * (repeat - 1);
-            VF_CALL<WholeReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>>(
+            WholeReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>(
                 dst, newSrc, 1, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf, order);
         } else if (dstRepStride == 1 && repeat > 0) {
-            VF_CALL<WholeReduceUnalignCall<isSetMask, isBitMask, true, false, func, T, U>>(
+            WholeReduceUnalignCall<isSetMask, isBitMask, true, false, func, T, U>(
                 dst, src, repeat, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf, order);
         } else {
             uint32_t dstRepOffsetPost = oneRepOffset * (dstRepStride - 1);
-            VF_CALL<WholeReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>>(
+            WholeReduceUnalignCall<isSetMask, isBitMask, true, true, func, T, U>(
                 dst, src, repeat, oneRepOffset, dstRepOffsetPost, srcBlkStride, srcRepStride, maskReg, maskBuf, order);
         }
         if constexpr (!isSetMask) {
@@ -251,14 +251,14 @@ __aicore__ inline void ReduceTemplate(__ubuf__ U *dst, __ubuf__ T *src, int32_t 
         if (dstRepStride == 0 && repeat > 0) {
             uint32_t srcStrideOffset = srcRepStride * ONE_BLK_ELEMENT_NUM;
             __ubuf__ T *newSrc = src + srcStrideOffset * (repeat - 1);
-            VF_CALL<WholeReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>>(
+            WholeReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>(
                 dst, newSrc, 1, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf, order);
         } else if (dstRepStride == 1 && repeat > 0) {
-            VF_CALL<WholeReduceUnalignCall<isSetMask, isBitMask, false, false, func, T, U>>(
+            WholeReduceUnalignCall<isSetMask, isBitMask, false, false, func, T, U>(
                 dst, src, repeat, oneRepOffset, 0, srcBlkStride, srcRepStride, maskReg, maskBuf, order);
         } else {
             uint32_t dstRepOffsetPost = oneRepOffset * (dstRepStride - 1);
-            VF_CALL<WholeReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>>(
+            WholeReduceUnalignCall<isSetMask, isBitMask, false, true, func, T, U>(
                 dst, src, repeat, oneRepOffset, dstRepOffsetPost, srcBlkStride, srcRepStride, maskReg, maskBuf, order);
         }
     }
@@ -580,7 +580,7 @@ __simd_callee__ inline void ReduceSumMask(
 }
 
 template <typename T, int shapeScope>
-__simd_callee__ inline void ReduceSumCounterMode(
+__simd_vf__ inline void ReduceSumCounterMode(
     __ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal, uint32_t count, const int32_t srcRepStride)
 {
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(T);
@@ -603,7 +603,7 @@ __simd_callee__ inline void ReduceSumCounterMode(
 }
 
 template <typename T, int shapeScope, bool isBitMask>
-__simd_callee__ inline void ReduceSumNormalMode(
+__simd_vf__ inline void ReduceSumNormalMode(
     __ubuf__ T *dstLocal, __ubuf__ T *srcLocal,  __ubuf__ T *workLocal, uint32_t mask, int32_t repeat, const int32_t srcRepStride)
 {
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(T);
@@ -633,20 +633,20 @@ __aicore__ inline void ReduceSumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
     if (isCounterMode) {
         uint32_t count = static_cast<uint32_t>(mask[0]);
         if (count <= oneRepSize) {
-            VF_CALL<ReduceSumCounterMode<T, 1>>(dstLocal, srcLocal, workLocal, count, srcRepStride);
+            ReduceSumCounterMode<T, 1>(dstLocal, srcLocal, workLocal, count, srcRepStride);
         } else if (count <= oneRepSize * oneRepSize) {
-            VF_CALL<ReduceSumCounterMode<T, 2>>(dstLocal, srcLocal, workLocal, count, srcRepStride);
+            ReduceSumCounterMode<T, 2>(dstLocal, srcLocal, workLocal, count, srcRepStride);
         } else {
-            VF_CALL<ReduceSumCounterMode<T, 3>>(dstLocal, srcLocal, workLocal, count, srcRepStride);
+            ReduceSumCounterMode<T, 3>(dstLocal, srcLocal, workLocal, count, srcRepStride);
         }
     } else {
         SetVectorMask<T>(mask[1], mask[0]);
         if (repeat <= 1) {
-            VF_CALL<ReduceSumNormalMode<T, 1, true>>(dstLocal, srcLocal, workLocal, 0, 1, srcRepStride);
+            ReduceSumNormalMode<T, 1, true>(dstLocal, srcLocal, workLocal, 0, 1, srcRepStride);
         } else if (repeat <= oneRepSize) {
-            VF_CALL<ReduceSumNormalMode<T, 2, true>>(dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride);
+            ReduceSumNormalMode<T, 2, true>(dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride);
         } else {
-            VF_CALL<ReduceSumNormalMode<T, 3, true>>(dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride);
+            ReduceSumNormalMode<T, 3, true>(dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride);
         }
     }
 }
@@ -661,25 +661,25 @@ __aicore__ inline void ReduceSumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
     if (isCounterMode) {
         uint32_t count = static_cast<uint32_t>(mask);
         if (count <= oneRepSize) {
-            VF_CALL<ReduceSumCounterMode<T, 1>>(dstLocal, srcLocal, workLocal, count, srcRepStride);
+            ReduceSumCounterMode<T, 1>(dstLocal, srcLocal, workLocal, count, srcRepStride);
         } else if (count <= oneRepSize * oneRepSize) {
-            VF_CALL<ReduceSumCounterMode<T, 2>>(dstLocal, srcLocal, workLocal, count, srcRepStride);
+            ReduceSumCounterMode<T, 2>(dstLocal, srcLocal, workLocal, count, srcRepStride);
         } else {
-            VF_CALL<ReduceSumCounterMode<T, 3>>(dstLocal, srcLocal, workLocal, count, srcRepStride);
+            ReduceSumCounterMode<T, 3>(dstLocal, srcLocal, workLocal, count, srcRepStride);
         }
     } else {
         if (repeat <= 1) {
-            VF_CALL<ReduceSumNormalMode<T, 1, false>>(dstLocal, srcLocal, workLocal, mask, 1, srcRepStride);
+            ReduceSumNormalMode<T, 1, false>(dstLocal, srcLocal, workLocal, mask, 1, srcRepStride);
         } else if (repeat <= oneRepSize) {
-            VF_CALL<ReduceSumNormalMode<T, 2, false>>(dstLocal, srcLocal, workLocal, mask, repeat, srcRepStride);
+            ReduceSumNormalMode<T, 2, false>(dstLocal, srcLocal, workLocal, mask, repeat, srcRepStride);
         } else {
-            VF_CALL<ReduceSumNormalMode<T, 3, false>>(dstLocal, srcLocal, workLocal, mask, repeat, srcRepStride);
+            ReduceSumNormalMode<T, 3, false>(dstLocal, srcLocal, workLocal, mask, repeat, srcRepStride);
         }
     }
 }
 
 template <typename T>
-__simd_callee__ inline void ReduceB64SumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal, uint32_t count)
+__simd_vf__ inline void ReduceB64SumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal, uint32_t count)
 {
     constexpr uint32_t oneRepSize = 2 * GetVecLen() / sizeof(T);
     uint16_t repeatTime = CeilDivision(count, oneRepSize);
@@ -708,15 +708,15 @@ __aicore__ inline void ReduceSumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
 {
     static_assert((SupportType<T, half, float, uint64_t, int64_t>()), "ReduceSum current data type is not supported!");
     if constexpr (SupportType<T, uint64_t, int64_t>()) {
-        VF_CALL<ReduceB64SumImpl<T>>(dstLocal, srcLocal, workLocal, count);
+        ReduceB64SumImpl<T>(dstLocal, srcLocal, workLocal, count);
     } else {
         constexpr uint32_t oneRepSize = GetVecLen() / sizeof(T);
         if (count <= oneRepSize) {
-            VF_CALL<ReduceSumCounterMode<T, 1>>(dstLocal, srcLocal, workLocal, count, 8);
+            ReduceSumCounterMode<T, 1>(dstLocal, srcLocal, workLocal, count, 8);
         } else if (count <= oneRepSize * oneRepSize) {
-            VF_CALL<ReduceSumCounterMode<T, 2>>(dstLocal, srcLocal, workLocal, count, 8);
+            ReduceSumCounterMode<T, 2>(dstLocal, srcLocal, workLocal, count, 8);
         } else {
-            VF_CALL<ReduceSumCounterMode<T, 3>>(dstLocal, srcLocal, workLocal, count, 8);
+            ReduceSumCounterMode<T, 3>(dstLocal, srcLocal, workLocal, count, 8);
         }
     }
     if constexpr (std::is_same_v<T, float> || std::is_same_v<T, half>) {
@@ -779,7 +779,7 @@ __aicore__ inline T GetMaxValue()
 }
 
 template <ReduceMode mode, typename T>
-__simd_callee__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
+__simd_vf__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
     uint32_t count, const int32_t srcRepStride, T initValue)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
@@ -811,7 +811,7 @@ __simd_callee__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__
 }
 
 template <ReduceMode mode, typename T>
-__simd_callee__ inline void ReduceB64NoIndexTemplate(
+__simd_vf__ inline void ReduceB64NoIndexTemplate(
     __ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal, uint32_t count, T initValue)
 {
     constexpr uint16_t oneRepSize = 2 * GetVecLen() / sizeof(T);
@@ -842,7 +842,7 @@ __simd_callee__ inline void ReduceB64NoIndexTemplate(
 }
 
 template <ReduceMode mode, bool isBitMask, typename T>
-__simd_callee__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
+__simd_vf__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
     uint32_t maskReg, const int32_t repeat, const int32_t srcRepStride, T initValue)
 {
     MicroAPI::MaskReg preg;
@@ -869,7 +869,7 @@ __simd_callee__ inline void ReduceNoIndexTemplate(__ubuf__ T *dstLocal, __ubuf__
 }
 
 template <ReduceMode mode, typename T, typename IndexT>
-__simd_callee__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
+__simd_vf__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
     uint32_t count, const int32_t srcRepStride, T initValue)
 {
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
@@ -930,7 +930,7 @@ __simd_callee__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T
 }
 
 template <ReduceMode mode, typename T, typename IndexT>
-__simd_callee__ inline void ReduceB64IndexTemplate(
+__simd_vf__ inline void ReduceB64IndexTemplate(
     __ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal, uint32_t count, T initValue)
 {
     constexpr uint16_t oneRepSize = 2 * GetVecLen() / sizeof(T);
@@ -990,7 +990,7 @@ __simd_callee__ inline void ReduceB64IndexTemplate(
 }
 
 template <ReduceMode mode, bool isBitMask, typename T, typename IndexT>
-__simd_callee__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
+__simd_vf__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ T *workLocal,
     uint32_t maskReg, const int32_t repeat, const int32_t srcRepStride, T initValue)
 {
     MicroAPI::MaskReg preg, pregCond;
@@ -1055,26 +1055,26 @@ __aicore__ inline void ReduceMaxImpl(
     T initValue = GetMinValue<T>();
     if constexpr (sizeof(T) == 8) {
         if (calIndex) {
-            VF_CALL<ReduceB64IndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>>(
+            ReduceB64IndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>(
                 dstLocal, srcLocal, workLocal, count, initValue);
         } else {
-            VF_CALL<ReduceB64NoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+            ReduceB64NoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                 dstLocal, srcLocal, workLocal, count, initValue);
         }
     } else if constexpr (sizeof(T) == 4) {
         if (calIndex) {
-            VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>>(
+            ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         } else {
-            VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+            ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         }
     } else {
         if (calIndex) {
-            VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint16_t>>(
+            ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint16_t>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         } else {
-            VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+            ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         }
     }
@@ -1092,18 +1092,18 @@ __aicore__ inline void ReduceMaxImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
     if (isCounterMode) {
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             }
         }
@@ -1111,18 +1111,18 @@ __aicore__ inline void ReduceMaxImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
         SetVectorMask<T>(mask[1], mask[0]);
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, true, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, true, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, true, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, true, T>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, true, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, true, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, true, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, true, T>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             }
         }
@@ -1141,36 +1141,36 @@ __aicore__ inline void ReduceMaxImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
     if (isCounterMode) {
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, T>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             }
         }
     } else {
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, false, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, false, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, false, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, false, T>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MAX, false, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MAX, false, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, false, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MAX, false, T>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             }
         }
@@ -1186,26 +1186,26 @@ __aicore__ inline void ReduceMinImpl(
     T initValue = GetMaxValue<T>();
     if constexpr (sizeof(T) == 8) {
         if (calIndex) {
-            VF_CALL<ReduceB64IndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>>(
+            ReduceB64IndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>(
                 dstLocal, srcLocal, workLocal, count, initValue);
         } else {
-            VF_CALL<ReduceB64NoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+            ReduceB64NoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                 dstLocal, srcLocal, workLocal, count, initValue);
         }
     } else if constexpr (sizeof(T) == 4) {
         if (calIndex) {
-            VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>>(
+            ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         } else {
-            VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+            ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         }
     } else {
         if (calIndex) {
-            VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint16_t>>(
+            ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint16_t>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         } else {
-            VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+            ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                 dstLocal, srcLocal, workLocal, count, 8, initValue);
         }
     }
@@ -1223,18 +1223,18 @@ __aicore__ inline void ReduceMinImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
     if (isCounterMode) {
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                     dstLocal, srcLocal, workLocal, count, srcRepStride, initValue);
             }
         }
@@ -1242,18 +1242,18 @@ __aicore__ inline void ReduceMinImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
         SetVectorMask<T>(mask[1], mask[0]);
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, true, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, true, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, true, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, true, T>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, true, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, true, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, true, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, true, T>(
                     dstLocal, srcLocal, workLocal, 0, repeat, srcRepStride, initValue);
             }
         }
@@ -1272,36 +1272,36 @@ __aicore__ inline void ReduceMinImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
     if (isCounterMode) {
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, T>(
                     dstLocal, srcLocal, workLocal, maskReg, srcRepStride, initValue);
             }
         }
     } else {
         if constexpr (sizeof(T) == 4) {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, false, T, uint32_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, false, T, uint32_t>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, false, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, false, T>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             }
         } else {
             if (calIndex) {
-                VF_CALL<ReduceIndexTemplate<ReduceMode::REDUCE_MIN, false, T, uint16_t>>(
+                ReduceIndexTemplate<ReduceMode::REDUCE_MIN, false, T, uint16_t>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             } else {
-                VF_CALL<ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, false, T>>(
+                ReduceNoIndexTemplate<ReduceMode::REDUCE_MIN, false, T>(
                     dstLocal, srcLocal, workLocal, maskReg, repeat, srcRepStride, initValue);
             }
         }

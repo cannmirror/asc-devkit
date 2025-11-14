@@ -10,11 +10,11 @@
  */
 
 /* !
- * \file kernel_micro_vec_createvecindex_intf.h
+ * \file kernel_micro_vec_arange_intf.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_MICRO_VEC_CREATEVECINDEX_INTERFACE_H
-#define ASCENDC_MODULE_MICRO_VEC_CREATEVECINDEX_INTERFACE_H
+#ifndef ASCENDC_MODULE_MICRO_VEC_ARANGE_INTERFACE_H
+#define ASCENDC_MODULE_MICRO_VEC_ARANGE_INTERFACE_H
 
 #include "kernel_micro_common_intf.h"
 
@@ -25,5 +25,5 @@ __simd_callee__ inline void Arange(S &dstReg, U scalar);
 } // namespace MicroAPI
 } // namespace AscendC
 
-#include "impl/micro_api/kernel_micro_vec_createvecindex_intf_impl.h"
-#endif // ASCENDC_MODULE_MICRO_VEC_CREATEVECINDEX_INTERFACE_H
+#include "impl/micro_api/kernel_micro_vec_arange_intf_impl.h"
+#endif // ASCENDC_MODULE_MICRO_VEC_ARANGE_INTERFACE_H

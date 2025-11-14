@@ -10,11 +10,11 @@
  */
 
 /* !
- * \file kernel_micro_vec_createvecindex_impl.h
+ * \file kernel_micro_vec_arange_impl.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_MICRO_VEC_CREATEVECINDEX_IMPL_H
-#define ASCENDC_MODULE_MICRO_VEC_CREATEVECINDEX_IMPL_H
+#ifndef ASCENDC_MODULE_MICRO_VEC_ARANGE_IMPL_H
+#define ASCENDC_MODULE_MICRO_VEC_ARANGE_IMPL_H
 
 namespace AscendC {
 namespace MicroAPI {
@@ -57,4 +57,4 @@ __simd_callee__ inline void ArangeImpl(RegT &dstReg, T1 scalar)
 }
 } // namespace MicroAPI
 } // namespace AscendC
-#endif // ASCENDC_MODULE_MICRO_VEC_CREATEVECINDEX_IMPL_H
+#endif // ASCENDC_MODULE_MICRO_VEC_ARANGE_IMPL_H

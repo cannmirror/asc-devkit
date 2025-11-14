@@ -21,7 +21,8 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void VfGenIndex(__ubuf__ T *indexUb, uint32_t *sizeI, uint32_t *strideI, uint32_t offset)
+__simd_vf__ inline void VfGenIndex(__ubuf__ T *indexUb, uint32_t sizeI0, uint32_t sizeI1, uint32_t sizeI2, uint32_t strideI0,
+    uint32_t strideI1, uint32_t strideI2, uint32_t offset)
 {
     MicroAPI::RegTensor<T> v0;
     MicroAPI::RegTensor<T> v1;
@@ -47,24 +48,24 @@ __aicore__ inline void VfGenIndex(__ubuf__ T *indexUb, uint32_t *sizeI, uint32_t
     p0 = MicroAPI::CreateMask<T>();
     MicroAPI::Arange(v0, 0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[2], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI2, p0);
     MicroAPI::Div(vd0, v0, v1, p0);
     MicroAPI::Mul(v2, vd0, v1, p0);
     MicroAPI::Sub(vi2, v0, v2, p0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[1], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI1, p0);
     MicroAPI::Div(vd1, vd0, v1, p0);
     MicroAPI::Mul(v2, vd1, v1, p0);
     MicroAPI::Sub(vi1, vd0, v2, p0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[0], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI0, p0);
     MicroAPI::Div(vd2, vd1, v1, p0);
     MicroAPI::Mul(v2, vd2, v1, p0);
     MicroAPI::Sub(vi0, vd1, v2, p0);
 
-    MicroAPI::Duplicate(vs0, (T)strideI[0], p0);
-    MicroAPI::Duplicate(vs1, (T)strideI[1], p0);
-    MicroAPI::Duplicate(vs2, (T)strideI[2], p0);
+    MicroAPI::Duplicate(vs0, (T)strideI0, p0);
+    MicroAPI::Duplicate(vs1, (T)strideI1, p0);
+    MicroAPI::Duplicate(vs2, (T)strideI2, p0);
 
     MicroAPI::Mul(vr0, vs2, vi2, p0);
     MicroAPI::MulAddDst(vr0, vs1, vi1, p0);
@@ -77,7 +78,8 @@ __aicore__ inline void VfGenIndex(__ubuf__ T *indexUb, uint32_t *sizeI, uint32_t
 }
 
 template <typename T>
-__aicore__ inline void VfGenIndexForFourDim(__ubuf__ T *indexUb, uint32_t *sizeI, uint32_t *strideI, uint32_t offset)
+__simd_vf__ inline void VfGenIndexForFourDim(__ubuf__ T *indexUb, uint32_t sizeI0, uint32_t sizeI1, uint32_t sizeI2, uint32_t sizeI3,
+    uint32_t strideI0, uint32_t strideI1, uint32_t strideI2, uint32_t strideI3, uint32_t offset)
 {
     MicroAPI::RegTensor<T> v0;
     MicroAPI::RegTensor<T> v1;
@@ -106,30 +108,30 @@ __aicore__ inline void VfGenIndexForFourDim(__ubuf__ T *indexUb, uint32_t *sizeI
     p0 = MicroAPI::CreateMask<T>();
     MicroAPI::Arange(v0, 0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[3], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI3, p0);
     MicroAPI::Div(vd0, v0, v1, p0);
     MicroAPI::Mul(v2, vd0, v1, p0);
     MicroAPI::Sub(vi3, v0, v2, p0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[2], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI2, p0);
     MicroAPI::Div(vd1, vd0, v1, p0);
     MicroAPI::Mul(v2, vd1, v1, p0);
     MicroAPI::Sub(vi2, vd0, v2, p0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[1], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI1, p0);
     MicroAPI::Div(vd2, vd1, v1, p0);
     MicroAPI::Mul(v2, vd2, v1, p0);
     MicroAPI::Sub(vi1, vd1, v2, p0);
 
-    MicroAPI::Duplicate(v1, (T)sizeI[0], p0);
+    MicroAPI::Duplicate(v1, (T)sizeI0, p0);
     MicroAPI::Div(vd3, vd2, v1, p0);
     MicroAPI::Mul(v2, vd3, v1, p0);
     MicroAPI::Sub(vi0, vd2, v2, p0);
 
-    MicroAPI::Duplicate(vs0, (T)strideI[0], p0);
-    MicroAPI::Duplicate(vs1, (T)strideI[1], p0);
-    MicroAPI::Duplicate(vs2, (T)strideI[2], p0);
-    MicroAPI::Duplicate(vs3, (T)strideI[3], p0);
+    MicroAPI::Duplicate(vs0, (T)strideI0, p0);
+    MicroAPI::Duplicate(vs1, (T)strideI1, p0);
+    MicroAPI::Duplicate(vs2, (T)strideI2, p0);
+    MicroAPI::Duplicate(vs3, (T)strideI3, p0);
 
     MicroAPI::Mul(vr0, vs3, vi3, p0);
     MicroAPI::MulAddDst(vr0, vs2, vi2, p0);
@@ -143,8 +145,8 @@ __aicore__ inline void VfGenIndexForFourDim(__ubuf__ T *indexUb, uint32_t *sizeI
 }
 
 template <typename T>
-__aicore__ inline void VfGatherBrc(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ T *indexUb, uint16_t *size,
-    uint16_t *srcStride, uint32_t main, uint32_t tail)
+__simd_vf__ inline void VfGatherBrc(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ T *indexUb, uint16_t size0, uint16_t size1,
+    uint16_t size2, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2, uint32_t main, uint32_t tail)
 {
     MicroAPI::UnalignReg u0;
     MicroAPI::RegTensor<T> vindex0;
@@ -170,23 +172,23 @@ __aicore__ inline void VfGatherBrc(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf_
     uint32_t tail1 = tail;
     p0 = MicroAPI::UpdateMask<T>(main);
     p1 = MicroAPI::UpdateMask<T>(tail);
-    MicroAPI::Duplicate(vstride0, (T)srcStride[0], pa);
-    MicroAPI::Duplicate(vstride1, (T)srcStride[1], pa);
-    MicroAPI::Duplicate(vstride2, (T)srcStride[2], pa);
+    MicroAPI::Duplicate(vstride0, (T)srcStride0, pa);
+    MicroAPI::Duplicate(vstride1, (T)srcStride1, pa);
+    MicroAPI::Duplicate(vstride2, (T)srcStride2, pa);
     MicroAPI::DataCopy(vindex0, indexUb);
-    for (uint16_t i0 = 0; i0 < size[0]; ++i0) {
+    for (uint16_t i0 = 0; i0 < size0; ++i0) {
         MicroAPI::Muls(voffset0, vstride0, (T)i0, p0);
         MicroAPI::Add(vbase0, voffset0, vindex0, p0);
-        for (uint16_t i1 = 0; i1 < size[1]; ++i1) {
+        for (uint16_t i1 = 0; i1 < size1; ++i1) {
             MicroAPI::Muls(voffset1, vstride1, (T)i1, p0);
             MicroAPI::Add(vbase1, vbase0, voffset1, p0);
-            for (uint16_t i2 = 0; i2 < size[2]; ++i2) {
+            for (uint16_t i2 = 0; i2 < size2; ++i2) {
                 MicroAPI::Muls(voffset2, vstride2, (T)i2, p0);
                 MicroAPI::Add(vindex, vbase1, voffset2, p0);
                 MicroAPI::DataCopyGather(vd0, srcUb, vindex, p0);
                 MicroAPI::DataCopyUnAlign(dstUb, vd0, u0, main1);
             }
-            MicroAPI::Muls(voffset2, vstride2, (T)size[2], p1);
+            MicroAPI::Muls(voffset2, vstride2, (T)size2, p1);
             MicroAPI::Add(vindex, vbase1, voffset2, p1);
             MicroAPI::DataCopyGather(vd1, srcUb, vindex, p1);
             MicroAPI::DataCopyUnAlign(dstUb, vd1, u0, tail1);
@@ -196,8 +198,9 @@ __aicore__ inline void VfGatherBrc(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf_
 }
 
 template <typename T>
-__aicore__ inline void VfGatherBrcForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ T *indexUb, uint16_t *size,
-    uint16_t *srcStride, uint32_t main, uint32_t tail)
+__simd_vf__ inline void VfGatherBrcForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ T *indexUb, uint16_t size0, uint16_t size1,
+    uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2, uint16_t srcStride3, uint32_t main,
+    uint32_t tail)
 {
     MicroAPI::UnalignReg u0;
     MicroAPI::RegTensor<T> vindex0;
@@ -225,27 +228,27 @@ __aicore__ inline void VfGatherBrcForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcU
     uint32_t tail1 = tail;
     p0 = MicroAPI::UpdateMask<T>(main);
     p1 = MicroAPI::UpdateMask<T>(tail);
-    MicroAPI::Duplicate(vstride0, (T)srcStride[0], pa);
-    MicroAPI::Duplicate(vstride1, (T)srcStride[1], pa);
-    MicroAPI::Duplicate(vstride2, (T)srcStride[2], pa);
-    MicroAPI::Duplicate(vstride3, (T)srcStride[3], pa);
+    MicroAPI::Duplicate(vstride0, (T)srcStride0, pa);
+    MicroAPI::Duplicate(vstride1, (T)srcStride1, pa);
+    MicroAPI::Duplicate(vstride2, (T)srcStride2, pa);
+    MicroAPI::Duplicate(vstride3, (T)srcStride3, pa);
     MicroAPI::DataCopy(vindex0, indexUb);
-    for (uint16_t i0 = 0; i0 < size[0]; ++i0) {
+    for (uint16_t i0 = 0; i0 < size0; ++i0) {
         MicroAPI::Muls(voffset0, vstride0, (T)i0, p0);
         MicroAPI::Add(vbase0, voffset0, vindex0, p0);
-        for (uint16_t i1 = 0; i1 < size[1]; ++i1) {
+        for (uint16_t i1 = 0; i1 < size1; ++i1) {
             MicroAPI::Muls(voffset1, vstride1, (T)i1, p0);
             MicroAPI::Add(vbase1, vbase0, voffset1, p0);
-            for (uint16_t i2 = 0; i2 < size[2]; ++i2) {
+            for (uint16_t i2 = 0; i2 < size2; ++i2) {
                 MicroAPI::Muls(voffset2, vstride2, (T)i2, p0);
                 MicroAPI::Add(vbase2, vbase1, voffset2, p0);
-                for (uint16_t i3 = 0; i3 < size[3]; ++i3) {
+                for (uint16_t i3 = 0; i3 < size3; ++i3) {
                     MicroAPI::Muls(voffset3, vstride3, (T)i3, p0);
                     MicroAPI::Add(vindex, vbase2, voffset3, p0);
                     MicroAPI::DataCopyGather(vd0, srcUb, vindex, p0);
                     MicroAPI::DataCopyUnAlign(dstUb, vd0, u0, main1);
                 }
-                MicroAPI::Muls(voffset3, vstride3, (T)size[3], p1);
+                MicroAPI::Muls(voffset3, vstride3, (T)size3, p1);
                 MicroAPI::Add(vindex, vbase2, voffset3, p1);
                 MicroAPI::DataCopyGather(vd1, srcUb, vindex, p1);
                 MicroAPI::DataCopyUnAlign(dstUb, vd1, u0, tail1);
@@ -282,7 +285,8 @@ template <typename T> __aicore__ inline void GenGatherIndex(__ubuf__ T *indexUb,
         sizeI[2] = VF_LEN;
     }
 
-    VF_CALL<VfGenIndex<T>>(indexUb, sizeI, srcStrideI, 0);
+    VfGenIndex<T>(indexUb, sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1],
+        srcStrideI[2], 0);
 }
 
 template <typename T> __aicore__ inline void GenGatherIndexForFourDim(__ubuf__ T *indexUb, uint32_t *size, uint32_t *srcStride)
@@ -322,7 +326,8 @@ template <typename T> __aicore__ inline void GenGatherIndexForFourDim(__ubuf__ T
         sizeI[3] = VF_LEN;
     }
 
-    VF_CALL<VfGenIndexForFourDim<T>>(indexUb, sizeI, srcStrideI, 0);
+    VfGenIndexForFourDim<T>(indexUb, sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0], srcStrideI[1],
+        srcStrideI[2], srcStrideI[3], 0);
 }
 
 template <typename T>
@@ -379,12 +384,14 @@ __aicore__ inline void GatherWrapper(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint3
     PopStackBuffer<T, TPosition::LCM>(indexUb);
     if constexpr (sizeof(T) == sizeof(uint32_t)) {
         GenGatherIndex((__ubuf__ int32_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VF_CALL<VfGatherBrc<uint32_t>>((__ubuf__ uint32_t *)dstUb, (__ubuf__ uint32_t *)srcUb,
-            (__ubuf__ uint32_t *)indexUb.GetPhyAddr(), sizeI, srcStrideI, main, tail);
+        VfGatherBrc<uint32_t>((__ubuf__ uint32_t *)dstUb, (__ubuf__ uint32_t *)srcUb,
+            (__ubuf__ uint32_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1],
+            srcStrideI[2], main, tail);
     } else {
         GenGatherIndex((__ubuf__ int16_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VF_CALL<VfGatherBrc<uint16_t>>((__ubuf__ uint16_t *)dstUb, (__ubuf__ uint16_t *)srcUb,
-            (__ubuf__ uint16_t *)indexUb.GetPhyAddr(), sizeI, srcStrideI, main, tail);
+        VfGatherBrc<uint16_t>((__ubuf__ uint16_t *)dstUb, (__ubuf__ uint16_t *)srcUb,
+            (__ubuf__ uint16_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], srcStrideI[0], srcStrideI[1],
+            srcStrideI[2], main, tail);
     }
 }
 
@@ -465,12 +472,14 @@ __aicore__ inline void GatherWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *sr
     PopStackBuffer<T, TPosition::LCM>(indexUb);
     if constexpr (sizeof(T) == sizeof(uint32_t)) {
         GenGatherIndexForFourDim((__ubuf__ int32_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VF_CALL<VfGatherBrcForFourDim<uint32_t>>((__ubuf__ uint32_t *)dstUb, (__ubuf__ uint32_t *)srcUb,
-            (__ubuf__ uint32_t *)indexUb.GetPhyAddr(), sizeI, srcStrideI, main, tail);
+        VfGatherBrcForFourDim<uint32_t>((__ubuf__ uint32_t *)dstUb, (__ubuf__ uint32_t *)srcUb,
+            (__ubuf__ uint32_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0],
+            srcStrideI[1], srcStrideI[2], srcStrideI[3], main, tail);
     } else {
         GenGatherIndexForFourDim((__ubuf__ int16_t *)indexUb.GetPhyAddr(), size, srcStride);
-        VF_CALL<VfGatherBrcForFourDim<uint16_t>>((__ubuf__ uint16_t *)dstUb, (__ubuf__ uint16_t *)srcUb,
-            (__ubuf__ uint16_t *)indexUb.GetPhyAddr(), sizeI, srcStrideI, main, tail);
+        VfGatherBrcForFourDim<uint16_t>((__ubuf__ uint16_t *)dstUb, (__ubuf__ uint16_t *)srcUb,
+            (__ubuf__ uint16_t *)indexUb.GetPhyAddr(), sizeI[0], sizeI[1], sizeI[2], sizeI[3], srcStrideI[0],
+            srcStrideI[1], srcStrideI[2], srcStrideI[3], main, tail);
     }
 }
 } // namespace AscendC

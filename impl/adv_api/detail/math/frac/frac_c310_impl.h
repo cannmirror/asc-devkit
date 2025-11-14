@@ -26,14 +26,14 @@ constexpr MicroAPI::CastTrait castTraitF162F32 = {
 constexpr MicroAPI::CastTrait castTraitF322F16 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
-__aicore__ inline void FracCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+__simd_callee__ inline void FracCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
 {
     MicroAPI::Truncate<float, RoundMode::CAST_TRUNC>(dstReg, srcReg, mask);
     MicroAPI::Sub(dstReg, srcReg, dstReg, mask);
 }
 
 template<typename T>
-__aicore__ inline void FracCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void FracCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcReg;
     MicroAPI::RegTensor<float> castReg;
@@ -92,7 +92,7 @@ __aicore__ inline void FracImpl(const LocalTensor<T>& dstTensor, const LocalTens
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
-    VF_CALL<FRAC::FracCoreImpl<T>>(dstUb, srcUb, calCount, repeatTimes);
+    FRAC::FracCoreImpl<T>(dstUb, srcUb, calCount, repeatTimes);
 }
 } // namespace AscendC
 

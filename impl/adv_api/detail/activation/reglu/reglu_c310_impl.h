@@ -24,7 +24,7 @@
 namespace AscendC {
 namespace Internal {
 template <typename T>
-__aicore__ inline void ReGluImplVF(
+__simd_vf__ inline void ReGluImplVF(
     __ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint32_t count, const uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcOrigin0;
@@ -76,7 +76,7 @@ __aicore__ inline void ReGluImpl(const LocalTensor<T>& dstTensor, const LocalTen
     CheckCalCount(count, "count", srcTensor1, "srcTensor1", "ReGlu");
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    VF_CALL<Internal::ReGluImplVF<T>>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
+    Internal::ReGluImplVF<T>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
         (__ubuf__ T*)srcTensor1.GetPhyAddr(), count, repeatTimes);
 }
 

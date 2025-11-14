@@ -28,7 +28,7 @@ constexpr MicroAPI::CastTrait castTraitF32F16 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
 template<typename T>
-__aicore__ inline void LoadSrcDataAndXor(MicroAPI::RegTensor<float>& srcReg, __ubuf__ T* src0, 
+__simd_callee__ inline void LoadSrcDataAndXor(MicroAPI::RegTensor<float>& srcReg, __ubuf__ T* src0, 
     __ubuf__ T* src1, uint16_t index, MicroAPI::MaskReg& mask)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
@@ -40,7 +40,7 @@ __aicore__ inline void LoadSrcDataAndXor(MicroAPI::RegTensor<float>& srcReg, __u
 }
 
 template<typename T>
-__aicore__ inline void ReduceXorSumCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* src0Ub,
+__simd_vf__ inline void ReduceXorSumCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* src0Ub,
     __ubuf__ T* src1Ub,  uint32_t calCount)
 {
     MicroAPI::MaskReg mask;
@@ -92,7 +92,7 @@ __aicore__ inline void ReduceXorSumCompute(LocalTensor<T>& dstTensor, const Loca
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *src0Ub = (__local_mem__ T *)src0Tensor.GetPhyAddr();
     __local_mem__ T *src1Ub = (__local_mem__ T *)src1Tensor.GetPhyAddr();
-    VF_CALL<ReduceXorSumAPI::ReduceXorSumCoreImpl<T>>(dstUb, src0Ub, src1Ub, calCount);
+    ReduceXorSumAPI::ReduceXorSumCoreImpl<T>(dstUb, src0Ub, src1Ub, calCount);
 }
 } // namespace AscendC
 

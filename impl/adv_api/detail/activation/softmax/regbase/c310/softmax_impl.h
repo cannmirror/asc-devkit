@@ -1448,7 +1448,7 @@ __aicore__ inline void SoftMaxNDImpl(const LocalTensor<T>& dst, const LocalTenso
 }
 
 template <typename T1, typename T2, uint32_t stepSize, uint32_t stride>
-__aicore__ inline void AdjustSoftMaxResNZImpl(__local_mem__ T1* resUb, __local_mem__ T2* maxUb,
+__simd_vf__ inline void AdjustSoftMaxResNZImpl(__local_mem__ T1* resUb, __local_mem__ T2* maxUb,
     __local_mem__ uint64_t* maskUb, const uint32_t from, const T1 to, const uint32_t dataBlock,
     const uint16_t mRepeatTimes, const uint16_t kRepeatTimes)
 {
@@ -1490,7 +1490,7 @@ __aicore__ inline void AdjustSoftMaxResNZImpl(__local_mem__ T1* resUb, __local_m
 }
 
 template <typename T1, typename T2, uint32_t stepSize, uint32_t stride>
-__aicore__ inline void AdjustSoftMaxResNDImpl(__local_mem__ T1* resUb, __local_mem__ T2* maxUb,
+__simd_vf__ inline void AdjustSoftMaxResNDImpl(__local_mem__ T1* resUb, __local_mem__ T2* maxUb,
     __local_mem__ uint64_t* maskUb, const uint32_t from, const T1 to, const uint32_t srcK, const uint16_t srcM,
     const uint16_t repeatTimes)
 {
@@ -1553,7 +1553,7 @@ __aicore__ inline bool AdjustSoftMaxResBaseImpl(const LocalTensor<T1>& softMaxRe
         uint32_t dataBlock = softmaxShapeInfo.srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
         uint16_t mRepeatTimes = static_cast<uint16_t>(CeilDivision(dataBlock, stride));
         uint16_t kRepeatTimes = static_cast<uint16_t>(softmaxShapeInfo.srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT);
-        VF_CALL<AdjustSoftMaxResNZImpl<T1, T2, stepSize, stride>>(resUb, maxUb, maskBuf, from,
+        AdjustSoftMaxResNZImpl<T1, T2, stepSize, stride>(resUb, maxUb, maskBuf, from,
                                                                   to, dataBlock, mRepeatTimes, kRepeatTimes);
     } else {
         uint32_t srcK = softmaxShapeInfo.srcK;
@@ -1561,11 +1561,11 @@ __aicore__ inline bool AdjustSoftMaxResBaseImpl(const LocalTensor<T1>& softMaxRe
         uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(softmaxShapeInfo.srcK, stride));
         if constexpr (stepSizeMode != 0) {
             constexpr uint32_t stepSize = 1;
-            VF_CALL<AdjustSoftMaxResNDImpl<T1, T2, stepSize, stride>>(resUb, maxUb, maskBuf, from,
+            AdjustSoftMaxResNDImpl<T1, T2, stepSize, stride>(resUb, maxUb, maskBuf, from,
                                                                     to, srcK, srcM, repeatTimes);
         } else {
             constexpr uint32_t stepSize = GetDataBlockSizeInBytes() / sizeof(T2);
-            VF_CALL<AdjustSoftMaxResNDImpl<T1, T2, stepSize, stride>>(resUb, maxUb, maskBuf, from,
+            AdjustSoftMaxResNDImpl<T1, T2, stepSize, stride>(resUb, maxUb, maskBuf, from,
                                                                     to, srcK, srcM, repeatTimes);
         }
     }

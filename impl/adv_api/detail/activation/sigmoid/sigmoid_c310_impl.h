@@ -26,7 +26,7 @@ namespace Internal {
  * Formula is y= 1 / (1 + exp(-x))
 */
 template<typename T>
-__aicore__ inline void SigmoidImplVF(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t count, const uint16_t repeatTimes)
+__simd_vf__ inline void SigmoidImplVF(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t count, const uint16_t repeatTimes)
 {
     uint32_t sreg = count;
     MicroAPI::MaskReg preg;
@@ -83,7 +83,7 @@ __aicore__ inline void SigmoidImpl(const LocalTensor<T>& dstTensor, const LocalT
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
-    VF_CALL<Internal::SigmoidImplVF<T>>(dstUb, srcUb, calCount, repeatTimes);
+    Internal::SigmoidImplVF<T>(dstUb, srcUb, calCount, repeatTimes);
 }
 } // namespace AscendC
 

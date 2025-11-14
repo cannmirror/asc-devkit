@@ -22,7 +22,7 @@
 namespace AscendC {
 namespace SignInternal {
 template <typename T, typename RegT, const MicroAPI::RegTrait& trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void SignCoreCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t calCount, uint16_t repeatTime, uint32_t vlSize)
+__simd_vf__ inline void SignCoreCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t calCount, uint16_t repeatTime, uint32_t vlSize)
 {
     MicroAPI::MaskReg signMask;
     MicroAPI::MaskReg cmpMask0;
@@ -77,12 +77,12 @@ __aicore__ inline void SignCompute(const LocalTensor<T>& dstTensor, const LocalT
         using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
         constexpr int32_t vlSize = static_cast<int32_t>(GetVecLen() / sizeof(T) * SIGN_B64_REPEAT_STRIDE);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, vlSize));
-        VF_CALL<SignInternal::SignCoreCompute<T, RegT, MicroAPI::RegTraitNumTwo>>(dstUb, srcUb, calCount, repeatTime, vlSize);
+        SignInternal::SignCoreCompute<T, RegT, MicroAPI::RegTraitNumTwo>(dstUb, srcUb, calCount, repeatTime, vlSize);
     } else {
         using RegT = MicroAPI::RegTensor<T>;
         constexpr int32_t vlSize = static_cast<int32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, vlSize));
-        VF_CALL<SignInternal::SignCoreCompute<T, RegT>>(dstUb, srcUb, calCount, repeatTime, vlSize);
+        SignInternal::SignCoreCompute<T, RegT>(dstUb, srcUb, calCount, repeatTime, vlSize);
     }
 }
 } // namespace AscendC

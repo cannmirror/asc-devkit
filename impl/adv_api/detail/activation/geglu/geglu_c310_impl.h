@@ -26,7 +26,7 @@ namespace Internal {
 constexpr float gegluConstantA = 22.36386;
 constexpr float gegluConstantB = -0.071354814;
 template <typename T>
-__aicore__ inline void GeGLUImplVF(
+__simd_vf__ inline void GeGLUImplVF(
     __ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint32_t count, const uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<half> srcOrigin0;
@@ -87,7 +87,7 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTen
     CheckCalCount(count, "count", srcTensor1, "srcTensor1", "GeGLU");
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    VF_CALL<Internal::GeGLUImplVF<T>>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
+    Internal::GeGLUImplVF<T>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor0.GetPhyAddr(),
         (__ubuf__ T*)srcTensor1.GetPhyAddr(), count, repeatTimes);
 }
 

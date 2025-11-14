@@ -27,7 +27,7 @@ constexpr MicroAPI::CastTrait castTraitS162F32 = {
 constexpr MicroAPI::CastTrait castTraitF322F16 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 template<typename T, uint8_t taylorExpandLevel>
-__aicore__ inline void ExpCompute(__local_mem__ T* dst, __local_mem__ T* src, uint32_t calCount, uint16_t repeatTimes,
+__simd_vf__ inline void ExpCompute(__local_mem__ T* dst, __local_mem__ T* src, uint32_t calCount, uint16_t repeatTimes,
     __local_mem__ float* taylorExpandTmpBuffer)
 {
     constexpr float dupConstant = 2.0f;
@@ -117,7 +117,7 @@ __aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
     __local_mem__ float* sharedTmpBufferAddr = (__local_mem__ float*)sharedTmpBuffer.GetPhyAddr();
-    VF_CALL<ExpAPI::ExpCompute<T, taylorExpandLevel>>(dst, src, calCount, repeatTimes, sharedTmpBufferAddr);
+    ExpAPI::ExpCompute<T, taylorExpandLevel>(dst, src, calCount, repeatTimes, sharedTmpBufferAddr);
 }
 
 template <typename T, uint8_t taylorExpandLevel, bool isReuseSource>

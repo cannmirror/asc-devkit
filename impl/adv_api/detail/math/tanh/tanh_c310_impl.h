@@ -145,9 +145,9 @@ __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTens
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
     if constexpr (config.algo == TanhAlgo::INTRINSIC) {
-        VF_CALL<TanhIntrinsicImpl<T>>(dstUb, srcUb, calCount, repeatTimes);
+        TanhIntrinsicImpl<T>(dstUb, srcUb, calCount, repeatTimes);
     } else {
-        VF_CALL<TanhCompensationImpl<T>>(dstUb, srcUb, calCount, repeatTimes);
+        TanhCompensationImpl<T>(dstUb, srcUb, calCount, repeatTimes);
     }
 }
 

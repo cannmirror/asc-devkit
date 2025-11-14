@@ -26,8 +26,8 @@ namespace SelInternal {
  * *************************************** Select ****************************************
  * ************************************************************************************** */
 template <typename T, bool isCounterMode>
-__simd_callee__ inline void SelectWithoutMaskMode0ImplVF(
-    __ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, __ubuf__ uint64_t *tempBuf, int32_t repeat, const BinaryRepeatParams &repeatParams)
+__simd_vf__ inline void SelectWithoutMaskMode0ImplVF(
+    __ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, __ubuf__ uint64_t *tempBuf, int32_t repeat, const BinaryRepeatParams repeatParams)
 {
     MicroAPI::RegTensor<T> srcReg0, srcReg1, dstReg;
     MicroAPI::MaskReg maskReg, selMask;
@@ -68,8 +68,8 @@ __simd_callee__ inline void SelectWithoutMaskMode0ImplVF(
 }
 
 template <typename T, bool isCounterMode>
-__simd_callee__ inline void SelectWithoutMaskMode2ImplVF(
-    __ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, __ubuf__ uint64_t *tempBuf, uint64_t selAddr, int32_t repeat, const BinaryRepeatParams &repeatParams)
+__simd_vf__ inline void SelectWithoutMaskMode2ImplVF(
+    __ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, __ubuf__ uint64_t *tempBuf, uint64_t selAddr, int32_t repeat, const BinaryRepeatParams repeatParams)
 {
     MicroAPI::RegTensor<T> srcReg0, srcReg1, dstReg;
     MicroAPI::MaskReg maskReg, selMask;
@@ -132,9 +132,9 @@ __aicore__ inline void SelectCal(
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
         if (isCounterMode) {
-            VF_CALL<SelectWithoutMaskMode0ImplVF<T, true>>(dst, src0, src1, tempBuf, repeat, repeatParams);
+            SelectWithoutMaskMode0ImplVF<T, true>(dst, src0, src1, tempBuf, repeat, repeatParams);
         } else {
-            VF_CALL<SelectWithoutMaskMode0ImplVF<T, false>>(dst, src0, src1, tempBuf, repeat, repeatParams);
+            SelectWithoutMaskMode0ImplVF<T, false>(dst, src0, src1, tempBuf, repeat, repeatParams);
         }
     }
     else if constexpr (selMode == SELMODE::VSEL_TENSOR_TENSOR_MODE) {
@@ -143,17 +143,17 @@ __aicore__ inline void SelectCal(
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
         if (isCounterMode) {
-            VF_CALL<SelectWithoutMaskMode2ImplVF<T, true>>(dst, src0, src1, tempBuf, selAddr, repeat, repeatParams);
+            SelectWithoutMaskMode2ImplVF<T, true>(dst, src0, src1, tempBuf, selAddr, repeat, repeatParams);
         } else {
-            VF_CALL<SelectWithoutMaskMode2ImplVF<T, false>>(dst, src0, src1, tempBuf, selAddr, repeat, repeatParams);
+            SelectWithoutMaskMode2ImplVF<T, false>(dst, src0, src1, tempBuf, selAddr, repeat, repeatParams);
         }
     }
     AscendCUtils::FreeTemporaryBuffer<uint64_t>(tempBuf);
 }
 
 template <typename T, typename U, bool isCounterMode>
-__simd_callee__ inline void SelectWithoutMaskMode1ImplVF(
-    __ubuf__ T *dst, __ubuf__ U *sel, __ubuf__ T *src0, T scalar, __ubuf__ uint64_t *tempBuf, int32_t repeat, const BinaryRepeatParams &repeatParams)
+__simd_vf__ inline void SelectWithoutMaskMode1ImplVF(
+    __ubuf__ T *dst, __ubuf__ U *sel, __ubuf__ T *src0, T scalar, __ubuf__ uint64_t *tempBuf, int32_t repeat, const BinaryRepeatParams repeatParams)
 {
     MicroAPI::RegTensor<T> srcReg0, srcReg1, dstReg;
     MicroAPI::MaskReg maskReg, selMask;
@@ -207,18 +207,18 @@ __aicore__ inline void SelectCal(
     WaitFlag<HardEvent::S_V>(eventIdSToV);
     if (isCounterMode) {
         __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
-        VF_CALL<SelectWithoutMaskMode1ImplVF<T, U, true>>(dst, sel, src0, scalar, tempBuf, repeat, repeatParams);
+        SelectWithoutMaskMode1ImplVF<T, U, true>(dst, sel, src0, scalar, tempBuf, repeat, repeatParams);
         AscendCUtils::FreeTemporaryBuffer<uint64_t>(tempBuf);
     } else {
-        VF_CALL<SelectWithoutMaskMode1ImplVF<T, U, false>>(dst, sel, src0, scalar, nullptr, repeat, repeatParams);
+        SelectWithoutMaskMode1ImplVF<T, U, false>(dst, sel, src0, scalar, nullptr, repeat, repeatParams);
     }
 }
 
 // ============ select mode: 0/2 ============
 // ================Level2====================
 template <typename T, typename U, bool isBitMap, bool isCounterMode>
-__simd_callee__ inline void SelectMode0Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams) {
+__simd_vf__ inline void SelectMode0Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
+    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams repeatParams) {
     constexpr uint32_t blockElm = GetDataBlockSizeInBytes() / sizeof(T);
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     MicroAPI::RegTensor<T> src0Reg, src1Reg, dstReg;
@@ -256,8 +256,8 @@ __simd_callee__ inline void SelectMode0Level0(__ubuf__ T* dst, __ubuf__ U* sel, 
 }
 
 template <typename T, typename U, bool isBitMap, bool isCounterMode>
-__simd_callee__ inline void SelectMode2Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams) {
+__simd_vf__ inline void SelectMode2Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
+    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams repeatParams) {
     constexpr uint32_t blockElm = GetDataBlockSizeInBytes() / sizeof(T);
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t newRepeatTimes = repeatTime;
@@ -370,15 +370,15 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
         if (selMode == SELMODE::VSEL_CMPMASK_SPR) {
-            VF_CALL<SelectMode0Level0<T, U, false, true>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectMode0Level0<T, U, false, true>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         } else if (selMode == SELMODE::VSEL_TENSOR_TENSOR_MODE) {
-            VF_CALL<SelectMode2Level0<T, U, false, true>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectMode2Level0<T, U, false, true>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         }
     } else {
         if (selMode == SELMODE::VSEL_CMPMASK_SPR) {
-            VF_CALL<SelectMode0Level0<T, U, false, false>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectMode0Level0<T, U, false, false>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         } else if (selMode == SELMODE::VSEL_TENSOR_TENSOR_MODE) {
-            VF_CALL<SelectMode2Level0<T, U, false, false>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectMode2Level0<T, U, false, false>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         }
     }
 }
@@ -394,15 +394,15 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
         if (selMode == SELMODE::VSEL_CMPMASK_SPR) {
-            VF_CALL<SelectMode0Level0<T, U, true, true>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectMode0Level0<T, U, true, true>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         } else if (selMode == SELMODE::VSEL_TENSOR_TENSOR_MODE) {
-            VF_CALL<SelectMode2Level0<T, U, true, true>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectMode2Level0<T, U, true, true>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         }
     } else {
         if (selMode == SELMODE::VSEL_CMPMASK_SPR) {
-            VF_CALL<SelectMode0Level0<T, U, true, false>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectMode0Level0<T, U, true, false>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         } else if (selMode == SELMODE::VSEL_TENSOR_TENSOR_MODE) {
-            VF_CALL<SelectMode2Level0<T, U, true, false>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectMode2Level0<T, U, true, false>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         }
     }
 }
@@ -410,8 +410,8 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
 // ================Level0====================
 
 template <typename T, typename U, bool isBitMap, bool isCounterMode>
-__simd_callee__ inline void SelectMode1Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, T src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams) {
+__simd_vf__ inline void SelectMode1Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, T src1,
+    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams repeatParams) {
     constexpr uint32_t blockElm = GetDataBlockSizeInBytes() / sizeof(T);
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t newRepeatTimes = repeatTime;
@@ -515,9 +515,9 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     static_assert(SupportType<U, uint8_t, uint16_t, uint32_t, uint64_t>(), "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        VF_CALL<SelectMode1Level0<T, U, false, true>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+        SelectMode1Level0<T, U, false, true>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
     } else {
-        VF_CALL<SelectMode1Level0<T, U, false, false>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+        SelectMode1Level0<T, U, false, false>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
     }
 }
 
@@ -531,15 +531,15 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     SetVectorMask<T>(mask[1], mask[0]);
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        VF_CALL<SelectMode1Level0<T, U, true, true>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+        SelectMode1Level0<T, U, true, true>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
     } else {
-        VF_CALL<SelectMode1Level0<T, U, true, false>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+        SelectMode1Level0<T, U, true, false>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
     }
 }
 // ===============  Src0 Scalar =====================
 template <typename T, typename U, bool isBitMap, bool isCounterMode>
-__simd_callee__ inline void SelectSrc0ScalarMode1Level0(__ubuf__ T* dst, __ubuf__ U* sel, T src0, __ubuf__ T* src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams) {
+__simd_vf__ inline void SelectSrc0ScalarMode1Level0(__ubuf__ T* dst, __ubuf__ U* sel, T src0, __ubuf__ T* src1,
+    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams repeatParams) {
     constexpr uint32_t blockElm = GetDataBlockSizeInBytes() / sizeof(T);
     uint32_t sreg;
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
@@ -631,9 +631,9 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, T src0, __ubuf
     static_assert(SupportType<U, uint8_t, uint16_t, uint32_t, uint64_t>(), "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        VF_CALL<SelectSrc0ScalarMode1Level0<T, U, false, true>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+        SelectSrc0ScalarMode1Level0<T, U, false, true>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
     } else {
-        VF_CALL<SelectSrc0ScalarMode1Level0<T, U, false, false>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+        SelectSrc0ScalarMode1Level0<T, U, false, false>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
     }
 }
 
@@ -647,16 +647,16 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, T src0, __ubuf
     SetVectorMask<T>(mask[1], mask[0]);
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        VF_CALL<SelectSrc0ScalarMode1Level0<T, U, true, true>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+        SelectSrc0ScalarMode1Level0<T, U, true, true>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
     } else {
-        VF_CALL<SelectSrc0ScalarMode1Level0<T, U, true, false>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+        SelectSrc0ScalarMode1Level0<T, U, true, false>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
     }
 }
 
 // both src0 / src1 are tensor
 template <typename T, typename U, bool isBitMap, uint8_t scalarIdx, MicroAPI::LoadDist pattern, bool isCounterMode>
-__simd_callee__ inline void SelectBothTensorMode1Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams) {
+__simd_vf__ inline void SelectBothTensorMode1Level0(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
+    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams repeatParams) {
     constexpr uint32_t blockElm = GetDataBlockSizeInBytes() / sizeof(T);
     uint16_t newRepeatTimes = repeatTime;
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
@@ -814,15 +814,15 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
         if constexpr (sizeof(T) == 2) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, true>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, true>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         } else if constexpr (sizeof(T) == 4) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, true>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, true>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         }
     } else {
         if constexpr (sizeof(T) == 2) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, false>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, false>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         } else if constexpr (sizeof(T) == 4) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, false>>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, false, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, false>(dst, sel, src0, src1, mask, repeatTime, repeatParams);
         }
     }
 }
@@ -838,15 +838,15 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
         if constexpr (sizeof(T) == 2) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, true>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, true>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         } else if constexpr (sizeof(T) == 4) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, true>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, true>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         }
     } else {
         if constexpr (sizeof(T) == 2) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, false>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16, false>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         } else if constexpr (sizeof(T) == 4) {
-            VF_CALL<SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, false>>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
+            SelectBothTensorMode1Level0<T, U, true, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32, false>(dst, sel, src0, src1, mask[0], repeatTime, repeatParams);
         }
     }
 }
@@ -855,7 +855,7 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
 // ============ select mode: 0/2 ============
 // =============== LEVEL2 ===================
 template <typename T, typename U, typename RegT>
-__simd_callee__ inline void SelectMode0Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
+__simd_vf__ inline void SelectMode0Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * RegT::trait.REG_NUM;
@@ -900,7 +900,7 @@ __simd_callee__ inline void SelectMode0Level2(__ubuf__ T* dst, __ubuf__ U* sel, 
 }
 
 template <typename T, typename U, typename RegT>
-__simd_callee__ inline void SelectMode2Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
+__simd_vf__ inline void SelectMode2Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * RegT::trait.REG_NUM;
@@ -986,15 +986,15 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
     static_assert(SupportType<U, uint8_t, uint16_t, uint32_t, uint64_t>(), "current data type is not supported!");
     if (selMode == SELMODE::VSEL_CMPMASK_SPR) {
         if constexpr (sizeof(T) == 8) {
-            VF_CALL<SelectMode0Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, sel, src0, src1, calCount);
+            SelectMode0Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, sel, src0, src1, calCount);
         } else {
-            VF_CALL<SelectMode0Level2<T, U, MicroAPI::RegTensor<T>>>(dst, sel, src0, src1, calCount);
+            SelectMode0Level2<T, U, MicroAPI::RegTensor<T>>(dst, sel, src0, src1, calCount);
         }
     } else if (selMode == SELMODE::VSEL_TENSOR_TENSOR_MODE) {
         if constexpr (sizeof(T) == 8) {
-            VF_CALL<SelectMode2Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, sel, src0, src1, calCount);
+            SelectMode2Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, sel, src0, src1, calCount);
         } else {
-            VF_CALL<SelectMode2Level2<T, U, MicroAPI::RegTensor<T>>>(dst, sel, src0, src1, calCount);
+            SelectMode2Level2<T, U, MicroAPI::RegTensor<T>>(dst, sel, src0, src1, calCount);
         }
     }
 }
@@ -1002,7 +1002,7 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
 // ============ select mode: 1 ============
 // =============== LEVEL2 ===================
 template <typename T, typename U, typename RegT>
-__simd_callee__ inline void SelectMode1Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, T src1,
+__simd_vf__ inline void SelectMode1Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, T src1,
     uint32_t calCount)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * RegT::trait.REG_NUM;
@@ -1086,14 +1086,14 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
         "current data type is not supported!");
     static_assert(SupportType<U, uint8_t, uint16_t, uint32_t, uint64_t>(), "current data type is not supported!");
     if constexpr (sizeof(T) == 8) {
-        VF_CALL<SelectMode1Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, sel, src0, src1, calCount);
+        SelectMode1Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, sel, src0, src1, calCount);
     } else {
-        VF_CALL<SelectMode1Level2<T, U, MicroAPI::RegTensor<T>>>(dst, sel, src0, src1, calCount);
+        SelectMode1Level2<T, U, MicroAPI::RegTensor<T>>(dst, sel, src0, src1, calCount);
     }
 }
 // Src0Scalar
 template <typename T, typename U, typename RegT>
-__simd_callee__ inline void SelectSrc0ScalarMode1Level2(__ubuf__ T* dst, __ubuf__ U* sel, T src0, __ubuf__ T* src1,
+__simd_vf__ inline void SelectSrc0ScalarMode1Level2(__ubuf__ T* dst, __ubuf__ U* sel, T src0, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * RegT::trait.REG_NUM;
@@ -1176,14 +1176,14 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, T src0,__ubuf_
         "current data type is not supported!");
     static_assert(SupportType<U, uint8_t, uint16_t, uint32_t, uint64_t>(), "current data type is not supported!");
     if constexpr (sizeof(T) == 8) {
-        VF_CALL<SelectSrc0ScalarMode1Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, sel, src0, src1, calCount);
+        SelectSrc0ScalarMode1Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, sel, src0, src1, calCount);
     } else {
-        VF_CALL<SelectSrc0ScalarMode1Level2<T, U, MicroAPI::RegTensor<T>>>(dst, sel, src0, src1, calCount);
+        SelectSrc0ScalarMode1Level2<T, U, MicroAPI::RegTensor<T>>(dst, sel, src0, src1, calCount);
     }
 }
 // both src0 / src1 Tensor
 template <typename T, typename U, typename RegT, uint8_t scalarIdx, MicroAPI::LoadDist pattern = MicroAPI::LoadDist::DIST_BRC_B32>
-__simd_callee__ inline void SelectBothTensorMode1Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
+__simd_vf__ inline void SelectBothTensorMode1Level2(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T) * RegT::trait.REG_NUM;
@@ -1347,13 +1347,13 @@ __aicore__ inline void VselImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ubuf__ T* sr
         "current data type is not supported!");
     static_assert(SupportType<U, uint8_t, uint16_t, uint32_t, uint64_t>(), "current data type is not supported!");
     if constexpr (sizeof(T) == 1) {
-        VF_CALL<SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B8>>(dst, sel, src0, src1, calCount);
+        SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B8>(dst, sel, src0, src1, calCount);
     } else if constexpr (sizeof(T) == 2) {
-        VF_CALL<SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16>>(dst, sel, src0, src1, calCount);
+        SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B16>(dst, sel, src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32>>(dst, sel, src0, src1, calCount);
+        SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32>(dst, sel, src0, src1, calCount);
     } else {
-        VF_CALL<SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32>>(dst, sel, src0, src1, calCount);
+        SelectBothTensorMode1Level2<T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, scalarIdx, MicroAPI::LoadDist::DIST_BRC_B32>(dst, sel, src0, src1, calCount);
     }
 }
 } // namespace AscendC

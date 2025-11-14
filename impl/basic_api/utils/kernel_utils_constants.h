@@ -37,6 +37,7 @@ const int32_t MIN_REPEAT_TIMES = 0;
 const bool DEFAULT_REPEAT_STRIDE_MODE = 0;
 const bool STRIDE_SIZE_MODE = 0;
 const int32_t ONE_BYTE_BIT_SIZE = 8;
+const uint16_t MASK_ARRAY_SIZE = 4;
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || \
     (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113))
 const int32_t B32_BIT_SIZE = 32;
@@ -625,6 +626,10 @@ template <> struct GetDstType<mx_fp8_e5m2_t> {
 
 template <> struct GetDstType<mx_fp8_e4m3_t> {
     using Type = fp8_e4m3fn_t;
+};
+
+struct maskStruct {
+    uint64_t maskArray[MASK_ARRAY_SIZE] = { 0 };
 };
 #endif
 

@@ -25,7 +25,7 @@ namespace BatchNormAPI {
 constexpr int32_t oneRepSize = GetVecLen() / sizeof(float);
 
 template <typename T>
-__aicore__ inline void LoadDataWithT(
+__simd_callee__ inline void LoadDataWithT(
     __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
@@ -38,7 +38,7 @@ __aicore__ inline void LoadDataWithT(
 }
 
 template <typename T>
-__aicore__ inline void LoadDataWithGammBeta(
+__simd_callee__ inline void LoadDataWithGammBeta(
     __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
@@ -51,7 +51,7 @@ __aicore__ inline void LoadDataWithGammBeta(
 }
 
 template <typename T>
-__aicore__ inline void SaveDataWithT(
+__simd_callee__ inline void SaveDataWithT(
     __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
@@ -64,7 +64,7 @@ __aicore__ inline void SaveDataWithT(
 }
 
 template <typename T>
-__aicore__ inline void ComputeOutputMean(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, uint32_t oriBLength,
+__simd_callee__ inline void ComputeOutputMean(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, uint32_t oriBLength,
     uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
@@ -101,7 +101,7 @@ __aicore__ inline void ComputeOutputMean(__local_mem__ T* dstLocal, __local_mem_
 }
 
 template <typename T>
-__aicore__ inline void ComputeFloatMean(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal, uint32_t oriBLength,
+__simd_callee__ inline void ComputeFloatMean(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal, uint32_t oriBLength,
     uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
@@ -138,7 +138,7 @@ __aicore__ inline void ComputeFloatMean(__local_mem__ float* dstLocal, __local_m
 }
 
 template <typename T>
-__aicore__ inline void ComputeOutputVariance(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal,
+__simd_callee__ inline void ComputeOutputVariance(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal,
     __local_mem__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
@@ -188,7 +188,7 @@ __aicore__ inline void ComputeOutputVariance(__local_mem__ T* dstLocal, __local_
 }
 
 template <typename T>
-__aicore__ inline void ComputeFloatVariance(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal,
+__simd_callee__ inline void ComputeFloatVariance(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal,
     __local_mem__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
@@ -238,7 +238,7 @@ __aicore__ inline void ComputeFloatVariance(__local_mem__ float* dstLocal, __loc
 }
 
 template <typename T>
-__aicore__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, __local_mem__ float* tmpMeanLocal,
+__simd_callee__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, __local_mem__ float* tmpMeanLocal,
     __local_mem__ float* tmpVarLocal, __local_mem__ T* gammLocal,  __local_mem__ T* betaLocal, uint32_t oriBLength,
     uint32_t featureLength, const float epsilon)
 {
@@ -303,10 +303,10 @@ __aicore__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcL
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void BatchNormImplVF(__local_mem__ T* output, __local_mem__ T* outputMean,
+__simd_vf__ inline void BatchNormImplVF(__local_mem__ T* output, __local_mem__ T* outputMean,
     __local_mem__ T* outputVariance, __local_mem__ T* inputX, __local_mem__ T* gamm, __local_mem__ T* beta,
     __local_mem__ float* tmpMeanLocal, __local_mem__ float* tmpVarLocal, const float epsilon,
-    const BatchNormTiling& tiling, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
+    const BatchNormTiling tiling, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     ComputeOutputMean(outputMean, inputX, oriBLength, featureLength, firstDimValueBack);
     ComputeFloatMean(tmpMeanLocal, inputX, oriBLength, featureLength, firstDimValueBack);
@@ -340,7 +340,7 @@ __aicore__ inline void BatchNormImpl(const LocalTensor<T>& output, const LocalTe
     LocalTensor<float> tmpMeanLocal = tmpLocal;
 
     LocalTensor<float> tmpVarLocal = tmpLocal[featureLength];
-    VF_CALL<BatchNormImplVF<T, isReuseSource, isBasicBlock>>((__local_mem__ T*)output.GetPhyAddr(),
+    BatchNormImplVF<T, isReuseSource, isBasicBlock>((__local_mem__ T*)output.GetPhyAddr(),
         (__local_mem__ T*)outputMean.GetPhyAddr(), (__local_mem__ T*)outputVariance.GetPhyAddr(),
         (__local_mem__ T*)inputX.GetPhyAddr(), (__local_mem__ T*)gamm.GetPhyAddr(), (__local_mem__ T*)beta.GetPhyAddr(),
         (__local_mem__ float*)tmpMeanLocal.GetPhyAddr(), (__local_mem__ float*)tmpVarLocal.GetPhyAddr(), epsilonFloat, tiling,
