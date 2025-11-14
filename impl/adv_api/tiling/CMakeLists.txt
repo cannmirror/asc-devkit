@@ -6,6 +6,8 @@
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING
 # BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
+cmake_minimum_required(VERSION 3.16.0)
+project(ascendc_tiling_api)
 
 add_library(tiling_api_headers INTERFACE)
 target_include_directories(
@@ -140,10 +142,10 @@ add_library(
   $<$<STREQUAL:${PRODUCT_SIDE},host>:${ASCENDC_DIR}/impl/utils/context/context_builder_impl.cpp>
   $<$<STREQUAL:${PRODUCT_SIDE},device>:${ASCENDC_DIR}/impl/utils/stub/shape.cpp>
   $<$<STREQUAL:${PRODUCT_SIDE},device>:${ASCENDC_DIR}/impl/utils/stub/tilingdata_base.cc>
-  $<$<AND:$<BOOL:${BUILD_OPEN_PROJECT}>,$<NOT:$<BOOL:${COMPILE_BASE_ON_SUBGROUP}>>>:$<TARGET_OBJECTS:${ASCENDC_API_ADV_OBJ}>>
   )
 
 target_include_directories(tiling_api PRIVATE
+  ${KERNEL_TILING_DIR}
   ${ASCENDC_DIR}/include/utils/context
   ${ASCENDC_DIR}/include/utils/tiling/platform
   ${ASCENDC_DIR}/include/utils
