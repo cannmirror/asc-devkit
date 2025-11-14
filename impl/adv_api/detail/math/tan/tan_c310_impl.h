@@ -48,7 +48,7 @@ constexpr float TAN_2ADDS = 61.20362572811089435388;
 constexpr float TAN_3ADDS = -24.8048928861126769186219;
 
 // normalized x to (-pi/2,pi/2) using x = x-round(x/π)*π
-__aicore__ inline void TanRound(MicroAPI::RegTensor<float> &srcReg, MicroAPI::RegTensor<float> &tmpReg,
+__simd_callee__ inline void TanRound(MicroAPI::RegTensor<float> &srcReg, MicroAPI::RegTensor<float> &tmpReg,
     MicroAPI::RegTensor<float> &roundReg, MicroAPI::RegTensor<float> &resReg, MicroAPI::RegTensor<float> &downReg1,
     MicroAPI::RegTensor<float> &downReg2, MicroAPI::MaskReg mask)
 {
@@ -125,7 +125,7 @@ __aicore__ inline void TanRound(MicroAPI::RegTensor<float> &srcReg, MicroAPI::Re
     MicroAPI::Sub(downReg2, downReg2, tmpReg, mask);
 }
 
-__aicore__ inline void TanPolynomialApproximation(MicroAPI::RegTensor<float> &dstReg, MicroAPI::RegTensor<float> &tmpReg,
+__simd_callee__ inline void TanPolynomialApproximation(MicroAPI::RegTensor<float> &dstReg, MicroAPI::RegTensor<float> &tmpReg,
     MicroAPI::RegTensor<float> &roundReg, MicroAPI::RegTensor<float> &resReg, MicroAPI::RegTensor<float> &downReg1,
     MicroAPI::RegTensor<float> &downReg2, MicroAPI::MaskReg mask)
 {
@@ -162,7 +162,7 @@ __aicore__ inline void TanPolynomialApproximation(MicroAPI::RegTensor<float> &ds
 }
 
 template <typename T>
-__aicore__ inline void TanCompute(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint32_t sreg, uint16_t repeatTimes)
+__simd_vf__ inline void TanCompute(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint32_t sreg, uint16_t repeatTimes)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
 
@@ -219,7 +219,7 @@ __aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
 
-    VF_CALL<TanInternal::TanCompute<T>>(dstUb, srcUb, calCount, repeatTimes);
+    TanInternal::TanCompute<T>(dstUb, srcUb, calCount, repeatTimes);
 }
 
 template <typename T, bool isReuseSource = false>

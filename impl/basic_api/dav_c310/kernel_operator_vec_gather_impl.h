@@ -24,8 +24,8 @@ namespace AscendC {
  * Gather                                             *
  * ************************************************************************************************* */
 template <typename T, bool isNormalMode>
-__simd_callee__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
+__simd_vf__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg0;
@@ -73,13 +73,13 @@ __aicore__ inline void GatherApi0B16Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint32_t blkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
-    VF_CALL<VfGatherApi0B16<T, isNormalMode>>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
+    VfGatherApi0B16<T, isNormalMode>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
         dstRepeatCount, u32OffsetRepeatCount, blkCount, maskCount);
 }
 
 template <typename T, bool isNormalMode>
-__simd_callee__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
+__simd_vf__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg;
@@ -111,13 +111,13 @@ __aicore__ inline void GatherApi0B32Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint32_t blkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
-    VF_CALL<VfGatherApi0B32<T, isNormalMode>>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
+    VfGatherApi0B32<T, isNormalMode>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
         dstRepeatCount, u32OffsetRepeatCount, blkCount, maskCount);
 }
 
 template <typename T, bool isNormalMode>
-__simd_callee__ inline void VfGatherApi0B64Normal(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t u64OffsetRepeatCount,
+__simd_vf__ inline void VfGatherApi0B64Normal(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t dstRepStride, uint32_t u64OffsetRepeatCount,
     uint32_t u32BlkCount, const uint64_t maskCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg;
@@ -157,13 +157,13 @@ __aicore__ inline void GatherApi0B64NormalImpl(__ubuf__ T *dst, __ubuf__ T *src,
     uint64_t dstMaskValue = maskCount * 2;
     uint32_t u64OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32BlkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(uint32_t));
-    VF_CALL<VfGatherApi0B64Normal<T, isNormalMode>>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
+    VfGatherApi0B64Normal<T, isNormalMode>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
         u64OffsetRepeatCount, u32BlkCount, dstMaskValue);
 }
 
 template <typename T, bool isNormalMode>
-__simd_callee__ inline void VfGatherApi0B64Bits(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t u64OffsetRepeatCount,
+__simd_vf__ inline void VfGatherApi0B64Bits(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t dstRepStride, uint32_t u64OffsetRepeatCount,
     uint32_t u32BlkCount, const uint64_t maskCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg;
@@ -209,12 +209,12 @@ __aicore__ inline void GatherApi0B64BitsImpl(__ubuf__ T *dst, __ubuf__ T *src, _
     uint32_t u64OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32BlkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(uint32_t));
     uint64_t dstMaskValue = maskCount * 2;
-    VF_CALL<VfGatherApi0B64Bits<T, isNormalMode>>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
+    VfGatherApi0B64Bits<T, isNormalMode>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
         u64OffsetRepeatCount, u32BlkCount, dstMaskValue);
 }
 
 template <typename T>
-__simd_callee__ inline void VfGatherApi2B8(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+__simd_vf__ inline void VfGatherApi2B8(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t u32OffsetRepeatCount, uint32_t u8GatherRepeatCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg0;
@@ -259,12 +259,12 @@ __aicore__ inline void GatherApi2B8Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf
 {
     uint32_t u8GatherRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint16_t));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
-    VF_CALL<VfGatherApi2B8<T>>(dst, src, srcOffsetLocal, srcBaseIndex, count, u32OffsetRepeatCount,
+    VfGatherApi2B8<T>(dst, src, srcOffsetLocal, srcBaseIndex, count, u32OffsetRepeatCount,
         u8GatherRepeatCount);
 }
 
 template <typename T>
-__simd_callee__ inline void VfGatherApi2B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+__simd_vf__ inline void VfGatherApi2B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t dstRepeatCount, uint32_t u32OffsetRepeatCount,
     uint16_t repeatTime)
 {
@@ -308,12 +308,12 @@ __aicore__ inline void GatherApi2B16Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint16_t repeatTime = CeilDivision(count, dstRepeatCount);
-    VF_CALL<VfGatherApi2B16<T>>(dst, src, srcOffsetLocal, srcBaseIndex, count, dstRepeatCount, u32OffsetRepeatCount,
+    VfGatherApi2B16<T>(dst, src, srcOffsetLocal, srcBaseIndex, count, dstRepeatCount, u32OffsetRepeatCount,
         repeatTime);
 }
 
 template <typename T>
-__simd_callee__ inline void VfGatherApi2B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+__simd_vf__ inline void VfGatherApi2B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t dstRepeatCount, uint32_t u32OffsetRepeatCount,
     uint16_t repeatTime)
 {
@@ -340,12 +340,12 @@ __aicore__ inline void GatherApi2B32Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint16_t repeatTime = CeilDivision(count, dstRepeatCount);
-    VF_CALL<VfGatherApi2B32<T>>(dst, src, srcOffsetLocal, srcBaseIndex, count, dstRepeatCount, u32OffsetRepeatCount,
+    VfGatherApi2B32<T>(dst, src, srcOffsetLocal, srcBaseIndex, count, dstRepeatCount, u32OffsetRepeatCount,
         repeatTime);
 }
 
 template <typename T>
-__simd_callee__ inline void VfGatherApi2B64(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+__simd_vf__ inline void VfGatherApi2B64(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
     const uint32_t srcBaseIndex, const uint32_t count, uint32_t u32Count, uint32_t u64OffsetRepeatCount,
     uint32_t u32RepeatCount, uint16_t repeatTime)
 {
@@ -382,7 +382,7 @@ __aicore__ inline void GatherApi2B64Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t u64OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32RepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint16_t repeatTime = CeilDivision(u32Count, u32RepeatCount);
-    VF_CALL<VfGatherApi2B64<T>>(dst, src, srcOffsetLocal, srcBaseIndex, count, u32Count, u64OffsetRepeatCount,
+    VfGatherApi2B64<T>(dst, src, srcOffsetLocal, srcBaseIndex, count, u32Count, u64OffsetRepeatCount,
         u32RepeatCount, repeatTime);
 }
 

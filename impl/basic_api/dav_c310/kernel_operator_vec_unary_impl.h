@@ -16,7 +16,7 @@
 namespace AscendC {
 namespace Internal {
 template <auto func, typename T, typename RegType>
-__aicore__ inline void VecUnaryLevel2VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t count)
+__simd_vf__ inline void VecUnaryLevel2VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t count)
 {
     RegType srcReg;
     RegType dstReg;
@@ -36,9 +36,9 @@ template <auto func, typename T>
 __aicore__ inline void VecUnaryLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t count)
 {
     if constexpr (SupportBytes<T, 8>()) {
-        VF_CALL<VecUnaryLevel2VFImpl<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src, count);
+        VecUnaryLevel2VFImpl<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, src, count);
     } else {
-        VF_CALL<VecUnaryLevel2VFImpl<func, T, MicroAPI::RegTensor<T>>>(dst, src, count);
+        VecUnaryLevel2VFImpl<func, T, MicroAPI::RegTensor<T>>(dst, src, count);
     }
 }
 
@@ -176,11 +176,11 @@ __simd_vf__ inline void VecUnaryLevel2ImplB64(__ubuf__ T *dst, __ubuf__ T *src, 
 }
 
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_callee__ inline void VecUnaryLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t maskArray[],
-    const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams &repeatParams,
+__simd_vf__ inline void VecUnaryLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const maskStruct maskArrayStruct,
+    const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
@@ -213,12 +213,18 @@ __aicore__ inline void VecUnaryLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, 
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
+    
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
 
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecUnaryLevel0VFImpl<func, isSetMask, isMaskBitMode, false, T>>(dst, src, maskArray, maskCount,
+        VecUnaryLevel0VFImpl<func, isSetMask, isMaskBitMode, false, T>(dst, src, maskArrayStruct, maskCount,
             repeatTime, repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -243,7 +249,7 @@ __aicore__ inline void VecUnaryLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, 
             }
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VF_CALL<VecUnaryLevel0VFImpl<func, isSetMask, isMaskBitMode, true, T>>(dst, src, maskArray, maskCount,
+        VecUnaryLevel0VFImpl<func, isSetMask, isMaskBitMode, true, T>(dst, src, maskArrayStruct, maskCount,
             repeatTime, repeatParams, maskBuf);
         if constexpr (isMaskBitMode && SupportBytes<T, 1>()) {
             AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);

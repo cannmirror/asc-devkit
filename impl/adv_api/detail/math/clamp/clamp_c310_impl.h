@@ -20,7 +20,7 @@
 
 namespace AscendC {
 template <typename T, CLAMPMODE selMode, bool isReuseSource = false>
-__aicore__ inline void ClampCompute(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+__simd_vf__ inline void ClampCompute(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
     const T scalar, uint32_t calCount, const uint16_t repeatTimes)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
@@ -63,7 +63,7 @@ __aicore__ inline void ClampMaxImpl(const LocalTensor<T>& dstTensor, const Local
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatElm));
-    VF_CALL<ClampCompute<T, CLAMPMODE::CLAMP_MAX, isReuseSource>>(dstUb, srcUb, scalar, calCount, repeatTimes);
+    ClampCompute<T, CLAMPMODE::CLAMP_MAX, isReuseSource>(dstUb, srcUb, scalar, calCount, repeatTimes);
 }
 
 /* **************************************************************************************************
@@ -92,7 +92,7 @@ __aicore__ inline void ClampMinImpl(const LocalTensor<T>& dstTensor, const Local
     __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatElm));
-    VF_CALL<ClampCompute<T, CLAMPMODE::CLAMP_MIN, isReuseSource>>(dstUb, srcUb, scalar, calCount, repeatTimes);
+    ClampCompute<T, CLAMPMODE::CLAMP_MIN, isReuseSource>(dstUb, srcUb, scalar, calCount, repeatTimes);
 }
 
 /* **************************************************************************************************
@@ -104,7 +104,7 @@ struct ClampConfig {
 constexpr ClampConfig DEFAULT_CLAMP_CONFIG = { false };
 
 template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void ClampImplTensorScalarVF(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ T* min, const T max, uint16_t repeatTime, 
+__simd_vf__ inline void ClampImplTensorScalarVF(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ T* min, const T max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -122,7 +122,7 @@ __aicore__ inline void ClampImplTensorScalarVF(__ubuf__ T* dst, __ubuf__ T* src,
 }
 
 template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void ClampImplScalarTensorVF(__ubuf__ T* dst, __ubuf__ T* src, const T min, __ubuf__ T* max, uint16_t repeatTime, 
+__simd_vf__ inline void ClampImplScalarTensorVF(__ubuf__ T* dst, __ubuf__ T* src, const T min, __ubuf__ T* max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -140,7 +140,7 @@ __aicore__ inline void ClampImplScalarTensorVF(__ubuf__ T* dst, __ubuf__ T* src,
 }
 
 template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void ClampImplBothTensorVF(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ T* min, __ubuf__ T* max, uint16_t repeatTime, 
+__simd_vf__ inline void ClampImplBothTensorVF(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ T* min, __ubuf__ T* max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -160,7 +160,7 @@ __aicore__ inline void ClampImplBothTensorVF(__ubuf__ T* dst, __ubuf__ T* src, _
 }
 
 template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void ClampImplBothScalarVF(__ubuf__ T* dst, __ubuf__ T* src, const T min, const T max, uint16_t repeatTime, 
+__simd_vf__ inline void ClampImplBothScalarVF(__ubuf__ T* dst, __ubuf__ T* src, const T min, const T max, uint16_t repeatTime, 
     uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -196,13 +196,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            VF_CALL<ClampImplBothTensorVF<T, RegT, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplBothTensorVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T>;
-            VF_CALL<ClampImplBothTensorVF<T, RegT>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplBothTensorVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
         
@@ -214,13 +214,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            VF_CALL<ClampImplTensorScalarVF<T, RegT, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplTensorScalarVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), max, repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T>;
-            VF_CALL<ClampImplTensorScalarVF<T, RegT>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplTensorScalarVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 (__ubuf__ T*)min.GetPhyAddr(), max, repeatTime, count, oneRepElm);;
         }
         
@@ -232,13 +232,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            VF_CALL<ClampImplScalarTensorVF<T, RegT, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplScalarTensorVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T>;
-            VF_CALL<ClampImplScalarTensorVF<T, RegT>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplScalarTensorVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, (__ubuf__ T*)max.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
     } else {
@@ -248,13 +248,13 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>;
-            VF_CALL<ClampImplBothScalarVF<T, RegT, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplBothScalarVF<T, RegT, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, max, repeatTime, count, oneRepElm);
         } else {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
             using RegT = MicroAPI::RegTensor<T>;
-            VF_CALL<ClampImplBothScalarVF<T, RegT>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
+            ClampImplBothScalarVF<T, RegT>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src.GetPhyAddr(), 
                 min, max, repeatTime, count, oneRepElm);
         }
     }

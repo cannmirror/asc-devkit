@@ -22,7 +22,7 @@
 namespace AscendC {
 namespace Internal {
 template <typename T1, typename T2>
-__aicore__ inline void SoftmaxFlashNDImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
+__simd_vf__ inline void SoftmaxFlashNDImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, __local_mem__ T2* inSumUb,
     __local_mem__ T2* inMaxUb, __local_mem__ float* workUb, __local_mem__ float* tmpUb, const uint16_t srcM,
     const uint16_t repeatTimes, const uint32_t srcK)
@@ -106,7 +106,7 @@ __aicore__ inline void SoftmaxFlashNDImpl(__local_mem__ T1* dstUb, __local_mem__
 }
 
 template <typename T1, typename T2>
-__aicore__ inline void SoftmaxFlashNDWithTailImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
+__simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
     __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, __local_mem__ T2* inSumUb,
     __local_mem__ T2* inMaxUb, __local_mem__ float* workUb, __local_mem__ float* tmpUb, const uint16_t srcM,
     const uint16_t repeatTimes, const uint32_t srcK, const uint32_t originK)
@@ -235,14 +235,14 @@ __aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T1> &dstTensor,
         SoftMaxNDImpl<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, workLocal, originalSrcShape, tiling);
     } else {
         if constexpr (isBasicBlock) {
-            VF_CALL<Internal::SoftmaxFlashNDImpl<T1, T2>>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
+            Internal::SoftmaxFlashNDImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
                     inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK);
         } else {
             if (originalSrcShape.k % stride != 0) {
-                VF_CALL<Internal::SoftmaxFlashNDWithTailImpl<T1, T2>>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
+                Internal::SoftmaxFlashNDWithTailImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
                         inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK, originK);
             } else {
-                VF_CALL<Internal::SoftmaxFlashNDImpl<T1, T2>>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
+                Internal::SoftmaxFlashNDImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, expMaxUb, inSumUb,
                         inMaxUb, workUb, tmpUb, srcM, repeatTimes, srcK);
             }
         }

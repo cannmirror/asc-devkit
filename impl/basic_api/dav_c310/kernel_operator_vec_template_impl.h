@@ -103,11 +103,11 @@ enum class BinaryFuncMode {
  */
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode,
     BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T, typename U>
-__simd_callee__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const uint64_t maskArray[],
-    const uint64_t maskCount, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams,
+__simd_vf__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const maskStruct maskArrayStruct,
+    const uint64_t maskCount, const uint8_t repeatTime, const BinaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
     using TT = typename Conditional<TUCompare, T, U>::type;
@@ -170,11 +170,17 @@ __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, 
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
+
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecBinaryVFImpl<func, isSetMask, isMaskBitMode, false, funcMode, T, U>>(dst, src0, src1, maskArray,
+        VecBinaryVFImpl<func, isSetMask, isMaskBitMode, false, funcMode, T, U>(dst, src0, src1, maskArrayStruct,
             maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -199,7 +205,7 @@ __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, 
             }
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VF_CALL<VecBinaryVFImpl<func, isSetMask, isMaskBitMode, true, funcMode, T, U>>(dst, src0, src1, maskArray,
+        VecBinaryVFImpl<func, isSetMask, isMaskBitMode, true, funcMode, T, U>(dst, src0, src1, maskArrayStruct,
             maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (isMaskBitMode && SupportBytes<TT, 1>()) {
             AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);

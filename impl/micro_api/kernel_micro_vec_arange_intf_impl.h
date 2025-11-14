@@ -10,11 +10,11 @@
  */
 
 /* !
- * \file kernel_micro_vec_createvecindex_intf_impl.h
+ * \file kernel_micro_vec_arange_intf_impl.h
  * \brief
  */
-#ifndef ASCENDC_KERNEL_MICRO_VEC_CREATEVECINDEX_INTERFACE_IMPL_H
-#define ASCENDC_KERNEL_MICRO_VEC_CREATEVECINDEX_INTERFACE_IMPL_H
+#ifndef ASCENDC_KERNEL_MICRO_VEC_ARANGE_INTERFACE_IMPL_H
+#define ASCENDC_KERNEL_MICRO_VEC_ARANGE_INTERFACE_IMPL_H
 
 #if __NPU_ARCH__ == 2103
 #include "micro_api/dav_l210/kernel_micro_vec_createvecindex_impl.h"
@@ -25,7 +25,7 @@
 #elif __NPU_ARCH__ == 3113
 #include "micro_api/dav_l311/kernel_micro_vec_createvecindex_impl.h"
 #else
-#include "micro_api/dav_c310/kernel_micro_vec_createvecindex_impl.h"
+#include "micro_api/dav_c310/kernel_micro_vec_arange_impl.h"
 #endif
 
 namespace AscendC {
@@ -37,4 +37,4 @@ __simd_callee__ inline void Arange(S &dstReg, U scalar)
 }
 }  // namespace MicroAPI
 }  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_CREATEVECINDEX_INTERFACE_IMPL_H
+#endif  // ASCENDC_KERNEL_MICRO_VEC_ARANGE_INTERFACE_IMPL_H

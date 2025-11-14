@@ -27,7 +27,7 @@ struct FmaConfig {
 constexpr FmaConfig DEFAULT_FMA_CONFIG = { false };
 
 template <typename T>
-__aicore__ inline void FmaImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, __ubuf__ T* src2,
+__simd_vf__ inline void FmaImplVF(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, __ubuf__ T* src2,
     uint32_t count, uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
@@ -58,7 +58,7 @@ __aicore__ inline void FmaImpl(const LocalTensor<T>& dst, const LocalTensor<T>& 
     CHECK_FUNC_HIGHLEVEL_API(Fma, (T, config.isReuseSource), (dst, src0, src1, src2, sharedTmpBuffer, count));
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    VF_CALL<FmaImplVF<T>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src0.GetPhyAddr(),
+    FmaImplVF<T>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ T*)src0.GetPhyAddr(),
         (__ubuf__ T*)src1.GetPhyAddr(), (__ubuf__ T*)src2.GetPhyAddr(), count, repeatTimes);
 }
 

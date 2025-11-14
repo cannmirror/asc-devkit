@@ -26,7 +26,7 @@
 #include "kernel_micro_vec_binary_impl.h"
 #include "kernel_micro_vec_binary_scalar_impl.h"
 #include "kernel_micro_vec_cmpsel_impl.h"
-#include "kernel_micro_vec_createvecindex_impl.h"
+#include "kernel_micro_vec_arange_impl.h"
 #include "kernel_micro_vec_duplicate_impl.h"
 #include "kernel_micro_vec_reduce_impl.h"
 #include "kernel_micro_vec_ternary_scalar_impl.h"

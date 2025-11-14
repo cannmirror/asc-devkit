@@ -234,7 +234,7 @@ __simd_callee__ inline void GenStoreL2(__ubuf__ DST_TYPE *dstAddr, MicroAPI::Reg
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__simd_callee__ inline void CastIntrinsicsImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint32_t calCount)
+__simd_vf__ inline void CastIntrinsicsImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint32_t calCount)
 {
     uint16_t oneRepSize = GetVecLen() / sizeof(SRC_TYPE);
     if constexpr (sizeof(SRC_TYPE) < sizeof(DST_TYPE)) {
@@ -286,9 +286,9 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
         Tuple<complex64, complex32>,
         Tuple<complex32, complex64>>();
     if constexpr (b64Cast) {
-        VF_CALL<CastIntrinsicsB64ImplVF<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+        CastIntrinsicsB64ImplVF<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
     } else {
-        VF_CALL<CastIntrinsicsImplVF<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+        CastIntrinsicsImplVF<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
     }
 }
 
@@ -947,15 +947,15 @@ __aicore__ inline void CastDouble(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src
     constexpr bool cast_Int64ToDouble = SupportType<Tuple<DST_TYPE, SRC_TYPE>, Tuple<double, int64_t>>();
     if constexpr (cast_DoubleToFloat) {
         if (isGetOverflow) {
-            VF_CALL<CastDoubleToFloat<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+            CastDoubleToFloat<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
         } else {
-            VF_CALL<CastDoubleToFloat0<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+            CastDoubleToFloat0<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
         }
     } else if constexpr (cast_DoubleToBf16) {
         if (isGetOverflow) {
-            VF_CALL<CastDoubleToBf16<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+            CastDoubleToBf16<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
         } else {
-            VF_CALL<CastDoubleToBf160<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+            CastDoubleToBf160<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
         }
     } else if constexpr (cast_Int64ToDouble) {
         VF_CALL<CastInt64ToDouble<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
@@ -1078,8 +1078,8 @@ __aicore__ inline void CastImpl(
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__simd_callee__ inline void CastIntrinsicsB64ImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask[],
-    uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsB64ImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const maskStruct maskArrayStruct,
+    uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -1190,8 +1190,8 @@ __simd_callee__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::Re
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__simd_callee__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask[],
-    uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const maskStruct maskArrayStruct,
+    uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -1242,8 +1242,8 @@ __simd_callee__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
-__simd_callee__ inline void CastIntrinsicsB64ImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
-    __ubuf__ uint64_t *maskBuf, uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsB64ImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
+    __ubuf__ uint64_t *maskBuf, uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -1299,8 +1299,8 @@ __simd_callee__ inline void CastIntrinsicsB64ImplCounterVF(__ubuf__ DST_TYPE *ds
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
-__simd_callee__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
-    __ubuf__ uint64_t *maskBuf, uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
+    __ubuf__ uint64_t *maskBuf, uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -1371,16 +1371,23 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     constexpr bool b64Cast = SupportType<Tuple<DST_TYPE, SRC_TYPE>, Tuple<float, int64_t>, Tuple<int64_t, float>,
         Tuple<int32_t, int64_t>, Tuple<int64_t, int32_t>>();
     bool isCounterMode = Internal::IsCounterMode();
+    
+    uint16_t maskArraySize = (mask == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = mask[i];
+    }
+
     if (isCounterMode) {
         __ubuf__ uint64_t *maskBuf = nullptr;
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
         if constexpr (b64Cast) {
-            VF_CALL<CastIntrinsicsB64ImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+            CastIntrinsicsB64ImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask[0], maskBuf, repeatTime, repeatParams);
         } else {
-            VF_CALL<CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+            CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask[0], maskBuf, repeatTime, repeatParams);
         }
     } else {
@@ -1388,7 +1395,7 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
             if constexpr (isSetMask) {
                 SetVectorMask<uint32_t>(mask[1], mask[0]);
             }
-            VF_CALL<CastIntrinsicsB64ImplVF2<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, mask, repeatTime, repeatParams);
+            CastIntrinsicsB64ImplVF2<DST_TYPE, SRC_TYPE, roundMode>(dst, src, maskArrayStruct, repeatTime, repeatParams);
         } else {
             if constexpr (isSetMask) {
                 if constexpr (sizeof(DST_TYPE) < sizeof(SRC_TYPE)) {
@@ -1397,8 +1404,8 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
                     SetVectorMask<DST_TYPE>(mask[1], mask[0]);
                 }
             }
-            VF_CALL<CastIntrinsicsImplVF2<DST_TYPE, SRC_TYPE, roundMode>>(
-                dst, src, mask, repeatTime, repeatParams);
+            CastIntrinsicsImplVF2<DST_TYPE, SRC_TYPE, roundMode>(
+                dst, src, maskArrayStruct, repeatTime, repeatParams);
         }
     }
 }
@@ -1505,8 +1512,8 @@ __aicore__ inline void CastImpl(__ubuf__ ORI_DST_TYPE *oriDst, __ubuf__ ORI_SRC_
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
-__simd_callee__ inline void CastIntrinsicsB64ImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
-    uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsB64ImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
+    uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -1559,8 +1566,8 @@ __simd_callee__ inline void CastIntrinsicsB64ImplVF1(__ubuf__ DST_TYPE *dst, __u
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
-__simd_callee__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
-    uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
+    uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -1636,18 +1643,18 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
         if constexpr (b64Cast) {
-            VF_CALL<CastIntrinsicsB64ImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+            CastIntrinsicsB64ImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask, maskBuf, repeatTime, repeatParams);
         } else {
-            VF_CALL<CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+            CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask, maskBuf, repeatTime, repeatParams);
         }
     } else {
         if constexpr (b64Cast) {
-            VF_CALL<CastIntrinsicsB64ImplVF1<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+            CastIntrinsicsB64ImplVF1<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask, repeatTime, repeatParams);
         } else {
-            VF_CALL<CastIntrinsicsImplVF1<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+            CastIntrinsicsImplVF1<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask, repeatTime, repeatParams);
         }
     }
@@ -1934,7 +1941,7 @@ __simd_callee__ inline void GenLevel0StoreMask(MicroAPI::MaskReg &srcMask, Micro
 }
 
 template <typename U, typename T, bool halfBlock>
-__simd_callee__ inline void CastVecDeqImplVF(
+__simd_vf__ inline void CastVecDeqImplVF(
     __ubuf__ U *dst, __ubuf__ T *src, const uint32_t calCount, uint64_t deqScaleAddr)
 {
     MicroAPI::RegTensor<U> dstReg;
@@ -1977,7 +1984,7 @@ __simd_callee__ inline void CastVecDeqImplVF(
 }
 
 template <typename U, typename T, bool halfBlock, bool signMode>
-__simd_callee__ inline void CastDeqImplVF(__ubuf__ U *dst, __ubuf__ T *src, const uint32_t calCount, uint64_t deqScale)
+__simd_vf__ inline void CastDeqImplVF(__ubuf__ U *dst, __ubuf__ T *src, const uint32_t calCount, uint64_t deqScale)
 {
     MicroAPI::RegTensor<T> srcReg0, srcReg1;
     MicroAPI::RegTensor<float> tmpReg;
@@ -2014,7 +2021,7 @@ __simd_callee__ inline void CastDeqImplVF(__ubuf__ U *dst, __ubuf__ T *src, cons
 }
 
 template <typename U, typename T>
-__simd_callee__ inline void CastDeqS322f16ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const uint32_t calCount, const half deqScale)
+__simd_vf__ inline void CastDeqS322f16ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const uint32_t calCount, const half deqScale)
 {
     MicroAPI::RegTensor<T> srcReg;
     MicroAPI::RegTensor<float> tmpReg;
@@ -2044,28 +2051,28 @@ __aicore__ inline void CastDeqImpl(__ubuf__ U *dst, __ubuf__ T *src, const uint3
         event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
-        VF_CALL<CastDeqS322f16ImplVF<U, T>>(dst, src, calCount, scale);
+        CastDeqS322f16ImplVF<U, T>(dst, src, calCount, scale);
     } else {
         uint64_t deqScale = Internal::g_deqScale;
         event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
         if constexpr (isVecDeq) {
-            VF_CALL<CastVecDeqImplVF<U, T, halfBlock>>(dst, src, calCount, deqScale);
+            CastVecDeqImplVF<U, T, halfBlock>(dst, src, calCount, deqScale);
         } else {
             bool signMode = GetCastDeqSignMode(deqScale);
             if (signMode) {
-                VF_CALL<CastDeqImplVF<U, T, halfBlock, true>>(dst, src, calCount, deqScale);
+                CastDeqImplVF<U, T, halfBlock, true>(dst, src, calCount, deqScale);
             } else {
-                VF_CALL<CastDeqImplVF<U, T, halfBlock, false>>(dst, src, calCount, deqScale);
+                CastDeqImplVF<U, T, halfBlock, false>(dst, src, calCount, deqScale);
             }
         }
     }
 }
 
 template <typename U, typename T, bool isCounterMode, bool isBitMap, bool isSetMask, bool halfBlock>
-__simd_callee__ inline void CastVecDeqLevel0ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const int32_t mask,
-    __ubuf__ uint64_t *tempBuf, uint8_t repeatTime, const UnaryRepeatParams &repeatParams, uint64_t deqScaleAddr)
+__simd_vf__ inline void CastVecDeqLevel0ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const int32_t mask,
+    __ubuf__ uint64_t *tempBuf, uint8_t repeatTime, const UnaryRepeatParams repeatParams, uint64_t deqScaleAddr)
 {
     MicroAPI::RegTensor<U> dstReg;
     MicroAPI::RegTensor<T> srcReg0, srcReg1;
@@ -2138,8 +2145,8 @@ __simd_callee__ inline void CastVecDeqLevel0ImplVF(__ubuf__ U *dst, __ubuf__ T *
 }
 
 template <typename U, typename T, bool isCounterMode, bool isBitMap, bool isSetMask, bool halfBlock, bool signMode>
-__simd_callee__ inline void CastDeqLevel0ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const int32_t mask,
-    __ubuf__ uint64_t *tempBuf, uint8_t repeatTime, const UnaryRepeatParams &repeatParams, uint64_t deqScale)
+__simd_vf__ inline void CastDeqLevel0ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const int32_t mask,
+    __ubuf__ uint64_t *tempBuf, uint8_t repeatTime, const UnaryRepeatParams repeatParams, uint64_t deqScale)
 {
     MicroAPI::RegTensor<T> srcReg0, srcReg1;
     MicroAPI::RegTensor<float> tmpReg;
@@ -2207,8 +2214,8 @@ __simd_callee__ inline void CastDeqLevel0ImplVF(__ubuf__ U *dst, __ubuf__ T *src
 }
 
 template <typename U, typename T, bool isCounterMode, bool isBitMap, bool isSetMask>
-__simd_callee__ inline void CastDeqS322f16Level0ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const int32_t mask,
-    __ubuf__ uint64_t *tempBuf, uint8_t repeatTime, const UnaryRepeatParams &repeatParams, const half deqScale)
+__simd_vf__ inline void CastDeqS322f16Level0ImplVF(__ubuf__ U *dst, __ubuf__ T *src, const int32_t mask,
+    __ubuf__ uint64_t *tempBuf, uint8_t repeatTime, const UnaryRepeatParams repeatParams, const half deqScale)
 {
     MicroAPI::RegTensor<T> srcReg;
     MicroAPI::RegTensor<float> tmpReg;
@@ -2274,10 +2281,10 @@ __aicore__ inline void CastDeqImpl(
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
         if (isCounterMode) {
-            VF_CALL<CastDeqS322f16Level0ImplVF<U, T, true, true, isSetMask>>(
+            CastDeqS322f16Level0ImplVF<U, T, true, true, isSetMask>(
                 dst, src, mask[0], tempBuf, repeatTime, repeatParams, scale);
         } else {
-            VF_CALL<CastDeqS322f16Level0ImplVF<U, T, false, true, isSetMask>>(
+            CastDeqS322f16Level0ImplVF<U, T, false, true, isSetMask>(
                 dst, src, mask[0], tempBuf, repeatTime, repeatParams, scale);
         }
     } else {
@@ -2288,27 +2295,27 @@ __aicore__ inline void CastDeqImpl(
         bool signMode = GetCastDeqSignMode(deqScale);
         if (isCounterMode) {
             if constexpr (isVecDeq) {
-                VF_CALL<CastVecDeqLevel0ImplVF<U, T, true, true, isSetMask, halfBlock>>(
+                CastVecDeqLevel0ImplVF<U, T, true, true, isSetMask, halfBlock>(
                     dst, src, mask[0], tempBuf, repeatTime, repeatParams, deqScale);
             } else {
                 if (signMode) {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, true, true, isSetMask, halfBlock, true>>(
+                    CastDeqLevel0ImplVF<U, T, true, true, isSetMask, halfBlock, true>(
                         dst, src, mask[0], tempBuf, repeatTime, repeatParams, deqScale);
                 } else {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, true, true, isSetMask, halfBlock, false>>(
+                    CastDeqLevel0ImplVF<U, T, true, true, isSetMask, halfBlock, false>(
                         dst, src, mask[0], tempBuf, repeatTime, repeatParams, deqScale);
                 }
             }
         } else {
             if constexpr (isVecDeq) {
-                VF_CALL<CastVecDeqLevel0ImplVF<U, T, false, true, isSetMask, halfBlock>>(
+                CastVecDeqLevel0ImplVF<U, T, false, true, isSetMask, halfBlock>(
                     dst, src, 0, tempBuf, repeatTime, repeatParams, deqScale);
             } else {
                 if (signMode) {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, false, true, isSetMask, halfBlock, true>>(
+                    CastDeqLevel0ImplVF<U, T, false, true, isSetMask, halfBlock, true>(
                         dst, src, 0, tempBuf, repeatTime, repeatParams, deqScale);
                 } else {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, false, true, isSetMask, halfBlock, false>>(
+                    CastDeqLevel0ImplVF<U, T, false, true, isSetMask, halfBlock, false>(
                         dst, src, 0, tempBuf, repeatTime, repeatParams, deqScale);
                 }
             }
@@ -2332,10 +2339,10 @@ __aicore__ inline void CastDeqImpl(
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
         if (isCounterMode) {
-            VF_CALL<CastDeqS322f16Level0ImplVF<U, T, true, false, isSetMask>>(
+            CastDeqS322f16Level0ImplVF<U, T, true, false, isSetMask>(
                 dst, src, mask, tempBuf, repeatTime, repeatParams, scale);
         } else {
-            VF_CALL<CastDeqS322f16Level0ImplVF<U, T, false, false, isSetMask>>(
+            CastDeqS322f16Level0ImplVF<U, T, false, false, isSetMask>(
                 dst, src, mask, tempBuf, repeatTime, repeatParams, scale);
         }
     } else {
@@ -2346,27 +2353,27 @@ __aicore__ inline void CastDeqImpl(
         bool signMode = GetCastDeqSignMode(deqScale);
         if (isCounterMode) {
             if constexpr (isVecDeq) {
-                VF_CALL<CastVecDeqLevel0ImplVF<U, T, true, false, isSetMask, halfBlock>>(
+                CastVecDeqLevel0ImplVF<U, T, true, false, isSetMask, halfBlock>(
                     dst, src, mask, tempBuf, repeatTime, repeatParams, deqScale);
             } else {
                 if (signMode) {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, true, false, isSetMask, halfBlock, true>>(
+                    CastDeqLevel0ImplVF<U, T, true, false, isSetMask, halfBlock, true>(
                         dst, src, mask, tempBuf, repeatTime, repeatParams, deqScale);
                 } else {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, true, false, isSetMask, halfBlock, false>>(
+                    CastDeqLevel0ImplVF<U, T, true, false, isSetMask, halfBlock, false>(
                         dst, src, mask, tempBuf, repeatTime, repeatParams, deqScale);
                 }
             }
         } else {
             if constexpr (isVecDeq) {
-                VF_CALL<CastVecDeqLevel0ImplVF<U, T, false, false, isSetMask, halfBlock>>(
+                CastVecDeqLevel0ImplVF<U, T, false, false, isSetMask, halfBlock>(
                     dst, src, mask, tempBuf, repeatTime, repeatParams, deqScale);
             } else {
                 if (signMode) {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, false, false, isSetMask, halfBlock, true>>(
+                    CastDeqLevel0ImplVF<U, T, false, false, isSetMask, halfBlock, true>(
                         dst, src, mask, tempBuf, repeatTime, repeatParams, deqScale);
                 } else {
-                    VF_CALL<CastDeqLevel0ImplVF<U, T, false, false, isSetMask, halfBlock, false>>(
+                    CastDeqLevel0ImplVF<U, T, false, false, isSetMask, halfBlock, false>(
                         dst, src, mask, tempBuf, repeatTime, repeatParams, deqScale);
                 }
             }

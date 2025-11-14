@@ -21,7 +21,7 @@
 
 namespace AscendC {
 namespace LgammaInternal {
-__aicore__ inline void LgammaCalPow70To023(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg,
+__simd_callee__ inline void LgammaCalPow70To023(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg,
     MicroAPI::MaskReg mask)
 {
     constexpr float r0 = -7.72156649015328655494e-02;
@@ -46,7 +46,7 @@ __aicore__ inline void LgammaCalPow70To023(MicroAPI::RegTensor<float>& resReg, M
     MicroAPI::Add(resReg, resReg, aReg, mask);
 }
 
-__aicore__ inline void LgammaCal023To073(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void LgammaCal023To073(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = -1.0348905219959115;
@@ -98,14 +98,14 @@ __aicore__ inline void LgammaCal023To073(MicroAPI::RegTensor<float>& resReg, Mic
     MicroAPI::Sub(resReg, resReg, aReg, mask);
 }
 
-__aicore__ inline void LgammaCal07To123(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
+__simd_callee__ inline void LgammaCal07To123(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     MicroAPI::Adds(tmpReg, absReg, fn1, mask);
     LgammaCalPow70To023(resReg, tmpReg, mask);
 }
 
-__aicore__ inline void LgammaCal123o173(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
+__simd_callee__ inline void LgammaCal123o173(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float tc = -1.46163214496836224576e+00;
@@ -151,7 +151,7 @@ __aicore__ inline void LgammaCal123o173(MicroAPI::RegTensor<float>& resReg, Micr
     MicroAPI::Add(resReg, resReg, aReg, mask);
 }
 
-__aicore__ inline void LgammaCal173To2(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void LgammaCal173To2(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = 0.422784325282832;
@@ -189,7 +189,7 @@ __aicore__ inline void LgammaCal173To2(MicroAPI::RegTensor<float>& resReg, Micro
     MicroAPI::Mul(resReg, aReg, resReg, mask);
 }
 
-__aicore__ inline void LgammaCal2To22(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void LgammaCal2To22(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = -1.0012922592272755;
@@ -227,7 +227,7 @@ __aicore__ inline void LgammaCal2To22(MicroAPI::RegTensor<float>& resReg, MicroA
     MicroAPI::Div(resReg, bReg, resReg, mask);
 }
 
-__aicore__ inline void LgammaCal22To25(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void LgammaCal22To25(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = 0.5071375856257216;
@@ -261,7 +261,7 @@ __aicore__ inline void LgammaCal22To25(MicroAPI::RegTensor<float>& resReg, Micro
     MicroAPI::Mul(resReg, aReg, resReg, mask);
 }
 
-__aicore__ inline void LgammaCal25To3(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void LgammaCal25To3(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = -2.225444571099429;
@@ -304,7 +304,7 @@ __aicore__ inline void LgammaCal25To3(MicroAPI::RegTensor<float>& resReg, MicroA
     MicroAPI::Sub(resReg, aReg, resReg, mask);
 }
 
-__aicore__ inline void LgammaCal3To8(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
+__simd_callee__ inline void LgammaCal3To8(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = -7.72156649015328655494e-02;
@@ -372,7 +372,7 @@ __aicore__ inline void LgammaCal3To8(MicroAPI::RegTensor<float>& resReg, MicroAP
     MicroAPI::Add(resReg, resReg, aReg, mask);
 }
 
-__aicore__ inline void LgammaCal8ToPow58(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
+__simd_callee__ inline void LgammaCal8ToPow58(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& absReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = 4.18938533204672725052e-01;
@@ -403,7 +403,7 @@ __aicore__ inline void LgammaCal8ToPow58(MicroAPI::RegTensor<float>& resReg, Mic
     MicroAPI::Add(resReg, resReg, aReg, mask);
 }
 
-__aicore__ inline void SearchSinPi(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void SearchSinPi(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float r0 = 0.9452154240716536;
@@ -452,7 +452,7 @@ __aicore__ inline void SearchSinPi(MicroAPI::RegTensor<float>& resReg, MicroAPI:
     MicroAPI::Mul(resReg, resReg, srcReg, mask);
 }
 
-__aicore__ inline void SinPi(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void SinPi(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     MicroAPI::RegTensor<float> aReg;
@@ -486,7 +486,7 @@ __aicore__ inline void SinPi(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTe
     MicroAPI::Mul(resReg, resReg, bReg, mask);
 }
 
-__aicore__ inline void LgammaCalNegPow70(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& resReg,
+__simd_callee__ inline void LgammaCalNegPow70(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& resReg,
     MicroAPI::RegTensor<float>& srcReg, MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg mask)
 {
     constexpr float logpi = 1.14472988584940016388e+00;
@@ -504,7 +504,7 @@ __aicore__ inline void LgammaCalNegPow70(MicroAPI::RegTensor<float>& dstReg, Mic
     MicroAPI::Sub(resReg, resReg, dstReg, mask);
 }
 
-__aicore__ inline void LgammaCompute1(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& absReg,
+__simd_callee__ inline void LgammaCompute1(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& absReg,
     MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg cmpMaskReg1,
     MicroAPI::MaskReg cmpMaskReg2, MicroAPI::MaskReg cmpMaskReg, MicroAPI::MaskReg mask)
 {
@@ -578,7 +578,7 @@ __aicore__ inline void LgammaCompute1(MicroAPI::RegTensor<float>& dstReg, MicroA
     MicroAPI::Select(dstReg, resReg, dstReg, cmpMaskReg);
 }
 
-__aicore__ inline void LgammaCompute2(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void LgammaCompute2(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg cmpMaskReg,
     MicroAPI::MaskReg mask)
 {
@@ -598,7 +598,7 @@ __aicore__ inline void LgammaCompute2(MicroAPI::RegTensor<float>& dstReg, MicroA
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LgammaComputeImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__simd_vf__ inline void LgammaComputeImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
     __local_mem__ float *workUb, uint32_t calCount, uint16_t repeatTime)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
@@ -671,7 +671,7 @@ __aicore__ inline void LgammaImpl(const LocalTensor<T> &dst, const LocalTensor<T
     __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
     __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
     __local_mem__ float *workUb = (__local_mem__ float *)workLocal.GetPhyAddr();
-    VF_CALL<LgammaInternal::LgammaComputeImpl<T, isReuseSource>>(dstUb, srcUb, workUb, calCount, repeatTime);
+    LgammaInternal::LgammaComputeImpl<T, isReuseSource>(dstUb, srcUb, workUb, calCount, repeatTime);
 }
 }  // namespace AscendC
 #endif  // IMPL_MATH_LGAMMA_LGAMMA_C310_IMPL_H

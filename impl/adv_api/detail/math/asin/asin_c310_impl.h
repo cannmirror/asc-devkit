@@ -32,7 +32,7 @@ constexpr MicroAPI::CastTrait ASIN_CAST_TRAIT_RINT = {MicroAPI::RegLayout::ZERO,
 
 // Calculate Taylor Expansion according to (((k_nx^2 + k_n) * x^2 + k_(n-1)) * x^2 +k_(n-2) ……)*x^2 +k_0)*x.
 template <typename T, typename RegT>
-__aicore__ inline void AsinTaylorComputeInner(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void AsinTaylorComputeInner(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::Muls(dstReg, dstReg, static_cast<T>(kCOEF[ASIN_TAYLOR_EXPAND_COUNT]), mask);
     MicroAPI::Adds(dstReg, dstReg, static_cast<T>(kCOEF[6]), mask);
@@ -51,7 +51,7 @@ __aicore__ inline void AsinTaylorComputeInner(RegT& dstReg, RegT& srcReg, MicroA
 }
 
 template <typename T, typename RegT>
-__aicore__ inline void AsinTaylorCompute(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void AsinTaylorCompute(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> tmpReg;
     MicroAPI::Mul(dstReg, srcReg, srcReg, mask);
@@ -62,7 +62,7 @@ __aicore__ inline void AsinTaylorCompute(RegT& dstReg, RegT& srcReg, MicroAPI::M
 
 // Calculate Taylor Expansion of Asin based on its square value, and set the source to be sqrt(x).
 template <typename T, typename RegT>
-__aicore__ inline void AsinTaylorComputeBySquareValue(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void AsinTaylorComputeBySquareValue(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::Muls(dstReg, srcReg, static_cast<T>(NUM_ONE), mask);
     AsinTaylorComputeInner<T>(dstReg, srcReg, mask);
@@ -72,7 +72,7 @@ __aicore__ inline void AsinTaylorComputeBySquareValue(RegT& dstReg, RegT& srcReg
 }
 
 template <typename T, typename RegT>
-__aicore__ inline void CalRes2(RegT& resReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void CalRes2(RegT& resReg, RegT& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> tmpReg;
     MicroAPI::Mul(tmpReg, srcReg, srcReg, mask);
@@ -85,7 +85,7 @@ __aicore__ inline void CalRes2(RegT& resReg, RegT& srcReg, MicroAPI::MaskReg& ma
 }
 
 template <typename T, typename RegT>
-__aicore__ inline void ProcessBranch(RegT& resReg1, RegT& resReg2, RegT& tmpReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void ProcessBranch(RegT& resReg1, RegT& resReg2, RegT& tmpReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<int32_t> s32Reg;
     MicroAPI::Mins(tmpReg, tmpReg, BOUNDARY, mask);
@@ -105,7 +105,7 @@ __aicore__ inline void ProcessBranch(RegT& resReg1, RegT& resReg2, RegT& tmpReg,
 // FP16: sign(x) = 2^(15) * x /(2^(-15) + 2^(15) *|x|)
 // FP32: sign(x) = 2^(62) * x /(2^(-62) + 2^(62) *|x|)
 template <typename T, typename RegT>
-__aicore__ inline void GetSign(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void GetSign(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> denominatorReg;
     constexpr float FP16_MAX = 32768;                 // 2^15
@@ -125,7 +125,7 @@ __aicore__ inline void GetSign(RegT& dstReg, RegT& srcReg, MicroAPI::MaskReg& ma
 // asin(x) = the 15th order taylor expansion when x belongs to (-2^(-0.5), 2^(-0.5))
 // asin(x) = PI*0.5 - arcsin(sqrt(1-x^2)) when x belongs to (2^(-0.5), 1)
 template <typename T, bool convertToAcos = false>
-__aicore__ inline void AsinComputeVFF32(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calSize,
+__simd_vf__ inline void AsinComputeVFF32(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calSize,
     uint16_t repeatTimes, uint16_t stride)
 {
     MicroAPI::MaskReg mask;
@@ -168,7 +168,7 @@ __aicore__ inline void AsinComputeVFF32(__local_mem__ T* dstUb, __local_mem__ T*
 }
 
 template <typename T, bool convertToAcos = false>
-__aicore__ inline void AsinComputeVFF16(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calSize,
+__simd_vf__ inline void AsinComputeVFF16(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calSize,
     uint16_t repeatTimes, uint16_t stride)
 {
     MicroAPI::MaskReg mask;
@@ -246,9 +246,9 @@ __aicore__ inline void AsinCompute(const LocalTensor<T>& dst, const LocalTensor<
     constexpr uint16_t stride = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calSize, stride);
     if constexpr (IsSameType<T, half>::value) {
-        VF_CALL<Internal::AsinComputeVFF16<T, convertToAcos>>(dstUb, srcUb, calSize, repeatTimes, stride);
+        Internal::AsinComputeVFF16<T, convertToAcos>(dstUb, srcUb, calSize, repeatTimes, stride);
     } else if (IsSameType<T, float>::value) {
-        VF_CALL<Internal::AsinComputeVFF32<T, convertToAcos>>(dstUb, srcUb, calSize, repeatTimes, stride);
+        Internal::AsinComputeVFF32<T, convertToAcos>(dstUb, srcUb, calSize, repeatTimes, stride);
     }
 }
 

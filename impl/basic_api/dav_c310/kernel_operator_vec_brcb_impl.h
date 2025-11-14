@@ -21,8 +21,8 @@ namespace AscendC {
  * Brcb                                             *
  * ************************************************************************************************* */
 template <typename T>
-__simd_callee__ inline void BrcbB64Impl(
-    __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams &repeatParams, int32_t dstBlkStride)
+__simd_vf__ inline void BrcbB64Impl(
+    __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams repeatParams, int32_t dstBlkStride)
 {
     int32_t dstRepOffset = 0;
     int32_t sreg0 = 0;
@@ -49,8 +49,8 @@ __simd_callee__ inline void BrcbB64Impl(
 }
 
 template <typename T>
-__simd_callee__ inline void BrcbB8Impl(
-    __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams &repeatParams, int32_t dstBlkStride)
+__simd_vf__ inline void BrcbB8Impl(
+    __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams repeatParams, int32_t dstBlkStride)
 {
     int32_t dstRepOffset = 0;
     constexpr uint32_t oneBlkSize = ONE_BLK_SIZE / sizeof(T);
@@ -70,8 +70,8 @@ __simd_callee__ inline void BrcbB8Impl(
 }
 
 template <typename T>
-__simd_callee__ inline void BrcbCommonImpl(
-    __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams &repeatParams, int32_t dstBlkStride)
+__simd_vf__ inline void BrcbCommonImpl(
+    __ubuf__ T *dst, __ubuf__ T *src, const uint8_t repeatTime, const BrcbRepeatParams repeatParams, int32_t dstBlkStride)
 {
     int32_t dstRepOffset = 0;
     MicroAPI::RegTensor<T> srcReg;
@@ -98,11 +98,11 @@ __aicore__ inline void BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t
 
     int32_t dstBlkStride = repeatParams.dstBlkStride ? repeatParams.dstBlkStride : 1;
     if constexpr (sizeof(T) == 8) {
-        VF_CALL<BrcbB64Impl<T>>(dst, src0, repeatTime, repeatParams, dstBlkStride);
+        BrcbB64Impl<T>(dst, src0, repeatTime, repeatParams, dstBlkStride);
     } else if constexpr (sizeof(T) == 1) {
-        VF_CALL<BrcbB8Impl<T>>(dst, src0, repeatTime, repeatParams, dstBlkStride);
+        BrcbB8Impl<T>(dst, src0, repeatTime, repeatParams, dstBlkStride);
     } else {
-        VF_CALL<BrcbCommonImpl<T>>(dst, src0, repeatTime, repeatParams, dstBlkStride);
+        BrcbCommonImpl<T>(dst, src0, repeatTime, repeatParams, dstBlkStride);
     }
 }
 } // namespace AscendC

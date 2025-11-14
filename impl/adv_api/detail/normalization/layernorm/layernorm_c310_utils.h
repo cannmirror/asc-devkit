@@ -73,7 +73,7 @@ __aicore__ inline uint16_t CalculateHalfAddRepeatTimes(uint32_t halfAddTimes)
 
 // Helper function for the first loop in ComputeMeanUseY
 template <typename T>
-__aicore__ inline void ComputeMeanLoop1(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanLoop1(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
     const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1, const float k2Rec,
     const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
@@ -106,7 +106,7 @@ __aicore__ inline void ComputeMeanLoop1(__local_mem__ T* const srcUb, __local_me
 
 // Helper function for the second loop in ComputeMeanUseY
 template <typename T>
-__aicore__ inline void ComputeMeanLoop2(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanLoop2(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& preg2, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint16_t repeatTimes1,
     const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0,
@@ -136,7 +136,7 @@ __aicore__ inline void ComputeMeanLoop2(__local_mem__ T* const srcUb, __local_me
 
 // Helper function for the third loop in ComputeMeanUseY
 template <typename T>
-__aicore__ inline void ComputeMeanLoop3(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanLoop3(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL,
     const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0,
@@ -160,7 +160,7 @@ __aicore__ inline void ComputeMeanLoop3(__local_mem__ T* const srcUb, __local_me
 }
 
 template <typename T>
-__aicore__ inline void ComputeMeanUseY(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanUseY(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& pregLastCount, MicroAPI::MaskReg& preg2,
     const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL,
@@ -184,7 +184,7 @@ __aicore__ inline void ComputeMeanUseY(__local_mem__ T* const srcUb, __local_mem
 
 // Helper function for the first loop in ComputeVarianceUseY
 template <typename T>
-__aicore__ inline void ComputeVarianceLoop1(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeVarianceLoop1(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1,
     const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& meanReg,
@@ -233,7 +233,7 @@ __aicore__ inline void ComputeVarianceLoop1(__local_mem__ T* const srcUb, __loca
 
 // Helper function for the second loop in ComputeVarianceUseY
 template <typename T>
-__aicore__ inline void ComputeVarianceLoop2(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeVarianceLoop2(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
     MicroAPI::MaskReg& preg2, const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower,
@@ -276,7 +276,7 @@ __aicore__ inline void ComputeVarianceLoop2(__local_mem__ T* const srcUb, __loca
 
 // Helper function for the third loop in ComputeVarianceUseY
 template <typename T>
-__aicore__ inline void ComputeVarianceLoop3(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeVarianceLoop3(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint16_t repeatTimes1, const uint16_t repeatTimes2,
     const uint16_t repeatTimes3, const uint32_t mVL, const float k2Rec, const uint16_t sregLower,
@@ -308,7 +308,7 @@ __aicore__ inline void ComputeVarianceLoop3(__local_mem__ T* const srcUb, __loca
 }
 
 template <typename T>
-__aicore__ inline void ComputeVarianceUseY(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeVarianceUseY(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
     __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
     MicroAPI::MaskReg& pregLastCount, MicroAPI::MaskReg& preg2, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1,
@@ -335,7 +335,7 @@ __aicore__ inline void ComputeVarianceUseY(__local_mem__ T* const srcUb, __local
 
 // Helper: reduce temporary work buffer into a scalar per row and store to dstUb
 template <typename T, uint16_t HalfAddTimes>
-__aicore__ inline void ReduceWorkBufferAndStore(__local_mem__ T* const workUbYOrigin, __local_mem__ float* const dstUb,
+__simd_callee__ inline void ReduceWorkBufferAndStore(__local_mem__ T* const workUbYOrigin, __local_mem__ float* const dstUb,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& pregLastCount, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint16_t halfAddRepeatTimes, const uint32_t lastCount, const float k2RRec,
     const uint16_t sregLower, const uint16_t dynamicHalfAddTimes = 0)

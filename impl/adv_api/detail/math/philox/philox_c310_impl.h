@@ -40,8 +40,15 @@ constexpr uint32_t EXP_MASK = static_cast<uint32_t>(127) << 23u; // 7 bit exp
 } // namespace PhiloxInternal
 
 // 64 bit key and 128-bit counter, little endian
-using PhiloxKey = uint32_t[2];
-using PhiloxCounter = uint32_t[4];
+constexpr uint16_t PHILOX_KEY_SIZE = 2;
+constexpr uint16_t PHILOX_COUNTER_SIZE = 4;
+struct philoxStruct {
+    uint32_t philoxKey[PHILOX_KEY_SIZE] = { 0 };
+    uint32_t philoxCounter[PHILOX_COUNTER_SIZE] = {0};
+};
+
+using PhiloxKey = uint32_t[PHILOX_KEY_SIZE];
+using PhiloxCounter = uint32_t[PHILOX_COUNTER_SIZE];
 
 struct PhiloxRandomParams {
     uint32_t stride;
@@ -49,7 +56,7 @@ struct PhiloxRandomParams {
     uint32_t column;
 };
 
-__aicore__ inline void AddWith128Bits(MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1,
+__simd_callee__ inline void AddWith128Bits(MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1,
     MicroAPI::RegTensor<uint32_t> &ctr2, MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &value,
     MicroAPI::MaskReg &pg)
 {
@@ -62,7 +69,7 @@ __aicore__ inline void AddWith128Bits(MicroAPI::RegTensor<uint32_t> &ctr0, Micro
     AddCarryOuts(pd, ctr3, ctr3, vZero, pd, pg);
 }
 
-__aicore__ inline void UInt2Float(MicroAPI::RegTensor<uint32_t> &tmpCtr0, MicroAPI::RegTensor<uint32_t> &tmpCtr1,
+__simd_callee__ inline void UInt2Float(MicroAPI::RegTensor<uint32_t> &tmpCtr0, MicroAPI::RegTensor<uint32_t> &tmpCtr1,
     MicroAPI::RegTensor<uint32_t> &tmpCtr2, MicroAPI::RegTensor<uint32_t> &tmpCtr3, MicroAPI::MaskReg &pg)
 {
     MicroAPI::RegTensor<uint32_t> vb32ManMask, vb32ExpMask;
@@ -83,7 +90,7 @@ __aicore__ inline void UInt2Float(MicroAPI::RegTensor<uint32_t> &tmpCtr0, MicroA
 }
 
 template <uint16_t Rounds>
-__aicore__ inline void SpNetworkKernel(MicroAPI::RegTensor<uint32_t> &tmpL0, MicroAPI::RegTensor<uint32_t> &tmpH0,
+__simd_callee__ inline void SpNetworkKernel(MicroAPI::RegTensor<uint32_t> &tmpL0, MicroAPI::RegTensor<uint32_t> &tmpH0,
     MicroAPI::RegTensor<uint32_t> &tmpL1, MicroAPI::RegTensor<uint32_t> &tmpH1, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
     MicroAPI::RegTensor<uint32_t> &tmpCtr1, MicroAPI::RegTensor<uint32_t> &tmpCtr2,
     MicroAPI::RegTensor<uint32_t> &tmpCtr3, MicroAPI::RegTensor<uint32_t> &tmpKey0,
@@ -108,7 +115,7 @@ __aicore__ inline void SpNetworkKernel(MicroAPI::RegTensor<uint32_t> &tmpL0, Mic
 }
 
 template <uint16_t Rounds, typename T, bool DstUnalign = false>
-__aicore__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t tailCount,
+__simd_callee__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t tailCount,
     MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
     MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
     MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1, MicroAPI::MaskReg &pg)
@@ -161,7 +168,7 @@ __aicore__ inline void SpNetworkFull(__ubuf__ uint32_t *dstUbTail, uint16_t tail
 }
 
 template <bool DstUnalign = false>
-__aicore__ inline void PhiloxUnrollStoreTmpCtrl(__ubuf__ uint32_t *&dstUbT, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
+__simd_callee__ inline void PhiloxUnrollStoreTmpCtrl(__ubuf__ uint32_t *&dstUbT, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
     MicroAPI::RegTensor<uint32_t> &tmpCtr1, MicroAPI::RegTensor<uint32_t> &tmpCtr2,
     MicroAPI::RegTensor<uint32_t> &tmpCtr3, MicroAPI::MaskReg &pg)
 {
@@ -189,7 +196,7 @@ __aicore__ inline void PhiloxUnrollStoreTmpCtrl(__ubuf__ uint32_t *&dstUbT, Micr
 }
 
 template <bool DstUnalign = false>
-__aicore__ inline void PhiloxUnrollLoadTmpCtrl(__ubuf__ uint32_t *&dstUbTT0, __ubuf__ uint32_t *&dstUbTT1,
+__simd_callee__ inline void PhiloxUnrollLoadTmpCtrl(__ubuf__ uint32_t *&dstUbTT0, __ubuf__ uint32_t *&dstUbTT1,
     __ubuf__ uint32_t *&dstUbTT2, __ubuf__ uint32_t *&dstUbTT3, MicroAPI::RegTensor<uint32_t> &tmpCtr0,
     MicroAPI::RegTensor<uint32_t> &tmpCtr1, MicroAPI::RegTensor<uint32_t> &tmpCtr2,
     MicroAPI::RegTensor<uint32_t> &tmpCtr3)
@@ -221,7 +228,7 @@ __aicore__ inline void PhiloxUnrollLoadTmpCtrl(__ubuf__ uint32_t *&dstUbTT0, __u
 }
 
 template <typename T, bool DstUnalign = false>
-__aicore__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
+__simd_callee__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
     MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
     MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
     MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
@@ -437,7 +444,7 @@ __aicore__ inline void PhiloxRound10MainBlockUnroll442(__ubuf__ uint32_t *dstUb,
 }
 
 template <typename T, bool DstUnalign = false>
-__aicore__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
+__simd_callee__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
     MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
     MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
     MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
@@ -578,7 +585,7 @@ __aicore__ inline void PhiloxRound7MainBlockUnroll43(__ubuf__ uint32_t *dstUb, u
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign = false>
-__aicore__ inline void PhiloxRoundMainBlockUnroll(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
+__simd_callee__ inline void PhiloxRoundMainBlockUnroll(__ubuf__ uint32_t *dstUb, uint16_t mainIter,
     MicroAPI::RegTensor<uint32_t> &ctr0, MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2,
     MicroAPI::RegTensor<uint32_t> &ctr3, MicroAPI::RegTensor<uint32_t> &key0, MicroAPI::RegTensor<uint32_t> &key1,
     MicroAPI::RegTensor<uint32_t> &cMul0, MicroAPI::RegTensor<uint32_t> &cMul1,
@@ -595,7 +602,7 @@ __aicore__ inline void PhiloxRoundMainBlockUnroll(__ubuf__ uint32_t *dstUb, uint
     }
 }
 
-__aicore__ inline void PhiloxCounterInit(const PhiloxCounter &philoxCounter, MicroAPI::RegTensor<uint32_t> &ctr0,
+__simd_callee__ inline void PhiloxCounterInit(const PhiloxCounter &philoxCounter, MicroAPI::RegTensor<uint32_t> &ctr0,
     MicroAPI::RegTensor<uint32_t> &ctr1, MicroAPI::RegTensor<uint32_t> &ctr2, MicroAPI::RegTensor<uint32_t> &ctr3,
     MicroAPI::RegTensor<int32_t> &incIdx, MicroAPI::MaskReg &pg)
 {
@@ -607,22 +614,22 @@ __aicore__ inline void PhiloxCounterInit(const PhiloxCounter &philoxCounter, Mic
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign = false>
-__aicore__ inline void PhiloxRandomOneRow(__ubuf__ uint32_t *dstUb, __ubuf__ uint32_t *dstUbTail,
-    const PhiloxKey &philoxKey, const PhiloxCounter &philoxCounter, uint16_t mainIter, uint16_t tailCount)
+__simd_vf__ inline void PhiloxRandomOneRow(__ubuf__ uint32_t *dstUb, __ubuf__ uint32_t *dstUbTail,
+    const philoxStruct philox, uint16_t mainIter, uint16_t tailCount)
 {
     MicroAPI::MaskReg pg = MicroAPI::CreateMask<uint32_t>();
 
     MicroAPI::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
     MicroAPI::RegTensor<int32_t> incIdx;
     MicroAPI::Arange(incIdx, 0);
-    PhiloxCounterInit(philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
+    PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
 
     MicroAPI::RegTensor<uint32_t> vEleStrideB32OneRow;
     Duplicate(vEleStrideB32OneRow, PhiloxInternal::ELE_CNT_B32_ONCE);
 
     MicroAPI::RegTensor<uint32_t> key1, key0;
-    Duplicate(key0, philoxKey[0]);
-    Duplicate(key1, philoxKey[1]);
+    Duplicate(key0, philox.philoxKey[0]);
+    Duplicate(key1, philox.philoxKey[1]);
 
     MicroAPI::RegTensor<uint32_t> cMul0, cMul1;
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
@@ -668,7 +675,7 @@ for (i.o, 0, row / factor) {
   }
 }
 */
-__aicore__ inline void PhiloxRandomIndexCal(__ubuf__ int32_t *indexUb, const PhiloxRandomParams &params,
+__simd_callee__ inline void PhiloxRandomIndexCal(__ubuf__ int32_t *indexUb, const PhiloxRandomParams &params,
     const uint32_t fuseFactor)
 {
     __ubuf__ int32_t *indexUbT = indexUb;
@@ -689,9 +696,9 @@ __aicore__ inline void PhiloxRandomIndexCal(__ubuf__ int32_t *indexUb, const Phi
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstBlockUnalign, bool DstRepeatUnalign>
-__aicore__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbStart, __ubuf__ int32_t *indexUb,
-    const PhiloxKey &philoxKey, const PhiloxCounter &philoxCounter, const PhiloxRandomParams &params,
-    const uint32_t fuseFactor, const uint32_t mainFuseAxis, const uint32_t mainRowsNum, const uint32_t tailFuseAxis)
+__simd_vf__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbStart, __ubuf__ int32_t *indexUb,
+    const philoxStruct philox, const PhiloxRandomParams params, const uint32_t fuseFactor, const uint32_t mainFuseAxis,
+    const uint32_t mainRowsNum, const uint32_t tailFuseAxis)
 {
     PhiloxRandomIndexCal(indexUb, params, fuseFactor);
     MicroAPI::RegTensor<uint32_t> ctr3, ctr2, ctr1, ctr0;
@@ -699,11 +706,11 @@ __aicore__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbStar
     MicroAPI::MaskReg pg = MicroAPI::CreateMask<uint32_t>();
     MicroAPI::RegTensor<int32_t> incIdx;
     MicroAPI::DataCopy(incIdx, indexUb);
-    PhiloxCounterInit(philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
+    PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
 
     MicroAPI::RegTensor<uint32_t> key1, key0;
-    Duplicate(key0, philoxKey[0]);
-    Duplicate(key1, philoxKey[1]);
+    Duplicate(key0, philox.philoxKey[0]);
+    Duplicate(key1, philox.philoxKey[1]);
 
     MicroAPI::RegTensor<uint32_t> cMul0, cMul1;
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
@@ -733,16 +740,16 @@ __aicore__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbStar
 }
 
 template <uint16_t Rounds = 7, typename T, bool DstUnalign>
-__aicore__ inline void PhiloxRandomMultiRowNoFuse(__ubuf__ uint32_t *dstUbStart, const PhiloxKey &philoxKey,
-    const PhiloxCounter &philoxCounter, const PhiloxRandomParams &params, uint32_t strideCounterOneRow,
-    uint16_t mainIter, uint16_t tailCount, uint16_t hasTail)
+__simd_vf__ inline void PhiloxRandomMultiRowNoFuse(__ubuf__ uint32_t *dstUbStart, const philoxStruct philox,
+    const PhiloxRandomParams params, uint32_t strideCounterOneRow, uint16_t mainIter, uint16_t tailCount,
+    uint16_t hasTail)
 {
     MicroAPI::RegTensor<uint32_t> vEleStrideB32OneRow;
     Duplicate(vEleStrideB32OneRow, PhiloxInternal::ELE_CNT_B32_ONCE);
 
     MicroAPI::RegTensor<uint32_t> key1, key0;
-    Duplicate(key0, philoxKey[0]);
-    Duplicate(key1, philoxKey[1]);
+    Duplicate(key0, philox.philoxKey[0]);
+    Duplicate(key1, philox.philoxKey[1]);
 
     MicroAPI::RegTensor<uint32_t> cMul0, cMul1;
     Duplicate(cMul0, PhiloxInternal::CONST_MUL_0);
@@ -757,7 +764,7 @@ __aicore__ inline void PhiloxRandomMultiRowNoFuse(__ubuf__ uint32_t *dstUbStart,
 
         MicroAPI::RegTensor<int32_t> incIdx;
         MicroAPI::Arange(incIdx, i * strideCounterOneRow);
-        PhiloxCounterInit(philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
+        PhiloxCounterInit(philox.philoxCounter, ctr0, ctr1, ctr2, ctr3, incIdx, pg);
         PhiloxRoundMainBlockUnroll<Rounds, T, DstUnalign>(dstUb, mainIter, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,
             cMul1, vEleStrideB32OneRow, pg);
         for (uint16_t j = 0; j < hasTail; j++) {
@@ -779,7 +786,16 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
     uint16_t mainIter = count / PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
     uint16_t tailCount = count - mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
     __ubuf__ uint32_t *dstUbTail = dstUb + mainIter * PhiloxInternal::PHILOX_ONCE_REPEAT_NUM;
-    VF_CALL<PhiloxRandomOneRow<Rounds, T, false>>(dstUb, dstUbTail, philoxKey, philoxCounter, mainIter, tailCount);
+    philoxStruct philox;
+    uint16_t philoxKeySize = (philoxKey == nullptr) ? 0 : PHILOX_KEY_SIZE;
+    uint16_t philoxCounterSize = (philoxCounter == nullptr) ? 0 : PHILOX_COUNTER_SIZE;
+    for (uint16_t i = 0; i < philoxKeySize; i++) {
+        philox.philoxKey[i] = philoxKey[i];
+    }
+    for (uint16_t i = 0; i < philoxCounterSize; i++) {
+        philox.philoxCounter[i] = philoxCounter[i];
+    }
+    PhiloxRandomOneRow<Rounds, T, false>(dstUb, dstUbTail, philox, mainIter, tailCount);
 }
 
 template <uint16_t Rounds = 7, typename T>
@@ -799,7 +815,15 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
                    { KERNEL_LOG(KERNEL_ERROR, "params.row > 0 && params.column > 0!"); });
 
     __ubuf__ uint32_t *dstUbStart = (__ubuf__ uint32_t *)dstLocal.GetPhyAddr();
-
+    philoxStruct philox;
+    uint16_t philoxKeySize = (philoxKey == nullptr) ? 0 : PHILOX_KEY_SIZE;
+    uint16_t philoxCounterSize = (philoxCounter == nullptr) ? 0 : PHILOX_COUNTER_SIZE;
+    for (uint16_t i = 0; i < philoxKeySize; i++) {
+        philox.philoxKey[i] = philoxKey[i];
+    }
+    for (uint16_t i = 0; i < philoxCounterSize; i++) {
+        philox.philoxCounter[i] = philoxCounter[i];
+    }
     // judge fuse axis and unalign pattern
     if (params.row == 1 || params.stride == params.column) {
         // if one row or stride == column, continuous and align, count = row * column
@@ -815,15 +839,15 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
         __ubuf__ int32_t *indexUb = (__ubuf__ int32_t *)indexTensor.GetPhyAddr();
         if (mainFuseAxis == PhiloxInternal::PHILOX_ONCE_REPEAT_NUM) {
             // DstBlock align, DstRepeat align
-            VF_CALL<PhiloxRandomMultiRowWithFuse<Rounds, T, false, false>>(dstUbStart, indexUb, philoxKey,
-                philoxCounter, params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
+            PhiloxRandomMultiRowWithFuse<Rounds, T, false, false>(dstUbStart, indexUb, philox,
+                params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
         } else if (mainFuseAxis * sizeof(uint32_t) % ONE_BLOCK_SIZE == 0) {
             // DstBlock align, DstRepeat unalign. use SpNetworkFull align condition
-            VF_CALL<PhiloxRandomMultiRowWithFuse<Rounds, T, false, true>>(dstUbStart, indexUb, philoxKey, philoxCounter,
+            PhiloxRandomMultiRowWithFuse<Rounds, T, false, true>(dstUbStart, indexUb, philox,
                 params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
         } else {
             // DstBlock unalign, DstRepeat unalign
-            VF_CALL<PhiloxRandomMultiRowWithFuse<Rounds, T, true, true>>(dstUbStart, indexUb, philoxKey, philoxCounter,
+            PhiloxRandomMultiRowWithFuse<Rounds, T, true, true>(dstUbStart, indexUb, philox,
                 params, fuseFactor, mainFuseAxis, mainRowsNum, tailFuseAxis);
         }
     } else {
@@ -834,11 +858,11 @@ __aicore__ inline void PhiloxRandomImpl(const LocalTensor<T> &dstLocal, const Ph
         uint16_t hasTail = static_cast<uint16_t>(tailCount > 0);
         if (params.column / PhiloxInternal::PHILOX_ONCE_COUNTER_NUM * sizeof(uint32_t) % ONE_BLOCK_SIZE == 0) {
             // align pattern. use PhiloxRoundMainBlockUnroll align condition
-            VF_CALL<PhiloxRandomMultiRowNoFuse<Rounds, T, false>>(dstUbStart, philoxKey, philoxCounter, params,
+            PhiloxRandomMultiRowNoFuse<Rounds, T, false>(dstUbStart, philox, params,
                 strideCounterOneRow, mainIter, tailCount, hasTail);
         } else {
             // unalign pattern. each process element: column / PHILOX_ONCE_COUNTER_NUM
-            VF_CALL<PhiloxRandomMultiRowNoFuse<Rounds, T, true>>(dstUbStart, philoxKey, philoxCounter, params,
+            PhiloxRandomMultiRowNoFuse<Rounds, T, true>(dstUbStart, philox, params,
                 strideCounterOneRow, mainIter, tailCount, hasTail);
         }
     }

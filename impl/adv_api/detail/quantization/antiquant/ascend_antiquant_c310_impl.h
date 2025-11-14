@@ -47,7 +47,7 @@ __simd_callee__ inline void SelectZeroNan(MicroAPI::RegTensor<bfloat16_t>& b16vr
 }
 
 template <typename OutputDataType>
-__aicore__ inline void CastScale(__local_mem__ OutputDataType* dst, __local_mem__ fp8_e8m0_t* scale,
+__simd_vf__ inline void CastScale(__local_mem__ OutputDataType* dst, __local_mem__ fp8_e8m0_t* scale,
     const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -87,7 +87,7 @@ __aicore__ inline void CastScale(__local_mem__ OutputDataType* dst, __local_mem_
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void AntiQuantProcessByLine(__local_mem__ OutputDataType* dstUb, __local_mem__ SrcType* srcUb,
+__simd_callee__ inline void AntiQuantProcessByLine(__local_mem__ OutputDataType* dstUb, __local_mem__ SrcType* srcUb,
     __local_mem__ fp8_e8m0_t* scaleUb, const uint32_t calCount, MicroAPI::RegTensor<uint16_t>& bf16Zero,
     MicroAPI::RegTensor<uint16_t>& bf16Nan, MicroAPI::RegTensor<uint16_t>& e8m0Zero,
     MicroAPI::RegTensor<uint16_t>& e8m0Nan)
@@ -129,7 +129,7 @@ __aicore__ inline void AntiQuantProcessByLine(__local_mem__ OutputDataType* dstU
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
     __local_mem__ OutputDataType* scale, const uint32_t srcCalCount, const uint16_t newRepeatTime)
 {
     uint32_t sregLower = static_cast<uint32_t>(ANTIQUANT_B16_VF_LEN);
@@ -180,8 +180,8 @@ __aicore__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst, 
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<OutputDataType>& dst,
-    const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale, const uint32_t k, const uint32_t n)
+__simd_vf__ inline void AscendAntiQuantNoTranspose(__local_mem__ OutputDataType* dstUb,
+    __local_mem__ SrcType* srcUb, __local_mem__ fp8_e8m0_t* scaleUb, const uint32_t k, const uint32_t n)
 {
     MicroAPI::RegTensor<uint16_t> bf16Zero;
     MicroAPI::RegTensor<uint16_t> bf16Nan;
@@ -194,12 +194,8 @@ __aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<OutputDataTy
     uint16_t repeatTimes = CeilDivision(k, ANTIQUANT_FP4_PERGROUP_SIZE);
     for (uint16_t i = 0; i < repeatTimes; i++) {
         for (uint16_t j = 0; j < ANTIQUANT_FP4_PERGROUP_SIZE; j++) {
-            __local_mem__ OutputDataType* dstUb =
-                (__local_mem__ OutputDataType*)dst[i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n].GetPhyAddr();
-            __local_mem__ SrcType* srcUb =
-                (__local_mem__ SrcType*)src[i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n].GetPhyAddr();
-            __local_mem__ fp8_e8m0_t* scaleUb = (__local_mem__ fp8_e8m0_t*)scale[i * n].GetPhyAddr();
-            AntiQuantProcessByLine<SrcType, OutputDataType>(dstUb, srcUb, scaleUb, n, bf16Zero, bf16Nan, e8m0Zero,
+            AntiQuantProcessByLine<SrcType, OutputDataType>(dstUb + i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n,
+                srcUb + i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n, scaleUb + i * n, n, bf16Zero, bf16Nan, e8m0Zero,
                 e8m0Nan);
         }
     }
@@ -235,17 +231,17 @@ __aicore__ inline void AscendAntiQuantTranspose(const LocalTensor<OutputDataType
         for (uint16_t i = 0; i < repeatTimes; i++) {
             uint32_t remainCount = count - sharedTmpBufferSize * i;
             uint32_t oneRepSize = remainCount < sharedTmpBufferSize ? remainCount : sharedTmpBufferSize;
-            VF_CALL<CastScale<OutputDataType>>(tmpbufferUb, scaleUb + i * sharedTmpBufferSize, oneRepSize);
+            CastScale<OutputDataType>(tmpbufferUb, scaleUb + i * sharedTmpBufferSize, oneRepSize);
             uint16_t againRepeatTimes = CeilDivision(oneRepSize, ANTIQUANT_B16_VF_LEN);
             uint16_t newRepeatTime = (againRepeatTimes == 1) ? 1 : (againRepeatTimes / HALF_FACTOR); // if calcount <=128 need repeat once
-            VF_CALL<AntiQuantProcessByNum<SrcType, OutputDataType>>(dstUb + i * sharedTmpBufferSize, srcUb + i * sharedTmpBufferSize,
+            AntiQuantProcessByNum<SrcType, OutputDataType>(dstUb + i * sharedTmpBufferSize, srcUb + i * sharedTmpBufferSize,
                 tmpbufferUb, oneRepSize, newRepeatTime);
         }
     } else {
-        VF_CALL<CastScale<OutputDataType>>(tmpbufferUb, scaleUb, srcCalCount);
+        CastScale<OutputDataType>(tmpbufferUb, scaleUb, srcCalCount);
         uint16_t repeatTimes = CeilDivision(srcCalCount, ANTIQUANT_B16_VF_LEN);
         uint16_t newRepeatTime = (repeatTimes == 1) ? 1 : (repeatTimes / HALF_FACTOR); // if calcount <=128 need repeat once
-        VF_CALL<AntiQuantProcessByNum<SrcType, OutputDataType>>(dstUb, srcUb, tmpbufferUb, srcCalCount,
+        AntiQuantProcessByNum<SrcType, OutputDataType>(dstUb, srcUb, tmpbufferUb, srcCalCount,
             newRepeatTime);
     }
 }
@@ -262,6 +258,9 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& ds
         "This AscendAntiQuant only support fp4 input dtype");
     static_assert(SupportType<OutputDataType, half, bfloat16_t>(),
         "This AscendAntiQuant only support half/bf16 output dtype");
+    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
+    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
+    __local_mem__ fp8_e8m0_t* scaleUb = (__local_mem__ fp8_e8m0_t*)scale.GetPhyAddr();
     if constexpr (isTranspose) {
         ASCENDC_ASSERT((k != 0 && (k / HALF_FACTOR) % ONE_BLK_SIZE == 0),
                        { KERNEL_LOG(KERNEL_ERROR, "K should be larger than 0 && should be 32B aligned!"); });
@@ -271,7 +270,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& ds
         uint32_t n1 = (shapeInfo.scaleWidth == 0 ? scale.GetShapeInfo().shape[1] : shapeInfo.scaleWidth);
         ASCENDC_ASSERT((n1 != 0 && (n1 / HALF_FACTOR) % ONE_BLK_SIZE == 0),
                        { KERNEL_LOG(KERNEL_ERROR, "k should be larger than 0 && should be 32B aligned!"); });
-        VF_CALL<AscendAntiQuantNoTranspose<SrcType, OutputDataType>>(dst, src, scale, k, n1);
+        AscendAntiQuantNoTranspose<SrcType, OutputDataType>(dstUb, srcUb, scaleUb, k, n1);
     }
 }
 
@@ -279,7 +278,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& ds
  * perTensor for B8                                             *
  * ************************************************************************************************* */
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void PerTensorProcessForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerTensorProcessForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
     const OutputDataType offset, const OutputDataType scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -381,7 +380,7 @@ __aicore__ inline void AntiQuantPertensorImpl(const LocalTensor<OutputDataType>&
 
     uint32_t srcCalCount = src.GetSize();
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
-        VF_CALL<PerTensorProcessForFp8<SrcType, OutputDataType>>(dstUb, srcUb, offset, scale, srcCalCount);
+        PerTensorProcessForFp8<SrcType, OutputDataType>(dstUb, srcUb, offset, scale, srcCalCount);
     } else {
         // vfcall not support overload function
         PerTensorProcessForB8<SrcType>(dstUb, srcUb, offset, scale, srcCalCount);
@@ -392,7 +391,7 @@ __aicore__ inline void AntiQuantPertensorImpl(const LocalTensor<OutputDataType>&
  * perChannel for B8                                             *
  * ************************************************************************************************* */
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void PerchannelNoTransposeForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerchannelNoTransposeForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
     __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
@@ -431,7 +430,7 @@ __aicore__ inline void PerchannelNoTransposeForFp8(__local_mem__ OutputDataType*
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void PerchannelNoTransposeForB8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerchannelNoTransposeForB8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
     __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
@@ -478,14 +477,14 @@ __aicore__ inline void AntiQuantPerchannelNoTranspose(const LocalTensor<OutputDa
     __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
 
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
-        VF_CALL<PerchannelNoTransposeForFp8<SrcType, OutputDataType>>(dstUb, srcUb, offsetUb, scaleUb, K, N);
+        PerchannelNoTransposeForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, K, N);
     } else {
-        VF_CALL<PerchannelNoTransposeForB8<SrcType, OutputDataType>>(dstUb, srcUb, offsetUb, scaleUb, K, N);
+        PerchannelNoTransposeForB8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, K, N);
     }
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void PerchannelUnlignedForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerchannelUnlignedForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
     __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -530,7 +529,7 @@ __aicore__ inline void PerchannelUnlignedForFp8(__local_mem__ OutputDataType* ds
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void PerchannelUnlignedForB8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerchannelUnlignedForB8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
     __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -574,9 +573,9 @@ __aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType
     __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
 
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
-        VF_CALL<PerchannelUnlignedForFp8<SrcType, OutputDataType>>(dstUb, srcUb, offsetUb, scaleUb, N * K);
+        PerchannelUnlignedForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
     } else { // now only support hifloat8 and int8
-        VF_CALL<PerchannelUnlignedForB8<SrcType, OutputDataType>>(dstUb, srcUb, offsetUb, scaleUb, N * K);
+        PerchannelUnlignedForB8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
     }
 }
 

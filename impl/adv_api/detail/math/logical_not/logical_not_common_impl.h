@@ -26,7 +26,7 @@ struct LogicalNotConfig {
 constexpr LogicalNotConfig DEFAULT_LOGICAL_NOT_CONFIG = { false };
 
 template <typename T, typename U, typename RegT, typename RegU, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void LogicalNotVF(__ubuf__ T* dst, __ubuf__ U* src, uint16_t repeatTime, uint32_t count, uint32_t oneRepElm)
+__simd_vf__ inline void LogicalNotVF(__ubuf__ T* dst, __ubuf__ U* src, uint16_t repeatTime, uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
     RegT brcZeroReg;
@@ -73,16 +73,16 @@ __aicore__ inline void LogicalNotImpl(const LocalTensor<T>& dst, const LocalTens
         using RegU = MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>;
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U) * LOGICAL_NOT_B64_REPEAT_STRIDE);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-        VF_CALL<LogicalNotVF<T, U, RegT, RegU, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), repeatTime, count, oneRepElm);
+        LogicalNotVF<T, U, RegT, RegU, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), repeatTime, count, oneRepElm);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
         if constexpr (Std::is_same_v<U, bool>) {
             using RegU = MicroAPI::RegTensor<uint8_t>;
-            VF_CALL<LogicalNotVF<T, uint8_t, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src.GetPhyAddr(), repeatTime, count, oneRepElm);
+            LogicalNotVF<T, uint8_t, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
             using RegU = MicroAPI::RegTensor<U>;
-            VF_CALL<LogicalNotVF<T, U, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), repeatTime, count, oneRepElm);
+            LogicalNotVF<T, U, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
     }
 }

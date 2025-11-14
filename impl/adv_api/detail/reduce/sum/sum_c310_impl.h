@@ -23,8 +23,8 @@
 namespace AscendC {
 namespace SumInternal {
 template <typename T>
-__aicore__ inline void SumForOneRepeatTime(
-    __ubuf__ T* dstUb, __ubuf__ T* srcUb, const SumParams& sumParams, uint32_t count, uint32_t offset)
+__simd_vf__ inline void SumForOneRepeatTime(
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, const SumParams sumParams, uint32_t count, uint32_t offset)
 {
     uint32_t calCount;
     MicroAPI::MaskReg mask;
@@ -42,7 +42,7 @@ __aicore__ inline void SumForOneRepeatTime(
 }
 
 template <typename T, bool isFirstRepeat>
-__aicore__ inline void ReduceSumNextN(__ubuf__ T* dstUb, __ubuf__ T* srcUb, const SumParams& sumParams,
+__simd_vf__ inline void ReduceSumNextN(__ubuf__ T* dstUb, __ubuf__ T* srcUb, const SumParams sumParams,
     uint32_t calCount, uint32_t repeatTimes, uint32_t offset)
 {
     uint32_t count;
@@ -113,11 +113,11 @@ __aicore__ inline void SumCompute(const LocalTensor<T>& dstTensor, const LocalTe
     }
 
     if (repeatTimes == 1) {
-        VF_CALL<SumInternal::SumForOneRepeatTime<T>>(dstUb, srcUb, sumParams, sumParams.n, sumParams.inner);
+        SumInternal::SumForOneRepeatTime<T>(dstUb, srcUb, sumParams, sumParams.n, sumParams.inner);
         return;
     }
 
-    VF_CALL<SumInternal::ReduceSumNextN<T, true>>(sharedTmpBufferUb, srcUb, sumParams, calCount, repeatTimes, offset);
+    SumInternal::ReduceSumNextN<T, true>(sharedTmpBufferUb, srcUb, sumParams, calCount, repeatTimes, offset);
 
     --totalCnt;
     loopRepeatTimes = repeatTimes;
@@ -125,9 +125,9 @@ __aicore__ inline void SumCompute(const LocalTensor<T>& dstTensor, const LocalTe
         calCount = loopRepeatTimes;
         loopRepeatTimes = CeilDivision(loopRepeatTimes, eleCountPerVL);
         if (totalCnt == 1) {
-            VF_CALL<SumInternal::SumForOneRepeatTime<T>>(dstUb, sharedTmpBufferUb, sumParams, calCount, offset);
+            SumInternal::SumForOneRepeatTime<T>(dstUb, sharedTmpBufferUb, sumParams, calCount, offset);
         } else {
-            VF_CALL<SumInternal::ReduceSumNextN<T, false>>(
+            SumInternal::ReduceSumNextN<T, false>(
                 sharedTmpBufferUb, sharedTmpBufferUb, sumParams, calCount, loopRepeatTimes, offset);
         }
         --totalCnt;

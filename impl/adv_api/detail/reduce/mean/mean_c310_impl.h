@@ -34,7 +34,7 @@ struct GetConvType<half, float> {
 };
 
 template <typename T, typename ConvType>
-__aicore__ inline void LoadSrcData(
+__simd_callee__ inline void LoadSrcData(
     MicroAPI::RegTensor<ConvType>& srcReg, __ubuf__ T* src, uint16_t index, uint32_t offset, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<T> srcTmpReg;
@@ -47,8 +47,8 @@ __aicore__ inline void LoadSrcData(
 }
 
 template <typename T, typename U, typename ConvType>
-__aicore__ inline void MeanForOneRepeatTime(
-    __ubuf__ T* dstUb, __ubuf__ U* srcUb, const MeanParams& meanParams, uint32_t calCount, uint32_t offset)
+__simd_vf__ inline void MeanForOneRepeatTime(
+    __ubuf__ T* dstUb, __ubuf__ U* srcUb, const MeanParams meanParams, uint32_t calCount, uint32_t offset)
 {
     uint32_t count;
     ConvType scalarValue = static_cast<ConvType>(1.0f / meanParams.n);
@@ -76,7 +76,7 @@ __aicore__ inline void MeanForOneRepeatTime(
 }
 
 template <typename T, typename ConvType, bool isFirstRepeat>
-__aicore__ inline void ReduceSumNextN(__ubuf__ ConvType* dstUb, __ubuf__ T* srcUb, const MeanParams& meanParams,
+__simd_vf__ inline void ReduceSumNextN(__ubuf__ ConvType* dstUb, __ubuf__ T* srcUb, const MeanParams meanParams,
     uint32_t calCount, uint32_t repeatTimes, uint32_t offset)
 {
     uint32_t count;
@@ -152,11 +152,11 @@ __aicore__ inline void MeanImpl(const LocalTensor<T>& dstTensor, const LocalTens
     }
 
     if (repeatTimes == 1) {
-        VF_CALL<Internal::MeanForOneRepeatTime<T, T, ConvType>>(dstUb, srcUb, meanParams, meanParams.n, meanParams.inner);
+        Internal::MeanForOneRepeatTime<T, T, ConvType>(dstUb, srcUb, meanParams, meanParams.n, meanParams.inner);
         return;
     }
 
-    VF_CALL<Internal::ReduceSumNextN<T, ConvType, true>>(
+    Internal::ReduceSumNextN<T, ConvType, true>(
         sharedTmpBufferUb, srcUb, meanParams, calCount, repeatTimes, offset);
 
     --totalCnt;
@@ -165,10 +165,10 @@ __aicore__ inline void MeanImpl(const LocalTensor<T>& dstTensor, const LocalTens
         calCount = loopRepeatTimes;
         loopRepeatTimes = CeilDivision(loopRepeatTimes, eleCountPerVL);
         if (totalCnt == 1) {
-            VF_CALL<Internal::MeanForOneRepeatTime<T, ConvType, ConvType>>(
+            Internal::MeanForOneRepeatTime<T, ConvType, ConvType>(
                 dstUb, sharedTmpBufferUb, meanParams, calCount, offset);
         } else {
-            VF_CALL<Internal::ReduceSumNextN<ConvType, ConvType, false>>(
+            Internal::ReduceSumNextN<ConvType, ConvType, false>(
                 sharedTmpBufferUb, sharedTmpBufferUb, meanParams, calCount, loopRepeatTimes, offset);
         }
         --totalCnt;

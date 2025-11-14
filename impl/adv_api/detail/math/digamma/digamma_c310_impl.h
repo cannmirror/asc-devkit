@@ -42,14 +42,14 @@ static constexpr MicroAPI::CastTrait FLOAT_TO_INT_CAST_TRAIT = {MicroAPI::RegLay
 static constexpr MicroAPI::CastTrait INT_TO_FLOAT_CAST_TRAIT = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
 template <CMPMODE cmpMode>
-__aicore__ inline void DigammaGenCompareMask(MicroAPI::MaskReg& maskDst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::MaskReg& mask) {
+__simd_callee__ inline void DigammaGenCompareMask(MicroAPI::MaskReg& maskDst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::MaskReg& mask) {
     MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> tmpScalarReg;
     MicroAPI::Duplicate(tmpScalarReg, scalar, fullMask);
     MicroAPI::Compare<float, cmpMode>(maskDst, srcReg, tmpScalarReg, mask);
 }
 
-__aicore__ inline void DigammaSelect(
+__simd_callee__ inline void DigammaSelect(
     MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
     MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg& mask)
 {
@@ -60,7 +60,7 @@ __aicore__ inline void DigammaSelect(
     MicroAPI::Add(dstReg, tmpReg, dstReg, fullMask);
 }
 
-__aicore__ inline void DigammaPositiveTmp0(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
+__simd_callee__ inline void DigammaPositiveTmp0(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
 {
     MicroAPI::MaskReg mask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> tmpReg1;
@@ -96,7 +96,7 @@ __aicore__ inline void DigammaPositiveTmp0(MicroAPI::RegTensor<float>& dstReg, M
     MicroAPI::Sub(dstReg, dstReg, tmpReg2, mask);
 }
 
-__aicore__ inline void DigammaPositiveTmp1(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
+__simd_callee__ inline void DigammaPositiveTmp1(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
 {
     MicroAPI::MaskReg mask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> tmpReg2;
@@ -132,7 +132,7 @@ __aicore__ inline void DigammaPositiveTmp1(MicroAPI::RegTensor<float>& dstReg, M
     MicroAPI::Add(dstReg, dstReg, tmpReg2, mask);
 }
 
-__aicore__ inline void DigammaPositive(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaPositive(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> tmpRegForPos;
     DigammaPositiveTmp0(dstReg, srcReg);
@@ -140,7 +140,7 @@ __aicore__ inline void DigammaPositive(MicroAPI::RegTensor<float>& dstReg, Micro
     MicroAPI::Sub(dstReg, dstReg, tmpRegForPos, mask);
 }
 
-__aicore__ inline void DigammaNegPicotPix(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
+__simd_callee__ inline void DigammaNegPicotPix(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg)
 {
     MicroAPI::MaskReg mask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::MaskReg mask1;
@@ -184,7 +184,7 @@ __aicore__ inline void DigammaNegPicotPix(MicroAPI::RegTensor<float>& dstReg, Mi
     MicroAPI::Muls(dstReg, dstReg, DIGAMMA_PI, mask);
 }
 
-__aicore__ inline void DigammaNegative(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaNegative(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> tmpReg3;
@@ -196,7 +196,7 @@ __aicore__ inline void DigammaNegative(MicroAPI::RegTensor<float>& dstReg, Micro
     MicroAPI::Add(dstReg, dstReg, tmpReg4, mask);
 }
 
-__aicore__ inline void DigammaGenNegIntMask(MicroAPI::MaskReg& maskdst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::RegTensor<float>& tmpCal1, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaGenNegIntMask(MicroAPI::MaskReg& maskdst, MicroAPI::RegTensor<float>& srcReg, const float scalar, MicroAPI::RegTensor<float>& tmpCal1, MicroAPI::MaskReg& mask)
 {
     MicroAPI::MaskReg tmpmask;
     MicroAPI::MaskReg mask1;
@@ -211,7 +211,7 @@ __aicore__ inline void DigammaGenNegIntMask(MicroAPI::MaskReg& maskdst, MicroAPI
     MicroAPI::MaskAnd(maskdst, mask1, mask2, mask);
 }
 
-__aicore__ inline void DigammaGenNanMask(MicroAPI::MaskReg& mask0, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask1, MicroAPI::MaskReg& mask2, MicroAPI::MaskReg& mask)
+__simd_callee__ inline void DigammaGenNanMask(MicroAPI::MaskReg& mask0, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask1, MicroAPI::MaskReg& mask2, MicroAPI::MaskReg& mask)
 {
     DigammaGenCompareMask<CMPMODE::LT>(mask1, srcReg, 0.0f, mask);
     DigammaGenCompareMask<CMPMODE::GE>(mask2, srcReg, 0.0f, mask);
@@ -220,7 +220,7 @@ __aicore__ inline void DigammaGenNanMask(MicroAPI::MaskReg& mask0, MicroAPI::Reg
     MicroAPI::MaskAnd(mask0, mask1, mask2, mask);
 }
 
-__aicore__ inline void DigammaComputeImpl(
+__simd_callee__ inline void DigammaComputeImpl(
     MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>&srcReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::MaskReg mask0;
@@ -254,7 +254,7 @@ __aicore__ inline void DigammaComputeImpl(
 }
 
 template <typename T = float, bool isReuseSource = false>
-__aicore__ inline void DigammaImpl(__local_mem__ float *dstUb, __local_mem__ float *srcUb, uint32_t calCount)
+__simd_vf__ inline void DigammaImpl(__local_mem__ float *dstUb, __local_mem__ float *srcUb, uint32_t calCount)
 {
     constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -287,7 +287,7 @@ __aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTens
 
         __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
         __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
-        VF_CALL<DigammaInternal::DigammaImpl<T, isReuseSource>>(dstUb, srcUb, calCount);
+        DigammaInternal::DigammaImpl<T, isReuseSource>(dstUb, srcUb, calCount);
     } else if constexpr(Std::is_same<T, half>::value) {
         if constexpr (isReuseSource) {
             static_assert(SupportType<T, float>(), "isReuseSource is only supported for float on current device!");
@@ -300,7 +300,7 @@ __aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTens
         AscendC::Cast(srcF32, src, AscendC::RoundMode::CAST_NONE, calCount);
         __local_mem__ float *srcUb = (__local_mem__ float *)srcF32.GetPhyAddr();
         __local_mem__ float *dstUb = (__local_mem__ float *)dstF32.GetPhyAddr();
-        VF_CALL<DigammaInternal::DigammaImpl<float, isReuseSource>>(dstUb, srcUb, calCount);
+        DigammaInternal::DigammaImpl<float, isReuseSource>(dstUb, srcUb, calCount);
         AscendC::Cast(dst, dstF32, AscendC::RoundMode::CAST_NONE, calCount);
     }
 }

@@ -257,7 +257,7 @@ __aicore__ inline constexpr MulAddsParams GetConstants8ToPow58()
     return params;
 }
 
-__aicore__ inline void LGammaCalcMulAdd(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg,
+__simd_callee__ inline void LGammaCalcMulAdd(MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg,
     MicroAPI::MaskReg mask, const MulAddsParams& params)
 {
     MicroAPI::Muls(resReg, tmpReg, params.r0, mask);

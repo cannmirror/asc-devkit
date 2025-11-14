@@ -24,7 +24,7 @@
 namespace AscendC {
 // Extracted helper for rLength <= 64, invoked via VF_CALL<>
 template <typename T, bool isOutputVariance = true, bool isCorrection = false>
-__aicore__ inline void ComputeMeanVariance64VF(__local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
+__simd_vf__ inline void ComputeMeanVariance64VF(__local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
     __local_mem__ T* const srcUb, const uint32_t aLength, const uint32_t rLengthWithPadding, const float k2Rec,
     const float k2RRec, const float rRecWithCorrection, const uint32_t count)
 {
@@ -68,13 +68,13 @@ __aicore__ inline void ComputeMeanVariance64(__local_mem__ float* const meanUb, 
 {
     const uint32_t count = rLength;
 
-    VF_CALL<ComputeMeanVariance64VF<T, isOutputVariance, isCorrection>>(
+    ComputeMeanVariance64VF<T, isOutputVariance, isCorrection>(
         meanUb, varianceUb, srcUb, aLength, rLengthWithPadding, k2Rec, k2RRec, rRecWithCorrection, count);
 }
 
 // Extracted helper for rLength in (64, 128], invoked via VF_CALL<>
 template <typename T, bool isOutputVariance = true>
-__aicore__ inline void ComputeMeanVariance128VF(__local_mem__ float* const meanUb,
+__simd_vf__ inline void ComputeMeanVariance128VF(__local_mem__ float* const meanUb,
     __local_mem__ float* const varianceUb, __local_mem__ T* const srcUb, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec, const uint16_t sregLower, uint32_t count)
 {
@@ -125,13 +125,13 @@ __aicore__ inline void ComputeMeanVariance128(__local_mem__ float* const meanUb,
 {
     const uint32_t count = rLength - sregLower;
 
-    VF_CALL<ComputeMeanVariance128VF<T, isOutputVariance>>(
+    ComputeMeanVariance128VF<T, isOutputVariance>(
         meanUb, varianceUb, srcUb, aLength, rLengthWithPadding, k2Rec, k2RRec, sregLower, count);
 }
 
 // Helper for ComputeMeanVarianceUseY branching logic
 template <typename T, uint16_t HalfAddTimes, bool isOutputVariance>
-static __aicore__ inline void ComputeMeanVarianceUseYVF(__local_mem__ T* const srcUb,
+__simd_vf__ inline void ComputeMeanVarianceUseYVF(__local_mem__ T* const srcUb,
     __local_mem__ T* const workUbYOrigin, __local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
     const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t count2,
@@ -188,19 +188,19 @@ __aicore__ inline void ComputeMeanVarianceUseY(__local_mem__ float* const meanUb
     uint16_t repeatTimes3 = mainTailCount / sregLower / 2;
     uint32_t lastCountTmp = static_cast<uint32_t>(lastCount);
     if (halfAddTimes == 1) {
-        VF_CALL<ComputeMeanVarianceUseYVF<T, 1, isOutputVariance>>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
+        ComputeMeanVarianceUseYVF<T, 1, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
             rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
             halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
     } else if (halfAddTimes == 2) {
-        VF_CALL<ComputeMeanVarianceUseYVF<T, 2, isOutputVariance>>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
+        ComputeMeanVarianceUseYVF<T, 2, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
             rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
             halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
     } else if (halfAddTimes == 4) {
-        VF_CALL<ComputeMeanVarianceUseYVF<T, 4, isOutputVariance>>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
+        ComputeMeanVarianceUseYVF<T, 4, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
             rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
             halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, 0);
     } else {
-        VF_CALL<ComputeMeanVarianceUseYVF<T, 0, isOutputVariance>>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
+        ComputeMeanVarianceUseYVF<T, 0, isOutputVariance>(srcUb, workUbYOrigin, meanUb, varianceUb, aLength,
             rLengthWithPadding, rHeadLength, m, repeatTimes1, repeatTimes2, repeatTimes3, count2, mVL, k2Rec,
             halfAddRepeatTimes, lastCountTmp, k2RRec, sregLower, halfAddTimes);
     }

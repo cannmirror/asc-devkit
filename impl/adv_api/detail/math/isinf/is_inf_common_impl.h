@@ -26,7 +26,7 @@ struct IsInfConfig {
 constexpr IsInfConfig DEFAULT_IS_INF_CONFIG = { false };
 
 template <typename T, typename U>
-__aicore__ inline void IsInfImplVF(__ubuf__ T* dst, __ubuf__ U* src, uint32_t count, uint16_t repeatTimes)
+__simd_vf__ inline void IsInfImplVF(__ubuf__ T* dst, __ubuf__ U* src, uint32_t count, uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
     constexpr uint32_t floatInf = F32_INF;
@@ -93,7 +93,7 @@ __aicore__ inline void IsInfImpl(const LocalTensor<T>& dst, const LocalTensor<U>
     CHECK_FUNC_HIGHLEVEL_API(IsInf, (T, U, config.isReuseSource), (dst, src, sharedTmpBuffer, count));
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    VF_CALL<IsInfImplVF<T, U>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), count,
+    IsInfImplVF<T, U>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), count,
         repeatTimes);
 }
 

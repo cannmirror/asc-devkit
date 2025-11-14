@@ -440,7 +440,7 @@ __aicore__ inline void GatherMaskCal(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__
 }
 
 template <typename T>
-__simd_callee__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* dstIndexLocal,
+__simd_vf__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* dstIndexLocal,
     __ubuf__ T* sortedLocal, const int32_t repeatTime)
 {
     uint16_t loopTimes = static_cast<uint16_t>(repeatTime / 2);
@@ -497,7 +497,7 @@ template <typename T>
 __aicore__ inline void ExtractImpl(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* dstIndexLocal,
     __ubuf__ T* sortedLocal, const int32_t repeatTime)
 {
-    VF_CALL<ExtractVf<T>>(dstValueLocal, dstIndexLocal, sortedLocal, repeatTime);
+    ExtractVf<T>(dstValueLocal, dstIndexLocal, sortedLocal, repeatTime);
 }
 
 } // namespace AscendC

@@ -23,7 +23,7 @@ namespace AscendC {
 constexpr uint32_t LOGICAL_TEMPLATE_B64_REPEAT_STRIDE = 2;
 
 template <auto func, typename T, typename U, typename RegT, typename RegU, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void LogicalTemplateVF(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, 
+__simd_vf__ inline void LogicalTemplateVF(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, 
     uint16_t repeatTime, uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -72,18 +72,18 @@ __aicore__ inline void LogicalTemplateImpl(const LocalTensor<T>& dst, const Loca
         using RegU = MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>;
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U) * LOGICAL_TEMPLATE_B64_REPEAT_STRIDE);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-        VF_CALL<LogicalTemplateVF<func, T, U, RegT, RegU, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src0.GetPhyAddr(),
+        LogicalTemplateVF<func, T, U, RegT, RegU, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src0.GetPhyAddr(),
             (__ubuf__ U*)src1.GetPhyAddr(), repeatTime, count, oneRepElm);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
         if constexpr (Std::is_same_v<U, bool>) { 
             using RegU = MicroAPI::RegTensor<uint8_t>;
-            VF_CALL<LogicalTemplateVF<func, T, uint8_t, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src0.GetPhyAddr(),
+            LogicalTemplateVF<func, T, uint8_t, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src0.GetPhyAddr(),
                 (__ubuf__ uint8_t*)src1.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
             using RegU = MicroAPI::RegTensor<U>;
-            VF_CALL<LogicalTemplateVF<func, T, U, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src0.GetPhyAddr(),
+            LogicalTemplateVF<func, T, U, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src0.GetPhyAddr(),
                 (__ubuf__ U*)src1.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
     }
@@ -92,7 +92,7 @@ __aicore__ inline void LogicalTemplateImpl(const LocalTensor<T>& dst, const Loca
 // Logical Tensor Scalar
 
 template <auto func, typename T, typename U, typename RegT, typename RegU, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void LogicalTemplateBothTensorVF(__ubuf__ T* dst, __ubuf__ U* src, __ubuf__ U* scalar, 
+__simd_vf__ inline void LogicalTemplateBothTensorVF(__ubuf__ T* dst, __ubuf__ U* src, __ubuf__ U* scalar, 
     uint16_t repeatTime, uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -140,7 +140,7 @@ __aicore__ inline void LogicalTemplateBothTensorVF(__ubuf__ T* dst, __ubuf__ U* 
 }
 
 template <auto func, typename T, typename U, typename RegT, typename RegU, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void LogicalTemplateSingleScalarVF(__ubuf__ T* dst, __ubuf__ U* src, U scalar, 
+__simd_vf__ inline void LogicalTemplateSingleScalarVF(__ubuf__ T* dst, __ubuf__ U* src, U scalar, 
     uint16_t repeatTime, uint32_t count, uint32_t oneRepElm)
 {
     RegT dstVreg;
@@ -194,10 +194,10 @@ __aicore__ inline void LogicalTemplateBothTensorCompute(const LocalTensor<T>& ds
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(ActualU) * LOGICAL_TEMPLATE_B64_REPEAT_STRIDE);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
         if constexpr (scalarTensorIndex == 0) {
-            VF_CALL<LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src1.GetPhyAddr(),
+            LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src1.GetPhyAddr(),
                 (__ubuf__ ActualU*)src0.GetPhyAddr(), repeatTime, count, oneRepElm);
         } else {
-            VF_CALL<LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src0.GetPhyAddr(),
+            LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src0.GetPhyAddr(),
                 (__ubuf__ ActualU*)src1.GetPhyAddr(), repeatTime, count, oneRepElm);
         }
     } else {
@@ -206,19 +206,19 @@ __aicore__ inline void LogicalTemplateBothTensorCompute(const LocalTensor<T>& ds
         if constexpr (Std::is_same_v<ActualU, bool>) {
             using RegU = MicroAPI::RegTensor<uint8_t>;
             if constexpr (scalarTensorIndex == 0) {
-                VF_CALL<LogicalTemplateBothTensorVF<func, T, uint8_t, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src1.GetPhyAddr(),
+                LogicalTemplateBothTensorVF<func, T, uint8_t, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src1.GetPhyAddr(),
                     (__ubuf__ uint8_t*)src0.GetPhyAddr(), repeatTime, count, oneRepElm);
             } else {
-                VF_CALL<LogicalTemplateBothTensorVF<func, T, uint8_t, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src0.GetPhyAddr(),
+                LogicalTemplateBothTensorVF<func, T, uint8_t, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ uint8_t*)src0.GetPhyAddr(),
                     (__ubuf__ uint8_t*)src1.GetPhyAddr(), repeatTime, count, oneRepElm);
             }
         } else {
             using RegU = MicroAPI::RegTensor<ActualU>;
             if constexpr (scalarTensorIndex == 0) {
-                VF_CALL<LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src1.GetPhyAddr(),
+                LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src1.GetPhyAddr(),
                     (__ubuf__ ActualU*)src0.GetPhyAddr(), repeatTime, count, oneRepElm);
             } else {
-                VF_CALL<LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src0.GetPhyAddr(),
+                LogicalTemplateBothTensorVF<func, T, ActualU, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ ActualU*)src0.GetPhyAddr(),
                     (__ubuf__ ActualU*)src1.GetPhyAddr(), repeatTime, count, oneRepElm);
             }
         }
@@ -238,18 +238,18 @@ __aicore__ inline void LogicalTemplateTensorScalarCompute(const LocalTensor<T>& 
         using RegU = MicroAPI::RegTensor<ActualU, MicroAPI::RegTraitNumTwo>;
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(ActualU) * LOGICAL_TEMPLATE_B64_REPEAT_STRIDE);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-        VF_CALL<LogicalTemplateSingleScalarVF<func, T, ActualU, RegT, RegU, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), 
+        LogicalTemplateSingleScalarVF<func, T, ActualU, RegT, RegU, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), 
             (__ubuf__ ActualU*)src0.GetPhyAddr(), src1, repeatTime, count, oneRepElm);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(ActualU));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
         if constexpr (Std::is_same_v<ActualU, bool>) {
             using RegU = MicroAPI::RegTensor<uint8_t>;
-            VF_CALL<LogicalTemplateSingleScalarVF<func, T, uint8_t, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), 
+            LogicalTemplateSingleScalarVF<func, T, uint8_t, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), 
                 (__ubuf__ uint8_t*)src0.GetPhyAddr(), static_cast<uint8_t>(src1), repeatTime, count, oneRepElm);
         } else {
             using RegU = MicroAPI::RegTensor<ActualU>;
-            VF_CALL<LogicalTemplateSingleScalarVF<func, T, ActualU, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), 
+            LogicalTemplateSingleScalarVF<func, T, ActualU, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), 
                 (__ubuf__ ActualU*)src0.GetPhyAddr(), src1, repeatTime, count, oneRepElm);
         }
     }
@@ -268,18 +268,18 @@ __aicore__ inline void LogicalTemplateScalarTensorCompute(const LocalTensor<T>& 
         using RegU = MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>;
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U) * LOGICAL_TEMPLATE_B64_REPEAT_STRIDE);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-        VF_CALL<LogicalTemplateSingleScalarVF<func, T, U, RegT, RegU, MicroAPI::RegTraitNumTwo>>((__ubuf__ T*)dst.GetPhyAddr(), 
+        LogicalTemplateSingleScalarVF<func, T, U, RegT, RegU, MicroAPI::RegTraitNumTwo>((__ubuf__ T*)dst.GetPhyAddr(), 
                 (__ubuf__ U*)src1.GetPhyAddr(), src0, repeatTime, count, oneRepElm);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
         if constexpr (Std::is_same_v<U, bool>) {
             using RegU = MicroAPI::RegTensor<uint8_t>;
-            VF_CALL<LogicalTemplateSingleScalarVF<func, T, uint8_t, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), 
+            LogicalTemplateSingleScalarVF<func, T, uint8_t, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), 
                 (__ubuf__ uint8_t*)src1.GetPhyAddr(), static_cast<uint8_t>(src0), repeatTime, count, oneRepElm);
         } else {
             using RegU = MicroAPI::RegTensor<U>;
-            VF_CALL<LogicalTemplateSingleScalarVF<func, T, U, RegT, RegU>>((__ubuf__ T*)dst.GetPhyAddr(), 
+            LogicalTemplateSingleScalarVF<func, T, U, RegT, RegU>((__ubuf__ T*)dst.GetPhyAddr(), 
                 (__ubuf__ U*)src1.GetPhyAddr(), src0, repeatTime, count, oneRepElm);
         }
     }

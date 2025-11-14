@@ -22,11 +22,11 @@
 namespace AscendC {
 namespace Internal {
 template <bool isMaskBitMode, typename T>
-__simd_callee__ inline void BilinearInterpolationRepeatModeLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* src0Offset,
-    __ubuf__ T* src1, const uint64_t maskArray[], const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
+__simd_vf__ inline void BilinearInterpolationRepeatModeLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* src0Offset,
+    __ubuf__ T* src1, const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
     uint16_t dstBlkStride, uint16_t vROffset, __ubuf__ uint64_t* maskBuf)
 {
-    uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<T>();;
     MicroAPI::MaskReg maskReg = VecMicroGetMaskReg<T, true, true, isMaskBitMode>(maskBuf, count);
     MicroAPI::RegTensor<T> dstReg;
@@ -54,11 +54,11 @@ __simd_callee__ inline void BilinearInterpolationRepeatModeLevel0VFImpl(__ubuf__
 }
 
 template <bool isMaskBitMode, typename T>
-__simd_callee__ inline void BilinearInterpolationNoRepeatModeLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* src0Offset,
-    __ubuf__ T* src1, const uint64_t maskArray[], const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
+__simd_vf__ inline void BilinearInterpolationNoRepeatModeLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* src0Offset,
+    __ubuf__ T* src1, const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
     uint16_t dstBlkStride, uint16_t vROffset, __ubuf__ uint64_t* maskBuf)
 {
-    uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<T>();
     MicroAPI::MaskReg maskReg = VecMicroGetMaskReg<T, true, true, isMaskBitMode>(maskBuf, count);
     MicroAPI::RegTensor<T> dstReg;
@@ -94,15 +94,21 @@ __aicore__ inline void VecBilinearInterpolationLevel0Template(__ubuf__ T* dst, _
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
+
     if constexpr (isMaskBitMode) {
         SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
     }
     if (!repeatMode) {
-        VF_CALL<BilinearInterpolationNoRepeatModeLevel0VFImpl<isMaskBitMode, T>>(dst, src0, src0Offset, src1,
-            maskArray, maskCount, hRepeat, vRepeat, dstBlkStride, vROffset, nullptr);
+        BilinearInterpolationNoRepeatModeLevel0VFImpl<isMaskBitMode, T>(dst, src0, src0Offset, src1,
+            maskArrayStruct, maskCount, hRepeat, vRepeat, dstBlkStride, vROffset, nullptr);
     } else {
-        VF_CALL<BilinearInterpolationRepeatModeLevel0VFImpl<isMaskBitMode, T>>(dst, src0, src0Offset, src1,
-            maskArray, maskCount, hRepeat, vRepeat, dstBlkStride, vROffset, nullptr);
+        BilinearInterpolationRepeatModeLevel0VFImpl<isMaskBitMode, T>(dst, src0, src0Offset, src1,
+            maskArrayStruct, maskCount, hRepeat, vRepeat, dstBlkStride, vROffset, nullptr);
     }
 }
 } // namespace Internal

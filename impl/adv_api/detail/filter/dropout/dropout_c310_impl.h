@@ -23,7 +23,7 @@
 
 namespace AscendC {
 namespace Internal {
-__aicore__ inline void DropOutBitModeFP32Main(__local_mem__ float* dstUb, __local_mem__ float* srcUb,
+__simd_callee__ inline void DropOutBitModeFP32Main(__local_mem__ float* dstUb, __local_mem__ float* srcUb,
     __local_mem__ uint8_t* maskUb, MicroAPI::RegTensor<float>& vDivValueReg, uint32_t sreg, uint32_t newRepeatTimes,
     uint16_t loopH, uint32_t srcLastAxis, uint32_t maskLastAxis)
 {
@@ -60,7 +60,7 @@ __aicore__ inline void DropOutBitModeFP32Main(__local_mem__ float* dstUb, __loca
 }
 
 template <typename T>
-__aicore__ inline void VFDropOutBitModeCalc(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+__simd_vf__ inline void VFDropOutBitModeCalc(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
     __local_mem__ uint8_t* maskUb, const T divValue, const uint32_t dataSize)
 {
     MicroAPI::RegTensor<T> vDivValueReg;
@@ -108,8 +108,8 @@ __aicore__ inline void VFDropOutBitModeCalc(__local_mem__ T* dstUb, __local_mem_
 }
 
 template <typename T>
-__aicore__ inline void VFDropOutBitModeCalcInfo(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ uint8_t* maskUb, const T divValue, const DropOutShapeInfo& info)
+__simd_vf__ inline void VFDropOutBitModeCalcInfo(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+    __local_mem__ uint8_t* maskUb, const T divValue, const DropOutShapeInfo info)
 {
     MicroAPI::RegTensor<T> vDivValueReg;
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
@@ -166,7 +166,7 @@ __aicore__ inline void VFDropOutBitModeCalcInfo(__local_mem__ T* dstUb, __local_
 }
 
 template <typename T>
-__aicore__ inline void VFDropOutByteModeCalc(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+__simd_vf__ inline void VFDropOutByteModeCalc(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
     __local_mem__ uint8_t* maskUb, const T divValue, const uint32_t dataSize)
 {
     MicroAPI::RegTensor<T> vSrcReg;
@@ -208,8 +208,8 @@ __aicore__ inline void VFDropOutByteModeCalc(__local_mem__ T* dstUb, __local_mem
 }
 
 template <typename T>
-__aicore__ inline void VFDropOutByteModeCalcInfo(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ uint8_t* maskUb, const T divValue, const DropOutShapeInfo& info)
+__simd_vf__ inline void VFDropOutByteModeCalcInfo(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+    __local_mem__ uint8_t* maskUb, const T divValue, const DropOutShapeInfo info)
 {
     MicroAPI::RegTensor<T> vSrcReg;
     MicroAPI::RegTensor<T> vDstReg;
@@ -265,7 +265,7 @@ __aicore__ inline void DropOutBitMode(const LocalTensor<T>& dstLocal, const Loca
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ uint8_t *maskUb = (__local_mem__ uint8_t *)maskLocal.GetPhyAddr();
 
-    VF_CALL<Internal::VFDropOutBitModeCalc<T>>(dstUb, srcUb, maskUb, divValue, dataSize);
+    Internal::VFDropOutBitModeCalc<T>(dstUb, srcUb, maskUb, divValue, dataSize);
 }
 
 template <typename T, bool isInitBitMode = false>
@@ -278,7 +278,7 @@ __aicore__ inline void DropOutBitMode(const LocalTensor<T>& dstLocal, const Loca
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ uint8_t *maskUb = (__local_mem__ uint8_t *)maskLocal.GetPhyAddr();
 
-    VF_CALL<Internal::VFDropOutBitModeCalcInfo<T>>(dstUb, srcUb, maskUb, divValue, info);
+    Internal::VFDropOutBitModeCalcInfo<T>(dstUb, srcUb, maskUb, divValue, info);
 }
 
 template <typename T>
@@ -292,7 +292,7 @@ __aicore__ inline void DropOutByteMode(const LocalTensor<T>& dstLocal, const Loc
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ uint8_t *maskUb = (__local_mem__ uint8_t *)maskLocal.GetPhyAddr();
 
-    VF_CALL<Internal::VFDropOutByteModeCalc<T>>(dstUb, srcUb, maskUb, divValue, dataSize);
+    Internal::VFDropOutByteModeCalc<T>(dstUb, srcUb, maskUb, divValue, dataSize);
 }
 
 template <typename T>
@@ -306,7 +306,7 @@ __aicore__ inline void DropOutByteMode(const LocalTensor<T>& dstLocal, const Loc
     __local_mem__ T *dstUb = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ uint8_t *maskUb = (__local_mem__ uint8_t *)maskLocal.GetPhyAddr();
 
-    VF_CALL<Internal::VFDropOutByteModeCalcInfo<T>>(dstUb, srcUb, maskUb, divValue, info);
+    Internal::VFDropOutByteModeCalcInfo<T>(dstUb, srcUb, maskUb, divValue, info);
 }
 } // namespace AscendC
 #endif // LIB_DROPOUT_DROPOUT_C310_IMPL_H

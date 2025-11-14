@@ -52,7 +52,7 @@ __simd_callee__ inline void SaveDataWithT(__local_mem__ T* dst, MicroAPI::RegTen
 // T: fp16-> U: fp32
 // T: fp32-> U: fp16
 template <typename U, typename T>
-__aicore__ inline void CumSumCopyWithCastVF(__local_mem__ T* src, __local_mem__ U* dst, const uint16_t outter,
+__simd_vf__ inline void CumSumCopyWithCastVF(__local_mem__ T* src, __local_mem__ U* dst, const uint16_t outter,
                                             const uint16_t inner, uint16_t innerOneRepNum, uint16_t mainRepeatTime,
                                             uint16_t tailRepeatTime, uint32_t tailCount)
 {
@@ -81,12 +81,12 @@ __aicore__ inline void CumSumCopyWithCast(const LocalTensor<U>& dstTensor, const
     uint16_t mainRepeatTime = inner / innerOneRepNum;
     uint32_t tailCount = inner % innerOneRepNum;
     uint16_t tailRepeatTime = tailCount > 0 ? 1 : 0;
-    VF_CALL<CumSumCopyWithCastVF<U, T>>(src, dst, static_cast<uint16_t>(outter), static_cast<uint16_t>(inner),
+    CumSumCopyWithCastVF<U, T>(src, dst, static_cast<uint16_t>(outter), static_cast<uint16_t>(inner),
                                         innerOneRepNum, mainRepeatTime, tailRepeatTime, tailCount);
 }
 
 template <typename T>
-__aicore__ inline void CumSumCopyOutWithBlockVF(__local_mem__ T* src, __local_mem__ T* dst, uint16_t outter,
+__simd_vf__ inline void CumSumCopyOutWithBlockVF(__local_mem__ T* src, __local_mem__ T* dst, uint16_t outter,
                                                 uint16_t inner, uint16_t mainRepeatTime, uint16_t innerOneRepNum,
                                                 uint32_t tailCount, uint16_t tailRepeatTime)
 {
@@ -111,7 +111,7 @@ __aicore__ inline void CumSumCopyOutWithBlockVF(__local_mem__ T* src, __local_me
 }
 
 template <typename T>
-__aicore__ inline void CumSumCopyOutVF(__local_mem__ T* src, __local_mem__ T* dst, uint16_t outter, uint16_t inner,
+__simd_vf__ inline void CumSumCopyOutVF(__local_mem__ T* src, __local_mem__ T* dst, uint16_t outter, uint16_t inner,
                                        uint16_t mainRepeatTime, uint16_t innerOneRepNum, uint32_t tailCount,
                                        uint16_t tailRepeatTime)
 {
@@ -161,7 +161,7 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ D* dstAddr, __local_m
 
 // VF for TransposeCommonGather (float, float)
 template <typename T, const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGatherVFFF(__local_mem__ float* dstAddr, __local_mem__ float* srcAddr,
+__simd_vf__ inline void TransposeCommonGatherVFFF(__local_mem__ float* dstAddr, __local_mem__ float* srcAddr,
                                                  uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                                  uint32_t srcStride2, uint32_t tail, uint32_t count, uint16_t mainLoop,
                                                  uint32_t dtypeSize, uint32_t tailLoop)
@@ -199,13 +199,13 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ float* dstAddr, __loc
     uint16_t mainLoop = forLoop2 / vlSize;
     uint32_t dtypeSize = sizeof(float);
     uint32_t tailLoop = tail > 0 ? 1 : 0;
-    VF_CALL<TransposeCommonGatherVFFF<T, Trait, vlSize>>(dstAddr, srcAddr, forLoop1, forLoop2, srcStride1, srcStride2,
+    TransposeCommonGatherVFFF<T, Trait, vlSize>(dstAddr, srcAddr, forLoop1, forLoop2, srcStride1, srcStride2,
                                                          tail, count, mainLoop, dtypeSize, tailLoop);
 }
 
 // VF for TransposeCommonGather (float, half)
 template <const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGatherVFFH(__local_mem__ float* dstAddr, __local_mem__ half* srcAddr,
+__simd_vf__ inline void TransposeCommonGatherVFFH(__local_mem__ float* dstAddr, __local_mem__ half* srcAddr,
                                                  uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                                  uint32_t srcStride2, uint32_t tail, uint32_t count, uint16_t mainLoop,
                                                  uint32_t dtypeSize, uint32_t tailLoop)
@@ -254,13 +254,13 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ float* dstAddr, __loc
     uint16_t mainLoop = forLoop2 / vlSize;
     uint32_t dtypeSize = sizeof(float);
     uint32_t tailLoop = tail > 0 ? 1 : 0;
-    VF_CALL<TransposeCommonGatherVFFH<Trait, vlSize>>(dstAddr, srcAddr, forLoop1, forLoop2, srcStride1, srcStride2,
+    TransposeCommonGatherVFFH<Trait, vlSize>(dstAddr, srcAddr, forLoop1, forLoop2, srcStride1, srcStride2,
                                                       tail, count, mainLoop, dtypeSize, tailLoop);
 }
 
 // VF for TransposeCommonGather (half, float)
 template <const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGatherVHF(__local_mem__ half* dstAddr, __local_mem__ float* srcAddr,
+__simd_vf__ inline void TransposeCommonGatherVHF(__local_mem__ half* dstAddr, __local_mem__ float* srcAddr,
                                                 uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                                 uint32_t srcStride2, uint32_t tail, uint32_t count, uint16_t mainLoop,
                                                 uint32_t dtypeSize, uint32_t tailLoop)
@@ -309,7 +309,7 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ half* dstAddr, __loca
     uint16_t mainLoop = forLoop2 / vlSize;
     uint32_t dtypeSize = sizeof(half);
     uint32_t tailLoop = tail > 0 ? 1 : 0;
-    VF_CALL<TransposeCommonGatherVHF<Trait, vlSize>>(dstAddr, srcAddr, forLoop1, forLoop2, srcStride1, srcStride2, tail,
+    TransposeCommonGatherVHF<Trait, vlSize>(dstAddr, srcAddr, forLoop1, forLoop2, srcStride1, srcStride2, tail,
                                                      count, mainLoop, dtypeSize, tailLoop);
 }
 
@@ -335,7 +335,7 @@ __aicore__ inline void TransposeAB(const LocalTensor<D>& dstTensor, const LocalT
                                                                   outer, srcStride1, srcStride2);
 }
 
-__aicore__ inline void CumSumFirstDimSklanskyVF(__local_mem__ float* dst, uint32_t outer, uint32_t inner,
+__simd_vf__ inline void CumSumFirstDimSklanskyVF(__local_mem__ float* dst, uint32_t outer, uint32_t inner,
                                                 uint32_t currRound1, uint32_t currRound2, uint16_t indexRepeatTimes,
                                                 uint16_t jRepeatTimes, uint16_t repeatTimes, uint16_t sregLower)
 {
@@ -390,7 +390,7 @@ __aicore__ inline void CumSumFirstDimSklansky(const LocalTensor<float>& dstTenso
         uint32_t currRound2 = 1 << currRound;
         uint16_t indexRepeatTimes = static_cast<uint16_t>(outerAlign / currRound2);
         uint16_t jRepeatTimes = static_cast<uint16_t>(currRound1);
-        VF_CALL<CumSumFirstDimSklanskyVF>(dst, outer, inner, currRound1, currRound2, indexRepeatTimes, jRepeatTimes,
+        CumSumFirstDimSklanskyVF(dst, outer, inner, currRound1, currRound2, indexRepeatTimes, jRepeatTimes,
                                           repeatTimes, sregLower);
         round = round / halfSize;
         currRound += 1;
@@ -401,7 +401,7 @@ __aicore__ inline void CumSumFirstDimSklansky(const LocalTensor<float>& dstTenso
 // VF for CumSumFirstDimBasic
 // simple implementation that cumulatively adds elements
 // VF for CumSumFirstDimBasic
-__aicore__ inline void CumSumFirstDimBasicVF(__local_mem__ float* dst, uint16_t outerRepeatTime, uint16_t inner,
+__simd_vf__ inline void CumSumFirstDimBasicVF(__local_mem__ float* dst, uint16_t outerRepeatTime, uint16_t inner,
                                              uint16_t mainRepeatTime, uint16_t innerOneRepNum, uint16_t tailTime,
                                              uint32_t tailCount, uint16_t halfMainRepeatTime,
                                              uint16_t mainTailRepeatTime, uint16_t innerTailOffset1,
@@ -460,7 +460,7 @@ __aicore__ inline void CumSumFirstDimBasic(const LocalTensor<float>& dstTensor, 
     uint16_t castedInner = static_cast<uint16_t>(inner);
     uint16_t innerTailOffset1 = halfMainRepeatTime * innerOneRepNum * 2;
     uint16_t innerTailOffset2 = mainRepeatTime * innerOneRepNum;
-    VF_CALL<CumSumFirstDimBasicVF>(dst, outterRepeatTime, castedInner, mainRepeatTime, innerOneRepNum, tailRepeatTime,
+    CumSumFirstDimBasicVF(dst, outterRepeatTime, castedInner, mainRepeatTime, innerOneRepNum, tailRepeatTime,
                                    tailCount, halfMainRepeatTime, mainTailRepeatTime, innerTailOffset1,
                                    innerTailOffset2);
 }

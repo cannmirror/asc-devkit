@@ -56,7 +56,7 @@ constexpr FloatS32Union scaleList2[FMOD_ITERATION_NUM_MAX] = {
 };
 
 template <typename T>
-__aicore__ inline void LoadDataWithT(
+__simd_callee__ inline void LoadDataWithT(
     __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
@@ -69,7 +69,7 @@ __aicore__ inline void LoadDataWithT(
 }
 
 template <typename T>
-__aicore__ inline void SaveDataWithT(
+__simd_callee__ inline void SaveDataWithT(
     __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
@@ -81,7 +81,7 @@ __aicore__ inline void SaveDataWithT(
     }
 }
 
-__aicore__ inline void GetSignBit(
+__simd_callee__ inline void GetSignBit(
     MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask)
 {
     constexpr int16_t signRightNum = 31;
@@ -94,7 +94,7 @@ __aicore__ inline void GetSignBit(
 }
 
 template <int32_t iterationNum>
-__aicore__ inline void SolveScale(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src1Reg,
+__simd_callee__ inline void SolveScale(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src1Reg,
     const float scale1, const float scale2, MicroAPI::MaskReg& mask)
 {
     constexpr float maxValue = 3.4028235e38;
@@ -142,7 +142,7 @@ __aicore__ inline void SolveScale(MicroAPI::RegTensor<float>& dstReg, MicroAPI::
 
 // recurse from itermax to 1
 template <int32_t iterationNum>
-__aicore__ inline void SolveScaleIter (
+__simd_callee__ inline void SolveScaleIter (
     MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src1Reg, MicroAPI::MaskReg& mask)
 {
     SolveScale<iterationNum>(dstReg, src1Reg, scaleList1[iterationNum - 1].f, scaleList2[iterationNum - 1].f, mask);
@@ -153,7 +153,7 @@ __aicore__ inline void SolveScaleIter (
 }
 
 template <int32_t iterationNum>
-__aicore__ inline void SolveScale(__local_mem__ float* dst, __local_mem__ float* src, const uint16_t unitRepTimes,
+__simd_callee__ inline void SolveScale(__local_mem__ float* dst, __local_mem__ float* src, const uint16_t unitRepTimes,
     const float scale1, const float scale2, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> src1OriginReg;
@@ -169,7 +169,7 @@ __aicore__ inline void SolveScale(__local_mem__ float* dst, __local_mem__ float*
 }
 
 template <int32_t iterationNum>
-__aicore__ inline void SolveScaleInit(__local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
+__simd_callee__ inline void SolveScaleInit(__local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
     const uint16_t unitRepTimes, const float scale1, const float scale2, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> src0OriginReg;
@@ -187,7 +187,7 @@ __aicore__ inline void SolveScaleInit(__local_mem__ float* dst, __local_mem__ fl
 }
 
 template <int32_t iterationNum, int32_t totalIterationNum>
-__aicore__ inline void SolveScaleIterImpl(
+__simd_callee__ inline void SolveScaleIterImpl(
     __local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
     const uint16_t unitRepTimes, MicroAPI::MaskReg& mask)
 {
@@ -204,14 +204,14 @@ __aicore__ inline void SolveScaleIterImpl(
 }
 
 template <int32_t iterationNum>
-__aicore__ inline void SolveScaleIter(__local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
+__simd_callee__ inline void SolveScaleIter(__local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
     const uint16_t unitRepTimes, MicroAPI::MaskReg& mask)
 {
     SolveScaleIterImpl<iterationNum, iterationNum>(dst, src0, src1, unitRepTimes, mask);
 }
     
 
-__aicore__ inline void SolveExceptionScenarios(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src0Reg,
+__simd_callee__ inline void SolveExceptionScenarios(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src0Reg,
     MicroAPI::RegTensor<float>& src1Reg, MicroAPI::RegTensor<float> nanReg, MicroAPI::MaskReg& mask)
 {
     MicroAPI::MaskReg src0Is0CmpReg;
@@ -258,7 +258,7 @@ __aicore__ inline void SolveExceptionScenarios(MicroAPI::RegTensor<float>& dstRe
 } // namespace FmodInternal
 
 template <int32_t iterationNum>
-__aicore__ inline void FmodComputeIterationF32(__local_mem__ float* dstTensor, __local_mem__ float* src0Tensor,
+__simd_vf__ inline void FmodComputeIterationF32(__local_mem__ float* dstTensor, __local_mem__ float* src0Tensor,
     __local_mem__ float* src1Tensor, const uint16_t mainRepeatTimes, const uint16_t mainBlockLen,
     const uint16_t tailRepeatTimes, uint32_t tailCount)
 {
@@ -353,12 +353,12 @@ __aicore__ inline void FmodComputeIteration(const LocalTensor<float>& dstTensor,
     uint32_t tailCount = count - mainBlockLen;
     const uint16_t tailRepeatTimes = static_cast<uint16_t>(CeilDivision(tailCount, FmodInternal::oneRepSize));
 
-    VF_CALL<FmodComputeIterationF32<iterationNum>>(
+    FmodComputeIterationF32<iterationNum>(
         dst, src0, src1, mainRepeatTimes, mainBlockLen, tailRepeatTimes, tailCount);
 }
 
 template <typename T>
-__aicore__ inline void FmodCompute(__local_mem__ T* dstTensor, __local_mem__ T* src0Tensor, __local_mem__ T* src1Tensor, 
+__simd_vf__ inline void FmodComputeVF(__local_mem__ T* dstTensor, __local_mem__ T* src0Tensor, __local_mem__ T* src1Tensor, 
     const uint16_t repeatTimes, uint32_t count)
 {
     MicroAPI::RegTensor<float> src0Reg;
@@ -392,7 +392,7 @@ __aicore__ inline void FmodCompute(const LocalTensor<float> &dstTensor, const Lo
     __local_mem__ float *dst = (__local_mem__ float *)dstTensor.GetPhyAddr();
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, FmodInternal::oneRepSize));
  
-    VF_CALL<FmodCompute<float>>(dst, src0, src1, repeatTimes, count);
+    FmodComputeVF<float>(dst, src0, src1, repeatTimes, count);
 }
  
 __aicore__ inline void FmodCompute(const LocalTensor<half> &dstTensor, const LocalTensor<half> &src0Tensor,
@@ -403,7 +403,7 @@ __aicore__ inline void FmodCompute(const LocalTensor<half> &dstTensor, const Loc
     __local_mem__ half *dst = (__local_mem__ half *)dstTensor.GetPhyAddr();
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, FmodInternal::oneRepSize));
  
-    VF_CALL<FmodCompute<half>>(dst, src0, src1, repeatTimes, count);
+    FmodComputeVF<half>(dst, src0, src1, repeatTimes, count);
 }
  
 template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>

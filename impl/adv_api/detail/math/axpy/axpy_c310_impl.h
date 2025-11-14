@@ -24,7 +24,7 @@ namespace AxpyAPI {
 constexpr MicroAPI::CastTrait castTraitF162F32 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 template<typename T, typename U>
-__aicore__ inline void AxpyCompute(__local_mem__ T* dst, __local_mem__ U* src, U scalarValue, uint32_t calCount, uint16_t repeatTimes, uint16_t oneRepSize)
+__simd_vf__ inline void AxpyCompute(__local_mem__ T* dst, __local_mem__ U* src, U scalarValue, uint32_t calCount, uint16_t repeatTimes, uint16_t oneRepSize)
 {
     MicroAPI::MaskReg mask;
     MicroAPI::RegTensor<T> dstVreg;
@@ -74,8 +74,7 @@ const U scalarValue , const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_
     __local_mem__ U *src = (__local_mem__ U *)srcLocal.GetPhyAddr();
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    VF_CALL<AxpyAPI::AxpyCompute<T, U>>(dst, src, scalarValue, calCount, repeatTimes, oneRepSize);
+    AxpyAPI::AxpyCompute<T, U>(dst, src, scalarValue, calCount, repeatTimes, oneRepSize);
 }
 } // namespace AscendC
 #endif // IMPL_MATH_AXPY_AXPY_C310_IMPL_H
-

@@ -19,7 +19,7 @@
 namespace AscendC {
 namespace XorAPI {
 template<typename T>
-__aicore__ inline void XorCompute(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
+__simd_vf__ inline void XorCompute(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
     uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::MaskReg mask;
@@ -56,8 +56,7 @@ __aicore__ inline void XorImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     __local_mem__ T *src1 = (__local_mem__ T *)src1Tensor.GetPhyAddr();
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    VF_CALL<XorAPI::XorCompute<T>>(dst, src0, src1, calCount, repeatTimes);
+    XorAPI::XorCompute<T>(dst, src0, src1, calCount, repeatTimes);
 }
 } // namespace AscendC
 #endif // IMPL_MATH_XOR_XOR_C310_IMPL_H
-

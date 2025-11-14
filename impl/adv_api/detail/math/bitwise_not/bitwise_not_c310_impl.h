@@ -22,7 +22,7 @@ struct BitwiseNotConfig {
 };
 constexpr BitwiseNotConfig DEFAULT_BITWISE_NOT_CONFIG = {false};
 template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__aicore__ inline void BitwiseNotCompute(__local_mem__ T* dst, __local_mem__ T* src, uint32_t count,
+__simd_vf__ inline void BitwiseNotCompute(__local_mem__ T* dst, __local_mem__ T* src, uint32_t count,
                                          uint16_t repeatTime, uint32_t oneRepElm, uint32_t offset)
 {
     MicroAPI::MaskReg mask;
@@ -63,16 +63,15 @@ __aicore__ inline void BitwiseNotImpl(const LocalTensor<T>& dst, const LocalTens
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * 2);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = repeatTime * oneRepElm;
-        VF_CALL<BitwiseNotCompute<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTraitNumTwo>>(
+        BitwiseNotCompute<T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>, MicroAPI::RegTraitNumTwo>(
             dstTensor, srcTensor, count, repeatTime, oneRepElm, offset);
     } else {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm) / 2);
         uint32_t offset = repeatTime * oneRepElm;
-        VF_CALL<BitwiseNotCompute<T, MicroAPI::RegTensor<T>>>(dstTensor, srcTensor, count, repeatTime, oneRepElm,
+        BitwiseNotCompute<T, MicroAPI::RegTensor<T>>(dstTensor, srcTensor, count, repeatTime, oneRepElm,
                                                               offset);
     }
 }
 } // namespace AscendC
-
 #endif // IMPL_MATH_BITWISE_NOT_BITWISE_NOT_C310_IMPL_H

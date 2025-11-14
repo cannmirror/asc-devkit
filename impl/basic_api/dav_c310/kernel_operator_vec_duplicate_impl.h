@@ -37,11 +37,11 @@ template <typename T> constexpr __aicore__ inline void CheckDuplicateL0Supported
 
 namespace Internal {
 template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_callee__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T& scalarValue, const uint64_t maskArray[],
+__simd_vf__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T scalarValue, const maskStruct maskArrayStruct,
     const uint64_t maskCount, const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
@@ -72,12 +72,18 @@ __aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValu
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
- 
+    
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
+
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecDupLevel0VFImpl<isSetMask, isMaskBitMode, false, T>>(dst, scalarValue, maskArray, maskCount,
+        VecDupLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, scalarValue, maskArrayStruct, maskCount,
             repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -102,7 +108,7 @@ __aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValu
             }
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VF_CALL<VecDupLevel0VFImpl<isSetMask, isMaskBitMode, true, T>>(dst, scalarValue, maskArray, maskCount,
+        VecDupLevel0VFImpl<isSetMask, isMaskBitMode, true, T>(dst, scalarValue, maskArrayStruct, maskCount,
             repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
         if constexpr (isMaskBitMode && SupportBytes<T, 1>()) {
             AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -190,7 +196,7 @@ __aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
 }
 
 template <typename T, bool hasUnalign = true>
-__simd_callee__ inline void InterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+__simd_vf__ inline void InterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
     __ubuf__ T *src1Local, const int32_t calCount)
 {
     MicroAPI::RegTensor<T> src0Reg, src1Reg, dst0Reg, dst1Reg;
@@ -245,7 +251,7 @@ __simd_callee__ inline void InterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__
 }
 
 template <typename T, bool hasUnalign = true>
-__simd_callee__ inline void InterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+__simd_vf__ inline void InterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
     __ubuf__ T *src1Local, const int32_t calCount)
 {
     MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> src0Reg, src1Reg, dst0Reg, dst1Reg;
@@ -319,21 +325,21 @@ __aicore__ inline void InterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Loc
     ASCENDC_ASSERT((calCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "calCount % 2 = 0!"); });
     if constexpr (sizeof(T) != 8) {
         if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
-            VF_CALL<InterleaveImplNormal<T, false>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            InterleaveImplNormal<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         } else {
-            VF_CALL<InterleaveImplNormal<T, true>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            InterleaveImplNormal<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         }
     } else {
         if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
-            VF_CALL<InterleaveImplB64<T, false>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            InterleaveImplB64<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         } else {
-            VF_CALL<InterleaveImplB64<T, true>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            InterleaveImplB64<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         }
     }
 }
 
 template <typename T, bool hasUnalign = true, bool hasSrc1 = true>
-__simd_callee__ inline void DeInterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+__simd_vf__ inline void DeInterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
     __ubuf__ T *src1Local, const int32_t calCount)
 {
     MicroAPI::RegTensor<T> src0Reg, src1Reg, dst0Reg, dst1Reg;
@@ -396,7 +402,7 @@ __simd_callee__ inline void DeInterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf
 }
 
 template <typename T, bool hasUnalign = true, bool hasSrc1 = true>
-__simd_callee__ inline void DeInterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+__simd_vf__ inline void DeInterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
     __ubuf__ T *src1Local, const int32_t calCount)
 {
     MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> src0Reg, src1Reg, dst0Reg, dst1Reg;
@@ -500,15 +506,15 @@ __aicore__ inline void DeInterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1L
     ASCENDC_ASSERT((calCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "calCount % 2 = 0!"); });
     if constexpr (sizeof(T) != 8) {
         if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
-            VF_CALL<DeInterleaveImplNormal<T, false>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            DeInterleaveImplNormal<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         } else {
-            VF_CALL<DeInterleaveImplNormal<T, true>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            DeInterleaveImplNormal<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         }
     } else {
         if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
-            VF_CALL<DeInterleaveImplB64<T, false>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            DeInterleaveImplB64<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         } else {
-            VF_CALL<DeInterleaveImplB64<T, true>>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+            DeInterleaveImplB64<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
         }
     }
 }
@@ -523,9 +529,9 @@ __aicore__ inline void DeInterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1L
     ASCENDC_ASSERT((srcCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "srcCount % 2 = 0!"); });
     // no unalign problem
     if constexpr (sizeof(T) != 8) {
-        VF_CALL<DeInterleaveImplNormal<T, false, false>>(dst0Local, dst1Local, srcLocal, nullptr, srcCount);
+        DeInterleaveImplNormal<T, false, false>(dst0Local, dst1Local, srcLocal, nullptr, srcCount);
     } else {
-        VF_CALL<DeInterleaveImplB64<T, false, false>>(dst0Local, dst1Local, srcLocal, nullptr, srcCount);
+        DeInterleaveImplB64<T, false, false>(dst0Local, dst1Local, srcLocal, nullptr, srcCount);
     }
 }
 } // namespace AscendC

@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Internal {
 template <auto func, typename T, typename U, typename RegT, typename RegU>
-__simd_callee__ inline void VecAxpyLevel2VFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const uint32_t calCount)
+__simd_vf__ inline void VecAxpyLevel2VFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const uint32_t calCount)
 {
     RegU srcReg;
     RegT dstReg;
@@ -43,10 +43,10 @@ __aicore__ inline void VecAxpyLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ U *sr
     const uint32_t calCount)
 {
     if constexpr (SupportBytes<T, 8>()) {
-        VF_CALL<VecAxpyLevel2VFImpl<func, T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
-            MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>>>(dst, src, scalarValue, calCount);
+        VecAxpyLevel2VFImpl<func, T, U, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>,
+            MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo>>(dst, src, scalarValue, calCount);
     } else {
-        VF_CALL<VecAxpyLevel2VFImpl<func, T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>>(dst, src, scalarValue,
+        VecAxpyLevel2VFImpl<func, T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>(dst, src, scalarValue,
             calCount);
     }
 }
@@ -59,11 +59,11 @@ __aicore__ inline void VecAxpyLevel2ImplTemplate(__ubuf__ T *dst, __ubuf__ U *sr
  * isMaskBitMode: true: mask bit mode, false: mask count mode
  */
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T, typename U>
-__simd_callee__ inline void VecAxpyVFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const uint64_t maskArray[],
-    const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams &repeatParams,
+__simd_vf__ inline void VecAxpyVFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarValue, const maskStruct maskArrayStruct,
+    const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
     using TT = typename Conditional<TUCompare, T, U>::type;
@@ -121,11 +121,17 @@ __aicore__ inline void VecAxpyImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U s
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
+    
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecAxpyVFImpl<func, isSetMask, isMaskBitMode, false, T, U>>(dst, src, scalarValue, maskArray, maskCount,
+        VecAxpyVFImpl<func, isSetMask, isMaskBitMode, false, T, U>(dst, src, scalarValue, maskArrayStruct, maskCount,
             repeatTime, repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -134,7 +140,7 @@ __aicore__ inline void VecAxpyImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U s
         if constexpr (isMaskBitMode && isSetMask) {
             SetVectorMask<TT>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
         }
-        VF_CALL<VecAxpyVFImpl<func, isSetMask, isMaskBitMode, true, T, U>>(dst, src, scalarValue, maskArray, maskCount,
+        VecAxpyVFImpl<func, isSetMask, isMaskBitMode, true, T, U>(dst, src, scalarValue, maskArrayStruct, maskCount,
             repeatTime, repeatParams, maskBuf);
     }
 }

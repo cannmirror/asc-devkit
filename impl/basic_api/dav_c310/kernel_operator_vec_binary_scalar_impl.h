@@ -17,7 +17,7 @@
 namespace AscendC {
 namespace Internal {
 template <auto func, typename T, typename RegType>
-__simd_callee__ inline void VecBinaryScalarLevel2VFImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
+__simd_vf__ inline void VecBinaryScalarLevel2VFImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const uint32_t calCount)
 {
     RegType srcReg;
@@ -39,19 +39,19 @@ __aicore__ inline void VecBinaryScalarLevel2ImplTemplate(__ubuf__ T *dst, __ubuf
     const uint32_t calCount)
 {
     if constexpr (SupportBytes<T, 8>() || SupportType<T, complex32>()) {
-        VF_CALL<VecBinaryScalarLevel2VFImpl<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>>(dst, src,
+        VecBinaryScalarLevel2VFImpl<func, T, MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo>>(dst, src,
             scalarValue, calCount);
     } else {
-        VF_CALL<VecBinaryScalarLevel2VFImpl<func, T, MicroAPI::RegTensor<T>>>(dst, src, scalarValue, calCount);
+        VecBinaryScalarLevel2VFImpl<func, T, MicroAPI::RegTensor<T>>(dst, src, scalarValue, calCount);
     }
 }
 
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_callee__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
-    const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,
-    const UnaryRepeatParams &repeatParams, __ubuf__ uint64_t *maskBuf)
+__simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
+    const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
+    const UnaryRepeatParams repeatParams, __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
@@ -86,11 +86,17 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
+
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, false, T>>(dst, src, scalarValue, maskArray,
+        VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, false, T>(dst, src, scalarValue, maskArrayStruct,
             maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -115,7 +121,7 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
             }
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VF_CALL<VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, true, T>>(dst, src, scalarValue, maskArray,
+        VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, true, T>(dst, src, scalarValue, maskArrayStruct,
             maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (isMaskBitMode && SupportBytes<T, 1>()) {
             AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -124,11 +130,11 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
 }
 
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T, MicroAPI::LoadDist pattern, uint8_t scalarIdx>
-__simd_callee__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,
-    const UnaryRepeatParams &repeatParams, __ubuf__ uint64_t *maskBuf)
+__simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
+    const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
+    const UnaryRepeatParams repeatParams, __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
@@ -171,11 +177,16 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    maskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, false, T, pattern, scalarIdx>>(dst, src0, src1, maskArray,
+        VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, false, T, pattern, scalarIdx>(dst, src0, src1, maskArrayStruct,
             maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -185,7 +196,7 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
             SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VF_CALL<VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, true, T, pattern, scalarIdx>>(dst, src0, src1, maskArray,
+        VecBinaryScalarLevel0VFImpl<func, isSetMask, isMaskBitMode, true, T, pattern, scalarIdx>(dst, src0, src1, maskArrayStruct,
             maskCount, repeatTime, repeatParams, maskBuf);
     }
 }
@@ -812,8 +823,8 @@ __simd_vf__ inline void FusedMulsCastImpl(__ubuf__ T *dst, __ubuf__ U *src, U sc
 }
 
 template <typename T, BinaryScalarOp op, uint8_t scalarIdx>
-__aicore__ inline void BinaryScalarOpTemplateCntB64(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const int32_t &calCount)
+__simd_vf__ inline void BinaryScalarOpTemplateCntB64(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
+    const int32_t calCount)
 {
     MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> dstReg, srcReg0, srcReg1, dupReg;
     MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne> preReg;
@@ -869,8 +880,8 @@ __aicore__ inline void BinaryScalarOpTemplateCntB64(__ubuf__ T *dst, __ubuf__ T 
 }
 
 template <typename T, MicroAPI::LoadDist pattern, BinaryScalarOp op, uint8_t scalarIdx>
-__simd_callee__ inline void BinaryScalarOpTemplateCnt(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const int32_t &calCount)
+__simd_vf__ inline void BinaryScalarOpTemplateCnt(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
+    const int32_t calCount)
 {
     MicroAPI::RegTensor<T> vSrcReg0;
     MicroAPI::RegTensor<T> vSrcReg1;
@@ -953,16 +964,16 @@ __aicore__ inline void AddsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
         "Adds not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 1) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B8, BinaryScalarOp::ADDS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B8, BinaryScalarOp::ADDS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::ADDS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::ADDS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::ADDS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::ADDS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::ADDS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::ADDS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1005,16 +1016,16 @@ __aicore__ inline void MaxsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
         "Maxs not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 1) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B8, BinaryScalarOp::MAXS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B8, BinaryScalarOp::MAXS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::MAXS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::MAXS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::MAXS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::MAXS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::MAXS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::MAXS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1057,16 +1068,16 @@ __aicore__ inline void MinsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
         "Mins not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 1) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B8, BinaryScalarOp::MINS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B8, BinaryScalarOp::MINS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::MINS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::MINS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::MINS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::MINS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::MINS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::MINS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1110,13 +1121,13 @@ __aicore__ inline void MulsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
         "Muls not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::MULS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::MULS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::MULS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::MULS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::MULS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::MULS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1160,13 +1171,13 @@ __aicore__ inline void SubsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
         "Subs not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::SUBS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::SUBS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::SUBS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::SUBS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::SUBS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::SUBS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1209,13 +1220,13 @@ __aicore__ inline void DivsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
         "Divs not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::DIVS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::DIVS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::DIVS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::DIVS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::DIVS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::DIVS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1257,13 +1268,13 @@ __aicore__ inline void AndsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *s
     static_assert((SupportType<T, int16_t, uint16_t, int64_t, uint64_t>()), "Ands not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::ANDS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::ANDS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::ANDS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::ANDS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::ANDS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::ANDS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 
@@ -1305,13 +1316,13 @@ __aicore__ inline void OrsImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *sr
     static_assert((SupportType<T, int16_t, uint16_t, int64_t, uint64_t>()), "Ors not support current datatype!");
     static_assert(scalarIdx == 0 || scalarIdx == 1);
     if constexpr (sizeof(T) == 2) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::ORS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B16, BinaryScalarOp::ORS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 4) {
-        VF_CALL<BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::ORS, scalarIdx>>(dst,
+        BinaryScalarOpTemplateCnt<T, MicroAPI::LoadDist::DIST_BRC_B32, BinaryScalarOp::ORS, scalarIdx>(dst,
             src0, src1, calCount);
     } else if constexpr (sizeof(T) == 8) {
-        VF_CALL<BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::ORS, scalarIdx>>(dst, src0, src1, calCount);
+        BinaryScalarOpTemplateCntB64<T, BinaryScalarOp::ORS, scalarIdx>(dst, src0, src1, calCount);
     }
 }
 } // namespace AscendC

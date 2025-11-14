@@ -22,7 +22,7 @@ namespace AscendC {
 namespace Internal {
 
 template <typename T>
-__aicore__ inline void SwishComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const T scalarValue,
+__simd_vf__ inline void SwishComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const T scalarValue,
     const uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
@@ -59,7 +59,7 @@ __aicore__ inline void SwishCompute(const LocalTensor<T>& dstLocal, const LocalT
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
     const T scalar = static_cast<T>(negOne * static_cast<float>(scalarValue));
-    VF_CALL<Internal::SwishComputeVF<T>>(
+    Internal::SwishComputeVF<T>(
         (__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)srcLocal.GetPhyAddr(), count, scalar, repeatTimes);
 }
 

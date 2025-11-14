@@ -26,7 +26,7 @@ constexpr float ACOSH_NEG_ONE = -1;
     when x > 0 : acosh = ln(x + sqrt(x ^ 2 - 1))
 */
 template <typename T>
-__aicore__ inline void AcoshImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
+__simd_vf__ inline void AcoshImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T> srcVreg;
     MicroAPI::RegTensor<T> dstVreg;
@@ -74,7 +74,7 @@ __aicore__ inline void AcoshImpl(const LocalTensor<T>& dstTensor, const LocalTen
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "Acosh");
     constexpr int32_t oneRepElm = static_cast<int32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, oneRepElm));
-    VF_CALL<Internal::AcoshImplVF<T>>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor.GetPhyAddr(), calCount, repeatTimes);
+    Internal::AcoshImplVF<T>((__ubuf__ T*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor.GetPhyAddr(), calCount, repeatTimes);
 }
 
 template <typename T, bool isReuseSource = false>

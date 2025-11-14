@@ -25,7 +25,7 @@ struct IsNanConfig {
 constexpr IsNanConfig DEFAULT_IS_NAN_CONFIG = { false };
 
 template <typename T, typename U>
-__aicore__ inline void IsNanImplVF(__ubuf__ T* dst, __ubuf__ U* src, uint32_t count, uint16_t repeatTimes)
+__simd_vf__ inline void IsNanImplVF(__ubuf__ T* dst, __ubuf__ U* src, uint32_t count, uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
     MicroAPI::RegTensor<U> srcVreg;
@@ -78,7 +78,7 @@ __aicore__ inline void IsNanImpl(const LocalTensor<T>& dst, const LocalTensor<U>
     CHECK_FUNC_HIGHLEVEL_API(IsNan, (T, U, config.isReuseSource), (dst, src, sharedTmpBuffer, count));
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(U));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    VF_CALL<IsNanImplVF<T, U>>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), count,
+    IsNanImplVF<T, U>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), count,
         repeatTimes);
 }
 

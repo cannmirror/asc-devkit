@@ -632,7 +632,7 @@ __aicore__ inline void PowFComputeImpl(__local_mem__ T* dst, const T& scalarValu
 }
 
 /*********** PowF Intrinsic Impl **********/
-__aicore__ inline void GetPowFInstrinsicCore(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& baseReg,
+__simd_callee__ inline void GetPowFInstrinsicCore(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& baseReg,
     MicroAPI::RegTensor<float>& expReg, MicroAPI::MaskReg& mask)
 {
     // Compute dst = exp(exp * ln(|base|))
@@ -644,7 +644,7 @@ __aicore__ inline void GetPowFInstrinsicCore(MicroAPI::RegTensor<float>& dstReg,
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicTensorTensorImpl(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
+__simd_vf__ inline void PowFInstrinsicTensorTensorImpl(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -662,7 +662,7 @@ __aicore__ inline void PowFInstrinsicTensorTensorImpl(__local_mem__ T* dst, __lo
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicTensorScalarImpl(__local_mem__ T* dst, __local_mem__ T* src0, const T& scalarValue,
+__simd_vf__ inline void PowFInstrinsicTensorScalarImpl(__local_mem__ T* dst, __local_mem__ T* src0, const T scalarValue,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -680,7 +680,7 @@ __aicore__ inline void PowFInstrinsicTensorScalarImpl(__local_mem__ T* dst, __lo
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicScalarTensorImpl(__local_mem__ T* dst, const T& scalarValue, __local_mem__ T* src1,
+__simd_vf__ inline void PowFInstrinsicScalarTensorImpl(__local_mem__ T* dst, const T scalarValue, __local_mem__ T* src1,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -703,7 +703,7 @@ __aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, __local_mem__ T*
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(calCount, eleCountPerVL);
-    VF_CALL<PowFInstrinsicTensorTensorImpl<T>>(dst, src0, src1, calCount, repeatTimes);
+    PowFInstrinsicTensorTensorImpl<T>(dst, src0, src1, calCount, repeatTimes);
 }
 
 template<typename T>
@@ -712,7 +712,7 @@ __aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, __local_mem__ T*
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(calCount, eleCountPerVL);
-    VF_CALL<PowFInstrinsicTensorScalarImpl<T>>(dst, src0, scalarValue, calCount, repeatTimes);
+    PowFInstrinsicTensorScalarImpl<T>(dst, src0, scalarValue, calCount, repeatTimes);
 }
 
 template<typename T>
@@ -721,7 +721,7 @@ __aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, const T& scalarV
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(calCount, eleCountPerVL);
-    VF_CALL<PowFInstrinsicScalarTensorImpl<T>>(dst, scalarValue, src1, calCount, repeatTimes);
+    PowFInstrinsicScalarTensorImpl<T>(dst, scalarValue, src1, calCount, repeatTimes);
 }
 } // namespace PowF
 

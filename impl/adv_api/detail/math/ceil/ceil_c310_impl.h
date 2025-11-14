@@ -19,7 +19,7 @@
 
 namespace AscendC {
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CeilCompute(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calCount,
+__simd_vf__ inline void CeilCompute(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calCount,
     const uint16_t repeatTimes)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
@@ -67,7 +67,7 @@ __aicore__ inline void CeilImpl(const LocalTensor<T>& dstTensor, const LocalTens
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatElm));
 
-    VF_CALL<CeilCompute<T, isReuseSource>>(dstUb, srcUb, calCount, repeatTimes);
+    CeilCompute<T, isReuseSource>(dstUb, srcUb, calCount, repeatTimes);
 }
 }  // namespace AscendC
 #endif  // IMPL_MATH_CEIL_CEIL_C310_IMPL_H

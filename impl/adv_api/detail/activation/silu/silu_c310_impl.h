@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Internal {
 template<typename T>
-__aicore__ inline void SiluComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const uint16_t repeatTimes)
+__simd_vf__ inline void SiluComputeVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count, const uint16_t repeatTimes)
 {
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     MicroAPI::RegTensor<T> srcVreg;
@@ -56,7 +56,7 @@ __aicore__ inline void SiluCompute(const LocalTensor<T>& dstLocal, const LocalTe
 
     constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
-    VF_CALL<Internal::SiluComputeVF<T>>(
+    Internal::SiluComputeVF<T>(
         (__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)srcLocal.GetPhyAddr(), count, repeatTimes);
 }
 }   // namespace AscendC

@@ -20,7 +20,7 @@
 
 namespace AscendC {
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void RoundCompute(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint32_t calCount,
+__simd_vf__ inline void RoundCompute(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint32_t calCount,
     const uint16_t repeatTimes)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
@@ -67,7 +67,7 @@ __aicore__ inline void RoundImpl(const LocalTensor<T> &dstTensor, const LocalTen
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatElm));
 
-    VF_CALL<RoundCompute<T, isReuseSource>>(dstUb, srcUb, calCount, repeatTimes);
+    RoundCompute<T, isReuseSource>(dstUb, srcUb, calCount, repeatTimes);
 }
 } // namespace AscendC
 #endif // IMPL_MATH_ROUND_ROUND_C310_IMPL_H

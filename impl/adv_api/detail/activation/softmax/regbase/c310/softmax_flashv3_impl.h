@@ -327,13 +327,13 @@ __aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, co
     __local_mem__ float* newSrcUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * repeatStride);
 
     if constexpr (!isUpdate) {
-        VF_CALL<SoftmaxFlashV3NDNoUpdateImpl<T, U>>(dstUb, meanUb, expSumUb, maxUb, srcUb, workUb, newSrcUb,
+        SoftmaxFlashV3NDNoUpdateImpl<T, U>(dstUb, meanUb, expSumUb, maxUb, srcUb, workUb, newSrcUb,
             srcM, srcK, splitMeanCnt, baseK, tail, remainRepeatTime, kRepeatTime, baseKRepeatTime, scalar, r0, r1);
     } else {
         float r2 = static_cast<float>(loopCnt - 1.0f);
         float r3 = static_cast<float>(1.0f / loopCnt);
         __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * repeatStride + srcM * srcK);
-        VF_CALL<SoftmaxFlashV3NDUpdateImpl<T, U>>(dstUb, meanUb, expSumUb, maxUb, srcUb, expMaxUb,
+        SoftmaxFlashV3NDUpdateImpl<T, U>(dstUb, meanUb, expSumUb, maxUb, srcUb, expMaxUb,
                 inMeanUb, inExpSumUb, inMaxUb, workUb, newSrcUb, tmpUb, srcM, srcK, splitMeanCnt, baseK,
                 tail, remainRepeatTime, kRepeatTime, baseKRepeatTime, loopCnt, scalar, r0, r1, r2, r3);
     }
