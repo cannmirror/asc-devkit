@@ -40,7 +40,7 @@
 
    **注：如果需要下载其它版本代码，请先请根据前置条件说明进行asc-devkit-dev仓分支切换。下载压缩包命名跟tag/branch相关，此处以master分支为例，下载的名字将会是asc-devkit-dev-master.zip**
    ```bash
-   # 1. samples仓右上角选择 【克隆/下载】 下拉框并选择 【下载ZIP】。
+   # 1. 仓右上角选择 【克隆/下载】 下拉框并选择 【下载ZIP】。
    # 2. 将ZIP包上传到开发环境中的普通用户某个目录中，【例如：${git_clone_path}/asc-devkit-dev-master.zip】。
    # 3. 开发环境中，执行以下命令，解压zip包。
    cd ${git_clone_path}
