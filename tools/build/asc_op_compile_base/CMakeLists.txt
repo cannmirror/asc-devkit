@@ -37,7 +37,12 @@ target_link_libraries(asc_platform PRIVATE
   alog
   error_manager
 )
-target_compile_options(asc_platform PRIVATE -fPIC -D_GLIBCXX_USE_CXX11_ABI=0)
+target_compile_options(asc_platform PRIVATE 
+  -fPIC 
+  -D_GLIBCXX_USE_CXX11_ABI=0
+  -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+  -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+)
 
 # 将共享库复制到 asc_op_compile_base 包的根目录下
 add_custom_command(

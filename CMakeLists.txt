@@ -36,6 +36,12 @@ else()
   set(INSTALL_LIBRARY_DIR lib)
 endif()
 
+find_program(CCACHE_PROGRAM ccache)
+if(CCACHE_PROGRAM)
+  set(CMAKE_C_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+  set(CMAKE_Cxx_COMPILER_LAUNCHER ${CCACHE_PROGRAM})
+endif()
+
 set(GEN_KERENL_TILING_DATA_SCRIPT
     ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/gen_kernel_tiling_data_def.py)
 set(GENERATE_INSTALL_SCRIPT
