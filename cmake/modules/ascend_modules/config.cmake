@@ -37,6 +37,15 @@ endif()
 if (NOT DEFINED ASCEND_COMPUTE_UNIT)
     set(ASCEND_COMPUTE_UNIT ascend910b CACHE STRING "")
 endif()
+
+set(ASC_VALID_SOC_LIST ascend310b ascend310p ascend610 ascend910 ascend910b ascend910_93 ascend910_95 bs9sx1a bs9sx2a ascend610lite ascend910_55 mc61am21a mc62cm12a ascend910_96)
+
+foreach(soc_version ${ASCEND_COMPUTE_UNIT})
+    if(NOT soc_version IN_LIST ASC_VALID_SOC_LIST)
+        message(FATAL_ERROR "COMPUTE_UNIT ${soc_version} does not support, the support list is ${ASC_VALID_SOC_LIST}")
+    endif()
+endforeach()
+
 if (NOT DEFINED ENABLE_TEST)
     set(ENABLE_TEST FALSE CACHE BOOL "")
 endif()
