@@ -341,7 +341,7 @@ function cmake_config()
 function build()
 {
   local target="$1"
-  cmake --build . --target ${target} ${JOB_NUM} --verbose
+  cmake --build . --target ${target} ${JOB_NUM}
 }
 
 function build_package(){
