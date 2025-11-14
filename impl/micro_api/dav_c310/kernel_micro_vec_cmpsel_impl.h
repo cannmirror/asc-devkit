@@ -70,8 +70,7 @@ __simd_callee__ inline void CompareInt64Impl(MaskReg &dstMask, RegT &srcReg0, Re
     MaskReg highCmp;
     if constexpr (mode == CMPMODE::EQ) {
         vcmp_eq(lowEq, (RegTensor<uint32_t> &)srcReg0.reg[0], (RegTensor<uint32_t> &)srcReg1.reg[0], mask);
-        vcmp_eq(highEq, (RegTensor<int32_t> &)srcReg0.reg[1], (RegTensor<int32_t> &)srcReg1.reg[1], mask);
-        pand(dstMask, lowEq, highEq, mask);
+        vcmp_eq(dstMask, (RegTensor<int32_t> &)srcReg0.reg[1], (RegTensor<int32_t> &)srcReg1.reg[1], lowEq);
     } else if constexpr (mode == CMPMODE::NE) {
         vcmp_ne(lowEq, (RegTensor<uint32_t> &)srcReg0.reg[0], (RegTensor<uint32_t> &)srcReg1.reg[0], mask);
         vcmp_ne(highEq, (RegTensor<int32_t> &)srcReg0.reg[1], (RegTensor<int32_t> &)srcReg1.reg[1], mask);
@@ -106,10 +105,6 @@ __simd_callee__ inline void CompareB64Impl(MaskReg &dstMask, RegT &srcReg0, RegT
     static_assert(SupportType<ActualT, uint64_t, int64_t>(),
         "CompareB64Impl only support uint64_t and int64_t type");
     static_assert(CheckRegTrait<RegT, RegTraitNumTwo>(), "CompareB64Impl only support RegTraitNumTwo");
-    MaskReg lowEq;
-    MaskReg highEq;
-    MaskReg lowCmp;
-    MaskReg highCmp;
     if constexpr (std::is_same_v<ActualT, uint64_t>) {
         CompareUint64Impl<mode, RegT>(dstMask, srcReg0, srcReg1, mask);
     } else if constexpr (std::is_same_v<ActualT, int64_t>) {
