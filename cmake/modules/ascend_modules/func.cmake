@@ -540,8 +540,9 @@ function(npu_op_code_gen)
 
   set(ENV{OPS_PRODUCT_NAME} "${ASCEND_COMPUTE_UNIT}")
 
+  set(RAW_COMPUTE_UNIT_ARG "--compute_unit=${ASCEND_COMPUTE_UNIT}")
   execute_process(COMMAND ${ASCEND_CANN_PACKAGE_PATH}/toolkit/tools/opbuild/op_build
-                          ${OPBUILD_OUT_DIR}/libascend_all_ops.so ${OPBUILD_OUT_DIR}
+                          ${OPBUILD_OUT_DIR}/libascend_all_ops.so ${OPBUILD_OUT_DIR} "${RAW_COMPUTE_UNIT_ARG}"
                   RESULT_VARIABLE EXEC_RESULT
                   OUTPUT_VARIABLE EXEC_INFO
                   ERROR_VARIABLE  EXEC_ERROR
