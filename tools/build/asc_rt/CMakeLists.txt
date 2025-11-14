@@ -28,8 +28,8 @@ else()
     ${TOP_DIR}/abl/libc_sec/include
     ${TOP_DIR}/abl/mmpa/inc
     ${TOP_DIR}/abl/slog/inc/toolchain
-    ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/tools/build/common
-    ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include
+    ${TOP_DIR}/asc/asc-devkit/tools/build/common
+    ${TOP_DIR}/asc/asc-devkit/include
     ${TOP_DIR}/runtime/include/external/acl
     ${TOP_DIR}/runtime/include/external
   )

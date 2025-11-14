@@ -12,7 +12,7 @@ if(BUILD_OPEN_PROJECT)
   )
 else()
   target_include_directories(elf_tool_obj PRIVATE
-    ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/tools/build/elf_tool
+    ${TOP_DIR}/asc/asc-devkit/tools/build/elf_tool
   )
 endif()
 
