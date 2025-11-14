@@ -11,157 +11,400 @@
 
 set -e
 
+SUPPORTED_SHORT_OPTS=("h" "j" "t" "p")
+SUPPORTED_LONG_OPTS=(
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path"
+)
+
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
 BUILD_DIR=${CURRENT_DIR}/build
 OUTPUT_DIR=${CURRENT_DIR}/build_out
 CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
 CPU_NUM=$(($(cat /proc/cpuinfo | grep "^processor" | wc -l)))
-JOB_NUM="-j${CPU_NUM}"
-ASAN="false"
-COV="false"
 
-if [ "${USER_ID}" != "0" ]; then
-    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
-    DEFAULT_INSTALL_DIR="${HOME}/Ascend/latest"
-else
-    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/ascend-toolkit/latest"
-    DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
-fi
+THREAD_NUM=8
+
+dotted_line="----------------------------------------------------------------"
 
 function log() {
     local current_time=`date +"%Y-%m-%d %H:%M:%S"`
     echo "[$current_time] "$1
 }
 
-function set_env()
-{
-    source $ASCEND_CANN_PACKAGE_PATH/bin/setenv.bash || echo "0"
+usage() {
+  local specific_help="$1"
+
+  if [[ -n "$specific_help" ]]; then
+    case "$specific_help" in
+      package)
+        echo "Package Build Options:"
+        echo $dotted_line
+        echo "    --pkg                Compile run package"
+        echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+        echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
+        echo "    --asan               Enable ASAN (address Sanitizer)"
+        echo "    -j                   Compile thread nums, default is 8, eg: -j 8"
+        echo $dotted_line
+        echo "Examples:"
+        echo "    bash build.sh --pkg -j 16"
+        echo "    bash build.sh --pkg --asan -j 32"
+        return
+        ;;
+      test)
+        echo "Test Options:"
+        echo $dotted_line
+        echo "    -t, --test           Build annd run all unit tests"
+        echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+        echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
+        echo "    --cov                Enable code coverage for unit tests"
+        echo "    --asan               Enable ASAN (address Sanitizer)"
+        echo "    -j                   Compile thread nums, default is 8, eg: -j 8"
+        echo $dotted_line
+        echo "Examples:"
+        echo "    bash build.sh -t --cov"
+        echo "    bash build.sh --test --asan -j 32"
+        return
+        ;;
+      clean)
+        echo "Clean Options:"
+        echo $dotted_line
+        echo "    --make_clean         Clean build artifacts"
+        echo $dotted_line
+        echo "Examples:"
+        echo "    bash build.sh -t --make_clean"
+        return
+        ;;
+    esac
+  fi
+
+  echo "build script for asc-devkit repository"
+  echo "Usage: bash build.sh [OPTION]..."
+  echo ""
+  echo "    The following are all supported arguments:"
+  echo $dotted_line
+  echo "    -h, --help           Display help information"
+  echo "    -j                   Compile thread nums, default is 8, eg: -j 8"
+  echo "    -t, --test           Build annd run all unit tests"
+  echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+  echo "    --pkg                Compile run package"
+  echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
+  echo "    --cov                Enable code coverage for unit tests"
+  echo "    --asan               Enable ASAN (address Sanitizer)"
+  echo "    --make_clean         Clean build artifacts"
+}
+
+check_option_validity() {
+  local arg="$1"
+
+  if [[ "$arg" =~ "=" ]]; then
+    arg="${arg%%=*}"
+  fi
+
+  if [[ "$arg" =~ ^-[^-] ]]; then
+    if [[ ! " ${SUPPORTED_SHORT_OPTS[@]} " =~ " ${arg:1} " ]]; then
+      log "[ERROR] Invalid short option: ${arg}"
+      return 1
+    fi
+  fi
+
+  if [[ "$arg" =~ ^-- ]]; then
+    if [[ ! " ${SUPPORTED_LONG_OPTS[@]} " =~ " ${arg:2} " ]]; then
+      log "[ERROR] Invalid long option: ${arg}"
+      return 1
+    fi
+  fi
+  return 0
+}
+
+check_help_combinations() {
+  local args=("$@")
+  local has_test=false
+  local has_cov=false
+  local has_pkg=false
+
+  for arg in "${arg[@]}"; do
+    case "$arg" in
+      -t|--test) has_test=true ;;
+      --cov) has_cov=true ;;
+      --pkg) has_pkg=true ;;
+      -h|--help) ;;
+    esac
+  done
+
+  if [[ "$has_test" == "true" && "$has_pkg" == "true" ]]; then
+    log "[ERROR] --pkg cannot be used with test(-t, --test)."
+    return 1
+  fi
+  if [[ "$has_cov" == "true" && "$has_test" == "all" ]]; then
+    log "[ERROR] --cov must be used with test(-t, --test)."
+    return 1
+  fi
+  return 0
+}
+
+check_param_with_help() {
+  for arg in "$@"; do
+    if [[ "$arg" =~ ^- ]]; then
+      if ! check_option_validity "$arg"; then
+        log "[INFO] Use 'bash build.sh --help' for more information."
+        exit 1
+      fi
+    fi
+  done
+
+  seen=()
+  for arg in "$@"; do
+    arg="${arg%%=*}"
+    if [[ " ${seen[@]} " =~ " $arg " ]]; then
+      log "[ERROR] $arg can only be input one."
+      exit 1
+    fi
+    seen+=("$arg")
+  done
+
+  for arg in "$@"; do
+    if [[ "$arg" == "--help" || "$arg" == "-h" ]]; then
+      # 检查帮助信息中的组合参数
+      check_help_combinations "$@"
+      local comb_result=$?
+      if [ $comb_result -eq 1 ]; then
+        exit 1
+      fi
+      SHOW_HELP="general"
+
+      for prev_arg in "$@"; do
+        case "$prev_arg" in
+          --pkg) SHOW_HELP="package" ;;
+          -t|--test) SHOW_HELP="test" ;;
+          --make_clean) SHOW_HELP="clean" ;;
+        esac
+      done
+
+      usage "$SHOW_HELP"
+      exit 0
+    fi
+  done
+}
+
+check_param_j() {
+  if [[ ! $THREAD_NUM =~ ^-?[0-9]+$ ]]; then
+   log "[ERROR] -j only support positive integers."
+   exit 1
+  fi
+
+  if [[ "$THREAD_NUM" -gt "$CPU_NUM" ]]; then
+    log "[WARNING] compile thread num:$THREAD_NUM over core num:$CPU_NUM, adjust to core num."
+    THREAD_NUM=$CPU_NUM
+  fi
+}
+
+check_param_clean() {
+  if [[ "$#" -gt 1 || ( "$#" -eq 2 && $has_h == "true" ) ]]; then
+    log "[ERROR] --make_clean must be used separately."
+    exit 1
+  fi
+}
+
+check_param_test_pkg() {
+  if [[ "$TEST" == "all" && "$PKG" == "true" ]]; then
+    log "[ERROR] --pkg cannot be used with test(-t, --test)."
+    exit 1
+  fi
+}
+
+check_param_cov() {
+  if [[ "$COV" == "true" && "$TEST" != "all" ]]; then
+    log "[ERROR] --cov must be used with test(-t, --test)."
+    exit 1
+  fi
+}
+
+set_options() {
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+    -h|--help)
+      has_h="true"
+      usage
+      exit 0
+      ;;
+    --ccache)
+      CCACHE_PROGRAM="$2"
+      shift 2
+      ;;
+    -p=*|--cann_path=*)
+      cann_path="${1#*=}"
+      shift
+      ;;
+    -p|--cann_path)
+      cann_path="$2"
+      shift 2
+      ;;
+    -t|--test)
+      TEST="all"
+      check_param_test_pkg
+      shift
+      ;;
+    --asan)
+      ASAN="true"
+      shift
+      ;;
+    --cov)
+      COV="true"
+      shift
+      ;;
+    --pkg)
+      PKG="true"
+      check_param_test_pkg
+      shift
+      ;;
+    --cann_3rd_lib_path=*)
+      CANN_3RD_LIB_PATH="${1#*=}"
+      shift
+      ;;
+    --cann_3rd_lib_path)
+      CANN_3RD_LIB_PATH="$2"
+      shift 2
+      ;;
+    --make_clean)
+      MAKE_CLEAN="true"
+      check_param_clean
+      clean
+      exit 0
+      ;;
+    -j=*)
+      THREAD_NUM="${1#*=}"
+      check_param_j
+      shift
+      ;;
+    -j)
+      THREAD_NUM="$2"
+      check_param_j
+      shift 2
+      ;;
+    *)
+      log "[ERROR] Undefined option: $1"
+      usage
+      break
+      ;;
+    esac
+  done
+}
+
+set_env() {
+  if [ "${USER_ID}" != "0" ]; then
+    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
+    DEFAULT_INSTALL_DIR="${HOME}/Ascend/latest"
+  else
+    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/ascend-toolkit/latest"
+    DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
+  fi
+
+  if [ -n "${ascend_package_path}" ];then
+    ASCEND_CANN_PACKAGE_PATH=${ascend_package_path}
+  elif [ -n "${ASCEND_HOME_PATH}" ];then
+    ASCEND_CANN_PACKAGE_PATH=${ASCEND_HOME_PATH}
+  elif [ -n "${ASCEND_OPP_PATH}" ];then
+    ASCEND_CANN_PACKAGE_PATH=$(dirname ${ASCEND_OPP_PATH})
+  elif [ -d "${DEFAULT_TOOLKIT_INSTALL_DIR}" ];then
+    ASCEND_CANN_PACKAGE_PATH=${DEFAULT_TOOLKIT_INSTALL_DIR}
+  elif [ -d "${DEFAULT_INSTALL_DIR}" ];then
+    ASCEND_CANN_PACKAGE_PATH=${DEFAULT_INSTALL_DIR}
+  else
+    log "Error: Please set the cann package installation directory through parameter -p|--package-path."
+    exit 1
+  fi
+
+  source $ASCEND_CANN_PACKAGE_PATH/bin/setenv.bash || echo "0"
 }
 
 function clean()
 {
-    if [ -n "${BUILD_DIR}" ];then
-        rm -rf ${BUILD_DIR}
-    fi
+  if [ -n "${BUILD_DIR}" ];then
+    rm -rf ${BUILD_DIR}
+  fi
 
-    if [ -z "${TEST}" ];then
-        if [ -n "${OUTPUT_DIR}" ];then
-            rm -rf ${OUTPUT_DIR}
-        fi
-    fi
+  if [ -n "${OUTPUT_DIR}" ];then
+    rm -rf ${OUTPUT_DIR}
+  fi
 
-    mkdir -p ${BUILD_DIR} ${OUTPUT_DIR}
+  mkdir -p ${BUILD_DIR} ${OUTPUT_DIR}
 }
 
 function cmake_config()
 {
-    local extra_option="$1"
-    log "Info: cmake config ${CUSTOM_OPTION} ${extra_option} ."
-    cmake ..  ${CUSTOM_OPTION} ${extra_option}
+  local extra_option="$1"
+  log "Info: cmake config ${CUSTOM_OPTION} ${extra_option} ."
+  cmake ..  ${CUSTOM_OPTION} ${extra_option}
 }
 
 function build()
 {
-    local target="$1"
-    cmake --build . --target ${target} ${JOB_NUM} --verbose
+  local target="$1"
+  cmake --build . --target ${target} ${JOB_NUM} --verbose
 }
 
 function build_package(){
-    cmake_config
-    build package
-    cp ${BUILD_DIR}/_CPack_Packages/makeself_staging/*.run ${OUTPUT_DIR}
+  cmake_config
+  build package
+  cp ${BUILD_DIR}/_CPack_Packages/makeself_staging/*.run ${OUTPUT_DIR}
 }
 
 function build_test() {
-    cmake_config
-    build all
+  cmake_config
+  build all
 }
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-    --ccache)
-        CCACHE_PROGRAM="$2"
-        shift 2
-        ;;
-    -p|--package-path)
-        ascend_package_path="$2"
-        shift 2
-        ;;
-    -t|--test)
-        TEST="all"
-        shift
-        ;;
-    --asan)
-        ASAN="true"
-        shift
-        ;;
-    --cov)
-        COV="true"
-        shift
-        ;;
-    --pkg)
-        PKG="true"
-        shift
-        ;;
-    --cann_3rd_lib_path=*)
-        CANN_3RD_LIB_PATH="${1#*=}"
-        shift
-        ;;
-    *)
-        break
-        ;;
-    esac
-done
+main() {
+  check_param_with_help "$@"
+  set_options "$@"
 
-if [ -n "${TEST}" ];then
+  set_env
+
+  CUSTOM_OPTION="${CUSTOM_OPTION} -DCUSTOM_ASCEND_CANN_PACKAGE_PATH=${ASCEND_CANN_PACKAGE_PATH}"
+
+  if [ -n "${TEST}" ];then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=ON"
-fi
+  fi
 
-if [ "${ASAN}" == "true" ];then
+  if [ "${ASAN}" == "true" ];then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_ASAN=true"
-fi
+  fi
 
-if [ "${COV}" == "true" ];then
+  if [ "${COV}" == "true" ];then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_GCOV=true"
-fi
+  fi
 
-if [ "${PKG}" == "true" ];then
+  if [ "${PKG}" == "true" ];then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DPACKAGE_OPEN_PROJECT=ON"
-fi
+  fi
 
-if [ -n "${CANN_3RD_LIB_PATH}" ];then
+  if [ -n "${CANN_3RD_LIB_PATH}" ];then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DCANN_3RD_LIB_PATH=${CANN_3RD_LIB_PATH}"
-fi
+  fi
 
-if [ -n "${ascend_package_path}" ];then
-    ASCEND_CANN_PACKAGE_PATH=${ascend_package_path}
-elif [ -n "${ASCEND_HOME_PATH}" ];then
-    ASCEND_CANN_PACKAGE_PATH=${ASCEND_HOME_PATH}
-elif [ -n "${ASCEND_OPP_PATH}" ];then
-    ASCEND_CANN_PACKAGE_PATH=$(dirname ${ASCEND_OPP_PATH})
-elif [ -d "${DEFAULT_TOOLKIT_INSTALL_DIR}" ];then
-    ASCEND_CANN_PACKAGE_PATH=${DEFAULT_TOOLKIT_INSTALL_DIR}
-elif [ -d "${DEFAULT_INSTALL_DIR}" ];then
-    ASCEND_CANN_PACKAGE_PATH=${DEFAULT_INSTALL_DIR}
-else
-    log "Error: Please set the toolkit package installation directory through parameter -p|--package-path."
-    exit 1
-fi
+  if [[ ! -d "${BUILD_DIR}" ]]; then
+    mkdir -p "${BUILD_DIR}"
+  fi
+  if [[ ! -d "${OUTPUT_DIR}" ]]; then
+    mkdir -p "${OUTPUT_DIR}"
+  fi
 
-CUSTOM_OPTION="${CUSTOM_OPTION} -DCUSTOM_ASCEND_CANN_PACKAGE_PATH=${ASCEND_CANN_PACKAGE_PATH}"
+  cd ${BUILD_DIR}
 
-set_env
-
-clean
-
-cd ${BUILD_DIR}
-
-if [ -n "${TEST}" ];then
+  if [ -n "${TEST}" ];then
     build_test
-elif [ -n "${PKG}" ];then
+  elif [ -n "${PKG}" ];then
     build_package
-else
+  else
     cmake_config
     build all
+  fi
+}
+
+set -o pipefail
+if [[ $# -eq 0 ]]; then
+  usage
 fi
+
+main "$@"
