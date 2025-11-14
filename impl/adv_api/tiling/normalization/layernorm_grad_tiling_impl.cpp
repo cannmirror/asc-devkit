@@ -162,8 +162,12 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
     const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
     uint32_t oneCalSize = 0;
     uint32_t nohCalSize = 0;
-    if (socVersion != platform_ascendc::SocVersion::ASCEND910_95
-        && socVersion != platform_ascendc::SocVersion::ASCEND910_55) {
+    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95
+        || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+        // needless to calculate oneCalSize and nohCalSize
+        oneCalSize = static_cast<uint32_t>(1);
+        nohCalSize = static_cast<uint32_t>(1);
+    }else{
         oneCalSize = stackBufferSize * static_cast<uint32_t>(sizeof(uint8_t)) / static_cast<uint32_t>(sizeof(float)) / needBufferBlock;
         oneCalSize = oneCalSize / hLength * hLength;
         ASCENDC_HOST_ASSERT(oneCalSize > static_cast<uint32_t>(0), return, "stackBufferSize is not enough.");
