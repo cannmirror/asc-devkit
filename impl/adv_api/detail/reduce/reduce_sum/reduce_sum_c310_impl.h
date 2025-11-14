@@ -55,7 +55,7 @@ __aicore__ inline void ReduceSumARReuseSourceCompute(__ubuf__ T *dstAddr, __ubuf
         ReduceARImpl<T, MicroAPI::RegTraitNumOne,
             MicroAPI::Add<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
             MicroAPI::ReduceSum<T, T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>,
-            MicroAPI::RegTensor<T>>, isReuseSource>(
+            MicroAPI::RegTensor<T>>, isReuseSource, ReduceType::IS_REDUCE_SUM>(
                 dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
         ReduceARReuseSourceUnAligned<T, MicroAPI::RegTraitNumOne,

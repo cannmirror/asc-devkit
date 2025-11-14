@@ -74,8 +74,8 @@ __simd_vf__ inline void ReduceARCastLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *
     }
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
-__simd_vf__ inline void ReduceARReuseSourceLessThanVLVF(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
+template <class T, const MicroAPI::RegTrait &Trait, auto Reducefunc>
+__simd_vf__ inline void ReduceARLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
     MicroAPI::RegTensor<T, Trait> vreg0;
@@ -91,7 +91,75 @@ __simd_vf__ inline void ReduceARReuseSourceLessThanVLVF(__ubuf__ T *dstAddr, __u
     MicroAPI::DataCopyUnAlignPost((__ubuf__ T *&)dstAddr, uDst, 0);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc, auto Reducefunc>
+enum class ReduceType {
+    IS_REDUCE_SUM,
+    IS_REDUCE_MAX,
+    IS_REDUCE_MIN,
+    OTHERS,
+};
+
+template <class T, const MicroAPI::RegTrait &Trait, ReduceType reduceType>
+__simd_callee__ inline void GroupReduce(
+    MicroAPI::RegTensor<T, Trait>& dst, MicroAPI::RegTensor<T, Trait>& src, MicroAPI::MaskReg& mask)
+{
+    if constexpr (reduceType == ReduceType::IS_REDUCE_SUM) {
+        MicroAPI::ReduceSumWithDataBlock(dst, src, mask);
+    } else if constexpr (reduceType == ReduceType::IS_REDUCE_MAX) {
+        MicroAPI::ReduceMaxWithDataBlock(dst, src, mask);
+    } else if constexpr (reduceType == ReduceType::IS_REDUCE_MIN) {
+        MicroAPI::ReduceMinWithDataBlock(dst, src, mask);
+    }
+}
+
+template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc,
+          auto GroupReduceType, bool NeedFoldR = true>
+__simd_vf__ inline void GroupReduceVf(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint16_t innerFoldNum,
+                                      uint16_t fusedA, uint16_t strideA, uint32_t outerRepElement)
+{
+    constexpr uint16_t blockDataLen = GetDataBlockSizeInBytes() / sizeof(T);
+    constexpr uint16_t blockNumInVl = vlSize / blockDataLen;
+    MicroAPI::RegTensor<T, Trait> vreg0;
+    MicroAPI::RegTensor<T, Trait> vreg1;
+    MicroAPI::UnalignReg uDst;
+    MicroAPI::MaskReg mask;
+    const uint16_t innerFoldBinaryNum = innerFoldNum - 1;
+
+    for (uint16_t loopA = 0; loopA < static_cast<uint16_t>(fusedA); ++loopA) {
+        mask = MicroAPI::UpdateMask<T, Trait>(outerRepElement);
+        if constexpr (NeedFoldR) {
+            auto srcAddrFold = srcAddr + blockDataLen;
+            DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                vreg0, srcAddr, innerFoldNum, strideA, mask);
+            for (uint16_t loopR = 0; loopR < innerFoldBinaryNum; ++loopR) {
+                DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                    vreg1, srcAddrFold, innerFoldNum, 1, mask);
+                Binaryfunc(vreg0, vreg1, vreg0, mask);
+            }
+        } else {
+            DataCopy(vreg0, srcAddr + vlSize * loopA);
+        }
+        GroupReduce<T, Trait, GroupReduceType>(vreg1, vreg0, mask);
+        DataCopyUnAlign((__ubuf__ T*&)dstAddr, vreg1, uDst, blockNumInVl);
+    }
+    MicroAPI::DataCopyUnAlignPost((__ubuf__ T*&)dstAddr, uDst, blockNumInVl);
+}
+
+template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize, auto Binaryfunc,
+          auto groupReduceType, bool NeedFoldR = true>
+__aicore__ inline void GroupReduceARLessThanVL(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t dimA, uint32_t dimR)
+{
+    constexpr uint16_t blockDataLen = GetDataBlockSizeInBytes() / sizeof(T);
+    constexpr uint16_t blockNumInVl = vlSize / blockDataLen;
+    const auto innerFoldNum = dimR / blockDataLen;
+    const auto fusedA = CeilDivision(dimA, blockNumInVl);
+    const auto strideA = (blockNumInVl * dimR) / blockDataLen;
+    uint32_t outerRepElement = dimA * blockDataLen;
+    GroupReduceVf<T, Trait, vlSize, Binaryfunc, groupReduceType, NeedFoldR>(
+        dstAddr, srcAddr, innerFoldNum, fusedA, strideA, outerRepElement);
+}
+
+template <class T, const MicroAPI::RegTrait &Trait, const uint16_t vlSize,
+          auto Binaryfunc, auto Reducefunc, ReduceType groupReduceType = ReduceType::OTHERS>
 __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, uint32_t dimA,
     uint32_t dimR)
 {
@@ -103,8 +171,16 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf
     } else if constexpr (SupportBytes<T, 1>()) {
         ReduceARCastLessThanVL<T, half, Trait, ReduceOpInternal::CastTraitB8F16, ReduceOpInternal::CastTraitF16B8,
             vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
+    } else if constexpr (groupReduceType != ReduceType::OTHERS) {
+        if (dimR == GetDataBlockSizeInBytes() / sizeof(T)) {
+            GroupReduceARLessThanVL<T, Trait, vlSize, Binaryfunc, groupReduceType, false>(dstAddr, srcAddr, dimA, dimR);
+        } else if (dimR <= vlSize / 2) {
+            GroupReduceARLessThanVL<T, Trait, vlSize, Binaryfunc, groupReduceType, true>(dstAddr, srcAddr, dimA, dimR);
+        } else {
+            ReduceARLessThanVL<T, Trait, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
+        }
     } else {
-        ReduceARReuseSourceLessThanVLVF<T, Trait, vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
+        ReduceARLessThanVL<T, Trait, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
     }
 }
 } // namespace AscendC

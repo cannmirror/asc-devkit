@@ -32,6 +32,13 @@ __aicore__ inline uint32_t CalculateRMainBlock(uint32_t count)
     return (count + 1) >> 1;
 }
 
+enum class ReduceType {
+    IS_REDUCE_SUM,
+    IS_REDUCE_MAX,
+    IS_REDUCE_MIN,
+    OTHERS,
+};
+
 constexpr uint16_t BASE_FOLD = 4;
 constexpr uint16_t BASE_FOLD_B64 = 3;
 constexpr uint16_t FLOD_THREE = 3;

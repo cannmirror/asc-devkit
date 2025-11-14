@@ -53,7 +53,8 @@ __aicore__ inline void ReduceMinARReuseSourceCompute(__ubuf__ T *dstAddr, __ubuf
     if ((srcShape[1] * sizeof(T)) % 32 == 0 || srcShape[1] == 1) {
         ReduceARImpl<T, MicroAPI::RegTraitNumOne,
             MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>,
-            MicroAPI::ReduceMin<castType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<castType>>, isReuseSource>(
+            MicroAPI::ReduceMin<castType, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<castType>>,
+            isReuseSource, ReduceType::IS_REDUCE_MIN>(
                 dstAddr, srcAddr, tmpAddr, srcShape[0], srcShape[1]);
     } else {
         if constexpr (SupportBytes<T, 1>()) {
