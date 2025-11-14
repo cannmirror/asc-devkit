@@ -503,12 +503,13 @@ __aicore__ inline void ReduceAROverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
         avgFolds, mainTimes, foldZero, foldOne, foldTwo, foldThree);
 }
 
-template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc, bool isReuseSource = false>
+template <class T, const MicroAPI::RegTrait &Trait, auto Binaryfunc, auto Reducefunc,
+          bool isReuseSource = false, ReduceType groupReduceType = ReduceType::OTHERS>
 __aicore__ inline void ReduceARImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAddr, __ubuf__ T *tmpAddr, uint32_t dimA, uint32_t dimR)
 {
     constexpr uint16_t vlSize = SupportBytes<T, 8>() ? GetVecLen() / sizeof(float) : GetVecLen() / sizeof(T);
     if (dimR <= vlSize) {
-        ReduceARReuseSourceLessThanVL<T, Trait, vlSize, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
+        ReduceARReuseSourceLessThanVL<T, Trait, vlSize, Binaryfunc, Reducefunc, groupReduceType>(dstAddr, srcAddr, dimA, dimR);
     } else {
         if constexpr (SupportBytes<T, 8>()) {
             ReduceARB64OverVL<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR);
