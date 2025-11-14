@@ -1,3 +1,13 @@
+# ----------------------------------------------------------------------------
+# This program is free software, you can redistribute it and/or modify it.
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# This file is a part of the CANN Open Software.
+# Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+# ----------------------------------------------------------------------------
 project (asc_op_compile_base)
 
 #build asc_op_compile_base whl pkg
@@ -44,7 +54,7 @@ target_compile_options(asc_platform PRIVATE
   -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
 )
 
-# 将共享库复制到 asc_op_compile_base 包的根目录下
+# 将共享库复制到打包 asc_op_compile_base whl包的根目录下
 add_custom_command(
   TARGET asc_platform POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E echo "Source file: $<TARGET_FILE:asc_platform>"
@@ -55,6 +65,13 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:asc_platform> ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/libasc_platform.so
   COMMAND ${CMAKE_STRIP} -s ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/libasc_platform.so
   COMMAND ${CMAKE_COMMAND} -E echo "Copied libasc_platform.so to ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/libasc_platform.so"
+)
+
+# 将.so复制回c_api，便于测试
+add_custom_target(asc_platform_test
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:asc_platform> ${ASC_OP_COMPILE_BASE_SRC}/c_api/libasc_platform.so
+  COMMAND ${CMAKE_STRIP} -s ${ASC_OP_COMPILE_BASE_SRC}/c_api/libasc_platform.so
+  COMMAND ${CMAKE_COMMAND} -E echo "Copied libasc_platform.so to ${ASC_OP_COMPILE_BASE_SRC}/c_api/libasc_platform.so"
 )
 
 # 生成 Python 轮子包
@@ -74,16 +91,3 @@ add_custom_target(${ASC_OP_COMPILE_BASE_WHL_NAME} ALL
     echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME} end"
   DEPENDS asc_platform
 )
-
-# add_custom_target(${ASC_OP_COMPILE_CHECK_WHL} ALL
-#   COMMAND /bin/sh -c "[ -n \"\$(find ${ASC_OP_COMPILE_BASE_DIR}/dist -name '*.whl' -type f)\" ] && echo \"[ASC_OP_COMPILE_BASE]: FIND .whl FILE\" || echo \"[ASC_OP_COMPILE_BASE]: NOT FIND .whl FILE\""
-#   DEPENDS ${ASC_OP_COMPILE_BASE_WHL_NAME}
-#   VERBATIM
-# )
-
-# add_custom_target(${ASC_OP_COMPILE_MOVE_WHL} ALL
-#   COMMAND mkdir ${CMAKE_INSTALL_PREFIX}/lib -p &&
-#     ${CMAKE_COMMAND} -E rename ${ASC_OP_COMPILE_BASE_DIR}/dist/asc_op_compile_base*.whl ${CMAKE_INSTALL_PREFIX}/lib/${ASC_OP_COMPILE_BASE_WHL_NAME} &&
-#     echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME} end"
-#   DEPENDS ${ASC_OP_COMPILE_CHECK_WHL}
-# )

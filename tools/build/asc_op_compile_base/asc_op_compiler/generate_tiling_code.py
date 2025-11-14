@@ -12,14 +12,14 @@
 generate tiling code
 """
 
-from asc_op_compile_base.common.platform.platform_info import get_soc_spec
+from .global_storage import global_var_storage
 
 
 def generate_pointer_directly_assess_data(is_dynamic: bool = True, \
     is_micro=True, tiling_assign_str: str = ""):
     """generate code to access data directly by pointer"""
 
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     # 310P can't use const qualifier due to compiler reason
     is_need_const = "" if short_soc_version == "Ascend310P" else "const"
 
@@ -29,6 +29,7 @@ def generate_pointer_directly_assess_data(is_dynamic: bool = True, \
 #define __tiling_data_ptr__ __gm__ {is_need_const}
 
 #define GET_TILING_DATA_PTR_WITH_STRUCT(tiling_struct, dst_ptr, tiling_ptr)                                           \
+    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                                             \
     __tiling_data_ptr__ tiling_struct *dst_ptr = (__tiling_data_ptr__ tiling_struct *)tiling_ptr;
 
 #define COPY_TILING_WITH_STRUCT(tiling_struct, src_ptr, dst_ptr)                                                          \
@@ -49,6 +50,7 @@ def generate_pointer_directly_assess_data(is_dynamic: bool = True, \
 #define __tiling_data_ptr__ {is_need_const}
 
 #define GET_TILING_DATA_PTR_WITH_STRUCT(tiling_struct, dst_ptr, tiling_ptr)                                                     \
+    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                                             \
     {is_need_const} tiling_struct __var__##dst_ptr;                                                                             \
     __tiling_data_ptr__ tiling_struct *dst_ptr = &__var__##dst_ptr;
 
@@ -70,6 +72,7 @@ def generate_pointer_directly_assess_data(is_dynamic: bool = True, \
 #define __tiling_data_ptr__ {is_need_const}
 
 #define GET_TILING_DATA_PTR_WITH_STRUCT(tiling_struct, dst_ptr, tiling_ptr)                                                     \
+    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                                             \
     {tiling_assign_str % ('dst_ptr')}                                                                                           \
     {is_need_const} tiling_struct __var__##dst_ptr =                                                                            \
         *reinterpret_cast<{is_need_const} tiling_struct *>(__ascendc_arr_##dst_ptr);                                            \

@@ -13,7 +13,7 @@ AscendC global var storage class
 """
 
 import threading
-
+from asc_op_compile_base.common.platform.platform_info import get_soc_spec
 
 class GlobalStorageSingleton:
     _instance = None
@@ -26,6 +26,7 @@ class GlobalStorageSingleton:
         return cls._instance
 
     def __init__(self):
+        self.ascendc_short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
         self.ascendc_compile_debug_config = False
         self.ascendc_dump_disable_compile_options = False
         self.ascendc_debug_compile_options = False
@@ -53,9 +54,11 @@ class GlobalStorageSingleton:
         self.ascendc_dump_assert_only = False
         self.ascendc_enable_dump_workspace = False
         self.ascendc_meta_info = ""
+        self.ascendc_tiling_no_register = False
 
 
     def global_storage_reset(self):
+        self.ascendc_short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
         self.ascendc_compile_debug_config = False
         self.ascendc_dump_disable_compile_options = False
         self.ascendc_debug_compile_options = False
@@ -82,6 +85,7 @@ class GlobalStorageSingleton:
         self.ascendc_dump_assert_only = False
         self.ascendc_enable_dump_workspace = False
         self.ascendc_meta_info = ""
+        self.ascendc_tiling_no_register = False
 
 
     def set_variable(self, name, value):

@@ -1,4 +1,4 @@
 .vscode
-build
+/build/
 output
 __pycache__/

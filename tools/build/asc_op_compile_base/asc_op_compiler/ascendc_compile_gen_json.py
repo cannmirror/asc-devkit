@@ -136,7 +136,8 @@ def _gen_mix_json_from_seperate_json_for_kernel_type(kernel_name: str, task_rati
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("write json file failed, reason is:", err))
 
 
-def _dynamic_kernel_list_to_json(kernel_name: str, tiling_key_list: list, enable_deterministic: bool):
+def _dynamic_kernel_list_to_json(kernel_name: str, tiling_key_list: list, \
+    enable_deterministic: bool, tiling_key_deterministic: dict):
     kernel_meta_path = CommonUtility.get_kernel_meta_dir()
     dynamic_kernel_json_path = os.path.join(kernel_meta_path, kernel_name + '.json')
     try:
@@ -147,7 +148,10 @@ def _dynamic_kernel_list_to_json(kernel_name: str, tiling_key_list: list, enable
     js['kernelName'] = kernel_name
     js['kernelList'] = []
     for tiling_key in tiling_key_list:
-        if enable_deterministic:
+        if tiling_key in tiling_key_deterministic:
+            js['kernelList'].append({"deterministic": tiling_key_deterministic[tiling_key], \
+                "kernelName": kernel_name + "_" + tiling_key})
+        elif enable_deterministic:
             if get_current_build_config("enable_deterministic_mode") == 1:
                 js['kernelList'].append({"deterministic": "true", "kernelName": kernel_name + '_' + tiling_key})
             else:
@@ -163,7 +167,7 @@ def _dynamic_kernel_list_to_json(kernel_name: str, tiling_key_list: list, enable
 
 
 def _dynamic_regbase_kernel_list_to_json(kernel_name: str, tiling_key_list: list, enable_deterministic: bool, \
-    enable_mix_for_profiling: bool):
+    enable_mix_for_profiling: bool, tiling_key_deterministic: dict):
     kernel_meta_path = CommonUtility.get_kernel_meta_dir()
     dynamic_kernel_json_path = os.path.join(kernel_meta_path, kernel_name + '.json')
     try:
@@ -177,7 +181,10 @@ def _dynamic_regbase_kernel_list_to_json(kernel_name: str, tiling_key_list: list
     if enable_mix_for_profiling:
         js['magic'] = "RT_DEV_BINARY_MAGIC_ELF"
     for tiling_key in tiling_key_list:
-        if enable_deterministic:
+        if tiling_key in tiling_key_deterministic:
+            js['kernelList'].append({"deterministic": tiling_key_deterministic[tiling_key], \
+                "kernelName": kernel_name + '_' + tiling_key})
+        elif enable_deterministic:
             if get_current_build_config("enable_deterministic_mode") == 1:
                 js['kernelList'].append({"deterministic": "true", "kernelName": kernel_name + '_' + tiling_key})
             else:
@@ -337,7 +344,11 @@ def _dynamic_kernel_list_to_json_for_kernel_type(compile_info: CompileInfo, \
         tiling_key_dict = {}
         if final_kernel_type != 0x1 and final_kernel_type != 0x2:
             tiling_key_dict = _get_kernel_type_dict(compile_info, tiling_key)
-        if enable_deterministic:
+        if tiling_key in compile_info.tiling_key_deterministic:
+            tiling_key_dict["deterministic"] = compile_info.tiling_key_deterministic[tiling_key]
+            tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
+            js['kernelList'].append(tiling_key_dict)
+        elif enable_deterministic:
             if get_current_build_config("enable_deterministic_mode") == 1:
                 tiling_key_dict["deterministic"] = "true"
                 tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key

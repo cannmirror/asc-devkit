@@ -84,3 +84,5 @@ from .platform_info import get_soc_spec
 from .platform_info import VECTOR_INST_BLOCK_WIDTH
 from .platform_info import get_block_size
 from .platform_info_ import VERSION_MINI
+
+from .cce_buffer import cur_cce_product_params
