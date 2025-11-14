@@ -21,6 +21,7 @@
 #include "kernel_utils.h"
 
 namespace AscendC {
+__aicore__ inline void PrintTimeStamp(uint32_t descId);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 inline uint8_t* GetBaseAddrCpu(int8_t logicPos)
 {
