@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# This program is free software, you can redistribute it and/or modify.
+# This program is free software, you can redistribute it and/or modify it.
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This file is a part of the CANN Open Software.
 # Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
@@ -22,7 +22,6 @@ from dataclasses import dataclass
 from asc_op_compile_base.asc_op_compiler import cce_runtime
 from asc_op_compile_base.common.buildcfg import get_current_build_config
 from asc_op_compile_base.common.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
-from asc_op_compile_base.common.platform.platform_info import get_soc_spec
 from asc_op_compile_base.common.ccec import CCECInfo
 from .ascendc_common_utility import CommonUtility, write_mk, is_enable_ascendc_cov, \
     is_enable_build_log, is_enable_sanitizer
@@ -105,7 +104,7 @@ def fatbin_objs(obj_files: list, dst_file: str, is_debug: bool, compile_log_path
 
 
 def link_relocatable(bin_file_path, compile_log_path=None):
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     if short_soc_version == "Ascend310B":
         link_cmd = [CCECInfo.get_exe("ld.lld"),
                     "-m",
@@ -128,6 +127,21 @@ def link_relocatable(bin_file_path, compile_log_path=None):
                     "%s" % bin_file_path,
                     '-q',
                     ]
+    CommonUtility.run_cmd_inner(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
+
+
+def link_relocatable_meta_file(bin_file_path, meta_file_path, compile_log_path=None):
+    link_cmd = [CCECInfo.get_exe("ld.lld"),
+                "-m",
+                "aicorelinux",
+                "-Ttext=0",
+                "%s" % bin_file_path,
+                "%s" % meta_file_path,
+                "-static",
+                "-o",
+                "%s" % bin_file_path,
+                '-q',
+                ]
     CommonUtility.run_cmd_inner(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
 
 

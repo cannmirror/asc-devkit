@@ -13,7 +13,8 @@ super kernel
 """
 import os
 import stat
-from .super_kernel_utility import get_soc_spec, KernelMetaType, \
+from .global_storage import global_var_storage
+from .super_kernel_utility import KernelMetaType, \
     CommonUtility, gen_func_align_attribute, gen_dci_codes
 from .super_kernel_op_compile import super_kernel_compile, gen_file_header
 from .super_kernel_constants import SuperKernelPreLoadMode, SuperKernelDataCacheMode, \
@@ -987,9 +988,12 @@ def compile(kernel_infos, called_kernel_name="ascendc_super_kernel_plus", impl_m
                 }
             called_kernel_name: super kernel name
     """
+    # global_var_storage must be reset before every entry of compile
+    global_var_storage.global_storage_reset()
     if not CommonUtility.is_support_super_kernel():
         CommonUtility().ascendc_raise_python_err(ERR_CODE, \
-        f'current soc: {get_soc_spec("SHORT_SOC_VERSION")} series do not support super kernel feature')
+        f'current soc: {global_var_storage.get_variable("ascendc_short_soc_version")} '
+        f'series do not support super kernel feature')
 
     kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
     if os.path.exists(os.path.join(kernel_meta_dir, called_kernel_name + ".o")):

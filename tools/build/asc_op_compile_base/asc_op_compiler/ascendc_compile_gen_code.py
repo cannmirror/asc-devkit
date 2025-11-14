@@ -243,6 +243,12 @@ def update_tiling_size_for_oom(compile_info: CompileInfo, tiling_info: TilingInf
             content += f"    uint64_t tmpTilingSizeForOOM = sizeof({compile_info.tiling_key_struct_map[tiling_key]});\n"
             content += f"    tmpTilingSizeForOOM = (tmpTilingSizeForOOM + 7) / 8 * 8;\n"
             content += "#endif\n"
+    elif global_var_storage.get_variable("ascendc_tiling_no_register"):
+        for tiling_key in tiling_info.tiling_key_list:
+            content += f"#if {TILING_KEY_MACRO} == {tiling_key}UL\n"
+            content += f"    uint64_t tmpTilingSizeForOOM = g_custom_tiling_size_meta_{tiling_key};\n"
+            content += f"    tmpTilingSizeForOOM = (tmpTilingSizeForOOM + 7) / 8 * 8;\n"
+            content += "#endif\n"
     else:
         if len(tiling_info.tiling_key_data_size) == 0:
             content += "    uint64_t tmpTilingSizeForOOM = {};\n".format(int(dyn_input_shape_offset))

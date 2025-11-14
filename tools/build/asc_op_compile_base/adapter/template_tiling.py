@@ -98,6 +98,10 @@ class TilingTemplateParams:
             if not set(self.values).issubset({0, 1}):
                 raise RuntimeError("There is invalid number in ASCENDC_TPL_BOOL_{} {}!"
                     " Value should only be in [0, 1].".format(self.macro_type, self.name))
+        elif self.param_type == TilingParamType.TPL_DETERMINISTIC:
+            if not set(self.values).issubset({'true', 'false'}):
+                raise RuntimeError("There is invalid number in ASCENDC_TPL_DETERMINISTIC_SEL!"
+                    "Value should only be in [0, 1, true, false].")
         else:
             if self.bit_width <= 0:
                 raise RuntimeError("Bit width in ASCENDC_TPL_{}_{} {}"
@@ -232,8 +236,14 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
                 name, TilingParamType.TPL_KERNEL_TYPE, format_list, 8, macro_type))
         elif sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL"):
             cur_deter_flag = extract_str(tiling_param_list[i + 1])
+            if len(cur_deter_flag) != 1:
+                raise RuntimeError("ASCENDC_TPL_DETERMINISTIC_SEL can only one value can be specified")
+            if cur_deter_flag[0] == "1":
+                cur_deter_flag = ["true"]
+            if cur_deter_flag[0] == "0":
+                cur_deter_flag = ["false"]
             tiling_param.append(TilingTemplateParams("DETERMINISTIC", \
-                TilingParamType.TPL_DETERMINISTIC, cur_deter_flag, 8, macro_type))
+                TilingParamType.TPL_DETERMINISTIC, cur_deter_flag, 1, macro_type))
         elif sub_str.startswith("ASCENDC_TPL_UINT"):
             uint_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_UINT_{}_'.format(macro_type))

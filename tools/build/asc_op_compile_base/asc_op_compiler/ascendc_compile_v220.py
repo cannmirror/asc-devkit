@@ -180,6 +180,22 @@ def gen_compile_cmd_v220(src_file: str, dst_file: str, compile_option_tuple, sub
         return _gen_compile_cmd_v220(src_file, dst_file, compile_option_tuple, sub_arch, tiling_file, with_tiling_file)
 
 
+def gen_compile_cmd_for_meta_info(src_file: str, dst_file: str, compile_option_tuple, sub_arch: str):
+    if global_var_storage.get_variable("ascendc_enable_ccache") == True:
+        compile_cmd = [os.environ.get("ASCENDC_CCACHE_EXECUTABLE"), \
+            global_var_storage.get_variable("ascendc_compiler_path"), '-c', '-O3']
+    else:
+        compile_cmd = [global_var_storage.get_variable("ascendc_compiler_path"), '-c', '-O3']
+    for option in compile_option_tuple.compile_options:
+        compile_cmd += [option]
+    compile_cmd += [src_file, "--cce-aicore-arch=%s" % sub_arch,
+                    "--cce-aicore-only", "-o", dst_file]
+    if CommonUtility.is_c310():
+        compile_cmd += ["-D__DAV_C310__"]
+    compile_cmd += ["-std=c++17"]
+    return compile_cmd
+
+
 def get_v220_kernel_type_mix_flag(compile_info: CompileInfo, tiling_info: TilingInfo):
     is_v220_flag = CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6()
     kernel_type_res = 0
@@ -462,6 +478,118 @@ def v220_mode(inst) -> int:
     return 0
 
 
+def v310_mode_vec_ofile(little_endian, binary_32) -> int:
+    vf_high_low_map = {
+        '01000010011000100': '00', # wait_intra_block
+        '01000010010000100': '00', # set_intra_block
+        '01000000101000100': '00', # set_flag
+        '01000000110000100': '00', # wait_flag
+    }
+    # DMA
+    vec_high_low_map = {
+        '0110101010': '1', # ND_DMA_DCI
+    }
+    vec_high_map = {
+        '0110111001', # ND_DMA_OUT_TO_UB
+        '0111010010', # MOV_OUT_TO_UB_ALIGN_V2
+        '0111010011', # MOV_UB_TO_OUT_ALIGN_V2
+    }
+    vec_high_mid_map = {
+        '011100001': '0100', # MOV_UB_TO_L1
+    }
+    high_9 = binary_32[:9] 
+    high_10 = binary_32[:10] 
+    mid_36 = binary_32[25:29] 
+    low_1 = binary_32[31] 
+
+    conditions = [
+        # PIPE_V: exclude movemask
+        (little_endian[0] == '1' and little_endian[1] == '5' and
+        not (binary_32[:11] == "00010101110" and
+            binary_32[16:26] == "0000000000" and
+            binary_32[27:] == "10011")),
+
+        # set, wait
+        (binary_32[:17] in vf_high_low_map and
+        binary_32[30:] == vf_high_low_map[binary_32[:17]]),
+
+        # DMA
+        (high_10 in vec_high_low_map and low_1 == vec_high_low_map[high_10]),
+        (high_10 in vec_high_map),
+        (high_9 in vec_high_mid_map and mid_36 == vec_high_mid_map[high_9]),        
+    ]
+
+    if any(conditions):
+        return CORE_TYPE_VEC
+
+    return 0
+
+
+def v310_mode_cube_ofile(little_endian, binary_32) -> int:
+    cube_high_low_map = {
+        '0110000001': '10', # SET_L1_2D
+        '0110011000': '10', # LOAD_OUT_TO_L1_2Dv2
+    }
+    cube_high_low2_map = {
+        '0110110100': '1', # LOAD_L1_TO_L0B_2D_TRANSPOSE
+        '0110110101': '1',
+        '0110110110': '1',
+        '0110110111': '1',
+    }
+    cube_high_map = {
+        '0110110000', # LOAD_L1_TO_L0A_2Dv2和LOAD_L1_TO_L0B_2Dv2
+        '0110110001',
+        '0110110010',
+        '0110110011',
+        '0110101000', # MOV_OUT _TO_L1 _MULTI_DN2NZ
+        '0110101100', # MOV_OUT _TO_L1 _MULTI_ND2NZ
+        '0110111010', # MOV_OUT_TO_L1_V2
+        '0111010000', # MOV_OUT_TO_L1_ALIGN_V2
+        '0111011000', # LOAD_L1_TO_L0A_MX_2Dv2和LOAD_L1_TO_L0B_MX_2Dv2
+        '0110011100', # LOAD_L1_TO_L0A_3Dv2和LOAD_L1_TO_L0B_3Dv2
+        '0110011101',
+        '0110010100',
+        '0110010101',
+    }
+    high_10 = binary_32[:10] 
+
+    conditions = [
+        # Fixpipe
+        (little_endian[0] == 'c' and little_endian[1] in '0123'),
+
+        # matrix instr
+        (little_endian[0] == 'e' and little_endian[1] in '012345' and binary_32[30:] == '00'),
+        (little_endian[0] == 'f' and little_endian[1] in '01'),
+        (little_endian[0] == 'f' and little_endian[1] == '6' and binary_32[30:] == '00'),
+        (little_endian[0] == 'f' and little_endian[1] in '2345abcd' and binary_32[30] == '0'),
+
+        # DMA
+        (binary_32[:9] == '011100100' and binary_32[25:29] in ('0001', '0101')),
+        (high_10 in cube_high_low_map and binary_32[30:] == cube_high_low_map[high_10]),
+        (high_10 in cube_high_low2_map and binary_32[31] == cube_high_low2_map[high_10]),
+        (high_10 in cube_high_map),
+    ]
+
+    if any(conditions):
+        return CORE_TYPE_CUBE
+
+    return 0
+
+
+def v310_mode(inst, cubemode) -> int:
+    if len(inst) != 8:
+        return 0
+
+    little_endian = f"{int.from_bytes(int(inst, 16).to_bytes(4, 'little'), 'big'):08x}"
+    binary_32 = bin(int(little_endian, 16))[2:].zfill(32)
+
+    return (
+        v310_mode_cube_ofile(little_endian, binary_32)
+        if cubemode
+        else v310_mode_vec_ofile(little_endian, binary_32)
+    )
+
+
 def decode_mode(mode) -> int:
     # 3 means insts contain cube and vector instruct
     if mode == 3:
@@ -515,7 +643,9 @@ def get_code_channel_v220_by_first_tiling_key(params: InferChannelParams):
                 continue
             for inst in insts[1: 5]:
                 hardware_sync_in_asm = hardware_sync_in_asm or _is_hard_sync_instr(inst)
-                if not (CommonUtility.is_c310() or CommonUtility.is_310r6()):
+                if CommonUtility.is_c310() or CommonUtility.is_310r6():
+                    mode |= v310_mode(inst, arch == f"dav-{chip_version}-cube")
+                else:
                     mode |= v220_mode(inst)
     code_channel = decode_mode(mode)
     return code_channel, hardware_sync_in_asm

@@ -17,7 +17,6 @@ from .ascendc_common_utility import CommonUtility, CompileInfo
 from .get_op_tiling import OpInfo, TilingInfo
 from asc_op_compile_base.common.buildcfg import get_current_build_config
 from asc_op_compile_base.common.error_mgr import TBE_DEFAULT_PYTHON_ERROR_CODE
-from asc_op_compile_base.common.platform.platform_info import get_soc_spec
 from .ascendc_constants import CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC, INPUT_OUTPUT_DTYPE_LEN, \
     TILING_KEY_MACRO
 from .global_storage import global_var_storage
@@ -185,6 +184,13 @@ class DFXSectionGenerator:
         else:
             return [f"(((sizeof({string_value}) + 8) >> {int((7 - i) * 8)}) & 0xff)" for i in range(8)]
 
+    def _tran_dfx_info_to_value_string(self, size_value: int):
+        if "oom" in get_current_build_config("tir.op_debug_config"):
+            total_size = ((size_value + 7) // 8) * 8 + 8 + 8 * self.param_placeholder_num
+        else:
+            total_size = size_value + 8
+        return [str((total_size >> ((7 - i) * 8)) & 0xFF) for i in range(8)]
+
 
     def _generate_binary_for_input_and_output(self, param: DFXArgInfo):
         # for static level_1 record real size dim shape, for level 2 push -1
@@ -215,6 +221,15 @@ class DFXSectionGenerator:
             else:
                 tiling_size = tiling_size + 8
             parameter.args_dfx_info[-8:] = self._tran_dfx_info_to_uint8_t(tiling_size, ArgTypeSize.U64)
+
+
+    def _generate_binary_for_tiling_without_register(self, tiling_info: TilingInfo, tiling_key: str, \
+        tiling_key_struct_size_map: dict):
+        parameter: DFXArgInfo = self.get_param("tiling")
+        tiling_struct_info = tiling_key_struct_size_map.get(str(tiling_key), None)
+        if tiling_struct_info is not None:
+            _, tiling_struct_size = tiling_struct_info
+        parameter.args_dfx_info[-8:] = self._tran_dfx_info_to_value_string(tiling_struct_size)
 
 
     def _generate_binary_section_for_static(self, compile_info: CompileInfo, op_info: OpInfo, tiling_info: TilingInfo):
@@ -256,7 +271,7 @@ class DFXSectionGenerator:
     def generate_kernel_type_section(self, compile_info: CompileInfo, kernel_name: str):
         section_var = f""
         if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
-            short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+            short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
             if compile_info.code_channel == CORE_TYPE_MIX:
                 section_var += \
                     f"static const struct FunLevelMixCoreType {kernel_name}_kernel_type_section __attribute__ "
@@ -333,7 +348,7 @@ class DFXSectionGenerator:
         if self.is_support is False:
             return ""
 
-        if not tiling_info.static_shape_flag:
+        if not tiling_info.static_shape_flag and not global_var_storage.get_variable("ascendc_tiling_no_register"):
             self._generate_binary_for_tiling(tiling_key, tiling_info, compile_info)
 
         section_content = f"// generate dfx section for tiling_key:{tiling_key}"
@@ -356,7 +371,53 @@ class DFXSectionGenerator:
         if kernel_type_section:
             section_content += self.generate_kernel_type_section(compile_info, kernel_name)
 
-        section_content += f"static const struct AscendCInfoMetaDFX {kernel_name}_dfx_section __attribute__ "
+        #generate AscendCInfoMetaDFX when tiling struct is register
+        if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+            section_content += f"static const struct AscendCInfoMetaDFX {kernel_name}_dfx_section __attribute__ "
+            section_content += f"((used, section (\".ascend.meta.{kernel_name}\"))) = "
+            section_content += "{"
+            binary_u8 = []
+            for param in self.params_base:
+                # binary of arg info tlv
+                binary_u8.extend(self._tran_dfx_info_to_uint8_t(FuncMetaType.F_TYPE_L0_EXCEPTION_DFX_ARGSINFO.value, \
+                                                                ArgTypeSize.U16))
+                # binary of sizeof dfx info by uint64_t
+                binary_u8.extend(self._tran_dfx_info_to_uint8_t(int(len(param.args_dfx_info) / 8), ArgTypeSize.U16))
+                binary_u8.extend(param.args_dfx_info)
+            self.section_size = len(binary_u8)
+            self.check_section_size()
+            # binary of dfx tlv
+            section_content += f"{{{FuncMetaType.F_TYPE_L0_EXCEPTION_DFX.value}, {self.section_size}}}, "
+            # generate binary for dfx value array
+            section_content += "{ "
+            for binary in binary_u8:
+                section_content += f"{binary}, "
+            section_content += "} "
+            section_content += "};\n"
+        if CommonUtility.is_c310() or CommonUtility.is_310r6():
+            section_content += self.generate_meta_info_func_section(tiling_key, compile_info, kernel_name)
+        section_content += f"#endif\n"
+        # generate struct for dfx section
+        if self.gen_dfx_struct_flag == False:
+            if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+                section_content = self._generate_dfx_info_struct() + section_content
+        return section_content
+
+    def _generate_dfx_info_struct(self):
+        content = f"""
+struct AscendCInfoMetaDFX {{
+    BaseTlv head;
+    uint8_t value[{self.section_size}];
+}};\n\n\n
+"""
+        self.gen_dfx_struct_flag = True
+        return content
+
+    def generate_dfx_section_without_tiling_register(self, tiling_key: str, tiling_info: TilingInfo, \
+        tiling_key_struct_size_map: dict, kernel_name: str):
+        if not tiling_info.static_shape_flag:
+            self._generate_binary_for_tiling_without_register(tiling_info, tiling_key, tiling_key_struct_size_map)
+        section_content = f"static const struct AscendCInfoMetaDFX {kernel_name}_dfx_section __attribute__ "
         section_content += f"((used, section (\".ascend.meta.{kernel_name}\"))) = "
         section_content += "{"
         binary_u8 = []
@@ -377,20 +438,6 @@ class DFXSectionGenerator:
             section_content += f"{binary}, "
         section_content += "} "
         section_content += "};\n"
-        if CommonUtility.is_c310() or CommonUtility.is_310r6():
-            section_content += self.generate_meta_info_func_section(tiling_key, compile_info, kernel_name)
-        section_content += f"#endif\n"
-        # generate struct for dfx section
         if self.gen_dfx_struct_flag == False:
             section_content = self._generate_dfx_info_struct() + section_content
         return section_content
-
-    def _generate_dfx_info_struct(self):
-        content = f"""
-struct AscendCInfoMetaDFX {{
-    BaseTlv head;
-    uint8_t value[{self.section_size}];
-}};\n\n\n
-"""
-        self.gen_dfx_struct_flag = True
-        return content

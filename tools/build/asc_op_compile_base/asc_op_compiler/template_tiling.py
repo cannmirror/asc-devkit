@@ -31,6 +31,11 @@ def extract_num(s):
     return [int(num) for num in numbers]
 
 
+def extract_str(s):
+    strs = re.findall(r'\w+', s)
+    return strs
+
+
 class TilingParamType(Enum):
     TPL_DTYPE = auto()
     TPL_FORMAT = auto()
@@ -38,6 +43,7 @@ class TilingParamType(Enum):
     TPL_BOOL = auto()
     TPL_TILING_STRUCT = auto()
     TPL_KERNEL_TYPE = auto()
+    TPL_DETERMINISTIC = auto()
     TPL_NONE = auto()
 
 
@@ -92,6 +98,10 @@ class TilingTemplateParams:
             if not set(self.values).issubset({0, 1}):
                 raise RuntimeError("There is invalid number in ASCENDC_TPL_BOOL_{} {}!"
                     " Value should only be in [0, 1].".format(self.macro_type, self.name))
+        elif self.param_type == TilingParamType.TPL_DETERMINISTIC:
+            if not set(self.values).issubset({'true', 'false'}):
+                raise RuntimeError("There is invalid number in ASCENDC_TPL_DETERMINISTIC_SEL!"
+                    "Value should only be in [0, 1, true, false].")
         else:
             if self.bit_width <= 0:
                 raise RuntimeError("Bit width in ASCENDC_TPL_{}_{} {}"
@@ -120,6 +130,7 @@ class TilingTemplateParams:
                     TilingParamType.TPL_BOOL: "BOOL",
                     TilingParamType.TPL_FORMAT: "FORMAT",
                     TilingParamType.TPL_UINT: "UINT",
+                    TilingParamType.TPL_DETERMINISTIC: "DETERMINISTIC",
                     TilingParamType.TPL_NONE: ""
         }
         return name_dict.get(self.param_type, "")
@@ -153,12 +164,14 @@ def check_valid_select_param(tiling_param_list: List[TilingTemplateParams], name
     total_bit_length = 0
     for tiling_param in tiling_param_list:
         if tiling_param.param_type == TilingParamType.TPL_TILING_STRUCT or \
-            tiling_param.param_type == TilingParamType.TPL_KERNEL_TYPE:
+            tiling_param.param_type == TilingParamType.TPL_KERNEL_TYPE or \
+            tiling_param.param_type == TilingParamType.TPL_DETERMINISTIC:
             continue
         name = tiling_param.name
         total_bit_length += tiling_param.bit_width
         if total_bit_length > 64:
-            raise RuntimeError("Total bit width cannot be greater than 64!")
+            raise RuntimeError(f"name:{tiling_param.name}, type:{tiling_param.get_param_type_str()}, \
+Total bit width cannot be greater than 64!")
         tpl_type = tiling_param.param_type
         vals = tiling_param.values
         matched_param = None
@@ -199,10 +212,13 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
             res.append(tiling_param)
             tiling_param = []
         macro_type = "SEL" if sub_str.startswith("ASCENDC_TPL_DTYPE_SEL_") or \
-            sub_str.startswith("ASCENDC_TPL_FORMAT_SEL_") or sub_str.startswith("ASCENDC_TPL_UINT_SEL_")\
-             or sub_str.startswith("ASCENDC_TPL_BOOL_SEL_") or sub_str.startswith("ASCENDC_TPL_TILING_STRUCT_SEL_")\
-             or sub_str.startswith("ASCENDC_TPL_KERNEL_TYPE_SEL")\
-             else "DECL"
+            sub_str.startswith("ASCENDC_TPL_FORMAT_SEL_") or \
+            sub_str.startswith("ASCENDC_TPL_UINT_SEL_") or \
+            sub_str.startswith("ASCENDC_TPL_BOOL_SEL_") or \
+            sub_str.startswith("ASCENDC_TPL_TILING_STRUCT_SEL_") or \
+            sub_str.startswith("ASCENDC_TPL_KERNEL_TYPE_SEL") or \
+            sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL") else \
+            "DECL"
         if sub_str.startswith("ASCENDC_TPL_DTYPE"):
             dtype_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_DTYPE_{}_'.format(macro_type))
@@ -218,6 +234,16 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
             name = "KERNEL_TYPE"
             tiling_param.append(TilingTemplateParams(
                 name, TilingParamType.TPL_KERNEL_TYPE, format_list, 8, macro_type))
+        elif sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL"):
+            cur_deter_flag = extract_str(tiling_param_list[i + 1])
+            if len(cur_deter_flag) != 1:
+                raise RuntimeError("ASCENDC_TPL_DETERMINISTIC_SEL can only one value can be specified")
+            if cur_deter_flag[0] == "1":
+                cur_deter_flag = ["true"]
+            if cur_deter_flag[0] == "0":
+                cur_deter_flag = ["false"]
+            tiling_param.append(TilingTemplateParams("DETERMINISTIC", \
+                TilingParamType.TPL_DETERMINISTIC, cur_deter_flag, 1, macro_type))
         elif sub_str.startswith("ASCENDC_TPL_UINT"):
             uint_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_UINT_{}_'.format(macro_type))
@@ -254,6 +280,10 @@ def get_concated_tiling_key(template_param_list: List[TilingTemplateParams], \
             tiling_args_temp = tiling_args
         elif template_param.param_type == TilingParamType.TPL_KERNEL_TYPE:
             data["kernelType"] = template_param.values[0]
+            encode_ = ""
+            tiling_args_temp = tiling_args
+        elif template_param.param_type == TilingParamType.TPL_DETERMINISTIC:
+            data['deterministic'] = template_param.values[0]
             encode_ = ""
             tiling_args_temp = tiling_args
         else:

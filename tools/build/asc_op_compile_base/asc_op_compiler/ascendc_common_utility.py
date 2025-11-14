@@ -20,7 +20,6 @@ import shutil
 import struct
 from asc_op_compile_base.common.ccec import _build_aicore_compile_cmd, switching_compilation_mode
 from asc_op_compile_base.common.buildcfg import get_current_build_config
-from asc_op_compile_base.common.platform.platform_info import get_soc_spec
 from asc_op_compile_base.common.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
 from asc_op_compile_base.asc_op_compiler.op_tiling import tiling_so_arch_path
 from .get_op_tiling import get_tiling_info, OpInfo, get_tiling_info_v2
@@ -46,6 +45,7 @@ class CompileInfo:
         self.hard_sync: bool = False
         self.enable_deterministic: bool = False
         self.tiling_key_kernel_type: dict = {}
+        self.tiling_key_deterministic: dict = {}
         self.raw_tiling_key_kernel_type: dict = {}
         self.no_set_kernel_type: bool = True
         self.default_kernel_type: KernelMetaType = KernelMetaType.KERNEL_TYPE_MAX
@@ -61,6 +61,9 @@ class CompileInfo:
         self.super_kernel_early_start_wait_flag: bool = False
         self.super_kernel_info: dict = {}
         self.is_super_kernel_compile = False # used to judge super kernel compile or sub super kernel compile
+        self.max_tiling_size: int = 0
+        self.tiling_and_dfx_utils_file: str = ""  # used when tling struct is not register
+        self.tiling_and_dfx_utils_bin_path: str = ""
 
 
     def __str__(self):
@@ -139,7 +142,7 @@ class CommonUtility:
     """
     def __init__(self):
         pass
-    
+
     # write the cmpile_cmd to log
     @staticmethod
     def dump_compile_log(compile_cmd, stage: CompileStage, log_file=None):
@@ -231,10 +234,10 @@ class CommonUtility:
         cmd.insert(4, "-disable-machine-licm")
         if "-cce-aicore-jump-expand=false" in cmd:
             cmd[cmd.index("-cce-aicore-jump-expand=false")] = "-cce-aicore-jump-expand=true"
-        if get_soc_spec("SHORT_SOC_VERSION") == ASCEND_310P:
+        if global_var_storage.get_variable("ascendc_short_soc_version") == ASCEND_310P:
             cmd.insert(5, "-mllvm")
             cmd.insert(6, "-cce-aicore-function-stack-size=16000")
-        elif get_soc_spec("SHORT_SOC_VERSION") == ASCEND_310:
+        elif global_var_storage.get_variable("ascendc_short_soc_version") == ASCEND_310:
             cmd.insert(5, "-mllvm")
             cmd.insert(6, "-cce-aicore-function-stack-size=8192")
         proc = subprocess.Popen(
@@ -371,7 +374,7 @@ class CommonUtility:
         Returns:
             res: True means V220
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910B", "Ascend910_93"]:
             return True
         return False
@@ -384,7 +387,7 @@ class CommonUtility:
         Returns:
             res: True means current soc support super kernel
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910B", "Ascend910_93", "Ascend910_95"]:
             return True
         return False
@@ -397,7 +400,7 @@ class CommonUtility:
         Returns:
             res: True means soc version support workspace offset way
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910_95", "mc62cm12a"]:
             return True
         return False
@@ -410,7 +413,7 @@ class CommonUtility:
         Returns:
             res: True means V200
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend310P", "Ascend610"]:
             return True
         return False
@@ -422,7 +425,7 @@ class CommonUtility:
         Returns:
             res: True means V100
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910"]:
             return True
         return False
@@ -434,7 +437,7 @@ class CommonUtility:
         Returns:
             res: True means V300
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend310B", "Ascend610Lite"]:
             return True
         return False
@@ -447,7 +450,7 @@ class CommonUtility:
         Returns:
             res: True means V300
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend310B"]:
             return True
         return False
@@ -460,7 +463,7 @@ class CommonUtility:
         Returns:
             res: True means c310
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910_95"]:
             return True
         return False
@@ -475,7 +478,7 @@ class CommonUtility:
         Returns:
             res: True means has ffts addr
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version not in ["Ascend910_95"]:
             return True
         return False
@@ -488,7 +491,7 @@ class CommonUtility:
         Returns:
             res: True means 310r6
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910_55"]:
             return True
         return False
@@ -496,11 +499,11 @@ class CommonUtility:
     @staticmethod
     def is_m510():
         """return if current soc version is m510
- 
+
         Returns:
             res: True means m510
         """
-        short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["MC62CM12A"]:
             return True
         return False
@@ -651,7 +654,8 @@ format(str(stage), output))
         CommonUtility.print_compile_log(op_info.kernel_name, "get tiling info...", AscendCLogLevel.LOG_INFO)
         # temp enable avoid
         enable_vd = CommonUtility.is_c310()
-        if infered_info_from_ifile.default_tiling_struct != "":
+        if infered_info_from_ifile.default_tiling_struct != "" or global_var_storage.get_variable(\
+            "ascendc_tiling_no_register"):
             return get_tiling_info_v2(op_info, infered_info_from_ifile.tiling_key_list,
                                       infered_info_from_ifile.default_tiling_struct,
                                       infered_info_from_ifile.tiling_key_struct_map, value_depends, enable_vd)
@@ -683,7 +687,7 @@ def is_enable_sanitizer(compile_options):
         return False
     if os.path.exists(config_json_path) is False:
         return False
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     pre_asan_obj_path = {}
     try:
         with open(config_json_path, 'r') as fd:
@@ -707,7 +711,7 @@ def is_enable_sanitizer(compile_options):
         if os.path.exists(tmp_path) is False:
             raise Exception("asan obj file not exist")
         soc_obj_path.append(tmp_path)
-    global_var_storage.set_variable("ascendc_asan_obj_path", {short_soc_version: soc_obj_path})      
+    global_var_storage.set_variable("ascendc_asan_obj_path", {short_soc_version: soc_obj_path})
     return True
 
 
@@ -718,7 +722,7 @@ def is_enable_build_log():
     build_log_path = os.environ.get("ASCENDC_BUILD_LOG_DIR")
     if build_log_path is None:
         return False
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     if short_soc_version is None:
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("get soc version failed, reason is:", err))
     build_log_path = os.path.join(build_log_path, short_soc_version.lower())
@@ -763,7 +767,7 @@ def check_func_align(s):
         num = int(s)
     except Exception as err:
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("Invalid func-align option, reason is: ", err))
-    
+
     if num < 0:
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, \
 f'Invalid func-align option, func-align should be a positive integer, but got {num}')

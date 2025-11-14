@@ -22,13 +22,13 @@ import glob
 from pathlib import Path
 from collections import namedtuple
 from asc_op_compile_base.common.context import get_context
-from asc_op_compile_base.common.platform.platform_info import get_soc_spec
 from asc_op_compile_base.asc_op_compiler.op_tiling import do_op_tiling, _ASCEND_OPP_PATH_ENV, \
     _ASCEND_OPP_PATH_DEFAULT, so_arch_path2, op_impl_path
 from asc_op_compile_base.common.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
 from asc_op_compile_base.common.utils.log_utils import LogUtil, AscendCLogLevel
 import asc_op_compile_base.common.context.op_context as op_context
 from asc_op_compile_base.common.utils import log
+from .global_storage import global_var_storage
 from .generate_tiling_code import generate_pointer_directly_assess_data
 
 OpInfo = namedtuple('OpInfo', ['kernel_name', 'op_type', 'inputs', 'outputs', 'attrs', 'impl_mode', 'origin_inputs', \
@@ -44,7 +44,6 @@ opp_dir = os.environ.get(_ASCEND_OPP_PATH_ENV, _ASCEND_OPP_PATH_DEFAULT)
 config_default = os.path.join(opp_dir, "vendors", "config.ini")
 
 _TILING_NAMESPACE = "AscendC::tiling"
-
 
 def get_default_optiling_pathlist():
     vendor_list = []
@@ -307,7 +306,6 @@ def get_bytes_by_type(dtype):
     else:
         msg = "get_bytes_by_type cannot find type = " + dtype
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, (msg))
-        return None
 
 
 def _decode_tiling_data(tiling_def, run_info_tiling_data, struct_tiling_def_base):
@@ -498,7 +496,7 @@ def gen_all_dynamic_struct_def_except_self(is_optype_self, tiling_key, tiling_ke
 
 
 def gen_sub_class_body(tiling_def, has_arr):
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     class_body = "#ifdef ASCENDC_TIME_STAMP_ON\n"
     if short_soc_version == "Ascend310P" and has_arr:
         class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                                     \\\n"
@@ -566,6 +564,8 @@ def gen_static_shape(tiling_def, tilingdata, struct_tiling_def_base, all_dynamic
     class_body += "#else\n"
     class_body += "#define __aicore__ [aicore]\n"
     class_body += "#endif\n"
+    if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n\n"
     # all tiling struct info by dynamic, except the only one top-level struct of static-shape one itself
     class_body += all_dynamic_struct_def_except_self
     # the only one top-level struct of static-shape one itself
@@ -716,6 +716,8 @@ def gen_dynamic_shape(tiling_def, struct_tiling_def_base):
     class_body += "#else\n"
     class_body += "#define __aicore__ [aicore]\n"
     class_body += "#endif\n"
+    if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n\n"
     class_body += get_struct_shape(struct_tiling_def_base)
     class_body += get_dynamic_tiling_struct(tiling_def, struct_tiling_def_base)
     class_body += get_tiling_copy_func_and_micro(tiling_def.class_name)
@@ -888,6 +890,8 @@ def get_header_and_sub_struct_def(tiling_def, struct_tiling_def_base):
     start_body += "#else\n"
     start_body += "#define __aicore__ [aicore]\n"
     start_body += "#endif\n"
+    if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+        start_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n\n"
     start_body += get_struct_shape(struct_tiling_def_base)
     start_body += generate_pointer_directly_assess_data()
     end_body = f"#endif // __{class_name_upper}_HEADER__\n"
@@ -916,7 +920,7 @@ def _gen_tiling_copy_through_reserved_ub():
     constexpr uint32_t copy_tile_size = 8192;
     for (uint32_t stack_offset = 0; stack_offset < all_bytes; stack_offset += copy_tile_size) {
         uint32_t copy_size = stack_offset + copy_tile_size < all_bytes ? copy_tile_size : all_bytes - stack_offset;
-        copy_gm_to_ubuf_align_v2(((__ubuf__ uint8_t *)tilingdata_in_ub), 
+        copy_gm_to_ubuf_align_v2(((__ubuf__ uint8_t *)tilingdata_in_ub),
         ((__gm__ uint8_t *)p_tilingdata) + stack_offset, 0, 1, copy_size, 0, 0, false, 0, 0, 0);
         set_flag(PIPE_MTE2, PIPE_S, EVENT_ID0);
         wait_flag(PIPE_MTE2, PIPE_S, EVENT_ID0);
@@ -929,17 +933,21 @@ def _gen_tiling_copy_through_reserved_ub():
 
 
 def _get_tiling_data_without_time_stamp(class_name):
-    class_body = "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \\\n"
-    class_body += f"    struct __AUX__ascendc_struct_mocker_##tiling_data{{                     \\\n"
-    class_body += f"        uint8_t data[sizeof({class_name})];                                 \\\n"
-    class_body += f"    }}__attribute__((__may_alias__));                                       \\\n"
-    class_body += f"    __AUX__ascendc_struct_mocker_##tiling_data __aux__tiling_##tiling_data; \\\n"
-    class_body += f"    InitTilingData<{class_name}>(tiling_arg,                                \\\n"
-    class_body += f"        reinterpret_cast<{class_name}*>(&__aux__tiling_##tiling_data));     \\\n"
-    class_body += f"    {class_name} &tiling_data =                                             \\\n"
-    class_body += f"        reinterpret_cast<{class_name} &>(*(&__aux__tiling_##tiling_data));  \n\n"
+    if global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body = "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+    else:
+        class_body = "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \\\n"
+        class_body += f"    struct __AUX__ascendc_struct_mocker_##tiling_data{{                     \\\n"
+        class_body += f"        uint8_t data[sizeof({class_name})];                                 \\\n"
+        class_body += f"    }}__attribute__((__may_alias__));                                       \\\n"
+        class_body += f"    __AUX__ascendc_struct_mocker_##tiling_data __aux__tiling_##tiling_data; \\\n"
+        class_body += f"    InitTilingData<{class_name}>(tiling_arg,                                \\\n"
+        class_body += f"        reinterpret_cast<{class_name}*>(&__aux__tiling_##tiling_data));     \\\n"
+        class_body += f"    {class_name} &tiling_data =                                             \\\n"
+        class_body += f"        reinterpret_cast<{class_name} &>(*(&__aux__tiling_##tiling_data));  \n\n"
 
     class_body += "#define GET_TILING_DATA_WITH_STRUCT(tiling_struct, tiling_data, tiling_arg)                 \\\n"
+    class_body += "    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                   \\\n"
     class_body += "    struct __AUX__STRUCT_ascendc_struct_mocker_##tiling_data{                               \\\n"
     class_body += "        uint8_t data[sizeof(tiling_struct)];                                                \\\n"
     class_body += "    }__attribute__((__may_alias__));                                                        \\\n"
@@ -950,6 +958,7 @@ def _get_tiling_data_without_time_stamp(class_name):
         "    tiling_struct &tiling_data = reinterpret_cast<tiling_struct &>(*(&__aux__tiling_##tiling_data));  \n\n"
 
     class_body += "#define GET_TILING_DATA_MEMBER(tiling_type, member, var, tiling)                     \\\n"
+    class_body += "    REGISTER_TILINGDATA_SIZE(tiling_type, __COUNTER__);                              \\\n"
     class_body += "    struct __AUX__MEMBER##var {                                                      \\\n"
     class_body += "        uint8_t data[sizeof(decltype(((tiling_type *)0)->member))];                  \\\n"
     class_body += "    }__attribute__((__may_alias__));                                                 \\\n"
@@ -964,16 +973,21 @@ def _get_tiling_data_without_time_stamp(class_name):
 
 def _get_tiling_data_with_time_stamp(class_name):
     class_body = "#ifdef ASCENDC_TIME_STAMP_ON\n"
-    class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                            \\\n"
-    class_body += f"    {class_name} tiling_data;                                    \\\n"
-    class_body += f"    InitTilingData<{class_name}>(tiling_arg, &tiling_data);      \\\n"
-    class_body += _add_time_stamp_codes('TIME_STAMP_TILING_DATA')
+    if global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+    else:
+        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                            \\\n"
+        class_body += f"    {class_name} tiling_data;                                    \\\n"
+        class_body += f"    InitTilingData<{class_name}>(tiling_arg, &tiling_data);      \\\n"
+        class_body += _add_time_stamp_codes('TIME_STAMP_TILING_DATA')
     class_body += "#define GET_TILING_DATA_WITH_STRUCT(tiling_struct, tiling_data, tiling_arg)  \\\n"
+    class_body += "    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                    \\\n"
     class_body += "    tiling_struct tiling_data;                                               \\\n"
     class_body += "    InitTilingData<tiling_struct>(tiling_arg, &tiling_data);                 \\\n"
     class_body += _add_time_stamp_codes('TIME_STAMP_TILING_DATA_STRUCT')
 
     class_body += "#define GET_TILING_DATA_MEMBER(tiling_type, member, var, tiling)            \\\n"
+    class_body += "    REGISTER_TILINGDATA_SIZE(tiling_type, __COUNTER__);                     \\\n"
     class_body += "    decltype(((tiling_type *)0)->member) var;                               \\\n"
     class_body += "    size_t offset##var = (size_t)(&((tiling_type*)0)->member);              \\\n"
     class_body += "    InitTilingData<decltype(((tiling_type *)0)->member)>(tiling + offset##var, &var);\\\n"
@@ -981,15 +995,20 @@ def _get_tiling_data_with_time_stamp(class_name):
 
     class_body += "#else\n"
 
-    class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                            \\\n"
-    class_body += f"    {class_name} tiling_data;                                    \\\n"
-    class_body += f"    InitTilingData<{class_name}>(tiling_arg, &tiling_data);\n"
+    if global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+    else:
+        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                            \\\n"
+        class_body += f"    {class_name} tiling_data;                                    \\\n"
+        class_body += f"    InitTilingData<{class_name}>(tiling_arg, &tiling_data);\n"
 
     class_body += "#define GET_TILING_DATA_WITH_STRUCT(tiling_struct, tiling_data, tiling_arg) \\\n"
+    class_body += "    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                    \\\n"
     class_body += "    tiling_struct tiling_data;                                              \\\n"
     class_body += "    InitTilingData<tiling_struct>(tiling_arg, &tiling_data);\n"
 
     class_body += "#define GET_TILING_DATA_MEMBER(tiling_type, member, var, tiling)            \\\n"
+    class_body += "    REGISTER_TILINGDATA_SIZE(tiling_type, __COUNTER__);                     \\\n"
     class_body += "    decltype(((tiling_type *)0)->member) var;                               \\\n"
     class_body += "    size_t offset##var = (size_t)(&((tiling_type*)0)->member);              \\\n"
     class_body += "    InitTilingData<decltype(((tiling_type *)0)->member)>(tiling + offset##var, &var);\n"
@@ -1048,7 +1067,7 @@ len_burst, 0, 0);\n"
     class_body += "#endif\n"
     class_body += "}\n\n"
 
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     if short_soc_version in ["Ascend910_95", "Ascend910_55", "mc62cm12a"]:
         # use __AUX__ to create a new struct to reduce running time. __AUX__ name does not matter
         # original: initialize, then write value    use __AUX__: write value, then interpret_cast to needed struct
@@ -1098,20 +1117,24 @@ def _gen_class_body(short_soc_version, tiling_size, tiling_arr_data, tiling_stru
 
     else:
         tiling_assign_str = f"const uint64_t  __ascendc_arr_##%s[{tiling_size}] = {{{tiling_arr_data_str}}};"
-
-        class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                                           \\\n"
-        class_body += \
-            f"    {tiling_assign_str % ('tiling_data')}  \\\n"
-        class_body += \
-            f"    const {tiling_struct} tiling_data = *reinterpret_cast<const {tiling_struct} *>(__ascendc_arr_##tiling_data);\n\n"
+        if global_var_storage.get_variable("ascendc_tiling_no_register"):
+            class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                             \n"
+        else:
+            class_body += "#define GET_TILING_DATA(tiling_data, tiling_arg)                                       \\\n"
+            class_body += \
+                f"    {tiling_assign_str % ('tiling_data')}  \\\n"
+            class_body += \
+                f"    const {tiling_struct} tiling_data = *reinterpret_cast<const {tiling_struct} *>(__ascendc_arr_##tiling_data);\n\n"
 
         class_body += "#define GET_TILING_DATA_WITH_STRUCT(tiling_struct, tiling_data, tiling_arg)                \\\n"
+        class_body += "    REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                  \\\n"
         class_body += \
             f"    {tiling_assign_str % ('tiling_data')}   \\\n"
         class_body +=\
             f"    const tiling_struct tiling_data = *reinterpret_cast<const tiling_struct *>(__ascendc_arr_##tiling_data); \n\n"
 
         class_body += "#define GET_TILING_DATA_MEMBER(tiling_type, member, var, tiling)                            \\\n"
+        class_body += "    REGISTER_TILINGDATA_SIZE(tiling_type, __COUNTER__);                                     \\\n"
         class_body += f"    const uint64_t  __ascendc_arr_##var[{tiling_size}] = {{{tiling_arr_data_str}}}; \\\n"
         class_body += \
             f"    const tiling_type __ascendc_point##var = *reinterpret_cast<const tiling_type *>(__ascendc_arr_##var);\\\n"
@@ -1121,7 +1144,7 @@ def _gen_class_body(short_soc_version, tiling_size, tiling_arr_data, tiling_stru
 
 def gen_static_shape_v2(optype: str, tiling_struct: str, tiling_raw_data: str):
     tiling_size = len(tiling_raw_data)
-    short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
+    short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     if short_soc_version in ["Ascend310P"]:
         tiling_format = {"tiling": [tiling_size, "uint8"]}
     else:
@@ -1147,6 +1170,22 @@ def gen_static_shape_v2(optype: str, tiling_struct: str, tiling_raw_data: str):
     class_body += "#else\n"
     class_body += "#define __aicore__ [aicore]\n"
     class_body += "#endif\n"
+    if global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body += "#define ASCENDC_INTERNAL_STR(x) #x \n"
+        class_body += "#define ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(x) ASCENDC_INTERNAL_STR(x) \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT_IMPL(x, y) x##y \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT(x, y) ASCENDC_INTERNAL_CONCAT_IMPL(x, y) \n"
+        class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \\\n"
+        class_body += "    static constexpr uint64_t ASCENDC_INTERNAL_CONCAT(__ascend_tiling_struct_, \
+            ASCENDC_INTERNAL_CONCAT(TILING_KEY_VAR, counter)) \\\n"
+        class_body += "__attribute__((used, section( \\\n"
+        class_body += "        \".ascendc_tiling.\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_STR(tiling_struct) \"_\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(TILING_KEY_VAR) \".\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(counter) \\\n"
+        class_body += "    ))) = sizeof(tiling_struct); \n"
+    else:
+        class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n"
 
     tiling_assign_str, body = _gen_class_body(short_soc_version, tiling_size, tiling_arr_data, \
                                               tiling_struct, tiling_arr_data_str)
@@ -1167,6 +1206,22 @@ def gen_dynamic_shape_v2(optype: str, tiling_struct: str):
     class_body += "#else\n"
     class_body += "#define __aicore__ [aicore]\n"
     class_body += "#endif\n"
+    if global_var_storage.get_variable("ascendc_tiling_no_register"):
+        class_body += "#define ASCENDC_INTERNAL_STR(x) #x \n"
+        class_body += "#define ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(x) ASCENDC_INTERNAL_STR(x) \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT_IMPL(x, y) x##y \n"
+        class_body += "#define ASCENDC_INTERNAL_CONCAT(x, y) ASCENDC_INTERNAL_CONCAT_IMPL(x, y) \n"
+        class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \\\n"
+        class_body += "    static constexpr uint64_t ASCENDC_INTERNAL_CONCAT(__ascend_tiling_struct_, \
+            ASCENDC_INTERNAL_CONCAT(TILING_KEY_VAR, counter)) \\\n"
+        class_body += "__attribute__((used, section( \\\n"
+        class_body += "        \".ascendc_tiling.\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_STR(tiling_struct) \"_\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(TILING_KEY_VAR) \".\" \\\n"
+        class_body += "        ASCENDC_INTERNAL_EXPAND_AND_STRINGIFY(counter) \\\n"
+        class_body += "    ))) = sizeof(tiling_struct); \n"
+    else:
+        class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n"
     class_body += get_tiling_copy_func_and_micro(tiling_struct)
     class_body += generate_pointer_directly_assess_data()
     class_body += f"#endif // __{class_name_upper}_HEADER__\n"
@@ -1211,8 +1266,12 @@ def get_tiling_info_v2(op_info: OpInfo, tiling_key_list: list, default_tiling_st
         tiling_info.clear_atomic = run_info["clear_atomic"]
         tiling_info.schedule_mode = run_info.get("schedule_mode", 0)
         total_workspace_size = sum(run_info["workspaces"])
-        tiling_info.file_content = gen_static_shape_v2(optype, tiling_struct_expr_map[str(tiling_info.tiling_key)], \
-                                                             run_info["tiling_data"])
+        if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+            tiling_info.file_content = gen_static_shape_v2(optype, \
+                tiling_struct_expr_map[str(tiling_info.tiling_key)], run_info["tiling_data"])
+        else:
+            tiling_info.file_content = gen_static_shape_v2(optype, "ascendc_trigger_tiling_struct", \
+                                                                run_info["tiling_data"])
         tiling_info.static_workspace_size = total_workspace_size
         run_info["tiling_data"] = tiling_info.tiling_data.hex()
         tiling_info.raw_run_info = run_info
@@ -1223,8 +1282,11 @@ def get_tiling_info_v2(op_info: OpInfo, tiling_key_list: list, default_tiling_st
             context.add_workspace("total_workspace", size=total_workspace_size)
     else:
         tiling_info.static_shape_flag = False
-        context.add_workspace("total_workspace", size=-1)
-        tiling_info.file_content = gen_dynamic_shape_v2(optype, default_tiling_struct)
+        context.add_workspace("total_workspace", size=1)
+        if not global_var_storage.get_variable("ascendc_tiling_no_register"):
+            tiling_info.file_content = gen_dynamic_shape_v2(optype, default_tiling_struct)
+        else:
+            tiling_info.file_content = gen_dynamic_shape_v2(optype, "ascendc_trigger_tiling_struct")
     return tiling_info
 
 
