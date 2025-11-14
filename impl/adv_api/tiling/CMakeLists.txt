@@ -162,6 +162,8 @@ target_compile_options(
           -Wfloat-equal
           -D_FORTIFY_SOURCE=2
           -O2
+          -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+          -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
           $<$<STREQUAL:${PRODUCT_SIDE},host>:-DLOG_CPP>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fPIC>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fstack-protector-strong>

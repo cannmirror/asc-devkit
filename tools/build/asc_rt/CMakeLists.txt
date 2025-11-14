@@ -38,6 +38,8 @@ endif()
 target_compile_options(ascend_runtime_base PRIVATE
   -fvisibility-inlines-hidden
   -fvisibility=hidden
+  -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+  -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
 )
 
 target_link_libraries(ascend_runtime_base PRIVATE
