@@ -96,6 +96,7 @@ public:
                            { KERNEL_LOG(KERNEL_ERROR, "ret of alloc message can not be nullptr when client quit"); });
             uint32_t quitSignal = KfcMsgMakeFlag(KFC_Enum::SERVICE_QUIT, 0);
             *((__gm__ uint32_t *)msg) = quitSignal;
+            msg->ubAddr = GetTaskRationImpl(); // vector core nums: 1 & 2
  
 #ifdef __MSTX_DFX_REPORT__
             MstxCrossRecord record = {
