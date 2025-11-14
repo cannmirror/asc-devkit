@@ -13,7 +13,6 @@
 #include "kernel_utils.h"
 #include "kernel_operator.h"
 #include "kernel_operator_vec_template_impl.h"
-#include "simt_api/kernel_simt_intf.h"
 namespace AscendC {
 constexpr MicroAPI::CastTrait layoutZMrgZ = { MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
                                               MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN };
@@ -743,91 +742,199 @@ __simd_vf__ inline void CastDoubleToBf160(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     }
 }
 
-template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__simt_vf__ __aicore__ LAUNCH_BOUND(2048) inline void CastInt64ToDouble(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint32_t calCount)
+__simd_callee__ inline void Clz(MicroAPI::MaskReg &preg, MicroAPI::RegTensor<uint64_t> &srcReg, MicroAPI::RegTensor<uint64_t> &countZero)
 {
-    double dstVreg;
-    uint32_t num2, numImplicit, clzLen;
-    uint32_t numLeft = 52;
-    uint64_t num4 = 0x1;
-    uint64_t num5 = 0x10000000000000;
-    uint64_t doubleExponent, srcVreg, doubleNum0, discardBit, doubleMantissa, clzLenth, num1, num3;
-    uint64_t num6 = 1023;
-    int64_t nn;
-    uint64_t num0 = 0x8000000000000000;
-    int64_t zero = 0x0;
-    for (uint32_t i = Simt::GetThreadIdx<0>(); i < calCount; i+=Simt::GetThreadNum<0>()) {
+    uint64_t num1 = 0;
+    int16_t shiftScalar0 = 32;
+    uint64_t add = 32;
+    MicroAPI::RegTensor<uint64_t> tmpOne, tmpAdd, tmpTwo, tmpThree;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::MaskReg tempMask;
+    MicroAPI::ShiftRights(tmpOne, srcReg, shiftScalar0, preg);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, tmpOne, num1, preg);
+    MicroAPI::Add(tmpTwo, countZero, tmpAdd, tempMask);
+    MicroAPI::ShiftLefts(tmpAdd, srcReg, shiftScalar0, tempMask);
+    MicroAPI::Select(tmpThree, tmpAdd, srcReg, tempMask);
+    MicroAPI::Select(countZero, tmpTwo, countZero, tempMask);
+    shiftScalar0 = 48;
+    add = 16;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::ShiftRights(tmpOne, tmpThree, shiftScalar0, preg);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, tmpOne, num1, preg);
+    MicroAPI::Add(tmpTwo, countZero, tmpAdd, tempMask);
+    shiftScalar0 = 16;
+    MicroAPI::ShiftLefts(tmpAdd, tmpThree, shiftScalar0, tempMask);
+    MicroAPI::Select(tmpThree, tmpAdd, tmpThree, tempMask);
+    MicroAPI::Select(countZero, tmpTwo, countZero, tempMask);
+    shiftScalar0 = 56;
+    add = 8;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::ShiftRights(tmpOne, tmpThree, shiftScalar0, preg);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, tmpOne, num1, preg);
+    MicroAPI::Add(tmpTwo, countZero, tmpAdd, tempMask);
+    shiftScalar0 = 8;
+    MicroAPI::ShiftLefts(tmpAdd, tmpThree, shiftScalar0, tempMask);
+    MicroAPI::Select(tmpThree, tmpAdd, tmpThree, tempMask);
+    MicroAPI::Select(countZero, tmpTwo, countZero, tempMask);
+    shiftScalar0 = 60;
+    add = 4;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::ShiftRights(tmpOne, tmpThree, shiftScalar0, preg);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, tmpOne, num1, preg);
+    MicroAPI::Add(tmpTwo, countZero, tmpAdd, tempMask);
+    shiftScalar0 = 4;
+    MicroAPI::ShiftLefts(tmpAdd, tmpThree, shiftScalar0, tempMask);
+    MicroAPI::Select(tmpThree, tmpAdd, tmpThree, tempMask);
+    MicroAPI::Select(countZero, tmpTwo, countZero, tempMask);
+    shiftScalar0 = 62;
+    add = 2;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::ShiftRights(tmpOne, tmpThree, shiftScalar0, preg);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, tmpOne, num1, preg);
+    MicroAPI::Add(tmpTwo, countZero, tmpAdd, tempMask);
+    shiftScalar0 = 2;
+    MicroAPI::ShiftLefts(tmpAdd, tmpThree, shiftScalar0, tempMask);
+    MicroAPI::Select(tmpThree, tmpAdd, tmpThree, tempMask);
+    MicroAPI::Select(countZero, tmpTwo, countZero, tempMask);
+    shiftScalar0 = 63;
+    add = 1;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::ShiftRights(tmpOne, tmpThree, shiftScalar0, preg);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, tmpOne, num1, preg);
+    MicroAPI::Add(tmpTwo, countZero, tmpAdd, tempMask);
+    shiftScalar0 = 16;
+    MicroAPI::ShiftLefts(tmpAdd, tmpThree, shiftScalar0, tempMask);
+    MicroAPI::Select(tmpThree, tmpAdd, tmpThree, tempMask);
+    MicroAPI::Select(countZero, tmpTwo, countZero, tempMask);
+    MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tempMask, srcReg, num1, preg);
+    add = 64;
+    MicroAPI::Duplicate(tmpAdd, add);
+    MicroAPI::Select(countZero, tmpAdd, countZero, tempMask);
+}
+
+__simd_callee__ inline void DealLowerThan52(MicroAPI::MaskReg &tmpMask1, MicroAPI::RegTensor<uint64_t> &srcReg, MicroAPI::RegTensor<uint64_t> &countZero)
+{
+    uint64_t num0 = 1023;
+    MicroAPI::RegTensor<uint64_t> tmpReg1, expReg, tmpReg2;
+    MicroAPI::RegTensor<int64_t> scalar;
+    MicroAPI::Duplicate(tmpReg1, num0);
+    MicroAPI::Add(expReg, tmpReg1, countZero, tmpMask1);
+    num0 = 52;
+    MicroAPI::Duplicate(tmpReg1, num0);
+    MicroAPI::Sub(tmpReg2, tmpReg1, countZero, tmpMask1);
+    scalar = (MicroAPI::RegTensor<int64_t>&)tmpReg1;
+    MicroAPI::ShiftLeft(expReg, expReg, scalar, tmpMask1);
+    num0 = 1;
+    MicroAPI::Duplicate(tmpReg1, num0);
+    scalar = (MicroAPI::RegTensor<int64_t>&)countZero;
+    MicroAPI::ShiftLeft(tmpReg1, tmpReg1, scalar, tmpMask1);
+    MicroAPI::Sub(tmpReg1, srcReg, tmpReg1, tmpMask1);
+    scalar = (MicroAPI::RegTensor<int64_t>&)tmpReg2;
+    MicroAPI::ShiftLeft(tmpReg1, tmpReg1, scalar, tmpMask1);
+    MicroAPI::Add(tmpReg1, tmpReg1, expReg, tmpMask1);
+    MicroAPI::Select(srcReg, tmpReg1, srcReg, tmpMask1);
+}
+
+template <RoundMode roundMode>
+__simd_callee__ inline void DealHigherThan52(MicroAPI::MaskReg &tmpMask1, MicroAPI::MaskReg &tmpNegative, MicroAPI::RegTensor<uint64_t> &srcReg, MicroAPI::RegTensor<uint64_t> &countZero)
+{
+    uint64_t num0 = 1;
+    MicroAPI::MaskReg tmpMask;
+    MicroAPI::RegTensor<int64_t> scalar;
+    MicroAPI::RegTensor<uint64_t> tmpReg1, expReg, mantissaReg, discardBit, midTmp, tmpReg2;
+    MicroAPI::Duplicate(tmpReg1, num0);
+    scalar = (MicroAPI::RegTensor<int64_t>&)countZero;
+    MicroAPI::ShiftLeft(tmpReg1, tmpReg1, scalar, tmpMask1);
+    MicroAPI::Sub(tmpReg2, srcReg, tmpReg1, tmpMask1);
+    num0 = 1023;
+    MicroAPI::Duplicate(tmpReg1, num0);
+    MicroAPI::Add(expReg, tmpReg1, countZero, tmpMask1);
+    num0 = 52;
+    MicroAPI::Duplicate(tmpReg1, num0);
+    scalar = (MicroAPI::RegTensor<int64_t>&)tmpReg1;
+    MicroAPI::ShiftLeft(expReg, expReg, scalar, tmpMask1);
+    MicroAPI::Sub(tmpReg1, countZero, tmpReg1, tmpMask1);
+    scalar = (MicroAPI::RegTensor<int64_t>&)tmpReg1;
+    MicroAPI::ShiftRight(mantissaReg, tmpReg2, scalar, tmpMask1);
+    MicroAPI::ShiftLeft(mantissaReg, mantissaReg, scalar, tmpMask1);
+    MicroAPI::Sub(discardBit, tmpReg2, mantissaReg, tmpMask1);
+    MicroAPI::ShiftRight(mantissaReg, mantissaReg, scalar, tmpMask1);
+    num0 = 1;
+    MicroAPI::Duplicate(midTmp, num0);
+    MicroAPI::Sub(tmpReg1, tmpReg1, midTmp, tmpMask1);
+    scalar = (MicroAPI::RegTensor<int64_t>&)tmpReg1;
+    MicroAPI::ShiftLeft(midTmp, midTmp, scalar, tmpMask1);
+    MicroAPI::Duplicate(tmpReg1, num0);
+    if constexpr (roundMode == RoundMode::CAST_RINT) {
+        MicroAPI::Compare<uint64_t, CMPMODE::GT>(tmpMask, discardBit, midTmp, tmpMask1);
+        MicroAPI::Add(tmpReg2, mantissaReg, tmpReg1, tmpMask);
+        MicroAPI::Select(mantissaReg, tmpReg2, mantissaReg, tmpMask);
+        MicroAPI::Compare<uint64_t, CMPMODE::EQ>(tmpMask, discardBit, midTmp, tmpMask1);
+        MicroAPI::And(discardBit, mantissaReg, tmpReg1, tmpMask);
+        MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tmpMask, discardBit, 1, tmpMask);
+        MicroAPI::Add(tmpReg2, mantissaReg, tmpReg1, tmpMask);
+        MicroAPI::Select(mantissaReg, tmpReg2, mantissaReg, tmpMask);
+    } else if constexpr (roundMode == RoundMode::CAST_FLOOR) {
+        MicroAPI::MaskAnd(tmpMask, tmpNegative, tmpMask1, tmpMask1);
+        MicroAPI::CompareScalar<uint64_t, CMPMODE::GT>(tmpMask, discardBit, 0, tmpMask);
+        MicroAPI::Add(tmpReg2, mantissaReg, tmpReg1, tmpMask);
+        MicroAPI::Select(mantissaReg, tmpReg2, mantissaReg, tmpMask);
+    } else if constexpr (roundMode == RoundMode::CAST_CEIL) {
+        MicroAPI::MaskXor(tmpMask, tmpNegative, tmpMask1, tmpMask1);
+        MicroAPI::CompareScalar<uint64_t, CMPMODE::GT>(tmpMask, discardBit, 0, tmpMask);
+        MicroAPI::Add(tmpReg2, mantissaReg, tmpReg1, tmpMask);
+        MicroAPI::Select(mantissaReg, tmpReg2, mantissaReg, tmpMask);
+    } else if constexpr (roundMode == RoundMode::CAST_ROUND) {
+        MicroAPI::Compare<uint64_t, CMPMODE::GE>(tmpMask, discardBit, midTmp, tmpMask1);
+        MicroAPI::Add(tmpReg2, mantissaReg, tmpReg1, tmpMask);
+        MicroAPI::Select(mantissaReg, tmpReg2, mantissaReg, tmpMask);
+    }
+    MicroAPI::Add(tmpReg2, mantissaReg, expReg, tmpMask1);
+    MicroAPI::Select(srcReg, tmpReg2, srcReg, tmpMask1);
+}
+
+template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
+__simd_vf__ inline void CastInt64ToDouble(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint32_t calCount)
+{
+    constexpr uint16_t oneRepSize = GetVecLen() / sizeof(double);
+    uint16_t repeatTime = CeilDivision(calCount, oneRepSize);
+    uint32_t sreg = static_cast<uint16_t>(calCount);
+    uint64_t num1;
+    MicroAPI::MaskReg preg, tmpMask, tmpMask1, tmpNegative;
+    MicroAPI::RegTensor<int64_t> tmp, tmp1;
+    MicroAPI::RegTensor<uint64_t> srcReg, countZero, tmpReg;
+    MicroAPI::RegTensor<double> dstReg;
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        preg = MicroAPI::UpdateMask<int64_t, MicroAPI::RegTraitNumOne>(sreg);
+        MicroAPI::DataCopy(tmp, src + i * oneRepSize);
+        MicroAPI::CompareScalar<int64_t, CMPMODE::LT>(tmpNegative, tmp, 0, preg);
+        MicroAPI::Duplicate(tmp1, 0);
+        MicroAPI::Sub(tmp1, tmp1, tmp, tmpNegative);
+        MicroAPI::Select(tmp, tmp1, tmp, tmpNegative);
+        srcReg = (MicroAPI::RegTensor<uint64_t>&)tmp;
+        num1 = 0;
+        MicroAPI::Duplicate(countZero, num1);
+        num1 = 64;
+        Clz(preg, srcReg, countZero);
+        MicroAPI::CompareScalar<uint64_t, CMPMODE::EQ>(tmpMask, countZero, num1, preg);
+        num1 = 0;
+        MicroAPI::Duplicate(tmpReg, num1);
+        MicroAPI::Select(srcReg, tmpReg, srcReg, tmpMask);
+        MicroAPI::MaskXor(tmpMask, tmpMask, preg, preg);
         num1 = 63;
-        num3 = 0x1;
-        nn = src[i];
-        if (src[i] < zero) {
-            nn = zero - nn;
-        }
-        srcVreg = AscendC::GetScalarBitcodeValue<int64_t, uint64_t>(nn);
-        clzLen = Simt::Clz(srcVreg);
-        clzLenth = static_cast<uint64_t>(clzLen);
-        doubleExponent = num1 - clzLenth;
+        MicroAPI::Duplicate(tmpReg, num1);
+        MicroAPI::Sub(countZero, tmpReg, countZero, tmpMask);
         num1 = 52;
-        numImplicit = static_cast<uint32_t>(doubleExponent);
-        if (nn == 0) {
-            dstVreg = 0;
-            dst[i] = dstVreg;
-        } else if (doubleExponent <= num1) {
-            num2 = static_cast<uint32_t>(52 - doubleExponent);
-            doubleExponent = doubleExponent + num6;
-            doubleExponent = doubleExponent << numLeft;
-            num3 = num3 << numImplicit;
-            srcVreg = srcVreg - num3;
-            doubleMantissa = srcVreg << num2;
-            srcVreg = doubleMantissa + doubleExponent;
-            if(src[i] < zero) {
-                srcVreg = num0 + srcVreg;
-            }
-            dstVreg = *reinterpret_cast<double*>(&srcVreg);
-            dst[i] = dstVreg;
-        } else {
-            num2 = static_cast<uint32_t>(doubleExponent - 52);
-            num3 = num3 << numImplicit;
-            srcVreg = srcVreg - num3;
-            num3 = 0x1;
-            num4 = 0x1;
-            doubleMantissa = srcVreg >> num2;
-            doubleMantissa = doubleMantissa << num2;
-            discardBit = srcVreg - doubleMantissa;
-            num4 = num4 << (num2 - 1);
-            doubleMantissa = doubleMantissa >> num2;
-            if constexpr (roundMode == RoundMode::CAST_CEIL) {
-                if (src[i] > zero) {
-                    if (discardBit > 0) {
-                        doubleMantissa = doubleMantissa + num3;
-                    }
-                }
-            } else if constexpr (roundMode == RoundMode::CAST_FLOOR) {
-                if (src[i] < zero) {
-                    if (discardBit > 0) {
-                        doubleMantissa = doubleMantissa + num3;
-                    }
-                }
-            } else if constexpr (roundMode == RoundMode::CAST_ROUND) {
-                if (discardBit >= num4) {
-                    doubleMantissa = doubleMantissa + num3;
-                }
-            } else if constexpr (roundMode == RoundMode::CAST_RINT) {
-                if (discardBit > num4) {
-                    doubleMantissa = doubleMantissa + num3;
-                } else if((discardBit == num4) && (doubleMantissa & num3)) {
-                    doubleMantissa = doubleMantissa + num3;
-                }
-            }
-            doubleExponent = doubleExponent + num6;
-            doubleExponent = doubleExponent << numLeft;
-            srcVreg = doubleMantissa + doubleExponent;
-            if (src[i] < zero) {
-                srcVreg = num0 + srcVreg;
-            }
-            dstVreg = *reinterpret_cast<double*>(&srcVreg);
-            dst[i] = dstVreg;
-        }
+        MicroAPI::CompareScalar<uint64_t, CMPMODE::LE>(tmpMask1, countZero, num1, tmpMask);
+        DealLowerThan52(tmpMask1, srcReg, countZero);
+        MicroAPI::MaskXor(tmpMask, tmpMask1, tmpMask, tmpMask);
+        DealHigherThan52<roundMode>(tmpMask, tmpNegative, srcReg, countZero);
+        num1 = 0x8000000000000000;
+        MicroAPI::Duplicate(tmpReg, num1);
+        MicroAPI::Add(tmpReg, srcReg, tmpReg, tmpNegative);
+        MicroAPI::Select(srcReg, tmpReg, srcReg, tmpNegative);
+        dstReg = (MicroAPI::RegTensor<double>&)srcReg;
+        MicroAPI::DataCopy(dst + i * oneRepSize, dstReg, preg);
     }
 }
 
@@ -851,7 +958,7 @@ __aicore__ inline void CastDouble(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src
             VF_CALL<CastDoubleToBf160<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
         }
     } else if constexpr (cast_Int64ToDouble) {
-        Simt::VF_CALL<CastInt64ToDouble<DST_TYPE, SRC_TYPE, roundMode>>(AscendC::Simt::Dim3{1024, 1, 1}, dst, src, calCount);
+        VF_CALL<CastInt64ToDouble<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
     } else {
         ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "illegal type for cast"); });
     }
