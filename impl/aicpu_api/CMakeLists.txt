@@ -2,12 +2,13 @@ add_library(aicpu_api STATIC aicpu_dump.cpp)
 
 target_compile_options(aicpu_api PRIVATE
     -O2
-    -fPIC
     -std=c++17
-    -fvisibility=hidden
-    -fvisibility-inlines-hidden
-    -fstack-protector-strong
-    -ftrapv
+    -D_FORTIFY_SOURCE=2
+    $<$<STREQUAL:${PRODUCT_SIDE},device>:-fPIC>
+    $<$<STREQUAL:${PRODUCT_SIDE},device>:-fvisibility=hidden>
+    $<$<STREQUAL:${PRODUCT_SIDE},device>:-fvisibility-inlines-hidden>
+    $<$<STREQUAL:${PRODUCT_SIDE},device>:-fstack-protector-strong>
+    $<$<STREQUAL:${PRODUCT_SIDE},device>:-ftrapv>
 )
 
 if(BUILD_OPEN_PROJECT)
@@ -24,8 +25,8 @@ endif()
 
 target_compile_definitions(aicpu_api PRIVATE
     $<$<STREQUAL:${PRODUCT_SIDE},device>:__AICPU_DEVICE__>
-    _GLIBCXX_USE_CXX11_ABI=0>
-    _FORTIFY_SOURCE=2>
+    $<$<STREQUAL:${PRODUCT_SIDE},device>:_FORTIFY_SOURCE=2>
+    _GLIBCXX_USE_CXX11_ABI=0
 )
 
 install(TARGETS aicpu_api
