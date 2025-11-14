@@ -367,8 +367,8 @@ __simd_callee__ inline void SqrtFastInverseImpl(RegT& dstReg, RegT& srcReg, Mask
     vsel(srcRegCopy, tmpReg, srcRegCopy, cmpMaskReg);
 
     vdup(regOne, 1.0f, maskFull, modeValue);
-    vdiv(tmpReg, regOne, srcRegCopy, mask, modeValue);
-    vsqrt(dstRegCopy, tmpReg, mask, modeValue);
+    vsqrt(tmpReg, srcRegCopy, mask, modeValue);
+    vdiv(dstRegCopy, regOne, tmpReg, mask, modeValue);
 
     vmuls(tmpReg, dstRegCopy, negOne, mask, modeValue);      // -x
     vmul(errReg, dstRegCopy, srcRegCopy, mask, modeValue);   // b*x
