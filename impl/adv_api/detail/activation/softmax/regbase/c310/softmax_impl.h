@@ -636,7 +636,7 @@ __no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl
         for (uint16_t i = 0; i < factor; ++i) {
             pregOut = MicroAPI::UpdateMask<uint32_t>(sreg);
             LoadE2B<float>(sumVreg, tmpUb1 + i * factorRow);
-            StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, tmpVreg, pregOut);
+            StoreIfNeedCast<T2>(sumUb + i * blockStride * factorRow, sumVreg, pregOut);
             MicroAPI::DataCopy(tmpVreg, workUb + i * srcK * factorRow);
             MicroAPI::MaskAnd(pregDst, pregCnt, pregOut, pregFull);
             MicroAPI::Div(dstVreg, tmpVreg, sumVreg, pregDst);
