@@ -21,10 +21,10 @@
 namespace AscendC {
 
 template <typename T = MicroAPI::DefaultType, CMPMODE mode = CMPMODE::EQ, typename RegT>
-__simd_callee__ inline void CompareDoubleImpl(MicroAPI::MaskReg &dstMask, RegT &srcReg0, RegT &srcReg1, MicroAPI::MaskReg &mask)
+__simd_callee__ inline void CompareEqDoubleImpl(MicroAPI::MaskReg &dstMask, RegT &srcReg0, RegT &srcReg1, MicroAPI::MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(SupportType<ActualT, double, uint64_t>(), "CompareDoubleImpl only support double and uint64_t type");
+    static_assert(SupportType<ActualT, double, uint64_t>(), "CompareEqDoubleImpl only support double and uint64_t type");
     MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo> tmpSrcReg0 = (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)srcReg0;
 	MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo> tmpSrcReg1 = (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)srcReg1;
 	MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo> exponent0;
@@ -60,9 +60,124 @@ __simd_callee__ inline void CompareDoubleImpl(MicroAPI::MaskReg &dstMask, RegT &
 }
 
 template <typename T, CMPMODE mode, typename U>
-__simd_callee__ inline void CompareDouble(MicroAPI::MaskReg &dstMask, U &srcReg0, U &srcReg1, MicroAPI::MaskReg &mask)
+__simd_callee__ inline void CompareEqDouble(MicroAPI::MaskReg &dstMask, U &srcReg0, U &srcReg1, MicroAPI::MaskReg &mask)
 {
-    CompareDoubleImpl<T, mode, U>(dstMask, srcReg0, srcReg1, mask);
+    CompareEqDoubleImpl<T, mode, U>(dstMask, srcReg0, srcReg1, mask);
+}
+
+template <typename T = MicroAPI::DefaultType, typename U>
+__simd_callee__ inline void IsNanFull(MicroAPI::MaskReg &dstMask, U &low, U &high, MicroAPI::RegTensor<uint32_t> &scalar0,
+    MicroAPI::RegTensor<uint32_t> &scalar1, MicroAPI::RegTensor<uint32_t> &scalar2, MicroAPI::MaskReg &cmpMask,
+    MicroAPI::MaskReg &cmpMask0, MicroAPI::MaskReg &cmpMask1, MicroAPI::MaskReg &mask)
+{
+	MicroAPI::RegTensor<uint32_t> tmpReg, resReg;
+
+    // exp_and_mantissa_high = high & 0x7fffffff
+    MicroAPI::And(tmpReg, high, scalar0, mask);
+    // exponent = (exp_and_mantissa_high >> 20) & 0x7ff
+    MicroAPI::ShiftRights(resReg, tmpReg, static_cast<int16_t>(20), mask);
+    MicroAPI::And(resReg, resReg, scalar1, mask);
+
+    // cmpMask = (exponent == 0x7ff)
+    MicroAPI::Compare(cmpMask, resReg, scalar1, mask);
+    // scenario that cmpMask = true
+    // mantissa_high = exp_and_mantissa_high & 0xfffff
+    MicroAPI::And(resReg, tmpReg, scalar2, cmpMask);
+    // return (mantissa_high != 0) || (low != 0) 
+    MicroAPI::CompareScalar<uint32_t, CMPMODE::NE>(cmpMask0, resReg, static_cast<uint32_t>(0), cmpMask);
+    MicroAPI::CompareScalar<uint32_t, CMPMODE::NE>(cmpMask1, low, static_cast<uint32_t>(0), cmpMask);
+    // scenario that cmpMask = false, return false
+    // cmpMask0 || cmpMask1 -> dstMask && cmpMask
+    MicroAPI::MaskOr(dstMask, cmpMask0, cmpMask1, cmpMask);
+}
+
+template <typename T = MicroAPI::DefaultType, typename U>
+__simd_callee__ inline void IsZero(MicroAPI::MaskReg &dstMask, U &low, U &high, MicroAPI::RegTensor<uint32_t> &scalar0,
+    MicroAPI::MaskReg &cmpMask, MicroAPI::MaskReg &mask)
+{
+	MicroAPI::RegTensor<uint32_t> tmpReg;
+
+    // return (high & 0x7fffffff) == 0 && low == 0
+    MicroAPI::And(tmpReg, high, scalar0, mask);
+    MicroAPI::CompareScalar(dstMask, tmpReg, static_cast<uint32_t>(0), mask);
+    MicroAPI::CompareScalar(cmpMask, low, static_cast<uint32_t>(0), mask);
+    MicroAPI::MaskAnd(dstMask, dstMask, cmpMask, mask);
+}
+
+template <typename T = MicroAPI::DefaultType, CMPMODE mode, typename U>
+__simd_callee__ inline void CompareLtDouble(MicroAPI::MaskReg &dstMask, U &srcReg0, U &srcReg1, MicroAPI::RegTensor<uint32_t> &scalar0,
+    MicroAPI::RegTensor<uint32_t> &scalar1, MicroAPI::RegTensor<uint32_t> &scalar2, MicroAPI::MaskReg &mask)
+{
+    MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo> tmpSrcReg0 = (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)srcReg0;
+	MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo> tmpSrcReg1 = (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)srcReg1;
+	MicroAPI::RegTensor<uint32_t> sign0, sign1, low0, low1, high0, high1;
+    MicroAPI::MaskReg cmpMask, cmpMask0, cmpMask1, cmpMask2;
+
+    // low = bits64 & 0xffffffff
+    MicroAPI::Copy(low0, (MicroAPI::RegTensor<uint32_t> &)tmpSrcReg0.reg[0], mask);
+    MicroAPI::Copy(low1, (MicroAPI::RegTensor<uint32_t> &)tmpSrcReg1.reg[0], mask);
+    // high = (bits64 >> 32) &  0xffffffff
+    MicroAPI::Copy(high0, (MicroAPI::RegTensor<uint32_t> &)tmpSrcReg0.reg[1], mask);
+    MicroAPI::Copy(high1, (MicroAPI::RegTensor<uint32_t> &)tmpSrcReg1.reg[1], mask);
+
+    // handle nan: any comparision (except for NE) with nan is false
+    IsNanFull(cmpMask0, low0, high0, scalar0, scalar1, scalar2, cmpMask, cmpMask2, dstMask, mask);
+    IsNanFull(cmpMask1, low1, high1, scalar0, scalar1, scalar2, cmpMask, cmpMask2, dstMask, mask);
+
+    // if is_nan_full(low0, high0) || is_nan_full(low1, high1), return false
+    MicroAPI::MaskOr(cmpMask, cmpMask0, cmpMask1, mask);
+    // !cmpMask && mask -> dstMask
+    MicroAPI::MaskNot(dstMask, cmpMask, mask);
+
+    // handle zeros: +0 and -0 are equal
+    IsZero(cmpMask0, low0, high0, scalar0, cmpMask2, mask);
+    IsZero(cmpMask1, low1, high1, scalar0, cmpMask2, mask);
+
+    // if is_zero(low0, high0) && is_zero(low1, high1), return false
+    MicroAPI::MaskAnd(cmpMask2, cmpMask0, cmpMask1, mask);
+    // handle non-zero and non-nan scenario
+    // !cmpMask2 && dstMask -> mask
+    MicroAPI::MaskNot(mask, cmpMask2, dstMask);
+    // !cmpMask2 && dstMask -> dstMask
+    MicroAPI::MaskNot(dstMask, cmpMask2, dstMask);
+
+    // extract sign bits
+    MicroAPI::ShiftRights(sign0, high0, static_cast<int16_t>(31), mask);
+    MicroAPI::ShiftRights(sign1, high1, static_cast<int16_t>(31), mask);
+
+    // negative (sign=1) < positive (sign=0)
+    // if sign0 != sign1, return sign0 > sign1
+    MicroAPI::Compare<uint32_t, CMPMODE::NE>(cmpMask, sign0, sign1, mask);
+    MicroAPI::Compare<uint32_t, CMPMODE::GT>(cmpMask0, sign0, sign1, cmpMask);
+    MicroAPI::MaskSel(dstMask, cmpMask0, dstMask, cmpMask);
+
+    // if sign0 == sign1
+    MicroAPI::MaskNot(mask, cmpMask, mask);
+    /*
+        if sign0 == 0:
+            if high0 != high1:
+                return high0 < high1
+            return low0 < low1
+        else:
+            if high0 != high1:
+                return high0 > high1
+            return low0 > low1
+    */
+    MicroAPI::CompareScalar(cmpMask, sign0, static_cast<uint32_t>(0), mask);
+    MicroAPI::Compare<uint32_t, CMPMODE::NE>(cmpMask0, high0, high1, cmpMask);
+    MicroAPI::Compare<uint32_t, CMPMODE::LT>(cmpMask1, high0, high1, cmpMask0);
+    MicroAPI::MaskSel(dstMask, cmpMask1, dstMask, cmpMask0);
+    MicroAPI::Compare<uint32_t, CMPMODE::EQ>(cmpMask0, high0, high1, cmpMask);
+    MicroAPI::Compare<uint32_t, CMPMODE::LT>(cmpMask1, low0, low1, cmpMask0);
+    MicroAPI::MaskSel(dstMask, cmpMask1, dstMask, cmpMask0);
+
+    MicroAPI::MaskNot(cmpMask, cmpMask, mask);
+    MicroAPI::Compare<uint32_t, CMPMODE::NE>(cmpMask0, high0, high1, cmpMask);
+    MicroAPI::Compare<uint32_t, CMPMODE::GT>(cmpMask1, high0, high1, cmpMask0);
+    MicroAPI::MaskSel(dstMask, cmpMask1, dstMask, cmpMask0);
+    MicroAPI::Compare<uint32_t, CMPMODE::EQ>(cmpMask0, high0, high1, cmpMask);
+    MicroAPI::Compare<uint32_t, CMPMODE::GT>(cmpMask1, low0, low1, cmpMask0);
+    MicroAPI::MaskSel(dstMask, cmpMask1, dstMask, cmpMask0);
 }
 
 // Compare::Level 2 - counter mode
@@ -80,12 +195,20 @@ __simd_vf__ inline void CompareLevel2(__ubuf__ U *dst, __ubuf__ T *src0, __ubuf_
         repeatTime = CeilDivision(calCount, repeatElm);
         __ubuf__ uint32_t *dstT = reinterpret_cast<__ubuf__ uint32_t*>(dst);
         MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> src0Reg, src1Reg;
+	    MicroAPI::RegTensor<uint32_t> scalar0, scalar1, scalar2;
+        MicroAPI::Duplicate(scalar0, static_cast<uint32_t>(0x7fffffff));
+        MicroAPI::Duplicate(scalar1, static_cast<uint32_t>(0x7ff));
+        MicroAPI::Duplicate(scalar2, static_cast<uint32_t>(0xfffff));
         for (uint16_t i = 0; i < repeatTime; ++i) {
             mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
             MicroAPI::DataCopy(src0Reg, src0 + i * repeatElm);
             MicroAPI::DataCopy(src1Reg, src1 + i * repeatElm);
             if constexpr (Std::is_same_v<T, double>) {
-               CompareDouble<double, cmpMode>(dstReg, src0Reg, src1Reg, mask);     
+                if constexpr (cmpMode == CMPMODE::EQ) {
+                    CompareEqDouble<double, cmpMode>(dstReg, src0Reg, src1Reg, mask);
+                } else {
+                    CompareLtDouble<double, cmpMode>(dstReg, src0Reg, src1Reg, scalar0, scalar1, scalar2, mask);
+                }
             } else {
                 MicroAPI::Compare<T, cmpMode>(dstReg, src0Reg, src1Reg, mask);
             }
