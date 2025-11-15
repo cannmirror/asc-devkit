@@ -11,6 +11,8 @@
 
 add_subdirectory(aicpu_api)
 add_subdirectory(adv_api)
+add_subdirectory(basic_api)
+add_subdirectory(c_api)
 add_subdirectory(utils)
 
 if(NOT BUILD_OPEN_PROJECT)
