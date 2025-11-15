@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 
 THIS_FILE_NAME = __file__
 FILE_PATH = os.path.dirname(os.path.realpath(THIS_FILE_NAME))
-MSOBJDUMP_PATH = os.path.join(FILE_PATH, "../../../../", "tools/scripts/compile_trace_log/")
+MSOBJDUMP_PATH = os.path.join(FILE_PATH, "../../../../../../", "tools/scripts/compile_trace_log/")
 print(MSOBJDUMP_PATH)
 sys.path.append(MSOBJDUMP_PATH)
 from compile_trace_log import compile_trace
