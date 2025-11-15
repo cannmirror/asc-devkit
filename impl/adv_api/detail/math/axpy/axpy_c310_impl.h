@@ -24,43 +24,71 @@ namespace AxpyAPI {
 constexpr MicroAPI::CastTrait castTraitF162F32 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 template<typename T, typename U>
-__simd_vf__ inline void AxpyCompute(__local_mem__ T* dst, __local_mem__ U* src, U scalarValue, uint32_t calCount, uint16_t repeatTimes, uint16_t oneRepSize)
+__simd_vf__ inline void AxpyCompute(__local_mem__ T* dst, __local_mem__ U* src, U scalarValue, uint32_t calCount,
+                                   uint16_t repeatTimes, uint16_t oneRepSize, uint32_t mainBlockCount,
+                                   uint32_t tailCount, uint16_t offset, uint16_t singleMainBlockCtrl)
 {
-    MicroAPI::MaskReg mask;
+    MicroAPI::MaskReg mask, maskTail;
     MicroAPI::RegTensor<T> dstVreg;
     MicroAPI::RegTensor<U> srcVreg;
-    if constexpr (IsSameType<U, half>::value && IsSameType<T, half>::value) {
-        for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = MicroAPI::UpdateMask<T>(calCount);
-            MicroAPI::DataCopy(srcVreg, src + i * oneRepSize);
-            MicroAPI::DataCopy(dstVreg, dst + i * oneRepSize);
-            MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
-            MicroAPI::DataCopy(dst + i * oneRepSize, dstVreg, mask);
-        }
-    } else if constexpr (IsSameType<U, half>::value && IsSameType<T, float>::value) {
+    mask = MicroAPI::UpdateMask<T>(mainBlockCount);
+    maskTail = MicroAPI::UpdateMask<T>(tailCount);
+    if constexpr (IsSameType<U, half>::value && IsSameType<T, float>::value) {
         MicroAPI::RegTensor<float> tempSrcVreg;
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = MicroAPI::UpdateMask<T>(calCount);
             MicroAPI::DataCopy<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepSize);
             MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
             MicroAPI::DataCopy(dstVreg, dst + i * oneRepSize);
             MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
             MicroAPI::DataCopy(dst + i * oneRepSize, dstVreg, mask);
+            // unroll
+            MicroAPI::DataCopy<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + i * oneRepSize + offset);
+            MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
+            MicroAPI::DataCopy(dstVreg, dst + i * oneRepSize + offset);
+            MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
+            MicroAPI::DataCopy(dst + i * oneRepSize + offset, dstVreg, mask);
         }
-    } else if constexpr (IsSameType<U, float>::value && IsSameType<T, float>::value) {
+        for (uint16_t j = 0; j < singleMainBlockCtrl; ++j) {
+            MicroAPI::DataCopy<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcVreg, src + repeatTimes * oneRepSize * 2);
+            MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, mask);
+            MicroAPI::DataCopy(dstVreg, dst + repeatTimes * oneRepSize * 2);
+            MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, mask);
+            MicroAPI::DataCopy(dst + repeatTimes * oneRepSize * 2, dstVreg, mask);
+        }
+        MicroAPI::DataCopy<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(
+            srcVreg, src + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        MicroAPI::Cast<float, U, castTraitF162F32>(tempSrcVreg, srcVreg, maskTail);
+        MicroAPI::DataCopy(dstVreg, dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        MicroAPI::Axpy(dstVreg, tempSrcVreg, scalarValue, maskTail);
+        MicroAPI::DataCopy(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
+    } else {
         for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = MicroAPI::UpdateMask<T>(calCount);
             MicroAPI::DataCopy(srcVreg, src + i * oneRepSize);
             MicroAPI::DataCopy(dstVreg, dst + i * oneRepSize);
             MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
             MicroAPI::DataCopy(dst + i * oneRepSize, dstVreg, mask);
+            // unroll
+            MicroAPI::DataCopy(srcVreg, src + i * oneRepSize + offset);
+            MicroAPI::DataCopy(dstVreg, dst + i * oneRepSize + offset);
+            MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
+            MicroAPI::DataCopy(dst + i * oneRepSize + offset, dstVreg, mask);
         }
+        for (uint16_t j = 0; j < singleMainBlockCtrl; ++j) {
+            MicroAPI::DataCopy(srcVreg, src + repeatTimes * oneRepSize * 2);
+            MicroAPI::DataCopy(dstVreg, dst + repeatTimes * oneRepSize * 2);
+            MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, mask);
+            MicroAPI::DataCopy(dst + repeatTimes * oneRepSize * 2, dstVreg, mask);
+        }
+        MicroAPI::DataCopy(srcVreg, src + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        MicroAPI::DataCopy(dstVreg, dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize);
+        MicroAPI::Axpy(dstVreg, srcVreg, scalarValue, maskTail);
+        MicroAPI::DataCopy(dst + repeatTimes * oneRepSize * 2 + singleMainBlockCtrl * oneRepSize, dstVreg, maskTail);
     }
 }
 }//namespace AxpyAPI
 template <typename T, typename U, bool isReuseSource>
-__aicore__ inline void AxpyImpl(const LocalTensor<T>& dstLocal, const LocalTensor<U>& srcLocal,
-const U scalarValue , const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AxpyImpl(const LocalTensor<T> &dstLocal, const LocalTensor<U> &srcLocal, const U scalarValue, 
+                                const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Axpy, (T, U, isReuseSource), (dstLocal, srcLocal, scalarValue, sharedTmpBuffer, calCount));
     CheckTensorPosition(sharedTmpBuffer, "sharedTmpBuffer", "VECIN, VECOUT, VECCALC");
@@ -73,8 +101,18 @@ const U scalarValue , const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_
     __local_mem__ T *dst = (__local_mem__ T *)dstLocal.GetPhyAddr();
     __local_mem__ U *src = (__local_mem__ U *)srcLocal.GetPhyAddr();
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
-    uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    AxpyAPI::AxpyCompute<T, U>(dst, src, scalarValue, calCount, repeatTimes, oneRepSize);
+    const uint32_t mainBlockCount = oneRepSize;
+    uint32_t tailCount = calCount % oneRepSize;
+    uint16_t repeatTimes = calCount / oneRepSize;
+    if (tailCount == 0 && repeatTimes > 0) {
+        repeatTimes--;
+        tailCount += oneRepSize;
+    }
+    uint16_t repeatTimesUnRoll = repeatTimes / 2;
+    uint16_t singleMainBlockCtrl = repeatTimes % 2;
+    uint16_t offset = repeatTimesUnRoll * oneRepSize;
+    AxpyAPI::AxpyCompute<T, U>(dst, src, scalarValue, calCount, repeatTimesUnRoll, oneRepSize, mainBlockCount,
+                                        tailCount, offset, singleMainBlockCtrl);
 }
 } // namespace AscendC
 #endif // IMPL_MATH_AXPY_AXPY_C310_IMPL_H
