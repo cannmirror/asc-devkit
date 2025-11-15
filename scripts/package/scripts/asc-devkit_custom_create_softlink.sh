@@ -65,9 +65,10 @@ do_create_stub_softlink() {
         fi
         ln -sr "$install_path/$version_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
     fi
-    if [ ! -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
-        mkdir -p "$arch_linux_path/pkg_inc/asc/hccl"
+    if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
+        chmod 750 "$arch_linux_path/pkg_inc/asc/hccl"
         ln -sr "$arch_linux_path/asc/include/adv_api/hccl/internal" "$arch_linux_path/pkg_inc/asc/hccl/internal"
+        chmod -R 550 "$arch_linux_path/pkg_inc/asc/hccl"
     fi
 }
 
