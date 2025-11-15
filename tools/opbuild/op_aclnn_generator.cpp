@@ -925,7 +925,7 @@ void AclnnOpGenerator::AclnnOpGenHcclServerTypeList(OpDef& opDef, ofstream& outf
         auto type = opDef.MC2().GetHcclServerType(iter->first);
         if (type == HcclServerType::MAX) {
             // server type has not been set, no need to gen code
-            return;
+            continue;
         }
         auto serverTypeIter = HCCL_SERVER_TYPE_MAP.find(type);
         if (serverTypeIter == HCCL_SERVER_TYPE_MAP.end()) {
