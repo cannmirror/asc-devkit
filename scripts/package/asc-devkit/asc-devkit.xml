@@ -31,6 +31,9 @@
         <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules"/>
         <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules/util"/>
         <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules/util/makeself"/>
+        <path value="$(TARGET_ENV)/pkg_inc"/>
+        <path value="$(TARGET_ENV)/pkg_inc/asc"/>
+        <path value="$(TARGET_ENV)/pkg_inc/asc/hccl"/>
         <path value="$(TARGET_ENV)/ascendc"/>
         <path value="$(TARGET_ENV)/ascendc/include"/>
         <path value="$(TARGET_ENV)/ascendc/include/basic_api"/>
