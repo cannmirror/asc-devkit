@@ -47,16 +47,16 @@ set(ASCENDC_TEST_HEADER_FILES
     ${LOCAL_DIR}/../common
     ${LOCAL_DIR}/common/
     ${LOCAL_DIR}/testcase/
-    ${ASCENDC_FRAMEWORK_DIR}
-    ${ASCENDC_FRAMEWORK_DIR}/include/
-    ${ASCENDC_FRAMEWORK_DIR}/include/micro_api/
-    ${ASCENDC_FRAMEWORK_DIR}/include/simt_api/
-    ${ASCENDC_FRAMEWORK_DIR}/include/basic_api/
-    ${ASCENDC_FRAMEWORK_DIR}/include/utils/
-    ${ASCENDC_FRAMEWORK_DIR}/impl/
-    ${ASCENDC_FRAMEWORK_DIR}/impl/basic_api/
-    ${ASCENDC_FRAMEWORK_DIR}/impl/simt_api/
-    ${ASCENDC_FRAMEWORK_DIR}/impl/micro_api/
+    ${ASCENDC_DIR}
+    ${ASCENDC_DIR}/include/
+    ${ASCENDC_DIR}/include/micro_api/
+    ${ASCENDC_DIR}/include/simt_api/
+    ${ASCENDC_DIR}/include/basic_api/
+    ${ASCENDC_DIR}/include/utils/
+    ${ASCENDC_DIR}/impl/
+    ${ASCENDC_DIR}/impl/basic_api/
+    ${ASCENDC_DIR}/impl/simt_api/
+    ${ASCENDC_DIR}/impl/micro_api/
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/interface
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/impl
@@ -692,7 +692,7 @@ target_include_directories(ops_utest PRIVATE
   ${ASCENDC_SYS_DIR}/include/base/
   ${ASCENDC_SYS_DIR}/include/experiment/metadef/
   ${ASCENDC_SYS_DIR}/include/experiment/
-  ${ASCENDC_FRAMEWORK_DIR}/tools/build/common
+  ${ASCENDC_DIR}/tools/build/common
   ${ASCEND_HOME_PATH}/tools/msopgen/template/custom_operator_sample/DSL/Onnx/metadef/inc
   mmpa_headers
   slog_headers
@@ -717,14 +717,14 @@ add_custom_target(utest_env
 add_executable(tikcpp_utest_opbuild
   ${LOCAL_DIR}/main.cpp
   ${LOCAL_DIR}/testcase/opbuild/test_opbuild.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_build.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_generator.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_generator_factory.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_cfg_generator.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_proto_generator.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_aclnn_generator.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_custom_registry_generator.cpp
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild/op_aclnn_fallback_generator.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_build.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_generator.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_generator_factory.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_cfg_generator.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_proto_generator.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_aclnn_generator.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_custom_registry_generator.cpp
+  ${ASCENDC_DIR}/tools/opbuild/op_aclnn_fallback_generator.cpp
 )
 
 add_dependencies(tikcpp_utest_opbuild ops_utest utest_env)
@@ -739,8 +739,8 @@ target_compile_options(tikcpp_utest_opbuild PRIVATE
 )
 
 target_include_directories(tikcpp_utest_opbuild PRIVATE
-  ${ASCENDC_FRAMEWORK_DIR}/tools/opbuild
-  ${ASCENDC_FRAMEWORK_DIR}/tools/build/common
+  ${ASCENDC_DIR}/tools/opbuild
+  ${ASCENDC_DIR}/tools/build/common
   ${ASCENDC_TEST_HEADER_FILES}
   ${ASCENDC_SYS_DIR}/include/base/
   ${ASCENDC_SYS_DIR}/include/experiment/metadef/
@@ -774,28 +774,28 @@ run_llt_test(
 # ############################################ascendc_kernel ut###################################
 set(ASCEND_KERNEL_TEST_HEADERS_FILES
     ${LOCAL_DIR}/../common/
-    ${ASCENDC_FRAMEWORK_DIR}/include
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/common/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/elf_tool/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/asc_rt/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/asc_pack_kernel/
+    ${ASCENDC_DIR}/include
+    ${ASCENDC_DIR}/tools/build/common/
+    ${ASCENDC_DIR}/tools/build/elf_tool/
+    ${ASCENDC_DIR}/tools/build/asc_rt/
+    ${ASCENDC_DIR}/tools/build/asc_pack_kernel/
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/base/
     ${ASCENDC_SYS_DIR}/include/experiment/metadef/
     ${ASCENDC_SYS_DIR}/include/experiment/
-    ${ASCENDC_FRAMEWORK_DIR}/tikcpulib/inc/
-    ${ASCENDC_FRAMEWORK_DIR}/tikcpulib/cpulib/api_check
-    ${ASCENDC_FRAMEWORK_DIR}/tikcpulib/cpulib/api_check/inc
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/common
+    ${ASCENDC_DIR}/tikcpulib/inc/
+    ${ASCENDC_DIR}/tikcpulib/cpulib/api_check
+    ${ASCENDC_DIR}/tikcpulib/cpulib/api_check/inc
+    ${ASCENDC_DIR}/tools/build/common
 
 )
 
 file(GLOB ASCENDC_KERNEL_SRC_FILES
-    ${ASCENDC_FRAMEWORK_DIR}/impl/aicpu_api/*.cpp
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/elf_tool/*.c
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/asc_rt/*.cpp
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/asc_pack_kernel/*.c
-    ${ASCENDC_FRAMEWORK_DIR}/tests/unit/basic_api/ut/testcase/ascendc_kernel/*.cpp
+    ${ASCENDC_DIR}/impl/aicpu_api/*.cpp
+    ${ASCENDC_DIR}/tools/build/elf_tool/*.c
+    ${ASCENDC_DIR}/tools/build/asc_rt/*.cpp
+    ${ASCENDC_DIR}/tools/build/asc_pack_kernel/*.c
+    ${ASCENDC_DIR}/tests/unit/basic_api/ut/testcase/ascendc_kernel/*.cpp
     ${LOCAL_DIR}/../ascendc_kernel_header/*.cpp
     ${LOCAL_DIR}/main.cpp
 )
@@ -823,8 +823,8 @@ target_include_directories(ascendc_utest_kernel PRIVATE
     ${ASCENDC_SYS_DIR}/include/experiment/msprof/
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/acl/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/asc_rt/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/build/elf_tool/
+    ${ASCENDC_DIR}/tools/build/asc_rt/
+    ${ASCENDC_DIR}/tools/build/elf_tool/
 )
 target_compile_options(ascendc_utest_kernel PRIVATE
     -g
@@ -855,14 +855,14 @@ run_llt_test(
 # # bishengcc arguments
 set(ASCC_TEST_HEADERS_FILES
     ${LOCAL_DIR}/../common/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/ascc/include
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/common/include
+    ${ASCENDC_DIR}/tools/ascc/ascc/include
+    ${ASCENDC_DIR}/tools/ascc/common/include
     ${LOCAL_DIR}/testcase/ascc/
 )
 
 file(GLOB ASCC_SRC_FILES
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/ascc/src/*.cpp
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/common/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/ascc/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/common/src/*.cpp
 )
 
 file(GLOB TEST_ASCC_SRC_FILES
@@ -906,15 +906,15 @@ run_llt_test(
 
 set(ASCENDFE_TEST_HEADERS_FILES
     ${LOCAL_DIR}/../common/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/ascendfe/include
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/common/include
+    ${ASCENDC_DIR}/tools/ascc/ascendfe/include
+    ${ASCENDC_DIR}/tools/ascc/common/include
     ${LOCAL_DIR}/testcase/ascc/
 )
 
 file(GLOB ASCENDFE_SRC_FILES
     ${LOCAL_DIR}/main.cpp
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/common/src/*.cpp
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/ascendfe/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/common/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/ascendfe/src/*.cpp
 )
 
 file(GLOB TEST_ASCENDFE_SRC_FILES
@@ -958,13 +958,13 @@ run_llt_test(
 # # libasc_plugin: 独立流程
 set(ASC_PLUGIN_TEST_HEADERS_FILES
     ${LOCAL_DIR}/../common/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/asc_plugin/include/internal
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/asc_plugin/include/external
+    ${ASCENDC_DIR}/tools/ascc/asc_plugin/include/internal
+    ${ASCENDC_DIR}/tools/ascc/asc_plugin/include/external
     ${LOCAL_DIR}/testcase/ascc/
 )
 
 file(GLOB ASC_PLUGIN_SRC_FILES
-    ${ASCENDC_FRAMEWORK_DIR}/tools/ascc/asc_plugin/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/asc_plugin/src/*.cpp
 )
 
 file(GLOB TEST_ASC_PLUGIN_SRC_FILES
@@ -984,7 +984,7 @@ target_compile_definitions(ascendc_utest_asc_plugin PRIVATE
 target_compile_definitions(ascendc_utest_asc_plugin PRIVATE ASCENDC_CPU_DEBUG=1)
 target_include_directories(ascendc_utest_asc_plugin PRIVATE
     ${ASC_PLUGIN_TEST_HEADERS_FILES}
-    ${ASCENDC_FRAMEWORK_DIR}/tests/unit/basic_api/third_party/json_src/include/
+    ${ASCENDC_DIR}/tests/unit/basic_api/third_party/json_src/include/
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/experiment/
 )
@@ -1011,11 +1011,11 @@ run_llt_test(
 # ############################################ aclrtc ut ############################################
 set(ACLRTC_TEST_HEADERS_FILES
     ${LOCAL_DIR}/../common/
-    ${ASCENDC_FRAMEWORK_DIR}/tools/aclrtc/include
+    ${ASCENDC_DIR}/tools/aclrtc/include
 )
 
 file(GLOB ACLRTC_SRC_FILES
-    ${ASCENDC_FRAMEWORK_DIR}/tools/aclrtc/src/*.cpp
+    ${ASCENDC_DIR}/tools/aclrtc/src/*.cpp
 )
 
 file(GLOB TEST_ACLRTC_SRC_FILES

@@ -10,7 +10,7 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 
 ![原理图](docs/figures/architecture.png)
 
-Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工程能力、调试调优工具链及一系列公共辅助函数。语言扩展层提供纯C接口，通常基于指针计算；类库分为多核算子样例、单核公共算法和单指令三类。多核算子样例类库对应算子模板库，包括由[CATLASS](https://gitcode.com/cann/catlass)和[ATCOS](https://gitcode.com/cann/atcos)组成的Cube类模板库，以及由[ATVC](https://gitcode.com/cann/atvc)和ATVOS组成的Vector类模板库。单核公共算法类库对应高阶API，这类API基于单核对常见算法进行抽象和封装，旨在提高编程开发效率。单指令类库分为SIMD（Single Instruction Multiple Data，单指令多数据）和SIMT（Single Instruction Multiple Thread，单指令多线程），其中SIMD类库接口包括基于内存上的Tensor的基础API，以及未来即将支持的基于寄存器上的Tensor的微指令API，基础API通常是对硬件能力的抽象和封装。
+Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工程能力、调试调优工具链及一系列公共辅助函数。语言扩展层提供纯C接口，通常基于指针计算；类库分为多核算子样例、单核公共算法和单指令三类。多核算子样例类库对应算子模板库，包括Cube类模板库[CATLASS](https://gitcode.com/cann/catlass)，以及由[ATVC](https://gitcode.com/cann/atvc)和ATVOS组成的Vector类模板库。单核公共算法类库对应高阶API，这类API基于单核对常见算法进行抽象和封装，旨在提高编程开发效率。单指令类库分为SIMD（Single Instruction Multiple Data，单指令多数据）和SIMT（Single Instruction Multiple Thread，单指令多线程），其中SIMD类库接口包括基于内存上的Tensor的基础API，以及未来即将支持的基于寄存器上的Tensor的微指令API，基础API通常是对硬件能力的抽象和封装。
 
 开发者使用Ascend C编写的算子代码，依赖毕昇编译器编译成二进制可执行文件和动态库等形式。借助Ascend C丰富的类库接口能力，Ascend C Python层当前提供了[PyAsc](https://gitcode.com/cann/pyasc)编程语言，原生支持Python标准规范，PyAsc接口与Ascend C API一一映射，具备完备的编程能力。
 
@@ -26,7 +26,6 @@ Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工
 │   └── aicore                          // Ascend C AICore 编程接口实现源代码
 │       ├── adv_api                     // Ascend C 高阶API实现源代码
 │       ├── basic_api                   // Ascend C 基础API实现源代码
-│       ├── host_api                    // Ascend C HOST API实现源代码
 │       ├── micro_api                   // Ascend C 微指令API实现源代码
 │       ├── simt_api                    // Ascend C SIMT API实现源代码
 │       └── utils                       // Ascend C 工具类实现源代码
@@ -34,7 +33,6 @@ Ascend C主要由类库和语言扩展层构成，同时提供全面的算子工
 │   └── aicore                          // Ascend C AICore 编程接口声明源代码
 │       ├── adv_api                     // Ascend C 高阶API声明源代码
 │       ├── basic_api                   // Ascend C 基础API声明源代码
-│       ├── host_api                    // Ascend C HOST API声明源代码
 │       ├── micro_api                   // Ascend C 微指令API声明源代码
 │       ├── simt_api                    // Ascend C SIMT API声明源代码
 │       └── utils                       // Ascend C 工具类声明源代码

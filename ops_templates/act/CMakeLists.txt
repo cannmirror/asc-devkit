@@ -10,8 +10,7 @@
 install(
   DIRECTORY ${ASCENDC_DIR}/ops_templates/act
   DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/ops_templates/
-  OPTIONAL
-  PATTERN "OWNERS" EXCLUDE)
+  OPTIONAL)
 
 file(
   CREATE_LINK

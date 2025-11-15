@@ -7,6 +7,61 @@
 # BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 
+set(ASCENDC_ADV_API_IMPL_DIR ${ASCENDC_IMPL_DIR}/adv_api)
+set(ASCENDC_ADV_API_CMAKE_DIR ${ASCENDC_ADV_API_IMPL_DIR}/cmake)
+
+# generate tiling_api.h softlink
+if(NOT BUILD_OPEN_PROJECT)
+  add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/tiling/tiling_api.h
+    COMMAND mkdir ${CMAKE_BINARY_DIR}/tiling
+    COMMAND ln -s ${ASCENDC_INCLUDE_DIR}/adv_api/tiling_api.h
+            ${CMAKE_BINARY_DIR}/tiling/tiling_api.h
+    DEPENDS ${ASCENDC_INCLUDE_DIR}/adv_api/tiling_api.h)
+  add_custom_target(gen_kernel_api ALL
+                    DEPENDS ${CMAKE_BINARY_DIR}/tiling/tiling_api.h)
+endif()
+
+# generate kernel_tiling/kernel_tiling.h
+set(GEN_KERENL_TILING_DATA_SCRIPT
+    ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/gen_kernel_tiling_data_def.py)
+set(GENERATE_INSTALL_SCRIPT
+    ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/generate_install_script.sh)
+set(TILING_DATA_DEF_DIR ${ASCENDC_INCLUDE_DIR}/adv_api)
+set(KERNEL_TILING_DIR ${CMAKE_BINARY_DIR})
+set(KERNEL_TILING_HAED ${KERNEL_TILING_DIR}/kernel_tiling/kernel_tiling.h)
+
+if(NOT BUILD_OPEN_PROJECT)
+  add_custom_command(
+    OUTPUT ${KERNEL_TILING_HAED}
+    COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
+            ${KERNEL_TILING_HAED}
+    COMMAND mkdir -p ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
+    COMMAND cp ${KERNEL_TILING_HAED} ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
+    DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+else()
+  add_custom_command(
+    OUTPUT ${KERNEL_TILING_HAED}
+    COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
+            ${KERNEL_TILING_HAED}
+    DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+endif()
+
+add_custom_target(gen_kernel_tiling ALL DEPENDS ${KERNEL_TILING_HAED})
+
+add_library(kernel_tiling_headers INTERFACE)
+add_dependencies(kernel_tiling_headers gen_kernel_tiling)
+if(NOT BUILD_OPEN_PROJECT)
+  add_dependencies(kernel_tiling_headers gen_kernel_api)
+endif()
+target_include_directories(
+  kernel_tiling_headers
+  INTERFACE $<INSTALL_INTERFACE:include>
+            $<INSTALL_INTERFACE:include/tikcpp>
+            $<INSTALL_INTERFACE:include/tikcpp/tikcfw>
+            $<INSTALL_INTERFACE:include/tikcpp/tikcfw/kernel_tiling>
+            $<BUILD_INTERFACE:${KERNEL_TILING_DIR}>)
+
 add_subdirectory(tiling)
 
 if (BUILD_OPEN_PROJECT)
@@ -35,6 +90,7 @@ if (BUILD_OPEN_PROJECT)
 endif()
 
 
+# copy include to asc impl
 install(
   FILES ${KERNEL_TILING_HAED}
   DESTINATION
@@ -61,9 +117,9 @@ install(
 install(
   DIRECTORY ${ASCENDC_INCLUDE_DIR}/adv_api/
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
-  OPTIONAL
-  PATTERN "OWNERS" EXCLUDE)
+  OPTIONAL)
 
+# generate softlink
 configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_headers.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake @ONLY)
 install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_headers.cmake)
@@ -76,18 +132,17 @@ configure_file(${ASCENDC_ADV_API_CMAKE_DIR}/kernel_directory.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake @ONLY)
 install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/kernel_directory.cmake)
 
-if(NOT BUILD_OPEN_PROJECT)
-  install_package(
-    PACKAGE kernel_tiling
-    TARGETS kernel_tiling_headers
-    FILES ${KERNEL_TILING_HAED}
-    DESTINATION ${INSTALL_INCLUDE_DIR}/asc/include/adv_api/)
-
-endif()
-
 configure_file(
     ${ASCENDC_ADV_API_CMAKE_DIR}/utils_headers.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake
     @ONLY
 )
 install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/utils_headers.cmake)
+
+if(NOT BUILD_OPEN_PROJECT)
+  install_package(
+    PACKAGE kernel_tiling
+    TARGETS kernel_tiling_headers
+    FILES ${KERNEL_TILING_HAED}
+    DESTINATION ${INSTALL_INCLUDE_DIR}/asc/include/adv_api/)
+endif()

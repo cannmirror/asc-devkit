@@ -1,1 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
+
+install(DIRECTORY ${ASCENDC_INCLUDE_DIR}/c_api
+  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include OPTIONAL
+)
+
+install(DIRECTORY ${ASCENDC_IMPL_DIR}/c_api
+  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl OPTIONAL
+)
