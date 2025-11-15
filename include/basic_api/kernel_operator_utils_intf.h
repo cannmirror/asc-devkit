@@ -24,7 +24,6 @@ __aicore__ inline void Nop();
 #endif
 
 enum class EngineType : int32_t {
-    MIX = 0,
     AIC = 1,
     AIV = 2
 };
@@ -32,7 +31,6 @@ enum class EngineType : int32_t {
 template <EngineType engine, auto funPtr, class... Args>
 __aicore__ void Async(Args... args)
 {
-    static_assert(engine != EngineType::MIX, "Error: MIX mode is not supported. Please use AIV or AIC.");
     if constexpr (engine == EngineType::AIV) {
         if ASCEND_IS_AIV {
             funPtr(args...);
