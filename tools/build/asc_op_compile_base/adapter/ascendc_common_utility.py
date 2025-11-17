@@ -682,30 +682,35 @@ def is_enable_sanitizer(compile_options):
     if enable_compile_asan_option is False:
         return False
     ascend_home_path = os.environ.get("ASCEND_HOME_PATH")
-    config_json_path = ""
-    if ascend_home_path is not None:
-        config_json_path = os.path.join(ascend_home_path, "compiler/conf/compile_options_config.json")
-    else:
-        return False
-    if os.path.exists(config_json_path) is False:
+
+    if ascend_home_path is None:
         return False
     short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
     pre_asan_obj_path = {}
-    try:
-        with open(config_json_path, 'r') as fd:
-            js = json.load(fd)
-            if "Sanitizer" in js:
-                if len(js["Sanitizer"]) == 0:
-                    return False
-                else:
-                    if short_soc_version in js["Sanitizer"][0]:
-                        pre_asan_obj_path[short_soc_version] = js["Sanitizer"][0][short_soc_version]
-                    else:
-                        return False
-            else:
-                return False
-    except Exception as err:
-        raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("open asan config file failed", err))
+
+    js = {
+        "Sanitizer": [
+            {
+                "Ascend910B": [
+                    "${ASCEND_HOME_PATH}/tools/mssanitizer/lib64/libsanitizer_stub_dav-c220-vec.a",
+                    "${ASCEND_HOME_PATH}/tools/mssanitizer/lib64/libsanitizer_stub_dav-c220-cube.a"
+                ],
+                "Ascend910_93": [
+                    "${ASCEND_HOME_PATH}/tools/mssanitizer/lib64/libsanitizer_stub_dav-c220-vec.a",
+                    "${ASCEND_HOME_PATH}/tools/mssanitizer/lib64/libsanitizer_stub_dav-c220-cube.a"
+                ],
+                "Ascend310P": [
+                    "${ASCEND_HOME_PATH}/tools/mssanitizer/lib64/libsanitizer_stub_dav-m200.a",
+                    "${ASCEND_HOME_PATH}/tools/mssanitizer/lib64/libsanitizer_stub_dav-m200-vec.a"
+                ]
+            }
+        ]
+    }
+
+    if short_soc_version in js["Sanitizer"][0]:
+        pre_asan_obj_path[short_soc_version] = js["Sanitizer"][0][short_soc_version]
+    else:
+        return False
 
     soc_obj_path = []
     for obj_path in pre_asan_obj_path[short_soc_version]:
