@@ -27,7 +27,7 @@ mkdir -p $DST_PATH/basic_api
 cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/impl ${DST_PATH}/basic_api/impl
 cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include ${DST_PATH}/basic_api/include
 cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/kernel_operator.h ${DST_PATH}/basic_api/kernel_operator.h
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/basic_api/op_frame ${DST_PATH}/basic_api/op_frame
+cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/obsolete/op_frame ${DST_PATH}/basic_api/op_frame
 cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/utils/tiling/template_argument.h ${DST_PATH}/basic_api/template_argument.h
 
 #copy highlevel_api
