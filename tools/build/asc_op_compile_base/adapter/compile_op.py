@@ -37,9 +37,9 @@ from .global_storage import global_var_storage
 from .ascendc_constants import InferChannelParamsFromIFile, InferChannelParams, KernelMetaType, \
     STR_TO_KERNEL_TYPE_V220, STR_TO_KERNEL_TYPE_V200, CompileOptionTuple, \
     CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC, TILING_KEY_MACRO, \
-    ASCENDC_OOM, MIX_CORE_MACRO
+    ASCENDC_OOM, MIX_CORE_MACRO, CustomizedConfig
 from .ascendc_common_utility import CommonUtility, CompileInfo, \
-    process_ascendc_api_version, gen_func_align_attribute
+    process_ascendc_api_version, gen_func_align_attribute, convert_customized_config_to_inferchannel
 from .ascendc_compile_dfx import DFXParamType, DFXPointType, DFXArgInfo, DFXSectionGenerator
 from .ascendc_compile_v220 import gen_compile_cmd_v220, get_v220_kernel_type_mix_flag, call_bisheng_v220, \
     get_ktype_section_variable, get_code_channel_v220_by_first_tiling_key, \
@@ -1780,9 +1780,9 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
                             extend_options)
 
 
-def compile_op_with_inferinfo(cce_file: str, origin_func_name: str, op_info: OpInfo,
+def compile_op_with_customized_config(cce_file: str, origin_func_name: str, op_info: OpInfo,
         compile_options: list = None, code_channel: int = -1, op_compile_option: str = "{}",
-        extend_options: dict = {}, infered_info_from_ifile: InferChannelParamsFromIFile = None):
+        extend_options: dict = {}, customized_config: CustomizedConfig = None):
     """get tiling_data/ generate tiling_data file/ compile cce to .o / generate .json file
     Args:
         cce_file (str): cce file to be compiled
@@ -1814,6 +1814,10 @@ def compile_op_with_inferinfo(cce_file: str, origin_func_name: str, op_info: OpI
     DFXSectionGenerator().dfx_info_reset(op_info)
 
     _update_compile_option(op_info.kernel_name, compile_option_tuple.compile_options, extend_options)
+
+    if customized_config is None:
+        raise Exception(f"must provide infer infos for compile op with customized informations")
+    infered_info_from_ifile = convert_customized_config_to_inferchannel(customized_config)
 
     compile_option_tuple.compile_options.append('-DASCENDC_TPL_KERNEL')
     value_depend_dict = extend_options.get("valueDepend")

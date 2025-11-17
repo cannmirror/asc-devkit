@@ -25,7 +25,8 @@ from asc_op_compile_base.asc_op_compiler.op_tiling import tiling_so_arch_path
 from .get_op_tiling import get_tiling_info, OpInfo, get_tiling_info_v2
 from asc_op_compile_base.common.utils.log_utils import LogUtil, AscendCLogLevel, CompileStage
 from .global_storage import global_var_storage
-from .ascendc_constants import CORE_TYPE_MIX, KernelMetaType
+from .ascendc_constants import CORE_TYPE_MIX, KernelMetaType, InferChannelParamsFromIFile,\
+    CustomizedConfig, TilingKeyConfig
 
 BIN_FILENAME_HASHED_FLAG_ENV = 'BIN_FILENAME_HASHED'
 
@@ -849,3 +850,37 @@ def process_ascendc_api_version(cce_file: str, compile_options: list, extend_opt
         tiling_so_path = get_op_tiling_so_path(tiling_so_path)
     add_compile_options(tiling_so_path, compile_options)
 
+
+def convert_customized_config_to_inferchannel(config: CustomizedConfig):
+    tiling_key_infos = config.tiling_key_infos
+    first_tiling_info = next(iter(tiling_key_infos.values()))
+    tiling_key_list = list(tiling_key_infos.keys())
+    hard_sync = False
+    no_kfc_server_flag = not first_tiling_info.use_kfc
+    enable_deterministic = first_tiling_info.enable_deterministic
+    tiling_key_kernel_type = {k: v.kernel_type for k, v in tiling_key_infos.items()}
+    no_set_kernel_type = False
+    default_kernel_type = first_tiling_info.kernel_type
+    code_channel = -1
+    allow_debug_key = {'printf', 'assert'}
+    dump_type = []
+    for k, v in config.debug_info:
+        if k not in allow_debug_key:
+            raise Exception(f"invalid debug key: {k}")
+        dump_type.append(k)
+    dump_size = 108 * 1024 * 1024
+    dump_info = {'dump_type': ','.join(dump_type), 'dump_size': dump_size}
+    template_tiling_info = {}
+    default_tiling_struct = config.default_tiling_struct_name
+    tiling_struct_expr_map = {}
+    tiling_key_struct_map = \
+        {k: str(v.tiling_struct_name) for k, v in tiling_key_infos.items() if str(v.tiling_struct_name) != ''}
+    set_task_bar = False
+    wait_task_bar = False
+    tiling_key_deterministic = {k: str(v.enable_deterministic).lower() for k, v in tiling_key_infos.items()}
+
+    return InferChannelParamsFromIFile(tiling_key_list, code_channel, hard_sync, no_kfc_server_flag, \
+                                           enable_deterministic, tiling_key_kernel_type, no_set_kernel_type,\
+                                           default_kernel_type, dump_info, template_tiling_info,
+                                           default_tiling_struct, tiling_struct_expr_map, tiling_key_struct_map,\
+                                           set_task_bar, wait_task_bar, tiling_key_deterministic)
