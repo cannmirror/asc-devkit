@@ -14,6 +14,8 @@ ascendc constants
 
 import enum
 from collections import namedtuple
+from typing import Dict, Optional, Any
+from dataclasses import dataclass, asdict, field
 
 
 """CORE_TYPE_* is used to set is AscendC-api work
@@ -59,6 +61,29 @@ class KernelMetaType(enum.Enum):
     KERNEL_TYPE_MIX_AICORE = 10
     KERNEL_TYPE_MIX_VECTOR_CORE = 11
     KERNEL_TYPE_MAX = 12
+
+
+@dataclass
+class TilingKeyConfig:
+    """
+    Necessary information for compile per tiling key.
+    """
+    kernel_type: KernelMetaType = KernelMetaType.KERNEL_TYPE_MAX
+    use_kfc: bool = False
+    enable_deterministic: bool = False
+    tiling_struct_name: str = ""
+    template_tiling_info: Optional[Dict[str, Any]] = field(default_factory=dict)
+
+
+@dataclass
+class CustomizedConfig:
+    """
+    Inferred Informations of a given kernel source code.
+    """
+    default_kernel_type: KernelMetaType = KernelMetaType.KERNEL_TYPE_MAX
+    default_tiling_struct_name: str = ""
+    tiling_key_infos: Optional[Dict[str, TilingKeyConfig]] = field(default_factory=dict)
+    debug_info: Optional[Dict[str, str]] = field(default_factory=dict)
 
 
 STR_TO_KERNEL_TYPE_V220 = {
