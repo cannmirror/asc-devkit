@@ -44,10 +44,6 @@ target_include_directories(tikcfw_headers INTERFACE
   $<INSTALL_INTERFACE:include/asc/impl/c_api>
 )
 
-install(DIRECTORY ${ASCENDC_DIR}/obsolete/op_frame
-  DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api OPTIONAL
-)
-
 install(FILES ${ASCENDC_INCLUDE_DIR}/kernel_operator.h
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include OPTIONAL
 )
@@ -140,6 +136,7 @@ install(CODE "file(CREATE_LINK ../basic_api/kernel_tpipe.h ${CMAKE_INSTALL_PREFI
 install(CODE "file(CREATE_LINK ../basic_api/kernel_type.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_type.h SYMBOLIC)")
 
 # 2 ascendc/include/basic_api
+install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../asc/include/interface ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/interface SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../asc/include/kernel_operator.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/kernel_operator.h SYMBOLIC)")
 
@@ -253,8 +250,6 @@ if(NOT BUILD_OPEN_PROJECT)
         DIRECTORY ${ASCENDC_DIR}/include/c_api
         DESTINATION ${INSTALL_INCLUDE_DIR}/asc/include
 
-        DIRECTORY ${ASCENDC_DIR}/obsolete/op_frame
-        DESTINATION ${INSTALL_INCLUDE_DIR}/ascendc/include/basic_api
         FILES ${ASCENDC_DIR}/include/utils/tiling/platform/platform_ascendc.h
         DESTINATION ${INSTALL_INCLUDE_DIR}/ascendc/include/highlevel_api/tiling/platform
         FILES ${ASCENDC_DIR}/include/utils/context/context_builder.h
