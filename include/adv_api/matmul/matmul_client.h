@@ -725,6 +725,12 @@ public:
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,
                       "Iterate not support when enableMixDualMaster is enabled.");
+#if !defined(USE_SSBUF)
+        if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
+            ASSERT(false && "Iterate not support when sameab is enabled");
+            return false;
+        }
+#endif
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
         if (unlikely(kfcMsg_.body.isFirstIter)) {
             cntIter_ = 0;
@@ -1257,6 +1263,10 @@ public:
     {
         ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
             "GetTensorC not support when enableMixDualMaster is enabled");
+        if constexpr (A_TYPE::ibShare && B_TYPE::ibShare) {
+            ASSERT(false && "GetTensorC not support when sameab is enabled");
+            return;
+        }
         TRACE_START(TraceId::KFC_CLIENT_REV_MSG_GM);
         ASSERT(kfcMsg_.body.isFirstIter == 0);
         ASSERT(isSyncGetC); // The mode must be synchronous.
