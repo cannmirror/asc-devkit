@@ -70,7 +70,7 @@ detect_usr() {
     local curr_usr=''
     curr_usr=$(whoami)
     if [ "$curr_usr" = "root" ]; then
-        SUDO='
+        SUDO=''
     else
         SUDO="sudo"
     fi
