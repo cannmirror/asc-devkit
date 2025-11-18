@@ -41,5 +41,6 @@
 #include "kernel_simt_transcendental_impl.h"
 #include "kernel_simt_warp_level_impl.h"
 #include "kernel_simt_bessel_impl.h"
+#include "kernel_simt_cast_sat_impl.h"
 
 #endif  // ASCENDC_MODULE_SIMT_IMPL_H

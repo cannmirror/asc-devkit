@@ -17,6 +17,7 @@
 
 #include "kernel_utils.h"
 #include "kernel_simt_common_impl.h"
+#include "kernel_simt_cast_sat_impl.h"
 
 namespace AscendC {
 namespace Simt {
@@ -193,10 +194,10 @@ REG_CAST_VEC_(Ceil)
 REG_CAST_VEC_(Trunc)
 REG_CAST_VEC_(CastNone)
 
-template <typename T1, typename T2, RoundMode roundMode>
-__aicore__ inline T1 CastImpl(T2 x)
+template <typename T, typename U, RoundMode roundMode>
+__aicore__ inline T CastFallback(U x)
 {
-    T1 y;
+    T y;
     switch (roundMode) {
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
         case RoundMode::CAST_EVEN:
@@ -215,11 +216,46 @@ __aicore__ inline T1 CastImpl(T2 x)
         case RoundMode::CAST_NONE:
             CastNone_(y, x);
             break;
-        default:
-            ASSERT(false && "Cast: An invalid RoundMode!");
-            break;
     }
     return y;
+}
+
+template <typename T, typename U, RoundMode roundMode, SatMode satMode>
+__aicore__ inline T CastImpl(U x)
+{
+#if defined(ASCENDC_CPU_DEBUG)
+    return CastFallback<T, U, roundMode>(x);
+#else
+    if constexpr ((roundMode == RoundMode::CAST_EVEN || roundMode == RoundMode::CAST_ZERO) &&
+                  SupportType<Tuple<U, T>, Tuple<float, int>, Tuple<int, float>, Tuple<float, int64_t>,
+                              Tuple<int64_t, float>, Tuple<float, half>, Tuple<float, bfloat16_t>>()) {
+        return CastFallback<T, U, roundMode>(x);
+    }
+    if constexpr (roundMode == RoundMode::CAST_NONE &&
+                  SupportType<Tuple<U, T>, Tuple<half, float>, Tuple<bfloat16_t, float>>()) {
+        return CastFallback<T, U, roundMode>(x);
+    }
+    T y;
+    if constexpr (SupportType<Tuple<T, U>, Tuple<uint32_t, half>, Tuple<int32_t, half>, Tuple<uint32_t, float>,
+                              Tuple<int32_t, float>, Tuple<uint64_t, float>, Tuple<int64_t, float>,
+                              Tuple<uint32_t, bfloat16_t>, Tuple<int32_t, bfloat16_t>>()) {
+        y = CastSat<T, U, roundMode>(x);
+    } else if constexpr (SupportType<Tuple<T, U>, Tuple<half, uint32_t>, Tuple<float, uint32_t>,
+                                     Tuple<bfloat16_t, uint32_t>, Tuple<half, int32_t>, Tuple<float, int32_t>,
+                                     Tuple<bfloat16_t, int32_t>, Tuple<float, uint64_t>, Tuple<float, int64_t>,
+                                     Tuple<float, half>, Tuple<bfloat16_t, half>, Tuple<half, float>,
+                                     Tuple<bfloat16_t, float>, Tuple<half, bfloat16_t>, Tuple<float, bfloat16_t>>()) {
+        switch (satMode) {
+            case SatMode::SAT:
+                y = CastSat<T, U, roundMode>(x);
+                break;
+            case SatMode::NO_SAT:
+                y = CastNoSat<T, U, roundMode>(x);
+                break;
+        }
+    }
+    return y;
+#endif
 }
 
 template <typename T>
