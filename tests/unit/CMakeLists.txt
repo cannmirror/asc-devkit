@@ -15,5 +15,10 @@ if (BUILD_OPEN_PROJECT)
   include(${ASCENDC_UNIT_TESTS_DIR}/cmake/func.cmake)
 endif ()
 
-add_subdirectory(adv_api)
-# add_subdirectory(basic_api)
+if (ENABLE_ADV_TEST)
+  add_subdirectory(adv_api)
+endif ()
+
+if (ENABLE_BASIC_TEST)
+  add_subdirectory(basic_api)
+endif ()

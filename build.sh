@@ -13,7 +13,7 @@ set -e
 
 SUPPORTED_SHORT_OPTS=("h" "j" "t" "p")
 SUPPORTED_LONG_OPTS=(
-    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path"
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "basic_test_one" "basic_test_two" "basic_test_three"
 )
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
@@ -22,8 +22,7 @@ OUTPUT_DIR=${CURRENT_DIR}/build_out
 CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
 CPU_NUM=$(($(cat /proc/cpuinfo | grep "^processor" | wc -l)))
-
-THREAD_NUM=8
+THREAD_NUM=16
 
 dotted_line="----------------------------------------------------------------"
 
@@ -42,28 +41,32 @@ usage() {
         echo $dotted_line
         echo "    --pkg                Compile run package"
         echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+        echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
         echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
         echo "    --asan               Enable ASAN (address Sanitizer)"
-        echo "    -j                   Compile thread nums, default is 8, eg: -j 8"
         echo $dotted_line
         echo "Examples:"
-        echo "    bash build.sh --pkg -j 16"
+        echo "    bash build.sh --pkg -j 8"
         echo "    bash build.sh --pkg --asan -j 32"
         return
         ;;
       test)
         echo "Test Options:"
         echo $dotted_line
-        echo "    -t, --test           Build annd run all unit tests"
+        echo "    -t, --test           Build and run all unit tests"
         echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+        echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
+        echo "    -adv_test            Build and run the adv part of unit tests"
+        echo "    -basic_test_one      Build and run the basic_one part of unit tests"
+        echo "    -basic_test_two      Build and run the basic_two part of unit tests"
+        echo "    -basic_test_three    Build and run the basic_three part of unit tests"
         echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
         echo "    --cov                Enable code coverage for unit tests"
         echo "    --asan               Enable ASAN (address Sanitizer)"
-        echo "    -j                   Compile thread nums, default is 8, eg: -j 8"
         echo $dotted_line
         echo "Examples:"
         echo "    bash build.sh -t --cov"
-        echo "    bash build.sh --test --asan -j 32"
+        echo "    bash build.sh --test_part --asan -j 32"
         return
         ;;
       clean)
@@ -84,9 +87,13 @@ usage() {
   echo "    The following are all supported arguments:"
   echo $dotted_line
   echo "    -h, --help           Display help information"
-  echo "    -j                   Compile thread nums, default is 8, eg: -j 8"
-  echo "    -t, --test           Build annd run all unit tests"
+  echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
+  echo "    -t, --test           Build and run all unit tests"
   echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+  echo "    -adv_test            Build and run the adv part of unit tests"
+  echo "    -basic_test_one      Build and run the basic_one part of unit tests"
+  echo "    -basic_test_two      Build and run the basic_two part of unit tests"
+  echo "    -basic_test_three    Build and run the basic_three part of unit tests"
   echo "    --pkg                Compile run package"
   echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
   echo "    --cov                Enable code coverage for unit tests"
@@ -120,24 +127,33 @@ check_option_validity() {
 check_help_combinations() {
   local args=("$@")
   local has_test=false
+  local test_part=''
   local has_cov=false
   local has_pkg=false
 
   for arg in "${arg[@]}"; do
     case "$arg" in
       -t|--test) has_test=true ;;
+      --adv_test) test_part="adv_test" ;;
+      --basic_test_one) test_part="basic_test_one" ;;
+      --basic_test_two) test_part="basic_test_two" ;;
+      --basic_test_three) test_part="basic_test_three" ;;
       --cov) has_cov=true ;;
       --pkg) has_pkg=true ;;
       -h|--help) ;;
     esac
   done
 
-  if [[ "$has_test" == "true" && "$has_pkg" == "true" ]]; then
-    log "[ERROR] --pkg cannot be used with test(-t, --test)."
+  if [[ "$has_test" == "true" && -n "$test_part" ]]; then
+    log "[ERROR] --$test_part cannot be used with test(-t, --test)."
     return 1
   fi
-  if [[ "$has_cov" == "true" && "$has_test" == "all" ]]; then
-    log "[ERROR] --cov must be used with test(-t, --test)."
+  if [[ ("$has_test" == "true" || -n "$test_part") && "$has_pkg" == "true" ]]; then
+    log "[ERROR] --pkg cannot be used with test(-t, --test, --$test_part)."
+    return 1
+  fi
+  if [[ "$has_cov" == "true" && ("$has_test" == "true" || -n "$test_part") ]]; then
+    log "[ERROR] --cov must be used with test(-t, --test, --$test_part)."
     return 1
   fi
   return 0
@@ -177,6 +193,10 @@ check_param_with_help() {
         case "$prev_arg" in
           --pkg) SHOW_HELP="package" ;;
           -t|--test) SHOW_HELP="test" ;;
+          --adv_test) SHOW_HELP="test" ;;
+          --basic_test_one) SHOW_HELP="test" ;;
+          --basic_test_two) SHOW_HELP="test" ;;
+          --basic_test_three) SHOW_HELP="test" ;;
           --make_clean) SHOW_HELP="clean" ;;
         esac
       done
@@ -213,6 +233,13 @@ check_param_test_pkg() {
   fi
 }
 
+check_param_test_part() {
+  if [[ "$TEST" == "all" && -n "$TEST_PART" ]]; then
+    log "[ERROR] --$TEST_PART cannot be used with test(-t, --test)."
+    exit 1
+  fi
+}
+
 check_param_cov() {
   if [[ "$COV" == "true" && "$TEST" != "all" ]]; then
     log "[ERROR] --cov must be used with test(-t, --test)."
@@ -243,6 +270,26 @@ set_options() {
     -t|--test)
       TEST="all"
       check_param_test_pkg
+      shift
+      ;;
+    --adv_test)
+      TEST_PART="adv_test"
+      check_param_test_part
+      shift
+      ;;
+    --basic_test_one)
+      TEST_PART="basic_test_one"
+      check_param_test_part
+      shift
+      ;;
+    --basic_test_two)
+      TEST_PART="basic_test_two"
+      check_param_test_part
+      shift
+      ;;
+    --basic_test_three)
+      TEST_PART="basic_test_three"
+      check_param_test_part
       shift
       ;;
     --asan)
@@ -300,8 +347,8 @@ set_env() {
     DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
   fi
 
-  if [ -n "${ascend_package_path}" ];then
-    ASCEND_CANN_PACKAGE_PATH=${ascend_package_path}
+  if [ -n "${cann_path}" ];then
+    ASCEND_CANN_PACKAGE_PATH=${cann_path}
   elif [ -n "${ASCEND_HOME_PATH}" ];then
     ASCEND_CANN_PACKAGE_PATH=${ASCEND_HOME_PATH}
   elif [ -n "${ASCEND_OPP_PATH}" ];then
@@ -311,7 +358,7 @@ set_env() {
   elif [ -d "${DEFAULT_INSTALL_DIR}" ];then
     ASCEND_CANN_PACKAGE_PATH=${DEFAULT_INSTALL_DIR}
   else
-    log "Error: Please set the cann package installation directory through parameter -p|--package-path."
+    log "Error: Please set the cann package installation directory through parameter -p|--cann_path."
     exit 1
   fi
 
@@ -355,6 +402,32 @@ function build_test() {
   build all
 }
 
+function build_test_part() {
+  if [[ "$TEST_PART" == "adv_test" ]]; then
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_ADV_TEST=ON -DENABLE_BASIC_TEST=OFF"
+    build_test
+    return 0
+  fi
+
+  source ${CURRENT_DIR}/tests/unit/basic_api/common/ci/basic_tests_part.sh
+  CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_ADV_TEST=OFF -DENABLE_BASIC_TEST=ON"
+
+  if [ "$TEST_PART" == "basic_test_one" ]; then
+    BASIC_TEST_PART=("${test_one_targets[@]}")
+  elif [ "$TEST_PART" == "basic_test_two" ]; then
+    BASIC_TEST_PART=("${test_two_targets[@]}")
+  elif [ "$TEST_PART" == "basic_test_three" ]; then
+    BASIC_TEST_PART=("${test_three_targets[@]}")
+  fi
+
+  for tag in "${BASIC_TEST_PART[@]}"; do
+    TARGETS="${TARGETS} --target ${tag}"
+  done
+  cmake_config
+  cmake --build . ${TARGETS} -j ${THREAD_NUM}
+  return 0
+}
+
 main() {
   check_param_with_help "$@"
   set_options "$@"
@@ -364,6 +437,10 @@ main() {
   CUSTOM_OPTION="${CUSTOM_OPTION} -DCUSTOM_ASCEND_CANN_PACKAGE_PATH=${ASCEND_CANN_PACKAGE_PATH}"
 
   if [ -n "${TEST}" ];then
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=ON -DENABLE_ADV_TEST=ON -DENABLE_BASIC_TEST=ON"
+  fi
+
+  if [ -n "${TEST_PART}" ]; then
     CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=ON"
   fi
 
@@ -392,9 +469,11 @@ main() {
 
   cd ${BUILD_DIR}
 
-  if [ -n "${TEST}" ];then
+  if [ -n "${TEST}" ]; then
     build_test
-  elif [ -n "${PKG}" ];then
+  elif [ -n "$TEST_PART" ]; then
+    build_test_part
+  elif [ -n "${PKG}" ]; then
     build_package
   else
     cmake_config
