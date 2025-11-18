@@ -399,4 +399,11 @@ void Conv3DBpInputTilingBase::SetFinalTiling(optiling::Conv3DBackpropInputTiling
     tiling.conv3DDxTiling.set_dilationD(this->attrInfo.dilationD);
     tiling.conv3DDxTiling.set_hf32Flag(this->attrInfo.hf32Enable);
 }
+
+void Conv3DBpInputTilingBase::SetFinalTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling)
+{
+    optiling::Conv3DBackpropInputTilingData tilingData;
+    SetFinalTiling(tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(Conv3DBackpropInputTilingData));
+}
 } // ConvBackpropApi

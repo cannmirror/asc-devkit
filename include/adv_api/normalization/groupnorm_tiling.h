@@ -17,6 +17,7 @@
 #define LIB_NORMALIZATION_GROUPNORM_TILING_H
 #include "graph/tensor.h"
 #include "groupnorm_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 /*!
  * \brief calculate max and min tmp buffer size for GroupNorm interface.
@@ -49,5 +50,7 @@ void GetGroupNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
  */
 void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const bool isReuseSource, const uint32_t groupNum, optiling::GroupNormTiling& tiling);
+void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling);
 }
 #endif // LIB_NORMALIZATION_GROUPNORM_TILING_H

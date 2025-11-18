@@ -18,6 +18,7 @@
 #include "tiling/platform/platform_ascendc.h"
 #include "graph/types.h"
 #include "topk_utils_constants.h"
+#include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
 enum class TopKAlgo {
@@ -96,6 +97,9 @@ bool GetTopKMaxMinTmpSize(const int32_t inner, const int32_t outter, const int32
 bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
     const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
     optiling::TopkTiling &topKTiling);
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
+    const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
+    AscendC::tiling::TopkTiling &topKTiling);
 
 }  // namespace AscendC
 #endif  // LIB_SORT_TOPK_TILING_H

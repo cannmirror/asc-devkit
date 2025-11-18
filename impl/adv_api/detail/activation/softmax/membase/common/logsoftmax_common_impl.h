@@ -214,7 +214,7 @@ __aicore__ inline void LogSoftMaxGenericNZImpl(const LocalTensor<half>& dst, con
 }
 
 __aicore__ inline bool LogSoftMaxTilingFunc(const uint32_t workLocalSize, const LastAxisShapeND& ndinfo,
-    LogSoftMaxTiling& softmaxTiling, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    AscendC::tiling::LogSoftMaxTiling& softmaxTiling, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
     bool isDataFormatNZ = false)
 {
     ASCENDC_ASSERT((dataTypeSize2 != 0),

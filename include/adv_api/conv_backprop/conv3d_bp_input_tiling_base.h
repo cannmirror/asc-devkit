@@ -71,6 +71,7 @@ public:
     explicit Conv3DBpInputTilingBase(const PlatformInfo& platform);
     virtual ~Conv3DBpInputTilingBase() = default;
     virtual int64_t GetTiling(optiling::Conv3DBackpropInputTilingData& tiling) = 0;
+    virtual int64_t GetTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling) = 0;
 
     bool SetWeightShape(int64_t cout, int64_t cin, int64_t d, int64_t h, int64_t w);
     bool SetInputShape(int64_t n, int64_t c, int64_t d, int64_t h, int64_t w);
@@ -87,6 +88,7 @@ public:
 protected:
     virtual int64_t Compute() = 0;
     virtual void SetFinalTiling(optiling::Conv3DBackpropInputTilingData& tiling);
+    virtual void SetFinalTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling);
     virtual void PrintTilingData() const;
     virtual bool CheckInputParam();
     bool ShapeInitCalc();

@@ -181,6 +181,14 @@ void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stac
     tiling.set_bsCurLength(bsCurLength);
     tiling.set_lastDimValueBack(lastDimValueBack);
 }
+
+void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormTiling& tiling)
+{
+    optiling::LayerNormTiling tilingData;
+    GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(LayerNormTiling));
+}
 } // namespace
 
 void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
@@ -200,6 +208,13 @@ void GetLayerNormNDTillingInfo(const ge::Shape& srcShape, const uint32_t stackBu
 
 void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const bool isReuseSource, optiling::LayerNormTiling& tiling)
+{
+    CheckLayerNormHostCommon("LayerNorm", "GetLayerNormNDTilingInfo", srcShape, typeSize);
+    GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tiling);
+}
+
+void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormTiling& tiling)
 {
     CheckLayerNormHostCommon("LayerNorm", "GetLayerNormNDTilingInfo", srcShape, typeSize);
     GetLayerNormNDTilingInfoImpl(srcShape, stackBufferSize, typeSize, isReuseSource, tiling);
@@ -405,5 +420,13 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
         tiling.set_aCurLength(aCurLength);
         tiling.set_rValueBack(rValueBack);
     }
+}
+
+void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, const bool isComputeRstd, AscendC::tiling::LayerNormSeparateTiling& tiling)
+{
+    optiling::LayerNormSeparateTiling tilingData;
+    GetLayerNormNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, isComputeRstd, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(LayerNormSeparateTiling));
 }
 } // namespace AscendC

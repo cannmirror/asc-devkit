@@ -223,4 +223,15 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
     tilling.set_castHalfOutRepStride(castHalfOutRepStride);
     return true;
 }
+
+bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
+    const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource,
+    AscendC::tiling::BatchNormTiling& tilling, const bool isBasicBlock)
+{
+    optiling::BatchNormTiling tillingData;
+    bool ret = GetBatchNormNDTilingInfo(srcShape, originSrcShape, stackBufferByteSize, typeSize, isReuseSource,
+                                    tillingData, isBasicBlock);
+    tillingData.SaveToBuffer(&tilling, sizeof(BatchNormTiling));
+    return ret;
+}
 } // namespace AscendC

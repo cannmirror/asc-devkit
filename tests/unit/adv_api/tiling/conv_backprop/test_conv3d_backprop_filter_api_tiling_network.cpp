@@ -49,6 +49,16 @@ bool TestBasicBlockResult(uint32_t singleCoreM, uint64_t singleCoreN,
     return res;
 }
 
+bool TestBasicBlockResult(uint32_t singleCoreM, uint64_t singleCoreN,
+                          uint64_t singleCoreK, AscendC::tiling::Conv3DBackpropFilterTilingData &tilingData)
+{
+    bool res = true;
+    res = res && singleCoreM == tilingData.basicBlockTiling.singleCoreM;
+    res = res && singleCoreN == tilingData.basicBlockTiling.singleCoreN;
+    res = res && singleCoreK == tilingData.basicBlockTiling.singleCoreK;
+    return res;
+}
+
 TEST_F(TestConv3dFilterTilingNetWork, NetWorks_001)
 {
     optiling::Conv3DBackpropFilterTilingData tilingData;
@@ -85,6 +95,13 @@ TEST_F(TestConv3dFilterTilingNetWork, NetWorks_002)
     int64_t ret1 = conv3dDw.GetTiling(tilingData);
     EXPECT_EQ(ret1, 0);
     EXPECT_EQ(TestBasicBlockResult(16, 576, 512, tilingData), true);
+
+    AscendC::tiling::Conv3DBackpropFilterTilingData tilingData1;
+    int64_t ret = conv3dDw.GetTiling(tilingData1);
+    EXPECT_EQ(ret, 0);
+    conv3dDw.SetWeightShape(128, 17, 1, 3, 0);
+    ret = conv3dDw.GetTiling(tilingData1);
+    EXPECT_EQ(ret, -1);
 }
 
 TEST_F(TestConv3dFilterTilingNetWork, NetWorks_003)
@@ -256,6 +273,13 @@ TEST_F(TestConv3dFilterTilingNetWork, NetWorks_011)
     int64_t ret1 = conv3dDw.GetTiling(tilingData);
     EXPECT_EQ(ret1, 0);
     EXPECT_EQ(TestBasicBlockResult(16, 576, 512, tilingData), true);
+
+    AscendC::tiling::Conv3DBackpropFilterTilingData tilingData1;
+    int64_t ret = conv3dDw.GetTiling(tilingData1);
+    EXPECT_EQ(ret, 0);
+    conv3dDw.SetWeightShape(128, 17, 1, 3, 0);
+    ret = conv3dDw.GetTiling(tilingData1);
+    EXPECT_EQ(ret, -1);
 }
 
 TEST_F(TestConv3dFilterTilingNetWork, NetWorks_012)

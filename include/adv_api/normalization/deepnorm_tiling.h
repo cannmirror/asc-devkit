@@ -11,6 +11,7 @@
 #define LIB_NORMALIZATION_DEEPNORM_TILING_H
 #include "graph/tensor.h"
 #include "deepnorm_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 /*!
  * \brief calculate max and min tmp buffer size for DeepNorm interface.
@@ -45,5 +46,7 @@ bool GetDeepNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
  */
 bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, optiling::DeepNormTiling& tiling);
+bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling);
 }
 #endif // LIB_NORMALIZATION_DEEPNORM_TILING_H

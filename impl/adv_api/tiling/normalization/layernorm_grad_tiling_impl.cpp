@@ -194,4 +194,12 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
     tiling.set_lastDimValueBack(lastDimValueBack.uint32Value);
     tiling.set_lastDimValueBackMulTwo(lastDimValueBackMulTwo.uint32Value);
 }
+
+void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormGradTiling& tiling)
+{
+    optiling::LayerNormGradTiling tilingData;
+    GetLayerNormGradNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(LayerNormGradTiling));
+}
 } // namespace AscendC

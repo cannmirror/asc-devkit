@@ -18,6 +18,7 @@
 
 #include "conv3d_tilingdata.h"
 #include "../../../../impl/adv_api/tiling/conv/conv3d_tiling_util.h"
+#include "kernel_tiling/kernel_tiling.h"
 
 namespace Conv3dTilingApi {
 struct Conv3DL1Tiling {
@@ -140,6 +141,7 @@ public:
     explicit Conv3dTilingBase(const PlatformInfo& platform);
     virtual ~Conv3dTilingBase() = default;
     virtual int64_t GetTiling(optiling::TConv3DApiTiling& tiling) = 0;
+    virtual int64_t GetTiling(AscendC::tiling::TConv3DApiTiling& tiling) = 0;
     void SetOrgWeightShape(int64_t orgCo, int64_t orgKd, int64_t orgKh, int64_t orgKw);
     void SetOrgInputShape(int64_t orgCi, int64_t orgDi, int64_t orgHi, int64_t orgWi);
     void SetSingleWeightShape(int64_t singleCi, int64_t singleKd, int64_t singleKh, int64_t singleKw);
@@ -173,8 +175,11 @@ public:
 protected:
     virtual int64_t Compute() = 0;
     void SetFinalTilingBasicInfo(optiling::TConv3DApiTiling& tiling);
+    void SetFinalTilingBasicInfo(AscendC::tiling::TConv3DApiTiling& tiling);
     void SetFinalTilingDecisionInfo(optiling::TConv3DApiTiling& tiling);
+    void SetFinalTilingDecisionInfo(AscendC::tiling::TConv3DApiTiling& tiling);
     void SetFinalTiling(optiling::TConv3DApiTiling& tiling);
+    void SetFinalTiling(AscendC::tiling::TConv3DApiTiling& tiling);
     void PrintTilingDataBasicInfo() const;
     void PrintTilingDataDecision() const;
     void PrintTilingData() const;

@@ -16,6 +16,7 @@
 #define LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_H
 #include "graph/tensor.h"
 #include "layernorm_grad_beta_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 struct LayerNormGradBetaTilingTmp {
     uint32_t stackBufferSize = 0;
@@ -54,5 +55,7 @@ void GetLayerNormGradBetaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t
 
 void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const bool isReuseSource, optiling::LayerNormGradBetaTiling& tiling);
+void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling& tiling);
 } // namespace AscendC
 #endif // LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_H

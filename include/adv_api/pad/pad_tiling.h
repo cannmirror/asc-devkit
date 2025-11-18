@@ -19,6 +19,7 @@
 #include "graph/tensor.h"
 #include "pad_tilingdata.h"
 #include "tiling/platform/platform_ascendc.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 /*!
  * \brief calculate max and min tmp buffer size for Pad interface.
@@ -45,6 +46,8 @@ void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uin
  */
 void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, optiling::PadTiling& tiling);
+void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, AscendC::tiling::PadTiling& tiling);
 
 /*!
  * \brief calculate max and min tmp buffer size for UnPad interface.
@@ -72,5 +75,7 @@ void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatf
  */
 void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     optiling::UnPadTiling& tiling);
+void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    AscendC::tiling::UnPadTiling& tiling);
 }
 #endif // LIB_PAD_PAD_TILING_H

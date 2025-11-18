@@ -48,7 +48,7 @@ public:
      * @param [in] tiling the structure to store the tiling result defined on the Kernel side
      * @return return 0 if success, else return -1
      */
-    int64_t GetTiling(TCubeTiling &tiling) override;
+    int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling) override;
 
     /**
      * @brief Whether can enable L1BankConflictOptimise
@@ -75,7 +75,7 @@ int32_t MatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::SysTil
  * @param [in] bufSize the structure to store the used sizeof L1/UB/L0C buffer
  * @return return 0 if success, else return -1
  */
-int32_t MatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t MatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
 };
 
 #endif // MATMUL_API_TILING_H

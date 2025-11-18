@@ -217,4 +217,12 @@ namespace {
         tiling.set_factor(GROUPNORM_ONE_FLOAT_VALUE / (d * h * w));
         tiling.set_smallShape(smallShape);
     }
+
+    void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+        const bool isReuseSource, const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling) 
+    {
+        optiling::GroupNormTiling tilingData;
+        GetGroupNormNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, groupNum, tilingData);
+        tilingData.SaveToBuffer(&tiling, sizeof(GroupNormTiling));
+    }
 } // namespace AscendC

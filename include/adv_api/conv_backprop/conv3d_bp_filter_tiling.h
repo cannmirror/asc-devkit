@@ -28,12 +28,15 @@ public:
     explicit Conv3dBpFilterTiling(const PlatformInfo& platform) : Conv3dBpFilterTilingBase(platform) {};
     ~Conv3dBpFilterTiling() override = default;
     int64_t GetTiling(optiling::Conv3DBackpropFilterTilingData& tiling) override;
+    int64_t GetTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling) override;
 
 protected:
     int64_t Compute() override;
     void PrintTilingData() const override;
     void SetFinalTiling(optiling::Conv3DBackpropFilterTilingData& tiling) override;
+    void SetFinalTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling) override;
     void SetFinalBasickBlockTiling(optiling::Conv3DBackpropFilterTilingData& tiling);
+    void SetFinalBasickBlockTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling);
     void InitTilingValue();
     void ReCalDilation();
 

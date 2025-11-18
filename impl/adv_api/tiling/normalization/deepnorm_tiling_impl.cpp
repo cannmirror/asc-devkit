@@ -249,4 +249,13 @@ bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrc
     tiling.set_lastDimValueBack(lastDimValueBack);
     return true;
 }
+
+bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling)
+{
+    optiling::DeepNormTiling tilingData;
+    bool ret = GetDeepNormTilingInfo(srcShape, originSrcShape, stackBufferSize, typeSize, isReuseSource, isBasicBlock, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(DeepNormTiling));
+    return ret;
+}
 } // namespace AscendC

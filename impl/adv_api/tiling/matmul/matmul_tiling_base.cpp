@@ -740,6 +740,13 @@ void MatmulApiTilingBase::SetFinalTiling(optiling::TCubeTiling& tiling)
     return;
 }
 
+void MatmulApiTilingBase::SetFinalTiling(AscendC::tiling::TCubeTiling& tiling)
+{
+    optiling::TCubeTiling tCubeTiling;
+    SetFinalTiling(tCubeTiling);
+    tCubeTiling.SaveToBuffer(&tiling, sizeof(TCubeTiling));
+}
+
 void MatmulApiTilingBase::PrintTilingDataInfo(optiling::TCubeTiling &tiling) const
 {
     TILING_LOG_INFO("MatmulTiling: M             = %d",  tiling.get_M());
@@ -771,6 +778,39 @@ void MatmulApiTilingBase::PrintTilingDataInfo(optiling::TCubeTiling &tiling) con
     TILING_LOG_INFO("MatmulTiling: singleBatchN  = %d",  tiling.get_singleBatchN());
     TILING_LOG_INFO("MatmulTiling: stepKa        = %d",  tiling.get_stepKa());
     TILING_LOG_INFO("MatmulTiling: stepKb        = %d",  tiling.get_stepKb());
+}
+
+void MatmulApiTilingBase::PrintTilingDataInfo(AscendC::tiling::TCubeTiling &tiling) const
+{
+    TILING_LOG_INFO("MatmulTiling: M             = %d",  tiling.M);
+    TILING_LOG_INFO("MatmulTiling: N             = %d",  tiling.N);
+    TILING_LOG_INFO("MatmulTiling: Ka            = %d",  tiling.Ka);
+    TILING_LOG_INFO("MatmulTiling: Kb            = %d",  tiling.Kb);
+    TILING_LOG_INFO("MatmulTiling: singleCoreM   = %d",  tiling.singleCoreM);
+    TILING_LOG_INFO("MatmulTiling: singleCoreN   = %d",  tiling.singleCoreN);
+    TILING_LOG_INFO("MatmulTiling: singleCoreK   = %d",  tiling.singleCoreK);
+    TILING_LOG_INFO("MatmulTiling: baseM         = %d",  tiling.baseM);
+    TILING_LOG_INFO("MatmulTiling: baseN         = %d",  tiling.baseN);
+    TILING_LOG_INFO("MatmulTiling: baseK         = %d",  tiling.baseK);
+    TILING_LOG_INFO("MatmulTiling: depthA1       = %d",  tiling.depthA1);
+    TILING_LOG_INFO("MatmulTiling: depthB1       = %d",  tiling.depthB1);
+    TILING_LOG_INFO("MatmulTiling: depthAL1CacheUB     = %d",  tiling.depthAL1CacheUB);
+    TILING_LOG_INFO("MatmulTiling: depthBL1CacheUB     = %d",  tiling.depthBL1CacheUB);
+    TILING_LOG_INFO("MatmulTiling: stepM         = %d",  tiling.stepM);
+    TILING_LOG_INFO("MatmulTiling: stepN         = %d",  tiling.stepN);
+    TILING_LOG_INFO("MatmulTiling: isBias        = %d",  tiling.isBias);
+    TILING_LOG_INFO("MatmulTiling: transLength   = %d",  tiling.transLength);
+    TILING_LOG_INFO("MatmulTiling: iterateOrder  = %d",  tiling.iterateOrder);
+    TILING_LOG_INFO("MatmulTiling: shareMode     = %d",  tiling.shareMode);
+    TILING_LOG_INFO("MatmulTiling: usedL1Size    = %d",  tiling.shareL1Size);
+    TILING_LOG_INFO("MatmulTiling: usedL0CSize   = %d",  tiling.shareL0CSize);
+    TILING_LOG_INFO("MatmulTiling: usedUBSize    = %d",  tiling.shareUbSize);
+    TILING_LOG_INFO("MatmulTiling: batchM        = %d",  tiling.batchM);
+    TILING_LOG_INFO("MatmulTiling: batchN        = %d",  tiling.batchN);
+    TILING_LOG_INFO("MatmulTiling: singleBatchM  = %d",  tiling.singleBatchM);
+    TILING_LOG_INFO("MatmulTiling: singleBatchN  = %d",  tiling.singleBatchN);
+    TILING_LOG_INFO("MatmulTiling: stepKa        = %d",  tiling.stepKa);
+    TILING_LOG_INFO("MatmulTiling: stepKb        = %d",  tiling.stepKb);
 }
 
 void MatmulApiTilingBase::PrintTilingData()

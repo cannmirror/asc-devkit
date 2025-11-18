@@ -580,4 +580,18 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, co
     const platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
     return TopKTilingFunc(inner, outter, k, dataTypeSize, isInitIndex, mode, topKTiling, isLargest, socVersion);
 }
+
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
+    const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
+    AscendC::tiling::TopkTiling &topKTiling)
+{
+    CheckTopKHostCommon("TopK", "TopKTilingFunc", ascendcPlatform, inner, outter, isInitIndex, mode, dataTypeSize);
+    ASCENDC_HOST_ASSERT(k >= 1 && k <= inner, continue, 
+        "[TopK][TopKTilingFunc] The range of value k is [1, %d]!", inner);
+    const platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
+    optiling::TopkTiling tilingData;
+    bool ret = TopKTilingFunc(inner, outter, k, dataTypeSize, isInitIndex, mode, tilingData, isLargest, socVersion);
+    tilingData.SaveToBuffer(&topKTiling, sizeof(TopkTiling));
+    return ret;
+}
 }  // namespace AscendC

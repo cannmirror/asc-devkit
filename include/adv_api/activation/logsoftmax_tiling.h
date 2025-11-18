@@ -17,6 +17,7 @@
 #define LIB_ACTIVATION_LOGSOFTMAX_TILING_H
 #include "graph/tensor.h"
 #include "logsoftmax_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 /*
  * @ingroup GetLogSoftMaxMaxTmpSize
@@ -46,5 +47,8 @@ uint32_t GetLogSoftMaxMinTmpSize(const ge::Shape srcShape, const uint32_t dataTy
  */
 void LogSoftMaxTilingFunc(const ge::Shape srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
     optiling::LogSoftMaxTiling& softmaxTiling);
+
+void LogSoftMaxTilingFunc(const ge::Shape srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    AscendC::tiling::LogSoftMaxTiling& softmaxTiling);
 }
 #endif // LIB_ACTIVATION_LOGSOFTMAX_TILING_H

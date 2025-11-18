@@ -89,7 +89,7 @@ public:
      * @param tiling : The Tiling structure stores the final tiling results. The TCubeTiling structure without the
         optiling namespace, Matmul TilingData defined on the Kernel side.
      */
-    int64_t GetTiling(TCubeTiling &tiling) override;
+    int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling) override;
     /**
      * @brief Set the maximum and minimum values for singleCoreM/singleCoreN/singleCoreK.
      * @param maxM : Set the maximum value of singleCoreM to -1, which indicates that no specific maximum value
@@ -236,7 +236,7 @@ public:
      *                 - Any value other than -1: Tiling calculation succeeded, and the tiling structure can be used.
      *                 - -1: Tiling calculation failed, and the tiling result cannot be used.
      */
-    int64_t GetTiling(TCubeTiling &tiling) override;
+    int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling) override;
 protected:
     int64_t Compute() override;
 private:
@@ -279,7 +279,7 @@ int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::S
  *
  * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
  */
-int32_t MultiCoreMatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
 /**
  * @brief Get L1/Unified/L0C buffer sizes for BatchMatmul
  *
@@ -290,7 +290,7 @@ int32_t MultiCoreMatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTi
  *
  * @return 0 if the core numbers are successfully retrieved; -1 if the retrieval fails
  */
-int32_t BatchMatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
+int32_t BatchMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize);
 };
 
 #endif // LIB_MATMUL_BMM_TILING_H

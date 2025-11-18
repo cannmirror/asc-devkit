@@ -246,6 +246,13 @@ void Conv3dBpFilterTilingBase::SetFinalTiling(optiling::Conv3DBackpropFilterTili
     tiling.dwTiling.set_hf32Flag(static_cast<uint32_t>(this->attrInfo.hf32Enable));
 }
 
+void Conv3dBpFilterTilingBase::SetFinalTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling)
+{
+    optiling::Conv3DBackpropFilterTilingData tilingData;
+    SetFinalTiling(tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(Conv3DBackpropFilterTilingData));
+}
+
 bool Conv3dBpFilterTilingBase::CheckInputParam()
 {
     if (!CheckInputAttr() || !CheckInputShape() || !CheckInputFormat()) {
