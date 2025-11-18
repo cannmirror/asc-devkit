@@ -458,7 +458,6 @@ __aicore__ inline void ResetLoopModePara(DataCopyMVType type);
  * DataCopy(Layout) API Level2                                              *
  * ************************************************************************************************* */
 namespace AscendC {
-
 template <typename T, size_t row, size_t column>
 using NZLayout = typename NZLayoutFormat<T, row, column>::type;
 
@@ -467,6 +466,9 @@ using RowMajorLayout = NDLayoutFormat<T, row, column>;
 
 template <typename T, size_t row, size_t column>
 using ColumnMajorLayout = DNLayoutFormat<T, row, column>;
+
+template <typename T, size_t row, size_t column>
+using ZNLayout = ZNLayoutFormat<T, row, column>;
 
 template <typename T>
 __aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column);

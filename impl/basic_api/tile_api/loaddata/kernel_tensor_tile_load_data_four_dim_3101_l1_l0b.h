@@ -15,7 +15,7 @@
 #ifndef IMPL_TILE_API_KERNEL_TENSOR_TILE_LOAD_DATA_FOUR_DIM_3101_L1_L0B_H
 #define IMPL_TILE_API_KERNEL_TENSOR_TILE_LOAD_DATA_FOUR_DIM_3101_L1_L0B_H
 
-#include "kernel_tensor_tile_utils.h"
+#include "../kernel_tensor_tile_utils.h"
 
 namespace AscendC {
 namespace TileInternal {

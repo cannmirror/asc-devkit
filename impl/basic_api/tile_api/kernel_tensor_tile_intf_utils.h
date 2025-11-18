@@ -38,6 +38,9 @@ using NDLayoutFormat = Layout<TileInternal::NDShapeFormat<T, row, column>, TileI
 template <typename T, size_t row, size_t column>
 using DNLayoutFormat = Layout<TileInternal::DNShapeFormat<T, row, column>, TileInternal::DNStrideFormat<T, row, column>>;
 
+template <typename T, size_t row, size_t column>
+using ZNLayoutFormat = Layout<TileInternal::ZNShapeFormat<T, row, column>, TileInternal::ZNStrideFormat<T, row, column>>;
+
 template <typename T, typename U>
 constexpr bool VerifyingDataCopyTemplate =
     ((TileInternal::IsGlobalTensorTraitV<U> && TileInternal::IsLocalTensorTraitV<T>) ||
