@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from typing import List, Any
 from .log_utils import AscendCLogLevel
 from .ascendc_common_utility import CommonUtility
+from .get_op_tiling import OpInfo
 
 TILING_DECLARE_MAP = []
 TILING_SELECT_MAP = []
@@ -25,6 +26,98 @@ ONE_BYTE_BIT = 8
 UI_RANGE = 0
 UI_LIST = 1
 UI_MIX = 2
+
+# native datatype and dataformat support
+ASCENDC_TPL_INPUT_BIAS = 1e8
+ASCENDC_TPL_OUTPUT_BIAS = 9e8
+ASCENDC_TPL_DATATYPE_MAX = 42
+ASCENDC_COMPILE_DATATYPE_MAP = {
+    "DT_FLOAT": ["float32", 0],
+    "DT_FLOAT16": ["float16", 1],
+    "DT_INT8": ["int8", 2],
+    "DT_INT32": ["int32", 3],
+    "DT_UINT8": ["uint8", 4],
+    "DT_INT16": ["int16", 6],
+    "DT_UINT16": ["uint16", 7],
+    "DT_UINT32": ["uint32", 8],
+    "DT_INT64": ["int64", 9],
+    "DT_UINT64": ["uint64", 10],
+    "DT_DOUBLE": ["double", 11],
+    "DT_BOOL": ["bool", 12],
+    "DT_COMPLEX64": ["complex64", 16],
+    "DT_BF16": ["bfloat16", 27],
+    "DT_INT4": ["int4", 29],
+    "DT_UINT1": ["uint1", 30],
+    "DT_INT2": ["int2", 31],
+    "DT_COMPLEX32": ["complex32", 33],
+    "DT_HIFLOAT8": ["hifloat8", 34],
+    "DT_FLOAT8_E5M2": ["float8_e5m2", 35],
+    "DT_FLOAT8_E4M3FN": ["float8_e4m3fn", 36],
+    "DT_FLOAT4_E2M1": ["float4_e2m1", 40],
+    "DT_FLOAT4_E1M2": ["float4_e1m2", 41],
+    "DT_MAX": ["unknown", ASCENDC_TPL_DATATYPE_MAX],
+}
+ASCENDC_COMPILE_DATATYPE_REVERT_MAP = {v[-1]: v[0] for v in ASCENDC_COMPILE_DATATYPE_MAP.values()}
+ASCENDC_TPL_DATAFORMAT_MAX = 55
+ASCENDC_COMPILE_DATAFORMAT_MAP = {
+    "FORMAT_NCHW": ["NCHW", 0],
+    "FORMAT_NHWC": ["NHWC", 1],
+    "FORMAT_ND": ["ND", 2],
+    "FORMAT_NC1HWC0": ["NC1HWC0", 3],
+    "FORMAT_FRACTAL_Z": ["FRACTAL_Z", 4],
+    "FORMAT_NC1C0HWPAD": ["NC1C0HWPAD", 5],
+    "FORMAT_NHWC1C0": ["NHWC1C0", 6],
+    "FORMAT_FSR_NCHW": ["FSR_NCHW", 7],
+    "FORMAT_FRACTAL_DECONV": ["FRACTAL_DECONV", 8],
+    "FORMAT_C1HWNC0": ["C1HWNC0", 9],
+    "FORMAT_FRACTAL_DECONV_TRANSPOSE": ["FRACTAL_DECONV_TRANSPOSE", 10],
+    "FORMAT_FRACTAL_DECONV_SP_STRIDE_TRANS": ["FRACTAL_DECONV_SP_STRIDE_TRANS", 11],
+    "FORMAT_NC1HWC0_C04": ["NC1HWC0_C04", 12],
+    "FORMAT_FRACTAL_Z_C04": ["FRACTAL_Z_C04", 13],
+    "FORMAT_CHWN": ["CHWN", 14],
+    "FORMAT_FRACTAL_DECONV_SP_STRIDE8_TRANS": ["FRACTAL_DECONV_SP_STRIDE8_TRANS", 15],
+    "FORMAT_HWCN": ["HWCN", 16],
+    "FORMAT_NC1KHKWHWC0": ["NC1KHKWHWC0", 17],
+    "FORMAT_BN_WEIGHT": ["BN_WEIGHT", 18],
+    "FORMAT_FILTER_HWCK": ["FILTER_HWCK", 19],
+    "FORMAT_HASHTABLE_LOOKUP_LOOKUPS": ["HASHTABLE_LOOKUP_LOOKUPS", 20],
+    "FORMAT_HASHTABLE_LOOKUP_KEYS": ["HASHTABLE_LOOKUP_KEYS", 21],
+    "FORMAT_HASHTABLE_LOOKUP_VALUE": ["HASHTABLE_LOOKUP_VALUE", 22],
+    "FORMAT_HASHTABLE_LOOKUP_OUTPUT": ["HASHTABLE_LOOKUP_OUTPUT", 23],
+    "FORMAT_HASHTABLE_LOOKUP_HITS": ["HASHTABLE_LOOKUP_HITS", 24],
+    "FORMAT_C1HWNCoC0": ["C1HWNCoC0", 25],
+    "FORMAT_MD": ["MD", 26],
+    "FORMAT_NDHWC": ["NDHWC", 27],
+    "FORMAT_FRACTAL_ZZ": ["FRACTAL_ZZ", 28],
+    "FORMAT_FRACTAL_NZ": ["FRACTAL_NZ", 29],
+    "FORMAT_NCDHW": ["NCDHW", 30],
+    "FORMAT_DHWCN": ["DHWCN", 31],
+    "FORMAT_NDC1HWC0": ["NDC1HWC0", 32],
+    "FORMAT_FRACTAL_Z_3D": ["FRACTAL_Z_3D", 33],
+    "FORMAT_CN": ["CN", 34],
+    "FORMAT_NC": ["NC", 35],
+    "FORMAT_DHWNC": ["DHWNC", 36],
+    "FORMAT_FRACTAL_Z_3D_TRANSPOSE": ["FRACTAL_Z_3D_TRANSPOSE", 37],
+    "FORMAT_FRACTAL_ZN_LSTM": ["FRACTAL_ZN_LSTM", 38],
+    "FORMAT_FRACTAL_Z_G": ["FRACTAL_Z_G", 39],
+    "FORMAT_RESERVED": ["RESERVED", 40],
+    "FORMAT_ALL": ["ALL", 41],
+    "FORMAT_NULL": ["NULL", 42],
+    "FORMAT_ND_RNN_BIAS": ["ND_RNN_BIAS", 43],
+    "FORMAT_FRACTAL_ZN_RNN": ["FRACTAL_ZN_RNN", 44],
+    "FORMAT_NYUV": ["NYUV", 45],
+    "FORMAT_NYUV_A": ["NYUV_A", 46],
+    "FORMAT_NCL": ["NCL", 47],
+    "FORMAT_FRACTAL_Z_WINO": ["FRACTAL_Z_WINO", 48],
+    "FORMAT_C1HWC0": ["C1HWC0", 49],
+    "FORMAT_FRACTAL_NZ_C0_16": ["FRACTAL_NZ_C0_16", 50],
+    "FORMAT_FRACTAL_NZ_C0_32": ["FRACTAL_NZ_C0_32", 51],
+    "FORMAT_FRACTAL_NZ_C0_2": ["FRACTAL_NZ_C0_2", 52],
+    "FORMAT_FRACTAL_NZ_C0_4": ["FRACTAL_NZ_C0_4", 53],
+    "FORMAT_FRACTAL_NZ_C0_8": ["FRACTAL_NZ_C0_8", 54],
+    "FORMAT_MAX": ["unknown", ASCENDC_TPL_DATAFORMAT_MAX],  # 0xff = 255
+}
+ASCENDC_COMPILE_DATAFORMAT_REVERT_MAP = {v[-1]: v[0] for v in ASCENDC_COMPILE_DATAFORMAT_MAP.values()}
 
 
 def extract_num(s):
@@ -37,16 +130,73 @@ def extract_str(s):
     return strs
 
 
+def safe_parse_value(s):
+    try:
+        return int(s)
+    except Exception:
+        pass
+    try:
+        result = int(eval(s))
+        return result
+    except Exception:
+        pass
+    try:
+        if "DT_" in s:
+            if s[:5] != "C_DT_":
+                CommonUtility.print_compile_log(
+                    "",
+                    f"datatype only support C_DT_*, but now is [{s}]",
+                    AscendCLogLevel.LOG_ERROR,
+                )
+            datatype = s.split("::")[-1]
+            if datatype[:2] == "C_":
+                datatype = datatype[2:]
+            result = ASCENDC_COMPILE_DATATYPE_MAP[datatype][-1]
+            return result
+    except Exception:
+        pass
+    try:
+        if "FORMAT_" in s:
+            if s[:9] != "C_FORMAT_":
+                CommonUtility.print_compile_log(
+                    "",
+                    f"format only support C_FORMAT_*, but now is [{s}]",
+                    AscendCLogLevel.LOG_ERROR,
+                )
+            dataformat = s.split("::")[-1]
+            if dataformat[:2] == "C_":
+                dataformat = dataformat[2:]
+            result = ASCENDC_COMPILE_DATAFORMAT_MAP[dataformat][-1]
+            return result
+    except Exception:
+        pass
+    CommonUtility.print_compile_log(
+        "",
+        "can't convert str : [{}], it is invalid value.".format(s),
+        AscendCLogLevel.LOG_ERROR,
+    )
+    return -1
+
+
+def extract_expr(s):
+    match = re.search(r"{([^}]*)}", s)
+    content = match.group(1).split(",")
+    content = [x.strip() for x in content if x.strip()]
+    results = [safe_parse_value(item) for item in content if safe_parse_value(item) >= 0]
+    return results
+
+
 class TilingParamType(Enum):
     TPL_DTYPE = auto()
+    TPL_DATATYPE = auto()
     TPL_FORMAT = auto()
+    TPL_DATAFORMAT = auto()
     TPL_UINT = auto()
     TPL_BOOL = auto()
     TPL_TILING_STRUCT = auto()
     TPL_KERNEL_TYPE = auto()
     TPL_DETERMINISTIC = auto()
     TPL_NONE = auto()
-
 
 
 @dataclass
@@ -116,23 +266,38 @@ class TilingTemplateParams:
         encodes = dict()
         if self.param_type == TilingParamType.TPL_UINT:
             for i, value in enumerate(self.values):
-                encodes[bin(i)[2:].rjust(self.bit_width, '0')] = value
-        elif self.param_type == TilingParamType.TPL_DTYPE or \
-            self.param_type == TilingParamType.TPL_FORMAT:
+                encodes[bin(i)[2:].rjust(self.bit_width, "0")] = value
+        elif (
+            self.param_type == TilingParamType.TPL_DTYPE or
+            self.param_type == TilingParamType.TPL_FORMAT
+        ):
             for value in self.values:
-                encodes[bin(value)[2:].rjust(self.bit_width, '0')] = value
+                encodes[bin(value)[2:].rjust(self.bit_width, "0")] = value
+        elif (self.param_type == TilingParamType.TPL_DATATYPE):
+            for value in self.values:
+                if value >= ASCENDC_TPL_DATATYPE_MAX:
+                    continue
+                encodes[bin(value)[2:].rjust(self.bit_width, "0")] = value
+        elif (self.param_type == TilingParamType.TPL_DATAFORMAT):
+            for value in self.values:
+                if value >= ASCENDC_TPL_DATAFORMAT_MAX:
+                    continue
+                encodes[bin(value)[2:].rjust(self.bit_width, "0")] = value
         else:
             encodes['0'] = 0
             encodes['1'] = 1
         return encodes
 
     def get_param_type_str(self) -> str:
-        name_dict = {TilingParamType.TPL_DTYPE : "DTYPE",
-                    TilingParamType.TPL_BOOL: "BOOL",
-                    TilingParamType.TPL_FORMAT : "FORMAT",
-                    TilingParamType.TPL_UINT : "UINT",
-                    TilingParamType.TPL_DETERMINISTIC: "DETERMINISTIC",
-                    TilingParamType.TPL_NONE : ""
+        name_dict = {
+            TilingParamType.TPL_DTYPE: "DTYPE",
+            TilingParamType.TPL_DATATYPE: "DATATYPE",
+            TilingParamType.TPL_BOOL: "BOOL",
+            TilingParamType.TPL_FORMAT: "FORMAT",
+            TilingParamType.TPL_DATAFORMAT: "DATAFORMAT",
+            TilingParamType.TPL_UINT: "UINT",
+            TilingParamType.TPL_DETERMINISTIC: "DETERMINISTIC",
+            TilingParamType.TPL_NONE: "",
         }
         return name_dict.get(self.param_type, "")
 
@@ -202,6 +367,15 @@ def remove_prefix(text, prefix):
     return text
 
 
+def build_format_class(tiling_param_str: str, name: str, macro_type: str):
+    sparse_values_old = extract_num(tiling_param_str)
+    sparse_values_new = extract_expr(tiling_param_str)
+    if sparse_values_old == sparse_values_new:
+        return TilingTemplateParams(name, TilingParamType.TPL_FORMAT, sparse_values_old, 8, macro_type)
+    else:
+        return TilingTemplateParams(name, TilingParamType.TPL_DATAFORMAT, sparse_values_new, 8, macro_type)
+
+
 def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict = None) -> list:
     res = []
     tiling_param = []
@@ -212,24 +386,32 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
         if sub_str == '{' and tiling_param:
             res.append(tiling_param)
             tiling_param = []
-        macro_type = "SEL" if sub_str.startswith("ASCENDC_TPL_DTYPE_SEL_") or \
-            sub_str.startswith("ASCENDC_TPL_FORMAT_SEL_") or \
-            sub_str.startswith("ASCENDC_TPL_UINT_SEL_") or \
-            sub_str.startswith("ASCENDC_TPL_BOOL_SEL_") or \
-            sub_str.startswith("ASCENDC_TPL_TILING_STRUCT_SEL_") or \
-            sub_str.startswith("ASCENDC_TPL_KERNEL_TYPE_SEL") or \
-            sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL") else \
-            "DECL"
+        macro_type = (
+            "SEL"
+            if sub_str.startswith("ASCENDC_TPL_DTYPE_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_DATATYPE_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_FORMAT_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_DATAFORMAT_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_UINT_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_BOOL_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_TILING_STRUCT_SEL_")
+            or sub_str.startswith("ASCENDC_TPL_KERNEL_TYPE_SEL")
+            or sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL")
+            else "DECL"
+        )
         if sub_str.startswith("ASCENDC_TPL_DTYPE"):
             dtype_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_DTYPE_{}_'.format(macro_type))
             tiling_param.append(TilingTemplateParams(
                 name, TilingParamType.TPL_DTYPE, dtype_list, 8, macro_type))
-        elif sub_str.startswith("ASCENDC_TPL_FORMAT"):
-            format_list = extract_num(tiling_param_list[i + 1])
-            name = remove_prefix(sub_str, 'ASCENDC_TPL_FORMAT_{}_'.format(macro_type))
+        elif sub_str.startswith("ASCENDC_TPL_DATATYPE"):
+            dtype_list = extract_expr(tiling_param_list[i + 1])
+            name = remove_prefix(sub_str, 'ASCENDC_TPL_DATATYPE_{}_'.format(macro_type))
             tiling_param.append(TilingTemplateParams(
-                name, TilingParamType.TPL_FORMAT, format_list, 8, macro_type))
+                name, TilingParamType.TPL_DATATYPE, dtype_list, 8, macro_type))
+        elif sub_str.startswith("ASCENDC_TPL_FORMAT"):
+            name = remove_prefix(sub_str, 'ASCENDC_TPL_FORMAT_{}_'.format(macro_type))
+            tiling_param.append(build_format_class(tiling_param_list[i + 1], name, macro_type))
         elif sub_str.startswith("ASCENDC_TPL_KERNEL_TYPE_SEL"):
             format_list = extract_num(tiling_param_list[i + 1])
             name = "KERNEL_TYPE"
@@ -238,11 +420,11 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
         elif sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL"):
             cur_deter_flag = extract_str(tiling_param_list[i + 1])
             if len(cur_deter_flag) != 1:
-                raise RuntimeError("ASCENDC_TPL_DETERMINISTIC_SEL can only one value can be specified")
+                raise RuntimeError("ASCENDC_TPL_DETERMINISTIC_SEL can only one value can be specified!")
             if cur_deter_flag[0] == "1":
-                cur_deter_flag = ["true"]
-            if cur_deter_flag[0] == "0":
-                cur_deter_flag = ["false"]
+                cur_deter_flag[0] = "true"
+            elif cur_deter_flag[0] == "0":
+                cur_deter_flag[0] = "false"
             tiling_param.append(TilingTemplateParams("DETERMINISTIC", \
                 TilingParamType.TPL_DETERMINISTIC, cur_deter_flag, 1, macro_type))
         elif sub_str.startswith("ASCENDC_TPL_UINT"):
@@ -266,8 +448,14 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
     return res
 
 
-def get_concated_tiling_key(template_param_list: List[TilingTemplateParams],\
-    index: int, tiling_key: str, tiling_args: List[int], encode_book: dict, data: dict) -> dict:
+def get_concated_tiling_key(
+    template_param_list: List[TilingTemplateParams],
+    index: int,
+    tiling_key: str,
+    tiling_args: List[str],
+    encode_book: dict,
+    data: dict,
+) -> dict:
     result = dict()
     if index == len(template_param_list):
         data.update({"paramArgs": tiling_args})
@@ -287,12 +475,66 @@ def get_concated_tiling_key(template_param_list: List[TilingTemplateParams],\
             data['deterministic'] = template_param.values[0]
             encode_ = ""
             tiling_args_temp = tiling_args
+        elif template_param.param_type == TilingParamType.TPL_DATATYPE:
+            data["dtypeParams"].append(ASCENDC_COMPILE_DATATYPE_REVERT_MAP.get(val, "unknown"))
+            encode_ = encode_book[template_param.name][val]
+            tiling_args_temp = tiling_args + ["TypeFromId<{}>::type".format(str(val))]
+        elif template_param.param_type == TilingParamType.TPL_DATAFORMAT:
+            data["formatParams"].append(ASCENDC_COMPILE_DATAFORMAT_REVERT_MAP.get(val, "unknown"))
+            encode_ = encode_book[template_param.name][val]
+            tiling_args_temp = tiling_args + [str(val)]
         else:
             encode_ = encode_book[template_param.name][val]
-            tiling_args_temp = tiling_args + [val]
-        result.update(get_concated_tiling_key(template_param_list, index + 1, encode_ + tiling_key, tiling_args_temp,
-                                              encode_book, data))
+            tiling_args_temp = tiling_args + [str(val)]
+        result.update(
+            get_concated_tiling_key(
+                template_param_list, index + 1, encode_ + tiling_key, tiling_args_temp, encode_book, data
+            )
+        )
     return result
+
+
+def extract_decl_param_options(op_info: OpInfo, option_name="dtype"):
+    if op_info is None:
+        return [], []
+    support_option_dict = {
+        "dtype": TilingParamType.TPL_DATATYPE,
+        "format": TilingParamType.TPL_DATAFORMAT,
+    }
+    decl_input_indexes = []
+    decl_output_indexes = []
+    deck_select_indexes = []
+    checked_param_type = support_option_dict[option_name]
+    for declare_param in TILING_DECLARE_MAP:
+        if declare_param.param_type != checked_param_type:
+            continue
+        deck_select_indexes.append(False)
+        for val in declare_param.values:
+            if val >= ASCENDC_TPL_INPUT_BIAS and val < ASCENDC_TPL_OUTPUT_BIAS:
+                decl_input_indexes.append(int(val % ASCENDC_TPL_INPUT_BIAS))
+                deck_select_indexes[-1] = True
+            elif val >= ASCENDC_TPL_OUTPUT_BIAS:
+                decl_output_indexes.append(int(val % ASCENDC_TPL_OUTPUT_BIAS))
+                deck_select_indexes[-1] = True
+
+    def _check_indexes(indexes: List[int], value_list, desc=""):
+        if len(indexes) != 0 and (max(indexes) >= len(value_list) or min(indexes) < 0):
+            raise ValueError(
+                f"exist invalid {desc} index : {indexes}, please check it."
+            )
+        if len(indexes) != len(set(indexes)):
+            raise ValueError(f"exist duplicate {desc} index : {indexes}")
+
+    _check_indexes(decl_input_indexes, op_info.inputs, "input")
+    _check_indexes(decl_output_indexes, op_info.outputs, "output")
+    decl_input_options = [
+        op_info.inputs[idx][option_name] for idx in decl_input_indexes
+    ]
+    decl_output_options = [
+        op_info.outputs[idx][option_name] for idx in decl_output_indexes
+    ]
+    decl_output_indexes = [int(x + len(op_info.inputs)) for x in decl_output_indexes]
+    return decl_input_options + decl_output_options, deck_select_indexes
 
 
 def decode_tiling(tiling_key: int = None) -> dict:
@@ -310,7 +552,8 @@ def decode_tiling(tiling_key: int = None) -> dict:
     decode_results = dict()
     for tiling_template_select_param in TILING_SELECT_MAP:
         decode_result = get_concated_tiling_key(
-            tiling_template_select_param, 0, '', [], reversed_encode_book, {})
+            tiling_template_select_param, 0, "", [], reversed_encode_book, {"dtypeParams": [], "formatParams": []}
+        )
         length_before = len(decode_result) + len(decode_results)
         decode_results.update(decode_result)
         if length_before != len(decode_results):
