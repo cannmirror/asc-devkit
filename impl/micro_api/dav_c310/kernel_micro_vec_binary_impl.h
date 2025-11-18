@@ -106,16 +106,10 @@ __simd_callee__ inline void CalTraitOneByTransToTraitTwo(RegT &dstReg, RegT &src
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void AddOperator(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
-        uint64_t, int64_t, complex32, complex64>(),
-        "current data type is not supported on current device!");
-    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Add api only supported Mode ZEROING on current device!");
-    if constexpr(SupportType<ActualT, complex32>()) {
+    if constexpr (SupportType<ActualT, complex32>()) {
         if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
             AddComplexTwoRegImpl<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
         } else {
@@ -134,6 +128,25 @@ __simd_callee__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, 
     } else {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
         vadd(dstReg, srcReg0, srcReg1, mask, modeValue);
+    }
+}
+
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
+__simd_callee__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+        uint64_t, int64_t, complex32, complex64>(),
+        "current data type is not supported on current device!");
+    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING, MaskMergeMode::MERGING>(),
+        "current Add api only supported Mode ZEROING/MERGING on current device!");
+    if constexpr (mode == MaskMergeMode::ZEROING) {
+        AddOperator<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
+    } else if constexpr (mode == MaskMergeMode::MERGING) {
+        RegT dstCopyReg;
+        AddOperator<T, MaskMergeMode::ZEROING, RegT>(dstCopyReg, srcReg0, srcReg1, mask);
+        Copy(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -1361,15 +1374,9 @@ __simd_callee__ inline void DivImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, 
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void MaxImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MaxOperator(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
-        uint64_t, int64_t>(),
-        "current data type is not supported on current device!");
-    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Max api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
         if constexpr (sizeof(ActualT) < 8) {
@@ -1395,15 +1402,28 @@ __simd_callee__ inline void MaxImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, 
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void MinImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MaxImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
         uint64_t, int64_t>(),
         "current data type is not supported on current device!");
-    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Min api only supported Mode ZEROING on current device!");
+    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING, MaskMergeMode::MERGING>(),
+        "current Max api only supported Mode ZEROING/MERGING on current device!");
+    if constexpr (mode == MaskMergeMode::ZEROING) {
+        MaxOperator<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
+    } else if constexpr (mode == MaskMergeMode::MERGING) {
+        RegT dstCopyReg;
+        MaxOperator<T, MaskMergeMode::ZEROING, RegT>(dstCopyReg, srcReg0, srcReg1, mask);
+        Copy(dstReg, dstCopyReg, mask);
+    }
+}
+
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
+__simd_callee__ inline void MinOperator(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
         if constexpr (sizeof(ActualT) < 8) {
@@ -1425,6 +1445,25 @@ __simd_callee__ inline void MinImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, 
         MaskReg selMask;
         Compare<ActualT, CMPMODE::LT>(selMask, srcReg0, srcReg1, mask);
         Select(dstReg, srcReg0, srcReg1, selMask);
+    }
+}
+
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
+__simd_callee__ inline void MinImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+        uint64_t, int64_t>(),
+        "current data type is not supported on current device!");
+    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING, MaskMergeMode::MERGING>(),
+        "current Min api only supported Mode ZEROING/MERGING on current device!");
+    if constexpr (mode == MaskMergeMode::ZEROING) {
+        MinOperator<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
+    } else if constexpr (mode == MaskMergeMode::MERGING) {
+        RegT dstCopyReg;
+        MinOperator<T, MaskMergeMode::ZEROING, RegT>(dstCopyReg, srcReg0, srcReg1, mask);
+        Copy(dstReg, dstCopyReg, mask);
     }
 }
 
