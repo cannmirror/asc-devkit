@@ -8,17 +8,17 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-add_library(intf_llt_pub INTERFACE)
+add_library(intf_llt_pub_basic INTERFACE)
 
-target_include_directories(intf_llt_pub INTERFACE
+target_include_directories(intf_llt_pub_basic INTERFACE
 )
 
-target_compile_definitions(intf_llt_pub INTERFACE
+target_compile_definitions(intf_llt_pub_basic INTERFACE
     CFG_BUILD_DEBUG
     _GLIBCXX_USE_CXX11_ABI=0
 )
 
-target_compile_options(intf_llt_pub INTERFACE
+target_compile_options(intf_llt_pub_basic INTERFACE
     -g
     -w
     $<$<BOOL:${ENABLE_GCOV}>:-fprofile-arcs -ftest-coverage>
@@ -27,17 +27,18 @@ target_compile_options(intf_llt_pub INTERFACE
     -pipe
 )
 
-target_link_options(intf_llt_pub INTERFACE
+target_link_options(intf_llt_pub_basic INTERFACE
     $<$<BOOL:${ENABLE_GCOV}>:-fprofile-arcs -ftest-coverage>
     $<$<BOOL:${ENABLE_ASAN}>:-fsanitize=address -static-libasan -fsanitize=undefined  -static-libubsan -fsanitize=leak -static-libtsan>
 )
 
-target_link_directories(intf_llt_pub INTERFACE
+target_link_directories(intf_llt_pub_basic INTERFACE
 )
 
-target_link_libraries(intf_llt_pub INTERFACE
+target_link_libraries(intf_llt_pub_basic INTERFACE
     GTest::gtest
     -lpthread
+    mockcpp_static
     $<$<BOOL:${ENABLE_GCOV}>:-lgcov>
 )
 
