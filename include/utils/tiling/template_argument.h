@@ -215,10 +215,10 @@ ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_BF16, bfloat16_t);             // bf16
 ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_INT4, AscendC::int4b_t);       // int4
 #endif
 #if defined(ASC_INNER_DATATYPE_ENABLE_UINT1)
-ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_UINT1, uint1b_t);              // u1
+ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_UINT1, AscendC::uint1b_t);     // u1
 #endif
 #if defined(ASC_INNER_DATATYPE_ENABLE_INT2)
-ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_INT2, int2b_t);                // int2
+ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_INT2, AscendC::int2b_t);       // int2
 #endif
 #if defined(ASC_INNER_DATATYPE_ENABLE_COMPLEX32)
 ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_COMPLEX32, complex32);         // complex32
