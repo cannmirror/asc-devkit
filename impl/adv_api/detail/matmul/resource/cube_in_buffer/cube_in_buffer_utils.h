@@ -124,9 +124,9 @@ __aicore__ inline constexpr CubeInBufferType GetCubeInBufferType()
     } else if constexpr (DoMatmulNorm(MM_CFG)) {
         if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) {
             return CubeInBufferType::BMM_DOUBLE_BUFFER;
-        } else if (IsSetNoDB<INPUT_TYPE, MM_CFG>()) {
+        } else if constexpr (IsSetNoDB<INPUT_TYPE, MM_CFG>()) {
             return CubeInBufferType::SINGLE_BUFFER;
-        } else if (IsScaleTag<INPUT_TYPE>()) {
+        } else if constexpr (IsScaleTag<INPUT_TYPE>()) {
             return CubeInBufferType::NORMAL_MX;
         } else {
             return CubeInBufferType::NORMAL;
