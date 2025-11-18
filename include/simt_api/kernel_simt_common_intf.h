@@ -20,6 +20,11 @@
 namespace AscendC {
 namespace Simt {
 
+enum class SatMode {
+    NO_SAT = 0,
+    SAT
+};
+
 __aicore__ inline int32_t GetWarpSize();
 
 template <int32_t dim = 0>

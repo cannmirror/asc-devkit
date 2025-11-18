@@ -14,7 +14,7 @@
 namespace AscendC {
 namespace Simt {
 
-template <typename T, typename U, RoundMode roundMode>
+template <typename T, typename U, RoundMode roundMode, SatMode satMode = SatMode::NO_SAT>
 __aicore__ inline T Cast(U x);
 
 template <typename T>
