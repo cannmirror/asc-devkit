@@ -260,7 +260,7 @@ void ContextBuilderImpl::AddAttr(const std::string& attrName,
     const std::string& attrValue)
 {
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return , CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
-    tilingCtxBuilder_->AppendAttr(attrValue.c_str());
+    tilingCtxBuilder_->AppendAttr(ge::AscendString(attrValue.c_str()));
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, float attrValue)
@@ -294,7 +294,7 @@ void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<
     for (const auto &str : attrValue) {
         attrValues.emplace_back(str.c_str());
     }
-    tilingCtxBuilder_->AppendAttr(attrValues);
+    tilingCtxBuilder_->AppendAttr(std::vector<ge::AscendString>(attrValues));
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<std::vector<int64_t>> &attrValue)
