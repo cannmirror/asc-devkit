@@ -100,16 +100,11 @@ public:
     __aicore__ inline enable_if_t<IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG_ALIAS>(), int32_t>
     GetBatchNumBySplitIdx(int32_t splitIdx) const
     {
-        auto batchNum = tag == InputTypeTag::A ? batchA_ : batchB_;
-        if (batchNum > splitBatchNum_) {
-            if (splitIdx == 0) {
-                return splitBatchNum_;
-            } else {
-                return batchNum - splitBatchNum_;
-            }
+        if constexpr (tag == InputTypeTag::A) {
+            return batchA_ > splitBatchNum_ ? splitBatchNum_ : batchA_;
+        } else {
+            return batchB_ > splitBatchNum_ ? splitBatchNum_ : batchB_;
         }
-
-        return batchNum;
     }
 
     __aicore__ inline int32_t GetBatchA() const
@@ -158,19 +153,18 @@ public:
 
     __aicore__ inline bool SplitEnd()
     {
-        if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) {
-            return splitOuterIdx_ >= splitSize_ || (splitOuterIdx_ == 1 && batchNum_ < splitBatchNum_);
-        } else {
-            return splitOuterIdx_ >= splitSize_;
-        }
+        return splitOuterIdx_ >= splitSize_;
     }
 
     template <InputTypeTag tag>
     __aicore__ inline uint32_t GetSplitIndex() const
     {
         if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) {
-            auto batchNum = tag == InputTypeTag::A ? batchA_ : batchB_;
-            return splitBatchNum_ >= batchNum ? 0 : splitOuterIdx_;
+            if constexpr (tag == InputTypeTag::A) {
+                return splitBatchNum_ >= batchA_ ? 0 : splitOuterIdx_;
+            } else {
+                return splitBatchNum_ >= batchB_ ? 0 : splitOuterIdx_;
+            }
         } else {
             return splitOuterIdx_;
         }
@@ -257,8 +251,11 @@ public:
     __aicore__ inline bool NeedCache() const
     {
         if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) {
-            auto batchNum = tag == InputTypeTag::A ? batchA_ : batchB_;
-            return batchNum <= splitBatchNum_;
+            if constexpr (tag == InputTypeTag::A) {
+                return batchA_ <= splitBatchNum_;
+            } else {
+                return batchB_ <= splitBatchNum_;
+            }
         } else {
             return false;
         }

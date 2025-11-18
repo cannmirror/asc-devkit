@@ -130,28 +130,29 @@ public:
     __aicore__ inline void CalcBatchIterateAOffsetInfo(BatchOffsetInfo& batchOffsetInfo)
     {
         const auto tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
-        if (tiling.GetALayoutInfoG() == 1 && tiling.GetBLayoutInfoG() != 1) { // BRC for Gaxis
-            ASSERT((tiling.GetBLayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
-                (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
-            batchOffsetInfo.modA = 1;
-            batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG();
-        } else if (tiling.GetALayoutInfoN() == 1 && tiling.GetBLayoutInfoN() != 1) {
-            // BRC for N axis = idx % BLayoutInfoG + idx / (BLayoutInfoG * BLayoutInfoN)
-            ASSERT((tiling.GetBLayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) &&
-                (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
-            batchOffsetInfo.modA = tiling.GetBLayoutInfoG();
-            batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN();
-        } else if (A_TYPE::layout != LayoutMode::NORMAL && tiling.GetALayoutInfoB() == 1 && tiling.GetBLayoutInfoB() != 1) { // BRC for B axis
-            ASSERT((tiling.GetBLayoutInfoB() > 0) && (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG())); // multi axis BRC is not supported.
-            batchOffsetInfo.modA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN();
-            batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN() * tiling.GetBLayoutInfoB();
-        } else {
-            batchOffsetInfo.modA = 1;
-            batchOffsetInfo.divisorA = 1;
-        }
         if constexpr (A_TYPE::layout == LayoutMode::NORMAL) {
             batchOffsetInfo.modA = 1;
             batchOffsetInfo.divisorA = MATMUL_MODULE(BatchLoop)->GetBatchNum() / MATMUL_MODULE(BatchLoop)->GetBatchA();
+        } else {
+            if (tiling.GetALayoutInfoG() == 1 && tiling.GetBLayoutInfoG() != 1) { // BRC for Gaxis
+                ASSERT((tiling.GetBLayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
+                    (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
+                batchOffsetInfo.modA = 1;
+                batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG();
+            } else if (tiling.GetALayoutInfoN() == 1 && tiling.GetBLayoutInfoN() != 1) {
+                // BRC for N axis = idx % BLayoutInfoG + idx / (BLayoutInfoG * BLayoutInfoN)
+                ASSERT((tiling.GetBLayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) &&
+                    (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
+                batchOffsetInfo.modA = tiling.GetBLayoutInfoG();
+                batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN();
+            } else if (tiling.GetALayoutInfoB() == 1 && tiling.GetBLayoutInfoB() != 1) { // BRC for B axis
+                ASSERT((tiling.GetBLayoutInfoB() > 0) && (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG())); // multi axis BRC is not supported.
+                batchOffsetInfo.modA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN();
+                batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN() * tiling.GetBLayoutInfoB();
+            } else {
+                batchOffsetInfo.modA = 1;
+                batchOffsetInfo.divisorA = 1;
+            }
         }
 
         const auto matmulShapeInfo = MATMUL_MODULE(MatmulShapeInfo);
@@ -170,29 +171,30 @@ public:
     __aicore__ inline void CalcBatchIterateBOffsetInfo(BatchOffsetInfo& batchOffsetInfo)
     {
         const auto tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
-        if (tiling.GetBLayoutInfoG() == 1 && tiling.GetALayoutInfoG() != 1) { // BRC for Gaxis
-            ASSERT((tiling.GetALayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
-                (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
-            batchOffsetInfo.modB = 1;
-            batchOffsetInfo.divisorB = tiling.GetALayoutInfoG();
-        } else if (tiling.GetBLayoutInfoN() == 1 && tiling.GetALayoutInfoN() != 1) {
-            // BRC for GN axis = idx % BLayoutInfoG + idx / (BLayoutInfoG * BLayoutInfoN)
-            ASSERT((tiling.GetALayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) &&
-                (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
-            batchOffsetInfo.modB = tiling.GetALayoutInfoG();
-            batchOffsetInfo.divisorB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN();
-        } else if (tiling.GetBLayoutInfoB() == 1 && tiling.GetALayoutInfoB() != 1) { // BRC for B axis
-            ASSERT((tiling.GetALayoutInfoB() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
-                (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG())); // multi axis BRC is not supported.
-            batchOffsetInfo.modB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN();
-            batchOffsetInfo.divisorB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN() * tiling.GetALayoutInfoB();
-        } else {
-            batchOffsetInfo.modB = 1;
-            batchOffsetInfo.divisorB = 1;
-        }
-        if constexpr (A_TYPE::layout == LayoutMode::NORMAL) {
+        if constexpr (B_TYPE::layout == LayoutMode::NORMAL) {
             batchOffsetInfo.modB = 1;
             batchOffsetInfo.divisorB = MATMUL_MODULE(BatchLoop)->GetBatchNum() / MATMUL_MODULE(BatchLoop)->GetBatchB();
+        } else {
+            if (tiling.GetBLayoutInfoG() == 1 && tiling.GetALayoutInfoG() != 1) { // BRC for Gaxis
+                ASSERT((tiling.GetALayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
+                    (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
+                batchOffsetInfo.modB = 1;
+                batchOffsetInfo.divisorB = tiling.GetALayoutInfoG();
+            } else if (tiling.GetBLayoutInfoN() == 1 && tiling.GetALayoutInfoN() != 1) {
+                // BRC for GN axis = idx % BLayoutInfoG + idx / (BLayoutInfoG * BLayoutInfoN)
+                ASSERT((tiling.GetALayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) &&
+                    (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
+                batchOffsetInfo.modB = tiling.GetALayoutInfoG();
+                batchOffsetInfo.divisorB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN();
+            } else if (tiling.GetBLayoutInfoB() == 1 && tiling.GetALayoutInfoB() != 1) { // BRC for B axis
+                ASSERT((tiling.GetALayoutInfoB() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
+                    (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG())); // multi axis BRC is not supported.
+                batchOffsetInfo.modB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN();
+                batchOffsetInfo.divisorB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN() * tiling.GetALayoutInfoB();
+            } else {
+                batchOffsetInfo.modB = 1;
+                batchOffsetInfo.divisorB = 1;
+            }
         }
 
         const auto matmulShapeInfo = MATMUL_MODULE(MatmulShapeInfo);
@@ -423,10 +425,8 @@ private:
 
     __aicore__ inline void CalcReduceGInfo(BatchSchedulerContext& ctx)
     {
-        ctx.reduceGNum = 0;
         const auto tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
-        ctx.isReduceG = ((tiling.GetCLayoutInfoG() == 1) &&
-            (tiling.GetALayoutInfoG() != 1 || tiling.GetBLayoutInfoG() != 1));
+        ctx.isReduceG = ((tiling.GetCLayoutInfoG() == 1) && (tiling.GetALayoutInfoG() != 1 || tiling.GetBLayoutInfoG() != 1));
         if (ctx.isReduceG) {
             ctx.reduceGNum = tiling.GetALayoutInfoG() >= tiling.GetBLayoutInfoG() ? tiling.GetALayoutInfoG() : tiling.GetBLayoutInfoG();
         } else {
