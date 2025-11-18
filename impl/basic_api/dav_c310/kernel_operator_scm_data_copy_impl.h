@@ -51,7 +51,11 @@ __aicore__ inline void ScmDataCopyMsg(__cbuf__ void* dst, __gm__ void* src, cons
     auto msg = GetKfcClient()->AllocMessage();
     ASSERT(sizeof(msg->buffer) >= sizeof(struct Gm2L1Params));
 
+#if KFC_C310_SSBUF == 1
     MSG_POS struct Gm2L1Params* p = (MSG_POS struct Gm2L1Params*)&(msg->buffer);
+#else
+    __ubuf__ struct Gm2L1Params* p = (__ubuf__ struct Gm2L1Params*)&(GetKfcClient()->ubMsg->buffer);
+#endif
     p->dst = dst;
     p->src = src;
     p->subBlockID = GetSubBlockIdxImpl();
@@ -59,9 +63,12 @@ __aicore__ inline void ScmDataCopyMsg(__cbuf__ void* dst, __gm__ void* src, cons
     p->blockLen = intriParams.blockLen;
     p->srcStride = intriParams.srcStride;
     p->dstStride = intriParams.dstStride;
-    msg->head = KfcMsgMakeFlag(KFC_Enum::SCMFUN_GM2L1, 0);
 #if KFC_C310_SSBUF == 1
+    msg->head = KfcMsgMakeFlag(KFC_Enum::SCMFUN_GM2L1, 0);
     set_intra_block(PIPE_MTE3, static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM));
+#else
+    GetKfcClient()->ubMsg->ubAddr = ubAddr;
+    GetKfcClient()->ubMsg->head = KfcMsgMakeFlag(KFC_Enum::SCMFUN_GM2L1, 0);
 #endif
     GetKfcClient()->PostMessage<false>(msg);
 }
@@ -76,7 +83,11 @@ __aicore__ inline void ScmDataCopyND2NZMsg(__cbuf__ void* dst, __gm__ void* src,
     auto msg = GetKfcClient()->AllocMessage();
     ASSERT(sizeof(msg->buffer) >= sizeof(struct Gm2L1Nd2NzParams));
 
+#if KFC_C310_SSBUF == 1
     auto p = (MSG_POS struct Gm2L1Nd2NzParams*)&(msg->buffer);
+#else
+    auto p = (__ubuf__ struct Gm2L1Nd2NzParams*)&(GetKfcClient()->ubMsg->buffer);
+#endif
     p->dst = dst;
     p->src = src;
     p->subBlockID = GetSubBlockIdxImpl();
@@ -89,9 +100,12 @@ __aicore__ inline void ScmDataCopyND2NZMsg(__cbuf__ void* dst, __gm__ void* src,
     p->dstNzNStride = intriParams.dstNzNStride;
     p->dstNzMatrixStride = intriParams.dstNzMatrixStride;
     p->srcDValue = intriParams.srcDValue;
-    msg->head = KfcMsgMakeFlag(KFC_Enum::SCMFUN_GM2L1ND2NZ, 0);
 #if KFC_C310_SSBUF == 1
+    msg->head = KfcMsgMakeFlag(KFC_Enum::SCMFUN_GM2L1ND2NZ, 0);
     set_intra_block(PIPE_MTE3, static_cast<uint8_t>(CUBE_WAIT_INTRA_Enum::GM_L1_UB_GM));
+#else
+    GetKfcClient()->ubMsg->ubAddr = ubAddr;
+    GetKfcClient()->ubMsg->head = KfcMsgMakeFlag(KFC_Enum::SCMFUN_GM2L1ND2NZ, 0);
 #endif
     GetKfcClient()->PostMessage<false>(msg);
 }
