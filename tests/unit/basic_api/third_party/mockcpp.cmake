@@ -22,17 +22,6 @@ if (ABI_ZERO STREQUAL true)
     set(mockcpp_FLAGS "${mockcpp_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 endif()
 
-set(BUILD_WRAPPER ${ASCENDC_TOOLS_ROOT_DIR}/cmake/tools/build_ext.sh) # TODO 这个tool在这里是否合适
-set(BUILD_TYPE "DEBUG")
-
-if (CMAKE_GENERATOR MATCHES "Unix Makefiles")
-    set(IS_MAKE True)
-    set(MAKE_CMD "$(MAKE)")
-else()
-    set(IS_MAKE False)
-endif()
-
-# 依赖蓝区二进制仓mockcpp
 set(BOOST_INCLUDE_DIRS ${mockcpp_SRC_DIR}/../boost_src)
 if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}/mockcpp/lib/libmockcpp.a" OR TRUE)
     set(PATCH_FILE ${third_party_TEM_DIR}/mockcpp-2.7_py3.patch)
@@ -61,26 +50,9 @@ if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}/mockcpp/lib/libmockcpp.a" OR TRUE)
             -DBUILD_32_BIT_TARGET_BY_64_BIT_COMPILER=OFF
             -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/mockcpp
             <SOURCE_DIR>
-        BUILD_COMMAND ${BUILD_WRAPPER} default ${${BUILD_TYPE}} $<$<BOOL:${IS_MAKE}>:$(MAKE)>
+        BUILD_COMMAND make install -j 16
     )
 endif()
-
-# # 依赖黄区llt仓mockcpp
-# include(ExternalProject)
-# ExternalProject_Add(mockcpp
-#     SOURCE_DIR ${mockcpp_SRC_DIR}
-#     CONFIGURE_COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR}
-#         -DCMAKE_CXX_FLAGS=${mockcpp_CXXFLAGS}
-#         -DCMAKE_C_FLAGS=${mockcpp_FLAGS}
-#         -DCMAKE_SHARED_LINKER_FLAGS=${mockcpp_LINKER_FLAGS}
-#         -DCMAKE_EXE_LINKER_FLAGS=${mockcpp_LINKER_FLAGS}
-#         -DBUILD_32_BIT_TARGET_BY_64_BIT_COMPILER=OFF
-#         -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}/mockcpp
-#         <SOURCE_DIR>
-#     BUILD_COMMAND ${BUILD_WRAPPER} default ${${BUILD_TYPE}} $<$<BOOL:${IS_MAKE}>:$(MAKE)>
-#     EXCLUDE_FROM_ALL TRUE
-# )
-# set(BOOST_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/mockcpp/include/3rdparty)
 
 set(MOCKCPP_DIR ${CMAKE_INSTALL_PREFIX}/mockcpp)
 
