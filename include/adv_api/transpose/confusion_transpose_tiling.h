@@ -16,6 +16,7 @@
 #define LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H
 #include "graph/tensor.h"
 #include "confusion_transpose_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 constexpr uint32_t TWO_TIMES = 2;
 #ifndef __NPU_DEVICE__
@@ -88,5 +89,14 @@ void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBuffe
 
 void GetConfusionTransposeOnlyTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
     const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling);
+
+void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling &tiling);
+
+void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling &tiling);
+
+void GetConfusionTransposeOnlyTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, AscendC::tiling::ConfusionTransposeTiling &tiling);
 }
 #endif // LIB_TRANSPOSE_CONFUSION_TRANSPOSE_TILING_H

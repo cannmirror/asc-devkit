@@ -27,10 +27,12 @@ public:
     explicit Conv3DBpInputTiling(const PlatformInfo& platform) : Conv3DBpInputTilingBase(platform) {};
     ~Conv3DBpInputTiling() override = default;
     int64_t GetTiling(optiling::Conv3DBackpropInputTilingData &tiling) override;
+    int64_t GetTiling(AscendC::tiling::Conv3DBackpropInputTilingData &tiling) override;
 protected:
     int64_t Compute() override;
     bool CheckInputParam() override;
-    void SetFinalTiling(optiling::Conv3DBackpropInputTilingData& tiling) override;    
+    void SetFinalTiling(optiling::Conv3DBackpropInputTilingData& tiling) override;
+    void SetFinalTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling) override;   
     void PrintTilingData() const override;
     void SetBasicBlockAttrsTiling();
     int32_t CalFmapH(const uint32_t& mL1Size) const;

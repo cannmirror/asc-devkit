@@ -168,4 +168,11 @@ void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t s
     SetLayerNormGradBetaNDTilingInfo(tilingTmp, tiling);
 }
 
+void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling& tiling)
+{
+    optiling::LayerNormGradBetaTiling tilingData;
+    GetLayerNormGradBetaNDTilingInfo(srcShape, stackBufferSize, typeSize, isReuseSource, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(LayerNormGradBetaTiling));
+}
 } // namespace AscendC

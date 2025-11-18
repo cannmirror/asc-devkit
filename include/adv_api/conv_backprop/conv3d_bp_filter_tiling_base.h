@@ -100,6 +100,7 @@ public:
     explicit Conv3dBpFilterTilingBase(const PlatformInfo& platform);
     virtual ~Conv3dBpFilterTilingBase() = default;
     virtual int64_t GetTiling(optiling::Conv3DBackpropFilterTilingData& tiling) = 0;
+    virtual int64_t GetTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling) = 0;
 
     void SetWeightShape(int64_t cout, int64_t cin, int64_t d, int64_t h, int64_t w);
     void SetInputShape(int64_t n, int64_t c, int64_t d, int64_t h, int64_t w);
@@ -116,6 +117,7 @@ public:
 protected:
     virtual int64_t Compute() = 0;
     virtual void SetFinalTiling(optiling::Conv3DBackpropFilterTilingData& tiling);
+    virtual void SetFinalTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling);
     virtual void PrintTilingData() const;
     bool CheckInputParam();
     bool ShapeInitCalc();

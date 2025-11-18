@@ -11,6 +11,7 @@
 #define LIB_NORMALIZATION_BATCHNORM_TILING_H
 #include "graph/tensor.h"
 #include "batchnorm_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 /*!
  * \brief calculate max and min tmp buffer size for BatchNorm interface.
@@ -50,5 +51,8 @@ bool GetBatchNormMaxMinTmpSize(const ge::Shape& srcShape, const ge::Shape& origi
 bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
     const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource,
     optiling::BatchNormTiling& tilling, const bool isBasicBlock = false);
+bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
+    const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource,
+    AscendC::tiling::BatchNormTiling& tilling, const bool isBasicBlock = false);
 }
 #endif // LIB_NORMALIZATION_BATCHNORM_TILING_H

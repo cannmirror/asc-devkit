@@ -36,11 +36,15 @@ int64_t MatmulApiTiling::GetTiling(optiling::TCubeTiling &tiling)
     PrintTilingDataInfo(tiling);
     return ret;
 }
-int64_t MatmulApiTiling::GetTiling(TCubeTiling &tiling)
+int64_t MatmulApiTiling::GetTiling(AscendC::tiling::TCubeTiling &tiling)
 {
-    optiling::TCubeTiling mmTiling;
-    int64_t ret = GetTiling(mmTiling);
-    mmTiling.SaveToBuffer(&tiling, sizeof(TCubeTiling));
+    const int64_t ret = Compute();
+    if (ret == -1) {
+        TILING_LOG_INFO("Cannot deduce tiling params from given info.");
+        return -1;
+    }
+    SetFinalTiling(tiling);
+    PrintTilingDataInfo(tiling);
     return ret;
 }
 

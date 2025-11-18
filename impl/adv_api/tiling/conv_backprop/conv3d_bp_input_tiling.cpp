@@ -231,6 +231,19 @@ int64_t Conv3DBpInputTiling::GetTiling(optiling::Conv3DBackpropInputTilingData& 
     return 0;
 }
 
+int64_t Conv3DBpInputTiling::GetTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling)
+{
+    int64_t ret = Compute();
+    if (ret == -1) {
+        TILING_LOG_ERROR("can not gen Conv3dBackpropInput api tiling");
+        return -1;
+    }
+
+    SetFinalTiling(tiling);
+    PrintTilingData();
+    return 0;
+}
+
 void Conv3DBpInputTiling::SetInitOutput()
 {
     int64_t fmapDepthWithPadding = shapeInfo.orgDi + attrInfo.padFront + attrInfo.padBack;
@@ -330,6 +343,61 @@ void Conv3DBpInputTiling::SetFinalTiling(optiling::Conv3DBackpropInputTilingData
     dxt.set_al1Pbuffer(tilingParams.al1Pbuffer);
     dxt.set_bl1Pbuffer(tilingParams.bl1Pbuffer);
     dxt.set_iterateOrder(tilingParams.iterateOrder);
+
+    if (shapeInfo.orgkH * shapeInfo.orgkW == 1) {
+        loadB2Condition_ = 2; // 2表示Hk*Wk = 1的情况
+    } else if (tilingParams.baseK / blockSize_ >= static_cast<uint32_t>(shapeInfo.orgkH * shapeInfo.orgkW)) {
+        loadB2Condition_ = 1;
+    } else {
+        loadB2Condition_ = 0;
+    }
+}
+
+void Conv3DBpInputTiling::SetFinalTiling(AscendC::tiling::Conv3DBackpropInputTilingData& tiling)
+{
+    Conv3DBpInputTilingBase::SetFinalTiling(tiling);
+    TConv3DBackpropInputTiling &dxt = tiling.conv3DDxTiling;
+    dxt.baseD = 1;
+    dxt.baseBatch = 1;
+    dxt.baseGroup = 1;
+
+    dxt.c0 = blockSize_;
+    if (dtypeByte_ == F16_DATA_SIZE) {
+        dxt.c0Bits = B16_BITS;
+    } else if (dtypeByte_ == FP32_DATA_SIZE) {
+        dxt.c0Bits = FP32_BITS;
+    }
+    dxt.initOutputFlag = initOutputFlag;
+
+    // singleCore
+    dxt.singleCoreBatch = 1;
+    dxt.singleCoreGroup = 1;
+    dxt.singleCoreDin = 1;
+    dxt.singleCoreHo = 1;
+
+    dxt.stepBatch = 1;
+    dxt.stepGroup = 1;
+
+    dxt.singleCoreM = tilingParams.singleCoreM;
+    dxt.singleCoreCout = tilingParams.singleCoreCout;
+    dxt.singleCoreCout1 = tilingParams.singleCoreCout1;
+    dxt.singleCoreCin1 = tilingParams.singleCoreCin1;
+    dxt.singleCoreCin = tilingParams.singleCoreCin;
+
+    dxt.baseM = tilingParams.baseM;
+    dxt.baseK = tilingParams.baseK;
+    dxt.baseN = tilingParams.baseN;
+    dxt.stepM = tilingParams.stepM;
+    dxt.stepN = tilingParams.stepN;
+    dxt.stepKa = tilingParams.stepKa;
+    dxt.stepKb = tilingParams.stepKb;
+
+    dxt.al0Pbuffer = tilingParams.al0Pbuffer;  // 默认开
+    dxt.bl0Pbuffer = tilingParams.bl0Pbuffer;  // 默认开
+    dxt.cl0Pbuffer = tilingParams.cl0Pbuffer;
+    dxt.al1Pbuffer = tilingParams.al1Pbuffer;
+    dxt.bl1Pbuffer = tilingParams.bl1Pbuffer;
+    dxt.iterateOrder = tilingParams.iterateOrder;
 
     if (shapeInfo.orgkH * shapeInfo.orgkW == 1) {
         loadB2Condition_ = 2; // 2表示Hk*Wk = 1的情况

@@ -572,7 +572,7 @@ TEST_F(TestTiling, TestSoftMaxFlashV3Tiling)
     SoftMaxFlashV3TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 8);
 
-    SoftMaxTiling tilingDataNotOp;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     SoftMaxFlashV3TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true);
     EXPECT_EQ(tilingDataNotOp.reduceM, 8);
 }
@@ -581,6 +581,7 @@ TEST_F(TestTiling, TestSoftMaxTiling)
 {
     std::vector<int64_t> shapeDims = { 128, 128 };
     optiling::SoftMaxTiling tilingData;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     auto softmaxShape = ge::Shape(shapeDims);
     uint32_t softmaxTmpSize = 100 * 1024 * 4;
     uint32_t softmaxNeedMinSize = GetSoftMaxMinTmpSize(softmaxShape, 2, true);
@@ -630,6 +631,21 @@ TEST_F(TestTiling, TestSoftMaxTiling)
     EXPECT_EQ(tilingData.get_reduceM(), 64);
     SoftMaxGradTilingFunc(softmaxShape, 2, 133120, tilingData, true);
     EXPECT_EQ(tilingData.get_reduceM(), 64);
+
+    SoftMaxTilingFunc(softmaxShape, 2, softmaxTmpSize, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
+    flag = IsBasicBlockInSoftMax(tilingDataNotOp);
+    EXPECT_EQ(flag, true);
+    SoftMaxFlashTilingFunc(softmaxShape, 2, 77952, tilingDataNotOp, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 32);
+    SoftMaxFlashTilingFunc(softmaxShape, 2, 77952, tilingDataNotOp, false);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
+    SoftMaxGradTilingFunc(softmaxShape, 2, softmaxTmpSize, tilingDataNotOp, false);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
+    SoftMaxGradTilingFunc(softmaxShape, 4, softmaxTmpSize, tilingDataNotOp, false);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
+    SoftMaxGradTilingFunc(softmaxShape, 2, 133120, tilingDataNotOp, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
 }
 
 TEST_F(TestTiling, TestSoftMaxFlashV2TilingMaxMinTmpSize)
@@ -821,6 +837,7 @@ TEST_F(TestTiling, TestSoftMaxFlashV2Tiling)
 {
     std::vector<int64_t> shapeDims = { 128, 128 };
     optiling::SoftMaxTiling tilingData;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     auto softmaxShape = ge::Shape(shapeDims);
     uint32_t maxSumTypeSize = 2;
     uint32_t inputTypeSize = 2;
@@ -859,6 +876,15 @@ TEST_F(TestTiling, TestSoftMaxFlashV2Tiling)
     SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 64);
 
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, false, false);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 120);
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, false, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, false);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 120);
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
+
     inputTypeSize = 4;
     softmaxflashV2NeedMinLength = GetSoftMaxFlashV2MinTmpSize(softmaxShape, inputTypeSize, maxSumTypeSize, true, true);
     EXPECT_EQ(softmaxflashV2NeedMinLength, (128 + 128 * (16)) * 4);
@@ -866,12 +892,16 @@ TEST_F(TestTiling, TestSoftMaxFlashV2Tiling)
     EXPECT_EQ(softmaxflashV2NeedMaxLength, 128 * (64 + 8) * 4);
     SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 64);
+
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
 }
 
 TEST_F(TestTiling, TestSoftMaxFlashV2TilingBasicBlock)
 {
     std::vector<int64_t> shapeDims = { 8, 1024 };
     optiling::SoftMaxTiling tilingData;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     auto softmaxShape = ge::Shape(shapeDims);
     uint32_t maxSumTypeSize = 4;
     uint32_t inputTypeSize = 4;
@@ -883,6 +913,8 @@ TEST_F(TestTiling, TestSoftMaxFlashV2TilingBasicBlock)
     uint32_t workLength = 32 * 1024;
     SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 8);
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 8);
 
     inputTypeSize = 2;
     workLength = 64 * 1024;
@@ -892,12 +924,15 @@ TEST_F(TestTiling, TestSoftMaxFlashV2TilingBasicBlock)
     EXPECT_EQ(softmaxflashV2NeedMaxLength, 8 * (8 + 1024 + 64) * 4);
     SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 8);
+    SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 8);
 }
 
 TEST_F(TestTiling, TestLogSoftMaxTiling)
 {
     std::vector<int64_t> shapeDims = { 128, 128 };
     optiling::LogSoftMaxTiling tilingData;
+    AscendC::tiling::LogSoftMaxTiling tilingDataNotOp;
     auto softmaxShape = ge::Shape(shapeDims);
     uint32_t softmaxTmpSize = 100 * 1024 * 4;
     uint32_t softmaxNeedMinSize = GetLogSoftMaxMinTmpSize(softmaxShape, 2, true);
@@ -907,6 +942,9 @@ TEST_F(TestTiling, TestLogSoftMaxTiling)
 
     LogSoftMaxTilingFunc(softmaxShape, 2, softmaxTmpSize, tilingData);
     EXPECT_EQ(tilingData.get_reduceM(), 64);
+
+    LogSoftMaxTilingFunc(softmaxShape, 2, softmaxTmpSize, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
 }
 
 TEST_F(TestTiling, TestWelfordUpdateTiling)
@@ -991,6 +1029,7 @@ TEST_F(TestTiling, TestLayerNormRstdTiling)
     bool isComputeRstd = true;
     bool isOnlyOutput = false;
     optiling::LayerNormSeparateTiling tiling;
+    AscendC::tiling::LayerNormSeparateTiling tilingNotOp;
     uint32_t minValue = 0;
     uint32_t maxValue = 0;
     GetLayerNormMaxMinTmpSize(layernormShape, typeSize, isReuseSource, isComputeRstd, isOnlyOutput, maxValue, minValue);
@@ -1002,7 +1041,11 @@ TEST_F(TestTiling, TestLayerNormRstdTiling)
     GetLayerNormNDTilingInfo(layernormShape, stackBufferSize, typeSize, isReuseSource, isComputeRstd, tiling);
     GetLayerNormNDTilingInfo(layernormShape, 0, typeSize, isReuseSource, isComputeRstd, tiling);
     EXPECT_EQ(tiling.get_rLength(), 88);
-    EXPECT_EQ(tiling.get_rHeadLength(), 64); 
+    EXPECT_EQ(tiling.get_rHeadLength(), 64);
+    GetLayerNormNDTilingInfo(layernormShape, stackBufferSize, typeSize, isReuseSource, isComputeRstd, tilingNotOp);
+    GetLayerNormNDTilingInfo(layernormShape, 0, typeSize, isReuseSource, isComputeRstd, tilingNotOp);
+    EXPECT_EQ(tilingNotOp.rLength, 88);
+    EXPECT_EQ(tilingNotOp.rHeadLength, 64); 
 }
 
 TEST_F(TestTiling, TestLayernormGradTiling1982)
@@ -1442,6 +1485,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexTrue_Float_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
 
@@ -1458,6 +1502,17 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexTrue_Float_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, true, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 1024);
     EXPECT_EQ(minValue, 1024);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 256);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 64);
+    EXPECT_EQ(tilingDataNotOp.innerDataSize, 128);
+    EXPECT_EQ(tilingDataNotOp.sortRepeat, 2);
+    EXPECT_EQ(tilingDataNotOp.kAlignFourBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.kAlignTwoBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 16);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2FourBytes, 20);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2TwoBytes, 40);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexFalse_Float_Inner64)
@@ -1472,6 +1527,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexFalse_Float_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1488,6 +1544,18 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexFalse_Float_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, false, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 1280);
     EXPECT_EQ(minValue, 1280);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 320);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 64);
+    EXPECT_EQ(tilingDataNotOp.innerDataSize, 128);
+    EXPECT_EQ(tilingDataNotOp.sortRepeat, 2);
+    EXPECT_EQ(tilingDataNotOp.kAlignFourBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.kAlignTwoBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 16);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2FourBytes, 20);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2TwoBytes, 40);
+    EXPECT_EQ(tilingDataNotOp.srcIndexOffset, 256);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexTrue_Half_Inner64)
@@ -1502,6 +1570,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexTrue_Half_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1517,6 +1586,17 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexTrue_Half_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, true, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 1024);
     EXPECT_EQ(minValue, 1024);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 512);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 64);
+    EXPECT_EQ(tilingDataNotOp.innerDataSize, 256);
+    EXPECT_EQ(tilingDataNotOp.sortRepeat, 2);
+    EXPECT_EQ(tilingDataNotOp.kAlignFourBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.kAlignTwoBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 16);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2FourBytes, 20);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2TwoBytes, 40);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexFalse_Half_Inner64)
@@ -1531,6 +1611,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexFalse_Half_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1547,6 +1628,18 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexFalse_Half_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, false, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 1280);
     EXPECT_EQ(minValue, 1280);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 640);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 64);
+    EXPECT_EQ(tilingDataNotOp.innerDataSize, 256);
+    EXPECT_EQ(tilingDataNotOp.sortRepeat, 2);
+    EXPECT_EQ(tilingDataNotOp.kAlignFourBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.kAlignTwoBytes, 16);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 16);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2FourBytes, 20);
+    EXPECT_EQ(tilingDataNotOp.maskVreducev2TwoBytes, 40);
+    EXPECT_EQ(tilingDataNotOp.srcIndexOffset, 512);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexTrue_Float_Inner64)
@@ -1561,6 +1654,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexTrue_Float_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, false, tilingData);
@@ -1570,6 +1664,11 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexTrue_Float_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, true, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 256);
     EXPECT_EQ(minValue, 256);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, false, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 32);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 64);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 10);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_Inner64)
@@ -1584,6 +1683,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1594,6 +1694,11 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, false, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 384);
     EXPECT_EQ(minValue, 384);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 32);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 10);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 96);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexTrue_Half_Inner64)
@@ -1608,6 +1713,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexTrue_Half_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1617,6 +1723,11 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexTrue_Half_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, false, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 256);
     EXPECT_EQ(minValue, 256);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 32);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 128);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 10);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Half_Inner64)
@@ -1631,6 +1742,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Half_Inner64)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, false, tilingData);
@@ -1640,6 +1752,11 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Half_Inner64)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, true, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 384);
     EXPECT_EQ(minValue, 384);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, false, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 32);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 10);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 192);
 }
 
 TEST_F(TestTiling, TestTopkTiling_DataTypeSize0_FAILED)
@@ -1654,10 +1771,14 @@ TEST_F(TestTiling, TestTopkTiling_DataTypeSize0_FAILED)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     auto res = TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, false, tilingData);
     EXPECT_EQ(res, false);
+
+    auto resNotOp = TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, false, tilingDataNotOp);
+    EXPECT_EQ(resNotOp, false);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Half_k)
@@ -1672,6 +1793,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Half_k)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1681,6 +1803,11 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Half_k)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, true, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 384);
     EXPECT_EQ(minValue, 384);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 32);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 13);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 192);
 }
 
 TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_k32)
@@ -1695,6 +1822,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_k32)
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     optiling::TopkTiling tilingData;
+    AscendC::tiling::TopkTiling tilingDataNotOp;
     fe::PlatFormInfos platformInfo;
     auto plat = platform_ascendc::PlatformAscendC(&platformInfo);
     TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingData);
@@ -1704,6 +1832,11 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_k32)
     GetTopKMaxMinTmpSize(plat, inner, outter, isReuseSource, isInitIndex, topkMode, true, 4, maxValue, minValue);
     EXPECT_EQ(maxValue, 384);
     EXPECT_EQ(minValue, 384);
+
+    TopKTilingFunc(plat, inner, outter, k, dataTypeSize, isInitIndex, topkMode, true, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.allDataSize, 32);
+    EXPECT_EQ(tilingDataNotOp.maskOffset, 32);
+    EXPECT_EQ(tilingDataNotOp.tmpLocalSize, 96);
 }
 
 TEST_F(TestTiling, TestTopkTiling_RadixTopKModeSmall_isInitIndexFalse)
@@ -2418,6 +2551,13 @@ TEST_F(TestTiling, PlatformConstructor)
     tiling.PrintTilingDataInfo(tilingData);
     EXPECT_EQ(ret, 0);
     EXPECT_GE(tilingData.get_shareL1Size(), 66560);
+
+    AscendC::tiling::TCubeTiling tilingDataNotOp;
+    ret = tiling.GetTiling(tilingDataNotOp);
+    tiling.PrintTilingData();
+    tiling.PrintTilingDataInfo(tilingDataNotOp);
+    EXPECT_EQ(ret, 0);
+    EXPECT_GE(tilingDataNotOp.shareL1Size, 66560);
 }
 
 TEST_F(TestTiling, TestMatmulApiTilingL0DB)
@@ -2439,6 +2579,11 @@ TEST_F(TestTiling, TestMatmulApiTilingL0DB)
     tiling.PrintTilingData();
     EXPECT_EQ(ret, 0);
     EXPECT_GE(tilingData.get_shareL1Size(), 163840);
+
+    AscendC::tiling::TCubeTiling tilingDataNotOp;
+    ret = tiling.GetTiling(tilingDataNotOp);
+    EXPECT_EQ(ret, 0);
+    EXPECT_GE(tilingDataNotOp.shareL1Size, 163840);
 }
 
 TEST_F(TestTiling, TestMatmulApiTilingL0DBError)
@@ -2459,6 +2604,10 @@ TEST_F(TestTiling, TestMatmulApiTilingL0DBError)
     optiling::TCubeTiling tilingData;
     int ret = tiling.GetTiling(tilingData);
     tiling.PrintTilingData();
+    EXPECT_EQ(ret, -1);
+
+    AscendC::tiling::TCubeTiling tilingDataNotOp;
+    ret = tiling.GetTiling(tilingDataNotOp);
     EXPECT_EQ(ret, -1);
 }
 
@@ -2609,7 +2758,7 @@ TEST_F(TestTiling, Tiling_BatchMatmul)
 TEST_F(TestTiling, Tiling_BatchMatmulWithCppStruct)
 {
     matmul_tiling::BatchMatmulTiling bmm;
-    TCubeTiling tilingData;
+    AscendC::tiling::TCubeTiling tilingData;
     int ret = bmm.GetTiling(tilingData);
     bmm.PrintTilingData();
     matmul_tiling::SysTilingTempBufSize bufSize;
@@ -3549,7 +3698,7 @@ TEST_F(TestTiling, TestSoftMaxTiling)
     SoftMaxGradTilingFunc(softmaxShape, 2, 133120, tilingData, true);
     EXPECT_EQ(tilingData.get_reduceM(), 64);
 
-    SoftMaxTiling tilingDataNotOp;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     SoftMaxFlashTilingFunc(softmaxShape, 2, 77952, tilingDataNotOp, true);
     EXPECT_EQ(tilingDataNotOp.reduceM, 32);
     flag = IsBasicBlockInSoftMax(tilingDataNotOp);
@@ -3564,6 +3713,7 @@ TEST_F(TestTiling, TestLogSoftMaxTiling)
 {
     std::vector<int64_t> shapeDims = { 128, 128 };
     optiling::LogSoftMaxTiling tilingData;
+    AscendC::tiling::LogSoftMaxTiling tilingDataNotOp;
     auto softmaxShape = ge::Shape(shapeDims);
     uint32_t softmaxTmpSize = 100 * 1024 * 4;
     uint32_t softmaxNeedMinSize = GetLogSoftMaxMinTmpSize(softmaxShape, 2, true);
@@ -3571,6 +3721,9 @@ TEST_F(TestTiling, TestLogSoftMaxTiling)
 
     LogSoftMaxTilingFunc(softmaxShape, 2, softmaxTmpSize, tilingData);
     EXPECT_EQ(tilingData.get_reduceM(), 64);
+
+    LogSoftMaxTilingFunc(softmaxShape, 2, softmaxTmpSize, tilingDataNotOp);
+    EXPECT_EQ(tilingDataNotOp.reduceM, 64);
 }
 
 TEST_F(TestTiling, TestSoftMaxFlashV2TilingMaxMinTmpSize)
@@ -3865,7 +4018,7 @@ TEST_F(TestTiling, TestSoftMaxFlashV2TilingBasicBlock)
     SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 16);
 
-    SoftMaxTiling tilingDataNotOp;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     SoftMaxFlashV2TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true, true);
     EXPECT_EQ(tilingDataNotOp.reduceM, 16);
 }
@@ -3897,7 +4050,7 @@ TEST_F(TestTiling, TestSoftMaxFlashV3Tiling)
     SoftMaxFlashV3TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingData, true, true);
     EXPECT_EQ(tilingData.get_reduceM(), 8);
 
-    SoftMaxTiling tilingDataNotOp;
+    AscendC::tiling::SoftMaxTiling tilingDataNotOp;
     SoftMaxFlashV3TilingFunc(softmaxShape, inputTypeSize, maxSumTypeSize, workLength, tilingDataNotOp, true, true);
     EXPECT_EQ(tilingDataNotOp.reduceM, 8);
 }
@@ -4623,6 +4776,7 @@ TEST_F(TestTiling, TestLayernormTiling)
     auto layernormShape = ge::Shape(shapeDims);
     const bool isReuseSource = false;
     optiling::LayerNormTiling tilling;
+    AscendC::tiling::LayerNormTiling tilingNotOp;
 
     uint32_t minValue = 0;
     uint32_t maxValue = 0;
@@ -4638,6 +4792,10 @@ TEST_F(TestTiling, TestLayernormTiling)
     AscendC::GetLayerNormNDTilingInfo(layernormShape, 0, typeSize, isReuseSource, tilling);
     AscendC::GetLayerNormNDTilingInfo(layernormShape, stackBufferSize, typeSize, isReuseSource, tilling);
     EXPECT_EQ(tilling.get_tmpBufSize(), stackBufferSize / sizeof(float));
+
+    AscendC::GetLayerNormNDTilingInfo(layernormShape, 0, typeSize, isReuseSource, tilingNotOp);
+    AscendC::GetLayerNormNDTilingInfo(layernormShape, stackBufferSize, typeSize, isReuseSource, tilingNotOp);
+    EXPECT_EQ(tilingNotOp.tmpBufSize, stackBufferSize / sizeof(float));
 }
 
 TEST_F(TestTiling, TestGroupnormTiling)
@@ -4650,6 +4808,7 @@ TEST_F(TestTiling, TestGroupnormTiling)
     auto groupnormShape = ge::Shape(shapeDims);
     const bool isReuseSource = false;
     optiling::GroupNormTiling tilling;
+    AscendC::tiling::GroupNormTiling tillingNotOp;
 
     uint32_t minValue = 0;
     uint32_t maxValue = 0;
@@ -4660,6 +4819,9 @@ TEST_F(TestTiling, TestGroupnormTiling)
 
     AscendC::GetGroupNormNDTilingInfo(groupnormShape, stackBufferSize, typeSize, isReuseSource, groupNum, tilling);
     EXPECT_EQ(tilling.get_tmpBufSize(), stackBufferSize / sizeof(float));
+
+    AscendC::GetGroupNormNDTilingInfo(groupnormShape, stackBufferSize, typeSize, isReuseSource, groupNum, tillingNotOp);
+    EXPECT_EQ(tillingNotOp.tmpBufSize, stackBufferSize / sizeof(float));
 }
 TEST_F(TestTiling, TestRmsnormTiling)
 {
@@ -4700,6 +4862,12 @@ TEST_F(TestTiling, TestRmsnormTiling)
     // basic block scene: get basic block using minTmpSize
     // goldenMin should be (BASIC_BLK_HLENGTH(64) * BASIC_BLK_BSLENGTH(8) + bsLength) * typeSize
     optiling::RmsNormTiling tiling;
+    AscendC::tiling::RmsNormTiling tilingNotOp;
+    res = AscendC::GetRmsNormTilingInfo(shape_basic_blk, shape_basic_blk, minValue, typeSize, tilingNotOp, true);
+    EXPECT_EQ(res, true);
+    EXPECT_EQ(tilingNotOp.mainBshLength, 64);
+    EXPECT_EQ(tilingNotOp.mainBsLength, 1);
+
     uint32_t tmpSize = (64 + 8) * 4; // shape: 4,32,64
     res = AscendC::GetRmsNormTilingInfo(shape_basic_blk, shape_basic_blk, minValue, typeSize, tiling, true);
     EXPECT_EQ(res, true);
@@ -4833,6 +5001,11 @@ TEST_F(TestTiling, TestBatchnormTiling)
 
     // basic block scene: get basic block using minTmpSize, shape = [8,4,16,2]
     optiling::BatchNormTiling tiling;
+    AscendC::tiling::BatchNormTiling tilingNotOp;
+    res =
+        AscendC::GetBatchNormNDTilingInfo(shape_basic_blk, shape_basic_blk, minValue, typeSize, reuseSrc, tilingNotOp, true);
+    EXPECT_EQ(res, true);
+
     res =
         AscendC::GetBatchNormNDTilingInfo(shape_basic_blk, shape_basic_blk, minValue, typeSize, reuseSrc, tiling, true);
     EXPECT_EQ(res, true);
@@ -4885,6 +5058,7 @@ TEST_F(TestTiling, TestDeepnormTiling)
     const bool varFalse = false;
     const bool varTrue = true;
     optiling::DeepNormTiling tiling;
+    AscendC::tiling::DeepNormTiling tilingNotOp;
 
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
@@ -4905,10 +5079,12 @@ TEST_F(TestTiling, TestDeepnormTiling)
     res = AscendC::GetDeepNormMaxMinTmpSize(wrongDeepNormShape, typeSize, varFalse, varTrue, maxValue, minValue);
     EXPECT_EQ(res, false);
 
-
     AscendC::GetDeepNormTilingInfo(deepnormShape, oriDeepNormShape, stackBufferSize, typeSize, varFalse, varFalse,
         tiling);
     EXPECT_EQ(tiling.get_tmpBufSize(), stackBufferSize / sizeof(float));
+    AscendC::GetDeepNormTilingInfo(deepnormShape, oriDeepNormShape, stackBufferSize, typeSize, varFalse, varFalse,
+        tilingNotOp);
+    EXPECT_EQ(tilingNotOp.tmpBufSize, stackBufferSize / sizeof(float));
 
     // originalB = b, originalH = h
     wrong_shape_dims = {1, 8, 128};          // originalb != b
@@ -5235,7 +5411,7 @@ TEST_F(TestTiling, TestMatmulApiTilngMultiCoreWithCppStruct)
     tiling.SetShape(2048, 2048, 256);
     tiling.EnableBias(false);
     tiling.SetBufferSpace(-1, -1, -1);
-    TCubeTiling tilingData;
+    AscendC::tiling::TCubeTiling tilingData;
     int ret = tiling.GetTiling(tilingData);
     tiling.PrintTilingData();
     EXPECT_EQ(ret, 0);
@@ -5480,9 +5656,12 @@ TEST_F(TestTiling, TestUnPadTiling)
     std::vector<int64_t> shapeDims = { 32, 32 };
     auto srcShape = ge::Shape(shapeDims);
     optiling::UnPadTiling tiling;
+    AscendC::tiling::UnPadTiling tilingNotOp;
 
     AscendC::UnPadTilingFunc(srcShape, 0, typeSize, tiling);
     AscendC::UnPadTilingFunc(srcShape, stackBufferSize, typeSize, tiling);
+    AscendC::UnPadTilingFunc(srcShape, 0, typeSize, tilingNotOp);
+    AscendC::UnPadTilingFunc(srcShape, stackBufferSize, typeSize, tilingNotOp);
     fe::PlatFormInfos platform_info;
     auto plat = platform_ascendc::PlatformAscendC(&platform_info);
     uint32_t maxValue = 0;
@@ -5500,9 +5679,12 @@ TEST_F(TestTiling, TestPadTiling)
     auto srcShape = ge::Shape(shapeDims);
     auto oriSrcShape = ge::Shape(ori_shape_dims);
     optiling::PadTiling tiling;
+    AscendC::tiling::PadTiling tilingNotOp;
 
     AscendC::PadTilingFunc(srcShape, oriSrcShape, stackBufferSize, typeSize, tiling);
     AscendC::PadTilingFunc(srcShape, oriSrcShape, 0, typeSize, tiling);
+    AscendC::PadTilingFunc(srcShape, oriSrcShape, stackBufferSize, typeSize, tilingNotOp);
+    AscendC::PadTilingFunc(srcShape, oriSrcShape, 0, typeSize, tilingNotOp);
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
     AscendC::GetPadMaxMinTmpSize(srcShape, typeSize, maxValue, minValue);
@@ -5515,9 +5697,13 @@ TEST_F(TestTiling, TestLayernormGradTiling)
     std::vector<int64_t> shapeDims = { 128, 128, 128, 128, 128, 128 };
     auto layernormgradShape = ge::Shape(shapeDims);
     optiling::LayerNormGradTiling tiling;
+    AscendC::tiling::LayerNormGradTiling tilingNotOp;
 
     AscendC::GetLayerNormGradNDTilingInfo(layernormgradShape, stackBufferSize, 4, false, tiling);
     EXPECT_EQ(tiling.get_stackBufferSize(), stackBufferSize);
+
+    AscendC::GetLayerNormGradNDTilingInfo(layernormgradShape, stackBufferSize, 4, false, tilingNotOp);
+    EXPECT_EQ(tilingNotOp.stackBufferSize, stackBufferSize);
 
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
@@ -5544,6 +5730,7 @@ TEST_F(TestTiling, TestLayernormGradBetaTiling)
     const bool isReuseSource = false;
 
     optiling::LayerNormGradBetaTiling tiling;
+    AscendC::tiling::LayerNormGradBetaTiling tilingNotOp;
 
     uint32_t maxValue = 0;
     uint32_t minValue = 0;
@@ -5557,6 +5744,9 @@ TEST_F(TestTiling, TestLayernormGradBetaTiling)
 
     AscendC::GetLayerNormGradBetaNDTilingInfo(layernormgradbetaShape, stackBufferSize, typeSize, isReuseSource, tiling);
     EXPECT_EQ(tiling.get_stackBufferSize(), stackBufferSize / sizeof(float));
+
+    AscendC::GetLayerNormGradBetaNDTilingInfo(layernormgradbetaShape, stackBufferSize, typeSize, isReuseSource, tilingNotOp);
+    EXPECT_EQ(tilingNotOp.stackBufferSize, stackBufferSize / sizeof(float));
 }
 
 TEST_F(TestTiling, TestConfusionTransposeTiling)
@@ -5574,6 +5764,40 @@ TEST_F(TestTiling, TestConfusionTransposeTiling)
     AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 5, tiling);
     AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 6, tiling);
     AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 7, tiling);
+}
+
+TEST_F(TestTiling, TestConfusionTransposeTilingWithCppStruct)
+{
+    const uint32_t stackBufferSize = 100 * 1024;
+    const uint32_t typeSize = 2;
+
+    std::vector<int64_t> shapeDims = { 1, 2, 64, 32 };
+    auto srcShape = ge::Shape(shapeDims);
+    AscendC::tiling::ConfusionTransposeTiling tiling;
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 1, tiling);
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 2, tiling);
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 3, tiling);
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 4, tiling);
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 5, tiling);
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 6, tiling);
+    AscendC::GetConfusionTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 7, tiling);
+}
+
+TEST_F(TestTiling, TestGetTransposeTilingInfoWithCppStruct)
+{
+    const uint32_t stackBufferSize = 100 * 1024;
+    const uint32_t typeSize = 2;
+
+    std::vector<int64_t> shapeDims = { 1, 2, 64, 32 };
+    auto srcShape = ge::Shape(shapeDims);
+    AscendC::tiling::ConfusionTransposeTiling tiling;
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 1, tiling);
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 2, tiling);
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 3, tiling);
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 4, tiling);
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 5, tiling);
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 6, tiling);
+    AscendC::GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, 7, tiling);
 }
 
 TEST_F(TestTiling, TestMatmulApiTilngL0BNoDB)
@@ -8857,6 +9081,10 @@ TEST_F(TestTiling, TestLayerNormRstdTiling)
     auto layernormShape = ge::Shape(shapeDims);
     GetLayerNormNDTilingInfo(layernormShape, stackBufferSize, sizeof(float), false, true, tiling);
     GetLayerNormNDTilingInfo(layernormShape, 0, sizeof(float), false, true, tiling);
+
+    AscendC::tiling::LayerNormSeparateTiling tilingNotOp;
+    GetLayerNormNDTilingInfo(layernormShape, stackBufferSize, sizeof(float), false, true, tilingNotOp);
+    GetLayerNormNDTilingInfo(layernormShape, 0, sizeof(float), false, true, tilingNotOp);
 }
 
 TEST_F(TestTiling, TestNZFp32UnalignedK)
@@ -8990,7 +9218,7 @@ TEST_F(TestTiling, TestMatmulApiTilingIsBTransKMisAlign)
     tiling.EnableBias(false);
     tiling.SetBufferSpace(-1, -1, -1, -1);
 
-    TCubeTiling tilingData;
+    AscendC::tiling::TCubeTiling tilingData;
     int ret = tiling.GetTiling(tilingData);
     tiling.PrintTilingData();
     EXPECT_EQ(ret, 0);

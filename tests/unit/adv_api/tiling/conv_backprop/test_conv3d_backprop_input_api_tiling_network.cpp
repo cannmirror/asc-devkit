@@ -66,6 +66,24 @@ bool TestSingleCoreResult(uint32_t singleCoreBatch, uint32_t singleCoreGroup, ui
     return res;
 }                    
 
+bool TestSingleCoreResult(uint32_t singleCoreBatch, uint32_t singleCoreGroup, uint32_t singleCoreDin, uint32_t singleCoreHo,
+                    uint32_t singleCoreM, uint32_t singleCoreCout, uint32_t singleCoreCout1,
+                    uint32_t singleCoreCin, uint32_t singleCoreCin1,
+                    AscendC::tiling::Conv3DBackpropInputTilingData &tilingData)
+{
+    bool res = true;
+    res = res && singleCoreBatch == tilingData.conv3DDxTiling.singleCoreBatch; 
+    res = res && singleCoreGroup == tilingData.conv3DDxTiling.singleCoreGroup;
+    res = res && singleCoreDin == tilingData.conv3DDxTiling.singleCoreDin;
+    res = res && singleCoreHo == tilingData.conv3DDxTiling.singleCoreHo;
+    res = res && singleCoreM == tilingData.conv3DDxTiling.singleCoreM;
+    res = res && singleCoreCout == tilingData.conv3DDxTiling.singleCoreCout;
+    res = res && singleCoreCout1 == tilingData.conv3DDxTiling.singleCoreCout1;
+    res = res && singleCoreCin == tilingData.conv3DDxTiling.singleCoreCin;
+    res = res && singleCoreCin1 == tilingData.conv3DDxTiling.singleCoreCin1;
+    return res;
+} 
+
 bool TestBaseResult(uint32_t baseM, uint32_t baseK, uint32_t baseN,
                     uint32_t baseD, uint32_t baseBatch, uint32_t baseGroup,
                     optiling::Conv3DBackpropInputTilingData &tilingData)
@@ -80,6 +98,20 @@ bool TestBaseResult(uint32_t baseM, uint32_t baseK, uint32_t baseN,
     return res;
 }
 
+bool TestBaseResult(uint32_t baseM, uint32_t baseK, uint32_t baseN,
+                    uint32_t baseD, uint32_t baseBatch, uint32_t baseGroup,
+                    AscendC::tiling::Conv3DBackpropInputTilingData &tilingData)
+{
+    bool res = true;
+    res = res && baseM == tilingData.conv3DDxTiling.baseM;
+    res = res && baseK == tilingData.conv3DDxTiling.baseK;
+    res = res && baseN == tilingData.conv3DDxTiling.baseN;
+    res = res && baseD == tilingData.conv3DDxTiling.baseD;
+    res = res && baseBatch == tilingData.conv3DDxTiling.baseBatch;
+    res = res && baseGroup == tilingData.conv3DDxTiling.baseGroup; 
+    return res;
+}
+
 bool TestPbBufferResult(uint32_t al0Pbuffer, uint32_t bl0Pbuffer, uint32_t cl0Pbuffer,
                     uint32_t al1Pbuffer, uint32_t bl1Pbuffer,
                     optiling::Conv3DBackpropInputTilingData &tilingData)
@@ -90,6 +122,19 @@ bool TestPbBufferResult(uint32_t al0Pbuffer, uint32_t bl0Pbuffer, uint32_t cl0Pb
     res = res && cl0Pbuffer == tilingData.conv3DDxTiling.get_cl0Pbuffer();
     res = res && al1Pbuffer == tilingData.conv3DDxTiling.get_al1Pbuffer();
     res = res && bl1Pbuffer == tilingData.conv3DDxTiling.get_bl1Pbuffer();
+    return res;
+}
+
+bool TestPbBufferResult(uint32_t al0Pbuffer, uint32_t bl0Pbuffer, uint32_t cl0Pbuffer,
+                    uint32_t al1Pbuffer, uint32_t bl1Pbuffer,
+                    AscendC::tiling::Conv3DBackpropInputTilingData &tilingData)
+{
+    bool res = true;
+    res = res && al0Pbuffer == tilingData.conv3DDxTiling.al0Pbuffer;
+    res = res && bl0Pbuffer == tilingData.conv3DDxTiling.bl0Pbuffer;
+    res = res && cl0Pbuffer == tilingData.conv3DDxTiling.cl0Pbuffer;
+    res = res && al1Pbuffer == tilingData.conv3DDxTiling.al1Pbuffer;
+    res = res && bl1Pbuffer == tilingData.conv3DDxTiling.bl1Pbuffer;
     return res;
 }
 
@@ -107,12 +152,35 @@ bool TestStepResult(uint32_t stepM, uint32_t stepN, uint32_t stepKa,
     return res;
 }
 
+bool TestStepResult(uint32_t stepM, uint32_t stepN, uint32_t stepKa,
+                    uint32_t stepKb, uint32_t stepBatch, uint32_t stepGroup,
+                    AscendC::tiling::Conv3DBackpropInputTilingData &tilingData)
+{
+    bool res = true;
+    res = res && stepM == tilingData.conv3DDxTiling.stepM;
+    res = res && stepN == tilingData.conv3DDxTiling.stepN;
+    res = res && stepKa == tilingData.conv3DDxTiling.stepKa;
+    res = res && stepKb == tilingData.conv3DDxTiling.stepKb;
+    res = res && stepBatch == tilingData.conv3DDxTiling.stepBatch;
+    res = res && stepGroup == tilingData.conv3DDxTiling.stepGroup; 
+    return res;
+}
+
 bool TestOtherResult(uint32_t iterateOrder, uint32_t hf32Flag,
                      optiling::Conv3DBackpropInputTilingData &tilingData)
 {
     bool res = true;
     res = res && iterateOrder == tilingData.conv3DDxTiling.get_iterateOrder();
     res = res && hf32Flag == tilingData.conv3DDxTiling.get_hf32Flag();
+    return res;
+}
+
+bool TestOtherResult(uint32_t iterateOrder, uint32_t hf32Flag,
+                     AscendC::tiling::Conv3DBackpropInputTilingData &tilingData)
+{
+    bool res = true;
+    res = res && iterateOrder == tilingData.conv3DDxTiling.iterateOrder;
+    res = res && hf32Flag == tilingData.conv3DDxTiling.hf32Flag;
     return res;
 }
 
@@ -142,6 +210,13 @@ TEST_F(TestConv3dInputTiling, NetWorks_001)
     EXPECT_EQ(TestPbBufferResult(2, 2, 1, 2, 1, tilingData), true);
     EXPECT_EQ(TestStepResult(1, 1, 4, 8, 1, 1, tilingData), true);
     EXPECT_EQ(TestOtherResult(1, 0, tilingData), true);
+
+    AscendC::tiling::Conv3DBackpropInputTilingData tilingData1;
+    ret1 = conv3dDx.GetTiling(tilingData1);
+    EXPECT_EQ(ret1, 0);
+    conv3dDx.SetWeightShape(512, 512, 1, 1, 0);
+    ret1 = conv3dDx.GetTiling(tilingData1);
+    EXPECT_EQ(ret1, -1);
 }
 
 // magvit_1

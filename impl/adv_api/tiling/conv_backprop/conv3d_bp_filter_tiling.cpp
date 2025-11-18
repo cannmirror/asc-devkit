@@ -37,6 +37,19 @@ int64_t Conv3dBpFilterTiling::GetTiling(optiling::Conv3DBackpropFilterTilingData
     return ret;
 }
 
+int64_t Conv3dBpFilterTiling::GetTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling)
+{
+    int64_t ret = Compute();
+    if (ret == -1) {
+        TILING_LOG_ERROR("can not gen conv3d api tiling");
+        return -1;
+    }
+
+    SetFinalTiling(tiling);
+    PrintTilingData();
+    return ret;
+}
+
 int64_t Conv3dBpFilterTiling::Compute()
 {
     if (!CheckInputParam()) {
@@ -546,6 +559,27 @@ void Conv3dBpFilterTiling::SetFinalTiling(optiling::Conv3DBackpropFilterTilingDa
     SetFinalBasickBlockTiling(tiling);
 }
 
+void Conv3dBpFilterTiling::SetFinalTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling)
+{
+    Conv3dBpFilterTilingBase::SetFinalTiling(tiling);
+
+    tiling.params.totalL1Size = static_cast<uint32_t>(platformInfo.l1Size);
+
+    tiling.dwTiling.al0Pbuffer = static_cast<uint32_t>(tilingParams.al0Pbuffer);
+    tiling.dwTiling.bl0Pbuffer = static_cast<uint32_t>(tilingParams.bl0Pbuffer);
+    tiling.dwTiling.m0 = static_cast<uint32_t>(BLOCK_CUBE);
+    tiling.dwTiling.k0 = static_cast<uint32_t>(shapeCalc.channelSize);
+    tiling.dwTiling.n0 = static_cast<uint32_t>(BLOCK_CUBE);
+    
+    // singleCore
+    tiling.dwTiling.singleCoreDk = static_cast<uint32_t>(tilingParams.singleCoreDk);
+    tiling.dwTiling.singleCoreGroup = static_cast<uint32_t>(tilingParams.singleCoreGroup);
+    tiling.dwTiling.singleCoreBatch = static_cast<uint64_t>(tilingParams.singleCoreBatch);
+
+    // 设置基本块
+    SetFinalBasickBlockTiling(tiling);
+}
+
 void Conv3dBpFilterTiling::SetFinalBasickBlockTiling(optiling::Conv3DBackpropFilterTilingData& tiling)
 {
     tiling.dwTiling.set_singleCoreHo(static_cast<uint32_t>(blockTiling_.singleCoreK / shapeInfo.orgWo));
@@ -574,6 +608,12 @@ void Conv3dBpFilterTiling::SetFinalBasickBlockTiling(optiling::Conv3DBackpropFil
     tiling.basicBlockTiling.set_singleCoreK(static_cast<uint32_t>(blockTiling_.singleCoreK));
 }
 
+void Conv3dBpFilterTiling::SetFinalBasickBlockTiling(AscendC::tiling::Conv3DBackpropFilterTilingData& tiling)
+{
+    optiling::Conv3DBackpropFilterTilingData convTiling;
+    SetFinalBasickBlockTiling(convTiling);
+    convTiling.SaveToBuffer(&tiling, sizeof(Conv3DBackpropFilterTilingData));
+}
 
 void Conv3dBpFilterTiling::PrintTilingData() const
 {

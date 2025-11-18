@@ -622,6 +622,13 @@ void Conv3dTilingBase::SetFinalTilingBasicInfo(optiling::TConv3DApiTiling& tilin
     tiling.set_offsetx(this->attrInfo.offsetx);
 }
 
+void Conv3dTilingBase::SetFinalTilingBasicInfo(AscendC::tiling::TConv3DApiTiling& tiling)
+{
+    optiling::TConv3DApiTiling tConv3DApiTiling;
+    SetFinalTilingBasicInfo(tConv3DApiTiling);
+    tConv3DApiTiling.SaveToBuffer(&tiling, sizeof(TConv3DApiTiling));
+}
+
 void Conv3dTilingBase::SetFinalTilingDecisionInfo(optiling::TConv3DApiTiling& tiling)
 {
     // set L1 tiling decision
@@ -657,7 +664,20 @@ void Conv3dTilingBase::SetFinalTilingDecisionInfo(optiling::TConv3DApiTiling& ti
     tiling.set_hf32TransMode(0);
 }
 
+void Conv3dTilingBase::SetFinalTilingDecisionInfo(AscendC::tiling::TConv3DApiTiling& tiling)
+{
+    optiling::TConv3DApiTiling tConv3DApiTiling;
+    SetFinalTilingDecisionInfo(tConv3DApiTiling);
+    tConv3DApiTiling.SaveToBuffer(&tiling, sizeof(TConv3DApiTiling));
+}
+
 void Conv3dTilingBase::SetFinalTiling(optiling::TConv3DApiTiling& tiling)
+{
+    SetFinalTilingBasicInfo(tiling);
+    SetFinalTilingDecisionInfo(tiling);
+}
+
+void Conv3dTilingBase::SetFinalTiling(AscendC::tiling::TConv3DApiTiling& tiling)
 {
     SetFinalTilingBasicInfo(tiling);
     SetFinalTilingDecisionInfo(tiling);

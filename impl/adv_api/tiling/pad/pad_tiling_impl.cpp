@@ -165,6 +165,14 @@ void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const 
     tiling.set_brcbFractalTailRepeatTimesTail(brcbFractalTailRepeatTimesTail);
 }
 
+void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, AscendC::tiling::PadTiling& tiling)
+{
+    optiling::PadTiling tilingData;
+    PadTilingFunc(srcShape, oriSrcShape, stackBufferSize, typeSize, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(PadTiling));
+}
+
 void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
     const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
@@ -230,5 +238,13 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
     tiling.set_widthTiling(widthTiling);
     tiling.set_widthFractal(widthFractal);
     tiling.set_widthFractalTail(widthFractalTail);
+}
+
+void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    AscendC::tiling::UnPadTiling& tiling)
+{
+    optiling::UnPadTiling tilingData;
+    UnPadTilingFunc(srcShape, stackBufferSize, typeSize, tilingData);
+    tilingData.SaveToBuffer(&tiling, sizeof(UnPadTiling));
 }
 }

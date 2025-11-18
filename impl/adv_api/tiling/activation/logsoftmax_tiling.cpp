@@ -183,4 +183,12 @@ void LogSoftMaxTilingFunc(const ge::Shape srcShape, const uint32_t dataTypeSize,
     softmaxTiling.set_tailSplitSize(tail * srcK);
     softmaxTiling.set_tailReduceSize(tail * elementNumPerBlk);
 }
+
+void LogSoftMaxTilingFunc(const ge::Shape srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize,
+    AscendC::tiling::LogSoftMaxTiling& softmaxTiling)
+{
+    optiling::LogSoftMaxTiling tiling;
+    LogSoftMaxTilingFunc(srcShape, dataTypeSize, localWorkSpaceSize, tiling);
+    tiling.SaveToBuffer(&softmaxTiling, sizeof(LogSoftMaxTiling));
+}
 }

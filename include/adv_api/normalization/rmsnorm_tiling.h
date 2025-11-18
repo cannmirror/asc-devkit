@@ -11,6 +11,7 @@
 #define LIB_NORMALIZATION_RMSNORM_TILING_H
 #include "graph/tensor.h"
 #include "rmsnorm_tilingdata.h"
+#include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 /*!
  * \brief calculate max and min tmp buffer size for rmsnorm interface.
@@ -48,6 +49,9 @@ bool GetRmsNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
  */
 bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
     const uint32_t stackBufferByteSize, const uint32_t typeSize, optiling::RmsNormTiling& tiling,
+    const bool isBasicBlock = false);
+bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
+    const uint32_t stackBufferByteSize, const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling,
     const bool isBasicBlock = false);
 }
 #endif // LIB_NORMALIZATION_RMSNORM_TILING_H

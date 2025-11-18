@@ -551,7 +551,7 @@ public:
     * @param [in] tiling: reference to store the tiling information
     * @note the tiling of this function is in global namespace
     */
-    virtual int64_t GetTiling(TCubeTiling& tiling) = 0;
+    virtual int64_t GetTiling(AscendC::tiling::TCubeTiling& tiling) = 0;
 
 public:
     optiling::TCubeTiling tiling_;
@@ -640,9 +640,11 @@ public:
 protected:
     virtual int64_t Compute() = 0;
     void SetFinalTiling(optiling::TCubeTiling& tiling);
+    void SetFinalTiling(AscendC::tiling::TCubeTiling& tiling);
     bool CheckSetParam();
     void PrintTilingData();
     void PrintTilingDataInfo(optiling::TCubeTiling &tiling) const;
+    void PrintTilingDataInfo(AscendC::tiling::TCubeTiling &tiling) const;
 };
 } // namespace matmul_tiling
 

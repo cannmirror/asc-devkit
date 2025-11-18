@@ -214,4 +214,14 @@ bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcS
     tiling.set_tailBsLength(inputTailSize / hLength);
     return true;
 }
+
+bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape,
+    const uint32_t stackBufferByteSize, const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling,
+    const bool isBasicBlock)
+{
+    optiling::RmsNormTiling tilingData;
+    bool ret = GetRmsNormTilingInfo(srcShape, originSrcShape, stackBufferByteSize, typeSize, tilingData, isBasicBlock);
+    tilingData.SaveToBuffer(&tiling, sizeof(RmsNormTiling));
+    return ret;
+}
 }  // namespace AscendC

@@ -33,6 +33,19 @@ int64_t Conv3dTiling::GetTiling(optiling::TConv3DApiTiling &tiling)
     return ret;
 }
 
+int64_t Conv3dTiling::GetTiling(AscendC::tiling::TConv3DApiTiling& tiling)
+{
+    int64_t ret1 = Compute();
+    if (ret1 == -1) {
+        TILING_LOG_ERROR("can not gen conv3d api tiling");
+        return -1;
+    }
+
+    SetFinalTiling(tiling);
+    PrintTilingData();
+    return ret1;
+}
+
 int64_t Conv3dTiling::Compute()
 {
     if (!CheckSocVersion()) {

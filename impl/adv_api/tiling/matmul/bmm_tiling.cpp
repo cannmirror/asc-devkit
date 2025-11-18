@@ -88,7 +88,7 @@ int64_t MultiCoreMatmulTiling::GetTiling(optiling::TCubeTiling& tiling)
     return ret;
 }
 
-int64_t MultiCoreMatmulTiling::GetTiling(TCubeTiling& tiling)
+int64_t MultiCoreMatmulTiling::GetTiling(AscendC::tiling::TCubeTiling& tiling)
 {
     optiling::TCubeTiling mmTiling;
     int64_t ret = GetTiling(mmTiling);
@@ -171,7 +171,7 @@ int64_t BatchMatmulTiling::GetTiling(optiling::TCubeTiling& tiling)
     return 0;
 }
 
-int64_t BatchMatmulTiling::GetTiling(TCubeTiling& tiling)
+int64_t BatchMatmulTiling::GetTiling(AscendC::tiling::TCubeTiling& tiling)
 {
     optiling::TCubeTiling mmTiling;
     int64_t ret = GetTiling(mmTiling);
@@ -208,7 +208,7 @@ int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling& tiling, matmul_tiling::S
     bufSize.ubSize = max(bufSize.ubSize, max(tiling.get_shareUbSize(), 2 * tiling.get_transLength()));
     return 0;
 }
-int32_t MultiCoreMatmulGetTmpBufSizeV2(TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
+int32_t MultiCoreMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
 {
     bufSize.l1Size = max(bufSize.l1Size, tiling.shareL1Size);
     bufSize.l0cSize = max(bufSize.l0cSize, tiling.shareL0CSize);
@@ -216,7 +216,7 @@ int32_t MultiCoreMatmulGetTmpBufSizeV2(TCubeTiling& tiling, matmul_tiling::SysTi
     bufSize.ubSize = max(bufSize.ubSize, max(tiling.shareUbSize, 2 * tiling.transLength));
     return 0;
 }
-int32_t BatchMatmulGetTmpBufSizeV2(TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
+int32_t BatchMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling& tiling, matmul_tiling::SysTilingTempBufSize& bufSize)
 {
     bufSize.l1Size = max(bufSize.l1Size, tiling.shareL1Size);
     bufSize.l0cSize = max(bufSize.l0cSize, tiling.shareL0CSize);
