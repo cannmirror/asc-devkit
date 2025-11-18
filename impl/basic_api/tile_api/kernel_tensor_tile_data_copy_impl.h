@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_TILE_API_KERNEL_TENSOR_TILE_DATA_COPY_IMPL_H
 #define IMPL_TENSOR_TILE_API_KERNEL_TENSOR_TILE_DATA_COPY_IMPL_H
 
-#include "kernel_tensor_tile_data_copy_routing.h"
+#include "datacopy/kernel_tensor_tile_data_copy_routing.h"
 
 namespace AscendC {
 

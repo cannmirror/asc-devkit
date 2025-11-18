@@ -7,7 +7,6 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-
 /*!
  * \file kernel_tensor_tile_fixpipe_four_dim_3101_l0c_gm.h
  * \brief
@@ -81,7 +80,7 @@ private:
     }
 };
 
-class FixpipetNz2NdBase : public CopyMatrixCcToGmBase, SetRegisterBase {
+class FixpipetNz2NdBase : public CopyMatrixCcToGmBase, public SetRegisterBase {
 public:
     template <typename T, typename U, const FixpipeTrait& trait>
     __aicore__ inline void Run(const T& dst, const U& src) {
@@ -170,7 +169,7 @@ private:
     }
 };
 
-class FixpipetNz2DnBase : public CopyMatrixCcToGmBase, SetRegisterBase {
+class FixpipetNz2DnBase : public CopyMatrixCcToGmBase, public SetRegisterBase {
 public:
     template <typename T, typename U, const FixpipeTrait& trait>
     __aicore__ inline void Run(const T& dst, const U& src) {

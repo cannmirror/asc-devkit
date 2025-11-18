@@ -15,7 +15,7 @@
 #ifndef IMPL_TILE_API_KERNEL_TENSOR_TILE_LOAD_DATA_IMPL_H
 #define IMPL_TILE_API_KERNEL_TENSOR_TILE_LOAD_DATA_IMPL_H
 
-#include "kernel_tensor_tile_load_data_routing.h"
+#include "loaddata/kernel_tensor_tile_load_data_routing.h"
 
 namespace AscendC {
 

@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_TILE_API_KERNEL_TENSOR_TILE_FIXPIPE_IMPL_H
 #define IMPL_TENSOR_TILE_API_KERNEL_TENSOR_TILE_FIXPIPE_IMPL_H
 
-#include "kernel_tensor_tile_fixpipe_routing.h"
+#include "fixpipe/kernel_tensor_tile_fixpipe_routing.h"
 
 namespace AscendC {
 
