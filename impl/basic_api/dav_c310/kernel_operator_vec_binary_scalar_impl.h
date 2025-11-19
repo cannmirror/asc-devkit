@@ -64,7 +64,9 @@ __simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T 
         }
         MicroAPI::RegTensor<T> dstVreg;
         MicroAPI::RegTensor<T> srcVreg;
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
         MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+#endif
         MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
             src + index * repeatParams.srcRepStride * ElePerBlkT, repeatParams.srcBlkStride, maskReg);
         func(dstVreg, srcVreg, scalarValue, maskReg);
@@ -148,7 +150,9 @@ __simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T 
         if constexpr (!isNormalMode) {
             maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         }
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
         MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+#endif
         if constexpr (scalarIdx == 0) {
             MicroAPI::DataCopy<T, pattern>(vSrcReg0, src0);
             MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(vSrcReg1,
