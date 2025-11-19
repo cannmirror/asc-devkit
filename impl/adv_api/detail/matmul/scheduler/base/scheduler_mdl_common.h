@@ -120,7 +120,10 @@ private:
         bool isATranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeA();
         bool isBTranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeB();
         SplitPrepareOneIter(isATranspose, isBTranspose, aL0Params, bL0Params);
-        LocalTensor<BiasT> bias = SplitBias(bL0Params.axisL0Len);
+        LocalTensor<BiasT> bias;
+        if (MATMUL_MODULE(BiasScheduler)->IsBias()) {
+            bias = SplitBias(bL0Params.axisL0Len);
+        }
         int32_t kL1Stride;
         if constexpr (IsStaticPaddingEnable(MM_CFG)) {
             kL1Stride = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
@@ -160,12 +163,15 @@ private:
         // curKaOuterIdx and curKbOuterIdx are used to decide if left or right matrix need to clear its l1 buffer
         int32_t curKaOuterIdx = MATMUL_MODULE(KLoop)->GetOuterKaIdx();
         int32_t curKbOuterIdx = MATMUL_MODULE(KLoop)->GetOuterKbIdx();
+        LocalTensor<BiasT> bias;
         do {
             // CopyIn
             LocalTensor<TransAT> a1;
             LocalTensor<TransBT> b1;
             BASE_MODULE::CopyIn(a1, b1);
-            LocalTensor<BiasT> bias = SplitBias(bL0Params.axisL0Len);
+            if (MATMUL_MODULE(BiasScheduler)->IsBias()) {
+                bias = SplitBias(bL0Params.axisL0Len);
+            }
             Compute(a1, b1, bias, enPartialSum, isATranspose, isBTranspose, aL0Params, bL0Params);
             if constexpr (MatmulFeatureTrait<MM_CFG>().IsSupportMNL0DB()) {
                 MATMUL_MODULE(BiasScheduler)->Free(bias);

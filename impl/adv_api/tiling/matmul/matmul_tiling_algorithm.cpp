@@ -2652,6 +2652,27 @@ void MatmulTilingAlgorithm::AdjustFloatL1Factor(const SingleCoreStatus& singleCo
     }
 }
 
+void MatmulTilingAlgorithm::SetBaseMNK(const SingleCoreStatus& singleCoreStatus) const
+{
+    int32_t baseM = singleCoreStatus.l0Status.mL0 * C0_SIZE;
+    if (tilingIns_->madType_ == MatrixMadType::MXMODE) {
+        bool isAUbNdTrans = tilingIns_->aType_.pos == TPosition::VECOUT && 
+            tilingIns_->aType_.type == CubeFormat::ND && tilingIns_->aType_.isTrans;
+        int32_t widthAlignSize = INT8_ALIGN_SIZE;
+        if (tilingIns_->aType_.dataType == DataType::DT_FLOAT4_E2M1 ||
+            tilingIns_->aType_.dataType == DataType::DT_FLOAT4_E1M2) {
+            widthAlignSize = INT4_ALIGN_SIZE;
+        }
+        if (isAUbNdTrans) {
+            baseM = MathUtil::CeilDivision(baseM, widthAlignSize) * widthAlignSize;
+        }
+    }
+    tilingIns_->tiling_.set_baseM(baseM);
+    tilingIns_->tiling_.set_baseN(singleCoreStatus.l0Status.nL0 * C0_SIZE);
+    const int32_t reduceSize = C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE;
+    tilingIns_->tiling_.set_baseK(singleCoreStatus.l0Status.kL0 * reduceSize);
+}
+
 int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const CoreStatusPack &coreStatus, SingleCoreStatus& singleCoreStatus) const
 {
     int32_t coreUse = singleBlockDim_ ? tilingIns_->blockDim : coreStatus.batchDim * coreStatus.mDim * coreStatus.kDim * coreStatus.nDim;
@@ -2667,10 +2688,7 @@ int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const C
     tilingIns_->tiling_.set_singleCoreN(singleCoreN);
     tilingIns_->tiling_.set_singleCoreK(singleCoreK);
     UpdateShapeAndLayout();
-    tilingIns_->tiling_.set_baseM(singleCoreStatus.l0Status.mL0 * C0_SIZE);
-    tilingIns_->tiling_.set_baseN(singleCoreStatus.l0Status.nL0 * C0_SIZE);
-    const int32_t reduceSize = C0_BYTE_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE;
-    tilingIns_->tiling_.set_baseK(singleCoreStatus.l0Status.kL0 * reduceSize);
+    SetBaseMNK(singleCoreStatus);
     tilingIns_->tiling_.set_iterateOrder(GetIteratorOrder(singleCoreStatus, singleCoreM, singleCoreN, singleCoreK));
     // check whether OUTER_PRODUCT is supported
     if (AdjustOuterProductL0Factor(singleCoreStatus) != 0) {
