@@ -23,6 +23,7 @@ import glob
 from pathlib import Path
 from collections import namedtuple
 from tbe.common.context import get_context
+from tbe.common.platform.platform_info import get_soc_spec
 from tbe.common.utils.op_tiling import do_op_tiling, _ASCEND_OPP_PATH_ENV, _ASCEND_OPP_PATH_DEFAULT, \
     _BUILTIN_TILING_PATH, _CUSTOM_TILING_PATH_DEFAULT, so_arch_path2, op_impl_path
 from tbe.tvm.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
@@ -1228,6 +1229,23 @@ def gen_dynamic_shape_v2(optype:str, tiling_struct: str):
     return class_body
 
 
+def _set_runtime_soc_version():
+    try:
+        full_soc = get_soc_spec("FULL_SOC_VERSION")
+        mylib = ctypes.CDLL("libruntime.so")
+        mylib.rtSetSocVersion.argtypes = [ctypes.c_char_p]
+        mylib.rtSetSocVersion.restype = ctypes.c_int
+        rt_ret = mylib.rtSetSocVersion(full_soc.encode('utf-8'))
+        if rt_ret != 0:
+            LogUtil.print_compile_log("", f"ascendc cannot rtSetSoCVersion: {full_soc}", AscendCLogLevel.LOG_INFO)
+    except OSError:
+        LogUtil.print_compile_log("", f"ascendc cannot load libruntime.so", AscendCLogLevel.LOG_INFO)
+        return
+    except Exception as e:
+        LogUtil.print_compile_log("", f"ascendc cannot set runtime soc version: {e}", AscendCLogLevel.LOG_INFO)
+        return
+
+
 def get_tiling_info_v2(op_info: OpInfo, tiling_key_list: list, default_tiling_struct: str,
                        tiling_struct_expr_map: dict, value_depends: dict = None, enable_vd=False):
     """get tiling define v2
@@ -1250,6 +1268,7 @@ def get_tiling_info_v2(op_info: OpInfo, tiling_key_list: list, default_tiling_st
     static_shape = is_static_shape(op_info.origin_inputs, outputs, value_depends, op_info.param_type_list, enable_vd)
     context = get_context()
     if static_shape:
+        _set_runtime_soc_version()
         _change_param_name_to_name(inputs)
         _change_param_name_to_name(op_info.origin_inputs)
         compile_info = context.get_compile_info()
@@ -1313,6 +1332,7 @@ def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends
     static_shape = is_static_shape(op_info.origin_inputs, outputs, value_depends, op_info.param_type_list, enable_vd)
     context = get_context()
     if static_shape:
+        _set_runtime_soc_version()
         _change_param_name_to_name(inputs)
         _change_param_name_to_name(op_info.origin_inputs)
         compile_info = context.get_compile_info()
