@@ -1941,7 +1941,11 @@ private:
         tbufOutTmp.logicPos = (uint8_t)(TPosition::VECCALC);
         tbufOutTmp.bufferAddr = addr;
 #if ASCENDC_CPU_DEBUG
-        tbufOutTmp.dataLen = size * sizeof(T);
+        if (IsTypeOneOfV<T, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
+            tbufOutTmp.dataLen = size / AscendC::Impl::FP4_TWO;
+        } else {
+            tbufOutTmp.dataLen = size * sizeof(T);
+        }
         tbufOutTmp.absAddr = reinterpret_cast<uint8_t*>(addr);
 #endif
         cLocal.SetAddr(tbufOutTmp);
@@ -2080,7 +2084,7 @@ private:
         int calcWidthExr = Ceil(width, c0Size_);
         int calcHeightExr = Ceil(height, BLOCK_CUBE);
 
-        if constexpr (!PhyMxScalePosIsUB<INPUT_TYPE>()) {
+        if constexpr (!HasScalePosition<INPUT_TYPE>::value) {
             // set2d, pad tail zero
             if (height % BLOCK_CUBE != 0) {
                 int64_t repeat = calcWidthExr * calcHeightExr;
@@ -2108,7 +2112,7 @@ private:
                 CopyND2NZOnTheFlyWithTail<T, TAG>(dst, src, height, width, gCol, isTrans);
             }
         } else {
-            CopyND2NZOnTheFlyWithoutTail(dst, src, height, width, gCol, dstHeight);
+            CopyND2NZOnTheFlyWithoutTail<T, INPUT_TYPE>(dst, src, height, width, gCol, dstHeight);
         }
     }
 
@@ -2199,7 +2203,7 @@ private:
         WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
     }
 
-    template <class T>
+    template <class T, typename INPUT_TYPE>
     __aicore__ inline void CopyND2NZOnTheFlyWithoutTail(const LocalTensor<T> &dst, LocalTensor<T> &src,
         const int32_t height, const int32_t width, const int32_t gCol, const int32_t dstHeight)
     {
@@ -2227,7 +2231,7 @@ private:
         } else {
             // data copy stride is aligned
             int32_t repDstOffset;
-            if constexpr ((IsSupportB8<T>() && !IsSameTypeV<T, int8_t>) || (IsSupportB4<T>() && !IsSameTypeV<T, int4b_t>)) {
+            if constexpr (HasScalePosition<INPUT_TYPE>::value) {
                 repDstOffset = dstHeight * c0Size_;
             } else {
                 repDstOffset = calcHeightExr * BLOCK_CUBE * c0Size_;
@@ -2287,27 +2291,52 @@ private:
         constexpr uint8_t multiOfB8b4 = 2;
         if (isTrans) {
             int32_t dstHeight;
-            if constexpr (IsSupportB8<SrcAT>() && !IsSameTypeV<SrcAT, int8_t>) {
-                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
-            } else if constexpr (IsSupportB4<SrcAT>() && !IsSameTypeV<SrcAT, int4b_t>) {
-                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                auto leftMatrixS8 = leftMatrix.template ReinterpretCast<int8_t>();
-                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
-                CopyUB2L1ND2NZ<int8_t, InputTypeTag::A, A_TYPE>(leftMatrixS8, srcS8, singleCoreK_, singleCoreM_/multiOfB8b4, singleCoreM_/multiOfB8b4, isTrans, dstHeight);
+            if constexpr (HasScalePosition<A_TYPE>::value) {
+                if constexpr (IsSupportMxFp8<SrcAT>()) {
+                    dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                    CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
+                } else if constexpr (IsSupportMxFp4<SrcAT>()) {
+                    dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                    auto leftMatrixFp8 = leftMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
+                    auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
+                    c0Size_ = AscendC::Impl::B8_C0SIZE;
+                    CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::A, A_TYPE>(leftMatrixFp8, srcFp8, singleCoreK_, singleCoreM_/multiOfB8b4, singleCoreM_/multiOfB8b4, isTrans, dstHeight);
+                } 
             } else {
                 dstHeight = singleCoreK_;
                 CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreK_, singleCoreM_, singleCoreM_, isTrans, dstHeight);
             }
         } else {
-            if constexpr (IsSupportB4<SrcAT>() && !IsSameTypeV<SrcAT, int4b_t>) {
-                auto leftMatrixS8 = leftMatrix.template ReinterpretCast<int8_t>();
-                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
-                CopyUB2L1ND2NZ<int8_t, InputTypeTag::A, A_TYPE>(leftMatrixS8, srcS8, singleCoreM_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4, isTrans,  Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
+            if constexpr (IsSupportMxFp4<SrcAT>()) {
+                auto leftMatrixFp8 = leftMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
+                auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
+                c0Size_ = AscendC::Impl::B8_C0SIZE;
+                CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::A, A_TYPE>(leftMatrixFp8, srcFp8, singleCoreM_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4, isTrans,  Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
             } else {
                 CopyUB2L1ND2NZ<SrcAT, InputTypeTag::A, A_TYPE>(leftMatrix, srcTensor, singleCoreM_, singleCoreK_, singleCoreK_, isTrans,
                     Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE);
             }
+        }
+    }
+
+    __aicore__ inline int32_t ComputeAL1Size()
+    {
+        int32_t orgHeightAlign;
+        int32_t orgWidthAlign;
+        if constexpr (IsSupportMxFp4<SrcAT>()) {
+            c0Size_ = AscendC::Impl::B4_C0SIZE;
+        }
+        if constexpr (A_TYPE::isTrans) {
+            orgHeightAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+            orgWidthAlign = Ceil(singleCoreM_, c0Size_) * c0Size_;
+        } else {
+            orgHeightAlign = Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
+            orgWidthAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+        }
+        if constexpr (IsSupportMxFp4<SrcAT>()) {
+            return orgHeightAlign * orgWidthAlign / AscendC::Impl::FP4_TWO;
+        } else {
+            return orgHeightAlign * orgWidthAlign * sizeof(SrcAT);
         }
     }
 
@@ -2323,15 +2352,8 @@ private:
             Ceil(singleCoreK_, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::A1);
-        if constexpr (PhyMxScalePosIsUB<A_TYPE>() && A_TYPE::format == CubeFormat::ND) {
-            if constexpr (A_TYPE::isTrans) {
-                orgHeightAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                orgWidthAlign = Ceil(this->cubeTiling.GetBaseM(), c0Size_) * c0Size_ * this->cubeTiling.GetStepM();
-            } else {
-                orgHeightAlign = Ceil(singleCoreM_, BLOCK_CUBE) * BLOCK_CUBE;
-                orgWidthAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-            }
-            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(SrcAT);
+        if constexpr (HasScalePosition<A_TYPE>::value && A_TYPE::format == CubeFormat::ND) {
+            tbufOutTmp.dataLen = ComputeAL1Size();
         } else {
             tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
         }
@@ -2409,10 +2431,11 @@ private:
     {
         constexpr uint8_t multiOfB8b4 = 2;
         if (isTrans) {
-            if constexpr (IsSupportB4<SrcBT>() && !IsSameTypeV<SrcBT, int4b_t>) {
-                auto rightMatrixS8 = rightMatrix.template ReinterpretCast<int8_t>();
-                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
-                CopyUB2L1ND2NZ<int8_t, InputTypeTag::B, B_TYPE>(rightMatrixS8, srcS8, singleCoreN_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4,
+            if constexpr (IsSupportMxFp4<SrcBT>()) {
+                auto rightMatrixFp8 = rightMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
+                auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
+                c0Size_ = AscendC::Impl::B8_C0SIZE;
+                CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::B, B_TYPE>(rightMatrixFp8, srcFp8, singleCoreN_, singleCoreK_/multiOfB8b4, singleCoreK_/multiOfB8b4,
                                                     isTrans, Ceil(singleCoreN_, BLOCK_CUBE)*BLOCK_CUBE);
             } else {
                 CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreN_, singleCoreK_, singleCoreK_,
@@ -2420,16 +2443,19 @@ private:
             }
         } else {
             int32_t dstHeight;
-            if constexpr (IsSupportB8<SrcBT>() && !IsSameTypeV<SrcBT, int8_t>) {
-                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
-                                                    isTrans, dstHeight);
-            } else if constexpr (IsSupportB4<SrcBT>() && !IsSameTypeV<SrcBT, int4b_t>) {
-                dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
-                auto rightMatrixS8 = rightMatrix.template ReinterpretCast<int8_t>();
-                auto srcS8 = srcTensor.template ReinterpretCast<int8_t>();
-                CopyUB2L1ND2NZ<int8_t, InputTypeTag::B, B_TYPE>(rightMatrixS8, srcS8, singleCoreK_, singleCoreN_/multiOfB8b4, singleCoreN_/multiOfB8b4,
-                                                    isTrans, dstHeight);
+            if constexpr (HasScalePosition<B_TYPE>::value) {
+                if constexpr (IsSupportMxFp8<SrcBT>()) {
+                    dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                    CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
+                                                        isTrans, dstHeight);
+                } else if constexpr (IsSupportMxFp4<SrcBT>()) {
+                    dstHeight = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
+                    auto rightMatrixFp8 = rightMatrix.template ReinterpretCast<fp8_e4m3fn_t>();
+                    auto srcFp8 = srcTensor.template ReinterpretCast<fp8_e4m3fn_t>();
+                    c0Size_ = AscendC::Impl::B8_C0SIZE;
+                    CopyUB2L1ND2NZ<fp8_e4m3fn_t, InputTypeTag::B, B_TYPE>(rightMatrixFp8, srcFp8, singleCoreK_, singleCoreN_/multiOfB8b4, singleCoreN_/multiOfB8b4,
+                                                        isTrans, dstHeight);
+                } 
             } else {
                 dstHeight = singleCoreK_;
                 CopyUB2L1ND2NZ<SrcBT, InputTypeTag::B, B_TYPE>(rightMatrix, srcTensor, singleCoreK_, singleCoreN_, singleCoreN_,
@@ -2450,7 +2476,10 @@ private:
             Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
         TBuffAddr tbufOutTmp;
         tbufOutTmp.logicPos = (uint8_t)(TPosition::B1);
-        if constexpr (PhyMxScalePosIsUB<B_TYPE>() && B_TYPE::format == CubeFormat::ND) {
+        if constexpr (HasScalePosition<B_TYPE>::value && B_TYPE::format == CubeFormat::ND) {
+            if constexpr (IsSupportMxFp4<SrcBT>()) {
+                c0Size_ = AscendC::Impl::B4_C0SIZE;
+            }
             if constexpr (B_TYPE::isTrans) {
                 orgHeightAlign = Ceil(singleCoreN_, BLOCK_CUBE) * BLOCK_CUBE;
                 orgWidthAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
@@ -2458,7 +2487,11 @@ private:
                 orgHeightAlign = Ceil(singleCoreK_, AscendC::Impl::MX_BASEK_FACTOR) * AscendC::Impl::MX_BASEK_FACTOR;
                 orgWidthAlign = Ceil(singleCoreN_, c0Size_) * c0Size_;
             }
-            tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(SrcBT);
+            if constexpr (IsSupportMxFp4<SrcBT>()) {
+                tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign / AscendC::Impl::FP4_TWO;
+            } else {
+                tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * sizeof(SrcBT);
+            }
         } else {
             tbufOutTmp.dataLen = orgHeightAlign * orgWidthAlign * bitSize;
         }

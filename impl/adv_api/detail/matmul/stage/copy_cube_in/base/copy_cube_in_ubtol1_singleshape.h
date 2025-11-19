@@ -77,7 +77,7 @@ public:
         int32_t orgHeight;
         constexpr static int32_t c0Size_ = AuxGetC0Size<TransT>();
         if constexpr (INPUT_TYPE::TAG == InputTypeTag::A) {
-            if constexpr ((IsSupportB8<SrcT>() && !IsSameTypeV<SrcT, int8_t>) || (IsSupportB4<SrcT>() && !IsSameTypeV<SrcT, int4b_t>)) {
+            if constexpr (HasScalePosition<INPUT_TYPE>::value) {
                 if constexpr (INPUT_TYPE::isTrans) {
                     orgHeight = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_BASEK_FACTOR;
                     orgWidth = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM(), c0Size_) * c0Size_;
@@ -90,7 +90,7 @@ public:
                 orgHeight = MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreM();
             }
         } else {
-            if constexpr ((IsSupportB8<SrcT>() && !IsSameTypeV<SrcT, int8_t>) || (IsSupportB4<SrcT>() && !IsSameTypeV<SrcT, int4b_t>)) {
+            if constexpr (HasScalePosition<INPUT_TYPE>::value) {
                 if constexpr (INPUT_TYPE::isTrans) {
                     orgHeight = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN(), BLOCK_CUBE) * BLOCK_CUBE;
                     orgWidth = Ceil(MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreK(), MX_BASEK_FACTOR) * MX_BASEK_FACTOR;

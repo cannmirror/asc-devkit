@@ -533,6 +533,7 @@ private:
     int32_t GetMatrixScaleBByteSize() const;
     void CalABAndScaleABL1Space(int32_t matrixByteSize, int32_t cacheNum, int32_t stepSize,
         uint32_t &curL1UpperHalfAddr, uint32_t &curL1LowerHalfAddr) const;
+    void SetBaseMNK(const SingleCoreStatus& singleCoreStatus) const;
 private:
     MatmulApiTilingBase* tilingIns_ = nullptr;
     bool singleBlockDim_ = false;

@@ -144,6 +144,28 @@ __aicore__ inline constexpr bool IsSupportB4()
     return false;
 }
 
+template <typename SrcT>
+__aicore__ inline constexpr bool IsSupportMxFp4()
+{
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    if (IsTypeOneOfV<SrcT, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
+        return true;
+    }
+#endif
+    return false;
+}
+
+template <typename SrcT>
+__aicore__ inline constexpr bool IsSupportMxFp8()
+{
+#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+    if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t>) {
+        return true;
+    }
+#endif
+    return false;
+}
+
 template <typename T>
 __aicore__ inline constexpr static bool IsNeedC0Align()
 {

@@ -236,7 +236,10 @@ private:
         bool isScaleATranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeScaleA();
         bool isScaleBTranspose = MATMUL_MODULE(MatmulShapeInfo)->IsTransposeScaleB();
         SplitPrepareOneIter(isATranspose, isBTranspose, aL0Params, bL0Params);
-        LocalTensor<BiasT> bias = BASE_MODULE::SplitBias(bL0Params.axisL0Len);
+        LocalTensor<BiasT> bias;
+        if (MATMUL_MODULE(BiasScheduler)->IsBias()) {
+            bias = BASE_MODULE::SplitBias(bL0Params.axisL0Len);
+        }
         int32_t kL1Stride;
         int32_t kAuxL1Stride;
         if constexpr (IsStaticPaddingEnable(MM_CFG)) {
@@ -292,6 +295,7 @@ private:
         int32_t curScaleKaOuterIdx = MATMUL_MODULE(KLoop)->GetOuterScaleKaIdx();
         int32_t curScaleKbOuterIdx = MATMUL_MODULE(KLoop)->GetOuterScaleKbIdx();
         int32_t padCount = 0;
+        LocalTensor<BiasT> bias;
         do {
             // CopyIn
             LocalTensor<SrcAT> a1;
@@ -299,7 +303,9 @@ private:
             LocalTensor<ScaleT> scaleA1;
             LocalTensor<ScaleT> scaleB1;
             CopyIn(a1, b1, scaleA1, scaleB1, padCount);
-            LocalTensor<BiasT> bias = BASE_MODULE::SplitBias(bL0Params.axisL0Len);
+            if (MATMUL_MODULE(BiasScheduler)->IsBias()) {
+                bias = BASE_MODULE::SplitBias(bL0Params.axisL0Len);
+            }
             Compute(a1, b1, scaleA1, scaleB1, bias, enPartialSum, isATranspose, isBTranspose, aL0Params, bL0Params);
             if constexpr (MatmulFeatureTrait<MM_CFG>().IsSupportMNL0DB()) {
                 MATMUL_MODULE(BiasScheduler)->Free(bias);

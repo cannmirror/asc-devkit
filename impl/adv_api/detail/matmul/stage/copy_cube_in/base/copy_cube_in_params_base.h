@@ -272,11 +272,11 @@
             Align<int32_t>(GetOrgHeight(), c0Size_) : Align<int32_t>(GetOrgHeight(), BLOCK_CUBE);
          int32_t orgWidthAlign = (IsTypeOneOfV<SrcT, float> || IsNeedC0Align<SrcT>()) ?
             Align<int32_t>(GetOrgWidth(), c0Size_) : Align<int32_t>(GetOrgWidth(), BLOCK_CUBE);
-         if constexpr ((IsSupportB8<SrcT>() && !IsSameTypeV<SrcT, int8_t>) || (IsSupportB4<SrcT>() && !IsSameTypeV<SrcT, int4b_t>)) {
+         if constexpr (HasScalePosition<INPUT_TYPE>::value) {
             if constexpr (INPUT_TYPE::isTrans) {
                 orgHeightAlign = CeilAlign(GetOrgHeight<INPUT_TYPE::isTrans>(), MX_BASEK_FACTOR);
                 const auto& tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
-                orgWidthAlign = CeilAlign(tiling.GetBaseM(), c0Size_) * tiling.GetStepM();
+                orgWidthAlign = CeilAlign(GetOrgWidth<INPUT_TYPE::isTrans>(), c0Size_);
             } else {
                 orgHeightAlign = CeilAlign(GetOrgHeight<INPUT_TYPE::isTrans>(), BLOCK_CUBE);
                 orgWidthAlign = CeilAlign(GetOrgWidth<INPUT_TYPE::isTrans>(), MX_BASEK_FACTOR);
@@ -512,8 +512,7 @@
             Align<int32_t>(GetOrgHeight(), c0Size_) : Align<int32_t>(GetOrgHeight(), BLOCK_CUBE);
          int32_t orgWidthAlign = (IsSameTypeV<SrcT, float> || (IsNeedC0Align<SrcT>() && !INPUT_TYPE::isTrans)) ?
             Align<int32_t>(GetOrgWidth(), c0Size_) : Align<int32_t>(GetOrgWidth(), BLOCK_CUBE);
-         if constexpr ((IsSupportB8<SrcT>() && !IsSameTypeV<SrcT, int8_t>) || (IsSupportB4<SrcT>() && !IsSameTypeV<SrcT, int4b_t>))
-         {
+         if constexpr (HasScalePosition<INPUT_TYPE>::value) {
             if constexpr (INPUT_TYPE::isTrans) {
                 orgHeightAlign = CeilAlign(GetOrgHeight<INPUT_TYPE::isTrans>(), BLOCK_CUBE);
                 orgWidthAlign = CeilAlign(GetOrgWidth<INPUT_TYPE::isTrans>(), MX_BASEK_FACTOR);
