@@ -95,7 +95,9 @@ __aicore__ inline void VecAxpyVFImpl(__ubuf__ T *dst, __ubuf__ U *src, U scalarV
         }
         MicroAPI::RegTensor<T> dstVreg;
         MicroAPI::RegTensor<U> srcVreg;
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
         MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+#endif
         MicroAPI::DataCopy<U, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
             src + index * repeatParams.srcRepStride * ElePerBlkU, repeatParams.srcBlkStride, maskRegSrc);
 

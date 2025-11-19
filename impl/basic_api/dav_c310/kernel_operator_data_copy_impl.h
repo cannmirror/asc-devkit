@@ -856,7 +856,9 @@ __simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src, co
         maskReg = VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
         for (uint16_t index = 0; index < newRepeatTimes; ++index) {
             MicroAPI::RegTensor<T> srcVreg;
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
             MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+#endif
             MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
                 srcVreg, src + index * repeatParams.srcRepeatSize * ElePerBlkT, repeatParams.srcStride, maskReg);
             MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
@@ -877,7 +879,9 @@ __simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src, co
             sreg = static_cast<uint32_t>(count);
             for (uint16_t j = 0; j <= static_cast<uint16_t>(innerRepeatTimes); ++j) {
                 maskReg = MicroAPI::UpdateMask<T>(sreg);
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
                 MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+#endif
                 MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
                     srcReg, src, repeatParams.srcStride, srcRepeatStride, maskReg);
                 MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(

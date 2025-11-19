@@ -139,7 +139,9 @@ __aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf
         }
         MicroAPI::RegTensor<T> dstVreg;
         MicroAPI::RegTensor<U> srcVreg0, srcVreg1;
+#ifndef NO_OVERLAP_IN_MULTI_REPEAT
         MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+#endif
         MicroAPI::DataCopy<U, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg0,
             src0 + index * repeatParams.src0RepStride * ElePerBlkU, repeatParams.src0BlkStride, maskRegSrc);
         MicroAPI::DataCopy<U, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg1,
