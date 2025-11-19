@@ -40,7 +40,6 @@ if(CCACHE_PROGRAM)
 endif()
 
 add_subdirectory(impl)
-add_subdirectory(ops_templates)
 if(ENABLE_TEST)
   add_subdirectory(tests)
 endif()
