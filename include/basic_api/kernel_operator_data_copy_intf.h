@@ -444,9 +444,11 @@ template <typename T, TPosition pos = TPosition::MAX>
 __aicore__ inline void SetPadValue(T paddingValue);
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-template <typename T, uint8_t dim, const MultiCopyConfig &config = kDefaultMultiCopyConfig>
+template <typename T, uint8_t dim, const NdDmaConfig &config = kDefaultNdDmaConfig>
 __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T> &src,
     const MultiCopyParams<T, dim> &params);
+
+__aicore__ inline void NdDmaDci();
 
 __aicore__ inline void SetLoopModePara(const LoopModeParams &loopParams, DataCopyMVType type);
 

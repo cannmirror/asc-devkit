@@ -1498,7 +1498,7 @@ __aicore__ inline void SetPadValue(T paddingValue)
 }
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
-template <typename T, uint8_t dim, const MultiCopyConfig &config>
+template <typename T, uint8_t dim, const NdDmaConfig &config>
 __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T> &src,
     const MultiCopyParams<T, dim> &params)
 {
@@ -1510,6 +1510,10 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T>
     const uint8_t cacheMode = ExtractCacheMode(src);
     DataCopyWithNDDMAImpl<T, dim, config>((__ubuf__ PrimT<T>*)dst.GetPhyAddr(),
         (__gm__ PrimT<T>*)src.GetPhyAddr(), params.loopInfo, params.constantValue, cacheMode);
+}
+
+__aicore__ inline void NdDmaDci() {
+    NdDmaDciImpl();
 }
 
 __aicore__ inline void SetLoopModePara(const LoopModeParams &loopParams, DataCopyMVType type)

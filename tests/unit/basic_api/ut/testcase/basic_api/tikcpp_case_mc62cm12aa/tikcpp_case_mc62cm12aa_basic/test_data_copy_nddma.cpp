@@ -46,9 +46,9 @@ void DataCopyNDDMAOp(__gm__ uint8_t *__restrict__ dstGm, __gm__ uint8_t *__restr
     tpipe.InitBuffer(tbuf, dstSize * sizeof(T));
     LocalTensor<T> outputLocal = tbuf.Get<T>();
 
-    constexpr uint16_t padValue = disablePad ? MultiCopyConfig::unsetPad : 0;
+    constexpr uint16_t padValue = disablePad ? NdDmaConfig::unsetPad : 0;
 
-    static constexpr MultiCopyConfig config = { enableNearest, padValue, padValue, optimized };
+    static constexpr NdDmaConfig config = { enableNearest, padValue, padValue, optimized };
     DataCopy<T, dim, config>(outputLocal, inputGlobal, params);
 
     set_flag(PIPE_MTE2, PIPE_MTE3, EVENT_ID0);
