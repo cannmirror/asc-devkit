@@ -17,10 +17,10 @@ if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
 
-set(LLVM_CLANG_NAME "llvm-15")
+set(LLVM_CLANG_NAME "llvm-15.0.4")
 set(LLVM_CLANG_DOWNLOAD_PATH ${CANN_3RD_LIB_PATH}/pkg)
 set(LLVM_CLANG_INSTALL_PATH ${CANN_3RD_LIB_PATH}/llvm_clang)
-set(LLVM_CLANG_SOURCE_PATH ${CANN_3RD_LIB_PATH}/${LLVM_CLANG_NAME})
+set(LLVM_CLANG_SOURCE_PATH ${CANN_3RD_LIB_PATH}/${LLVM_CLANG_NAME}/llvm-project-llvmorg-15.0.4)
 
 find_path(LLVM_CLANG_INCLUDE
         NAMES clang-c/Index.h
@@ -216,6 +216,7 @@ if(LLVM_CLANG_FOUND AND NOT FORCE_REBUILD_CANN_3RD)
     add_library(llvm_clang INTERFACE)
 else()
     if (NOT EXISTS "${LLVM_CLANG_SOURCE_PATH}")
+        message(info, "download llvm code, don't use llvm cache.")
         set(LLVM_FILE llvm-project-llvmorg-15.0.4.tar.gz)
         set(LLVM_CLANG_URL "https://gitcode.com/cann-src-third-party/llvm/releases/download/15.0.4/${LLVM_FILE}")
         message(STATUS "Downloading ${LLVM_CLANG_NAME} from ${LLVM_CLANG_URL}")
@@ -242,6 +243,8 @@ else()
         #     COMMAND chmod 755 -R ${LLVM_CLANG_SOURCE_PATH}
         #     COMMAND tar -xf ${LLVM_CLANG_SOURCE_PATH}/${LLVM_FILE} --overwrite --strip-components=1 -C ${LLVM_CLANG_SOURCE_PATH}
         # )
+    else ()
+        message(info, "use llvm cache,do not need download llvm code.")
     endif()
 
     set(LLVM_C_COMPILE_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -fvisibility=hidden -fstack-protector-all -fPIE")
