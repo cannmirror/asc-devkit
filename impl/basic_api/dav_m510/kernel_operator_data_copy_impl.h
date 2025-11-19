@@ -1079,7 +1079,13 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T *dst, __ubuf__ T *src, co
     ASSERT(false && "unsupported data copy from gm to ubuf with pad in Ascend910");
 }
 
-template <uint8_t dim, const MultiCopyConfig &config>
+__aicore__ inline void NdDmaDciImpl() {
+#if ((!defined(ASCENDC_CPU_DEBUG)) || ASCENDC_CPU_DEBUG == 0)
+    nd_dma_dci();
+#endif
+}
+
+template <uint8_t dim, const NdDmaConfig &config>
 __aicore__ inline void SetNDDMALoopInfo(const MultiCopyLoopInfo<dim> &params, const uint8_t idx, uint64_t &padCount,
     uint32_t &loopSize, uint64_t &loopStride)
 {
@@ -1089,9 +1095,9 @@ __aicore__ inline void SetNDDMALoopInfo(const MultiCopyLoopInfo<dim> &params, co
     constexpr uint8_t srcStrideEncodingOffest = 20;
 
     const uint8_t loopLpSize =
-        config.loopLpSize == MultiCopyConfig::unsetPad ? params.loopLpSize[idx] : config.loopLpSize;
+        config.loopLpSize == NdDmaConfig::unsetPad ? params.loopLpSize[idx] : config.loopLpSize;
     const uint8_t loopRpSize =
-        config.loopRpSize == MultiCopyConfig::unsetPad ? params.loopRpSize[idx] : config.loopRpSize;
+        config.loopRpSize == NdDmaConfig::unsetPad ? params.loopRpSize[idx] : config.loopRpSize;
 
     padCount |= static_cast<uint64_t>(loopLpSize & 0xff) << (loopEncodingOffest * idx - lpEncodingOffset);
     padCount |= static_cast<uint64_t>(loopRpSize & 0xff) << (loopEncodingOffest * idx - rpEncodingOffset);
@@ -1131,18 +1137,18 @@ __aicore__ inline MultiCopyLoopInfo<actualDim> BuildLoopInfoByFuseAxis(const Mul
     return newParams;
 }
 
-template <typename T, uint8_t dim, const MultiCopyConfig &config>
+template <typename T, uint8_t dim, const NdDmaConfig &config>
 __aicore__ inline void DataCopyWithNDDMAB64Impl(__ubuf__ T *dst, __gm__ T *src, const MultiCopyLoopInfo<dim> &params,
     const T constValue, const uint8_t cacheMode);
 
-template <typename T, uint8_t dim, const MultiCopyConfig &config>
+template <typename T, uint8_t dim, const NdDmaConfig &config>
 __aicore__ inline void DataCopyWithNDDMAImpl(__ubuf__ T *dst, __gm__ T *src, const MultiCopyLoopInfo<dim> &params,
     const T constValue, const uint8_t cacheMode = 0)
 {
     static_assert(dim <= 5, "nddma only support dim <= 5");
-    static_assert(config.loopLpSize <= 0xff || config.loopLpSize == MultiCopyConfig::unsetPad,
+    static_assert(config.loopLpSize <= 0xff || config.loopLpSize == NdDmaConfig::unsetPad,
         "loopLpSize in config must be either <= 255 or unset");
-    static_assert(config.loopRpSize <= 0xff || config.loopRpSize == MultiCopyConfig::unsetPad,
+    static_assert(config.loopRpSize <= 0xff || config.loopRpSize == NdDmaConfig::unsetPad,
         "loopRpSize in config must be either <= 255 or unset");
     if constexpr (sizeof(T) == 8) {
         DataCopyWithNDDMAB64Impl<T, dim, config>(dst, src, params, constValue, cacheMode);
@@ -1153,9 +1159,9 @@ __aicore__ inline void DataCopyWithNDDMAImpl(__ubuf__ T *dst, __gm__ T *src, con
     uint32_t loop0Size{ params.loopSize[dim0Idx] }, loop1Size{ 1 }, loop2Size{ 1 }, loop3Size{ 1 }, loop4Size{ 1 };
     uint64_t padCount{ 0 };
     uint8_t loop0LeftPadSize =
-        config.loopLpSize == MultiCopyConfig::unsetPad ? params.loopLpSize[dim0Idx] : config.loopLpSize;
+        config.loopLpSize == NdDmaConfig::unsetPad ? params.loopLpSize[dim0Idx] : config.loopLpSize;
     uint8_t loop0RightPadSize =
-        config.loopRpSize == MultiCopyConfig::unsetPad ? params.loopRpSize[dim0Idx] : config.loopRpSize;
+        config.loopRpSize == NdDmaConfig::unsetPad ? params.loopRpSize[dim0Idx] : config.loopRpSize;
     uint64_t loop0Stride{ 0 };
     uint64_t loop1Stride{ 0 };
     uint64_t loop2Stride{ 0 };
@@ -1199,7 +1205,7 @@ __aicore__ inline void DataCopyWithNDDMAImpl(__ubuf__ T *dst, __gm__ T *src, con
     }
 }
 
-template <typename T, uint8_t dim, const MultiCopyConfig &config>
+template <typename T, uint8_t dim, const NdDmaConfig &config>
 __aicore__ inline void DataCopyWithNDDMAB64Impl(__ubuf__ T *dst, __gm__ T *src, const MultiCopyLoopInfo<dim> &params,
     const T constValue, const uint8_t cacheMode)
 {

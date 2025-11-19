@@ -149,16 +149,18 @@ enum class DataCopyMVType : uint8_t {
     OUT_TO_UB = 1,
 };
 
-struct MultiCopyConfig {
+struct NdDmaConfig {
     static constexpr uint16_t unsetPad = 0xffff;
     bool isNearestValueMode = false;
     uint16_t loopLpSize = unsetPad; // Left padding size of all dimensions, must be less than 256.
     uint16_t loopRpSize = unsetPad; // Right padding size of all dimensions, must be less than 256.
     bool ascOptimize = false;       // used for AscendC optimization on special senario.
 };
-
-constexpr MultiCopyConfig kDefaultMultiCopyConfig = { false, MultiCopyConfig::unsetPad, MultiCopyConfig::unsetPad,
+using MultiCopyConfig = NdDmaConfig;  // reserve old name
+constexpr NdDmaConfig kDefaultNdDmaConfig = { false, NdDmaConfig::unsetPad, NdDmaConfig::unsetPad,
     false };
+constexpr NdDmaConfig kDefaultMultiCopyConfig = { false, NdDmaConfig::unsetPad, NdDmaConfig::unsetPad,
+    false };  // reserve old name
 
 template <uint8_t dim>
 struct MultiCopyLoopInfo  {
