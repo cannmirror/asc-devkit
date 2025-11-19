@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 #include <mockcpp/mockcpp.hpp>
 #include "graph/tensor.h"
-// #include "graph/ge_tensor.h"
 #include <dlfcn.h>
 #include <string>
 #define private public
@@ -23,8 +22,6 @@
 #include "utils/context/context_builder_impl.h"
 #include "utils/tiling/template_argument.h"
 using namespace AscendC;
-// using namespace ge;
-// using namespace std;
 
 class TestTiling : public testing::Test {
 protected:
@@ -334,50 +331,53 @@ TEST_F(TestTiling, TestTilingContextBuildWithBinFile)
     EXPECT_EQ(holder1, nullptr);
 }
 
-// TEST_F(TestTiling, TestTilingContextBuildWithConstValue)
-// {
-//     string active_type = "gelu";
-//     gert::StorageShape x_shape = {{1024, 5120}, {1024, 5120}};
-//     gert::StorageShape expert_tokens_shape = {{16}, {16}};
-//     gert::StorageShape weight1_shape = {{16, 5120, 0}, {16, 5120, 0}};
-//     gert::StorageShape bias1_shape = {{16, 0}, {16, 0}};
-//     gert::StorageShape weight2_shape = {{16, 0, 5120}, {16, 0, 5120}};
-//     gert::StorageShape bias2_shape = {{16, 5120}, {16, 5120}};
-//     gert::StorageShape output_shape = {{1024, 5210}, {1024, 5210}};
+TEST_F(TestTiling, TestTilingContextBuildWithConstValue)
+{
+    string active_type = "gelu";
+    gert::StorageShape x_shape = {{1024, 5120}, {1024, 5120}};
+    gert::StorageShape expert_tokens_shape = {{16}, {16}};
+    gert::StorageShape weight1_shape = {{16, 5120, 1}, {16, 5120, 1}};
+    gert::StorageShape bias1_shape = {{16, 1}, {16, 1}};
+    gert::StorageShape weight2_shape = {{16, 1, 5120}, {16, 1, 5120}};
+    gert::StorageShape bias2_shape = {{16, 5120}, {16, 5120}};
+    gert::StorageShape output_shape = {{1024, 5210}, {1024, 5210}};
 
-//     std::vector<int64_t> expert_tokens_const_value (16, 1);
-//     std::vector<float> x_const_value (1024 * 5120, 2.f);
-//     std::vector<float> bias2_value (16 * 5120, 3.f);
-//     std::vector<float> floatVecAttr (2, 1.f);
-//     std::vector<bool> boolVecAttr (2, true);
-//     std::vector<int64_t> intVecAttr (2, 1);
-//     std::vector<std::vector<int64_t>> intVecVecAttr { {1, 2}, {3, 4}};
-//     std::vector<string> stringVecAttr (2, active_type);
-//     auto param = gert::TilingData::CreateCap(4096);
-//     auto workspace_size_holer = gert::ContinuousVector::Create<size_t>(4096);
-//     auto ws_size = reinterpret_cast<gert::ContinuousVector *>(workspace_size_holer.get());
-//     auto holder = context_ascendc::ContextBuilder()
-//                                 .NodeIoNum(6, 1)
-//                                 .IrInstanceNum({1, 1, 1, 1, 1, 1})
-//                                 .AddInputTd(0, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, x_shape, reinterpret_cast<void *>(x_const_value.data()))
-//                                 .AddInputTd(1, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, weight1_shape)
-//                                 .AddInputTd(2, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, weight2_shape)
-//                                 .AddInputTd(3, ge::DT_INT64, ge::FORMAT_ND, ge::FORMAT_ND, expert_tokens_shape, reinterpret_cast<void *>(expert_tokens_const_value.data()))
-//                                 .AddInputTd(4, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, bias1_shape)
-//                                 .AddInputTd(5, ge::DT_BF16, ge::FORMAT_ND, ge::FORMAT_ND, bias2_shape, reinterpret_cast<void*>(bias2_value.data()))
-//                                 .AddOutputTd(0, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, output_shape)
-//                                 .AddAttr("activation", active_type)
-//                                 .AddAttr("inner_precise", static_cast<int64_t>(1))
-//                                 .AddAttr("boolAttr", true)
-//                                 .AddAttr("floatAttr", 1.f)
-//                                 .AddAttr("floatVecAttr", floatVecAttr)
-//                                 .AddAttr("stringVecAttr", stringVecAttr)
-//                                 .AddAttr("intVecVecAttr", intVecVecAttr)
-//                                 .TilingData(param.get())
-//                                 .Workspace(ws_size)
-//                                 .BuildTilingContext();
-//     EXPECT_NE(holder, nullptr);
-// }
+    std::vector<int64_t> expert_tokens_const_value (16, 1);
+    std::vector<float> x_const_value (1024 * 5120, 2.f);
+    std::vector<float> bias2_value (16 * 5120, 3.f);
+    std::vector<float> floatVecAttr (2, 1.f);
+    std::vector<bool> boolVecAttr (2, true);
+    std::vector<int64_t> intVecAttr (2, 1);
+    std::vector<std::vector<int64_t>> intVecVecAttr { {1, 2}, {3, 4}};
+    std::vector<string> stringVecAttr (2, active_type);
+    auto param = gert::TilingData::CreateCap(4096);
+    auto workspace_size_holer = gert::ContinuousVector::Create<size_t>(4096);
+    auto ws_size = reinterpret_cast<gert::ContinuousVector *>(workspace_size_holer.get());
+    auto holder = context_ascendc::ContextBuilder()
+                                .NodeIoNum(6, 1)
+                                .IrInstanceNum({1, 1, 1, 1, 1, 1})
+                                .AddInputTd(0, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, x_shape, reinterpret_cast<void *>(x_const_value.data()))
+                                .AddInputTd(1, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, weight1_shape)
+                                .AddInputTd(2, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, weight2_shape)
+                                .AddInputTd(3, ge::DT_INT64, ge::FORMAT_ND, ge::FORMAT_ND, expert_tokens_shape, reinterpret_cast<void *>(expert_tokens_const_value.data()))
+                                .AddInputTd(4, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, bias1_shape)
+                                .AddInputTd(5, ge::DT_BF16, ge::FORMAT_ND, ge::FORMAT_ND, bias2_shape, reinterpret_cast<void*>(bias2_value.data()))
+                                .AddOutputTd(0, ge::DT_FLOAT16, ge::FORMAT_ND, ge::FORMAT_ND, output_shape)
+                                .AddAttr("activation", active_type)
+                                .AddAttr("inner_precise", static_cast<int64_t>(1))
+                                .AddAttr("boolAttr", true)
+                                .AddAttr("floatAttr", 1.f)
+                                .AddAttr("floatVecAttr", floatVecAttr)
+                                .AddAttr("stringVecAttr", stringVecAttr)
+                                .AddAttr("intVecVecAttr", intVecVecAttr)
+                                .TilingData(param.get())
+                                .Workspace(ws_size)
+                                .BuildTilingContext();
+    EXPECT_NE(holder, nullptr);
+    gert::TilingContext *tilingContext = holder->GetContext<gert::TilingContext>();
+    EXPECT_EQ(*tilingContext->GetInputShape(1), weight1_shape);
+    EXPECT_EQ(*tilingContext->GetOutputShape(0), output_shape);
+}
 
 TEST_F(TestTiling, TestTilingContextBuildFailed)
 {
