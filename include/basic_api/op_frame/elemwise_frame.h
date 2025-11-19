@@ -16,6 +16,9 @@
 #define ASCENDC_KERNEL_FRAME_H
 #include "kernel_operator.h"
 
+[[deprecated(__FILE__
+    " is deprecated, please not to use!")]]
+
 namespace AscendC {
 #define QUE_MAX_DEPTH 2
 #ifndef STAGE_NUM
