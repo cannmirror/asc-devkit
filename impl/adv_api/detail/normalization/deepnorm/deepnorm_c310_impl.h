@@ -351,7 +351,7 @@ __aicore__ inline bool IsDeepNormParamValid(DeepNormTiling& tiling)
     ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value),
         {KERNEL_LOG(KERNEL_ERROR, "DeepNorm only support data type: float/half");});
     ASCENDC_ASSERT(tiling.oneTmpSize > 0,
-        {KERNEL_LOG(KERNEL_ERROR, "In DeepNorm, Reduce axis is too long to put it in Pop Stack Buffer!");});
+        {KERNEL_LOG(KERNEL_ERROR, "In DeepNorm, each tmpsize in sharedTmpBuffer must > 0!");});
     const bool hDivBy64 = (tiling.hLength % 64 == 0) &&
         (tiling.originalHLength % 64 == 0);
     const bool bsDivBy8 = ((tiling.bLength * tiling.sLength) % 8 == 0);
