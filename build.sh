@@ -392,6 +392,7 @@ function build()
 }
 
 function build_package(){
+  CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=OFF"
   cmake_config
   build package
   cp ${BUILD_DIR}/_CPack_Packages/makeself_staging/*.run ${OUTPUT_DIR}
