@@ -10,7 +10,6 @@
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
-│   ├── data_utils.h            // 数据读入写出函数
 │   └── whole_reduce_sum_custom.asc    // AscendC算子实现 & 调用样例
 ```
 ## 算子描述
@@ -42,7 +41,7 @@
       
   将yLocal从UB搬出到GM，由于只需要搬出reducesBytes，需要用DataCopyPad进行非对齐搬出。
     
-  TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本示例算子使用了3个tiling参数：totalLength，rows，cols 。totalLength是指需要计算的数据量大小，rows是指二维输入Tensor的行数，cols则是指每行的数据个数。通过将totalLength，rows，cols传递到kernel侧，就可以实现将输入数据按行切分，然后规约求和。tiling实现代码中通过上下文获取输入输出的shape信息，并对应设置TilingData。
+  TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本样例算子使用了3个tiling参数：totalLength，rows，cols 。totalLength是指需要计算的数据量大小，rows是指二维输入Tensor的行数，cols则是指每行的数据个数。通过将totalLength，rows，cols传递到kernel侧，就可以实现将输入数据按行切分，然后规约求和。tiling实现代码中通过上下文获取输入输出的shape信息，并对应设置TilingData。
   - 调用实现    
     使用内核调用符<<<>>>调用核函数。
 ## 编译运行

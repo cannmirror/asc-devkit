@@ -1,31 +1,24 @@
-# printf样例说明
+# Printf直调样例说明
 ## 概述
-本样例通过Ascend C编程语言实现了Matmul算子，同时在算子中添加printf调测，并按照不同的算子调用方式分别给出了对应的端到端实现。
-- [FrameworkLaunch](./FrameworkLaunch)：使用框架调用Matmul算子及printf调测。  
-  按照工程创建->算子实现->编译部署>算子调用的流程完成算子开发。整个过程都依赖于算子工程：基于工程代码框架完成算子核函数的开发和Tiling实现，通过工程编译脚本完成算子的编译部署，继而实现单算子调用或第三方框架中的算子调用。
-- [KernelLaunch](./KernelLaunch)：使用核函数直调Matmul算子及printf调测。  
-  核函数的基础调用（Kernel Launch）方式，开发者完成算子核函数的开发和Tiling实现后，即可通过AscendCL运行时接口，完成算子的调用。
+本样例通过Ascend C编程语言实现了Matmul算子，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，同时在算子中添加printf调测，给出了对应的端到端实现。
 
-本样例中包含如下调用方式：
-<table>
-<th> 调用方式 </th>
-<th> 目录 </th>
-<th> 描述 </th>
-<tr>
-<th rowspan="1"><a href="./FrameworkLaunch"> FrameworkLaunch </a></th>
-<td><a href="./FrameworkLaunch/AclNNInvocation"> AclNNInvocation </a></td>
-<td> 通过aclnn调用的方式调用Matmul算子及printf调测。 </td>
-</tr>
-<tr>
-<th rowspan="1"><a href="./KernelLaunch"> KernelLaunch </a></th>
-<td><a href="./KernelLaunch/MatmulInvocationNeo"> MatmulInvocationNeo </a></td>
-<td> Kernel Launch方式调用Matmul算子及printf调测。 </td>
-</tr>
-</table>
+## 支持的AI处理器
+- Ascend 910B
+
+## 目录结构介绍
+```
+├── 00_printf
+│   ├── scripts
+│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
+│   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
+│   ├── CMakeLists.txt          // 编译工程文件
+│   └── printf.asc         // AscendC算子实现 & 调用样例
+```
 
 ## 算子描述
-Matmul实现了快速的Matmul矩阵乘法的运算操作。
-printf可以实现调试场景下的格式化输出功能。
+- 算子功能：  
+Matmul实现了快速的Matmul矩阵乘法的运算操作。  
+printf可以实现调试场景下的格式化输出功能。  
 本样例将打印的内容保存到输出文件中，并对比文件中是否有打印的内容，以及样例正常执行未中断报错，从而判断样例是否执行成功。
 
 Matmul的计算公式为：
@@ -40,7 +33,7 @@ C = A * B + Bias
 
 在上述算子中添加printf，可以打印执行过程中的部分变量值，变量类型包括无符号整型、整型、字符型、bool类型、half和float浮点型等等，可以方便调试。
 
-## 算子规格描述
+- 算子规格：  
 在核函数直调样例中，算子实现支持的shape为：M = 512, N = 1024, K = 512。
 <table>
 <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Matmul</td></tr>
@@ -56,28 +49,52 @@ C = A * B + Bias
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">matmul_custom</td></tr>
 </table>
 
-## 支持的AI处理器
-- Ascend 310P AI Core
-- Ascend 910B
+- 算子实现：  
+本样例中实现的是[M, K, N]固定为[512, 512, 1024]的Matmul算子，并调用printf进行调测。
+  kernel实现
+  Matmul算子的数学表达式为：
+  $$
+  C = A * B
+  $$
+  其中A的形状为[512, 512], B的形状为[512, 1024], C的形状为[512, 1024]。
 
-## 目录结构介绍
-```
-├── FrameworkLaunch         //使用框架调用的方式调用Matmul算子及printf调测。
-└── KernelLaunch            //使用核函数直调的方式调用Matmul算子及printf调测。
-```
-## 环境要求
-编译运行此样例前，请参考[《CANN软件安装指南》](https://hiascend.com/document/redirect/CannCommunityInstSoftware)完成开发运行环境的部署。
+  调用实现
+  使用内核调用符<<<>>>调用核函数。
 
-## 编译运行样例算子
+## 编译运行
+  - 配置环境变量  
+    以命令行方式下载样例代码，master分支为例。
+    ```bash
+    cd ${git_clone_path}/examples/01_utilities/00_printf
+    ```
+    请根据当前环境上CANN开发套件包的[安装方式](https://hiascend.com/document/redirect/CannCommunityInstSoftware)，选择对应配置环境变量的命令。
+    - 默认路径，root用户安装CANN软件包
+      ```bash
+      export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
+      ```
+    - 默认路径，非root用户安装CANN软件包
+      ```bash
+      export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
+      ```
+    - 指定路径install_path，安装CANN软件包
+      ```bash
+      export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
+      ```
 
-### 1. 准备：获取样例代码<a name="codeready"></a>
+  - 样例执行
+    ```bash
+    mkdir -p build && cd build;   # 创建并进入build目录
+    cmake ..;make -j;             # 编译工程
+    python3 ../scripts/gen_data.py   # 生成测试输入数据
+    ./demo                        # 执行编译生成的可执行程序，执行样例
+    python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
+    ```
+    执行结果如下，说明精度对比成功。
+    ```bash
+    test pass
+    ```
 
- 编译运行此样例前，请参考[准备：获取样例代码](../README.md#codeready)获取源码包。
-
-### 2. 编译运行样例工程
-- 若使用框架调用的方式，编译运行操作请参见[FrameworkLaunch](./FrameworkLaunch)。
-- 若使用核函数直调的方式，编译运行操作请参见[KernelLaunch](./KernelLaunch)。
 ## 更新说明
-| 时间       | 更新事项                                            |
-| ---------- | --------------------------------------------------- |
-| 2025/01/06 | 新增本readme                                      |
+| 时间       | 更新事项     |
+| ---------- | ------------ |
+| 2025/11/18 | 样例目录调整，新增本readme |
