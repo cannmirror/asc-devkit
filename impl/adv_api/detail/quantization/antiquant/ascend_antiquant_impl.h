@@ -20,7 +20,7 @@
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_antiquant_common.h"
 #include "../../api_check/kernel_api_check.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "ascend_antiquant_c310_impl.h"
 #elif __CCE_AICORE__ >= 220
 #include "ascend_antiquant_c220_impl.h"
@@ -596,7 +596,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
     AscendAntiQuantImpl<SrcType, DstType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, K, shapeInfo);
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType> &dst,
     const LocalTensor<InputDataType> &src, const LocalTensor<fp8_e8m0_t> &scale, const uint32_t K,

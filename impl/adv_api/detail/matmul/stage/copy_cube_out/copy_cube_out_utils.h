@@ -28,7 +28,7 @@ struct FixpipeParamsUtil
 {
     using DstT = typename C_TYPE::T;
     using SrcT = typename GetMmDstType<typename A_TYPE::T>::Type;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     using TYPE = typename AscendC::Conditional<C_TYPE::format == CubeFormat::NZ, FixpipeParamsC310<CO2Layout::NZ>,
         typename AscendC::Conditional<C_TYPE::format == CubeFormat::COLUMN_MAJOR,
             FixpipeParamsC310<CO2Layout::COLUMN_MAJOR>, FixpipeParamsC310<CO2Layout::ROW_MAJOR>>::type>::type;
@@ -63,7 +63,7 @@ public:
         if constexpr(EnUnitFlag(MM_CFG)) {
             params_.unitFlag = FIX_PIPE_UNIT_FLAG;
         }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         if constexpr(C_TYPE::format == CubeFormat::COLUMN_MAJOR) {
             params_.params = {1, 0, 0, 1};
         }
@@ -91,7 +91,7 @@ public:
         params_.deqScalar = scalar;
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     __aicore__ inline void SetMcgShfMode(McgShfMode mode) {
         params_.dualDstCtl = static_cast<uint8_t>(mode);
     }
@@ -104,7 +104,7 @@ public:
     __aicore__ inline void SetNdParams(int32_t ndNum, int32_t baseHeight, int32_t baseWidth, int32_t baseBlockWidth,
         int32_t baseM, int32_t baseN)
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
         params_.params.ndNum = static_cast<uint16_t>(ndNum);
         params_.params.srcNdStride = static_cast<uint16_t>(baseM * baseBlockWidth);
         if constexpr ((C_TYPE::layout == LayoutMode::BSNGD) || (C_TYPE::layout == LayoutMode::SBNGD)) {

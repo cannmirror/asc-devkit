@@ -82,7 +82,7 @@ public:
                     }
                 }
             } else {
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
                 Barrier();
 #endif
                 if constexpr (IsCopyFromUB<INPUT_TYPE, MM_CFG>()) {
@@ -438,7 +438,7 @@ private:
             } else {
                 MATMUL_MODULE(DataCopyWrapper)->CopyND2NZ(dst, src, curRow * baseHeight, curCol * baseWidth, tileHeight, tileWidth, orgWidth);
             }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
         } else if constexpr (INPUT_TYPE::format == CubeFormat::COLUMN_MAJOR) {
             if constexpr (sizeof(TransT) == sizeof(int8_t)) {
                 CopyDN2NZForInt8(dst, src, curRow, curCol, tileHeight, tileWidth, baseHeight, baseWidth,
@@ -485,14 +485,14 @@ private:
     __aicore__ inline void CopyTileToCubeFromUB(const LocalTensor<TransT>& dst, const LocalTensor<SrcT>& src,
         int32_t curRow, int32_t curCol, int32_t tileHeight, int32_t tileWidth, int32_t widthFactor)
     {
-#if __CCE_AICORE__ == 300 || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3002 || __NPU_ARCH__ == 5102)
         auto baseHeight = MATMUL_MODULE(CopyCubeInParams)->template GetBaseHeight<IS_TRANS>();
         auto baseWidth = MATMUL_MODULE(CopyCubeInParams)->template GetBaseWidth<IS_TRANS>();
         auto orgHeight = MATMUL_MODULE(CopyCubeInParams)->template GetOrgHeight<IS_TRANS, IS_INTRA_BLOCK>();
         auto orgWidth = MATMUL_MODULE(CopyCubeInParams)->template GetOrgWidth<IS_TRANS, IS_INTRA_BLOCK>();
         auto iskRowDirec = MATMUL_MODULE(CopyCubeInParams)->template IsKRowDirec<IS_INTRA_BLOCK>();
 
-        #if __CCE_AICORE__ == 300
+        #if __NPU_ARCH__ == 3002
         orgWidth = MATMUL_MODULE(CopyCubeInParams)->template GetOrgWidth<IS_TRANS, IS_INTRA_BLOCK>() / widthFactor;;
         iskRowDirec = false;
         tileWidth = tileWidth / widthFactor;

@@ -34,7 +34,7 @@ protected:
 };
 
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 TEST_F(TestTiling, testTransDataTilingUnalignedHw)
 {
     uint32_t maxSize;
@@ -6198,7 +6198,7 @@ TEST_F(TestTiling, TestLgammaTilingHalf)
     EXPECT_EQ(extraBuf, 0);
 }
 
-// #if __CCE_AICORE__ == 200
+// #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 // TEST_F(TestTiling, TestPlatformAscendC)
 // {
 //     fe::PlatFormInfos platform_info;
@@ -6208,7 +6208,7 @@ TEST_F(TestTiling, TestLgammaTilingHalf)
 // }
 // #endif
 
-// #if __CCE_AICORE__ == 220
+// #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 // extern void platfrom_stub_set_num_aic(const char *num);
 // extern void platfrom_stub_set_num_aiv(const char *num);
 // extern void platfrom_stub_set_num_cub(const char *num);
@@ -6266,7 +6266,7 @@ TEST_F(TestTiling, TestLgammaTilingHalf)
 // }
 // #endif
 
-// #if __CCE_AICORE__ == 300
+// #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 // extern void platfrom_stub_set_num_aic(const char *num);
 // extern void platfrom_stub_set_num_aiv(const char *num);
 // extern void platfrom_stub_set_num_cub(const char *num);
@@ -7003,7 +7003,7 @@ TEST_F(TestTiling, TestFracTilingHalf)
     EXPECT_EQ(extraBuf, 0);
 }
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 extern void platfrom_stub_set_chip_version(const char *num);
 TEST_F(TestTiling, TestTopkTiling_TopKModeNomal_isInitIndexTrue_Float_Inner64)
 {
@@ -7353,7 +7353,7 @@ TEST_F(TestTiling, TestTopkTiling_TopKModeSmall_isInitIndexFalse_Float_k32)
 
 #endif
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 extern void platfrom_stub_set_chip_version(const char *num);
 TEST_F(TestTiling, TestTopkTiling_TopKModeNormal310P_FLOAT)
 {
@@ -8071,7 +8071,7 @@ TEST_F(TestTiling, TestReGluFloat32)
     EXPECT_EQ(maxValue, 256);
 }
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 extern void platfrom_stub_set_chip_version(const char *num);
 TEST_F(TestTiling, TestBroadCast220)
 {
@@ -8218,7 +8218,7 @@ TEST_F(TestTiling, TestPowerTilingFactorSize)
 }
 #endif
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 extern void platfrom_stub_set_chip_version(const char *num);
 TEST_F(TestTiling, TestPowerTilingV200)
 {

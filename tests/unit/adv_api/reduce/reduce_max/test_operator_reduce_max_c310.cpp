@@ -40,7 +40,7 @@ class KernelReduceMax {
 
   __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, 
     const uint32_t aLength, const uint32_t rLength, const uint32_t srcInnerPad) {
-#if defined(__DAV_C310__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #ifdef __CCE_KT_TEST__
     g_coreType = 2;
 #endif

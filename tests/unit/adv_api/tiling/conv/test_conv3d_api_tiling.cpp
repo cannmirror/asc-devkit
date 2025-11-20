@@ -114,7 +114,7 @@ void TestTilingResult(int64_t ret, Conv3dTilingApi::Conv3dTiling &testTiling)
     EXPECT_EQ(testTiling.l0TilingInfo.nL0 % testTiling.cubeInfo.n0, 0);
 }
 
-#if (__CCE_AICORE__ == 220)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
 TEST_F(TestConv3dTiling, L0Range_cout_prime)
 {
     Conv3dTilingApi::Conv3dTiling* testTiling = new Conv3dTilingApi::Conv3dTiling(*ascendcPlatform);
@@ -4803,7 +4803,7 @@ TEST_F(TestConv3dTiling, Check_Ascend910_93)
 }
 #endif
 
-#if (__CCE_AICORE__ == 200)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 TEST_F(TestConv3dTiling, Soc_Error)
 {
     const char *socVersion1 = "Ascend310P3";
@@ -4824,7 +4824,7 @@ TEST_F(TestConv3dTiling, Soc_Error)
 }
 #endif
 
-#if (__CCE_AICORE__ == 310)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3102 || __NPU_ARCH__ == 3101)
 TEST_F(TestConv3dTiling, Soc_Error1)
 {
     const char *socVersion1 = "AscendError";

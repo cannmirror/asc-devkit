@@ -81,7 +81,7 @@ struct HcclCombineOpParam {
     uint64_t windowsOut[HCCL_MAX_RANK_NUM];     // windows address for output, windowsOut[rankId] corresponds
                                                 // to the local card address,
                                                 // and others are cross-card mapping addresses.
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
     GM_ADDR xnOffset;
     GM_ADDR ckeOffset;
     uint8_t res[8312];

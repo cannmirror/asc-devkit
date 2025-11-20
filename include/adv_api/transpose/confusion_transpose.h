@@ -20,7 +20,8 @@
 #include "kernel_tiling/kernel_tiling.h"
 #include "../../../impl/adv_api/detail/transpose/confusion_transpose/confusion_transpose_common_impl.h"
 
-#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || \
+    __NPU_ARCH__ == 5102)
 namespace AscendC {
 #pragma begin_pipe(V)
 

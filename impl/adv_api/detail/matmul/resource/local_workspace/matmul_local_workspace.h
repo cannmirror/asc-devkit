@@ -44,7 +44,7 @@ public:
      */
     __aicore__ inline void Init(const LocalTensor<uint8_t>& localBuffer)
     {
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
         SetWorkspace(localBuffer);
 #else
         ASCENDC_ASSERT((false),
@@ -174,7 +174,7 @@ public:
      */
     __aicore__ inline void Init(const LocalTensor<uint8_t>& localBuffer)
     {
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
         SetWorkspace(localBuffer);
 #else
         ASCENDC_ASSERT((false),

@@ -15,12 +15,11 @@
 #ifndef LIB_NORMALIZATION_NORMALIZE_H
 #define LIB_NORMALIZATION_NORMALIZE_H
 #include "include/adv_api/normalization/normalize_utils.h"
-#include "../../../impl/adv_api/detail/normalization/normalize/normalize_config.h"
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/normalization/normalize/normalize_common_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/normalization/normalize/normalize_c310_impl.h"
 #endif
 namespace AscendC {

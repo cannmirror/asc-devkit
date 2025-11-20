@@ -23,8 +23,8 @@
 #ifndef LIB_ASCEND_QUANT_ASCEND_QUANT_H
 #define LIB_ASCEND_QUANT_ASCEND_QUANT_H
 #include "include/adv_api/quantization/ascend_quant_utils.h"
-#if __CCE_AICORE__ == 100 || __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || \
-    defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+    __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/quantization/quant/ascend_quant_common_impl.h"
 namespace AscendC {
@@ -300,7 +300,7 @@ __aicore__ inline void AscendQuant(const LocalTensor<int8_t>& dstTensor,
         scaleTensor.GetSize(), offsetTensor.GetSize(), srcTensor.GetSize());
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 template <typename dstT, typename srcT, bool isReuseSource = false>
 __aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
     const float scale, const float offset, const uint32_t calCount)

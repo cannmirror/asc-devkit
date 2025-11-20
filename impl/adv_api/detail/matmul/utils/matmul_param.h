@@ -45,7 +45,7 @@ struct MatmulParamsNorm : public MatmulParamsBase<A_TYPE, B_TYPE, C_TYPE, BIAS_T
     using DstT = typename C_TYPE::T;
     using BiasT = typename BIAS_TYPE::T;
     TQue<TPosition::C1, QUEUE_DEPTH> qidBias_;
-#if __CCE_AICORE__ < 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
     TQue<TPosition::A2, QUEUE_DEPTH> qidA2_;
     TQue<TPosition::B2, QUEUE_DEPTH> qidB2_;
 #endif
@@ -147,7 +147,7 @@ struct MatmulParamsMDLSparse : public MatmulParamsBase<A_TYPE, B_TYPE, C_TYPE, B
     int baseMN_;
 };
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__ASC_NPU_HOST__)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) || defined(__ASC_NPU_HOST__)
 template<class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto &MM_CFG>
 struct MatmulParamsMxNorm : public MatmulParamsBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> {
     using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
@@ -197,7 +197,7 @@ struct MatmulParamsIBShareNorm : public MatmulParamsBase<A_TYPE, B_TYPE, C_TYPE,
     using DstT = typename C_TYPE::T;
     using BiasT = typename BIAS_TYPE::T;
 
-#if __CCE_AICORE__ < 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
     TQue<TPosition::A2, QUEUE_DEPTH> qidA2_;
     TQue<TPosition::B2, QUEUE_DEPTH> qidB2_;
 #endif
@@ -243,7 +243,7 @@ struct MatmulParams<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, GetMatmulMode(CFG
     using PARAMS = MatmulParamsMDLSparse<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG>;
 };
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__ASC_NPU_HOST__)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) || defined(__ASC_NPU_HOST__)
 // MX_CFG_NORM
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG>
 struct MatmulParams<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, GetMatmulMode(CFG_NORM),

@@ -78,7 +78,7 @@ public:
     __aicore__ inline void GetResult(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false) {}
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     /**
      * @description: Get current block's output to local tensor and global tensor
      * @param: gm: global tensor to store output

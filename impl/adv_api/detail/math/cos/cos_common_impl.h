@@ -19,9 +19,10 @@
 #include "kernel_pop_stack_buffer.h"
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 #include "cos_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "cos_v200_impl.h"
 #endif
 
@@ -117,7 +118,8 @@ __aicore__ inline void CosRound(const LocalTensor<float>& inputX, const LocalTen
     Adds<float, false>(roundTensor, roundTensor, COS_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // tie to even
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
     CosCastFullMask(roundTensor, roundTensor, RoundMode::CAST_RINT);
 #else
     CosCast(roundTensor, roundTensor, RoundMode::CAST_RINT);
@@ -137,7 +139,8 @@ __aicore__ inline void SignCompute(const LocalTensor<float>& dstTensor, const Lo
     Muls<float, false>(dstTensor, roundTensor, COS_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
     CosCastFullMask(dstTensor, dstTensor, RoundMode::CAST_FLOOR);
 #else
     CosCast(dstTensor, dstTensor, RoundMode::CAST_FLOOR);

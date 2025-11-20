@@ -54,14 +54,14 @@ __aicore__ inline void SoftmaxFlashV2BasicBlockImpl(const LocalTensor<half>& dst
         PipeBarrier<PIPE_V>();
         BasicBlockReduceMaxImpl(tmpBuffer3, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j * HALF_FACTOR], tmpBuffer3[FLOAT_NUM_PER_BLK * j],
                 HALF_FACTOR * DEFAULT_REPEAT_STRIDE);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, tmpBuffer3, splitCeilM, { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
         Brcb(tmpBuffer1[DEFAULT_REPEAT_STRIDE], tmpBuffer3, splitCeilM,
             { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
@@ -100,14 +100,14 @@ __aicore__ inline void SoftmaxFlashV2BasicBlockImpl(const LocalTensor<half>& dst
 
         BasicBlockReduceSumImpl(tmpBuffer3, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j * HALF_FACTOR], tmpBuffer3[FLOAT_NUM_PER_BLK * j],
                 HALF_FACTOR * DEFAULT_REPEAT_STRIDE);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, tmpBuffer3, splitCeilM, { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
         Brcb(tmpBuffer1[DEFAULT_REPEAT_STRIDE], tmpBuffer3, splitCeilM,
             { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
@@ -151,14 +151,14 @@ __aicore__ inline void SoftmaxFlashV2BasicBlockImpl(const LocalTensor<float>& ds
         BasicBlockReduceMaxImpl(tmpBuffer2, src[offset1], tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j], tmpBuffer2[FLOAT_NUM_PER_BLK * j], FLOAT_NUM_PER_BLK);
         }
         ResetMask();
         Adds<float>(tmpBuffer2, inMaxTensor[offset2], 0, tiling.reduceSize);
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, tmpBuffer2, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
         PipeBarrier<PIPE_V>();
         Copy<float, false>(tmpBuffer2, inMaxTensor[offset2], MASK_PLACEHOLDER, reduceCeilValue,
@@ -187,13 +187,13 @@ __aicore__ inline void SoftmaxFlashV2BasicBlockImpl(const LocalTensor<float>& ds
 
         BasicBlockReduceSumImpl(tmpBuffer3, dst[offset1], tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j], tmpBuffer3[FLOAT_NUM_PER_BLK * j], FLOAT_NUM_PER_BLK);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, tmpBuffer3, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
 #endif
         PipeBarrier<PIPE_V>();
@@ -237,14 +237,14 @@ __aicore__ inline void SoftmaxFlashV2BasicBlock(const LocalTensor<half>& dst, co
         PipeBarrier<PIPE_V>();
         BasicBlockReduceMaxImpl(tmpBuffer2, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j], tmpBuffer2[FLOAT_NUM_PER_BLK * j], FLOAT_NUM_PER_BLK);
         }
         ResetMask();
         Adds<float>(inMaxTmp, inMaxTensor[offset2], 0, tiling.reduceSize);
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, tmpBuffer2, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
         PipeBarrier<PIPE_V>();
 
@@ -269,7 +269,7 @@ __aicore__ inline void SoftmaxFlashV2BasicBlock(const LocalTensor<half>& dst, co
         PipeBarrier<PIPE_V>();
 
         // src 32B copy to dst 64B copy twice
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetMaskCount();
         SetVectorMask<float, MaskMode::COUNTER>(0, tiling.reduceSize);
         Adds<float, false>(tmpBuffer1, inMaxTmp, 0, MASK_PLACEHOLDER, 1,
@@ -278,7 +278,7 @@ __aicore__ inline void SoftmaxFlashV2BasicBlock(const LocalTensor<half>& dst, co
             { HALF_FACTOR, 1, DEFAULT_REPEAT_STRIDE * HALF_FACTOR, DEFAULT_REPEAT_STRIDE});
         SetMaskNorm();
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Copy<float, false>(tmpBuffer1, inMaxTmp, MASK_PLACEHOLDER, reduceCeilValue,
             { B16_BYTE_SIZE, 1, DEFAULT_REPEAT_STRIDE * B16_BYTE_SIZE, DEFAULT_REPEAT_STRIDE });
         Copy<float, false>(tmpBuffer1[DEFAULT_REPEAT_STRIDE], inMaxTmp, MASK_PLACEHOLDER, reduceCeilValue,
@@ -299,13 +299,13 @@ __aicore__ inline void SoftmaxFlashV2BasicBlock(const LocalTensor<half>& dst, co
         BasicBlockReduceSumImpl(inSumTmp, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j], inSumTmp[FLOAT_NUM_PER_BLK * j], FLOAT_NUM_PER_BLK);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, inSumTmp, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
 #endif
         PipeBarrier<PIPE_V>();
@@ -345,14 +345,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdateBasicBlock(const LocalTensor<half>&
         BasicBlockReduceMaxImpl(reduceSumBuffer, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j * B16_BYTE_SIZE], reduceSumBuffer[FLOAT_NUM_PER_BLK * j],
                 FLOAT_NUM_PER_BLK * B16_BYTE_SIZE);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220	
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, reduceSumBuffer, splitCeilM, { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
         Brcb(tmpBuffer1[DEFAULT_REPEAT_STRIDE], reduceSumBuffer, splitCeilM,
             { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
@@ -376,14 +376,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdateBasicBlock(const LocalTensor<half>&
         BasicBlockReduceSumImpl(reduceSumBuffer, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(tmpBuffer1[FLOAT_REPEAT_SIZE * j * B16_BYTE_SIZE], reduceSumBuffer[FLOAT_NUM_PER_BLK * j],
                 FLOAT_NUM_PER_BLK * B16_BYTE_SIZE);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(tmpBuffer1, reduceSumBuffer, splitCeilM, { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
         Brcb(tmpBuffer1[DEFAULT_REPEAT_STRIDE], reduceSumBuffer, splitCeilM,
             { B16_BYTE_SIZE, B16_BYTE_SIZE * DEFAULT_REPEAT_STRIDE });
@@ -421,14 +421,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdateBasicBlock(const LocalTensor<half>&
         BasicBlockReduceMaxImpl(tmpBuffer2, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(maxTensor[offset2 + FLOAT_REPEAT_SIZE * j], tmpBuffer2[FLOAT_NUM_PER_BLK * j],
                 FLOAT_NUM_PER_BLK);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(maxTensor[offset2], tmpBuffer2, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
 #endif
         PipeBarrier<PIPE_V>();
@@ -448,14 +448,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdateBasicBlock(const LocalTensor<half>&
         BasicBlockReduceSumImpl(tmpBuffer2, tmpBuffer0, tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(expSumTensor[offset2 + FLOAT_REPEAT_SIZE * j], tmpBuffer2[FLOAT_NUM_PER_BLK * j],
                 FLOAT_NUM_PER_BLK);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(expSumTensor[offset2], tmpBuffer2, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
 #endif
     }
@@ -483,14 +483,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdateBasicBlock(const LocalTensor<float>
         BasicBlockReduceMaxImpl(tmpBuffer2, src[offset1], tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(maxTensor[offset2 + FLOAT_REPEAT_SIZE * j], tmpBuffer2[FLOAT_NUM_PER_BLK * j],
                 FLOAT_NUM_PER_BLK);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(maxTensor[offset2], tmpBuffer2, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
 #endif
 
@@ -506,14 +506,14 @@ __aicore__ inline void SoftmaxFlashV2NoUpdateBasicBlock(const LocalTensor<float>
 
         BasicBlockReduceSumImpl(tmpBuffer2, dst[offset1], tmpBuffer1, splitBlock, tiling.splitM, tiling.splitK);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         SetWaitFlagVToS();
         for (uint32_t j = 0; j < splitCeilM; j++) {
             AlignedBrcbImpl(expSumTensor[offset2 + FLOAT_REPEAT_SIZE * j], tmpBuffer2[FLOAT_NUM_PER_BLK * j],
                 FLOAT_NUM_PER_BLK);
         }
         ResetMask();
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         Brcb(expSumTensor[offset2], tmpBuffer2, splitCeilM, { 1, DEFAULT_REPEAT_STRIDE });
 #endif
     }

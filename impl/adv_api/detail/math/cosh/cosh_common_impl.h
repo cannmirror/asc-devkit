@@ -19,9 +19,9 @@
 #include "kernel_pop_stack_buffer.h"
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "cosh_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "cosh_v200_impl.h"
 #endif
 

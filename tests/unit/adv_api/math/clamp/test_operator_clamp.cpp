@@ -80,7 +80,7 @@ void main_vec_clamp_demo(__gm__ uint8_t *__restrict__ dstGm, __gm__ uint8_t *__r
         } else if constexpr (testMode == CLAMP_MIN) {
             ClampMin<T, false>(outputLocal, inputLocal, scalar, dataSize);
         } else {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
             if constexpr (testMode == CLAMP_BOTH_TENSOR) {
                 Clamp(outputLocal, inputLocal, minLocal, maxLocal, dataSize);
             } else if constexpr (testMode == CLAMP_TENSOR_SCALAR) {
@@ -129,7 +129,7 @@ VEC_CLAMP_TESTCASE(float, CLAMP_MIN, 256, MODE_NORMAL);
 VEC_CLAMP_TESTCASE(half, CLAMP_MAX, 256, MODE_NORMAL);
 VEC_CLAMP_TESTCASE(half, CLAMP_MIN, 256, MODE_NORMAL);
 VEC_CLAMP_TESTCASE(half, CLAMP_MIN, 2048, MODE_TMPBUFFER);
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 VEC_CLAMP_TESTCASE(uint8_t, CLAMP_BOTH_TENSOR, 256, MODE_NORMAL);
 VEC_CLAMP_TESTCASE(int8_t, CLAMP_BOTH_TENSOR, 256, MODE_NORMAL);
 VEC_CLAMP_TESTCASE(bfloat16_t, CLAMP_BOTH_TENSOR, 256, MODE_NORMAL);

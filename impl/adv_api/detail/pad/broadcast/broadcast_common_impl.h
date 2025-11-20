@@ -19,9 +19,10 @@
 #include "kernel_operator_intf.h"
 #include "broadcast_common_utils.h"
 #include "../../api_check/kernel_api_check.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 #include "broadcast_c310_impl.h"
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "broadcast_v220_impl.h"
 #else
 #include "broadcast_v200_impl.h"
@@ -32,7 +33,8 @@ namespace AscendC {
 constexpr uint32_t TWO_DIM = 2;
 constexpr uint32_t HALF_ONE_BLK_SIZE = 16;
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 struct BroadcastTiling {
     uint32_t oriRank;
     uint32_t rank;
@@ -377,7 +379,8 @@ template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCast(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<uint8_t> &sharedTmpBuffer);
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCastCommon(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim])

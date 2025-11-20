@@ -16,7 +16,7 @@
 #define LIB_QUANTIZATION_QUANTIZE_UTILS_H
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 enum class QuantizePolicy : int32_t {
     PER_TENSOR,
     PER_CHANNEL,
@@ -36,6 +36,6 @@ struct QuantizeParams {
   uint32_t n;
   uint32_t groupSize = 0;
 };
-#endif // defined(__DAV_C310__) || defined(__DAV_310R6__)
+#endif // defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 }; // namespace AscendC
 #endif // LIB_QUANTIZATION_QUANTIZE_UTILS_H

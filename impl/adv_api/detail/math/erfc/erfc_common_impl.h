@@ -22,7 +22,7 @@ constexpr uint8_t TMPBUF_IDX_6 = 5;
 
 __aicore__ inline constexpr RoundMode GetErfcCastType()
 {
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     return RoundMode::CAST_ROUND;
 #else
     return RoundMode::CAST_NONE;

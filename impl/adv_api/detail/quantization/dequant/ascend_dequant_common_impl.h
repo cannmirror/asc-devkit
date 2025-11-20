@@ -19,7 +19,7 @@
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_dequant_common.h"
 #include "../../api_check/kernel_api_check.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "ascend_dequant_c310_impl.h"
 #endif
 
@@ -96,7 +96,7 @@ __aicore__ inline constexpr bool IsTemplateValid()
         //                    dst      dtype: half    , float, float,       bfloat16_t
         constexpr bool isValid1 = (IsSameType<scaleT, uint64_t>::value)   && (IsSameType<dstT, half>::value);
         constexpr bool isValid2 = (IsSameType<scaleT, float>::value)      && (IsSameType<dstT, float>::value);
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         return isValid1 || isValid2;
 #else
         constexpr bool isValid3 = (IsSameType<scaleT, bfloat16_t>::value) && (IsSameType<dstT, float>::value);
@@ -107,7 +107,7 @@ __aicore__ inline constexpr bool IsTemplateValid()
     } else {
         // dtype only support deqScale dtype: bfloat16_t, bfloat16_t, float
         //                    dst      dtype: bfloat16_t, float,      float
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         constexpr bool isValid1 = (IsSameType<scaleT, float>::value) && (IsSameType<dstT, float>::value);
         return isValid1;
 #else
@@ -160,7 +160,7 @@ __aicore__ inline void AscendDequantTmpCalc(const LocalTensor<int32_t>& srcTenso
 template <typename dstT>
 __aicore__ inline RoundMode GetFP32CastMode()
 {
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     return RoundMode::CAST_NONE;
 #else
     constexpr RoundMode castMode = IsSameType<dstT, bfloat16_t>::value ? RoundMode::CAST_RINT: RoundMode::CAST_NONE;
@@ -398,7 +398,7 @@ __aicore__ inline void AscendDequantImpl(const LocalTensor<dstT>& dstTensor, con
         "current combination of deqScale dtype and dstTensor dtype is not supported, please check the document");
     UpdateDequantParams<dstT, mode>(params);
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     DequantPerchannelImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
     return;
 #endif
@@ -485,7 +485,7 @@ __aicore__ inline void AscendDequantScalarImpl(const LocalTensor<dstT>& dstTenso
 
     UpdateDequantParams<dstT, mode>(params);
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     DequantPertensorImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
     return;
 #endif
@@ -515,7 +515,7 @@ __aicore__ inline void AscendDequantScalarImpl(const LocalTensor<dstT>& dstTenso
     AscendDequantScalarImpl<dstT, scaleT, true, mode>(dstTensor, srcTensor, deqScale, sharedTmpBuffer, params);
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
 __aicore__ inline void AscendDequantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
                                          const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,

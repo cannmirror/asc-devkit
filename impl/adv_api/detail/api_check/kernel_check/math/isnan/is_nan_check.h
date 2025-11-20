@@ -15,7 +15,7 @@
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_ISNAN_ISNAN_CHECK_H
 #define IMPL_API_CHECK_KERNEL_CHECK_MATH_ISNAN_ISNAN_CHECK_H
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "is_nan_check_common.h"
 #endif
 
@@ -25,7 +25,7 @@ template <typename T, typename U, bool isReuseSource>
 __aicore__ inline void CheckFuncIsNan(__gm__ const char* name, const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     CheckFuncClassIsNan<T, U, isReuseSource> checkFun(name);
     checkFun.VerifyingParameters(dst, src, sharedTmpBuffer, count);
 #endif

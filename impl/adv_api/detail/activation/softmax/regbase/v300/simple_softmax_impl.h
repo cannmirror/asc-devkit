@@ -79,7 +79,7 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst,
     Exp(dst[offset1], dst[offset1], splitSize);
     DivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
 }
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& inSumTensor,
     const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& src, const LocalTensor<float> workLocal,
     const SoftMaxTiling& tiling)
@@ -123,7 +123,7 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T>& dst, const Loca
     const LocalTensor<T>& inMaxTensor, const LocalTensor<T>& src, const LocalTensor<float> workLocal,
     const SoftMaxTiling& tiling)
 {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     SimpleSoftMaxGenericNDImpl(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
 #else
 

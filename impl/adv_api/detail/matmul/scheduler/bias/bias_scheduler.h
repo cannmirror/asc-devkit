@@ -16,7 +16,7 @@
 #ifndef IMPL_MATMUL_SCHEDULER_BIAS_BIAS_SCHEDULER_H
 #define IMPL_MATMUL_SCHEDULER_BIAS_BIAS_SCHEDULER_H
 
-#if __CCE_AICORE__ <= 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 #include "bias_scheduler_v200.h"
 #else
 #include "bias_scheduler_batch.h"

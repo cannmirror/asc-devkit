@@ -116,10 +116,10 @@ __aicore__ inline void GetExpFloorInput(const ExpParams<float>& params, uint32_t
     SetVectorMask<float, MaskMode::COUNTER>(0, maskLength);
 
     // tmpTensorIntPart:   floor(x)       ->   IntX
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 220)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     Cast<float, float, false>(params.tempTensorIntPart, params.tempTensorFloorX, RoundMode::CAST_FLOOR,
         MASK_PLACEHOLDER, 1, unaryParams);
-#elif defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     Cast<int32_t, float, false>(params.tempTensorIntPart.ReinterpretCast<int32_t>(), params.tempTensorFloorX,
         RoundMode::CAST_FLOOR, MASK_PLACEHOLDER, 1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
     PipeBarrier<PIPE_V>();

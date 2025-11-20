@@ -14,7 +14,8 @@
  */
 #ifndef LIB_SELECT_KERNEL_OPERATOR_SELECT_WITH_BYTES_MASK_INTF_H
 #define LIB_SELECT_KERNEL_OPERATOR_SELECT_WITH_BYTES_MASK_INTF_H
-#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || \
+    __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 #include "selectwithbytesmask.h"
 
 namespace AscendC {

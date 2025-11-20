@@ -29,9 +29,9 @@ constexpr int32_t BT_SIZE = 1024;
 constexpr int32_t MIN_MN_SIZE = 16;
 constexpr int32_t BITS_PER_BYTE = 8;
 constexpr int32_t ALIGN_TWO = 2;
-#if __CCE_AICORE__ < 220 || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)) || (__NPU_ARCH__ == 5102)
 constexpr int32_t L1_SIZE = 1024 * 1024;
-#elif __CCE_AICORE__ == 300
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 constexpr int32_t L1_SIZE = 1024 * 1024;
 #else
 constexpr int32_t L1_SIZE = 512 * 1024;

@@ -11,11 +11,11 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_SOFTMAX_COMMON_SIMPLE_H
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_COMMON_SIMPLE_H
 
-#if __CCE_AICORE__ == 300
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 #include "../regbase/v300/simple_softmax_impl.h"
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "../membase/v220/simple_softmax_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "../membase/v200/simple_softmax_impl.h"
 #endif
 

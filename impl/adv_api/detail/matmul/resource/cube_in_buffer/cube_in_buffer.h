@@ -20,12 +20,12 @@
 #include "cube_in_buffer_single_global_buffer.h"
 #include "cube_in_buffer_double_buffer.h"
 #include "cube_in_buffer_double_global_buffer.h"
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "cube_in_buffer_double_buffer_sparse.h"
 #include "cube_in_buffer_n_buffer.h"
 #include "cube_in_buffer_bmm_db.h"
 #endif
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "cube_in_buffer_n_buffer.h"
 #include "cube_in_buffer_bmm_db.h"
 #endif

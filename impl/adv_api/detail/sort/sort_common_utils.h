@@ -16,7 +16,7 @@
 #define IMPL_SORT_SORT_COMMON_UTILS_H
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 namespace Internal {
 template <uint32_t size = sizeof(uint8_t)> struct ExtractTypeBySize {
     using T = uint8_t;

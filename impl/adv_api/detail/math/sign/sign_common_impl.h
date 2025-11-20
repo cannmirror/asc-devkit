@@ -36,7 +36,7 @@ __aicore__ inline void SignComputeImpl(const LocalTensor<T> &dstTensor, const Lo
     Duplicate<T, false>(dstTensor, static_cast<T>(0), MASK_PLACEHOLDER, 1, 1, 8);
     PipeBarrier<PIPE_V>();
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     SetMaskNorm();
     ResetMask();
 #endif
@@ -44,7 +44,7 @@ __aicore__ inline void SignComputeImpl(const LocalTensor<T> &dstTensor, const Lo
         tmpBuffer1, srcTensor, dstTensor, CMPMODE::LT, MASK_PLACEHOLDER, repeatTimes, binaryParams);
     Compare<T, uint8_t, false>(
         tmpBuffer2, srcTensor, dstTensor, CMPMODE::GT, MASK_PLACEHOLDER, repeatTimes, binaryParams);
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     SetMaskCount();
     SetVectorMask<T, MaskMode::COUNTER>(0, calCount);
 #endif

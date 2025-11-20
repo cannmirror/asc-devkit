@@ -162,7 +162,7 @@ __aicore__ inline void main_kernel_matmul(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM,
     TCubeTiling tiling;
     tilingParam.GetTiling(tiling);
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     int A1Length = tiling.baseM * tiling.baseK * sizeof(A_T);
     int B1Length = tiling.baseK * tiling.baseN * sizeof(B_T);
     int CO1Length = tiling.baseM * tiling.baseN * sizeof(C_T);
@@ -204,7 +204,7 @@ __aicore__ inline void main_kernel_matmul(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM,
     TQue<TPosition::VECIN, 2> rightMatrix;
     TQue<TPosition::VECIN, 2> biasQue;
     TQue<TPosition::VECIN, 2> resultCMatrix;
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     TQue<TPosition::VECIN, 2> ubWorkspace;
 #endif
 
@@ -220,7 +220,7 @@ __aicore__ inline void main_kernel_matmul(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM,
     LocalTensor<C_T> bufferC;
     LocalTensor<BiasT> bufferBias;
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     LocalTensor<uint8_t> workspaceBuffer;
     int ubWorkspaceSize = 0;
     if constexpr (BIAS_TYPE::pos == TPosition::GM) {
@@ -336,7 +336,7 @@ __aicore__ inline void main_kernel_matmul(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM,
     }
 
     if constexpr (C_TYPE::pos == TPosition::VECCALC) {
-#if __CCE_AICORE__ < 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
         que.InitBuffer(resultCMatrix, 1, tiling.M * tiling.N * 4);
         bufferC = resultCMatrix.AllocTensor<C_T>();
         mm.IterateAll(bufferC);
@@ -369,7 +369,7 @@ __aicore__ inline void main_kernel_matmul(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM,
         resultCMatrix.FreeTensor(bufferC);
     }
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     if (ubWorkspaceSize != 0) {
         ubWorkspace.FreeTensor(workspaceBuffer);
     }

@@ -306,7 +306,7 @@ template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto&
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetSparseIndex(const GlobalTensor<uint8_t>& indexGlobal)
 {
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     if constexpr (DoMatmulMDL(MM_CFG) && HasSparseIndex<B_TYPE>()) {
         MATMUL_MODULE(CopyCubeInB)->SetSparseIndex(indexGlobal);
     }
@@ -438,7 +438,7 @@ __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG,
     }
 }
 
-#if defined(__DAV_C310__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetHIF8(bool enableHIF8)
@@ -541,7 +541,7 @@ template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto&
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetTensorAWithCopy(
     const GlobalTensor<SrcAT>& gm, const LocalTensor<SrcAT>& leftMatrix, bool isTransposeA)
 {
-#if (__CCE_AICORE__ < 220) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     event_t eventIDVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
     SetFlag<HardEvent::V_MTE3>(eventIDVToMte3);
     WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
@@ -559,7 +559,7 @@ template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto&
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetTensorBWithCopy(
     const GlobalTensor<SrcBT>& gm, const LocalTensor<SrcBT>& rightMatrix, bool isTransposeB)
 {
-#if (__CCE_AICORE__ < 220) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     event_t eventIDVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
     SetFlag<HardEvent::V_MTE3>(eventIDVToMte3);
     WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
@@ -663,7 +663,7 @@ __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG,
     MATMUL_MODULE(Scheduler)->GetResult(gm, enAtomic, enSequentialWrite);
 }
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 // v100, v200
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>

@@ -23,7 +23,7 @@
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 namespace AscendC {
 __aicore__ inline void Lgamma1Compute(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
     const LocalTensor<float> &tmpTensor, const uint32_t splitSize)

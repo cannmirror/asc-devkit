@@ -15,9 +15,9 @@
 #ifndef IMPL_MATH_POWER_POWER_INT_IMPL_H
 #define IMPL_MATH_POWER_POWER_INT_IMPL_H
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 220)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "power_v220_impl.h"
-#elif defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "power_v200_impl.h"
 #endif
 

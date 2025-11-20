@@ -85,7 +85,7 @@ public:
 
     __aicore__ inline constexpr static bool IsSupportUBToL1Singleshape()
     {
-#if defined(__DAV_C310__) && defined(USE_WORKSPACE)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && defined(USE_WORKSPACE)
         return false;
 #else
         return MatmulChipCap::GetFeatures().ifSupportUBToL1Singleshape;
@@ -99,7 +99,7 @@ public:
 
     __aicore__ inline constexpr static bool IsSupportL0CToUB()
     {
-#if defined(__DAV_C310__) && defined(USE_WORKSPACE)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && defined(USE_WORKSPACE)
         return false;
 #else
         return MatmulChipCap::GetFeatures().ifSupportL0CToUB;

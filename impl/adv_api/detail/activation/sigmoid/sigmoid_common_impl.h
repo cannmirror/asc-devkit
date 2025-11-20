@@ -21,11 +21,12 @@
 #include "../../api_check/kernel_api_check.h"
 
 // V100 does not support counter mode. Thus different implementation is needed.
-#if __CCE_AICORE__ == 220 || __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "sigmoid_impl.h"
-#elif __CCE_AICORE__ == 100
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 #include "sigmoid_v100_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 #include "sigmoid_c310_impl.h"
 #endif
 

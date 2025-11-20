@@ -35,7 +35,7 @@ struct Out2L1ScalarParams {
     uint32_t bL1cin1CopyLen{0};
 };
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "dav_v220/conv3d_bp_filter_sub_func.h"
 #endif
 

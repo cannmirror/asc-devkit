@@ -22,16 +22,16 @@
 #include "base/copy_cube_in_mdl.h"
 #include "base/copy_cube_in_mdl_fullload.h"
 #include "base/copy_cube_in_norm.h"
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "base/copy_cube_in_mdl_sparse.h"
 #endif
-#if __CCE_AICORE__ <= 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 #include "base/copy_cube_in_using_ub.h"
 #include "batch/batch_copy_cube_in_using_ub.h"
 #endif
 #include "batch/batch_copy_cube_in.h"
 #include "batch/batch_copy_cube_in_from_l1.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "base/copy_cube_in_mdl_mx.h"
 #include "base/copy_cube_in_norm_mx.h"
 #endif

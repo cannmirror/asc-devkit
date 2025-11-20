@@ -18,10 +18,8 @@
 
 // USE_SSBUF       kfc 310 full capability mode (msg ssbuf + data ub2l1 + other new capability)
 // USE_WORKSPACE   kfc 220 or compatible mode of 310 (msg gm + data gm + no other new capability)
-#if defined(__DAV_310R6__)
-#define USE_SSBUF
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 
-#elif defined(__DAV_C310__)
 #if (defined(KFC_C310_SSBUF) && KFC_C310_SSBUF == 0)
 #define USE_WORKSPACE
 #else
@@ -30,7 +28,6 @@
 
 #else
 #define USE_WORKSPACE
-
 #endif
 
 #include "matmul_config_utils.h"
@@ -208,7 +205,7 @@ __aicore__ inline T CeilAlignT(T num1, T num2)
     return CeilT(num1, num2) * num2;
 }
 
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 template <class T, class U>
 __aicore__ inline void InitKfcClient(T &matmulClient, U *tiling, TPipe *tpipe, KfcCommClient *client, int instIdx,
     GM_ADDR workspace)
@@ -233,7 +230,7 @@ __aicore__ constexpr bool PhyPosIsL1(TPosition pos)
     if (pos == TPosition::A1 || pos == TPosition::B1 || pos == TPosition::SHM || pos == TPosition::TSCM) {
         return true;
     }
-#if (__CCE_AICORE__ == 220 || __CCE_AICORE__ == 300)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3002)
     if (pos == TPosition::C1) {
         return true;
     }
@@ -249,15 +246,15 @@ __aicore__ constexpr bool PhyPosIsUB(TPosition pos)
         pos == TPosition::SHM || pos == TPosition::TSCM) {
         return false;
     }
-#if (__CCE_AICORE__ <= 200) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     if (pos == TPosition::C2) {
         return false;
     }
-#elif (__CCE_AICORE__ == 220)
+#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
     if (pos == TPosition::C1 || pos == TPosition::C2 || pos == TPosition::CO2 || pos == TPosition::C2PIPE2GM) {
         return false;
     }
-#elif (__CCE_AICORE__ == 300)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
     if (pos == TPosition::C1 || pos == TPosition::C2) {
         return false;
     }
@@ -271,7 +268,7 @@ __aicore__ constexpr bool PhyPosIsGM(TPosition pos)
     if (pos == TPosition::GM) {
         return true;
     }
-#if (__CCE_AICORE__ == 220)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
     if (pos == TPosition::CO2) {
         return true;
     }

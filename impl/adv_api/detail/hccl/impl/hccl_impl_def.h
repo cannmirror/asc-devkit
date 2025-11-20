@@ -17,11 +17,11 @@
 
 #include "../common/hccl_base.h"
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 220)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "hccl_v220_impl.h"
 #endif
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "hccl_v310_impl.h"
 #endif
 

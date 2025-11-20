@@ -23,7 +23,7 @@
 #include "n_loop_basic.h"
 #include "n_loop_intrablock.h"
 #include "n_loop_norm_outer_product.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "n_loop_mdl_mx.h"
 #endif
 

@@ -15,7 +15,7 @@
 
 #ifndef LIB_MATH_LOGICAL_AND_IMPL_H
 #define LIB_MATH_LOGICAL_AND_IMPL_H
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #include "../logical_template/logical_template.h"
 

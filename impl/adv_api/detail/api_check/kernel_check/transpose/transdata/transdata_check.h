@@ -16,8 +16,7 @@
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_TRANSPOSE_TRANSDATA_TRANSDATA_CHECK_H
 #define IMPL_API_CHECK_KERNEL_CHECK_TRANSPOSE_TRANSDATA_TRANSDATA_CHECK_H
 #include "include/adv_api/transpose/transdata_common.h"
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || \
-    defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "transdata_check_common.h"
 #else
 #include "transdata_check_aicore.h"

@@ -103,7 +103,7 @@ __aicore__ inline void main_kernel_matmul_batch(GM_ADDR aGM, GM_ADDR bGM, GM_ADD
     AscendC::MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG> mm1;
     TPipe pipe;
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #ifdef __DAV_C220_CUBE__
     g_cubeTPipePtr = &pipe;
 #elif defined(__DAV_C220_VEC__)

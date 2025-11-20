@@ -18,7 +18,7 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "reduce_any_check_common.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "reduce_any_check_c310.h"
 #else
 #include "reduce_any_check_aicore.h"

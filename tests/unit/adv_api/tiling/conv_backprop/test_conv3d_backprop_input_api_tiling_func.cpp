@@ -34,7 +34,7 @@ protected:
     uint64_t l0cSize = 262144;
 };
 
-#if (__CCE_AICORE__ == 220)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
 TEST_F(TestConv3dInputTiling, Init_Check_001)
 {
     optiling::Conv3DBackpropInputTilingData tilingData;
