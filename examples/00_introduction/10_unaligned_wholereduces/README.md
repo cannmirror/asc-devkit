@@ -2,6 +2,7 @@
 ## 概述
 本样例介绍非对齐WholeReduceSum算子的核函数直调方法。
 ## 支持的AI处理器
+- Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```

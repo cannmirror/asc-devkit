@@ -1,6 +1,7 @@
 # MatmulLeakyRelu算子直调样例
 本样例以MatmulLeakyRelu算子为样例，展示了一种更为简单的算子编译流程，支持main函数和Kernel函数在同一个cpp文件中实现。
 ## 支持的AI处理器
+- Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```
