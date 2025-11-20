@@ -35,7 +35,7 @@
 
   Sub算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
-  TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本示例算子使用了5个tiling参数：totalLength、tileNum。
+  TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本样例算子使用了5个tiling参数：totalLength、tileNum。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

@@ -1,6 +1,6 @@
 # Add算子直调样例
 ## 概述
-本样例以Add算子为示例，展示了一种更为简单的算子编译流程，支持main函数和Kernel函数在同一个cpp文件中实现。
+本样例以Add算子为样例，展示了一种更为简单的算子编译流程，支持main函数和Kernel函数在同一个cpp文件中实现。
 
 ## 支持的AI处理器
 - Ascend 910B
@@ -12,9 +12,7 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── c_api_add.asc      // AscendC算子实现 & 调用样例
-│   └── micro_api_add.asc      // AscendC微指令算子实现 & 调用样例
-│   └── add.asc      // AscendC算子实现，tipipe管理内存 & 调用样例
+│   └── add.asc                 // AscendC算子实现，tpipe管理内存 & 调用样例
 │   └── basic_api_tque_add.asc      // AscendC算子实现,tque管理内存 & 调用样例
 │   └── basic_api_memory_allocator_add.asc      // AscendC算子实现,使用LocalMemAllocator简化代码 & 调用样例
 ```
@@ -47,7 +45,7 @@
 
     Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
   - tiling实现  
-    TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本示例算子使用了2个tiling参数：totalLength、tileNum。totalLength是指需要计算的数据量大小，tileNum是指每个核上总计算数据分块个数。比如，totalLength这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。
+    TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本样例算子使用了2个tiling参数：totalLength、tileNum。totalLength是指需要计算的数据量大小，tileNum是指每个核上总计算数据分块个数。比如，totalLength这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
@@ -88,8 +86,8 @@
 
     执行add.asc、basic_api_tque_add.asc样例的命令如下所示：
     ```bash
-    ./add_tque                        # 执行样例
-    ./add                        # 执行样例
+    ./add_basic_api_tque                        # 执行样例
+    ./add_simt                        # 执行样例
     ```
     执行结果如下，说明精度对比成功。
     ```bash
@@ -99,7 +97,7 @@
     执行basic_api_memory_allocator_add.asc样例的命令如下所示：
     ```bash
     python3 ../scripts/gen_data.py   # 生成测试输入数据
-    ./add_basic                        # 执行编译生成的可执行程序，执行样例
+    ./add_basic_api_memory_allocator                        # 执行编译生成的可执行程序，执行样例
     python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
     ```
     执行结果如下，说明精度对比成功。

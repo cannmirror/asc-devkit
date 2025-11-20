@@ -1,34 +1,36 @@
 # ----------------------------------------------------------------------------------------------------------
+# This program is free software, you can redistribute it and/or modify it.
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
-# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-# CANN Open Software License Agreement Version 2.0 (the "License").
+# This file is a part of the CANN Open Software.
+# Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
+
 cmake_minimum_required(VERSION 3.16)
 
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(add_tque
+add_executable(add_basic_api_tque
     basic_api_tque_add.asc
 )
-add_executable(add
+add_executable(add_simt
     add.asc
 )
-add_executable(add_basic
+add_executable(add_basic_api_memory_allocator
     basic_api_memory_allocator_add.asc
 )
 
-target_compile_options(add_tque PRIVATE
+target_compile_options(add_basic_api_tque PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
-target_compile_options(add PRIVATE
+target_compile_options(add_simt PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
-target_compile_options(add_basic PRIVATE
+target_compile_options(add_basic_api_memory_allocator PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )

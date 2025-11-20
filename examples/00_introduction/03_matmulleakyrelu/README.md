@@ -1,12 +1,11 @@
 # MatmulLeakyRelu算子直调样例
-本样例以MatmulLeakyRelu算子为示例，展示了一种更为简单的算子编译流程，支持main函数和Kernel函数在同一个cpp文件中实现。
+本样例以MatmulLeakyRelu算子为样例，展示了一种更为简单的算子编译流程，支持main函数和Kernel函数在同一个cpp文件中实现。
 ## 支持的AI处理器
 - Ascend 910B
 ## 目录结构介绍
 ```
 ├── 03_matmulleakyrelu
 │   ├── CMakeLists.txt          // 编译工程文件
-│   ├── data_utils.h            // 数据读入写出函数
 │   ├── matmul_leakyrelu.asc    // AscendC算子实现 & 调用样例
 │   └── scripts
 │       ├── gen_data.py         // 输入数据和真值数据生成脚本文件
