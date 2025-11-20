@@ -1,0 +1,30 @@
+if(CUSTOM_ASCEND_CANN_PACKAGE_PATH)
+    set(ASCEND_CANN_PACKAGE_PATH  ${CUSTOM_ASCEND_CANN_PACKAGE_PATH})
+elseif(DEFINED ENV{ASCEND_HOME_PATH})
+    set(ASCEND_CANN_PACKAGE_PATH  $ENV{ASCEND_HOME_PATH})
+elseif(DEFINED ENV{ASCEND_OPP_PATH})
+    get_filename_component(ASCEND_CANN_PACKAGE_PATH "$ENV{ASCEND_OPP_PATH}/.." ABSOLUTE)
+else()
+    set(ASCEND_CANN_PACKAGE_PATH  "/usr/local/Ascend/ascend-toolkit/latest")
+endif()
+
+if (NOT EXISTS "${ASCEND_CANN_PACKAGE_PATH}")
+    message(FATAL_ERROR "${ASCEND_CANN_PACKAGE_PATH} does not exist, please install the cann package and set environment variables.")
+endif()
+
+if (CMAKE_INSTALL_PREFIX STREQUAL /usr/local)
+    set(CMAKE_INSTALL_PREFIX     "${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/makeself_staging"  CACHE STRING "path for install()" FORCE)
+endif ()
+
+set(HI_PYTHON                     "python3"                       CACHE   STRING   "python executor")
+set(PRODUCT_SIDE                  host)
+set(COMPILE_BASE_ON_SUBGROUP OFF BOOL)
+
+if (ENABLE_TEST)
+    set(CMAKE_SKIP_RPATH FALSE)
+else ()
+    set(CMAKE_SKIP_RPATH TRUE)
+endif ()
+
+get_filename_component(ASCENDC_API_ADV_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
+# include(${ASCENDC_API_ADV_CMAKE_DIR}/intf_pub_linux.cmake)

@@ -1,0 +1,187 @@
+/**
+* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+
+/*!
+ * \file erfc_c310_impl.h
+ * \brief
+ */
+#ifndef IMPL_MATH_ERFC_ERFC_C310_IMPL_H
+#define IMPL_MATH_ERFC_ERFC_C310_IMPL_H
+
+#include "kernel_tensor.h"
+
+namespace AscendC {
+namespace ERFC {
+
+constexpr MicroAPI::CastTrait castTraitF162F32 = {
+    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+constexpr MicroAPI::CastTrait castTraitF322F16 = {
+    MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::NO_SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
+
+__simd_callee__ inline void MulAdds(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
+    MicroAPI::RegTensor<float>& srcReg2, const float scalarValue, MicroAPI::MaskReg& mask)
+{
+    // dst = src1 * src2 + scalerValue
+    MicroAPI::RegTensor<float> tmpReg;
+    MicroAPI::Mul(tmpReg, srcReg1, srcReg2, mask);
+    MicroAPI::Adds(dstReg, tmpReg, scalarValue, mask);
+}
+    
+// compute Erfc with xa = |x| + fp32_min
+__simd_callee__ inline void ErfcPreCompute(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+{
+    constexpr float SCALAR_ERFC_FP32_MIN = 2.168404344971009e-19; // 2^-62
+    MicroAPI::RegTensor<float> tmpReg;
+    MicroAPI::Abs(tmpReg, srcReg, mask);
+    MicroAPI::Adds(dstReg, tmpReg, SCALAR_ERFC_FP32_MIN, mask);
+}
+
+// compute Erfc R(z) = ((((((((z*r0 + r1)*z + r2)*z + r3)*z + r4)*z + r5)*z + r6)*z + r7)*z + r8)
+__simd_callee__ inline void ErfcComputeR(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+{
+    // Specific value used for approximate calculation.
+    constexpr float R0 = 0.1735313680e-7;
+    constexpr float R1 = -0.9856738394e-6;
+    constexpr float R2 = 0.2517003236e-4;
+    constexpr float R3 = -0.3848015171e-3;
+    constexpr float R4 = 0.5681528564e0;
+    constexpr float R5 = 0.5245623129e1;
+    constexpr float R6 = 0.2107740710e2;
+    constexpr float R7 = 0.4212761755e2;
+    constexpr float R8 = 0.4380524149e2;
+
+    MicroAPI::RegTensor<float> rReg;
+    MicroAPI::Duplicate(rReg, R0, mask);
+    MulAdds(dstReg, srcReg, rReg, R1, mask);
+    MulAdds(dstReg, dstReg, srcReg, R2, mask);
+    MulAdds(dstReg, dstReg, srcReg, R3, mask);
+    MulAdds(dstReg, dstReg, srcReg, R4, mask);
+    MulAdds(dstReg, dstReg, srcReg, R5, mask);
+    MulAdds(dstReg, dstReg, srcReg, R6, mask);
+    MulAdds(dstReg, dstReg, srcReg, R7, mask);
+    MulAdds(dstReg, dstReg, srcReg, R8, mask);
+}
+
+// compute Erfc S(z) = (((((z + s1)*z + s2)*z + s3)*z + s4)*z + s5)
+__simd_callee__ inline void ErfcComputeS(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+{
+    // Specific value used for approximate calculation.
+    constexpr float S1 = 0.9349684299e1;
+    constexpr float S2 = 0.3756930664e2;
+    constexpr float S3 = 0.8058268949e2;
+    constexpr float S4 = 0.9155653738e2;
+    constexpr float S5 = 0.4380524152e2;
+
+    MicroAPI::Adds(dstReg, srcReg, S1, mask);
+    MulAdds(dstReg, dstReg, srcReg, S2, mask);
+    MulAdds(dstReg, dstReg, srcReg, S3, mask);
+    MulAdds(dstReg, dstReg, srcReg, S4, mask);
+    MulAdds(dstReg, dstReg, srcReg, S5, mask);
+}
+
+__simd_callee__ inline void ErfcClip(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+{
+    constexpr float ERFC_BOUNDARY_MAX = 10.0f;
+    MicroAPI::Mins(dstReg, srcReg, ERFC_BOUNDARY_MAX, mask);
+    MicroAPI::Maxs(dstReg, dstReg, -ERFC_BOUNDARY_MAX, mask);
+}
+
+// Compute Erfc: exp(-xa^2) * (R(z) / S(z)) * xb + (1 - xb)
+__simd_callee__ inline void ErfcPublicSteps(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg mask)
+{
+    constexpr float MIN_BOUNDARY = 10.0f;
+    // Compute xa = |x| + min_pf32, exp(-xa^2)
+    MicroAPI::RegTensor<float> xaReg, xbReg, zReg, rzReg, szReg;
+    MicroAPI::RegTensor<float> oneReg, tmpReg;
+    ErfcPreCompute(xaReg, srcReg, mask);
+    MicroAPI::Mul(tmpReg, xaReg, xaReg, mask);
+    MicroAPI::Neg(tmpReg, tmpReg, mask);
+    MicroAPI::Exp(dstReg, tmpReg, mask);
+    // Compute z = min(xa, 10), xb = x / xa, exp(-xa^2) * xb
+    MicroAPI::Mins(zReg, xaReg, MIN_BOUNDARY, mask);
+    MicroAPI::Div(xbReg, srcReg, xaReg, mask);
+    MicroAPI::Mul(dstReg, dstReg, xbReg, mask);
+    // Compute exp(-xa^2) * xb * (R(z) / S(z)) 
+    ErfcComputeR(rzReg, zReg, mask);
+    ErfcComputeS(szReg, zReg, mask);
+    MicroAPI::Mul(dstReg, dstReg, rzReg, mask);
+    MicroAPI::Div(dstReg, dstReg, szReg, mask);
+
+    MicroAPI::Duplicate(oneReg, 1.0f, mask);
+    MicroAPI::Sub(tmpReg, oneReg, xbReg, mask);
+    MicroAPI::Add(dstReg, dstReg, tmpReg, mask);
+}
+
+template<typename T>
+__simd_vf__ inline void ErfcCoreImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calCount, uint16_t repeatTimes)
+{
+    MicroAPI::RegTensor<T> srcReg;
+    MicroAPI::RegTensor<float> castReg;
+    MicroAPI::RegTensor<float> tmpReg;
+    MicroAPI::RegTensor<float> dstReg;
+
+    for (uint16_t i = 0; i < repeatTimes; ++i) {
+        MicroAPI::MaskReg mask = MicroAPI::UpdateMask<float>(calCount);
+        if constexpr (sizeof(T) == sizeof(half)) {
+            MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+            MicroAPI::Cast<float, T, castTraitF162F32>(castReg, srcReg, mask);
+        } else {
+            MicroAPI::DataCopy(castReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
+        }
+        ErfcClip(tmpReg, castReg, mask);
+        ErfcPublicSteps(dstReg, tmpReg, mask);
+        if constexpr (sizeof(T) == sizeof(half)) {
+            MicroAPI::Cast<T, float, castTraitF322F16>(srcReg, dstReg, mask);
+            MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * B32_DATA_NUM_PER_REPEAT, srcReg, mask);
+        } else {
+            MicroAPI::DataCopy(dstUb + i * B32_DATA_NUM_PER_REPEAT, dstReg, mask);
+        }
+    }
+}
+
+} // namespace ERFC
+
+template <typename T,  bool isReuseSource = false>
+__aicore__ inline void ErfcImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+{
+    CheckTensorPos(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECOUT / VECCALC", "Erfc");
+    ErfcImpl(dstTensor, srcTensor, calCount);
+}
+
+template <typename T,  bool isReuseSource = false>
+__aicore__ inline void ErfcImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const uint32_t calCount)
+{
+    // Only for AI Vector Core.
+    if ASCEND_IS_AIC {
+        return;
+    }
+
+    static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
+    CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "ERFC");
+    CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "ERFC");
+    ASCENDC_ASSERT((calCount <= srcTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than srcTensor length %u", calCount,
+            srcTensor.GetSize());
+    });
+    ASCENDC_ASSERT((calCount <= dstTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not be larger than dstTensor length %u", calCount,
+            dstTensor.GetSize());
+    });
+
+    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
+    uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
+    ERFC::ErfcCoreImpl<T>(dstUb, srcUb, calCount, repeatTimes);
+}
+} // namespace AscendC
+
+#endif // IMPL_MATH_ERFC_ERFC_C310_IMPL_H

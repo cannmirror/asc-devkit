@@ -1,0 +1,12 @@
+set(GENERATE_CPP_COV ${ASCENDC_UNIT_TESTS_DIR}/cmake/scripts/generate_cpp_cov.sh)
+
+find_package(GTest CONFIG)
+if (NOT ${GTest_FOUND})
+    if (EXISTS "${ASCEND_CANN_PACKAGE_PATH}/opensdk/opensdk/gtest")
+        list(APPEND CMAKE_PREFIX_PATH ${ASCEND_CANN_PACKAGE_PATH}/opensdk/opensdk/gtest)
+        find_package(GTest CONFIG)
+    endif ()
+endif ()
+if (NOT ${GTest_FOUND})
+    message(FATAL_ERROR "Can't find any googletest.")
+endif ()
