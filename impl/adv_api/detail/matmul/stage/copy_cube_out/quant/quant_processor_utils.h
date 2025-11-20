@@ -24,7 +24,7 @@ template <typename CType, typename AType>
 __aicore__ inline constexpr static bool IsQuantSenario()
 {
     using L0cT = typename GetMmDstType<AType>::Type;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
     if constexpr (IsTypeOneOfV<CType, half, bfloat16_t> &&
         !IsTypeOneOfV<AType, int8_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t>) {
         return false;

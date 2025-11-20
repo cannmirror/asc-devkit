@@ -14,7 +14,7 @@
  */
 #ifndef IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_IMPL_H
 #define IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_IMPL_H
-#if defined(__DAV_C310__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "digamma_c310_impl.h"
 #else
 #include "kernel_tensor.h"

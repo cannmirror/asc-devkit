@@ -66,7 +66,7 @@ public:
         auto& var = MATMUL_PARAM_VAR;
         var.tpipe_ = tpipe;
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
         MATMUL_MODULE(MatmulSubBlockInfo)->SetSubBlockIdx(0);
 #endif
 

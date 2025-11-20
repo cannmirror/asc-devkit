@@ -126,7 +126,7 @@ enable_if_t<(GetGemvMode<A_TYPE>() == GemvMode::VECTOR) && (HasScalePosition<A_T
      bool isATranspose, const LocalTensor<AuxDtype> &l1AAuxMatrix = {}, uint16_t aAuxL1K = 0,
      uint16_t aAuxL1KOffset = 0, uint16_t aAuxL1MOffset = 0) const
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         LoadData2DParamsV2 loadDataParams;
         loadDataParams.mStartPosition = 0;
         loadDataParams.kStartPosition = 0;

@@ -18,14 +18,15 @@
 #include "kernel_log.h"
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/math/sign/sign_common_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 #include "../../../impl/adv_api/detail/math/sign/sign_c310_impl.h"
 #endif
 
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || \
+    __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 #pragma begin_pipe(V)
 namespace AscendC {
 /*!
@@ -78,7 +79,7 @@ __aicore__ inline void Sign(const LocalTensor<T> &dstTensor, const LocalTensor<T
         return;
     }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     SignCompute<T, isReuseSource>(dstTensor, srcTensor, calCount);
 #else
     // Using the Stack Space to Allocate sharedTmpBuffer

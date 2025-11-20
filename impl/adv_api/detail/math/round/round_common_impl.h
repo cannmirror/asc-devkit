@@ -20,13 +20,13 @@
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "round_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "round_v200_impl.h"
 #endif
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 namespace AscendC {
 
 template <typename T, bool isReuseSource = false>

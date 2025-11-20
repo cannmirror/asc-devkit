@@ -15,13 +15,14 @@
 #ifndef IMPL_MATH_FLOOR_FLOOR_COMMON_IMPL_H
 #define IMPL_MATH_FLOOR_FLOOR_COMMON_IMPL_H
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 220)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "floor_v220_impl.h"
-#elif defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "floor_v200_impl.h"
-#elif defined(__CCE_AICORE__) && (__CCE_AICORE__ == 300) && !defined(__DAV_L300__)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002 && !defined(__DAV_L300__)
 #include "floor_v300_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
+#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 #include "floor_c310_impl.h"
 #endif
 

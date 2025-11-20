@@ -17,7 +17,7 @@
 #ifndef LIB_QUANTIZATION_QUANTIZE_H
 #define LIB_QUANTIZATION_QUANTIZE_H
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #include "include/adv_api/quantization/quantize_utils.h"
 #include "../../../impl/adv_api/detail/quantization/quantize/quantize_impl.h"
@@ -74,5 +74,5 @@ __aicore__ inline void Quantize(const LocalTensor<DstT>& dstTensor, const LocalT
 
 #pragma end_pipe
 }  // namespace AscendC
-#endif  // defined(__DAV_C310__) || defined(__DAV_310R6__)
+#endif  // defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #endif  // LIB_QUANTIZATION_QUANTIZE_H

@@ -25,7 +25,7 @@
 
 namespace AscendC {
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 template <typename T> constexpr __aicore__ inline void SoftmaxApiSupportedTypeCheck()
 {
     static_assert(std::is_same<T, half>::value || std::is_same<T, float>::value,

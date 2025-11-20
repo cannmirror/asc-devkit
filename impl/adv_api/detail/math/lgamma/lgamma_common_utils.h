@@ -15,7 +15,8 @@
 #ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMOM_UTILS_H
 #define IMPL_MATH_LGAMMA_LGAMMA_COMMOM_UTILS_H
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || \
+    __NPU_ARCH__ == 5102)
 namespace AscendC {
 namespace {
 constexpr float f05 = 0.5;
@@ -117,7 +118,7 @@ struct LGammaParams {
     uint32_t splitSize;
 };
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 namespace LgammaInternal {
 constexpr MicroAPI::CastTrait LGAMMA_CAST_TRAIT_F162F32 = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};

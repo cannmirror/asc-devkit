@@ -25,9 +25,9 @@
 #include "topk_common_utils.h"
 #include "include/adv_api/index/arithprogression.h"
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "topk_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "topk_v200_impl.h"
 #endif
 

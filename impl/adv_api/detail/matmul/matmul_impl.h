@@ -49,14 +49,14 @@ public:
         MATMUL_MODULE(MatmulAntiQuantProcessor)->SetAntiQuantVector(offsetTensor, scaleTensor);
     }
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     // v100, v200
     template <bool sync = true>
     __aicore__ inline void IterateAll(const GlobalTensor<DstT>& gm, uint8_t enAtomic = 0,
         bool enSequentialWrite = false, bool waitIterateAll = false, bool fakeMsg = false)
     {
         ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         GlobalTensor<uint64_t> global;
         global.SetGlobalBuffer((__gm__ uint64_t*)0);
         DataCacheCleanAndInvalid<uint64_t, CacheLine::ENTIRE_DATA_CACHE>(global);
@@ -84,7 +84,7 @@ public:
     __aicore__ inline void IterateAll(const LocalTensor<DstT>& ubCmatrix, uint8_t enAtomic = 0)
     {
         ASCENDC_ASSERT((!ToMatmulConfig(MM_CFG).isPartialOutput), { KERNEL_LOG(KERNEL_ERROR, "IterateAll is not supported for PartialOutput."); });
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         GlobalTensor<uint64_t> global;
         global.SetGlobalBuffer((__gm__ uint64_t*)0);
         DataCacheCleanAndInvalid<uint64_t, CacheLine::ENTIRE_DATA_CACHE>(global);

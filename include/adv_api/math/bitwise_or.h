@@ -16,7 +16,7 @@
 #ifndef LIB_MATH_BITWISE_OR_H
 #define LIB_MATH_BITWISE_OR_H
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/math/bitwise_or/bitwise_or_c310_impl.h"
 #include "kernel_tensor.h"
 namespace AscendC {

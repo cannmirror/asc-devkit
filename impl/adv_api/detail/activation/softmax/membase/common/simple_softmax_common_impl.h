@@ -432,19 +432,19 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, 
     if constexpr (config.oriSrcM == 0 || config.oriSrcK == 0) {
         Cast(tmpBuffer0, src[offset1], RoundMode::CAST_NONE, splitSize);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.srcK,
             DEFAULT_REPEAT_STRIDE);
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         GenericSubNDImpl(tmpBuffer0, tmpBuffer0, inMaxTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
 #endif
         PipeBarrier<PIPE_V>();
         Exp(tmpBuffer0, tmpBuffer0, tiling.splitSize);
         PipeBarrier<PIPE_V>();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.srcK,
             DEFAULT_REPEAT_STRIDE);
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         GenericDivNDImpl(tmpBuffer0, tmpBuffer0, inSumTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
 #endif
         PipeBarrier<PIPE_V>();

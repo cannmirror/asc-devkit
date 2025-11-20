@@ -69,7 +69,7 @@ public:
         auto& var = MATMUL_PARAM_VAR;
         var.tpipe_ = tpipe;
 
-#if (__CCE_AICORE__ < 220 || __CCE_AICORE__ == 300) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3002)
         MATMUL_MODULE(MatmulSubBlockInfo)->SetSubBlockIdx(0);
 #endif
 
@@ -128,7 +128,7 @@ public:
 #endif
 
         if constexpr (MdlInitScene<MM_CFG>) {
-#if __CCE_AICORE__ < 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
             var.tpipe_->InitBuffer(var.qidA2_, 1, L0ASize_);
             var.tpipe_->InitBuffer(var.qidB2_, 1, L0BSize_);
 #endif
@@ -207,7 +207,7 @@ public:
         GetResultImpl(gm, enAtomic, enSequentialWrite);
     }
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     __aicore__ inline void GetResult(const GlobalTensor<DstT>& gm, const LocalTensor<DstT>& co2Local,
         uint8_t enAtomic = 0, bool enSequentialWrite = false) {
         static_assert(ToMatmulConfig(MM_CFG).scheduleType != ScheduleType::OUTER_PRODUCT, "Unsupported scheduleType");
@@ -384,7 +384,7 @@ protected:
         MATMUL_MODULE(CubeOutBuffer)->FreeTensor(co1Local);
     }
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
     __aicore__ inline void SetAtomic(uint8_t enAtomic)
     {
         if (enAtomic == ATOMIC_ADD) {

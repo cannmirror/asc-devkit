@@ -298,7 +298,7 @@ __aicore__ inline void AscendQuantImplStatic(const LocalTensor<int8_t>& dstTenso
     }
 }
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 // per tensor intrinsics
 __aicore__ inline void AscendQuantIntrinsicsImpl(const LocalTensor<int8_t>& dstTensor,
     const LocalTensor<half>& srcTensor, const LocalTensor<half>& stackBuffer, half scale, half offset)

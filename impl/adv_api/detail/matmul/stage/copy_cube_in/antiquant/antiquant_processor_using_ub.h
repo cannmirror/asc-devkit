@@ -54,7 +54,7 @@ public:
     __aicore__ inline void AntiQuantCompute(const LocalTensor<TransT>& quantOut, const LocalTensor<SrcT>& quantIn,
                                             bool isBankConflict, bool isTranspose, int32_t baseWidth)
     {
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         LocalTensor<uint8_t> sharedLocal = GetSharedLocal(isTranspose, baseWidth);
         if constexpr (ToMatmulConfig(MM_CFG).isPerTensor) {
             AntiQuantComputePerTensor(quantOut, quantIn, sharedLocal, isTranspose);
@@ -107,7 +107,7 @@ public:
     __aicore__ inline void AntiQuantComputePerTensor(const LocalTensor<TransT>& quantOut,
         const LocalTensor<SrcT>& quantIn, const LocalTensor<uint8_t>& sharedLocal, bool isTranspose)
     {
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if constexpr (ToMatmulConfig(MM_CFG).hasAntiQuantOffset) {
             if (isTranspose) {
                 AscendAntiQuant<SrcT, TransT, true>(

@@ -54,7 +54,8 @@ __aicore__ inline void Broadcast(const LocalTensor<T> &dstLocal, const LocalTens
     BroadCast<T, dim, axis, isReuseSource>(dstLocal, srcLocal, dstShape, srcShape);
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102) || defined(__DAV_L300__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 /*
  * @ingroup GetBroadcastTilingInfo
  * @brief get broadcast tiling information

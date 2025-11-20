@@ -20,14 +20,14 @@
 #include "kernel_tiling/kernel_tiling.h"
 #include "../../api_check/kernel_api_check.h"
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 220)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "reduce_xor_sum_v220_impl.h"
-#elif defined(__CCE_AICORE__) && (__CCE_AICORE__ == 200)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "reduce_xor_sum_v200_impl.h"
 #endif
 
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ == 220 || __CCE_AICORE__ == 200)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 namespace AscendC {
 namespace {
 constexpr uint32_t REDUCE_XOR_SUM_REUSE_CALC_PROC = 2U;

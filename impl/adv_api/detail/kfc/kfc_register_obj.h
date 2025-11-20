@@ -19,7 +19,7 @@
 namespace AscendC {
 __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
 {
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
     SetAtomicNone();
     if ASCEND_IS_AIC {
@@ -34,23 +34,21 @@ __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
     }
 #endif
 #endif
-#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF
     SetAtomicNone();
     if ASCEND_IS_AIC {
         SetMaskNorm();
         SetLoadDataPaddingValue((uint64_t)0);
         ClearSSbufImpl();
-#if defined(__DAV_310R6__)
-        CrossCoreSetFlag<KFC_INTRA_MODE, PIPE_S>(KFC_SYNC_ID);
-#else
+
         CrossCoreSetFlag<KFC_INTRA_MODE, PIPE_S>(KFC_SYNC_ID);
         CrossCoreSetFlag<KFC_INTRA_MODE, PIPE_S>(KFC_SYNC_ID + 16);
-#endif
+
     } else {
         SetVectorMask<uint64_t, MaskMode::NORMAL>((uint64_t)-1, (uint64_t)-1);
         SetMaskNorm();
     }
-#elif defined(__DAV_C310__) && KFC_C310_SSBUF == 0
+#elif (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF == 0
 #ifdef SPLIT_CORE_CUBE
     SetAtomicNone();
     SetMaskNorm();
@@ -66,17 +64,13 @@ __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
 #endif
 }
 
-#if defined(__DAV_C310__) && KFC_C310_SSBUF == 0
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF == 0
     constexpr bool DAV_310_ENABLE_GM = true;
 #else
     constexpr bool DAV_310_ENABLE_GM = false;
 #endif
 
-#if defined(__DAV_310R6__)
-    constexpr bool ENABLE_HARD_POOL = true;
-#else
-    constexpr bool ENABLE_HARD_POOL = false;
-#endif
+constexpr bool ENABLE_HARD_POOL = false;
 
 constexpr int8_t CUBEOBJ_MIX_MODE = 2; // 0 no, 1 all, 2 mix
 template <class... Args> struct CubeObjs {};
@@ -144,13 +138,13 @@ __aicore__ inline void InitCurObj(AscendC::TPipe* tpipe, T& a, Args&&... b)
 }
 
 #ifdef ASCENDC_CPU_DEBUG
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 #ifdef ASCENDC_CUBE_ONLY
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...) \
     AscendC::InitCurObj(tpipe, __VA_ARGS__)
 
 #else
-#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF
 template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC::TPipe* tpipe, T &a, Args &&... b);
 
 template <class T, class... Args> __aicore__ inline void CountMatmulObjSkip(AscendC::TPipe* tpipe, T *a, Args &&... b);
@@ -271,7 +265,7 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
 
 #define REGIST_CUBE_OBJ_REMOTE(tpipe, workspace, ...)
 #else
-#if (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...)                                                             \
     using ASCubeObjConfig = AscendC::GetCubeObjConfig<decltype(AscendC::GetObjType(__VA_ARGS__))>;         \
     constexpr int8_t enableHardPollKfc = AscendC::ENABLE_HARD_POOL ? AscendC::ENABLE_HARD_POOL             \
@@ -327,7 +321,7 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
 #ifdef ASCENDC_CUBE_ONLY
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...) \
     return
-#elif (defined(__DAV_C310__) && KFC_C310_SSBUF) || defined(__DAV_310R6__)
+#elif (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF
 #define REGIST_CUBE_OBJ(tpipe, workspace, ...)                                                     \
     using ASCubeObjConfig = AscendC::GetCubeObjConfig<decltype(AscendC::GetObjType(__VA_ARGS__))>; \
     constexpr int8_t enableHardPollKfc = AscendC::ENABLE_HARD_POOL ? AscendC::ENABLE_HARD_POOL     \

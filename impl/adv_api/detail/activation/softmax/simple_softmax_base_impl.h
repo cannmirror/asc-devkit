@@ -15,15 +15,15 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_SIMPLE_SOFTMAX_BASE_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_SIMPLE_SOFTMAX_BASE_IMPL_H
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 #include "regbase/c310/simple_softmax_impl.h"
-#elif __CCE_AICORE__ == 300
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 #include "regbase/v300/simple_softmax_impl.h"
 #include "softmax_common/softmax_common_simple.h"
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "membase/v220/simple_softmax_impl.h"
 #include "softmax_common/softmax_common_simple.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "membase/v200/simple_softmax_impl.h"
 #include "softmax_common/softmax_common_simple.h"
 #endif
@@ -60,7 +60,7 @@ __aicore__ inline void SimpleSoftMaxImpl(const LocalTensor<T1>& dst, const Local
     const LocalTensor<T2>& inMaxTensor, const LocalTensor<T1>& src, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const SoftMaxTiling& tiling, const SoftMaxShapeInfo& softmaxShapeInfo)
 {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
     CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT", "SimpleSoftMax");
 #endif
     auto workLocal = sharedTmpBuffer.ReinterpretCast<float>();

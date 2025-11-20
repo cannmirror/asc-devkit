@@ -17,13 +17,13 @@
 #define LIB_MATH_CEIL_H
 
 #include "kernel_tensor.h"
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/math/ceil/ceil_common_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/math/ceil/ceil_c310_impl.h"
 #endif
 
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 
 namespace AscendC {
 #pragma begin_pipe(V)
@@ -44,7 +44,7 @@ template <typename T, bool isReuseSource = false>
 __aicore__ inline void Ceil(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
     const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
 {
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;
@@ -63,7 +63,7 @@ __aicore__ inline void Ceil(const LocalTensor<T> &dstTensor, const LocalTensor<T
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void Ceil(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const uint32_t calCount)
 {
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
         return;

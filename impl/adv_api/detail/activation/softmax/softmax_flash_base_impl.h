@@ -14,7 +14,7 @@
  */
 #ifndef IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_BASE_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_BASE_IMPL_H
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "regbase/c310/softmax_flash_impl.h"
 #else
 #include "softmax_common/softmax_common_flash.h"

@@ -79,7 +79,7 @@ public:
 
     __aicore__ inline uint64_t GetBufferHeadAddr()
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         return GetTQueHeadAddr(qidBias_);
 #else
         return 0;
@@ -88,7 +88,7 @@ public:
 
 private:
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
     static constexpr TQueConfig staticL1Evt = { .nd2nz = false,
                                                 .nz2nd = false,
                                                 .scmBlockGroup = false,

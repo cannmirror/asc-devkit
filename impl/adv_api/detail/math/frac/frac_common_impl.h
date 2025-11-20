@@ -12,9 +12,9 @@
 #include "kernel_tensor.h"
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "frac_v200_impl.h"
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "frac_v220_impl.h"
 #endif
 

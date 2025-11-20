@@ -15,13 +15,14 @@
 #ifndef IMPL_FILTER_DROPOUT_DROPOUT_IMPL_H
 #define IMPL_FILTER_DROPOUT_DROPOUT_IMPL_H
 
-#if (__CCE_AICORE__ <= 200) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 #include "dropout_m200_impl.h"
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "dropout_c220_impl.h"
-#elif __CCE_AICORE__ == 300
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 #include "dropout_m300_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 #include "dropout_c310_impl.h"
 #endif
 #include "../../api_check/kernel_api_check.h"
@@ -38,7 +39,7 @@ __aicore__ inline void DropOutOpt(const LocalTensor<T>& dstLocal, const LocalTen
 
     const uint32_t dataSize = info.firstAxis * info.srcLastAxis;
     T actualVal;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L300__)
     if constexpr (IsSameType<T, bfloat16_t>::value) {
         actualVal = ToBfloat16(divValue);
     } else {
@@ -67,14 +68,14 @@ __aicore__ inline void DropOutImpl(const LocalTensor<T>& dstLocal, const LocalTe
 {
     CHECK_FUNC_HIGHLEVEL_API(DropOut, (T, isInitBitMode, dropOutMode),
         (dstLocal, srcLocal, maskLocal, sharedTmpBuffer, keepProb, info));
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L300__)
     CheckTensorPos<T>(dstLocal, Hardware::UB, "dstLocal", "VECIN / VECCALC / VECOUT", "DropOut");
     CheckTensorPos<T>(srcLocal, Hardware::UB, "srcLocal", "VECIN / VECCALC / VECOUT", "DropOut");
     CheckTensorPos<uint8_t>(maskLocal, Hardware::UB, "maskLocal", "VECIN / VECCALC / VECOUT", "DropOut");
     CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT", "DropOut");
 #endif
     TRACE_START(TraceId::DropOut);
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L300__)
     static_assert((dropOutMode == 0 || dropOutMode == 1 || dropOutMode == 2 || dropOutMode == 3 || dropOutMode == 4),
         "dropOutMode should be 0 / 1 / 2 / 3 / 4");
     ASCENDC_ASSERT((info.firstAxis > 0), { KERNEL_LOG(KERNEL_ERROR, "info.firstAxis must > 0!"); });

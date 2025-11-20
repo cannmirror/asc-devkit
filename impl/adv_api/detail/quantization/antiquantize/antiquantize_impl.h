@@ -20,13 +20,13 @@
 #include "kernel_pop_stack_buffer.h"
 #include "antiquantize_common.h"
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "../antiquant/ascend_antiquant_c310_impl.h"
 #include "antiquantize_c310_impl.h"
 #endif
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 template <typename DstT, typename SrcT, typename ScaleT, AntiQuantizePolicy policy>
 __aicore__ inline constexpr bool IsDataTypeValid()
 {

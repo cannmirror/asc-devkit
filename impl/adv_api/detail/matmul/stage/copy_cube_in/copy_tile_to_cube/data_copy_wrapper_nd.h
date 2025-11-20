@@ -95,7 +95,7 @@ public:
         }
         nd2nzParams.dstNzNStride = 1;
         nd2nzParams.dstNzMatrixStride = dstNzMatrixStride;
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         if constexpr (!ToMatmulConfig(MM_CFG).intrinsicsCheck) {
             DataCopy(dst, src[srcOffset], nd2nzParams);
         } else {

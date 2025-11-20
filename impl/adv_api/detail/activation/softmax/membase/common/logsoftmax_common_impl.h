@@ -14,9 +14,9 @@
  */
 #ifndef IMPL_ACTIVATION_SOFTMAX_MEMBASE_COMMON_LOGSOFTMAX_COMMON_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_MEMBASE_COMMON_LOGSOFTMAX_COMMON_IMPL_H
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "../v220/softmax_common_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "../v200/softmax_common_impl.h"
 #endif
 

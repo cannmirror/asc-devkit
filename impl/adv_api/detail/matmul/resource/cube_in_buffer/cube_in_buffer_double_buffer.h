@@ -64,7 +64,7 @@ public:
             } else {
                 GetTPipePtr()->InitBuffer(qid_, queDepth, matrixByteSize * stepSize + GetBankConflictSize());
             }
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
             if (IsFromUB()) {
                 eventIDMte3ToMte1_ = static_cast<event_t>(GetTPipePtr()->AllocEventID<HardEvent::MTE3_MTE1>());
             }
@@ -77,7 +77,7 @@ public:
         isCachingPing_ = false;
         isCachingPong_ = false;
         qid_.FreeAllEvent();
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if (IsFromUB()) {
             GetTPipePtr()->ReleaseEventID<HardEvent::MTE3_MTE1>(eventIDMte3ToMte1_);
         }
@@ -137,7 +137,7 @@ public:
 
     __aicore__ inline void EnQue(LocalTensor<TransT>& tensor)
     {
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if (IsFromUB()) {
             SetFlag<HardEvent::MTE3_MTE1>(eventIDMte3ToMte1_);
         } else {
@@ -150,7 +150,7 @@ public:
 
     __aicore__ inline void DeQue()
     {
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if (IsFromUB()) {
             WaitFlag<HardEvent::MTE3_MTE1>(eventIDMte3ToMte1_);
         } else {
@@ -245,7 +245,7 @@ private:
     __aicore__ inline void SetCache(bool isPong, const LocalTensor<TransT>& cacheTensor)
     {
         if (isPong) {
-    #if __CCE_AICORE__ == 220
+    #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             Barrier();
     #endif
             cachePong_ = cacheTensor.GetBufferHandle();
@@ -257,7 +257,7 @@ private:
     __aicore__ inline void SetBufferCaching(bool isPong, bool isCaching)
     {
         if (isPong) {
-    #if __CCE_AICORE__ == 220
+    #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             Barrier();
     #endif
             isCachingPong_ = isCaching;
@@ -280,7 +280,7 @@ private:
     int32_t cacheFactor_;
     bool isCachingPing_ { false };
     bool isCachingPong_ { false };
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
     event_t eventIDMte3ToMte1_;
 #endif
 };

@@ -18,7 +18,7 @@
 
 #if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
 #include "copy_tile_to_cube_common.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "copy_tile_to_cube_mx.h"
 #endif
 #else

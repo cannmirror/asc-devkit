@@ -17,7 +17,7 @@
 #define LIB_SORT_SORT_H
 
 #include "kernel_operator.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/sort/sort/sort_impl.h"
 #endif
@@ -36,7 +36,7 @@
  *     const LocalTensor<uint32_t> &indexLocal, LocalTensor<T> &tmpLocal, const int32_t repeatTimes);
 */
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 namespace AscendC {
 #pragma begin_pipe(V)
 /* !

@@ -96,7 +96,7 @@ public:
     __aicore__ inline uint64_t GetBufferHeadAddr()
     {
 // wait for GetTQueHeadAddr
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         return GetTQueHeadAddr(qid_);
 #else
         return 0;

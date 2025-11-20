@@ -31,7 +31,7 @@ __aicore__ inline void SoftmaxFlashV2NoUpdate(const LocalTensor<T1>& dst, const 
     const LocalTensor<T1>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     if (originalSrcShape.k % FLOAT_REPEAT_SIZE) {
         SoftMaxGenericNDWithTailImpl<T1, T1, isBasicBlock, true>(dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
     } else {
@@ -124,7 +124,7 @@ __aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<float>& dst, c
     Add(expSumTensor[offset2], expSumTensor[offset2], tmpBuffer0, reduceSize);
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 __aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<half>& dst, const LocalTensor<half>& expSumTensor,
     const LocalTensor<half>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
     const LocalTensor<half>& inExpSumTensor, const LocalTensor<half>& inMaxTensor, const LocalTensor<float>& workLocal,
@@ -209,7 +209,7 @@ __aicore__ inline void SoftmaxFlashV2Update(const LocalTensor<T1>& dst, const Lo
     const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     SoftmaxFlashV2UpdateNDImpl(dst, expSumTensor, maxTensor, src, expMaxTensor, inExpSumTensor, inMaxTensor,
                 workLocal, originalSrcShape, tiling);
 #else

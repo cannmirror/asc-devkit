@@ -17,7 +17,7 @@
 #include "kernel_tensor.h"
 #include "kernel_tiling/kernel_tiling.h"
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 namespace AscendC {
 __aicore__ inline void LGammaFloor(const LocalTensor<float> &dst, const LocalTensor<float> &src)
 {

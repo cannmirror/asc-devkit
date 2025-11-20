@@ -156,7 +156,7 @@ public:
 } // namespace AscendC
 
 #include "copy_cube_in_params_base.h"
-#if defined(__DAV_C310__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "copy_cube_in_params_mx.h"
 #endif
 

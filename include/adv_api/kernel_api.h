@@ -15,7 +15,7 @@
 #ifndef LIB_KERNEL_API_H
 #define LIB_KERNEL_API_H
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #if (__NPU_ARCH__ != 5102)
 #include "hccl/hccl.h"
 #endif
@@ -112,9 +112,10 @@
 #include "normalization/deepnorm.h"
 #include "normalization/batchnorm.h"
 #include "normalization/groupnorm.h"
-#endif // __CCE_AICORE__ == 310
+#endif // __NPU_ARCH__ == 3101
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ != 310) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+    __NPU_ARCH__ == 3002)
 #include "filter/dropout.h"
 #include "activation/sigmoid.h"
 #include "activation/softmax.h"
@@ -132,7 +133,7 @@
 #include "../utils/std/utility.h"
 #include "../utils/std/algorithm.h"
 
-#if defined(__CCE_AICORE__) && (__CCE_AICORE__ < 300) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "index/arithprogression.h"
 #include "normalization/layernormgrad.h"
 #include "normalization/layernormgradbeta.h"
@@ -194,6 +195,6 @@
 #include "math/fmod.h"
 #include "normalization/groupnorm.h"
 #include "utils/init_global_memory.h"
-#endif // __CCE_AICORE__ < 300
+#endif // __NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201
 
 #endif // LIB_KERNEL_API_H

@@ -20,12 +20,12 @@
 #include "kernel_pop_stack_buffer.h"
 #include "dequantize_common.h"
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "../dequant/ascend_dequant_c310_impl.h"
 #endif
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 // DequantParams check
 template <typename DstT>
 __aicore__ inline bool IsDequantizeParamsValid(const LocalTensor<int32_t>& srcTensor, const LocalTensor<DstT>& dstTensor,

@@ -114,7 +114,7 @@ private:
             KERNEL_LOG(KERNEL_ERROR, "tiling_.IsBias() is %d , which should be not less than 0", tiling_.IsBias());
         });
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 )
         ASCENDC_ASSERT((tiling_.GetTransLength() > 0), {
             KERNEL_LOG(KERNEL_ERROR, "tiling_.GetTransLength() is %d , which should be larger than 0",
                 tiling_.GetTransLength());
@@ -167,7 +167,7 @@ private:
             KERNEL_LOG(KERNEL_ERROR, "baseM * baseN is %d , which should be no larger than L0CSize_ %d.",
                 tiling_.GetBaseM() * tiling_.GetBaseN() * sizeof(L0cT) * l0CUseSizeFactor, L0CSize_);
         });
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
         if constexpr ((DoMatmulNorm(MM_CFG) || DoMatmulMDL(MM_CFG)) && ToMatmulConfig(MM_CFG).isA2B2Shared) {
             ASCENDC_ASSERT((tiling_.GetBaseM() * tiling_.GetBaseK() * AscendC::GetBitSize<SrcT>() / ONE_BYTE_BIT_SIZE <= L0ASize_ / Impl::DB_FACTOR), {
                 KERNEL_LOG(KERNEL_ERROR, "baseM * baseK is %d , which should be no larger than A2 Size / 2 when isA2B2Shared is enable %d.",
@@ -201,7 +201,7 @@ private:
     template <typename SrcT, typename L0cT>
     __aicore__ inline void MxShapeValidCheck()
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         const auto l0ABUseSizeFactor = (tiling_.GetDbL0A() - 1) & (tiling_.GetDbL0B() - 1) ? Impl::DB_FACTOR : 1;
         const auto l0CUseSizeFactor = (tiling_.GetDbL0C() == Impl::DB_FACTOR) ? Impl::DB_FACTOR : 1;
         // A  < l0aSize;
@@ -267,7 +267,7 @@ private:
 
     __aicore__ inline void MxTypeParaCheck()
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         if constexpr (DoMatmulMDL(MM_CFG)) {
             int32_t mxTypePara = tiling_.GetMxTypePara();
             // 0x101 is scaleFactorKa, scaleFactorKb min val
@@ -291,7 +291,7 @@ private:
                 });
             }
 
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
             if constexpr (ToMatmulConfig(MM_CFG).scheduleType == ScheduleType::OUTER_PRODUCT) {
                 ASCENDC_ASSERT(tiling_.GetSingleCoreK() <= tiling_.GetBaseK(), {
                     KERNEL_LOG(KERNEL_ERROR, "When singleCoreK is larger than baseK, the parameter scheduleType of "
@@ -300,7 +300,7 @@ private:
             }
 #endif
         }
-#if __CCE_AICORE__ < 220  && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
         // when output is int8 and ND format, do not support on the fly trans nd2nz
         if constexpr (IMPL::CType::format == CubeFormat::ND && !ToMatmulConfig(MM_CFG).enVecND2NZ &&
                       (IsSameType<typename IMPL::CType::T, int8_t>::value ||
@@ -318,10 +318,10 @@ private:
               enable_if_t<MdlInitScene<MM_CFG_ALIAS>, bool> = false>
     __aicore__ inline void ConfigSpecificCheck()
     {
-#if __CCE_AICORE__ < 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
         ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "MatmulVersion MULTI_DATA_LOAD is valid only in v220."); });
 #endif
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
         // when output is int8 and ND format, do not support on the fly trans nd2nz
         if constexpr (IMPL::CType::format == CubeFormat::ND && !ToMatmulConfig(MM_CFG).enVecND2NZ &&
                       (IsSameType<typename IMPL::CType::T, int8_t>::value ||
@@ -339,7 +339,7 @@ private:
                 "ScheduleType is OUTER_PRODUCT only supported on A2/A3/A5."); });
         }
 #endif
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
         if constexpr (ToMatmulConfig(MM_CFG).scheduleType == ScheduleType::OUTER_PRODUCT) {
             ASCENDC_ASSERT(tiling_.GetSingleCoreK() <= tiling_.GetBaseK(), {
                 KERNEL_LOG(KERNEL_ERROR, "When singleCoreK is larger than baseK, the parameter scheduleType of "
@@ -368,7 +368,7 @@ private:
 
     __aicore__ inline void MxConfigSpecificCheck()
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         if constexpr (ToMatmulConfig(MM_CFG).scheduleType == ScheduleType::OUTER_PRODUCT) {
             ASCENDC_ASSERT(DoMatmulMDL(MM_CFG), {
                 KERNEL_LOG(KERNEL_ERROR, "when scheduleType is OUTER_PRODUCT, MxMatmul only support mdl");
@@ -414,7 +414,7 @@ private:
 
     __aicore__ inline void ConfigCommonCheck()
     {
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if (IMPL::CType::format == CubeFormat::ND && (tiling_.GetN() * sizeof(typename IMPL::CType::T) % ONE_BLK_SIZE != 0)) {
             ASCENDC_ASSERT(
                 (false), { KERNEL_LOG(KERNEL_ERROR, "N dims need to be aligined to 32B when ND format output in v200."); });
@@ -450,7 +450,7 @@ private:
         }
 #endif
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         if constexpr (ToMatmulConfig(MM_CFG).enableL1BankConflictOptimise) {
             static_assert(DoMatmulMDL(MM_CFG), "L1BankConflictOptimise only support MDL config.");
 

@@ -68,18 +68,16 @@ private:
 
     __aicore__ inline constexpr static uint8_t GetChipType()
     {
-        #if __CCE_AICORE__ == 100
+        #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
             return CHIP_TYPE_100;
-        #elif __CCE_AICORE__ == 200
+        #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
             return CHIP_TYPE_200;
-        #elif __CCE_AICORE__ == 220
+        #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
             return CHIP_TYPE_220;
-        #elif __CCE_AICORE__ == 300
+        #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
             return CHIP_TYPE_300;
-        #elif defined(__DAV_C310__)
+        #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
             return CHIP_TYPE_310;
-        #elif defined(__DAV_310R6__)
-            return CHIP_TYPE_310R6;
         #elif __NPU_ARCH__ == 5102
             return CHIP_TYPE_510R2;
         #else

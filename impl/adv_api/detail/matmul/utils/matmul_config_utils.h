@@ -30,7 +30,7 @@ constexpr int32_t B32_C0SIZE = 8;
 constexpr int32_t B16_C0SIZE = 16;
 constexpr int32_t L0_SIZE = 64 * 1024;
 constexpr int32_t MAX_BLOCK_COUNT_SIZE = 4095;
-#if __CCE_AICORE__ < 200 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 constexpr int32_t DB_FACTOR = 1;
 #else
 constexpr int32_t DB_FACTOR = 2;
@@ -45,14 +45,14 @@ constexpr uint8_t ATOMIC_MIN = 3;
 constexpr int32_t DOUBLE_SIZE = 2;
 constexpr uint32_t SHARE_LEN_SIZE = 3;
 
-#if __CCE_AICORE__ < 220 && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 constexpr static int L1Size_ = 1024 * 1024;
 constexpr static int L0CSize_ = 256 * 1024;
 constexpr static int UBSize_ = 256 * 1024;
-#elif __CCE_AICORE__ == 300
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 constexpr static int L1Size_ = 1024 * 1024;
 constexpr static int L0CSize_ = 128 * 1024;
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 constexpr static int L1Size_ = 512 * 1024;
 constexpr static int L0CSize_ = 256 * 1024;
 
@@ -88,7 +88,7 @@ constexpr int32_t MX_EVEN_FACTOR = 2;
             equal: TOTAL_UB_SIZE * MAX_AIV_NUM
 */
 constexpr int64_t GM_OFFSET = 128 * 2 * 64 * 50 + 128 * 8 * 50 + 192 * 1024 * 50;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 constexpr FixpipeConfig CFG_ROW_MAJOR_UB = {CO2Layout::ROW_MAJOR, true};
 constexpr FixpipeConfig CFG_NZ_UB = {CO2Layout::NZ, true};
 #else

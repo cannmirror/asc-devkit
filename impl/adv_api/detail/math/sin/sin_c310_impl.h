@@ -15,7 +15,7 @@
 #ifndef LIB_MATH_SIN_C310_IMPL_H
 #define LIB_MATH_SIN_C310_IMPL_H
 #include "kernel_tensor.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__) || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 #include "../sincos/sincos_c310_impl.h"
 #include "sin_common_utils.h"
 #endif

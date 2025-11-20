@@ -19,9 +19,9 @@
 #include "kernel_pop_stack_buffer.h"
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "sin_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "sin_v200_impl.h"
 #endif
 
@@ -57,7 +57,7 @@ __aicore__ inline void SinSignCompute(const LocalTensor<float>& dstTensor, const
     // kover2
     Muls<float, false>(dstTensor, roundTensor, SIN_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     SinCastFullMask(dstTensor, dstTensor, RoundMode::CAST_FLOOR);
 #else
     SinCast(dstTensor, dstTensor, RoundMode::CAST_FLOOR);
@@ -163,7 +163,7 @@ __aicore__ inline void SinRound(const LocalTensor<float>& inputX, const LocalTen
     const UnaryRepeatParams unaryParams;
     Muls<float, false>(roundTensor, srcTensor, SIN_PI_FOR_X_TODIV, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     SinCastFullMask(roundTensor, roundTensor, RoundMode::CAST_ROUND);
 #else
     SinCast(roundTensor, roundTensor, RoundMode::CAST_ROUND);

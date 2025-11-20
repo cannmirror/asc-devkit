@@ -16,7 +16,7 @@
 #define LIB_MATMUL_MATMUL_INTF_H
 
 #include "../../impl/adv_api/detail/kfc/kfc_register_obj.h"
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 #include "../../impl/adv_api/detail/kfc/kernel_kfc.h"
 #else
 #include "include/adv_api/matmul/matmul.h"
@@ -26,7 +26,7 @@ namespace AscendC {
 #define REGIST_MATMUL_OBJ_STATIC REGIST_CUBE_OBJ
 #define REGIST_MATMUL_OBJ REGIST_CUBE_OBJ
 #ifdef ASCENDC_CPU_DEBUG
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 #ifdef ASCENDC_CUBE_ONLY
 template <
     class A_TYPE, 
@@ -69,7 +69,7 @@ template <
 
 using Matmul = MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
 
-#endif // __CCE_AICORE__ == 220 || defined(__DAV_C310__) || defined(__DAV_310R6__)
+#endif // defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
 
 #else // Not in ASCENDC_CPU_DEBUG mode
 

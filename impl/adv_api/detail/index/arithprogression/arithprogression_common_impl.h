@@ -48,7 +48,7 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
 {
     CHECK_FUNC_HIGHLEVEL_API(ArithProgression, (T), (dstLocal, firstValue, diffValue, count));
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     if (g_coreType == AIC) {
         return;
     }

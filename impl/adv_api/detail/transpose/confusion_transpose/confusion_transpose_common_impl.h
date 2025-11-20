@@ -16,17 +16,17 @@
 #define IMPL_TRANSPOSE_CONFUSION_TRANSPOSE_CONFUSION_TRANSPOSE_COMMON_IMPL_H
 
 #include "../../api_check/kernel_api_check.h"
-#if (__CCE_AICORE__ <= 200) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 #include "confusion_transpose_v200_impl.h"
-#elif __CCE_AICORE__ == 220
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "confusion_transpose_v220_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "confusion_transpose_v220_impl.h"
 #include "confusion_transpose_c310_impl.h"
 #endif
 
 namespace AscendC {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 template <typename T>
 __aicore__ inline void CheckCompatibleTransposeTypeDataType() {
     ASCENDC_ASSERT(

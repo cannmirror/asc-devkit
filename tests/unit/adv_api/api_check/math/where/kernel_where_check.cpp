@@ -13,7 +13,7 @@
 #include "kernel_operator.h"
 #include "impl/adv_api/detail/api_check/kernel_api_check.h"
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 class WhereAPICheck : public testing::Test {
 protected:
     static void SetUpTestCase() {}

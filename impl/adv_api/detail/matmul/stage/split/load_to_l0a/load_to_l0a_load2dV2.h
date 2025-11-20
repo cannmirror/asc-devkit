@@ -125,7 +125,7 @@ private:
      uint16_t aL1K, uint16_t madM, uint16_t madK, uint16_t aL1MOffset, uint16_t aL1KOffset,
      const LocalTensor<AuxDtype> &l1AAuxMatrix, uint16_t aAuxL1K, uint16_t aAuxL1KOffset, uint16_t aAuxL1MOffset) const
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         uint16_t mStep = CeilDiv(madM, HW_M0);
         uint16_t kStep = CeilDiv(madK, c0Size_);
 
@@ -161,7 +161,7 @@ private:
      uint16_t aL1M, uint16_t madM, uint16_t madK, uint16_t aL1MOffset, uint16_t aL1KOffset,
      const LocalTensor<AuxDtype> &l1AAuxMatrix, uint16_t aAuxL1K, uint16_t aAuxL1KOffset, uint16_t aAuxL1MOffset) const
     {
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
         uint16_t mStep = CeilDiv(madM, HW_M0);
         uint16_t kStep = CeilDiv(madK, c0Size_);
 

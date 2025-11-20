@@ -150,7 +150,7 @@ public:
         int calcWidthExr = CeilT<int32_t>(width, c0Size_);
         int calcHeightExr = CeilT<int32_t>(height, BLOCK_CUBE);
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         // set2d, pad tail zero
         if (height % BLOCK_CUBE != 0) {
             int64_t repeat = calcWidthExr * calcHeightExr;

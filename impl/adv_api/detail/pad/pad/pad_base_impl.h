@@ -199,7 +199,7 @@ __aicore__ inline void UnAlignedPad(const LocalTensor<T>& dstTensor, const Local
                         PipeBarrier<PIPE_V>();
                     }
                     // load data to tmp1 from src
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
                     if (brcbFractalCount == brcbFractal) {
                         for (uint32_t i = 0; i < brcbFractalTailRepeatTimes; i++) {
                             Brcb(tmp1[i * maxRepeatTimes * 8 * tmpWidth],

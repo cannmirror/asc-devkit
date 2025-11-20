@@ -20,7 +20,7 @@
 #include "k_loop_norm.h"
 #include "k_loop_intrablock.h"
 #include "k_loop_mdl_partial_output.h"
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 #include "k_loop_mdl_mx.h"
 #endif
 

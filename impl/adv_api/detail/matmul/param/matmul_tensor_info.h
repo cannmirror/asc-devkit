@@ -91,12 +91,12 @@ private:
             ASCENDC_ASSERT(!isTransposeA, { KERNEL_LOG(KERNEL_ERROR,
                 "In GEMV mode, matrix A should not be transposed.");});
         }
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         if constexpr (IsSameType<SrcT, int4b_t>::value) {
             ASCENDC_ASSERT(!isTransposeA, { KERNEL_LOG(KERNEL_ERROR,
                 "When matrix A DType is int4, matrix A should not be transposed");});
         }
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if constexpr (IsSameType<SrcT, int8_t>::value) {
             ASCENDC_ASSERT(!isTransposeA, { KERNEL_LOG(KERNEL_ERROR,
                 "When matrix A DType is int8, matrix A should not be transposed");});

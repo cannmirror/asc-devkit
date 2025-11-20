@@ -19,13 +19,13 @@
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "ascend_quant_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "ascend_quant_v200_impl.h"
-#elif __CCE_AICORE__ == 100
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 #include "ascend_quant_v100_impl.h"
-#elif defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "ascend_quant_c310_impl.h"
 #include "ascend_quant_per_group_c310_impl.h"
 #endif
@@ -66,7 +66,7 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
         scaleCount, offsetCount, calCount);
 }
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 template <typename dstT, typename srcT, bool isReuseSource = false>
 __aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
     const float scale, const float offset, const uint32_t calCount)

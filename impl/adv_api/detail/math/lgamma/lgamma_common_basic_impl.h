@@ -15,12 +15,12 @@
 #ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMOM_BASIC_IMPL_H
 #define IMPL_MATH_LGAMMA_LGAMMA_COMMOM_BASIC_IMPL_H
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "lgamma_v220_impl.h"
-#elif __CCE_AICORE__ == 200
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "lgamma_v200_impl.h"
 #endif
-#if __CCE_AICORE__ == 200 || __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 namespace AscendC {
 __aicore__ inline void LGammaCalcMulAdd(const LocalTensor<float> &tmp, const LocalTensor<float> &src,
     const UnaryRepeatParams &unaryParams, const BinaryRepeatParams binaryParams, const float params[],
