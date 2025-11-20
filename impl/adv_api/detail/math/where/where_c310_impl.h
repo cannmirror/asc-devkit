@@ -31,6 +31,10 @@ template <> struct ExtractDataTypeBySize<sizeof(uint16_t)> {
 template <> struct ExtractDataTypeBySize<sizeof(uint32_t)> {
     using T = uint32_t;
 };
+
+template <> struct ExtractDataTypeBySize<sizeof(uint64_t)> {
+    using T = uint32_t;
+};
 }
 template <bool src0Val, bool src1Val, typename T, typename V, const MicroAPI::RegTrait& regTrait = MicroAPI::RegTraitNumOne>
 __simd_vf__ inline void WhereCompute(__local_mem__ T* dstUb, __local_mem__ T* src0Ub,
@@ -83,7 +87,7 @@ __aicore__ inline void WhereImpl(const LocalTensor<T>& dst, const U& src0, const
     using WhereType = typename WhereInternal::ExtractDataTypeBySize<sizeof(T)>::T;
 
     __local_mem__ V *conditionUb = (__local_mem__ V *)condition.GetPhyAddr();
-    uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, GetVecLen() / sizeof(T)));
+    uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, GetVecLen() / sizeof(WhereType)));
     if constexpr (TypeUtils::IsLocalTensorType<U, S>()) {
         static_assert(Std::is_same<U, S>::value);
         static_assert(Std::is_same<T, typename U::PrimType>::value);
