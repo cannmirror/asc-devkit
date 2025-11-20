@@ -13,11 +13,11 @@
 
 ## 算子开发样例
 当前本目录包含的所有样例如下。
-|  目录名称                                                   |  功能描述                                              |  支持的AI处理器 |
-| ------------------------------------------------------------ | ---------------------------------------------------- | -- |
-| [00_printf](./00_printf) | 基于Ascend C的Matmul自定义Cube算子并调用printf进行调测的KernelLaunch和FrameworkLaunch调用样例 | Ascend 910B |
-| [01_assert](./01_assert) | 基于Ascend C的Matmul自定义Cube算子并调用assert进行调测的KernelLaunch和FrameworkLaunch调用样例 | Ascend 910B |
-| [02_dumptensor](./02_dumptensor) | 基于Ascend C的Add自定义算子和Mmad自定义算子并调用DumpTensor进行调测的KernelLaunch和FrameworkLaunch调用样例 | Ascend 910B |
+|  目录名称                                                   |  功能描述                                              |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| [00_printf](./00_printf) | 基于Ascend C的Matmul自定义Cube算子并调用printf进行调测的KernelLaunch和FrameworkLaunch调用样例 |
+| [01_assert](./01_assert) | 基于Ascend C的Matmul自定义Cube算子并调用assert进行调测的KernelLaunch和FrameworkLaunch调用样例 |
+| [02_dumptensor](./02_dumptensor) | 基于Ascend C的Add自定义算子和Mmad自定义算子并调用DumpTensor进行调测的KernelLaunch和FrameworkLaunch调用样例 |
 
 ## 获取样例代码<a name="codeready"></a>
 
