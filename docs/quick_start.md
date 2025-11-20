@@ -1,4 +1,4 @@
-# 构建
+# 快速入门
 ## 前提条件
 1. **安装依赖**
 
@@ -95,7 +95,7 @@
    ./cann-asc-devkit_<cann_version>_linux-<arch>.run --full --install-path=${install_path}
    ```
 
-## 本地验证
+## UT验证
 
 在开源仓根目录执行下列命令之一，将依次批跑tests目录下的用例，得到结果日志，用于看护编译是否正常。
 
