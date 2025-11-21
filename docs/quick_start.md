@@ -10,6 +10,14 @@
 
    - cmake >= 3.16.0
 
+   - ccache >= 4.6.1
+
+   - lcov >= 1.13（可选，仅执行UT时依赖）
+   
+   - pytest >= 5.4.2（可选，仅执行UT时依赖）
+
+   - coverage >= 4.5.4（可选，仅执行UT时依赖）
+
    - googletest（可选，仅执行UT时依赖，建议版本[release-1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)）
 
      下载[googletest源码](https://github.com/google/googletest.git)后，执行以下命令安装：
@@ -25,7 +33,7 @@
 
    运行算子时必须安装驱动与固件，若仅编译算子，可跳过本操作，安装指导详见《[CANN 软件安装指南](https://www.hiascend.com/document/redirect/CannCommunityInstSoftware)》。
 
-## 环境准备
+## 环境准备<a name="prepare&install"></a>
 本项目支持由源码编译，进行源码编译前，请根据如下步骤完成相关环境准备。
 
 1. **安装社区尝鲜版CANN toolkit包**
