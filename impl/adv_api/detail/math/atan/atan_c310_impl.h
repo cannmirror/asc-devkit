@@ -157,12 +157,13 @@ __simd_vf__ inline void AtanTaylorVFImpl(
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
 
     uint32_t sreg = calCount;
-    MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(sreg);
+    MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<T> srcReg;
     MicroAPI::RegTensor<float> castReg;
     MicroAPI::RegTensor<float> dstReg;
 
     for (uint16_t i = 0; i < repeatTimes; ++i) {
+        preg = MicroAPI::UpdateMask<float>(sreg);
         if constexpr (sizeof(T) == sizeof(half)) {
             MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * B32_DATA_NUM_PER_REPEAT);
             MicroAPI::Cast<float, T, castTraitB16ToB32>(castReg, srcReg, preg);
