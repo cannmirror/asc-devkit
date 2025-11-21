@@ -133,6 +133,17 @@ static std::string MapParamTypeToVoid(std::string paramType)
 void AscHostStubGenerator::GenStubFuncImpl()
 {
     auto &infoManager = InfoManager::GetInstance();
+    ShortSocVersion shortSoc = infoManager.GetShortSocVersion();
+    constexpr uint32_t coreNumNormal = 75;
+    constexpr uint32_t coreNum91095 = 108;
+    uint32_t maxCoreNum = coreNumNormal;
+    if (shortSoc == ShortSocVersion::ASCEND910B || shortSoc == ShortSocVersion::ASCEND310P ||
+        shortSoc == ShortSocVersion::ASCEND910 || shortSoc == ShortSocVersion::ASCEND310B) {
+        maxCoreNum = coreNumNormal;
+    }
+    if (shortSoc == ShortSocVersion::ASCEND910_95) {
+        maxCoreNum = coreNum91095;
+    }
     KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     std::ostringstream funcImplCode;
     funcImplCode << GenStubFuncDecl(/* hasNameSpace = */true) << "\n{\n";
@@ -161,8 +172,8 @@ void AscHostStubGenerator::GenStubFuncImpl()
     if (infoManager.IsDumpOn()) {
         funcImplCode << "    constexpr uint32_t __ascendc_one_core_dump_size = "
                      << std::to_string(infoManager.GetOneCoreDumpSize()) << ";\n";
-        funcImplCode <<
-            "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * 75);\n";
+        funcImplCode << "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * "
+                     << maxCoreNum << ");\n";
     }
     funcImplCode << "    constexpr uint32_t __ascendc_overflow_status_size = 8;\n";
     funcImplCode <<
@@ -196,8 +207,8 @@ void AscHostStubGenerator::GenStubFuncImpl()
     funcImplCode << "    }\n";
     funcImplCode << "    AscPluginGenerator::GetHandleUnregisterInst();\n";
     if (infoManager.IsDumpOn() && infoManager.HasPrintf()) {
-        funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, "
-                               "__ascendc_one_core_dump_size * 75, __ascendc_stream, __ascendc_name);\n";
+        funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * "
+                     << maxCoreNum << ", __ascendc_stream, __ascendc_name);\n";
     }
     if (infoManager.IsDumpOn()) {
         funcImplCode << "    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);\n";

@@ -99,8 +99,8 @@ inline bool IsMixKernelType(const KernelMetaType kType)
 void UpdateManglingNameSuffix(std::vector<std::string>& compileOptions, const CoreType coreType)
 {
     auto& manager = InfoManager::GetInstance();
-    ShortSocVersion soc = manager.GetShortSocVersion();
-    if (soc == ShortSocVersion::ASCEND910B) {
+    ShortSocVersion shortSoc = manager.GetShortSocVersion();
+    if (shortSoc == ShortSocVersion::ASCEND910B || shortSoc == ShortSocVersion::ASCEND910_95) {
         for (const auto& funcInfo : InfoManager::GetInstance().GetGlobalSymbolInfo()) {
             std::string manglingName = funcInfo.first;
             KernelMetaType kType = std::get<0>(funcInfo.second);
@@ -287,11 +287,15 @@ int32_t PluginGenKernel(const char** result, const char* info)
     }
 
     const auto& [kernelType, kfcScene] = GetKernelFuncScene(kernelInfo);
-    for (const auto& ktype : kernelType) {
-        if (ktype == KernelMetaType::KERNEL_TYPE_AIC_ONLY || ktype == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
-            continue;
+    ShortSocVersion shortSoc = manager.GetShortSocVersion();
+    // 910_95 no ffts, don't set flag means close
+    if (shortSoc != ShortSocVersion::ASCEND910_95) {
+        for (const auto& ktype : kernelType) {
+            if (ktype == KernelMetaType::KERNEL_TYPE_AIC_ONLY || ktype == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
+                continue;
+            }
+            InfoManager::GetInstance().SetAscendMetaFlag(ASC_FFTS_MASK);
         }
-        InfoManager::GetInstance().SetAscendMetaFlag(ASC_FFTS_MASK);
     }
     const auto [deviceResult, deviceStub, metaInfo] = GetDeviceCode(kernelInfo, kernelType, kfcScene);
     if (deviceResult != 0) {
