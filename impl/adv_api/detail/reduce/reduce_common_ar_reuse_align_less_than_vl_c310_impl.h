@@ -173,7 +173,7 @@ __aicore__ inline void ReduceARReuseSourceLessThanVL(__ubuf__ T *dstAddr, __ubuf
     } else if constexpr (groupReduceType != ReduceType::OTHERS) {
         if (dimR == GetDataBlockSizeInBytes() / sizeof(T)) {
             GroupReduceARLessThanVL<T, Trait, vlSize, Binaryfunc, groupReduceType, false>(dstAddr, srcAddr, dimA, dimR);
-        } else if (dimR <= vlSize / 2) {
+        } else if (dimR < vlSize / 2) {
             GroupReduceARLessThanVL<T, Trait, vlSize, Binaryfunc, groupReduceType, true>(dstAddr, srcAddr, dimA, dimR);
         } else {
             ReduceARLessThanVL<T, Trait, Reducefunc>(dstAddr, srcAddr, dimA, dimR);
