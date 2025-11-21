@@ -143,11 +143,11 @@ __aicore__ inline void CumSumCopyOut(const LocalTensor<T>& dstTensor, const Loca
     uint16_t tailRepeatTime = tailCount > 0 ? 1 : 0;
     if (inner % elePerBlock == 0) {
         // 32B per copy
-        VF_CALL<CumSumCopyOutWithBlockVF<T>>(src, dst, outter, inner, mainRepeatTime, innerOneRepNum, tailCount,
+        CumSumCopyOutWithBlockVF<T>(src, dst, outter, inner, mainRepeatTime, innerOneRepNum, tailCount,
                                              tailRepeatTime);
     } else {
         // 256B per copy
-        VF_CALL<CumSumCopyOutVF<T>>(src, dst, outter, inner, mainRepeatTime, innerOneRepNum, tailCount, tailRepeatTime);
+        CumSumCopyOutVF<T>(src, dst, outter, inner, mainRepeatTime, innerOneRepNum, tailCount, tailRepeatTime);
     }
 }
 

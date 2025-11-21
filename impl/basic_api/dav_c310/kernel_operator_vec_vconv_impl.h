@@ -1377,7 +1377,7 @@ __aicore__ inline void CastDouble(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src
             CastDoubleToBf160<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
         }
     } else if constexpr (cast_Int64ToDouble) {
-        VF_CALL<CastInt64ToDouble<DST_TYPE, SRC_TYPE, roundMode>>(dst, src, calCount);
+        CastInt64ToDouble<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
     } else if constexpr (cast_DoubleToInt32) {
         CastDoubleToInt32<DST_TYPE, SRC_TYPE, roundMode>(dst, src, calCount);
     } else if constexpr (cast_DoubleToInt64) {
