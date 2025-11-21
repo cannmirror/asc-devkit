@@ -70,12 +70,7 @@ __aicore__ inline void VecCreateVecIndexLevel0Template(__ubuf__ T *dst, const T 
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
 
-    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
-    maskStruct maskArrayStruct;
-    for (uint16_t i = 0; i < maskArraySize; i++) {
-        maskArrayStruct.maskArray[i] = maskArray[i];
-    }
-
+    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if (Internal::IsCounterMode()) {
         VecCreateVecIndexLevel0VFImpl<isMaskBitMode, false, T>(dst, firstValue, maskArrayStruct, maskCount,
             repeatTime, dstBlkStride, dstRepStride, nullptr);

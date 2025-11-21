@@ -1792,12 +1792,7 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
         Tuple<int32_t, int64_t>, Tuple<int64_t, int32_t>>();
     bool isCounterMode = Internal::IsCounterMode();
     
-    uint16_t maskArraySize = (mask == nullptr) ? 0 : MASK_ARRAY_SIZE;
-    maskStruct maskArrayStruct;
-    for (uint16_t i = 0; i < maskArraySize; i++) {
-        maskArrayStruct.maskArray[i] = mask[i];
-    }
-
+    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(mask);
     if (isCounterMode) {
         __ubuf__ uint64_t *maskBuf = nullptr;
         if constexpr (!isSetMask) {

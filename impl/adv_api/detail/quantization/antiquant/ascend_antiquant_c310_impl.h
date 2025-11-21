@@ -182,6 +182,8 @@ template <typename SrcType, typename OutputDataType>
 __simd_vf__ inline void AscendAntiQuantNoTranspose(__local_mem__ OutputDataType* dstUb,
     __local_mem__ SrcType* srcUb, __local_mem__ fp8_e8m0_t* scaleUb, const uint32_t k, const uint32_t n)
 {
+    static_assert(SupportType<SrcType, fp4x2_e2m1_t, fp4x2_e1m2_t>(),
+        "This AscendAntiQuant only support fp4 input dtype");
     MicroAPI::RegTensor<uint16_t> bf16Zero;
     MicroAPI::RegTensor<uint16_t> bf16Nan;
     MicroAPI::RegTensor<uint16_t> e8m0Zero;
@@ -193,8 +195,12 @@ __simd_vf__ inline void AscendAntiQuantNoTranspose(__local_mem__ OutputDataType*
     uint16_t repeatTimes = CeilDivision(k, ANTIQUANT_FP4_PERGROUP_SIZE);
     for (uint16_t i = 0; i < repeatTimes; i++) {
         for (uint16_t j = 0; j < ANTIQUANT_FP4_PERGROUP_SIZE; j++) {
+            uint16_t srcAddrCount = i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n;
+            if constexpr (SupportType<SrcType, fp4x2_e1m2_t, fp4x2_e2m1_t>) {
+                srcAddrCount = srcAddrCount / 2;
+            }
             AntiQuantProcessByLine<SrcType, OutputDataType>(dstUb + i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n,
-                srcUb + i * ANTIQUANT_FP4_PERGROUP_SIZE * n + j * n, scaleUb + i * n, n, bf16Zero, bf16Nan, e8m0Zero,
+                srcUb + srcAddrCount, scaleUb + i * n, n, bf16Zero, bf16Nan, e8m0Zero,
                 e8m0Nan);
         }
     }

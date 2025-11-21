@@ -93,12 +93,7 @@ __aicore__ inline void VecBilinearInterpolationLevel0Template(__ubuf__ T* dst, _
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
 
-    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
-    maskStruct maskArrayStruct;
-    for (uint16_t i = 0; i < maskArraySize; i++) {
-        maskArrayStruct.maskArray[i] = maskArray[i];
-    }
-
+    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if constexpr (isMaskBitMode) {
         SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
     }

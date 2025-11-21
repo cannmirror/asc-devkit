@@ -215,11 +215,7 @@ __aicore__ inline void VecUnaryLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, 
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
     
-    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
-    maskStruct maskArrayStruct;
-    for (uint16_t i = 0; i < maskArraySize; i++) {
-        maskArrayStruct.maskArray[i] = maskArray[i];
-    }
+    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
 
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
