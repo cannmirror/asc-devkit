@@ -350,9 +350,20 @@ Total bit width cannot be greater than 64!")
                 "Cannot find ASCENDC_TPL_{}_SEL name: {} in ASCENDC_TPL_{}_DECL.".format(
                 tiling_param.get_param_type_str(), name, tiling_param.get_param_type_str()))
         if tpl_type != matched_param.param_type:
-            raise RuntimeError(
-                "{} has different type in ASCENDC_TPL_{}_SEL and ASCENDC_TPL_{}_DECL.".format(name,
-                tiling_param.get_param_type_str(), matched_param.get_param_type_str()))
+            if (
+                tpl_type == TilingParamType.TPL_FORMAT
+                and matched_param.param_type == TilingParamType.TPL_DATAFORMAT
+            ):
+                raise RuntimeError(
+                    "[Error] Not support both used custom FORMAT and native FORMAT, "
+                    "please check {} in ASCENDC_TPL_FORMAT_DECL.".format(name, tiling_param.get_param_type_str())
+                )
+            else:
+                raise RuntimeError(
+                    "{} has different type in ASCENDC_TPL_{}_SEL and ASCENDC_TPL_{}_DECL.".format(
+                        name, tiling_param.get_param_type_str(), matched_param.get_param_type_str()
+                    )
+                )
         if not set(vals).issubset(set(matched_param.values)):
             raise RuntimeError(
                 "Cannot find value {} from ASCENDC_TPL_{}_SEL {} in ASCENDC_TPL_{}_DECL,"
@@ -431,7 +442,7 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
             uint_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_UINT_{}_'.format(macro_type))
             if macro_type == "SEL":
-                tiling_param.append(TilingTemplateParams(name, \
+                tiling_param.append(TilingTemplateParams(name,
                     TilingParamType.TPL_UINT, uint_list, bit_map[name], macro_type))
             else:
                 tiling_param.append(TilingTemplateParams(name, TilingParamType.TPL_UINT, uint_list, 0, macro_type))
@@ -513,9 +524,11 @@ def extract_decl_param_options(op_info: OpInfo, option_name="dtype"):
             if val >= ASCENDC_TPL_INPUT_BIAS and val < ASCENDC_TPL_OUTPUT_BIAS:
                 decl_input_indexes.append(int(val % ASCENDC_TPL_INPUT_BIAS))
                 deck_select_indexes[-1] = True
+                break
             elif val >= ASCENDC_TPL_OUTPUT_BIAS:
                 decl_output_indexes.append(int(val % ASCENDC_TPL_OUTPUT_BIAS))
                 deck_select_indexes[-1] = True
+                break
 
     def _check_indexes(indexes: List[int], value_list, desc=""):
         if len(indexes) != 0 and (max(indexes) >= len(value_list) or min(indexes) < 0):
