@@ -133,6 +133,12 @@ constexpr uint32_t F173 = 0x3fdda618;
 constexpr uint32_t F22 = 0x400ccccd;
 constexpr uint32_t F25 = 0x40200000;
 constexpr uint32_t POW_58 = 0x5c800000;
+constexpr uint32_t F32_POS_INF = 0x7f800000;
+constexpr uint32_t F32_NEG_INF = 0xff800000;
+constexpr uint32_t F32_NAN = 0x7fc00000;
+constexpr uint32_t MANTISSA = 23;
+constexpr uint32_t SCALAR0 = 0xff;
+constexpr uint32_t SCALAR1 = 0x7fffff;
 constexpr float F4 = 4.0;
 constexpr float F5 = 5.0;
 constexpr float F6 = 6.0;
@@ -268,6 +274,18 @@ __simd_callee__ inline void LGammaCalcMulAdd(MicroAPI::RegTensor<float>& resReg,
     MicroAPI::Adds(resReg, resReg, params.r3, mask);
     MicroAPI::Mul(resReg, resReg, tmpReg, mask);
     MicroAPI::Adds(resReg, resReg, params.r4, mask);
+}
+
+template <typename T>
+__simd_callee__ inline void LgammaLoadData(MicroAPI::RegTensor<float>& dstReg,
+    MicroAPI::RegTensor<T> srcReg, __local_mem__ T* srcUb, MicroAPI::MaskReg& mask)
+{
+    if constexpr (IsSameType<T, half>::value) {
+        MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb);
+        MicroAPI::Cast<float, T, LGAMMA_CAST_TRAIT_F162F32>(dstReg, srcReg, mask);
+    } else {
+        MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_NORM>(dstReg, srcUb);
+    }
 }
 }  // LgammaInternal
 #endif

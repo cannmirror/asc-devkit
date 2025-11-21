@@ -203,19 +203,10 @@ __aicore__ inline void SoftmaxFlashV2MaxImpl(const LocalTensor<T1>& dstTensor, c
     (dstTensor, outSum, outMax, srcTensor, outexpMax, inSum, inMax, workLocal, tiling, softmaxShapeInfo));
 
     LastAxisShapeND originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-    SoftMaxTiling newTiling = SoftmaxFlashV2UpdateTilingImpl<T1, T2, isUpdate, isBasicBlock, isDataFormatNZ, config>(
-        srcTensor, workLocal, tiling, softmaxShapeInfo);
-    if constexpr (config.mode == SoftmaxMode::SOFTMAX_OUTPUT_WITHOUT_BRC) {
-        SoftmaxFlashV2M1PostProcess<T1, T2, isUpdate, isBasicBlock, true>(dstTensor, outReduceMax, outSum, outMax,
-            srcTensor, outexpMax, inSum, inMax, workLocal, originalSrcShape, newTiling);
-    }
-#else
     if constexpr (config.mode == SoftmaxMode::SOFTMAX_OUTPUT_WITHOUT_BRC) {
         SoftmaxFlashV2M1PostProcess<T1, T2, isUpdate, isBasicBlock, true>(dstTensor, outReduceMax, outSum, outMax,
             srcTensor, outexpMax, inSum, inMax, workLocal, originalSrcShape, tiling);
     }
-#endif
 }
 
 template <typename T1, typename T2, bool isUpdate, bool isReuseSource, bool isBasicBlock, bool isDataFormatNZ,
