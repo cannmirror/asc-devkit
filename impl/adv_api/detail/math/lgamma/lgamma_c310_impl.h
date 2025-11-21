@@ -578,8 +578,9 @@ __simd_callee__ inline void LgammaCompute1(MicroAPI::RegTensor<float>& dstReg, M
 }
 
 __simd_callee__ inline void LgammaCompute2(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg,
-    MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg, MicroAPI::MaskReg cmpMaskReg,
-    MicroAPI::MaskReg mask)
+    MicroAPI::RegTensor<float>& resReg, MicroAPI::RegTensor<float>& tmpReg, MicroAPI::RegTensor<float>& infReg,
+    MicroAPI::RegTensor<float>& nanReg, MicroAPI::RegTensor<float>& scalar0, MicroAPI::RegTensor<float>& scalar1,
+    MicroAPI::MaskReg cmpMaskReg, MicroAPI::MaskReg mask)
 {
     MicroAPI::Abs(tmpReg, srcReg, mask);
     // 2^58 <= abs_x
@@ -594,6 +595,18 @@ __simd_callee__ inline void LgammaCompute2(MicroAPI::RegTensor<float>& dstReg, M
     MicroAPI::CompareScalar<float, CMPMODE::LT>(cmpMaskReg, srcReg, (float&)NEG_POW_70, mask);
     LgammaCalNegPow70(dstReg, resReg, srcReg, tmpReg, mask);
     MicroAPI::Select(dstReg, resReg, dstReg, cmpMaskReg);
+
+    // x == -inf
+    MicroAPI::CompareScalar<float, CMPMODE::EQ>(cmpMaskReg, srcReg, (float&)F32_NEG_INF, mask);
+    MicroAPI::Select(dstReg, infReg, dstReg, cmpMaskReg);
+
+    // x == nan
+    MicroAPI::ShiftRights((MicroAPI::RegTensor<uint32_t> &)tmpReg, (MicroAPI::RegTensor<uint32_t> &)srcReg, static_cast<int16_t>(MANTISSA), mask);
+    MicroAPI::And((MicroAPI::RegTensor<uint32_t> &)tmpReg, (MicroAPI::RegTensor<uint32_t> &)tmpReg, (MicroAPI::RegTensor<uint32_t> &)scalar0, mask);
+    MicroAPI::And((MicroAPI::RegTensor<uint32_t> &)resReg, (MicroAPI::RegTensor<uint32_t> &)srcReg, (MicroAPI::RegTensor<uint32_t> &)scalar1, mask);
+    MicroAPI::Compare(cmpMaskReg, tmpReg, scalar0, mask);
+    MicroAPI::CompareScalar<float, CMPMODE::NE>(cmpMaskReg, resReg, 0.0f, cmpMaskReg);
+    MicroAPI::Select(dstReg, nanReg, dstReg, cmpMaskReg);
 }
 
 template <typename T, bool isReuseSource = false>
@@ -614,16 +627,19 @@ __simd_vf__ inline void LgammaComputeImpl(__local_mem__ T *dstUb, __local_mem__ 
     MicroAPI::RegTensor<float> resReg;
     MicroAPI::RegTensor<float> dstReg;
     MicroAPI::RegTensor<float> absReg;
+    MicroAPI::RegTensor<float> infReg;
+    MicroAPI::RegTensor<float> nanReg;
+    MicroAPI::RegTensor<float> scalar0;
+    MicroAPI::RegTensor<float> scalar1;
 
+    MicroAPI::Duplicate(infReg, (float&)F32_POS_INF);
+    MicroAPI::Duplicate(nanReg, (float&)F32_NAN);
+    MicroAPI::Duplicate(scalar0, (float&)SCALAR0);
+    MicroAPI::Duplicate(scalar1, (float&)SCALAR1);
     for (uint16_t i = 0; i < repeatTime; ++i) {
         mask = MicroAPI::UpdateMask<float>(sreg0);
         MicroAPI::Duplicate(dstReg, static_cast<float>(0));
-        if constexpr (IsSameType<T, half>::value) {
-            MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * stride);
-            MicroAPI::Cast<float, T, LGAMMA_CAST_TRAIT_F162F32>(castReg, srcReg, mask);
-        } else {
-            MicroAPI::DataCopy(castReg, srcUb + i * stride);
-        }
+        LgammaLoadData<T>(castReg, srcReg, srcUb + i * stride, mask);
         MicroAPI::Abs(absReg, castReg, mask);
         LgammaCompute1(dstReg, absReg, resReg, tmpReg, cmpMaskReg1, cmpMaskReg2, cmpMaskReg, mask);
         MicroAPI::DataCopy(workUb + i * stride, dstReg, mask);
@@ -633,14 +649,9 @@ __simd_vf__ inline void LgammaComputeImpl(__local_mem__ T *dstUb, __local_mem__ 
 
     for (uint16_t i = 0; i < repeatTime; ++i) {
         mask = MicroAPI::UpdateMask<float>(sreg1);
-        if constexpr (IsSameType<T, half>::value) {
-            MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb + i * stride);
-            MicroAPI::Cast<float, T, LGAMMA_CAST_TRAIT_F162F32>(castReg, srcReg, mask);
-        } else {
-            MicroAPI::DataCopy(castReg, srcUb + i * stride);
-        }
+        LgammaLoadData<T>(castReg, srcReg, srcUb + i * stride, mask);
         MicroAPI::DataCopy(dstReg, workUb + i * stride);
-        LgammaCompute2(dstReg, castReg, resReg, tmpReg, cmpMaskReg, mask);
+        LgammaCompute2(dstReg, castReg, resReg, tmpReg, infReg, nanReg, scalar0, scalar1, cmpMaskReg, mask);
         if constexpr (IsSameType<T, half>::value) {
             MicroAPI::Cast<T, float, LGAMMA_CAST_TRAIT_F322F16>(srcReg, dstReg, mask);
             MicroAPI::DataCopy<T, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * stride, srcReg, mask);

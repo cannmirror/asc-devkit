@@ -1197,14 +1197,16 @@ template <typename T = MicroAPI::DefaultType, typename U>
 __simd_callee__ inline void CastDoubleToInt64Impl(MicroAPI::RegTensor<int32_t> &dstVregLow, MicroAPI::RegTensor<int32_t> &dstVregHigh,
     U &srcReg, MicroAPI::RegTensor<int32_t> &scalar0, MicroAPI::RegTensor<int32_t> &scalar1, MicroAPI::RegTensor<int32_t> &scalar2,
     MicroAPI::RegTensor<int32_t> &posInfLow, MicroAPI::RegTensor<int32_t> &posInfHigh, MicroAPI::RegTensor<int32_t> &negInfLow,
-    MicroAPI::RegTensor<int32_t> &negInfHigh, MicroAPI::MaskReg &cmpMask, MicroAPI::MaskReg &mask)
+    MicroAPI::RegTensor<int32_t> &negInfHigh, MicroAPI::RegTensor<int32_t> &zeroReg, MicroAPI::MaskReg &mask)
 {
     MicroAPI::RegTensor<int64_t, MicroAPI::RegTraitNumTwo> tmpSrcReg = (MicroAPI::RegTensor<int64_t, MicroAPI::RegTraitNumTwo>&)srcReg;
 	MicroAPI::RegTensor<int32_t> sign, mLow, mHigh, exponent;
-	MicroAPI::RegTensor<int32_t> tmpReg, tmpReg0, tmpReg1, tmpReg2, scalar;
-    MicroAPI::MaskReg cmpMask0, cmpMask1, cmpMask2, cmpMask3;
+	MicroAPI::RegTensor<int32_t> tmpReg, tmpReg0, tmpReg1, tmpReg2, tmpReg3, tmpReg4, resRegLow, resRegHigh, scalar;
+    MicroAPI::MaskReg cmpMask0, cmpMask1, cmpMask2;
     MicroAPI::Duplicate(dstVregLow, static_cast<int32_t>(0));
     MicroAPI::Duplicate(dstVregHigh, static_cast<int32_t>(0));
+    MicroAPI::Duplicate(resRegLow, static_cast<int32_t>(0));
+    MicroAPI::Duplicate(resRegHigh, static_cast<int32_t>(0));
 
     // m_low = bits_low
     MicroAPI::Copy(mLow, (MicroAPI::RegTensor<int32_t> &)tmpSrcReg.reg[0], mask);
@@ -1217,105 +1219,97 @@ __simd_callee__ inline void CastDoubleToInt64Impl(MicroAPI::RegTensor<int32_t> &
     MicroAPI::And(mHigh, (MicroAPI::RegTensor<int32_t> &)tmpSrcReg.reg[1], scalar2, mask);
 
     /*
-        if E == 0:
-            return (0，0)
-        
-        if E == 0x7ff:
-            if m_high != 0 or m_low != 0: (nan condition)
-                return (0，0)
-            else: (inf condition)
-                if S == 0:
-                    return (0x7fffffff, 0xffffffff)
-                else:
-                    return (0x80000000, 0x00000000)
-    */
-    MicroAPI::Compare(cmpMask0, exponent, scalar1, mask);
-    MicroAPI::CompareScalar(cmpMask1, mLow, static_cast<int32_t>(0), cmpMask0);
-    MicroAPI::CompareScalar(cmpMask1, mHigh, static_cast<int32_t>(0), cmpMask1);
-
-    MicroAPI::CompareScalar(cmpMask2, sign, static_cast<int32_t>(0), cmpMask1);
-    MicroAPI::Select(tmpReg0, posInfLow, negInfLow, cmpMask2);
-    MicroAPI::Select(tmpReg1, posInfHigh, negInfHigh, cmpMask2);
-    MicroAPI::Select(dstVregLow, tmpReg0, dstVregLow, cmpMask1);
-    MicroAPI::Select(dstVregHigh, tmpReg1, dstVregHigh, cmpMask1);
-
-    MicroAPI::CompareScalar<int32_t, CMPMODE::NE>(cmpMask1, exponent, static_cast<int32_t>(0), mask);
-    // handle E != 0 and E != 0x7ff scenario
-    // !cmpMask0 && cmpMask1 -> cmpMask
-    MicroAPI::MaskNot(cmpMask, cmpMask0, cmpMask1);
-
-    /*
-        exp = E - 1023
         mantissa_high = 0x100000 | m_high
         mantissa_low = m_low
 
-        if exp < 0:
-            return (0, 0)
-        elif exp < 52:
-            shift = 52 - exp
-            result_high, result_low = shift_right_dual32(
-            mantissa_high, mantissa_low, shift)
-        else:
-            shift = exp - 52
-            if shift > 10:
-                if S == 0:
-                    return (0x7fffffff, 0xffffffff)
-                else:
-                    return (0x80000000, 0x00000000)
-        
-            result_high, result_low = shift_left_dual32(
-                mantissa_high, mantissa_low, shift)
-        
-            if S == 0:
-                if result_high >= 0x80000000:
-                    return (0x7fffffff, 0xffffffff)
-    */
-    MicroAPI::Adds(exponent, exponent, static_cast<int32_t>(-1023), cmpMask);
-    MicroAPI::Or(tmpReg, mHigh, scalar0, cmpMask);
+        exp = E - 1023
+        shift_r = 52 - exp
+        shift_l = exp - 52
 
-    MicroAPI::CompareScalar<int32_t, CMPMODE::GE>(cmpMask2, exponent, static_cast<int32_t>(0), cmpMask);
-    MicroAPI::CompareScalar<int32_t, CMPMODE::GE>(cmpMask3, exponent, static_cast<int32_t>(52), cmpMask);
-    MicroAPI::MaskXor(cmpMask0, cmpMask3, cmpMask2, cmpMask);
-    MicroAPI::Duplicate(scalar, static_cast<int32_t>(52), cmpMask);
-    MicroAPI::Sub(tmpReg0, scalar, exponent, cmpMask0);
-    ShiftRightDual32(dstVregLow, dstVregHigh, mLow, tmpReg, tmpReg0, tmpReg1, tmpReg2, scalar, cmpMask1, cmpMask2, cmpMask0);
-    
-    MicroAPI::Adds(tmpReg0, exponent, static_cast<int32_t>(-52), cmpMask3);
-    MicroAPI::CompareScalar<int32_t, CMPMODE::GT>(cmpMask1, tmpReg0, static_cast<int32_t>(10), cmpMask3);
-    MicroAPI::CompareScalar(cmpMask2, sign, static_cast<int32_t>(0), cmpMask1);
-    MicroAPI::Select(tmpReg1, posInfLow, negInfLow, cmpMask2);
-    MicroAPI::Select(tmpReg2, posInfHigh, negInfHigh, cmpMask2);
-    MicroAPI::Select(dstVregLow, tmpReg1, dstVregLow, cmpMask1);
-    MicroAPI::Select(dstVregHigh, tmpReg2, dstVregHigh, cmpMask1);
-    ShiftLeftDual32(dstVregLow, dstVregHigh, mLow, tmpReg, tmpReg0, tmpReg1, tmpReg2, scalar, cmpMask0, cmpMask2, cmpMask3);
-    MicroAPI::CompareScalar<int32_t, CMPMODE::EQ>(cmpMask2, sign, static_cast<int32_t>(0), cmpMask3);
-    MicroAPI::CompareScalar<uint32_t, CMPMODE::GE>(cmpMask0, (MicroAPI::RegTensor<uint32_t> &)dstVregHigh, static_cast<uint32_t>(0x80000000), cmpMask2);
-    MicroAPI::Select(dstVregLow, posInfLow, dstVregLow, cmpMask0);
-    MicroAPI::Select(dstVregHigh, posInfHigh, dstVregHigh, cmpMask0);
-    
-    MicroAPI::CompareScalar<int32_t, CMPMODE::GE>(cmpMask2, exponent, static_cast<int32_t>(0), cmpMask);
-    // update cmpMask
-    // !cmpMask1 && cmpMask2 -> cmpMask
-    MicroAPI::MaskNot(cmpMask, cmpMask1, cmpMask2);
-    // !cmpMask0 && cmpMask -> cmpMask
-    MicroAPI::MaskNot(cmpMask, cmpMask0, cmpMask);
+        s_r = shift_r if shift_r > 0 else 0
+        s_l = shift_l if shift_l > 0 else 0
+
+        val_r_hi, val_r_lo = shift_right_dual32(mantissa_high, mantissa_low, s_r)
+        val_l_hi, val_l_lo = shift_left_dual32(mantissa_high, mantissa_low, s_l)
+
+        is_right_shift = (exp < 52)
+        raw_hi = val_r_hi if is_right_shift else val_l_hi
+        raw_lo = val_r_lo if is_right_shift else val_l_lo
+    */
+    MicroAPI::Or(tmpReg, mHigh, scalar0, mask);
+    MicroAPI::Adds(tmpReg0, exponent, static_cast<int32_t>(-1023), mask);
+    MicroAPI::Duplicate(scalar, static_cast<int32_t>(52), mask);
+    MicroAPI::Sub(tmpReg1, scalar, tmpReg0, mask);
+    MicroAPI::Sub(tmpReg2, tmpReg0, scalar, mask);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::GT>(cmpMask0, tmpReg1, static_cast<int32_t>(0), mask);
+    MicroAPI::Or(tmpReg1, tmpReg1, zeroReg, cmpMask0);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::GT>(cmpMask1, tmpReg2, static_cast<int32_t>(0), mask);
+    MicroAPI::Or(tmpReg2, tmpReg2, zeroReg, cmpMask1);
+    ShiftRightDual32(dstVregLow, dstVregHigh, mLow, tmpReg, tmpReg1, tmpReg3, tmpReg4, scalar, cmpMask0, cmpMask1, mask);
+    ShiftLeftDual32(resRegLow, resRegHigh, mLow, tmpReg, tmpReg2, tmpReg3, tmpReg4, scalar, cmpMask0, cmpMask1, mask);
+
+    MicroAPI::CompareScalar<int32_t, CMPMODE::LT>(cmpMask2, tmpReg0, static_cast<int32_t>(52), mask);
+    MicroAPI::Select(dstVregLow, dstVregLow, resRegLow, cmpMask2);
+    MicroAPI::Select(dstVregHigh, dstVregHigh, resRegHigh, cmpMask2);
     
     /*
-        if S == 1:
-            if result_high >= 0x80000000:
-                return (0x80000000, 0x00000000)
+        neg_hi, neg_lo = negate_dual32(result_high, result_low)
+        
+        res_hi = neg_hi if S == 1 else raw_hi
+        res_lo = neg_lo if S == 1 else raw_lo
 
-            result_high, result_low = negate_dual32(result_high, result_low)
-
-        return (result_high, result_low)
+        over_hi = 0x80000000 if S else 0x7fffffff
+        over_lo = 0x00000000 if S else 0xffffffff
     */
-    MicroAPI::CompareScalar(cmpMask0, sign, static_cast<int32_t>(-1), cmpMask);
-    MicroAPI::CompareScalar<uint32_t, CMPMODE::GE>(cmpMask1, (MicroAPI::RegTensor<uint32_t> &)dstVregHigh, static_cast<uint32_t>(0x80000000), cmpMask0);
-    MicroAPI::Select(dstVregLow, negInfLow, dstVregLow, cmpMask1);
-    MicroAPI::Select(dstVregHigh, negInfHigh, dstVregHigh, cmpMask1);
+    MicroAPI::CompareScalar(cmpMask0, sign, static_cast<int32_t>(-1), mask);
+    NegateDual32(dstVregLow, dstVregHigh, tmpReg1, tmpReg2, cmpMask1, cmpMask0);
+    MicroAPI::Select(tmpReg3, negInfLow, posInfLow, cmpMask0);
+    MicroAPI::Select(tmpReg4, negInfHigh, posInfHigh, cmpMask0);
     
-    MicroAPI::MaskNot(cmpMask2, cmpMask1, cmpMask0);
-    NegateDual32(dstVregLow, dstVregHigh, tmpReg1, tmpReg2, cmpMask3, cmpMask2);
+    /*
+        is_inf = (E == 0x7ff) and ((m_high | m_low) == 0)
+        is_large = exp >= 63
+        is_int64_min = (exp == 63) and (m_high == 0) and (m_low == 0) and (S == 1)
+
+        is_overflow = if_inf or (is_large and !is_int64_min)
+
+        fin_hi = over_hi if is_overflow else res_hi
+        fin_lo = over_lo if is_overflow else res_lo
+
+        is_nan = (E == 0x7ff) and ((m_high | m_low) != 0)
+        is_not_zero = (E != 0) and (exp >= 0) and !is _nan
+        
+        fin_hi = fin_hi if is_not_zero else 0
+        fin_lo = fin_lo if is_not_zero else 0
+
+        return (fin_hi, fin_lo)
+    */
+    MicroAPI::Compare(cmpMask0, exponent, scalar1, mask);
+    MicroAPI::Or(tmpReg1, mLow, mHigh, cmpMask0);
+    MicroAPI::CompareScalar(cmpMask0, tmpReg1, static_cast<int32_t>(0), cmpMask0);
+
+    MicroAPI::CompareScalar<int32_t, CMPMODE::GE>(cmpMask1, tmpReg0, static_cast<int32_t>(63), mask);
+
+    MicroAPI::CompareScalar<int32_t, CMPMODE::EQ>(cmpMask2, tmpReg0, static_cast<int32_t>(63), mask);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::EQ>(cmpMask2, mLow, static_cast<int32_t>(0), cmpMask2);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::EQ>(cmpMask2, mHigh, static_cast<int32_t>(0), cmpMask2);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::EQ>(cmpMask2, sign, static_cast<int32_t>(-1), cmpMask2);
+
+    MicroAPI::MaskNot(cmpMask2, cmpMask2, cmpMask1);
+    MicroAPI::MaskOr(cmpMask0, cmpMask2, cmpMask0, mask);
+
+    MicroAPI::Select(dstVregLow, tmpReg3, dstVregLow, cmpMask0);
+    MicroAPI::Select(dstVregHigh, tmpReg4, dstVregHigh, cmpMask0);
+
+    MicroAPI::Compare(cmpMask2, exponent, scalar1, mask);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::NE>(cmpMask2, tmpReg1, static_cast<int32_t>(0), cmpMask2);
+
+    MicroAPI::Compare<int32_t, CMPMODE::NE>(cmpMask1, exponent, zeroReg, mask);
+    MicroAPI::CompareScalar<int32_t, CMPMODE::GE>(cmpMask1, tmpReg0, static_cast<int32_t>(0), cmpMask1);
+    MicroAPI::MaskNot(cmpMask2, cmpMask2, cmpMask1);
+
+    MicroAPI::Select(dstVregLow, dstVregLow, zeroReg, cmpMask2);
+    MicroAPI::Select(dstVregHigh, dstVregHigh, zeroReg, cmpMask2);
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
@@ -1325,17 +1319,18 @@ __simd_vf__ inline void CastDoubleToInt64(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     uint16_t repeatTime = CeilDivision(calCount, oneRepSize);
     uint32_t sreg = static_cast<uint32_t>(calCount);
 
-    MicroAPI::MaskReg mask, cmpMask;
+    MicroAPI::MaskReg mask;
     MicroAPI::RegTensor<SRC_TYPE, MicroAPI::RegTraitNumTwo> srcVreg;
     MicroAPI::RegTensor<DST_TYPE, MicroAPI::RegTraitNumTwo> dstVreg, tmpVreg;
     MicroAPI::RegTensor<int32_t> dstVregLow;
 	MicroAPI::RegTensor<int32_t> dstVregHigh;
-    MicroAPI::RegTensor<int32_t> scalar0, scalar1, scalar2;
+    MicroAPI::RegTensor<int32_t> scalar0, scalar1, scalar2, zeroReg;
     MicroAPI::RegTensor<int32_t> posInfLow, posInfHigh, negInfLow, negInfHigh;
 
     MicroAPI::Duplicate(scalar0, static_cast<int32_t>(0x100000));
     MicroAPI::Duplicate(scalar1, static_cast<int32_t>(0x7ff));
     MicroAPI::Duplicate(scalar2, static_cast<int32_t>(0xfffff));
+    MicroAPI::Duplicate(zeroReg, static_cast<int32_t>(0));
     MicroAPI::Duplicate(posInfHigh, static_cast<int32_t>(0x7fffffff));
     MicroAPI::Duplicate(posInfLow, static_cast<int32_t>(0xffffffff));
     MicroAPI::Duplicate(negInfHigh, static_cast<int32_t>(0x80000000));
@@ -1344,7 +1339,7 @@ __simd_vf__ inline void CastDoubleToInt64(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
         mask = MicroAPI::UpdateMask<uint64_t, MicroAPI::RegTraitNumTwo>(sreg);
         MicroAPI::DataCopy(srcVreg, src + i * oneRepSize);
         CastDoubleToInt64Impl(dstVregLow, dstVregHigh, srcVreg, scalar0, scalar1, scalar2,
-                                posInfLow, posInfHigh, negInfLow, negInfHigh, cmpMask, mask);
+                                posInfLow, posInfHigh, negInfLow, negInfHigh, zeroReg, mask);
         /*
             result = (result_high << 32) | result_low
             return result
