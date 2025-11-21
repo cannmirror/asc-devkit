@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_UTILS_MACROS_H
 #define USE_ISA_INS 1
 #define GM_ADDR __gm__ uint8_t*
+#define __kfc_workspace__ __attribute__((annotate("kfc_workspace")))
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 #define UB_ADDR __ubuf__ uint8_t*
 #define SSBUF_ADDR __ssbuf__ uint32_t*

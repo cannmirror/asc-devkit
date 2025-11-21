@@ -119,9 +119,9 @@ std::string AscDevStubGenerator::GetWorkspaceArgName() const
         return kernelInfo_.kernelParameters[kernelInfo_.kernelParameters.size() - 2].name;
     }
     for (const auto& param : kernelInfo_.kernelParameters) {
-        if (param.name == std::string("workspace")) {
+        if (param.attribute.find(std::string("kfc_workspace")) != std::string::npos) {
             ASC_LOGI("Kernel [%s] : the kernel utilizes the workspace.", kernelInfo_.kernelName.c_str());
-            return "workspace";
+            return param.name;
         }
     }
     ASC_LOGI("Kernel [%s] : the kernel does not utilize the workspace.", kernelInfo_.kernelName.c_str());
@@ -189,30 +189,30 @@ void AscDevStubGenerator::StubFuncDumpAndHardSyncImpl(const bool& isMix, const b
 
 void AscDevStubGenerator::StubFuncWorkSpaceImpl(const bool& isMix)
 {
-    if (workspaceArgName_.empty()) {
+    if (workspaceArgName_.empty() || kfcScene_ == KfcScene::Close) {
         ASC_LOGI("Kernel [%s] : the kernel no need to implement workspace.", kernelInfo_.kernelName.c_str());
         return;
     }
-    codeStream_ << "    GM_ADDR workspace_param;\n";
-    codeStream_ << "    GM_ADDR workspace_usr;\n";
-    codeStream_ << "    workspace_param = " << workspaceArgName_ << ";\n";
+    codeStream_ << "    GM_ADDR ascendc_workspace_param;\n";
+    codeStream_ << "    GM_ADDR ascendc_workspace_usr;\n";
+    codeStream_ << "    ascendc_workspace_param = " << workspaceArgName_ << ";\n";
     if (isMix) {
-        codeStream_ << "    if (workspace_param == nullptr) {\n";
+        codeStream_ << "    if (ascendc_workspace_param == nullptr) {\n";
         codeStream_ << "        return;\n";
         codeStream_ << "    }\n";
     }
-    codeStream_ << "    AscendC::SetSysWorkspaceForce(workspace_param);\n";
-    codeStream_ << "    workspace_usr = AscendC::GetUserWorkspace(workspace_param);\n";
+    codeStream_ << "    AscendC::SetSysWorkspaceForce(ascendc_workspace_param);\n";
+    codeStream_ << "    ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);\n";
     if (isMix && kfcScene_ == KfcScene::Open) {
         codeStream_ << "    if constexpr (g_coreType == AscendC::AIC) {\n";
-        codeStream_ << "        matmul::clearWorkspace(workspace_param);\n";
+        codeStream_ << "        matmul::clearWorkspace(ascendc_workspace_param);\n";
         if (dumpAscendCStamp_) {
             codeStream_ << "        AscendC::AscendCTimeStamp(static_cast<uint32_t>";
             codeStream_ << "(AscendC::TimeStampId::TIME_STAMP_WRAP_CLEAR_WK_SPAC));\n";
         }
         codeStream_ << "    }\n";
     }
-    codeStream_ << "    " << workspaceArgName_ << " = workspace_usr;\n";
+    codeStream_ << "    " << workspaceArgName_ << " = ascendc_workspace_usr;\n";
 }
 
 void AscDevStubGenerator::StubFuncCallImpl(const std::string& templateArgs)
