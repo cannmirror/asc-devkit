@@ -2,8 +2,8 @@ set(LIB_SUPPORT_TYPES SHARED STATIC)
 
 function(library_interface_setup target_name)
     target_include_directories(${target_name} INTERFACE
-        ${ASCEND_CANN_PACKAGE_PATH}/include
-        ${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/
+        ${ASCEND_CANN_PACKAGE_LINUX_PATH}/include
+        ${ASCEND_CANN_PACKAGE_LINUX_PATH}/tikcpp/tikcfw/
     )
     target_link_directories(${target_name} INTERFACE
         ${ASCEND_CANN_PACKAGE_PATH}/lib64

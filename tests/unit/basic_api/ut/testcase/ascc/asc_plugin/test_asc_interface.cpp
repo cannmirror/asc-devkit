@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <mockcpp/mockcpp.hpp>
 #include <nlohmann/json.hpp>
+#include <sys/utsname.h>
 #define private public
 #include "asc_utils.h"
 #include "asc_info_manager.h"
@@ -1477,16 +1478,47 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginPreCompile)
 
     const char* a;
     int32_t exec_res = AscPlugin::PluginGetPreCompileOpts(&a);
+
+    struct utsname info;
+    std::string prefix;
+    if (uname(&info) < 0) {
+        prefix = "/compiler";
+    } else {
+        std::string machine = info.machine;
+        if (machine == "x86_64") {
+            prefix = "/x86_64-linux";
+        } else if (machine == "aarch64" || machine == "arm64" || machine == "arm") {
+            prefix = "/aarch64-linux";
+        } else {
+            prefix = "/compiler";
+        }
+    }
+
     std::vector<std::string> hostOptions = {
-        "-IA/include",
-        "-IA/include/ascendc/host_api",
-        "-IA/compiler/ascendc/include/highlevel_api",
-        "-IA/compiler/tikcpp/tikcfw",
-        "-IA/compiler/tikcpp/tikcfw/lib",
-        "-IA/compiler/tikcpp/tikcfw/lib/matmul",
-        "-IA/compiler/tikcpp/tikcfw/impl",
-        "-IA/compiler/tikcpp/tikcfw/interface",
-        "-std=c++17"
+        "-std=c++17",
+        "-IA" + prefix + "/include", "-IA" + prefix + "/include/ascendc/host_api",
+        "-IA" + prefix + "/ascendc/include/highlevel_api", "-IA" + prefix + "/tikcpp/tikcfw",
+        "-IA" + prefix + "/tikcpp/tikcfw/lib", "-IA" + prefix + "/tikcpp/tikcfw/lib/matmul",
+        "-IA" + prefix + "/tikcpp/tikcfw/impl", "-IA" + prefix + "/tikcpp/tikcfw/interface",
+
+        "-IA" + prefix + "/asc/impl/adv_api",
+        "-IA" + prefix + "/asc/impl/basic_api",
+        "-IA" + prefix + "/asc/impl/c_api",
+        "-IA" + prefix + "/asc/impl/micro_api",
+        "-IA" + prefix + "/asc/impl/simt_api",
+        "-IA" + prefix + "/asc/impl/utils",
+
+        "-IA" + prefix + "/asc/include",
+        "-IA" + prefix + "/asc/include/adv_api",
+        "-IA" + prefix + "/asc/include/adv_api/matmul",
+        "-IA" + prefix + "/asc/include/aicpu_api",
+        "-IA" + prefix + "/asc/include/basic_api",
+        "-IA" + prefix + "/asc/include/c_api",
+        "-IA" + prefix + "/asc/include/interface",
+        "-IA" + prefix + "/asc/include/micro_api",
+        "-IA" + prefix + "/asc/include/simt_api",
+        "-IA" + prefix + "/asc/include/tiling",
+        "-IA" + prefix + "/asc/include/utils"
     };
     AscPlugin::PreCompileOptsResult configInfo = nlohmann::json::parse(a).get<AscPlugin::PreCompileOptsResult>();
     EXPECT_EQ(configInfo.compileOptions, hostOptions);
