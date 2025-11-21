@@ -418,13 +418,16 @@ public:
         if ASCEND_IS_NOT_AIV {
             if (status) {
                 uint64_t oriGmAddr = reinterpret_cast<uint64_t>(gmAddr);
-                const uint64_t sysOffset = g_opSystemRunCfg.l2Cacheoffset;
-                const uint64_t hintOffset = g_opL2CacheHintCfg.l2Cacheoffset;
-                if (sysOffset != 0 && oriGmAddr >= sysOffset) {
-                    oriGmAddr -= sysOffset;
-                } else if (oriGmAddr >= hintOffset) {
-                    oriGmAddr -= hintOffset;
+#ifdef __NPU_DEVICE__
+                const uint64_t l2Cacheoffset = g_opL2CacheHintCfg.l2Cacheoffset;
+                if (oriGmAddr >= l2Cacheoffset) {
+                    oriGmAddr -= l2Cacheoffset;
                 }
+#else // ifndef __NPU_DEVICE__
+                if (oriGmAddr >= g_opSystemRunCfg.l2Cacheoffset) {
+                    oriGmAddr -= g_opSystemRunCfg.l2Cacheoffset;
+                }
+#endif // __NPU_DEVICE__
                 gmAddrConvert = reinterpret_cast<uintptr_t>(oriGmAddr);
                 status = OOMCheckAddrIsOverflow(gmAddrConvert, gmLen);
             }
