@@ -180,8 +180,11 @@ struct OpSystemRunCfg {
     uint64_t l2Cacheoffset;
 };
 #ifdef L2_CACHE_HINT
-extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;
+#ifdef __NPU_DEVICE__
 inline __gm__ struct OpSystemRunCfg g_opL2CacheHintCfg = {0};
+#else // ifndef __NPU_DEVICE__
+extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;
+#endif // __NPU_DEVICE__
 #endif // L2_CACHE_HINT
 
 __aicore__ inline void GetCannVersion(__gm__ char*& versionStr, uint64_t& version, uint64_t& timeStamp)
@@ -272,9 +275,11 @@ template<class T, CacheRwMode rwMode = CacheRwMode::RW>
 __aicore__ inline __gm__ T* L2CacheAlter(__gm__ T* addr, CacheMode mode)
 {
 #if defined(L2_CACHE_HINT) && defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-    const uint64_t l2CacheOffset = g_opSystemRunCfg.l2Cacheoffset != 0
-                                       ? g_opSystemRunCfg.l2Cacheoffset
-                                       : g_opL2CacheHintCfg.l2Cacheoffset;
+#ifdef __NPU_DEVICE__
+    uint64_t l2CacheOffset = g_opL2CacheHintCfg.l2Cacheoffset;
+#else // ifndef __NPU_DEVICE__
+    uint64_t l2CacheOffset = g_opSystemRunCfg.l2Cacheoffset;
+#endif // __NPU_DEVICE__
     if (mode == CacheMode::CACHE_MODE_DISABLE) {
         return reinterpret_cast<__gm__ T*>((uint64_t)addr + l2CacheOffset);
     }
