@@ -146,7 +146,7 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_get_device_code_template_success)
 TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_generator)
 {
     std::string golden = R"(namespace Foo1::Foo2 {
-extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_dump_addr, int i, uint8_t* workspace, __attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_dump_addr, int i, __attribute__((annotate("kfc_workspace"))) uint8_t* workspace, __attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
 {
     AscendC::InitDump(true, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);
     AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_DUMP));
@@ -164,19 +164,19 @@ extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__at
     } else {
         AscendC::printf("CANN Version: %s, TimeStamp: %u\n", (__gm__ const char*)(__ascendc_version_str), __ascendc_timestamp);
     }
-    GM_ADDR workspace_param;
-    GM_ADDR workspace_usr;
-    workspace_param = workspace;
-    if (workspace_param == nullptr) {
+    GM_ADDR ascendc_workspace_param;
+    GM_ADDR ascendc_workspace_usr;
+    ascendc_workspace_param = workspace;
+    if (ascendc_workspace_param == nullptr) {
         return;
     }
-    AscendC::SetSysWorkspaceForce(workspace_param);
-    workspace_usr = AscendC::GetUserWorkspace(workspace_param);
+    AscendC::SetSysWorkspaceForce(ascendc_workspace_param);
+    ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);
     if constexpr (g_coreType == AscendC::AIC) {
-        matmul::clearWorkspace(workspace_param);
+        matmul::clearWorkspace(ascendc_workspace_param);
         AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_CLEAR_WK_SPAC));
     }
-    workspace = workspace_usr;
+    workspace = ascendc_workspace_usr;
     __origin__add<int, float>(i, workspace);
 }
 }
@@ -186,7 +186,7 @@ extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__at
     info.kernelMangledName = "add_mangling";
     info.kernelParameters = {
         {"int", "i", false, "", ""},
-        {"uint8_t*", "workspace", false, "", ""}
+        {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}
     };
     info.ratio = {false, 0, 0};
     info.templateParameters = {
@@ -199,7 +199,7 @@ extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__at
             {"int", "float"},
             {
                 {"int", "i", false, "", ""},
-                {"uint8_t*", "workspace", false, "", ""}
+                {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}
             },
             "add_mangling_int_float",
             "prefix_add_mangling_int_float",
@@ -224,8 +224,8 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_workspace_arg)
     info.kernelName = "add";
     info.kernelMangledName = "add_mangling";
     info.kernelParameters = {
-        {"uint8_t*", "workspace", false, "", ""},
-        {"uint8_t*", "workspace_bak", false, "", ""}
+        {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"},
+        {"uint8_t*", "workspace_bak", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}
     };
     AscPlugin::AscDevStubGenerator devStubGen = AscPlugin::AscDevStubGenerator(
         info, {AscPlugin::KernelMetaType::KERNEL_TYPE_AIV_ONLY}, AscPlugin::KfcScene::Close);
@@ -263,10 +263,10 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_workspace_arg_failure)
         info.kernelName = "add";                                                                         \
         info.kernelMangledName = "add_mangling";                                                         \
         info.kernelMangledNameConsiderPrefix = "prefix_add_mangling";                                    \
-        info.kernelParameters = {{"int", "i", false, "", ""}, {"uint8_t*", "workspace", false, "", ""}}; \
+        info.kernelParameters = {{"int", "i", false, "", ""}, {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}}; \
         info.templateParameters = {{"typename", "T", false, "", ""}, {"typename", "U", false, "", ""}};  \
         info.templateInstances = {{{"int", "float"},                                                     \
-            {{"int", "i", false, "", ""}, {"uint8_t*", "workspace", false, "", ""}},                             \
+            {{"int", "i", false, "", ""}, {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}},                             \
             "add_mangling_int_float",                                                                    \
             "prefix_add_mangling_int_float"}};                                                           \
         info.isTemplate = isTemplateFunc;                                                                \
