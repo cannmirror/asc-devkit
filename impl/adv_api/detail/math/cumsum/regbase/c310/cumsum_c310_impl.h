@@ -9,11 +9,11 @@
 */
 
 /* !
- * \file cumsum_common_c310_impl.h
+ * \file cumsum_c310_impl.h
  * \brief
  */
-#ifndef IMPL_MATH_CUMSUM_CUMSUM_COMMON_IMPL_C310_H
-#define IMPL_MATH_CUMSUM_CUMSUM_COMMON_IMPL_C310_H
+#ifndef IMPL_MATH_CUMSUM_CUMSUM_IMPL_C310_H
+#define IMPL_MATH_CUMSUM_CUMSUM_IMPL_C310_H
 
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
@@ -188,4 +188,4 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
     }
 }
 } // namespace AscendC
-#endif // IMPL_MATH_CUMSUM_CUMSUM_COMMON_IMPL_C310_H
+#endif // IMPL_MATH_CUMSUM_CUMSUM_IMPL_C310_H

@@ -1374,6 +1374,19 @@ __aicore__ inline void IterateSrc(__ubuf__ T* src, uint32_t repeat, uint32_t src
 }
 
 template <typename T>
+__simd_vf__ inline void GetReduceMaxMinCountImplVF(__local_mem__ uint64_t* popBufferAddress)
+{
+    MicroAPI::UnalignReg uReg;
+    // read the mask from special purpose registers
+    MicroAPI::MaskReg mask = MicroAPI::MoveMask<half>();
+    // 对于B16类型，会读取完整的128bit {MASK1, MASK0}数据，并将每bit复制为2bit，写入函数返回值MaskReg
+    MicroAPI::MaskReg packedMask;
+    MicroAPI::MaskPack(packedMask, mask);
+    // write the maskreg to UB
+    MicroAPI::DataCopy<uint64_t>(popBufferAddress, packedMask);
+}
+
+template <typename T>
 __aicore__ inline void GetReduceMaxMinCountImpl(T &maxMinValue, T &maxMinIndex)
 {
     // retrieve saved src address and count
@@ -1398,17 +1411,7 @@ __aicore__ inline void GetReduceMaxMinCountImpl(T &maxMinValue, T &maxMinIndex)
 
     TEventID eventID = GetTPipePtr()->AllocEventID<HardEvent::V_S>();
     if (!isSetMask && bitwiseMask) {
-        __VEC_SCOPE__
-        {
-            MicroAPI::UnalignReg uReg;
-            // read the mask from special purpose registers
-            // 对于B16类型，会读取完整的128bit {MASK1, MASK0}数据，并将每bit复制为2bit，写入函数返回值MaskReg
-            MicroAPI::MaskReg mask = MicroAPI::MoveMask<half>();
-            MicroAPI::MaskReg packedMask;
-            MicroAPI::MaskPack(packedMask, mask);
-            // write the maskreg to UB
-            MicroAPI::DataCopy<uint64_t>(popBufferAddress, packedMask);
-        }
+        GetReduceMaxMinCountImplVF<T>(popBufferAddress);
         SetFlag<HardEvent::V_S>(eventID);
         WaitFlag<HardEvent::V_S>(eventID);
         mask0 = popBufferAddress[0];
