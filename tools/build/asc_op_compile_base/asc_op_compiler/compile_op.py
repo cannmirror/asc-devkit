@@ -697,27 +697,6 @@ def _check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
     return True
 
 
-def _set_compile_info(op_info: OpInfo, value_depends: dict = None):
-    """set compile info in order to let AOE tools set tune params into compile info
-        only support static shape ops
-    """
-    context = get_context()
-    if is_static_shape(op_info.inputs, op_info.outputs, value_depends, op_info.param_type_list):
-        from tbe.common.tiling import BANK_CACHE
-        if BANK_CACHE is not None and len(BANK_CACHE) != 0:
-            tiling = context.get_addition('tune_param')
-            if tiling is None:
-                from tbe.common.utils.create_kb_query_key import get_op_compile_unique_key
-                from tbe.common.repository_manager.interface import cann_kb_search
-                info_dict = get_op_compile_unique_key(
-                    op_info.op_type, op_info.inputs, op_info.outputs, op_info.attrs, op_info.impl_mode, False
-                )
-                tiling = cann_kb_search(info_dict, search_config={"op_type": op_info.op_type, "full_info": True}, \
-                    option={})
-            if tiling is not None:
-                context.add_compile_info('tune_param', tiling)
-
-
 def _infer_name(key, sub_operater_infos, chip_version):
     if key == 'stream':
         if sub_operater_infos["sub_operator_kernel_type"] == "KERNEL_TYPE_AIV_ONLY" \
@@ -1869,7 +1848,6 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
     _update_compile_option(op_info.kernel_name, compile_option_tuple.compile_options, extend_options)
 
     value_depend_dict = extend_options.get("valueDepend")
-    _set_compile_info(op_info, value_depend_dict)
     kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
 
     compile_option_tuple.compile_options.append('-DASCENDC_TPL_KERNEL')
@@ -1933,7 +1911,6 @@ def compile_op_with_customized_config(cce_file: str, origin_func_name: str, op_i
 
     compile_option_tuple.compile_options.append('-DASCENDC_TPL_KERNEL')
     value_depend_dict = extend_options.get("valueDepend")
-    _set_compile_info(op_info, value_depend_dict)
 
     compile_op_common_part(cce_file, origin_func_name, op_info, compile_option_tuple, infered_info_from_ifile,
                             extend_options)
