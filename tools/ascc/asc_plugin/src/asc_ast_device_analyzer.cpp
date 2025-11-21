@@ -95,20 +95,13 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
         "-D__cube__=__attribute__((annotate(\"device\")))",
         "-D__vector__=__attribute__((annotate(\"device\")))"};
     const CompileArgs &inputArgs = AscPlugin::InfoManager::GetInstance().GetCompileArgs();
-    const std::string intputFileDir = GetFilePath(source);
+    const std::string inputFileDir = GetFilePath(source);
     PathInfo pathInfo = InfoManager::GetInstance().GetPathInfo();
-    astDeviceArgs_.includePaths = {
-        "-I" + intputFileDir,
-        "-I" + pathInfo.cannIncludePath,
-        "-I" + pathInfo.hostApiPath,
-        "-I" + pathInfo.highLevelApiPath,
-        "-I" + pathInfo.tikcfwPath,
-        "-I" + pathInfo.tikcfwLibPath,
-        "-I" + pathInfo.tikcfwLibMatmulPath,
-        "-I" + pathInfo.tikcfwImplPath,
-        "-I" + pathInfo.tikcfwInterfacePath,
-        "-I" + pathInfo.ascendClangIncludePath
-    };
+    astDeviceArgs_.includePaths = {"-I" + inputFileDir, "-I" + pathInfo.ascendClangIncludePath};
+    for (auto& incPath: pathInfo.cannIncludePath) {
+        astDeviceArgs_.includePaths.emplace_back("-I" + incPath);
+    }
+
     astDeviceArgs_.file = source;
     astDeviceArgs_.options = innerOpts;
     astDeviceArgs_.includePaths.insert(astDeviceArgs_.includePaths.end(), inputArgs.includePaths.begin(),

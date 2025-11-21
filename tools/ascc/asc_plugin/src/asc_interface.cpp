@@ -182,17 +182,10 @@ int32_t PluginGetPreCompileOpts(const char** result)
 
     auto& manager = InfoManager::GetInstance();
     PathInfo pathInfo = manager.GetPathInfo();
-    std::vector<std::string> compileOptions = {
-        "-I" + pathInfo.cannIncludePath,
-        "-I" + pathInfo.hostApiPath,
-        "-I" + pathInfo.highLevelApiPath,
-        "-I" + pathInfo.tikcfwPath,
-        "-I" + pathInfo.tikcfwLibPath,
-        "-I" + pathInfo.tikcfwLibMatmulPath,
-        "-I" + pathInfo.tikcfwImplPath,
-        "-I" + pathInfo.tikcfwInterfacePath,
-        "-std=c++17"
-    };
+    std::vector<std::string> compileOptions = {"-std=c++17"};
+    for (auto& incPath: pathInfo.cannIncludePath) {
+        compileOptions.emplace_back("-I" + incPath);
+    }
 
     PreCompileOptsResult res = {compileOptions};
     return DumpResultInfo(res, result);

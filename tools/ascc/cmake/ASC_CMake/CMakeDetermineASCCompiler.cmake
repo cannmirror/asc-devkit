@@ -15,7 +15,16 @@ else()
     set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_CANN_PACKAGE_PATH} CACHE PATH "Path for CANN package")
 endif()
 
-find_program(CMAKE_ASC_COMPILER NAMES "bisheng" PATHS "${ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler/bin/" "$ENV{PATH}" "$ENV{ASCEND_HOME_PATH}" DOC "ASC Compiler")
+message(STATUS "System processer: ${CMAKE_SYSTEM_PROCESSOR}")
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(ASCEND_CANN_PACKAGE_LINUX_PATH ${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux)
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|arm")
+    set(ASCEND_CANN_PACKAGE_LINUX_PATH ${ASCEND_CANN_PACKAGE_PATH}/aarch64-linux)
+else ()
+    message(FATAL_ERROR "Unknown architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+find_program(CMAKE_ASC_COMPILER NAMES "bisheng" PATHS "${ASCEND_CANN_PACKAGE_LINUX_PATH}/ccec_compiler/bin/" "$ENV{PATH}" "$ENV{ASCEND_HOME_PATH}" DOC "ASC Compiler")
 
 mark_as_advanced(CMAKE_ASC_COMPILER)
 message(STATUS "CMAKE_ASC_COMPILER: " ${CMAKE_ASC_COMPILER})
@@ -66,7 +75,7 @@ endif()
 
 # 第一次编译时顺序： CMakeDetermineASCCompiler.cmake -> CMakeASCInformation.cmake
 # 增量编译时顺序：   CMakeASCInformation.cmake
-find_program(CMAKE_ASC_LLD_LINKER NAMES "ld.lld" PATHS "${ASCEND_CANN_PACKAGE_PATH}/tools/ccec_compiler/bin/" DOC "ASC ld.lld Linker" NO_DEFAULT_PATH)
+find_program(CMAKE_ASC_LLD_LINKER NAMES "ld.lld" PATHS "${ASCEND_CANN_PACKAGE_LINUX_PATH}/ccec_compiler/bin/" DOC "ASC ld.lld Linker" NO_DEFAULT_PATH)
 
 if(DEFINED SOC_VERSION)
     message(STATUS "SOC_VERSION: " ${SOC_VERSION})
@@ -74,6 +83,7 @@ endif()
 message(STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
 message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 message(STATUS "ASCEND_CANN_PACKAGE_PATH: " ${ASCEND_CANN_PACKAGE_PATH})
+message(STATUS "ASCEND_CANN_PACKAGE_LINUX_PATH: " ${ASCEND_CANN_PACKAGE_LINUX_PATH})
 message(STATUS "CMAKE_ASC_LLD_LINKER: ${CMAKE_ASC_LLD_LINKER}")
 
 # configure all variables set in this file
