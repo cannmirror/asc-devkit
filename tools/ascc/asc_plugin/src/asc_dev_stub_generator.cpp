@@ -222,6 +222,12 @@ void AscDevStubGenerator::StubFuncCallImpl(const std::string& templateArgs)
         codeStream_ << "<" << templateArgs << ">";
     }
     codeStream_ << "(" << originParamsCallList_ << ");\n";
+    ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
+    if (shortSoc == ShortSocVersion::ASCEND910_95) {
+        codeStream_ << "    pipe_barrier(PIPE_ALL);\n";
+        codeStream_ << "    dsb(mem_dsb_t::DSB_ALL);\n";
+        codeStream_ << "    dci();\n";
+    }
 }
 
 std::pair<bool, bool> AscDevStubGenerator::GetArchInfo(const ShortSocVersion& socVersion) const
