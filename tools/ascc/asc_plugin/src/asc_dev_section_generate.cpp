@@ -26,6 +26,7 @@
 #include "asc_dev_meta_generator.h"
 
 namespace AscPlugin {
+namespace {
 std::string GetAscFeatureMetaSection(const uint32_t &featureFlag)
 {
     std::string counterMacroDef =
@@ -56,6 +57,7 @@ struct AscendCMetaInfo {
                     "(\".ascend.meta\"))) = {{0, 4, 0x01}, {4, 8, ") +
         std::to_string(featureFlag) + ", 0}};\n";
     return counterMacroDef + ascMetaSecDef + metaSection + "#endif\n";
+}
 }
 
 std::tuple<int32_t, std::string, std::string> GetDeviceCode(const KernelInfo& kernelInfo,
