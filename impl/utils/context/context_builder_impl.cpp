@@ -246,12 +246,14 @@ void ContextBuilderImpl::Outputs(std::vector<void *> outputs)
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, int64_t attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, bool attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
@@ -259,36 +261,42 @@ void ContextBuilderImpl::AddAttr(const std::string &attrName, bool attrValue)
 void ContextBuilderImpl::AddAttr(const std::string& attrName,
     const std::string& attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return , CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(ge::AscendString(attrValue.c_str()));
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, float attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<float> &attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<bool> &attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<int64_t> &attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<std::string> &attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return , CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     std::vector<ge::AscendString> attrValues;
     for (const auto &str : attrValue) {
@@ -299,6 +307,7 @@ void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<
 
 void ContextBuilderImpl::AddAttr(const std::string &attrName, const std::vector<std::vector<int64_t>> &attrValue)
 {
+    (void)attrName;
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return, CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
     tilingCtxBuilder_->AppendAttr(attrValue);
 }
