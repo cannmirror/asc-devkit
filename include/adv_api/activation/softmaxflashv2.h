@@ -19,7 +19,7 @@
 #include "kernel_tiling/kernel_tiling.h"
 #include "include/adv_api/activation/softmax_utils.h"
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_common.h"
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_flashv2_base_impl.h"
 
 #pragma begin_pipe(V)

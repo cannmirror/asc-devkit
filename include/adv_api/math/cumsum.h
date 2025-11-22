@@ -17,16 +17,12 @@
 
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/math/cumsum/regbase/c310/cumsum_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/math/cumsum/cumsum_common_impl.h"
-#endif
 #include "include/adv_api/math/cumsum_utils.h"
 #if ASCENDC_CPU_DEBUG
 #include "kernel_log.h"
 #endif
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200
 
 namespace AscendC {
 #pragma begin_pipe(V)

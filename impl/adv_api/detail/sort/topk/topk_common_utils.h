@@ -17,7 +17,7 @@
 
 #include "include/adv_api/sort/topk_utils.h"
 
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200
 namespace {
 constexpr uint16_t MIN_SORT32_SIZE = 32;
 constexpr uint16_t MIN_RPSORT16_SIZE = 16;
@@ -49,27 +49,6 @@ constexpr uint32_t TOPK_NORMAL_INNER_MAX_LEN = 4096;
 }  // namespace
 
 namespace AscendC {
-
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
-enum class TopKAlgo {
-    RADIX_SELECT,
-    MERGE_SORT
-};
-
-enum class TopKOrder {
-    UNSET,
-    LARGEST,
-    SMALLEST
-};
-
-struct TopKConfig {
-    TopKAlgo algo = TopKAlgo::MERGE_SORT;
-    TopKOrder order = TopKOrder::UNSET;
-    bool sorted = true;
-};
-
-constexpr TopKConfig defaultTopKConfig = { TopKAlgo::MERGE_SORT, TopKOrder::UNSET, true };
-#endif
 }
 #endif
 

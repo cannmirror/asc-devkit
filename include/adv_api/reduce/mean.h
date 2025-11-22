@@ -18,11 +18,8 @@
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
 #include "include/adv_api/reduce/mean_utils.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/reduce/mean/mean_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/reduce/mean/mean_common_impl.h"
-#endif
+
 #if ASCENDC_CPU_DEBUG
 #include "kernel_log.h"
 #include <type_traits>

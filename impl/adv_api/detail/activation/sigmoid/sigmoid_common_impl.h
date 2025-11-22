@@ -25,14 +25,10 @@
 #include "sigmoid_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 #include "sigmoid_v100_impl.h"
-#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
-    defined(__DAV_L311__) || defined(__DAV_L300__)
-#include "sigmoid_c310_impl.h"
 #endif
 
 namespace AscendC {
 
-#if !(defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__)) && (__NPU_ARCH__ != 5102)
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void SigmoidImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
@@ -56,7 +52,6 @@ __aicore__ inline void SigmoidImpl(const LocalTensor<T>& dstTensor, const LocalT
     LocalTensor<T> tmpBuffer = sharedTmpBuffer.ReinterpretCast<T>();
     SigmoidCompute<T, isReuseSource>(dstTensor, srcTensor, tmpBuffer, splitSize, loopCount, calcTail);
 }
-#endif
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void SigmoidImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,

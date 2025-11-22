@@ -27,33 +27,5 @@ constexpr uint32_t ANTIQUANT_SINGLE_N_SIZE_BF16 = 64;
 constexpr uint32_t ANTIQUANT_SINGLE_N_SIZE_FP16 = 128;
 constexpr uint32_t ANTIQUANT_MAX_K = 255;
 constexpr uint32_t MAX_K_FOR_FP16_BRCB = 4096;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-constexpr uint32_t ANTIQUANT_FP4_PERGROUP_SIZE = 32;
-constexpr uint32_t ANTIQUANT_BF16_MAN_LEN = 7;
-#endif
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-struct AscendAntiQuantConfig {
-    bool hasOffset;
-    bool isTranspose;
-    int32_t kDim = 1;
-};
-
-enum class AscendAntiQuantPolicy : int32_t {
-    PER_TENSOR,
-    PER_CHANNEL,
-    PER_TOKEN,
-    PER_GROUP,
-    PER_CHANNEL_PER_GROUP,
-    PER_TOKEN_PER_GROUP
-};
-
-struct AscendAntiQuantParam {
-    uint32_t m;
-    uint32_t n;
-    uint32_t calCount;
-    uint32_t groupSize = 0;
-};
-#endif
 } // namespace AscendC
 #endif // IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_COMMON_H

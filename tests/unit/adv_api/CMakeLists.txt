@@ -15,7 +15,7 @@ set(ASCENDC_UTILS_INCLUDE ${ASCENDC_INCLUDE_DIR}/utils)
 set(ASCENDC_UTILS_IMPL ${ASCENDC_IMPL_DIR}/utils)
 
 set(PRODUCT_TYPE_LIST_INIT
-    ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend910_9599_AIC ascend910_9599_AIV ascend310B1)
+    ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend910_9599_AIC ascend310B1)
 set(PRODUCT_TYPE_LIST ${PRODUCT_TYPE_LIST_INIT}
     CACHE STRING "Supported product types")
 
@@ -267,118 +267,6 @@ file(GLOB ASCENDC_TEST_ascend910_9599_AIC_CASE_SRC_FILES
     ${ASCENDC_TESTS_DIR}/matmul/lib/test_matmul_client.cpp
 )
 
-file(GLOB ASCENDC_TEST_ascend910_9599_AIV_CASE_SRC_FILES
-    #activate
-    ${ASCENDC_TESTS_DIR}/activation/gelu/test_operator_fast_gelu.cpp
-    ${ASCENDC_TESTS_DIR}/activation/gelu/test_operator_fast_gelu_v2.cpp
-    ${ASCENDC_TESTS_DIR}/activation/sigmoid/test_operator_vec_sigmoid.cpp
-    ${ASCENDC_TESTS_DIR}/activation/softmax/test_operator_softmax_c310.cpp
-    ${ASCENDC_TESTS_DIR}/api_check/activation/softmax/kernel_softmax_flashv3_check.cpp
-    ${ASCENDC_TESTS_DIR}/activation/gelu/test_operator_gelu.cpp
-    ${ASCENDC_TESTS_DIR}/activation/geglu/test_operator_geglu.cpp
-    ${ASCENDC_TESTS_DIR}/activation/reglu/test_operator_reglu.cpp
-    ${ASCENDC_TESTS_DIR}/activation/swish/test_operator_swish.cpp
-    ${ASCENDC_TESTS_DIR}/activation/silu/test_operator_silu.cpp
-    ${ASCENDC_TESTS_DIR}/activation/swiglu/test_operator_swiglu.cpp
-    #filter
-    ${ASCENDC_TESTS_DIR}/filter/dropout/test_operator_dropout.cpp
-    #index
-    ${ASCENDC_TESTS_DIR}/index/arithprogression/test_operator_arithprogression.cpp
-    #math
-    ${ASCENDC_TESTS_DIR}/math/clamp/test_operator_clamp.cpp
-    ${ASCENDC_TESTS_DIR}/math/bitwise_and/test_operator_bitwise_and.cpp
-    ${ASCENDC_TESTS_DIR}/math/logical_and/test_operator_logical_and.cpp
-    ${ASCENDC_TESTS_DIR}/math/logical_ands/test_operator_logical_ands.cpp
-    ${ASCENDC_TESTS_DIR}/math/logical_or/test_operator_logical_or.cpp
-    ${ASCENDC_TESTS_DIR}/math/logical_ors/test_operator_logical_ors.cpp
-    ${ASCENDC_TESTS_DIR}/math/logical_not/test_operator_logical_not.cpp
-    ${ASCENDC_TESTS_DIR}/math/isnan/test_operator_isnan.cpp
-    ${ASCENDC_TESTS_DIR}/math/isinf/test_operator_isinf.cpp
-    ${ASCENDC_TESTS_DIR}/math/fma/test_operator_fma.cpp
-    ${ASCENDC_TESTS_DIR}/math/rint/test_operator_rint.cpp
-    ${ASCENDC_TESTS_DIR}/math/sincos/test_operator_sincos.cpp
-    ${ASCENDC_TESTS_DIR}/math/isfinite/test_operator_isfinite.cpp
-    ${ASCENDC_TESTS_DIR}/math/atanh/test_operator_atan_c310.cpp
-    ${ASCENDC_TESTS_DIR}/math/cos/test_operator_cos_c310.cpp
-    ${ASCENDC_TESTS_DIR}/math/cumsum/test_operator_cumsum.cpp
-    ${ASCENDC_TESTS_DIR}/math/erf/test_operator_erf.cpp
-    ${ASCENDC_TESTS_DIR}/math/fmod/test_operator_fmod.cpp
-    ${ASCENDC_TESTS_DIR}/math/hypot/test_operator_hypot.cpp
-    ${ASCENDC_TESTS_DIR}/math/log/test_operator_log.cpp
-    ${ASCENDC_TESTS_DIR}/math/philox/test_operator_philox_c310.cpp
-    ${ASCENDC_TESTS_DIR}/math/power/test_operator_power_c310.cpp
-    ${ASCENDC_TESTS_DIR}/math/sin/test_operator_sin_c310.cpp
-    ${ASCENDC_TESTS_DIR}/math/tanh/test_operator_tanh_c310.cpp
-    ${ASCENDC_TESTS_DIR}/math/cosh/test_operator_cosh.cpp
-    ${ASCENDC_TESTS_DIR}/math/sinh/test_operator_sinh.cpp
-    ${ASCENDC_TESTS_DIR}/math/sign/test_operator_sign.cpp
-    ${ASCENDC_TESTS_DIR}/math/exp/test_operator_exphighprecision.cpp
-    ${ASCENDC_TESTS_DIR}/math/where/test_operator_where.cpp
-    ${ASCENDC_TESTS_DIR}/api_check/math/where/kernel_where_check.cpp
-    ${ASCENDC_TESTS_DIR}/math/bitwise_not/test_operator_bitwise_not.cpp
-    ${ASCENDC_TESTS_DIR}/math/bitwise_or/test_operator_bitwise_or.cpp
-    ${ASCENDC_TESTS_DIR}/math/bitwise_xor/test_operator_bitwise_xor.cpp
-    ${ASCENDC_TESTS_DIR}/math/logical_xor/test_operator_logical_xor.cpp
-    # normalization
-    ${ASCENDC_TESTS_DIR}/normalization/welfordfinalize/test_operator_welfordfinalize.cpp
-    ${ASCENDC_TESTS_DIR}/normalization/normalize/test_operator_normalize_c310.cpp
-    ${ASCENDC_TESTS_DIR}/normalization/layernormV2/test_operator_layernormV2_c310.cpp
-    ${ASCENDC_TESTS_DIR}/normalization/welfordupdate/test_operator_welfordupdate.cpp
-    ${ASCENDC_TESTS_DIR}/normalization/groupnorm/test_operator_groupnorm.cpp
-    # quantization
-    ${ASCENDC_TESTS_DIR}/quantization/dequantize/test_dequantize.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/antiquantize/test_antiquantize.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/antiquant/test_ascend_antiquant_scalar.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/antiquant/test_ascend_antiquant_weight_scalar.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/antiquant/test_ascend_antiquant_weight_c310.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/antiquant/test_ascend_antiquant.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_quant_per_group.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_quant_per_group_transpose.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_quant_per_token.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_quant_per_token_transpose.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_dequant.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_dequant_per_group.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/dequant/test_ascend_dequant_per_token.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quant/test_ascend_quant_per_group_scalar.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quant/test_ascend_quant_per_group.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quant/test_ascend_quant_per_token_scalar.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quant/test_ascend_quant_per_token.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quantize/test_quantize_per_tensor.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quantize/test_quantize_per_channel.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quantize/test_quantize_per_token.cpp
-    ${ASCENDC_TESTS_DIR}/quantization/quantize/test_quantize_per_group.cpp
-    # reduce
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_max/test_operator_reduce_max_c310.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_min/test_operator_reduce_min_c310.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_sum/test_operator_reduce_sum_c310.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_all/test_operator_reduce_all_c310.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_any/test_operator_reduce_any_c310.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_prod/test_operator_reduce_prod_c310.cpp
-    ${ASCENDC_TESTS_DIR}/api_check/reduce/reduce_all/kernel_reduce_all_check.cpp
-    ${ASCENDC_TESTS_DIR}/api_check/reduce/reduce_any/kernel_reduce_any_check.cpp
-    ${ASCENDC_TESTS_DIR}/api_check/reduce/reduce_prod/kernel_reduce_prod_check.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/mean/test_operator_mean.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/sum/test_operator_sum.cpp
-    ${ASCENDC_TESTS_DIR}/reduce/reduce_xor_sum/test_operator_reduce_xor_sum.cpp
-    # pad
-    ${ASCENDC_TESTS_DIR}/pad/broadcast/test_operator_broadcast_c310.cpp
-    ${ASCENDC_TESTS_DIR}/api_check/pad/broadcast/kernel_broadcast_check.cpp
-    ${ASCENDC_TESTS_DIR}/pad/pad/test_operator_pad.cpp
-    # select
-    ${ASCENDC_TESTS_DIR}/select/selectwithbytesmask/test_operator_selectwithbytesmask.cpp
-    # sort
-    ${ASCENDC_TESTS_DIR}/sort/sort/test_operator_radix_sort.cpp
-    ${ASCENDC_TESTS_DIR}/sort/topk/test_operator_radix_topk.cpp
-    # transpose
-    ${ASCENDC_TESTS_DIR}/transpose/confusion_transpose/test_operator_confusion_transpose_c310.cpp
-    # hccl
-    ${ASCENDC_TESTS_DIR}/hccl/test_hccl_910_9599.cpp
-    # cmath
-    ${ASCENDC_TESTS_DIR}/std/cmath/test_abs.cpp
-    ${ASCENDC_TESTS_DIR}/std/cmath/test_sqrt.cpp
-    # matmul
-)
-
 # ascend310B1 test cases
 file(GLOB ASCENDC_TEST_ascend310B1_CASE_SRC_FILES
     ${ASCENDC_TESTS_DIR}/activation/softmax/test_operator_softmax_v300.cpp
@@ -398,7 +286,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend910B1_ACT>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend910B1_ATVC>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend910_9599_AIC>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend310B1>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         ${ASCENDC_TEST_${product_type}_CASE_SRC_FILES}
     )
@@ -484,19 +371,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
             ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
             ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
         )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV")
-        target_compile_definitions(ascendc_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __NPU_ARCH__=3101
-            __DAV_C310__
-            __DAV_C310_VEC__
-        )
-        target_link_directories(ascendc_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
     elseif(${product_type} STREQUAL "ascend310B1")
         target_compile_definitions(ascendc_utest_${product_type} PRIVATE
             UT_TEST
@@ -555,7 +429,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend910B1_ACT>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend910B1_ATVC>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend910_9599_AIC>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend310B1>:pem_davinci>
         unified_dlog
         c_sec
@@ -638,13 +511,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
             __NPU_ARCH__=2201
         )
     elseif(${product_type} STREQUAL "ascend910_9599_AIC")
-        target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __NPU_ARCH__=3101
-            __DAV_C310__
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV")
         target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE
             UT_TEST
             __CCE_AICORE__=310

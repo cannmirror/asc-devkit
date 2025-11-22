@@ -80,32 +80,3 @@ TEST_F(ReduceAllAPICheck, ReduceAllAPICheckOverlap)
     CheckReduceOverlap<float, 
         HighLevelApiCheck::CheckFuncReduceAll<float, AscendC::Pattern::Reduce::RA>>("ReduceAll");
 }
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-TEST_F(ReduceAllAPICheck, ReduceAllAPICheckWidth32B)
-{
-    AscendC::TPipe pipe;
-    AscendC::TQue<TPosition::VECIN, 1> inQueueX;
-    AscendC::TQue<TPosition::VECOUT, 1> outQueueY;
-    AscendC::TBuf<TPosition::VECCALC> tmplocalBuf;
-    uint32_t first = 33;
-    uint32_t last = 33;
-    pipe.InitBuffer(outQueueY, 1, last * sizeof(float));
-    pipe.InitBuffer(inQueueX, 1, first * last * sizeof(float));
-    pipe.InitBuffer(tmplocalBuf, last);
-    AscendC::LocalTensor<float> srcTensor = inQueueX.AllocTensor<float>();
-    AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmplocalBuf.Get<uint8_t>();
-    AscendC::LocalTensor<float> dstTensor = outQueueY.AllocTensor<float>();
-
-    uint32_t srcShape[] = { first, last };
-    constexpr bool isReuseSource = true;
-    bool srcInnerPad = true;
-    uint64_t startCounts = AscendC::KernelRaise::GetInstance().GetRaiseCount();
-    HighLevelApiCheck::CheckFuncReduceAll<float, AscendC::Pattern::Reduce::RA>(
-        "ReduceAll", dstTensor, srcTensor, sharedTmpBuffer, srcShape, srcInnerPad, last);
-    inQueueX.FreeTensor(srcTensor);
-    outQueueY.FreeTensor(dstTensor);
-    tmplocalBuf.FreeTensor(sharedTmpBuffer);
-    EXPECT_EQ(AscendC::KernelRaise::GetInstance().GetRaiseCount() - startCounts, 1);
-}
-#endif

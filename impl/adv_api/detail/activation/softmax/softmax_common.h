@@ -25,14 +25,6 @@
 
 namespace AscendC {
 
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
-template <typename T> constexpr __aicore__ inline void SoftmaxApiSupportedTypeCheck()
-{
-    static_assert(std::is_same<T, half>::value || std::is_same<T, float>::value,
-        "This Related Api of Softmax only support half/float input dtype");
-}
-#endif
-
 __aicore__ inline void CreateSpecialFormatMask(uint64_t& lowMask, const uint32_t& maskLen, const uint32_t& nzBlockCount,
     const uint32_t& totalLen = SOFTMAX_SHAPE_NZ_BASIC_COUNT)
 {

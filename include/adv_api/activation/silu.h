@@ -16,11 +16,8 @@
 #define LIB_SILU_SILU_H
 
 #include "kernel_tensor.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/activation/silu/silu_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/activation/silu/silu_common_impl.h"
-#endif
+
 namespace AscendC {
 /* !
  * \brief This function implements the Sigmoid Linear Unit (SiLU) function. silu(x) = x / (1 + e^(-x))
