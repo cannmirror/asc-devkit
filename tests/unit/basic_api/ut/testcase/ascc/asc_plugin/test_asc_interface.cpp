@@ -678,694 +678,694 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMix11_Mix12)
     EXPECT_EQ(exec_res, AscPlugin::ASC_FAILURE);
 }
 
-// // MIX_1_2 with MIX_AIV_only is ok. Because has MIX, has -D__MIX_CORE_MACRO__=1, has -DA=A_mix_aiv/aic
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIV_Mix12)
-// {
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.kernelFuncSymbolToFuncInfo_ = {};
-//     manager.AddGlobalSymbolInfo("__device_stub__add_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0, "a.cpp", 100, 110, AscPlugin::KfcScene::Close);
-//     manager.AddGlobalSymbolInfo("__device_stub__sub_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2, "b.cpp", 120, 110, AscPlugin::KfcScene::Close);
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "-D__MIX_CORE_MACRO__=1",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom_mix_aic",
-//         "-D__device_stub__add_custom=add_custom_mix_aic",
-//     };
+// MIX_1_2 with MIX_AIV_only is ok. Because has MIX, has -D__MIX_CORE_MACRO__=1, has -DA=A_mix_aiv/aic
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIV_Mix12)
+{
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.kernelFuncSymbolToFuncInfo_ = {};
+    manager.AddGlobalSymbolInfo("__device_stub__add_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0, "a.cpp", 100, 110, AscPlugin::KfcScene::Close);
+    manager.AddGlobalSymbolInfo("__device_stub__sub_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2, "b.cpp", 120, 110, AscPlugin::KfcScene::Close);
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "-D__MIX_CORE_MACRO__=1",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom_mix_aic",
+        "-D__device_stub__add_custom=add_custom_mix_aic",
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "-D__MIX_CORE_MACRO__=1",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom_mix_aiv",
-//         "-D__device_stub__add_custom=add_custom_mix_aiv"
-//     };
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "-D__MIX_CORE_MACRO__=1",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom_mix_aiv",
+        "-D__device_stub__add_custom=add_custom_mix_aiv"
+    };
 
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(std::string(a), std::string(expectedRes));
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(std::string(a), std::string(expectedRes));
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// // MIX_1_2 with MIX_AIC_only is ok. Because has MIX, has -D__MIX_CORE_MACRO__=1.
-// // Because has MIX_1_1, has -D__MIX_CORE_AIC_RATION__=1
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIC_Mix11)
-// {
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.kernelFuncSymbolToFuncInfo_ = {};
-//     manager.AddGlobalSymbolInfo("__device_stub__add_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0, "a.cpp", 100, 110, AscPlugin::KfcScene::Close);
-//     manager.AddGlobalSymbolInfo("__device_stub__sub_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1, "b.cpp", 120, 110, AscPlugin::KfcScene::Close);
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "-D__MIX_CORE_MACRO__=1", "-D__MIX_CORE_AIC_RATION__=1",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom_mix_aic",
-//         "-D__device_stub__add_custom=add_custom_mix_aic"
-//     };
+// MIX_1_2 with MIX_AIC_only is ok. Because has MIX, has -D__MIX_CORE_MACRO__=1.
+// Because has MIX_1_1, has -D__MIX_CORE_AIC_RATION__=1
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIC_Mix11)
+{
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.kernelFuncSymbolToFuncInfo_ = {};
+    manager.AddGlobalSymbolInfo("__device_stub__add_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0, "a.cpp", 100, 110, AscPlugin::KfcScene::Close);
+    manager.AddGlobalSymbolInfo("__device_stub__sub_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1, "b.cpp", 120, 110, AscPlugin::KfcScene::Close);
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "-D__MIX_CORE_MACRO__=1", "-D__MIX_CORE_AIC_RATION__=1",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom_mix_aic",
+        "-D__device_stub__add_custom=add_custom_mix_aic"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "-D__MIX_CORE_MACRO__=1", "-D__MIX_CORE_AIC_RATION__=1",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom_mix_aiv",
-//         "-D__device_stub__add_custom=add_custom_mix_aiv"
-//     };
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "-D__MIX_CORE_MACRO__=1", "-D__MIX_CORE_AIC_RATION__=1",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom_mix_aiv",
+        "-D__device_stub__add_custom=add_custom_mix_aiv"
+    };
 
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// // no function call, still pass device compile options
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_device_call)
-// {
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.kernelFuncSymbolToFuncInfo_ = {};
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube"
-//     };
+// no function call, still pass device compile options
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_device_call)
+{
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.kernelFuncSymbolToFuncInfo_ = {};
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec"
-//     };
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec"
+    };
 
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// // when not has mix, do not need extra compile options
-// // AIC_ONLY do not need -DA=A_mix_aic/aiv
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue)
-// {
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.AddGlobalSymbolInfo("__device_stub__add_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_AIC_ONLY, "a.cpp", 100, 110, AscPlugin::KfcScene::Close);
-//     manager.AddGlobalSymbolInfo("__device_stub__sub_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_AIV_ONLY, "a.cpp", 100, 130, AscPlugin::KfcScene::Close);
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+// when not has mix, do not need extra compile options
+// AIC_ONLY do not need -DA=A_mix_aic/aiv
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue)
+{
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.AddGlobalSymbolInfo("__device_stub__add_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_AIC_ONLY, "a.cpp", 100, 110, AscPlugin::KfcScene::Close);
+    manager.AddGlobalSymbolInfo("__device_stub__sub_custom", AscPlugin::KernelMetaType::KERNEL_TYPE_AIV_ONLY, "a.cpp", 100, 130, AscPlugin::KfcScene::Close);
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_nullptr)
-// {
-//     int32_t exec_res = AscPlugin::PluginEpilogue(nullptr);
-//     EXPECT_EQ(exec_res, AscPlugin::ASC_NULLPTR);
-// }
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_nullptr)
+{
+    int32_t exec_res = AscPlugin::PluginEpilogue(nullptr);
+    EXPECT_EQ(exec_res, AscPlugin::ASC_NULLPTR);
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_dump)
-// {
-//     const char* a;
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.userDumpStatus_ = false;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         // include paths
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_dump)
+{
+    const char* a;
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.userDumpStatus_ = false;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        // include paths
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000", "-mllvm", "-cce-aicore-function-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         // include paths
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
-//     EXPECT_EQ(exec_res, 0);
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(std::string(a), std::string(expectedRes));
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000", "-mllvm", "-cce-aicore-function-stack-size=0x8000",
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_310P)
-// {
-//     AscPlugin::PrologueResult res2;
-//     AscPlugin::PrologueConfig config;
-//     PrologueConfigUpdate(config);
-//     config.compileArgs = {"-DASCENDC_DUMP=0", "-O1"};
-//     nlohmann::json configObj= config;
-//     const char* configObjPtr = strdup(configObj.dump().c_str());
-//     const char* prologueRes;
-//     int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
-//     free(const_cast<char*>(prologueRes));
-//     free(const_cast<char*>(configObjPtr));
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        // include paths
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
+    EXPECT_EQ(exec_res, 0);
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(std::string(a), std::string(expectedRes));
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-//     AscPlugin::EpilogueResult res;
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetShortSocVersion(AscPlugin::ShortSocVersion::ASCEND310P);
-//     manager.SetCannPath("A");
-//     manager.userDumpStatus_ = false;
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O2",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-fp-ceiling=2",
-//         "-mllvm", "-cce-aicore-record-overflow=false", "-mllvm", "-cce-aicore-mask-opt=false",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-m200",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_310P)
+{
+    AscPlugin::PrologueResult res2;
+    AscPlugin::PrologueConfig config;
+    PrologueConfigUpdate(config);
+    config.compileArgs = {"-DASCENDC_DUMP=0", "-O1"};
+    nlohmann::json configObj = config;
+    const char* configObjPtr = strdup(configObj.dump().c_str());
+    const char* prologueRes;
+    int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
+    free(const_cast<char*>(prologueRes));
+    free(const_cast<char*>(configObjPtr));
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-fp-ceiling=2",
-//         "-mllvm", "-cce-aicore-record-overflow=false", "-mllvm", "-cce-aicore-mask-opt=false",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-m200-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom",
-//         "-D__ENABLE_VECTOR_CORE__"
-//     };
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
+    AscPlugin::EpilogueResult res;
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetShortSocVersion(AscPlugin::ShortSocVersion::ASCEND310P);
+    manager.SetCannPath("A");
+    manager.userDumpStatus_ = false;
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O2",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-fp-ceiling=2",
+        "-mllvm", "-cce-aicore-record-overflow=false", "-mllvm", "-cce-aicore-mask-opt=false",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-m200",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-fp-ceiling=2",
+        "-mllvm", "-cce-aicore-record-overflow=false", "-mllvm", "-cce-aicore-mask-opt=false",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-m200-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom",
+        "-D__ENABLE_VECTOR_CORE__"
+    };
+    EXPECT_EQ(exec_res, 0);
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(std::string(a), std::string(expectedRes));
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
 
-//     manager.SetShortSocVersion(AscPlugin::ShortSocVersion::ASCEND910B);
-// }
+    manager.SetShortSocVersion(AscPlugin::ShortSocVersion::ASCEND910B);
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_optimize_lv1)
-// {
-//     AscPlugin::PrologueResult res2;
-//     AscPlugin::PrologueConfig config;
-//     PrologueConfigUpdate(config);
-//     config.compileArgs = {"-DASCENDC_DUMP=0", "-O1"};
-//     nlohmann::json configObj= config;
-//     const char* configObjPtr = strdup(configObj.dump().c_str());
-//     const char* prologueRes;
-//     int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
-//     free(const_cast<char*>(prologueRes));
-//     free(const_cast<char*>(configObjPtr));
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_optimize_lv1)
+{
+    AscPlugin::PrologueResult res2;
+    AscPlugin::PrologueConfig config;
+    PrologueConfigUpdate(config);
+    config.compileArgs = {"-DASCENDC_DUMP=0", "-O1"};
+    nlohmann::json configObj= config;
+    const char* configObjPtr = strdup(configObj.dump().c_str());
+    const char* prologueRes;
+    int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
+    free(const_cast<char*>(prologueRes));
+    free(const_cast<char*>(configObjPtr));
 
-//     AscPlugin::EpilogueResult res;
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.userDumpStatus_ = false;
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O2",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+    AscPlugin::EpilogueResult res;
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.userDumpStatus_ = false;
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O2",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O2", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_no_dump)
-// {
-//     AscPlugin::PrologueResult res2;
-//     AscPlugin::PrologueConfig config;
-//     PrologueConfigUpdate(config);
-//     config.compileArgs = {"-DASCENDC_DUMP=0", "--cce-aicore-input-parameter-size=50"};
-//     nlohmann::json configObj= config;
-//     const char* configObjPtr = strdup(configObj.dump().c_str());
-//     const char* prologueRes;
-//     int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
-//     free(const_cast<char*>(prologueRes));
-//     free(const_cast<char*>(configObjPtr));
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_no_dump)
+{
+    AscPlugin::PrologueResult res2;
+    AscPlugin::PrologueConfig config;
+    PrologueConfigUpdate(config);
+    config.compileArgs = {"-DASCENDC_DUMP=0", "--cce-aicore-input-parameter-size=50"};
+    nlohmann::json configObj= config;
+    const char* configObjPtr = strdup(configObj.dump().c_str());
+    const char* prologueRes;
+    int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
+    free(const_cast<char*>(prologueRes));
+    free(const_cast<char*>(configObjPtr));
 
-//     AscPlugin::EpilogueResult res;
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.userDumpStatus_ = false;
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+    AscPlugin::EpilogueResult res;
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.userDumpStatus_ = false;
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=0",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=0",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on)
-// {
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.userDumpStatus_ = true;
-//     manager.hasPrintf_ = true;
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=1",
-//         "-DONE_CORE_DUMP_SIZE=1048576",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on)
+{
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.userDumpStatus_ = true;
+    manager.hasPrintf_ = true;
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=1",
+        "-DONE_CORE_DUMP_SIZE=1048576",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=1",
-//         "-DONE_CORE_DUMP_SIZE=1048576",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=1",
+        "-DONE_CORE_DUMP_SIZE=1048576",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on_assert)
-// {
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.userDumpStatus_ = true;
-//     manager.hasPrintf_ = false;
-//     manager.hasAssert_ = true;
-//     manager.UpdateOneCoreDumpSize();
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=1",
-//         "-DONE_CORE_DUMP_SIZE=1024",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on_assert)
+{
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.userDumpStatus_ = true;
+    manager.hasPrintf_ = false;
+    manager.hasAssert_ = true;
+    manager.UpdateOneCoreDumpSize();
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=1",
+        "-DONE_CORE_DUMP_SIZE=1024",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=1",
-//         "-DONE_CORE_DUMP_SIZE=1024",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=1",
+        "-DONE_CORE_DUMP_SIZE=1024",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
-// TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_dump_on)
-// {
-//     AscPlugin::PrologueConfig config;
-//     PrologueConfigUpdate(config);
-//     config.compileArgs = {"-DASCENDC_DUMP=1"};
-//     nlohmann::json configObj= config;
-//     const char* configObjPtr = strdup(configObj.dump().c_str());
-//     const char* prologueRes;
-//     int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
-//     free(const_cast<char*>(prologueRes));
-//     free(const_cast<char*>(configObjPtr));
+TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_dump_on)
+{
+    AscPlugin::PrologueConfig config;
+    PrologueConfigUpdate(config);
+    config.compileArgs = {"-DASCENDC_DUMP=1"};
+    nlohmann::json configObj= config;
+    const char* configObjPtr = strdup(configObj.dump().c_str());
+    const char* prologueRes;
+    int32_t exec_res1 = AscPlugin::PluginPrologue(&prologueRes, configObjPtr);
+    free(const_cast<char*>(prologueRes));
+    free(const_cast<char*>(configObjPtr));
 
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetCannPath("A");
-//     manager.optimizeLevel_ = "-O3";
-//     manager.userDumpStatus_ = true;
-//     manager.hasPrintf_ = true;
-//     manager.UpdateOneCoreDumpSize();
-//     const char* a;
-//     MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
-//     int32_t exec_res = AscPlugin::PluginEpilogue(&a);
-//     std::vector<std::string> expHostExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3",
-//         // define macros
-//         "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
-//     };
-//     std::vector<std::string> expDeviceCubeExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=1",
-//         "-DONE_CORE_DUMP_SIZE=1048576",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-cube",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetCannPath("A");
+    manager.optimizeLevel_ = "-O3";
+    manager.userDumpStatus_ = true;
+    manager.hasPrintf_ = true;
+    manager.UpdateOneCoreDumpSize();
+    const char* a;
+    MOCKER(AscPlugin::FunctionRegistryImpl).stubs().will(returnValue(std::string("")));
+    int32_t exec_res = AscPlugin::PluginEpilogue(&a);
+    std::vector<std::string> expHostExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3",
+        // define macros
+        "-D__NPU_HOST__", "-DTILING_KEY_VAR=0",
+    };
+    std::vector<std::string> expDeviceCubeExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=1",
+        "-DONE_CORE_DUMP_SIZE=1048576",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-cube",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
 
-//     std::vector<std::string> expDeviceVecExtraCompileOptions = {
-//         // compile options
-//         "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
-//         "-mllvm", "-cce-aicore-stack-size=0x8000",
-//         "-mllvm", "-cce-aicore-function-stack-size=0x8000", "-mllvm", "-cce-aicore-record-overflow=true",
-//         "-mllvm", "-cce-aicore-addr-transform", "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
-//         "-DL2_CACHE_HINT",
-//         "--cce-auto-sync",
-//         "-DASCENDC_DUMP=1",
-//         "-DONE_CORE_DUMP_SIZE=1048576",
-//         "-include", "A/include/version/cann_version.h",
-//         "-D__ASC_FEATURE_META_INFO7",
-//         "--cce-aicore-arch=dav-c220-vec",
-//         "-D__device_stub__sub_custom=sub_custom",
-//         "-D__device_stub__add_custom=add_custom"
-//     };
-//     AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
-//         expDeviceVecExtraCompileOptions};
-//     nlohmann::json jsonObj = expectRes;
-//     const char* expectedRes = strdup(jsonObj.dump().c_str());
-//     EXPECT_EQ(exec_res, 0);
-//     EXPECT_EQ(strcmp(expectedRes, a), 0);
-//     free(const_cast<char*>(a));
-//     free(const_cast<char*>(expectedRes));
-// }
+    std::vector<std::string> expDeviceVecExtraCompileOptions = {
+        // compile options
+        "-std=c++17", "-O3", "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0",
+        "-mllvm", "-cce-aicore-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-function-stack-size=0x8000",
+        "-mllvm", "-cce-aicore-dcci-insert-for-scalar=false",
+        "-DL2_CACHE_HINT",
+        "--cce-auto-sync",
+        "-DASCENDC_DUMP=1",
+        "-DONE_CORE_DUMP_SIZE=1048576",
+        "-include", "A/include/version/cann_version.h",
+        "-D__ASC_FEATURE_META_INFO7",
+        "--cce-aicore-arch=dav-c220-vec",
+        "-D__device_stub__sub_custom=sub_custom",
+        "-D__device_stub__add_custom=add_custom"
+    };
+    AscPlugin::EpilogueResult expectRes = {"", expHostExtraCompileOptions, expDeviceCubeExtraCompileOptions,
+        expDeviceVecExtraCompileOptions};
+    nlohmann::json jsonObj = expectRes;
+    const char* expectedRes = strdup(jsonObj.dump().c_str());
+    EXPECT_EQ(exec_res, 0);
+    EXPECT_EQ(strcmp(expectedRes, a), 0);
+    free(const_cast<char*>(a));
+    free(const_cast<char*>(expectedRes));
+}
 
 TEST_F(TEST_ASC_INTERFACE, asc_PluginFatbinLink)
 {

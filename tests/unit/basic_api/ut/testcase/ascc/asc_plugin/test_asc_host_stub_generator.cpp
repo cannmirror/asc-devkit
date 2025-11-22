@@ -248,94 +248,94 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aic_1_0)
     EXPECT_EQ(hostStubCode, golden);
 }
 
-// TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_bisheng_core_ratio)
-// {
-//     // template/add_custom_namespace
-//     std::string golden = R"(template<int32_t cube, int32_t vec> void AscendC::AOT::Kernel::add_custom(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream, uint8_t * x, uint8_t * y, uint8_t * z)
-// {
-//     struct {
-//         alignas(((alignof(void*) + 3) >> 2) << 2) void* x;
-//         alignas(((alignof(void*) + 3) >> 2) << 2) void* y;
-//         alignas(((alignof(void*) + 3) >> 2) << 2) void* z;
-//         alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
-//     } __ascendc_args {x, y, z, };
-//     uint32_t __ascendc_ret;
-//     constexpr uint32_t __ascendc_overflow_status_size = 8;
-//     AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
-//     const char* __ascendc_name = "add_custom";
-//     const char* __ascendc_manglingName = nullptr;
-//     uint32_t __ascendc_kType = 10;
-//     if constexpr (AscendC::Std::is_same<cube, 1>::value && AscendC::Std::is_same<vec, 2>::value) {
-//         __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
-//         __ascendc_kType = 10;
-//     }
-//     if constexpr (AscendC::Std::is_same<cube, 1>::value && AscendC::Std::is_same<vec, 0>::value) {
-//         __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S5_";
-//         __ascendc_kType = 8;
-//     }
-//     if (__ascendc_manglingName == nullptr) {
-//         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
-//         return;
-//     }
-//     __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
-//     if(__ascendc_ret != 0) {
-//         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
-//         return;
-//     }
-//     AscPluginGenerator::GetHandleUnregisterInst();
-//     FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
-// }
-// )";
-//     AscPlugin::KernelInfo kernelInfo;
-//     kernelInfo.kernelName = "add_custom";
-//     kernelInfo.kernelMangledName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
-//     kernelInfo.kernelMangledNameConsiderPrefix = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
-//     kernelInfo.namespaces = {"AscendC", "AOT", "Kernel"};
-//     kernelInfo.kernelParameters = {
-//         {"uint8_t *", "x", false, "", ""},
-//         {"uint8_t *", "y", false, "", ""},
-//         {"uint8_t *", "z", false, "", ""}
-//     };
-//     kernelInfo.kernelAttributes = {};
-//     kernelInfo.isTemplate = true;
-//     kernelInfo.templateParameters = {
-//         {"int32_t", "cube", false, "", "", AscPlugin::ParamType::TEMPLATE_TYPE},
-//         {"int32_t", "vec", false, "", "", AscPlugin::ParamType::TEMPLATE_TYPE}
-//     };
-//     kernelInfo.templateInstances = {
-//         {
-//             {"1", "2"},
-//             {
-//                 {"uint8_t *", "x", false, "", ""},
-//                 {"uint8_t *", "y", false, "", ""},
-//                 {"uint8_t *", "z", false, "", ""}
-//             },
-//             "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_",
-//             "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_",
-//             {true, 1, 2}
-//         },
-//         {
-//             {"1", "0"},
-//             {
-//                 {"uint8_t *", "x", false, "", ""},
-//                 {"uint8_t *", "y", false, "", ""},
-//                 {"uint8_t *", "z", false, "", ""}
-//             },
-//             "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S5_",
-//             "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S5_",
-//             {true, 1, 0}
-//         }
-//     };
+TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_bisheng_core_ratio)
+{
+    // template/add_custom_namespace
+    std::string golden = R"(template<int32_t cube, int32_t vec> void AscendC::AOT::Kernel::add_custom(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream, uint8_t * x, uint8_t * y, uint8_t * z)
+{
+    struct {
+        alignas(((alignof(void*) + 3) >> 2) << 2) void* x;
+        alignas(((alignof(void*) + 3) >> 2) << 2) void* y;
+        alignas(((alignof(void*) + 3) >> 2) << 2) void* z;
+        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
+    } __ascendc_args {x, y, z, };
+    uint32_t __ascendc_ret;
+    constexpr uint32_t __ascendc_overflow_status_size = 8;
+    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
+    const char* __ascendc_name = "add_custom";
+    const char* __ascendc_manglingName = nullptr;
+    uint32_t __ascendc_kType = 8;
+    if constexpr (AscendC::Std::is_same<cube, 1>::value && AscendC::Std::is_same<vec, 2>::value) {
+        __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
+        __ascendc_kType = 10;
+    }
+    if constexpr (AscendC::Std::is_same<cube, 1>::value && AscendC::Std::is_same<vec, 0>::value) {
+        __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S5_";
+        __ascendc_kType = 8;
+    }
+    if (__ascendc_manglingName == nullptr) {
+        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
+        return;
+    }
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    if(__ascendc_ret != 0) {
+        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
+        return;
+    }
+    AscPluginGenerator::GetHandleUnregisterInst();
+    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
+}
+)";
+    AscPlugin::KernelInfo kernelInfo;
+    kernelInfo.kernelName = "add_custom";
+    kernelInfo.kernelMangledName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
+    kernelInfo.kernelMangledNameConsiderPrefix = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
+    kernelInfo.namespaces = {"AscendC", "AOT", "Kernel"};
+    kernelInfo.kernelParameters = {
+        {"uint8_t *", "x", false, "", ""},
+        {"uint8_t *", "y", false, "", ""},
+        {"uint8_t *", "z", false, "", ""}
+    };
+    kernelInfo.kernelAttributes = {};
+    kernelInfo.isTemplate = true;
+    kernelInfo.templateParameters = {
+        {"int32_t", "cube", false, "", "", AscPlugin::ParamType::TEMPLATE_TYPE},
+        {"int32_t", "vec", false, "", "", AscPlugin::ParamType::TEMPLATE_TYPE}
+    };
+    kernelInfo.templateInstances = {
+        {
+            {"1", "2"},
+            {
+                {"uint8_t *", "x", false, "", ""},
+                {"uint8_t *", "y", false, "", ""},
+                {"uint8_t *", "z", false, "", ""}
+            },
+            "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_",
+            "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_",
+            {true, 1, 2}
+        },
+        {
+            {"1", "0"},
+            {
+                {"uint8_t *", "x", false, "", ""},
+                {"uint8_t *", "y", false, "", ""},
+                {"uint8_t *", "z", false, "", ""}
+            },
+            "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S5_",
+            "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S5_",
+            {true, 1, 0}
+        }
+    };
 
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
-//     manager.SetHasPrintf(false);
-//     manager.SetHasAssert(false);
-//     manager.SetUserDumpStatus(false);
-//     std::unordered_set<AscPlugin::KernelMetaType> kernelType = {AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2,
-//         AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0};
-//     auto hostStubCode = GetHostStubCode(kernelInfo, kernelType);
-//     EXPECT_EQ(hostStubCode, golden);
-// }
+    auto& manager = AscPlugin::InfoManager::GetInstance();
+    manager.SetHasPrintf(false);
+    manager.SetHasAssert(false);
+    manager.SetUserDumpStatus(false);
+    std::unordered_set<AscPlugin::KernelMetaType> kernelType = {AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2,
+        AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0};
+    auto hostStubCode = GetHostStubCode(kernelInfo, kernelType);
+    EXPECT_EQ(hostStubCode, golden);
+}
 
 TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_printf)
 {

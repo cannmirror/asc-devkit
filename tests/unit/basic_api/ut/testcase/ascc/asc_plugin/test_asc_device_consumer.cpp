@@ -146,6 +146,13 @@ TEST_F(TEST_ASC_DEVICE_CONSUMER, asc_VisitFunctionDecl)
     MOCKER(&clang::FunctionDecl::attrs).stubs().will(returnValue(
         std::vector<clang::AnnotateAttr*>{&attrA, &attrB}
     ));
+
+    static clang::ParmVarDecl paramA;
+    static clang::ParmVarDecl paramB;
+    MOCKER(&clang::FunctionDecl::parameters).stubs().will(returnValue(
+        std::vector<clang::ParmVarDecl *>{&paramA, &paramB}
+    ));
+
     static clang::AnnotateAttr annotateA;
     static clang::AnnotateAttr annotateB;
     clang::AnnotateAttr *annotatePtrA = &annotateA;
