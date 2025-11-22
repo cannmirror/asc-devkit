@@ -48,39 +48,6 @@
         __VA_ARGS__                  \
     }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || \
-    (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113))
-#define SetBitOn(flag, bit) ((flag) = ((flag) | ((uint64_t)(1) << (bit))))
-
-#define GetBit(flag, bit) (((flag) >> (bit)) & (1))
-
-// define macro for deterministic compile options
-enum QuantCfgBit {
-    QUANTPRE_SCALE_VECTOR_CFGBIT = 0,
-    QUANTPOST_SCALE_VECTOR_CFGBIT = 1,
-    PRERELU_SCALE_VECTOR_CFGBIT = 2,
-    POSTREELU_SCALE_VECTOR_CFGBIT,
-    ELTWISEANTIQ_SCALE_VECTOR_CFGBIT,
-    DUMMY_MATMUL_QUANTPRE_SCALE_VECTOR_CFGBIT, // 5
-    QUANTPRE_SCALE_SCALAR_CFGBIT = 16,
-    QUANTPOST_SCALE_SCALAR_CFGBIT,
-    PRERELU_SCALE_SCALAR_CFGBIT,
-    POSTREELU_SCALE_SCALAR_CFGBIT,
-    ELTWISEANTIQ_SCALE_SCALAR_CFGBIT,
-    SCALE_PERGROUP_CFGBIT = 32, // pergroup指示
-};
-
-enum SidOutSMMU {
-    SID_OUT_L1 = 0,
-    SID_OUT_L1_FILTER = 1,
-    SID_OUT_L1_SCALE = 2,
-    SID_OUT_L1_BIAS = 3,
-    SID_OUT_L1_IMAGE = 4,
-    SID_L1_TO_OUT = 5,
-    SID_WEIGHT_LLM_DECODER = 9,
-};
-#endif
-
 // define macro for deterministic compile options
 enum KernelMetaType : uint8_t {
     KERNEL_TYPE_AIV_ONLY,
@@ -348,9 +315,7 @@ struct FunLevelMixCoreType {
 #define SIMT_ONE_CORE_DUMP_SIZE (2048 * 2048)
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) ||                             \
-	(__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||   \
-	(__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101)) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101)) || defined(__ASC_NPU_HOST__)
 
 #if !defined(ASCENDC_CPU_DEBUG)
 using fp4x2_e2m1_t = float4_e2m1x2_t;

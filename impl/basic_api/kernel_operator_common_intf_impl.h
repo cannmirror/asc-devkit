@@ -64,8 +64,6 @@
 #include "dav_m510/kernel_operator_set_atomic_impl.h"
 #include "dav_m510/kernel_operator_common_impl.h"
 #include "dav_m510/kernel_operator_sync_impl.h"
-#elif (__NPU_ARCH__ == 3113)
-#include "dav_l311/kernel_operator_set_atomic_impl.h"
 #endif
 #include "kernel_pop_stack_buffer.h"
 

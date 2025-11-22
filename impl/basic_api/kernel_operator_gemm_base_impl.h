@@ -207,55 +207,6 @@ __aicore__ inline void LoadL0A(uint32_t kBlocks, uint32_t mBlocks, GemmTiling ti
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-template <typename T, typename U, typename S>
-__aicore__ inline void MmadFunc(const LocalTensor<U>& l0a, const LocalTensor<S>& l0b,
-    const LocalTensor<T>& l0c, int32_t initValue, GemmTiling tilling, size_t i)
-{
-    MmadParams mmadParams;
-    mmadParams.SetM(tilling.mTileBlock * tilling.blockSize);
-    mmadParams.n = tilling.nTileBlock * tilling.blockSize;
-    mmadParams.SetIsBias(1);
-
-    if (tilling.kIterNum == 1) {
-        mmadParams.SetK(tilling.kNum);
-        mmadParams.SetIsBias(initValue);
-    } else if (initValue == 1 && tilling.kHasTailEle) {
-        if (i == tilling.kIterNum - 1) {
-            mmadParams.SetK(tilling.kTailEle);
-        } else {
-            mmadParams.SetK(tilling.kTileBlock * tilling.c0Size);
-        }
-    } else if (initValue != 1 && tilling.kHasTailEle) {
-        if (i == 0) {
-            mmadParams.SetK(tilling.kTileBlock * tilling.c0Size);
-            mmadParams.SetIsBias(0);
-        } else if (i == tilling.kIterNum - 1) {
-            mmadParams.SetK(tilling.kTailEle);
-        } else {
-            mmadParams.SetK(tilling.kTileBlock * tilling.c0Size);
-        }
-    } else if (initValue == 1 && !tilling.kHasTailEle) {
-        if (i == tilling.kIterNum - 1) {
-            mmadParams.SetK(tilling.kTailBlock * tilling.c0Size);
-        } else {
-            mmadParams.SetK(tilling.kTileBlock * tilling.c0Size);
-        }
-    } else {
-        if (i == 0) {
-            mmadParams.SetK(tilling.kTileBlock * tilling.c0Size);
-            mmadParams.SetIsBias(0);
-        } else if (i == tilling.kIterNum - 1) {
-            mmadParams.SetK(tilling.kTailBlock * tilling.c0Size);
-        } else {
-            mmadParams.SetK(tilling.kTileBlock * tilling.c0Size);
-        }
-    }
-    MmadImpl(l0c, l0a, l0b, mmadParams);
-}
-
-#else
 template <typename T, typename U, typename S>
 __aicore__ inline void MmadFunc(const LocalTensor<U>& l0a, const LocalTensor<S>& l0b,
     const LocalTensor<T>& l0c, int32_t initValue, GemmTiling tilling, size_t i)
@@ -301,7 +252,6 @@ __aicore__ inline void MmadFunc(const LocalTensor<U>& l0a, const LocalTensor<S>&
     }
     MmadImpl(l0c, l0a, l0b, mmadParams);
 }
-#endif
 
 template <typename T, typename U>
 __aicore__ inline void GetPingPongBuffer(LocalTensor<T>& l0aPing, LocalTensor<T>& l0aPong,

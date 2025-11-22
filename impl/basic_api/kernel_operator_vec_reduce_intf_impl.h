@@ -30,14 +30,6 @@
 #include "dav_c310/kernel_operator_vec_reduce_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_reduce_impl.h"
-#elif (__NPU_ARCH__ == 2103)
-#include "dav_l210/kernel_operator_vec_reduce_impl.h"
-#elif (__NPU_ARCH__ == 3003)
-#include "dav_l300/kernel_operator_vec_reduce_impl.h"
-#elif (__NPU_ARCH__ == 3103)
-#include "dav_l310/kernel_operator_vec_reduce_impl.h"
-#elif (__NPU_ARCH__ == 3113)
-#include "dav_l311/kernel_operator_vec_reduce_impl.h"
 #endif
 
 #include "kernel_check.h"
@@ -367,9 +359,7 @@ __aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTens
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceMax");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||                        \
-    (__NPU_ARCH__ == 3113) ||                        \
+    (__NPU_ARCH__ == 5102) ||                        \
     (__NPU_ARCH__ == 3101))
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 3, "order", "WholeReduceMax");
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
@@ -417,9 +407,7 @@ __aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTens
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceMin");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||                        \
-    (__NPU_ARCH__ == 3113) ||                        \
+    (__NPU_ARCH__ == 5102) ||                        \
     (__NPU_ARCH__ == 3101))
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 3, "order", "WholeReduceMin");
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
@@ -530,9 +518,7 @@ __aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTens
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceMin");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||                        \
-    (__NPU_ARCH__ == 3113) ||                        \
+    (__NPU_ARCH__ == 5102) ||                        \
     (__NPU_ARCH__ == 3101))
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 3, "order", "WholeReduceMin");
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
@@ -574,16 +560,6 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
     bool calIndex)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    if (calIndex) {
-       ReduceMaxWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    } else {
-        ReduceMaxNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    }
-#else
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunVecReduce(dst, src, sharedTmpBuffer, repeatTime, mask, calIndex, srcRepStride, "ReduceMax")) {
         ASCENDC_REPORT_CHECK_ERROR("ReduceMax", KernelFuncType::MASK_COUNT_MODE);
@@ -602,7 +578,6 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MAX);
-#endif
 #endif
 }
 
@@ -623,16 +598,6 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     bool calIndex)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    if (calIndex) {
-        ReduceMinWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    } else {
-        ReduceMinNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    }
-#else
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunVecReduce(dst, src, sharedTmpBuffer, repeatTime, mask, calIndex, srcRepStride, "ReduceMin")) {
         ASCENDC_REPORT_CHECK_ERROR("ReduceMin", KernelFuncType::MASK_COUNT_MODE);
@@ -652,7 +617,6 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MIN);
 #endif
-#endif
 }
 
 /*
@@ -670,11 +634,6 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     const LocalTensor<T>& sharedTmpBuffer, const int32_t mask, const int32_t repeatTime, const int32_t srcRepStride)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    ReduceSumImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-        (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), mask, repeatTime, srcRepStride);
-#else
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunVecReduce(dst, src, sharedTmpBuffer, repeatTime, mask, srcRepStride, "ReduceSum")) {
         ASCENDC_REPORT_CHECK_ERROR("ReduceSum", KernelFuncType::MASK_COUNT_MODE);
@@ -694,7 +653,6 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, 0, ReduceMode::REDUCE_SUM);
 #endif
-#endif
 }
 
 template <typename T>
@@ -703,15 +661,6 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
     bool calIndex)
 {
     using PrimType = PrimT<T>;
-#if (defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113)))
-    if (calIndex) {
-       ReduceMaxWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    } else {
-        ReduceMaxNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    }
-#else
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunVecReduce(dst, src, sharedTmpBuffer, repeatTime, mask, calIndex, srcRepStride, "ReduceMax")) {
         ASCENDC_REPORT_CHECK_ERROR("ReduceMax", KernelFuncType::MASK_BIT_MODE);
@@ -731,7 +680,6 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MAX);
 #endif
-#endif
 }
 
 template <typename T>
@@ -740,16 +688,6 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     bool calIndex)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    if (calIndex) {
-        ReduceMinWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    } else {
-        ReduceMinNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),  mask,  repeatTime, srcRepStride);
-    }
-#else
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunVecReduce(dst, src, sharedTmpBuffer, repeatTime, mask, calIndex, srcRepStride, "ReduceMin")) {
         ASCENDC_REPORT_CHECK_ERROR("ReduceMin", KernelFuncType::MASK_BIT_MODE);
@@ -769,7 +707,6 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MIN);
 #endif
-#endif
 }
 
 template <typename T>
@@ -777,11 +714,6 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     const LocalTensor<T>& sharedTmpBuffer, const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    ReduceSumImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-        (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), mask, repeatTime, srcRepStride);
-#else
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunVecReduce(dst, src, sharedTmpBuffer, repeatTime, mask, srcRepStride, "ReduceSum")) {
         ASCENDC_REPORT_CHECK_ERROR("ReduceSum", KernelFuncType::MASK_BIT_MODE);
@@ -801,7 +733,6 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, 0, ReduceMode::REDUCE_SUM);
 #endif
-#endif
 }
 
 /*
@@ -818,24 +749,7 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     const LocalTensor<T>& sharedTmpBuffer, const int32_t count, bool calIndex)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103)
-    if (calIndex) {
-        ReduceMinWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    } else {
-        ReduceMinNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    }
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    if (calIndex) {
-        ReduceMinWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    } else {
-        ReduceMinNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    }
-#elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #if ASCENDC_CPU_DEBUG
     int32_t oneRepSize = ONE_REPEAT_BYTE_SIZE / sizeof(PrimType);
     int32_t repeats = count < oneRepSize ? 1 : (count / oneRepSize);
@@ -845,23 +759,6 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
 #endif
     ReduceMinImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(),
             (__ubuf__ PrimType*)src.GetPhyAddr(), (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count, calIndex);
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103)
-    if (calIndex) {
-        ReduceMaxWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    } else {
-        ReduceMaxNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    }
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    if (calIndex) {
-        ReduceMaxWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    } else {
-        ReduceMaxNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    }
 #else
     ASCENDC_ASSERT((SupportType<PrimType, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in ReduceMin, "
         "current api support dtype combination is src and dst both: half / float");});
@@ -909,24 +806,7 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
     const LocalTensor<T>& sharedTmpBuffer, const int32_t count, bool calIndex)
 {
     using PrimType = PrimT<T>;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103)
-    if (calIndex) {
-        ReduceMaxWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    } else {
-        ReduceMaxNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    }
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    if (calIndex) {
-        ReduceMaxWithIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    } else {
-        ReduceMaxNoIndexImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-            (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-    }   
-#elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #if ASCENDC_CPU_DEBUG
     int32_t oneRepSize = ONE_REPEAT_BYTE_SIZE / sizeof(PrimType);
     int32_t repeats = count < oneRepSize ? 1 : (count / oneRepSize);
@@ -996,9 +876,6 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
         return;
     }
     ReduceSumImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(), count);
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103)
-    ReduceSumImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-        (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
 #elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #if ASCENDC_CPU_DEBUG
     int32_t oneRepSize = ONE_REPEAT_BYTE_SIZE / sizeof(PrimType);
@@ -1008,10 +885,6 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     }
 #endif
     ReduceSumImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(), (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && defined(__DAV_L310__)) || \
-    ((__NPU_ARCH__ == 3113) && defined(__DAV_L311__)))
-    ReduceSumImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
-        (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), count);
 #else // other version
     ASCENDC_ASSERT((SupportType<PrimType, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in ReduceSum, "
         "current api support dtype combination is src and dst both: half / float");});

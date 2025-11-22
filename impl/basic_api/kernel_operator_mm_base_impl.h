@@ -30,14 +30,6 @@
 #include "dav_c310/kernel_operator_mm_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_mm_impl.h"
-#elif (__NPU_ARCH__ == 2103)
-#include "dav_l210/kernel_operator_mm_impl.h"
-#elif (__NPU_ARCH__ == 3003)
-#include "dav_l300/kernel_operator_mm_impl.h"
-#elif (__NPU_ARCH__ == 3103)
-#include "dav_l310/kernel_operator_mm_impl.h"
-#elif (__NPU_ARCH__ == 3113)
-#include "dav_l311/kernel_operator_mm_impl.h"
 #endif
 #include "kernel_operator_mm_check.h"
 #include "kernel_operator_mm_load2d_impl.h"
@@ -303,32 +295,6 @@ __aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003))
-// cce compiler process laod3d bfloat16_t using B8, so use the half dtype instead
-template <>
-__aicore__ inline void LoadDataImpl(const LocalTensor<bfloat16_t>& dst, const LocalTensor<bfloat16_t>& src,
-    const LoadData3DParamsV2Pro& loadDataParams)
-{
-#if ASCENDC_CPU_DEBUG
-    ASCENDC_ASSERT(CheckFuncLoadData3dv2Pro(dst, src, loadDataParams, "loaddata3dv2Pro"), {
-        KERNEL_LOG(KERNEL_ERROR, "check loaddata3dv2Pro instr failed");
-    });
-#endif
-
-    const Hardware dstScope = GetPhyType((QuePosition)dst.GetPosition());
-    // compiler process bfloat16_t load3dv2 is using B8 type, so cast to half which is using B16 type
-    if (dstScope == Hardware::L0A) {
-        LoadData3DV2L12L0ACal((__ca__ half*)dst.GetPhyAddr(),
-            (__cbuf__ half*)src.GetPhyAddr(), loadDataParams);
-    } else if (dstScope == Hardware::L0B) {
-        LoadData3DV2L12L0BCal((__cb__ half*)dst.GetPhyAddr(),
-            (__cbuf__ half*)src.GetPhyAddr(), loadDataParams);
-    } else {
-        ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "dst only support A2/B2"); });
-    }
-}
-#endif
-
 /* **************************************************************************************************
  * Mmad                                             *
  * ************************************************************************************************* */
@@ -442,57 +408,6 @@ __aicore__ inline void LoadUnzipIndexImpl(const GlobalTensor<T>& src, uint32_t n
 }
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-/* **************************************************************************************************
- * MmadFix                                          *
- * ************************************************************************************************* */
-template <typename T, typename U, typename S>
-__aicore__ inline void MmadFixImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
-    const LocalTensor<S>& filter, const MmadFixParams& mmadFixParams)
-{
-    MmadFixCal((__cbuf__ T*)dst.GetPhyAddr(), (__cbuf__ U*)fm.GetPhyAddr(),
-        (__cb__ S*)filter.GetPhyAddr(), mmadFixParams);
-}
- 
-template <typename T, typename U, typename S, typename V>
-__aicore__ inline void MmadFixImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
-    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadFixParams& mmadFixParams)
-{
-    MmadFixCal((__cbuf__ T *)dst.GetPhyAddr(), (__cbuf__ U *)fm.GetPhyAddr(),
-        (__cb__ S *)filter.GetPhyAddr(), (uint64_t)bias.GetPhyAddr(), mmadFixParams);
-}
- 
-/* **************************************************************************************************
- * ConvFix                                          *
- * ************************************************************************************************* */
-template <typename T, typename U, typename S>
-__aicore__ inline void ConvFixImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
-    const LocalTensor<S>& filter, const ConvFixParams& convFixParams)
-{
-    ConvFixCal((__cbuf__ T*)dst.GetPhyAddr(), (__cbuf__ U*)fm.GetPhyAddr(),
-        (__cb__ S*)filter.GetPhyAddr(), convFixParams);
-}
- 
-template <typename T, typename U, typename S, typename V>
-__aicore__ inline void ConvFixImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
-    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const ConvFixParams& convFixParams)
-{
-    ConvFixCal((__cbuf__ T *)dst.GetPhyAddr(), (__cbuf__ U *)fm.GetPhyAddr(),
-        (__cb__ S *)filter.GetPhyAddr(), (uint64_t)bias.GetPhyAddr(), convFixParams);
-}
-
-/* **************************************************************************************************
- * PostProc                                          *
- * ************************************************************************************************* */
-template <typename T, typename U>
-__aicore__ inline void PostProcImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
-    uint64_t config)
-{
-    PostProcCal((__cbuf__ T*)dst.GetPhyAddr(), (__cbuf__ U*)fm.GetPhyAddr(), config);
-}
-#endif
-
 /* **************************************************************************************************
  * BroadCastVecToMM                                             *
  * ************************************************************************************************* */
@@ -518,18 +433,6 @@ __aicore__ inline __inout_pipe__(V) void BroadCastVecToMMImpl(const LocalTensor<
  * @brief setting loadData pad value
  * @param [in]padValue padding value
  */
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-template <typename T>
-__aicore__ inline void Load3DSetPaddingImpl(const LoadDataPaddingParam<T> &param, const FmatrixMode& fmatrixMode)
-{
-    if (fmatrixMode == FmatrixMode::FMATRIX_LEFT) {
-        Load3DSetPaddingCal(param);
-    } else if (fmatrixMode == FmatrixMode::FMATRIX_RIGHT) {
-        Load3DSetPaddingBCal(param);
-    }
-}
-#endif
 
 template <typename T>
 __aicore__ inline void Load3DSetPaddingImpl(const T padValue)
@@ -612,18 +515,6 @@ __aicore__ inline void SetLoadDataRepeatImpl(const LoadDataRepeatParam& repeatPa
     SetLoadDataRepeatCal(repeatParams);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-__aicore__ inline void SetLoadDataRepeatImpl(const LoadDataRepeatParam& repeatParams, const FmatrixMode &fmatrixMode)
-{
-    if (FmatrixMode::FMATRIX_LEFT == fmatrixMode) {
-        SetLoadDataRepeatCal(repeatParams);
-    } else if (FmatrixMode::FMATRIX_RIGHT == fmatrixMode) {
-        SetLoadDataRepeatBCal(repeatParams);
-    }
-}
-#endif
-
 /* **************************************************************************************************
  * LoadDataUnzipImpl                                             *
  * ************************************************************************************************* */
@@ -660,31 +551,5 @@ __aicore__ inline void LoadDataUnzipImpl(const LocalTensor<T>& dst, const Global
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-/* **************************************************************************************************
- * SetMte2QTable0Flag                                             *
- * ************************************************************************************************* */
-__aicore__ inline void SetMte2QTable0FlagImpl(const Mte2QTableParam& qTableParam)
-{
-    SetLoad2DsetMte2QTable0FlagCal(qTableParam);
-}
- 
-/* **************************************************************************************************
- * SetMte2QTable1Flag                                             *
- * ************************************************************************************************* */
-__aicore__ inline void SetMte2QTable1FlagImpl(const Mte2QTableParam& qTableParam)
-{
-    SetLoad2DsetMte2QTable1FlagCal(qTableParam);
-}
- 
-/* **************************************************************************************************
- * SetMte2SrcParaFlag                                             *
- * ************************************************************************************************* */
-__aicore__ inline void SetMte2SrcParaFlagImpl(uint64_t kStride)
-{
-    SetMte2SrcParaFlagCal(kStride);
-}
-#endif
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_MM_BASE_IMPL_H

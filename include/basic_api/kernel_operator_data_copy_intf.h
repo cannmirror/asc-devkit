@@ -74,12 +74,6 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, 
  * @param [in] intriParams.dstNzNStride stride of n between 2 C0 in L1
  * @param [in] intriParams.dstNzMatrixStride DST_nz_matrix_stride in L1 in unit of element
  */
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103 || __NPU_ARCH__ == 3003 ||  __NPU_ARCH__ == 3103 || \
-    __NPU_ARCH__ == 3113)
-template <typename T, bool enableSmallC0 = false>
-__aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
-    const Dn2NzParams& intriParams);
-#endif
 
 /*
  * @ingroup DataCopy Level 0
@@ -127,12 +121,6 @@ template <typename T>
 __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
                                 const DataCopyParams& repeatParams);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-template <typename T>
-__aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const DataCopyParams &repeatParams, const DataCopyAttrParams& attrParams);
-#endif
 /*
  * @ingroup DataCopy Level 0
  * @brief datacopy from L1 to bt, applicable to vector data
@@ -282,8 +270,7 @@ template <typename T, typename U>
 __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
                                 const DataCopyCO12DstParams& intriParams);
 
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201) || __NPU_ARCH__ == 2103 || __NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3103 || __NPU_ARCH__ == 3113)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
 // float to bfloat16_t
 template <typename T, typename U,
           typename Std::enable_if<Std::is_same<PrimT<T>, bfloat16_t>::value && Std::is_same<PrimT<U>, float>::value,

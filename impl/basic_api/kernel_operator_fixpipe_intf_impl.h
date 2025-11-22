@@ -35,14 +35,6 @@
 #include "dav_c310/kernel_operator_fixpipe_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_fixpipe_impl.h"
-#elif __NPU_ARCH__ == 2103
-#include "dav_l210/kernel_operator_fixpipe_impl.h"
-#elif __NPU_ARCH__ == 3003
-#include "dav_l300/kernel_operator_fixpipe_impl.h"
-#elif __NPU_ARCH__ == 3103
-#include "dav_l310/kernel_operator_fixpipe_impl.h"
-#elif __NPU_ARCH__ == 3113
-#include "dav_l311/kernel_operator_fixpipe_impl.h"
 #endif
 
 namespace AscendC {
@@ -77,19 +69,6 @@ __aicore__ inline void SetFixPipeConfig(const LocalTensor<T> &preData, bool isUn
     SetFixPipeConfigImpl<T, setRelu>(preData, isUnitFlag);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-__aicore__ inline void SetFixPipeConfig(uint64_t config)
-{
-    SetFixPipeConfigImpl(config);
-}
-
-__aicore__ inline void SetFixPipeConfig(const FixPipeConfigParams &params)
-{
-    SetFixPipeConfigImpl(params);
-}
-#endif
-
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 __aicore__ inline void SetFixpipeNz2ndFlag(uint16_t ndNum, uint16_t srcNdStride, uint32_t dstNdStride)
 {
@@ -111,92 +90,6 @@ __aicore__ inline void SetFixPipeClipRelu(uint64_t config)
 {
     SetFixPipeClipReluImpl(config);
 }
-
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-template<typename T>
-__aicore__ inline void SetFixpipePreQuantFlag(const FixPipePreQuantParams<T> &params)
-{
-    SetFixpipePreQuantFlagImpl(params);
-}
-
-__aicore__ inline void SetFixpipeLeakyReluAlpha(uint64_t config)
-{
-    SetFixpipeLeakyReluAlphaImpl(config);
-}
-
-__aicore__ inline void SetFixpipeLeakyReluAlpha(const FixPipeLeakyReluAlphaParams &params)
-{
-    SetFixpipeLeakyReluAlphaImpl(params);
-}
-
-__aicore__ inline void SetFixpipeEltAnitq(uint64_t config)
-{
-    SetFixpipeEltAnitqImpl(config);
-}
-
-template<typename T>
-__aicore__ inline void SetFixpipeEltAnitq(const FixPipeEltAntiqParams<T> &params)
-{
-    SetFixpipeEltAnitqImpl(params);
-}
-
-__aicore__ inline void SetFixpipeEltwiseAddr(uint64_t config)
-{
-    SetFixpipeEltwiseAddrImpl(config);
-}
-
-__aicore__ inline void SetFixpipeEltwiseAddr(const FixpipeEltwiseAddrParams &params)
-{
-    SetFixpipeEltwiseAddrImpl(params);
-}
-
-__aicore__ inline void SetFixpipePostQuant(uint64_t config)
-{
-    SetFixpipePostQuantImpl(config);
-}
-
-__aicore__ inline void SetFixpipePostQuant(const FixPipePostQuantParams &params)
-{
-    SetFixpipePostQuantImpl(params);
-}
-
-template <typename T, typename U>
-__aicore__ inline void SetFixPipeClipRelu(const FixpipeClipReluParams<T, U> &intriParams)
-{
-    SetFixPipeClipReluImpl(intriParams);
-}
-
-__aicore__ inline void SetFixpipeLoop3(uint64_t config)
-{
-    SetFixpipeLoop3Impl(config);
-}
-
-__aicore__ inline void SetFixpipeLoop3(const FixpipeLoop3Params& intriParams)
-{
-    SetFixpipeLoop3Impl(intriParams);
-}
-
-__aicore__ inline void SetFixpipeLoop4(uint64_t config)
-{
-    SetFixpipeLoop4Impl(config);
-}
-
-__aicore__ inline void SetFixpipeLoop4(const FixpipeLoop4Params& intriParams)
-{
-    SetFixpipeLoop4Impl(intriParams);
-}
-
-__aicore__ inline void SetFixpipeChannnel(uint64_t config)
-{
-    SetFixpipeChannnelImpl(config);
-}
-
-__aicore__ inline void SetFixpipeChannnel(const FixpipeChannelParams& intriParams)
-{
-    SetFixpipeChannnelImpl(intriParams);
-}
-#endif
 
 template <typename T>
 __aicore__ inline void SetFixPipeAddr(const LocalTensor<T> &eleWiseData, uint16_t c0ChStride)

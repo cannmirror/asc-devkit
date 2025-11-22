@@ -52,7 +52,7 @@ namespace AscendC {
 
 #endif // __NPU_DEVICE__
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2103)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #define ASCENDC_REPORT_OVERFLOW_MEM(cond)                                                \
     do {                                                                                 \
         if (!(cond)) {                                                                   \
