@@ -88,8 +88,9 @@ TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs)
 
     auto& manager = AscPlugin::InfoManager::GetInstance();
 
-    std::vector<std::string> compileArgs = {"-DFFF", "-UFFF", "-UAAAA", "-DAAA","-include", "F.h", "-DSSS", "-l", "AAA", "-lBBB"};
-    std::vector<std::string> expectDef = {"-DFFF", "-UFFF", "-UAAAA", "-DAAA", "-DSSS"};
+    std::vector<std::string> compileArgs = {"-DFFF", "-UFFF", "-UAAAA", "-DAAA","-include", "F.h", "-DSSS", "-l", "AAA",
+        "-lBBB", "-DGEN_ACLRT=/tmp/sss"};
+    std::vector<std::string> expectDef = {"-DFFF", "-UFFF", "-UAAAA", "-DAAA", "-DSSS", "-DGEN_ACLRT=/tmp/sss"};
     std::vector<std::string> expectIncFiles = {"-include", "", "-include", "F.h"};
     std::vector<std::string> expectLinkFiles = {"-l", "AAA", "-lBBB"};
     manager.compileArgs_ = a;   // clean up
@@ -99,6 +100,7 @@ TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs)
     EXPECT_EQ(info.definitions, expectDef);
     EXPECT_EQ(info.includeFiles, expectIncFiles);
     EXPECT_EQ(info.linkFiles, expectLinkFiles);
+    EXPECT_EQ(manager.GetAclrtHeaderPath(), "/tmp/sss");
 }
 
 TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs_with_host_options)
@@ -121,21 +123,21 @@ TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs_with_host_options)
     EXPECT_EQ(info.hostDefinitions, expectHostDef);
 }
 
-// // For -UXXX,A => -U XXX
-// TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs_Undef_Def)
-// {
-//     AscPlugin::CompileArgs a;
+// For -UXXX,A => -U XXX
+TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs_Undef_Def)
+{
+    AscPlugin::CompileArgs a;
 
-//     auto& manager = AscPlugin::InfoManager::GetInstance();
+    auto& manager = AscPlugin::InfoManager::GetInstance();
 
-//     std::vector<std::string> compileArgs = {"-DAAA=3", "-D", "FFF=5", "-UFFF,ababs",};
-//     std::vector<std::string> expectDef = {"-DAAA=3", "-DFFF=5", "-UFFF"};
-//     manager.compileArgs_ = a;   // clean up
+    std::vector<std::string> compileArgs = {"-DAAA=3", "-D", "FFF=5", "-UFFF,ababs",};
+    std::vector<std::string> expectDef = {"-DAAA=3", "-DFFF=5", "-UFFF,ababs"};
+    manager.compileArgs_ = a;   // clean up
 
-//     manager.SetCompileArgs(compileArgs);
-//     AscPlugin::CompileArgs info = manager.GetCompileArgs();
-//     EXPECT_EQ(info.definitions, expectDef);
-// }
+    manager.SetCompileArgs(compileArgs);
+    AscPlugin::CompileArgs info = manager.GetCompileArgs();
+    EXPECT_EQ(info.definitions, expectDef);
+}
 
 // -D dump = false => -U DUMP = true
 TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs_Undef_Def_dump)
