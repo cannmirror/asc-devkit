@@ -69,13 +69,6 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const LoadData2DParamsV2& loadDataParams);
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-template <typename T, typename U = T>
-__aicore__ inline void LoadData(const LocalTensor<U>& dst, const LocalTensor<T>& src,
-    const LocalTensor<fp8_e8m0_t>& srcMx, const LoadData2DParamsV2& loadDataParams,
-    const LoadData2DMxParams& loadMxDataParams);
-#endif
-
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
 template <typename T, typename U>
 __aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, const GlobalTensor<U>& src,

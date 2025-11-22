@@ -16,12 +16,8 @@
 #ifndef ASCENDC_MODULE_OPERATOR_GROUP_BARRIER_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_GROUP_BARRIER_INTERFACE_H
 #include "kernel_tensor.h"
-#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
 #if __NPU_ARCH__ == 2201
 #include "dav_c220/core_mng/roc/kernel_operator_cube_group_info.h"
-#elif __NPU_ARCH__ == 3101
-#include "dav_c310/core_mng/roc/kernel_operator_cube_group_info.h"
-#endif
 namespace AscendC {
 template <PipeMode pipeMode>
 class GroupBarrier {

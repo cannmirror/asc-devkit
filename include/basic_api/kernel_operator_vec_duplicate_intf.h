@@ -52,63 +52,6 @@ __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue
  */
 template <typename T>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, const int32_t& count);
-
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-/*
- * @ingroup Duplicate lowest position of src
- * @brief dst = dst[i] = src[0]
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] count number Number of data involved in calculation
- */
-template <typename T>
-__aicore__ inline void Duplicate(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const int32_t& count);
-
-/* **************************************************************************************************
- * Interleave                                            *
- * ************************************************************************************************* */
-/*
- * @ingroup Interleave Level 2
- * @brief Interleave src0 and src1 to dst0 and dst1
- * @param [out] dst0 output0 LocalTensor
- * @param [out] dst1 output1 LocalTensor
- * @param [in] src0 input0 LocalTensor
- * @param [in] src1 input1 LocalTensor
- * @param [count] count number of data calculation, must be even number
- */
-template <typename T>
-__aicore__ inline void Interleave(const LocalTensor<T>& dst0, const LocalTensor<T>& dst1,
-    const LocalTensor<T>& src0, const LocalTensor<T>& src1, const int32_t count);
-
-/* **************************************************************************************************
- * DeInterleave                                            *
- * ************************************************************************************************* */
-/*
- * @ingroup DeInterleave Level 2
- * @brief DeInterleave src0 and src1 to dst0 and dst1
- * @param [out] dst0 output0 LocalTensor
- * @param [out] dst1 output1 LocalTensor
- * @param [in] src0 input0 LocalTensor
- * @param [in] src1 input1 LocalTensor
- * @param [count] count number of data calculation, must be even number
- */
-template <typename T>
-__aicore__ inline void DeInterleave(const LocalTensor<T>& dst0, const LocalTensor<T>& dst1,
-    const LocalTensor<T>& src0, const LocalTensor<T>& src1, const int32_t count);
-
-/*
- * @ingroup DeInterleave Level 2
- * @brief DeInterleave src to dst0 and dst1
- * @param [out] dst0 output0 LocalTensor
- * @param [out] dst1 output1 LocalTensor
- * @param [in] src input LocalTensor
- * @param [srcCount] srcCount number of data calculation, must be even number
- */
-template <typename T>
-__aicore__ inline void DeInterleave(const LocalTensor<T>& dst0, const LocalTensor<T>& dst1,
-    const LocalTensor<T>& src, const int32_t srcCount);
-#endif
 } // namespace AscendC
 #pragma end_pipe
 

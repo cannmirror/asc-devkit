@@ -56,18 +56,6 @@ __aicore__ inline void SetStoreAtomicConfig();
 __aicore__ inline void GetStoreAtomicConfig(uint16_t& atomicType, uint16_t& atomicOp);
 
 __aicore__ inline void CheckLocalMemoryIA(const CheckLocalMemoryIAParam& checkParams);
-
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-
-template <int8_t startBit, int8_t endBit>
-__aicore__ static inline void SetCtrlSpr(int64_t value);
-
-template <int8_t startBit, int8_t endBit>
-__aicore__ static inline int64_t GetCtrlSpr();
-
-template <int8_t startBit, int8_t endBit>
-__aicore__ static inline void ResetCtrlSpr();
-#endif
 }  // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_common_intf_impl.h"

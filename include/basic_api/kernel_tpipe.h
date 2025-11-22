@@ -32,13 +32,8 @@ public:
     __aicore__ inline TQueBind();
     __aicore__ inline void FreeBuffer(TBufHandle buf);
     __aicore__ inline TBuffAddr GetBufferAddr(TBufHandle buf);
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    template <typename T> __aicore__ inline __sync_noalias__ LocalTensor<T> AllocTensor();
-    template <typename T> __aicore__ inline __sync_noalias__ void AllocTensor(LocalTensor<T>& tensor);
-#else
     template <typename T> __aicore__ inline __sync_alias__ LocalTensor<T> AllocTensor();
     template <typename T> __aicore__ inline __sync_alias__ void AllocTensor(LocalTensor<T>& tensor);
-#endif
     template <typename T> __aicore__ inline void FreeTensor(LocalTensor<T>& tensor);
     template <typename T> __aicore__ inline bool EnQue(const LocalTensor<T>& tensor);
     __aicore__ inline bool EnQue(TBufHandle buf);
@@ -71,15 +66,6 @@ protected:
     static constexpr HardEvent enQueEvt = GetQueEvt(srcHardType, dstHardType, true, nd2nz, nz2nd);
     static constexpr HardEvent freeBufEvt = GetQueEvt(srcHardType, dstHardType, false, nd2nz, nz2nd);
     static constexpr int32_t queDepth = depth;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    static constexpr bool enableGlobalManageQue = EnableGlobalManageQue<GetBufferPos(src, dst)>(config);
-    static constexpr pipe_t srcPipe = GetPipe(srcHardType, dstHardType, true);
-    static constexpr pipe_t dstPipe = GetPipe(srcHardType, dstHardType, false);
-    static constexpr int32_t maxBlockNum = 32;
-    static constexpr uint8_t shiftBits = CalculatesShiftedBit(config.bufferLen);
-    static constexpr uint8_t maxBufferBlock = GlobalManageQueConfig<GetBufferPos(src, dst)>::maxBufferBlock;
-    static constexpr uint8_t bufIdOffset = GlobalManageQueConfig<GetBufferPos(src, dst)>::bufIdOffset;
-#endif
     union {
         uint64_t value;
         struct {
@@ -90,30 +76,13 @@ protected:
             uint8_t bufUsedCount;
             uint8_t bufCursor;
         };
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-        struct {
-            uint32_t freeMask;
-            uint8_t staticHead;
-            uint8_t staticEnqueHead;
-            uint8_t staticUsedCount;
-            uint8_t staticBufUsedCount;
-        };
-#endif
     };
     typename TBufHandleAux<depth>::T que_;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    typename BufInfoAux<enableGlobalManageQue, config>::type bufStart;
-#else
     struct TBufType* bufStart;
-#endif
     DEBUG_CODE(uint32_t bufLen);
     friend class TPipe;
     template <TPosition pos, int32_t d, auto m> friend class TQue;
     template<TPosition pos, uint32_t bufIDSize> friend class TBufPool;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    template<TPosition bufPos, uint32_t bufIDSize> friend class TBufPoolExtImpl;
-#endif
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     uint64_t bufPoolHandle{0U};
 #endif
@@ -122,19 +91,9 @@ private:
     template <typename T> __aicore__ inline LocalTensor<T> Buf2Tensor(TBufHandle buf);
     __aicore__ inline TBufState GetState(const TBufHandle& handle) const;
     static constexpr bool isTQue = true;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    __aicore__ inline uint64_t GetNext(const int32_t len = 1);
-#endif
     __aicore__ inline TBufHandle AllocBuffer();
     template <TPosition srcUserPos, TPosition dstUserPos> __aicore__ inline bool EnQue(TBufHandle buf);
     template <TPosition srcUserPos, TPosition dstUserPos> __aicore__ inline TBufHandle DeQue();
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    template <typename IMPL, typename A, typename B, typename L0cT, class C, const auto &MM_CFG, typename>
-    friend class Impl::Detail::CubeOutBuffer;
-    template <typename T> __aicore__ inline __sync_noalias__ LocalTensor<T> AllocTensor(int32_t num);
-    template <typename T>
-    friend __aicore__ inline uint64_t GetTQueHeadAddr(const T& que);
-#endif
 };
 
 // Template Args:
@@ -149,11 +108,6 @@ private:
     friend class TPipe;
     template<TPosition bufPos, uint32_t bufIDSize> friend class TBufPool;
     static constexpr bool isTQue = true;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    template<TPosition bufPos, uint32_t bufIDSize> friend class TBufPoolExtImpl;
-    template <typename T>
-    friend __aicore__ inline uint64_t GetTQueHeadAddr(const T& que);
-#endif
 };
 
 template <TPosition pos = TPosition::LCM> class TBuf : public TQueBind<pos, pos, 0, 0> {
@@ -189,19 +143,9 @@ private:
     uint32_t offset;
     friend class TPipe;
     template<TPosition bufPos, uint32_t bufIDSize> friend class TBufPool;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    template<TPosition bufPos, uint32_t bufIDSize> friend class TBufPoolExtImpl;
-#endif
     static constexpr bool isTQue = false;
 };
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-template <TPosition pos, uint32_t bufIDSize = defaultBufIDSize>
-class TBufPool : public TBufPoolExtImpl<pos, bufIDSize> {
-public:
-    __aicore__ inline TBufPool() = default;
-    __aicore__ inline ~TBufPool();
-};
-#else
+
 template <TPosition pos, uint32_t bufIDSize = defaultBufIDSize>
 class TBufPool {
 public:
@@ -226,98 +170,6 @@ private:
     template <TPosition bufPos> friend class TBuf;
     static constexpr bool isTbufPool = true;
 };
-#endif
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-#define EXTERN_IMPL_BUFPOOL(EXT_BUFPOOL, POSITION, BUFID_SIZE)                                                         \
-public:                                                                                                                \
-    static constexpr AscendC::TPosition poolPos = POSITION;                                                            \
-    static constexpr int32_t bufSize = BUFID_SIZE;                                                                     \
-    static constexpr bool isTbufPool = true;                                                                           \
-    __aicore__ inline ~EXT_BUFPOOL()                                                                                   \
-    {                                                                                                                  \
-        Reset();                                                                                                       \
-    }                                                                                                                  \
-    __aicore__ inline void Reset()                                                                                     \
-    {                                                                                                                  \
-        auto ptr = this->tBufPoolImpl.buf_;                                                                            \
-        if constexpr (GetPhyType(poolPos) == Hardware::UB) {                                                           \
-            PipeBarrier<PIPE_MTE2>();                                                                                  \
-            PipeBarrier<PIPE_MTE3>();                                                                                  \
-            PipeBarrier<PIPE_V>();                                                                                     \
-        } else {                                                                                                       \
-            uint8_t i = 0;                                                                                             \
-            do {                                                                                                       \
-                if (ptr->freeBufEvtID != INVALID_TEVENTID) {                                                           \
-                    WaitFlagImpl(ptr->freeBufEvt, ptr->freeBufEvtID);                                                  \
-                    ptr->freeBufEvtID = INVALID_TEVENTID;                                                              \
-                }                                                                                                      \
-                i++;                                                                                                   \
-                ptr++;                                                                                                 \
-            } while (i < this->tBufPoolImpl.curBufSize_);                                                              \
-            GetBuffImpl<PIPE_MTE1, true>(31);                                                                          \
-            ReleaseBuffImpl<PIPE_MTE1, true>(31);                                                                      \
-            GetBuffImpl<PIPE_MTE2, false>(31);                                                                         \
-            ReleaseBuffImpl<PIPE_MTE2, false>(31);                                                                     \
-        }                                                                                                              \
-        tBufPoolImpl.curBufSize_ = 0;                                                                                  \
-        tBufPoolImpl.maxAddr_ = tBufPoolImpl.startAddr_;                                                               \
-    }                                                                                                                  \
-    __aicore__ inline void Init()                                                                                      \
-    {                                                                                                                  \
-        constexpr auto pool = AscendC::GetPhyType(poolPos);                                                            \
-        static_assert((pool == AscendC::Hardware::L1 || pool == AscendC::Hardware::UB),                                \
-                      "TbufPool Position should be one of A1/B1/C1/VECIN/VECOUT/VECCALC");                             \
-        ResetPool();                                                                                                   \
-        tBufPoolImpl.bufIdPool_ = 0;                                                                                   \
-        tBufPoolImpl.availableIdMask_ = 0;                                                                             \
-        tBufPoolImpl.isReset_ = true;                                                                                  \
-    }                                                                                                                  \
-    __aicore__ inline AscendC::TBufHandle GetBufHandle(uint8_t offset)                                                 \
-    {                                                                                                                  \
-        return reinterpret_cast<AscendC::TBufHandle>(this->tBufPoolImpl.buf_ + offset);                                \
-    }                                                                                                                  \
-    __aicore__ inline void SetCurAddr(uint32_t curAddr)                                                                \
-    {                                                                                                                  \
-        this->tBufPoolImpl.maxAddr_ = curAddr;                                                                         \
-        return;                                                                                                        \
-    }                                                                                                                  \
-    __aicore__ inline uint32_t GetCurAddr()                                                                            \
-    {                                                                                                                  \
-        return this->tBufPoolImpl.maxAddr_;                                                                            \
-    }                                                                                                                  \
-    __aicore__ inline void SetCurBufSize(uint8_t curBufSize)                                                           \
-    {                                                                                                                  \
-        this->tBufPoolImpl.curBufSize_ = curBufSize;                                                                   \
-        return;                                                                                                        \
-    }                                                                                                                  \
-    __aicore__ inline uint8_t GetCurBufSize()                                                                          \
-    {                                                                                                                  \
-        return this->tBufPoolImpl.curBufSize_;                                                                         \
-    }                                                                                                                  \
-                                                                                                                       \
-protected:                                                                                                             \
-    AscendC::TBufPoolImpl<bufSize> tBufPoolImpl;                                                                       \
-                                                                                                                       \
-private:                                                                                                               \
-    __aicore__ inline void ResetPool()                                                                                 \
-    {                                                                                                                  \
-        tBufPoolImpl.curBufSize_ = 0;                                                                                  \
-        tBufPoolImpl.startAddr_ = 0;                                                                                   \
-        tBufPoolImpl.maxAddr_ = 0;                                                                                     \
-        tBufPoolImpl.maxLen_ = 0;                                                                                      \
-    }                                                                                                                  \
-                                                                                                                       \
-private:                                                                                                               \
-    friend class AscendC::TPipe;                                                                                       \
-    template <AscendC::TPosition src, AscendC::TPosition dst, int32_t depth, auto mask>                                \
-    friend class AscendC::TQueBind;                                                                                    \
-    template <AscendC::TPosition bufPos, int32_t depth, auto mask>                                                     \
-    friend class AscendC::TQue;                                                                                        \
-    template <AscendC::TPosition bufPos>                                                                               \
-    friend class AscendC::TBuf
-
-#else
 
 #define  EXTERN_IMPL_BUFPOOL(EXT_BUFPOOL, POSITION, BUFID_SIZE)                              \
 public:                                                                                      \
@@ -378,8 +230,6 @@ private:                                                                        
     friend class AscendC::TQue;                                                              \
     template <AscendC::TPosition bufPos> friend class AscendC::TBuf
 
-#endif
-
 class TPipe : public TPipeBase {
 public:
     __aicore__ inline TPipe();
@@ -398,10 +248,6 @@ public:
     template <TPosition pos, typename T>
     __aicore__ inline LocalTensor<T> GetAbsAddr(int32_t offset, int32_t size) const;
     template <TPosition pos> __aicore__ inline TBuffAddr GetAbsAddr(int32_t offset, int32_t len) const;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    __aicore__ inline MutexID AllocMutexID();
-    __aicore__ inline void ReleaseMutexID(MutexID id);
-#endif
     /*
      * brief: these functions are used to use spm buffer;
      * demo case:
@@ -463,10 +309,6 @@ private:
      * brief: these functions are used to get end and queueend addr.
      */
     template <TPosition pos> __aicore__ inline uint64_t GetQueueEndAddress();
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    __aicore__ inline TBufId AllocTscmBufId();
-    __aicore__ inline int8_t AllocCrossSyncId();
-#endif
 };
 
 template <TPosition pos, int32_t depth = 1, auto mask = 0>

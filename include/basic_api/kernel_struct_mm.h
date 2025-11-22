@@ -739,38 +739,8 @@ struct LoadDataPaddingParam {
 };
 #endif // Kirin versions
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-struct LoadData2DMxParams {
-    __aicore__ LoadData2DMxParams() {}
-
-    __aicore__ LoadData2DMxParams(const uint16_t xStartPositionIn, const uint16_t yStartPositionIn,
-        const uint8_t xStepIn, const uint8_t yStepIn, const uint16_t srcStrideIn, const uint16_t dstStrideIn)
-    {
-        xStartPosition = xStartPositionIn;
-        yStartPosition = yStartPositionIn;
-        xStep = xStepIn;
-        yStep = yStepIn;
-        srcStride = srcStrideIn;
-        dstStride = dstStrideIn;
-    }
-
-    uint16_t xStartPosition = 0;
-    uint16_t yStartPosition = 0;
-    uint8_t xStep = 0;
-    uint8_t yStep = 0;
-    uint16_t srcStride = 0;
-    uint16_t dstStride = 0;
-};
-#endif
-
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-template <typename TYPE>
-struct LoadData3DParamsV1 {
-    using T = typename GetPadValueType<TYPE>::Type;
-#else
 template <typename T>
 struct LoadData3DParamsV1 {
-#endif
     __aicore__ LoadData3DParamsV1()
     {
         for (int32_t i = 0; i < PAD_SIZE; ++i) {
@@ -829,14 +799,8 @@ struct LoadData3DParamsV1 {
     int16_t leftTopH = 0;
 };
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-template <typename TYPE>
-struct LoadData3DParamsV2 {
-    using T = typename GetPadValueType<TYPE>::Type;
-#else
 template <typename T>
 struct LoadData3DParamsV2 {
-#endif
     __aicore__ LoadData3DParamsV2()
     {
         for (int32_t i = 0; i < PAD_SIZE; ++i) {
@@ -1824,9 +1788,6 @@ struct MmadParams {
     bool cmatrixSource = false;
     // Indicates the initial matrix, 1: the number in C matrix is 0, 0：use the real number in C matrix
     bool cmatrixInitVal = true;
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-    bool disableGemv = false;
-#endif
 };
 #endif
 
@@ -2396,7 +2357,7 @@ struct LoadDataRepeatParam {
 };
 #endif
 #else
-#if __NPU_ARCH__ == 3102 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 3102
 struct LoadDataRepeatParam {
     __aicore__ LoadDataRepeatParam() {}
 
