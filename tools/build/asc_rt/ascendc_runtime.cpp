@@ -37,7 +37,6 @@
 #include "mmpa/mmpa_api.h"
 #include "acl/acl_rt.h"
 #include "mem.h"
-// #include "register/stream_manage_func_registry.h"
 #include "ascendc_tool_log.h"
 #include "acl_rt.h"
 #include "acl/acl_base.h"
