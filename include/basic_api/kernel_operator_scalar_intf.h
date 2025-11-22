@@ -23,11 +23,6 @@ __aicore__ inline int64_t ScalarGetCountOfValue(uint64_t valueIn);
 
 __aicore__ inline int64_t ScalarCountLeadingZero(uint64_t valueIn);
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-template <typename T>
-__aicore__ inline void GetUintDivMagicAndShift(T& magic, T& shift, T divisor);
-#endif
-
 __aicore__ inline int64_t CountBitsCntSameAsSignBit(int64_t valueIn);
 
 template <int countValue>
@@ -36,7 +31,7 @@ __aicore__ inline int64_t ScalarGetSFFValue(uint64_t valueIn);
 template <typename T, typename U, RoundMode roundMode>
 __aicore__ inline U ScalarCast(T valueIn);
 
-#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 2201
 template <typename T>
 __aicore__ inline void WriteGmByPassDCache(__gm__ T* addr, T value);
 

@@ -225,51 +225,6 @@ __aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<U>& s
 template <typename T, typename U>
 __aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<U>& selMask,
     const LocalTensor<T>& src0, T src1, SELMODE selMode, uint32_t count);
-
-/*
- * @ingroup CompareScalar Level 2
- * @brief CompareScalar the size of two tensors one by one. If true, the corresponding bit is 1, otherwise it is 0
- * @param [out] dst output LocalTensor
- * @param [in] src0 input LocalTensor/Scalar, one of src0/src1 should be Scalar or single point LocalTensor
- * @param [in] src1 input LocalTensor/Scalar, one of src0/src1 should be Scalar or single point LocalTensor
- * @param [in] cmpMode compare mode
- * @param [in] count number Number of data involved in calculation
- */
-// One of src0/src1 should be Scalar
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
-          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
-__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
-    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
-
-template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
-          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
-__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
-    const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
-
-template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
-          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
-__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
-    uint32_t count);
-
-// select mode 1
-// One of src0/src1 should be scalar
-template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
-          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
-__aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask, const T3& src0, const T4& src1,
-    SELMODE selMode, uint64_t mask[], uint8_t repeatTime, const BinaryRepeatParams& repeatParams);
-
-template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
-          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
-__aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask, const T3& src0, const T4& src1,
-    SELMODE selMode, uint64_t mask, uint8_t repeatTime, const BinaryRepeatParams& repeatParams);
-
-template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, const BinaryConfig &config = DEFAULT_BINARY_CONFIG,
-          typename T2, typename T3, typename T4>
-__aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask, const T3& src0, const T4& src1,
-    SELMODE selMode, uint32_t count);
-#endif
-
 } // namespace AscendC
 #pragma end_pipe
 

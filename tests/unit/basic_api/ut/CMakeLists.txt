@@ -11,16 +11,10 @@ project(ascendc_devkit_ut)
 cmake_minimum_required(VERSION 3.14.1)
 
 set(PRODUCT_TYPE_LIST
-    ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite ascend910_9599_AIV ascend910_9599_AIV_BASIC
-    ascend910_9599_AIV_FRAMEWORK ascend910_9599_AIV_HIGH_LEVEL ascend910_9599_AIV_MICRO ascend910_9599_AIV_SIMT ascend910_9599_AIC
-    mc62cm12aa_AIC mc62cm12aa_BASIC mc62cm12aa_FRAMEWORK mc62cm12aa_MICRO mc62cm12aa_SIMT)
+    ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite)
 
-#set(TIKCPP_UT_PRODUCT_TYPE_LIST ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite
-#    ascend910_9599_AIV_BASIC ascend910_9599_AIV_FRAMEWORK ascend910_9599_AIV_MICRO ascend910_9599_AIV_SIMT ascend910_9599_AIC
-#    mc62cm12aa_AIC mc62cm12aa_BASIC mc62cm12aa_FRAMEWORK mc62cm12aa_MICRO mc62cm12aa_SIMT)
-set(TIKCPP_UT_PRODUCT_TYPE_LIST ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite
-    ascend910_9599_AIV_BASIC ascend910_9599_AIV_FRAMEWORK ascend910_9599_AIV_MICRO ascend910_9599_AIC
-    mc62cm12aa_AIC mc62cm12aa_BASIC mc62cm12aa_FRAMEWORK mc62cm12aa_MICRO)
+#set(TIKCPP_UT_PRODUCT_TYPE_LIST ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite)
+set(TIKCPP_UT_PRODUCT_TYPE_LIST ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite)
 # set(TIKCPP_UT_PRODUCT_TYPE_LIST ascend910)
 
 add_compile_definitions(ASCENDC_CPU_DEBUG=1 ASCENDC_DUMP=0)
@@ -58,14 +52,10 @@ set(ASCENDC_TEST_HEADER_FILES
     ${LOCAL_DIR}/testcase/
     ${ASCENDC_DIR}
     ${ASCENDC_DIR}/include/
-    ${ASCENDC_DIR}/include/micro_api/
-    ${ASCENDC_DIR}/include/simt_api/
     ${ASCENDC_DIR}/include/basic_api/
     ${ASCENDC_DIR}/include/utils/
     ${ASCENDC_DIR}/impl/
     ${ASCENDC_DIR}/impl/basic_api/
-    ${ASCENDC_DIR}/impl/simt_api/
-    ${ASCENDC_DIR}/impl/micro_api/
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/interface
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/impl
@@ -131,114 +121,6 @@ file(GLOB ASCENDC_TEST_ascend610Lite_CASE_SRC_FILES
     ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend610lite/*.cpp
 )
 
-# ascend910_9599 basic test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIV_BASIC_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/tikcpp_case_ascend910_9599_aiv/tikcpp_case_ascend910_9599_aiv_basic/*.cpp
-)
-
-# ascend910_9599 framework test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIV_FRAMEWORK_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/tikcpp_case_ascend910_9599_aiv/tikcpp_case_ascend910_9599_aiv_framework/*.cpp
-)
-
-# ascend910_9599 high_level test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIV_HIGH_LEVEL_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/tikcpp_case_ascend910_9599_aiv/tikcpp_case_ascend910_9599_aiv_high_level/*.cpp
-)
-
-# ascend910_9599 micro test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIV_MICRO_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/tikcpp_case_ascend910_9599_aiv/tikcpp_case_ascend910_9599_aiv_micro/*.cpp
-)
-
-# ascend910_9599 simt test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIV_SIMT_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/tikcpp_case_ascend910_9599_aiv/tikcpp_case_ascend910_9599_aiv_simt/*.cpp
-)
-
-# ascend910_9599 aic test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIC_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend910_9599/tikcpp_case_ascend910_9599_aic/*.cpp
-)
-
-# mc62cm12aa basic test cases
-file(GLOB ASCENDC_TEST_mc62cm12aa_BASIC_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/tikcpp_case_mc62cm12aa_basic/*.cpp
-)
-
-# mc62cm12aa framework test cases
-file(GLOB ASCENDC_TEST_mc62cm12aa_FRAMEWORK_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/tikcpp_case_mc62cm12aa_framework/*.cpp
-)
-
-# mc62cm12aa micro test cases
-file(GLOB ASCENDC_TEST_mc62cm12aa_MICRO_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/tikcpp_case_mc62cm12aa_micro/*.cpp
-)
-
-# mc62cm12aa simt test cases
-file(GLOB ASCENDC_TEST_mc62cm12aa_SIMT_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_case_common/test_kernel_pop_stack_buffer.cpp
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/tikcpp_case_mc62cm12aa_simt/*.cpp
-)
-
-# mc62cm12aa aic test cases
-file(GLOB ASCENDC_TEST_mc62cm12aa_AIC_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/common/test_kernel_tensor.cpp
-    ${LOCAL_DIR}/testcase/common/test_tikcpp_fp16.cpp
-    ${LOCAL_DIR}/testcase/common/test_type_check.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/*.cpp
-    ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_mc62cm12aa/tikcpp_case_mc62cm12aa_aic/*.cpp
-)
-
 file(GLOB ASCENDC_API_CHECK_CASE_SRC_FILES
     ${LOCAL_DIR}/testcase/tikcpp_api_check/*.cpp
 )
@@ -261,24 +143,6 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend310B1>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend610Lite>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_BASIC>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_BASIC>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_FRAMEWORK>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_FRAMEWORK>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_MICRO>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_MICRO>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_SIMT>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_SIMT>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIC>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},mc62cm12aa_AIC>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},mc62cm12aa_BASIC>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},mc62cm12aa_BASIC>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},mc62cm12aa_FRAMEWORK>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},mc62cm12aa_FRAMEWORK>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},mc62cm12aa_MICRO>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},mc62cm12aa_MICRO>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},mc62cm12aa_SIMT>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
-        $<$<STREQUAL:${product_type},mc62cm12aa_SIMT>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         ${ASCENDC_TEST_${product_type}_CASE_SRC_FILES}
     )
 
@@ -376,140 +240,6 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
             ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend610Lite/
             ${ASCENDC_SYS_DIR}/simulator/Ascend610Lite/lib/
         )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV_BASIC")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-            __ST_CHIP_VER__=310
-            __DAV_C310_VEC__
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV_FRAMEWORK")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-            __ST_CHIP_VER__=310
-            __DAV_C310_VEC__
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV_HIGH_LEVEL")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-            __ST_CHIP_VER__=310
-            __DAV_C310_VEC__
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV_MICRO")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-            __ST_CHIP_VER__=310
-            __DAV_C310_VEC__
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV_SIMT")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-            __ST_CHIP_VER__=310
-            __DAV_C310_VEC__
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIC")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-            __UT_CHIP_VER__=310
-            __DAV_C310_CUBE__
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
-    elseif(${product_type} STREQUAL "mc62cm12aa_AIC")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __NPU_ARCH__=5102
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/MC62CM12AA
-            ${ASCENDC_SYS_DIR}/simulator/MC62CM12AA/lib/
-        )
-    elseif(${product_type} STREQUAL "mc62cm12aa_BASIC")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __NPU_ARCH__=5102
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/MC62CM12AA
-            ${ASCENDC_SYS_DIR}/simulator/MC62CM12AA/lib/
-        )
-    elseif(${product_type} STREQUAL "mc62cm12aa_FRAMEWORK")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __NPU_ARCH__=5102
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/MC62CM12AA
-            ${ASCENDC_SYS_DIR}/simulator/MC62CM12AA/lib/
-        )
-    elseif(${product_type} STREQUAL "mc62cm12aa_MICRO")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __NPU_ARCH__=5102
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/MC62CM12AA
-            ${ASCENDC_SYS_DIR}/simulator/MC62CM12AA/lib/
-        )
-    elseif(${product_type} STREQUAL "mc62cm12aa_SIMT")
-        target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
-            UT_TEST
-            __NPU_ARCH__=5102
-        )
-        target_link_directories(tikcpp_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/MC62CM12AA
-            ${ASCENDC_SYS_DIR}/simulator/MC62CM12AA/lib/
-        )
     endif()
 
     target_compile_definitions(tikcpp_utest_${product_type} PRIVATE
@@ -546,16 +276,6 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend310B1>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend610Lite>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_BASIC>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_FRAMEWORK>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_MICRO>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIV_SIMT>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIC>:pem_davinci>
-        $<$<STREQUAL:${product_type},mc62cm12aa_AIC>:pem_davinci>
-        $<$<STREQUAL:${product_type},mc62cm12aa_BASIC>:pem_davinci>
-        $<$<STREQUAL:${product_type},mc62cm12aa_FRAMEWORK>:pem_davinci>
-        $<$<STREQUAL:${product_type},mc62cm12aa_MICRO>:pem_davinci>
-        $<$<STREQUAL:${product_type},mc62cm12aa_SIMT>:pem_davinci>
         c_sec
         mmpa
         error_manager
@@ -635,20 +355,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
             UT_TEST
             __CCE_AICORE__=310
             __NPU_ARCH__=3102
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIC")
-        target_compile_definitions(tikcpp_tiling_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIV")
-        target_compile_definitions(tikcpp_tiling_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __DAV_C310__
-            __NPU_ARCH__=3101
         )
     endif()
 

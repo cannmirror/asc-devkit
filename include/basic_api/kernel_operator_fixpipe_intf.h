@@ -51,11 +51,7 @@ __aicore__ inline void SetFixPipeConfig(uint64_t config);
 __aicore__ inline void SetFixPipeConfig(const FixPipeConfigParams &params);
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-__aicore__ inline void SetFixpipeNz2ndFlag(uint16_t ndNum, uint16_t srcNdStride, uint32_t dstNdStride);
-#else
 __aicore__ inline void SetFixpipeNz2ndFlag(uint16_t ndNum, uint16_t srcNdStride, uint16_t dstNdStride);
-#endif
 
 __aicore__ inline void SetFixpipePreQuantFlag(uint64_t config);
 
@@ -172,26 +168,6 @@ template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR, t
     typename Std::enable_if<Std::is_same<PrimT<S>, uint64_t>::value, bool>::type = true>
 __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
     const LocalTensor<S>& cbufWorkspace, const FixpipeParamsM310& intriParams);
-#elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-// L0C->L1
-template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-__aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src,
-    const FixpipeParamsC310<config.format>& intriParams);
-
-// L0C->L1/UB deq tensor quant
-template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-__aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src,
-    const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams);
-
-// L0C->GM
-template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-__aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
-    const FixpipeParamsC310<config.format>& intriParams);
-
-// L0C->GM deq tensor quant
-template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-__aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
-    const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams);
 #endif
 } // namespace AscendC
 

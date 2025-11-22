@@ -15,7 +15,7 @@ set(ASCENDC_UTILS_INCLUDE ${ASCENDC_INCLUDE_DIR}/utils)
 set(ASCENDC_UTILS_IMPL ${ASCENDC_IMPL_DIR}/utils)
 
 set(PRODUCT_TYPE_LIST_INIT
-    ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend910_9599_AIC ascend310B1)
+    ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1)
 set(PRODUCT_TYPE_LIST ${PRODUCT_TYPE_LIST_INIT}
     CACHE STRING "Supported product types")
 
@@ -240,33 +240,6 @@ file(GLOB ASCENDC_TEST_ascend910B1_AIC_CASE_SRC_FILES
     ${ASCENDC_TESTS_DIR}/matmul/scheduler/batch_scheduler/test_batch_scheduler_single.cpp
 )
 
-# ascend910_9599 test cases
-file(GLOB ASCENDC_TEST_ascend910_9599_AIC_CASE_SRC_FILES
-    ${ASCENDC_TESTS_DIR}/matmul/resource/cube_out_buffer/test_cube_out_buffer_co1_shared.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/param/test_matmul_cross_core_sync.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/kfc/test_matmul_server_c310.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_in/test_copy_cube_in_ub_to_l1_ss.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/tiling/test_matmul_constant_tiling_impl.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/test_operator_matmul_mx_c310.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/test_mx_matmul_impl.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/utils/test_mx_matmul_utils.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/scheduler/test_scheduler_norm_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/scheduler/test_scheduler_mdl_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/iterator/test_k_loop_mdl_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_in/test_copy_cube_in_norm_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_in/test_copy_cube_in_mdl_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_in/test_copy_cube_in_params_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_in/copy_tile_to_cube/test_copy_tile_to_cube_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/param/test_matmul_shape_tiling.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/cube_in_buffer/test_cube_in_buffer_utils.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_out/test_copy_cube_out_fixpipe.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/copy_cube_out/test_quant_processor_fixpipe.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/load_buffer/test_matmul_load_to_l0aV2.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/load_buffer/test_matmul_load_to_l0bV2.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/load_buffer/test_matmul_load_to_l0a_gemv_mx.cpp
-    ${ASCENDC_TESTS_DIR}/matmul/lib/test_matmul_client.cpp
-)
-
 # ascend310B1 test cases
 file(GLOB ASCENDC_TEST_ascend310B1_CASE_SRC_FILES
     ${ASCENDC_TESTS_DIR}/activation/softmax/test_operator_softmax_v300.cpp
@@ -285,7 +258,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend910B1_ACT>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend910B1_ATVC>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIC>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend310B1>:${ASCENDC_UNIT_TESTS_DIR}/common/k3_pvwrap.cpp>
         ${ASCENDC_TEST_${product_type}_CASE_SRC_FILES}
     )
@@ -358,19 +330,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
             ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910B1/
             ${ASCENDC_SYS_DIR}/simulator/Ascend910B1/lib/
         )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIC")
-        target_compile_definitions(ascendc_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __NPU_ARCH__=3101
-            __DAV_C310__
-            __DAV_C310_CUBE__
-        )
-        target_link_directories(ascendc_utest_${product_type} PRIVATE
-            ${ASCEND_DEP_LIB_DIR}
-            ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/Ascend910_9599
-            ${ASCENDC_SYS_DIR}/simulator/Ascend910_9599/lib/
-        )
     elseif(${product_type} STREQUAL "ascend310B1")
         target_compile_definitions(ascendc_utest_${product_type} PRIVATE
             UT_TEST
@@ -428,7 +387,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend910B1_ACT>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend910B1_ATVC>:pem_davinci>
-        $<$<STREQUAL:${product_type},ascend910_9599_AIC>:pem_davinci>
         $<$<STREQUAL:${product_type},ascend310B1>:pem_davinci>
         unified_dlog
         c_sec
@@ -509,13 +467,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
             UT_TEST
             __CCE_AICORE__=220
             __NPU_ARCH__=2201
-        )
-    elseif(${product_type} STREQUAL "ascend910_9599_AIC")
-        target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE
-            UT_TEST
-            __CCE_AICORE__=310
-            __NPU_ARCH__=3101
-            __DAV_C310__
         )
     elseif(${product_type} STREQUAL "ascend310B1")
         target_compile_definitions(ascendc_tiling_utest_${product_type} PRIVATE

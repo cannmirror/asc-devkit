@@ -14,12 +14,6 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_INTERFACE_H
-#if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||    \
-     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101)) || defined(__ASC_NPU_HOST__)
-// MICRO API
-#include "micro_api/kernel_micro_intf.h"
-#endif
 #include "kernel_prof_trace_intf.h"
 #include "kernel_operator_data_copy_intf.h"
 #include "kernel_operator_fixpipe_intf.h"
@@ -48,9 +42,7 @@
 #include "kernel_operator_vec_ternary_scalar_intf.h"
 #include "kernel_operator_vec_unary_intf.h"
 #include "kernel_operator_vec_vpadding_intf.h"
-#include "kernel_operator_limits_intf.h"
 #include "kernel_operator_sys_var_intf.h"
-#include "kernel_operator_atomic_intf.h"
 #include "kernel_operator_set_atomic_intf.h"
 
 #include "include/adv_api/kernel_api.h"
@@ -124,9 +116,5 @@
 #include "include/adv_api/pad/broadcast.h"
 #include "include/adv_api/reduce/reduce_xor_sum.h"
 #include "include/adv_api/math/cumsum.h"
-#endif
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-// SIMT API
-#include "simt_api/kernel_simt_intf.h"
 #endif
 #endif // ASCENDC_MODULE_OPERATOR_INTERFACE_H

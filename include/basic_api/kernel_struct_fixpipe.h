@@ -22,23 +22,6 @@ enum class CO2Layout : uint8_t {
     COLUMN_MAJOR // ND Column
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
-struct FixpipeConfig {
-    CO2Layout format;
-    bool isToUB;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-    bool enableFixVal = false;
-#endif
-};
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-constexpr FixpipeConfig CFG_NZ_FIX = {CO2Layout::NZ, false, true};
-#endif
-
-constexpr FixpipeConfig CFG_NZ = {CO2Layout::NZ, false};
-constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR, false};
-constexpr FixpipeConfig CFG_COLUMN_MAJOR = {CO2Layout::COLUMN_MAJOR, false};
-#else
 struct FixpipeConfig {
     CO2Layout format;
 };
@@ -46,7 +29,6 @@ struct FixpipeConfig {
 constexpr FixpipeConfig CFG_NZ = {CO2Layout::NZ};
 constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};
 constexpr FixpipeConfig CFG_COLUMN_MAJOR = {CO2Layout::COLUMN_MAJOR};
-#endif
 
 struct FixpipeParamsV220 {
     __aicore__ FixpipeParamsV220() {}
@@ -109,59 +91,6 @@ struct FixpipeParamsV220 {
     uint8_t unitFlag = 0;
     bool isChannelSplit = false;
 };
-
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-// 根据模板参数选结构体
-template <CO2Layout format>
-struct TransformParams {};
-
-template <>
-struct TransformParams<CO2Layout::NZ> {
-    __aicore__ inline TransformParams(){};
-    using PARAMS = uint8_t;
-};
-
-template <>
-struct TransformParams<CO2Layout::ROW_MAJOR> {
-    __aicore__ inline TransformParams(){};
-    using PARAMS = Nz2NdParams;
-};
-
-template <>
-struct TransformParams<CO2Layout::COLUMN_MAJOR> {
-    __aicore__ inline TransformParams(){};
-    using PARAMS = Nz2DnParams;
-};
-
-template <CO2Layout format = CO2Layout::ROW_MAJOR>
-struct FixpipeParamsC310 {
-    __aicore__ FixpipeParamsC310() {}
-
-    __aicore__ FixpipeParamsC310(const uint16_t nSizeIn, const uint16_t mSizeIn, const uint16_t srcStrideIn,
-        const uint32_t dstStrideIn)
-    {
-        nSize = nSizeIn;
-        mSize = mSizeIn;
-        srcStride = srcStrideIn;
-        dstStride = dstStrideIn;
-    }
-
-    uint16_t nSize = 0;
-    uint16_t mSize = 0;  // M-DirectionSize
-    uint16_t srcStride = 0;
-    uint32_t dstStride = 0;
-    // Params: used for Quant
-    QuantMode_t quantPre = QuantMode_t::NoQuant;
-    uint64_t deqScalar;
-    bool reluEn = false;
-    uint8_t unitFlag = 0;
-    // c310 extend param
-    uint8_t dualDstCtl = 0;
-    bool subBlockId = false;
-    typename TransformParams<format>::PARAMS params;
-    bool isChannelSplit = false;
-};
-#endif
 
 using FixpipeParamsM300 = FixpipeParamsV220;
 using FixpipeParamsM310 = FixpipeParamsV220;
