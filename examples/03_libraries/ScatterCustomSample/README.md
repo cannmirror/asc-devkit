@@ -21,14 +21,14 @@
 本调用样例中实现的是对于Scatter功能变换的兼容,Ascend910B不支持Scatter指令，使用标量搬出的方式进行兼容。
 
   Scatter计算逻辑是：给定一个连续的输入张量和一个目的地址偏移张量，Scatter指令根据偏移地址生成新的结果张量后将输入张量分散到结果张量中。
+
   兼容Scatter算子逻辑是：对于部分有规律的离散计算，可以通过Loop循环搬出的方式来提升效率，对于完全离散的场景,只能通过标量搬出的方式进行处理。
 - 算子规格：  
 <!-- <table>  
 <tr><th align="center">算子类型(OpType)</th><th colspan="4" align="center">Scatter</th></tr>  
 <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>  
 <tr><td align="center">x</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td></tr>  
-<tr><td align="center">y</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td></tr>  
-<tr><td align="center">z</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td></tr>  
+<tr><td align="center">y</td><td align="center">-</td><td align="center">uint32</td><td align="center">ND</td></tr>    
 <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td></tr>  
 <tr><td align="center">attr属性</td><td align="center">value</td><td align="center"> </td><td align="center">float16</td><td align="center"> </td></tr>
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">scatter_custom</td></tr>  
@@ -38,8 +38,7 @@
 <tr><th align="center">算子类型(OpType)</th><th colspan="5" align="center">Scatter</th></tr>  
 <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">default</td></tr>  
 <tr><td align="center">x</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr>  
-<tr><td align="center">y</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr>  
-<tr><td align="center">z</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr>  
+<tr><td align="center">y</td><td align="center">-</td><td align="center">uint32</td><td align="center">ND</td><td align="center">\</td></tr>  
 <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr>  
 <tr><td align="center">attr属性</td><td align="center">value</td><td align="center">\</td><td align="center">float16</td><td align="center">\</td><td align="center">1.0</td></tr>
 <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">scatter_custom</td></tr>  
