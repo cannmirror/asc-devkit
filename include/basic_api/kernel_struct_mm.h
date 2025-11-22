@@ -107,8 +107,6 @@ struct Nd2NzParamsV2 {
 };
 #endif
 
-// Kirin versions
-
 template <typename T>
 struct LoadData3DParamsV1 {
     __aicore__ LoadData3DParamsV1()
@@ -369,8 +367,6 @@ struct MmadParams {
     bool cmatrixInitVal = true;
 };
 
-// Kirin versions
-
 template <typename T>
 struct InitConstValueParams {
     __aicore__ InitConstValueParams() {}
@@ -432,7 +428,7 @@ struct LoadDataRepeatParam {
     uint8_t repeatMode = 0;
     uint8_t reserved = 0;
 };
-#endif // Turing versions // Kirin versions
+#endif // Turing versions
 
 struct LoadImageToLocalParams {
     __aicore__ LoadImageToLocalParams() {}

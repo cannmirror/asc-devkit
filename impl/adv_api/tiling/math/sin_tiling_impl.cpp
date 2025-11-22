@@ -85,7 +85,6 @@ void GetSinTmpBufferFactorSize(const SinConfig& config, const uint32_t typeSize,
     platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
     ASCENDC_HOST_ASSERT((socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
         socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
-        socVersion == platform_ascendc::SocVersion::KIRIN9010 ||
         socVersion == platform_ascendc::SocVersion::MC62CM12A),
         return, "Unsupported SocVersion of Cos API.");
     if (config.algo == SinAlgo::POLYNOMIAL_APPROXIMATION) {
@@ -114,7 +113,6 @@ void GetSinMaxMinTmpSize(const SinConfig& config, const ge::Shape& srcShape, con
     platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
     ASCENDC_HOST_ASSERT((socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
         socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
-        socVersion == platform_ascendc::SocVersion::KIRIN9010 ||
         socVersion == platform_ascendc::SocVersion::MC62CM12A),
         return, "Unsupported SocVersion of Cos API.");
 
