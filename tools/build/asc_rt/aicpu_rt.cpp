@@ -215,6 +215,5 @@ void AicpuLaunchKernel(aclrtFuncHandle funcHandle, uint32_t blockDim, aclrtStrea
         ReportAscendProf(funcName, blockDim, 3, startTime);   // 3 is means WRITE_BACK
     }
 }
-
 }
 #endif
