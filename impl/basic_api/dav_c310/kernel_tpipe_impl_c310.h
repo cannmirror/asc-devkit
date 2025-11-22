@@ -173,8 +173,8 @@ __aicore__ inline bool TPipe::InitBuffer(T& que, const Std::tuple<U, V>& addr0, 
     this->g_tpipeImpl.curBufSize_ += num;
     // total buffer num created by InitBuffer must be <= 64
     ASCENDC_DEBUG_ASSERT((this->g_tpipeImpl.curBufSize_ <= QBUF_MAX_LEN && this->g_tpipeImpl.curBufSize_ > 0),
-                         "Total buffer num managed by TPipe is %d, should be in range (0, %d]\n",
-                         this->g_tpipeImpl.curBufSize_, QBUF_MAX_LEN);
+                         KERNEL_LOG(KERNEL_ERROR, "Total buffer num managed by TPipe is %d, should be in range (0, %d]\n",
+                         this->g_tpipeImpl.curBufSize_, QBUF_MAX_LEN));
 #ifdef ASCENDC_TIME_STAMP_ON
     PrintTimeStamp(static_cast<uint32_t>(TimeStampId::TIME_STAMP_BUFFER));
 #endif
@@ -768,15 +768,15 @@ inline uint64_t TPipe::GetAbsAddr(const LocalTensor<T>& tensor)
         static_cast<uint8_t*>(g_tpipeImpl.bufPoolBaseAddr_[static_cast<uint32_t>(hardType)].absAddr);
     ASCENDC_ASSERT((phyAddr >= baseAddr), {
         KERNEL_LOG(KERNEL_ERROR, "phyAddr is %p, baseAddr is %p, phyAddr should be larger than baseAddr", phyAddr,
-            baseAddr);
+                   baseAddr);
     });
     uint64_t delta = phyAddr - baseAddr;
     if (hardType == Hardware::UB) {
         ASCENDC_ASSERT((delta < TMP_UB_OFFSET),
-                        { KERNEL_LOG(KERNEL_ERROR, "addr %lu exceed ub limits %lu ", delta, TMP_UB_OFFSET); });
+                       { KERNEL_LOG(KERNEL_ERROR, "addr %lu exceed ub limits %lu ", delta, TMP_UB_OFFSET); });
     } else {
         ASCENDC_ASSERT((delta < TOTAL_L1_SIZE),
-                        { KERNEL_LOG(KERNEL_ERROR, "addr %lu exceed l1 limits %lu", delta, TOTAL_L1_SIZE); });
+                       { KERNEL_LOG(KERNEL_ERROR, "addr %lu exceed l1 limits %lu", delta, TOTAL_L1_SIZE); });
     }
     return delta;
 }
