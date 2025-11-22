@@ -152,7 +152,7 @@ __simd_callee__ inline void AtanCompute(
 
 template <typename T, bool isReuseSource = false>
 __simd_vf__ inline void AtanTaylorVFImpl(
-    __local_mem__ T* dstUb, __local_mem__ T* srcUb, const uint32_t calCount)
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t calCount)
 {
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
 
@@ -189,14 +189,14 @@ template <typename T, bool isReuseSource = false>
 __aicore__ inline void AtanTaylorImpl(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
-    __local_mem__ T* dstUb = (__local_mem__ T*)dstTensor.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)srcTensor.GetPhyAddr();
     AtanTaylorVFImpl<T, isReuseSource>(dstUb, srcUb, calCount);
 }
 
 template <typename T, bool isReuseSource = false>
 __simd_vf__ inline void AtanPolynomialVFImpl(
-    __local_mem__ T* dstUb, __local_mem__ T* srcUb, const uint32_t calCount)
+    __ubuf__ T* dstUb, __ubuf__ T* srcUb, const uint32_t calCount)
 {
     constexpr float a1 = -0.333329409;
     constexpr float a2 = 0.199887753;
@@ -288,8 +288,8 @@ template <typename T, bool isReuseSource = false>
 __aicore__ inline void AtanPolynomialImpl(
     const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
-    __local_mem__ T* dstUb = (__local_mem__ T*)dstTensor.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)srcTensor.GetPhyAddr();
 
     AtanPolynomialVFImpl<T, isReuseSource>(dstUb, srcUb, calCount);
 }

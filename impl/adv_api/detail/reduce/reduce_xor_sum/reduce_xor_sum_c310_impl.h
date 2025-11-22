@@ -88,9 +88,9 @@ __aicore__ inline void ReduceXorSumCompute(LocalTensor<T>& dstTensor, const Loca
     }
 
     ReduceXorSumCheckParams<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *src0Ub = (__local_mem__ T *)src0Tensor.GetPhyAddr();
-    __local_mem__ T *src1Ub = (__local_mem__ T *)src1Tensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *src0Ub = (__ubuf__ T *)src0Tensor.GetPhyAddr();
+    __ubuf__ T *src1Ub = (__ubuf__ T *)src1Tensor.GetPhyAddr();
     ReduceXorSumAPI::ReduceXorSumCoreImpl<T>(dstUb, src0Ub, src1Ub, calCount);
 }
 } // namespace AscendC

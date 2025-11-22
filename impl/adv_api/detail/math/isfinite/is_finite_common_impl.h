@@ -26,7 +26,7 @@
 
 namespace AscendC {
 template<typename T, typename U>
-__simd_vf__ inline void IsFiniteVFImpl(__local_mem__ U *dstUb, __local_mem__ T *srcUb, uint32_t calCount)
+__simd_vf__ inline void IsFiniteVFImpl(__ubuf__ U *dstUb, __ubuf__ T *srcUb, uint32_t calCount)
 {
     constexpr float ONE = 1.0;
     constexpr uint16_t BF16_ONE = 0x3f80;
@@ -112,8 +112,8 @@ __aicore__ inline void IsFiniteImpl(const LocalTensor<U>& dst, const LocalTensor
     static_assert(SupportType<U, bool, float, half, bfloat16_t>(),
             "IsFinite do not support this output type on current device");
  
-    __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
-    __local_mem__ U *dstUb = (__local_mem__ U *)dst.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
+    __ubuf__ U *dstUb = (__ubuf__ U *)dst.GetPhyAddr();
 
     IsFiniteVFImpl<T, U>(dstUb, srcUb, calCount);
 }

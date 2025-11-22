@@ -297,8 +297,8 @@ __aicore__ inline void ErfImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     }
 
     ErfCheckParams<T, isReuseSource, config>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
     ErfAPI::ErfCoreImpl<T, isReuseSource, config>(dstUb, srcUb, calCount, repeatTimes);
 }

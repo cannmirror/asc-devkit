@@ -19,9 +19,9 @@
 
 namespace AscendC {
 template <typename T1, typename T2, bool isLog = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNZVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* expUb, __local_mem__ T2* tmpUb,
-    __local_mem__ float* workUb, const LastAxisShapeND originalSrcShape, uint16_t srcM, uint16_t srcK,
+__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNZVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* expUb, __ubuf__ T2* tmpUb,
+    __ubuf__ float* workUb, const LastAxisShapeND originalSrcShape, uint16_t srcM, uint16_t srcK,
     uint16_t VcgFoldRepeat, uint16_t e2bRep, uint16_t dtypeRepStride, uint16_t dtypeBlkStride)
 {
     uint16_t originK = originalSrcShape.k;
@@ -137,22 +137,22 @@ __aicore__ inline void SoftMaxGenericNZImpl(const LocalTensor<T1>& dst, const Lo
     uint16_t dtypeRepStride = IsSameType<T2, half>::value ? HALF_REPEAT_SIZE : FLOAT_REPEAT_SIZE;
     uint16_t dtypeBlkStride = dtypeRepStride / DEFAULT_BLK_NUM;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* expUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ T2* tmpUb = (__local_mem__ T2*)workLocal.GetPhyAddr(srcM * srcK);
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK + VcgFoldRepeat * FLOAT_REPEAT_SIZE);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* expUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ T2* tmpUb = (__ubuf__ T2*)workLocal.GetPhyAddr(srcM * srcK);
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * srcK + VcgFoldRepeat * FLOAT_REPEAT_SIZE);
 
     SoftMaxGenericNZVFImpl<T1, T2, isLog>(dstUb, sumUb, maxUb, srcUb, expUb, tmpUb,
         workUb, originalSrcShape, srcM, srcK, VcgFoldRepeat, e2bRep, dtypeRepStride, dtypeBlkStride);
 }
 
 template <typename T1, typename T2, bool isLog = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNZWithTailVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* expUb, __local_mem__ T2* tmpUb,
-    __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t originM, uint16_t VcgFoldRepeat,
+__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNZWithTailVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* expUb, __ubuf__ T2* tmpUb,
+    __ubuf__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t originM, uint16_t VcgFoldRepeat,
     uint16_t kRepeatTimes, uint16_t e2bRep, uint16_t dtypeRepStride, uint16_t dtypeBlkStride)
 {
     uint16_t dataBlock = srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
@@ -295,13 +295,13 @@ __aicore__ inline void SoftMaxGenericNZWithTailImpl(const LocalTensor<T1>& dst, 
     CreateSpecialFormatMask(mask[0], originK % SOFTMAX_SHAPE_NZ_BASIC_COUNT, FLOAT_REPEAT_SIZE / SOFTMAX_SHAPE_NZ_BASIC_COUNT);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* expUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ T2* tmpUb = (__local_mem__ T2*)workLocal.GetPhyAddr(srcM * srcK);
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK + VcgFoldRepeat * FLOAT_REPEAT_SIZE);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* expUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ T2* tmpUb = (__ubuf__ T2*)workLocal.GetPhyAddr(srcM * srcK);
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * srcK + VcgFoldRepeat * FLOAT_REPEAT_SIZE);
 
     SoftMaxGenericNZWithTailVFImpl<T1, T2, isLog>(dstUb, sumUb, maxUb, srcUb, expUb, tmpUb,
         workUb, srcM, srcK, originM, VcgFoldRepeat, kRepeatTimes, e2bRep, dtypeRepStride, dtypeBlkStride);
@@ -324,8 +324,8 @@ __aicore__ inline void SoftMaxNZImpl(const LocalTensor<T1>& dst, const LocalTens
 }
 
 template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
-__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb,
+__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* tmpUb, __ubuf__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t repeatTimes, uint16_t blockStride)
 {
     NotNumUnion notNum;
@@ -417,20 +417,20 @@ __aicore__ inline void SoftMaxGenericNDImpl(const LocalTensor<T1>& dst, const Lo
     constexpr uint16_t blockStride = IsSameType<T2, half>::value ? B16_DATA_NUM_PER_BLOCK
                                                                  : B32_DATA_NUM_PER_BLOCK;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
     SoftMaxGenericNDVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
          maxUb, srcUb, tmpUb, workUb, srcM, srcK, repeatTimes, blockStride);
 }
 
 template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
-__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb,
+__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* tmpUb, __ubuf__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t repeatTimes, uint16_t blockStride)
 {
     NotNumUnion notNum;
@@ -536,20 +536,20 @@ __aicore__ inline void SoftMaxGenericNDWithTailImpl(const LocalTensor<T1>& dst, 
     constexpr uint16_t blockStride = IsSameType<T2, half>::value ? B16_DATA_NUM_PER_BLOCK
                                                                  : B32_DATA_NUM_PER_BLOCK;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
     SoftMaxGenericNDWithTailVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb, workUb, srcM, srcK, originK, repeatTimes, blockStride);
 }
 
 template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
-__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb0, __local_mem__ float* tmpUb1, __local_mem__ float* workUb,
+__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* tmpUb0, __ubuf__ float* tmpUb1, __ubuf__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t factorRow, uint16_t factor, uint16_t blockStride)
 {
     uint32_t sreg = srcK * srcM;
@@ -663,28 +663,28 @@ __aicore__ inline void SingleSoftMaxGenericNDForBlkImpl(const LocalTensor<T1>& d
     CreateSpecialFormatMask(mask[0], originK, factorRow, srcK);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* tmpUb0 = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb1 = (__local_mem__ float*)workLocal.GetPhyAddr(factorRow * factor);
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(factorRow * factor * 2);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* tmpUb0 = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb1 = (__ubuf__ float*)workLocal.GetPhyAddr(factorRow * factor);
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(factorRow * factor * 2);
 
     SingleSoftMaxGenericNDForBlkVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb0, tmpUb1, workUb, srcM, srcK, factorRow, factor, blockStride);
 }
 
 template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
-__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithBlkVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb0, __local_mem__ float* tmpUb, __local_mem__ float* tmpUb1,
-    __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t factorRow, uint16_t factor, uint16_t originK, uint16_t blockStride)
+__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithBlkVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* tmpUb0, __ubuf__ float* tmpUb, __ubuf__ float* tmpUb1,
+    __ubuf__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t factorRow, uint16_t factor, uint16_t originK, uint16_t blockStride)
 {
     uint16_t halfFactor = CeilDivision(srcM, factorRow * 2);
     uint32_t sreg = srcK * srcM;
     uint32_t sreg1 = srcM * blockStride;
-    __local_mem__ float* tmpUb0Tmp0 = tmpUb0;
-    __local_mem__ float* tmpUb0Tmp1 = tmpUb0;
+    __ubuf__ float* tmpUb0Tmp0 = tmpUb0;
+    __ubuf__ float* tmpUb0Tmp1 = tmpUb0;
 
     MicroAPI::MaskReg pregDst;
     MicroAPI::MaskReg pregTmp;
@@ -842,22 +842,22 @@ __aicore__ inline void SingleSoftMaxGenericNDAlignedWithBlkImpl(const LocalTenso
     CreateSpecialFormatMask(mask[0], originK, factorRow, srcK);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb0 = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK);
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK + offset);
-    __local_mem__ float* tmpUb1 = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * srcK + offset + offset1);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb0 = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * srcK);
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * srcK + offset);
+    __ubuf__ float* tmpUb1 = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * srcK + offset + offset1);
 
     SingleSoftMaxGenericNDAlignedWithBlkVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb0, tmpUb, tmpUb1, workUb, srcM, srcK, factorRow, factor, originK, blockStride);
 }
 
 template <typename T1, typename T2, bool isFlashV2 = false, bool isLog = false, bool outputBrc = true>
-__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb,
+__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ float* tmpUb, __ubuf__ float* workUb,
     uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t blockStride)
 {
     uint32_t sreg = originK;
@@ -940,12 +940,12 @@ __aicore__ inline void SingleSoftMaxGenericNDImpl(const LocalTensor<T1>& dst, co
     constexpr uint16_t blockStride = IsSameType<T2, half>::value ? B16_DATA_NUM_PER_BLOCK
                                                                  : B32_DATA_NUM_PER_BLOCK;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
     SingleSoftMaxGenericNDVFImpl<T1, T2, isFlashV2, isLog, outputBrc>(dstUb, sumUb,
         maxUb, srcUb, tmpUb, workUb, srcM, srcK, originK, blockStride);
@@ -979,12 +979,12 @@ __aicore__ inline void SoftMaxNDImpl(const LocalTensor<T1>& dst, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ float* sumUb, __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t repeatTimes)
+__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDWithTailVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
+    __ubuf__ float* sumUb, __ubuf__ float* workUb, uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t repeatTimes)
 {
     NotNumUnion notNum;
     notNum.i = F32_NEG_INF;
-    __local_mem__ float* tmpUb = sumUb;
+    __ubuf__ float* tmpUb = sumUb;
 
     MicroAPI::MaskReg pregCnt;
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
@@ -1052,21 +1052,21 @@ __aicore__ inline void SoftMaxGenericNDWithTailImpl(const LocalTensor<T>& dst, c
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(originK, FLOAT_REPEAT_SIZE));
     uint16_t offset = static_cast<uint16_t>(CeilDivision(srcM, B32_DATA_NUM_PER_BLOCK) * B32_DATA_NUM_PER_BLOCK);
 
-    __local_mem__ T* dstUb = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)src.GetPhyAddr();
-    __local_mem__ float* sumUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
+    __ubuf__ float* sumUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
     if constexpr (isReuseSource && sizeof(T) == sizeof(float)) {
-        workUb = (__local_mem__ float*)src.GetPhyAddr();
+        workUb = (__ubuf__ float*)src.GetPhyAddr();
     }
 
     SoftMaxGenericNDWithTailVFImpl<T, isReuseSource>(dstUb, srcUb, sumUb, workUb, srcM, srcK, originK, repeatTimes);
 }
 
 template <typename T, bool isReuseSource = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ float* sumUb, __local_mem__ float* maxUb, __local_mem__ float* workUb, __local_mem__ float* sumUb0,
-    __local_mem__ float* sumUb1, uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t repeatTimes, uint16_t halfM,
+__no_simd_vf_fusion__ __simd_vf__ inline void SoftMaxGenericNDVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
+    __ubuf__ float* sumUb, __ubuf__ float* maxUb, __ubuf__ float* workUb, __ubuf__ float* sumUb0,
+    __ubuf__ float* sumUb1, uint16_t srcM, uint16_t srcK, uint16_t originK, uint16_t repeatTimes, uint16_t halfM,
     uint16_t tailM, uint16_t mainM)
 {
     NotNumUnion notNum;
@@ -1181,17 +1181,17 @@ __aicore__ inline void SoftMaxGenericNDImpl(const LocalTensor<T>& dst, const Loc
     uint16_t tailM = srcM % 2;
     uint16_t mainM = halfM * 2;
 
-    __local_mem__ T* dstUb = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)src.GetPhyAddr();
-    __local_mem__ float* sumUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* maxUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset * 2);
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
+    __ubuf__ float* sumUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* maxUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset * 2);
 
-    __local_mem__ float* sumUb0 = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* sumUb1 = (__local_mem__ float*)workLocal.GetPhyAddr() + halfM;
+    __ubuf__ float* sumUb0 = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* sumUb1 = (__ubuf__ float*)workLocal.GetPhyAddr() + halfM;
 
     if constexpr (isReuseSource && sizeof(T) == sizeof(float)) {
-        workUb = (__local_mem__ float*)src.GetPhyAddr();
+        workUb = (__ubuf__ float*)src.GetPhyAddr();
     }
 
     SoftMaxGenericNDVFImpl<T, isReuseSource>(dstUb, srcUb, sumUb, maxUb, workUb, sumUb0,
@@ -1199,8 +1199,8 @@ __aicore__ inline void SoftMaxGenericNDImpl(const LocalTensor<T>& dst, const Loc
 }
 
 template <typename T, bool isReuseSource = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ float* sumUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, 
+__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDForBlkVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
+    __ubuf__ float* sumUb, __ubuf__ float* tmpUb, __ubuf__ float* workUb, uint16_t srcM, uint16_t srcK, 
     uint16_t factorRow, uint16_t factor)
 {
     uint32_t sreg = srcK * srcM;
@@ -1261,21 +1261,21 @@ __aicore__ inline void SingleSoftMaxGenericNDForBlkImpl(const LocalTensor<T>& ds
     CreateSpecialFormatMask(mask[0], originK, factorRow, srcK);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T* dstUb = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)src.GetPhyAddr();
-    __local_mem__ float* sumUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset * 2);
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
+    __ubuf__ float* sumUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset * 2);
     if constexpr (isReuseSource && sizeof(T) == sizeof(float)) {
-        workUb = (__local_mem__ float*)src.GetPhyAddr();
+        workUb = (__ubuf__ float*)src.GetPhyAddr();
     }
 
     SingleSoftMaxGenericNDForBlkVFImpl<T, isReuseSource>(dstUb, srcUb, sumUb, tmpUb, workUb, srcM, srcK, factorRow, factor);
 }
 
 template <typename T, bool isReuseSource = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithBlkVFImpl(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ float* sumUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, 
+__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDAlignedWithBlkVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
+    __ubuf__ float* sumUb, __ubuf__ float* tmpUb, __ubuf__ float* workUb, uint16_t srcM, uint16_t srcK, 
     uint16_t factorRow, uint16_t factor)
 {
     uint32_t sreg = srcK * srcM;
@@ -1347,13 +1347,13 @@ __aicore__ inline void SingleSoftMaxGenericNDAlignedWithBlkImpl(const LocalTenso
     CreateSpecialFormatMask(mask[0], originK, factorRow, srcK);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T* dstUb = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)src.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
-    __local_mem__ float* sumUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset + offset1);
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ float* sumUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset + offset1);
     if constexpr (isReuseSource && sizeof(T) == sizeof(float)) {
-        workUb = (__local_mem__ float*)src.GetPhyAddr();
+        workUb = (__ubuf__ float*)src.GetPhyAddr();
     }
 
     SingleSoftMaxGenericNDAlignedWithBlkVFImpl<T, isReuseSource>(dstUb, srcUb, sumUb, tmpUb, workUb, srcM, srcK,
@@ -1361,8 +1361,8 @@ __aicore__ inline void SingleSoftMaxGenericNDAlignedWithBlkImpl(const LocalTenso
 }
 
 template <typename T, bool isReuseSource = false>
-__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
-    __local_mem__ float* sumUb, __local_mem__ float* tmpUb, __local_mem__ float* workUb, uint16_t srcM, uint16_t srcK, 
+__no_simd_vf_fusion__ __simd_vf__ inline void SingleSoftMaxGenericNDVFImpl(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
+    __ubuf__ float* sumUb, __ubuf__ float* tmpUb, __ubuf__ float* workUb, uint16_t srcM, uint16_t srcK, 
     uint16_t originK)
 {
     uint32_t sreg = originK;
@@ -1410,13 +1410,13 @@ __aicore__ inline void SingleSoftMaxGenericNDImpl(const LocalTensor<T>& dst, con
     uint16_t originK = originalSrcShape.k;
     uint16_t offset = static_cast<uint16_t>(CeilDivision(srcM, B32_DATA_NUM_PER_BLOCK) * B32_DATA_NUM_PER_BLOCK);
     
-    __local_mem__ T* dstUb = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)src.GetPhyAddr();
-    __local_mem__ float* sumUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb = sumUb;
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ T* dstUb = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)src.GetPhyAddr();
+    __ubuf__ float* sumUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb = sumUb;
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
     if constexpr (isReuseSource && sizeof(T) == sizeof(float)) {
-        workUb = (__local_mem__ float*)src.GetPhyAddr();
+        workUb = (__ubuf__ float*)src.GetPhyAddr();
     }
 
     SingleSoftMaxGenericNDVFImpl<T, isReuseSource>(dstUb, srcUb, sumUb, tmpUb, workUb, srcM, srcK,
@@ -1447,8 +1447,8 @@ __aicore__ inline void SoftMaxNDImpl(const LocalTensor<T>& dst, const LocalTenso
 }
 
 template <typename T1, typename T2, uint32_t stepSize, uint32_t stride>
-__simd_vf__ inline void AdjustSoftMaxResNZImpl(__local_mem__ T1* resUb, __local_mem__ T2* maxUb,
-    __local_mem__ uint64_t* maskUb, const uint32_t from, const T1 to, const uint32_t dataBlock,
+__simd_vf__ inline void AdjustSoftMaxResNZImpl(__ubuf__ T1* resUb, __ubuf__ T2* maxUb,
+    __ubuf__ uint64_t* maskUb, const uint32_t from, const T1 to, const uint32_t dataBlock,
     const uint16_t mRepeatTimes, const uint16_t kRepeatTimes)
 {
     MicroAPI::RegTensor<T1> srcVreg;
@@ -1485,12 +1485,12 @@ __simd_vf__ inline void AdjustSoftMaxResNZImpl(__local_mem__ T1* resUb, __local_
             MicroAPI::DataCopy(resUb + i * stride + j * dataBlock, dstVreg, maskFull);
         }
     }
-    MicroAPI::DataCopy((__local_mem__ uint8_t*)maskUb, dstMask);
+    MicroAPI::DataCopy((__ubuf__ uint8_t*)maskUb, dstMask);
 }
 
 template <typename T1, typename T2, uint32_t stepSize, uint32_t stride>
-__simd_vf__ inline void AdjustSoftMaxResNDImpl(__local_mem__ T1* resUb, __local_mem__ T2* maxUb,
-    __local_mem__ uint64_t* maskUb, const uint32_t from, const T1 to, const uint32_t srcK, const uint16_t srcM,
+__simd_vf__ inline void AdjustSoftMaxResNDImpl(__ubuf__ T1* resUb, __ubuf__ T2* maxUb,
+    __ubuf__ uint64_t* maskUb, const uint32_t from, const T1 to, const uint32_t srcK, const uint16_t srcM,
     const uint16_t repeatTimes)
 {
     MicroAPI::RegTensor<T1> srcVreg;
@@ -1529,7 +1529,7 @@ __simd_vf__ inline void AdjustSoftMaxResNDImpl(__local_mem__ T1* resUb, __local_
             MicroAPI::DataCopy(resUb + i * srcK + j * stride, dstVreg, maskReg);
         }
     }
-    MicroAPI::DataCopy((__local_mem__ uint8_t*)maskUb, dstMask);
+    MicroAPI::DataCopy((__ubuf__ uint8_t*)maskUb, dstMask);
 }
 
 template <typename T1, typename T2, bool isDataFormatNZ = false, uint8_t stepSizeMode = 0>
@@ -1543,9 +1543,9 @@ __aicore__ inline bool AdjustSoftMaxResBaseImpl(const LocalTensor<T1>& softMaxRe
                 "support dtype combination is T1 : half, T2 : float; T1 : half, T2 : half; "
                 "T1 : float, T2 : float");
     constexpr uint32_t stride = GetVecLen() / sizeof(T1);
-    __local_mem__ T1* resUb = (__local_mem__ T1*)softMaxRes.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ uint64_t* maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
+    __ubuf__ T1* resUb = (__ubuf__ T1*)softMaxRes.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ uint64_t* maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
 
     if constexpr (isDataFormatNZ) {
         constexpr uint32_t stepSize = GetDataBlockSizeInBytes() / sizeof(T2);
@@ -1571,7 +1571,7 @@ __aicore__ inline bool AdjustSoftMaxResBaseImpl(const LocalTensor<T1>& softMaxRe
     auto eventID = GetTPipePtr()->FetchEventID(HardEvent::V_S);
     SetFlag<HardEvent::V_S>(eventID);
     WaitFlag<HardEvent::V_S>(eventID);
-    bool isUpdateNeedCheck = *((__local_mem__ uint8_t*)maskBuf);
+    bool isUpdateNeedCheck = *((__ubuf__ uint8_t*)maskBuf);
     AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
     return isUpdateNeedCheck;
 }

@@ -508,15 +508,15 @@ __aicore__ inline void InitializeFloatTempBuffer(__ubuf__ uint32_t *&tmpBuffer, 
         tmpBuffer[i] = oneOverPiF[i];
     }
 
-    tmpBufferR = (__local_mem__ float *)((__local_mem__ uint8_t *)tmpBuffer + sizeof(uint32_t) * oneOverPiFAlignedLength);
-    tmpBufferI = (__local_mem__ int32_t *)((__local_mem__ uint8_t *)tmpBufferR + sizeof(float) * alignCount);
+    tmpBufferR = (__ubuf__ float *)((__ubuf__ uint8_t *)tmpBuffer + sizeof(uint32_t) * oneOverPiFAlignedLength);
+    tmpBufferI = (__ubuf__ int32_t *)((__ubuf__ uint8_t *)tmpBufferR + sizeof(float) * alignCount);
 }
 
 __aicore__ inline void InitializeHalfTempBuffer(__ubuf__ uint32_t *&tmpBuffer, __ubuf__ float *&tmpBufferR,
     __ubuf__ int32_t *&tmpBufferI, const uint32_t alignCount)
 {
-    tmpBufferR = (__local_mem__ float *)((__local_mem__ uint8_t *)tmpBuffer);
-    tmpBufferI = (__local_mem__ int32_t *)((__local_mem__ uint8_t *)tmpBufferR + sizeof(float) * alignCount);
+    tmpBufferR = (__ubuf__ float *)((__ubuf__ uint8_t *)tmpBuffer);
+    tmpBufferI = (__ubuf__ int32_t *)((__ubuf__ uint8_t *)tmpBufferR + sizeof(float) * alignCount);
 }
 
 template <typename T>
@@ -663,8 +663,8 @@ __aicore__ inline void SinRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, 
         "current data type is not supported on current device!");
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __local_mem__ float *tmpBufferR;
-    __local_mem__ int32_t *tmpBufferI;
+    __ubuf__ float *tmpBufferR;
+    __ubuf__ int32_t *tmpBufferI;
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     if constexpr (std::is_same_v<T, float>) {
@@ -687,8 +687,8 @@ __aicore__ inline void CosRadianReductionImpl(__ubuf__ T *dst, __ubuf__ T *src, 
         "current data type is not supported on current device!");
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __local_mem__ float *tmpBufferR;
-    __local_mem__ int32_t *tmpBufferI;
+    __ubuf__ float *tmpBufferR;
+    __ubuf__ int32_t *tmpBufferI;
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     if constexpr (std::is_same_v<T, float>) {
@@ -721,8 +721,8 @@ __aicore__ inline void SinCosRadianReductionImpl(const LocalTensor<T>& dst0, con
         "current data type is not supported on current device!");
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __local_mem__ float *tmpBufferR;
-    __local_mem__ int32_t *tmpBufferI;
+    __ubuf__ float *tmpBufferR;
+    __ubuf__ int32_t *tmpBufferI;
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     if constexpr (std::is_same_v<T, float>) {

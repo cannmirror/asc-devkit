@@ -19,7 +19,7 @@
 
 namespace AscendC {
 template <typename T, CLAMPMODE selMode, bool isReuseSource = false>
-__simd_vf__ inline void ClampCompute(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+__simd_vf__ inline void ClampCompute(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
     const T scalar, uint32_t calCount, const uint16_t repeatTimes)
 {
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
@@ -58,8 +58,8 @@ __aicore__ inline void ClampMaxImpl(const LocalTensor<T>& dstTensor, const Local
     CheckCalCount(calCount, "calCount", srcTensor, "srcTensor", "ClampMax");
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "ClampMax");
 
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatElm));
     ClampCompute<T, CLAMPMODE::CLAMP_MAX, isReuseSource>(dstUb, srcUb, scalar, calCount, repeatTimes);
@@ -87,8 +87,8 @@ __aicore__ inline void ClampMinImpl(const LocalTensor<T>& dstTensor, const Local
     CheckCalCount(calCount, "calCount", srcTensor, "srcTensor", "ClampMin");
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "ClampMin");
 
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
     constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatElm));
     ClampCompute<T, CLAMPMODE::CLAMP_MIN, isReuseSource>(dstUb, srcUb, scalar, calCount, repeatTimes);

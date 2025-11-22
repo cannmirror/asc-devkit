@@ -278,7 +278,7 @@ __aicore__ inline void CastAdaptor(RegTensor<T> &dstReg, RegTensor<U> &srcReg, M
                                        (MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg);                        \
                 MicroAPI::DeInterleave((MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg,                         \
                                        (MicroAPI::RegTensor<uint8_t> &)dstVreg, tmpVreg);                        \
-                MicroAPI::DataCopy( (__local_mem__ uint8_t *)dst + (i * oneRepSize) / 2,                         \
+                MicroAPI::DataCopy( (__ubuf__ uint8_t *)dst + (i * oneRepSize) / 2,                         \
                     (MicroAPI::RegTensor<uint8_t> &)dstVreg, pregDst);                                           \
             }                                                                                                    \
         }                                                                                                        \

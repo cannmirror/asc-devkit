@@ -218,7 +218,7 @@ __aicore__ inline void GenLoadL2(MicroAPI::RegTensor<SRC_TYPE> &srcVreg, __ubuf_
 {
     if constexpr (SupportType<SRC_TYPE, int4x2_t, fp4x2_e2m1_t, fp4x2_e1m2_t>() && sizeof(DST_TYPE) == 2) {
         MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>(
-            (MicroAPI::RegTensor<uint8_t> &)srcVreg, (__local_mem__ uint8_t *)srcAddr);
+            (MicroAPI::RegTensor<uint8_t> &)srcVreg, (__ubuf__ uint8_t *)srcAddr);
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 2) {
         MicroAPI::DataCopy<SRC_TYPE, MicroAPI::LoadDist::DIST_UNPACK_B8>(srcVreg, srcAddr);
     } else if constexpr (sizeof(SRC_TYPE) == 2 && sizeof(DST_TYPE) == 4) {
@@ -235,7 +235,7 @@ __aicore__ inline void GenStoreL2(__ubuf__ DST_TYPE *dstAddr, MicroAPI::RegTenso
 {
     if constexpr (SupportType<DST_TYPE, int4x2_t, fp4x2_e2m1_t, fp4x2_e1m2_t>() && sizeof(SRC_TYPE) == 2) {
         MicroAPI::DataCopy<uint8_t, MicroAPI::StoreDist::DIST_PACK4_B32>(
-            (__local_mem__ uint8_t *)dstAddr, (MicroAPI::RegTensor<uint8_t> &)dstVreg, preg);
+            (__ubuf__ uint8_t *)dstAddr, (MicroAPI::RegTensor<uint8_t> &)dstVreg, preg);
     } else if constexpr (sizeof(DST_TYPE) == 1 && sizeof(SRC_TYPE) == 2) {
         MicroAPI::DataCopy<DST_TYPE, MicroAPI::StoreDist::DIST_PACK_B16>(dstAddr, dstVreg, preg);
     } else if constexpr (sizeof(DST_TYPE) == 2 && sizeof(SRC_TYPE) == 4) {

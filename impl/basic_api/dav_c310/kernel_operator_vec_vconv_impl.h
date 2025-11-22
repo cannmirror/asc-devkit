@@ -449,7 +449,7 @@ __simd_vf__ inline void CastDoubleToFloat(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     MicroAPI::RegTensor<float> dstFloatAdd;
     for (uint16_t i = 0; i < repeatTime; ++i) {
         preg = MicroAPI::UpdateMask<int64_t, MicroAPI::RegTraitNumOne>(sreg);
-        MicroAPI::DataCopy(tmpSrcReg0, (__local_mem__ uint64_t*&)src + i * oneRepSize);
+        MicroAPI::DataCopy(tmpSrcReg0, (__ubuf__ uint64_t*&)src + i * oneRepSize);
         TruncateForDoubleToFloat(maskNan0, maskInf0, maskZero0, maskMax0, srvVreg0, tmpSrcReg0, preg);
         DealMantissa0<roundMode>(mask0, tmpSrcReg0, preg);
         MicroAPI::DeInterleave(dstVreg, dstZero, (MicroAPI::RegTensor<uint32_t> &)srvVreg0,
@@ -486,7 +486,7 @@ __simd_vf__ inline void CastDoubleToFloat0(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_
     MicroAPI::RegTensor<float> dstFloatAdd;
     for (uint16_t i = 0; i < repeatTime; ++i) {
         preg = MicroAPI::UpdateMask<int64_t, MicroAPI::RegTraitNumOne>(sreg);
-        MicroAPI::DataCopy(tmpSrcReg0, (__local_mem__ uint64_t*&)src + i * oneRepSize);
+        MicroAPI::DataCopy(tmpSrcReg0, (__ubuf__ uint64_t*&)src + i * oneRepSize);
         TruncateForDoubleToFloat(maskNan0, maskInf0, maskZero0, maskMax0, srvVreg0, tmpSrcReg0, preg);
         DealMantissa0<roundMode>(mask0, tmpSrcReg0, preg);
         MicroAPI::DeInterleave(dstVreg, dstZero, (MicroAPI::RegTensor<uint32_t> &)srvVreg0,
@@ -658,7 +658,7 @@ __simd_vf__ inline void CastDoubleToBf16(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TY
     constexpr uint16_t num1 = 0x8000;
     for (uint16_t i = 0; i < repeatTime; ++i) {
         preg = MicroAPI::UpdateMask<int64_t, MicroAPI::RegTraitNumOne>(sreg);
-        MicroAPI::DataCopy(tmpSrcReg0, (__local_mem__ uint64_t*&)src + i * oneRepSize);
+        MicroAPI::DataCopy(tmpSrcReg0, (__ubuf__ uint64_t*&)src + i * oneRepSize);
         TruncateForDoubleToBf16(maskNan0, maskInf0, maskZero0, maskMax0, srvVreg0, tmpSrcReg0, preg);
         DealMantissa1<roundMode>(mask0, tmpSrcReg0, preg);
         MicroAPI::DeInterleave(dstVreg0, dstZero, (MicroAPI::RegTensor<uint16_t> &)srvVreg0,
@@ -711,7 +711,7 @@ __simd_vf__ inline void CastDoubleToBf160(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     constexpr uint16_t num1 = 0x8000;
     for (uint16_t i = 0; i < repeatTime; ++i) {
         preg = MicroAPI::UpdateMask<int64_t, MicroAPI::RegTraitNumOne>(sreg);
-        MicroAPI::DataCopy(tmpSrcReg0, (__local_mem__ uint64_t*&)src + i * oneRepSize);
+        MicroAPI::DataCopy(tmpSrcReg0, (__ubuf__ uint64_t*&)src + i * oneRepSize);
         TruncateForDoubleToBf16(maskNan0, maskInf0, maskZero0, maskMax0, srvVreg0, tmpSrcReg0, preg);
         DealMantissa1<roundMode>(mask0, tmpSrcReg0, preg);
         MicroAPI::DeInterleave(dstVreg0, dstZero, (MicroAPI::RegTensor<uint16_t> &)srvVreg0,

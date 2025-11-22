@@ -44,7 +44,7 @@ __aicore__ inline void CheckApiDtypeValid()
 }
 
 template <typename DstT, typename ScaleT>
-__simd_callee__ inline void StoreRes(__local_mem__ DstT* dstAddr, MicroAPI::RegTensor<DstT>& vreg,
+__simd_callee__ inline void StoreRes(__ubuf__ DstT* dstAddr, MicroAPI::RegTensor<DstT>& vreg,
                                 MicroAPI::MaskReg& mask)
 {
     if (SupportType<ScaleT, float>()) {
@@ -193,7 +193,7 @@ __simd_callee__ inline void TransRegForFp4(
 }
 
 template <typename T>
-__simd_callee__ inline void GetPerGroupScale(__local_mem__ T* scaleUb, const int32_t start, const uint32_t groupSize,
+__simd_callee__ inline void GetPerGroupScale(__ubuf__ T* scaleUb, const int32_t start, const uint32_t groupSize,
                                         MicroAPI::RegTensor<T>& scaleVreg)
 {
     if constexpr (SupportType<T, half, bfloat16_t>()) {
@@ -218,7 +218,7 @@ __simd_callee__ inline void GetPerGroupScale(__local_mem__ T* scaleUb, const int
 }
 
 template <typename T>
-__simd_callee__ inline void GetPerGroupScaleToFloat(__local_mem__ T* scaleAddr, const int32_t start,
+__simd_callee__ inline void GetPerGroupScaleToFloat(__ubuf__ T* scaleAddr, const int32_t start,
                                                const uint32_t groupSize, MicroAPI::RegTensor<float>& floatVreg,
                                                MicroAPI::RegTensor<T>& tempVreg, MicroAPI::MaskReg& mask)
 {
@@ -259,8 +259,8 @@ __simd_callee__ inline void CastFp32DstToExpect(MicroAPI::RegTensor<float>& srcV
 } // namespace QuantizeUtils
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT, typename ActualScaleT>
-__simd_vf__ inline void QuantizePerGroupForKColCommonVF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
-    __local_mem__ ActualScaleT* scaleUb, __local_mem__ ActualScaleT* offsetUb, const OffsetT offset, const QuantizeParams params)
+__simd_vf__ inline void QuantizePerGroupForKColCommonVF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
+    __ubuf__ ActualScaleT* scaleUb, __ubuf__ ActualScaleT* offsetUb, const OffsetT offset, const QuantizeParams params)
 {
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
     uint16_t rowNum = params.m;
@@ -316,20 +316,20 @@ __aicore__ inline void QuantizePerGroupForKColCommon(const LocalTensor<DstT> &ds
 {
     using ActualScaleT = typename ScaleT::PrimType;
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
-    __local_mem__ ActualScaleT* scaleUb = (__local_mem__ ActualScaleT*)scale.GetPhyAddr();
-    __local_mem__ ActualScaleT* offsetUb = nullptr;
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ ActualScaleT* scaleUb = (__ubuf__ ActualScaleT*)scale.GetPhyAddr();
+    __ubuf__ ActualScaleT* offsetUb = nullptr;
     if constexpr (!isScalarOffset) {
-        offsetUb = (__local_mem__ ActualScaleT*)offset.GetPhyAddr();
+        offsetUb = (__ubuf__ ActualScaleT*)offset.GetPhyAddr();
     }
     QuantizePerGroupForKColCommonVF<config, DstT, SrcT, ScaleT, OffsetT, ActualScaleT>(dstUb, srcUb, scaleUb,
         offsetUb, offset, params);
 }
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename ActualScaleT>
-__simd_vf__ inline void QuantizePerGroupForKColFp4VF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
-    __local_mem__ ActualScaleT* scaleUb, const QuantizeParams params)
+__simd_vf__ inline void QuantizePerGroupForKColFp4VF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
+    __ubuf__ ActualScaleT* scaleUb, const QuantizeParams params)
 {
     uint16_t rowNum = params.m;
     uint32_t vecLen = GetVecLen() / sizeof(float);
@@ -361,7 +361,7 @@ __simd_vf__ inline void QuantizePerGroupForKColFp4VF(__local_mem__ DstT* dstUb, 
             MicroAPI::Mul(srcVreg, srcVreg, scaleVreg, mask);
             QuantizeUtils::TransRegForFp4<DstT, float, castTrait>(srcVreg, dstVreg, mask);
             MicroAPI::DataCopy<uint8_t, MicroAPI::StoreDist::DIST_PACK4_B32>(
-                (__local_mem__ uint8_t *)dstUb + (i * params.n + j * vecLen) / 2,
+                (__ubuf__ uint8_t *)dstUb + (i * params.n + j * vecLen) / 2,
                 (MicroAPI::RegTensor<uint8_t> &)dstVreg, mask);
         }
     }
@@ -372,9 +372,9 @@ __aicore__ inline void QuantizePerGroupForKColFp4(const LocalTensor<DstT> &dstTe
     const ScaleT& scale, const QuantizeParams& params)
 {
     using ActualScaleT = typename ScaleT::PrimType;
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
-    __local_mem__ ActualScaleT* scaleUb = (__local_mem__ ActualScaleT*)scale.GetPhyAddr();
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ ActualScaleT* scaleUb = (__ubuf__ ActualScaleT*)scale.GetPhyAddr();
     QuantizePerGroupForKColFp4VF<config, DstT, SrcT, ScaleT, ActualScaleT>(dstUb, srcUb, scaleUb, params);
 }
 
@@ -403,8 +403,8 @@ __aicore__ inline void QuantizePerGroupForKCol(const LocalTensor<DstT> &dstTenso
 }
 
 template <typename DstT, typename SrcT, typename ActualScaleT, bool hasOffset, bool isScalarOffset, const MicroAPI::CastTrait& castTrait>
-__simd_callee__ inline void QuantizePerGroupForKRowCommonOneRow(__local_mem__ DstT *dstAddr, __local_mem__ SrcT *srcAddr,
-    __local_mem__ ActualScaleT *scaleAddr, __local_mem__ ActualScaleT *offsetAddr, MicroAPI::RegTensor<DstT> &dstVreg,
+__simd_callee__ inline void QuantizePerGroupForKRowCommonOneRow(__ubuf__ DstT *dstAddr, __ubuf__ SrcT *srcAddr,
+    __ubuf__ ActualScaleT *scaleAddr, __ubuf__ ActualScaleT *offsetAddr, MicroAPI::RegTensor<DstT> &dstVreg,
     MicroAPI::RegTensor<float> &srcVreg, MicroAPI::RegTensor<float> &scaleVreg,
     MicroAPI::RegTensor<float> &offsetVreg,  uint16_t repeat, uint32_t n, uint32_t vecLen)
 {
@@ -446,8 +446,8 @@ __simd_callee__ inline void QuantizePerGroupForKRowCommonOneRow(__local_mem__ Ds
 }
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT, typename ActualScaleT>
-__simd_vf__ inline void QuantizePerGroupForKRowCommonVF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
-    __local_mem__ ActualScaleT* scaleUb, __local_mem__ ActualScaleT* offsetUb, const OffsetT offset, const QuantizeParams params,
+__simd_vf__ inline void QuantizePerGroupForKRowCommonVF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
+    __ubuf__ ActualScaleT* scaleUb, __ubuf__ ActualScaleT* offsetUb, const OffsetT offset, const QuantizeParams params,
     uint16_t rowNum, uint16_t tailRow)
 {
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
@@ -510,12 +510,12 @@ __aicore__ inline void QuantizePerGroupForKRowCommon(const LocalTensor<DstT> &ds
 {
     using ActualScaleT = typename ScaleT::PrimType;
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
-    __local_mem__ ActualScaleT* scaleUb = (__local_mem__ ActualScaleT*)scale.GetPhyAddr();
-    __local_mem__ ActualScaleT* offsetUb = nullptr;
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ ActualScaleT* scaleUb = (__ubuf__ ActualScaleT*)scale.GetPhyAddr();
+    __ubuf__ ActualScaleT* offsetUb = nullptr;
     if constexpr (!isScalarOffset) {
-        offsetUb = (__local_mem__ ActualScaleT*)offset.GetPhyAddr();
+        offsetUb = (__ubuf__ ActualScaleT*)offset.GetPhyAddr();
     }
     uint16_t rowNum = params.m;
     uint16_t tailRow = rowNum % params.groupSize;
@@ -524,8 +524,8 @@ __aicore__ inline void QuantizePerGroupForKRowCommon(const LocalTensor<DstT> &ds
 }
 
 template <typename DstT, typename SrcT, typename ActualScaleT, const MicroAPI::CastTrait& castTrait>
-__simd_callee__ inline void QuantizePerGroupForKRowFp4OneRow(__local_mem__ DstT *dstAddr, __local_mem__ SrcT *srcAddr,
-    __local_mem__ ActualScaleT *scaleAddr, MicroAPI::RegTensor<DstT> &dstVreg,
+__simd_callee__ inline void QuantizePerGroupForKRowFp4OneRow(__ubuf__ DstT *dstAddr, __ubuf__ SrcT *srcAddr,
+    __ubuf__ ActualScaleT *scaleAddr, MicroAPI::RegTensor<DstT> &dstVreg,
     MicroAPI::RegTensor<float> &srcVreg,MicroAPI::RegTensor<float> &scaleVreg,
     uint16_t repeat, uint32_t n, uint32_t vecLen)
 {
@@ -549,13 +549,13 @@ __simd_callee__ inline void QuantizePerGroupForKRowFp4OneRow(__local_mem__ DstT 
         MicroAPI::Mul<float, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, mask);
         QuantizeUtils::TransRegForFp4<DstT, float, castTrait>(srcVreg, dstVreg, mask);
         MicroAPI::DataCopy<uint8_t, MicroAPI::StoreDist::DIST_PACK4_B32>(
-            (__local_mem__ uint8_t *)dstAddr + (j * vecLen) / 2, (MicroAPI::RegTensor<uint8_t> &)dstVreg, mask);
+            (__ubuf__ uint8_t *)dstAddr + (j * vecLen) / 2, (MicroAPI::RegTensor<uint8_t> &)dstVreg, mask);
     }
 }
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename ActualScaleT>
-__simd_vf__ inline void QuantizePerGroupForKRowFp4VF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
-    __local_mem__ ActualScaleT* scaleUb, const QuantizeParams params, uint16_t rowNum, uint16_t tailRow)
+__simd_vf__ inline void QuantizePerGroupForKRowFp4VF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
+    __ubuf__ ActualScaleT* scaleUb, const QuantizeParams params, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / params.groupSize;
     uint32_t vecLen = GetVecLen() / sizeof(float);
@@ -591,9 +591,9 @@ __aicore__ inline void QuantizePerGroupForKRowFp4(const LocalTensor<DstT> &dstTe
     const ScaleT& scale, const QuantizeParams& params)
 {
     using ActualScaleT = typename ScaleT::PrimType;
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
-    __local_mem__ ActualScaleT* scaleUb = (__local_mem__ ActualScaleT*)scale.GetPhyAddr();
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ ActualScaleT* scaleUb = (__ubuf__ ActualScaleT*)scale.GetPhyAddr();
     uint16_t rowNum = params.m;
     uint16_t tailRow = rowNum % params.groupSize;
     QuantizePerGroupForKRowFp4VF<config, DstT, SrcT, ScaleT, ActualScaleT>(dstUb, srcUb,
@@ -625,8 +625,8 @@ __aicore__ inline void QuantizePerGroupForKRow(const LocalTensor<DstT> &dstTenso
 }
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT, typename ActualScaleT>
-__simd_vf__ inline void QuantizePerTokenCommonVF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
-    __local_mem__ ActualScaleT* scaleUb, __local_mem__ ActualScaleT* offsetUb, const OffsetT offset,
+__simd_vf__ inline void QuantizePerTokenCommonVF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
+    __ubuf__ ActualScaleT* scaleUb, __ubuf__ ActualScaleT* offsetUb, const OffsetT offset,
     const QuantizeParams params)
 {
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
@@ -689,12 +689,12 @@ __aicore__ inline void QuantizePerTokenCommon(const LocalTensor<DstT>& dstTensor
 {
     using ActualScaleT = typename ScaleT::PrimType;
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
-    __local_mem__ ActualScaleT* scaleUb = (__local_mem__ ActualScaleT*)scale.GetPhyAddr();
-    __local_mem__ ActualScaleT* offsetUb = nullptr;
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ ActualScaleT* scaleUb = (__ubuf__ ActualScaleT*)scale.GetPhyAddr();
+    __ubuf__ ActualScaleT* offsetUb = nullptr;
     if constexpr (!isScalarOffset) {
-        offsetUb = (__local_mem__ ActualScaleT*)offset.GetPhyAddr();
+        offsetUb = (__ubuf__ ActualScaleT*)offset.GetPhyAddr();
     }
     QuantizePerTokenCommonVF<config, DstT, SrcT, ScaleT, OffsetT, ActualScaleT>(dstUb, srcUb,
         scaleUb, offsetUb, offset, params);
@@ -718,8 +718,8 @@ __aicore__ inline void QuantizePerToken(const LocalTensor<DstT>& dstTensor, cons
 }
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT, typename ActualScaleT>
-__simd_vf__ inline void QuantizePerChannelCommonVF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
-    __local_mem__ ActualScaleT* scaleUb, __local_mem__ ActualScaleT* offsetUb, const OffsetT offset,
+__simd_vf__ inline void QuantizePerChannelCommonVF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
+    __ubuf__ ActualScaleT* scaleUb, __ubuf__ ActualScaleT* offsetUb, const OffsetT offset,
     const QuantizeParams params)
 {
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
@@ -785,12 +785,12 @@ __aicore__ inline void QuantizePerChannelCommon(const LocalTensor<DstT>& dstTens
 {
     using ActualScaleT = typename ScaleT::PrimType;
     constexpr bool isScalarOffset = TypeUtils::IsInnerDefaultType<OffsetT>();
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
-    __local_mem__ ActualScaleT* scaleUb = (__local_mem__ ActualScaleT*)scale.GetPhyAddr();
-    __local_mem__ ActualScaleT* offsetUb = nullptr;
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ ActualScaleT* scaleUb = (__ubuf__ ActualScaleT*)scale.GetPhyAddr();
+    __ubuf__ ActualScaleT* offsetUb = nullptr;
     if constexpr (!isScalarOffset) {
-        offsetUb = (__local_mem__ ActualScaleT*)offset.GetPhyAddr();
+        offsetUb = (__ubuf__ ActualScaleT*)offset.GetPhyAddr();
     }
     QuantizePerChannelCommonVF<config, DstT, SrcT, ScaleT, OffsetT, ActualScaleT>(dstUb, srcUb,
         scaleUb, offsetUb, offset, params);
@@ -814,7 +814,7 @@ __aicore__ inline void QuantizePerChannel(const LocalTensor<DstT>& dstTensor, co
 }
 
 template <const QuantizeConfig& config, typename DstT, typename SrcT, typename ScaleT, typename OffsetT>
-__simd_vf__ inline void QuantizePerTensorCommonVF(__local_mem__ DstT* dstUb, __local_mem__ SrcT* srcUb,
+__simd_vf__ inline void QuantizePerTensorCommonVF(__ubuf__ DstT* dstUb, __ubuf__ SrcT* srcUb,
     const ScaleT scale, const OffsetT offset, const QuantizeParams params)
 {
     uint16_t rowNum = params.m;
@@ -862,8 +862,8 @@ template <const QuantizeConfig& config, typename DstT, typename SrcT, typename S
 __aicore__ inline void QuantizePerTensorCommon(const LocalTensor<DstT>& dstTensor, const LocalTensor<SrcT>& srcTensor,
     const ScaleT& scale, const OffsetT& offset, const QuantizeParams& params)
 {
-    __local_mem__ DstT* dstUb = (__local_mem__ DstT*)dstTensor.GetPhyAddr();
-    __local_mem__ SrcT* srcUb = (__local_mem__ SrcT*)srcTensor.GetPhyAddr();
+    __ubuf__ DstT* dstUb = (__ubuf__ DstT*)dstTensor.GetPhyAddr();
+    __ubuf__ SrcT* srcUb = (__ubuf__ SrcT*)srcTensor.GetPhyAddr();
     QuantizePerTensorCommonVF<config, DstT, SrcT, ScaleT, OffsetT>(dstUb, srcUb, scale, offset, params);
 }
 

@@ -610,8 +610,8 @@ __simd_callee__ inline void LgammaCompute2(MicroAPI::RegTensor<float>& dstReg, M
 }
 
 template <typename T, bool isReuseSource = false>
-__simd_vf__ inline void LgammaComputeImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
-    __local_mem__ float *workUb, uint32_t calCount, uint16_t repeatTime)
+__simd_vf__ inline void LgammaComputeImpl(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
+    __ubuf__ float *workUb, uint32_t calCount, uint16_t repeatTime)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
     uint32_t sreg0 = calCount;
@@ -678,9 +678,9 @@ __aicore__ inline void LgammaImpl(const LocalTensor<T> &dst, const LocalTensor<T
     uint16_t repeatTime = CeilDivision(calCount, stride);
     auto workLocal = tmp.ReinterpretCast<float>();
 
-    __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
-    __local_mem__ float *workUb = (__local_mem__ float *)workLocal.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
+    __ubuf__ float *workUb = (__ubuf__ float *)workLocal.GetPhyAddr();
     LgammaInternal::LgammaComputeImpl<T, isReuseSource>(dstUb, srcUb, workUb, calCount, repeatTime);
 }
 }  // namespace AscendC

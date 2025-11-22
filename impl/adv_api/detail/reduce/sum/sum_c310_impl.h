@@ -94,9 +94,9 @@ __aicore__ inline void SumCompute(const LocalTensor<T>& dstTensor, const LocalTe
     }
 
     SumCheckParams<T, reduceDim, isReuseSource, isBasicBlock>(dstTensor, srcTensor, sharedTmpBuffer, sumParams);
-    __local_mem__ T* dstUb = (__local_mem__ T*)dstTensor.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)srcTensor.GetPhyAddr();
-    __local_mem__ T* sharedTmpBufferUb = (__local_mem__ T*)sharedTmpBuffer.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ T* sharedTmpBufferUb = (__ubuf__ T*)sharedTmpBuffer.GetPhyAddr();
 
     constexpr int32_t eleCountPerVL = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = CeilDivision(sumParams.n, eleCountPerVL);

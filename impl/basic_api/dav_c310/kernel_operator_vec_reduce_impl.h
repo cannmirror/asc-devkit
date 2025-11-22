@@ -1374,7 +1374,7 @@ __aicore__ inline void IterateSrc(__ubuf__ T* src, uint32_t repeat, uint32_t src
 }
 
 template <typename T>
-__simd_vf__ inline void GetReduceMaxMinCountImplVF(__local_mem__ uint64_t* popBufferAddress)
+__simd_vf__ inline void GetReduceMaxMinCountImplVF(__ubuf__ uint64_t* popBufferAddress)
 {
     MicroAPI::UnalignReg uReg;
     // read the mask from special purpose registers
@@ -1391,7 +1391,7 @@ __aicore__ inline void GetReduceMaxMinCountImpl(T &maxMinValue, T &maxMinIndex)
 {
     // retrieve saved src address and count
     LocalTensor<uint64_t> popBuffer;
-    __local_mem__ uint64_t* popBufferAddress = (__local_mem__ uint64_t*)popBuffer.GetPhyAddr() + 8;
+    __ubuf__ uint64_t* popBufferAddress = (__ubuf__ uint64_t*)popBuffer.GetPhyAddr() + 8;
     bool ret = PopStackBuffer<uint64_t, TPosition::LCM>(popBuffer);
     uint64_t reduceMaxMinProperty = popBuffer.GetValue(0);
     bool isMax = static_cast<uint16_t>(reduceMaxMinProperty >> 48) == 124;

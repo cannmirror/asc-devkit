@@ -254,7 +254,7 @@ __simd_callee__ inline void DigammaComputeImpl(
 }
 
 template <typename T = float, bool isReuseSource = false>
-__simd_vf__ inline void DigammaImpl(__local_mem__ float *dstUb, __local_mem__ float *srcUb, uint32_t calCount)
+__simd_vf__ inline void DigammaImpl(__ubuf__ float *dstUb, __ubuf__ float *srcUb, uint32_t calCount)
 {
     constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -285,8 +285,8 @@ __aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTens
     static_assert(SupportType<T, half, float>(), "current data type is not supported on current device!");
     if constexpr (Std::is_same<T, float>::value) {
 
-        __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
-        __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
+        __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
+        __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
         DigammaInternal::DigammaImpl<T, isReuseSource>(dstUb, srcUb, calCount);
     } else if constexpr(Std::is_same<T, half>::value) {
         if constexpr (isReuseSource) {
@@ -298,8 +298,8 @@ __aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTens
         LocalTensor<float> srcF32 = tmpBuffer[0];
         LocalTensor<float> dstF32 = tmpBuffer[countAlign];
         AscendC::Cast(srcF32, src, AscendC::RoundMode::CAST_NONE, calCount);
-        __local_mem__ float *srcUb = (__local_mem__ float *)srcF32.GetPhyAddr();
-        __local_mem__ float *dstUb = (__local_mem__ float *)dstF32.GetPhyAddr();
+        __ubuf__ float *srcUb = (__ubuf__ float *)srcF32.GetPhyAddr();
+        __ubuf__ float *dstUb = (__ubuf__ float *)dstF32.GetPhyAddr();
         DigammaInternal::DigammaImpl<float, isReuseSource>(dstUb, srcUb, calCount);
         AscendC::Cast(dst, dstF32, AscendC::RoundMode::CAST_NONE, calCount);
     }

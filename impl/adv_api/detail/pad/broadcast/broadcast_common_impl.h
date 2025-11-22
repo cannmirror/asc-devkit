@@ -171,8 +171,8 @@ __aicore__ inline void BroadcastCompute(const LocalTensor<T> &dst, const LocalTe
 {
     BroadcastInternal::DstShapeCheck(dstShape, dim);
     using BrcType = typename AscendC::BroadcastInternal::ExtractUnsignedTypeBySize<sizeof(T)>::T;
-    __local_mem__ BrcType *dstUb = (__local_mem__ BrcType *)dst.GetPhyAddr();
-    __local_mem__ BrcType *srcUb = (__local_mem__ BrcType *)src.GetPhyAddr();
+    __ubuf__ BrcType *dstUb = (__ubuf__ BrcType *)dst.GetPhyAddr();
+    __ubuf__ BrcType *srcUb = (__ubuf__ BrcType *)src.GetPhyAddr();
     bool isReduceBranch = false;
     if (srcSize == dstSize) {
         const uint32_t alginSize = ONE_BLK_SIZE / sizeof(T);
@@ -261,8 +261,8 @@ __aicore__ inline void BroadcastCompute(const LocalTensor<T> &dst, const LocalTe
         }
         if (isReduceBranch) {
             loopNum = loopNum == 0 ? 1 : loopNum;
-            __local_mem__ BrcType *dstUbTmp = dstUb;
-            __local_mem__ BrcType *srcUbTmp = srcUb;
+            __ubuf__ BrcType *dstUbTmp = dstUb;
+            __ubuf__ BrcType *srcUbTmp = srcUb;
             for (uint16_t h = 0; h < loopNum; ++h) {
                 dstUb = dstUbTmp + h * dstStride[0] * dstShape[0];
                 srcUb = srcUbTmp + h * srcStride[9];

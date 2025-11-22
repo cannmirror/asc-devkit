@@ -124,7 +124,7 @@ __simd_callee__ inline void GetSign(RegT& dstReg, RegT& srcReg, MicroAPI::MaskRe
 // asin(x) = the 15th order taylor expansion when x belongs to (-2^(-0.5), 2^(-0.5))
 // asin(x) = PI*0.5 - arcsin(sqrt(1-x^2)) when x belongs to (2^(-0.5), 1)
 template <typename T, bool convertToAcos = false>
-__simd_vf__ inline void AsinComputeVFF32(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calSize,
+__simd_vf__ inline void AsinComputeVFF32(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize,
     uint16_t repeatTimes, uint16_t stride)
 {
     MicroAPI::MaskReg mask;
@@ -167,7 +167,7 @@ __simd_vf__ inline void AsinComputeVFF32(__local_mem__ T* dstUb, __local_mem__ T
 }
 
 template <typename T, bool convertToAcos = false>
-__simd_vf__ inline void AsinComputeVFF16(__local_mem__ T* dstUb, __local_mem__ T* srcUb, uint32_t calSize,
+__simd_vf__ inline void AsinComputeVFF16(__ubuf__ T* dstUb, __ubuf__ T* srcUb, uint32_t calSize,
     uint16_t repeatTimes, uint16_t stride)
 {
     MicroAPI::MaskReg mask;
@@ -238,8 +238,8 @@ __simd_vf__ inline void AsinComputeVFF16(__local_mem__ T* dstUb, __local_mem__ T
 template <typename T, bool convertToAcos = false>
 __aicore__ inline void AsinCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint32_t calSize)
 {
-    __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)src.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
 
     // half dtype will be converted to float to improve precision;
     constexpr uint16_t stride = GetVecLen() / sizeof(float);

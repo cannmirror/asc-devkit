@@ -23,7 +23,7 @@ constexpr uint32_t ASCENDC_QUANT_B16_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint16_t
 constexpr uint32_t ASCENDC_QUANT_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPertensorForB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
+__simd_vf__ inline void QuantPertensorForB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
     const float scale, const float offset, const uint32_t calCount)
 {
     MicroAPI::MaskReg preg;
@@ -65,13 +65,13 @@ template <typename dstT, typename srcT>
 __aicore__ inline void QuantPertensorForB8(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
     const float scale, const float offset, const uint32_t calCount)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
     QuantPertensorForB8VF<dstT, srcT>(dstUb, srcUb, scale, offset, calCount);
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPertensorForB8VF(__local_mem__ dstT* dstUb, __local_mem__ float* srcUb,
+__simd_vf__ inline void QuantPertensorForB8VF(__ubuf__ dstT* dstUb, __ubuf__ float* srcUb,
     const float scale, const float offset, const uint32_t calCount)
 {
     MicroAPI::MaskReg preg;
@@ -106,8 +106,8 @@ template <typename dstT, typename srcT>
 __aicore__ inline void QuantPertensorForB8(const LocalTensor<dstT>& dstTensor, const LocalTensor<float>& srcTensor,
     const float scale, const float offset, const uint32_t calCount)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ float* srcUb = (__local_mem__ float*)srcTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ float* srcUb = (__ubuf__ float*)srcTensor.GetPhyAddr();
     QuantPertensorForB8VF<dstT, srcT>(dstUb, srcUb, scale, offset, calCount);
 }
 
@@ -132,7 +132,7 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPertensorForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
+__simd_vf__ inline void QuantPertensorForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
     const float scale, const float offset, const uint32_t calCount)
 {
     MicroAPI::MaskReg preg;
@@ -170,8 +170,8 @@ template <typename dstT, typename srcT>
 __aicore__ inline void QuantPertensorForFp8(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
     const float scale, const float offset, const uint32_t calCount)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
     QuantPertensorForFp8VF<dstT, srcT>(dstUb, srcUb, scale, offset, calCount);
 }
 
@@ -200,8 +200,8 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPerchannelForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ srcT* scaleUb, __local_mem__ srcT* offsetUb, const uint32_t scaleCount,
+__simd_vf__ inline void QuantPerchannelForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ srcT* scaleUb, __ubuf__ srcT* offsetUb, const uint32_t scaleCount,
     const uint32_t rowNum)
 {
     MicroAPI::MaskReg preg;
@@ -256,16 +256,16 @@ __aicore__ inline void QuantPerchannelForFp8(const LocalTensor<dstT>& dstTensor,
     const LocalTensor<srcT>& scaleTensor, const LocalTensor<srcT>& offsetTensor, const uint32_t scaleCount,
     const uint32_t rowNum)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ srcT* scaleUb = (__local_mem__ srcT*)scaleTensor.GetPhyAddr();
-    __local_mem__ srcT* offsetUb = (__local_mem__ srcT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ srcT* scaleUb = (__ubuf__ srcT*)scaleTensor.GetPhyAddr();
+    __ubuf__ srcT* offsetUb = (__ubuf__ srcT*)offsetTensor.GetPhyAddr();
     QuantPerchannelForFp8VF<dstT, srcT>(dstUb, srcUb, scaleUb, offsetUb, scaleCount, rowNum);
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPerchannelForB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ srcT* scaleUb, __local_mem__ srcT* offsetUb, const uint32_t scaleCount,
+__simd_vf__ inline void QuantPerchannelForB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ srcT* scaleUb, __ubuf__ srcT* offsetUb, const uint32_t scaleCount,
     const uint32_t rowNum)
 {
     MicroAPI::MaskReg preg;
@@ -319,16 +319,16 @@ __aicore__ inline void QuantPerchannelForB8(const LocalTensor<dstT>& dstTensor, 
     const LocalTensor<srcT>& scaleTensor, const LocalTensor<srcT>& offsetTensor, const uint32_t scaleCount,
     const uint32_t rowNum)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ srcT* scaleUb = (__local_mem__ srcT*)scaleTensor.GetPhyAddr();
-    __local_mem__ srcT* offsetUb = (__local_mem__ srcT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ srcT* scaleUb = (__ubuf__ srcT*)scaleTensor.GetPhyAddr();
+    __ubuf__ srcT* offsetUb = (__ubuf__ srcT*)offsetTensor.GetPhyAddr();
     QuantPerchannelForB8VF<dstT, srcT>(dstUb, srcUb, scaleUb, offsetUb, scaleCount, rowNum);
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPerchannelForB8VF(__local_mem__ dstT* dstUb, __local_mem__ float* srcUb,
-    __local_mem__ float* scaleUb, __local_mem__ float* offsetUb, const uint32_t scaleCount,
+__simd_vf__ inline void QuantPerchannelForB8VF(__ubuf__ dstT* dstUb, __ubuf__ float* srcUb,
+    __ubuf__ float* scaleUb, __ubuf__ float* offsetUb, const uint32_t scaleCount,
     const uint32_t rowNum)
 {
     MicroAPI::MaskReg preg;
@@ -376,16 +376,16 @@ __aicore__ inline void QuantPerchannelForB8(const LocalTensor<dstT>& dstTensor, 
     const LocalTensor<float>& scaleTensor, const LocalTensor<float>& offsetTensor, const uint32_t scaleCount,
     const uint32_t rowNum)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ float* srcUb = (__local_mem__ float*)srcTensor.GetPhyAddr();
-    __local_mem__ float* scaleUb = (__local_mem__ float*)scaleTensor.GetPhyAddr();
-    __local_mem__ float* offsetUb = (__local_mem__ float*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ float* srcUb = (__ubuf__ float*)srcTensor.GetPhyAddr();
+    __ubuf__ float* scaleUb = (__ubuf__ float*)scaleTensor.GetPhyAddr();
+    __ubuf__ float* offsetUb = (__ubuf__ float*)offsetTensor.GetPhyAddr();
     QuantPerchannelForB8VF<dstT, srcT>(dstUb, srcUb, scaleUb, offsetUb, scaleCount, rowNum);
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPerchannelForB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ srcT* scaleUb, const srcT offset, const uint32_t scaleCount, const uint32_t rowNum)
+__simd_vf__ inline void QuantPerchannelForB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ srcT* scaleUb, const srcT offset, const uint32_t scaleCount, const uint32_t rowNum)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<bfloat16_t> b16vreg;
@@ -435,15 +435,15 @@ template <typename dstT, typename srcT>
 __aicore__ inline void QuantPerchannelForB8(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
     const LocalTensor<srcT>& scaleTensor, const srcT offset, const uint32_t scaleCount, const uint32_t rowNum)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ srcT* scaleUb = (__local_mem__ srcT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ srcT* scaleUb = (__ubuf__ srcT*)scaleTensor.GetPhyAddr();
     QuantPerchannelForB8VF<dstT, srcT>(dstUb, srcUb, scaleUb, offset, scaleCount, rowNum);
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPerchannelForB8VF(__local_mem__ dstT* dstUb, __local_mem__ float* srcUb,
-    __local_mem__ float* scaleUb, const float offset, const uint32_t scaleCount, const uint32_t rowNum)
+__simd_vf__ inline void QuantPerchannelForB8VF(__ubuf__ dstT* dstUb, __ubuf__ float* srcUb,
+    __ubuf__ float* scaleUb, const float offset, const uint32_t scaleCount, const uint32_t rowNum)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<float> f32vreg;
@@ -487,15 +487,15 @@ template <typename dstT, typename srcT>
 __aicore__ inline void QuantPerchannelForB8(const LocalTensor<dstT>& dstTensor, const LocalTensor<float>& srcTensor,
     const LocalTensor<float>& scaleTensor, const float offset, const uint32_t scaleCount, const uint32_t rowNum)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ float* srcUb = (__local_mem__ float*)srcTensor.GetPhyAddr();
-    __local_mem__ float* scaleUb = (__local_mem__ float*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ float* srcUb = (__ubuf__ float*)srcTensor.GetPhyAddr();
+    __ubuf__ float* scaleUb = (__ubuf__ float*)scaleTensor.GetPhyAddr();
     QuantPerchannelForB8VF<dstT, srcT>(dstUb, srcUb, scaleUb, offset, scaleCount, rowNum);
 }
 
 template <typename dstT, typename srcT>
-__simd_vf__ inline void QuantPerchannelForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ srcT* scaleUb, const srcT offset, const uint32_t scaleCount, const uint32_t rowNum)
+__simd_vf__ inline void QuantPerchannelForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ srcT* scaleUb, const srcT offset, const uint32_t scaleCount, const uint32_t rowNum)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<float> f32vreg;
@@ -544,9 +544,9 @@ template <typename dstT, typename srcT>
 __aicore__ inline void QuantPerchannelForFp8(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
     const LocalTensor<srcT>& scaleTensor, const srcT offset, const uint32_t scaleCount, const uint32_t rowNum)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ srcT* scaleUb = (__local_mem__ srcT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ srcT* scaleUb = (__ubuf__ srcT*)scaleTensor.GetPhyAddr();
     QuantPerchannelForFp8VF<dstT, srcT>(dstUb, srcUb, scaleUb, offset, scaleCount, rowNum);
 }
 
@@ -692,8 +692,8 @@ __aicore__ constexpr inline float ConvertToFloat(const scaleT& offset)
 }
 
 template <typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void GetPerTokenScaleAndOffset(__local_mem__ scaleT* scaleAddr,
-                                                 __local_mem__ scaleT* offsetAddr,
+__simd_callee__ inline void GetPerTokenScaleAndOffset(__ubuf__ scaleT* scaleAddr,
+                                                 __ubuf__ scaleT* offsetAddr,
                                                  MicroAPI::RegTensor<scaleT>& scaleVreg,
                                                  MicroAPI::RegTensor<scaleT>& offsetVreg)
 {
@@ -711,7 +711,7 @@ __simd_callee__ inline void GetPerTokenScaleAndOffset(__local_mem__ scaleT* scal
 }
 
 template <typename scaleT>
-__simd_callee__ inline void GetPerTokenScale(__local_mem__ scaleT* scaleAddr,
+__simd_callee__ inline void GetPerTokenScale(__ubuf__ scaleT* scaleAddr,
                                         MicroAPI::RegTensor<scaleT>& scaleVreg)
 {
     if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
@@ -722,7 +722,7 @@ __simd_callee__ inline void GetPerTokenScale(__local_mem__ scaleT* scaleAddr,
 }
 
 template <typename dstT, typename scaleT>
-__simd_callee__ inline void StoreRes(__local_mem__ dstT* dstAddr, MicroAPI::RegTensor<dstT>& vreg,
+__simd_callee__ inline void StoreRes(__ubuf__ dstT* dstAddr, MicroAPI::RegTensor<dstT>& vreg,
                                 MicroAPI::MaskReg& preg)
 {
     if (SupportType<scaleT, float>()) {
@@ -733,7 +733,7 @@ __simd_callee__ inline void StoreRes(__local_mem__ dstT* dstAddr, MicroAPI::RegT
 }
 
 template <typename T>
-__simd_callee__ inline void GetPerGroupScale(__local_mem__ T* scaleUb, const int32_t start, const AscendQuantParam& para,
+__simd_callee__ inline void GetPerGroupScale(__ubuf__ T* scaleUb, const int32_t start, const AscendQuantParam& para,
                                         const AscendQuantConfig& config, MicroAPI::RegTensor<T>& scaleReg)
 {
     // use vgather to get perGroup scale/offset
@@ -760,7 +760,7 @@ __simd_callee__ inline void GetPerGroupScale(__local_mem__ T* scaleUb, const int
 }
 
 template <typename T>
-__simd_callee__ inline void GetPerGroupOffset(__local_mem__ T* offsetUb, const int32_t start, const AscendQuantParam& para,
+__simd_callee__ inline void GetPerGroupOffset(__ubuf__ T* offsetUb, const int32_t start, const AscendQuantParam& para,
                                          const AscendQuantConfig& config, MicroAPI::RegTensor<T>& offsetReg)
 {
     // use vgather to get perGroup scale/offset
@@ -799,7 +799,7 @@ __simd_callee__ inline void GenerateZeroVreg(MicroAPI::RegTensor<scaleT>& zeroVr
 }
 
 template <typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void GetPerGroupScaleEntry(__local_mem__ scaleT* scaleAddr, const AscendQuantParam& para,
+__simd_callee__ inline void GetPerGroupScaleEntry(__ubuf__ scaleT* scaleAddr, const AscendQuantParam& para,
                                              int32_t start, MicroAPI::MaskReg& preg,
                                              MicroAPI::RegTensor<float>& f32ScaleVreg)
 {
@@ -818,7 +818,7 @@ __simd_callee__ inline void GetPerGroupScaleEntry(__local_mem__ scaleT* scaleAdd
 }
 
 template <typename scaleT, const AscendQuantConfig& config>
-__aicore__ inline void GetPerGroupOffsetEntry(__local_mem__ scaleT* offsetAddr, const AscendQuantParam& para,
+__aicore__ inline void GetPerGroupOffsetEntry(__ubuf__ scaleT* offsetAddr, const AscendQuantParam& para,
                                               int32_t start, MicroAPI::MaskReg& preg,
                                               MicroAPI::RegTensor<float>& f32OffsetVreg)
 {
@@ -841,7 +841,7 @@ __aicore__ inline void GetPerGroupOffsetEntry(__local_mem__ scaleT* offsetAddr, 
 }
 
 template <typename scaleT>
-__simd_callee__ inline void GetPerGroupKRowScaleEntry(__local_mem__ scaleT* scaleAddr,
+__simd_callee__ inline void GetPerGroupKRowScaleEntry(__ubuf__ scaleT* scaleAddr,
                                                  MicroAPI::RegTensor<float>& f32ScaleVreg)
 {
     MicroAPI::MaskReg b32FullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
@@ -855,7 +855,7 @@ __simd_callee__ inline void GetPerGroupKRowScaleEntry(__local_mem__ scaleT* scal
 }
 
 template <typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void GetPerGroupKRowOffsetEntry(__local_mem__ scaleT* offsetAddr,
+__simd_callee__ inline void GetPerGroupKRowOffsetEntry(__ubuf__ scaleT* offsetAddr,
                                                   MicroAPI::RegTensor<float>& f32OffsetVreg)
 {
     MicroAPI::MaskReg b32FullPreg = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
@@ -1011,7 +1011,7 @@ __simd_callee__ inline void TransRegForFp4(
 }
 
 template <typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void LoadContinousScaleAndOffset(__local_mem__ scaleT* scaleAddr, __local_mem__ scaleT* offsetAddr,
+__simd_callee__ inline void LoadContinousScaleAndOffset(__ubuf__ scaleT* scaleAddr, __ubuf__ scaleT* offsetAddr,
                                                    MicroAPI::RegTensor<scaleT>& scaleVreg,
                                                    MicroAPI::RegTensor<scaleT>& offsetVreg)
 {
@@ -1022,7 +1022,7 @@ __simd_callee__ inline void LoadContinousScaleAndOffset(__local_mem__ scaleT* sc
 }
 
 template <typename srcT>
-__simd_callee__ inline void LoadSrc(__local_mem__ srcT* srcAddr, MicroAPI::MaskReg& preg,
+__simd_callee__ inline void LoadSrc(__ubuf__ srcT* srcAddr, MicroAPI::MaskReg& preg,
                                MicroAPI::RegTensor<float>& vreg)
 {
     if constexpr (SupportType<srcT, half, bfloat16_t>()) {

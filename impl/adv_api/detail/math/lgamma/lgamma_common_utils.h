@@ -278,7 +278,7 @@ __simd_callee__ inline void LGammaCalcMulAdd(MicroAPI::RegTensor<float>& resReg,
 
 template <typename T>
 __simd_callee__ inline void LgammaLoadData(MicroAPI::RegTensor<float>& dstReg,
-    MicroAPI::RegTensor<T> srcReg, __local_mem__ T* srcUb, MicroAPI::MaskReg& mask)
+    MicroAPI::RegTensor<T> srcReg, __ubuf__ T* srcUb, MicroAPI::MaskReg& mask)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, srcUb);

@@ -27,7 +27,7 @@ constexpr uint32_t LAYERNORM_B32_VF_LEN = GetVecLen() / sizeof(uint32_t);
 } // namespace Internal
 
 template <typename T>
-__simd_callee__ inline void LoadDataWithT(__local_mem__ T* src0, __local_mem__ T* src1, MicroAPI::RegTensor<float>& dstReg0,
+__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src0, __ubuf__ T* src1, MicroAPI::RegTensor<float>& dstReg0,
     MicroAPI::RegTensor<float>& dstReg1, MicroAPI::MaskReg& dst0Preg, MicroAPI::MaskReg& dst1Preg, uint32_t src0Offset,
     uint32_t src1Offset)
 {
@@ -46,7 +46,7 @@ __simd_callee__ inline void LoadDataWithT(__local_mem__ T* src0, __local_mem__ T
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t srcOffset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t srcOffset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -72,7 +72,7 @@ __aicore__ inline uint16_t CalculateHalfAddRepeatTimes(uint32_t halfAddTimes)
 
 // Helper function for the first loop in ComputeMeanUseY
 template <typename T>
-__simd_callee__ inline void ComputeMeanLoop1(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanLoop1(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
     const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1, const float k2Rec,
     const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
@@ -81,7 +81,7 @@ __simd_callee__ inline void ComputeMeanLoop1(__local_mem__ T* const srcUb, __loc
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         uint32_t mTmp = m;
-        __local_mem__ float* workUbOrigin = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         // tail block add to main block
         for (uint16_t i = 0; i < repeatTimes1; i++) {
             MicroAPI::MaskReg preg = MicroAPI::UpdateMask<float>(mTmp);
@@ -105,7 +105,7 @@ __simd_callee__ inline void ComputeMeanLoop1(__local_mem__ T* const srcUb, __loc
 
 // Helper function for the second loop in ComputeMeanUseY
 template <typename T>
-__simd_callee__ inline void ComputeMeanLoop2(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanLoop2(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& preg2, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint16_t repeatTimes1,
     const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0,
@@ -113,7 +113,7 @@ __simd_callee__ inline void ComputeMeanLoop2(__local_mem__ T* const srcUb, __loc
     MicroAPI::RegTensor<float>& dstReg1, MicroAPI::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
-        __local_mem__ float* workUbOrigin = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         for (uint16_t i = 0; i < repeatTimes2; i++) {
             LoadDataWithT<T>(srcUb, srcUb, src0Reg0, src1Reg0, pregFull, preg2,
                 j * rLengthWithPadding + repeatTimes1 * 2 * sregLower,
@@ -135,7 +135,7 @@ __simd_callee__ inline void ComputeMeanLoop2(__local_mem__ T* const srcUb, __loc
 
 // Helper function for the third loop in ComputeMeanUseY
 template <typename T>
-__simd_callee__ inline void ComputeMeanLoop3(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanLoop3(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength, const uint32_t rLengthWithPadding,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL,
     const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& src0Reg0,
@@ -143,7 +143,7 @@ __simd_callee__ inline void ComputeMeanLoop3(__local_mem__ T* const srcUb, __loc
     MicroAPI::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
-        __local_mem__ float* workUbOrigin = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         // Processes the remaining data of the entire block.
         for (uint16_t i = 0; i < repeatTimes3; i++) {
             LoadDataWithT<T>(srcUb, src0Reg0, pregFull, j * rLengthWithPadding + mVL + 2 * i * sregLower);
@@ -159,7 +159,7 @@ __simd_callee__ inline void ComputeMeanLoop3(__local_mem__ T* const srcUb, __loc
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeMeanUseY(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
+__simd_callee__ inline void ComputeMeanUseY(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& pregLastCount, MicroAPI::MaskReg& preg2,
     const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL,
@@ -183,8 +183,8 @@ __simd_callee__ inline void ComputeMeanUseY(__local_mem__ T* const srcUb, __loca
 
 // Helper function for the first loop in ComputeVarianceUseY
 template <typename T>
-__simd_callee__ inline void ComputeVarianceLoop1(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
-    __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
+__simd_callee__ inline void ComputeVarianceLoop1(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
+    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1,
     const float k2Rec, const uint16_t sregLower, MicroAPI::RegTensor<float>& meanReg,
     MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
@@ -193,7 +193,7 @@ __simd_callee__ inline void ComputeVarianceLoop1(__local_mem__ T* const srcUb, _
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
         uint32_t mTmp = m;
-        __local_mem__ float* workUbOrigin = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
         // tail block add to main block
         for (uint16_t i = 0; i < repeatTimes1; i++) {
@@ -232,8 +232,8 @@ __simd_callee__ inline void ComputeVarianceLoop1(__local_mem__ T* const srcUb, _
 
 // Helper function for the second loop in ComputeVarianceUseY
 template <typename T>
-__simd_callee__ inline void ComputeVarianceLoop2(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
-    __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
+__simd_callee__ inline void ComputeVarianceLoop2(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
+    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
     MicroAPI::MaskReg& preg2, const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const float k2Rec, const uint16_t sregLower,
     MicroAPI::RegTensor<float>& meanReg, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src1Reg0,
@@ -241,7 +241,7 @@ __simd_callee__ inline void ComputeVarianceLoop2(__local_mem__ T* const srcUb, _
     MicroAPI::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
-        __local_mem__ float* workUbOrigin = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
         for (uint16_t i = 0; i < repeatTimes2; i++) {
             LoadDataWithT<T>(srcUb, srcUb, src0Reg0, src1Reg0, pregFull, preg2,
@@ -275,15 +275,15 @@ __simd_callee__ inline void ComputeVarianceLoop2(__local_mem__ T* const srcUb, _
 
 // Helper function for the third loop in ComputeVarianceUseY
 template <typename T>
-__simd_callee__ inline void ComputeVarianceLoop3(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
-    __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
+__simd_callee__ inline void ComputeVarianceLoop3(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
+    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint16_t repeatTimes1, const uint16_t repeatTimes2,
     const uint16_t repeatTimes3, const uint32_t mVL, const float k2Rec, const uint16_t sregLower,
     MicroAPI::RegTensor<float>& meanReg, MicroAPI::RegTensor<float>& src0Reg0, MicroAPI::RegTensor<float>& src0Reg1,
     MicroAPI::RegTensor<float>& dstReg0, MicroAPI::RegTensor<float>& dstReg1, MicroAPI::RegTensor<float>& dstReg)
 {
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); j++) {
-        __local_mem__ float* workUbOrigin = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUbOrigin = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
         DataCopy<float, MicroAPI::LoadDist::DIST_BRC_B32>(meanReg, meanUb + j);
         // Processes the remaining data of the entire block.
         for (uint16_t i = 0; i < repeatTimes3; i++) {
@@ -307,8 +307,8 @@ __simd_callee__ inline void ComputeVarianceLoop3(__local_mem__ T* const srcUb, _
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeVarianceUseY(__local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin,
-    __local_mem__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
+__simd_callee__ inline void ComputeVarianceUseY(__ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin,
+    __ubuf__ float* const meanUb, MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne,
     MicroAPI::MaskReg& pregLastCount, MicroAPI::MaskReg& preg2, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m, const uint16_t repeatTimes1,
     const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t mVL, const float k2Rec,
@@ -334,7 +334,7 @@ __simd_callee__ inline void ComputeVarianceUseY(__local_mem__ T* const srcUb, __
 
 // Helper: reduce temporary work buffer into a scalar per row and store to dstUb
 template <typename T, uint16_t HalfAddTimes>
-__simd_callee__ inline void ReduceWorkBufferAndStore(__local_mem__ T* const workUbYOrigin, __local_mem__ float* const dstUb,
+__simd_callee__ inline void ReduceWorkBufferAndStore(__ubuf__ T* const workUbYOrigin, __ubuf__ float* const dstUb,
     MicroAPI::MaskReg& pregFull, MicroAPI::MaskReg& pregOne, MicroAPI::MaskReg& pregLastCount, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const uint16_t halfAddRepeatTimes, const uint32_t lastCount, const float k2RRec,
     const uint16_t sregLower, const uint16_t dynamicHalfAddTimes = 0)
@@ -344,7 +344,7 @@ __simd_callee__ inline void ReduceWorkBufferAndStore(__local_mem__ T* const work
     MicroAPI::RegTensor<float> tmp, outReg;
 
     for (uint16_t j = 0; j < static_cast<uint16_t>(aLength); ++j) {
-        __local_mem__ float* workUb = (__local_mem__ float*)(workUbYOrigin + j * rLengthWithPadding);
+        __ubuf__ float* workUb = (__ubuf__ float*)(workUbYOrigin + j * rLengthWithPadding);
 
         if constexpr (HalfAddTimes == 1) {
             DataCopy(v0, workUb);

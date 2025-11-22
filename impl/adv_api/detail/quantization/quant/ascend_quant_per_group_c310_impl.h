@@ -22,8 +22,8 @@ namespace AscendC {
 constexpr uint32_t ASCENDC_QUANT_PER_GROUP_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerTokenForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerTokenForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_PER_GROUP_B32_VF_LEN;
@@ -72,16 +72,16 @@ __aicore__ inline void QuantPerTokenForFp8(const LocalTensor<dstT>& dstTensor, c
                                            const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                            const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     QuantPerTokenForFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerTokenForHif8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerTokenForHif8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -122,16 +122,16 @@ __aicore__ inline void QuantPerTokenForHif8(const LocalTensor<dstT>& dstTensor, 
                                             const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                             const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     QuantPerTokenForHif8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerTokenForS8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -172,16 +172,16 @@ __aicore__ inline void QuantPerTokenForS8(const LocalTensor<dstT>& dstTensor, co
                                           const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                           const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     QuantPerTokenForS8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerTokenForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerTokenForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_PER_GROUP_B32_VF_LEN;
@@ -228,15 +228,15 @@ __aicore__ inline void QuantPerTokenForFp8(const LocalTensor<dstT>& dstTensor, c
                                            const LocalTensor<scaleT>& scaleTensor, const scaleT& offset,
                                            const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerTokenForFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerTokenForHif8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerTokenForHif8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -276,15 +276,15 @@ __aicore__ inline void QuantPerTokenForHif8(const LocalTensor<dstT>& dstTensor, 
                                             const LocalTensor<scaleT>& scaleTensor, const scaleT& offset,
                                             const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerTokenForHif8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerTokenForS8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -325,15 +325,15 @@ __aicore__ inline void QuantPerTokenForS8(const LocalTensor<dstT>& dstTensor, co
                                           const LocalTensor<scaleT>& scaleTensor, const scaleT offset,
                                           const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerTokenForS8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColFp4VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColFp4VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -362,7 +362,7 @@ __simd_vf__ inline void QuantPerGroupForKColFp4VF(__local_mem__ dstT* dstUb, __l
             MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
             TransRegForFp4<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
             MicroAPI::DataCopy<uint8_t, MicroAPI::StoreDist::DIST_PACK4_B32>(
-                (__local_mem__ uint8_t *)dstUb + (i * para.n + j * vecLen) / 2,
+                (__ubuf__ uint8_t *)dstUb + (i * para.n + j * vecLen) / 2,
                 (MicroAPI::RegTensor<uint8_t> &)dstVreg,
                 preg);
         }
@@ -373,15 +373,15 @@ template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig
 __aicore__ inline void QuantPerGroupForKColFp4(const LocalTensor<dstT> &dstTensor, const LocalTensor<srcT> &srcTensor,
     const LocalTensor<scaleT> &scaleTensor, const AscendQuantParam &para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerGroupForKColFp4VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_PER_GROUP_B32_VF_LEN;
@@ -423,16 +423,16 @@ __aicore__ inline void QuantPerGroupForKColFp8(const LocalTensor<dstT>& dstTenso
                                                const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     QuantPerGroupForKColFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColHif8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColHif8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -476,16 +476,16 @@ __aicore__ inline void QuantPerGroupForKColHif8(const LocalTensor<dstT>& dstTens
                                                 const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                 const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     QuantPerGroupForKColHif8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColS8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -530,16 +530,16 @@ __aicore__ inline void QuantPerGroupForKColS8(const LocalTensor<dstT>& dstTensor
                                               const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                               const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     QuantPerGroupForKColS8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_PER_GROUP_B32_VF_LEN;
@@ -584,15 +584,15 @@ __aicore__ inline void QuantPerGroupForKColFp8(const LocalTensor<dstT>& dstTenso
                                                const LocalTensor<scaleT>& scaleTensor, const scaleT& offset,
                                                const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerGroupForKColFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColHif8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColHif8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -634,15 +634,15 @@ __aicore__ inline void QuantPerGroupForKColHif8(const LocalTensor<dstT>& dstTens
                                                 const LocalTensor<scaleT>& scaleTensor, const scaleT& offset,
                                                 const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerGroupForKColHif8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKColS8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
+__simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -685,15 +685,15 @@ __aicore__ inline void QuantPerGroupForKColS8(const LocalTensor<dstT>& dstTensor
                                               const LocalTensor<scaleT>& scaleTensor, const scaleT offset,
                                               const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     QuantPerGroupForKColS8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const MicroAPI::CastTrait& castTrait>
-__simd_callee__ inline void QuantPerGroupForKRowFp4OneRow(__local_mem__ dstT *dstAddr, __local_mem__ srcT *srcAddr,
-    __local_mem__ scaleT *scaleAddr, MicroAPI::RegTensor<dstT> &dstVreg, MicroAPI::RegTensor<scaleT> &srcVreg,
+__simd_callee__ inline void QuantPerGroupForKRowFp4OneRow(__ubuf__ dstT *dstAddr, __ubuf__ srcT *srcAddr,
+    __ubuf__ scaleT *scaleAddr, MicroAPI::RegTensor<dstT> &dstVreg, MicroAPI::RegTensor<scaleT> &srcVreg,
     MicroAPI::RegTensor<scaleT> &scaleVreg, MicroAPI::RegTensor<srcT> &tempVreg, MicroAPI::MaskReg &preg,
     uint16_t repeat, uint32_t n, uint32_t vecLen)
 {
@@ -709,13 +709,13 @@ __simd_callee__ inline void QuantPerGroupForKRowFp4OneRow(__local_mem__ dstT *ds
         MicroAPI::Mul<scaleT, MicroAPI::MaskMergeMode::ZEROING>(srcVreg, srcVreg, scaleVreg, preg);
         TransRegForFp4<dstT, scaleT, castTrait>(srcVreg, dstVreg, preg);
         MicroAPI::DataCopy<uint8_t, MicroAPI::StoreDist::DIST_PACK4_B32>(
-            (__local_mem__ uint8_t *)dstAddr + (j * vecLen) / 2, (MicroAPI::RegTensor<uint8_t> &)dstVreg, preg);
+            (__ubuf__ uint8_t *)dstAddr + (j * vecLen) / 2, (MicroAPI::RegTensor<uint8_t> &)dstVreg, preg);
     }
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowFp4VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendQuantParam para, uint16_t rowNum, uint16_t tailRow)
+__simd_vf__ inline void QuantPerGroupForKRowFp4VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendQuantParam para, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -764,17 +764,17 @@ template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig
 __aicore__ inline void QuantPerGroupForKRowFp4(const LocalTensor<dstT> &dstTensor, const LocalTensor<srcT> &srcTensor,
     const LocalTensor<scaleT> &scaleTensor, const AscendQuantParam &para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowFp4VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void QuantPerGroupForKRowFp8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                        __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void QuantPerGroupForKRowFp8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                        __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
                                                         uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -808,8 +808,8 @@ __simd_callee__ inline void QuantPerGroupForKRowFp8TailBlock(__local_mem__ dstT*
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para,
+__simd_vf__ inline void QuantPerGroupForKRowFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -856,18 +856,18 @@ __aicore__ inline void QuantPerGroupForKRowFp8(const LocalTensor<dstT>& dstTenso
                                                const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                         __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                         __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
                                                          uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -903,8 +903,8 @@ __simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__local_mem__ dstT
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowHif8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para,
+__simd_vf__ inline void QuantPerGroupForKRowHif8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -952,18 +952,18 @@ __aicore__ inline void QuantPerGroupForKRowHif8(const LocalTensor<dstT>& dstTens
                                                 const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                 const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowHif8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                       __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                       __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
                                                        uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -999,8 +999,8 @@ __simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__local_mem__ dstT* 
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowS8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendQuantParam para,
+__simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -1048,18 +1048,18 @@ __aicore__ inline void QuantPerGroupForKRowS8(const LocalTensor<dstT>& dstTensor
                                               const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                               const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowS8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void QuantPerGroupForKRowFp8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                        __local_mem__ scaleT* scaleUb, const scaleT& offset,
+__simd_callee__ inline void QuantPerGroupForKRowFp8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                        __ubuf__ scaleT* scaleUb, const scaleT& offset,
                                                         uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -1095,8 +1095,8 @@ __simd_callee__ inline void QuantPerGroupForKRowFp8TailBlock(__local_mem__ dstT*
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para,
+__simd_vf__ inline void QuantPerGroupForKRowFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -1144,17 +1144,17 @@ __aicore__ inline void QuantPerGroupForKRowFp8(const LocalTensor<dstT>& dstTenso
                                                const LocalTensor<scaleT>& scaleTensor, const scaleT& offset,
                                                const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                         __local_mem__ scaleT* scaleUb, const scaleT& offset,
+__simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                         __ubuf__ scaleT* scaleUb, const scaleT& offset,
                                                          uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -1187,8 +1187,8 @@ __simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__local_mem__ dstT
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowHif8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para,
+__simd_vf__ inline void QuantPerGroupForKRowHif8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -1236,17 +1236,17 @@ __aicore__ inline void QuantPerGroupForKRowHif8(const LocalTensor<dstT>& dstTens
                                                 const LocalTensor<scaleT>& scaleTensor, const scaleT& offset,
                                                 const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowHif8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                       __local_mem__ scaleT* scaleUb, const scaleT& offset,
+__simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                       __ubuf__ scaleT* scaleUb, const scaleT& offset,
                                                        uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -1279,8 +1279,8 @@ __simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__local_mem__ dstT* 
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
-__simd_vf__ inline void QuantPerGroupForKRowS8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para,
+__simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -1328,9 +1328,9 @@ __aicore__ inline void QuantPerGroupForKRowS8(const LocalTensor<dstT>& dstTensor
                                               const LocalTensor<scaleT>& scaleTensor, const scaleT offset,
                                               const AscendQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     QuantPerGroupForKRowS8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offset, para, rowNum, tailRow);

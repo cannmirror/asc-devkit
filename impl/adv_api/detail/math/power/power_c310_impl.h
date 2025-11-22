@@ -568,23 +568,23 @@ __simd_vf__ inline void ComputePowFSpecialCaseImpl(__ubuf__ T* dst, const T scal
 __aicore__ inline void InitTmpBuffer(__ubuf__ uint32_t*& tmpBuffer, __ubuf__ float*& tmpLogBuffer,
     __ubuf__ float*& tmpExpBuffer, const uint32_t alignCount)
 {
-    tmpLogBuffer = (__local_mem__ float *)tmpBuffer;
-    tmpExpBuffer = (__local_mem__ float *)((__local_mem__ uint8_t*)tmpLogBuffer + sizeof(float) * alignCount);
+    tmpLogBuffer = (__ubuf__ float *)tmpBuffer;
+    tmpExpBuffer = (__ubuf__ float *)((__ubuf__ uint8_t*)tmpLogBuffer + sizeof(float) * alignCount);
 }
 
 template<typename T>
-__aicore__ inline void PowFComputeImpl(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
+__aicore__ inline void PowFComputeImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     __ubuf__ uint32_t* tmpBuffer, uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTime = DivCeil(calCount, eleCountPerVL);
-    __local_mem__ float* tmpLowBuffer;
-    __local_mem__ float* tmpHighBuffer;
+    __ubuf__ float* tmpLowBuffer;
+    __ubuf__ float* tmpHighBuffer;
 
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     InitTmpBuffer(tmpBuffer, tmpHighBuffer, tmpLowBuffer, alignCount);
-    __local_mem__ float* tmpExpBuffer = tmpHighBuffer;
+    __ubuf__ float* tmpExpBuffer = tmpHighBuffer;
 
     ComputePowFBaseLogImpl<T>(tmpHighBuffer, tmpLowBuffer, src0, calCount, repeatTime);
     ComputePowFExpImpl<T>(tmpExpBuffer, tmpHighBuffer, tmpLowBuffer, src1,  calCount, repeatTime);
@@ -592,19 +592,19 @@ __aicore__ inline void PowFComputeImpl(__local_mem__ T* dst, __local_mem__ T* sr
 }
 
 template<typename T>
-__aicore__ inline void PowFComputeImpl(__local_mem__ T* dst, __local_mem__ T* src0, const T& scalarValue,
+__aicore__ inline void PowFComputeImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T& scalarValue,
     __ubuf__ uint32_t* tmpBuffer, uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTime = DivCeil(calCount, eleCountPerVL);
-    __local_mem__ float* tmpLowBuffer;
-    __local_mem__ float* tmpHighBuffer;
+    __ubuf__ float* tmpLowBuffer;
+    __ubuf__ float* tmpHighBuffer;
 
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     InitTmpBuffer(tmpBuffer, tmpHighBuffer, tmpLowBuffer, alignCount);
 
-    __local_mem__ float* tmpExpBuffer = tmpHighBuffer;
+    __ubuf__ float* tmpExpBuffer = tmpHighBuffer;
 
     ComputePowFBaseLogImpl<T>(tmpHighBuffer, tmpLowBuffer, src0, calCount, repeatTime);
     ComputePowFExpImpl<T>(tmpExpBuffer, tmpHighBuffer, tmpLowBuffer, scalarValue,  calCount, repeatTime);
@@ -612,18 +612,18 @@ __aicore__ inline void PowFComputeImpl(__local_mem__ T* dst, __local_mem__ T* sr
 }
 
 template<typename T>
-__aicore__ inline void PowFComputeImpl(__local_mem__ T* dst, const T& scalarValue, __local_mem__ T* src1,
+__aicore__ inline void PowFComputeImpl(__ubuf__ T* dst, const T& scalarValue, __ubuf__ T* src1,
     __ubuf__ uint32_t* tmpBuffer, uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTime = DivCeil(calCount, eleCountPerVL);
-    __local_mem__ float* tmpLowBuffer;
-    __local_mem__ float* tmpHighBuffer;
+    __ubuf__ float* tmpLowBuffer;
+    __ubuf__ float* tmpHighBuffer;
 
     uint32_t alignCount = (calCount + 31) / 32 * 32;
 
     InitTmpBuffer(tmpBuffer, tmpHighBuffer, tmpLowBuffer, alignCount);
-    __local_mem__ float* tmpExpBuffer = tmpHighBuffer;
+    __ubuf__ float* tmpExpBuffer = tmpHighBuffer;
 
     ComputePowFBaseLogImpl<T>(tmpHighBuffer, tmpLowBuffer, scalarValue, calCount, repeatTime);
     ComputePowFExpImpl<T>(tmpExpBuffer, tmpHighBuffer, tmpLowBuffer, src1, calCount, repeatTime);
@@ -643,7 +643,7 @@ __simd_callee__ inline void GetPowFInstrinsicCore(MicroAPI::RegTensor<float>& ds
 }
 
 template<typename T>
-__simd_vf__ inline void PowFInstrinsicTensorTensorImpl(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
+__simd_vf__ inline void PowFInstrinsicTensorTensorImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -661,7 +661,7 @@ __simd_vf__ inline void PowFInstrinsicTensorTensorImpl(__local_mem__ T* dst, __l
 }
 
 template<typename T>
-__simd_vf__ inline void PowFInstrinsicTensorScalarImpl(__local_mem__ T* dst, __local_mem__ T* src0, const T scalarValue,
+__simd_vf__ inline void PowFInstrinsicTensorScalarImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T scalarValue,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -679,7 +679,7 @@ __simd_vf__ inline void PowFInstrinsicTensorScalarImpl(__local_mem__ T* dst, __l
 }
 
 template<typename T>
-__simd_vf__ inline void PowFInstrinsicScalarTensorImpl(__local_mem__ T* dst, const T scalarValue, __local_mem__ T* src1,
+__simd_vf__ inline void PowFInstrinsicScalarTensorImpl(__ubuf__ T* dst, const T scalarValue, __ubuf__ T* src1,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -697,7 +697,7 @@ __simd_vf__ inline void PowFInstrinsicScalarTensorImpl(__local_mem__ T* dst, con
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
+__aicore__ inline void PowFInstrinsicImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
@@ -706,7 +706,7 @@ __aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, __local_mem__ T*
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, __local_mem__ T* src0, const T& scalarValue,
+__aicore__ inline void PowFInstrinsicImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T& scalarValue,
     uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
@@ -715,7 +715,7 @@ __aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, __local_mem__ T*
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicImpl(__local_mem__ T* dst, const T& scalarValue, __local_mem__ T* src1,
+__aicore__ inline void PowFInstrinsicImpl(__ubuf__ T* dst, const T& scalarValue, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
@@ -867,7 +867,7 @@ __aicore__ inline uint16_t GetMaxLoop(const LocalTensor<T>& dstTensor, const Loc
 }
 
 template<typename T>
-__simd_vf__ inline void PowIComputeImpl(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1, uint32_t calCount, uint16_t maxLoop)
+__simd_vf__ inline void PowIComputeImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, uint32_t calCount, uint16_t maxLoop)
 {
     using ConvType = typename PowICastType<T>::type;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(ConvType);
@@ -891,7 +891,7 @@ __simd_vf__ inline void PowIComputeImpl(__local_mem__ T* dst, __local_mem__ T* s
 }
 
 template<typename T>
-__simd_vf__ inline void PowIComputeImpl(__local_mem__ T* dst, __local_mem__ T* src0, const T scalarValue, uint32_t calCount, uint16_t maxLoop)
+__simd_vf__ inline void PowIComputeImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T scalarValue, uint32_t calCount, uint16_t maxLoop)
 {
     using ConvType = typename PowICastType<T>::type;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(ConvType);
@@ -915,7 +915,7 @@ __simd_vf__ inline void PowIComputeImpl(__local_mem__ T* dst, __local_mem__ T* s
 }
 
 template<typename T>
-__simd_vf__ inline void PowIComputeImpl(__local_mem__ T* dst, const T scalarValue, __local_mem__ T* src1,  uint32_t calCount, uint16_t maxLoop)
+__simd_vf__ inline void PowIComputeImpl(__ubuf__ T* dst, const T scalarValue, __ubuf__ T* src1,  uint32_t calCount, uint16_t maxLoop)
 {
     using ConvType = typename PowICastType<T>::type;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(ConvType);
@@ -984,15 +984,15 @@ template<typename T, const PowerConfig& config>
 __aicore__ inline void PowImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
     const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
-    __local_mem__ T* src0 = (__local_mem__ T *)src0Tensor.GetPhyAddr();
-    __local_mem__ T* src1 = (__local_mem__ T *)src1Tensor.GetPhyAddr();
-    __local_mem__ T* dst = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T* src0 = (__ubuf__ T *)src0Tensor.GetPhyAddr();
+    __ubuf__ T* src1 = (__ubuf__ T *)src1Tensor.GetPhyAddr();
+    __ubuf__ T* dst = (__ubuf__ T *)dstTensor.GetPhyAddr();
 
     if constexpr (IsFloatNum<T>()) {
         if constexpr (config.algo == PowerAlgo::INTRINSIC) {
             PowerC310Impl::PowF::PowFInstrinsicImpl(dst, src0, src1, calCount);
         } else {
-            __local_mem__ uint32_t* tmpBuffer =  (__local_mem__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
+            __ubuf__ uint32_t* tmpBuffer =  (__ubuf__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
             uint32_t sharedTmpBufferSize = GetPowTmpBufferSize<T>(sharedTmpBuffer);
             uint32_t count = calCount;
             uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sharedTmpBufferSize));
@@ -1017,14 +1017,14 @@ template<typename T, const PowerConfig& config>
 __aicore__ inline void PowImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
     const T& scalarValue, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
-    __local_mem__ T *base = (__local_mem__ T *)src0Tensor.GetPhyAddr();
-    __local_mem__ T *dst = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *base = (__ubuf__ T *)src0Tensor.GetPhyAddr();
+    __ubuf__ T *dst = (__ubuf__ T *)dstTensor.GetPhyAddr();
 
     if constexpr (IsFloatNum<T>()) {
         if constexpr (config.algo == PowerAlgo::INTRINSIC) {
             PowerC310Impl::PowF::PowFInstrinsicImpl(dst, base, scalarValue, calCount);
         } else {
-            __local_mem__ uint32_t* tmpBuffer =  (__local_mem__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
+            __ubuf__ uint32_t* tmpBuffer =  (__ubuf__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
             uint32_t sharedTmpBufferSize = GetPowTmpBufferSize<T>(sharedTmpBuffer);
             uint32_t count = calCount;
             uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sharedTmpBufferSize));
@@ -1046,14 +1046,14 @@ template<typename T, const PowerConfig& config>
 __aicore__ inline void PowImpl(const LocalTensor<T>& dstTensor, const T& scalarValue,
     const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
-    __local_mem__ T *exp = (__local_mem__ T *)src1Tensor.GetPhyAddr();
-    __local_mem__ T *dst = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *exp = (__ubuf__ T *)src1Tensor.GetPhyAddr();
+    __ubuf__ T *dst = (__ubuf__ T *)dstTensor.GetPhyAddr();
 
     if constexpr (IsFloatNum<T>()) {
         if constexpr (config.algo == PowerAlgo::INTRINSIC) {
             PowerC310Impl::PowF::PowFInstrinsicImpl(dst, scalarValue, exp, calCount);
         } else {
-            __local_mem__ uint32_t* tmpBuffer =  (__local_mem__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
+            __ubuf__ uint32_t* tmpBuffer =  (__ubuf__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
             uint32_t sharedTmpBufferSize = GetPowTmpBufferSize<T>(sharedTmpBuffer);
             uint32_t count = calCount;
             uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sharedTmpBufferSize));

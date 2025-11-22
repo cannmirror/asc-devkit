@@ -25,7 +25,7 @@ constexpr int32_t oneRepSize = GetVecLen() / sizeof(float);
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -38,7 +38,7 @@ __simd_callee__ inline void LoadDataWithT(
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithGammBeta(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -51,7 +51,7 @@ __simd_callee__ inline void LoadDataWithGammBeta(
 
 template <typename T>
 __simd_callee__ inline void SaveDataWithT(
-    __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> regT;
@@ -63,7 +63,7 @@ __simd_callee__ inline void SaveDataWithT(
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeOutputMean(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, uint32_t oriBLength,
+__simd_callee__ inline void ComputeOutputMean(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, uint32_t oriBLength,
     uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
@@ -100,7 +100,7 @@ __simd_callee__ inline void ComputeOutputMean(__local_mem__ T* dstLocal, __local
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeFloatMean(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal, uint32_t oriBLength,
+__simd_callee__ inline void ComputeFloatMean(__ubuf__ float* dstLocal, __ubuf__ T* srcLocal, uint32_t oriBLength,
     uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
@@ -137,8 +137,8 @@ __simd_callee__ inline void ComputeFloatMean(__local_mem__ float* dstLocal, __lo
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeOutputVariance(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal,
-    __local_mem__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
+__simd_callee__ inline void ComputeOutputVariance(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
+    __ubuf__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
     MicroAPI::RegTensor<float> dstReg;
@@ -187,8 +187,8 @@ __simd_callee__ inline void ComputeOutputVariance(__local_mem__ T* dstLocal, __l
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeFloatVariance(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal,
-    __local_mem__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
+__simd_callee__ inline void ComputeFloatVariance(__ubuf__ float* dstLocal, __ubuf__ T* srcLocal,
+    __ubuf__ float* meanLocal, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     MicroAPI::RegTensor<float> srcReg;
     MicroAPI::RegTensor<float> dstReg;
@@ -237,8 +237,8 @@ __simd_callee__ inline void ComputeFloatVariance(__local_mem__ float* dstLocal, 
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, __local_mem__ float* tmpMeanLocal,
-    __local_mem__ float* tmpVarLocal, __local_mem__ T* gammLocal,  __local_mem__ T* betaLocal, uint32_t oriBLength,
+__simd_callee__ inline void ComputeY(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ float* tmpMeanLocal,
+    __ubuf__ float* tmpVarLocal, __ubuf__ T* gammLocal,  __ubuf__ T* betaLocal, uint32_t oriBLength,
     uint32_t featureLength, const float epsilon)
 {
     constexpr float rsqrtExponent = -0.5;
@@ -302,9 +302,9 @@ __simd_callee__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T*
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__simd_vf__ inline void BatchNormImplVF(__local_mem__ T* output, __local_mem__ T* outputMean,
-    __local_mem__ T* outputVariance, __local_mem__ T* inputX, __local_mem__ T* gamm, __local_mem__ T* beta,
-    __local_mem__ float* tmpMeanLocal, __local_mem__ float* tmpVarLocal, const float epsilon,
+__simd_vf__ inline void BatchNormImplVF(__ubuf__ T* output, __ubuf__ T* outputMean,
+    __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamm, __ubuf__ T* beta,
+    __ubuf__ float* tmpMeanLocal, __ubuf__ float* tmpVarLocal, const float epsilon,
     const BatchNormTiling tiling, uint32_t oriBLength, uint32_t featureLength, float firstDimValueBack)
 {
     ComputeOutputMean(outputMean, inputX, oriBLength, featureLength, firstDimValueBack);
@@ -339,10 +339,10 @@ __aicore__ inline void BatchNormImpl(const LocalTensor<T>& output, const LocalTe
     LocalTensor<float> tmpMeanLocal = tmpLocal;
 
     LocalTensor<float> tmpVarLocal = tmpLocal[featureLength];
-    BatchNormImplVF<T, isReuseSource, isBasicBlock>((__local_mem__ T*)output.GetPhyAddr(),
-        (__local_mem__ T*)outputMean.GetPhyAddr(), (__local_mem__ T*)outputVariance.GetPhyAddr(),
-        (__local_mem__ T*)inputX.GetPhyAddr(), (__local_mem__ T*)gamm.GetPhyAddr(), (__local_mem__ T*)beta.GetPhyAddr(),
-        (__local_mem__ float*)tmpMeanLocal.GetPhyAddr(), (__local_mem__ float*)tmpVarLocal.GetPhyAddr(), epsilonFloat, tiling,
+    BatchNormImplVF<T, isReuseSource, isBasicBlock>((__ubuf__ T*)output.GetPhyAddr(),
+        (__ubuf__ T*)outputMean.GetPhyAddr(), (__ubuf__ T*)outputVariance.GetPhyAddr(),
+        (__ubuf__ T*)inputX.GetPhyAddr(), (__ubuf__ T*)gamm.GetPhyAddr(), (__ubuf__ T*)beta.GetPhyAddr(),
+        (__ubuf__ float*)tmpMeanLocal.GetPhyAddr(), (__ubuf__ float*)tmpVarLocal.GetPhyAddr(), epsilonFloat, tiling,
         oriBLength, featureLength, firstDimValueBack);
 }
 

@@ -37,7 +37,7 @@ constexpr MicroAPI::CastTrait tanhCastTraitF322F16 = {
 }
 
 template <typename T>
-__simd_vf__ inline void TanhIntrinsicImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__simd_vf__ inline void TanhIntrinsicImpl(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t calCount, const uint16_t repeatTimes)
 {
     uint32_t sreg = calCount;
@@ -73,7 +73,7 @@ __simd_vf__ inline void TanhIntrinsicImpl(__local_mem__ T *dstUb, __local_mem__ 
 }
 
 template <typename T>
-__simd_vf__ inline void TanhCompensationImpl(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__simd_vf__ inline void TanhCompensationImpl(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t calCount, const uint16_t repeatTimes)
 {
     uint32_t sreg = calCount;
@@ -140,8 +140,8 @@ __aicore__ inline void TanhImpl(const LocalTensor<T>& dstTensor, const LocalTens
     if ASCEND_IS_AIC {
         return;
     }
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
     if constexpr (config.algo == TanhAlgo::INTRINSIC) {
         TanhIntrinsicImpl<T>(dstUb, srcUb, calCount, repeatTimes);

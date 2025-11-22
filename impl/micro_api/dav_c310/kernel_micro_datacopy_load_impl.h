@@ -34,7 +34,7 @@ template <int OutputNum, LoadDist dist> __simd_callee__ inline void CheckLoadDis
 
 // vlds norm
 template <typename T = DefaultType, LoadDist dist = LoadDist::DIST_NORM, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAddr)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __ubuf__ T *srcUbAddr)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -46,19 +46,19 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAdd
         vlds((RegTensor<uint8_t> &)dstReg, (__ubuf__ uint8_t *)srcUbAddr, 0, distValue);
     } else if constexpr (SupportBytes<ActualT, 8>()) {
         if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
-            vlds((RegTensor<uint32_t> &)dstReg, (__local_mem__ uint32_t *)srcUbAddr, 0, distValue);
+            vlds((RegTensor<uint32_t> &)dstReg, (__ubuf__ uint32_t *)srcUbAddr, 0, distValue);
         } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
             constexpr auto dintlvDist =
                 std::integral_constant<::Dist, static_cast<::Dist>(LoadDist::DIST_DINTLV_B32)>();
             vlds((RegTensor<uint32_t> &)dstReg.reg[0], (RegTensor<uint32_t> &)dstReg.reg[1],
-                (__local_mem__ uint32_t *)srcUbAddr, 0, dintlvDist);
+                (__ubuf__ uint32_t *)srcUbAddr, 0, dintlvDist);
         }
     } else {
         if constexpr(SupportType<ActualT, complex32>() && (CheckRegTrait<RegT, RegTraitNumTwo>())) {
             constexpr auto dintlvDist =
                 std::integral_constant<::Dist, static_cast<::Dist>(LoadDist::DIST_DINTLV_B16)>();
             vlds((RegTensor<uint16_t> &)dstReg.reg[0], (RegTensor<uint16_t> &)dstReg.reg[1],
-                (__local_mem__ uint16_t *)srcUbAddr, 0, dintlvDist);
+                (__ubuf__ uint16_t *)srcUbAddr, 0, dintlvDist);
         } else {
             static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
                 "DataCopy only support type b8/b16/b32/b64 on current device");
@@ -75,7 +75,7 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAdd
 
 // vlds postupdate
 template <typename T = DefaultType, PostLiteral postMode, LoadDist dist = LoadDist::DIST_NORM, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *&srcUbAddr, int32_t postUpdateStride)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __ubuf__ T *&srcUbAddr, int32_t postUpdateStride)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -88,20 +88,20 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *&srcUbAd
         vlds((RegTensor<uint8_t> &)dstReg, (__ubuf__ uint8_t *&)srcUbAddr, postUpdateStride, distValue, postValue);
     } else if constexpr (SupportBytes<ActualT, 8>()) {
         if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
-            vlds((RegTensor<uint32_t> &)dstReg, (__local_mem__ uint32_t *&)srcUbAddr, postUpdateStride * 2, distValue,
+            vlds((RegTensor<uint32_t> &)dstReg, (__ubuf__ uint32_t *&)srcUbAddr, postUpdateStride * 2, distValue,
                 postValue);
         } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
             constexpr auto dintlvDist =
                 std::integral_constant<::Dist, static_cast<::Dist>(LoadDist::DIST_DINTLV_B32)>();
             vlds((RegTensor<uint32_t> &)dstReg.reg[0], (RegTensor<uint32_t> &)dstReg.reg[1],
-                (__local_mem__ uint32_t *&)srcUbAddr, postUpdateStride * 2, dintlvDist, postValue);
+                (__ubuf__ uint32_t *&)srcUbAddr, postUpdateStride * 2, dintlvDist, postValue);
         }
     } else {
         if constexpr(SupportType<ActualT, complex32>() && (CheckRegTrait<RegT, RegTraitNumTwo>())) {
             constexpr auto dintlvDist =
                 std::integral_constant<::Dist, static_cast<::Dist>(LoadDist::DIST_DINTLV_B16)>();
             vlds((RegTensor<uint16_t> &)dstReg.reg[0], (RegTensor<uint16_t> &)dstReg.reg[1],
-                (__local_mem__ uint16_t *&)srcUbAddr, postUpdateStride * 2, dintlvDist, postValue);
+                (__ubuf__ uint16_t *&)srcUbAddr, postUpdateStride * 2, dintlvDist, postValue);
         } else {
             static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
                 "DataCopy only support type b8/b16/b32/b64 on current device");
@@ -118,7 +118,7 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *&srcUbAd
 
 // vld areg
 template <typename T = DefaultType, LoadDist dist = LoadDist::DIST_NORM, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __ubuf__ T *srcUbAddr, AddrReg offset)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -145,7 +145,7 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAdd
 
 // vlds dual norm
 template <typename T = DefaultType, LoadDist dist, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __local_mem__ T *srcUbAddr)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __ubuf__ T *srcUbAddr)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -172,7 +172,7 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __local_m
 
 // vlds dual postupdate
 template <typename T = DefaultType, PostLiteral postMode, LoadDist dist, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __local_mem__ T *&srcUbAddr, int32_t postUpdateStride)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __ubuf__ T *&srcUbAddr, int32_t postUpdateStride)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -204,7 +204,7 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __local_m
 
 // vlds dual areg
 template <typename T = DefaultType, LoadDist dist, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __local_mem__ T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __ubuf__ T *srcUbAddr, AddrReg offset)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -231,12 +231,12 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg0, RegT &dstReg1, __local_m
 }
 
 // vldas/vldus
-template <typename T> __simd_callee__ inline void DataCopyUnAlignPreImpl(UnalignReg &ureg, __local_mem__ T *srcUbAddr)
+template <typename T> __simd_callee__ inline void DataCopyUnAlignPreImpl(UnalignReg &ureg, __ubuf__ T *srcUbAddr)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(),
         "DataCopyUnAlignPre only support type b8/b16/b32/b64 on current device");
     if constexpr (sizeof(T) == 8) {
-        vldas(ureg, (__local_mem__ uint32_t *&)srcUbAddr);
+        vldas(ureg, (__ubuf__ uint32_t *&)srcUbAddr);
     } else {
         if constexpr (std::is_same_v<T, bool>) {
             vldas(ureg, (__ubuf__ int8_t *)srcUbAddr);
@@ -249,7 +249,7 @@ template <typename T> __simd_callee__ inline void DataCopyUnAlignPreImpl(Unalign
 }
 
 template <typename T = DefaultType, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE, typename RegT>
-__simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, __local_mem__ T *&srcUbAddr, uint32_t stride)
+__simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, __ubuf__ T *&srcUbAddr, uint32_t stride)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -260,15 +260,15 @@ __simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, 
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
     if constexpr (SupportBytes<ActualT, 8>()) {
         if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
-            vldus((RegTensor<uint32_t> &)dstReg, ureg, (__local_mem__ uint32_t *&)srcUbAddr, stride * 2, postValue);
+            vldus((RegTensor<uint32_t> &)dstReg, ureg, (__ubuf__ uint32_t *&)srcUbAddr, stride * 2, postValue);
         } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
             RegTensor<uint32_t> tmp1;
             RegTensor<uint32_t> tmp2;
             constexpr uint32_t one_repeat_num = VECTOR_REG_WIDTH / sizeof(ActualT);
             uint32_t tmpStride1 = (stride > one_repeat_num) ? one_repeat_num : stride;
-            vldus(tmp1, ureg, (__local_mem__ uint32_t *&)srcUbAddr, tmpStride1 * 2, postValue);
+            vldus(tmp1, ureg, (__ubuf__ uint32_t *&)srcUbAddr, tmpStride1 * 2, postValue);
             uint32_t tmpStride2 = (stride > one_repeat_num) ? stride - one_repeat_num : 0;
-            vldus(tmp2, ureg, (__local_mem__ uint32_t *&)srcUbAddr, tmpStride2 * 2, postValue);
+            vldus(tmp2, ureg, (__ubuf__ uint32_t *&)srcUbAddr, tmpStride2 * 2, postValue);
             DeInterleave((RegTensor<uint32_t> &)dstReg.reg[0], (RegTensor<uint32_t> &)dstReg.reg[1], tmp1, tmp2);
         }
     } else {
@@ -277,9 +277,9 @@ __simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, 
             RegTensor<uint16_t> tmp2;
             constexpr uint32_t one_repeat_num = VECTOR_REG_WIDTH / sizeof(ActualT);
             uint32_t tmpStride1 = (stride > one_repeat_num) ? one_repeat_num : stride;
-            vldus(tmp1, ureg, (__local_mem__ uint16_t *&)srcUbAddr, tmpStride1 * 2, postValue);
+            vldus(tmp1, ureg, (__ubuf__ uint16_t *&)srcUbAddr, tmpStride1 * 2, postValue);
             uint32_t tmpStride2 = (stride > one_repeat_num) ? stride - one_repeat_num : 0;
-            vldus(tmp2, ureg, (__local_mem__ uint16_t *&)srcUbAddr, tmpStride2 * 2, postValue);
+            vldus(tmp2, ureg, (__ubuf__ uint16_t *&)srcUbAddr, tmpStride2 * 2, postValue);
             DeInterleave((RegTensor<uint16_t> &)dstReg.reg[0], (RegTensor<uint16_t> &)dstReg.reg[1], tmp1, tmp2);
         } else {
             if constexpr (std::is_same_v<T, bool>) {
@@ -294,7 +294,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, 
 }
 
 template <typename T = DefaultType, typename RegT>
-__simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, __local_mem__ T *srcUbAddr)
+__simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, __ubuf__ T *srcUbAddr)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -313,7 +313,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, 
 
 // vlda/vldu
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignPreImpl(UnalignReg &ureg, __local_mem__ T *srcUbAddr, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlignPreImpl(UnalignReg &ureg, __ubuf__ T *srcUbAddr, AddrReg &areg)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(),
         "DataCopyUnAlignPre only support type b8/b16/b32/b64 on current device");
@@ -329,7 +329,7 @@ __simd_callee__ inline void DataCopyUnAlignPreImpl(UnalignReg &ureg, __local_mem
 }
 
 template <typename T = DefaultType, typename RegT>
-__simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, __local_mem__ T *&srcUbAddr, AddrReg &areg,
+__simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, __ubuf__ T *&srcUbAddr, AddrReg &areg,
     uint32_t inc)
 {
     using ActualT = typename RegT::ActualT;
@@ -350,7 +350,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(RegT &dstReg, UnalignReg &ureg, 
 
 // vsldb
 template <typename T = DefaultType, DataCopyMode dataMode, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAddr, uint32_t dataBlockStride, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __ubuf__ T *srcUbAddr, uint32_t dataBlockStride, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -371,7 +371,7 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *srcUbAdd
 }
 
 template <typename T = DefaultType, DataCopyMode dataMode, PostLiteral postMode, typename RegT>
-__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __local_mem__ T *&srcUbAddr, uint32_t dataBlockStride,
+__simd_callee__ inline void DataCopyImpl(RegT &dstReg, __ubuf__ T *&srcUbAddr, uint32_t dataBlockStride,
     uint32_t repeatStride, MaskReg &mask)
 {
     if constexpr (postMode == PostLiteral::POST_MODE_NORMAL) {

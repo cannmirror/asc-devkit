@@ -27,8 +27,8 @@ namespace AscendC {
 
 template <typename T>
 __simd_callee__ inline void ComputePdVar(MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& inputVarianceReg,
-    MicroAPI::RegTensor<float>& inputMeanReg, MicroAPI::RegTensor<float>& inputGammaReg, __local_mem__ float* x1Tmp,
-    __local_mem__ float* x2Tmp, __local_mem__ T* inputDy, __local_mem__ T* inputX, float epsilon,
+    MicroAPI::RegTensor<float>& inputMeanReg, MicroAPI::RegTensor<float>& inputGammaReg, __ubuf__ float* x1Tmp,
+    __ubuf__ float* x2Tmp, __ubuf__ T* inputDy, __ubuf__ T* inputX, float epsilon,
     LayerNormGradParams& param, MicroAPI::MaskReg& preg, MicroAPI::MaskReg& pregOne, uint32_t offset,
     uint32_t tmpOffset)
 {
@@ -75,8 +75,8 @@ __simd_callee__ inline void ComputePdVar(MicroAPI::RegTensor<float>& pdVarReg, M
 
 template <typename T>
 __simd_callee__ inline void ComputePdMean(MicroAPI::RegTensor<float>& pdMeanReg, MicroAPI::RegTensor<float>& res2Reg,
-    MicroAPI::RegTensor<float>& inputVarianceReg, __local_mem__ float* x1Tmp, __local_mem__ float* x2Tmp,
-    __local_mem__ T* resForGamma, float epsilon, LayerNormGradParams& param, MicroAPI::MaskReg& preg,
+    MicroAPI::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
+    __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param, MicroAPI::MaskReg& preg,
     MicroAPI::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
 {
     MicroAPI::RegTensor<float> tmpReg1, tmpReg2, x1Reg, x2Reg;
@@ -130,7 +130,7 @@ __simd_callee__ inline void ComputePdMean(MicroAPI::RegTensor<float>& pdMeanReg,
 
 template <typename T>
 __simd_callee__ inline void ComputePdX(MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& pdMeanReg,
-    __local_mem__ float* x1Tmp, __local_mem__ float* x2Tmp, __local_mem__ T* outputPdX, LayerNormGradParams& param,
+    __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* outputPdX, LayerNormGradParams& param,
     MicroAPI::MaskReg& preg, MicroAPI::MaskReg& pregOne, uint32_t offset, uint32_t tmpOffset)
 {
     MicroAPI::RegTensor<float> tmpReg, x1Reg, x2Reg;
@@ -166,8 +166,8 @@ __simd_callee__ inline void ComputePdX(MicroAPI::RegTensor<float>& pdVarReg, Mic
 template <typename T>
 __simd_callee__ inline void ComputePdVarLoop(MicroAPI::RegTensor<float>& pdVarReg,
     MicroAPI::RegTensor<float>& inputVarianceReg, MicroAPI::RegTensor<float>& inputMeanReg,
-    __local_mem__ T* inputGamma, __local_mem__ float* x1Tmp, __local_mem__ float* x2Tmp,
-    __local_mem__ T* inputDy, __local_mem__ T* inputX, float epsilon, LayerNormGradParams& param, uint16_t repeatTimes,
+    __ubuf__ T* inputGamma, __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp,
+    __ubuf__ T* inputDy, __ubuf__ T* inputX, float epsilon, LayerNormGradParams& param, uint16_t repeatTimes,
     uint16_t oneRepeatTimes, uint32_t baseOffset, MicroAPI::MaskReg& pregOne)
 {
     uint32_t calCount = param.hLength;
@@ -187,8 +187,8 @@ __simd_callee__ inline void ComputePdVarLoop(MicroAPI::RegTensor<float>& pdVarRe
 
 template <typename T>
 __simd_callee__ inline void ComputePdMeanLoop(MicroAPI::RegTensor<float>& pdMeanReg, MicroAPI::RegTensor<float>& res2Reg,
-    MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& inputVarianceReg, __local_mem__ float* x1Tmp,
-    __local_mem__ float* x2Tmp, __local_mem__ T* resForGamma, float epsilon, LayerNormGradParams& param,
+    MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& inputVarianceReg, __ubuf__ float* x1Tmp,
+    __ubuf__ float* x2Tmp, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams& param,
     uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, MicroAPI::MaskReg& pregOne)
 {
     uint32_t calCount = param.hLength;
@@ -215,7 +215,7 @@ __simd_callee__ inline void ComputePdMeanLoop(MicroAPI::RegTensor<float>& pdMean
 
 template <typename T>
 __simd_callee__ inline void ComputePdXLoop(MicroAPI::RegTensor<float>& pdVarReg, MicroAPI::RegTensor<float>& pdMeanReg,
-    __local_mem__ float* x1Tmp, __local_mem__ float* x2Tmp, __local_mem__ T* outputPdX, LayerNormGradParams& param,
+    __ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* outputPdX, LayerNormGradParams& param,
     uint16_t repeatTimes, uint16_t oneRepeatTimes, uint32_t baseOffset, MicroAPI::MaskReg& pregOne)
 {
     // pd_var*(2.0 / H)
@@ -234,9 +234,9 @@ __simd_callee__ inline void ComputePdXLoop(MicroAPI::RegTensor<float>& pdVarReg,
 }
 
 template <typename T, bool isReuseSource>
-__simd_vf__ inline void LayerNormGradVF(__local_mem__ float* x1Tmp, __local_mem__ float* x2Tmp, __local_mem__ T* inputDy,
-    __local_mem__ T* inputX, __local_mem__ T* inputVariance, __local_mem__ T* inputMean, __local_mem__ T* inputGamma,
-    __local_mem__ T* outputPdX, __local_mem__ T* resForGamma, float epsilon, LayerNormGradParams param)
+__simd_vf__ inline void LayerNormGradVF(__ubuf__ float* x1Tmp, __ubuf__ float* x2Tmp, __ubuf__ T* inputDy,
+    __ubuf__ T* inputX, __ubuf__ T* inputVariance, __ubuf__ T* inputMean, __ubuf__ T* inputGamma,
+    __ubuf__ T* outputPdX, __ubuf__ T* resForGamma, float epsilon, LayerNormGradParams param)
 {
     MicroAPI::MaskReg preg = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
@@ -294,20 +294,20 @@ __aicore__ inline void LayerNormGradImpl(const LocalTensor<T>& outputPdX, const 
         *(reinterpret_cast<float*>(&tiling.lastDimValueBack)),
         *(reinterpret_cast<float*>(&tiling.lastDimValueBackMulTwo)));
 
-    __local_mem__ T* outputPdXDst = (__local_mem__ T*)outputPdX.GetPhyAddr();         // output gradient
-    __local_mem__ T* resForGammaDst = (__local_mem__ T*)resForGamma.GetPhyAddr();     // gradient w.r.t. gamma
-    __local_mem__ T* inputDySrc = (__local_mem__ T*)inputDy.GetPhyAddr();             // input gradient, (B,S,H)
-    __local_mem__ T* inputXSrc = (__local_mem__ T*)inputX.GetPhyAddr();               // input activations, (B,S,H)
-    __local_mem__ T* inputVarianceSrc = (__local_mem__ T*)inputVariance.GetPhyAddr(); // variance, (B,S,1)
-    __local_mem__ T* inputMeanSrc = (__local_mem__ T*)inputMean.GetPhyAddr();         // mean, (B,S,1)
-    __local_mem__ T* inputGammaSrc = (__local_mem__ T*)inputGamma.GetPhyAddr();       // gamma, (B,S,1)
-    __local_mem__ float* sharedTmpBufferSrc = (__local_mem__ float*)sharedTmpBuffer.GetPhyAddr(); // temporary buffer
-    __local_mem__ float *x1Tmp, *x2Tmp;
+    __ubuf__ T* outputPdXDst = (__ubuf__ T*)outputPdX.GetPhyAddr();         // output gradient
+    __ubuf__ T* resForGammaDst = (__ubuf__ T*)resForGamma.GetPhyAddr();     // gradient w.r.t. gamma
+    __ubuf__ T* inputDySrc = (__ubuf__ T*)inputDy.GetPhyAddr();             // input gradient, (B,S,H)
+    __ubuf__ T* inputXSrc = (__ubuf__ T*)inputX.GetPhyAddr();               // input activations, (B,S,H)
+    __ubuf__ T* inputVarianceSrc = (__ubuf__ T*)inputVariance.GetPhyAddr(); // variance, (B,S,1)
+    __ubuf__ T* inputMeanSrc = (__ubuf__ T*)inputMean.GetPhyAddr();         // mean, (B,S,1)
+    __ubuf__ T* inputGammaSrc = (__ubuf__ T*)inputGamma.GetPhyAddr();       // gamma, (B,S,1)
+    __ubuf__ float* sharedTmpBufferSrc = (__ubuf__ float*)sharedTmpBuffer.GetPhyAddr(); // temporary buffer
+    __ubuf__ float *x1Tmp, *x2Tmp;
 
     uint32_t bufferOffset = (param.hLength + 7) / 8 * 8;
     if constexpr (isReuseSource && IsSameType<T, float>::value) {
-        x1Tmp = reinterpret_cast<__local_mem__ float*>(inputDySrc);
-        x2Tmp = reinterpret_cast<__local_mem__ float*>(inputXSrc);
+        x1Tmp = reinterpret_cast<__ubuf__ float*>(inputDySrc);
+        x2Tmp = reinterpret_cast<__ubuf__ float*>(inputXSrc);
     } else {
         x1Tmp = sharedTmpBufferSrc;
         x2Tmp = sharedTmpBufferSrc + bufferOffset;

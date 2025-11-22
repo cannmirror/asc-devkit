@@ -18,7 +18,7 @@
 namespace AscendC {
 namespace XorAPI {
 template<typename T>
-__simd_vf__ inline void XorCompute(__local_mem__ T* dst, __local_mem__ T* src0, __local_mem__ T* src1,
+__simd_vf__ inline void XorCompute(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount, uint16_t repeatTimes)
 {
     MicroAPI::MaskReg mask;
@@ -50,9 +50,9 @@ __aicore__ inline void XorImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 #endif
 
     static_assert(SupportType<T, uint16_t, int16_t>(), "current data type is not supported on current device!");
-    __local_mem__ T *dst = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *src0 = (__local_mem__ T *)src0Tensor.GetPhyAddr();
-    __local_mem__ T *src1 = (__local_mem__ T *)src1Tensor.GetPhyAddr();
+    __ubuf__ T *dst = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *src0 = (__ubuf__ T *)src0Tensor.GetPhyAddr();
+    __ubuf__ T *src1 = (__ubuf__ T *)src1Tensor.GetPhyAddr();
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
     XorAPI::XorCompute<T>(dst, src0, src1, calCount, repeatTimes);

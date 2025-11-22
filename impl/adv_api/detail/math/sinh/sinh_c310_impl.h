@@ -91,8 +91,8 @@ __aicore__ inline void SinhImpl(const LocalTensor<T>& dstTensor, const LocalTens
     CheckCalCount(calCount, "calCount", srcTensor, "srcTensor", "Sinh");
     CheckCalCount(calCount, "calCount", dstTensor, "dstTensor", "Sinh");
 
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
     constexpr int32_t vlSize = static_cast<int32_t>(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, vlSize));
     SinhInternal::SinhCompute<T>(dstUb, srcUb, calCount, repeatTimes);

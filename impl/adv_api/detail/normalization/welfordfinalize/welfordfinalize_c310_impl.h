@@ -52,8 +52,8 @@ __aicore__ inline uint32_t CalculateMainBlock(uint32_t count)
 
 // only support rLength <= 64
 template <typename T, bool isCorrection = false>
-__simd_vf__ inline void ComputeMean64(__local_mem__ float *meanUb, __local_mem__ float *varianceUb,
-    __local_mem__ T *srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
+__simd_vf__ inline void ComputeMean64(__ubuf__ float *meanUb, __ubuf__ float *varianceUb,
+    __ubuf__ T *srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
     const float k2Rec, const float k2RRec, const float rRecWithCorrection)
 {
     constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(float)); // 64
@@ -81,8 +81,8 @@ __simd_vf__ inline void ComputeMean64(__local_mem__ float *meanUb, __local_mem__
 }
 
 template <typename T, bool isCorrection = false>
-__simd_vf__ inline void ComputeMeanVF(__local_mem__ float *meanUb, __local_mem__ float *varianceUb, __local_mem__ T *srcUb,
-    __local_mem__ float *workUbOrigin, const uint32_t k, const uint32_t aLength, const uint32_t rLength,
+__simd_vf__ inline void ComputeMeanVF(__ubuf__ float *meanUb, __ubuf__ float *varianceUb, __ubuf__ T *srcUb,
+    __ubuf__ float *workUbOrigin, const uint32_t k, const uint32_t aLength, const uint32_t rLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec, const float k2RRec,
     float rRecWithCorrection, uint32_t workCount, int16_t halfAddRepeatTimes)
 {
@@ -162,8 +162,8 @@ __simd_vf__ inline void ComputeMeanVF(__local_mem__ float *meanUb, __local_mem__
 }
 
 template <typename T, bool isCorrection = false>
-__aicore__ inline void ComputeMean(__local_mem__ float *meanUb, __local_mem__ float *varianceUb, __local_mem__ T *srcUb,
-    __local_mem__ float *workUbOrigin, const uint32_t k, const uint32_t aLength, const uint32_t rLength,
+__aicore__ inline void ComputeMean(__ubuf__ float *meanUb, __ubuf__ float *varianceUb, __ubuf__ T *srcUb,
+    __ubuf__ float *workUbOrigin, const uint32_t k, const uint32_t aLength, const uint32_t rLength,
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec, const float k2RRec,
     float rRecWithCorrection)
 {
@@ -204,9 +204,9 @@ __aicore__ inline void BinaryReduceSum(__ubuf__ float *dstUb, __ubuf__ float *sr
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordFinalizeWithCountsOutMeanVF(__local_mem__ float *outMean,
-    __local_mem__ int32_t *counts, __local_mem__ float *inMean, __local_mem__ float *inVar,
-    __local_mem__ float *tmpbuffer, uint32_t K, uint32_t sregLower, uint16_t repeat, uint16_t m)
+__simd_vf__ inline void WelfordFinalizeWithCountsOutMeanVF(__ubuf__ float *outMean,
+    __ubuf__ int32_t *counts, __ubuf__ float *inMean, __ubuf__ float *inVar,
+    __ubuf__ float *tmpbuffer, uint32_t K, uint32_t sregLower, uint16_t repeat, uint16_t m)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<int32_t> srcVreg;
@@ -235,9 +235,9 @@ __simd_vf__ inline void WelfordFinalizeWithCountsOutMeanVF(__local_mem__ float *
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordFinalizeWithCountsOutVarVF(__local_mem__ float *outMean,
-    __local_mem__ int32_t *counts, __local_mem__ float *inMean, __local_mem__ float *inVar,
-    __local_mem__ float *tmpbuffer, uint32_t K, uint32_t sregLower, uint16_t repeat, uint16_t m)
+__simd_vf__ inline void WelfordFinalizeWithCountsOutVarVF(__ubuf__ float *outMean,
+    __ubuf__ int32_t *counts, __ubuf__ float *inMean, __ubuf__ float *inVar,
+    __ubuf__ float *tmpbuffer, uint32_t K, uint32_t sregLower, uint16_t repeat, uint16_t m)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<int32_t> srcVreg;
@@ -266,9 +266,9 @@ __simd_vf__ inline void WelfordFinalizeWithCountsOutVarVF(__local_mem__ float *o
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__aicore__ inline void WelfordFinalizeWithCounts(__local_mem__ float *outMean, __local_mem__ float *outVar,
-    __local_mem__ int32_t *counts, __local_mem__ float *inMean, __local_mem__ float *inVar,
-    __local_mem__ float *tmpbuffer, __local_mem__ float *sumTmpbuffer, const WelfordFinalizePara &para)
+__aicore__ inline void WelfordFinalizeWithCounts(__ubuf__ float *outMean, __ubuf__ float *outVar,
+    __ubuf__ int32_t *counts, __ubuf__ float *inMean, __ubuf__ float *inVar,
+    __ubuf__ float *tmpbuffer, __ubuf__ float *sumTmpbuffer, const WelfordFinalizePara &para)
 {
     // K is actually abLength, which needs to be aligned with 32 bytes.
     uint32_t K = para.headCountLength + para.tailCountLength;
@@ -291,8 +291,8 @@ __aicore__ inline void WelfordFinalizeWithCounts(__local_mem__ float *outMean, _
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordFinalizeForB32RnVF(__local_mem__ float *outMean, __local_mem__ float *inMean,
-    __local_mem__ float *inVar, __local_mem__ float *tmpbuffer, const WelfordFinalizePara para, uint16_t m)
+__simd_vf__ inline void WelfordFinalizeForB32RnVF(__ubuf__ float *outMean, __ubuf__ float *inMean,
+    __ubuf__ float *inVar, __ubuf__ float *tmpbuffer, const WelfordFinalizePara para, uint16_t m)
 {
     MicroAPI::RegTensor<float> outmeanReg;
     MicroAPI::RegTensor<float> inMeanReg;
@@ -322,7 +322,7 @@ __simd_vf__ inline void WelfordFinalizeForB32RnVF(__local_mem__ float *outMean, 
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordFinalizeForB32OutMeanVF(__local_mem__ float *inMean, __local_mem__ float *tmpbuffer,
+__simd_vf__ inline void WelfordFinalizeForB32OutMeanVF(__ubuf__ float *inMean, __ubuf__ float *tmpbuffer,
     const WelfordFinalizePara para, uint32_t sregLower, uint32_t K, uint16_t m, uint16_t hRepeat, uint16_t abRepeat)
 {
     MicroAPI::RegTensor<float> inMeanReg;
@@ -351,8 +351,8 @@ __simd_vf__ inline void WelfordFinalizeForB32OutMeanVF(__local_mem__ float *inMe
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordFinalizeForB32OutVarVF(__local_mem__ float *outMean, __local_mem__ float *inMean,
-    __local_mem__ float *inVar, __local_mem__ float *tmpbuffer, const WelfordFinalizePara para,
+__simd_vf__ inline void WelfordFinalizeForB32OutVarVF(__ubuf__ float *outMean, __ubuf__ float *inMean,
+    __ubuf__ float *inVar, __ubuf__ float *tmpbuffer, const WelfordFinalizePara para,
     uint32_t sregLower, uint32_t K, uint16_t m, uint16_t hRepeat, uint16_t abRepeat)
 {
     MicroAPI::RegTensor<float> outmeanReg;
@@ -399,9 +399,9 @@ __simd_vf__ inline void WelfordFinalizeForB32OutVarVF(__local_mem__ float *outMe
 }
 
 template <bool isReuseSource = false, const WelfordFinalizeConfig &config = WFFINALIZE_DEFAULT_CFG>
-__aicore__ inline void WelfordFinalizeForB32(__local_mem__ float *outMean, __local_mem__ float *outVar,
-    __local_mem__ float *inMean, __local_mem__ float *inVar, __local_mem__ float *tmpbuffer,
-    __local_mem__ float *sumTmpbuffer, const WelfordFinalizePara &para)
+__aicore__ inline void WelfordFinalizeForB32(__ubuf__ float *outMean, __ubuf__ float *outVar,
+    __ubuf__ float *inMean, __ubuf__ float *inVar, __ubuf__ float *tmpbuffer,
+    __ubuf__ float *sumTmpbuffer, const WelfordFinalizePara &para)
 {
     if (para.tailCount == 0 || para.tailCountLength == 0) {
         uint32_t k = CalculateMainBlock(para.headCountLength);
@@ -457,13 +457,13 @@ __aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean,
 #if ASCENDC_CPU_DEBUG
     CheckWelfordFinalizePara(para);
 #endif
-    __local_mem__ float *inMean = (__local_mem__ float *)inputMean.GetPhyAddr();
-    __local_mem__ float *inVar = (__local_mem__ float *)inputVariance.GetPhyAddr();
-    __local_mem__ float *outMean = (__local_mem__ float *)outputMean.GetPhyAddr();
-    __local_mem__ float *outVar = (__local_mem__ float *)outputVariance.GetPhyAddr();
+    __ubuf__ float *inMean = (__ubuf__ float *)inputMean.GetPhyAddr();
+    __ubuf__ float *inVar = (__ubuf__ float *)inputVariance.GetPhyAddr();
+    __ubuf__ float *outMean = (__ubuf__ float *)outputMean.GetPhyAddr();
+    __ubuf__ float *outVar = (__ubuf__ float *)outputVariance.GetPhyAddr();
     LocalTensor<float> stackBuffer = sharedTmpBuffer.ReinterpretCast<float>();
-    __local_mem__ float *tmpbuffer1 = (__local_mem__ float *)stackBuffer.GetPhyAddr();
-    __local_mem__ float *tmpbuffer2 = (__local_mem__ float *)stackBuffer[para.abLength].GetPhyAddr();
+    __ubuf__ float *tmpbuffer1 = (__ubuf__ float *)stackBuffer.GetPhyAddr();
+    __ubuf__ float *tmpbuffer2 = (__ubuf__ float *)stackBuffer[para.abLength].GetPhyAddr();
 
     WelfordFinalizeForB32<isReuseSource, config>(outMean, outVar, inMean, inVar, tmpbuffer1, tmpbuffer2, para);
 }
@@ -490,13 +490,13 @@ __aicore__ inline void WelfordFinalizeImpl(const LocalTensor<float> &outputMean,
     CheckWelfordFinalizePara(para);
 #endif
     LocalTensor<float> stackBuffer = sharedTmpBuffer.ReinterpretCast<float>();
-    __local_mem__ int32_t *countsUb = (__local_mem__ int32_t *)counts.GetPhyAddr();
-    __local_mem__ float *inMean = (__local_mem__ float *)inputMean.GetPhyAddr();
-    __local_mem__ float *inVar = (__local_mem__ float *)inputVariance.GetPhyAddr();
-    __local_mem__ float *outMean = (__local_mem__ float *)outputMean.GetPhyAddr();
-    __local_mem__ float *outVar = (__local_mem__ float *)outputVariance.GetPhyAddr();
-    __local_mem__ float *tmpbuffer1 = (__local_mem__ float *)stackBuffer.GetPhyAddr();
-    __local_mem__ float *tmpbuffer2 = (__local_mem__ float *)stackBuffer[para.abLength].GetPhyAddr();
+    __ubuf__ int32_t *countsUb = (__ubuf__ int32_t *)counts.GetPhyAddr();
+    __ubuf__ float *inMean = (__ubuf__ float *)inputMean.GetPhyAddr();
+    __ubuf__ float *inVar = (__ubuf__ float *)inputVariance.GetPhyAddr();
+    __ubuf__ float *outMean = (__ubuf__ float *)outputMean.GetPhyAddr();
+    __ubuf__ float *outVar = (__ubuf__ float *)outputVariance.GetPhyAddr();
+    __ubuf__ float *tmpbuffer1 = (__ubuf__ float *)stackBuffer.GetPhyAddr();
+    __ubuf__ float *tmpbuffer2 = (__ubuf__ float *)stackBuffer[para.abLength].GetPhyAddr();
 
     WelfordFinalizeWithCounts<isReuseSource, config>(outMean, outVar, countsUb, inMean, inVar, tmpbuffer1, tmpbuffer2,
         para);

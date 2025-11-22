@@ -30,8 +30,8 @@ __simd_callee__ inline void WelfordUpdateImplForVFCommon(MicroAPI::MaskReg& preg
     MicroAPI::RegTensor<float>& varVreg, MicroAPI::RegTensor<float>& tmpVreg,
     typename std::conditional<IsB16, MicroAPI::RegTensor<float>&, MicroAPI::RegTensor<T>&>::type srcVreg,
     MicroAPI::RegTensor<float>& outMeanreg, MicroAPI::RegTensor<float>& outVarreg, MicroAPI::RegTensor<float>& f32vreg,
-    __local_mem__ float* const outMean, __local_mem__ float* const outVar, __local_mem__ float* const inMean,
-    __local_mem__ float* const inVar, uint32_t offset, float nRec, uint32_t sreg)
+    __ubuf__ float* const outMean, __ubuf__ float* const outVar, __ubuf__ float* const inMean,
+    __ubuf__ float* const inVar, uint32_t offset, float nRec, uint32_t sreg)
 {
     MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_NORM>(meanVreg, inMean + offset);
     MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_NORM>(varVreg, inVar + offset);
@@ -48,8 +48,8 @@ __simd_callee__ inline void WelfordUpdateImplForVFCommon(MicroAPI::MaskReg& preg
 
 // Helper for in-place copy logic in B16/B32
 __simd_callee__ inline void WelfordUpdateImplInplaceCopy(MicroAPI::MaskReg& preg, MicroAPI::RegTensor<float>& meanVreg,
-    MicroAPI::RegTensor<float>& varVreg, __local_mem__ float* const outMean, __local_mem__ float* const outVar,
-    __local_mem__ float* const inMean, __local_mem__ float* const inVar, uint32_t abLength, uint32_t inPlaceLength,
+    MicroAPI::RegTensor<float>& varVreg, __ubuf__ float* const outMean, __ubuf__ float* const outVar,
+    __ubuf__ float* const inMean, __ubuf__ float* const inVar, uint32_t abLength, uint32_t inPlaceLength,
     uint16_t repeatInplace, uint32_t sregLower, uint32_t dstOffset)
 {
     for (uint16_t i = 0; i < 1; ++i) {
@@ -70,8 +70,8 @@ __simd_callee__ inline void WelfordUpdateImplInplaceCopy(MicroAPI::MaskReg& preg
 
 // VF helper extracted from WelfordUpdateImplForB16
 template <typename T, const WelfordUpdateConfig& config = WFUPDATE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordUpdateImplForB16VF(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
-    __local_mem__ T* const src, __local_mem__ float* const inMean, __local_mem__ float* const inVar,
+__simd_vf__ inline void WelfordUpdateImplForB16VF(__ubuf__ float* const outMean, __ubuf__ float* const outVar,
+    __ubuf__ T* const src, __ubuf__ float* const inMean, __ubuf__ float* const inVar,
     const WelfordUpdateParam para, const uint16_t sregLowerB32, const uint32_t sregLower, const uint32_t K)
 {
     MicroAPI::MaskReg preg;
@@ -117,8 +117,8 @@ __simd_vf__ inline void WelfordUpdateImplForB16VF(__local_mem__ float* const out
 
 // VF helper extracted from WelfordUpdateImplForB32
 template <typename T, const WelfordUpdateConfig& config = WFUPDATE_DEFAULT_CFG>
-__simd_vf__ inline void WelfordUpdateImplForB32VF(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
-    __local_mem__ T* const src, __local_mem__ float* const inMean, __local_mem__ float* const inVar,
+__simd_vf__ inline void WelfordUpdateImplForB32VF(__ubuf__ float* const outMean, __ubuf__ float* const outVar,
+    __ubuf__ T* const src, __ubuf__ float* const inMean, __ubuf__ float* const inVar,
     const WelfordUpdateParam para, const uint32_t sregLower, const uint32_t K)
 {
     MicroAPI::MaskReg preg;
@@ -154,8 +154,8 @@ __simd_vf__ inline void WelfordUpdateImplForB32VF(__local_mem__ float* const out
 }
 
 template <typename T, const WelfordUpdateConfig& config = WFUPDATE_DEFAULT_CFG>
-__aicore__ inline void WelfordUpdateImplForB16(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
-    __local_mem__ T* const src, __local_mem__ float* const inMean, __local_mem__ float* const inVar,
+__aicore__ inline void WelfordUpdateImplForB16(__ubuf__ float* const outMean, __ubuf__ float* const outVar,
+    __ubuf__ T* const src, __ubuf__ float* const inMean, __ubuf__ float* const inVar,
     const WelfordUpdateParam& para)
 {
     const uint16_t sregLowerB32 = static_cast<uint16_t>(GetVecLen() / sizeof(float)); // 64
@@ -167,8 +167,8 @@ __aicore__ inline void WelfordUpdateImplForB16(__local_mem__ float* const outMea
 }
 
 template <typename T, const WelfordUpdateConfig& config = WFUPDATE_DEFAULT_CFG>
-__aicore__ inline void WelfordUpdateImplForB32(__local_mem__ float* const outMean, __local_mem__ float* const outVar,
-    __local_mem__ T* const src, __local_mem__ float* const inMean, __local_mem__ float* const inVar,
+__aicore__ inline void WelfordUpdateImplForB32(__ubuf__ float* const outMean, __ubuf__ float* const outVar,
+    __ubuf__ T* const src, __ubuf__ float* const inMean, __ubuf__ float* const inVar,
     const WelfordUpdateParam& para)
 {
     const uint32_t sregLower = static_cast<uint32_t>(Internal::LAYERNORM_B32_VF_LEN);
@@ -186,11 +186,11 @@ __aicore__ inline void WelfordUpdateImpl(const LocalTensor<U>& outputMean, const
     CHECK_FUNC_HIGHLEVEL_API(WelfordUpdate, (T, U, isReuseSource, config), (outputMean, outputVariance, inputMean, inputVariance, inputX, para));
 
     static_assert(SupportType<U, float>(), "current data type is not supported on current device!");
-    __local_mem__ T* srcUb = (__local_mem__ T*)inputX.GetPhyAddr();
-    __local_mem__ float* inMean = (__local_mem__ float*)inputMean.GetPhyAddr();
-    __local_mem__ float* inVar = (__local_mem__ float*)inputVariance.GetPhyAddr();
-    __local_mem__ float* outMean = (__local_mem__ float*)outputMean.GetPhyAddr();
-    __local_mem__ float* outVar = (__local_mem__ float*)outputVariance.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)inputX.GetPhyAddr();
+    __ubuf__ float* inMean = (__ubuf__ float*)inputMean.GetPhyAddr();
+    __ubuf__ float* inVar = (__ubuf__ float*)inputVariance.GetPhyAddr();
+    __ubuf__ float* outMean = (__ubuf__ float*)outputMean.GetPhyAddr();
+    __ubuf__ float* outVar = (__ubuf__ float*)outputVariance.GetPhyAddr();
 
     if constexpr (SupportType<T, half, bfloat16_t>()) {
         WelfordUpdateImplForB16<T, config>(outMean, outVar, srcUb, inMean, inVar, para);

@@ -21,8 +21,8 @@
 namespace AscendC {
 constexpr uint32_t ASCENDC_DEQUANT_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
 template <typename dstT, typename scaleT, DeQuantMode mode>
-__simd_vf__ inline void DequantPerchannelVFImpl(__local_mem__ half* dstUb, __local_mem__ int32_t* srcUb,
-    __local_mem__ float* scaleUb, DequantParams params)
+__simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ half* dstUb, __ubuf__ int32_t* srcUb,
+    __ubuf__ float* scaleUb, DequantParams params)
 {
     uint32_t rowNum = params.m;
     uint32_t N = params.n;
@@ -65,16 +65,16 @@ __aicore__ inline void DequantPerchannelImpl(const LocalTensor<half>& dstTensor,
     CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(deqScale, "deqScale", "VECIN, VECOUT, VECCALC");
-    __local_mem__ half* dstUb = (__local_mem__ half*)dstTensor.GetPhyAddr();
-    __local_mem__ int32_t* srcUb = (__local_mem__ int32_t*)srcTensor.GetPhyAddr();
-    __local_mem__ float* scaleUb = reinterpret_cast<__local_mem__ float*>(deqScale.GetPhyAddr());
+    __ubuf__ half* dstUb = (__ubuf__ half*)dstTensor.GetPhyAddr();
+    __ubuf__ int32_t* srcUb = (__ubuf__ int32_t*)srcTensor.GetPhyAddr();
+    __ubuf__ float* scaleUb = reinterpret_cast<__ubuf__ float*>(deqScale.GetPhyAddr());
 
     DequantPerchannelVFImpl<dstT, scaleT, mode>(dstUb, srcUb, scaleUb, params);
 }
 
 template <typename dstT, typename scaleT, DeQuantMode mode>
-__simd_vf__ inline void DequantPerchannelVFImpl(__local_mem__ dstT* dstUb, __local_mem__ int32_t* srcUb,
-    __local_mem__ scaleT* scaleUb, DequantParams params)
+__simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ dstT* dstUb, __ubuf__ int32_t* srcUb,
+    __ubuf__ scaleT* scaleUb, DequantParams params)
 {
     uint32_t rowNum = params.m;
     uint32_t N = params.n;
@@ -128,15 +128,15 @@ __aicore__ inline void DequantPerchannelImpl(const LocalTensor<dstT>& dstTensor,
     CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(deqScale, "deqScale", "VECIN, VECOUT, VECCALC");
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ int32_t* srcUb = (__local_mem__ int32_t*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)deqScale.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ int32_t* srcUb = (__ubuf__ int32_t*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)deqScale.GetPhyAddr();
 
     DequantPerchannelVFImpl<dstT, scaleT, mode>(dstUb, srcUb, scaleUb,params);
 }
 
 template <typename dstT, typename scaleT, DeQuantMode mode>
-__simd_vf__ inline void DequantPertensorVFImpl(__local_mem__ dstT* dstUb, __local_mem__ int32_t* srcUb,
+__simd_vf__ inline void DequantPertensorVFImpl(__ubuf__ dstT* dstUb, __ubuf__ int32_t* srcUb,
     const scaleT deqScale, DequantParams params)
 {
     uint32_t rowNum = params.m;
@@ -183,13 +183,13 @@ __aicore__ inline void DequantPertensorImpl(const LocalTensor<dstT>& dstTensor, 
 {
     CheckTensorPosition(dstTensor, "dstTensor", "VECIN, VECOUT, VECCALC");
     CheckTensorPosition(srcTensor, "srcTensor", "VECIN, VECOUT, VECCALC");
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ int32_t* srcUb = (__local_mem__ int32_t*)srcTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ int32_t* srcUb = (__ubuf__ int32_t*)srcTensor.GetPhyAddr();
     DequantPertensorVFImpl<dstT, scaleT, mode>(dstUb, srcUb,deqScale, params);
 }
 
 template <typename scaleT>
-__simd_callee__ inline void LoadPerTokenScale(__local_mem__ scaleT* addr, MicroAPI::RegTensor<scaleT>& vreg)
+__simd_callee__ inline void LoadPerTokenScale(__ubuf__ scaleT* addr, MicroAPI::RegTensor<scaleT>& vreg)
 {
     if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
         MicroAPI::DataCopy<scaleT, MicroAPI::LoadDist::DIST_BRC_B16>(vreg, addr);
@@ -199,7 +199,7 @@ __simd_callee__ inline void LoadPerTokenScale(__local_mem__ scaleT* addr, MicroA
 }
 
 template <typename dstT>
-__simd_callee__ inline void StoreRes(__local_mem__ dstT* dstAddr, MicroAPI::RegTensor<float>& vreg,
+__simd_callee__ inline void StoreRes(__ubuf__ dstT* dstAddr, MicroAPI::RegTensor<float>& vreg,
                                 MicroAPI::MaskReg& preg)
 {
     if constexpr (SupportType<dstT, half, bfloat16_t>()) {
@@ -212,8 +212,8 @@ __simd_callee__ inline void StoreRes(__local_mem__ dstT* dstAddr, MicroAPI::RegT
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config>
-__simd_vf__ inline void DeQuantPerTokenForS32VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendDeQuantParam para)
+__simd_vf__ inline void DeQuantPerTokenForS32VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendDeQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -247,15 +247,15 @@ __aicore__ inline void DeQuantPerTokenForS32(const LocalTensor<dstT>& dstTensor,
                                              const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                              const AscendDeQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     DeQuantPerTokenForS32VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config>
-__simd_vf__ inline void DeQuantPerTokenForF32VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendDeQuantParam para)
+__simd_vf__ inline void DeQuantPerTokenForF32VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendDeQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -288,14 +288,14 @@ __aicore__ inline void DeQuantPerTokenForF32(const LocalTensor<dstT>& dstTensor,
                                              const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                              const AscendDeQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     DeQuantPerTokenForF32VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para);
 }
 
 template <typename T>
-__simd_callee__ inline void GetPerGroupScale(__local_mem__ T* scaleUb, const int32_t start, const AscendDeQuantParam& para,
+__simd_callee__ inline void GetPerGroupScale(__ubuf__ T* scaleUb, const int32_t start, const AscendDeQuantParam& para,
                                         const AscendDeQuantConfig& config, MicroAPI::RegTensor<T>& scaleReg)
 {
     // use vgather to get perGroup scale/offset
@@ -322,8 +322,8 @@ __simd_callee__ inline void GetPerGroupScale(__local_mem__ T* scaleUb, const int
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config>
-__simd_vf__ inline void DeQuantPerGroupForColS32VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendDeQuantParam para)
+__simd_vf__ inline void DeQuantPerGroupForColS32VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendDeQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -371,15 +371,15 @@ __aicore__ inline void DeQuantPerGroupForColS32(const LocalTensor<dstT>& dstTens
                                                 const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                 const AscendDeQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     DeQuantPerGroupForColS32VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config>
-__simd_vf__ inline void DeQuantPerGroupForColF32VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendDeQuantParam para)
+__simd_vf__ inline void DeQuantPerGroupForColF32VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendDeQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -426,15 +426,15 @@ __aicore__ inline void DeQuantPerGroupForColF32(const LocalTensor<dstT>& dstTens
                                                 const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                 const AscendDeQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     DeQuantPerGroupForColF32VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config>
-__simd_callee__ inline void DeQuantPerGroupForRowTailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                      __local_mem__ scaleT* scaleUb, uint16_t repeat,
+__simd_callee__ inline void DeQuantPerGroupForRowTailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                      __ubuf__ scaleT* scaleUb, uint16_t repeat,
                                                       uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -466,8 +466,8 @@ __simd_callee__ inline void DeQuantPerGroupForRowTailBlock(__local_mem__ dstT* d
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config>
-__simd_vf__ inline void DeQuantPerGroupForRowVF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendDeQuantParam para, uint16_t rowNum, uint16_t tailRow)
+__simd_vf__ inline void DeQuantPerGroupForRowVF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendDeQuantParam para, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
         uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -513,9 +513,9 @@ __aicore__ inline void DeQuantPerGroupForRow(const LocalTensor<dstT>& dstTensor,
                                              const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                              const AscendDeQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     DeQuantPerGroupForRowVF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para, rowNum, tailRow);

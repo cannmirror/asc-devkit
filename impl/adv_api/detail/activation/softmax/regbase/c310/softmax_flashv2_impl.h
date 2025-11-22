@@ -20,9 +20,9 @@
 namespace AscendC {
 
 template <typename T1, typename T2, bool isOutputReduceMax = false>
-__simd_vf__ inline void SoftmaxFlashV2M1NDUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* reduceMaxUb,
-    __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb, __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb,
-    __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
+__simd_vf__ inline void SoftmaxFlashV2M1NDUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* reduceMaxUb,
+    __ubuf__ T2* expSumUb, __ubuf__ T2* inExpSumUb, __ubuf__ T2* maxUb, __ubuf__ T2* inMaxUb,
+    __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = originalSrcShape.m;
     uint16_t srcK = tiling.srcK;
@@ -79,23 +79,23 @@ __aicore__ inline void SoftmaxFlashV2M1NDUpdateImpl(const LocalTensor<T1>& dstTe
     const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
     const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* reduceMaxUb = (__local_mem__ T2*)outReduceMax.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* reduceMaxUb = (__ubuf__ T2*)outReduceMax.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* inExpSumUb = (__ubuf__ T2*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
 
     SoftmaxFlashV2M1NDUpdateVFImpl<T1, T2, isOutputReduceMax>(dstUb, reduceMaxUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb,
         expMaxUb, originalSrcShape, tiling);
 }
 
 template <typename T1, typename T2, bool isOutputReduceMax = false>
-__simd_vf__ inline void SoftmaxFlashV2M1NDWithTailUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* reduceMaxUb,
-    __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb, __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb,
-    __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
+__simd_vf__ inline void SoftmaxFlashV2M1NDWithTailUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* reduceMaxUb,
+    __ubuf__ T2* expSumUb, __ubuf__ T2* inExpSumUb, __ubuf__ T2* maxUb, __ubuf__ T2* inMaxUb,
+    __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = originalSrcShape.m;
     uint16_t srcK = tiling.srcK;
@@ -164,23 +164,23 @@ __aicore__ inline void SoftmaxFlashV2M1NDWithTailUpdateImpl(const LocalTensor<T1
     const LocalTensor<T1>& expMaxTensor, const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor,
     const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* reduceMaxUb = (__local_mem__ T2*)outReduceMax.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* reduceMaxUb = (__ubuf__ T2*)outReduceMax.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* inExpSumUb = (__ubuf__ T2*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
 
     SoftmaxFlashV2M1NDWithTailUpdateVFImpl<T1, T2, isOutputReduceMax>(dstUb, reduceMaxUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb,
         expMaxUb, originalSrcShape, tiling);
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashV2NZNoUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* expSumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ T2* tmpUb, __local_mem__ float* workUb,
-    __local_mem__ float* expUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
+__simd_vf__ inline void SoftmaxFlashV2NZNoUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* expSumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T2* tmpUb, __ubuf__ float* workUb,
+    __ubuf__ float* expUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = tiling.srcM;
     uint16_t originK = originalSrcShape.k;
@@ -296,21 +296,21 @@ __aicore__ inline void SoftmaxFlashV2NZNoUpdateImpl(const LocalTensor<T1>& dstTe
     uint16_t VcgFoldRepeat = CeilDivision(srcM, FLOAT_REPEAT_SIZE);
     uint16_t offset = CeilDivision(srcM * SOFTMAX_COMPUTE_DIM, HALF_REPEAT_SIZE) * HALF_REPEAT_SIZE;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T2* tmpUb = (__local_mem__ T2*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE);
-    __local_mem__ float* expUb = (__local_mem__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE + offset);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T2* tmpUb = (__ubuf__ T2*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE);
+    __ubuf__ float* expUb = (__ubuf__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE + offset);
 
     SoftmaxFlashV2NZNoUpdateVFImpl<T1, T2>(dstUb, expSumUb, maxUb, srcUb, tmpUb, workUb, expUb, originalSrcShape, tiling);
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashV2NZWithTailNoUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* expSumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ T2* tmpUb, __local_mem__ float* workUb,
-    __local_mem__ float* expUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
+__simd_vf__ inline void SoftmaxFlashV2NZWithTailNoUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* expSumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T2* tmpUb, __ubuf__ float* workUb,
+    __ubuf__ float* expUb, const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = tiling.srcM;
     uint16_t originK = originalSrcShape.k;
@@ -459,22 +459,22 @@ __aicore__ inline void SoftmaxFlashV2NZWithTailNoUpdateImpl(const LocalTensor<T1
     CreateSpecialFormatMask(mask[0], originK % SOFTMAX_SHAPE_NZ_BASIC_COUNT, FLOAT_REPEAT_SIZE / SOFTMAX_SHAPE_NZ_BASIC_COUNT);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T2* tmpUb = (__local_mem__ T2*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE);
-    __local_mem__ float* expUb = (__local_mem__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE + offset);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T2* tmpUb = (__ubuf__ T2*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE);
+    __ubuf__ float* expUb = (__ubuf__ float*)workLocal.GetPhyAddr(VcgFoldRepeat * FLOAT_REPEAT_SIZE + offset);
 
     SoftmaxFlashV2NZWithTailNoUpdateVFImpl<T1, T2>(dstUb, expSumUb, maxUb, srcUb, tmpUb, workUb,
         expUb, originalSrcShape, tiling);
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashV2NZUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb,
-    __local_mem__ float* expMaxF32Ub, __local_mem__ float* workUb, __local_mem__ float* tmpUb, __local_mem__ float* expUb,
+__simd_vf__ inline void SoftmaxFlashV2NZUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* expSumUb, __ubuf__ T2* inExpSumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T2* inMaxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb,
+    __ubuf__ float* expMaxF32Ub, __ubuf__ float* workUb, __ubuf__ float* tmpUb, __ubuf__ float* expUb,
     const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = tiling.srcM;
@@ -633,19 +633,19 @@ __aicore__ inline void SoftmaxFlashV2NZUpdateImpl(const LocalTensor<T1>& dstTens
     }
     uint16_t offset1 = srcM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
-    __local_mem__ float* expMaxF32Ub = (__local_mem__ float*)expMaxTensor.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
-    __local_mem__ float* expUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset + offset1);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* inExpSumUb = (__ubuf__ T2*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ float* expMaxF32Ub = (__ubuf__ float*)expMaxTensor.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ float* expUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset + offset1);
     if constexpr (sizeof(T1) == 2) {
-        expMaxF32Ub = (__local_mem__ float*)workLocal.GetPhyAddr(offset + offset1 + srcM * originK);
+        expMaxF32Ub = (__ubuf__ float*)workLocal.GetPhyAddr(offset + offset1 + srcM * originK);
     }
 
     SoftmaxFlashV2NZUpdateVFImpl<T1, T2>(dstUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb, expMaxUb,
@@ -653,9 +653,9 @@ __aicore__ inline void SoftmaxFlashV2NZUpdateImpl(const LocalTensor<T1>& dstTens
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashV2NZWithTailUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb,
-    __local_mem__ float* expMaxF32Ub, __local_mem__ float* workUb, __local_mem__ float* tmpUb, __local_mem__ float* expUb,
+__simd_vf__ inline void SoftmaxFlashV2NZWithTailUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* expSumUb, __ubuf__ T2* inExpSumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T2* inMaxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb,
+    __ubuf__ float* expMaxF32Ub, __ubuf__ float* workUb, __ubuf__ float* tmpUb, __ubuf__ float* expUb,
     const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = tiling.srcM;
@@ -846,19 +846,19 @@ __aicore__ inline void SoftmaxFlashV2NZWithTailUpdateImpl(const LocalTensor<T1>&
     CreateSpecialFormatMask(mask[0], originK % SOFTMAX_SHAPE_NZ_BASIC_COUNT, FLOAT_REPEAT_SIZE / SOFTMAX_SHAPE_NZ_BASIC_COUNT);
     SetVectorMask<uint32_t>(mask[1], mask[0]);
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
-    __local_mem__ float* expMaxF32Ub = (__local_mem__ float*)expMaxTensor.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset);
-    __local_mem__ float* expUb = (__local_mem__ float*)workLocal.GetPhyAddr(offset + offset1);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* inExpSumUb = (__ubuf__ T2*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ float* expMaxF32Ub = (__ubuf__ float*)expMaxTensor.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset);
+    __ubuf__ float* expUb = (__ubuf__ float*)workLocal.GetPhyAddr(offset + offset1);
     if constexpr (sizeof(T1) == 2) {
-        expMaxF32Ub = (__local_mem__ float*)workLocal.GetPhyAddr(offset + offset1 + srcM * srcK);
+        expMaxF32Ub = (__ubuf__ float*)workLocal.GetPhyAddr(offset + offset1 + srcM * srcK);
     }
     SoftmaxFlashV2NZWithTailUpdateVFImpl<T1, T2>(dstUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb, expMaxUb,
         expMaxF32Ub, workUb, tmpUb, expUb, originalSrcShape, tiling);
@@ -894,8 +894,8 @@ __aicore__ inline void SoftMaxFlashV2NZImpl(const LocalTensor<T1>& dstTensor, co
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashV2NDUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb,
+__simd_vf__ inline void SoftmaxFlashV2NDUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* expSumUb, __ubuf__ T2* inExpSumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T2* inMaxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb,
     const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = originalSrcShape.m;
@@ -968,21 +968,21 @@ __aicore__ inline void SoftmaxFlashV2NDUpdateImpl(const LocalTensor<T1>& dstTens
     const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* inExpSumUb = (__ubuf__ T2*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
 
     SoftmaxFlashV2NDUpdateVFImpl<T1, T2>(dstUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb,
         expMaxUb, originalSrcShape, tiling);
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashV2NDWithTailUpdateVFImpl(__local_mem__ T1* dstUb, __local_mem__ T2* expSumUb, __local_mem__ T2* inExpSumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T2* inMaxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb,
+__simd_vf__ inline void SoftmaxFlashV2NDWithTailUpdateVFImpl(__ubuf__ T1* dstUb, __ubuf__ T2* expSumUb, __ubuf__ T2* inExpSumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T2* inMaxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb,
     const LastAxisShapeND originalSrcShape, const SoftMaxTiling tiling)
 {
     uint16_t srcM = originalSrcShape.m;
@@ -1067,13 +1067,13 @@ __aicore__ inline void SoftmaxFlashV2NDWithTailUpdateImpl(const LocalTensor<T1>&
     const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* expSumUb = (__local_mem__ T2*)expSumTensor.GetPhyAddr();
-    __local_mem__ T2* inExpSumUb = (__local_mem__ T2*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* expSumUb = (__ubuf__ T2*)expSumTensor.GetPhyAddr();
+    __ubuf__ T2* inExpSumUb = (__ubuf__ T2*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
 
     SoftmaxFlashV2NDWithTailUpdateVFImpl<T1, T2>(dstUb, expSumUb, inExpSumUb, maxUb, inMaxUb, srcUb,
         expMaxUb, originalSrcShape, tiling);
