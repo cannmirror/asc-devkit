@@ -80,7 +80,7 @@ constexpr int32_t BYTE_BLOCK = 32;
 constexpr uint32_t B16_BITS = 4;
 constexpr uint32_t FP32_BITS = 3;
 constexpr uint32_t FP32_DATA_SIZE = 4;
-constexpr uint32_t F16_DATA_SIZE = 2; // BF16和FP16共用
+constexpr uint32_t F16_DATA_SIZE = 2; //Shared by BF16 and FP16
 constexpr uint32_t NUM_FP32_C1OUT = 2;
 constexpr int32_t FMAP_H_NUM = 2;
 
@@ -169,15 +169,15 @@ inline int32_t Min(int32_t num1, int64_t num2) {
   return static_cast<int32_t>(std::min(num2, static_cast<int64_t>(num1)));
 }
 
-inline int32_t CalcHi(int32_t ho, int32_t stride_h, int32_t kernel_h_dilation, int32_t ori_hi) {
-    return Min(static_cast<int64_t>(ho - 1) * stride_h + kernel_h_dilation, ori_hi);
+inline int32_t CalcHi(int32_t ho, int32_t strideH, int32_t kernelHDilation, int32_t oriHi) {
+    return Min(static_cast<int64_t>(ho - 1) * strideH + kernelHDilation, oriHi);
 }
 
 inline int32_t CalcHo(int64_t k, int32_t wo) {
     if (k == 0 || wo == 0) {
         return 0;
     }
-//  完整K是ho*wo，k可能超int32，但是下面除完以后的wo不可能超int32
+// The complete K is ho*wo, k may exceed int32, but wo after the following division cannot exceed int32
     int32_t ho = static_cast<int32_t>(CeilDivision(k, wo));
     if (k % wo == 0 || wo % k == 0) {
         return ho;
@@ -201,14 +201,14 @@ inline int32_t GetGcd(int32_t param1, int32_t param2) {
     }
 }
 
-inline void GetFactors(std::vector<int32_t> &factor_list, int64_t src_num, int32_t max_factor) {
-    int32_t max_num = Min(src_num, max_factor);
+inline void GetFactors(std::vector<int32_t> &factorList, int64_t srcNum, int32_t maxFactor) {
+    int32_t max_num = Min(srcNum, maxFactor);
     for (int32_t factor = 1; factor <= max_num; factor++) {
-        if (src_num % factor == 0) {
-            factor_list.push_back(factor);
+        if (srcNum % factor == 0) {
+            factorList.push_back(factor);
         }
     }
-}
+}   
 
 template <typename T>
 inline typename std::enable_if <std::is_integral<T>::value, T>::type CeilAlign(T x, T align) {
@@ -216,16 +216,16 @@ inline typename std::enable_if <std::is_integral<T>::value, T>::type CeilAlign(T
 }
 
 inline int64_t Lcm(int64_t param1, int64_t param2) {
-  int64_t pram1_lcm = param1;
-  int64_t pram2_lcm = param2;
-  int64_t temp = pram1_lcm * pram2_lcm;
-  int64_t param1_temp = pram1_lcm;
-  while (pram1_lcm % pram2_lcm != 0) {
-    param1_temp = pram1_lcm;
-    pram1_lcm = pram2_lcm;
-    pram2_lcm = param1_temp % pram2_lcm;
+  int64_t pram1Lcm = param1;
+  int64_t pram2Lcm = param2;
+  int64_t temp = pram1Lcm * pram2Lcm;
+  int64_t param1Temp = pram1Lcm;
+  while (pram1Lcm % pram2Lcm != 0) {
+    param1Temp = pram1Lcm;
+    pram1Lcm = pram2Lcm;
+    pram2Lcm = param1Temp % pram2Lcm;
   }
-  return temp / pram2_lcm;
+  return temp / pram2Lcm;
 }
 
 inline int64_t Lcm(int32_t param1, int32_t param2) {

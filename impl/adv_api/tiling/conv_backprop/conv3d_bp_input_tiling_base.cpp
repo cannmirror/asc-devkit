@@ -222,17 +222,17 @@ void Conv3DBpInputTilingBase::SetGroup(int64_t groups)
 bool Conv3DBpInputTilingBase::ShapeInitCalc()
 {
     int64_t k0 = C0_BYTE_SIZE / g_dtypeSizeTab.at(this->descInfo.fMapType.dtype);
-    int64_t y_shape_c0 = k0;
-    int64_t fmap_shape_c0 = k0;
-    shapeCalc.Ci1 = CeilDivision(shapeInfo.orgCi, fmap_shape_c0);
-    shapeCalc.Co1 = CeilDivision(shapeInfo.orgCo, y_shape_c0);
+    int64_t yShapeC0 = k0;
+    int64_t fmapShapeC0 = k0;
+    shapeCalc.Ci1 = CeilDivision(shapeInfo.orgCi, fmapShapeC0);
+    shapeCalc.Co1 = CeilDivision(shapeInfo.orgCo, yShapeC0);
 
-    int64_t mag_factor0 = Lcm(shapeInfo.orgCi / attrInfo.groups, k0) / (shapeInfo.orgCi / attrInfo.groups);
-    int64_t mag_factor1 = Lcm(shapeInfo.orgCo / attrInfo.groups, y_shape_c0) / (shapeInfo.orgCo / attrInfo.groups);
-    int64_t mag_factor = Min(Lcm(mag_factor0, mag_factor1), attrInfo.groups);
-    shapeCalc.realG = (attrInfo.groups + mag_factor - 1) / mag_factor;
-    shapeCalc.cin1G = (mag_factor * shapeInfo.orgCi / attrInfo.groups + fmap_shape_c0 - 1) / fmap_shape_c0;
-    shapeCalc.cout1G = (mag_factor * shapeInfo.orgCo / attrInfo.groups + y_shape_c0 - 1) / y_shape_c0;
+    int64_t magFactor0 = Lcm(shapeInfo.orgCi / attrInfo.groups, k0) / (shapeInfo.orgCi / attrInfo.groups);
+    int64_t magFactor1 = Lcm(shapeInfo.orgCo / attrInfo.groups, yShapeC0) / (shapeInfo.orgCo / attrInfo.groups);
+    int64_t magFactor = Min(Lcm(magFactor0, magFactor1), attrInfo.groups);
+    shapeCalc.realG = (attrInfo.groups + magFactor - 1) / magFactor;
+    shapeCalc.cin1G = (magFactor * shapeInfo.orgCi / attrInfo.groups + fmapShapeC0 - 1) / fmapShapeC0;
+    shapeCalc.cout1G = (magFactor * shapeInfo.orgCo / attrInfo.groups + yShapeC0 - 1) / yShapeC0;
     return true;
 }
 

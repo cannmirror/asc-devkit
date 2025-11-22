@@ -42,7 +42,7 @@ __aicore__ inline void InitMmadParams(Intf *self)
 {
     self->ctx.mmad_.m = self->ctx.baseUseM_;
     if (unlikely(self->ctx.curML0Idx_ == self->ctx.mIter_ - 1)) {
-        // 4用来替换除法运算
+        // 4 is used to replace the division operation
         self->ctx.mmad_.m = ((self->ctx.baseUseM_ + AscendC::BLOCK_CUBE - 1) >> 4) * AscendC::BLOCK_CUBE;
     }
     self->ctx.mmad_.k = self->ctx.tiling_->baseK;
@@ -58,7 +58,7 @@ __aicore__ inline void MmadLocal(Intf *self, const AscendC::LocalTensor<typename
                                         const AscendC::LocalTensor<typename Intf::SrcT> &l0b,
                                         AscendC::LocalTensor<typename Intf::L0cT> &l0c)
 {
-    // MMAD计算量baseM*baseN小于一定阈值时需要添加PIPE_M同步,当前平台阈值为10*256
+    // When the MMAD calculation amount baseM*baseN is less than a certain threshold, PIPE_M synchronization needs to be added. The current platform threshold is 10*256
     constexpr int32_t mmadThreshold = 10 * 256;
     if (self->ctx.mmad_.m * self->ctx.mmad_.n <= mmadThreshold) {
         AscendC::PipeBarrier<PIPE_M>();
@@ -66,7 +66,7 @@ __aicore__ inline void MmadLocal(Intf *self, const AscendC::LocalTensor<typename
     MmadImpl(l0c, l0a, l0b, self->ctx.mmad_);
 }
 
-// 计算Load2A2的指令参数
+// Calculate the instruction parameters of Load2A2
 template <class Intf>
 __aicore__ inline void InitLoadToA2Params(Intf *self)
 {
@@ -78,7 +78,7 @@ __aicore__ inline void InitLoadToA2Params(Intf *self)
     self->ctx.load3d_.mStartPt = 0;
     // posK
     self->ctx.load3d_.kStartPt = 0;
-    // 前放大预处理，统一转换成stride=1的操作
+    // Pre-amplification preprocessing and uniform conversion to stride=1 operation
     self->ctx.load3d_.strideW = 1;
     self->ctx.load3d_.strideH = 1;
     if constexpr (Intf::conv3dConfig.enableKernelSplit) {
@@ -98,7 +98,7 @@ __aicore__ inline void InitLoadToA2Params(Intf *self)
     self->ctx.load3d_.fMatrixCtrl = 0;
     self->ctx.load3d_.channelSize = self->ctx.channelSize_;
 
-    // 设置pad, pad列表[left, right, top, down], 默认是0, 范围[0, 255]
+    // Set pad, pad list [left, right, top, down], default is 0, range [0, 255]
     self->ctx.load3d_.padList[0] = self->ctx.tiling_->backpropPadLeft;
     self->ctx.load3d_.padList[1] = self->ctx.tiling_->backpropPadRight;
     self->ctx.load3d_.padList[3] = 255;
@@ -111,10 +111,10 @@ __aicore__ inline void UpdateLoadToA2ParamsM(Intf *self)
     // load3dStepM
     self->ctx.load3d_.mExtension = self->ctx.baseUseM_;
     if (unlikely(self->ctx.curML0Idx_ == self->ctx.mIter_ - 1)) {
-        // 4用来替换除法运算
+        // 4 is used to replace the division operation
         self->ctx.load3d_.mExtension = ((self->ctx.baseUseM_ + AscendC::BLOCK_CUBE - 1) >> 4) * AscendC::BLOCK_CUBE;
     }
-    // posM: 当前默认stepM = 1
+    // posM: current default stepM = 1
     if constexpr (Intf::conv3dConfig.enableKernelSplit) {
         self->ctx.load3d_.mStartPt = self->ctx.curML0Idx_ * self->ctx.tiling_->baseM % self->ctx.splitWi_;
     } else {
@@ -125,7 +125,7 @@ __aicore__ inline void UpdateLoadToA2ParamsM(Intf *self)
 template <class Intf>
 __aicore__ inline void UpdateCurHoSize(Intf *self)
 {
-    // posM: 当前默认stepM = 1
+    // posM: current default stepM = 1
     uint32_t curHoSize = 0;
     if constexpr (Intf::conv3dConfig.enableKernelSplit) {
         curHoSize = CalFmapHForKernelSplit<Intf>(self, self->ctx.tiling_->baseM * self->ctx.tiling_->stepM);
@@ -146,7 +146,7 @@ __aicore__ inline void UpdateCurHoSize(Intf *self)
     self->ctx.curHoSize_ = curHoSize;
 }
 
-// 计算B2参数
+// Calculate B2 parameters
 template <class Intf>
 __aicore__ inline void InitLoadToB2Params(Intf *self)
 {
@@ -185,10 +185,10 @@ template <class Intf>
 __aicore__ inline void LoadToB2V1(Intf *self, const AscendC::LocalTensor<typename Intf::SrcT> &l1B1Matrix, uint32_t kPos,
                                          AscendC::LocalTensor<typename Intf::SrcT> &l0b)
 {
-    // 转置逆序
+    // transpose reverse order
     uint32_t kRepeat = self->ctx.mmad_.k >> self->ctx.tiling_->c0Bits;
     uint32_t kBlockC0Num = kPos * (self->ctx.tiling_->baseK >> self->ctx.tiling_->c0Bits);
-    constexpr uint32_t blockSize = 256; // 256为load2d最小搬运单位的元素数
+    constexpr uint32_t blockSize = 256; // 256 is the number of elements in the minimum handling unit of load2d
     uint32_t dstB2Stride = self->ctx.blockBaseN_ * blockSize;
 
     if constexpr (Intf::conv3dConfig.enableKernelSplit) {
@@ -236,8 +236,8 @@ template <class Intf>
 __aicore__ inline void LoadToB2Pro(Intf *self, const AscendC::LocalTensor<typename Intf::SrcT> &l1B1Matrix,
     uint32_t kPos, uint32_t l0bKIdx, bool b1PingPongFlag, AscendC::LocalTensor<typename Intf::SrcT> &l0b)
 {
-    // 转置逆序：load3dv2版本，当前进支持fp32，fp16场景可以简单适配
-    // fp32场景，当baseK=8时，需要向上取整
+    // Transpose reverse order: load3dv2 version, currently supports fp32, fp16 scenes can be easily adapted
+    //In fp32 scenario, when baseK=8, it needs to be rounded up
     uint32_t kRepeat = self->ctx.mmad_.k >> self->ctx.tiling_->c0Bits;
     uint32_t kBlockC0Num = l0bKIdx * kRepeat;
     uint32_t baseHkOffset = kBlockC0Num / self->ctx.tiling_->wk % self->ctx.tiling_->hk;
@@ -245,22 +245,22 @@ __aicore__ inline void LoadToB2Pro(Intf *self, const AscendC::LocalTensor<typena
     uint32_t baseHkWkOffset = self->ctx.HkWk_ - 1 - baseHkOffset * self->ctx.tiling_->wk - baseWkOffset;
     uint32_t curL1Cout = DivCeil(self->ctx.curLoadKbl1_ / self->ctx.HkWkC0_, 2) * AscendC::BLOCK_CUBE;
     uint16_t wSize = static_cast<uint16_t>(curL1Cout * self->ctx.HkWk_);
-    // 参数对应关系：H，W，pad，mode
+    // Parameter correspondence: H, W, pad, mode
     SetFmatrix(1, wSize, PADLIST_B, AscendC::FmatrixMode::FMATRIX_RIGHT);
     uint16_t kStart = static_cast<uint16_t>(self->ctx.curNL0Idx_ % self->ctx.curStepN_ * self->ctx.baseUseN_);
     uint16_t channelSize = static_cast<uint16_t>(self->ctx.curStepN_ * self->ctx.baseUseN_);
-    // fp32场景下，B矩阵是16*8的小分形，2个16*8小分形，变成2个8*16小分形
+    // In the fp32 scenario, the B matrix is ​​a 16*8 small fractal, and two 16*8 small fractals become two 8*16 small fractals
     uint16_t numHkWk = kPos * self->ctx.mmad_.k / self->ctx.HkWkC0_;
-    // 根据是上半个分形，还是下半个分形，确定M方向是否产生偏移
+    // Depending on whether it is the upper half fractal or the lower half fractal, determine whether the M direction is offset
     uint16_t mStartOffset = static_cast<uint16_t>((numHkWk & 1) * self->ctx.tiling_->c0);
-    // 载入L1的数据，每2个HkWkC0对应1个C0out(16)，会出现只用一半的情况，此时load3dv2的M方向偏移要根据坐标推算
+    // When loading L1 data, every 2 HkWkC0 corresponds to 1 C0out(16), and only half of it will be used. At this time, the M direction offset of load3dv2 must be calculated based on the coordinates
     uint32_t curCoutIdx = b1PingPongFlag ? self->ctx.curPingCoutIdx_ : self->ctx.curPongCoutIdx_;
     uint32_t coutOffset = (kPos * self->ctx.tiling_->baseK / (self->ctx.HkWk_ * AscendC::BLOCK_CUBE) - curCoutIdx) * AscendC::BLOCK_CUBE;
     for (uint32_t i = 0; i < kRepeat; i++) {
-        // baseCoutOffset参数用于判断baseK是否需要载入多个HkWkC0，此时要进行Cout偏移计算
+        // The baseCoutOffset parameter is used to determine whether baseK needs to load multiple HkWkC0. At this time, Cout offset calculation is required
         uint32_t baseCoutOffset = i / self->ctx.HkWk_ * self->ctx.tiling_->c0;
         uint32_t dstB2Offset = i * self->ctx.baseUseAlignN_ * self->ctx.tiling_->c0;
-        // (baseHkWkOffset - i % self->ctx.HkWk_) * BLOCK_CUBE表示HkWk上偏移，coutOffset表示Cout上面偏移，mStartOffset表一个小分型取上半或者下半数据
+        // (baseHkWkOffset - i % self->ctx.HkWk_) * BLOCK_CUBE represents the upper offset of HkWk, coutOffset represents the upper offset of Cout, and mStartOffset represents a small type that takes the upper or lower half of the data
         uint16_t mStart = static_cast<uint16_t>((baseHkWkOffset - i % self->ctx.HkWk_) * curL1Cout + baseCoutOffset + coutOffset + mStartOffset);
         AscendC::LoadData<typename Intf::SrcT, LOAD3DV2_CONFIG>(l0b[dstB2Offset], l1B1Matrix[0],
                                                     {
@@ -278,12 +278,12 @@ __aicore__ inline void LoadToB2Pro(Intf *self, const AscendC::LocalTensor<typena
                                                         1,      // filterH
                                                         1,      // dilationFilterW
                                                         1,      // dilationFilterH
-                                                        true,   // enableTranspose，dst为L0B的情况下，硬件一定会使能tranpose能力，以满足L0B分型要求
+                                                        true,   // enableTranspose, when dst is L0B, the hardware will definitely enable the transpose capability to meet the L0B classification requirements
                                                         false,  // enableSmallK
                                                         0,      // padValue
                                                         0,      // filterSizeWIn
                                                         0,      // filterSizeHIn
-                                                        1       // fMatrixCtrlIn 使能set_fmatrix设置
+                                                        1       // fMatrixCtrlIn enables set_fmatrix setting
                                                     }
                                                 );
     }
@@ -293,11 +293,11 @@ template <class Intf>
 __aicore__ inline void LoadToB2ProGemm(Intf *self, const AscendC::LocalTensor<typename Intf::SrcT> &l1B1Matrix,
     uint32_t kPos, uint32_t l0bKIdx, AscendC::LocalTensor<typename Intf::SrcT> &l0b)
 {
-    // 转置逆序：load3dv2版本，拆分出kernel=1*1模板
+    // Transpose in reverse order: load3dv2 version, split out kernel=1*1 template
     uint32_t kRepeat = DivCeil(self->ctx.mmad_.k, AscendC::BLOCK_CUBE);
-    // 计算2块HkWkC0需要载入一份完整的C0out=16
+    // Calculating 2 blocks of HkWkC0 requires loading a complete C0out=16
     uint16_t wSize = static_cast<uint16_t>(DivCeil(self->ctx.curLoadKbl1_ / self->ctx.HkWkC0_, 2) * AscendC::BLOCK_CUBE);
-    // 参数对应关系：H，W，pad，mode
+    // Parameter correspondence: H, W, pad, mode
     SetFmatrix(1, wSize, PADLIST_B, AscendC::FmatrixMode::FMATRIX_RIGHT);
     uint16_t kStart = static_cast<uint16_t>(self->ctx.curNL0Idx_ % self->ctx.curStepN_ * self->ctx.baseUseN_);
     uint16_t channelSize = static_cast<uint16_t>(self->ctx.curStepN_ * self->ctx.baseUseN_);
@@ -321,12 +321,12 @@ __aicore__ inline void LoadToB2ProGemm(Intf *self, const AscendC::LocalTensor<ty
                                                         1,      // filterH
                                                         1,      // dilationFilterW
                                                         1,      // dilationFilterH
-                                                        true,   // enableTranspose，dst为L0B的情况下，硬件一定会使能tranpose能力，以满足L0B分型要求
+                                                        true,   // enableTranspose, when dst is L0B, the hardware will definitely enable the transpose capability to meet the L0B classification requirements
                                                         false,  // enableSmallK
                                                         0,      // padValue
                                                         0,      // filterSizeWIn
                                                         0,      // filterSizeHIn
-                                                        1       // fMatrixCtrlIn 使能set_fmatrix设置
+                                                        1       // fMatrixCtrlIn enables set_fmatrix setting
                                                     }
                                                 );
     }
@@ -347,7 +347,7 @@ __aicore__ inline void LoadToB2(Intf *self, const AscendC::LocalTensor<typename 
     }
 }
 
-// 数据从A1加载到A2
+// Data is loaded from A1 to A2
 template <class Intf>
 __aicore__ inline void LoadToA2(Intf *self, const AscendC::LocalTensor<typename Intf::SrcT> &l1A1Matrix,
                                        AscendC::LocalTensor<typename Intf::SrcT> &l0a)
@@ -360,9 +360,9 @@ __aicore__ inline void CopyData2Gm(Intf *self, const AscendC::GlobalTensor<typen
                                           AscendC::LocalTensor<typename Intf::L0cT> &useC1Buf, QuantMode_t quantMode)
 {
     uint64_t dstOffset = static_cast<uint64_t>(self->ctx.curNL0Idx_) * self->ctx.tiling_->baseN * self->ctx.hwI_ +
-        (static_cast<uint64_t>(self->ctx.curML0Idx_) * self->ctx.tiling_->baseM +  // M方向偏移
+        (static_cast<uint64_t>(self->ctx.curML0Idx_) * self->ctx.tiling_->baseM +  // M direction offset
         static_cast<uint64_t>(self->ctx.curDinIdx_) * self->ctx.hwI_ *
-        self->ctx.tiling_->cin1) * self->ctx.tiling_->c0;  // D方向偏移
+        self->ctx.tiling_->cin1) * self->ctx.tiling_->c0;  // D direction offset
     bool enableChannelSplit = false;
     if constexpr (std::is_same<typename Intf::DstT, float>::value) {
         enableChannelSplit = true;
@@ -381,7 +381,7 @@ __aicore__ inline void CopyData2Gm(Intf *self, const AscendC::GlobalTensor<typen
         );
         DataCopy(output[dstOffset], useC1Buf, dataCopyParams);
     } else {
-        // 由于HF32/FP32需要channel split，暂时指令无法支持此场景，需在tiling侧进行拦截，此处只有BF16/FP16走进来
+        // Since HF32/FP32 requires channel split, the temporary command cannot support this scenario and needs to be intercepted on the tiling side. Only BF16/FP16 comes in here
         uint16_t blockCnt = self->ctx.baseUseN_ / self->ctx.tiling_->c0;
         uint64_t dstStrideOffset = self->ctx.hwI_ * self->ctx.tiling_->c0;
         uint32_t srcStrideOffset = alingedBaseUseM;
@@ -390,8 +390,8 @@ __aicore__ inline void CopyData2Gm(Intf *self, const AscendC::GlobalTensor<typen
             AscendC::DataCopyCO12DstParams dataCopyParams(
                 static_cast<uint16_t>(self->ctx.tiling_->c0),         //nSize
                 static_cast<uint16_t>(self->ctx.baseUseM_),         //mSize
-                static_cast<uint32_t>(self->ctx.baseUseM_),  // 目的数据头和头的间隔, 此处为了满足接口不可设0的要求，实际并不生效
-                0, //原数据头和头的间隔， 此处只拷贝一次，故设置为0
+                static_cast<uint32_t>(self->ctx.baseUseM_),  // The interval between the destination data header and the header. In order to meet the requirement that the interface cannot be set to 0, it does not actually take effect
+                0, //The interval between the original data header and the header is only copied once, so it is set to 0
                 quantMode,
                 0,
                 enableChannelSplit,
