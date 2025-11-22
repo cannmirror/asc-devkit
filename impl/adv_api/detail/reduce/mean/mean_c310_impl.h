@@ -133,9 +133,9 @@ __aicore__ inline void MeanImpl(const LocalTensor<T>& dstTensor, const LocalTens
         dstTensor, srcTensor, sharedTmpBuffer, meanParams);
 
     using ConvType = typename Internal::GetConvType<T, accType>::type;
-    __local_mem__ T* dstUb = (__local_mem__ T*)dstTensor.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)srcTensor.GetPhyAddr();
-    __local_mem__ ConvType* sharedTmpBufferUb = (__local_mem__ ConvType*)sharedTmpBuffer.GetPhyAddr();
+    __ubuf__ T* dstUb = (__ubuf__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ ConvType* sharedTmpBufferUb = (__ubuf__ ConvType*)sharedTmpBuffer.GetPhyAddr();
 
     constexpr int32_t eleCountPerVL = GetVecLen() / sizeof(ConvType);
     uint16_t repeatTimes = CeilDivision(meanParams.n, eleCountPerVL);

@@ -34,8 +34,8 @@ __simd_callee__ inline void RegTensorToMaskReg(MicroAPI::RegTensor<U> &vMaskReg0
 }
 
 template <typename T, typename U, bool reverse = false>
-__simd_vf__ inline void SelectWithBytesMaskPerAxisImpl(__local_mem__ T *dstUb, __local_mem__ T *src0Ub, T src1,
-    __local_mem__ U *maskUb, const uint32_t firstAxis, const uint32_t srcLastAxis, const uint32_t maskLastAxis)
+__simd_vf__ inline void SelectWithBytesMaskPerAxisImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, T src1,
+    __ubuf__ U *maskUb, const uint32_t firstAxis, const uint32_t srcLastAxis, const uint32_t maskLastAxis)
 {
     MicroAPI::RegTensor<T> vSrcReg0;
     MicroAPI::RegTensor<T> vSrcReg1;
@@ -56,14 +56,14 @@ __simd_vf__ inline void SelectWithBytesMaskPerAxisImpl(__local_mem__ T *dstUb, _
             if constexpr (sizeof(T) == 2 && sizeof(U) == 1) {
                 MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK_B8>(
                     (MicroAPI::RegTensor<uint8_t> &)vMaskReg0,
-                    (__local_mem__ uint8_t *)maskUb + loopH * maskLastAxis + i * sregLower);
+                    (__ubuf__ uint8_t *)maskUb + loopH * maskLastAxis + i * sregLower);
             } else if constexpr (sizeof(T) == 2 && sizeof(U) == 4) {
                 MicroAPI::DataCopy<U>(vMaskReg0, maskUb + loopH * maskLastAxis + i * sregLower);
                 MicroAPI::DataCopy<U>(vMaskReg1, maskUb + loopH * maskLastAxis + i * sregLower + sregLower / 2);
             } else if constexpr (sizeof(T) == 4 && sizeof(U) == 1) {
                 MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>(
                     (MicroAPI::RegTensor<uint8_t> &)vMaskReg0,
-                    (__local_mem__ uint8_t *)maskUb + loopH * maskLastAxis + i * sregLower);
+                    (__ubuf__ uint8_t *)maskUb + loopH * maskLastAxis + i * sregLower);
             } else if constexpr (sizeof(T) == 4 && sizeof(U) == 2) {
                 MicroAPI::DataCopy<U, MicroAPI::LoadDist::DIST_UNPACK_B16>(vMaskReg0,
                     maskUb + loopH * maskLastAxis + i * sregLower);
@@ -87,9 +87,9 @@ template <typename T, typename U, bool reverse = false>
 __aicore__ inline void SelectWithBytesMaskProcess(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
     const LocalTensor<U> &mask, const SelectWithBytesMaskShapeInfo &info)
 {
-    __local_mem__ T *src0Ub = (__local_mem__ T *)src0.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dst.GetPhyAddr();
-    __local_mem__ U *maskUb = (__local_mem__ U *)mask.GetPhyAddr();
+    __ubuf__ T *src0Ub = (__ubuf__ T *)src0.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dst.GetPhyAddr();
+    __ubuf__ U *maskUb = (__ubuf__ U *)mask.GetPhyAddr();
     const uint32_t firstAxis = static_cast<uint32_t>(info.firstAxis);
     const uint32_t srcLastAxis = static_cast<uint32_t>(info.srcLastAxis);
     const uint32_t maskLastAxis = static_cast<uint32_t>(info.maskLastAxis);

@@ -54,9 +54,9 @@ __aicore__ inline void BitwiseTemplateImpl(const LocalTensor<T>& dst, const Loca
         SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
         "only support uint8_t/int8_t/uint16_t/int16_t/uint32_t/int32_t/uint64_t/int64_t data type on current device!");
 
-    __local_mem__ T* dstTensor = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* src0Tensor = (__local_mem__ T*)src0.GetPhyAddr();
-    __local_mem__ T* src1Tensor = (__local_mem__ T*)src1.GetPhyAddr();
+    __ubuf__ T* dstTensor = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* src0Tensor = (__ubuf__ T*)src0.GetPhyAddr();
+    __ubuf__ T* src1Tensor = (__ubuf__ T*)src1.GetPhyAddr();
 
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * 2);

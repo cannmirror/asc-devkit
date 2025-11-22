@@ -21,9 +21,9 @@
 namespace AscendC {
 namespace Internal {
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashNDImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, __local_mem__ T2* inSumUb,
-    __local_mem__ T2* inMaxUb, __local_mem__ float* workUb, __local_mem__ float* tmpUb, const uint16_t srcM,
+__simd_vf__ inline void SoftmaxFlashNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb, __ubuf__ T2* inSumUb,
+    __ubuf__ T2* inMaxUb, __ubuf__ float* workUb, __ubuf__ float* tmpUb, const uint16_t srcM,
     const uint16_t repeatTimes, const uint32_t srcK)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
@@ -105,9 +105,9 @@ __simd_vf__ inline void SoftmaxFlashNDImpl(__local_mem__ T1* dstUb, __local_mem_
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, __local_mem__ T1* expMaxUb, __local_mem__ T2* inSumUb,
-    __local_mem__ T2* inMaxUb, __local_mem__ float* workUb, __local_mem__ float* tmpUb, const uint16_t srcM,
+__simd_vf__ inline void SoftmaxFlashNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, __ubuf__ T1* expMaxUb, __ubuf__ T2* inSumUb,
+    __ubuf__ T2* inMaxUb, __ubuf__ float* workUb, __ubuf__ float* tmpUb, const uint16_t srcM,
     const uint16_t repeatTimes, const uint32_t srcK, const uint32_t originK)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
@@ -220,15 +220,15 @@ __aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T1> &dstTensor,
     uint16_t srcM = static_cast<uint16_t>(originalSrcShape.m);
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(originK, stride));
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dstTensor.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)sumTensor.GetPhyAddr();
-    __local_mem__ T2* inSumUb = (__local_mem__ T2*)inSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)maxTensor.GetPhyAddr();
-    __local_mem__ T2* inMaxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)srcTensor.GetPhyAddr();
-    __local_mem__ T1* expMaxUb = (__local_mem__ T1*)expMaxTensor.GetPhyAddr();
-    __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * blockStride);
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dstTensor.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)sumTensor.GetPhyAddr();
+    __ubuf__ T2* inSumUb = (__ubuf__ T2*)inSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
+    __ubuf__ T2* inMaxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)srcTensor.GetPhyAddr();
+    __ubuf__ T1* expMaxUb = (__ubuf__ T1*)expMaxTensor.GetPhyAddr();
+    __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * blockStride);
 
     if (!isUpdate) {
         SoftMaxNDImpl<T1, T2, isBasicBlock>(dstTensor, sumTensor, maxTensor, srcTensor, workLocal, originalSrcShape, tiling);

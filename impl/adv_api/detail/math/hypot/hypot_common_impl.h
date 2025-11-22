@@ -118,7 +118,7 @@ __simd_callee__ inline void HypotCompute(MicroAPI::RegTensor<T> &vSrcTmpReg0, Mi
 }
 
 template <typename T>
-__simd_vf__ inline void VfHypotImpl(__local_mem__ T *dstUb, __local_mem__ T *src0Ub, __local_mem__ T *src1Ub,
+__simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubuf__ T *src1Ub,
     const uint32_t calCount)
 {
     MicroAPI::RegTensor<T> vSrcReg0;
@@ -225,9 +225,9 @@ __aicore__ inline void HypotImpl(const LocalTensor<T> &dstTensor, const LocalTen
             dstTensor.GetSize());
     });
 
-    __local_mem__ T *src0Ub = (__local_mem__ T *)src0Tensor.GetPhyAddr();
-    __local_mem__ T *src1Ub = (__local_mem__ T *)src1Tensor.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *src0Ub = (__ubuf__ T *)src0Tensor.GetPhyAddr();
+    __ubuf__ T *src1Ub = (__ubuf__ T *)src1Tensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
 
     VfHypotImpl<T>(dstUb, src0Ub, src1Ub, calCount);
 }

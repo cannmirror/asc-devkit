@@ -22,7 +22,7 @@
 
 namespace AscendC {
 template <typename T>
-__simd_vf__ inline void CumSumCopyLastRowVF(__local_mem__ T* dst, __local_mem__ T* src, uint32_t len)
+__simd_vf__ inline void CumSumCopyLastRowVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t len)
 {
     constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t count = len;
@@ -40,8 +40,8 @@ __simd_vf__ inline void CumSumCopyLastRowVF(__local_mem__ T* dst, __local_mem__ 
 template <typename T>
 __aicore__ inline void CumSumCopyLastRow(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t len)
 {
-    __local_mem__ T* src = (__local_mem__ T*)srcTensor.GetPhyAddr();
-    __local_mem__ T* dst = (__local_mem__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ T* src = (__ubuf__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ T* dst = (__ubuf__ T*)dstTensor.GetPhyAddr();
     CumSumCopyLastRowVF<T>(dst, src, len);
 }
 

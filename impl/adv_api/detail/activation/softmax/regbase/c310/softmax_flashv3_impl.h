@@ -19,9 +19,9 @@
 
 namespace AscendC {
 template <typename T, typename U>
-__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__local_mem__ T* dstUb,
-    __local_mem__ U* meanUb, __local_mem__ U* expSumUb, __local_mem__ U* maxUb, __local_mem__ T* srcUb,
-    __local_mem__ float* workUb, __local_mem__ float* newSrcUb, const uint16_t srcM, const uint16_t srcK,
+__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__ubuf__ T* dstUb,
+    __ubuf__ U* meanUb, __ubuf__ U* expSumUb, __ubuf__ U* maxUb, __ubuf__ T* srcUb,
+    __ubuf__ float* workUb, __ubuf__ float* newSrcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t splitMeanCnt, const uint16_t baseK, const uint16_t tail, const uint16_t remainRepeatTime,
     const uint16_t kRepeatTime, const uint16_t baseKRepeatTime, const float scalar, const float r0, const float r1)
 {
@@ -90,27 +90,27 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__local_mem__ T*
             uint32_t sreg = baseK;
             for (uint16_t k = 0; k < baseKRepeatTime; ++k) { // baseK / 64
                 maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
-                __local_mem__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
                 MicroAPI::DataCopyUnAlignPre(ureg0, srcUbTmp);
                 MicroAPI::DataCopyUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
                 MicroAPI::UnPack<uint32_t, uint16_t>(
                     (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
                 MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
                 MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-                __local_mem__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
                 MicroAPI::DataCopyUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
                 MicroAPI::DataCopyUnAlignPost(newSrcUbTmp, ureg1, 0);
                 MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
             }
             maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
-            __local_mem__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             MicroAPI::DataCopyUnAlignPre(ureg0, srcUbTmp);
             MicroAPI::DataCopyUnAlign(castVreg, ureg0, srcUbTmp, tail);
             MicroAPI::UnPack<uint32_t, uint16_t>(
                 (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
             MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
             MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-            __local_mem__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             MicroAPI::DataCopyUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
             MicroAPI::DataCopyUnAlignPost(newSrcUbTmp, ureg1, 0);
             MicroAPI::Select(srcVreg, srcVreg, minVreg, maskCnt);
@@ -139,11 +139,11 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDNoUpdateImpl(__local_mem__ T*
 }
 
 template <typename T, typename U>
-__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__local_mem__ T* dstUb,
-    __local_mem__ U* meanUb, __local_mem__ U* expSumUb, __local_mem__ U* maxUb,
-    __local_mem__ T* srcUb, __local_mem__ T* expMaxUb, __local_mem__ U* inMeanUb,
-    __local_mem__ U* inExpSumUb, __local_mem__ U* inMaxUb, __local_mem__ float* workUb,
-    __local_mem__ float* newSrcUb, __local_mem__ float* tmpUb, const uint16_t srcM,
+__simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__ubuf__ T* dstUb,
+    __ubuf__ U* meanUb, __ubuf__ U* expSumUb, __ubuf__ U* maxUb,
+    __ubuf__ T* srcUb, __ubuf__ T* expMaxUb, __ubuf__ U* inMeanUb,
+    __ubuf__ U* inExpSumUb, __ubuf__ U* inMaxUb, __ubuf__ float* workUb,
+    __ubuf__ float* newSrcUb, __ubuf__ float* tmpUb, const uint16_t srcM,
     const uint16_t srcK, const uint16_t splitMeanCnt, const uint16_t baseK, const uint16_t tail,
     const uint16_t remainRepeatTime, const uint16_t kRepeatTime, const uint16_t baseKRepeatTime,
     const uint32_t loopCnt, const float scalar, const float r0, const float r1,
@@ -224,27 +224,27 @@ __simd_vf__ __aicore__ inline void SoftmaxFlashV3NDUpdateImpl(__local_mem__ T* d
             uint32_t sreg = baseK;
             for (uint16_t k = 0; k < baseKRepeatTime; ++k) { // baseK / 64
                 maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
-                __local_mem__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + k * repeatStride;
                 MicroAPI::DataCopyUnAlignPre(ureg0, srcUbTmp);
                 MicroAPI::DataCopyUnAlign(castVreg, ureg0, srcUbTmp, repeatStride);
                 MicroAPI::UnPack<uint32_t, uint16_t>(
                     (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
                 MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
                 MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-                __local_mem__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
+                __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + k * repeatStride;
                 MicroAPI::DataCopyUnAlign(newSrcUbTmp, srcVreg, ureg1, repeatStride);
                 MicroAPI::DataCopyUnAlignPost(newSrcUbTmp, ureg1, 0);
                 MicroAPI::Max(maxVreg, maxVreg, srcVreg, maskFull);
             }
             maskCnt = MicroAPI::UpdateMask<uint32_t>(sreg);
-            __local_mem__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ T *srcUbTmp = srcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             MicroAPI::DataCopyUnAlignPre(ureg0, srcUbTmp);
             MicroAPI::DataCopyUnAlign(castVreg, ureg0, srcUbTmp, tail);
             MicroAPI::UnPack<uint32_t, uint16_t>(
                 (MicroAPI::RegTensor<uint32_t>&)castVreg, (MicroAPI::RegTensor<uint16_t>&)castVreg);
             MicroAPI::Cast<float, T, Internal::castTraitB16ToB32>(srcVreg, castVreg, maskCnt);
             MicroAPI::Sub(srcVreg, srcVreg, meanVreg, maskCnt);
-            __local_mem__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
+            __ubuf__ float *newSrcUbTmp = newSrcUb + i * srcK + j * baseK + baseKRepeatTime * repeatStride;
             MicroAPI::DataCopyUnAlign(newSrcUbTmp, srcVreg, ureg1, tail);
             MicroAPI::DataCopyUnAlignPost(newSrcUbTmp, ureg1, 0);
             MicroAPI::Select(srcVreg, srcVreg, minVreg, maskCnt);
@@ -313,17 +313,17 @@ __aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, co
     float r0 = static_cast<float>(1.0f / baseK);
     float r1 = static_cast<float>(1.0f / splitMeanCnt);
 
-    __local_mem__ T* dstUb = (__local_mem__ T*)dstTensor.GetPhyAddr();
-    __local_mem__ U* meanUb = (__local_mem__ U*)meanTensor.GetPhyAddr();
-    __local_mem__ U* inMeanUb = (__local_mem__ U*)inMeanTensor.GetPhyAddr();
-    __local_mem__ U* expSumUb = (__local_mem__ U*)expSumTensor.GetPhyAddr();
-    __local_mem__ U* inExpSumUb = (__local_mem__ U*)inExpSumTensor.GetPhyAddr();
-    __local_mem__ U* maxUb = (__local_mem__ U*)maxTensor.GetPhyAddr();
-    __local_mem__ U* inMaxUb = (__local_mem__ U*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T* srcUb = (__local_mem__ T*)srcTensor.GetPhyAddr();
-    __local_mem__ T* expMaxUb = (__local_mem__ T*)expMaxTensor.GetPhyAddr();
-    __local_mem__ float* workUb = (__local_mem__ float*)workLocal.GetPhyAddr();
-    __local_mem__ float* newSrcUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * repeatStride);
+    __ubuf__ T* dstUb = (__ubuf__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ U* meanUb = (__ubuf__ U*)meanTensor.GetPhyAddr();
+    __ubuf__ U* inMeanUb = (__ubuf__ U*)inMeanTensor.GetPhyAddr();
+    __ubuf__ U* expSumUb = (__ubuf__ U*)expSumTensor.GetPhyAddr();
+    __ubuf__ U* inExpSumUb = (__ubuf__ U*)inExpSumTensor.GetPhyAddr();
+    __ubuf__ U* maxUb = (__ubuf__ U*)maxTensor.GetPhyAddr();
+    __ubuf__ U* inMaxUb = (__ubuf__ U*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T* srcUb = (__ubuf__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ T* expMaxUb = (__ubuf__ T*)expMaxTensor.GetPhyAddr();
+    __ubuf__ float* workUb = (__ubuf__ float*)workLocal.GetPhyAddr();
+    __ubuf__ float* newSrcUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * repeatStride);
 
     if constexpr (!isUpdate) {
         SoftmaxFlashV3NDNoUpdateImpl<T, U>(dstUb, meanUb, expSumUb, maxUb, srcUb, workUb, newSrcUb,
@@ -331,7 +331,7 @@ __aicore__ inline void SoftmaxFlashV3Process(const LocalTensor<T>& dstTensor, co
     } else {
         float r2 = static_cast<float>(loopCnt - 1.0f);
         float r3 = static_cast<float>(1.0f / loopCnt);
-        __local_mem__ float* tmpUb = (__local_mem__ float*)workLocal.GetPhyAddr(srcM * repeatStride + srcM * srcK);
+        __ubuf__ float* tmpUb = (__ubuf__ float*)workLocal.GetPhyAddr(srcM * repeatStride + srcM * srcK);
         SoftmaxFlashV3NDUpdateImpl<T, U>(dstUb, meanUb, expSumUb, maxUb, srcUb, expMaxUb,
                 inMeanUb, inExpSumUb, inMaxUb, workUb, newSrcUb, tmpUb, srcM, srcK, splitMeanCnt, baseK,
                 tail, remainRepeatTime, kRepeatTime, baseKRepeatTime, loopCnt, scalar, r0, r1, r2, r3);

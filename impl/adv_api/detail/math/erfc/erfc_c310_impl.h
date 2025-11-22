@@ -177,8 +177,8 @@ __aicore__ inline void ErfcImpl(const LocalTensor<T>& dstTensor, const LocalTens
             dstTensor.GetSize());
     });
 
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
     uint16_t repeatTimes = CeilDivision(calCount, B32_DATA_NUM_PER_REPEAT);
     ERFC::ErfcCoreImpl<T>(dstUb, srcUb, calCount, repeatTimes);
 }

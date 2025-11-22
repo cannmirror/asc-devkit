@@ -84,9 +84,9 @@ __simd_callee__ inline void RsqrtUtil(RegT &dstReg, RegT &srcReg, MicroAPI::Mask
 }
 
 template <typename U, typename T, bool isReuseSource = false, const NormalizeConfig &config = NLCFG_NORM>
-__simd_vf__ inline void NormalizeVFImpl(__local_mem__ float *rstdUb, __local_mem__ float *meanUb,
-    __local_mem__ float *varianceUb, __local_mem__ T *inputXUb, __local_mem__ T *outputUb,
-    __local_mem__ U *gammaUb, __local_mem__ U *betaUb, __local_mem__ float *workUb, const LocalTensor<uint8_t> sharedTmpBuffer,
+__simd_vf__ inline void NormalizeVFImpl(__ubuf__ float *rstdUb, __ubuf__ float *meanUb,
+    __ubuf__ float *varianceUb, __ubuf__ T *inputXUb, __ubuf__ T *outputUb,
+    __ubuf__ U *gammaUb, __ubuf__ U *betaUb, __ubuf__ float *workUb, const LocalTensor<uint8_t> sharedTmpBuffer,
     const float epsilon, const NormalizePara para, uint16_t aLength, uint16_t tailARepeatTimes)
 {
     constexpr uint16_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
@@ -96,16 +96,16 @@ __simd_vf__ inline void NormalizeVFImpl(__local_mem__ float *rstdUb, __local_mem
     uint32_t count;
     uint32_t halfA = aLength / 2;
 
-    __local_mem__ float *rstdUb2 = rstdUb + halfA;
-    __local_mem__ float *rstdUbTail = rstdUb + aLength - 1;
-    __local_mem__ float *meanUb2 = meanUb + halfA;
-    __local_mem__ float *meanUbTail = meanUb + aLength - 1;
-    __local_mem__ float *varianceUb2 = varianceUb + halfA;
-    __local_mem__ float *varianceUbTail = varianceUb + aLength - 1;
-    __local_mem__ T *inputXUb2 = inputXUb + halfA * rLengthWithPadding;
-    __local_mem__ T *inputXUbTail = inputXUb + (aLength - 1) * rLengthWithPadding;
-    __local_mem__ T *outputUb2 = outputUb + halfA * rLengthWithPadding;
-    __local_mem__ T *outputUbTail = outputUb + (aLength - 1) * rLengthWithPadding;
+    __ubuf__ float *rstdUb2 = rstdUb + halfA;
+    __ubuf__ float *rstdUbTail = rstdUb + aLength - 1;
+    __ubuf__ float *meanUb2 = meanUb + halfA;
+    __ubuf__ float *meanUbTail = meanUb + aLength - 1;
+    __ubuf__ float *varianceUb2 = varianceUb + halfA;
+    __ubuf__ float *varianceUbTail = varianceUb + aLength - 1;
+    __ubuf__ T *inputXUb2 = inputXUb + halfA * rLengthWithPadding;
+    __ubuf__ T *inputXUbTail = inputXUb + (aLength - 1) * rLengthWithPadding;
+    __ubuf__ T *outputUb2 = outputUb + halfA * rLengthWithPadding;
+    __ubuf__ T *outputUbTail = outputUb + (aLength - 1) * rLengthWithPadding;
 
     MicroAPI::RegTensor<float> inputReg1;
     MicroAPI::RegTensor<float> inputReg2;
@@ -291,14 +291,14 @@ __aicore__ inline void NormalizeImpl(const LocalTensor<T> &output, const LocalTe
     uint16_t tailARepeatTimes = aLength % 2;
     LocalTensor<float> workLocal = sharedTmpBuffer.ReinterpretCast<float>();
 
-    __local_mem__ float *rstdUb = (__local_mem__ float *)outputRstd.GetPhyAddr();
-    __local_mem__ float *meanUb = (__local_mem__ float *)inputMean.GetPhyAddr();
-    __local_mem__ float *varianceUb = (__local_mem__ float *)inputVariance.GetPhyAddr();
-    __local_mem__ T *inputXUb = (__local_mem__ T *)inputX.GetPhyAddr();
-    __local_mem__ T *outputUb = (__local_mem__ T *)output.GetPhyAddr();
-    __local_mem__ U *gammaUb = (__local_mem__ U *)gamma.GetPhyAddr();
-    __local_mem__ U *betaUb = (__local_mem__ U *)beta.GetPhyAddr();
-    __local_mem__ float *workUb = (__local_mem__ float *)workLocal.GetPhyAddr();
+    __ubuf__ float *rstdUb = (__ubuf__ float *)outputRstd.GetPhyAddr();
+    __ubuf__ float *meanUb = (__ubuf__ float *)inputMean.GetPhyAddr();
+    __ubuf__ float *varianceUb = (__ubuf__ float *)inputVariance.GetPhyAddr();
+    __ubuf__ T *inputXUb = (__ubuf__ T *)inputX.GetPhyAddr();
+    __ubuf__ T *outputUb = (__ubuf__ T *)output.GetPhyAddr();
+    __ubuf__ U *gammaUb = (__ubuf__ U *)gamma.GetPhyAddr();
+    __ubuf__ U *betaUb = (__ubuf__ U *)beta.GetPhyAddr();
+    __ubuf__ float *workUb = (__ubuf__ float *)workLocal.GetPhyAddr();
 
     NormalizeVFImpl<U, T, isReuseSource, config>(rstdUb, meanUb, varianceUb, inputXUb, outputUb,
         gammaUb, betaUb, workUb, sharedTmpBuffer, epsilon, para, aLength, tailARepeatTimes);

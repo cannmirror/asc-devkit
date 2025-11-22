@@ -22,7 +22,7 @@
 namespace AscendC {
 namespace BroadcastInternal {
 template <typename T>
-__simd_callee__ inline void E2bLoad(MicroAPI::RegTensor<T> &dstReg, __local_mem__ T *srcUb)
+__simd_callee__ inline void E2bLoad(MicroAPI::RegTensor<T> &dstReg, __ubuf__ T *srcUb)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_E2B_B16>(dstReg, srcUb);
@@ -32,7 +32,7 @@ __simd_callee__ inline void E2bLoad(MicroAPI::RegTensor<T> &dstReg, __local_mem_
 }
 
 template <typename T>
-__simd_callee__ inline void BrcLoad(MicroAPI::RegTensor<T> &dstReg, __local_mem__ T *srcUb)
+__simd_callee__ inline void BrcLoad(MicroAPI::RegTensor<T> &dstReg, __ubuf__ T *srcUb)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_BRC_B16>(dstReg, srcUb);
@@ -44,7 +44,7 @@ __simd_callee__ inline void BrcLoad(MicroAPI::RegTensor<T> &dstReg, __local_mem_
 }
 
 template <typename T>
-__simd_vf__ inline void BrcDuplicate(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint32_t dstSize)
+__simd_vf__ inline void BrcDuplicate(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t dstSize)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t repeatTimes = CeilDivision(dstSize, VF_LEN);
@@ -60,7 +60,7 @@ __simd_vf__ inline void BrcDuplicate(__local_mem__ T *dstUb, __local_mem__ T *sr
 }
 
 template <typename T>
-__simd_vf__ inline void GenLastGatherIndex(__local_mem__ T *indexUb, uint32_t size1, uint32_t offset)
+__simd_vf__ inline void GenLastGatherIndex(__ubuf__ T *indexUb, uint32_t size1, uint32_t offset)
 {
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
     MicroAPI::RegTensor<T> indexReg;
@@ -74,7 +74,7 @@ __simd_vf__ inline void GenLastGatherIndex(__local_mem__ T *indexUb, uint32_t si
 }
 
 template <typename T>
-__simd_vf__ inline void GenNlastGatherIndex(__local_mem__ T *indexUb, uint32_t size1, uint32_t offset)
+__simd_vf__ inline void GenNlastGatherIndex(__ubuf__ T *indexUb, uint32_t size1, uint32_t offset)
 {
     MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<T>();
     MicroAPI::RegTensor<T> indexReg;
@@ -92,7 +92,7 @@ __simd_vf__ inline void GenNlastGatherIndex(__local_mem__ T *indexUb, uint32_t s
 
 template <typename T, typename IndexT>
 __simd_vf__ inline void BrcLastGatherOne(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, __local_mem__ IndexT *indexUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ IndexT *indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
     uint32_t main = size0 * size1;
@@ -125,7 +125,7 @@ __simd_vf__ inline void BrcLastGatherOne(
 
 template <typename T, typename IndexT>
 __simd_vf__ inline void BrcLastGatherTwo(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, __local_mem__ IndexT *indexUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ IndexT *indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
@@ -183,7 +183,7 @@ __simd_vf__ inline void BrcLastGatherTwo(
 
 template <typename T, typename IndexT>
 __simd_vf__ inline void BrcNlastGatherOne(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, __local_mem__ IndexT *indexUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ IndexT *indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
     uint32_t main = size0 * size1;
@@ -215,7 +215,7 @@ __simd_vf__ inline void BrcNlastGatherOne(
 
 template <typename T, typename IndexT>
 __simd_vf__ inline void BrcNlastGatherTwo(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, __local_mem__ IndexT *indexUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ IndexT *indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
@@ -252,7 +252,7 @@ __simd_vf__ inline void BrcNlastGatherTwo(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastE2B(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+__simd_vf__ inline void BrcLastE2B(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = VF_LEN / size1;
@@ -271,7 +271,7 @@ __simd_vf__ inline void BrcLastE2B(__local_mem__ T *dstUb, __local_mem__ T *srcU
 
 template <typename T>
 __simd_vf__ inline void BrcLastE2BLargerThanVL(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1, uint16_t size2, uint16_t srcStride0)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1, uint16_t size2, uint16_t srcStride0)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = VF_LEN / size2;
@@ -293,7 +293,7 @@ __simd_vf__ inline void BrcLastE2BLargerThanVL(
 
 template <typename T>
 __simd_vf__ inline void BrcLastE2BLessThanVL(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1, uint16_t size2, uint16_t srcStride0)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1, uint16_t size2, uint16_t srcStride0)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint32_t preg = size1 * size2;
@@ -309,7 +309,7 @@ __simd_vf__ inline void BrcLastE2BLessThanVL(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastE2B(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1,
+__simd_vf__ inline void BrcLastE2B(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1,
     uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -334,7 +334,7 @@ __simd_vf__ inline void BrcLastE2B(__local_mem__ T *dstUb, __local_mem__ T *srcU
 
 template <typename T>
 __simd_vf__ inline void BrcNlastGatherBOne(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, __local_mem__ uint32_t *indexUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ uint32_t *indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint32_t oneBlockElementNum = GetDataBlockSizeInBytes() / sizeof(T);
     uint32_t main = size0 * size1;
@@ -353,7 +353,7 @@ __simd_vf__ inline void BrcNlastGatherBOne(
 
 template <typename T>
 __simd_vf__ inline void BrcNlastGatherBTwo(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, __local_mem__ uint32_t *indexUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, __ubuf__ uint32_t *indexUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     constexpr uint32_t oneBlockElementNum = GetDataBlockSizeInBytes() / sizeof(T);
@@ -381,7 +381,7 @@ __simd_vf__ inline void BrcNlastGatherBTwo(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLessThanVLAligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLessThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     MicroAPI::MaskReg pregCnt;
@@ -398,7 +398,7 @@ __simd_vf__ inline void BrcLastLessThanVLAligned(__local_mem__ T *dstUb, __local
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLessThanVLAligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLessThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     MicroAPI::MaskReg pregCnt;
@@ -418,7 +418,7 @@ __simd_vf__ inline void BrcLastLessThanVLAligned(__local_mem__ T *dstUb, __local
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLessThanVLAligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLessThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     MicroAPI::MaskReg pregCnt;
@@ -439,7 +439,7 @@ __simd_vf__ inline void BrcNlastLessThanVLAligned(__local_mem__ T *dstUb, __loca
 
 template <typename T>
 __simd_vf__ inline void BrcLastLessThanVLUnaligned(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     MicroAPI::MaskReg pregCnt;
     MicroAPI::RegTensor<T> srcReg;
@@ -456,7 +456,7 @@ __simd_vf__ inline void BrcLastLessThanVLUnaligned(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLessThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     MicroAPI::MaskReg pregCnt;
@@ -476,7 +476,7 @@ __simd_vf__ inline void BrcLastLessThanVLUnaligned(__local_mem__ T *dstUb, __loc
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLessThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     MicroAPI::MaskReg pregCnt;
@@ -499,7 +499,7 @@ __simd_vf__ inline void BrcLastLessThanVLUnaligned(__local_mem__ T *dstUb, __loc
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLessThanVLUnaligned(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     MicroAPI::MaskReg pregCnt;
     MicroAPI::RegTensor<T> srcReg;
@@ -515,7 +515,7 @@ __simd_vf__ inline void BrcNlastLessThanVLUnaligned(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLessThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     MicroAPI::MaskReg pregCnt;
@@ -536,7 +536,7 @@ __simd_vf__ inline void BrcNlastLessThanVLUnaligned(__local_mem__ T *dstUb, __lo
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLessThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLessThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     MicroAPI::MaskReg pregCnt;
@@ -548,7 +548,7 @@ __simd_vf__ inline void BrcNlastLessThanVLUnaligned(__local_mem__ T *dstUb, __lo
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
-                __local_mem__ T *srcUbTmp = srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2;
+                __ubuf__ T *srcUbTmp = srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2;
                 MicroAPI::DataCopyUnAlignPre(ureg0, srcUbTmp);
                 MicroAPI::DataCopyUnAlign(srcReg, ureg0, srcUbTmp, size3);
                 MicroAPI::DataCopyUnAlign(dstUb, srcReg, ureg1, size3);
@@ -560,7 +560,7 @@ __simd_vf__ inline void BrcNlastLessThanVLUnaligned(__local_mem__ T *dstUb, __lo
 
 template <typename T>
 __simd_vf__ inline void BrcLastLargerThanVLAligned(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size1, VF_LEN);
@@ -580,7 +580,7 @@ __simd_vf__ inline void BrcLastLargerThanVLAligned(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLargerThanVLAligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLargerThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -603,7 +603,7 @@ __simd_vf__ inline void BrcLastLargerThanVLAligned(__local_mem__ T *dstUb, __loc
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLargerThanVLAligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLargerThanVLAligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -631,7 +631,7 @@ __simd_vf__ inline void BrcLastLargerThanVLAligned(__local_mem__ T *dstUb, __loc
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size1, VF_LEN);
@@ -651,7 +651,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     uint16_t size0, uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -675,7 +675,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__local_mem__ T *ds
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     uint16_t size0, uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1,
     uint16_t srcStride2)
 {
@@ -703,7 +703,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithBlock(__local_mem__ T *ds
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = CeilDivision(size1, VF_LEN);
@@ -720,7 +720,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -740,7 +740,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__local_mem__ T *dstUb
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -765,7 +765,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLAlignedWithVL(__local_mem__ T *dstUb
 
 template <typename T>
 __simd_vf__ inline void BrcLastLargerThanVLUnaligned(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = size1 / VF_LEN;
@@ -789,7 +789,7 @@ __simd_vf__ inline void BrcLastLargerThanVLUnaligned(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLargerThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -816,7 +816,7 @@ __simd_vf__ inline void BrcLastLargerThanVLUnaligned(__local_mem__ T *dstUb, __l
 }
 
 template <typename T>
-__simd_vf__ inline void BrcLastLargerThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcLastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -846,7 +846,7 @@ __simd_vf__ inline void BrcLastLargerThanVLUnaligned(__local_mem__ T *dstUb, __l
 
 template <typename T>
 __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0, uint16_t size1)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0, uint16_t size1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     uint16_t factor = size1 / VF_LEN;
@@ -869,7 +869,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t srcStride0, uint16_t srcStride1)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -882,7 +882,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__local_mem__ T *dstUb, __
     uint32_t sreg = size2tail;
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
-            __local_mem__ T *tmpSrcUb = srcUb + i * srcStride0 + j * srcStride1;
+            __ubuf__ T *tmpSrcUb = srcUb + i * srcStride0 + j * srcStride1;
             MicroAPI::DataCopyUnAlignPre(ureg0, tmpSrcUb);
             for (uint16_t k = 0; k < factor; ++k) {
                 MicroAPI::DataCopyUnAlign(srcReg, ureg0, tmpSrcUb, VF_LEN);
@@ -896,7 +896,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__local_mem__ T *dstUb, __
 }
 
 template <typename T>
-__simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint16_t size0,
+__simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint16_t size0,
     uint16_t size1, uint16_t size2, uint16_t size3, uint16_t srcStride0, uint16_t srcStride1, uint16_t srcStride2)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -910,7 +910,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__local_mem__ T *dstUb, __
     for (uint16_t i = 0; i < size0; ++i) {
         for (uint16_t j = 0; j < size1; ++j) {
             for (uint16_t k = 0; k < size2; ++k) {
-                __local_mem__ T *tmpSrcUb = srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2;
+                __ubuf__ T *tmpSrcUb = srcUb + i * srcStride0 + j * srcStride1 + k * srcStride2;
                 MicroAPI::DataCopyUnAlignPre(ureg0, tmpSrcUb);
                 for (uint16_t t = 0; t < factor; ++t) {
                     MicroAPI::DataCopyUnAlign(srcReg, ureg0, tmpSrcUb, VF_LEN);
@@ -926,7 +926,7 @@ __simd_vf__ inline void BrcNlastLargerThanVLUnaligned(__local_mem__ T *dstUb, __
 
 template <typename T, int32_t constRank = -1>
 __aicore__ inline bool BrcLastWrapperForTwoDim(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, const uint32_t *dstShape)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, const uint32_t *dstShape)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
@@ -943,13 +943,13 @@ __aicore__ inline bool BrcLastWrapperForTwoDim(
     } else if (sizeI[1] < VF_LEN_HALF) {
         LocalTensor<T> indexLocal;
         PopStackBuffer<T, TPosition::LCM>(indexLocal);
-        __local_mem__ GatherIndexType *indexUb1 = (__local_mem__ GatherIndexType *)indexLocal.GetPhyAddr();
-        __local_mem__ GatherIndexType *indexUb2 = (__local_mem__ GatherIndexType *)indexLocal.GetPhyAddr(VF_LEN);
+        __ubuf__ GatherIndexType *indexUb1 = (__ubuf__ GatherIndexType *)indexLocal.GetPhyAddr();
+        __ubuf__ GatherIndexType *indexUb2 = (__ubuf__ GatherIndexType *)indexLocal.GetPhyAddr(VF_LEN);
         GenLastGatherIndex<GatherIndexType>(indexUb1, sizeI[1], 0);
         if constexpr (sizeof(T) == sizeof(uint8_t)) {
             GenLastGatherIndex<GatherIndexType>(indexUb2, sizeI[1], VF_LEN_HALF);
         }
-        __local_mem__ BrcIndexType *indexUb = (__local_mem__ BrcIndexType *)indexLocal.GetPhyAddr();
+        __ubuf__ BrcIndexType *indexUb = (__ubuf__ BrcIndexType *)indexLocal.GetPhyAddr();
         if (sizeI[0] * sizeI[1] < VF_LEN) {
             BrcLastGatherOne<T, BrcIndexType>(dstUb, srcUb, indexUb, sizeI[0], sizeI[1]);
         } else if (sizeI[1] < VF_LEN) {
@@ -972,7 +972,7 @@ __aicore__ inline bool BrcLastWrapperForTwoDim(
 }
 
 template <typename T, int32_t constRank = -1>
-__aicore__ inline bool BrcLastWrapperForThreeDim(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline bool BrcLastWrapperForThreeDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t *dstShape, const uint32_t *srcStride)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -1023,7 +1023,7 @@ __aicore__ inline bool BrcLastWrapperForThreeDim(__local_mem__ T *dstUb, __local
 }
 
 template <typename T, int32_t constRank = -1>
-__aicore__ inline bool BrcLastWrapperForFourDim(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline bool BrcLastWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t *dstShape, const uint32_t *srcStride)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -1077,7 +1077,7 @@ __aicore__ inline bool BrcLastWrapperForFourDim(__local_mem__ T *dstUb, __local_
 
 template <typename T, int32_t constRank = -1>
 __aicore__ inline bool BrcNlastWrapperForTwoDim(
-    __local_mem__ T *dstUb, __local_mem__ T *srcUb, const uint32_t *dstShape)
+    __ubuf__ T *dstUb, __ubuf__ T *srcUb, const uint32_t *dstShape)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
     constexpr uint32_t VF_LEN_HALF = GetVecLen() / 2 / sizeof(T);
@@ -1095,7 +1095,7 @@ __aicore__ inline bool BrcNlastWrapperForTwoDim(
             event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
             SetFlag<HardEvent::V_S>(eventIdVToS);
             WaitFlag<HardEvent::V_S>(eventIdVToS);
-            __local_mem__ uint32_t *indexUb = (__local_mem__ uint32_t *)indexLocal.GetPhyAddr();
+            __ubuf__ uint32_t *indexUb = (__ubuf__ uint32_t *)indexLocal.GetPhyAddr();
             if (sizeI[1] / oneBlockElementNum == 1) {
                 indexUb[0] = 0;
                 indexUb[1] = 0;
@@ -1128,18 +1128,18 @@ __aicore__ inline bool BrcNlastWrapperForTwoDim(
             SetFlag<HardEvent::S_V>(eventIdSToV);
             WaitFlag<HardEvent::S_V>(eventIdSToV);
             if (sizeI[0] * sizeI[1] < VF_LEN) {
-                BrcNlastGatherBOne<T>(dstUb, srcUb, (__local_mem__ uint32_t *)indexUb, sizeI[0], sizeI[1]);
+                BrcNlastGatherBOne<T>(dstUb, srcUb, (__ubuf__ uint32_t *)indexUb, sizeI[0], sizeI[1]);
             } else if (sizeI[1] < VF_LEN) {
-                BrcNlastGatherBTwo<T>(dstUb, srcUb, (__local_mem__ uint32_t *)indexUb, sizeI[0], sizeI[1]);
+                BrcNlastGatherBTwo<T>(dstUb, srcUb, (__ubuf__ uint32_t *)indexUb, sizeI[0], sizeI[1]);
             }
         } else {
-            __local_mem__ GatherIndexType *indexUb1 = (__local_mem__ GatherIndexType *)indexLocal.GetPhyAddr();
-            __local_mem__ GatherIndexType *indexUb2 = (__local_mem__ GatherIndexType *)indexLocal.GetPhyAddr(VF_LEN);
+            __ubuf__ GatherIndexType *indexUb1 = (__ubuf__ GatherIndexType *)indexLocal.GetPhyAddr();
+            __ubuf__ GatherIndexType *indexUb2 = (__ubuf__ GatherIndexType *)indexLocal.GetPhyAddr(VF_LEN);
             GenNlastGatherIndex<GatherIndexType>(indexUb1, sizeI[1], 0);
             if constexpr (sizeof(T) == sizeof(uint8_t)) {
                 GenNlastGatherIndex<GatherIndexType>(indexUb2, sizeI[1], VF_LEN_HALF);
             }
-            __local_mem__ BrcIndexType *indexUb = (__local_mem__ BrcIndexType *)indexLocal.GetPhyAddr();
+            __ubuf__ BrcIndexType *indexUb = (__ubuf__ BrcIndexType *)indexLocal.GetPhyAddr();
             if (sizeI[0] * sizeI[1] < VF_LEN) {
                 BrcNlastGatherOne<T, BrcIndexType>(dstUb, srcUb, indexUb, sizeI[0], sizeI[1]);
             } else if (sizeI[1] < VF_LEN) {
@@ -1167,7 +1167,7 @@ __aicore__ inline bool BrcNlastWrapperForTwoDim(
 }
 
 template <typename T, int32_t constRank = -1>
-__aicore__ inline bool BrcNlastWrapperForThreeDim(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline bool BrcNlastWrapperForThreeDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t *dstShape, const uint32_t *srcStride)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -1208,7 +1208,7 @@ __aicore__ inline bool BrcNlastWrapperForThreeDim(__local_mem__ T *dstUb, __loca
 }
 
 template <typename T, int32_t constRank = -1>
-__aicore__ inline bool BrcNlastWrapperForFourDim(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline bool BrcNlastWrapperForFourDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t *dstShape, const uint32_t *srcStride)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -1263,7 +1263,7 @@ __aicore__ inline bool BrcNlastWrapperForFourDim(__local_mem__ T *dstUb, __local
 }
 
 template <typename T>
-__aicore__ inline void BrcNlastWrapperForMoreDim(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline void BrcNlastWrapperForMoreDim(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t *dstShape, const uint32_t *dstStride, const uint32_t *srcStride)
 {
     uint16_t sizeI[4];
@@ -1278,8 +1278,8 @@ __aicore__ inline void BrcNlastWrapperForMoreDim(__local_mem__ T *dstUb, __local
     stride[3] = static_cast<uint16_t>(srcStride[4]);
     uint32_t totalDim = 9;
 
-    __local_mem__ T *srcUbTmp = srcUb;
-    __local_mem__ T *dstUbTmp = dstUb;
+    __ubuf__ T *srcUbTmp = srcUb;
+    __ubuf__ T *dstUbTmp = dstUb;
     for (uint16_t p = 0; p < static_cast<uint16_t>(dstShape[0]); ++p) {
         dstUb = dstUbTmp + p * dstStride[0];
         srcUb = srcUbTmp + p * srcStride[0];
@@ -1292,7 +1292,7 @@ __aicore__ inline void BrcNlastWrapperForMoreDim(__local_mem__ T *dstUb, __local
 }
 
 template <typename T>
-__aicore__ inline void BrcNlastWrapperForMoreDimDynamicShape(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline void BrcNlastWrapperForMoreDimDynamicShape(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t dim, const uint32_t *dstShape, const uint32_t *dstStride, const uint32_t *srcStride)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -1325,8 +1325,8 @@ __aicore__ inline void BrcNlastWrapperForMoreDimDynamicShape(__local_mem__ T *ds
             stride[4 - dim + i] = srcStride[i];
         }
     }
-    __local_mem__ T *srcUbTmp = srcUb;
-    __local_mem__ T *dstUbTmp = dstUb;
+    __ubuf__ T *srcUbTmp = srcUb;
+    __ubuf__ T *dstUbTmp = dstUb;
     for (uint16_t i = 0; i < loops[0]; ++i) {
         for (uint16_t j = 0; j < loops[1]; ++j) {
             for (uint16_t k = 0; k < loops[2]; ++k) {
@@ -1373,7 +1373,7 @@ __aicore__ inline void BrcNlastWrapperForMoreDimDynamicShape(__local_mem__ T *ds
 }
 
 template <typename T>
-__aicore__ inline void BrcLastWrapperForMoreDimDynamicShape(__local_mem__ T *dstUb, __local_mem__ T *srcUb,
+__aicore__ inline void BrcLastWrapperForMoreDimDynamicShape(__ubuf__ T *dstUb, __ubuf__ T *srcUb,
     const uint32_t dim, const uint32_t *dstShape, const uint32_t *dstStride, const uint32_t *srcStride)
 {
     constexpr uint16_t VF_LEN = GetVecLen() / sizeof(T);
@@ -1405,8 +1405,8 @@ __aicore__ inline void BrcLastWrapperForMoreDimDynamicShape(__local_mem__ T *dst
             stride[4 - dim + i] = srcStride[i];
         }
     }
-    __local_mem__ T *srcUbTmp = srcUb;
-    __local_mem__ T *dstUbTmp = dstUb;
+    __ubuf__ T *srcUbTmp = srcUb;
+    __ubuf__ T *dstUbTmp = dstUb;
     for (uint16_t i = 0; i < loops[0]; ++i) {
         for (uint16_t j = 0; j < loops[1]; ++j) {
             for (uint16_t k = 0; k < loops[2]; ++k) {

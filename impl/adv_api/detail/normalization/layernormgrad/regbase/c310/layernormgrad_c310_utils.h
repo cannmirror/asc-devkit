@@ -33,7 +33,7 @@ constexpr MicroAPI::CastTrait castTraitFloatToHalf = {
 // load a float register from float or half UB
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcTmpReg;
@@ -47,7 +47,7 @@ __simd_callee__ inline void LoadDataWithT(
 // fill a float register from float or half UB
 template <typename T>
 __simd_callee__ inline void FillDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& dstPreg, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcTmpReg;
@@ -61,7 +61,7 @@ __simd_callee__ inline void FillDataWithT(
 // store data from float register to float or half UB
 template <typename T>
 __simd_callee__ inline void StoreDataWithT(
-    __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& srcPreg, uint32_t offset)
+    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& srcPreg, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> dstTmpReg;

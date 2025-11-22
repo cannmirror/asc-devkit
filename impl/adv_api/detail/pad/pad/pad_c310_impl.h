@@ -41,7 +41,7 @@ __simd_callee__ inline void SetRightPadMask(MicroAPI::MaskReg& mask, uint32_t sr
 }
 
 template <typename T>
-__simd_vf__ inline void UnAlignedPad(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+__simd_vf__ inline void UnAlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
     PadParams padParams, PadTiling padTiling, uint32_t lastRegBlockPerRowElementCnt)
 {
     MicroAPI::RegTensor<T> regT;
@@ -56,8 +56,8 @@ __simd_vf__ inline void UnAlignedPad(__local_mem__ T* dstUb, __local_mem__ T* sr
 
     uint32_t lastRegBlockPerRowCopyOutCnt = lastRegBlockPerRowElementCnt + padParams.rightPad;
 
-    __local_mem__ T* srcStartPerBlock = srcUb;
-    __local_mem__ T* dstStartPerBlock = dstUb;
+    __ubuf__ T* srcStartPerBlock = srcUb;
+    __ubuf__ T* dstStartPerBlock = dstUb;
     for (uint32_t i = 0; i < padTiling.srcHeight; i++) {
         MicroAPI::UnalignReg unalignRegCpyIn;
         MicroAPI::UnalignReg unalignRegCpyOut;
@@ -88,7 +88,7 @@ __simd_vf__ inline void UnAlignedPad(__local_mem__ T* dstUb, __local_mem__ T* sr
 }
 
 template <typename T>
-__simd_vf__ inline void AlignedPad(__local_mem__ T* dstUb, __local_mem__ T* srcUb,
+__simd_vf__ inline void AlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
     PadParams padParams, PadTiling tiling, uint32_t lastRegBlockPerRowElementCnt)
 {
     MicroAPI::RegTensor<T> regT;
@@ -108,8 +108,8 @@ __simd_vf__ inline void AlignedPad(__local_mem__ T* dstUb, __local_mem__ T* srcU
     MicroAPI::MaskReg rightPadask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
     SetRightPadMask<T>(rightPadask, tiling.srcOriWidth - regBlockCntPerRow * regBlockElementCnt, padParams.rightPad);
 
-    __local_mem__ T* srcStartPerBlock = srcUb;
-    __local_mem__ T* dstStartPerBlock = dstUb;
+    __ubuf__ T* srcStartPerBlock = srcUb;
+    __ubuf__ T* dstStartPerBlock = dstUb;
 
     for (uint32_t i = 0; i < tiling.srcHeight; i++) {
         for (uint32_t j = 0; j < regBlockCntPerRow; j++) {
@@ -128,7 +128,7 @@ __simd_vf__ inline void AlignedPad(__local_mem__ T* dstUb, __local_mem__ T* srcU
 }
 
 template <typename T>
-__simd_vf__ inline void UnPad(__local_mem__ T* dstUb, __local_mem__ T* srcUb, UnPadParams padParams, UnPadTiling tiling,
+__simd_vf__ inline void UnPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb, UnPadParams padParams, UnPadTiling tiling,
                               uint32_t lastRegBlockPerRowElementCnt)
 {
     MicroAPI::RegTensor<T> regT;
@@ -141,8 +141,8 @@ __simd_vf__ inline void UnPad(__local_mem__ T* dstUb, __local_mem__ T* srcUb, Un
         lastRegBlockPerRowElementCnt = regBlockElementCnt;
     }
 
-    __local_mem__ T* srcStartPerBlock = srcUb;
-    __local_mem__ T* dstStartPerBlock = dstUb;
+    __ubuf__ T* srcStartPerBlock = srcUb;
+    __ubuf__ T* dstStartPerBlock = dstUb;
     for (uint32_t i = 0; i < tiling.srcHeight; i++) {
         for (uint32_t j = 0; j < regBlockCntPerRow; ++j) {
             MicroAPI::DataCopy<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
@@ -170,11 +170,11 @@ __aicore__ inline void PadCompute(const LocalTensor<T> &dstTensor, const LocalTe
     uint32_t regBlockElementCnt = CUBE_MAX_SIZE / sizeof(T);
     uint32_t lastRegBlockPerRowElementCnt = tiling.srcWidth % regBlockElementCnt;
     if (tiling.srcWidth * sizeof(T) % ONE_BLK_SIZE == 0) {
-        PadInternal::AlignedPad<T>((__local_mem__ T *)dstTensor.GetPhyAddr(),
-            (__local_mem__ T *)srcTensor.GetPhyAddr(), padParams, tiling, lastRegBlockPerRowElementCnt);
+        PadInternal::AlignedPad<T>((__ubuf__ T *)dstTensor.GetPhyAddr(),
+            (__ubuf__ T *)srcTensor.GetPhyAddr(), padParams, tiling, lastRegBlockPerRowElementCnt);
     } else {
-        PadInternal::UnAlignedPad<T>((__local_mem__ T *)dstTensor.GetPhyAddr(),
-            (__local_mem__ T *)srcTensor.GetPhyAddr(), padParams, tiling, lastRegBlockPerRowElementCnt);
+        PadInternal::UnAlignedPad<T>((__ubuf__ T *)dstTensor.GetPhyAddr(),
+            (__ubuf__ T *)srcTensor.GetPhyAddr(), padParams, tiling, lastRegBlockPerRowElementCnt);
     }
 }
 
@@ -196,8 +196,8 @@ __aicore__ inline void UnPadCompute(const LocalTensor<T> &dstTensor, const Local
 {
     uint32_t regBlockElementCnt = CUBE_MAX_SIZE / sizeof(T);
     uint32_t lastRegBlockPerRowElementCnt = tiling.srcWidth % regBlockElementCnt;
-    PadInternal::UnPad<T>((__local_mem__ T *)dstTensor.GetPhyAddr(),
-        (__local_mem__ T *)srcTensor.GetPhyAddr(), unPadParams, tiling, lastRegBlockPerRowElementCnt);
+    PadInternal::UnPad<T>((__ubuf__ T *)dstTensor.GetPhyAddr(),
+        (__ubuf__ T *)srcTensor.GetPhyAddr(), unPadParams, tiling, lastRegBlockPerRowElementCnt);
 }
 } // namespace AscendC
 #endif // IMPL_PAD_PAD_PAD_C310_IMPL_H

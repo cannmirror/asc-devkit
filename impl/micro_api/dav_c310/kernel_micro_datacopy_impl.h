@@ -22,7 +22,7 @@ namespace MicroAPI {
 template <typename DstT = DefaultType, typename SrcT, typename IndexT = DefaultType, typename RegDstT,
     typename RegIndexT>
 __simd_callee__ inline void DataCopyGatherB64Impl(
-    RegDstT &dstReg, __local_mem__ SrcT *baseAddr, RegIndexT &index, MaskReg &mask)
+    RegDstT &dstReg, __ubuf__ SrcT *baseAddr, RegIndexT &index, MaskReg &mask)
 {
     // index u32
     if constexpr (CheckRegTrait<RegDstT, RegTraitNumOne>()) {
@@ -55,7 +55,7 @@ __simd_callee__ inline void DataCopyGatherB64Impl(
 template <typename DstT = DefaultType, typename SrcT, typename IndexT = DefaultType, typename RegDstT,
     typename RegIndexT>
 __simd_callee__ inline void DataCopyGatherImpl(
-    RegDstT &dstReg, __local_mem__ SrcT *baseAddr, RegIndexT &index, MaskReg &mask)
+    RegDstT &dstReg, __ubuf__ SrcT *baseAddr, RegIndexT &index, MaskReg &mask)
 {
     using ActualDstT = typename RegDstT::ActualT;
     using ActualIndexT = typename RegIndexT::ActualT;
@@ -100,7 +100,7 @@ __simd_callee__ inline void DataCopyGatherImpl(
 
 // vgatherb
 template <typename T = DefaultType, typename RegT, typename RegIndexT>
-__simd_callee__ inline void DataCopyGatherBImpl(RegT &dstReg, __local_mem__ T *baseAddr, RegIndexT &index, MaskReg &mask)
+__simd_callee__ inline void DataCopyGatherBImpl(RegT &dstReg, __ubuf__ T *baseAddr, RegIndexT &index, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualIndexT = typename RegIndexT::ActualT;
@@ -123,7 +123,7 @@ __simd_callee__ inline void DataCopyGatherBImpl(RegT &dstReg, __local_mem__ T *b
 }
 
 template <typename T = DefaultType, typename IndexT = DefaultType, typename RegT, typename RegIndexT>
-__simd_callee__ inline void DataCopyScatterB64Impl(__local_mem__ T *baseAddr, RegT &srcReg, RegIndexT &index, MaskReg &mask)
+__simd_callee__ inline void DataCopyScatterB64Impl(__ubuf__ T *baseAddr, RegT &srcReg, RegIndexT &index, MaskReg &mask)
 {
     // index b32
     if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
@@ -155,7 +155,7 @@ __simd_callee__ inline void DataCopyScatterB64Impl(__local_mem__ T *baseAddr, Re
 
 // vscatter
 template <typename T = DefaultType, typename IndexT = DefaultType, typename RegT, typename RegIndexT>
-__simd_callee__ inline void DataCopyScatterImpl(__local_mem__ T *baseAddr, RegT &srcReg, RegIndexT &index, MaskReg &mask)
+__simd_callee__ inline void DataCopyScatterImpl(__ubuf__ T *baseAddr, RegT &srcReg, RegIndexT &index, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualIndexT = typename RegIndexT::ActualT;
@@ -195,7 +195,7 @@ __simd_callee__ inline void DataCopyScatterImpl(__local_mem__ T *baseAddr, RegT 
 
 // pld
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void DataCopyImpl(MaskReg &mask, __local_mem__ T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopyImpl(MaskReg &mask, __ubuf__ T *srcUbAddr, AddrReg offset)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_US, MaskDist::DIST_DS>(),
@@ -206,7 +206,7 @@ __simd_callee__ inline void DataCopyImpl(MaskReg &mask, __local_mem__ T *srcUbAd
 
 // plds
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void DataCopyImpl(MaskReg &mask, __local_mem__ T *srcUbAddr)
+__simd_callee__ inline void DataCopyImpl(MaskReg &mask, __ubuf__ T *srcUbAddr)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_US, MaskDist::DIST_DS>(),
@@ -216,7 +216,7 @@ __simd_callee__ inline void DataCopyImpl(MaskReg &mask, __local_mem__ T *srcUbAd
 }
 
 template <typename T, PostLiteral postMode, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void DataCopyImpl(MaskReg &mask, __local_mem__ T *&srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopyImpl(MaskReg &mask, __ubuf__ T *&srcUbAddr, int32_t offset)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_US, MaskDist::DIST_DS>(),
@@ -228,7 +228,7 @@ __simd_callee__ inline void DataCopyImpl(MaskReg &mask, __local_mem__ T *&srcUbA
 
 // pst
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, MaskReg &mask, AddrReg offset)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, MaskReg &mask, AddrReg offset)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_PACK>(),
@@ -239,7 +239,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, MaskReg &ma
 
 // psts
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, MaskReg &mask)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_PACK>(),
@@ -249,7 +249,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, MaskReg &ma
 }
 
 template <typename T, PostLiteral postMode, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, MaskReg &mask, int32_t offset)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *&dstUbAddr, MaskReg &mask, int32_t offset)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_PACK>(),
@@ -260,7 +260,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, MaskReg &m
 }
 
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, MaskReg &mask, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T *&dstUbAddr, MaskReg &mask, UnalignReg &ureg)
 {
     static_assert(SupportBytes<T, 2, 4>(), "DataCopy only support type b16/b32 on current device");
     if constexpr (sizeof(T) == 2) {

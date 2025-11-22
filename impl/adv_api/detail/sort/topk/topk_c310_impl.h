@@ -205,7 +205,7 @@ __aicore__ inline constexpr bool NeedPreProcess()
 }
 
 template <typename T, typename U, bool isLargest>
-__simd_vf__ inline void Preprocess(__local_mem__ T *src, __local_mem__ U *dst, uint32_t count)
+__simd_vf__ inline void Preprocess(__ubuf__ T *src, __ubuf__ U *dst, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     uint32_t currCount = count;
@@ -214,19 +214,19 @@ __simd_vf__ inline void Preprocess(__local_mem__ T *src, __local_mem__ U *dst, u
         MaskReg maskReg = UpdateMask<U>(currCount);
 
         RegTensor<U> local;
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__local_mem__ U *&)src, postUpdateSize);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__ubuf__ U *&)src, postUpdateSize);
         if constexpr (NeedTwiddle<T>()) {
             AscendC::MicroAPI::Internal::TwiddleIn<T>(local, local, maskReg);
         }
         if constexpr (NeedReverse<isLargest>()) {
             Not(local, local, maskReg);
         }
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__local_mem__ U *&)dst, local, postUpdateSize, maskReg);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__ubuf__ U *&)dst, local, postUpdateSize, maskReg);
     }
 }
 
 template <typename T, typename U, bool isLargest>
-__simd_vf__ inline void PostProcess(__local_mem__ U *src, __local_mem__ U *dst, uint32_t count)
+__simd_vf__ inline void PostProcess(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     constexpr uint32_t postUpdateSize = GetVecLen() / sizeof(U);
@@ -234,19 +234,19 @@ __simd_vf__ inline void PostProcess(__local_mem__ U *src, __local_mem__ U *dst, 
         MaskReg maskReg = UpdateMask<U>(count);
 
         RegTensor<U> local;
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__local_mem__ U *&)src, postUpdateSize);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__ubuf__ U *&)src, postUpdateSize);
         if constexpr (NeedReverse<isLargest>()) {
             Not(local, local, maskReg);
         }
         if constexpr (NeedTwiddle<T>()) {
             AscendC::MicroAPI::Internal::TwiddleOut<T>(local, local, maskReg);
         }
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__local_mem__ U *&)dst, local, postUpdateSize, maskReg);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__ubuf__ U *&)dst, local, postUpdateSize, maskReg);
     }
 }
 
 template <typename T, typename U>
-__simd_vf__ inline void Preprocess(__local_mem__ T *src, __local_mem__ U *dst, bool isLargest, uint32_t count)
+__simd_vf__ inline void Preprocess(__ubuf__ T *src, __ubuf__ U *dst, bool isLargest, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     uint32_t currCount = count;
@@ -255,19 +255,19 @@ __simd_vf__ inline void Preprocess(__local_mem__ T *src, __local_mem__ U *dst, b
         MaskReg maskReg = UpdateMask<U>(currCount);
 
         RegTensor<U> local;
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__local_mem__ U *&)src, postUpdateSize);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__ubuf__ U *&)src, postUpdateSize);
         if constexpr (NeedTwiddle<T>()) {
             AscendC::MicroAPI::Internal::TwiddleIn<T>(local, local, maskReg);
         }
         if (NeedReverse(isLargest)) {                
             Not(local, local, maskReg);
         }
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__local_mem__ U *&)dst, local, postUpdateSize, maskReg);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__ubuf__ U *&)dst, local, postUpdateSize, maskReg);
     }
 }
 
 template <typename T, typename U>
-__simd_vf__ inline void PostProcess(__local_mem__ U *src, __local_mem__ U *dst, bool isLargest, uint32_t count)
+__simd_vf__ inline void PostProcess(__ubuf__ U *src, __ubuf__ U *dst, bool isLargest, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     constexpr uint32_t postUpdateSize = GetVecLen() / sizeof(U);
@@ -275,23 +275,23 @@ __simd_vf__ inline void PostProcess(__local_mem__ U *src, __local_mem__ U *dst, 
         MaskReg maskReg = UpdateMask<U>(count);
 
         RegTensor<U> local;
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__local_mem__ U *&)src, postUpdateSize);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__ubuf__ U *&)src, postUpdateSize);
         if (NeedReverse(isLargest)) {
             Not(local, local, maskReg);
         }
         if constexpr (NeedTwiddle<T>()) {
             AscendC::MicroAPI::Internal::TwiddleOut<T>(local, local, maskReg);
         }
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__local_mem__ U *&)dst, local, postUpdateSize, maskReg);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__ubuf__ U *&)dst, local, postUpdateSize, maskReg);
     }
 }
 
 template<typename T, bool isReuseSrc, bool isLargest>
-__aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, const uint32_t alignCount, __local_mem__ T *&tmpSrcData, 
-    __local_mem__ int32_t *&tmpSrcIndex, __local_mem__ uint16_t *&tmpHistData, __local_mem__ T *&realWorkData, __local_mem__ T *&sortTmpBuffer)
+__aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, const uint32_t alignCount, __ubuf__ T *&tmpSrcData, 
+    __ubuf__ int32_t *&tmpSrcIndex, __ubuf__ uint16_t *&tmpHistData, __ubuf__ T *&realWorkData, __ubuf__ T *&sortTmpBuffer)
 {
-    __local_mem__ uint8_t *tmp = (__local_mem__ uint8_t *)tempBuffer.GetPhyAddr();
-    tmpSrcData = (__local_mem__ T*)tmp;
+    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)tempBuffer.GetPhyAddr();
+    tmpSrcData = (__ubuf__ T*)tmp;
 
     if constexpr (sizeof(T) == 8) {
         uint32_t srcOffset = 0;
@@ -301,12 +301,12 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, co
             srcOffset += sizeof(T) * alignCount;
         }
 
-        tmpSrcIndex = (__local_mem__ int32_t*)((__local_mem__ uint8_t *)tmpSrcData + srcOffset);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + srcOffset);
     } else {
-        tmpSrcIndex = (__local_mem__ int32_t*)((__local_mem__ uint8_t *)tmpSrcData + sizeof(T) * alignCount);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + sizeof(T) * alignCount);
     }
 
-    tmpHistData = (__local_mem__ uint16_t*)(tmpSrcIndex);
+    tmpHistData = (__ubuf__ uint16_t*)(tmpSrcIndex);
 
     if constexpr (NeedPreProcess<T, isLargest>()) {
         if constexpr (!isReuseSrc) {
@@ -314,23 +314,23 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, co
             if (indexSpace < BUCKET_BYTES) {
                 indexSpace = BUCKET_BYTES;
             }
-            realWorkData = (__local_mem__ T*)((__local_mem__ uint8_t*)tmpSrcIndex + indexSpace);
+            realWorkData = (__ubuf__ T*)((__ubuf__ uint8_t*)tmpSrcIndex + indexSpace);
             sortTmpBuffer = realWorkData;
         } else {
-            sortTmpBuffer = (__local_mem__ T*)((__local_mem__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
+            sortTmpBuffer = (__ubuf__ T*)((__ubuf__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
         }
     } else {
-        sortTmpBuffer = (__local_mem__ T*)((__local_mem__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
+        sortTmpBuffer = (__ubuf__ T*)((__ubuf__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
     }
 }
 
 template<typename T, bool isReuseSrc>
 __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bool isLargest, const uint32_t alignCount, 
-    __local_mem__ T *&tmpSrcData, __local_mem__ int32_t *&tmpSrcIndex, __local_mem__ uint16_t *&tmpHistData, 
-    __local_mem__ T *&realWorkData, __local_mem__ T *&sortTmpBuffer)
+    __ubuf__ T *&tmpSrcData, __ubuf__ int32_t *&tmpSrcIndex, __ubuf__ uint16_t *&tmpHistData, 
+    __ubuf__ T *&realWorkData, __ubuf__ T *&sortTmpBuffer)
 {
-    __local_mem__ uint8_t *tmp = (__local_mem__ uint8_t *)tempBuffer.GetPhyAddr();
-    tmpSrcData = (__local_mem__ T*)tmp;
+    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)tempBuffer.GetPhyAddr();
+    tmpSrcData = (__ubuf__ T*)tmp;
 
     if constexpr (sizeof(T) == 8) {
         uint32_t srcOffset = 0;
@@ -339,12 +339,12 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bo
         } else {
             srcOffset += sizeof(T) * alignCount;
         }
-        tmpSrcIndex = (__local_mem__ int32_t*)((__local_mem__ uint8_t *)tmpSrcData + srcOffset);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + srcOffset);
     } else {
-        tmpSrcIndex = (__local_mem__ int32_t*)((__local_mem__ uint8_t *)tmpSrcData + sizeof(T) * alignCount);
+        tmpSrcIndex = (__ubuf__ int32_t*)((__ubuf__ uint8_t *)tmpSrcData + sizeof(T) * alignCount);
     }
 
-    tmpHistData = (__local_mem__ uint16_t*)(tmpSrcIndex);
+    tmpHistData = (__ubuf__ uint16_t*)(tmpSrcIndex);
 
     if (NeedPreProcess<T>(isLargest)) {
         if constexpr (!isReuseSrc) {
@@ -352,13 +352,13 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bo
             if (indexSpace < BUCKET_BYTES) {
                 indexSpace = BUCKET_BYTES;
             }
-            realWorkData = (__local_mem__ T*)((__local_mem__ uint8_t*)tmpSrcIndex + indexSpace);
+            realWorkData = (__ubuf__ T*)((__ubuf__ uint8_t*)tmpSrcIndex + indexSpace);
             sortTmpBuffer = realWorkData;
         } else {
-            sortTmpBuffer = (__local_mem__ T*)((__local_mem__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
+            sortTmpBuffer = (__ubuf__ T*)((__ubuf__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
         }
     } else {
-        sortTmpBuffer = (__local_mem__ T*)((__local_mem__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
+        sortTmpBuffer = (__ubuf__ T*)((__ubuf__ uint8_t*)tmpSrcIndex + sizeof(int32_t) * alignCount);
     }
 }
 
@@ -392,15 +392,15 @@ __simd_callee__ inline void TransToB8Mask(MaskReg& dst, MaskReg& u32Src0, MaskRe
     TransToB8Mask(dst, tmpU16LowPart0, tmpU16LowPart2);
 }
 
-__simd_callee__ inline void CollectGivenPosByte(RegTensor<uint8_t>& colWorkBits, __local_mem__ uint64_t *src, uint16_t byteNum, const int32_t srcOffset, 
-__local_mem__ uint64_t* tmpLocal)
+__simd_callee__ inline void CollectGivenPosByte(RegTensor<uint8_t>& colWorkBits, __ubuf__ uint64_t *src, uint16_t byteNum, const int32_t srcOffset, 
+__ubuf__ uint64_t* tmpLocal)
 {
     uint32_t loadCount = GetVecLen() / sizeof(uint32_t);
     uint32_t realCount = loadCount / 2;
 
     int16_t offsets = static_cast<int16_t>((byteNum - 1) * 8);
-    __local_mem__ uint32_t* srcU32 = (__local_mem__ uint32_t*)src;
-    __local_mem__ uint32_t* tmpU32 = (__local_mem__ uint32_t*)tmpLocal;
+    __ubuf__ uint32_t* srcU32 = (__ubuf__ uint32_t*)src;
+    __ubuf__ uint32_t* tmpU32 = (__ubuf__ uint32_t*)tmpLocal;
 
     MaskReg fullMask = CreateMask<uint32_t>();
     MaskReg zeroMask = CreateMask<uint32_t, MaskPattern::ALLF>();
@@ -442,11 +442,11 @@ __local_mem__ uint64_t* tmpLocal)
     GetLowerstByte(colWorkBits, work0, work1, work2, work3);  
 }
 
-__simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __local_mem__ uint64_t *&src, MaskReg& maskReg,
-    uint64_t value, uint16_t byteNum, int32_t srcOffset, __local_mem__ uint64_t* tmpLocal)
+__simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __ubuf__ uint64_t *&src, MaskReg& maskReg,
+    uint64_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint64_t* tmpLocal)
 {
-    __local_mem__ uint32_t* srcU32 = (__local_mem__ uint32_t*)src;
-    __local_mem__ uint32_t* tmpU32 = (__local_mem__ uint32_t*)tmpLocal;
+    __ubuf__ uint32_t* srcU32 = (__ubuf__ uint32_t*)src;
+    __ubuf__ uint32_t* tmpU32 = (__ubuf__ uint32_t*)tmpLocal;
  
     uint32_t loadCount = GetVecLen() / sizeof(uint32_t);
     uint32_t realCount = loadCount / 2;
@@ -518,16 +518,16 @@ __simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __loc
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __local_mem__ uint64_t *src, MaskReg& maskReg,
-    uint64_t value, uint16_t byteNum, int32_t srcOffset, __local_mem__ uint64_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint64_t *src, MaskReg& maskReg,
+    uint64_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint64_t* tmpLocal)
 {
     CollectGivenPosByte(colWorkBits, src, byteNum, srcOffset * 2, tmpLocal);
     CompareHighBytesBeforePos(filterMask, src, maskReg, value, byteNum, srcOffset * 2, tmpLocal);
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __local_mem__ uint32_t *src, MaskReg& maskReg,
-    uint32_t value, uint16_t byteNum, int32_t srcOffset, __local_mem__ uint32_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint32_t *src, MaskReg& maskReg,
+    uint32_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint32_t* tmpLocal)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
     MaskReg fullMask = CreateMask<uint32_t>();
@@ -566,8 +566,8 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __local_mem__ uint16_t *src, MaskReg& maskReg,
-    uint16_t value, uint16_t byteNum, int32_t srcOffset, __local_mem__ uint16_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint16_t *src, MaskReg& maskReg,
+    uint16_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint16_t* tmpLocal)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint16_t);
     int16_t byteOffsets = static_cast<int16_t>((byteNum - 1) * 8);
@@ -599,8 +599,8 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
 }
 
 __simd_callee__ inline void FilterDataAndGivenByteFromOri(
-    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __local_mem__ uint8_t *src, MaskReg& maskReg,
-    uint8_t value, uint16_t byteNum, int32_t srcOffset, __local_mem__ uint8_t* tmpLocal)
+    MaskReg& filterMask, RegTensor<uint8_t>& colWorkBits, __ubuf__ uint8_t *src, MaskReg& maskReg,
+    uint8_t value, uint16_t byteNum, int32_t srcOffset, __ubuf__ uint8_t* tmpLocal)
 {
     DataCopy(colWorkBits, src + srcOffset);
     MaskReg fullMask = CreateMask<uint8_t>();
@@ -609,7 +609,7 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
 
 template <typename T>
 __simd_vf__ inline void GenerateAccumulateData(
-    __local_mem__ T *src, __local_mem__ uint16_t *hist, __local_mem__ T *tmpSrcData,
+    __ubuf__ T *src, __ubuf__ uint16_t *hist, __ubuf__ T *tmpSrcData,
     uint32_t count, T value, uint32_t byteNum)
 {
     using ConvType = typename AscendC::Internal::ExtractTypeBySize<sizeof(T)>::T;
@@ -637,11 +637,11 @@ __simd_vf__ inline void GenerateAccumulateData(
         Histograms<uint8_t, uint16_t, HistogramsBinType::BIN1, HistogramsType::ACCUMULATE>(acumHistHigh, colWorkBits, filterMask);
     }
 
-    DataCopy((__local_mem__ uint16_t *&)hist, acumHistLow, b16FullMask);
-    DataCopy((__local_mem__ uint16_t *&)hist + GetVecLen() / sizeof(uint16_t), acumHistHigh, b16FullMask);
+    DataCopy((__ubuf__ uint16_t *&)hist, acumHistLow, b16FullMask);
+    DataCopy((__ubuf__ uint16_t *&)hist + GetVecLen() / sizeof(uint16_t), acumHistHigh, b16FullMask);
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint64_t *src, __local_mem__ uint64_t *dst, const uint64_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint64_t *src, __ubuf__ uint64_t *dst, const uint64_t value, uint32_t count)
 {
     count *= 2;
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
@@ -653,8 +653,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint64_t *src, 
     uint64_t lowValue = value & 0xffffffff;
     uint64_t highValue = value >> 32;
 
-    __local_mem__ uint32_t* u32Src = (__local_mem__ uint32_t*)src;
-    __local_mem__ uint32_t* u32Dst = (__local_mem__ uint32_t*)dst;
+    __ubuf__ uint32_t* u32Src = (__ubuf__ uint32_t*)src;
+    __ubuf__ uint32_t* u32Dst = (__ubuf__ uint32_t*)dst;
 
     ClearSpr<SpecialPurposeReg::AR>();  
     MaskReg fullMask = CreateMask<uint32_t>();
@@ -724,7 +724,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint64_t *src, 
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint32_t *src, __local_mem__ uint32_t *dst, const uint32_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint32_t *src, __ubuf__ uint32_t *dst, const uint32_t value, uint32_t count)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -766,7 +766,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint32_t *src, 
     ClearSpr<SpecialPurposeReg::AR>(); 
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint16_t *src, __local_mem__ uint16_t *dst, const uint16_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint16_t *src, __ubuf__ uint16_t *dst, const uint16_t value, uint32_t count)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint16_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -808,7 +808,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint16_t *src, 
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint8_t *src, __local_mem__ uint8_t *dst, const uint8_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKData(__ubuf__ uint8_t *src, __ubuf__ uint8_t *dst, const uint8_t value, uint32_t count)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(uint8_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -849,8 +849,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKData(__local_mem__ uint8_t *src, _
 }
 
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint64_t *src, __local_mem__ int32_t *inputIndex, 
-    __local_mem__ int32_t *dstIndex, const uint64_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint64_t *src, __ubuf__ int32_t *inputIndex, 
+    __ubuf__ int32_t *dstIndex, const uint64_t value, uint32_t count)
 {
     count *= 2;
 
@@ -864,7 +864,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint64_t *src,
     uint64_t lowValue = value & 0xffffffff;
     uint64_t highValue = value >> 32;
 
-    __local_mem__ uint32_t* u32Src = (__local_mem__ uint32_t*)src;
+    __ubuf__ uint32_t* u32Src = (__ubuf__ uint32_t*)src;
 
     MaskReg fullMask = CreateMask<uint32_t>();
     MaskReg zeroMask = CreateMask<uint32_t, MaskPattern::ALLF>();
@@ -937,8 +937,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint64_t *src,
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint32_t *src, __local_mem__ int32_t *inputIndex,
-    __local_mem__ int32_t *dstIndex, const uint32_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint32_t *src, __ubuf__ int32_t *inputIndex,
+    __ubuf__ int32_t *dstIndex, const uint32_t value, uint32_t count)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
     uint16_t repeatTimes = DivCeil(count, eleCountPerVL);
@@ -983,8 +983,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint32_t *src,
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint16_t *src, __local_mem__ int32_t *inputIndex,
-    __local_mem__ int32_t *dstIndex, const uint16_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ubuf__ int32_t *inputIndex,
+    __ubuf__ int32_t *dstIndex, const uint16_t value, uint32_t count)
 {
     constexpr uint32_t u32EleCountPerVL = GetVecLen() / sizeof(int32_t);
     constexpr uint32_t u16EleCountPerVL = GetVecLen() / sizeof(uint16_t);
@@ -1045,8 +1045,8 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint16_t *src,
     ClearSpr<SpecialPurposeReg::AR>();
 }
 
-__simd_vf__ inline void GatherGreaterAndEqualKIndex(__local_mem__ uint8_t *src, __local_mem__ int32_t *inputIndex, 
-    __local_mem__ int32_t *dstIndex, const uint8_t value, uint32_t count)
+__simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint8_t *src, __ubuf__ int32_t *inputIndex, 
+    __ubuf__ int32_t *dstIndex, const uint8_t value, uint32_t count)
 {
     constexpr uint16_t u8EleCountPerVL = GetVecLen() / sizeof(uint8_t);
     constexpr uint32_t u32EleCountPerVL = GetVecLen() / sizeof(int32_t);
@@ -1138,7 +1138,7 @@ __simd_callee__ inline int32_t GetKPad(int32_t k)
 }
 
 template <typename T>
-__simd_vf__ inline void SaveData(__local_mem__ T *dst, __local_mem__ int32_t *dstIndex, __local_mem__ T *src, __local_mem__ int32_t *srcIndex,
+__simd_vf__ inline void SaveData(__ubuf__ T *dst, __ubuf__ int32_t *dstIndex, __ubuf__ T *src, __ubuf__ int32_t *srcIndex,
     const uint32_t count)
 {
     constexpr uint32_t dataCountPerTime = GetVecLen() / sizeof(T);
@@ -1152,21 +1152,21 @@ __simd_vf__ inline void SaveData(__local_mem__ T *dst, __local_mem__ int32_t *ds
     for (uint16_t i = 0; i < dataRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<T>(dCount);
         RegTensor<T> reg;
-        DataCopy<T, PostLiteral::POST_MODE_UPDATE>(reg, (__local_mem__ T *&)src, dataCountPerTime);
-        DataCopy<T, PostLiteral::POST_MODE_UPDATE>((__local_mem__ T *&)dst, reg, dataCountPerTime, maskReg);
+        DataCopy<T, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ T *&)src, dataCountPerTime);
+        DataCopy<T, PostLiteral::POST_MODE_UPDATE>((__ubuf__ T *&)dst, reg, dataCountPerTime, maskReg);
     }
 
     for (uint16_t i = 0; i < indexRepeatTimes; ++i) {
         MaskReg maskReg = UpdateMask<int32_t>(iCount);
         RegTensor<int32_t> reg;
-        DataCopy<int32_t, PostLiteral::POST_MODE_UPDATE>(reg, (__local_mem__ int32_t *&)srcIndex, indexCountPerTime);
-        DataCopy<int32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ int32_t *&)dstIndex, reg, indexCountPerTime, maskReg);
+        DataCopy<int32_t, PostLiteral::POST_MODE_UPDATE>(reg, (__ubuf__ int32_t *&)srcIndex, indexCountPerTime);
+        DataCopy<int32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ int32_t *&)dstIndex, reg, indexCountPerTime, maskReg);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void SaveDataUnAlignVF(__local_mem__ T *dst, __local_mem__ int32_t *dstIndex,
-    __local_mem__ T *src, __local_mem__ int32_t *srcIndex, const TopKInfo topKInfo, const uint32_t k)
+__simd_vf__ inline void SaveDataUnAlignVF(__ubuf__ T *dst, __ubuf__ int32_t *dstIndex,
+    __ubuf__ T *src, __ubuf__ int32_t *srcIndex, const TopKInfo topKInfo, const uint32_t k)
 {
     uint32_t dataMainCountPerTime = GetVecLen() / sizeof(T);
     uint32_t indexMainCountPerTime = GetVecLen() / sizeof(int32_t);
@@ -1182,7 +1182,7 @@ __simd_vf__ inline void SaveDataUnAlignVF(__local_mem__ T *dst, __local_mem__ in
             RegTensor<T> reg;
             auto dstUBT = dst + j * k + i * kPad;
             DataCopy(reg, src + j * kPad + i  * kPad);
-            DataCopyUnAlign((__local_mem__ T *&)dstUBT, reg, ureg, k);
+            DataCopyUnAlign((__ubuf__ T *&)dstUBT, reg, ureg, k);
             DataCopyUnAlignPost(dstUBT, ureg, 0);
         }
 
@@ -1191,7 +1191,7 @@ __simd_vf__ inline void SaveDataUnAlignVF(__local_mem__ T *dst, __local_mem__ in
             RegTensor<int32_t> reg;
             auto dstUBT = dstIndex + j * k + i * kIndexPad;
             DataCopy(reg, srcIndex + j * kIndexPad + i  * kIndexPad);
-            DataCopyUnAlign((__local_mem__ int32_t *&)dstUBT, reg, ureg, k);
+            DataCopyUnAlign((__ubuf__ int32_t *&)dstUBT, reg, ureg, k);
             DataCopyUnAlignPost(dstUBT, ureg, 0);
         }
     }
@@ -1201,10 +1201,10 @@ template <typename T>
 __aicore__ inline void SaveDataUnAlign(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
     const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const TopKInfo &topKInfo, const uint32_t k)
 {
-    __local_mem__ T *src = (__local_mem__ T *)srcLocal.GetPhyAddr();
-    __local_mem__ int32_t *srcIndex = (__local_mem__ int32_t *)srcIndexLocal.GetPhyAddr();
-    __local_mem__ T *dst = (__local_mem__ T *)dstValueLocal.GetPhyAddr();
-    __local_mem__ int32_t *dstIndex = (__local_mem__ int32_t *)dstIndexLocal.GetPhyAddr();
+    __ubuf__ T *src = (__ubuf__ T *)srcLocal.GetPhyAddr();
+    __ubuf__ int32_t *srcIndex = (__ubuf__ int32_t *)srcIndexLocal.GetPhyAddr();
+    __ubuf__ T *dst = (__ubuf__ T *)dstValueLocal.GetPhyAddr();
+    __ubuf__ int32_t *dstIndex = (__ubuf__ int32_t *)dstIndexLocal.GetPhyAddr();
 
     SaveDataUnAlignVF<T>(dst, dstIndex, src, srcIndex, topKInfo, k);
 }
@@ -1219,39 +1219,39 @@ __aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, cons
     constexpr bool isOrderFromTemplate = config.order != TopKOrder::UNSET;
     constexpr bool isLargestInTemplate = config.order == TopKOrder::LARGEST;
 
-    __local_mem__ ConvType *src = (__local_mem__ ConvType *)srcLocal.GetPhyAddr();
-    __local_mem__ int32_t *srcIndex = (__local_mem__ int32_t *)srcIndexLocal.GetPhyAddr();
-    __local_mem__ ConvType *dst = (__local_mem__ ConvType *)dstValueLocal.GetPhyAddr();
-    __local_mem__ int32_t *dstIndex = (__local_mem__ int32_t *)dstIndexLocal.GetPhyAddr();
-    __local_mem__ uint8_t *tmp = (__local_mem__ uint8_t *)tempBuffer.GetPhyAddr();
+    __ubuf__ ConvType *src = (__ubuf__ ConvType *)srcLocal.GetPhyAddr();
+    __ubuf__ int32_t *srcIndex = (__ubuf__ int32_t *)srcIndexLocal.GetPhyAddr();
+    __ubuf__ ConvType *dst = (__ubuf__ ConvType *)dstValueLocal.GetPhyAddr();
+    __ubuf__ int32_t *dstIndex = (__ubuf__ int32_t *)dstIndexLocal.GetPhyAddr();
+    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)tempBuffer.GetPhyAddr();
 
     // temp data for storing values which are greater and equal than the topk value, same size with src
-    __local_mem__ ConvType *tmpSrcData;
+    __ubuf__ ConvType *tmpSrcData;
     // temp data for storing indexes related tmpSrcData, same size with srcIndex
-    __local_mem__ int32_t *tmpSrcIndex;
+    __ubuf__ int32_t *tmpSrcIndex;
     // temp data for storing accumulate data, 512B
-    __local_mem__ uint16_t *tmpHistData;
+    __ubuf__ uint16_t *tmpHistData;
     // temp data for storing work src values
-    __local_mem__ ConvType *realWorkData = src;
+    __ubuf__ ConvType *realWorkData = src;
     // temp data for sort
-    __local_mem__ ConvType *sortTmpBuffer;
+    __ubuf__ ConvType *sortTmpBuffer;
 
     uint32_t count = topKInfo.inner;
     uint32_t realCount = topKInfo.n;
 
     if constexpr (isOrderFromTemplate) {
-        InitializeTempBuffer<T, isReuseSrc, isLargestInTemplate>(tempBuffer, count, (__local_mem__ T*&)tmpSrcData, 
-            tmpSrcIndex, tmpHistData, (__local_mem__ T*&)realWorkData, (__local_mem__ T*&)sortTmpBuffer);
+        InitializeTempBuffer<T, isReuseSrc, isLargestInTemplate>(tempBuffer, count, (__ubuf__ T*&)tmpSrcData, 
+            tmpSrcIndex, tmpHistData, (__ubuf__ T*&)realWorkData, (__ubuf__ T*&)sortTmpBuffer);
 
         if constexpr (NeedPreProcess<T, isLargestInTemplate>()) {
-            Preprocess<T, ConvType, isLargestInTemplate>((__local_mem__ T*)src, realWorkData, count);
+            Preprocess<T, ConvType, isLargestInTemplate>((__ubuf__ T*)src, realWorkData, count);
         }
     } else {
-        InitializeTempBuffer<T, isReuseSrc>(tempBuffer, isLargest, count, (__local_mem__ T*&)tmpSrcData, tmpSrcIndex, 
-            tmpHistData, (__local_mem__ T*&)realWorkData, (__local_mem__ T*&)sortTmpBuffer);
+        InitializeTempBuffer<T, isReuseSrc>(tempBuffer, isLargest, count, (__ubuf__ T*&)tmpSrcData, tmpSrcIndex, 
+            tmpHistData, (__ubuf__ T*&)realWorkData, (__ubuf__ T*&)sortTmpBuffer);
 
         if (NeedPreProcess<T>(isLargest)) {
-            Preprocess<T, ConvType>((__local_mem__ T*)src, realWorkData, isLargest, count);
+            Preprocess<T, ConvType>((__ubuf__ T*)src, realWorkData, isLargest, count);
         }
     }
 
@@ -1300,19 +1300,19 @@ __aicore__ inline void TopKRaidxSelect(const LocalTensor<T> &dstValueLocal, cons
         static constexpr SortConfig sortConfig = {SortType::RADIX_SORT, true};
 
         LocalTensor<ConvType> valueTensor = tempBuffer.template ReinterpretCast<ConvType>();
-        LocalTensor<ConvType> sortDataSrc = valueTensor[(__local_mem__ T*)tmpSrcData - (__local_mem__ T*)tmp];
+        LocalTensor<ConvType> sortDataSrc = valueTensor[(__ubuf__ T*)tmpSrcData - (__ubuf__ T*)tmp];
 
         LocalTensor<int32_t> indexTensor = tempBuffer.template ReinterpretCast<int32_t>();
-        LocalTensor<int32_t> sortIndexSrc = indexTensor[(__local_mem__ int32_t*)tmpSrcIndex - (__local_mem__ int32_t*)tmp];
+        LocalTensor<int32_t> sortIndexSrc = indexTensor[(__ubuf__ int32_t*)tmpSrcIndex - (__ubuf__ int32_t*)tmp];
 
         LocalTensor<uint8_t> tmpTensor = tempBuffer.template ReinterpretCast<uint8_t>();
-        LocalTensor<uint8_t> sortBufferTensor = tmpTensor[(__local_mem__ uint8_t*)sortTmpBuffer - (__local_mem__ uint8_t*)tmp];
+        LocalTensor<uint8_t> sortBufferTensor = tmpTensor[(__ubuf__ uint8_t*)sortTmpBuffer - (__ubuf__ uint8_t*)tmp];
 
         LocalTensor<ConvType> dstValueTensor = dstValueLocal.template ReinterpretCast<ConvType>();
         LocalTensor<int32_t> dstIndexTensor = dstIndexLocal.template ReinterpretCast<int32_t>();
         Sort<ConvType, int32_t, false, sortConfig>(dstValueTensor, dstIndexTensor, sortDataSrc, sortIndexSrc, sortBufferTensor, static_cast<uint32_t>(k));
     } else {
-        SaveData<T>((__local_mem__ T*)dst, dstIndex, (__local_mem__ T*)tmpSrcData, tmpSrcIndex, static_cast<uint32_t>(k));
+        SaveData<T>((__ubuf__ T*)dst, dstIndex, (__ubuf__ T*)tmpSrcData, tmpSrcIndex, static_cast<uint32_t>(k));
     }
 
     if constexpr (isOrderFromTemplate) {

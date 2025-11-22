@@ -21,7 +21,7 @@ constexpr int32_t oneRepSize = GetVecLen() / sizeof(float);
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -34,7 +34,7 @@ __simd_callee__ inline void LoadDataWithT(
 
 template <typename T>
 __simd_callee__ inline void SaveDataWithT(
-    __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> regT;
@@ -46,7 +46,7 @@ __simd_callee__ inline void SaveDataWithT(
 }
 
 template <typename T>
-__simd_callee__ inline void ComputeSum(__local_mem__ float* dstLocal, __local_mem__ T* srcLocal,
+__simd_callee__ inline void ComputeSum(__ubuf__ float* dstLocal, __ubuf__ T* srcLocal,
     uint32_t bsLength, uint32_t hLength, uint32_t oriHLength)
 {
     uint16_t mainRepeatTime = static_cast<uint16_t>(oriHLength / oneRepSize);
@@ -80,7 +80,7 @@ __simd_callee__ inline void ComputeSum(__local_mem__ float* dstLocal, __local_me
     }
 }
 template <typename T>
-__simd_callee__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal, __local_mem__ T* gammaLocal, __local_mem__ float* tmpLocal,
+__simd_callee__ inline void ComputeY(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* gammaLocal, __ubuf__ float* tmpLocal,
     uint32_t bsLength, uint32_t hLength, uint32_t oriHLength, const float epsilon, float reciprocalOfHLength)
 {
     constexpr float rsqrtExponent = -0.5;
@@ -142,8 +142,8 @@ __simd_callee__ inline void ComputeY(__local_mem__ T* dstLocal, __local_mem__ T*
 }
 
 template <typename T>
-__simd_vf__ inline void RmsNormImplVf(__local_mem__ T* dstLocal, __local_mem__ T* srcLocal,
-    __local_mem__ T* gammaLocal, __local_mem__ float* tmpLocal, const float epsilon, const RmsNormTiling tiling)
+__simd_vf__ inline void RmsNormImplVf(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal,
+    __ubuf__ T* gammaLocal, __ubuf__ float* tmpLocal, const float epsilon, const RmsNormTiling tiling)
 {
     uint32_t bLength = tiling.bLength;
     uint32_t sLength = tiling.sLength;
@@ -181,8 +181,8 @@ __aicore__ inline void RmsNormImpl(const LocalTensor<T>& dstLocal, const LocalTe
     CHECK_FUNC_HIGHLEVEL_API(RmsNorm, (T, isBasicBlock), (dstLocal, srcLocal, gammaLocal, sharedTmpBuffer, epsilon, tiling));
     LocalTensor<float> tmpLocal = sharedTmpBuffer.ReinterpretCast<float>();
     float eps = static_cast<float>(epsilon);
-    RmsNormImplVf<T>((__local_mem__ T*)dstLocal.GetPhyAddr(), (__local_mem__ T*)srcLocal.GetPhyAddr(),
-        (__local_mem__ T*)gammaLocal.GetPhyAddr(), (__local_mem__ float*)tmpLocal.GetPhyAddr(), eps, tiling);
+    RmsNormImplVf<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)srcLocal.GetPhyAddr(),
+        (__ubuf__ T*)gammaLocal.GetPhyAddr(), (__ubuf__ float*)tmpLocal.GetPhyAddr(), eps, tiling);
 }
 } // namespace RmsNormAPI
 } // namespace AscendC

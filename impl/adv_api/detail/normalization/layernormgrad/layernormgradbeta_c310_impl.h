@@ -118,10 +118,10 @@ __aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma
 {
     LayerNormGradBetaCheckParams<T, isReuseSource>(outputPdGamma, outputPdBeta, resForGamma, inputDy, sharedTmpBuffer,
                                                    tiling);
-    __local_mem__ T* outputPdGammaDst = (__local_mem__ T*)outputPdGamma.GetPhyAddr();
-    __local_mem__ T* outputPdBetaDst = (__local_mem__ T*)outputPdBeta.GetPhyAddr();
-    __local_mem__ T* resForGammaSrc = (__local_mem__ T*)resForGamma.GetPhyAddr();
-    __local_mem__ T* inputDySrc = (__local_mem__ T*)inputDy.GetPhyAddr();
+    __ubuf__ T* outputPdGammaDst = (__ubuf__ T*)outputPdGamma.GetPhyAddr();
+    __ubuf__ T* outputPdBetaDst = (__ubuf__ T*)outputPdBeta.GetPhyAddr();
+    __ubuf__ T* resForGammaSrc = (__ubuf__ T*)resForGamma.GetPhyAddr();
+    __ubuf__ T* inputDySrc = (__ubuf__ T*)inputDy.GetPhyAddr();
 
     LayerNormGradBetaAPI::ReduceSumN<T>(outputPdGammaDst, outputPdBetaDst, resForGammaSrc, inputDySrc,
                                                  tiling.bsLength, tiling.hLength);

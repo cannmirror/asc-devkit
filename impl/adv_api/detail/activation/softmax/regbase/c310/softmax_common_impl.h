@@ -20,7 +20,7 @@
 namespace AscendC {
 template <typename T>
 __simd_callee__ inline void LoadIfNeedCast(
-    MicroAPI::RegTensor<float>& dstReg, __local_mem__ T* srcUb, MicroAPI::MaskReg& preg)
+    MicroAPI::RegTensor<float>& dstReg, __ubuf__ T* srcUb, MicroAPI::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::RegTensor<T> tmpReg;
@@ -33,7 +33,7 @@ __simd_callee__ inline void LoadIfNeedCast(
 
 template <typename T>
 __simd_callee__ inline void LoadIfNeedCastM1(
-    MicroAPI::RegTensor<float>& dstReg, __local_mem__ T* srcUb, MicroAPI::MaskReg& preg)
+    MicroAPI::RegTensor<float>& dstReg, __ubuf__ T* srcUb, MicroAPI::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::RegTensor<T> castVreg;
@@ -48,7 +48,7 @@ __simd_callee__ inline void LoadIfNeedCastM1(
 
 template <typename T>
 __simd_callee__ inline void StoreIfNeedCastM1(
-    __local_mem__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
+    __ubuf__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::RegTensor<T> castVreg;
@@ -63,7 +63,7 @@ __simd_callee__ inline void StoreIfNeedCastM1(
 
 template <typename T>
 __simd_callee__ inline void StoreIfNeedCast(
-    __local_mem__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
+    __ubuf__ T* dstUb, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& preg)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::RegTensor<T> tmpReg;
@@ -75,7 +75,7 @@ __simd_callee__ inline void StoreIfNeedCast(
 }
 
 template <typename T>
-__simd_callee__ inline void LoadE2B(MicroAPI::RegTensor<T>& dstReg, __local_mem__ T* srcUb)
+__simd_callee__ inline void LoadE2B(MicroAPI::RegTensor<T>& dstReg, __ubuf__ T* srcUb)
 {
     if constexpr (sizeof(T) == 2) {
         MicroAPI::DataCopy<T, MicroAPI::LoadDist::DIST_E2B_B16>(dstReg, srcUb);

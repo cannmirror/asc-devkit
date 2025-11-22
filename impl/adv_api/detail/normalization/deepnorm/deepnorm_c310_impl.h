@@ -54,7 +54,7 @@ __aicore__ inline void GetDeepnormPara(DeepnormPara& para, DeepNormTiling& tilin
 }
 
 template <typename T>
-__simd_callee__ inline void CopyInFloat(MicroAPI::RegTensor<float>& reg, __local_mem__ T* ub,
+__simd_callee__ inline void CopyInFloat(MicroAPI::RegTensor<float>& reg, __ubuf__ T* ub,
     MicroAPI::MaskReg& hFloatAllMask)
 {
     MicroAPI::DataCopy(reg, ub);
@@ -62,7 +62,7 @@ __simd_callee__ inline void CopyInFloat(MicroAPI::RegTensor<float>& reg, __local
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -75,7 +75,7 @@ __simd_callee__ inline void LoadDataWithT(
 
 template <typename T>
 __simd_callee__ inline void SaveDataWithT(
-    __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> regT;
@@ -88,7 +88,7 @@ __simd_callee__ inline void SaveDataWithT(
 
 //tmpLocal = alpha * srcLocal + gxLocal
 template <typename T>
-__simd_vf__ inline void ComputeSum(__local_mem__ T* srcLocal, __local_mem__ T* gxLocal, __local_mem__ float* tmpLocal,
+__simd_vf__ inline void ComputeSum(__ubuf__ T* srcLocal, __ubuf__ T* gxLocal, __ubuf__ float* tmpLocal,
     const float alpha, uint32_t bLength, uint32_t sLength, uint32_t hLength, uint32_t oriHLength, uint32_t tailCount)
 {
     uint16_t mainRepeatTime = static_cast<uint16_t>(oriHLength / oneRepSize);
@@ -127,7 +127,7 @@ __simd_vf__ inline void ComputeSum(__local_mem__ T* srcLocal, __local_mem__ T* g
     }
 }
 
-__simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __local_mem__ float* inputX,
+__simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __ubuf__ float* inputX,
     Internal::DeepnormPara para)
 {
     MicroAPI::RegTensor<float> hDim;
@@ -165,7 +165,7 @@ __simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __
 }
 
 __simd_callee__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVariance, MicroAPI::RegTensor<float>& meanReg,
-    __local_mem__ float* inputX, Internal::DeepnormPara para)
+    __ubuf__ float* inputX, Internal::DeepnormPara para)
 {
     MicroAPI::RegTensor<float> sumVarianceResultH;
     MicroAPI::Duplicate(sumVarianceResultH, 0);
@@ -214,8 +214,8 @@ __simd_callee__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVari
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& varianceReg, __local_mem__ float* inputX, __local_mem__ T* gamma, __local_mem__ T* beta,
+__simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, MicroAPI::RegTensor<float>& meanReg,
+    MicroAPI::RegTensor<float>& varianceReg, __ubuf__ float* inputX, __ubuf__ T* gamma, __ubuf__ T* beta,
     MicroAPI::RegTensor<float>& sdReg, MicroAPI::MaskReg& hFloatMask)
 {
     MicroAPI::RegTensor<float> resultH;
@@ -259,9 +259,9 @@ __simd_callee__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, Micr
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& varianceReg, __local_mem__ float* inputX, __local_mem__ T* gamma,
-    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara para)
+__simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, MicroAPI::RegTensor<float>& meanReg,
+    MicroAPI::RegTensor<float>& varianceReg, __ubuf__ float* inputX, __ubuf__ T* gamma,
+    __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara para)
 {
     MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> sdReg;    // The standard deviation.
@@ -283,9 +283,9 @@ __simd_callee__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTe
 }
 
 template <typename T>
-__simd_vf__ inline void DeepNormImplVfHalf(__local_mem__ T* output, __local_mem__ T* outputMean,
-    __local_mem__ T* outputVariance, __local_mem__ float* inputX, __local_mem__ T* gamma,
-    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara para, DeepNormTiling tiling)
+__simd_vf__ inline void DeepNormImplVfHalf(__ubuf__ T* output, __ubuf__ T* outputMean,
+    __ubuf__ T* outputVariance, __ubuf__ float* inputX, __ubuf__ T* gamma,
+    __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara para, DeepNormTiling tiling)
 {
     MicroAPI::MaskReg floatLowestMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
     MicroAPI::MaskReg srcLowestMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL1>();
@@ -329,8 +329,8 @@ __simd_vf__ inline void DeepNormImplVfHalf(__local_mem__ T* output, __local_mem_
 }
 
 template <typename T>
-__aicore__ inline void DeepNormImplVf(__local_mem__ T* srcLocal, __local_mem__ T* gxLocal,
-    __local_mem__ float* tmpLocal, const T alpha, const DeepNormTiling& tiling)
+__aicore__ inline void DeepNormImplVf(__ubuf__ T* srcLocal, __ubuf__ T* gxLocal,
+    __ubuf__ float* tmpLocal, const T alpha, const DeepNormTiling& tiling)
 {
     uint32_t bLength = tiling.bLength;
     uint32_t sLength = tiling.sLength;
@@ -364,9 +364,9 @@ __aicore__ inline bool IsDeepNormParamValid(DeepNormTiling& tiling)
 }
 
 template <typename T>
-__aicore__ inline void DeepNormImplHalf(__local_mem__ T* output, __local_mem__ T* outputMean,
-    __local_mem__ T* outputVariance, __local_mem__ float* inputX, __local_mem__ T* gamma, 
-    __local_mem__ T* beta, const T epsilon, Internal::DeepnormPara& para, DeepNormTiling& tiling)
+__aicore__ inline void DeepNormImplHalf(__ubuf__ T* output, __ubuf__ T* outputMean,
+    __ubuf__ T* outputVariance, __ubuf__ float* inputX, __ubuf__ T* gamma, 
+    __ubuf__ T* beta, const T epsilon, Internal::DeepnormPara& para, DeepNormTiling& tiling)
 {
     DeepNormImplVfHalf<T>(output, outputMean, outputVariance, inputX, gamma,
         beta, epsilon, para, tiling);
@@ -393,17 +393,17 @@ __aicore__ inline void DeepNormImpl(const LocalTensor<T>& dstLocal, const LocalT
         Internal::GetDeepnormPara(para, tiling);
         LocalTensor<float> tmpLocal = sharedTmpBuffer.ReinterpretCast<float>();
         LocalTensor<float> ssdLocal = tmpLocal[tiling.firstTmpStartPos];
-        DeepNormImplVf<T>((__local_mem__ T*)srcLocal.GetPhyAddr(), (__local_mem__ T*)gxLocal.GetPhyAddr(),
-            (__local_mem__ float*)ssdLocal.GetPhyAddr(), alpha, tiling);
-        DeepNormImplHalf<T>((__local_mem__ T*)dstLocal.GetPhyAddr(), (__local_mem__ T*)meanLocal.GetPhyAddr(), (__local_mem__ T*)rstdLocal.GetPhyAddr(), 
-            (__local_mem__ float*)ssdLocal.GetPhyAddr(), (__local_mem__ T*)gammaLocal.GetPhyAddr(), (__local_mem__ T*)betaLocal.GetPhyAddr(), epsilon, para, tiling);
+        DeepNormImplVf<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), (__ubuf__ T*)gxLocal.GetPhyAddr(),
+            (__ubuf__ float*)ssdLocal.GetPhyAddr(), alpha, tiling);
+        DeepNormImplHalf<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)meanLocal.GetPhyAddr(), (__ubuf__ T*)rstdLocal.GetPhyAddr(), 
+            (__ubuf__ float*)ssdLocal.GetPhyAddr(), (__ubuf__ T*)gammaLocal.GetPhyAddr(), (__ubuf__ T*)betaLocal.GetPhyAddr(), epsilon, para, tiling);
     } else {
-        DeepNormImplVf<T>((__local_mem__ T*)srcLocal.GetPhyAddr(), (__local_mem__ T*)gxLocal.GetPhyAddr(),
-            (__local_mem__ float*)dstLocal.GetPhyAddr(), alpha, tiling);
+        DeepNormImplVf<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), (__ubuf__ T*)gxLocal.GetPhyAddr(),
+            (__ubuf__ float*)dstLocal.GetPhyAddr(), alpha, tiling);
         Internal::DeepnormPara para;
         Internal::GetDeepnormPara(para, tiling);
-        DeepNormImplHalf<T>((__local_mem__ T*)dstLocal.GetPhyAddr(), (__local_mem__ T*)meanLocal.GetPhyAddr(), (__local_mem__ T*)rstdLocal.GetPhyAddr(), 
-            (__local_mem__ float*)dstLocal.GetPhyAddr(), (__local_mem__ T*)gammaLocal.GetPhyAddr(), (__local_mem__ T*)betaLocal.GetPhyAddr(), epsilon, para, tiling);   
+        DeepNormImplHalf<T>((__ubuf__ T*)dstLocal.GetPhyAddr(), (__ubuf__ T*)meanLocal.GetPhyAddr(), (__ubuf__ T*)rstdLocal.GetPhyAddr(), 
+            (__ubuf__ float*)dstLocal.GetPhyAddr(), (__ubuf__ T*)gammaLocal.GetPhyAddr(), (__ubuf__ T*)betaLocal.GetPhyAddr(), epsilon, para, tiling);   
     }
 }
 

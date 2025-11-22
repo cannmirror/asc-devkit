@@ -20,8 +20,8 @@
 namespace AscendC {
 namespace Internal {
 template <typename T1, typename T2>
-__simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, const uint16_t mRepeatTimes,
+__simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t mRepeatTimes,
     const uint16_t kRepeatTimes, const uint16_t outNum, const uint16_t dataBlock)
 {
     MicroAPI::MaskReg maskCnt;
@@ -68,8 +68,8 @@ __simd_vf__ inline void SimpleSoftMaxGenericNZImpl(__local_mem__ T1* dstUb, __lo
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
+__simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t repeatTimes, const uint16_t blockStride)
 {
     MicroAPI::MaskReg maskFull = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::ALL>();
@@ -95,8 +95,8 @@ __simd_vf__ inline void SimpleSoftMaxGenericNDImpl(__local_mem__ T1* dstUb, __lo
 }
 
 template <typename T1, typename T2>
-__simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(__local_mem__ T1* dstUb, __local_mem__ T2* sumUb,
-    __local_mem__ T2* maxUb, __local_mem__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
+__simd_vf__ inline void SimpleSoftMaxGenericNDWithTailImpl(__ubuf__ T1* dstUb, __ubuf__ T2* sumUb,
+    __ubuf__ T2* maxUb, __ubuf__ T1* srcUb, const uint16_t srcM, const uint16_t srcK,
     const uint16_t repeatTimes, const uint16_t blockStride)
 {
     MicroAPI::MaskReg maskCnt;
@@ -144,10 +144,10 @@ __aicore__ inline void SimpleSoftMaxNZImpl(const LocalTensor<T1>& dst, const Loc
     uint16_t kRepeatTimes = srcK / SOFTMAX_SHAPE_NZ_BASIC_COUNT;
     uint32_t sreg = oriM * SOFTMAX_SHAPE_NZ_BASIC_COUNT;
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)inSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)inSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
 
     Internal::SimpleSoftMaxGenericNZImpl<T1, T2>(dstUb, sumUb, maxUb, srcUb, mRepeatTimes,
                                                 kRepeatTimes, sreg, dataBlock);
@@ -168,10 +168,10 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T1>& dst, const Loc
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(srcK, FLOAT_REPEAT_SIZE));
     constexpr uint16_t blockStride = GetDataBlockSizeInBytes() / sizeof(T2);
 
-    __local_mem__ T1* dstUb = (__local_mem__ T1*)dst.GetPhyAddr();
-    __local_mem__ T2* sumUb = (__local_mem__ T2*)inSumTensor.GetPhyAddr();
-    __local_mem__ T2* maxUb = (__local_mem__ T2*)inMaxTensor.GetPhyAddr();
-    __local_mem__ T1* srcUb = (__local_mem__ T1*)src.GetPhyAddr();
+    __ubuf__ T1* dstUb = (__ubuf__ T1*)dst.GetPhyAddr();
+    __ubuf__ T2* sumUb = (__ubuf__ T2*)inSumTensor.GetPhyAddr();
+    __ubuf__ T2* maxUb = (__ubuf__ T2*)inMaxTensor.GetPhyAddr();
+    __ubuf__ T1* srcUb = (__ubuf__ T1*)src.GetPhyAddr();
 
     if constexpr (isBasicBlock) {
         Internal::SimpleSoftMaxGenericNDImpl<T1, T2>(

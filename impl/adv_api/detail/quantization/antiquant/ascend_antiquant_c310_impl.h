@@ -46,7 +46,7 @@ __simd_callee__ inline void SelectZeroNan(MicroAPI::RegTensor<bfloat16_t>& b16vr
 }
 
 template <typename OutputDataType>
-__simd_vf__ inline void CastScale(__local_mem__ OutputDataType* dst, __local_mem__ fp8_e8m0_t* scale,
+__simd_vf__ inline void CastScale(__ubuf__ OutputDataType* dst, __ubuf__ fp8_e8m0_t* scale,
     const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -86,8 +86,8 @@ __simd_vf__ inline void CastScale(__local_mem__ OutputDataType* dst, __local_mem
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_callee__ inline void AntiQuantProcessByLine(__local_mem__ OutputDataType* dstUb, __local_mem__ SrcType* srcUb,
-    __local_mem__ fp8_e8m0_t* scaleUb, const uint32_t calCount, MicroAPI::RegTensor<uint16_t>& bf16Zero,
+__simd_callee__ inline void AntiQuantProcessByLine(__ubuf__ OutputDataType* dstUb, __ubuf__ SrcType* srcUb,
+    __ubuf__ fp8_e8m0_t* scaleUb, const uint32_t calCount, MicroAPI::RegTensor<uint16_t>& bf16Zero,
     MicroAPI::RegTensor<uint16_t>& bf16Nan, MicroAPI::RegTensor<uint16_t>& e8m0Zero,
     MicroAPI::RegTensor<uint16_t>& e8m0Nan)
 {
@@ -113,7 +113,7 @@ __simd_callee__ inline void AntiQuantProcessByLine(__local_mem__ OutputDataType*
         SelectZeroNan(b16vreg1, bf16Zero, bf16Nan, e8m0Zero, e8m0Nan, selPreg, preg);
 
         MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>((MicroAPI::RegTensor<uint8_t>&)fp4vreg0,
-            (__local_mem__ uint8_t*)srcUb + (i * sregLower / HALF_FACTOR));
+            (__ubuf__ uint8_t*)srcUb + (i * sregLower / HALF_FACTOR));
         MicroAPI::Cast<bfloat16_t, SrcType, layoutZMrgZ>(b16vreg2, fp4vreg0, preg);
         if constexpr (SupportType<OutputDataType, half>()) {
             MicroAPI::Cast<half, bfloat16_t, MrgZRndRSatS>(halfvreg2, b16vreg2, preg);
@@ -128,8 +128,8 @@ __simd_callee__ inline void AntiQuantProcessByLine(__local_mem__ OutputDataType*
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
-    __local_mem__ OutputDataType* scale, const uint32_t srcCalCount, const uint16_t newRepeatTime)
+__simd_vf__ inline void AntiQuantProcessByNum(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+    __ubuf__ OutputDataType* scale, const uint32_t srcCalCount, const uint16_t newRepeatTime)
 {
     uint32_t sregLower = static_cast<uint32_t>(ANTIQUANT_B16_VF_LEN);
     MicroAPI::MaskReg preg1;
@@ -148,7 +148,7 @@ __simd_vf__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst,
             (MicroAPI::RegTensor<uint16_t>&)tmpReg);
 
         MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>((MicroAPI::RegTensor<uint8_t>&)fp4vreg0,
-            (__local_mem__ uint8_t*)src + (2 * i) * sregLower / HALF_FACTOR); // once process half of sregLower num
+            (__ubuf__ uint8_t*)src + (2 * i) * sregLower / HALF_FACTOR); // once process half of sregLower num
         MicroAPI::Cast<bfloat16_t, SrcType, layoutZMrgZ>(b16vreg2, fp4vreg0, preg1);
         if constexpr (SupportType<OutputDataType, half>()) {
             MicroAPI::Cast<half, bfloat16_t, MrgZRndRSatS>(halfvreg2, b16vreg2, preg1);
@@ -162,7 +162,7 @@ __simd_vf__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst,
 
         preg1 = MicroAPI::UpdateMask<uint16_t>(sreg1);
         MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>((MicroAPI::RegTensor<uint8_t>&)fp4vreg0,
-            (__local_mem__ uint8_t*)src + (2 * i + 1) * sregLower / HALF_FACTOR); // once process half of sregLower num
+            (__ubuf__ uint8_t*)src + (2 * i + 1) * sregLower / HALF_FACTOR); // once process half of sregLower num
         MicroAPI::Cast<bfloat16_t, SrcType, layoutZMrgZ>(b16vreg2, fp4vreg0, preg1);
 
         if constexpr (SupportType<OutputDataType, half>()) {
@@ -179,8 +179,8 @@ __simd_vf__ inline void AntiQuantProcessByNum(__local_mem__ OutputDataType* dst,
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void AscendAntiQuantNoTranspose(__local_mem__ OutputDataType* dstUb,
-    __local_mem__ SrcType* srcUb, __local_mem__ fp8_e8m0_t* scaleUb, const uint32_t k, const uint32_t n)
+__simd_vf__ inline void AscendAntiQuantNoTranspose(__ubuf__ OutputDataType* dstUb,
+    __ubuf__ SrcType* srcUb, __ubuf__ fp8_e8m0_t* scaleUb, const uint32_t k, const uint32_t n)
 {
     static_assert(SupportType<SrcType, fp4x2_e2m1_t, fp4x2_e1m2_t>(),
         "This AscendAntiQuant only support fp4 input dtype");
@@ -222,11 +222,11 @@ __aicore__ inline void AscendAntiQuantTranspose(const LocalTensor<OutputDataType
     const LocalTensor<SrcType>& src, const LocalTensor<fp8_e8m0_t>& scale,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k, const uint32_t n)
 {
-    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
-    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
-    __local_mem__ fp8_e8m0_t* scaleUb = (__local_mem__ fp8_e8m0_t*)scale.GetPhyAddr();
+    __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
+    __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
+    __ubuf__ fp8_e8m0_t* scaleUb = (__ubuf__ fp8_e8m0_t*)scale.GetPhyAddr();
     auto tmpbuffer = sharedTmpBuffer.ReinterpretCast<OutputDataType>();
-    __local_mem__ OutputDataType* tmpbufferUb = (__local_mem__ OutputDataType*)tmpbuffer.GetPhyAddr();
+    __ubuf__ OutputDataType* tmpbufferUb = (__ubuf__ OutputDataType*)tmpbuffer.GetPhyAddr();
 
     uint32_t srcCalCount = n * k;
     if (scale.GetSize() == 1) {
@@ -263,9 +263,9 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& ds
         "This AscendAntiQuant only support fp4 input dtype");
     static_assert(SupportType<OutputDataType, half, bfloat16_t>(),
         "This AscendAntiQuant only support half/bf16 output dtype");
-    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
-    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
-    __local_mem__ fp8_e8m0_t* scaleUb = (__local_mem__ fp8_e8m0_t*)scale.GetPhyAddr();
+    __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
+    __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
+    __ubuf__ fp8_e8m0_t* scaleUb = (__ubuf__ fp8_e8m0_t*)scale.GetPhyAddr();
     if constexpr (isTranspose) {
         ASCENDC_ASSERT((k != 0 && (k / HALF_FACTOR) % ONE_BLK_SIZE == 0),
                        { KERNEL_LOG(KERNEL_ERROR, "K should be larger than 0 && should be 32B aligned!"); });
@@ -283,7 +283,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& ds
  * perTensor for B8                                             *
  * ************************************************************************************************* */
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerTensorProcessForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerTensorProcessForFp8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
     const OutputDataType offset, const OutputDataType scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -313,7 +313,7 @@ __simd_vf__ inline void PerTensorProcessForFp8(__local_mem__ OutputDataType* dst
     }
 }
 template <typename SrcType>
-__simd_vf__ inline void PerTensorProcessForB8(__local_mem__ half* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerTensorProcessForB8(__ubuf__ half* dst, __ubuf__ SrcType* src,
     const half offset, const half scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -337,7 +337,7 @@ __simd_vf__ inline void PerTensorProcessForB8(__local_mem__ half* dst, __local_m
 }
 
 template <typename SrcType>
-__simd_vf__ inline void PerTensorProcessForB8(__local_mem__ bfloat16_t* dst, __local_mem__ SrcType* src,
+__simd_vf__ inline void PerTensorProcessForB8(__ubuf__ bfloat16_t* dst, __ubuf__ SrcType* src,
     const bfloat16_t offset, const bfloat16_t scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -378,10 +378,10 @@ __aicore__ inline void AntiQuantPertensorImpl(const LocalTensor<OutputDataType>&
         "This AscendAntiQuant only support fp8/hif8/int8 input dtype");
     static_assert(SupportType<OutputDataType, half, bfloat16_t>(),
         "This AscendAntiQuant only support f16/bf16 output dtype");
-    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
-    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
+    __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
+    __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
     auto tmpbuffer = sharedTmpBuffer.ReinterpretCast<OutputDataType>();
-    __local_mem__ OutputDataType* tmpbufferUb = (__local_mem__ OutputDataType*)tmpbuffer.GetPhyAddr();
+    __ubuf__ OutputDataType* tmpbufferUb = (__ubuf__ OutputDataType*)tmpbuffer.GetPhyAddr();
 
     uint32_t srcCalCount = src.GetSize();
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
@@ -396,8 +396,8 @@ __aicore__ inline void AntiQuantPertensorImpl(const LocalTensor<OutputDataType>&
  * perChannel for B8                                             *
  * ************************************************************************************************* */
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelNoTransposeForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
-    __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t K, const uint32_t N)
+__simd_vf__ inline void PerchannelNoTransposeForFp8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+    __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<SrcType> vreg;
@@ -435,8 +435,8 @@ __simd_vf__ inline void PerchannelNoTransposeForFp8(__local_mem__ OutputDataType
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelNoTransposeForB8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
-    __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t K, const uint32_t N)
+__simd_vf__ inline void PerchannelNoTransposeForB8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+    __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<SrcType> vreg;
@@ -476,10 +476,10 @@ __aicore__ inline void AntiQuantPerchannelNoTranspose(const LocalTensor<OutputDa
     const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& offset,
     const LocalTensor<OutputDataType>& scale, const uint32_t K, const uint32_t N)
 {
-    __local_mem__ OutputDataType* scaleUb = (__local_mem__ OutputDataType*)scale.GetPhyAddr();
-    __local_mem__ OutputDataType* offsetUb = (__local_mem__ OutputDataType*)offset.GetPhyAddr();
-    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
-    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
+    __ubuf__ OutputDataType* scaleUb = (__ubuf__ OutputDataType*)scale.GetPhyAddr();
+    __ubuf__ OutputDataType* offsetUb = (__ubuf__ OutputDataType*)offset.GetPhyAddr();
+    __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
+    __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
 
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
         PerchannelNoTransposeForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, K, N);
@@ -489,8 +489,8 @@ __aicore__ inline void AntiQuantPerchannelNoTranspose(const LocalTensor<OutputDa
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelUnlignedForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
-    __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t srcCalCount)
+__simd_vf__ inline void PerchannelUnlignedForFp8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+    __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<SrcType> vreg;
@@ -534,8 +534,8 @@ __simd_vf__ inline void PerchannelUnlignedForFp8(__local_mem__ OutputDataType* d
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelUnlignedForB8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
-    __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t srcCalCount)
+__simd_vf__ inline void PerchannelUnlignedForB8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+    __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<SrcType> vreg;
@@ -572,10 +572,10 @@ __aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType
     const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& offset,
     const LocalTensor<OutputDataType>& scale, const uint32_t K, const uint32_t N)
 {
-    __local_mem__ OutputDataType* scaleUb = (__local_mem__ OutputDataType*)scale.GetPhyAddr();
-    __local_mem__ OutputDataType* offsetUb = (__local_mem__ OutputDataType*)offset.GetPhyAddr();
-    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
-    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
+    __ubuf__ OutputDataType* scaleUb = (__ubuf__ OutputDataType*)scale.GetPhyAddr();
+    __ubuf__ OutputDataType* offsetUb = (__ubuf__ OutputDataType*)offset.GetPhyAddr();
+    __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
+    __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
 
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
         PerchannelUnlignedForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
@@ -585,8 +585,8 @@ __aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType
 }
 
 template <typename SrcType>
-__simd_vf__ inline void PerchannelTransposeForB8(__local_mem__ half* dst, __local_mem__ SrcType* src,
-    __local_mem__ half* offset, __local_mem__ half* scale, const uint32_t K, const uint32_t N)
+__simd_vf__ inline void PerchannelTransposeForB8(__ubuf__ half* dst, __ubuf__ SrcType* src,
+    __ubuf__ half* offset, __ubuf__ half* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
 
@@ -619,8 +619,8 @@ __simd_vf__ inline void PerchannelTransposeForB8(__local_mem__ half* dst, __loca
 }
 
 template <typename SrcType>
-__simd_vf__ inline void PerchannelTransposeForB8(__local_mem__ bfloat16_t* dst, __local_mem__ SrcType* src,
-    __local_mem__ bfloat16_t* offset, __local_mem__ bfloat16_t* scale, const uint32_t K, const uint32_t N)
+__simd_vf__ inline void PerchannelTransposeForB8(__ubuf__ bfloat16_t* dst, __ubuf__ SrcType* src,
+    __ubuf__ bfloat16_t* offset, __ubuf__ bfloat16_t* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<SrcType> vreg;
@@ -666,8 +666,8 @@ __simd_vf__ inline void PerchannelTransposeForB8(__local_mem__ bfloat16_t* dst, 
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelTransposeForFp8(__local_mem__ OutputDataType* dst, __local_mem__ SrcType* src,
-    __local_mem__ OutputDataType* offset, __local_mem__ OutputDataType* scale, const uint32_t K, const uint32_t N)
+__simd_vf__ inline void PerchannelTransposeForFp8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+    __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t K, const uint32_t N)
 {
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<SrcType> vreg;
@@ -712,10 +712,10 @@ __aicore__ inline void AntiQuantPerchannelTranspose(const LocalTensor<OutputData
     const LocalTensor<OutputDataType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const uint32_t N)
 {
-    __local_mem__ OutputDataType* dstUb = (__local_mem__ OutputDataType*)dst.GetPhyAddr();
-    __local_mem__ SrcType* srcUb = (__local_mem__ SrcType*)src.GetPhyAddr();
-    __local_mem__ OutputDataType* scaleUb = (__local_mem__ OutputDataType*)scale.GetPhyAddr();
-    __local_mem__ OutputDataType* offsetUb = (__local_mem__ OutputDataType*)offset.GetPhyAddr();
+    __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
+    __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
+    __ubuf__ OutputDataType* scaleUb = (__ubuf__ OutputDataType*)scale.GetPhyAddr();
+    __ubuf__ OutputDataType* offsetUb = (__ubuf__ OutputDataType*)offset.GetPhyAddr();
 
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
         PerchannelTransposeForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, K, N);
@@ -1231,8 +1231,8 @@ __aicore__ inline void AscendAntiQuantTranspose(const LocalTensor<OutputDataType
 }
 
 template <typename scaleT, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void LoadPerTokenScaleAndOffset(__local_mem__ scaleT* scaleUb,
-                                                  __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void LoadPerTokenScaleAndOffset(__ubuf__ scaleT* scaleUb,
+                                                  __ubuf__ scaleT* offsetUb,
                                                   MicroAPI::RegTensor<scaleT>& scaleVreg,
                                                   MicroAPI::RegTensor<scaleT>& offsetVreg)
 {
@@ -1250,8 +1250,8 @@ __simd_callee__ inline void LoadPerTokenScaleAndOffset(__local_mem__ scaleT* sca
 }
 
 template <typename scaleT, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void LoadPerTokenTransposeScaleAndOffset(__local_mem__ scaleT* scaleUb,
-                                                           __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void LoadPerTokenTransposeScaleAndOffset(__ubuf__ scaleT* scaleUb,
+                                                           __ubuf__ scaleT* offsetUb,
                                                            MicroAPI::RegTensor<scaleT>& scaleVreg,
                                                            MicroAPI::RegTensor<scaleT>& offsetVreg)
 {
@@ -1269,8 +1269,8 @@ __simd_callee__ inline void LoadPerTokenTransposeScaleAndOffset(__local_mem__ sc
 }
 
 template <typename T, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void GetPerGroupScaleAndOffset(__local_mem__ T* scaleUb,
-                                                 __local_mem__ T* offsetUb, const int32_t start,
+__simd_callee__ inline void GetPerGroupScaleAndOffset(__ubuf__ T* scaleUb,
+                                                 __ubuf__ T* offsetUb, const int32_t start,
                                                  const AscendAntiQuantParam& para,
                                                  MicroAPI::RegTensor<T>& scaleReg,
                                                  MicroAPI::RegTensor<T>& offsetReg)
@@ -1305,7 +1305,7 @@ __simd_callee__ inline void GetPerGroupScaleAndOffset(__local_mem__ T* scaleUb,
 }
 
 template <typename dstT>
-__simd_callee__ inline void StoreF32Res(__local_mem__ dstT* dstAddr, MicroAPI::RegTensor<float>& vreg,
+__simd_callee__ inline void StoreF32Res(__ubuf__ dstT* dstAddr, MicroAPI::RegTensor<float>& vreg,
                                    MicroAPI::MaskReg& preg)
 {
     if constexpr (SupportType<dstT, float>()) {
@@ -1318,7 +1318,7 @@ __simd_callee__ inline void StoreF32Res(__local_mem__ dstT* dstAddr, MicroAPI::R
 }
 
 template <typename scaleT, typename srcT>
-__simd_callee__ inline void LoadSrc(__local_mem__ srcT* srcAddr, MicroAPI::RegTensor<srcT>& srcVreg)
+__simd_callee__ inline void LoadSrc(__ubuf__ srcT* srcAddr, MicroAPI::RegTensor<srcT>& srcVreg)
 {
     if constexpr (SupportType<scaleT, half, bfloat16_t>()) {
         MicroAPI::DataCopy<srcT, MicroAPI::LoadDist::DIST_UNPACK_B8>(srcVreg, srcAddr);
@@ -1392,8 +1392,8 @@ __simd_callee__ inline void ConvertToF32ScaleAndOffset(MicroAPI::RegTensor<scale
 }
 
 template <typename scaleT, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void LoadNormScaleAndOffset(__local_mem__ scaleT* scaleAddr,
-                                              __local_mem__ scaleT* offsetAddr,
+__simd_callee__ inline void LoadNormScaleAndOffset(__ubuf__ scaleT* scaleAddr,
+                                              __ubuf__ scaleT* offsetAddr,
                                               MicroAPI::RegTensor<scaleT>& scaleVreg,
                                               MicroAPI::RegTensor<scaleT>& offsetVreg)
 {
@@ -1404,8 +1404,8 @@ __simd_callee__ inline void LoadNormScaleAndOffset(__local_mem__ scaleT* scaleAd
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerTokenForB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerTokenForB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -1451,16 +1451,16 @@ __aicore__ inline void AntiQuantPerTokenForB8(const LocalTensor<dstT>& dstTensor
                                               const LocalTensor<scaleT>& offsetTensor,
                                               const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     AntiQuantPerTokenForB8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerTokenTransposeForB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerTokenTransposeForB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -1507,16 +1507,16 @@ __aicore__ inline void AntiQuantPerTokenTransposeForB8(const LocalTensor<dstT>& 
                                                        const LocalTensor<scaleT>& offsetTensor,
                                                        const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     AntiQuantPerTokenTransposeForB8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerTokenForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerTokenForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -1559,16 +1559,16 @@ __aicore__ inline void AntiQuantPerTokenForFp8(const LocalTensor<dstT>& dstTenso
                                                const LocalTensor<scaleT>& offsetTensor,
                                                const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     AntiQuantPerTokenForFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerTokenTransposeForFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerTokenTransposeForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -1612,10 +1612,10 @@ __aicore__ inline void AntiQuantPerTokenTransposeForFp8(const LocalTensor<dstT>&
                                                         const LocalTensor<scaleT>& offsetTensor,
                                                         const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     AntiQuantPerTokenTransposeForFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
@@ -1628,8 +1628,8 @@ __aicore__ inline void ReplaceBf16VmulsWithVmul(MicroAPI::RegTensor<bfloat16_t>&
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerGroupForColB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerGroupForColB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
@@ -1676,16 +1676,16 @@ __aicore__ inline void AntiQuantPerGroupForColB8(const LocalTensor<dstT>& dstTen
                                                  const LocalTensor<scaleT>& offsetTensor,
                                                  const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     AntiQuantPerGroupForColB8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerGroupForColFp4VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerGroupForColFp4VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(dstT);
@@ -1713,7 +1713,7 @@ __simd_vf__ inline void AntiQuantPerGroupForColFp4VF(__local_mem__ dstT* dstUb, 
             MicroAPI::Arange((MicroAPI::RegTensor<int16_t> &)indexVreg, static_cast<int16_t>(j * vecLen));
             MicroAPI::Div(indexVreg, indexVreg, gsizeVreg, pregFull);
             MicroAPI::DataCopyGather<uint16_t, uint8_t, uint16_t>((MicroAPI::RegTensor<uint16_t> &)scaleVreg,
-                (__local_mem__ uint8_t *)scaleUb + i * scaleK, indexVreg, pregFull);
+                (__ubuf__ uint8_t *)scaleUb + i * scaleK, indexVreg, pregFull);
             // fp8_e8m0x128 -> bf16x128
             MicroAPI::ShiftLefts<uint16_t, int16_t>((MicroAPI::RegTensor<uint16_t> &)dstScaleVreg,
                 (MicroAPI::RegTensor<uint16_t> &)scaleVreg, ANTIQUANT_BF16_MAN_LEN, preg);
@@ -1725,7 +1725,7 @@ __simd_vf__ inline void AntiQuantPerGroupForColFp4VF(__local_mem__ dstT* dstUb, 
             // 2. using cast fp4->bf16, to cast 64xb32 to 128xbf16
             MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>(
                 (MicroAPI::RegTensor<uint8_t> &)srcVreg,
-                (__local_mem__ uint8_t *)srcUb + (i * para.n + j * vecLen) / 2);
+                (__ubuf__ uint8_t *)srcUb + (i * para.n + j * vecLen) / 2);
             MicroAPI::Cast<bfloat16_t, srcT, layoutZMrgZ>(
                 (MicroAPI::RegTensor<bfloat16_t> &)dstSrcVreg, srcVreg, preg);
             // step3. dst = src * scale
@@ -1747,15 +1747,15 @@ template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantCo
 __aicore__ inline void AntiQuantPerGroupForColFp4(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
                                                   const LocalTensor<scaleT>& scaleTensor,const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT *dstUb = (__local_mem__ dstT *)dstTensor.GetPhyAddr();
-    __local_mem__ srcT *srcUb = (__local_mem__ srcT *)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT *scaleUb = (__local_mem__ scaleT *)scaleTensor.GetPhyAddr();
+    __ubuf__ dstT *dstUb = (__ubuf__ dstT *)dstTensor.GetPhyAddr();
+    __ubuf__ srcT *srcUb = (__ubuf__ srcT *)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT *scaleUb = (__ubuf__ scaleT *)scaleTensor.GetPhyAddr();
     AntiQuantPerGroupForColFp4VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT>
-__simd_callee__ inline void AntiQuantPerGroupForRowFp4OneRow(__local_mem__ dstT *dstAddr, __local_mem__ srcT *srcAddr,
-    __local_mem__ scaleT *scaleAddr, MicroAPI::RegTensor<dstT> &dstVreg, MicroAPI::RegTensor<srcT> &srcVreg,
+__simd_callee__ inline void AntiQuantPerGroupForRowFp4OneRow(__ubuf__ dstT *dstAddr, __ubuf__ srcT *srcAddr,
+    __ubuf__ scaleT *scaleAddr, MicroAPI::RegTensor<dstT> &dstVreg, MicroAPI::RegTensor<srcT> &srcVreg,
     MicroAPI::RegTensor<scaleT> &scaleVreg, MicroAPI::RegTensor<dstT> &dstSrcVreg,
     MicroAPI::RegTensor<dstT> &dstScaleVreg, MicroAPI::MaskReg &preg, uint16_t repeat, uint32_t n, uint32_t vecLen)
 {
@@ -1778,7 +1778,7 @@ __simd_callee__ inline void AntiQuantPerGroupForRowFp4OneRow(__local_mem__ dstT 
             (MicroAPI::RegTensor<bfloat16_t> &)dstScaleVreg, bf16Zero, bf16Nan, e8m0Zero, e8m0Nan, selPreg, preg);
         // step2: load src
         MicroAPI::DataCopy<uint8_t, MicroAPI::LoadDist::DIST_UNPACK4_B8>(
-            (MicroAPI::RegTensor<uint8_t> &)srcVreg, (__local_mem__ uint8_t *)srcAddr + (j * vecLen) / 2);
+            (MicroAPI::RegTensor<uint8_t> &)srcVreg, (__ubuf__ uint8_t *)srcAddr + (j * vecLen) / 2);
         MicroAPI::Cast<bfloat16_t, srcT, layoutZMrgZ>((MicroAPI::RegTensor<bfloat16_t> &)dstSrcVreg, srcVreg, preg);
         // step3. dst = src * scale
         MicroAPI::Mul<bfloat16_t, MicroAPI::MaskMergeMode::ZEROING>((MicroAPI::RegTensor<bfloat16_t> &)dstVreg,
@@ -1794,8 +1794,8 @@ __simd_callee__ inline void AntiQuantPerGroupForRowFp4OneRow(__local_mem__ dstT 
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerGroupForRowFp4VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, const AscendAntiQuantParam para, uint16_t rowNum, uint16_t tailRow)
+__simd_vf__ inline void AntiQuantPerGroupForRowFp4VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, const AscendAntiQuantParam para, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
     uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(dstT);
@@ -1841,9 +1841,9 @@ template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantCo
 __aicore__ inline void AntiQuantPerGroupForRowFp4(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
                                                   const LocalTensor<scaleT>& scaleTensor, const AscendAntiQuantParam& para)
 {
-     __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
+     __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
 
@@ -1851,8 +1851,8 @@ __aicore__ inline void AntiQuantPerGroupForRowFp4(const LocalTensor<dstT>& dstTe
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerGroupForColFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para)
+__simd_vf__ inline void AntiQuantPerGroupForColFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
     uint32_t vecLen = ASCENDC_QUANT_B32_VF_LEN;
@@ -1898,16 +1898,16 @@ __aicore__ inline void AntiQuantPerGroupForColFp8(const LocalTensor<dstT>& dstTe
                                                   const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                   const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     AntiQuantPerGroupForColFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void AntiQuantPerGroupForRowB8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                          __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void AntiQuantPerGroupForRowB8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                          __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
                                                           uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -1941,8 +1941,8 @@ __simd_callee__ inline void AntiQuantPerGroupForRowB8TailBlock(__local_mem__ dst
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerGroupForRowB8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para,
+__simd_vf__ inline void AntiQuantPerGroupForRowB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -1989,18 +1989,18 @@ __aicore__ inline void AntiQuantPerGroupForRowB8(const LocalTensor<dstT>& dstTen
                                                  const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                  const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     AntiQuantPerGroupForRowB8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para, rowNum, tailRow);
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_callee__ inline void AntiQuantPerGroupForRowFp8TailBlock(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-                                                           __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb,
+__simd_callee__ inline void AntiQuantPerGroupForRowFp8TailBlock(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+                                                           __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb,
                                                            uint16_t repeat, uint16_t tailRow, uint32_t n, uint32_t vecLen)
 {
     MicroAPI::MaskReg preg;
@@ -2034,8 +2034,8 @@ __simd_callee__ inline void AntiQuantPerGroupForRowFp8TailBlock(__local_mem__ ds
 }
 
 template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config>
-__simd_vf__ inline void AntiQuantPerGroupForRowFp8VF(__local_mem__ dstT* dstUb, __local_mem__ srcT* srcUb,
-    __local_mem__ scaleT* scaleUb, __local_mem__ scaleT* offsetUb, const AscendAntiQuantParam para,
+__simd_vf__ inline void AntiQuantPerGroupForRowFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
+    __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para,
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
@@ -2081,10 +2081,10 @@ __aicore__ inline void AntiQuantPerGroupForRowFp8(const LocalTensor<dstT>& dstTe
                                                   const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
                                                   const AscendAntiQuantParam& para)
 {
-    __local_mem__ dstT* dstUb = (__local_mem__ dstT*)dstTensor.GetPhyAddr();
-    __local_mem__ srcT* srcUb = (__local_mem__ srcT*)srcTensor.GetPhyAddr();
-    __local_mem__ scaleT* scaleUb = (__local_mem__ scaleT*)scaleTensor.GetPhyAddr();
-    __local_mem__ scaleT* offsetUb = (__local_mem__ scaleT*)offsetTensor.GetPhyAddr();
+    __ubuf__ dstT* dstUb = (__ubuf__ dstT*)dstTensor.GetPhyAddr();
+    __ubuf__ srcT* srcUb = (__ubuf__ srcT*)srcTensor.GetPhyAddr();
+    __ubuf__ scaleT* scaleUb = (__ubuf__ scaleT*)scaleTensor.GetPhyAddr();
+    __ubuf__ scaleT* offsetUb = (__ubuf__ scaleT*)offsetTensor.GetPhyAddr();
     uint16_t rowNum = para.calCount / para.n;
     uint16_t tailRow = rowNum % para.groupSize;
     AntiQuantPerGroupForRowFp8VF<dstT, srcT, scaleT, config>(dstUb, srcUb, scaleUb, offsetUb, para, rowNum, tailRow);

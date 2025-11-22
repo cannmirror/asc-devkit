@@ -22,7 +22,7 @@ namespace AscendC {
 
 namespace Internal {
 template <typename T>
-__simd_callee__ inline void LoadDataWithT(__local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg,
+__simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg,
                                           MicroAPI::MaskReg& dstPreg, uint32_t srcOffset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
@@ -35,7 +35,7 @@ __simd_callee__ inline void LoadDataWithT(__local_mem__ T* src, MicroAPI::RegTen
 }
 
 template <typename T>
-__simd_callee__ inline void SaveDataWithT(__local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg,
+__simd_callee__ inline void SaveDataWithT(__ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg,
                                           MicroAPI::MaskReg& dstPreg, uint32_t dstOffset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
@@ -51,7 +51,7 @@ __simd_callee__ inline void SaveDataWithT(__local_mem__ T* dst, MicroAPI::RegTen
 // T: fp16-> U: fp32
 // T: fp32-> U: fp16
 template <typename U, typename T>
-__simd_vf__ inline void CumSumCopyWithCastVF(__local_mem__ T* src, __local_mem__ U* dst, const uint16_t outter,
+__simd_vf__ inline void CumSumCopyWithCastVF(__ubuf__ T* src, __ubuf__ U* dst, const uint16_t outter,
                                             const uint16_t inner, uint16_t innerOneRepNum, uint16_t mainRepeatTime,
                                             uint16_t tailRepeatTime, uint32_t tailCount)
 {
@@ -74,8 +74,8 @@ template <typename U, typename T>
 __aicore__ inline void CumSumCopyWithCast(const LocalTensor<U>& dstTensor, const LocalTensor<T>& srcTensor,
                                           const uint32_t outter, const uint32_t inner)
 {
-    __local_mem__ T* src = (__local_mem__ T*)srcTensor.GetPhyAddr();
-    __local_mem__ U* dst = (__local_mem__ U*)dstTensor.GetPhyAddr();
+    __ubuf__ T* src = (__ubuf__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ U* dst = (__ubuf__ U*)dstTensor.GetPhyAddr();
     constexpr uint16_t innerOneRepNum = (uint16_t)(VECTOR_REG_WIDTH / sizeof(float));
     uint16_t mainRepeatTime = inner / innerOneRepNum;
     uint32_t tailCount = inner % innerOneRepNum;
@@ -85,7 +85,7 @@ __aicore__ inline void CumSumCopyWithCast(const LocalTensor<U>& dstTensor, const
 }
 
 template <typename T>
-__simd_vf__ inline void CumSumCopyOutWithBlockVF(__local_mem__ T* src, __local_mem__ T* dst, uint16_t outter,
+__simd_vf__ inline void CumSumCopyOutWithBlockVF(__ubuf__ T* src, __ubuf__ T* dst, uint16_t outter,
                                                 uint16_t inner, uint16_t mainRepeatTime, uint16_t innerOneRepNum,
                                                 uint32_t tailCount, uint16_t tailRepeatTime)
 {
@@ -110,7 +110,7 @@ __simd_vf__ inline void CumSumCopyOutWithBlockVF(__local_mem__ T* src, __local_m
 }
 
 template <typename T>
-__simd_vf__ inline void CumSumCopyOutVF(__local_mem__ T* src, __local_mem__ T* dst, uint16_t outter, uint16_t inner,
+__simd_vf__ inline void CumSumCopyOutVF(__ubuf__ T* src, __ubuf__ T* dst, uint16_t outter, uint16_t inner,
                                        uint16_t mainRepeatTime, uint16_t innerOneRepNum, uint32_t tailCount,
                                        uint16_t tailRepeatTime)
 {
@@ -134,8 +134,8 @@ template <typename T>
 __aicore__ inline void CumSumCopyOut(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
                                      const uint32_t outter, const uint32_t inner)
 {
-    __local_mem__ T* src = (__local_mem__ T*)srcTensor.GetPhyAddr();
-    __local_mem__ T* dst = (__local_mem__ T*)dstTensor.GetPhyAddr();
+    __ubuf__ T* src = (__ubuf__ T*)srcTensor.GetPhyAddr();
+    __ubuf__ T* dst = (__ubuf__ T*)dstTensor.GetPhyAddr();
     constexpr uint16_t innerOneRepNum = VECTOR_REG_WIDTH / sizeof(T);
     constexpr uint16_t elePerBlock = ONE_BLK_SIZE / sizeof(T);
     uint16_t mainRepeatTime = inner / innerOneRepNum;
@@ -152,7 +152,7 @@ __aicore__ inline void CumSumCopyOut(const LocalTensor<T>& dstTensor, const Loca
 }
 
 template <typename D, typename T, const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGather(__local_mem__ D* dstAddr, __local_mem__ T* srcAddr, uint32_t forLoop1,
+__aicore__ inline void TransposeCommonGather(__ubuf__ D* dstAddr, __ubuf__ T* srcAddr, uint32_t forLoop1,
                                              uint32_t forLoop2, uint32_t srcStride1, uint32_t srcStride2)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
@@ -160,7 +160,7 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ D* dstAddr, __local_m
 
 // VF for TransposeCommonGather (float, float)
 template <typename T, const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__simd_vf__ inline void TransposeCommonGatherVFFF(__local_mem__ float* dstAddr, __local_mem__ float* srcAddr,
+__simd_vf__ inline void TransposeCommonGatherVFFF(__ubuf__ float* dstAddr, __ubuf__ float* srcAddr,
                                                  uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                                  uint32_t srcStride2, uint32_t tail, uint32_t count, uint16_t mainLoop,
                                                  uint32_t dtypeSize, uint32_t tailLoop)
@@ -178,18 +178,18 @@ __simd_vf__ inline void TransposeCommonGatherVFFF(__local_mem__ float* dstAddr, 
         uint64_t hoistDstAddr = (uint64_t)dstAddr + (uint64_t)(j * forLoop2 * dtypeSize);
         for (uint16_t k = 0; k < static_cast<uint16_t>(mainLoop); k++) {
             DataCopyGather(srcReg, srcAddr + j * srcStride1 + k * vlSize * srcStride2, indexReg, mainMask);
-            MicroAPI::DataCopyUnAlign(((__local_mem__ float*&)hoistDstAddr), srcReg, ureg0, vlSize);
+            MicroAPI::DataCopyUnAlign(((__ubuf__ float*&)hoistDstAddr), srcReg, ureg0, vlSize);
         }
         for (uint16_t k = 0; k < static_cast<uint16_t>(tailLoop); k++) {
             DataCopyGather(srcReg, srcAddr + j * srcStride1 + mainLoop * vlSize * srcStride2, indexReg, tailMask);
-            MicroAPI::DataCopyUnAlign(((__local_mem__ float*&)hoistDstAddr), srcReg, ureg0, tail);
+            MicroAPI::DataCopyUnAlign(((__ubuf__ float*&)hoistDstAddr), srcReg, ureg0, tail);
         }
-        MicroAPI::DataCopyUnAlignPost(((__local_mem__ float*&)hoistDstAddr), ureg0, 0);
+        MicroAPI::DataCopyUnAlignPost(((__ubuf__ float*&)hoistDstAddr), ureg0, 0);
     }
 }
 
 template <typename D = float, typename T = float, const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGather(__local_mem__ float* dstAddr, __local_mem__ float* srcAddr,
+__aicore__ inline void TransposeCommonGather(__ubuf__ float* dstAddr, __ubuf__ float* srcAddr,
                                              uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                              uint32_t srcStride2)
 {
@@ -204,7 +204,7 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ float* dstAddr, __loc
 
 // VF for TransposeCommonGather (float, half)
 template <const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__simd_vf__ inline void TransposeCommonGatherVFFH(__local_mem__ float* dstAddr, __local_mem__ half* srcAddr,
+__simd_vf__ inline void TransposeCommonGatherVFFH(__ubuf__ float* dstAddr, __ubuf__ half* srcAddr,
                                                  uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                                  uint32_t srcStride2, uint32_t tail, uint32_t count, uint16_t mainLoop,
                                                  uint32_t dtypeSize, uint32_t tailLoop)
@@ -230,21 +230,21 @@ __simd_vf__ inline void TransposeCommonGatherVFFH(__local_mem__ float* dstAddr, 
             MicroAPI::Interleave((MicroAPI::RegTensor<uint16_t>&)castReg, (MicroAPI::RegTensor<uint16_t>&)tmpReg,
                                  (MicroAPI::RegTensor<uint16_t>&)srcReg, (MicroAPI::RegTensor<uint16_t>&)zeroReg);
             Cast<float, half, layoutZMrgZ>(vreg, castReg, mainMask);
-            MicroAPI::DataCopyUnAlign(((__local_mem__ float*&)hoistDstAddr), vreg, ureg0, vlSize);
+            MicroAPI::DataCopyUnAlign(((__ubuf__ float*&)hoistDstAddr), vreg, ureg0, vlSize);
         }
         for (uint16_t k = 0; k < static_cast<uint16_t>(tailLoop); k++) {
             DataCopyGather(srcReg, srcAddr + j * srcStride1 + mainLoop * vlSize * srcStride2, indexReg, tailMask);
             MicroAPI::Interleave((MicroAPI::RegTensor<uint16_t>&)castReg, (MicroAPI::RegTensor<uint16_t>&)tmpReg,
                                  (MicroAPI::RegTensor<uint16_t>&)srcReg, (MicroAPI::RegTensor<uint16_t>&)zeroReg);
             Cast<float, half, layoutZMrgZ>(vreg, castReg, mainMask);
-            MicroAPI::DataCopyUnAlign(((__local_mem__ float*&)hoistDstAddr), vreg, ureg0, tail);
+            MicroAPI::DataCopyUnAlign(((__ubuf__ float*&)hoistDstAddr), vreg, ureg0, tail);
         }
-        MicroAPI::DataCopyUnAlignPost(((__local_mem__ float*&)hoistDstAddr), ureg0, 0);
+        MicroAPI::DataCopyUnAlignPost(((__ubuf__ float*&)hoistDstAddr), ureg0, 0);
     }
 }
 
 template <typename D = float, typename T = half, const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGather(__local_mem__ float* dstAddr, __local_mem__ half* srcAddr,
+__aicore__ inline void TransposeCommonGather(__ubuf__ float* dstAddr, __ubuf__ half* srcAddr,
                                              uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                              uint32_t srcStride2)
 {
@@ -259,7 +259,7 @@ __aicore__ inline void TransposeCommonGather(__local_mem__ float* dstAddr, __loc
 
 // VF for TransposeCommonGather (half, float)
 template <const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__simd_vf__ inline void TransposeCommonGatherVHF(__local_mem__ half* dstAddr, __local_mem__ float* srcAddr,
+__simd_vf__ inline void TransposeCommonGatherVHF(__ubuf__ half* dstAddr, __ubuf__ float* srcAddr,
                                                 uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                                 uint32_t srcStride2, uint32_t tail, uint32_t count, uint16_t mainLoop,
                                                 uint32_t dtypeSize, uint32_t tailLoop)
@@ -285,21 +285,21 @@ __simd_vf__ inline void TransposeCommonGatherVHF(__local_mem__ half* dstAddr, __
             Cast<half, float, LayoutZMrgZRndRSatNS>(vreg, srcReg, fullMask);
             MicroAPI::DeInterleave((MicroAPI::RegTensor<uint16_t>&)castReg, (MicroAPI::RegTensor<uint16_t>&)tmpReg,
                                    (MicroAPI::RegTensor<uint16_t>&)vreg, (MicroAPI::RegTensor<uint16_t>&)zeroReg);
-            MicroAPI::DataCopyUnAlign(((__local_mem__ half*&)hoistDstAddr), castReg, ureg0, vlSize);
+            MicroAPI::DataCopyUnAlign(((__ubuf__ half*&)hoistDstAddr), castReg, ureg0, vlSize);
         }
         for (uint16_t k = 0; k < static_cast<uint16_t>(tailLoop); k++) {
             DataCopyGather(srcReg, srcAddr + j * srcStride1 + mainLoop * vlSize * srcStride2, indexReg, tailMask);
             Cast<half, float, LayoutZMrgZRndRSatNS>(vreg, srcReg, fullMask);
             MicroAPI::DeInterleave((MicroAPI::RegTensor<uint16_t>&)castReg, (MicroAPI::RegTensor<uint16_t>&)tmpReg,
                                    (MicroAPI::RegTensor<uint16_t>&)vreg, (MicroAPI::RegTensor<uint16_t>&)zeroReg);
-            MicroAPI::DataCopyUnAlign(((__local_mem__ half*&)hoistDstAddr), castReg, ureg0, tail);
+            MicroAPI::DataCopyUnAlign(((__ubuf__ half*&)hoistDstAddr), castReg, ureg0, tail);
         }
-        MicroAPI::DataCopyUnAlignPost(((__local_mem__ half*&)hoistDstAddr), ureg0, 0);
+        MicroAPI::DataCopyUnAlignPost(((__ubuf__ half*&)hoistDstAddr), ureg0, 0);
     }
 }
 
 template <typename D = half, typename T = float, const MicroAPI::RegTrait& Trait, const uint16_t vlSize>
-__aicore__ inline void TransposeCommonGather(__local_mem__ half* dstAddr, __local_mem__ float* srcAddr,
+__aicore__ inline void TransposeCommonGather(__ubuf__ half* dstAddr, __ubuf__ float* srcAddr,
                                              uint32_t forLoop1, uint32_t forLoop2, uint32_t srcStride1,
                                              uint32_t srcStride2)
 {
@@ -329,12 +329,12 @@ __aicore__ inline void TransposeAB(const LocalTensor<D>& dstTensor, const LocalT
     uint32_t srcStride1 = 1;
     uint32_t srcStride2 = inner;
     constexpr uint16_t vlSize = VECTOR_REG_WIDTH / sizeof(float);
-    TransposeCommonGather<D, T, MicroAPI::RegTraitNumOne, vlSize>((__local_mem__ D*)dstTensor.GetPhyAddr(),
-                                                                  (__local_mem__ T*)srcTensor.GetPhyAddr(), inner,
+    TransposeCommonGather<D, T, MicroAPI::RegTraitNumOne, vlSize>((__ubuf__ D*)dstTensor.GetPhyAddr(),
+                                                                  (__ubuf__ T*)srcTensor.GetPhyAddr(), inner,
                                                                   outer, srcStride1, srcStride2);
 }
 
-__simd_vf__ inline void CumSumFirstDimSklanskyVF(__local_mem__ float* dst, uint32_t outer, uint32_t inner,
+__simd_vf__ inline void CumSumFirstDimSklanskyVF(__ubuf__ float* dst, uint32_t outer, uint32_t inner,
                                                 uint32_t currRound1, uint32_t currRound2, uint16_t indexRepeatTimes,
                                                 uint16_t jRepeatTimes, uint16_t repeatTimes, uint16_t sregLower)
 {
@@ -380,7 +380,7 @@ __aicore__ inline void CumSumFirstDimSklansky(const LocalTensor<float>& dstTenso
     uint32_t round = outerAlign / halfSize;
 
     uint32_t currRound = 1;
-    __local_mem__ float* dst = (__local_mem__ float*)dstTensor.GetPhyAddr();
+    __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
     constexpr uint16_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
     uint16_t repeatTimes = CeilDivision(inner, sregLower);
 
@@ -400,7 +400,7 @@ __aicore__ inline void CumSumFirstDimSklansky(const LocalTensor<float>& dstTenso
 // VF for CumSumFirstDimBasic
 // simple implementation that cumulatively adds elements
 // VF for CumSumFirstDimBasic
-__simd_vf__ inline void CumSumFirstDimBasicVF(__local_mem__ float* dst, uint16_t outerRepeatTime, uint16_t inner,
+__simd_vf__ inline void CumSumFirstDimBasicVF(__ubuf__ float* dst, uint16_t outerRepeatTime, uint16_t inner,
                                              uint16_t mainRepeatTime, uint16_t innerOneRepNum, uint16_t tailTime,
                                              uint32_t tailCount, uint16_t halfMainRepeatTime,
                                              uint16_t mainTailRepeatTime, uint16_t innerTailOffset1,
@@ -445,7 +445,7 @@ __simd_vf__ inline void CumSumFirstDimBasicVF(__local_mem__ float* dst, uint16_t
 
 __aicore__ inline void CumSumFirstDimBasic(const LocalTensor<float>& dstTensor, uint32_t outer, uint32_t inner)
 {
-    __local_mem__ float* dst = (__local_mem__ float*)dstTensor.GetPhyAddr();
+    __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
     constexpr uint16_t innerOneRepNum = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
     uint16_t mainRepeatTime = 0;
     if constexpr (innerOneRepNum > 0) {

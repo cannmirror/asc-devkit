@@ -19,8 +19,8 @@
 
 namespace AscendC {
 template <typename T, bool isFront = true>
-__simd_vf__ inline void SoftmaxGradGenericNZWithTailVFImpl(__local_mem__ T *dstUb, __local_mem__ T *gradUb,
-    __local_mem__ T *srcUb, __local_mem__ float *workUb, __local_mem__ T *workUbFront,
+__simd_vf__ inline void SoftmaxGradGenericNZWithTailVFImpl(__ubuf__ T *dstUb, __ubuf__ T *gradUb,
+    __ubuf__ T *srcUb, __ubuf__ float *workUb, __ubuf__ T *workUbFront,
     const SoftMaxTiling tiling, const LastAxisShapeND originalSrcShape, uint16_t dtypeRepStride)
 {
     uint16_t srcM = tiling.srcM;
@@ -117,11 +117,11 @@ __aicore__ inline void SoftmaxGradGenericNZWithTailImpl(const LocalTensor<T> &ds
     const LocalTensor<T> &gradTensor, const LocalTensor<T> &srcTensor, const LocalTensor<float> &workLocal,
     const SoftMaxTiling &tiling, const LastAxisShapeND &originalSrcShape)
 {
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
-    __local_mem__ T *gradUb = (__local_mem__ T *)gradTensor.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ float *workUb = (__local_mem__ float *)workLocal.GetPhyAddr();
-    __local_mem__ T *workUbFront = (__local_mem__ T *)workLocal.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *gradUb = (__ubuf__ T *)gradTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ float *workUb = (__ubuf__ float *)workLocal.GetPhyAddr();
+    __ubuf__ T *workUbFront = (__ubuf__ T *)workLocal.GetPhyAddr();
 
     uint64_t kTail = originalSrcShape.k % B16_DATA_NUM_PER_BLOCK;
     // create k inner tail mask repeat 4 time.
@@ -135,8 +135,8 @@ __aicore__ inline void SoftmaxGradGenericNZWithTailImpl(const LocalTensor<T> &ds
 }
 
 template <typename T, bool isFront = true>
-__simd_vf__ inline void SoftmaxGradGenericNZVFImpl(__local_mem__ T *dstUb, __local_mem__ T *gradUb,
-    __local_mem__ T *srcUb, __local_mem__ float *workUb, __local_mem__ T *workUbFront,
+__simd_vf__ inline void SoftmaxGradGenericNZVFImpl(__ubuf__ T *dstUb, __ubuf__ T *gradUb,
+    __ubuf__ T *srcUb, __ubuf__ float *workUb, __ubuf__ T *workUbFront,
     const SoftMaxTiling tiling, const LastAxisShapeND originalSrcShape, uint16_t dtypeRepStride)
 {
     uint16_t oriM = originalSrcShape.m;
@@ -216,11 +216,11 @@ __aicore__ inline void SoftmaxGradGenericNZImpl(const LocalTensor<T> &dstTensor,
     const LocalTensor<T> &srcTensor, const LocalTensor<float> &workLocal, const SoftMaxTiling &tiling,
     const LastAxisShapeND &originalSrcShape)
 {
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
-    __local_mem__ T *gradUb = (__local_mem__ T *)gradTensor.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ float *workUb = (__local_mem__ float *)workLocal.GetPhyAddr();
-    __local_mem__ T *workUbFront = (__local_mem__ T *)workLocal.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *gradUb = (__ubuf__ T *)gradTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ float *workUb = (__ubuf__ float *)workLocal.GetPhyAddr();
+    __ubuf__ T *workUbFront = (__ubuf__ T *)workLocal.GetPhyAddr();
 
     uint16_t dtypeRepStride = IsSameType<T, half>::value ? HALF_REPEAT_SIZE:FLOAT_REPEAT_SIZE;
     SoftmaxGradGenericNZVFImpl<T, isFront>(dstUb, gradUb, srcUb, workUb, workUbFront,
@@ -228,8 +228,8 @@ __aicore__ inline void SoftmaxGradGenericNZImpl(const LocalTensor<T> &dstTensor,
 }
 
 template <typename T, bool isFront = true>
-__simd_vf__ inline void SoftMaxGradGenericNDVFImpl(__local_mem__ T *dstUb, __local_mem__ T *gradUb,
-    __local_mem__ T *srcUb, const SoftMaxTiling tiling, const LastAxisShapeND originalSrcShape,
+__simd_vf__ inline void SoftMaxGradGenericNDVFImpl(__ubuf__ T *dstUb, __ubuf__ T *gradUb,
+    __ubuf__ T *srcUb, const SoftMaxTiling tiling, const LastAxisShapeND originalSrcShape,
     uint16_t blockStride)
 {
     uint16_t srcM = originalSrcShape.m;
@@ -283,9 +283,9 @@ __aicore__ inline void SoftMaxGradGenericNDImpl(const LocalTensor<T> &dstTensor,
     const LocalTensor<T> &srcTensor, const LocalTensor<float> &workLocal, const SoftMaxTiling &tiling,
     const LastAxisShapeND &originalSrcShape)
 {
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
-    __local_mem__ T *gradUb = (__local_mem__ T *)gradTensor.GetPhyAddr();
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *gradUb = (__ubuf__ T *)gradTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
 
     uint16_t blockStride = IsSameType<T, half>::value ? B16_DATA_NUM_PER_BLOCK:B32_DATA_NUM_PER_BLOCK;
     SoftMaxGradGenericNDVFImpl<T, isFront>(dstUb, gradUb, srcUb, tiling, originalSrcShape, blockStride);

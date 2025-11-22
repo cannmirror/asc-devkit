@@ -23,8 +23,8 @@
 namespace AscendC {
 // Extracted helper for rLength <= 64, invoked via VF_CALL<>
 template <typename T, bool isOutputVariance = true, bool isCorrection = false>
-__simd_vf__ inline void ComputeMeanVariance64VF(__local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
-    __local_mem__ T* const srcUb, const uint32_t aLength, const uint32_t rLengthWithPadding, const float k2Rec,
+__simd_vf__ inline void ComputeMeanVariance64VF(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
+    __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLengthWithPadding, const float k2Rec,
     const float k2RRec, const float rRecWithCorrection, const uint32_t count)
 {
     MicroAPI::RegTensor<float> src0Reg;
@@ -61,8 +61,8 @@ __simd_vf__ inline void ComputeMeanVariance64VF(__local_mem__ float* const meanU
 
 // only support rLength <= 64
 template <typename T, bool isOutputVariance = true, bool isCorrection = false>
-__aicore__ inline void ComputeMeanVariance64(__local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
-    __local_mem__ T* const srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
+__aicore__ inline void ComputeMeanVariance64(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
+    __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
     const float k2Rec, const float k2RRec, const float rRecWithCorrection)
 {
     const uint32_t count = rLength;
@@ -73,8 +73,8 @@ __aicore__ inline void ComputeMeanVariance64(__local_mem__ float* const meanUb, 
 
 // Extracted helper for rLength in (64, 128], invoked via VF_CALL<>
 template <typename T, bool isOutputVariance = true>
-__simd_vf__ inline void ComputeMeanVariance128VF(__local_mem__ float* const meanUb,
-    __local_mem__ float* const varianceUb, __local_mem__ T* const srcUb, const uint32_t aLength,
+__simd_vf__ inline void ComputeMeanVariance128VF(__ubuf__ float* const meanUb,
+    __ubuf__ float* const varianceUb, __ubuf__ T* const srcUb, const uint32_t aLength,
     const uint32_t rLengthWithPadding, const float k2Rec, const float k2RRec, const uint16_t sregLower, uint32_t count)
 {
     MicroAPI::RegTensor<float> src0Reg;
@@ -118,8 +118,8 @@ __simd_vf__ inline void ComputeMeanVariance128VF(__local_mem__ float* const mean
 
 // only support rLength <= 128
 template <typename T, bool isOutputVariance = true>
-__aicore__ inline void ComputeMeanVariance128(__local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
-    __local_mem__ T* const srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
+__aicore__ inline void ComputeMeanVariance128(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
+    __ubuf__ T* const srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
     const float k2Rec, const float k2RRec, const uint16_t sregLower)
 {
     const uint32_t count = rLength - sregLower;
@@ -130,8 +130,8 @@ __aicore__ inline void ComputeMeanVariance128(__local_mem__ float* const meanUb,
 
 // Helper for ComputeMeanVarianceUseY branching logic
 template <typename T, uint16_t HalfAddTimes, bool isOutputVariance>
-__simd_vf__ inline void ComputeMeanVarianceUseYVF(__local_mem__ T* const srcUb,
-    __local_mem__ T* const workUbYOrigin, __local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
+__simd_vf__ inline void ComputeMeanVarianceUseYVF(__ubuf__ T* const srcUb,
+    __ubuf__ T* const workUbYOrigin, __ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
     const uint32_t aLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const uint32_t m,
     const uint16_t repeatTimes1, const uint16_t repeatTimes2, const uint16_t repeatTimes3, const uint32_t count2,
     const uint32_t mVL, const float k2Rec, const uint16_t halfAddRepeatTimes, const uint32_t lastCount,
@@ -162,8 +162,8 @@ __simd_vf__ inline void ComputeMeanVarianceUseYVF(__local_mem__ T* const srcUb,
 }
 
 template <typename T, bool isOutputVariance = true>
-__aicore__ inline void ComputeMeanVarianceUseY(__local_mem__ float* const meanUb, __local_mem__ float* const varianceUb,
-    __local_mem__ T* const srcUb, __local_mem__ T* const workUbYOrigin, const uint32_t k, const uint32_t aLength,
+__aicore__ inline void ComputeMeanVarianceUseY(__ubuf__ float* const meanUb, __ubuf__ float* const varianceUb,
+    __ubuf__ T* const srcUb, __ubuf__ T* const workUbYOrigin, const uint32_t k, const uint32_t aLength,
     const uint32_t rLength, const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec,
     const float k2RRec, const uint16_t sregLower)
 {
@@ -226,17 +226,17 @@ __aicore__ inline void ComputeMeanVariance(const LocalTensor<float>& outputMean,
     const LayerNormPara& para, const LayerNormSeparateTiling& tiling, const uint16_t sregLower)
 {
     if (tiling.rLength <= sregLower) {
-        ComputeMeanVariance64((__local_mem__ float*)outputMean.GetPhyAddr(),
-            (__local_mem__ float*)varianceLocal.GetPhyAddr(), (__local_mem__ T*)inputX.GetPhyAddr(), para.aLength,
+        ComputeMeanVariance64((__ubuf__ float*)outputMean.GetPhyAddr(),
+            (__ubuf__ float*)varianceLocal.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), para.aLength,
             tiling.rLength, para.rLengthWithPadding, tiling.k2Rec, tiling.k2RRec, tiling.k2RRec);
     } else if (tiling.rLength <= sregLower * 2) {
-        ComputeMeanVariance128((__local_mem__ float*)outputMean.GetPhyAddr(),
-            (__local_mem__ float*)varianceLocal.GetPhyAddr(), (__local_mem__ T*)inputX.GetPhyAddr(), para.aLength,
+        ComputeMeanVariance128((__ubuf__ float*)outputMean.GetPhyAddr(),
+            (__ubuf__ float*)varianceLocal.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(), para.aLength,
             tiling.rLength, para.rLengthWithPadding, tiling.k2Rec, tiling.k2RRec, sregLower);
     } else {
-        ComputeMeanVarianceUseY((__local_mem__ float*)outputMean.GetPhyAddr(),
-            (__local_mem__ float*)varianceLocal.GetPhyAddr(), (__local_mem__ T*)inputX.GetPhyAddr(),
-            (__local_mem__ T*)output.GetPhyAddr(), tiling.oneTmpSize, para.aLength, tiling.rLength,
+        ComputeMeanVarianceUseY((__ubuf__ float*)outputMean.GetPhyAddr(),
+            (__ubuf__ float*)varianceLocal.GetPhyAddr(), (__ubuf__ T*)inputX.GetPhyAddr(),
+            (__ubuf__ T*)output.GetPhyAddr(), tiling.oneTmpSize, para.aLength, tiling.rLength,
             para.rLengthWithPadding, tiling.rHeadLength, tiling.k2Rec, tiling.k2RRec, sregLower);
     }
 }

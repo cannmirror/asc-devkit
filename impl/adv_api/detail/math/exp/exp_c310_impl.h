@@ -26,8 +26,8 @@ constexpr MicroAPI::CastTrait castTraitS162F32 = {
 constexpr MicroAPI::CastTrait castTraitF322F16 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 template<typename T, uint8_t taylorExpandLevel>
-__simd_vf__ inline void ExpCompute(__local_mem__ T* dst, __local_mem__ T* src, uint32_t calCount, uint16_t repeatTimes,
-    __local_mem__ float* taylorExpandTmpBuffer)
+__simd_vf__ inline void ExpCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t calCount, uint16_t repeatTimes,
+    __ubuf__ float* taylorExpandTmpBuffer)
 {
     constexpr float dupConstant = 2.0f;
     constexpr uint32_t floatInf = F32_INF;
@@ -111,11 +111,11 @@ __aicore__ inline void ExpImpl(const LocalTensor<T>& dstLocal, const LocalTensor
         Exp<T>(dstLocal, srcLocal, calCount);
         return;
     }
-    __local_mem__ T *dst = (__local_mem__ T *)dstLocal.GetPhyAddr();
-    __local_mem__ T *src = (__local_mem__ T *)srcLocal.GetPhyAddr();
+    __ubuf__ T *dst = (__ubuf__ T *)dstLocal.GetPhyAddr();
+    __ubuf__ T *src = (__ubuf__ T *)srcLocal.GetPhyAddr();
     constexpr uint32_t oneRepSize = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, oneRepSize);
-    __local_mem__ float* sharedTmpBufferAddr = (__local_mem__ float*)sharedTmpBuffer.GetPhyAddr();
+    __ubuf__ float* sharedTmpBufferAddr = (__ubuf__ float*)sharedTmpBuffer.GetPhyAddr();
     ExpAPI::ExpCompute<T, taylorExpandLevel>(dst, src, calCount, repeatTimes, sharedTmpBufferAddr);
 }
 

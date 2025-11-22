@@ -51,7 +51,7 @@ __aicore__ inline void GetLayerNormInternalPara(LayerNormInternalPara& para, con
 }
 
 template <typename T>
-__simd_callee__ inline void CopyInFloatData(MicroAPI::RegTensor<float>& reg, __local_mem__ T* ub,
+__simd_callee__ inline void CopyInFloatData(MicroAPI::RegTensor<float>& reg, __ubuf__ T* ub,
     MicroAPI::MaskReg& hFloatAllMask)
 {
     if constexpr (SupportType<T, half>()) {
@@ -65,7 +65,7 @@ __simd_callee__ inline void CopyInFloatData(MicroAPI::RegTensor<float>& reg, __l
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __local_mem__ T* inputX,
+__simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __ubuf__ T* inputX,
     Internal::LayerNormInternalPara& para)
 {
     MicroAPI::RegTensor<float> hDim;
@@ -108,7 +108,7 @@ __simd_callee__ inline void CalcHMean(MicroAPI::RegTensor<float>& outputMean, __
 
 template <typename T>
 __simd_callee__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVariance, MicroAPI::RegTensor<float>& meanReg,
-    __local_mem__ T* inputX, Internal::LayerNormInternalPara& para)
+    __ubuf__ T* inputX, Internal::LayerNormInternalPara& para)
 {
     MicroAPI::RegTensor<float> sumVarianceResultH;
     MicroAPI::Duplicate(sumVarianceResultH, 0);
@@ -164,8 +164,8 @@ __simd_callee__ inline void CalcHVariance(MicroAPI::RegTensor<float>& outputVari
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& varianceReg, __local_mem__ T* inputX, __local_mem__ T* gamma, __local_mem__ T* beta,
+__simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, MicroAPI::RegTensor<float>& meanReg,
+    MicroAPI::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma, __ubuf__ T* beta,
     MicroAPI::RegTensor<float>& sdReg, MicroAPI::MaskReg& hFloatMask)
 {
     MicroAPI::RegTensor<float> resultH;
@@ -219,9 +219,9 @@ __simd_callee__ inline void CalcHSingleBlockOutPut(__local_mem__ T* output, Micr
 }
 
 template <typename T>
-__simd_callee__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTensor<float>& meanReg,
-    MicroAPI::RegTensor<float>& varianceReg, __local_mem__ T* inputX, __local_mem__ T* gamma,
-    __local_mem__ T* beta, const T epsilon, Internal::LayerNormInternalPara& para)
+__simd_callee__ inline void CalcHOutPut(__ubuf__ T* output, MicroAPI::RegTensor<float>& meanReg,
+    MicroAPI::RegTensor<float>& varianceReg, __ubuf__ T* inputX, __ubuf__ T* gamma,
+    __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara& para)
 {
     MicroAPI::MaskReg hFloatAllMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> sdReg;    // The standard deviation.
@@ -246,9 +246,9 @@ __simd_callee__ inline void CalcHOutPut(__local_mem__ T* output, MicroAPI::RegTe
 }
 
 template <typename T>
-__simd_vf__ inline void LayerNormImplVf(__local_mem__ T* output, __local_mem__ T* outputMean,
-    __local_mem__ T* outputVariance, __local_mem__ T* inputX, __local_mem__ T* gamma,
-    __local_mem__ T* beta, const T epsilon, Internal::LayerNormInternalPara para, LayerNormTiling tiling)
+__simd_vf__ inline void LayerNormImplVf(__ubuf__ T* output, __ubuf__ T* outputMean,
+    __ubuf__ T* outputVariance, __ubuf__ T* inputX, __ubuf__ T* gamma,
+    __ubuf__ T* beta, const T epsilon, Internal::LayerNormInternalPara para, LayerNormTiling tiling)
 {
     MicroAPI::MaskReg floatLowestMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::VL1>();
     MicroAPI::MaskReg srcLowestMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::VL1>();
@@ -307,9 +307,9 @@ __aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTe
     Internal::LayerNormInternalPara para{};
     Internal::GetLayerNormInternalPara<T>(para, tiling);
 
-    LayerNormImplVf<T>((__local_mem__ T*)output.GetPhyAddr(), (__local_mem__ T*)outputMean.GetPhyAddr(),
-        (__local_mem__ T*)outputVariance.GetPhyAddr(), (__local_mem__ T *)inputX.GetPhyAddr(),
-        (__local_mem__ T*)gamma.GetPhyAddr(), (__local_mem__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
+    LayerNormImplVf<T>((__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
+        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T *)inputX.GetPhyAddr(),
+        (__ubuf__ T*)gamma.GetPhyAddr(), (__ubuf__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
 }
 
 template <typename T, bool isReuseSource = false>
@@ -323,9 +323,9 @@ __aicore__ inline void LayerNormImpl(const LocalTensor<T>& output, const LocalTe
     Internal::LayerNormInternalPara para{};
     Internal::GetLayerNormInternalPara<T>(para, tiling);
 
-    LayerNormImplVf<T>((__local_mem__ T*)output.GetPhyAddr(), (__local_mem__ T*)outputMean.GetPhyAddr(),
-        (__local_mem__ T*)outputVariance.GetPhyAddr(), (__local_mem__ T *)inputX.GetPhyAddr(),
-        (__local_mem__ T*)gamma.GetPhyAddr(), (__local_mem__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
+    LayerNormImplVf<T>((__ubuf__ T*)output.GetPhyAddr(), (__ubuf__ T*)outputMean.GetPhyAddr(),
+        (__ubuf__ T*)outputVariance.GetPhyAddr(), (__ubuf__ T *)inputX.GetPhyAddr(),
+        (__ubuf__ T*)gamma.GetPhyAddr(), (__ubuf__ T*)beta.GetPhyAddr(), epsilon, para, tiling);
 }
 
 } // namespace AscendC

@@ -34,7 +34,7 @@ constexpr SortConfig defaultSortConfig = { SortType::RADIX_SORT, false };
 
 namespace MicroAPI {
 namespace internal {
-__simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint32_t *&input, RegTensor<uint8_t> &dst,
+__simd_callee__ inline void ConvertRegToWithShift(__ubuf__ uint32_t *&input, RegTensor<uint8_t> &dst,
     const int16_t offset)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint32_t);
@@ -59,7 +59,7 @@ __simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint32_t *&input
     DeInterleave(dst, tmpReg, (RegTensor<uint8_t> &)tmpU16Reg0, (RegTensor<uint8_t> &)tmpU16Reg2);
 }
 
-__simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint64_t *&input, RegTensor<uint8_t> &dst,
+__simd_callee__ inline void ConvertRegToWithShift(__ubuf__ uint64_t *&input, RegTensor<uint8_t> &dst,
     const int16_t offset)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint64_t);
@@ -98,7 +98,7 @@ __simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint64_t *&input
     DeInterleave(dst, tmpReg, (RegTensor<uint8_t> &)tmpU16Reg0, (RegTensor<uint8_t> &)tmpU16Reg2);
 }
 
-__simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint16_t *&input, RegTensor<uint8_t> &dst,
+__simd_callee__ inline void ConvertRegToWithShift(__ubuf__ uint16_t *&input, RegTensor<uint8_t> &dst,
     const int16_t offset)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen() / sizeof(uint16_t);
@@ -114,7 +114,7 @@ __simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint16_t *&input
     DeInterleave(dst, tmpReg, (RegTensor<uint8_t> &)inputP0, (RegTensor<uint8_t> &)inputP1);
 }
 
-__simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint8_t *&input, RegTensor<uint8_t> &dst,
+__simd_callee__ inline void ConvertRegToWithShift(__ubuf__ uint8_t *&input, RegTensor<uint8_t> &dst,
     const int16_t offset)
 {
     constexpr uint32_t eleCountPerVL = GetVecLen();
@@ -122,7 +122,7 @@ __simd_callee__ inline void ConvertRegToWithShift(__local_mem__ uint8_t *&input,
 }
 
 template <typename T, typename U, bool isDescend = false>
-__simd_vf__ inline void PreProcess(__local_mem__ U *src, __local_mem__ U *dst, uint32_t count)
+__simd_vf__ inline void PreProcess(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     uint32_t currCount = count;
@@ -131,19 +131,19 @@ __simd_vf__ inline void PreProcess(__local_mem__ U *src, __local_mem__ U *dst, u
         MaskReg maskReg = UpdateMask<U>(currCount);
 
         RegTensor<U> local;
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__local_mem__ U *&)src, postUpdateSize);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__ubuf__ U *&)src, postUpdateSize);
         if constexpr (SupportType<T, int8_t, int16_t, int32_t, float, half, bfloat16_t, int64_t>()) {
             AscendC::MicroAPI::Internal::TwiddleIn<T>(local, local, maskReg);
         }
         if constexpr (isDescend) {
             Not(local, local, maskReg);
         }
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__local_mem__ U *&)dst, local, postUpdateSize, maskReg);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__ubuf__ U *&)dst, local, postUpdateSize, maskReg);
     }
 }
 
 template <typename T, typename U, bool isDescend = false>
-__simd_vf__ inline void PostProcess(__local_mem__ U *src, __local_mem__ U *dst, uint32_t count)
+__simd_vf__ inline void PostProcess(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     constexpr uint32_t postUpdateSize = GetVecLen() / sizeof(U);
@@ -151,20 +151,20 @@ __simd_vf__ inline void PostProcess(__local_mem__ U *src, __local_mem__ U *dst, 
         MaskReg maskReg = UpdateMask<U>(count);
 
         RegTensor<U> local;
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__local_mem__ U *&)src, postUpdateSize);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>(local, (__ubuf__ U *&)src, postUpdateSize);
         if constexpr (isDescend) {
             Not(local, local, maskReg);
         }
         if constexpr (SupportType<T, int8_t, int16_t, int32_t, float, half, bfloat16_t, int64_t>()) {
             AscendC::MicroAPI::Internal::TwiddleOut<T>(local, local, maskReg);
         }
-        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__local_mem__ U *&)dst, local, postUpdateSize, maskReg);
+        DataCopy<U, PostLiteral::POST_MODE_UPDATE>((__ubuf__ U *&)dst, local, postUpdateSize, maskReg);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void GetExclusiveSum(__local_mem__ T *srcValue, __local_mem__ uint8_t *tmpSrc,
-    __local_mem__ uint8_t *tmpSrcCopy, __local_mem__ uint16_t *exclusiveSum, const uint32_t count, const int32_t round)
+__simd_vf__ inline void GetExclusiveSum(__ubuf__ T *srcValue, __ubuf__ uint8_t *tmpSrc,
+    __ubuf__ uint8_t *tmpSrcCopy, __ubuf__ uint16_t *exclusiveSum, const uint32_t count, const int32_t round)
 {
     // Traverse all data to get a Exclusive Sum
     uint16_t repeatTime = DivCeil(count, GetVecLen());
@@ -213,14 +213,14 @@ __simd_vf__ inline void GetExclusiveSum(__local_mem__ T *srcValue, __local_mem__
         b16FullMask);
 }
 
-__simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local_mem__ uint8_t *srcValueU8Back,
-    __local_mem__ uint8_t *inputIndexAddr, __local_mem__ uint16_t *inputIndexU16Addr, uint32_t count)
+__simd_vf__ inline void EightBitsSort(__ubuf__ uint8_t *srcValueU8, __ubuf__ uint8_t *srcValueU8Back,
+    __ubuf__ uint8_t *inputIndexAddr, __ubuf__ uint16_t *inputIndexU16Addr, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen());
-    __local_mem__ uint8_t *srcAddr = srcValueU8;
-    __local_mem__ uint8_t *srcAddrTmp = srcValueU8;
-    __local_mem__ uint8_t *indexAddr = inputIndexAddr;
-    __local_mem__ uint8_t *indexAddrTmp = inputIndexAddr;
+    __ubuf__ uint8_t *srcAddr = srcValueU8;
+    __ubuf__ uint8_t *srcAddrTmp = srcValueU8;
+    __ubuf__ uint8_t *indexAddr = inputIndexAddr;
+    __ubuf__ uint8_t *indexAddrTmp = inputIndexAddr;
     RegTensor<uint8_t> srcReg;
     RegTensor<uint8_t> indexReg;
     RegTensor<int8_t> shiftOffset;
@@ -231,7 +231,7 @@ __simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local
     RegTensor<int8_t> bucketIndex;
     Arange(bucketIndex, 0);
 
-    __local_mem__ uint8_t *outputIndex = inputIndexAddr;
+    __ubuf__ uint8_t *outputIndex = inputIndexAddr;
     uint32_t tmpCount = count;
     for (uint16_t j = 0; j < repeatTime; ++j) {
         MaskReg reg = UpdateMask<uint8_t>(tmpCount);
@@ -256,9 +256,9 @@ __simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local
         for (uint16_t j = 0; j < repeatTime; ++j) {
             MaskReg maskReg = UpdateMask<uint8_t>(currCount);
 
-            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(srcReg, (__local_mem__ uint8_t *&)srcAddr,
+            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(srcReg, (__ubuf__ uint8_t *&)srcAddr,
                 GetVecLen());
-            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(indexReg, (__local_mem__ uint8_t *&)indexAddr,
+            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(indexReg, (__ubuf__ uint8_t *&)indexAddr,
                 GetVecLen());
             RegTensor<uint8_t> shift2BitsReg;
             ShiftRight(shift2BitsReg, srcReg, shiftOffset, maskReg);
@@ -288,14 +288,14 @@ __simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local
         indexAddr = inputIndexAddr;
         srcAddr = srcValueU8;
         srcAddrTmp = srcValueU8;
-        __local_mem__ uint8_t *tmpSrcAddr = srcValueU8Back;
+        __ubuf__ uint8_t *tmpSrcAddr = srcValueU8Back;
         currCount = count;
         for (uint16_t j = 0; j < repeatTime; ++j) {
             MaskReg maskReg = UpdateMask<uint8_t>(currCount);
             RegTensor<uint8_t> selectData, tmpIndexReg;
-            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(srcReg, (__local_mem__ uint8_t *&)tmpSrcAddr,
+            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(srcReg, (__ubuf__ uint8_t *&)tmpSrcAddr,
                 GetVecLen());
-            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(tmpIndexReg, (__local_mem__ uint8_t *&)indexAddr,
+            DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(tmpIndexReg, (__ubuf__ uint8_t *&)indexAddr,
                 GetVecLen());
             Gather(selectData, srcReg, tmpIndexReg);
             DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(srcAddrTmp, selectData, GetVecLen(), maskReg);
@@ -307,8 +307,8 @@ __simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local
     }
 
     // Obtain sorted local u8 index and src values.
-    __local_mem__ uint8_t *tmpIndexLoad = inputIndexAddr;
-    __local_mem__ uint16_t *tmpIndexStore = inputIndexU16Addr;
+    __ubuf__ uint8_t *tmpIndexLoad = inputIndexAddr;
+    __ubuf__ uint16_t *tmpIndexStore = inputIndexU16Addr;
 
     MaskReg fullB16Mask = CreateMask<uint16_t>();
 
@@ -325,7 +325,7 @@ __simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local
         MaskReg maskReg1 = UpdateMask<uint16_t>(indexUpdateCount);
 
         RegTensor<uint8_t> sortedRes;
-        DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(sortedRes, (__local_mem__ uint8_t *&)tmpIndexLoad,
+        DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(sortedRes, (__ubuf__ uint8_t *&)tmpIndexLoad,
             GetVecLen());
         // zero extend to u16
         RegTensor<uint8_t> sortedRes0, sortedRes1;
@@ -342,8 +342,8 @@ __simd_vf__ inline void EightBitsSort(__local_mem__ uint8_t *srcValueU8, __local
     }
 }
 
-__simd_vf__ inline void LocalSort(__local_mem__ uint8_t *srcU8, __local_mem__ uint16_t *tmpIndexU16,
-    __local_mem__ uint16_t *exclusiveSumOrigin, __local_mem__ uint32_t *sortedLocalIndex, uint32_t count)
+__simd_vf__ inline void LocalSort(__ubuf__ uint8_t *srcU8, __ubuf__ uint16_t *tmpIndexU16,
+    __ubuf__ uint16_t *exclusiveSumOrigin, __ubuf__ uint32_t *sortedLocalIndex, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen());
     RegTensor<uint8_t> key;
@@ -356,9 +356,9 @@ __simd_vf__ inline void LocalSort(__local_mem__ uint8_t *srcU8, __local_mem__ ui
     Arange(bucketLocalIndex1, 128);
 
     RegTensor<uint16_t> bucketOffset0, bucketOffset1;
-    DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(bucketOffset0, (__local_mem__ uint16_t *&)exclusiveSumOrigin,
+    DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(bucketOffset0, (__ubuf__ uint16_t *&)exclusiveSumOrigin,
         GetVecLen() / sizeof(uint16_t));
-    DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(bucketOffset1, (__local_mem__ uint16_t *&)exclusiveSumOrigin,
+    DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(bucketOffset1, (__ubuf__ uint16_t *&)exclusiveSumOrigin,
         GetVecLen() / sizeof(uint16_t));
 
     RegTensor<uint8_t> zeroReg;
@@ -368,10 +368,10 @@ __simd_vf__ inline void LocalSort(__local_mem__ uint8_t *srcU8, __local_mem__ ui
     uint32_t currCountU8 = count;
     for (uint16_t i = 0; i < repeatTime; i++) {
         MaskReg maskRegB8 = UpdateMask<uint8_t>(currCountU8);
-        DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(key, (__local_mem__ uint8_t *&)srcU8, GetVecLen());
-        DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(indexU16Bucket0, (__local_mem__ uint16_t *&)tmpIndexU16,
+        DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>(key, (__ubuf__ uint8_t *&)srcU8, GetVecLen());
+        DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(indexU16Bucket0, (__ubuf__ uint16_t *&)tmpIndexU16,
             GetVecLen() / sizeof(uint16_t));
-        DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(indexU16Bucket1, (__local_mem__ uint16_t *&)tmpIndexU16,
+        DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>(indexU16Bucket1, (__ubuf__ uint16_t *&)tmpIndexU16,
             GetVecLen() / sizeof(uint16_t));
 
         RegTensor<uint8_t> bucketOffestLow, bucketOffestHigh;
@@ -459,7 +459,7 @@ __simd_vf__ inline void LocalSort(__local_mem__ uint8_t *srcU8, __local_mem__ ui
 
 // Gather B64 elements based on uint32_t offset and store at the correspoding memory.
 __simd_callee__ inline void GatherAndStoreB64Elements(RegTensor<uint32_t> &localOffset, MaskReg &maskReg,
-    __local_mem__ uint32_t *gatherIdxAddr, __local_mem__ uint32_t *storedAddr)
+    __ubuf__ uint32_t *gatherIdxAddr, __ubuf__ uint32_t *storedAddr)
 {
     MaskReg maskLow, maskHigh;
     RegTensor<uint32_t> indexLow;
@@ -478,9 +478,9 @@ __simd_callee__ inline void GatherAndStoreB64Elements(RegTensor<uint32_t> &local
 }
 
 template <typename T>
-__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint8_t *prevSortedValue,
-    __local_mem__ T *prevSortedIndex, __local_mem__ uint32_t *sortedLocalIndex, __local_mem__ uint8_t *currSortedValue,
-    __local_mem__ T *currSortedIndex, uint32_t count)
+__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__ubuf__ uint8_t *prevSortedValue,
+    __ubuf__ T *prevSortedIndex, __ubuf__ uint32_t *sortedLocalIndex, __ubuf__ uint8_t *currSortedValue,
+    __ubuf__ T *currSortedIndex, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen());
     uint32_t currCount = count;
@@ -498,13 +498,13 @@ __simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint8_t *p
         RegTensor<uint16_t> indexP0, indexP1, indexTmp, resB8P0, resB8P1;
         RegTensor<uint8_t> resB8, tmpB8;
 
-        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset0, (__local_mem__ uint32_t *&)sortedLocalIndex,
+        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset0, (__ubuf__ uint32_t *&)sortedLocalIndex,
             GetVecLen() / sizeof(uint32_t));
-        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset1, (__local_mem__ uint32_t *&)sortedLocalIndex,
+        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset1, (__ubuf__ uint32_t *&)sortedLocalIndex,
             GetVecLen() / sizeof(uint32_t));
-        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset2, (__local_mem__ uint32_t *&)sortedLocalIndex,
+        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset2, (__ubuf__ uint32_t *&)sortedLocalIndex,
             GetVecLen() / sizeof(uint32_t));
-        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset3, (__local_mem__ uint32_t *&)sortedLocalIndex,
+        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset3, (__ubuf__ uint32_t *&)sortedLocalIndex,
             GetVecLen() / sizeof(uint32_t));
         DeInterleave(indexP0, indexTmp, (RegTensor<uint16_t> &)localOffset0, (RegTensor<uint16_t> &)localOffset1);
         DeInterleave(indexP1, indexTmp, (RegTensor<uint16_t> &)localOffset2, (RegTensor<uint16_t> &)localOffset3);
@@ -514,15 +514,15 @@ __simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint8_t *p
         DeInterleave(resB8, tmpB8, (RegTensor<uint8_t> &)resB8P0, (RegTensor<uint8_t> &)resB8P1);
 
         if constexpr (sizeof(T) == 8) {
-            GatherAndStoreB64Elements(localOffset0, maskLowP0, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + 2 * i * GetVecLen() / sizeof(uint16_t)));
-            GatherAndStoreB64Elements(localOffset1, maskHighP0, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + 2 * i * GetVecLen() / sizeof(uint16_t) +
+            GatherAndStoreB64Elements(localOffset0, maskLowP0, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + 2 * i * GetVecLen() / sizeof(uint16_t)));
+            GatherAndStoreB64Elements(localOffset1, maskHighP0, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + 2 * i * GetVecLen() / sizeof(uint16_t) +
                 GetVecLen() / sizeof(uint32_t)));
-            GatherAndStoreB64Elements(localOffset2, maskLowP1, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + (2 * i + 1) * GetVecLen() / sizeof(uint16_t)));
-            GatherAndStoreB64Elements(localOffset3, maskHighP1, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + (2 * i + 1) * GetVecLen() / sizeof(uint16_t) +
+            GatherAndStoreB64Elements(localOffset2, maskLowP1, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + (2 * i + 1) * GetVecLen() / sizeof(uint16_t)));
+            GatherAndStoreB64Elements(localOffset3, maskHighP1, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + (2 * i + 1) * GetVecLen() / sizeof(uint16_t) +
                 GetVecLen() / sizeof(uint32_t)));
         } else {
             RegTensor<uint32_t> vecIndex0;
@@ -533,24 +533,24 @@ __simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint8_t *p
             DataCopyGather(vecIndex1, prevSortedIndex, localOffset1, maskHighP0);
             DataCopyGather(vecIndex2, prevSortedIndex, localOffset2, maskLowP1);
             DataCopyGather(vecIndex3, prevSortedIndex, localOffset3, maskHighP1);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex,
                 vecIndex0, GetVecLen() / sizeof(uint32_t), maskLowP0);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex,
                 vecIndex1, GetVecLen() / sizeof(uint32_t), maskHighP0);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex,
                 vecIndex2, GetVecLen() / sizeof(uint32_t), maskLowP1);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex,
                 vecIndex3, GetVecLen() / sizeof(uint32_t), maskHighP1);
         }
-        DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint8_t *&)currSortedValue, resB8,
+        DataCopy<uint8_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint8_t *&)currSortedValue, resB8,
             GetVecLen(), maskReg);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint16_t *prevSortedValue,
-    __local_mem__ T *prevSortedIndex, __local_mem__ uint32_t *sortedLocalIndex, __local_mem__ uint16_t *currSortedValue,
-    __local_mem__ T *currSortedIndex, uint32_t count)
+__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__ubuf__ uint16_t *prevSortedValue,
+    __ubuf__ T *prevSortedIndex, __ubuf__ uint32_t *sortedLocalIndex, __ubuf__ uint16_t *currSortedValue,
+    __ubuf__ T *currSortedIndex, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(uint16_t));
     uint32_t currCount = count;
@@ -563,38 +563,38 @@ __simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint16_t *
         RegTensor<uint16_t> indexP0;
         RegTensor<uint16_t> indexP1;
         DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset0,
-            (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+            (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
         DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset1,
-            (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+            (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
 
         DeInterleave(indexP1, indexP0, (RegTensor<uint16_t> &)localOffset0,
             (RegTensor<uint16_t> &)localOffset1);
         DataCopyGather(indexP0, prevSortedValue, indexP1, maskReg);
         if constexpr (sizeof(T) == 8) {
-            GatherAndStoreB64Elements(localOffset0, maskLow, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint16_t)));
-            GatherAndStoreB64Elements(localOffset1, maskHigh, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint16_t) +
+            GatherAndStoreB64Elements(localOffset0, maskLow, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint16_t)));
+            GatherAndStoreB64Elements(localOffset1, maskHigh, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint16_t) +
                 GetVecLen() / sizeof(uint32_t)));
         } else {
             RegTensor<uint32_t> indexU32P0;
             RegTensor<uint32_t> indexU32P1;
             DataCopyGather(indexU32P0, prevSortedIndex, localOffset0, maskLow);
             DataCopyGather(indexU32P1, prevSortedIndex, localOffset1, maskHigh);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex,
                 indexU32P0, GetVecLen() / sizeof(uint32_t), maskLow);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex,
                 indexU32P1, GetVecLen() / sizeof(uint32_t), maskHigh);
         }
-        DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint16_t *&)currSortedValue, indexP0,
+        DataCopy<uint16_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint16_t *&)currSortedValue, indexP0,
             GetVecLen() / sizeof(uint16_t), maskReg);
     }
 }
 
 template <typename T>
-__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint32_t *prevSortedValue,
-    __local_mem__ T *prevSortedIndex, __local_mem__ uint32_t *sortedLocalIndex, __local_mem__ uint32_t *currSortedValue,
-    __local_mem__ T *currSortedIndex, uint32_t count)
+__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__ubuf__ uint32_t *prevSortedValue,
+    __ubuf__ T *prevSortedIndex, __ubuf__ uint32_t *sortedLocalIndex, __ubuf__ uint32_t *currSortedValue,
+    __ubuf__ T *currSortedIndex, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(uint32_t));
     uint32_t currCount = count;
@@ -603,26 +603,26 @@ __simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint32_t *
         RegTensor<uint32_t> localOffset;
         RegTensor<uint32_t> index;
         DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset,
-            (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+            (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
         DataCopyGather(index, prevSortedValue, localOffset, maskReg);
-        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedValue, index,
+        DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedValue, index,
             GetVecLen() / sizeof(uint32_t), maskReg);
         if constexpr (sizeof(T) == 8) {
-            GatherAndStoreB64Elements(localOffset, maskReg, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint32_t)));
+            GatherAndStoreB64Elements(localOffset, maskReg, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint32_t)));
         } else {
             RegTensor<uint32_t> indexU32;
             DataCopyGather(indexU32, prevSortedIndex, localOffset, maskReg);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex, indexU32,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex, indexU32,
                 GetVecLen() / sizeof(uint32_t), maskReg);
         }
     }
 }
 
 template <typename T>
-__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint64_t *prevSortedValue,
-    __local_mem__ T *prevSortedIndex, __local_mem__ uint32_t *sortedLocalIndex, __local_mem__ uint64_t *currSortedValue,
-    __local_mem__ T *currSortedIndex, uint32_t count)
+__simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__ubuf__ uint64_t *prevSortedValue,
+    __ubuf__ T *prevSortedIndex, __ubuf__ uint32_t *sortedLocalIndex, __ubuf__ uint64_t *currSortedValue,
+    __ubuf__ T *currSortedIndex, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(uint64_t));
     uint32_t currCount = count;
@@ -631,24 +631,24 @@ __simd_vf__ inline void UpdateValueAndIndexByLocalIndex(__local_mem__ uint64_t *
         RegTensor<uint32_t> localOffset;
         RegTensor<uint32_t> index;
         DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset,
-            (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
-        GatherAndStoreB64Elements(localOffset, maskReg, (__local_mem__ uint32_t *)prevSortedValue,
-            (__local_mem__ uint32_t *)(currSortedValue + i * GetVecLen() / sizeof(uint32_t)));
+            (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+        GatherAndStoreB64Elements(localOffset, maskReg, (__ubuf__ uint32_t *)prevSortedValue,
+            (__ubuf__ uint32_t *)(currSortedValue + i * GetVecLen() / sizeof(uint32_t)));
         if constexpr (sizeof(T) == 8) {
-            GatherAndStoreB64Elements(localOffset, maskReg, (__local_mem__ uint32_t *)prevSortedIndex,
-                (__local_mem__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint32_t)));
+            GatherAndStoreB64Elements(localOffset, maskReg, (__ubuf__ uint32_t *)prevSortedIndex,
+                (__ubuf__ uint32_t *)(currSortedIndex + i * GetVecLen() / sizeof(uint32_t)));
         } else {
             RegTensor<uint32_t> indexU32;
             DataCopyGather(indexU32, prevSortedIndex, localOffset, maskReg);
-            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedIndex, indexU32,
+            DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedIndex, indexU32,
                 GetVecLen() / sizeof(uint32_t), maskReg);
         }
     }
 }
 
 template <typename T>
-__simd_vf__ inline void UpdateValueByLocalIndex(__local_mem__ T *srcValue, __local_mem__ uint32_t *sortedLocalIndex,
-    __local_mem__ T *currSortedValue, uint32_t count)
+__simd_vf__ inline void UpdateValueByLocalIndex(__ubuf__ T *srcValue, __ubuf__ uint32_t *sortedLocalIndex,
+    __ubuf__ T *currSortedValue, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     uint32_t currCount = count;
@@ -668,13 +668,13 @@ __simd_vf__ inline void UpdateValueByLocalIndex(__local_mem__ T *srcValue, __loc
             RegTensor<uint8_t> resB8, tmpB8;
 
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset0,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset1,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset2,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset3,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             DeInterleave(indexP0, indexTmp, (RegTensor<uint16_t> &)localOffset0,
                 (RegTensor<uint16_t> &)localOffset1);
             DeInterleave(indexP1, indexTmp, (RegTensor<uint16_t> &)localOffset2,
@@ -683,7 +683,7 @@ __simd_vf__ inline void UpdateValueByLocalIndex(__local_mem__ T *srcValue, __loc
             DataCopyGather(resB8P1, srcValue, indexP1, maskRegP1);
             DeInterleave(resB8, tmpB8, (RegTensor<uint8_t> &)resB8P0, (RegTensor<uint8_t> &)resB8P1);
 
-            DataCopy((__local_mem__ T *)(currSortedValue + i * (GetVecLen() / sizeof(T))), resB8, maskReg);
+            DataCopy((__ubuf__ T *)(currSortedValue + i * (GetVecLen() / sizeof(T))), resB8, maskReg);
         } else if constexpr (sizeof(T) == 2) {
             MaskReg maskReg = UpdateMask<uint16_t>(currCount);
             MaskReg maskLow, maskHigh;
@@ -695,26 +695,26 @@ __simd_vf__ inline void UpdateValueByLocalIndex(__local_mem__ T *srcValue, __loc
             RegTensor<uint16_t> indexP1;
 
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset0,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset1,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             DeInterleave(indexP1, indexP0, (RegTensor<uint16_t> &)localOffset0,
                 (RegTensor<uint16_t> &)localOffset1);
             DataCopyGather(indexP0, srcValue, indexP1, maskReg);
 
-            DataCopy((__local_mem__ T *)(currSortedValue + i * (GetVecLen() / sizeof(T))), indexP0, maskReg);
+            DataCopy((__ubuf__ T *)(currSortedValue + i * (GetVecLen() / sizeof(T))), indexP0, maskReg);
         } else {
             MaskReg maskReg = UpdateMask<uint32_t>(currCount);
             RegTensor<uint32_t> localOffset;
             RegTensor<uint32_t> indexP0;
             DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>(localOffset,
-                (__local_mem__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
+                (__ubuf__ uint32_t *&)sortedLocalIndex, GetVecLen() / sizeof(uint32_t));
             if constexpr (sizeof(T) == 8) {
-                GatherAndStoreB64Elements(localOffset, maskReg, (__local_mem__ uint32_t *)srcValue,
-                    (__local_mem__ uint32_t *)(currSortedValue + i * GetVecLen() / sizeof(uint32_t)));
+                GatherAndStoreB64Elements(localOffset, maskReg, (__ubuf__ uint32_t *)srcValue,
+                    (__ubuf__ uint32_t *)(currSortedValue + i * GetVecLen() / sizeof(uint32_t)));
             } else {
                 DataCopyGather(indexP0, srcValue, localOffset, maskReg);
-                DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__local_mem__ uint32_t *&)currSortedValue,
+                DataCopy<uint32_t, PostLiteral::POST_MODE_UPDATE>((__ubuf__ uint32_t *&)currSortedValue,
                     indexP0, GetVecLen() / sizeof(uint32_t), maskReg);
             }
         }
@@ -722,7 +722,7 @@ __simd_vf__ inline void UpdateValueByLocalIndex(__local_mem__ T *srcValue, __loc
 }
 
 template <typename T>
-__simd_vf__ inline void SaveBufferTo(__local_mem__ T *srcBuffer, __local_mem__ T *dstBuffer, uint32_t count)
+__simd_vf__ inline void SaveBufferTo(__ubuf__ T *srcBuffer, __ubuf__ T *dstBuffer, uint32_t count)
 {
     uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
     for (uint16_t i = 0; i < repeatTime; i++) {
@@ -733,13 +733,13 @@ __simd_vf__ inline void SaveBufferTo(__local_mem__ T *srcBuffer, __local_mem__ T
     }
 }
 
-__simd_vf__ inline void SaveBufferTo(__local_mem__ uint64_t *srcBuffer, __local_mem__ uint64_t *dstBuffer,
+__simd_vf__ inline void SaveBufferTo(__ubuf__ uint64_t *srcBuffer, __ubuf__ uint64_t *dstBuffer,
     uint32_t count)
 {
     uint32_t calCount = count << 1;
     uint16_t repeatTime = DivCeil(calCount, GetVecLen() / sizeof(uint32_t));
-    __local_mem__ uint32_t *tmpSrc = (__local_mem__ uint32_t *)srcBuffer;
-    __local_mem__ uint32_t *tmpDst = (__local_mem__ uint32_t *)dstBuffer;
+    __ubuf__ uint32_t *tmpSrc = (__ubuf__ uint32_t *)srcBuffer;
+    __ubuf__ uint32_t *tmpDst = (__ubuf__ uint32_t *)dstBuffer;
     for (uint16_t i = 0; i < repeatTime; i++) {
         MaskReg maskReg = UpdateMask<uint32_t>(calCount);
         RegTensor<uint32_t> reg;
@@ -748,9 +748,9 @@ __simd_vf__ inline void SaveBufferTo(__local_mem__ uint64_t *srcBuffer, __local_
     }
 }
 
-template <typename T> __aicore__ inline void SwapBuffer(__local_mem__ T *&a, __local_mem__ T *&b)
+template <typename T> __aicore__ inline void SwapBuffer(__ubuf__ T *&a, __ubuf__ T *&b)
 {
-    __local_mem__ T *tmp = a;
+    __ubuf__ T *tmp = a;
     a = b;
     b = tmp;
 }
@@ -761,9 +761,9 @@ template <typename T, bool isDescend> __aicore__ inline constexpr bool CheckData
 }
 
 template <typename T>
-__aicore__ inline void SortU8ElementsWithRound(__local_mem__ T *srcValue, __local_mem__ uint8_t *tmpSrc,
-    __local_mem__ uint8_t *tmpSrcCopy, __local_mem__ uint16_t *exclusiveSum, __local_mem__ uint8_t *tmpIndexU8,
-    __local_mem__ uint16_t *tmpIndexU16, __local_mem__ uint32_t *sortedLocalIndex, const uint32_t count,
+__aicore__ inline void SortU8ElementsWithRound(__ubuf__ T *srcValue, __ubuf__ uint8_t *tmpSrc,
+    __ubuf__ uint8_t *tmpSrcCopy, __ubuf__ uint16_t *exclusiveSum, __ubuf__ uint8_t *tmpIndexU8,
+    __ubuf__ uint16_t *tmpIndexU16, __ubuf__ uint32_t *sortedLocalIndex, const uint32_t count,
     const int32_t round)
 {
     GetExclusiveSum(srcValue, tmpSrc, tmpSrcCopy, exclusiveSum, count, round);
@@ -772,17 +772,17 @@ __aicore__ inline void SortU8ElementsWithRound(__local_mem__ T *srcValue, __loca
 }
 
 __aicore__ inline void ArrangeCommonTmpBuffer(const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t alignCount,
-    __local_mem__ uint16_t *&totalExclusiveSum, __local_mem__ uint8_t *&srcU8, __local_mem__ uint16_t *&tmpIndexU16,
-    __local_mem__ uint32_t *&sortedLocalIndex, __local_mem__ uint8_t *&srcU8Copy, __local_mem__ uint8_t *&tmpIndexU8)
+    __ubuf__ uint16_t *&totalExclusiveSum, __ubuf__ uint8_t *&srcU8, __ubuf__ uint16_t *&tmpIndexU16,
+    __ubuf__ uint32_t *&sortedLocalIndex, __ubuf__ uint8_t *&srcU8Copy, __ubuf__ uint8_t *&tmpIndexU8)
 {
     constexpr uint32_t bucketBuffer = 512;
-    __local_mem__ uint8_t *tmp = (__local_mem__ uint8_t *)sharedTmpBuffer.GetPhyAddr();
-    totalExclusiveSum = (__local_mem__ uint16_t *)tmp;
-    srcU8 = (__local_mem__ uint8_t *)(tmp + bucketBuffer);
-    tmpIndexU16 = (__local_mem__ uint16_t *)(srcU8 + alignCount);
-    sortedLocalIndex = (__local_mem__ uint32_t *)((__local_mem__ uint8_t *)tmpIndexU16 + sizeof(uint16_t) * alignCount);
+    __ubuf__ uint8_t *tmp = (__ubuf__ uint8_t *)sharedTmpBuffer.GetPhyAddr();
+    totalExclusiveSum = (__ubuf__ uint16_t *)tmp;
+    srcU8 = (__ubuf__ uint8_t *)(tmp + bucketBuffer);
+    tmpIndexU16 = (__ubuf__ uint16_t *)(srcU8 + alignCount);
+    sortedLocalIndex = (__ubuf__ uint32_t *)((__ubuf__ uint8_t *)tmpIndexU16 + sizeof(uint16_t) * alignCount);
     // Tmp u8 value and index, could be reused with sortedLocalIndex.
-    srcU8Copy = (__local_mem__ uint8_t *)sortedLocalIndex;
+    srcU8Copy = (__ubuf__ uint8_t *)sortedLocalIndex;
     tmpIndexU8 = srcU8Copy + alignCount;
 }
 
@@ -851,18 +851,18 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, const LocalTensor<T> &
         constexpr bool needProcess = CheckDataProcess<T, isDescend>();
         using ConvType = typename ::AscendC::Internal::ExtractTypeBySize<sizeof(T)>::T;
         uint32_t alignCount = AlignUp(count, ONE_BLK_SIZE);
-        __local_mem__ ConvType *src = (__local_mem__ ConvType *)srcLocal.GetPhyAddr();
-        __local_mem__ ConvType *dst = (__local_mem__ ConvType *)dstLocal.GetPhyAddr();
-        __local_mem__ uint16_t *totalExclusiveSum, *tmpIndexU16;
-        __local_mem__ uint8_t *srcU8, *srcU8Copy, *tmpIndexU8;
-        __local_mem__ uint32_t *sortedLocalIndex;
+        __ubuf__ ConvType *src = (__ubuf__ ConvType *)srcLocal.GetPhyAddr();
+        __ubuf__ ConvType *dst = (__ubuf__ ConvType *)dstLocal.GetPhyAddr();
+        __ubuf__ uint16_t *totalExclusiveSum, *tmpIndexU16;
+        __ubuf__ uint8_t *srcU8, *srcU8Copy, *tmpIndexU8;
+        __ubuf__ uint32_t *sortedLocalIndex;
         ArrangeCommonTmpBuffer(sharedTmpBuffer, alignCount, totalExclusiveSum, srcU8, tmpIndexU16, sortedLocalIndex,
             srcU8Copy, tmpIndexU8);
-        __local_mem__ ConvType *srcForNextRound =
-            (__local_mem__ ConvType *)((__local_mem__ uint8_t *)sortedLocalIndex + sizeof(uint32_t) * alignCount);
-        __local_mem__ ConvType *currSortedValue = srcForNextRound;
-        __local_mem__ ConvType *prevSortedValue = dst;
-        __local_mem__ ConvType *initSrcValue = src;
+        __ubuf__ ConvType *srcForNextRound =
+            (__ubuf__ ConvType *)((__ubuf__ uint8_t *)sortedLocalIndex + sizeof(uint32_t) * alignCount);
+        __ubuf__ ConvType *currSortedValue = srcForNextRound;
+        __ubuf__ ConvType *prevSortedValue = dst;
+        __ubuf__ ConvType *initSrcValue = src;
 
         if constexpr (sizeof(T) == 1 && needProcess) {
             PreProcess<T, ConvType, isDescend>(src, dst, count);
@@ -1003,23 +1003,23 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, LocalTensor<uint32_t> 
         constexpr bool needProcess = CheckDataProcess<T, isDescend>();
         using ConvType = typename ::AscendC::Internal::ExtractTypeBySize<sizeof(T)>::T;
         uint32_t alignCount = AlignUp(count, ONE_BLK_SIZE);
-        __local_mem__ ConvType *src = (__local_mem__ ConvType *)srcLocal.GetPhyAddr();
-        __local_mem__ ConvType *dst = (__local_mem__ ConvType *)dstLocal.GetPhyAddr();
-        __local_mem__ uint32_t *dstIndex = (__local_mem__ uint32_t *)dstIndexLocal.GetPhyAddr();
-        __local_mem__ uint16_t *totalExclusiveSum, *tmpIndexU16;
-        __local_mem__ uint8_t *srcU8, *srcU8Copy, *tmpIndexU8;
-        __local_mem__ uint32_t *sortedLocalIndex;
+        __ubuf__ ConvType *src = (__ubuf__ ConvType *)srcLocal.GetPhyAddr();
+        __ubuf__ ConvType *dst = (__ubuf__ ConvType *)dstLocal.GetPhyAddr();
+        __ubuf__ uint32_t *dstIndex = (__ubuf__ uint32_t *)dstIndexLocal.GetPhyAddr();
+        __ubuf__ uint16_t *totalExclusiveSum, *tmpIndexU16;
+        __ubuf__ uint8_t *srcU8, *srcU8Copy, *tmpIndexU8;
+        __ubuf__ uint32_t *sortedLocalIndex;
         ArrangeCommonTmpBuffer(sharedTmpBuffer, alignCount, totalExclusiveSum, srcU8, tmpIndexU16, sortedLocalIndex,
             srcU8Copy, tmpIndexU8);
-        __local_mem__ uint32_t *sortedIndexNextRound =
-            (__local_mem__ uint32_t *)((__local_mem__ uint8_t *)sortedLocalIndex + sizeof(uint32_t) * alignCount);
-        __local_mem__ ConvType *srcForNextRound =
-            (__local_mem__ ConvType *)((__local_mem__ uint8_t *)sortedIndexNextRound + sizeof(uint32_t) * alignCount);
-        __local_mem__ uint32_t *currSortedIndex = sortedIndexNextRound;
-        __local_mem__ ConvType *currSortedValue = srcForNextRound;
-        __local_mem__ uint32_t *prevSortedIndex = dstIndex;
-        __local_mem__ ConvType *prevSortedValue = dst;
-        __local_mem__ ConvType *initSrcValue = src;
+        __ubuf__ uint32_t *sortedIndexNextRound =
+            (__ubuf__ uint32_t *)((__ubuf__ uint8_t *)sortedLocalIndex + sizeof(uint32_t) * alignCount);
+        __ubuf__ ConvType *srcForNextRound =
+            (__ubuf__ ConvType *)((__ubuf__ uint8_t *)sortedIndexNextRound + sizeof(uint32_t) * alignCount);
+        __ubuf__ uint32_t *currSortedIndex = sortedIndexNextRound;
+        __ubuf__ ConvType *currSortedValue = srcForNextRound;
+        __ubuf__ uint32_t *prevSortedIndex = dstIndex;
+        __ubuf__ ConvType *prevSortedValue = dst;
+        __ubuf__ ConvType *initSrcValue = src;
 
         if constexpr (sizeof(T) == 1 && needProcess) {
             PreProcess<T, ConvType, isDescend>(src, dst, count);
@@ -1168,24 +1168,24 @@ __aicore__ inline void SortImpl(const LocalTensor<T> &dstLocal, const LocalTenso
         using ConvTypeT = typename ::AscendC::Internal::ExtractTypeBySize<sizeof(T)>::T;
         using ConvTypeU = typename ::AscendC::Internal::ExtractTypeBySize<sizeof(U)>::T;
         uint32_t alignCount = AlignUp(count, ONE_BLK_SIZE);
-        __local_mem__ ConvTypeT *src = (__local_mem__ ConvTypeT *)srcLocal.GetPhyAddr();
-        __local_mem__ ConvTypeU *srcIndex = (__local_mem__ ConvTypeU *)srcIndexLocal.GetPhyAddr();
-        __local_mem__ ConvTypeT *dst = (__local_mem__ ConvTypeT *)dstLocal.GetPhyAddr();
-        __local_mem__ ConvTypeU *dstIndex = (__local_mem__ ConvTypeU *)dstIndexLocal.GetPhyAddr();
-        __local_mem__ uint16_t *totalExclusiveSum, *tmpIndexU16;
-        __local_mem__ uint8_t *srcU8, *srcU8Copy, *tmpIndexU8;
-        __local_mem__ uint32_t *sortedLocalIndex;
+        __ubuf__ ConvTypeT *src = (__ubuf__ ConvTypeT *)srcLocal.GetPhyAddr();
+        __ubuf__ ConvTypeU *srcIndex = (__ubuf__ ConvTypeU *)srcIndexLocal.GetPhyAddr();
+        __ubuf__ ConvTypeT *dst = (__ubuf__ ConvTypeT *)dstLocal.GetPhyAddr();
+        __ubuf__ ConvTypeU *dstIndex = (__ubuf__ ConvTypeU *)dstIndexLocal.GetPhyAddr();
+        __ubuf__ uint16_t *totalExclusiveSum, *tmpIndexU16;
+        __ubuf__ uint8_t *srcU8, *srcU8Copy, *tmpIndexU8;
+        __ubuf__ uint32_t *sortedLocalIndex;
         ArrangeCommonTmpBuffer(sharedTmpBuffer, alignCount, totalExclusiveSum, srcU8, tmpIndexU16, sortedLocalIndex,
             srcU8Copy, tmpIndexU8);
-        __local_mem__ ConvTypeU *currSortedDstIndex =
-            (__local_mem__ ConvTypeU *)((__local_mem__ uint8_t *)sortedLocalIndex + sizeof(uint32_t) * alignCount);
-        __local_mem__ ConvTypeT *srcForNextRound =
-            (__local_mem__ ConvTypeT *)((__local_mem__ uint8_t *)currSortedDstIndex + sizeof(ConvTypeU) * alignCount);
-        __local_mem__ ConvTypeU *prevSortedDstIndex = dstIndex;
-        __local_mem__ ConvTypeT *currSortedValue = srcForNextRound;
-        __local_mem__ ConvTypeT *prevSortedValue = dst;
-        __local_mem__ ConvTypeT *initSrcValue = src;
-        __local_mem__ ConvTypeU *initSrcValueIndex = srcIndex;
+        __ubuf__ ConvTypeU *currSortedDstIndex =
+            (__ubuf__ ConvTypeU *)((__ubuf__ uint8_t *)sortedLocalIndex + sizeof(uint32_t) * alignCount);
+        __ubuf__ ConvTypeT *srcForNextRound =
+            (__ubuf__ ConvTypeT *)((__ubuf__ uint8_t *)currSortedDstIndex + sizeof(ConvTypeU) * alignCount);
+        __ubuf__ ConvTypeU *prevSortedDstIndex = dstIndex;
+        __ubuf__ ConvTypeT *currSortedValue = srcForNextRound;
+        __ubuf__ ConvTypeT *prevSortedValue = dst;
+        __ubuf__ ConvTypeT *initSrcValue = src;
+        __ubuf__ ConvTypeU *initSrcValueIndex = srcIndex;
 
         if constexpr (sizeof(T) == 1 && needProcess) {
             PreProcess<T, ConvTypeT, isDescend>(src, dst, count);

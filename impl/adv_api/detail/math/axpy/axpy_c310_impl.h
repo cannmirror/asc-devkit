@@ -23,7 +23,7 @@ namespace AxpyAPI {
 constexpr MicroAPI::CastTrait castTraitF162F32 = {
     MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
 template<typename T, typename U>
-__simd_vf__ inline void AxpyCompute(__local_mem__ T* dst, __local_mem__ U* src, U scalarValue, uint32_t calCount,
+__simd_vf__ inline void AxpyCompute(__ubuf__ T* dst, __ubuf__ U* src, U scalarValue, uint32_t calCount,
                                    uint16_t repeatTimes, uint16_t oneRepSize, uint32_t mainBlockCount,
                                    uint32_t tailCount, uint16_t offset, uint16_t singleMainBlockCtrl)
 {
@@ -97,8 +97,8 @@ __aicore__ inline void AxpyImpl(const LocalTensor<T> &dstLocal, const LocalTenso
     CheckCalCount(calCount, "calCount", srcLocal, "srcLocal", "Axpy");
     static_assert(SupportType<T, half, float>(), "Axpy current dst data type is not supported on current device!");
     static_assert(SupportType<U, half, float>(), "Axpy current src data type is not supported on current device!");
-    __local_mem__ T *dst = (__local_mem__ T *)dstLocal.GetPhyAddr();
-    __local_mem__ U *src = (__local_mem__ U *)srcLocal.GetPhyAddr();
+    __ubuf__ T *dst = (__ubuf__ T *)dstLocal.GetPhyAddr();
+    __ubuf__ U *src = (__ubuf__ U *)srcLocal.GetPhyAddr();
     constexpr uint16_t oneRepSize = GetVecLen() / sizeof(T);
     const uint32_t mainBlockCount = oneRepSize;
     uint32_t tailCount = calCount % oneRepSize;

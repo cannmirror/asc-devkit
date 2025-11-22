@@ -161,7 +161,7 @@ __simd_callee__ inline void TanPolynomialApproximation(MicroAPI::RegTensor<float
 }
 
 template <typename T>
-__simd_vf__ inline void TanCompute(__local_mem__ T *dstUb, __local_mem__ T *srcUb, uint32_t sreg, uint16_t repeatTimes)
+__simd_vf__ inline void TanCompute(__ubuf__ T *dstUb, __ubuf__ T *srcUb, uint32_t sreg, uint16_t repeatTimes)
 {
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
 
@@ -215,8 +215,8 @@ __aicore__ inline void TanImpl(const LocalTensor<T>& dstTensor, const LocalTenso
     constexpr uint32_t stride = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = CeilDivision(calCount, stride);
 
-    __local_mem__ T *dstUb = (__local_mem__ T *)dstTensor.GetPhyAddr();
-    __local_mem__ T *srcUb = (__local_mem__ T *)srcTensor.GetPhyAddr();
+    __ubuf__ T *dstUb = (__ubuf__ T *)dstTensor.GetPhyAddr();
+    __ubuf__ T *srcUb = (__ubuf__ T *)srcTensor.GetPhyAddr();
 
     TanInternal::TanCompute<T>(dstUb, srcUb, calCount, repeatTimes);
 }

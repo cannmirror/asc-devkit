@@ -34,7 +34,7 @@ template <int InputNum, StoreDist dist> __simd_callee__ inline void CheckStoreDi
 
 // vsts
 template <typename T = DefaultType, StoreDist dist = StoreDist::DIST_NORM, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcReg, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, RegT &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -60,8 +60,8 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
             RegTensor<uint32_t> reg1;
             pintlv_b32(dstMask0, dstMask1, mask, mask);
             Interleave(reg0, reg1, (RegTensor<uint32_t> &)srcReg.reg[0], (RegTensor<uint32_t> &)srcReg.reg[1]);
-            vsts((RegTensor<uint32_t> &)reg0, (__local_mem__ uint32_t *)dstUbAddr, 0, distValue, dstMask0);
-            vsts((RegTensor<uint32_t> &)reg1, (__local_mem__ uint32_t *)dstUbAddr, VECTOR_REG_WIDTH / sizeof(uint32_t),
+            vsts((RegTensor<uint32_t> &)reg0, (__ubuf__ uint32_t *)dstUbAddr, 0, distValue, dstMask0);
+            vsts((RegTensor<uint32_t> &)reg1, (__ubuf__ uint32_t *)dstUbAddr, VECTOR_REG_WIDTH / sizeof(uint32_t),
                 distValue, dstMask1);
         }
     } else {
@@ -72,8 +72,8 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
             RegTensor<uint16_t> reg1;
             pintlv_b16(dstMask0, dstMask1, mask, mask);
             Interleave(reg0, reg1, (RegTensor<uint16_t> &)srcReg.reg[0], (RegTensor<uint16_t> &)srcReg.reg[1]);
-            vsts((RegTensor<uint16_t> &)reg0, (__local_mem__ uint16_t *)dstUbAddr, 0, distValue, dstMask0);
-            vsts((RegTensor<uint16_t> &)reg1, (__local_mem__ uint16_t *)dstUbAddr, VECTOR_REG_WIDTH / sizeof(uint16_t),
+            vsts((RegTensor<uint16_t> &)reg0, (__ubuf__ uint16_t *)dstUbAddr, 0, distValue, dstMask0);
+            vsts((RegTensor<uint16_t> &)reg1, (__ubuf__ uint16_t *)dstUbAddr, VECTOR_REG_WIDTH / sizeof(uint16_t),
                 distValue, dstMask1);
         } else {
             static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
@@ -91,7 +91,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
 
 // vsts postupdate
 template <typename T = DefaultType, PostLiteral postMode, StoreDist dist = StoreDist::DIST_NORM, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, RegT &srcReg, int32_t postUpdateStride, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *&dstUbAddr, RegT &srcReg, int32_t postUpdateStride, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -116,9 +116,9 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, RegT &srcR
             constexpr uint32_t one_repeat_num = VECTOR_REG_WIDTH / sizeof(ActualT);
             uint32_t tmpStride1 = (postUpdateStride > one_repeat_num) ? one_repeat_num : postUpdateStride;
             uint32_t tmpStride2 = (postUpdateStride > one_repeat_num) ? postUpdateStride - one_repeat_num : 0;
-            vsts((RegTensor<uint32_t> &)reg0, (__local_mem__ uint32_t *&)dstUbAddr, tmpStride1 * 2, distValue, dstMask0,
+            vsts((RegTensor<uint32_t> &)reg0, (__ubuf__ uint32_t *&)dstUbAddr, tmpStride1 * 2, distValue, dstMask0,
                 postValue);
-            vsts((RegTensor<uint32_t> &)reg1, (__local_mem__ uint32_t *&)dstUbAddr, tmpStride2 * 2, distValue, dstMask1,
+            vsts((RegTensor<uint32_t> &)reg1, (__ubuf__ uint32_t *&)dstUbAddr, tmpStride2 * 2, distValue, dstMask1,
                 postValue);
         }
     } else {
@@ -132,9 +132,9 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, RegT &srcR
             static constexpr uint32_t one_repeat_num = VECTOR_REG_WIDTH / sizeof(ActualT);
             uint32_t tmpStride1 = (postUpdateStride > one_repeat_num) ? one_repeat_num : postUpdateStride;
             uint32_t tmpStride2 = (postUpdateStride > one_repeat_num) ? postUpdateStride - one_repeat_num : 0;
-            vsts((RegTensor<uint16_t> &)reg0, (__local_mem__ uint16_t *&)dstUbAddr, tmpStride1 * 2, distValue, dstMask0,
+            vsts((RegTensor<uint16_t> &)reg0, (__ubuf__ uint16_t *&)dstUbAddr, tmpStride1 * 2, distValue, dstMask0,
                 postValue);
-            vsts((RegTensor<uint16_t> &)reg1, (__local_mem__ uint16_t *&)dstUbAddr, tmpStride2 * 2, distValue, dstMask1,
+            vsts((RegTensor<uint16_t> &)reg1, (__ubuf__ uint16_t *&)dstUbAddr, tmpStride2 * 2, distValue, dstMask1,
                 postValue);
         } else {
             static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
@@ -152,7 +152,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, RegT &srcR
 
 // vst areg
 template <typename T = DefaultType, StoreDist dist = StoreDist::DIST_NORM, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcReg, AddrReg offset, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, RegT &srcReg, AddrReg offset, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -184,7 +184,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
 
 // vsts dual
 template <typename T = DefaultType, StoreDist dist, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -221,7 +221,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
 
 // vsts dual areg
 template <typename T = DefaultType, StoreDist dist, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcReg0, RegT &srcReg1, AddrReg offset,
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, RegT &srcReg0, RegT &srcReg1, AddrReg offset,
     MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
@@ -260,7 +260,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
 
 // vsstb
 template <typename T = DefaultType, DataCopyMode dataMode, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcReg, uint32_t dataBlockStride, MaskReg &mask)
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, RegT &srcReg, uint32_t dataBlockStride, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -281,7 +281,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *dstUbAddr, RegT &srcRe
 }
 
 template <typename T = DefaultType, DataCopyMode dataMode, PostLiteral postMode, typename RegT>
-__simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, RegT &srcReg, uint32_t dataBlockStride,
+__simd_callee__ inline void DataCopyImpl(__ubuf__ T *&dstUbAddr, RegT &srcReg, uint32_t dataBlockStride,
     uint32_t repeatStride, MaskReg &mask)
 {
     if constexpr (postMode == PostLiteral::POST_MODE_NORMAL) {
@@ -313,7 +313,7 @@ __simd_callee__ inline void DataCopyImpl(__local_mem__ T *&dstUbAddr, RegT &srcR
 
 // vstus/vstas
 template <typename T = DefaultType, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE, typename RegT>
-__simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, RegT &srcReg, UnalignReg &ureg,
+__simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T *&dstUbAddr, RegT &srcReg, UnalignReg &ureg,
     uint32_t postUpdateStride)
 {
     using ActualT = typename RegT::ActualT;
@@ -323,7 +323,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, Reg
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
     if constexpr (sizeof(ActualT) == 8) {
         if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
-            vstus(ureg, postUpdateStride * 2, (RegTensor<uint32_t> &)srcReg, (__local_mem__ uint32_t *&)dstUbAddr,
+            vstus(ureg, postUpdateStride * 2, (RegTensor<uint32_t> &)srcReg, (__ubuf__ uint32_t *&)dstUbAddr,
                 postValue);
         } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
             RegTensor<uint32_t> tmp1;
@@ -331,9 +331,9 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, Reg
             Interleave(tmp1, tmp2, (RegTensor<uint32_t> &)srcReg.reg[0], (RegTensor<uint32_t> &)srcReg.reg[1]);
             constexpr uint32_t one_repeat_num = VECTOR_REG_WIDTH / sizeof(ActualT);
             uint32_t tmpStride1 = (postUpdateStride > one_repeat_num) ? one_repeat_num : postUpdateStride;
-            vstus(ureg, tmpStride1 * 2, tmp1, (__local_mem__ uint32_t *&)dstUbAddr, postValue);
+            vstus(ureg, tmpStride1 * 2, tmp1, (__ubuf__ uint32_t *&)dstUbAddr, postValue);
             uint32_t tmpStride2 = (postUpdateStride > one_repeat_num) ? (postUpdateStride - one_repeat_num) : 0;
-            vstus(ureg, tmpStride2 * 2, tmp2, (__local_mem__ uint32_t *&)dstUbAddr, postValue);
+            vstus(ureg, tmpStride2 * 2, tmp2, (__ubuf__ uint32_t *&)dstUbAddr, postValue);
         }
     } else {
         if constexpr(SupportType<ActualT, complex32>() && (CheckRegTrait<RegT, RegTraitNumTwo>())) {
@@ -342,9 +342,9 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, Reg
             Interleave(tmp1, tmp2, (RegTensor<uint16_t> &)srcReg.reg[0], (RegTensor<uint16_t> &)srcReg.reg[1]);
             constexpr uint32_t one_repeat_num = VECTOR_REG_WIDTH / sizeof(ActualT);
             uint32_t tmpStride1 = (postUpdateStride > one_repeat_num) ? one_repeat_num : postUpdateStride;
-            vstus(ureg, tmpStride1 * 2, tmp1, (__local_mem__ uint16_t *&)dstUbAddr, postValue);
+            vstus(ureg, tmpStride1 * 2, tmp1, (__ubuf__ uint16_t *&)dstUbAddr, postValue);
             uint32_t tmpStride2 = (postUpdateStride > one_repeat_num) ? (postUpdateStride - one_repeat_num) : 0;
-            vstus(ureg, tmpStride2 * 2, tmp2, (__local_mem__ uint16_t *&)dstUbAddr, postValue);
+            vstus(ureg, tmpStride2 * 2, tmp2, (__ubuf__ uint16_t *&)dstUbAddr, postValue);
         } else {
             if constexpr (std::is_same_v<T, bool>) {
                 vstus(ureg, postUpdateStride, (RegTensor<int8_t> &)srcReg, (__ubuf__ int8_t *&)dstUbAddr, postValue);
@@ -358,15 +358,15 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, Reg
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__simd_callee__ inline void DataCopyUnAlignPostImpl(__local_mem__ T *&dstUbAddr, UnalignReg &ureg, int32_t postUpdateStride)
+__simd_callee__ inline void DataCopyUnAlignPostImpl(__ubuf__ T *&dstUbAddr, UnalignReg &ureg, int32_t postUpdateStride)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(),
         "DataCopyUnAlignPost only support type b8/b16/b32/b64 on current device");
     if constexpr (sizeof(T) == 8) {
         if constexpr (postMode == PostLiteral::POST_MODE_UPDATE) {
-            vstas(ureg, (__local_mem__ uint32_t *&)dstUbAddr, postUpdateStride * 2, POST_UPDATE);
+            vstas(ureg, (__ubuf__ uint32_t *&)dstUbAddr, postUpdateStride * 2, POST_UPDATE);
         } else {
-            vstas(ureg, (__local_mem__ uint32_t *&)dstUbAddr, postUpdateStride * 2);
+            vstas(ureg, (__ubuf__ uint32_t *&)dstUbAddr, postUpdateStride * 2);
         }
     } else {
         if constexpr (postMode == PostLiteral::POST_MODE_UPDATE) {
@@ -391,7 +391,7 @@ __simd_callee__ inline void DataCopyUnAlignPostImpl(__local_mem__ T *&dstUbAddr,
 
 // vstu/vsta
 template <typename T = DefaultType, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE, typename RegT>
-__simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, RegT &srcReg, UnalignReg &ureg, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T *&dstUbAddr, RegT &srcReg, UnalignReg &ureg, AddrReg &areg)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -410,7 +410,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *&dstUbAddr, Reg
 }
 
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignPostImpl(__local_mem__ T *&dstUbAddr, UnalignReg &ureg, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlignPostImpl(__ubuf__ T *&dstUbAddr, UnalignReg &ureg, AddrReg &areg)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "only support type b8/b16/b32/b64 on current device");
     if constexpr (std::is_same_v<T, bool>) {
@@ -426,7 +426,7 @@ __simd_callee__ inline void DataCopyUnAlignPostImpl(__local_mem__ T *&dstUbAddr,
 
 // vstur/vstar
 template <typename T = DefaultType, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE, typename RegT>
-__simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *dstUbAddr, RegT &srcReg, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T *dstUbAddr, RegT &srcReg, UnalignReg &ureg)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -444,7 +444,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__local_mem__ T *dstUbAddr, RegT
     }
 }
 
-template <typename T> __simd_callee__ inline void DataCopyUnAlignPostImpl(__local_mem__ T *dstUbAddr, UnalignReg &ureg)
+template <typename T> __simd_callee__ inline void DataCopyUnAlignPostImpl(__ubuf__ T *dstUbAddr, UnalignReg &ureg)
 {
     static_assert(SupportBytes<T, 1, 2, 4, 8>(), "only support type b8/b16/b32/b64 on current device");
     if constexpr (std::is_same_v<T, bool>) {

@@ -56,7 +56,7 @@ constexpr FloatS32Union scaleList2[FMOD_ITERATION_NUM_MAX] = {
 
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(
-    __local_mem__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -69,7 +69,7 @@ __simd_callee__ inline void LoadDataWithT(
 
 template <typename T>
 __simd_callee__ inline void SaveDataWithT(
-    __local_mem__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
+    __ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg, MicroAPI::MaskReg& mask, uint32_t offset)
 {
     if constexpr (IsSameType<T, half>::value) {
         MicroAPI::RegTensor<T> regT;
@@ -152,7 +152,7 @@ __simd_callee__ inline void SolveScaleIter (
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScale(__local_mem__ float* dst, __local_mem__ float* src, const uint16_t unitRepTimes,
+__simd_callee__ inline void SolveScale(__ubuf__ float* dst, __ubuf__ float* src, const uint16_t unitRepTimes,
     const float scale1, const float scale2, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> src1OriginReg;
@@ -168,7 +168,7 @@ __simd_callee__ inline void SolveScale(__local_mem__ float* dst, __local_mem__ f
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScaleInit(__local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
+__simd_callee__ inline void SolveScaleInit(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
     const uint16_t unitRepTimes, const float scale1, const float scale2, MicroAPI::MaskReg& mask)
 {
     MicroAPI::RegTensor<float> src0OriginReg;
@@ -187,7 +187,7 @@ __simd_callee__ inline void SolveScaleInit(__local_mem__ float* dst, __local_mem
 
 template <int32_t iterationNum, int32_t totalIterationNum>
 __simd_callee__ inline void SolveScaleIterImpl(
-    __local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
+    __ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
     const uint16_t unitRepTimes, MicroAPI::MaskReg& mask)
 {
     if (iterationNum == totalIterationNum) { // first iteration, initialization
@@ -203,7 +203,7 @@ __simd_callee__ inline void SolveScaleIterImpl(
 }
 
 template <int32_t iterationNum>
-__simd_callee__ inline void SolveScaleIter(__local_mem__ float* dst, __local_mem__ float* src0, __local_mem__ float* src1, 
+__simd_callee__ inline void SolveScaleIter(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float* src1, 
     const uint16_t unitRepTimes, MicroAPI::MaskReg& mask)
 {
     SolveScaleIterImpl<iterationNum, iterationNum>(dst, src0, src1, unitRepTimes, mask);
@@ -257,8 +257,8 @@ __simd_callee__ inline void SolveExceptionScenarios(MicroAPI::RegTensor<float>& 
 } // namespace FmodInternal
 
 template <int32_t iterationNum>
-__simd_vf__ inline void FmodComputeIterationF32(__local_mem__ float* dstTensor, __local_mem__ float* src0Tensor,
-    __local_mem__ float* src1Tensor, const uint16_t mainRepeatTimes, const uint16_t mainBlockLen,
+__simd_vf__ inline void FmodComputeIterationF32(__ubuf__ float* dstTensor, __ubuf__ float* src0Tensor,
+    __ubuf__ float* src1Tensor, const uint16_t mainRepeatTimes, const uint16_t mainBlockLen,
     const uint16_t tailRepeatTimes, uint32_t tailCount)
 {
     constexpr FmodInternal::FloatU32Union scale1(0x4B800000); // 2**24
@@ -342,9 +342,9 @@ template <int32_t iterationNum>
 __aicore__ inline void FmodComputeIteration(const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor,
     const LocalTensor<float>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t count)
 {
-    __local_mem__ float* src0 = (__local_mem__ float*)src0Tensor.GetPhyAddr();
-    __local_mem__ float* src1 = (__local_mem__ float*)src1Tensor.GetPhyAddr();
-    __local_mem__ float* dst = (__local_mem__ float*)dstTensor.GetPhyAddr();
+    __ubuf__ float* src0 = (__ubuf__ float*)src0Tensor.GetPhyAddr();
+    __ubuf__ float* src1 = (__ubuf__ float*)src1Tensor.GetPhyAddr();
+    __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
     
     const uint16_t mainRepeatTimes = static_cast<uint16_t>(count / FmodInternal::oneRepSize);
     const uint16_t mainBlockLen = mainRepeatTimes * FmodInternal::oneRepSize;
@@ -357,7 +357,7 @@ __aicore__ inline void FmodComputeIteration(const LocalTensor<float>& dstTensor,
 }
 
 template <typename T>
-__simd_vf__ inline void FmodComputeVF(__local_mem__ T* dstTensor, __local_mem__ T* src0Tensor, __local_mem__ T* src1Tensor, 
+__simd_vf__ inline void FmodComputeVF(__ubuf__ T* dstTensor, __ubuf__ T* src0Tensor, __ubuf__ T* src1Tensor, 
     const uint16_t repeatTimes, uint32_t count)
 {
     MicroAPI::RegTensor<float> src0Reg;
@@ -386,9 +386,9 @@ __simd_vf__ inline void FmodComputeVF(__local_mem__ T* dstTensor, __local_mem__ 
 __aicore__ inline void FmodCompute(const LocalTensor<float> &dstTensor, const LocalTensor<float> &src0Tensor,
     const LocalTensor<float> &src1Tensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t count)
 {
-    __local_mem__ float *src0 = (__local_mem__ float *)src0Tensor.GetPhyAddr();
-    __local_mem__ float *src1 = (__local_mem__ float *)src1Tensor.GetPhyAddr();
-    __local_mem__ float *dst = (__local_mem__ float *)dstTensor.GetPhyAddr();
+    __ubuf__ float *src0 = (__ubuf__ float *)src0Tensor.GetPhyAddr();
+    __ubuf__ float *src1 = (__ubuf__ float *)src1Tensor.GetPhyAddr();
+    __ubuf__ float *dst = (__ubuf__ float *)dstTensor.GetPhyAddr();
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, FmodInternal::oneRepSize));
  
     FmodComputeVF<float>(dst, src0, src1, repeatTimes, count);
@@ -397,9 +397,9 @@ __aicore__ inline void FmodCompute(const LocalTensor<float> &dstTensor, const Lo
 __aicore__ inline void FmodCompute(const LocalTensor<half> &dstTensor, const LocalTensor<half> &src0Tensor,
     const LocalTensor<half> &src1Tensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t count)
 {
-    __local_mem__ half *src0 = (__local_mem__ half *)src0Tensor.GetPhyAddr();
-    __local_mem__ half *src1 = (__local_mem__ half *)src1Tensor.GetPhyAddr();
-    __local_mem__ half *dst = (__local_mem__ half *)dstTensor.GetPhyAddr();
+    __ubuf__ half *src0 = (__ubuf__ half *)src0Tensor.GetPhyAddr();
+    __ubuf__ half *src1 = (__ubuf__ half *)src1Tensor.GetPhyAddr();
+    __ubuf__ half *dst = (__ubuf__ half *)dstTensor.GetPhyAddr();
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(count, FmodInternal::oneRepSize));
  
     FmodComputeVF<half>(dst, src0, src1, repeatTimes, count);

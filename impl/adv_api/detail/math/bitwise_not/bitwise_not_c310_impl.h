@@ -21,7 +21,7 @@ struct BitwiseNotConfig {
 };
 constexpr BitwiseNotConfig DEFAULT_BITWISE_NOT_CONFIG = {false};
 template <typename T, typename RegT, const MicroAPI::RegTrait& Trait = MicroAPI::RegTraitNumOne>
-__simd_vf__ inline void BitwiseNotCompute(__local_mem__ T* dst, __local_mem__ T* src, uint32_t count,
+__simd_vf__ inline void BitwiseNotCompute(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count,
                                          uint16_t repeatTime, uint32_t oneRepElm, uint32_t offset)
 {
     MicroAPI::MaskReg mask;
@@ -55,8 +55,8 @@ __aicore__ inline void BitwiseNotImpl(const LocalTensor<T>& dst, const LocalTens
                   "current data type is not supported on current device!");
     CHECK_FUNC_HIGHLEVEL_API(BitwiseNot, (T, config.isReuseSource), (dst, src, count));
 
-    __local_mem__ T* dstTensor = (__local_mem__ T*)dst.GetPhyAddr();
-    __local_mem__ T* srcTensor = (__local_mem__ T*)src.GetPhyAddr();
+    __ubuf__ T* dstTensor = (__ubuf__ T*)dst.GetPhyAddr();
+    __ubuf__ T* srcTensor = (__ubuf__ T*)src.GetPhyAddr();
 
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * 2);
