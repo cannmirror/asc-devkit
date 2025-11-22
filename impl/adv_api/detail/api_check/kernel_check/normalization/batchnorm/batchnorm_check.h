@@ -18,8 +18,6 @@
 #include "kernel_tiling/kernel_tiling.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "batchnorm_check_common.h"
-#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
-#include "batchnorm_check_c310.h"
 #else
 #include "batchnorm_check_aicore.h"
 #endif

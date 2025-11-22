@@ -21,9 +21,6 @@
 #include "floor_v200_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002 && !defined(__DAV_L300__)
 #include "floor_v300_impl.h"
-#elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
-    defined(__DAV_L311__) || defined(__DAV_L300__)
-#include "floor_c310_impl.h"
 #endif
 
 #endif // IMPL_MATH_FLOOR_FLOOR_COMMON_IMPL_H

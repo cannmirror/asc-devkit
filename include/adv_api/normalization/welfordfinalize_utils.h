@@ -36,9 +36,6 @@ struct WelfordFinalizePara
     uint32_t tailCountLength;
     float abRec;
     float rRec;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-    float rRecWithCorrection;
-#endif
 };
 
 }; // namespace AscendC

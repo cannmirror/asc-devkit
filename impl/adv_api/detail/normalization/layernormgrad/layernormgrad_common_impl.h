@@ -117,7 +117,7 @@ __aicore__ inline void DuplicateLastDimImpl(const LocalTensor<float>& dst, const
     }
 }
 
-#if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 220
 __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t bsLength, const uint32_t hLength)
 {
@@ -159,7 +159,7 @@ __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const Loca
 __aicore__ inline void BroadcastLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t dstSize, const uint32_t srcSize)
 {
-#if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 220
     BrcbLastDimImpl(dst, src, srcSize, dstSize / srcSize);
 #else
     DuplicateLastDimImpl(dst, src, srcSize, dstSize / srcSize);

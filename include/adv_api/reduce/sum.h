@@ -18,12 +18,8 @@
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
 #include "include/adv_api/reduce/sum_utils.h"
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
-    defined(__DAV_L311__) || defined(__DAV_L300__)
-#include "../../../impl/adv_api/detail/reduce/sum/sum_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/reduce/sum/sum_common_impl.h"
-#endif
+
 #if ASCENDC_CPU_DEBUG
 #include "kernel_log.h"
 #include <type_traits>
@@ -67,7 +63,7 @@ __aicore__ inline void Sum(const LocalTensor<T> &dstTensor, const LocalTensor<T>
     if ASCEND_IS_AIC {
         return;
     }
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102) || defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__)
+#if __CCE_AICORE__ >= 200
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });

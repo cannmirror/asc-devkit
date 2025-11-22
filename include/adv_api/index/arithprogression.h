@@ -15,12 +15,7 @@
 #ifndef LIB_ARITHPROGRESSION_H
 #define LIB_ARITHPROGRESSION_H
 
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
-    defined(__DAV_L311__) || defined(__DAV_L300__)
-#include "../../../impl/adv_api/detail/index/arithprogression/arithprogression_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/index/arithprogression/arithprogression_common_impl.h"
-#endif
 
 namespace AscendC {
 /* !

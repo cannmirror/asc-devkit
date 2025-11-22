@@ -42,7 +42,7 @@ __aicore__ inline void SumCompute(const LocalTensor<T> &dstTensor, const LocalTe
         return;
     }
     CHECK_FUNC_HIGHLEVEL_API(Sum, (T, reduceDim, isReuseSource, isBasicBlock), (dstTensor, srcTensor, sharedTmpBuffer, sumParams));
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200
     uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T);
     uint32_t firstRepeatTimes = (sumParams.n + elementNumPerRep - 1) / elementNumPerRep;

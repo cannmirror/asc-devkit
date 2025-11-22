@@ -15,9 +15,7 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASHV3_BASE_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASHV3_BASE_IMPL_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "regbase/c310/softmax_flashv3_impl.h"
-#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 #include "regbase/v300/softmax_flashv3_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "membase/v220/softmax_flashv3_impl.h"

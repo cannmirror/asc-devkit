@@ -15,11 +15,7 @@
 #ifndef LIB_GELU_GELU_H
 #define LIB_GELU_GELU_H
 #include "kernel_tensor.h"
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__) || defined(__DAV_L300__)
-#include "../../../impl/adv_api/detail/activation/gelu/gelu_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/activation/gelu/gelu_impl.h"
-#endif
 
 namespace AscendC {
 #pragma begin_pipe(V)
@@ -75,10 +71,6 @@ __aicore__ inline void FasterGelu(const LocalTensor<T>& dstLocal, const LocalTen
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-    ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value),
-        { KERNEL_LOG(KERNEL_ERROR, "FasterGelu only support data type: float/half"); });
-#endif
     FasterGeluImpl<T, highPrecision, highPerformance>(dstLocal, srcLocal, sharedTmpBuffer, dataSize);
 }
 
@@ -98,10 +90,6 @@ __aicore__ inline void FasterGelu(const LocalTensor<T>& dstLocal, const LocalTen
     if ASCEND_IS_AIC {
         return;
     }
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-    ASCENDC_ASSERT((IsSameType<T, half>::value || IsSameType<T, float>::value),
-        { KERNEL_LOG(KERNEL_ERROR, "FasterGelu only support data type: float/half"); });
-#endif
     FasterGeluImpl<T, highPrecision, highPerformance>(dstLocal, srcLocal, dataSize);
 }
 

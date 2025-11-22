@@ -20,8 +20,6 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "layernorm_check_common.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "layernorm_check_310.h"
 #else
 #include "layernorm_check_aicore.h"
 #endif

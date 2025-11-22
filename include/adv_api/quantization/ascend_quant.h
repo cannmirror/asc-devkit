@@ -23,8 +23,7 @@
 #ifndef LIB_ASCEND_QUANT_ASCEND_QUANT_H
 #define LIB_ASCEND_QUANT_ASCEND_QUANT_H
 #include "include/adv_api/quantization/ascend_quant_utils.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
-    __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/quantization/quant/ascend_quant_common_impl.h"
 namespace AscendC {
@@ -299,129 +298,6 @@ __aicore__ inline void AscendQuant(const LocalTensor<int8_t>& dstTensor,
     AscendQuant<T, isReuseSource, config>(dstTensor, srcTensor, scaleTensor, offsetTensor,
         scaleTensor.GetSize(), offsetTensor.GetSize(), srcTensor.GetSize());
 }
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const float scale, const float offset, const uint32_t calCount)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, scale, offset, calCount);
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const float scale, const float offset)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, scale, offset, srcTensor.GetSize());
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const float scale, const float offset)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, scale, offset,
-        srcTensor.GetSize());
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const float scale, const float offset, const uint32_t calCount)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, scale, offset, calCount);
-}
-
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<srcT>& scaleTensor,
-    const LocalTensor<srcT>& offsetTensor)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor,
-        scaleTensor.GetSize(), offsetTensor.GetSize(), srcTensor.GetSize());
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<srcT>& scaleTensor,
-    const LocalTensor<srcT>& offsetTensor, const uint32_t scaleCount, const uint32_t offsetCount,
-    const uint32_t calCount)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor,
-        scaleCount, offsetCount, calCount);
-}
-
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<srcT>& scaleTensor, const LocalTensor<srcT>& offsetTensor)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, scaleTensor, offsetTensor, scaleTensor.GetSize(),
-        offsetTensor.GetSize(), srcTensor.GetSize());
-}
-
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<srcT>& scaleTensor, const LocalTensor<srcT>& offsetTensor, const uint32_t scaleCount,
-    const uint32_t offsetCount, const uint32_t calCount)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, scaleTensor, offsetTensor, scaleCount, offsetCount,
-        calCount);
-}
-
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<srcT>& scaleTensor, const srcT offset,
-    const uint32_t scaleCount, const uint32_t calCount)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offset, scaleCount,
-        calCount);
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<srcT>& scaleTensor, const srcT offset)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offset,
-        scaleTensor.GetSize(), srcTensor.GetSize());
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<srcT>& scaleTensor, const srcT offset, const uint32_t scaleCount, const uint32_t calCount)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, scaleTensor, offset, scaleCount, calCount);
-}
-template <typename dstT, typename srcT, bool isReuseSource = false>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-    const LocalTensor<srcT>& scaleTensor, const srcT offset)
-{
-    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, scaleTensor, offset, scaleTensor.GetSize(),
-        srcTensor.GetSize());
-}
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config, const AscendQuantPolicy& policy>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                   const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
-                                   const AscendQuantParam& para)
-{
-    AscendQuantImpl<dstT, srcT, scaleT, isReuseSource, config, policy>(dstTensor, srcTensor, scaleTensor, offsetTensor, para);
-}
-
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config, const AscendQuantPolicy& policy>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                   const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<scaleT>& scaleTensor,
-                                   const LocalTensor<scaleT>& offsetTensor, const AscendQuantParam& para)
-{
-    AscendQuantImpl<dstT, srcT, scaleT, isReuseSource, config, policy>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor, para);
-}
-
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config, const AscendQuantPolicy& policy>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                   const LocalTensor<scaleT>& scaleTensor, const scaleT offset,
-                                   const AscendQuantParam& para)
-{
-    AscendQuantImpl<dstT, srcT, scaleT, isReuseSource, config, policy>(dstTensor, srcTensor, scaleTensor, offset, para);
-}
-
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config, const AscendQuantPolicy& policy>
-__aicore__ inline void AscendQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                   const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<scaleT>& scaleTensor,
-                                   const scaleT offset, const AscendQuantParam& para)
-{
-    AscendQuantImpl<dstT, srcT, scaleT, isReuseSource, config, policy>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offset, para);
-}
-#endif
 #pragma end_pipe
 }  // namespace AscendC
 #endif

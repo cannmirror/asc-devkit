@@ -15,7 +15,7 @@
 #ifndef LIB_MATH_DIGAMMA_H
 #define LIB_MATH_DIGAMMA_H
 
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200
 
 #include "kernel_tensor.h"
 #include "kernel_pop_stack_buffer.h"

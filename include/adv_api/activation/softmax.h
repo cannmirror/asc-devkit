@@ -18,7 +18,7 @@
 #include "kernel_tensor.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "softmax_utils.h"
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if __CCE_AICORE__ >= 200
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_common.h"
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_base_impl.h"
 #pragma begin_pipe(V)

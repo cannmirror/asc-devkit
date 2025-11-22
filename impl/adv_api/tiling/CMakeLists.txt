@@ -53,15 +53,6 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/matmul/matmul_tiling_algorithm.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/matmul/math_util.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/hccl/hccl_tiling.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_and_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_and_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_ands_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_not_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_or_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_ors_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/fma_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/sincos_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/rint_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/clamp_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/acos_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/acosh_tiling.cpp
@@ -69,8 +60,6 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/math/asinh_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/atan_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/atanh_tiling.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/is_inf_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/is_nan_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/cos_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/cosh_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/erf_tiling_impl.cpp
@@ -90,11 +79,6 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/math/tanh_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/trunc_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/axpy_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/hypot_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_not_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_or_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_xor_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_xor_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/swiglu_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/ceil_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/floor_tiling_impl.cpp
@@ -118,7 +102,6 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/pad/broadcast_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/xor_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/cumsum_tiling.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/math/where_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce/mean_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/sign_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/reglu_tiling_impl.cpp

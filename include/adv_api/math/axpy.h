@@ -15,11 +15,7 @@
 #ifndef LIB_MATH_AXPY_H
 #define LIB_MATH_AXPY_H
 #include "kernel_tensor.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/math/axpy/axpy_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/math/axpy/axpy_common_impl.h"
-#endif
 
 namespace AscendC {
 #pragma begin_pipe(V)

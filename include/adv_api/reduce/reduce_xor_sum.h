@@ -18,18 +18,14 @@
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
 #include "kernel_pop_stack_buffer.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "../../../impl/adv_api/detail/reduce/reduce_xor_sum/reduce_xor_sum_c310_impl.h"
-#else
 #include "../../../impl/adv_api/detail/reduce/reduce_xor_sum/reduce_xor_sum_common_impl.h"
-#endif
+
 #if ASCENDC_CPU_DEBUG
 #include "kernel_log.h"
 #include <type_traits>
 #endif
 
-#if (__NPU_ARCH__ == 5102) || (defined(__CCE_AICORE__) && \
-(__CCE_AICORE__ >= 220 || __CCE_AICORE__ == 200) || defined(__DAV_C310__) || defined(__DAV_310R6__))
+#if (defined(__CCE_AICORE__) && (__CCE_AICORE__ >= 220 || __CCE_AICORE__ == 200))
 
 namespace AscendC {
 #pragma begin_pipe(V)

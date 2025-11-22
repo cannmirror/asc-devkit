@@ -19,9 +19,6 @@
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_dequant_common.h"
 #include "../../api_check/kernel_api_check.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-#include "ascend_dequant_c310_impl.h"
-#endif
 
 namespace AscendC {
 constexpr uint32_t FLOAT_PER_BLOCK = 8;         // 32B  = FP32(4B) * 8
@@ -398,11 +395,6 @@ __aicore__ inline void AscendDequantImpl(const LocalTensor<dstT>& dstTensor, con
         "current combination of deqScale dtype and dstTensor dtype is not supported, please check the document");
     UpdateDequantParams<dstT, mode>(params);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-    DequantPerchannelImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
-    return;
-#endif
-
     LocalTensor<float> stackBuffer = sharedTmpBuffer.ReinterpretCast<float>();
 
     AscendDequantParams<float> ascendDqParams;
@@ -485,11 +477,6 @@ __aicore__ inline void AscendDequantScalarImpl(const LocalTensor<dstT>& dstTenso
 
     UpdateDequantParams<dstT, mode>(params);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-    DequantPertensorImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
-    return;
-#endif
-
     LocalTensor<float> stackBuffer = sharedTmpBuffer.ReinterpretCast<float>();
 
     SetMaskCount();
@@ -514,18 +501,5 @@ __aicore__ inline void AscendDequantScalarImpl(const LocalTensor<dstT>& dstTenso
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     AscendDequantScalarImpl<dstT, scaleT, true, mode>(dstTensor, srcTensor, deqScale, sharedTmpBuffer, params);
 }
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
-template <typename dstT, typename srcT, typename scaleT, const AscendDeQuantConfig& config, const AscendDeQuantPolicy& policy>
-__aicore__ inline void AscendDequantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
-                                         const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
-                                         const AscendDeQuantParam& para)
-{
-    LocalTensor<uint8_t> stackTensor;
-    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
-    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
-    AscendDequantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, stackTensor, scaleTensor, offsetTensor, para);
-}
-#endif
 } // namespace AscendC
 #endif // IMPL_QUANTIZATION_DEQUANT_ASCEND_DEQUANT_COMMON_IMPL_H
