@@ -138,6 +138,10 @@
         <file value="ascendc_parse_dumpinfo.py"/>
     </file_info>
 
+     <file_info value="asc_opc" copy_type="delivery" src_path="tools/build/asc_opc" dst_path="$(TARGET_ENV)/bin" install_path="$(TARGET_ENV)/bin" install_mod="550" feature="ascendc">
+        <file value="asc_opc"/>
+    </file_info>
+
     <file_info copy_type="source" src_path="build/makeself" dst_path="makeself" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules/util/makeself">
         <file value="COPYING" install_mod="550"/>
         <file value="make-release.sh" install_mod="550"/>

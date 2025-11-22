@@ -128,3 +128,25 @@ if [ $(id -u) -ne 0 ] && [ "$owner" != "$(whoami)" ] && [ -f "$custom_path_file"
     . "$common_interface"
     mk_custom_path "$custom_path_file"
 fi
+
+
+prepend_env() {
+    local name="$1"
+    local value="$2"
+    local env_value="$(eval echo "\${${name}}" | tr ':' '\n' | grep -v "^${value}$" | tr '\n' ':' | sed 's/:$/\n/')"
+    if [ "$env_value" = "" ]; then
+        read $name <<EOF
+$value
+EOF
+    else
+        read $name <<EOF
+$value:$env_value
+EOF
+    fi
+    export $name
+}
+
+asc_opc_tool_path="$(realpath $curpath/../../)/compiler/bin"
+if [ -d ${asc_opc_tool_path} ]; then
+    prepend_env PATH "$asc_opc_tool_path"
+fi

@@ -104,6 +104,10 @@ chmod_end() {
     chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base" 550 file
     chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base-0.1.0.dist-info" 550 dir
     chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base-0.1.0.dist-info" 550 file
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool" 550 dir
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool" 550 file
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool-0.1.0.dist-info" 550 dir
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool-0.1.0.dist-info" 550 file
 
     if [ $(id -u) -eq 0 ]; then
         chown "root:root" "$default_dir" 2> /dev/null

@@ -77,6 +77,21 @@ do_create_stub_softlink() {
             fi
         fi
     fi
+    if [ ! -d "$install_path/$version_dir/compiler/bin" ]; then
+        mkdir -p "$install_path/$version_dir/compiler/bin"
+    fi
+    if [ ! -d "$install_path/$latest_dir/compiler/bin" ]; then
+        mkdir -p "$install_path/$latest_dir/compiler/bin"
+    fi
+    if [ -e "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" ]; then
+        if [ ! -L "$install_path/$version_dir/compiler/bin/asc_opc" ]; then 
+            ln -sr "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" "$install_path/$version_dir/compiler/bin/asc_opc"
+        fi
+        if [ ! -L "$install_path/$latest_dir/compiler/bin/asc_opc" ]; then 
+            ln -sr "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" "$install_path/$latest_dir/compiler/bin/asc_opc"
+        fi
+    fi
+    
     if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
         chmod 750 "$arch_linux_path/pkg_inc/asc/hccl"
         ln -sr "$arch_linux_path/asc/include/adv_api/hccl/internal" "$arch_linux_path/pkg_inc/asc/hccl/internal"
@@ -102,3 +117,5 @@ python_dir_chmod_reset "$WHL_SOFTLINK_INSTALL_DIR_PATH"
 
 create_softlink_if_exists "$WHL_INSTALL_DIR_PATH" "$WHL_SOFTLINK_INSTALL_DIR_PATH" "asc_op_compile_base"
 create_softlink_if_exists "$WHL_INSTALL_DIR_PATH" "$WHL_SOFTLINK_INSTALL_DIR_PATH" "asc_op_compile_base-*.dist-info"
+create_softlink_if_exists "$WHL_INSTALL_DIR_PATH" "$WHL_SOFTLINK_INSTALL_DIR_PATH" "asc_opc_tool"
+create_softlink_if_exists "$WHL_INSTALL_DIR_PATH" "$WHL_SOFTLINK_INSTALL_DIR_PATH" "asc_opc_tool-*.dist-info"
