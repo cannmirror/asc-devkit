@@ -34,7 +34,7 @@ static __aicore__ inline void CalOut2L1ScalarParams(Intf *self, Out2L1ScalarPara
     }
 
     // to L1B
-    // 计算L1上cin起始idx, 去掉cin1HkWkCin里的HkWk，fp32场景下GM对齐到8
+    // Calculate the starting idx of cin on L1, remove the HkWk in cin1HkWkCin, and align the GM to 8 in the fp32 scenario
     if (params.isLoad2L1B) {
         uint64_t localN = ConvBackpropApi::ShiftDivChannelSize<Intf>(self->ctx.tiling_->baseN, self->ctx.tiling_->channelSize);
         uint64_t b1SrCin = ConvBackpropApi::DivHkWk(self->ctx.curNL1Idx_ * localN, self->ctx.hwK_);
@@ -48,10 +48,10 @@ static __aicore__ inline void CalOut2L1ScalarParams(Intf *self, Out2L1ScalarPara
         uint32_t bL1cin1CopyLen = ConvBackpropApi::CeilHkWk(bL1N, self->ctx.hwK_);
         if (self->ctx.hwK_ > bL1N) {
             if (self->ctx.hwK_ % bL1N != 0) {
-                ++bL1cin1CopyLen; // cin1搬一行就大于基本块大小, 多搬一行即可
+                ++bL1cin1CopyLen; // If cin1 moves one line, it will be larger than the basic block size. Just move one more line
             }
         } else if (ConvBackpropApi::RemainderOfHkWk(2 * bL1N, self->ctx.hwK_) != 0) {
-            ++bL1cin1CopyLen; // 除非尾块正好0.5, 考虑拖尾都要再搬一行
+            ++bL1cin1CopyLen; // Unless the tail block is exactly 0.5, you have to move another line to consider the tail
         }
         uint64_t cin1RemainLen = ConvBackpropApi::ShiftDivChannelSize<Intf>(self->ctx.singleShapeCin_, self->ctx.tiling_->channelSize) - b1SrCin;
         params.bL1cin1CopyLen = cin1RemainLen > bL1cin1CopyLen ? bL1cin1CopyLen: cin1RemainLen;
@@ -82,7 +82,7 @@ static __aicore__ inline void InitLoadToA2Params(Intf *self)
     self->ctx.load3dA_.channelSize = AscendC::BLOCK_CUBE;
 }
 
-// 计算Load2B2的指令参数
+// Calculate the instruction parameters of Load2B2
 template <class Intf>
 static __aicore__ inline void InitLoadToB2Params(Intf *self) {
     // load3dStepK
@@ -197,7 +197,7 @@ static __aicore__ inline void MmadLocal(Intf *self, const AscendC::LocalTensor<t
         l0a[self->ctx.srcL0aOffset_],
         l0b[self->ctx.srcL0bOffset_],
         self->ctx.mmad_);
-    // MMAD计算量baseM*baseN小于一定阈值时需要添加PIPE_M同步,当前平台阈值为10*256
+    // When the MMAD calculation amount baseM*baseN is less than a certain threshold, PIPE_M synchronization needs to be added. The current platform threshold is 10*256
     if (self->ctx.mmad_.m * self->ctx.mmad_.n < 2560) {
         AscendC::PipeBarrier<PIPE_M>();
     }
@@ -223,7 +223,7 @@ __aicore__ inline void LoadToA1(Intf *self, bool cachePosA1, uint64_t kaIdx, con
         AscendC::DataCopyParams dataCopyParams;
         dataCopyParams.dstStride = 0;
         if (self->ctx.stepKaRound == (kaStepIdx + 1)) {
-            // 最后一块kAL1，考虑tailK, 32表示32Byte
+            // The last piece kAL1, consider tailK, 32 means 32Byte
             dataCopyParams.blockLen =
                 (self->ctx.singleShapeHo_ * self->ctx.tiling_->wo - kaIdx * self->ctx.tiling_->baseK);
         } else {
@@ -233,7 +233,7 @@ __aicore__ inline void LoadToA1(Intf *self, bool cachePosA1, uint64_t kaIdx, con
 
         uint32_t blockCount = 0;
         if (params.isLastMAL1) {
-            // 最后一块mAL1，需要考虑tailM
+            // The last piece of mAL1 needs to consider tailM
             blockCount = ConvBackpropApi::ShiftDivChannelSize<Intf>(((self->ctx.curStepM_ - 1) * self->ctx.tiling_->baseM + self->ctx.tailM_),
                                         self->ctx.tiling_->channelSize);
         } else {
@@ -248,7 +248,7 @@ __aicore__ inline void LoadToA1(Intf *self, bool cachePosA1, uint64_t kaIdx, con
             }
         }
 
-        // blockcout和blockLen关联L1, 溢出风险低
+        // blockcout and blockLen are associated with L1, and the risk of overflow is low
         uint64_t srcStride = self->ctx.hwO_ - dataCopyParams.blockLen;
         if (srcStride <= MAX_16BITS_STRIDE) {
             dataCopyParams.srcStride = srcStride;
@@ -281,13 +281,13 @@ __aicore__ inline void LoadToB1(Intf *self, bool cachePosB1, uint64_t kbIdx, con
     if (!isLoadB1) {
         return;
     }
-    // 需要载入BL1的条件为，被计算的BL0块是BL1上的第一块数据，一次载入完整BL1大小
-    // 此时满足以下条件之一需要载入BL1：
-    // 1.BL1上无db，并且K方向需要多于一个buffer，每次都需要载入；BL1开db，并且K方向buffer数量小于等于2
-    // 2.singleShapeK / stepKb > 2, 优先循环k方向，BL1上数据无法复用
-    // 3.order_M时，L1上驻留AL1, BL1数据不复用
-    // 4.order_N时，BL1驻留在L1上，且K <=
-    // 2，即L1上可以栽下全部Kb，此时遍历M方向，BL1数据上数据不会被覆盖，只在M方向循环第一次时载入BL1
+    // The condition that needs to be loaded into BL1 is that the calculated BL0 block is the first block of data on BL1, and the entire BL1 size is loaded at one time
+    // At this time, BL1 needs to be loaded if one of the following conditions is met：
+    // 1.There is no db on BL1, and more than one buffer is needed in the K direction, which needs to be loaded every time; BL1 has db, and the number of buffers in the K direction is less than or equal to 2
+    // 2.singleShapeK / stepKb > 2, priority is given to looping in the k direction, and data on BL1 cannot be reused
+    // 3.When order_M, AL1 resides on L1, and BL1 data is not reused
+    // 4.When order_N, BL1 resides on L1, and K <=
+    // 2，That is, all Kb can be planted on L1. At this time, the M direction is traversed, and the data on BL1 will not be overwritten. BL1 will only be loaded in the first cycle of the M direction
     if (params.isLoad2L1B) {
         AscendC::LocalTensor<typename Intf::SrcT> useB1Buf;
         if (cachePosB1) {
@@ -296,13 +296,13 @@ __aicore__ inline void LoadToB1(Intf *self, bool cachePosB1, uint64_t kbIdx, con
             useB1Buf = self->ctx.b1Pong_.template AllocTensor<typename Intf::SrcT>();
         }
 
-        // L0shape到orgShape的对应关系，L0和L1是16对齐的，orgShape是Wi对齐的,先算Wo对齐再算Wi对齐
-        // 先算L0B所在BL1块的起始地址，16对齐的
+        // The correspondence between L0shape and orgShape, L0 and L1 are 16 aligned, orgShape is Wi aligned, Wo alignment is calculated first and Wi alignment is calculated
+        // First calculate the starting address of the BL1 block where L0B is located, which is 16 aligned
         uint64_t b1SrcKAlign = kbStepIdx * self->ctx.kbl1_;
-        // load3d必须有完整Wo，做Wo对齐，计算起始地址所在的Ho
+        // load3d must have a complete Wo, do Wo alignment, and calculate the Ho where the starting address is
         uint32_t b1SrcHo = b1SrcKAlign / self->ctx.tiling_->wo;
         uint32_t b1SrcHoGm = b1SrcHo + self->ctx.hoStartIdx_;
-        // 计算Ho对应的Hi，根据卷积原理
+        // Calculate Hi corresponding to Ho, based on the convolution principle
         int64_t b1SrcHiGm = static_cast<uint64_t>(b1SrcHoGm) * self->ctx.tiling_->strideH - self->ctx.tiling_->padUp;
         uint32_t b1SrcHi = 0;
         if (b1SrcHiGm > 0 && self->ctx.hiStartIdx_ > 0) {
@@ -339,7 +339,7 @@ __aicore__ inline void LoadToB1(Intf *self, bool cachePosB1, uint64_t kbIdx, con
             srcStride = 0;
         }
 
-        // 得到gm的偏移量
+        // Get the offset of gm
         uint64_t srcOffset = (params.out2B1SrcAddr + static_cast<uint64_t>(b1SrcHi) * self->ctx.tiling_->wi) * self->ctx.tiling_->channelSize;
         uint64_t dstOffset = 0;
         if (blockLen <= MAX_BLOCK_LEN && srcStride <= MAX_16BITS_STRIDE) {

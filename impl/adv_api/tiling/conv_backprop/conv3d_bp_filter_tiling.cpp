@@ -62,7 +62,7 @@ int64_t Conv3dBpFilterTiling::Compute()
     InitTilingValue();
     uint64_t kernelHW = static_cast<uint64_t>(shapeInfo.orgkH) * shapeInfo.orgkW;
     uint64_t strideHW = static_cast<uint64_t>(attrInfo.strideH) * attrInfo.strideW;
-    // MTE1压力较大且N方向满足搬运对齐，切MN
+    // MTE1 has a large pressure and the N direction meets the handling alignment, cut MN
     if (strideHW > 1 && (kernelHW % BLOCK_CUBE == 0 || BLOCK_CUBE % kernelHW == 0)) {
         MultiCoreSplitMN();
     } else {
@@ -77,7 +77,7 @@ void Conv3dBpFilterTiling::SetBasicBlockAttrsTiling()
     mmInfo_.mValue = shapeCalc.cout1_g * fractalSize0;
     mmInfo_.nValue = shapeInfo.orgkH * shapeInfo.orgkW *
         shapeCalc.cin1_g * fractalSize0;
-    // 不拆dk时将dk合并到n轴
+    // When not splitting dk, merge dk to n axis
     if (!seperateDk_) {
         mmInfo_.nValue *= shapeInfo.orgkD;
     }
@@ -87,7 +87,7 @@ void Conv3dBpFilterTiling::SetBasicBlockAttrsTiling()
 
 void Conv3dBpFilterTiling::InitTilingValue()
 {
-    // 默认开启double buffer
+    // Double buffer is enabled by default
     tilingParams.al0Pbuffer = DB_ON;
     tilingParams.bl0Pbuffer = DB_ON;
     tilingParams.singleCoreBatch = 1;
@@ -97,7 +97,7 @@ void Conv3dBpFilterTiling::InitTilingValue()
 
 /*
  *
- * 基本块
+ * basic block
  *
 */
 void Conv3dBpFilterTiling::MultiCoreSplitMN()
@@ -106,12 +106,12 @@ void Conv3dBpFilterTiling::MultiCoreSplitMN()
     blockTiling_.coreBindDirection = SPLIT_M_N;
     InitBaseMNK();
 
-    // 默认策略，一侧pingpong全载后驻留，另一侧pingpong交替载入
+    // The default policy is that pingpong on one side will stay after being fully loaded, and pingpong on the other side will be loaded alternately
     blockTiling_.coreBindOrder = ROW_FIRST;
     blockTiling_.dbL1A = DB_ON;
     blockTiling_.dbL1B = DB_ON;
 
-    // L1配比算法，按照16个块往下进行对称阶梯衰减
+    // L1 proportioning algorithm, symmetrical step decay is performed downwards according to 16 blocks
     uint32_t depthA1 = L1_DEPTH_16;
     uint32_t depthB1 = L1_DEPTH_16;
     while (depthA1 >= 1 && depthB1 >= 1) {
@@ -127,7 +127,7 @@ void Conv3dBpFilterTiling::MultiCoreSplitMN()
         depthB1 = depthB1 > STEP_2 ? (depthB1 - STEP_2) : (depthB1 - 1);
     }
 
-    // 合法性兜底，防止w一次要搬运的过大，直接超L1
+    // The legality is guaranteed to prevent the w from being moved too large at one time and directly exceeding the L1
     if (IsCurBlockL1L0Invalid()) {
         ShrinkBaseBlock();
         UpdateStepMNK();
@@ -145,13 +145,13 @@ void Conv3dBpFilterTiling::MultiCoreSplitK()
     blockTiling_.coreBindDirection = mmInfo_.mValue > mmInfo_.nValue ? SPLIT_N_K : SPLIT_M_K;
     InitBaseMNK();
 
-    // 默认24算法，depthA1/B1都为4*1*DB_ON, L1占用128*128*2*16=512KB
-    // 默认策略，一侧pingpong全载后驻留，另一侧pingpong交替载入
+    // The default 24 algorithm, depthA1/B1 are both 4*1*DB_ON, L1 occupies 128*128*2*16=512KB
+    // The default policy is that pingpong on one side will stay after being fully loaded, and pingpong on the other side will be loaded alternately
     blockTiling_.coreBindOrder = ROW_FIRST;
     blockTiling_.dbL1A = DB_ON;
     blockTiling_.dbL1B = DB_ON;
 
-    // L1配比算法，按照8+8,8+4,4+4,4+2,2+2,2+1,1+1进行阶梯匹配
+    // L1 matching algorithm, perform ladder matching according to 8+8,8+4,4+4,4+2,2+2,2+1,1+1
     uint32_t depthA1 = L1_DEPTH_8;
     uint32_t depthB1 = L1_DEPTH_8;
     while (depthA1 >= 1 && depthB1 >= 1) {
@@ -164,7 +164,7 @@ void Conv3dBpFilterTiling::MultiCoreSplitK()
         if (blockTiling_.totalCnt >= blockTiling_.usedCoreNum && !IsCurBlockL1L0Invalid()) {
             break;
         }
-        // 大的一侧L1先减半，相等时先减少非驻留侧的L1占用
+        // The larger side L1 will be halved first. If they are equal, the L1 occupation of the non-resident side will be reduced first
         if (depthA1 == 1 && depthB1 == 1) {
             break;
         } else if (depthA1 > depthB1) {
@@ -178,7 +178,7 @@ void Conv3dBpFilterTiling::MultiCoreSplitK()
         }
     }
 
-    // 合法性兜底，防止w一次要搬运的过大，直接超L1
+    // The legality is guaranteed to prevent the w from being moved too large at one time and directly exceeding the L1
     if (IsCurBlockL1L0Invalid()) {
         ShrinkBaseBlock();
         UpdateStepMNK();
@@ -189,7 +189,7 @@ void Conv3dBpFilterTiling::MultiCoreSplitK()
 void Conv3dBpFilterTiling::InitBaseMNK()
 {
     if (blockTiling_.coreBindDirection == SPLIT_M_N) {
-        // 不切K算法主要是MTE1 Bound场景，L0A搬运效率是L0B两倍以上，优先让L0A填满
+        // The non-cut K algorithm is mainly used in MTE1 Bound scenarios. The transport efficiency of L0A is more than twice that of L0B, so L0A is given priority to be filled
         if (mmInfo_.mValue > BASIC_BLOCK_SIZE_128) {
             blockTiling_.blockBaseM = BASIC_BLOCK_SIZE_256;
             blockTiling_.blockBaseN = BASIC_BLOCK_SIZE_128;
@@ -200,7 +200,7 @@ void Conv3dBpFilterTiling::InitBaseMNK()
         blockTiling_.blockBaseK = BASIC_BLOCK_SIZE_64;
         blockTiling_.dbL0C = DB_OFF;
     } else {
-        // 切K算法, 默认128基本块保证L0C能开PingPong, 否则会断流
+        // Cut K algorithm, the default 128 basic blocks ensure that L0C can open PingPong, otherwise the flow will be cut off
         blockTiling_.blockBaseM = BASIC_BLOCK_SIZE_128;
         blockTiling_.blockBaseN = BASIC_BLOCK_SIZE_128;
         blockTiling_.blockBaseK = BASIC_BLOCK_SIZE_128;
@@ -215,11 +215,11 @@ void Conv3dBpFilterTiling::InitBaseMNK()
     uint64_t aL0Max = blockTiling_.blockBaseK * blockTiling_.blockBaseM;
     uint64_t bL0Max = blockTiling_.blockBaseK * blockTiling_.blockBaseN;
 
-    // M或N方向不够一个基本块，适应性调小BaseM或者StepM
+    // The M or N direction is not enough for one basic block. Adjust BaseM or StepM adaptively
     blockTiling_.blockBaseM = std::min(static_cast<uint64_t>(blockTiling_.blockBaseM), CeilAlign(mmInfo_.mValue, BLOCK_CUBE_U64));
     blockTiling_.blockBaseN = std::min(static_cast<uint64_t>(blockTiling_.blockBaseN), CeilAlign(mmInfo_.nValue, BLOCK_CUBE_U64));
 
-    // K方向不够一个基本块，适应性调小BaseK，否则根据BaseM和BaseN的情况调大BaseK并进行搬运对齐
+    // The K direction is not enough for one basic block. Adjust BaseK adaptively. Otherwise, increase BaseK according to the conditions of BaseM and BaseN and carry out transportation and alignment
     uint64_t alignedKValue = CeilAlign(mmInfo_.kValue, fractalSize0);
     if (alignedKValue < static_cast<uint64_t>(blockTiling_.blockBaseK)) {
         blockTiling_.blockBaseK = alignedKValue;
@@ -227,7 +227,7 @@ void Conv3dBpFilterTiling::InitBaseMNK()
         if (blockTiling_.blockBaseM == 0 || blockTiling_.blockBaseN == 0) {
             return;
         }
-        // 根据调小后的BaseM和BaseN调大BaseK
+        // Increase BaseK according to the reduced BaseM and BaseN
         uint64_t newBaseKa = std::max(aL0Max / blockTiling_.blockBaseM / fractalSize0,
             static_cast<uint64_t>(1)) * fractalSize0;
         uint64_t newBaseKb = std::max(bL0Max / blockTiling_.blockBaseN / BLOCK_CUBE,
@@ -235,7 +235,7 @@ void Conv3dBpFilterTiling::InitBaseMNK()
         uint64_t newBaseK = std::min(std::min(newBaseKa, newBaseKb), alignedKValue);
         blockTiling_.blockBaseK = newBaseK;
 
-        // K在不超过L0约束情况下，优先满足搬运对齐
+        // K gives priority to satisfying the handling alignment without exceeding the L0 constraint
         if (static_cast<uint64_t>(shapeInfo.orgWo) < newBaseK && shapeInfo.orgWo % fractalSize0 == 0) {
             blockTiling_.blockBaseK = newBaseK / shapeInfo.orgWo * shapeInfo.orgWo;
         }
@@ -259,18 +259,18 @@ void Conv3dBpFilterTiling::UpdateStepMNK()
     uint64_t maxKIter = CeilDiv(mmInfo_.kValue, static_cast<uint64_t>(blockTiling_.blockBaseK));
     uint64_t minIter = 1;
 
-    // 根据预置的StepM/StepN初始化StepKa和StepKb, 不超过K方向最大循环次数
+    // Initialize StepKa and StepKb according to the preset StepM/StepN, and do not exceed the maximum number of cycles in the K direction
     blockTiling_.stepKa = std::max(std::min(aL1Max / blockTiling_.stepM, maxKIter), minIter);
     blockTiling_.stepKb = std::max(std::min(bL1Max / blockTiling_.stepN, maxKIter), minIter);
 
-    // 驻留的一侧允许适应性调整非K方向载入量，不超过最大循环次数
+    // The resident side allows adaptive adjustment of the non-K direction loading amount, without exceeding the maximum number of cycles
     if (blockTiling_.coreBindDirection == SPLIT_M_K) {
         blockTiling_.stepM = std::max(std::min(aL1Max / blockTiling_.stepKa, maxMIter), minIter);
     } else if (blockTiling_.coreBindDirection == SPLIT_N_K) {
         blockTiling_.stepN = std::max(std::min(bL1Max / blockTiling_.stepKb, maxNIter), minIter);
     }
 
-    // 根据调整后的StepM和StepN调整StepKa和StepKb, 不超过K方向最大循环次数
+    // Adjust StepKa and StepKb according to the adjusted StepM and StepN, and do not exceed the maximum number of cycles in the K direction
     blockTiling_.stepKa = std::max(std::min(aL1Max / blockTiling_.stepM, maxKIter), minIter);
     blockTiling_.stepKb = std::max(std::min(bL1Max / blockTiling_.stepN, maxKIter), minIter);
 
@@ -290,7 +290,7 @@ void Conv3dBpFilterTiling::UpdateStepMNK()
 
 bool Conv3dBpFilterTiling::IsCurBlockL1L0Invalid()
 {
-    // 先判断L0合法性，由于LoadData mExtention=Bask会强制16对齐，所以需要对齐到16再判断大小是否会超限制
+    // First determine the legality of L0. Since LoadData mExtention=Bask will force 16 alignment, it needs to be aligned to 16 before determining whether the size will exceed the limit
     uint64_t alignedBaseK = CeilAlign(static_cast<uint64_t>(blockTiling_.blockBaseK), BLOCK_CUBE_U64);
     uint64_t al0LoadSize = alignedBaseK * blockTiling_.blockBaseM * dtypeByte_ * DB_ON;
     if (al0LoadSize > platformInfo.l0ASize) {
@@ -301,7 +301,7 @@ bool Conv3dBpFilterTiling::IsCurBlockL1L0Invalid()
         return true;
     }
 
-    // 再判断L1合法性
+    // Then judge the legality of L1
     uint64_t al1LoadSize = blockTiling_.stepKa * blockTiling_.blockBaseK * blockTiling_.stepM *
                            blockTiling_.blockBaseM * dtypeByte_ * blockTiling_.dbL1A;
     uint64_t bl1LoadSize = CalBL1Bound() * dtypeByte_ * blockTiling_.dbL1B;
@@ -313,7 +313,7 @@ bool Conv3dBpFilterTiling::IsCurBlockL1L0Invalid()
 
 void Conv3dBpFilterTiling::UpdateSingleCoreInfo()
 {
-    // 搬运对齐时默认向下取整，避免越过基本块运算导致重新触发L1载入
+    // The default is to round down when handling and aligning, to avoid re-triggering L1 loading due to overstepping basic block operations
     blockTiling_.singleCoreM = blockTiling_.stepM * blockTiling_.blockBaseM;
 
     uint64_t maxStepKL1 = std::max(blockTiling_.stepKa, blockTiling_.stepKb) * blockTiling_.blockBaseK;
@@ -360,14 +360,14 @@ uint64_t Conv3dBpFilterTiling::CalBL1Bound() const
     int32_t hiCal = (hoCal - 1) * attrInfo.strideH + (shapeInfo.orgkH - 1) * attrInfo.dilationH + 1;
     uint32_t kernelHW = static_cast<uint32_t>(shapeInfo.orgkH * shapeInfo.orgkW);
     uint32_t bL1N = CeilDiv(blockTiling_.stepN * blockTiling_.blockBaseN, static_cast<int64_t>(BLOCK_CUBE));
-    uint32_t bL1Cin1CopyLen = CeilDiv(bL1N, kernelHW); // 向上取整，拖尾时默认多搬一行
+    uint32_t bL1Cin1CopyLen = CeilDiv(bL1N, kernelHW); // Round up, and move one more line by default when trailing
     if (bL1N == 0) {
         return 0;
     }
     if (kernelHW > bL1N && kernelHW % bL1N != 0) {
-        ++bL1Cin1CopyLen; // 此时bL1Cin1CopyLen为1, 每个基本块不足一行，考虑拖尾最多搬两行
+        ++bL1Cin1CopyLen; // At this time, bL1Cin1CopyLen is 1, and each basic block is less than one line. Consider moving the tail to two lines at most
     } else if (NUM_HALF * bL1N % kernelHW != 0) {
-        ++bL1Cin1CopyLen; // 除了尾块是0.5，其他场景都要搬2行
+        ++bL1Cin1CopyLen; // Except for the tail block, which is 0.5, all other scenarios require moving 2 lines
     }
     uint64_t bL1Size = static_cast<uint64_t>(hiCal) * shapeInfo.orgWi * bL1Cin1CopyLen * BLOCK_CUBE;
     return bL1Size;
@@ -386,14 +386,14 @@ uint32_t Conv3dBpFilterTiling::CalculateBl1Cin1CopyLen(uint32_t newBaseN)
 {
     uint32_t kernelHW = static_cast<uint32_t>(shapeInfo.orgkH * shapeInfo.orgkW);
     if (newBaseN == 0) {
-        return 0; // newBaseN 不可能为0
+        return 0; // newBaseN cannot be 0
     }
     uint32_t bL1N = CeilDiv(static_cast<int64_t>(newBaseN), shapeCalc.channelSize);
-    uint32_t bL1Cin1CopyLen = CeilDiv(bL1N, kernelHW); // 向上取整，拖尾时默认多搬一行
+    uint32_t bL1Cin1CopyLen = CeilDiv(bL1N, kernelHW); // Round up, and move one more line by default when trailing
     if (kernelHW > bL1N && kernelHW % bL1N != 0) {
-        ++bL1Cin1CopyLen; // 此时bL1Cin1CopyLen为1, 每个基本块不足一行，考虑拖尾最多搬两行
+        ++bL1Cin1CopyLen; // At this time, bL1Cin1CopyLen is 1, and each basic block is less than one line. Consider moving the tail to two lines at most
     } else if (NUM_HALF * bL1N % kernelHW != 0) {
-        ++bL1Cin1CopyLen; // 除了尾块是0.5，其他场景都要搬2行
+        ++bL1Cin1CopyLen; // Except for the tail block, which is 0.5, all other scenarios require moving 2 lines
     }
     return bL1Cin1CopyLen;
 }

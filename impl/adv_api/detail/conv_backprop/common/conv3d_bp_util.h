@@ -210,13 +210,13 @@ static __aicore__ inline uint64_t ShiftCeilM0(uint64_t a, uint32_t m0)
 static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width)
 {
     uint32_t rows = 1;
-    // 按照命中率高低进行场景判断，先处理多行搬运的场景
+    //Determine the scene according to the hit rate, and deal with the multi-line handling scene first.
     if (copySize > width) {
         rows = AscendC::Ceil(copySize, width);
         if (copySize == rows * width) {
-            return rows; // 整除直接返回，不整除时默认Ceil多搬一行
+            return rows; // Integer division returns directly. When not integer division, Ceil defaults to moving one more line
         } else if ((2 * copySize) % width != 0) {
-            return rows + 1; // 除非尾块是0.5行，不然上下拖尾还要多搬一行
+            return rows + 1; // Unless the tail block is 0.5 lines, you will need to move one more line when trailing up and down
         }
         return rows;
     } else if (copySize == width) {
@@ -225,11 +225,11 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
         if (width % copySize != 0) {
             return rows + 1;
         }
-        return rows; // 宽度是size整数倍时无拖尾，搬一行即可，否则搬两行
+        return rows; // When the width is an integer multiple of size, there is no trailing, just move it to one line, otherwise move it to two lines
     }
 }
 
-// API类中定义call函数的默认重载函数，支持任意类型任意数量的参数
+// The default overloaded function of the call function defined in the API class supports any number of parameters of any type
 #define DECLARE_DEFAULT_OVERLOADING_FUN(T, NAMESPACE)                       \
     template <class... Ts>                                                  \
     static __aicore__ inline NAMESPACE::TypeFalse call(T *self, Ts... args) \
@@ -237,13 +237,13 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
         return ((NAMESPACE::TypeFalse){0});                                   \
     }
 
-// 检查类T中是否有call(...)成员函数
+// Check whether there is a call(...) member function in class T
 #define CHECK_FUN(T, NAMESPACE, ...) (!AscendC::IsSameType<decltype(T::call(__VA_ARGS__)), NAMESPACE::TypeFalse>::value)
 
 /*
-定义一个校验性的模板类，用于判断类型T是否具有模板成员函数MEMBER<U>
-和宏DECLARE_IMPL配套使用，调用方式_has_impl_MEMBER<T, U>::value
-49行：decltype获取表达式的类型，declval是模板函数，获取模板参数T的右值引用，如果T没有MEMBER<U>，会报错，否则返回TrueType
+Define a verification template class to determine whether type T has the template member function MEMBER<U>
+Used with macro DECLARE_IMPL，Calling method_has_impl_MEMBER<T, U>::value
+Line 49: decltype gets the type of expression. declval is a template function that gets the rvalue reference of template parameter T. If T does not have MEMBER<U>, an error will be reported, otherwise TrueType will be returned
 */
 #define DECLARE_CHECK_IMPL(NAMESPACE, MEMBER, args...)                                                                     \
     namespace __##NAMESPACE {                                                                                  \
@@ -257,7 +257,7 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
     };                                                                                                          \
     }
 
-// 定义一个模板类，用于判断类型T是否具有模板成员函数MEMBER<typename U, bool sync>
+// Define a template class to determine whether type T has a template member function MEMBER<typename U, bool sync>
 #define DECLARE_CHECK_SYNC_IMPL(NAMESPACE, MEMBER, args...)                                                                      \
     namespace __##NAMESPACE {                                                                                        \
     template <typename T, typename U, bool sync>                                                                      \
@@ -270,7 +270,7 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
     };                                                                                                                \
     }
 
-// 定义成员函数MEMBER<U>, 如果Config中存在MEMBER成员，MEMBER函数指向Config成员，否者指向Current::Init
+// Define the member function MEMBER<U>. If the MEMBER member exists in Config, the MEMBER function points to the Config member, otherwise it points to Current::Init
 #define DECLARE_IMPL(NAMESPACE, Config, Current, MEMBER, U)     \
     template <bool Default, class T>                 \
     struct __##MEMBER {                              \
@@ -282,7 +282,7 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
     };                                               \
     using MEMBER = typename __##MEMBER<__##NAMESPACE::_has_impl_##MEMBER<Config, U>::value, Config>::Type
 
-// 定义成员函数MEMBER<U, sync>, 如果Config中存在MEMBER成员，MEMBER函数指向Config成员，否者指向Current::Init
+// Define the member function MEMBER<U, sync>. If the MEMBER member exists in Config, the MEMBER function points to the Config member, otherwise it points to Current::Init
 #define DECLARE_SYNC_IMPL(NAMESPACE, Config, Current, MEMBER, U)      \
     template <bool Default, class T, bool sync>            \
     struct __##MEMBER {                                    \
@@ -296,8 +296,8 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
     using MEMBER = typename __##MEMBER<__##NAMESPACE::_has_impl_##MEMBER<Config, U, sync>::value, Config, sync>::Type
 
 /*
-定义一个模板类，用于判断类型T是否具有成员MEMBER
-和宏CHECK_MEMBER配套使用，调用方式_has_member_MEMBER<T>::value
+Define a template class to determine whether type T has member MEMBER
+Used in conjunction with macro CHECK_MEMBER, calling method _has_member_MEMBER<T>::value
 */
 #define DECLARE_CHECK_MEMBER(MEMBER)                                                        \
     namespace __AuxCheck {                                                                  \
@@ -311,13 +311,13 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
     };                                                                                      \
     }
 
-// 检查类OBJ中是否有成员变量MEMBER
+// Check whether there is a member variable MEMBER in class OBJ
 #define CHECK_MEMBER(OBJ, MEMBER) (__AuxCheck::_has_member_##MEMBER<typename OBJ>::value)
 
 /*
-定义两个辅助模板类，一个成员M是变量，一个成员M是常量；
-同时定义一个校验性的模板函数，函数根据模板参数T是否有常量且值>0的成员M，返回对应的模板类
-和宏DEFINE_STUCT配套使用，
+Define two auxiliary template classes, one member M is a variable, and the other member M is a constant;
+At the same time, a verification template function is defined. The function returns the corresponding template class based on whether the template parameter T has a constant and a member M with a value > 0.
+Used with macro DEFINE_STUCT，
 */
 #define DECLARE_DEFINE_STRUCT(T, M, U)                                                                               \
     namespace __AuxTiling {                                                                                          \
@@ -340,7 +340,7 @@ static __aicore__ inline uint32_t CalRows2Copy(uint32_t copySize, uint32_t width
     typename std::conditional<_is_const_##T##_##M<TT>(), T##_CT_##M<TT>, T##_##M<TT>>::type T##_##M##_checkdefine(); \
     }
 
-// 供类继承使用，返回一个供继承的父类类型
+// For class inheritance, returns a parent class type for inheritance
 #define DEFINE_STUCT(T, M) \
 public                     \
     decltype(__AuxTiling::T##_##M##_checkdefine<T>())

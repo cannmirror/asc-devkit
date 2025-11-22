@@ -24,7 +24,7 @@ constexpr uint64_t L0C_SIZE = 131072;
 constexpr uint64_t UB_SIZE = 262144;
 constexpr uint64_t BT_SIZE = 1024;
 constexpr uint64_t FB_SIZE = 2048;
-constexpr uint32_t MAX_KW_SIZE = 32;   // transdata限制, 当前KW限制超过38
+constexpr uint32_t MAX_KW_SIZE = 32;   // transdata limit, the current KW limit exceeds 38
 constexpr int32_t BLOCK_CUBE = 16;
 constexpr int64_t BLOCK_CUBE_S64 = 16;
 
@@ -171,12 +171,12 @@ bool Conv3dBpFilterTilingBase::ShapeInitCalc()
     shapeCalc.Ci1 = CeilDivision(shapeInfo.orgCi, k0);
     shapeCalc.Co1 = CeilDivision(shapeInfo.orgCo, k0);
 
-    int64_t mag_factor0 = Lcm(shapeInfo.orgCi / attrInfo.groups, k0) / (shapeInfo.orgCi / attrInfo.groups);
-    int64_t mag_factor1 = Lcm(shapeInfo.orgCo / attrInfo.groups, BLOCK_CUBE) / (shapeInfo.orgCo / attrInfo.groups);
-    int64_t mag_factor = Min(Lcm(mag_factor0, mag_factor1), attrInfo.groups);
-    shapeCalc.real_g = (attrInfo.groups + mag_factor - 1) / mag_factor;
-    shapeCalc.cin1_g = CeilDivision(mag_factor * shapeInfo.orgCi / attrInfo.groups, k0);
-    shapeCalc.cout1_g = CeilAlign(mag_factor * shapeInfo.orgCo / attrInfo.groups, BLOCK_CUBE_S64) / k0;
+    int64_t magFactor0 = Lcm(shapeInfo.orgCi / attrInfo.groups, k0) / (shapeInfo.orgCi / attrInfo.groups);
+    int64_t magFactor1 = Lcm(shapeInfo.orgCo / attrInfo.groups, BLOCK_CUBE) / (shapeInfo.orgCo / attrInfo.groups);
+    int64_t magFactor = Min(Lcm(magFactor0, magFactor1), attrInfo.groups);
+    shapeCalc.real_g = (attrInfo.groups + magFactor - 1) / magFactor;
+    shapeCalc.cin1_g = CeilDivision(magFactor * shapeInfo.orgCi / attrInfo.groups, k0);
+    shapeCalc.cout1_g = CeilAlign(magFactor * shapeInfo.orgCo / attrInfo.groups, BLOCK_CUBE_S64) / k0;
     return true;
 }
 

@@ -120,7 +120,7 @@ static __aicore__ inline void UpdateIdxAndStep(Intf *self)
 {
     self->ctx.curML0Idx_ = self->ctx.curML1Idx_;
     self->ctx.curNL0Idx_ = self->ctx.curNL1Idx_;
-    // 当前放大后Ho绝对坐标
+    // Ho absolute coordinates after current magnification
     if constexpr (Intf::conv3dConfig.enableKernelSplit) {
         self->ctx.curHoIdx_ =
             self->ctx.curHoStartIdx_ + self->ctx.curML0Idx_ * self->ctx.tiling_->baseM / self->ctx.splitWi_ *
@@ -140,7 +140,7 @@ static __aicore__ inline void UpdateIdxAndStep(Intf *self)
 
 template <class Intf>
 struct Init {
-    // 定义call函数的默认重载函数，支持任意类型任意数量的参数
+    // Define the default overloaded function of the call function, supporting any number of parameters of any type
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self, const TConv3DBackpropInputTiling *__restrict tiling)
     {
@@ -210,18 +210,18 @@ static __aicore__ inline void JudgeIterateSkip(Intf *self)
     self->ctx.needComputeFlag_ = true;
     UpdateCurHoSize<Intf>(self);
 
-    // 使用needComputeFlag_来标记是否需要跳过curML0Idx、curNL0Idx、curDinIdx的计算
+    // Use needComputeFlag_ to mark whether you need to skip the calculation of curML0Idx, curNL0Idx, curDinIdx
     uint32_t hDstDataSkipLine = CalcHDstDataSkipLine(self);
 
     if (self->ctx.curHoSize_ <= hDstDataSkipLine && self->ctx.tiling_->initOutputFlag == 1) {
-        // 在跳过计算逻辑后，如果存在部分无需跳过的额外操作，则在compute逻辑中统一处理。当前已有的操作为isFreeB1
+        // After skipping the calculation logic, if there are some additional operations that do not need to be skipped, they will be processed uniformly in the compute logic. The current existing operation is isFreeB1
         self->ctx.needComputeFlag_ = false;
     }
 }
 
 template <class Intf, bool sync>
 struct Iterate {
-    // 一次iterate计算（baseM, baseN, baseD)，当前baseD=1
+    // An iterate calculation (baseM, baseN, baseD), current baseD=1
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline bool call(Intf *self, bool enPartialSum)
     {
@@ -240,12 +240,12 @@ struct Iterate {
         curNL0Idx_            ↑                   nIter_
         curNL1Idx_       next_curNL1Idx
 
-        order_N表示L1上驻留B循环A，顺序为L1A_ping * L1B_ping, L1A_pong * L1B_ping，L1A_ping * L1B_pong，L1A_pong *
-        L1B_pong L0上也是驻留B，循环A order_N: L0A1*L0B1, L0A2*L0B1, L0A3*L0B1, L0A1*L0B2 …………
+        order_N represents the resident B loop A on L1, the order is L1A_ping * L1B_ping, L1A_pong * L1B_ping, L1A_ping * L1B_pong, L1A_pong *
+        L1B_pong L0 also has resident B, loop A order_N: L0A1*L0B1, L0A2*L0B1, L0A3*L0B1, L0A1*L0B2…………
         L0A3*L0B3，L0A4*L0B1，L0A5*L0B1 …… L0A6*L0B6 order_M: L0A1*L0B1, L0A1*L0B2, L0A1*L0B3, L0A2*L0B1 …………
         L0A3*L0B3，L0A1*L0B4，L0A1*L0B5 …… L0A6*L0B6
         */
-        // 更新idx，用L1、L1step、L0三个指针控制走位和计算offset，表示计算第几个mL0 * baseN
+        // Update idx, use three pointers L1, L1step, L0 to control the position and calculate offset, indicating which mL0 * baseN is calculated
         if (unlikely(self->ctx.isFirstIter_)) {
             self->ctx.curML0Idx_ = 0;
             self->ctx.curNL0Idx_ = 0;
@@ -319,7 +319,7 @@ struct Iterate {
             self->ctx.baseUseN_ = self->ctx.tiling_->baseN;
         }
         if constexpr (std::is_same<typename Intf::DstT, float>::value) {
-            // baseN可能非16对齐，为8对齐，此时L0B的仍然按照512B对齐的地址偏移计算
+            // baseN may not be 16 aligned, but 8 aligned. At this time, L0B is still calculated according to the 512B aligned address offset
             self->ctx.baseUseAlignN_ = (self->ctx.baseUseN_ + AscendC::BLOCK_CUBE - 1) / AscendC::BLOCK_CUBE * AscendC::BLOCK_CUBE;
         }
         JudgeIterateSkip<Intf>(self);
