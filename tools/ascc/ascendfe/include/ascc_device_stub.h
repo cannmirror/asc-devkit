@@ -19,6 +19,7 @@
 #include <unordered_set>
 #include <memory>
 #include <fstream>
+#include <array>
 
 #include "ascc_types.h"
 #include "ascc_info_function.h"

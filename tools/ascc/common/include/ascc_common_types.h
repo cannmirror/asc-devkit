@@ -16,6 +16,7 @@
 #define __INCLUDE_ASCC_COMMON_TYPES_H__
 
 #include <string>
+#include <cstdint>
 #include <vector>
 #include <iostream>
 #include <unordered_set>
