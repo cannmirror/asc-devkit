@@ -2009,6 +2009,7 @@ def _gen_compile_cmd(src_file: str, dst_file: str, compile_option_tuple, tiling_
     compile_cmd += ["--cce-mask-opt"]
     if "oom" in get_current_build_config("tir.op_debug_config"):
         compile_cmd += [f"-D{ASCENDC_OOM}={1}"]
+    compile_cmd += ["--cce-long-call=true"]
     return compile_cmd
 
 
@@ -2629,6 +2630,7 @@ def _gen_compile_cmd_regbase(src_file: str, dst_file: str, compile_option_tuple,
     compile_cmd += [src_file, "--cce-aicore-arch=%s" % sub_arch,
                     "--cce-aicore-only", "-o", dst_file,
                     "-mllvm", "-cce-aicore-function-stack-size=16000",
+                    "--cce-long-call=true",
                     "-mllvm", "-cce-aicore-addr-transform",
                     "-mllvm", "--cce-aicore-or-combine=false",
                     "-mllvm", "-instcombine-code-sinking=false",

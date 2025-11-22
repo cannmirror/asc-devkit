@@ -93,10 +93,10 @@ __aicore__ inline void CheckFixpipeL0C2L1Param(__cbuf__ T *dst, __cc__ U *src, c
 {
     CheckCommonFixpipeParam<T, U, config>(src, params);
     ASCENDC_CHECK_TENSOR_PTR_ALIGN(dst, TPosition::C1, ONE_BLK_SIZE, "dstLocal", "Fixpipe when dst position is C1");
-    ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), "Failed to check format in Fixpipe, when src "
-        "position is CO1 and dst position is C1, format must be set as NZ \n");
-    ASCENDC_DEBUG_ASSERT((!(params.isChannelSplit)), "Failed to check isChannelSplit in Fixpipe, when src position is "
-        "CO1 and dst position is C1, isChannelSplit must be set as false \n");
+    ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), KERNEL_LOG(KERNEL_ERROR, "Failed to check format in Fixpipe, when src "
+        "position is CO1 and dst position is C1, format must be set as NZ \n"));
+    ASCENDC_DEBUG_ASSERT((!(params.isChannelSplit)), KERNEL_LOG(KERNEL_ERROR, "Failed to check isChannelSplit in Fixpipe, when src position is "
+        "CO1 and dst position is C1, isChannelSplit must be set as false \n"));
 
     ASCENDC_ASSERT((SupportType<Tuple<U, T>, Tuple<float, int8_t>, Tuple<float, uint8_t>, Tuple<float, half>,
         Tuple<float, bfloat16_t>, Tuple<int32_t, int8_t>, Tuple<int32_t, uint8_t>, Tuple<int32_t, half>>()),
@@ -123,10 +123,10 @@ __aicore__ inline void CheckFixpipeL0C2GMParam(__gm__ T *dst, __cc__ U *src, con
             "value in Fixpipe, when src is int32_t, dst is int32_t, supported value is NoQuant");});
     }
     if (params.isChannelSplit) {
-        ASCENDC_DEBUG_ASSERT((IsSameType<U, float>::value && IsSameType<T, float>::value), "Failed to check "
-            "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n");
-        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), "Failed to check format value in Fixpipe, "
-            "when isChannelSplit is set true, format must be set as NZ \n");
+        ASCENDC_DEBUG_ASSERT((IsSameType<U, float>::value && IsSameType<T, float>::value), KERNEL_LOG(KERNEL_ERROR, "Failed to check "
+            "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n"));
+        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), KERNEL_LOG(KERNEL_ERROR, "Failed to check format value in Fixpipe, "
+            "when isChannelSplit is set true, format must be set as NZ \n"));
     }
 }
 
@@ -181,31 +181,31 @@ __aicore__ inline void CopyDeqTensorToFbuf(
 template <typename T, const FixpipeConfig &config>
 __aicore__ inline void FixpipeL0C2L1Impl(__cbuf__ T *dst, __cc__ T *src, const FixpipeParamsV220 &intriParams)
 {
-    ASCENDC_DEBUG_ASSERT(false, "Failed to check dtype in Fixpipe, when src position is CO1 and dst position is C1, "
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Fixpipe, when src position is CO1 and dst position is C1, "
         "support dtype combinations are src: float, dst: int8_t / uint8_t / half / bfloat16_t; src: int32_t, dst: "
-        "int8_t / uint8_t / half\n");
+        "int8_t / uint8_t / half\n"));
 }
 
 template <typename T, const FixpipeConfig &config>
 __aicore__ inline void FixpipeL0C2L1Impl(
     __cbuf__ T *dst, __cc__ T *src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
 {
-    ASCENDC_DEBUG_ASSERT(false, "Failed to check dtype in Fixpipe, when src position is CO1 and dst position is C1, "
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Fixpipe, when src position is CO1 and dst position is C1, "
         "support dtype combinations are src: float, dst: int8_t / uint8_t / half / bfloat16_t; src: int32_t, dst: "
-        "int8_t / uint8_t / half\n");
+        "int8_t / uint8_t / half\n"));
 }
 
 template <typename T, typename U, const FixpipeConfig& config>
 __aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ T *dst, __cc__ U *src, const FixpipeParamsV220 &intriParams)
 {
-    ASCENDC_DEBUG_ASSERT(false, "Fixpipe doesn't support L0C to UB on current device\n");
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"));
 }
 
 template <typename T, typename U, const FixpipeConfig &config>
 __aicore__ inline void FixpipeL0C2UBImpl(
     __ubuf__ T *dst, __cc__ U *src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
 {
-    ASCENDC_DEBUG_ASSERT(false, "Fixpipe doesn't support L0C to UB on current device\n");
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"));
 }
 
 template <typename T, typename U, const FixpipeConfig& config>
@@ -382,7 +382,7 @@ __aicore__ inline void FixpipeL0cToL1(__cbuf__ T *dst, __cc__ U *src, const Fixp
                     calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride, intriParams.unitFlag,
                     QuantMode_t::VREQ8, static_cast<uint8_t>(intriParams.reluEn), false, false);
             default:
-                ASCENDC_DEBUG_ASSERT(false, "Fixpipe doesn't support this quantize mode \n");
+                ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support this quantize mode \n"));
         }
     }
 }
@@ -462,7 +462,7 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ T *dst, __cc__ U *src, const Fixpi
                     calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride, intriParams.unitFlag,
                     QuantMode_t::VREQ8, static_cast<uint8_t>(intriParams.reluEn), intriParams.isChannelSplit, nz2ndEn);
             default:
-                ASCENDC_DEBUG_ASSERT(false, "Fixpipe doesn't support this quantize mode \n");
+                ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support this quantize mode \n"));
         }
     }
 }

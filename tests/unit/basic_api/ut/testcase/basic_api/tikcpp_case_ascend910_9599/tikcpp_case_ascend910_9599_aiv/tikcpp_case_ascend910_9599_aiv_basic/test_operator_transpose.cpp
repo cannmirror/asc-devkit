@@ -151,9 +151,9 @@ INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_TRANSPOSE, Transpose4dTestsuite,
     // test tensor size overflow
     Transpose4dTestParams { 2, Transpose4D<uint16_t>, 50, 50, 16, 16, TransposeType::TRANSPOSE_ND2ND_B16, 256, true},
     Transpose4dTestParams { 2, Transpose4D<uint16_t>, 50, 50, 16, 16, TransposeType::TRANSPOSE_ND2ND_B16, 128, false, 1},  // 预期要512B
-    Transpose4dTestParams { 4, Transpose4D<float>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 32, false, 54}, // 不满足N*c*h*w 预期要48个元素
+    Transpose4dTestParams { 4, Transpose4D<float>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 32, false, 1}, // 不满足N*c*h*w 预期要48个元素
     Transpose4dTestParams { 4, Transpose4D<float>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 48, true },
-    Transpose4dTestParams { 1, Transpose4D<int8_t>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 960, false, 5}, // 预期要1024个元素
+    Transpose4dTestParams { 1, Transpose4D<int8_t>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 960, false, 1}, // 预期要1024个元素
     Transpose4dTestParams { 1, Transpose4D<uint8_t>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 1024, true},
     //===----------------------[ TensorTrait Case ]-----------------------===//
     Transpose4dTestParams { 2, Transpose4D<TensorTrait<half>>, 3, 1, 2, 8, TransposeType::TRANSPOSE_NCHW2NHWC},
@@ -182,9 +182,9 @@ INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_TRANSPOSE, Transpose4dTestsuite,
     Transpose4dTestParams { 4, Transpose4D<TensorTrait<float>>, 3, 17, 5, 8, TransposeType::TRANSPOSE_NHWC2NCHW },
     Transpose4dTestParams { 2, Transpose4D<TensorTrait<uint16_t>>, 50, 50, 16, 16, TransposeType::TRANSPOSE_ND2ND_B16, 256, true},
     Transpose4dTestParams { 2, Transpose4D<TensorTrait<uint16_t>>, 50, 50, 16, 16, TransposeType::TRANSPOSE_ND2ND_B16, 128, false, 1},  // 预期要512B
-    Transpose4dTestParams { 4, Transpose4D<TensorTrait<float>>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 32, false, 54}, // 不满足N*c*h*w 预期要48个元素
+    Transpose4dTestParams { 4, Transpose4D<TensorTrait<float>>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 32, false, 1}, // 不满足N*c*h*w 预期要48个元素
     Transpose4dTestParams { 4, Transpose4D<TensorTrait<float>>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 48, true },
-    Transpose4dTestParams { 1, Transpose4D<TensorTrait<int8_t>>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 960, false, 5}, // 预期要1024个元素
+    Transpose4dTestParams { 1, Transpose4D<TensorTrait<int8_t>>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 960, false, 1}, // 预期要1024个元素
     Transpose4dTestParams { 1, Transpose4D<TensorTrait<uint8_t>>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 1024, true}
 ));
 
