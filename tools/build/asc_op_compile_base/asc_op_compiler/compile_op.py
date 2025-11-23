@@ -1558,18 +1558,37 @@ def delete_tiling_section(compile_info: CompileInfo):
 
 
 def _update_compile_option(kernel_name: str, compile_options: list, extend_options: dict):
-    bisheng = os.environ.get('BISHENG_REAL_PATH')
-    if bisheng is None:
-        bisheng = shutil.which("bisheng")
-    if bisheng is not None:
-        bisheng_path = os.path.dirname(bisheng)
-        tikcpp_path = os.path.realpath(
-            os.path.join(bisheng_path, "..", "..", "tikcpp"))
+    ascend_home_path = os.environ.get('ASCEND_HOME_PATH')
+    import platform
+    archlinux = platform.machine()
+    if archlinux == 'x86_64':
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))
+    elif archlinux in ('aarch64', 'arm64'):
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
     else:
-        tikcpp_path = os.path.realpath(
-            "/usr/local/Ascend/latest/compiler/tikcpp")
-    cann_version_file_path = os.path.join(tikcpp_path, "..", "..",
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
+    cann_version_file_path = os.path.join(asc_path, "..", "..",
                                           "include", "version", "cann_version.h")
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "utils"))
+    compile_options.append("-I" + os.path.join(asc_path, "include"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "c_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "utils"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "impl"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "interface"))
     if os.path.exists(cann_version_file_path):
         compile_options.append("-include" + cann_version_file_path)
     else:

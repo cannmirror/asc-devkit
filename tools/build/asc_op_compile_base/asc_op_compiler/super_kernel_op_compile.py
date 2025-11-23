@@ -190,19 +190,39 @@ def gen_spk_kernel_call(super_split_info: SuperSplitInfo, split_mode, kernel_typ
             _sk_arch = f'dav-{chip_version}-cube'
 
         cmds = ["ccec", "-x", "cce"]
-        bisheng = os.environ.get('BISHENG_REAL_PATH')
-        if bisheng is None:
-            bisheng = shutil.which("bisheng")
-        if bisheng is not None:
-            bisheng_path = os.path.dirname(bisheng)
-            tikcpp_path = os.path.realpath(os.path.join(bisheng_path, "..", "..", "tikcpp"))
+        ascend_home_path = os.environ.get('ASCEND_HOME_PATH')
+        import platform
+        archlinux = platform.machine()
+        if archlinux == 'x86_64':
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))
+        elif archlinux in ('aarch64', 'arm64'):
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
         else:
-            tikcpp_path = os.path.realpath("/usr/local/Ascend/latest/compiler/tikcpp")
-        cmds.append("-I" + tikcpp_path)
-        cmds.append("-I" + os.path.join(tikcpp_path, "..", "..", "include"))
-        cmds.append("-I" + os.path.join(tikcpp_path, "tikcfw"))
-        cmds.append("-I" + os.path.join(tikcpp_path, "tikcfw", "impl"))
-        cmds.append("-I" + os.path.join(tikcpp_path, "tikcfw", "interface"))
+            asc_path = os.path.realpath(
+                os.path.join(ascend_home_path, "x86_64-linux", "tikcpp", "tikcfw", "interface", "..", "..")
+                )
+           
+        cmds.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "utils"))
+        cmds.append("-I" + os.path.join(asc_path, "include"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "adv_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "basic_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "c_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "simt_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "utils"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
+        cmds.append("-I" + os.path.join(asc_path, "impl"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "..", "include"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "impl"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "interface"))
 
         if CommonUtility.is_c310():
             cmds += ["-D__DAV_C310__"]

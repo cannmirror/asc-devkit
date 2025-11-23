@@ -179,20 +179,37 @@ def {}({}, kernel_name="{}"{}):
     __inputs__, __outputs__, __attrs__ = _build_args({})
     options = get_dtype_fmt_options(__inputs__, __outputs__)
     options += ["-x", "cce"]
-    bisheng = os.environ.get('BISHENG_REAL_PATH')
-    if bisheng is None:
-        bisheng = shutil.which("bisheng")
-    if bisheng != None:
-        bisheng_path = os.path.dirname(bisheng)
-        tikcpp_path = os.path.realpath(os.path.join(bisheng_path, "..", "..", "tikcpp"))
+
+    ascend_home_path = os.environ.get('ASCEND_HOME_PATH')
+    import platform
+    archlinux = platform.machine()
+    if archlinux == 'x86_64':
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))
+    elif archlinux in ('aarch64', 'arm64'):
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
     else:
-        tikcpp_path = os.path.realpath("/usr/local/Ascend/latest/compiler/tikcpp")
-    options.append("-I" + tikcpp_path)
-    options.append("-I" + os.path.join(tikcpp_path, "..", "..", "include"))
-    options.append("-I" + os.path.join(tikcpp_path, "tikcfw"))
-    options.append("-I" + os.path.join(tikcpp_path, "tikcfw", "impl"))
-    options.append("-I" + os.path.join(tikcpp_path, "tikcfw", "interface"))
-    options.append("-I" + os.path.join(tikcpp_path, "..", "ascendc", "act"))
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "tikcpp", "tikcfw", "interface", "..", ".."))
+
+    options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
+    options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+    options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+    options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+    options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
+    options.append("-I" + os.path.join(asc_path, "impl", "utils"))
+    options.append("-I" + os.path.join(asc_path, "include"))
+    options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
+    options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
+    options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+    options.append("-I" + os.path.join(asc_path, "include", "c_api"))
+    options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+    options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
+    options.append("-I" + os.path.join(asc_path, "include", "utils"))
+    options.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
+    options.append("-I" + os.path.join(asc_path, "..", "..", "include"))
+    options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw"))
+    options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "impl"))
+    options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "interface"))
+    options.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
     options.append("-I" + os.path.join(PYF_PATH, "..", "ascendc", "common"))
     if "impl_mode" in locals():
         if impl_mode == "high_performance":
@@ -205,7 +222,7 @@ def {}({}, kernel_name="{}"{}):
         options.append("-DDETERMINISTIC_MODE=1")
     else:
         options.append("-DDETERMINISTIC_MODE=0")
-    ascendc_api_version_header_path = os.path.join(tikcpp_path, "tikcfw/lib/ascendc_api_version.h")
+    ascendc_api_version_header_path = os.path.join(asc_path, "include/adv_api/ascendc_api_version.h")
     if os.path.exists(ascendc_api_version_header_path):
         with open(ascendc_api_version_header_path, "r") as ascendc_api_version_file:
             ascendc_api_version = re.findall(r"#define ASCENDC_API_VERSION (\d+)", ascendc_api_version_file.read())
