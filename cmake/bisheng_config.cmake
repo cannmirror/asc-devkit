@@ -7,7 +7,12 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-if(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/tools/ccec_compiler)
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_LOWER_PROCESSOR)
+if(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux/ccec_compiler AND SYSTEM_LOWER_PROCESSOR STREQUAL "x86_64")
+    set(ASCENDC_DEVKIT_PATH ${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux)
+elseif(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/aarch64-linux/ccec_compiler AND SYSTEM_LOWER_PROCESSOR STREQUAL "aarch64")
+    set(ASCENDC_DEVKIT_PATH ${ASCEND_CANN_PACKAGE_PATH}/aarch64-linux)
+elseif(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/tools/ccec_compiler)
     set(ASCENDC_DEVKIT_PATH ${ASCEND_CANN_PACKAGE_PATH}/tools)
 elseif(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler)
     set(ASCENDC_DEVKIT_PATH ${ASCEND_CANN_PACKAGE_PATH}/compiler)

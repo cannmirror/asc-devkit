@@ -338,11 +338,20 @@ function(ascendc_library target_name target_type)
         $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,STATIC_LIBRARY>:$<TARGET_OBJECTS:${ASCENDC_RUNTIME_OBJ_TARGET}>>
     )
 
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_LOWER_PROCESSOR)
+    if(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux/tikcpp/tikcfw AND SYSTEM_LOWER_PROCESSOR STREQUAL "x86_64")
+        set(ASCEND_TIKCFW_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux/tikcpp/tikcfw/")
+    elseif(EXISTS ${ASCEND_CANN_PACKAGE_PATH}/aarch64-linux/tikcpp/tikcfw AND SYSTEM_LOWER_PROCESSOR STREQUAL "aarch64")
+        set(ASCEND_TIKCFW_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/aarch64-linux/tikcpp/tikcfw/")
+    else()
+        set(ASCEND_TIKCFW_INCLUDE_DIR "${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/")
+    endif()
+
     target_include_directories(${target_name}
         INTERFACE
             ${${device_target}_include_dir}
             ${ASCEND_CANN_PACKAGE_PATH}/include
-            ${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/
+            ${ASCEND_TIKCFW_INCLUDE_DIR}
     )
 
     target_link_directories(${target_name} PUBLIC
