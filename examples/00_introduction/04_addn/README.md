@@ -8,7 +8,7 @@
 ```
 ├── 04_addn        
 │   ├── CMakeLists.txt          // 编译工程文件
-│   └── addn_custom.asc    // AscendC算子实现 & 调用样例
+│   └── addn.asc    // AscendC算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -71,35 +71,35 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
-  - 配置环境变量   
-    以命令行方式下载样例代码，master分支为例。
+- 配置环境变量   
+  以命令行方式下载样例代码，master分支为例。
+  ```bash
+  cd ${git_clone_path}/examples/00_introduction/04_addn/
+  ```
+  请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  - 默认路径，root用户安装CANN软件包
     ```bash
-    cd ${git_clone_path}/examples/00_introduction/04_addn/
+    export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
     ```
-    请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
-    - 默认路径，root用户安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
-      ```
-    - 默认路径，非root用户安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
-      ```
-    - 指定路径install_path，安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
-      ```
+  - 默认路径，非root用户安装CANN软件包
+    ```bash
+    export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
+    ```
+  - 指定路径install_path，安装CANN软件包
+    ```bash
+    export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
+    ```
 
-  - 样例执行
-    ```bash
-    mkdir -p build && cd build;   # 创建并进入build目录
-    cmake ..;make -j;             # 编译工程
-    ./demo                       # 执行编译生成的可执行程序，执行样例
-    ```
-    执行结果如下，说明精度对比成功。
-    ```bash
-    [Success] Case accurary is verification passed.
-    ```
+- 样例执行
+  ```bash
+  mkdir -p build && cd build;   # 创建并进入build目录
+  cmake ..;make -j;             # 编译工程
+  ./demo                       # 执行编译生成的可执行程序，执行样例
+  ```
+  执行结果如下，说明精度对比成功。
+  ```bash
+  [Success] Case accurary is verification passed.
+  ```
 
 ## 更新说明
 | 时间       | 更新事项     |

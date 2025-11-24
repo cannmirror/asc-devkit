@@ -15,15 +15,15 @@ find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(mmad_custom_cube
-    mmad_custom_cube.asc
+add_executable(cube
+    cube.asc
 )
 
-add_executable(mmad_custom_vector
-    mmad_custom_vector.asc
+add_executable(vector
+    vector.asc
 )
 
-target_link_libraries(mmad_custom_cube PRIVATE
+target_link_libraries(cube PRIVATE
     tiling_api
     register
     platform
@@ -31,7 +31,7 @@ target_link_libraries(mmad_custom_cube PRIVATE
     dl
 )
 
-target_link_libraries(mmad_custom_vector PRIVATE
+target_link_libraries(vector PRIVATE
     tiling_api
     register
     platform
@@ -39,10 +39,10 @@ target_link_libraries(mmad_custom_vector PRIVATE
     dl
 )
 
-target_compile_options(mmad_custom_cube PRIVATE
+target_compile_options(cube PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
 
-target_compile_options(mmad_custom_vector PRIVATE
+target_compile_options(vector PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )

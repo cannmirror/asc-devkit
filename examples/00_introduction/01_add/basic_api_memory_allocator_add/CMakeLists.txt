@@ -15,22 +15,10 @@ find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(add_basic_api_tque
-    basic_api_tque_add.asc
-)
-add_executable(add_simt
+add_executable(add
     add.asc
 )
-add_executable(add_basic_api_memory_allocator
-    basic_api_memory_allocator_add.asc
-)
 
-target_compile_options(add_basic_api_tque PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-)
-target_compile_options(add_simt PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-)
-target_compile_options(add_basic_api_memory_allocator PRIVATE
+target_compile_options(add PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
