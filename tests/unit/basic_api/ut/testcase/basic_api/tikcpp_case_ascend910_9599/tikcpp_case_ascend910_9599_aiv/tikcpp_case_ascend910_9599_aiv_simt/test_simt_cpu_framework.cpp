@@ -8,6 +8,7 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 #include <gtest/gtest.h>
+#include <metux>
 #include "kernel_operator.h"
 #include "mockcpp/mockcpp.hpp"
 
@@ -103,6 +104,8 @@ protected:
 
 __simt_vf__ __aicore__ inline void SimtComputeWarp(uint32_t& warpSum, uint32_t& threadSum, uint32_t& laneSum)
 {
+    static std::mutex lock;
+    std::lock_guard<std::mutex> guard(lock);
     warpSum += AscendC::Simt::GetWarpId();
     threadSum += AscendC::Simt::GetThreadIdx();
     laneSum += AscendC::Simt::GetLaneId();
