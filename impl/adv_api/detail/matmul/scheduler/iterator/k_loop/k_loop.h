@@ -20,8 +20,5 @@
 #include "k_loop_norm.h"
 #include "k_loop_intrablock.h"
 #include "k_loop_mdl_partial_output.h"
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
-#include "k_loop_mdl_mx.h"
-#endif
 
 #endif // _K_LOOP_H_
