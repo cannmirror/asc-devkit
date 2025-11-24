@@ -9,6 +9,8 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
+set -e
+
 test_one_targets=(
   tikcpp_utest_ascend910
   tikcpp_utest_ascend610
