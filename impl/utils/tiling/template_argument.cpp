@@ -42,7 +42,7 @@ constexpr uint8_t MAX_BITS_NUM = 64;
 constexpr size_t VAL_PAIR = 2;
 constexpr uint64_t INVALID_TILING_KEY = 0XFFFFFFFFFFFFFFFF;
 const std::map<uint32_t, const char *> TPL_TYPE_2_STR = {
-    {0, "DTYPE"}, {1, "FORMAT"}, {2, "UINT"}, {3, "BOOL"}, {4, "KERNEL_TYPE"}, {5, "DETERMINISTIC"}};
+    {0, "DTYPE"}, {1, "FORMAT"}, {2, "UINT"}, {3, "BOOL"}, {4, "KERNEL_TYPE"}, {5, "DETERMINISTIC"}, {6, "SHARED_KERNEL_TYPE"}};
 static bool CheckParamStructValid(ParamStruct &paramStruct)
 {
     auto it = TPL_TYPE_2_STR.find(paramStruct.paramType);
@@ -226,7 +226,7 @@ static bool CheckParamValid(const std::vector<uint64_t> &tilingParams, TilingSel
 static uint64_t EncodeParam(uint64_t val, const ParamStruct &paramStruct)
 {
     if (paramStruct.paramType == ASCENDC_TPL_DTYPE || paramStruct.paramType == ASCENDC_TPL_FORMAT ||
-        paramStruct.paramType == ASCENDC_TPL_BOOL) {
+        paramStruct.paramType == ASCENDC_TPL_BOOL || paramStruct.paramType == ASCENDC_TPL_SHARED_KERNEL_TYPE) {
         return static_cast<uint64_t>(val);
     } else if (paramStruct.paramType == ASCENDC_TPL_UINT) {
         auto iter = std::find(paramStruct.vals.cbegin(), paramStruct.vals.cend(), val);

@@ -13,6 +13,7 @@
 ascendc common utility
 """
 import os
+import re
 import stat
 import subprocess
 import copy
@@ -42,6 +43,7 @@ class CompileInfo:
         self.code_channel: int = CORE_TYPE_MIX
         self.gen_kernel_func_file: str = ""
         self.tiling_key_list: list = None
+        self.tiling_key_group_map: dict = {}
         self.is_debug: bool = False
         self.compile_log_path = None
         self.hard_sync: bool = False
@@ -889,4 +891,24 @@ def convert_customized_config_to_inferchannel(config: CustomizedConfig):
                                            enable_deterministic, tiling_key_kernel_type, no_set_kernel_type,\
                                            default_kernel_type, dump_info, template_tiling_info,
                                            default_tiling_struct, tiling_struct_expr_map, tiling_key_struct_map,\
-                                           set_task_bar, wait_task_bar, tiling_key_deterministic)
+                                           set_task_bar, wait_task_bar, tiling_key_deterministic, None)
+
+
+def get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info: CompileInfo, tiling_key: int):
+    full_kernel_name = compile_info.kernel_name
+    if (re.search(r'mix_aic', full_kernel_name) or re.search(r'mix_aiv', full_kernel_name)) and \
+        len(full_kernel_name) > 8:
+        full_kernel_name = full_kernel_name[:-8] + f"_{tiling_key}" + full_kernel_name[-8:]
+        return full_kernel_name
+    full_kernel_name += f"_{tiling_key}"
+    if compile_info.tiling_key_kernel_type is not None:
+        if tiling_key in compile_info.tiling_key_kernel_type.keys():
+            kernel_type = compile_info.tiling_key_kernel_type[tiling_key]
+    suffix_marker = ""
+    if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2, \
+        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+        suffix_marker = "_mix_aic"
+    elif kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0]:
+        suffix_marker = "_mix_aiv"
+    full_kernel_name += suffix_marker
+    return full_kernel_name
