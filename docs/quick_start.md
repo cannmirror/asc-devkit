@@ -57,17 +57,17 @@
 - 默认路径，root用户安装
 
     ```bash
-    source /usr/local/Ascend/8.5.0.alpha001/set_env.sh
+    source /usr/local/Ascend/latest/bin/setenv.bash
     ```
 
 - 默认路径，非root用户安装
     ```bash
-    source $HOME/Ascend/8.5.0.alpha001/set_env.sh
+    source $HOME/Ascend/latest/bin/setenv.bash
     ```
 
 - 指定路径安装
     ```bash
-    source ${install_path}/8.5.0.alpha001/set_env.sh
+    source ${install_path}/latest/bin/setenv.bash
     ```
 
 3. **下载源码**

@@ -340,10 +340,10 @@ set_options() {
 
 set_env() {
   if [ "${USER_ID}" != "0" ]; then
-    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/latest"
     DEFAULT_INSTALL_DIR="${HOME}/Ascend/latest"
   else
-    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/ascend-toolkit/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/latest"
     DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
   fi
 
