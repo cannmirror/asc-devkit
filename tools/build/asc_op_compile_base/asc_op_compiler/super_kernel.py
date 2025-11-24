@@ -361,32 +361,28 @@ def gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub
                 sync_and_event_code += indent_code_func(pre_sub_operator.notify_block[arch])
         # current op wait for outside
         if pre_sub_operator is not None:
-            if len(sub_operator.recv_event_list) != 0:
-                sync_and_event_code += indent_code_func(sub_operator.wait_block)
-        
-        # add sync after notify/wait event
-        sync_and_event_code += f'// two stream when has wait event, add sync by current operator kernel type\n'
-        if sub_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, \
-                KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
-            # add sync with sub_operator and sub_operator
-            sync_and_event_code += \
-                indent_code_func(f"AscendC::SyncAll<false>(); // reason3: for continues notify/wait event \n\n")
-        elif sub_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_AIC_ONLY, \
-                KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
-            sync_and_event_code += '// reason3: for continues notify/wait event\n'
-            sync_and_event_code += 'ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n'
-            sync_and_event_code += 'wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n'
-        else:
-            sync_and_event_code += '// reason3: for continues notify/wait event\n'
-            sync_and_event_code += \
-                'ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));\n'
-            sync_and_event_code += 'wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);\n\n'
-    else:
-        # current op wait for outside 
-        if pre_sub_operator is not None:
-            if len(sub_operator.recv_event_list) != 0:
+            if len(sub_operator.wait_block) != 0:
                 sync_and_event_code += indent_code_func(sub_operator.wait_block)
 
+            # add sync after notify/wait event
+            sync_and_event_code += f'// two stream when has wait event, add sync by current operator kernel type\n'
+            if sub_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, \
+                    KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
+                # add sync with sub_operator and sub_operator
+                sync_and_event_code += \
+                    indent_code_func(f"AscendC::SyncAll<false>(); // reason3: for continues notify/wait event \n\n")
+            elif sub_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_AIC_ONLY, \
+                    KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+                sync_and_event_code += '// reason3: for continues notify/wait event\n'
+                sync_and_event_code += \
+                    'ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n'
+                sync_and_event_code += 'wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n'
+            else:
+                sync_and_event_code += '// reason3: for continues notify/wait event\n'
+                sync_and_event_code += \
+                    'ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));\n'
+                sync_and_event_code += 'wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);\n\n'
+    else:
         # pre op send inter-core sync, cur op recv inter-core sync
         sync_and_event_code += \
             indent_code_func(gen_2_real_stream_sync_code(super_operator, pre_sub_operator, sub_operator, arch))
@@ -820,12 +816,12 @@ def gen_sync_and_event_code(super_operator, pre_sub_operator, sub_operator):
                                                                     pre_sub_operator,
                                                                     sub_operator))
         sync_and_event_code += indent_code_func(pre_sub_operator.notify_block)
-        sync_and_event_code += indent_code_func(sub_operator.wait_block)
-        # add sync with sub_operator and sub_operator
-        sync_and_event_code += "// reason3: for continues notify/wait event\n"
-        sync_and_event_code += \
-                indent_code_func(get_sync_code_by_kernel_type(super_operator.kernel_type))
-    
+        if len(sub_operator.wait_block) != 0:
+            sync_and_event_code += indent_code_func(sub_operator.wait_block)
+            # add sync with sub_operator and sub_operator
+            sync_and_event_code += "// reason3: for continues notify/wait event\n"
+            sync_and_event_code += \
+                    indent_code_func(get_sync_code_by_kernel_type(super_operator.kernel_type))
     else:
         if len(sub_operator.recv_event_list) != 0:
             sync_and_event_code += indent_code_func(sub_operator.wait_block)
