@@ -329,6 +329,26 @@ def _gen_static_json_for_mix_v200(compile_info: CompileInfo, tiling_info: Tiling
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("write json file failed, reason is:", err))
 
 
+def _dynamic_kernel_list_to_json_for_kernel_type_one(compile_info: CompileInfo, \
+    kernel_name: str, tiling_key: str, enable_deterministic: bool, final_kernel_type: int):
+    tiling_key_dict = {}
+    if final_kernel_type != 0x1 and final_kernel_type != 0x2:
+        tiling_key_dict = _get_kernel_type_dict(compile_info, tiling_key)
+    if tiling_key in compile_info.tiling_key_deterministic:
+        tiling_key_dict["deterministic"] = compile_info.tiling_key_deterministic[tiling_key]
+        tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
+    elif enable_deterministic:
+        if get_current_build_config("enable_deterministic_mode") == 1:
+            tiling_key_dict["deterministic"] = "true"
+            tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
+        else:
+            tiling_key_dict["deterministic"] = "false"
+            tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
+    else:
+        tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
+    return tiling_key_dict
+
+
 def _dynamic_kernel_list_to_json_for_kernel_type(compile_info: CompileInfo, \
     kernel_name: str, tiling_key_list: list, enable_deterministic: bool, final_kernel_type: int):
     kernel_meta_path = CommonUtility.get_kernel_meta_dir()
@@ -343,25 +363,16 @@ def _dynamic_kernel_list_to_json_for_kernel_type(compile_info: CompileInfo, \
     if final_kernel_type != 0x1 and final_kernel_type != 0x2:
         js['taskRation'] = "tilingKey"
     for tiling_key in tiling_key_list:
-        tiling_key_dict = {}
-        if final_kernel_type != 0x1 and final_kernel_type != 0x2:
-            tiling_key_dict = _get_kernel_type_dict(compile_info, tiling_key)
-        if tiling_key in compile_info.tiling_key_deterministic:
-            tiling_key_dict["deterministic"] = compile_info.tiling_key_deterministic[tiling_key]
-            tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
-            js['kernelList'].append(tiling_key_dict)
-        elif enable_deterministic:
-            if get_current_build_config("enable_deterministic_mode") == 1:
-                tiling_key_dict["deterministic"] = "true"
-                tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
-                js['kernelList'].append(tiling_key_dict)
-            else:
-                tiling_key_dict["deterministic"] = "false"
-                tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
-                js['kernelList'].append(tiling_key_dict)
-        else:
-            tiling_key_dict["kernelName"] = kernel_name + '_' + tiling_key
-            js['kernelList'].append(tiling_key_dict)
+        tiling_key_dict = _dynamic_kernel_list_to_json_for_kernel_type_one(compile_info, \
+            kernel_name, tiling_key, enable_deterministic, final_kernel_type)
+        js['kernelList'].append(tiling_key_dict)
+        if compile_info.tiling_key_group_map is not None:
+            if tiling_key in compile_info.tiling_key_group_map.keys():
+                for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                    tiling_key_dict_slave = _dynamic_kernel_list_to_json_for_kernel_type_one(compile_info, \
+                        kernel_name, tiling_key_slave, enable_deterministic, final_kernel_type)
+                    js['kernelList'].append(tiling_key_dict_slave)
+        
     try:
         with open(dynamic_kernel_json_path, 'w') as fd_write:
             os.chmod(dynamic_kernel_json_path, stat.S_IRUSR + stat.S_IWUSR)
