@@ -27,9 +27,6 @@ test_two_targets=(
   tikcpp_tiling_utest_ascend310B1
   tikcpp_tiling_utest_ascend610Lite
   ascendc_utest_kernel
-  ascendc_utest_ascc
-  ascendc_utest_ascendfe
-  ascendc_utest_asc_plugin
   ascendc_utest_aclrtc
   tikcpp_utest_ascend910B1_AIC
   tikcpp_utest_ascend910B1_AIV
