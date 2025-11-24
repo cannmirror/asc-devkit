@@ -89,14 +89,14 @@
    bash build.sh --pkg
    ```
 
-   编译完成后会在`output`目录下生成cann-asc-devkit_*<cann_version>*_linux-*<arch>*.run软件包。
+   编译完成后会在`build_out`目录下生成cann-asc-devkit_*<cann_version>*_linux-*\<arch\>*.run软件包。
 2. 安装
 
    在开源仓根目录下执行下列命令，根据设置的环境变量路径，将编译生成的run包安装到CANN包的装包路径，同时会覆盖原CANN包中的Ascend C内容。
 
    ```bash
    # 切换到run包生成路径下
-   cd build_output
+   cd build_out
    # 默认路径安装run包
    ./cann-asc-devkit_<cann_version>_linux-<arch>.run --full
    # 指定路径安装run包
