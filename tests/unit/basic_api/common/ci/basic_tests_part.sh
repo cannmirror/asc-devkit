@@ -51,10 +51,10 @@ test_three_targets=(
   tikcpp_utest_ascend910_9599_AIV_MICRO
   tikcpp_utest_ascend910_9599_AIV_BASIC
   tikcpp_utest_ascend910_9599_AIV_FRAMEWORK
-#  tikcpp_utest_ascend910_9599_AIV_SIMT
+  tikcpp_utest_ascend910_9599_AIV_SIMT
   tikcpp_utest_mc62cm12aa_FRAMEWORK
   tikcpp_utest_mc62cm12aa_AIC
   tikcpp_utest_mc62cm12aa_BASIC
-#  tikcpp_utest_mc62cm12aa_SIMT
+  tikcpp_utest_mc62cm12aa_SIMT
   tikcpp_utest_mc62cm12aa_MICRO
 )

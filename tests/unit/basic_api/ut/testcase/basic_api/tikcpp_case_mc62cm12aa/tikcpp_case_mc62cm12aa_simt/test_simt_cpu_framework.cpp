@@ -8,7 +8,7 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 #include <gtest/gtest.h>
-#include <metux>
+#include <mutex>
 #include "kernel_operator.h"
 #include "mockcpp/mockcpp.hpp"
 
@@ -24,7 +24,7 @@ enum class TestMode {
 template <typename T>
 __simt_vf__ LAUNCH_BOUND(1024) __aicore__ inline void SimtCompute(const LocalTensor<T> &ub, GlobalTensor<T> &srcGm, GlobalTensor<T> &dstGm, uint32_t srcSize_, uint32_t groupSize_)
     {
-        for (int idx = AscendC::Simt::GetThreadIdx<0>(); idx < srcSize_; idx += AscendC::Simt::GetThreadNum<0>()) {
+        for (uint32_t idx = AscendC::Simt::GetThreadIdx<0>(); idx < srcSize_; idx += AscendC::Simt::GetThreadNum<0>()) {
             ub(idx) = srcGm(idx);
             dstGm(idx % groupSize_) += ub(idx);
             AscendC::Simt::ThreadBarrier();
@@ -34,7 +34,7 @@ __simt_vf__ LAUNCH_BOUND(1024) __aicore__ inline void SimtCompute(const LocalTen
 template <typename T>
 __simt_vf__ LAUNCH_BOUND(1024) __aicore__ inline void SimtComputeReduce(const LocalTensor<T> &ub, GlobalTensor<T> &srcGm, GlobalTensor<T> &dstGm, uint32_t srcSize_, uint32_t groupSize_)
 {
-    for (int idx = AscendC::Simt::GetThreadIdx<0>(); idx < srcSize_; idx += AscendC::Simt::GetThreadNum<0>()) {
+    for (uint32_t idx = AscendC::Simt::GetThreadIdx<0>(); idx < srcSize_; idx += AscendC::Simt::GetThreadNum<0>()) {
         T sum = AscendC::Simt::WarpReduceAddSync(srcGm(idx));
         dstGm(idx % groupSize_) = sum;
     }
@@ -43,7 +43,7 @@ __simt_vf__ LAUNCH_BOUND(1024) __aicore__ inline void SimtComputeReduce(const Lo
 template <typename T>
 __simt_vf__ LAUNCH_BOUND(1024) __aicore__ inline void SimtComputeAtomic(const LocalTensor<T> &ub, GlobalTensor<T> &srcGm, GlobalTensor<T> &dstGm, uint32_t srcSize_, uint32_t groupSize_)
 {
-    for (int idx = AscendC::Simt::GetThreadIdx<0>(); idx < srcSize_; idx += AscendC::Simt::GetThreadNum<0>()) {
+    for (uint32_t idx = AscendC::Simt::GetThreadIdx<0>(); idx < srcSize_; idx += AscendC::Simt::GetThreadNum<0>()) {
         AscendC::Simt::AtomicMax(dstGm.GetPhyAddr(idx % groupSize_), srcGm(idx));
     }
 }
