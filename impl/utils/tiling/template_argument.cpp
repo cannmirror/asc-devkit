@@ -65,7 +65,7 @@ static bool CheckParamStructValid(ParamStruct &paramStruct)
     }
     auto maxValidNum = static_cast<uint64_t>(std::pow(2, paramStruct.bitWidth) - 1);
     auto chkIter = std::find_if(paramStruct.vals.cbegin(), paramStruct.vals.cend(),
-        [maxValidNum](uint64_t paramVal) { return paramVal > maxValidNum; });
+        [maxValidNum](uint64_t paramVal) { return paramVal > maxValidNum && paramVal < ASCENDC_TPL_INPUT_BIAS; });
     if (chkIter != paramStruct.vals.cend()) {
         printf("[ERROR] Bit width:%u in ASCENDC_TPL_%s_%s: %s is not enough to represent all values! "
             "Please make sure 2^bitWidth is greater than the number of values.\n",
@@ -125,7 +125,7 @@ static bool CheckSelectParamValid(const TilingDeclareParams &declareParams, cons
         if (declareParam.name == selectParam.name) {
             auto declareType = declareParam.paramType;
             auto declareBitWidth = declareParam.bitWidth;
-            set<uint64_t> declareVals = {declareParam.vals.begin(), declareParam.vals.end()};
+            auto declareVals = declareParam.vals;
             if (declareBitWidth != selectParam.bitWidth) {
                 printf("[ERROR] ASCENDC_TPL_%s_SEL: %s has different bitwidth: %u!\n", it->second, selectParam.name,
                     selectParam.bitWidth);
@@ -136,7 +136,7 @@ static bool CheckSelectParamValid(const TilingDeclareParams &declareParams, cons
                 return false;
             }
             for (auto val : selectParam.vals) {
-                if (declareVals.count(val) == 0) {
+                if (std::find(declareVals.begin(), declareVals.end(), val) == declareVals.cend()) {
                     printf("[ERROR] ASCENDC_TPL_%s_SEL %s value %lu does not exist in ASCENDC_TPL_%s_DECL, "
                         "please check it!\n", it->second, selectParam.name, val, it->second);
                     return false;
@@ -247,11 +247,6 @@ uint64_t EncodeTilingKey(TilingDeclareParams declareParams, TilingSelectParams s
         return INVALID_TILING_KEY;
     }
     for (auto &declareParam : declareParams) {
-        if (declareParam.paramType == ASCENDC_TPL_DTYPE || declareParam.paramType == ASCENDC_TPL_FORMAT) {
-            declareParam.vals.erase(std::remove_if(declareParam.vals.begin(), declareParam.vals.end(),
-                [](uint64_t val) { return val >= ASCENDC_TPL_INPUT_BIAS; }),
-                declareParam.vals.end());
-        }
         if (!ParseTplUintValue(declareParam, 0)) {
             printf("[ERROR] ASCENDC_TPL_DECL:%s parses value failed!\n", declareParam.name);
             return INVALID_TILING_KEY;
