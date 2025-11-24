@@ -170,6 +170,36 @@ __simd_callee__ inline void TraitTwoToTaitOneTmpl(RegT1 &dstReg, RegT2 &srcReg)
         (RegTensor<ShortType> &)srcReg.reg[1]);
 }
 
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::MERGING, typename RegT>
+__simd_callee__ inline void CopyMerging(RegT& dstReg, RegT& srcReg, MaskReg& mask)
+{
+    using ActualT = typename RegT::ActualT;
+    constexpr auto modeValue = GetMaskMergeMode<mode>();
+    if constexpr (IsSameType<ActualT, bool>::value) {
+        vmov((RegTensor<int8_t>&)dstReg, (RegTensor<int8_t>&)srcReg, mask, modeValue);
+    } else if constexpr (sizeof(ActualT) == 1) {
+        vmov((RegTensor<uint8_t>&)dstReg, (RegTensor<uint8_t>&)srcReg, mask, modeValue);
+    } else if constexpr (sizeof(ActualT) == 2) {
+        vmov((RegTensor<uint16_t>&)dstReg, (RegTensor<uint16_t>&)srcReg, mask, modeValue);
+    } else if constexpr (sizeof(ActualT) == 4) {
+        vmov((RegTensor<uint32_t>&)dstReg, (RegTensor<uint32_t>&)srcReg, mask, modeValue);
+    } else if constexpr (sizeof(ActualT) == 8) {
+        if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
+            constexpr auto lowerDist =
+                std::integral_constant<::HiloPart, static_cast<::HiloPart>(HighLowPart::LOWEST)>();
+            MaskReg dstMask;
+            MaskReg tmpMask;
+            MaskReg dumpMask;
+            ppack(tmpMask, mask, lowerDist);
+            pintlv_b32(dstMask, dumpMask, tmpMask, tmpMask);
+            vmov((RegTensor<uint32_t> &)dstReg, (RegTensor<uint32_t> &)srcReg, dstMask, modeValue);
+        } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
+            vmov((RegTensor<uint32_t> &)dstReg.reg[0], (RegTensor<uint32_t> &)srcReg.reg[0], mask, modeValue);
+            vmov((RegTensor<uint32_t> &)dstReg.reg[1], (RegTensor<uint32_t> &)srcReg.reg[1], mask, modeValue);
+        }
+    }
+}
+
 template <typename RegT2, typename RegT1> __simd_callee__ inline void B64TraitOneToTaitTwo(RegT2 &dstReg, RegT1 &srcReg)
 {
     TraitOneToTaitTwoTmpl<RegT2, RegT1, uint32_t>(dstReg, srcReg);
