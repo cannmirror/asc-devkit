@@ -55,9 +55,13 @@ function(ascendc_library target_name target_type)
     set(${device_target}_obj_install_dir  ${CMAKE_INSTALL_PREFIX}/single_objects/${target_name})
 
     set(SOURCES)
+    set(KERNELS)
     foreach(_source ${ARGN})
         get_filename_component(absolute_source "${_source}" ABSOLUTE)
+        string(REGEX REPLACE "^.*[/\\\\]" "" base_source "${_source}")
+        string(REGEX REPLACE "\\.[^./\\]*$" "" kernel_name "${base_source}") 
         list(APPEND SOURCES ${absolute_source})
+        list(APPEND KERNELS ${kernel_name})
     endforeach()
 
     string(REPLACE ";" "::" EP_SOURCES "${SOURCES}")
@@ -105,6 +109,7 @@ function(ascendc_library target_name target_type)
                             -DINCLUDES=$<TARGET_PROPERTY:${target_name}_interface,INCLUDES>
                             -DDYNAMIC_MODE=${DYNAMIC_MODE}
                             -DBUILD_MODE=${BUILD_MODE}
+                            -DRUN_MODE=${RUN_MODE}
                             -DDST_DIR=${${device_target}_auto_gen_dir}
                             -DINCLUDE_DIR=${${device_target}_include_dir}
                             -DASCEND_CANN_PACKAGE_PATH=${ASCEND_CANN_PACKAGE_PATH}
@@ -182,13 +187,22 @@ function(ascendc_library target_name target_type)
                     ${device_target}_aiv_device
             )
         else()
-            add_custom_target(${device_target}_merge_obj ALL
-                COMMAND bash merge_mix_obj.sh -l ${CCEC_LINKER} -o ${${device_target}_merge_obj_dir} --aiv-dir ${${device_target}_aiv_device_dir} --aic-dir ${${device_target}_aic_device_dir} --build-type ${CMAKE_BUILD_TYPE}
-                COMMAND ${ASCEND_PYTHON_EXECUTABLE} update_host_stub.py ${${device_target}_auto_gen_dir}  ${${device_target}_merge_obj_dir} ${_LOWER_SOC_VERSION} ${device_target}
-                WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
-                DEPENDS ${device_target}_aic_device ${device_target}_aiv_device
-                COMMAND_EXPAND_LISTS
-            )
+            if("${RUN_MODE}" STREQUAL "cpu")
+                add_custom_target(${device_target}_merge_obj ALL
+                    COMMAND bash merge_mix_obj.sh -l ${CCEC_LINKER} -o ${${device_target}_merge_obj_dir} --aiv-dir ${${device_target}_aiv_device_dir} --aic-dir ${${device_target}_aic_device_dir} --build-type ${CMAKE_BUILD_TYPE}
+                    WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
+                    DEPENDS ${device_target}_aic_device ${device_target}_aiv_device
+                    COMMAND_EXPAND_LISTS
+                )
+            else()
+                add_custom_target(${device_target}_merge_obj ALL
+                    COMMAND bash merge_mix_obj.sh -l ${CCEC_LINKER} -o ${${device_target}_merge_obj_dir} --aiv-dir ${${device_target}_aiv_device_dir} --aic-dir ${${device_target}_aic_device_dir} --build-type ${CMAKE_BUILD_TYPE}
+                    COMMAND ${ASCEND_PYTHON_EXECUTABLE} update_host_stub.py ${${device_target}_auto_gen_dir}  ${${device_target}_merge_obj_dir} ${_LOWER_SOC_VERSION} ${device_target}
+                    WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
+                    DEPENDS ${device_target}_aic_device ${device_target}_aiv_device
+                    COMMAND_EXPAND_LISTS
+                )
+            endif()
         endif()
     elseif(BUILD_MODE STREQUAL "m200" AND NOT "${_upper_target_type}" STREQUAL "OBJECT")
         set(${device_target}_aic_device_dir ${CMAKE_CURRENT_BINARY_DIR}/${device_target}_aic_device_dir)
@@ -309,7 +323,6 @@ function(ascendc_library target_name target_type)
                                 -DCMAKE_C_COMPILER_LAUNCHER=${CMAKE_C_COMPILER_LAUNCHER}
                                 -DCMAKE_CXX_COMPILER_LAUNCHER=${CMAKE_CXX_COMPILER_LAUNCHER}
                                 <SOURCE_DIR>
-                                -DBUILD_MODE=${BUILD_MODE}
                             LIST_SEPARATOR ::
                             BUILD_ALWAYS TRUE
                             )
@@ -317,6 +330,9 @@ function(ascendc_library target_name target_type)
     endif()
 
     # Generate host-side bin file based on device.o and host_stub.cpp
+    if("${RUN_MODE}" STREQUAL "cpu")
+        find_package(tikicpulib REQUIRED)
+    endif()
     set_source_files_properties(${${device_target}_auto_gen_dir}/host_stub.cpp PROPERTIES GENERATED TRUE)
     add_library(${device_target}_host_stub_obj OBJECT
         ${${device_target}_auto_gen_dir}/host_stub.cpp
@@ -324,6 +340,7 @@ function(ascendc_library target_name target_type)
 
     target_link_libraries(${device_target}_host_stub_obj PRIVATE
         $<BUILD_INTERFACE:host_intf_pub>
+        $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:tikicpulib::${SOC_VERSION}>>
     )
 
     target_compile_definitions(${device_target}_host_stub_obj PRIVATE
@@ -333,8 +350,13 @@ function(ascendc_library target_name target_type)
 
     add_dependencies(${device_target}_host_stub_obj ${device_target}_preprocess ${device_target}_merge_obj)
 
+    if("${RUN_MODE}" STREQUAL "cpu")
+        set_source_files_properties(${${device_target}_auto_gen_dir}/auto_gen_${KERNELS}.cpp PROPERTIES GENERATED TRUE)
+    endif()
+
     add_library(${target_name} ${_upper_target_type}
         $<TARGET_OBJECTS:${device_target}_host_stub_obj>
+        $<$<STREQUAL:${RUN_MODE},cpu>:${${device_target}_auto_gen_dir}/auto_gen_${KERNELS}.cpp>
         $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,STATIC_LIBRARY>:$<TARGET_OBJECTS:${ASCENDC_RUNTIME_OBJ_TARGET}>>
     )
 
@@ -348,6 +370,12 @@ function(ascendc_library target_name target_type)
     endif()
 
     target_include_directories(${target_name}
+        PRIVATE
+            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/>>
+            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/>>
+            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/impl/>>
+            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/tikcfw/interface/>>
+            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:${ASCEND_CANN_PACKAGE_PATH}/compiler/tikcpp/../../include/>>
         INTERFACE
             ${${device_target}_include_dir}
             ${ASCEND_CANN_PACKAGE_PATH}/include
@@ -359,47 +387,70 @@ function(ascendc_library target_name target_type)
         ${ASCEND_CANN_PACKAGE_PATH}/tools/simulator/${SOC_VERSION}/lib
     )
 
-    target_link_libraries(${target_name}
-        PRIVATE
-            $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>:${ASCENDC_RUNTIME_STATIC_TARGET}>
-            $<BUILD_INTERFACE:host_intf_pub>
-        INTERFACE
-            $<BUILD_INTERFACE:$<$<AND:$<STREQUAL:${RUN_MODE},sim>,$<STREQUAL:${BUILD_MODE},c100>>:pem_davinci>>
-            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:runtime_camodel>>
-            $<BUILD_INTERFACE:$<$<AND:$<STREQUAL:${RUN_MODE},sim>,$<STREQUAL:${DYNAMIC_MODE},ON>>:npu_drv>>
-            $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
-            $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
-            $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},npu>:runtime>>
-            register
-            error_manager
-            profapi
-            ge_common_base
-            ascendalog
-            mmpa
-            dl
-        PUBLIC
-            ascend_dump
-            c_sec
-    )
+    if("${RUN_MODE}" STREQUAL "cpu")
+        target_compile_definitions(${target_name} PRIVATE ASCENDC_CPU_DEBUG=1 ASCENDC_DEBUG=1 ASCENDC_DUMP=0)
+        target_link_libraries(${target_name}
+            PUBLIC
+                tikicpulib::${SOC_VERSION}
+            PRIVATE
+                $<BUILD_INTERFACE:host_intf_pub>
+            INTERFACE
+                ascendc_acl_stub
+                tiling_api
+                register
+                platform
+                ascendalog
+                mmpa
+                c_sec
+                dl
+        )
+    else()
+        target_link_libraries(${target_name}
+            PRIVATE
+                $<$<STREQUAL:$<TARGET_PROPERTY:TYPE>,SHARED_LIBRARY>:${ASCENDC_RUNTIME_STATIC_TARGET}>
+                $<BUILD_INTERFACE:host_intf_pub>
+            INTERFACE
+                $<BUILD_INTERFACE:$<$<AND:$<STREQUAL:${RUN_MODE},sim>,$<STREQUAL:${BUILD_MODE},c100>>:pem_davinci>>
+                $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:runtime_camodel>>
+                $<BUILD_INTERFACE:$<$<AND:$<STREQUAL:${RUN_MODE},sim>,$<STREQUAL:${DYNAMIC_MODE},ON>>:npu_drv>>
+                $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
+                $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
+                $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},npu>:runtime>>
+                tiling_api
+                register
+                platform
+                error_manager
+                profapi
+                ge_common_base
+                ascendalog
+                mmpa
+                dl
+            PUBLIC
+                ascend_dump
+                c_sec
+        )
+    endif()
 
     set_target_properties(${target_name} PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     )
 
-    add_custom_command(TARGET ${target_name}
-        PRE_LINK
-        COMMAND bash ${ASCENDC_KERNEL_CMAKE_DIR}/util/ascendc_pack_kernel.sh --pack_tool ${ASCENDC_PACK_KERNEL} --elf_in $<TARGET_OBJECTS:${device_target}_host_stub_obj> --add_dir ${${device_target}_merge_obj_dir}
-    )
-
-    if(NOT ASCEND_KERNEL_LAUNCH_ONLY)
-        add_dependencies(${target_name} ${target_name}_host)
-        
+    if(NOT "${RUN_MODE}" STREQUAL "cpu")
         add_custom_command(TARGET ${target_name}
-            POST_BUILD
-            COMMAND rm -f $<TARGET_FILE:${target_name}>
-            COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${ASCENDC_KERNEL_CMAKE_DIR}/util/recompile_binary.py --root-dir ${CMAKE_CURRENT_BINARY_DIR} --target-name ${target_name} --add-dir ${${target_name}_host_dir}
+            PRE_LINK
+            COMMAND bash ${ASCENDC_KERNEL_CMAKE_DIR}/util/ascendc_pack_kernel.sh --pack_tool ${ASCENDC_PACK_KERNEL} --elf_in $<TARGET_OBJECTS:${device_target}_host_stub_obj> --add_dir ${${device_target}_merge_obj_dir}
         )
+
+        if(NOT ASCEND_KERNEL_LAUNCH_ONLY)
+            add_dependencies(${target_name} ${target_name}_host)
+            
+            add_custom_command(TARGET ${target_name}
+                POST_BUILD
+                COMMAND rm -f $<TARGET_FILE:${target_name}>
+                COMMAND ${ASCEND_PYTHON_EXECUTABLE} ${ASCENDC_KERNEL_CMAKE_DIR}/util/recompile_binary.py --root-dir ${CMAKE_CURRENT_BINARY_DIR} --target-name ${target_name} --add-dir ${${target_name}_host_dir}
+            )
+        endif()
     endif()
 
     include(GNUInstallDirs)
@@ -475,15 +526,21 @@ function(ascendc_compile_options target_name target_scope)
 endfunction()
 
 function(ascendc_compile_definitions target_name target_scope)
-    if(ARGN)
-        get_target_property(CUSTOM_DEFINITIONS ${target_name}_interface DEFINITIONS)
-        if(CUSTOM_DEFINITIONS)
-            list(APPEND CUSTOM_DEFINITIONS ${ARGN})
-        else()
-            set(CUSTOM_DEFINITIONS ${ARGN})
+    if("${RUN_MODE}" STREQUAL "cpu")
+        if(ARGN)
+            target_compile_definitions(${target_name} ${target_scope} ${ARGN})
         endif()
+    else()
+        if(ARGN)
+            get_target_property(CUSTOM_DEFINITIONS ${target_name}_interface DEFINITIONS)
+            if(CUSTOM_DEFINITIONS)
+                list(APPEND CUSTOM_DEFINITIONS ${ARGN})
+            else()
+                set(CUSTOM_DEFINITIONS ${ARGN})
+            endif()
 
-        set_target_properties(${target_name}_interface PROPERTIES DEFINITIONS "${CUSTOM_DEFINITIONS}")
+            set_target_properties(${target_name}_interface PROPERTIES DEFINITIONS "${CUSTOM_DEFINITIONS}")
+        endif()
     endif()
 endfunction()
 

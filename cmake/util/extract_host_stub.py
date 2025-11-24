@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-# ----------------------------------------------------------------------------------------------------------
+# This program is free software, you can redistribute it and/or modify it.
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
-# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-# CANN Open Software License Agreement Version 2.0 (the "License").
+# This file is a part of the CANN Open Software.
+# Licensed under CANN Open Software License Agreement Version 2.0 (the "License").
 # Please refer to the License for details. You may not use this file except in compliance with the License.
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
-# ----------------------------------------------------------------------------------------------------------
 
 """Extract and generate host_stub.cpp and headers."""
 
@@ -39,6 +38,7 @@ from process_dump_info import get_dump_info_by_source
 
 IS_V220_MODE = False
 IS_C310_MODE = False
+RUN_MODE = "cpu"
 
 def merge_dict(base: Dict, *news: List[Dict]):
     """Merge dicts."""
@@ -379,7 +379,7 @@ def parse_func_signature_group_by_source(path: str, data: str, build_mode: str) 
     if kernel_count > 1:
         print("[WARNING]: Multiple kernel functions are detected. " +
                 "It is recommended to define only one kernel function per file.")
-                
+
     func_signs = sorted(func_signs, key=attrgetter('func_name'))
     func_signs = tuple(func_signs)
     dump_info = get_dump_info_by_source(data)
@@ -946,7 +946,6 @@ def generate_func_impl_code(func_sign: FuncSign,
     stream_name = param_names[1]
     name = func_sign.func_name.replace("aclrtlaunch_", "")
     buff = io.StringIO()
-
     new_func_params = func_sign.func_params
     if func_sign.func_template_decl:
         # set start index 2 to skip blockdim and stream definitions
@@ -1072,6 +1071,134 @@ def has_assert_in_func_groups(func_groups: List[FuncSignGroupWithModeBase]) -> b
             return True
 
     return False
+
+
+def generate_host_stub_head_code_cpu() -> str:
+    buff = io.StringIO()
+    buff.write(r'''
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include <dlfcn.h>
+#include "tikicpulib.h"
+#include "acl/acl.h"
+    ''')
+    return buff.getvalue()
+
+
+def format_params(func_sign: FuncSign):
+    result = []
+    if func_sign.func_template_decl:
+        for param in func_sign.func_params:
+            if param.cce_global:
+                result.append(f'(unsigned char*){param.parts[1]}')
+            else:
+                result.append(param.parts[1])
+    else:
+        for param in func_sign.func_params:
+            if param.tiling_struct:
+                result.append(f'*{param.parts[1]}')
+            else:
+                result.append(param.parts[1])
+    return result
+
+
+def generate_func_impl_code_cpu(func_sign: FuncSign,
+                                has_mode_func: bool,
+                                func_key: int,
+                                func_params_str: str,
+                                new_func_sign: FuncSign,
+                                kernel_name: str) -> str:
+    if (has_mode_func(CodeMode.AIV) or
+        has_mode_func(CodeMode.KERNEL_TYPE_AIV_ONLY) or
+        has_mode_func(CodeMode.KERNEL_TYPE_MIX_AIV_1_0)):
+        kernelType = "AIV_MODE"
+    elif (has_mode_func(CodeMode.AIC) or
+        has_mode_func(CodeMode.KERNEL_TYPE_AIC_ONLY) or
+        has_mode_func(CodeMode.KERNEL_TYPE_MIX_AIC_1_0)):
+        kernelType = "AIC_MODE"
+    elif has_mode_func(CodeMode.KERNEL_TYPE_MIX_AIC_1_1):
+        kernelType = "MIX_MODE_1_1"
+    elif (has_mode_func(CodeMode.MIX) or
+        has_mode_func(CodeMode.KERNEL_TYPE_MIX_AIC_1_2) or
+        has_mode_func(CodeMode.KERNEL_TYPE_CORE)):
+        kernelType = "MIX_MODE"
+    else:
+        raise (f"[ERROR]: KernelMode does not support!")
+    param_names = tuple(get_param_names_by_func_sign(func_sign))
+    block_dim_name = param_names[0]
+    stream_name = param_names[1]
+    new_func_sign = replace_func_sign_stream_param(func_sign, stream_name)
+    buff = io.StringIO()
+    if func_sign.func_template_decl:
+        func_declare_code = f'''
+template<>
+{func_sign.return_type} {func_sign.func_name}\
+<{func_sign.func_template_specilization_args[dehash_template_id(func_key)]}>({func_params_str})'''
+    else:
+        func_declare_code = generate_auto_gen_func_sign(func_sign, 
+                                                        func_sign_to_string(new_func_sign, "", "", False, False))
+    buff.write(func_declare_code)
+    buff.write(r'''
+{
+    printf("[%s:%s]\n", __FILE__, __FUNCTION__);
+    AscendC::SetKernelMode(KernelMode::''')
+    buff.write(f'{kernelType});\n')
+    buff.write(f"    ICPU_RUN_KF({kernel_name}, {block_dim_name}, {', '.join(format_params(new_func_sign)[2:])});\n")
+    buff.write("    return 1;\n")
+    buff.write("}")
+    return buff.getvalue()
+
+
+def generate_host_stub_code_cpu(func_groups: List[FuncSignGroupWithModeBase],
+                                type_definition: str) -> str:
+    """Generate host_stub.cpp code for cpu."""
+    buff = io.StringIO()
+    buff.write(generate_host_stub_head_code_cpu())
+    has_mode_func = partial(has_mode_in_func_groups, func_groups=func_groups)
+
+    for func_group in func_groups:
+        for key, func_sign in enumerate(func_group.func_signs, func_group.base_key):
+            param_names = tuple(get_param_names_by_func_sign(func_sign))
+            stream_name = param_names[1]
+            new_func_sign = replace_func_sign_stream_param(func_sign, stream_name)
+            kernel_name = (func_sign.func_name).replace("aclrtlaunch_", "")
+            kernel_sign = ""
+            aclrt_sign = ""
+            func_param_str = ""
+            kernel_sign_name = kernel_name
+            if func_sign.func_template_decl:
+                for template_id, _ in enumerate(new_func_sign.func_template_specilization_args, 0):
+                    kernel_sign_name = f'{kernel_name}_template_{template_id}'
+                    template_key = get_template_hash_tiling_key(template_id, key)
+                    specialized_params = replace_func_params_with_specilization_typename(new_func_sign,
+                                                                    dehash_template_id(template_key), 2)
+                    new_params = tiling_add_ref_or_ptr_func_params(func_sign, specialized_params)
+                    func_param_str = ', '.join(
+                        map(partial(func_param_to_string, with_cce_attr=False), new_params)
+                    )
+                    kernel_sign = f'extern void {kernel_sign_name}({func_sign.func_params_specilization_args[0]});\n'
+                    func_tmp_sign = func_sign_to_string(new_func_sign, "", "", False, False)
+                    aclrt_sign = f'{generate_auto_gen_func_sign(func_sign, func_tmp_sign)};'
+            else:
+                new_params = tiling_remove_ref_or_ptr_func_params(func_sign,
+                                                                  remove_added_func_params(func_sign.func_params))
+                func_param_str = ', '.join(
+                    map(partial(func_param_to_string, with_cce_attr=False), new_params)
+                )
+                kernel_sign = f'extern "C" void {kernel_name}({func_param_str});\n'
+            buff.write(type_definition)
+            buff.write("\n")
+            buff.write(kernel_sign)
+            buff.write(aclrt_sign)
+            buff.write(generate_func_impl_code_cpu(func_sign, has_mode_func, key, func_param_str,
+                                                   new_func_sign, kernel_sign_name))
+    return remove_comments(buff.getvalue())
 
 
 def generate_host_stub_code(func_groups: List[FuncSignGroupWithModeBase],
@@ -1235,6 +1362,16 @@ def generate_save_stub_header_commands(func_signs: Iterator[FuncSign],
     yield file_path, triple_chevrons_func_headers
 
 
+def generate_save_stub_impl_cpp_cpu_commands(func_groups: List[FuncSignGroupWithModeBase],
+                                         type_definition: str,
+                                         dst_dir: str) -> Iterator[Tuple[str, str]]:
+    """Generate save stub impl cpp commands for cpu."""
+    yield (
+        get_stub_impl_cpp_filepath(dst_dir),
+        generate_host_stub_code_cpu(func_groups, type_definition)
+    )
+
+
 def generate_save_stub_impl_cpp_commands(func_groups: List[FuncSignGroupWithModeBase],
                                          type_definition: str,
                                          dst_dir: str) -> Iterator[Tuple[str, str]]:
@@ -1382,7 +1519,10 @@ def source_properties(func_groups: Iterator[FuncSignGroupWithModeBase],
                     compile_section += f';{add_auto_gen_prefix_and_kernel_suffix(template_func_name)}='
                     template_key = get_template_hash_tiling_key(template_id, idx)
                     if generate_definition:
-                        compile_section += f'{func_sign.func_name}_{template_key}{suffix}'
+                        if RUN_MODE == "cpu":
+                            compile_section += f'{func_sign.func_name}_template_{template_key}{suffix}'
+                        else:
+                            compile_section += f'{func_sign.func_name}_{template_key}{suffix}'
                     else:
                         compile_section += f'{func_sign.func_name}{suffix}'
             else:
@@ -1702,58 +1842,60 @@ def gen_ktype_section(func_sign: FuncSign,
 def generate_extra_param(func_group: FuncSignGroupWithModeBase,
                          new_func_sign: FuncSign):
     extra_param = "\n"
-    if func_group.dump_info["dump_type"] != "":
-        extra_param += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
-        if len(new_func_sign.func_params) == 0:
-            extra_param += "GM_ADDR dumpAddr\n"
-        else:
-            extra_param += "GM_ADDR dumpAddr,\n"
-        extra_param += "#endif\n"
+    if not RUN_MODE == "cpu":
+        if func_group.dump_info["dump_type"] != "":
+            extra_param += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
+            if len(new_func_sign.func_params) == 0:
+                extra_param += "GM_ADDR dumpAddr\n"
+            else:
+                extra_param += "GM_ADDR dumpAddr,\n"
+            extra_param += "#endif\n"
     return extra_param
 
 
 def _generate_sub_source(func_group: FuncSignGroupWithModeBase, is_mix: bool, param_names):
     source = ""
-    if func_group.dump_info["dump_type"] != "":
-        source += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
-        if func_group.dump_info["dump_type"] == "assert":
-            if is_mix:
-                source += "    AscendC::StoreArgsOfInitDump(true, dumpAddr);\n"
+    if not RUN_MODE == "cpu":
+        if func_group.dump_info["dump_type"] != "":
+            source += "#if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
+            if func_group.dump_info["dump_type"] == "assert":
+                if is_mix:
+                    source += "    AscendC::StoreArgsOfInitDump(true, dumpAddr);\n"
+                else:
+                    source += "    AscendC::StoreArgsOfInitDump(false, dumpAddr);\n"
             else:
-                source += "    AscendC::StoreArgsOfInitDump(false, dumpAddr);\n"
-        else:
-            if is_mix:
-                source += "    AscendC::InitDump(true, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
-            else:
-                source += "    AscendC::InitDump(false, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
-        source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
-        source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
+                if is_mix:
+                    source += "    AscendC::InitDump(true, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
+                else:
+                    source += "    AscendC::InitDump(false, dumpAddr, ONE_CORE_DUMP_SIZE);\n"
+            source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
+            source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
 (AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_DUMP));\n"
-        source += "#endif\n"
-        source += "#endif\n\n"
-    if is_mix and is_v220_mode():
-        source += "    icache_preload(1);\n"
-        source += "    if (ffts_addr != nullptr) {\n"
-        source += "        set_ffts_base_addr((uint64_t)ffts_addr);\n"
-        source += "    }\n"
-        source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
-        source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
+            source += "#endif\n"
+            source += "#endif\n\n"
+        if is_mix and is_v220_mode():
+            source += "    icache_preload(1);\n"
+            source += "    if (ffts_addr != nullptr) {\n"
+            source += "        set_ffts_base_addr((uint64_t)ffts_addr);\n"
+            source += "    }\n"
+            source += "#ifdef ASCENDC_TIME_STAMP_ON\n"
+            source += "    AscendC::PrintTimeStamp(static_cast<uint32_t>\
 (AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));\n"
-        source += "#endif\n"
-    if "printf" in func_group.dump_info["dump_type"]:
-        source += "#ifdef ASCENDC_DUMP\n"
-        source += "    uint64_t __ascendc_tStamp = 0;\n"
-        source += "    uint64_t __ascendc_version = 0;\n"
-        source += "     __gm__ char* __ascendc_versionStr = nullptr;\n"
-        source += "    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);\n"
-        source += "    if (__ascendc_tStamp == 0) {\n"
-        source += "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, \
-CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
-        source += "    } else {\n"
-        source += "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", \
-(__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);\n"
-        source += "    }\n"
-        source += "#endif\n"
+            source += "#endif\n"
+        if "printf" in func_group.dump_info["dump_type"]:
+            source += "#ifdef ASCENDC_DUMP\n"
+            source += "    uint64_t __ascendc_tStamp = 0;\n"
+            source += "    uint64_t __ascendc_version = 0;\n"
+            source += "     __gm__ char* __ascendc_versionStr = nullptr;\n"
+            source += "    GetCannVersion(__ascendc_versionStr, __ascendc_version, __ascendc_tStamp);\n"
+            source += "    if (__ascendc_tStamp == 0) {\n"
+            source += "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, \
+    CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
+            source += "    } else {\n"
+            source += "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", \
+    (__gm__ const char*)(__ascendc_versionStr), __ascendc_tStamp);\n"
+            source += "    }\n"
+            source += "#endif\n"
     # if it has no param, there should be no asignment of workspace or tiling
     if len(param_names) > 0:
         source += "#if defined(HAVE_WORKSPACE)\n"
@@ -1778,7 +1920,7 @@ CANN TimeStamp is %u\\n\", __ascendc_tStamp);\n"
         source += "    AscendC::SetSysWorkspaceForce(workspace_param);\n"
         source += "    workspace_usr = AscendC::GetUserWorkspace(workspace_param);\n"
 
-        if is_mix and is_v220_mode():
+        if RUN_MODE != "cpu" and is_mix and is_v220_mode():
             source += f"#if defined(REGIST_MATMUL_OBJ) || defined({MIX_CORE_MACRO})\n"
             source += "    if constexpr (g_coreType == AscendC::AIC) {\n"
             source += "        matmul::clearWorkspace(workspace_param);\n"
@@ -1822,20 +1964,28 @@ def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
         func_params=new_func_params,
     )
     if is_mix and is_v220_mode():
-        new_func_sign = new_func_sign._replace(
-            func_params=(FuncParam(('GM_ADDR', 'ffts_addr')),) + new_func_sign.func_params,
-        )
+        if not RUN_MODE == "cpu":
+            new_func_sign = new_func_sign._replace(
+                func_params=(FuncParam(('GM_ADDR', 'ffts_addr')),) + new_func_sign.func_params,
+            )
 
     param_names = tuple(get_param_names_by_func_sign(func_sign))
 
     extra_param = generate_extra_param(func_group, new_func_sign)
 
-    suffix_extra_param = ', GM_ADDR overflow_status'
-    if (extra_param == "\n") and (not new_func_sign.func_params):
-        suffix_extra_param = 'GM_ADDR overflow_status'
+    suffix_extra_param = ''
+    if not RUN_MODE == "cpu":
+        suffix_extra_param = ', GM_ADDR overflow_status'
+        if (extra_param == "\n") and (not new_func_sign.func_params):
+            suffix_extra_param = 'GM_ADDR overflow_status'
 
-    source += ("extern \"C\" __global__ [aicore] "
-               f"{func_sign_to_string(new_func_sign, extra_param, suffix_extra_param, True)} ")
+    if (RUN_MODE == "cpu") and func_sign.func_template_decl:
+        source += "extern __global__ __aicore__ "
+    elif RUN_MODE == "cpu":
+        source += "extern \"C\" __global__ __aicore__ "
+    else:
+        source += "extern \"C\" __global__ [aicore] "
+    source += f"{func_sign_to_string(new_func_sign, extra_param, suffix_extra_param, True)} "
     source += "{\n"
 
     source += _generate_sub_source(func_group, is_mix, param_names)
@@ -1846,8 +1996,9 @@ def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
 <{func_sign.func_template_specilization_args[template_id]}>({param_names_str});\n"
     else:
         source += f"    {add_origin_suffix(func_sign.func_name)}({param_names_str});\n"
-    source += ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
-               "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
+    if not RUN_MODE == "cpu":
+        source += ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
+                "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
     source += '#if defined(__DAV_C310__) || defined(__DAV_310R6__)\n'
     source += '    pipe_barrier(PIPE_ALL);\n'
     source += '    dsb(mem_dsb_t::DSB_ALL);\n'
@@ -1885,6 +2036,7 @@ def save_device_kernel_function(func_groups: List[FuncSignGroupWithModeBase],
 
         for func_sign in func_group.func_signs:
             source += f"#define {func_sign.func_name} {add_origin_suffix(func_sign.func_name)}\n"
+            kernel_name = (func_sign.func_name).replace("aclrtlaunch_", "")
 
         source += f"#include \"{src_path}\"\n\n"
 
@@ -1902,6 +2054,19 @@ def save_device_kernel_function(func_groups: List[FuncSignGroupWithModeBase],
         source += "#ifndef ONE_CORE_DUMP_SIZE\n"
         source += f"#define ONE_CORE_DUMP_SIZE {dump_size} * 1\n"
         source += "#endif\n\n"
+
+        if RUN_MODE == "cpu":
+            source += "#if defined(ASCENDC_CPU_DEBUG)\n"
+            for func_sign in func_group.func_signs:
+                kernel_name = (func_sign.func_name).replace("aclrtlaunch_", "")
+                if func_sign.func_template_decl:
+                    for template_id, _ in enumerate(func_sign.func_template_specilization_args, 0):
+                        kernel_sign_name = f"{kernel_name}_template_{template_id}"
+                        autogen_name = f"auto_gen_{kernel_sign_name}_kernel"
+                        source += f"#define {autogen_name} {kernel_sign_name}\n"
+                else:
+                    source += f"#define auto_gen_{kernel_name}_kernel {kernel_name}\n"
+            source += "#endif\n"
 
         # generate kernel function
         for func_sign in func_group.func_signs:
@@ -2000,6 +2165,7 @@ def main(argv: List[str]):
                         action='store_true',
                         help='generate ktype section')
     parser.add_argument('--build-mode', help="Get chip type.")
+    parser.add_argument('--run-mode', help="cpu or npu mode.")
 
     args = parser.parse_args(argv)
 
@@ -2014,8 +2180,10 @@ def main(argv: List[str]):
 
     global IS_V220_MODE
     global IS_C310_MODE
-    IS_V220_MODE = args.build_mode == "c220" 
+    global RUN_MODE
+    IS_V220_MODE = args.build_mode == "c220"
     IS_C310_MODE = args.build_mode == "c310"
+    RUN_MODE = args.run_mode
     try:
         func_sign_groups = list(parse_func_signature_by_filepaths(args.filepaths, args.build_mode))
     except OSError as ex:
@@ -2068,11 +2236,18 @@ def main(argv: List[str]):
             func_signs_in_groups(new_func_sign_groups), args.header_dir
         )
     )
-    do_save_commands(
-        generate_save_stub_impl_cpp_commands(
-            new_func_sign_groups, type_definition, dst_dir
+    if RUN_MODE == "cpu":
+        do_save_commands(
+            generate_save_stub_impl_cpp_cpu_commands(
+                new_func_sign_groups, type_definition, dst_dir
+            )
         )
-    )
+    else:
+        do_save_commands(
+            generate_save_stub_impl_cpp_commands(
+                new_func_sign_groups, type_definition, dst_dir
+            )
+        )
 
     process_with_source_mapping(
         func_sign_groups,

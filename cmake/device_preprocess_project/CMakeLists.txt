@@ -92,6 +92,7 @@ if(DYNAMIC_MODE)
         COMMAND ${ASCEND_PYTHON_EXECUTABLE} extract_host_stub.py ${preprocess_objs} --dynamic-mode 
                     -d ${DST_DIR} -hd ${INCLUDE_DIR} --aiv-o ${aiv_objs} --aic-o ${aic_objs} 
                     --build-mode ${BUILD_MODE} --compile-commands ${CMAKE_BINARY_DIR}/compile_commands.json ${DEFINITION_OPTION}
+                    --run-mode ${RUN_MODE}
         WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
         DEPENDS preprocess_obj aiv_obj aic_obj merge_aiv_obj_text merge_aic_obj_text
         COMMAND_EXPAND_LISTS
@@ -120,6 +121,7 @@ else()
     COMMAND ${ASCEND_PYTHON_EXECUTABLE} extract_host_stub.py ${preprocess_objs} -d ${DST_DIR}
                 -hd ${INCLUDE_DIR} --aiv-o ${m200_obj}  --aic-o ${m200_obj} --build-mode ${BUILD_MODE} --compile-commands 
                 ${CMAKE_BINARY_DIR}/compile_commands.json ${DEFINITION_OPTION}
+                --run-mode ${RUN_MODE}
     WORKING_DIRECTORY ${ASCENDC_KERNEL_CMAKE_DIR}/util
     DEPENDS preprocess_obj m200_obj merge_m200_obj_text
     COMMAND_EXPAND_LISTS
@@ -149,11 +151,3 @@ target_include_directories(intf_device INTERFACE
 target_compile_definitions(intf_device INTERFACE
     ${DEFINITIONS}
 )
-
-
-
-
-
-
-
-

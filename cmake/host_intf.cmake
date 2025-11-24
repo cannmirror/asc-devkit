@@ -14,7 +14,7 @@ target_compile_options(host_intf_pub INTERFACE
     #-fvisibility=hidden
     $<$<CONFIG:Release>:-O2>
     $<$<CONFIG:Debug>:-O0>
-    $<$<COMPILE_LANGUAGE:CXX>:-std=c++11 -fvisibility-inlines-hidden>
+    $<$<COMPILE_LANGUAGE:CXX>:-std=c++17 -fvisibility-inlines-hidden>
     $<$<COMPILE_LANGUAGE:C>:-pthread -Wfloat-equal -Wshadow -Wformat=2 -Wno-deprecated -Wextra>
     $<IF:$<VERSION_GREATER:${CMAKE_C_COMPILER_VERSION},4.8.5>,-fstack-protector-strong,-fstack-protector-all>
 )
@@ -53,6 +53,3 @@ add_library(${ASCENDC_RUNTIME_STATIC_TARGET} STATIC IMPORTED)
 set_target_properties(${ASCENDC_RUNTIME_STATIC_TARGET} PROPERTIES
     IMPORTED_LOCATION    "${ASCENDC_RUNTIME}"
     )
-
-
-
