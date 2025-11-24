@@ -15,17 +15,10 @@ find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(demo
-    addn.asc
+add_executable(add
+    add.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
-)
-
-target_compile_options(demo PRIVATE
+target_compile_options(add PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
