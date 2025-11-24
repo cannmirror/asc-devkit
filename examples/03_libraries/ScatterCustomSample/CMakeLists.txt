@@ -9,7 +9,8 @@
 # ----------------------------------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.16)
-
+set(ASC_ROOT "/usr/local/Ascend/8.5.0/x86_64-linux")
+list(APPEND CMAKE_PREFIX_PATH "${ASC_ROOT}/tikcpp/ascendc_kernel_cmake")
 find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
