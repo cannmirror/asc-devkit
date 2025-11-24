@@ -328,13 +328,13 @@ UT测试使用gTest作为测试框架，一般验证接口编译是否正常，�
         LocalTensor<T> outputLocal = vecOutQue.AllocTensor<T>();
         LocalTensor<uint8_t> tmpLocal = vecTmpQue.AllocTensor<uint8_t>();
 
-        AscendCUtils::SetMask<uint8_t>(256);
+        SetVectorMask<uint8_t, MaskMode::NORMAL>(256);
         DataCopy(inputLocal, inputGlobal, dataSize);
         ```
     - 调用高阶API进行计算。
         ```c++
         SetFlag<HardEvent::MTE2_V>(EVENT_ID0);
-        AscendCUtils::SetMask<uint8_t>(128);
+        SetVectorMask<uint8_t, MaskMode::NORMAL>(128);
         WaitFlag<HardEvent::MTE2_V>(EVENT_ID0);
         U scalar = 4;
 
@@ -391,7 +391,7 @@ UT测试使用gTest作为测试框架，一般验证接口编译是否正常，�
         ```
 ###### Tiling侧
 
-Tiling接口的UT不需要新增文件，在[tests/unit/adv_api/tiling/test_tiling.cpp](../tests/unit/adv_api/tiling/test_tiling.cpp)文件中添加相应测试函数即可。
+Tiling接口的UT目前统一在[tests/unit/adv_api/tiling/test_tiling.cpp](../tests/unit/adv_api/tiling/test_tiling.cpp)文件中，在该文件中添加相应测试函数即可。
 ```c++
 TEST_F(TestTiling, TestAxpyTiling)
 {
@@ -406,7 +406,7 @@ TEST_F(TestTiling, TestAxpyTiling)
 }
 ```
 ##### 修改cmake文件
-执行Kernel侧UT用例前，需要修改cmake文件，将UT测试文件路径添加到该文件中。打开[tests/unit/adv_api/CMakeLists.txt](../tests/unit/adv_api/CMakeLists.txt)，在`file(GLOB ASCENDC_TEST_ascend910B1_AIV_CASE_SRC_FILES ...)`语句中新增文件路径`${ASCENDC_ADV_API_TESTS_DIR}/math/axpy/test_operator_axpy.cpp`。
+在执行UT用例前，需要修改[CMakeLists.txt](../tests/unit/adv_api/CMakeLists.txt)文件，由于Kernel侧和Tiling侧的UT执行对象不同，需要在不同的target下添加测试文件。以Kernel侧验证ascend910B1的UT为例，将UT测试文件路径添加到用例的源文件列表`ASCENDC_TEST_ASCEND910B1_AIV_CASE_SRC_PART_FILES`中，即新增文件路径`${ASCENDC_TESTS_DIR}/math/axpy/test_operator_axpy.cpp`。Tiling侧同理，需要将测试文件添加到`ASCENDC_TILING_TEST_SRC_FILES`列表。
 ##### 执行UT
 - 执行全量UT用例
   
@@ -418,8 +418,17 @@ TEST_F(TestTiling, TestAxpyTiling)
 
   打开[tests/unit/adv_api/main_global.cpp](../tests/unit/adv_api/main_global.cpp)和[tests/unit/adv_api/tiling/main.cpp](../tests/unit/adv_api/tiling/main.cpp)文件，在main函数中return前的最后一行添加下面的代码，利用gTest的过滤器根据单元测试的单元名字过滤测试用例。
     ```c++
-    ::testing::GTEST_FLAG(filter) = "*Axpy*"
+    ::testing::GTEST_FLAG(filter) = "*Axpy*";
     ```
+  修改[build.sh](../build.sh)，将all修改为需要执行的UT target，以执行Kernel侧ascend910B1的UT为例，target即为ascendc_utest_ascend910B1_AIV。
+  ```
+  function build_test() {
+    cmake_config
+    # build all
+    build ascendc_utest_ascend910B1_AIV
+  }
+  ```
+  执行命令`bash build.sh -t`即可仅运行新增UT用例。
 #### 单算子测试
 完成高阶API编码后，通过实现算子功能，在算子中调用该API，来测试API的功能，具体参考如下步骤。
 - 编译安装。
