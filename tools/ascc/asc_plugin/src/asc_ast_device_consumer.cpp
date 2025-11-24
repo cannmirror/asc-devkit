@@ -50,20 +50,16 @@ llvm::DenseMap<KernelFuncInfo, std::pair<std::unordered_set<KernelMetaType>, Kfc
 bool ASTDeviceVisitor::VisitFunctionDecl(const clang::FunctionDecl *funcDecl)
 {
     bool hasGlobal = false;
-    bool hasDevice = false;
     static constexpr llvm::StringRef globalAttr = "global";
-    static constexpr llvm::StringRef deviceAttr = "device";
     for (const auto *attr : funcDecl->attrs()) {
         if (const auto *annotate = llvm::dyn_cast<clang::AnnotateAttr>(attr)) {
             llvm::StringRef annotation = annotate->getAnnotation();
             if (annotation == globalAttr) {
                 hasGlobal = true;
-            } else if (annotation == deviceAttr) {
-                hasDevice = true;
             }
         }
     }
-    if (hasGlobal && hasDevice) {
+    if (hasGlobal) {
         AscPlugin::KernelFuncInfo kernelKey = GetKernelInfo(funcDecl);
         llvm::StringRef funcName = funcDecl->getName();
         if (kernelKey.mangledName.empty()) {

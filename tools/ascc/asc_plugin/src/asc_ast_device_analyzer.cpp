@@ -64,6 +64,7 @@ int32_t AscAstDeviceAnalyzer::Process()
     }
     return ASC_SUCCESS;
 }
+
 void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
 {
     auto npuArch = InfoManager::GetInstance().GetShortSocVersion();
@@ -80,7 +81,7 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
     };
     static const std::vector<std::string> innerDefinitions = {
         "-D__global__=__attribute__((annotate(\"global\")))",
-        "-D__aicore__=__attribute__((annotate(\"device\")))",
+        "-D__aicore__=",
         "-D__CCE__",
         "-DGM_ADDR= __gm__ uint8_t*",
         "-D__gm__= __attribute__((annotate(\"cce_global\")))",
@@ -91,9 +92,9 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
         "-Dbfloat16_t=__bf16",
         "-D__NPU_DEVICE__",
         // bisheng kernel type attribute
-        "-D__mix__(cube, vec)=__attribute__((annotate(\"device\")))",
-        "-D__cube__=__attribute__((annotate(\"device\")))",
-        "-D__vector__=__attribute__((annotate(\"device\")))"};
+        "-D__mix__(cube, vec)=",
+        "-D__cube__=",
+        "-D__vector__="};
     const CompileArgs &inputArgs = AscPlugin::InfoManager::GetInstance().GetCompileArgs();
     const std::string inputFileDir = GetFilePath(source);
     PathInfo pathInfo = InfoManager::GetInstance().GetPathInfo();
