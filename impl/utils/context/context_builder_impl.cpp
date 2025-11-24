@@ -24,15 +24,15 @@
 
 namespace context_ascendc {
 KernelRunContextHolder::KernelRunContextHolder(
-    gert::ContextHolder<gert::KernelContext> &&ctxHolder, gert::KernelContext *kernelContext, KernelRunContext *context)
-    : valueHolder(std::make_unique<ValueHolderImpl>(std::move(ctxHolder))), context(context),
-      kernelContext(kernelContext)
+    gert::ContextHolder<gert::KernelContext> &&ctxHolder, gert::KernelContext *kernelContextPtr, KernelRunContext *contextPtr)
+    : valueHolder(std::make_unique<ValueHolderImpl>(std::move(ctxHolder))), context(contextPtr),
+      kernelContext(kernelContextPtr)
 {}
 
 KernelRunContextHolder::KernelRunContextHolder(gert::ContextHolder<gert::TilingContext> &&ctxHolder,
-    std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, gert::KernelContext *kernelContext)
+    std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, gert::KernelContext *kernelContextPtr)
     : valueHolder(std::make_unique<ValueHolderImpl>(std::move(ctxHolder), std::move(inputTensorHolder))),
-      kernelContext(kernelContext)
+      kernelContext(kernelContextPtr)
 {}
 namespace {
 using SetConstDataFunc = std::function<bool(void *, int64_t, int64_t, std::unique_ptr<uint8_t[]> &)>;
