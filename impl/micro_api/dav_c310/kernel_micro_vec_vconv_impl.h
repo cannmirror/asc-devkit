@@ -87,7 +87,7 @@ __simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg,
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegTensor<T> dstCopyReg;
         CastOperator<T, U, layoutMode, MaskMergeMode::ZEROING>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -135,7 +135,7 @@ __simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg,
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegTensor<T> dstCopyReg;
         CastOperator<T, U, satMode, layoutMode, MaskMergeMode::ZEROING>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -210,7 +210,7 @@ __simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg,
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegTensor<T> dstCopyReg;
         CastOperator<T, U, roundMode, satMode, layoutMode, MaskMergeMode::ZEROING>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -244,7 +244,7 @@ __simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg,
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegTensor<T> dstCopyReg;
         CastOperator<T, U, roundMode, satMode, MaskMergeMode::ZEROING>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -282,7 +282,7 @@ __simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg,
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegTensor<T> dstCopyReg;
         CastOperator<T, U, roundMode, layoutMode, MaskMergeMode::ZEROING>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -315,7 +315,7 @@ __simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg,
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegTensor<T> dstCopyReg;
         CastOperator<T, U, roundMode, MaskMergeMode::ZEROING>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -374,7 +374,7 @@ __simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegT dstCopyReg;
         CastOperator<T, U, MaskMergeMode::ZEROING, RegT, RegU>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -413,7 +413,7 @@ __simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegT dstCopyReg;
         CastOperator<T, U, satMode, MaskMergeMode::ZEROING, RegT, RegU>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -454,7 +454,7 @@ __simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegT dstCopyReg;
         CastOperator<T, U, roundMode, satMode, MaskMergeMode::ZEROING, RegT, RegU>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -493,7 +493,7 @@ __simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
     } else if constexpr (mode == MaskMergeMode::MERGING) {
         RegT dstCopyReg;
         CastOperator<T, U, roundMode, MaskMergeMode::ZEROING, RegT, RegU>(dstCopyReg, srcReg, mask);
-        Copy(dstReg, dstCopyReg, mask);
+        CopyMerging(dstReg, dstCopyReg, mask);
     }
 }
 
@@ -504,6 +504,10 @@ __simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
     using ActualU = typename RegU::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
+    if constexpr (trait.mrgMode == MaskMergeMode::MERGING) {
+        static_assert(SupportEnum<trait.layoutMode, RegLayout::UNKNOWN, RegLayout::ZERO>(),
+            "current Cast api only supported MERGING Mode for RegLayout::UNKNOWN/ZERO on current device!");
+    }
     constexpr bool layoutMerge = SupportType<Tuple<ActualT, ActualU>, Tuple<uint16_t, uint8_t>, Tuple<int16_t, int8_t>,
         Tuple<uint32_t, uint16_t>, Tuple<uint32_t, int16_t>, Tuple<int32_t, int16_t>, Tuple<int64_t, int32_t>,
         Tuple<float, half>, Tuple<float, bfloat16_t>, Tuple<half, hifloat8_t>, Tuple<half, uint8_t>,
