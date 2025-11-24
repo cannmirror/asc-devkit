@@ -1,18 +1,4 @@
-  --run                             Install run mode
-    --docker-root=<docker root fs directory>    Specify the path of docker root
-    --install-path=<path>           Install product to specific dir path
-    --install-for-all               Install for all user
-    --chip=<chip1,chip2>            Nothing is currently supported
-    --feature=<feature1,feature2>   Nothing is currently supported
-    --setenv                        Setting the Environment Variables Required at Run Time
-  --devel                           Install devel mode
-    --docker-root=<docker root fs directory>    Specify the path of docker root
-    --install-path=<path>           Install product to specific dir path
-    --install-for-all               Install for all user
-    --chip=<chip1,chip2>            Nothing is currently supported
-    --feature=<feature1,feature2>   Nothing is currently supported
-    --setenv                        Setting the Environment Variables Required at Run Time
-  --full                            Install full mode
+  --run | --full | --devel          Install run | full | devel mode
     --docker-root=<docker root fs directory>    Specify the path of docker root
     --install-path=<path>           Install product to specific dir path
     --install-for-all               Install for all user
