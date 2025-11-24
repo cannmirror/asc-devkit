@@ -303,6 +303,7 @@ bool SwitchIntoShortSocVersion(const char *socVersionStr, std::string &shortSocV
         {"Ascend910_9599", "Ascend910_95"},
         {"Ascend910_957d", "Ascend910_95"},
         {"Ascend910_9581", "Ascend910_95"},
+        {"Ascend910_957c", "Ascend910_95"},
         {"Ascend910_9589", "Ascend910_95"}, // ascend910_95_list
         {"MC62CM12AA", "MC62CM12A"}
     };

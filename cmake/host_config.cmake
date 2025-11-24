@@ -11,7 +11,7 @@ set(ascend910b_list ascend910b1 ascend910b2 ascend910b2c ascend910b3 ascend910b4
 set(ascend910_list  ascend910a ascend910proa ascend910b ascend910prob ascend910premiuma)
 set(ascend310p_list ascend310p1 ascend310p3 ascend310p5 ascend310p7 ascend310p3vir01 ascend310p3vir02 ascend310p3vir04 ascend310p3vir08)
 set(ascend310b_list ascend310b1 ascend310b2 ascend310b3 ascend310b4)
-set(ascend910_95_list ascend910_9599 ascend910_9589 ascend910_9579 ascend910_958b ascend910_957b ascend910_957d ascend910_950z ascend910_958a)
+set(ascend910_95_list ascend910_9599 ascend910_9589 ascend910_9579 ascend910_958b ascend910_957b ascend910_957d ascend910_950z ascend910_958a ascend910_957c)
 set(ascend910_55_list ascend910_5591)
 set(all_product ${ascend910b_list} ${ascend910_list} ${ascend310p_list} ${ascend910_95_list} ${ascend910_55_list})
 
