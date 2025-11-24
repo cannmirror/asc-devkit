@@ -19,7 +19,7 @@
 #include "../../../impl/adv_api/detail/utils/init_global_memory/init_global_memory_v200_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "../../../impl/adv_api/detail/utils/init_global_memory/init_global_memory_v220_impl.h"
-#elif __CCE_AICORE__ == 310 || defined(__DAV_L311__) || defined(__DAV_L300__)
+#elif __CCE_AICORE__ == 310
 #include "../../../impl/adv_api/detail/utils/init_global_memory/init_global_memory_v310_impl.h"
 #endif
 

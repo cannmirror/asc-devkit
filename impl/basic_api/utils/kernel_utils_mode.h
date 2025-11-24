@@ -44,88 +44,6 @@ FRACTAL_Z_3D -> NCDHW           DCHNT -> NCDH  [0,1,2*3,4*5,6]    -> [0,1,2,3*4]
 FRACTAL_Z    -> ND              HCNT  -> HCN   [0:-4,-4,-3*-2,-1] -> [0:-2,-2,-1]
 */
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || \
-    (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113))
-enum class FixBufPos : uint8_t {
-    QUANT_PRE = 0,
-    RELU_PRE,
-    RELU_POST,
-    QUANT_POST,
-    ANTI_QUANT,
-    ANTI_QUANT_MTE2,
-    MAX
-};
-
-union Mte2QTableParam {
-    int8_t index[8];
-    uint64_t qTable;
-};
-
-
-// redefine these to support other platform.
-enum class pre_quant_t {
-    No_Quant = 0,
-    REQS8_Vector = 2,
-    REQS8_Scalar,
-    DEQF16_Vector,
-    DEQF16_Scalar,
-    DEQS16_Vector,
-    DEQS16_Scalar,
-    DEQS32_Vector,
-    DEQS32_Scalar,
-    REQS4_Vector,
-    REQS4_Scalar,
-};
-
-enum class post_quant_t {
-    No_Quant = 0,
-    SHIFT2S16_Scalar,
-    SHIFT2S16_Vector,
-    SHIFT2S8_Scalar,
-    SHIFT2S8_Vector,
-    SHIFT2S4_Scalar,
-    SHIFT2S4_Vector,
-};
-
-typedef ReluMode_t pre_relu_t;
-
-enum class post_relu_t {
-    NoRelu = 0,
-    NormalRelu,
-    ScalarRelu,
-    VectorRelu,
-};
-#if !defined(__CCE_KT_TEST__)
-enum class eltwise_op_t {
-    No_Eltwise = 0,
-    Add,
-    Sub,
-    Mul,
-    Max
-};
-
-enum class ClipReluMode_t {
-    NoClipRelu = 0,
-    ScalarClipRelu
- };
-#endif
-
-enum class lsb_mask_t {
-    Disable = 0,
-    Mask_1_LSB,
-    Mask_2_LSBs,
-    Mask_3_LSBs,
-    Mask_4_LSBs,
-};
-
-enum class instr_id_t {
-    ID_0 = 0,
-    ID_1 = 1,
-    ID_2 = 2,
-    ID_3 = 3,
-};
-
-#endif
 union NotNumUnion {
     __simd_callee__ NotNumUnion() {}
     float f;
@@ -174,10 +92,6 @@ enum class RoundMode : uint8_t {
     CAST_ROUND, // away-zero
     CAST_TRUNC, // to-zero
     CAST_ODD,   // Von Neumann rounding
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || \
-    (__NPU_ARCH__ == 3103)  || (__NPU_ARCH__ == 3113))
-    UNKNOWN = 0xFF,
-#endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
     CAST_HYBRID,  // hybrid round
     CAST_EVEN,

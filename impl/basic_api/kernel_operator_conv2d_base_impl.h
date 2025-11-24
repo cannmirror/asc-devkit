@@ -169,7 +169,7 @@ template <typename T>
 __aicore__ inline void LoadL0AForConv2D(uint32_t kBlocks, uint32_t indexK, uint32_t mBlocks, uint32_t indexM,
     Conv2dParams& conv2dParams, Conv2dTilling& tilling, const LocalTensor<T>& src0, const LocalTensor<T>& l0a)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 1001) && (__NPU_ARCH__ != 2002) && (__NPU_ARCH__ != 2103)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 1001) && (__NPU_ARCH__ != 2002)
     LoadL0AForConv2DV2(kBlocks, indexK, mBlocks, indexM, conv2dParams, tilling, src0, l0a);
 #else
     LoadL0AForConv2DV1(kBlocks, indexK, mBlocks, indexM, conv2dParams, tilling, src0, l0a);
@@ -205,53 +205,6 @@ __aicore__ inline void LoadL0BForConv2D(uint32_t kBlocks, uint32_t nBlocks, uint
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-template <typename T, typename U>
-__aicore__ inline void MmadFuncForConv2D(const LocalTensor<U>& l0a, const LocalTensor<U>& l0b,
-    const LocalTensor<T>& l0c, const LocalTensor<T>& bias, Conv2dParams& conv2dParams, Conv2dTilling tilling,
-    uint32_t kBlocks, uint32_t mBlocks, uint32_t nBlocks, uint32_t indexK, uint32_t indexM, uint32_t indexN)
-{
-    // only care data in K dim
-    uint32_t bSize = tilling.blockSize * tilling.blockSize;
-    uint32_t dstFlattenIdx = (indexN * tilling.mBlockNum * tilling.nTileBlock + indexM * tilling.mTileBlock) * bSize;
-    uint32_t hwActualSize = mBlocks;
-
-    // for m_extension is 1, mmad is GEMV mode, GEMV mode must L0A shape M is 1
-    // but current L0A shape M is not 1, set hw_actual_size to 2, mmad work in GEMM mode,
-    // set to 2 won't inspect mmad result
-    if (hwActualSize == 1) {
-        hwActualSize = 2;
-    }
-
-    MmadParams mmadParams;
-
-    mmadParams.SetM(hwActualSize);
-    mmadParams.SetK(kBlocks * tilling.c0Size);
-    mmadParams.n = nBlocks * tilling.blockSize;
-    mmadParams.SetIsBias(1);
-
-    if ((indexK == 0) && (conv2dParams.initY == 0)) {
-        mmadParams.SetIsBias(0);
-    }
-
-    if ((indexK == 0) && (conv2dParams.initY == 2)) {
-        mmadParams.SetIsBias(0);
-        uint32_t biasOffset = nBlocks * indexN * 16;
-        // bias size is Cout, max Cout is 4096, so nburst is 1 is enough to data move
-        uint32_t burstLenUnit = 64;
-        uint32_t extent = sizeof(PrimT<T>) * nBlocks * 16;
-        uint32_t burstLen = extent / burstLenUnit;
-        BroadCastVecToMM(l0c[dstFlattenIdx], bias[biasOffset], 1, burstLen, 0, 0);
-        event_t eventIdVToM = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_M));
-        SetFlag<HardEvent::V_M>(eventIdVToM);
-        WaitFlag<HardEvent::V_M>(eventIdVToM);
-    }
-
-    MmadImpl(l0c[dstFlattenIdx], l0a, l0b, mmadParams);
-}
-
-#else
 template <typename T, typename U>
 __aicore__ inline void MmadFuncForConv2D(const LocalTensor<U>& l0a, const LocalTensor<U>& l0b,
     const LocalTensor<T>& l0c, const LocalTensor<T>& bias, Conv2dParams& conv2dParams, Conv2dTilling tilling,
@@ -295,7 +248,6 @@ __aicore__ inline void MmadFuncForConv2D(const LocalTensor<U>& l0a, const LocalT
 
     MmadImpl(l0c[dstFlattenIdx], l0a, l0b, mmadParams);
 }
-#endif
 
 template <typename T, typename U>
 __aicore__ inline void Conv2DExecNmNopingpong(const LocalTensor<T>& l0c, const LocalTensor<T>& bias,

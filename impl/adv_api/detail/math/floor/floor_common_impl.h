@@ -19,7 +19,7 @@
 #include "floor_v220_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "floor_v200_impl.h"
-#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002 && !defined(__DAV_L300__)
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 #include "floor_v300_impl.h"
 #endif
 

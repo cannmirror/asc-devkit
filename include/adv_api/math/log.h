@@ -34,7 +34,7 @@ __aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>
     uint32_t calCount)
 {
     // Only for AI Vector Core.
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)) || defined(__DAV_L311__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
     if ASCEND_IS_AIC {
         return;
     }
@@ -67,7 +67,7 @@ __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T
     const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     // Only for AI Vector Core.
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)) || defined(__DAV_L311__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
     if ASCEND_IS_AIC {
         return;
     }
@@ -135,7 +135,7 @@ __aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<
     uint32_t calCount)
 {
     // Only for AI Vector Core.
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)) || defined(__DAV_L311__)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
     if ASCEND_IS_AIC {
         return;
     }

@@ -80,10 +80,7 @@ public:
 
     __aicore__ static inline void InitSocStateImpl()
     {
-    #if defined(__NPU_ARCH__) && (((__NPU_ARCH__ == 3113)) || (__NPU_ARCH__ == 3103))
-    #else
-        set_atomic_none();
-    #endif
+    set_atomic_none();
     #if __NPU_ARCH__ == 2201
         set_mask_norm();
         if ASCEND_IS_AIC {
@@ -277,8 +274,7 @@ public:
 
 #if defined(__NPU_ARCH__) &&                                                                    \
      ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||             \
-      (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||             \
-      (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+      (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
     template <typename T>
     __aicore__ static inline __fbuf__ T* GetTemporaryFbBufferAddr(const int32_t bufferOffset, const int32_t bufferSize)
     {
@@ -356,8 +352,7 @@ public:
     }
 
 #if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||    \
-     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
     __aicore__ static inline uint64_t GetGMLen(const uint64_t& srcEleSize, const Dn2NzParams& intriParams)
     {
         uint64_t gmLen = (intriParams.dnNum - 1) * intriParams.srcDnMatrixStride * srcEleSize
@@ -433,8 +428,7 @@ public:
         constexpr uint64_t errCode = 0X5A5A0001;
         if (status) {
 #if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) ||    \
-     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113) ||    \
+    ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 5102) ||    \
      (__NPU_ARCH__ == 3101))
             trap();
 #else
@@ -475,8 +469,7 @@ public:
     }
 
 #if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) ||    \
-     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
     template <typename T>
     __aicore__ static inline void CheckGmMemOverflowDn2Nz(__gm__ T* gmAddr, __gm__ uint8_t* workSpace,
                                                           const bool& isSrc, const Dn2NzParams& intriParams)

@@ -169,9 +169,7 @@ SocVersion PlatformAscendC::GetSocVersion(void) const
         {"MC61AM21A", SocVersion::MC61AM21A},
         {"MC62CM12A", SocVersion::MC62CM12A},
         {"SD3403", SocVersion::SD3403},
-        {"KirinX90", SocVersion::KIRINX90},
-        {"Kirin9010", SocVersion::KIRIN9010},
-        {"Kirin9020", SocVersion::KIRIN9020}
+        {"KirinX90", SocVersion::KIRINX90}
     };
     auto it = convertMap.find(socVersionStr);
     if (it != convertMap.end()) {

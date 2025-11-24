@@ -33,14 +33,6 @@
 #elif (__NPU_ARCH__ == 5102)
 #include "micro_api/kernel_micro_intf_impl.h"
 #include "dav_m510/kernel_operator_vec_duplicate_impl.h"
-#elif __NPU_ARCH__ == 2103
-#include "dav_l210/kernel_operator_vec_duplicate_impl.h"
-#elif __NPU_ARCH__ == 3003
-#include "dav_l300/kernel_operator_vec_duplicate_impl.h"
-#elif __NPU_ARCH__ == 3103
-#include "dav_l310/kernel_operator_vec_duplicate_impl.h"
-#elif __NPU_ARCH__ == 3113
-#include "dav_l311/kernel_operator_vec_duplicate_impl.h"
 #endif
 
 #pragma begin_pipe(V)
