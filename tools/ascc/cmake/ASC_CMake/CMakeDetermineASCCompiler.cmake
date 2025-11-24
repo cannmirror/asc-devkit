@@ -39,7 +39,7 @@ set(ascend910b_list Ascend910B1 Ascend910B2 Ascend910B2C Ascend910B3 Ascend910B4
 set(ascend310p_list Ascend310P1 Ascend310P3 Ascend310P5 Ascend310P7
                     Ascend310P3Vir01 Ascend310P3Vir02 Ascend310P3Vir04 Ascend310P3Vir08)
 set(ascend910_95_list Ascend910_957b Ascend910_950z Ascend910_958b Ascend910_958a
-                      Ascend910_9599 Ascend910_957d Ascend910_9581 Ascend910_9589)
+                      Ascend910_9599 Ascend910_957d Ascend910_9581 Ascend910_9589 Ascend910_957c)
 if(DEFINED SOC_VERSION)
     if(NOT ((SOC_VERSION IN_LIST ascend910b_list) OR (SOC_VERSION IN_LIST ascend310p_list) OR (SOC_VERSION IN_LIST ascend910_95_list)))
         message(FATAL_ERROR "SOC_VERSION ${SOC_VERSION} is unsupported, support list is ${ascend910b_list} ${ascend310p_list} ${ascend910_95_list}")

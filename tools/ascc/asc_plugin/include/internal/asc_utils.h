@@ -153,6 +153,7 @@ const std::unordered_map<std::string, AscPlugin::ShortSocVersion> SOC_VERSION_MA
     {"Ascend910_957d", AscPlugin::ShortSocVersion::ASCEND910_95},
     {"Ascend910_9581", AscPlugin::ShortSocVersion::ASCEND910_95},
     {"Ascend910_9589", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_957c", AscPlugin::ShortSocVersion::ASCEND910_95},
 };
 
 const std::map<std::pair<AscPlugin::ShortSocVersion, AscPlugin::CoreType>, std::string> CCE_AICORE_MAP = {
