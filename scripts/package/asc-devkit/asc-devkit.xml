@@ -133,8 +133,8 @@
         <file value="ascendc_pack_kernel" install_mod="550"/>
     </file_info>
 
-    <file_info value="asc_plugin" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64" install_type="all" install_mod="440">
-        <file value="libasc_plugin.so" file_type="shared" install_softlink="$(TARGET_ENV)/ascc/lib64/libasc_plugin.so"/>
+    <file_info value="asc_plugin" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/ascc/lib64" install_type="all" install_mod="440">
+        <file value="libasc_plugin.so" file_type="shared" install_softlink="$(TARGET_ENV)/lib64/libasc_plugin.so"/>
     </file_info>
 
     <file_info copy_type="delivery" src_path="lib/device" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64/device/lib64" pkg_feature="filter_florence">
