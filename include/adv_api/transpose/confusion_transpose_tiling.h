@@ -19,7 +19,7 @@
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
 constexpr uint32_t TWO_TIMES = 2;
-#ifndef __NPU_DEVICE__
+#if !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 
 #ifndef ASCC_PARAM_BLOCK_CUBE
 #define ASCC_PARAM_BLOCK_CUBE
@@ -36,7 +36,7 @@ constexpr uint32_t ONE_BLK_SIZE = 32;
 constexpr int32_t CUBE_MAX_SIZE = 256;
 #endif
 
-#else // #ifdef __NPU_DEVICE__
+#else // defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 
 #ifndef ASCC_PARAM_BLOCK_CUBE
 #define ASCC_PARAM_BLOCK_CUBE
@@ -53,7 +53,7 @@ const uint16_t ONE_BLK_SIZE = 32;
 const int32_t CUBE_MAX_SIZE = 256;
 #endif
 
-#endif // __NPU_DEVICE__
+#endif // !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 /*!
  * \brief calculate max and min tmp buffer size for Transpose interface.
    tmp buffer size is a input for GetConfusionTransposeTilingInfo

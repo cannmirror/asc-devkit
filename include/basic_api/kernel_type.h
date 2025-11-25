@@ -15,7 +15,7 @@
 #ifndef KERNEL_TYPE_H
 #define KERNEL_TYPE_H
 
-#if !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__)
+#if !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
 #define DT_FLOAT 0            // float32
 #define DT_FLOAT16 1          // half
 #define DT_INT8 2             // int8
@@ -110,7 +110,7 @@
 // Add new formats here
 
 #define FORMAT_MAX 0xff
-#else // ifdef __ASCC_XXXX__
+#else // defined(__NPU_HOST__) || defined(__NPU_DEVICE__) || defined(__ASCC_HOST__) || defined(__ASCC_DEVICE__)
 namespace AscendC {
 enum DataType {
     DT_FLOAT = 0,            // float32
@@ -208,5 +208,5 @@ enum Format {
     FORMAT_MAX,
 };
 }
-#endif // __ASCC_XXXX__
+#endif // !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
 #endif
