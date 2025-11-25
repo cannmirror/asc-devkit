@@ -12,9 +12,7 @@
 #include <mutex>
 #include <stdio.h>
 #include "securec.h"
-#define __AICPU_DEVICE__
 #include "aicpu_api/aicpu_api.h"
-#undef __AICPU_DEVICE__
 #include <mockcpp/mockcpp.hpp>
 
 class TEST_AICPU_DUMP : public testing::Test {
