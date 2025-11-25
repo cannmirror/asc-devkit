@@ -8,24 +8,10 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-# Ascend mode
-# if(DEFINED ENV{ASCEND_CUSTOM_PATH})
-#   set(ASCEND_DIR $ENV{ASCEND_CUSTOM_PATH})
-# else()
-#   if ("$ENV{USER}" STREQUAL "root")
-#     set(ASCEND_DIR /usr/local/Ascend/latest)
-#   else ()
-#     set(ASCEND_DIR $ENV{HOME}/Ascend/latest)
-#   endif()
-# endif()
-
-# message(STATUS "Search libs under install path ${ASCEND_DIR}")
-
-# set(CMAKE_PREFIX_PATH ${ASCEND_DIR}/)
 set(CMAKE_PREFIX_PATH ${ASCEND_CANN_PACKAGE_PATH}/)
 
 set(CMAKE_MODULE_PATH
-  ${CMAKE_CURRENT_SOURCE_DIR}/depend/modules
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules
   ${CMAKE_MODULE_PATH}
 )
 message(STATUS "CMAKE_MODULE_PATH            :${CMAKE_MODULE_PATH}")
@@ -40,6 +26,4 @@ find_package(platform MODULE REQUIRED)
 if(ENABLE_TEST)
   find_package(pvmodel MODULE REQUIRED)
 endif()
-# find_package(mmpa REQUIRED)
-# find_package(c_sec REQUIRED)
-# find_package(error_manager REQUIRED)
+

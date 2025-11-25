@@ -7,7 +7,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-get_filename_component(ASCENDC_KERNEL_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
+get_filename_component(ASCENDC_KERNEL_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}/legacy_modules" ABSOLUTE)
 
 include(${ASCENDC_KERNEL_CMAKE_DIR}/host_config.cmake)
 include(${ASCENDC_KERNEL_CMAKE_DIR}/host_intf.cmake)
