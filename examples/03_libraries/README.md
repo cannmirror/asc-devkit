@@ -5,7 +5,8 @@
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [01_AddcdivCustomSample](./01_AddcdivCustomSample) | 本样例通过Ascend C编程语言实现了Addcdiv算子，给出了对应的端到端实现 |
+| [01_addcdivcustomsample](./01_addcdivcustomsample) | 本样例通过Ascend C编程语言实现了Addcdiv算子，给出了对应的端到端实现 |
+| [02_scattercustomsample](./02_scattercustomsample) | 本样例介绍兼容Scatter算子实现及核函数直调方法，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，给出了对应的端到端实现 |
 
 ## 获取样例代码<a name="codeready"></a>
 

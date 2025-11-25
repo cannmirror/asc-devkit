@@ -1,7 +1,7 @@
 # DumpTensor直调样例说明
 
 ## 概述
-本样例通过Ascend C编程语言实现了Add算子和Mmad算子，同时在算子中添加DumpTensor调测，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，同时在算子中添加printf调测，给出了对应的端到端实现。
+本样例通过Ascend C编程语言实现了Add算子和Mmad算子，同时在算子中添加DumpTensor调测，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，给出了对应的端到端实现。
 
 ## 支持的AI处理器
 - Ascend 910C
@@ -15,7 +15,8 @@
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── printf.asc         // AscendC算子实现 & 调用样例
+│   └── cube.asc                // AscendC算子实现 & 调用样例
+│   └── vector.asc              // AscendC算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -39,7 +40,8 @@ DumpTensor介绍：
     - C为目的操作数，存放矩阵乘结果的矩阵，形状为\[M, N]。
     - Bias为矩阵乘偏置，形状为\[N]。对A*B结果矩阵的每一行都采用该Bias进行偏置。
 
-    - Vector场景Add算子介绍
+  - Vector场景Add算子介绍
+
     Add算子实现了两个数据相加，返回相加结果的功能。对应的数学表达式为：  
     ```
     z = x + y
