@@ -91,7 +91,6 @@ class KernelInfoInfer:
             return True
         return False
 
-
     @staticmethod
     def get_sync_task_start_end_instr_from_i_file(content):
         """
@@ -105,7 +104,6 @@ class KernelInfoInfer:
         wait_match = re.findall(wait_pattern, content)
         return len(set_match) > 2, len(wait_match) > 2
 
-
     @staticmethod
     def get_enable_deterministic_var_from_i_file(content):
         """
@@ -118,7 +116,6 @@ class KernelInfoInfer:
         if match and match.group(1) == "1":
             return True
         return False
-
 
     @staticmethod
     def find_kernel_type(s):
@@ -167,11 +164,9 @@ AscendCLogLevel.LOG_ERROR)
                     ("tiling struct match expression is wrong. lines: " + s))
                 return None, None
 
-
     @staticmethod
     def find_tiling_struct_no_register_flag(s: str) -> bool:
         return "__enable_no_register_custom_tiling" in s
-    
 
     @staticmethod
     def get_dump_info_from_i_file(content):
@@ -304,7 +299,6 @@ found following structs::{tiling_key_struct_map[match.group(1)]}, {match.group(2
         else:
             return False
 
-
     @staticmethod
     def dfx_for_func_name(cce_file: str, origin_func_name: str, func_name_exist: bool):
         if not func_name_exist:
@@ -314,13 +308,11 @@ please check whether the function name is correct in the kernel file.",
                 AscendCLogLevel.LOG_ERROR)
             raise Exception("An error occurred during stage of infer compile info")
 
-
     @staticmethod
     def search_any_in_line(line, keywords):
         pattern = re.compile(r'\b(' + '|'.join(re.escape(keyword) for keyword in keywords) + r')\b')
         matches = pattern.findall(line)
         return matches
-
 
     @staticmethod
     def get_kernel_meta_type(value):
@@ -481,15 +473,17 @@ REGISTER_TILING_DEFAULT')
             extract_template_tiling_info(declare_param_str, select_param_str)
             decode_tiling_result = decode_tiling()
             tiling_key_list = [str(k) for k in decode_tiling_result.keys()]
-            _tpl_tilingkey_kernel_type_check(
+            tiling_key_list, decode_tiling_result = _tpl_tilingkey_kernel_type_check(
                 tiling_key_list, decode_tiling_result, tiling_key_kernel_type
             )
-            _tpl_tilingkey_deterministic_check(
+            tiling_key_list, decode_tiling_result = _tpl_tilingkey_deterministic_check(
                 tiling_key_list,
                 decode_tiling_result,
                 tiling_key_deterministic,
             )
-            _tpl_tilingkey_native_check(tiling_key_list, decode_tiling_result, op_info)
+            tiling_key_list, decode_tiling_result = _tpl_tilingkey_native_check(
+                tiling_key_list, decode_tiling_result, op_info
+            )
 
             group_to_key = {}
             group_id_to_all_keys = {}
@@ -501,7 +495,7 @@ REGISTER_TILING_DEFAULT')
                     if group_id not in group_id_to_all_keys:
                         group_id_to_all_keys[group_id] = []
                     group_id_to_all_keys[group_id].append(key)
-            
+
             tiling_key_list_tmp = list(group_to_key.values())
             tiling_key_list_tmp = [str(key) for key in tiling_key_list_tmp]
 
