@@ -754,14 +754,22 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
         ascend_home_path = os.environ.get('ASCEND_HOME_PATH')
         import platform
         archlinux = platform.machine()
-        if archlinux == 'x86_64':
+        if ascend_home_path is None or ascend_home_path == '':
+            asc_opc_path = shutil.which("asc_opc")	
+            if asc_opc_path is not None:	
+                asc_opc_path_link = os.path.dirname(asc_opc_path)
+                asc_opc_real_path = os.path.realpath(asc_opc_path_link)
+                ascend_home_path = os.path.realpath(	
+                        os.path.join(asc_opc_real_path, "..", ".."))
+            else:	
+                ascend_home_path = "/usr/local/Ascend/latest"
+
+        if 'x86' in archlinux:
             asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))
-        elif archlinux in ('aarch64', 'arm64'):
-            asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
         else:
-            asc_path = os.path.realpath(
-                os.path.join(ascend_home_path, "x86_64-linux", "tikcpp", "tikcfw", "interface", "..", "..")
-                )
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
+        if asc_path is None:
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
         
         options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
@@ -781,6 +789,7 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
         options.append("-I" + os.path.join(asc_path, "impl"))
         options.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
         options.append("-I" + os.path.join(asc_path, "..", "..", "include"))
+        options.append("-I" + os.path.join(asc_path, "..", "..", "include", "ascendc"))
         options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw"))
         options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "impl"))
         options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "interface"))

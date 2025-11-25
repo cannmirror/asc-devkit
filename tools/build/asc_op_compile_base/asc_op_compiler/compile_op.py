@@ -1689,11 +1689,21 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     ascend_home_path = os.environ.get('ASCEND_HOME_PATH')
     import platform
     archlinux = platform.machine()
-    if archlinux == 'x86_64':
+    if ascend_home_path is None or ascend_home_path == '':
+        asc_opc_path = shutil.which("asc_opc")	
+        if asc_opc_path is not None:	
+            asc_opc_path_link = os.path.dirname(asc_opc_path)
+            asc_opc_real_path = os.path.realpath(asc_opc_path_link)
+            ascend_home_path = os.path.realpath(	
+                    os.path.join(asc_opc_real_path, "..", ".."))
+        else:	
+            ascend_home_path = "/usr/local/Ascend/latest"
+
+    if 'x86' in archlinux:
         asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))
-    elif archlinux in ('aarch64', 'arm64'):
-        asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
     else:
+        asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
+    if asc_path is None:
         asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
     cann_version_file_path = os.path.join(asc_path, "..", "..",
                                           "include", "version", "cann_version.h")
@@ -1712,6 +1722,7 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     compile_options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "utils"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include"))
+    compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include", "ascendc"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw"))
