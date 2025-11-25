@@ -16,6 +16,7 @@
 #include <ctime>
 #include <string>
 #include "ascendc_runtime.h"
+#include "runtime/kernel.h"
 #include <mockcpp/mockcpp.hpp>
 #include <unordered_map>
 #include "acl/acl_base.h"
@@ -70,11 +71,6 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeRegisterTest){
     UnregisterAscendBinary(handle);
 }
 
-uint32_t rtKernelLaunchWithFlagV2()
-{
-    return 0;
-}
-
 TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeDevBinaryRegisterTest) {
     uint8_t fileBuf[32];
     size_t fileSize = 32;
@@ -103,13 +99,13 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeMemoryFailedTest){
     EXPECT_NE(ret, 0);
 }
 
-// TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeGetProfStatusTest){
-//     MOCKER(GetAscendProfStatus).expects(once()).will(returnValue(true));
-//     MOCKER(AscendProfRegister).expects(once());
-//     GetAscendProfStatus();
-//     AscendProfRegister();
-//     EXPECT_NO_THROW(GlobalMockObject::verify());
-// }
+TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeGetProfStatusTest){
+    MOCKER(GetAscendProfStatus).expects(once()).will(returnValue(true));
+    MOCKER(AscendProfRegister).expects(once());
+    GetAscendProfStatus();
+    AscendProfRegister();
+    EXPECT_NO_THROW(GlobalMockObject::verify());
+}
 
 TEST_F(TEST_ASCENDC_RUNTIME, GetCoreNumForMixVectorCore){
     uint32_t aiCoreNum = 0;
@@ -162,25 +158,25 @@ const char *fake_rtGetSocVersion1()
     return "ascend910b22";
 }
 
-// TEST_F(TEST_ASCENDC_RUNTIME, TestAscendCheckSoCVersion)
-// {
-//     char errMsg[1024]; // max err msg length is 1024
-//     const char* socVersion = "ascend910b1";
-//     MOCKER(aclrtGetSocName).stubs().will(invoke(fake_rtGetSocVersion));
-//     bool ret = AscendCheckSoCVersion(socVersion, errMsg);
-//     EXPECT_EQ(ret, true);
-//     const char* socVersion1 = "ascend310p1";
-//     ret = AscendCheckSoCVersion(socVersion1, errMsg);
-//     EXPECT_EQ(ret, false);
-//     GlobalMockObject::verify();
-//     MOCKER(aclrtGetSocName).stubs().will(invoke(fake_rtGetSocVersion1));
-//     ret = AscendCheckSoCVersion(socVersion1, errMsg);
-//     EXPECT_EQ(ret, false);
-//     GlobalMockObject::verify();
-//     const char* socVersion2 = "ascend310p1xx";
-//     ret = AscendCheckSoCVersion(socVersion2, errMsg);
-//     EXPECT_EQ(ret, false);
-// }
+TEST_F(TEST_ASCENDC_RUNTIME, TestAscendCheckSoCVersion)
+{
+    char errMsg[1024]; // max err msg length is 1024
+    const char* socVersion = "ascend910b1";
+    MOCKER(aclrtGetSocName).stubs().will(invoke(fake_rtGetSocVersion));
+    bool ret = AscendCheckSoCVersion(socVersion, errMsg);
+    EXPECT_EQ(ret, true);
+    const char* socVersion1 = "ascend310p1";
+    ret = AscendCheckSoCVersion(socVersion1, errMsg);
+    EXPECT_EQ(ret, false);
+    GlobalMockObject::verify();
+    MOCKER(aclrtGetSocName).stubs().will(invoke(fake_rtGetSocVersion1));
+    ret = AscendCheckSoCVersion(socVersion1, errMsg);
+    EXPECT_EQ(ret, false);
+    GlobalMockObject::verify();
+    const char* socVersion2 = "ascend310p1xx";
+    ret = AscendCheckSoCVersion(socVersion2, errMsg);
+    EXPECT_EQ(ret, false);
+}
 
 TEST_F(TEST_ASCENDC_RUNTIME, LaunchAscendKernelA){
     void * handle = nullptr;
