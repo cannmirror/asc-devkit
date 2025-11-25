@@ -134,6 +134,8 @@ public:
     const std::string& GetSourceFile() const;
     const std::unordered_map<std::string, GlobalFuncInfo>& GetGlobalSymbolInfo() const;
     uint32_t GetAscendMetaFlag() const;
+    uint32_t GetMaxCoreNum(const ShortSocVersion& socVersion) const;
+    uint32_t GetMaxCoreNum() const;
     size_t GetMetaFlagCounter() const;
     bool SaveTempRequested() const;
     bool UserDumpRequested() const;
@@ -148,6 +150,8 @@ public:
     bool HasOpSystemCfg() const;
     bool IsFirstKernel() const;
     bool IsAutoSyncOn() const;
+    bool IsSupportFifoDump() const;
+    bool IsFifoDumpOn() const;
 
 private:
     InfoManager() = default;

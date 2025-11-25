@@ -343,12 +343,9 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_printf)
     std::string golden = R"(void hello_world(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream)
 {
     struct {
-        void* __ascendc_dump;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
-    } __ascendc_args {nullptr, };
+    } __ascendc_args {};
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_one_core_dump_size = 1048576;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * 75);
     constexpr uint32_t __ascendc_overflow_status_size = 8;
     AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "hello_world";
@@ -365,8 +362,6 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_printf)
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * 75, __ascendc_stream, __ascendc_name);
-    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);
     FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
@@ -404,14 +399,11 @@ struct __AsccIsMyType1<MyTempClassB> : AscendC::Std::true_type {};
 template<typename T, int32_t Y, const auto& U, template<typename , typename > class I, template<typename , typename > class O> void Foo1::Foo2::hello_world(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream, int i, uint8_t* workspace)
 {
     struct {
-        void* __ascendc_dump;
         alignas(((alignof(int) + 3) >> 2) << 2) int i;
         alignas(((alignof(uint8_t*) + 3) >> 2) << 2) uint8_t* workspace;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
-    } __ascendc_args {nullptr, i, workspace, };
+    } __ascendc_args {i, workspace, };
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_one_core_dump_size = 1048576;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * 75);
     constexpr uint32_t __ascendc_overflow_status_size = 8;
     AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "hello_world";
@@ -425,19 +417,12 @@ template<typename T, int32_t Y, const auto& U, template<typename , typename > cl
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::ascendc_set_exception_dump_info(__ascendc_one_core_dump_size);
-    if(__ascendc_ret != 0) {
-        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "init assert dump failure!");
-        return;
-    }
     __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * 75, __ascendc_stream, __ascendc_name);
-    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);
     FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";

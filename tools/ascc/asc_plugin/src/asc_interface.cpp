@@ -245,7 +245,7 @@ int32_t PluginPrologue(const char** result, const char* config)
     if (manager.IsL2CacheEnabled()) {
         manager.SetAscendMetaFlag(ASC_L2CACHE_HINT_MASK);
     }
-    if (manager.IsDumpOn()) {
+    if (manager.IsFifoDumpOn()) {
         manager.SetAscendMetaFlag(ASC_PRINT_MASK);
     }
 
@@ -287,7 +287,7 @@ int32_t PluginGenKernel(const char** result, const char* info)
             if (ktype == KernelMetaType::KERNEL_TYPE_AIC_ONLY || ktype == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
                 continue;
             }
-            InfoManager::GetInstance().SetAscendMetaFlag(ASC_FFTS_MASK);
+            manager.SetAscendMetaFlag(ASC_FFTS_MASK);
         }
     }
     const auto [deviceResult, deviceStub, metaInfo] = GetDeviceCode(kernelInfo, kernelType, kfcScene);

@@ -16,6 +16,8 @@
 #define ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 
+inline __gm__ uint8_t* g_sysPrintFifoSpace = nullptr;
+
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_dump_tensor_impl.h"
 #elif __NPU_ARCH__ == 2002
@@ -265,4 +267,3 @@ __aicore__ inline void PrintTimeStamp(uint32_t descId)
 
 }  // namespace AscendC
 #endif  // END OF ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_IMPL_H
-

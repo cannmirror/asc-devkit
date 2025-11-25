@@ -27,37 +27,12 @@
 namespace AscendC {
 __BLOCK_LOCAL__ __inline__ __gm__ uint8_t* g_dumpWorkspaceReserved;
 
+template <typename T>
+__aicore__ constexpr inline Internal::DumpTensorDataType GetTensorDataType();
+
 template <typename T> __aicore__ inline uint32_t GetDataType(T data)
 {
-    uint32_t type;
-
-    if (IsSameType<T, bool>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_BOOL);
-    } else if (IsSameType<T, uint8_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_UINT8);
-    } else if (IsSameType<T, int8_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_INT8);
-    } else if (IsSameType<T, int16_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_INT16);
-    } else if (IsSameType<T, uint16_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_UINT16);
-    } else if (IsSameType<T, int32_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_INT32);
-    } else if (IsSameType<T, uint32_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_UINT32);
-    } else if (IsSameType<T, uint64_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_UINT64);
-    } else if (IsSameType<T, int64_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_INT64);
-    } else if (IsSameType<T, float>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_FLOAT);
-    } else if (IsSameType<T, half>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_FLOAT16);
-    } else if (IsSameType<T, bfloat16_t>::value) {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_BF16);
-    } else {
-        return static_cast<uint32_t>(Internal::DumpTensorDataType::ACL_MAX);
-    }
+    return static_cast<uint32_t>(GetTensorDataType<T>());
 }
 
 __aicore__ inline uint8_t GetDumpBlockIdx()
@@ -141,20 +116,14 @@ __aicore__ inline DataCopyParams GetDataCopyParamImpl(uint32_t offset)
     return repeatParams;
 }
 
+__aicore__ inline void GetMatCopyParam(
+    uint32_t dumpSize, uint16_t& n, uint16_t& m, uint16_t& dstStrideDstD, uint16_t& srcStride);
+
 template <typename T>
 __aicore__ inline void DumpTensorL0C2GMImpl(const LocalTensor<T>& src, __gm__ BlockInfo* ptr, uint32_t dumpSize)
 {
-    // L0C to GM
-    uint16_t align = (dumpSize % DEFAULT_BLOCK_SIZE == 0) ? 0 : 1;
-    uint16_t countBlks = align + dumpSize / DEFAULT_BLOCK_SIZE;
-
-    uint16_t burstLen = static_cast<uint16_t>(SRC_BURST_LEN_SIZE_ELE * SRC_BURST_LEN_SIZE_ELE
-        * sizeof(float) / ONE_BLK_SIZE);
-    uint16_t n = countBlks * BLOCK_CUBE;
-    uint16_t m = (burstLen * ONE_BLK_SIZE / B32_BYTE_SIZE) / BLOCK_CUBE;
-    uint16_t howo = (burstLen * ONE_BLK_SIZE / sizeof(float)) / BLOCK_CUBE;
-    uint16_t srcStride = DivCeil(howo, BLOCK_CUBE) * BLOCK_CUBE;
-    uint32_t dstStrideDstD = burstLen;
+    uint16_t n, m, dstStrideDstD, srcStride;
+    GetMatCopyParam(dumpSize, n, m, dstStrideDstD, srcStride);
 
     copy_matrix_cc_to_gm((__gm__ float *)(ptr->dumpAddr), (__cc__ float *)(src.GetPhyAddr()),
         0, n, m, dstStrideDstD, srcStride, 0, QuantMode_t::NoQuant,
@@ -180,7 +149,7 @@ __aicore__ inline uint32_t CheckValidPosition(const LocalTensor<T>& src)
     }
 }
 
-__aicore__ inline void DumpShapeImpl(const ShapeInfo &shapeInfo)
+__aicore__ inline void WriteDumpShapeInfo(const ShapeInfo &shapeInfo)
 {
     uint8_t core = GetDumpBlockIdx();
     if (core >= DUMP_CORE_COUNT) {
@@ -212,6 +181,17 @@ __aicore__ inline void DumpShapeImpl(const ShapeInfo &shapeInfo)
     ptr->dumpAddr += tlvSize;
     ptr->dumpOffset -= tlvSize;
     dcci((__gm__ uint64_t*)ptr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+}
+
+__aicore__ inline void WriteFifoShapeInfo(const ShapeInfo &shapeInfo);
+
+__aicore__ inline void DumpShapeImpl(const ShapeInfo &shapeInfo)
+{
+    if (g_sysPrintFifoSpace != nullptr) {
+        WriteFifoShapeInfo(shapeInfo);
+    } else {
+        WriteDumpShapeInfo(shapeInfo);
+    }
 }
 
 template <typename T>
@@ -281,12 +261,20 @@ __aicore__ inline void DumpTensorLocal2GMEntityImpl(const LocalTensor<T>& src, u
     dcci((__gm__ uint64_t*)ptr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
+
+template <template<typename> class Tensor, typename T>
+__aicore__ inline void DumpTensorFifoImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize);
+
 template <typename T>
 __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_t desc, uint32_t dumpSize)
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
-    DumpTensorLocal2GMEntityImpl(src, desc, dumpSize);
+    if (g_sysPrintFifoSpace != nullptr) {
+        DumpTensorFifoImpl(src, desc, dumpSize);
+    } else {
+        DumpTensorLocal2GMEntityImpl(src, desc, dumpSize);
+    }
     set_ctrl(ctrlValue);
 }
 
@@ -445,7 +433,11 @@ __aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t 
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
-    DumpTensorGM2GMEntityImpl(src, desc, dumpSize);
+    if (g_sysPrintFifoSpace != nullptr) {
+        DumpTensorFifoImpl(src, desc, dumpSize);
+    } else {
+        DumpTensorGM2GMEntityImpl(src, desc, dumpSize);
+    }
     set_ctrl(ctrlValue);
 }
 
@@ -643,16 +635,425 @@ __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char* f
 #endif
 }
 
+__aicore__ inline uint32_t GetArgsFifoLen(uint32_t& argsNum)
+{
+    return 0;
+}
+
+template <typename... Args>
+__aicore__ inline uint32_t GetArgsFifoLen(uint32_t& argsNum, Args&&... args);
+
+template <typename... Args>
+__aicore__ inline uint32_t GetArgsFifoLenImpl(uint32_t& argsNum, __gm__ const char* s, Args&&... args)
+{
+    constexpr uint32_t paramSize = sizeof(uint64_t);
+    const uint32_t& strLen = GetStringLength(s);
+    argsNum += 1;
+    return paramSize + strLen + GetArgsFifoLen(argsNum, args...);
+}
+
+template <typename T, typename... Args>
+__aicore__ inline uint32_t GetArgsFifoLenImpl(uint32_t& argsNum, T scalar, Args&&... args)
+{
+    constexpr uint32_t paramSize = sizeof(uint64_t);
+    argsNum += 1;
+    return paramSize + GetArgsFifoLen(argsNum, args...);
+}
+
+template <typename... Args>
+__aicore__ inline uint32_t GetArgsFifoLen(uint32_t& argsNum, Args&&... args)
+{
+    return GetArgsFifoLenImpl(argsNum, args...);
+}
+
+__aicore__ constexpr uint32_t AlignTlvLen(const uint32_t& dataLen)
+{
+    constexpr uint32_t num = 7;
+    return ((dataLen + num) & ~num) + num + 1;
+}
+
+template <typename... Args>
+__aicore__ inline uint32_t GetPrintFifoTlvLen(uint32_t& argsNum, __gm__ const char* fmt, Args&&... args)
+{
+    constexpr uint32_t printInfoLen = sizeof(PrintTlvInfoHead);
+    const uint32_t& fmtLen = GetStringLength(fmt);
+    const uint32_t& argsLen = GetArgsFifoLen(argsNum, args...);
+    return AlignTlvLen(printInfoLen + argsLen + fmtLen); // gm need 8 byte align
+}
+
+__aicore__ __gm__ inline BlockPrintFiFoInfo* GetPrintFiFoHead()
+{
+    uint32_t blockIdx = GetDumpBlockIdx();
+    if (blockIdx >= DUMP_CORE_COUNT) {
+        return nullptr;
+    }
+    uint32_t blockLength = reinterpret_cast<__gm__ BlockPrintFiFoInfo*>(g_sysPrintFifoSpace)->length;
+    __gm__ BlockPrintFiFoInfo* fifoHead =
+        reinterpret_cast<__gm__ BlockPrintFiFoInfo*>(g_sysPrintFifoSpace + blockLength * blockIdx);
+    return fifoHead->magic == 0xAE86 ? fifoHead : nullptr;
+}
+
+__aicore__ inline void SkipPrintFifoDirectly(__gm__ BlockWriteInfo* writeInfo)
+{
+    writeInfo->writeIdx = 0;
+    dcci(reinterpret_cast<__gm__ uint64_t*>(writeInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    return;
+}
+
+__aicore__ inline void SkipPrintFifoWithInfo(
+    __gm__ BlockWriteInfo* writeInfo, __gm__ uint8_t* fifoBuffHead, const uint32_t& fifoBuffLen)
+{
+    __gm__ BlockSkipInfo* skipInfo = reinterpret_cast<__gm__ BlockSkipInfo*>(fifoBuffHead + writeInfo->writeIdx);
+    skipInfo->blockType = static_cast<uint32_t>(DumpType::DUMP_SKIP);
+    skipInfo->length = fifoBuffLen - writeInfo->writeIdx - sizeof(BlockSkipInfo);
+    writeInfo->writeIdx = 0;
+    writeInfo->packIdx += 1;
+    dcci(reinterpret_cast<__gm__ uint64_t*>(skipInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    dcci(reinterpret_cast<__gm__ uint64_t*>(writeInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    return;
+}
+
+__aicore__ inline bool WaitFifoReadIdx(
+    __gm__ BlockReadInfo* readInfo, uint64_t writeIdx, const uint32_t& fifoTlvLen)
+{
+    const uint64_t& firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
+    constexpr uint64_t TIMEOUT_CYCLE = 50 * 1000 * 1000 * 5; // 5s
+    while(writeIdx + fifoTlvLen > readInfo->readIdx) {
+        uint64_t spendTime = static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp;
+        if (spendTime > TIMEOUT_CYCLE) {
+            return false;
+        }
+        dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    }
+    return true;
+}
+
+__aicore__ inline void WriteFifoTlvHead(
+    DumpType printType, __gm__ PrintTlvInfoHead* fifoTlvAddr, const uint32_t& fifoTlvLen, const uint32_t& argsNum)
+{
+    fifoTlvAddr->printfType = static_cast<uint32_t>(printType);
+    fifoTlvAddr->printfLength = fifoTlvLen - sizeof(uint32_t[2]);
+    fifoTlvAddr->fmtOffset = (argsNum + 1) * sizeof(uint64_t);
+    dcci(reinterpret_cast<__gm__ uint64_t*>(fifoTlvAddr), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+}
+
+__aicore__ inline void MemCopyGm2Gm(__gm__ uint8_t* dst, __gm__ const uint8_t* src, const uint32_t& len)
+{
+    if (dst == nullptr || src == nullptr)
+    {
+        return;
+    }
+    for (uint32_t i = 0; i < len; i++) {
+        *(dst + i) = *(src + i);
+    }
+    dcci((__gm__ uint64_t*)(dst), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+}
+
+template <typename... Args>
+__aicore__ inline void WriteFifoTlvData(__gm__ PrintTlvInfoHead* fifoTlvAddr, __gm__ const char* fmt, Args&&... args)
+{
+    const uint32_t& strLen = GetStringLength(fmt);
+    __gm__ uint8_t* paramAddr =
+        reinterpret_cast<__gm__ uint8_t*>(fifoTlvAddr + 1);
+    __gm__ uint8_t* fmtAddr = paramAddr + fifoTlvAddr->fmtOffset - sizeof(uint64_t);
+    __gm__ uint8_t* strParamAddr = reinterpret_cast<__gm__ uint8_t*>(fmtAddr) + strLen;
+    MemCopyGm2Gm(fmtAddr, reinterpret_cast<__gm__ const uint8_t*>(fmt), strLen);
+    uint32_t strParamOffset = fifoTlvAddr->fmtOffset + strLen;
+    SetParam(paramAddr, 0, strParamOffset, args...);
+}
+
+__aicore__ inline void UpdateWriteInfo(__gm__ BlockWriteInfo* writeInfo, const uint32_t& fifoTlvLen)
+{
+    writeInfo->writeIdx += fifoTlvLen;
+    writeInfo->packIdx += 1;
+    dcci(reinterpret_cast<__gm__ uint64_t*>(writeInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+}
+
+__aicore__ __gm__ inline BlockReadInfo* GetBlockFifoReadInfo(__gm__ BlockPrintFiFoInfo* blockFifoInfo)
+{
+    __gm__ uint8_t* blockFifoHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo);
+
+    return reinterpret_cast<__gm__ BlockReadInfo*>(blockFifoHead + sizeof(BlockPrintFiFoInfo));
+}
+
+__aicore__ __gm__ inline BlockWriteInfo* GetBlockFifoWriteInfo(__gm__ BlockPrintFiFoInfo* blockFifoInfo)
+{
+    __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
+
+    return reinterpret_cast<__gm__ BlockWriteInfo*>(fifoBuffHead + blockFifoInfo->remainLen);
+}
+
+__aicore__ inline bool CheckAndWaitPrintFifoSpace(__gm__ BlockPrintFiFoInfo* blockFifoInfo, const uint32_t& fifoTlvLen)
+{
+    constexpr uint32_t minTlvLen = sizeof(BlockSkipInfo);
+    
+    __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
+    uint32_t fifoBuffLen = blockFifoInfo->remainLen;
+
+    __gm__ BlockReadInfo* readInfo = GetBlockFifoReadInfo(blockFifoInfo);
+    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+
+    if (minTlvLen >= fifoBuffLen || fifoTlvLen > fifoBuffLen) {
+        return false;
+    } else if (writeInfo->writeIdx + minTlvLen >= fifoBuffLen){
+        SkipPrintFifoDirectly(writeInfo);
+    } else if (writeInfo->writeIdx + fifoTlvLen > fifoBuffLen) {
+        SkipPrintFifoWithInfo(writeInfo, fifoBuffHead, fifoBuffLen);
+    }
+    if (writeInfo->packIdx > 0 &&
+        writeInfo->writeIdx <= readInfo->readIdx &&
+        writeInfo->writeIdx + fifoTlvLen > readInfo->readIdx) {
+        return WaitFifoReadIdx(readInfo, writeInfo->writeIdx, fifoTlvLen);
+    }
+    return true;
+}
+
+__aicore__ __gm__ inline uint8_t* GetFifoTlvAddr(__gm__ BlockPrintFiFoInfo* blockFifoInfo)
+{
+    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+    __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
+    return fifoBuffHead + writeInfo->writeIdx;
+}
+
+template <class... Args>
+__aicore__ inline void PrintfFifoImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
+{
+#ifdef ASCENDC_DUMP
+    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
+    if (blockFifoInfo == nullptr) {
+        return;
+    }
+    uint32_t argsNum = 0;
+    const uint32_t& fifoTlvLen = GetPrintFifoTlvLen(argsNum, fmt, args...);
+    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+        return;
+    }
+    
+    __gm__ PrintTlvInfoHead* fifoTlvAddr = reinterpret_cast<__gm__ PrintTlvInfoHead*>(GetFifoTlvAddr(blockFifoInfo));
+    
+    WriteFifoTlvHead(printType, fifoTlvAddr, fifoTlvLen, argsNum);
+    WriteFifoTlvData(fifoTlvAddr, fmt, args...);
+
+    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+
+    UpdateWriteInfo(writeInfo, fifoTlvLen);
+#endif // ASCENDC_DUMP
+}
+
+template <typename T>
+__aicore__ inline Hardware CheckDumpTensorPosition(const LocalTensor<T>& src)
+{
+    Hardware position = GetPhyType(static_cast<TPosition>(src.GetPosition()));
+    if (position != Hardware::UB && position != Hardware::L1 && position != Hardware::L0C) {
+        return Hardware::MAX;
+    }
+    return position;
+}
+
+template <typename T>
+__aicore__ constexpr inline Internal::DumpTensorDataType GetTensorDataType()
+{
+    if constexpr (IsSameType<T, bool>::value) {
+        return Internal::DumpTensorDataType::ACL_BOOL;
+    } else if (IsSameType<T, uint8_t>::value) {
+        return Internal::DumpTensorDataType::ACL_UINT8;
+    } else if (IsSameType<T, int8_t>::value) {
+        return Internal::DumpTensorDataType::ACL_INT8;
+    } else if (IsSameType<T, int16_t>::value) {
+        return Internal::DumpTensorDataType::ACL_INT16;
+    } else if (IsSameType<T, uint16_t>::value) {
+        return Internal::DumpTensorDataType::ACL_UINT16;
+    } else if (IsSameType<T, int32_t>::value) {
+        return Internal::DumpTensorDataType::ACL_INT32;
+    } else if (IsSameType<T, uint32_t>::value) {
+        return Internal::DumpTensorDataType::ACL_UINT32;
+    } else if (IsSameType<T, uint64_t>::value) {
+        return Internal::DumpTensorDataType::ACL_UINT64;
+    } else if (IsSameType<T, int64_t>::value) {
+        return Internal::DumpTensorDataType::ACL_INT64;
+    } else if (IsSameType<T, float>::value) {
+        return Internal::DumpTensorDataType::ACL_FLOAT;
+    } else if (IsSameType<T, half>::value) {
+        return Internal::DumpTensorDataType::ACL_FLOAT16;
+    } else if (IsSameType<T, bfloat16_t>::value) {
+        return Internal::DumpTensorDataType::ACL_BF16;
+    } else {
+        return Internal::DumpTensorDataType::ACL_MAX;
+    }
+}
+
+__aicore__ inline void GetMatCopyParam(
+    uint32_t dumpSize, uint16_t& n, uint16_t& m, uint16_t& dstStrideDstD, uint16_t& srcStride)
+{
+    // L0C to GM
+    uint16_t align = (dumpSize % DEFAULT_BLOCK_SIZE == 0) ? 0 : 1;
+    uint16_t countBlks = align + dumpSize / DEFAULT_BLOCK_SIZE;
+
+    uint16_t burstLen = static_cast<uint16_t>(SRC_BURST_LEN_SIZE_ELE * SRC_BURST_LEN_SIZE_ELE
+        * sizeof(float) / ONE_BLK_SIZE);
+    n = countBlks * BLOCK_CUBE;
+    m = (burstLen * ONE_BLK_SIZE / B32_BYTE_SIZE) / BLOCK_CUBE;
+    uint16_t howo = (burstLen * ONE_BLK_SIZE / sizeof(float)) / BLOCK_CUBE;
+    srcStride = DivCeil(howo, BLOCK_CUBE) * BLOCK_CUBE;
+    dstStrideDstD = burstLen;
+}
+
+template <typename T>
+__aicore__ inline void SetDumpDataL0C2GM(__gm__ uint8_t* dst, const LocalTensor<T>& src, uint32_t dumpSize)
+{
+    if ASCEND_IS_NOT_AIC {
+        return;
+    }
+    uint16_t n, m, dstStrideDstD, srcStride;
+    GetMatCopyParam(dumpSize, n, m, dstStrideDstD, srcStride);
+
+    copy_matrix_cc_to_gm(reinterpret_cast<__gm__ float*>(dst), reinterpret_cast<__cc__ float*>(src.GetPhyAddr()),
+        0, n, m, dstStrideDstD, srcStride, 0, QuantMode_t::NoQuant,
+        static_cast<uint8_t>(false), false, false);
+}
+
+template <template<typename> class Tensor, typename T>
+__aicore__ inline void WriteFifoTlvHead(const Tensor<T>& src, __gm__ DumpTensorTlvInfoHead* fifoTlvAddr,
+    const uint32_t& alignDumpDataLen, const uint32_t& desc, const uint32_t& dumpSize)
+{
+    Hardware position;
+    if constexpr (IsSameType<Tensor<T>, LocalTensor<T>>::value) {
+        position = GetPhyType(static_cast<TPosition>(src.GetPosition()));
+    } else if (IsSameType<Tensor<T>, GlobalTensor<T>>::value) {
+        position = Hardware::GM;
+    }
+    fifoTlvAddr->dumpType = static_cast<uint32_t>(DumpType::DUMP_TENSOR);
+    fifoTlvAddr->dumpLength = sizeof(uint32_t[6]) + alignDumpDataLen;
+    fifoTlvAddr->addr = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr()));
+    fifoTlvAddr->dataType = static_cast<uint32_t>(GetTensorDataType<T>());
+    fifoTlvAddr->desc = desc;
+    fifoTlvAddr->bufferId = 0;
+    fifoTlvAddr->position = static_cast<uint32_t>(position);
+    fifoTlvAddr->dumpSize = dumpSize * sizeof(T);
+    dcci((__gm__ uint64_t*)(fifoTlvAddr), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+}
+
+template <typename T>
+__aicore__ inline void WriteFifoTlvData(const LocalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* fifoTlvAddr,
+    const uint32_t& alignDumpDataLen, const uint32_t& dumpSize)
+{
+    __gm__ T* dumpDataAddr = reinterpret_cast<__gm__ T*>(fifoTlvAddr + 1);
+    DataCopyParams copyParams = {1, static_cast<uint16_t>(alignDumpDataLen / ONE_BLK_SIZE), 0, 0};
+
+    PipeBarrier<PIPE_ALL>();
+
+    if (fifoTlvAddr->position == static_cast<uint32_t>(Hardware::UB)) {
+        DataCopyUB2GMImpl(dumpDataAddr, reinterpret_cast<__ubuf__ T*>(src.GetPhyAddr()), copyParams); // UB to GM
+    } else if (fifoTlvAddr->position == static_cast<uint32_t>(Hardware::L1)) {
+        DataCopyL12GMImpl(dumpDataAddr, reinterpret_cast<__cbuf__ T*>(src.GetPhyAddr()), copyParams); // L1 to GM
+    } else if (fifoTlvAddr->position == static_cast<uint32_t>(Hardware::L0C)) {
+        SetDumpDataL0C2GM(reinterpret_cast<__gm__ uint8_t*>(dumpDataAddr), src, dumpSize); // L0C to GM
+    }
+
+    PipeBarrier<PIPE_ALL>();
+
+    dcci((__gm__ uint64_t*)dumpDataAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+}
+
+template <typename T>
+__aicore__ inline void WriteFifoTlvData(
+    const GlobalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* fifoTlvAddr, const uint32_t& dumpSize)
+{
+    __gm__ uint8_t* dst = reinterpret_cast<__gm__ uint8_t*>(fifoTlvAddr + 1);
+    MemCopyGm2Gm(dst, reinterpret_cast<__gm__ const uint8_t*>(src.GetPhyAddr()), dumpSize * sizeof(T));
+}
+
+template <template<typename> class Tensor, typename T>
+__aicore__ inline void DumpTensorFifoImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize)
+{
+    if constexpr (GetTensorDataType<T>() == Internal::DumpTensorDataType::ACL_MAX) {
+        ASCENDC_ASSERT((false),
+                   { KERNEL_LOG(KERNEL_ERROR, "dump tensor not support this data type"); });
+        return;
+    }
+
+    if (dumpSize == 0) {
+        return;
+    }
+
+    if constexpr (IsSameType<Tensor<T>, LocalTensor<T>>::value) {
+        Hardware position = CheckDumpTensorPosition(src);
+        // set the head struct value
+        if (position == Hardware::MAX) {
+            ASCENDC_ASSERT((false),
+                    { KERNEL_LOG(KERNEL_ERROR, "dump tensor only support dump tensor from local to gm"); });
+            return;
+        } else if (position == Hardware::L0C) {
+            if ASCEND_IS_NOT_AIC {
+                return;
+            }
+        }
+    }
+
+    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
+    if (blockFifoInfo == nullptr) {
+        return;
+    }
+    uint32_t alignDumpDataLen = AlignUp(dumpSize * sizeof(T), ONE_BLK_SIZE);
+    uint32_t fifoTlvLen = sizeof(DumpTensorTlvInfoHead) + alignDumpDataLen;
+    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+        return;
+    }
+
+    __gm__ DumpTensorTlvInfoHead* fifoTlvAddr =
+        reinterpret_cast<__gm__ DumpTensorTlvInfoHead*>(GetFifoTlvAddr(blockFifoInfo));
+
+    WriteFifoTlvHead(src, fifoTlvAddr, alignDumpDataLen, desc, dumpSize);
+    if constexpr (IsSameType<Tensor<T>, LocalTensor<T>>::value) {
+        WriteFifoTlvData(src, fifoTlvAddr, alignDumpDataLen, dumpSize);
+    } else if (IsSameType<Tensor<T>, GlobalTensor<T>>::value) {
+        WriteFifoTlvData(src, fifoTlvAddr, dumpSize);
+    }
+
+    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+
+    UpdateWriteInfo(writeInfo, fifoTlvLen);
+}
+
+__aicore__ inline void WriteFifoShapeInfo(const ShapeInfo &shapeInfo)
+{
+    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
+    if (blockFifoInfo == nullptr) {
+        return;
+    }
+    uint32_t fifoTlvLen = sizeof(DumpShapeTlvInfo);
+    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+        return;
+    }
+    __gm__ DumpShapeTlvInfo* fifoTlvAddr =
+        reinterpret_cast<__gm__ DumpShapeTlvInfo*>(GetFifoTlvAddr(blockFifoInfo));
+    fifoTlvAddr->dumpType = static_cast<uint32_t>(DumpType::DUMP_SHAPE);
+    fifoTlvAddr->dumpLength = sizeof(uint32_t[10]);
+    fifoTlvAddr->dim = shapeInfo.shapeDim;
+    for (uint32_t i = 0; i < K_MAX_SHAPE_DIM; ++i) {
+        fifoTlvAddr->shape[i] = shapeInfo.shape[i];
+    }
+    dcci((__gm__ uint64_t*)fifoTlvAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+
+    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+
+    UpdateWriteInfo(writeInfo, fifoTlvLen);
+}
+
 template <class... Args>
 __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
-    PrintfEntityImpl(printType, fmt, args...);
+    if (g_sysPrintFifoSpace != nullptr) {
+        PrintfFifoImpl(printType, fmt, args...);
+    } else {
+        PrintfEntityImpl(printType, fmt, args...);
+    }
     set_ctrl(ctrlValue);
 }
 
-__aicore__ inline void DumpTimeStampImpl(uint32_t descId)
+__aicore__ inline void WriteTimeStampInfo(uint32_t descId)
 {
 #ifdef ASCENDC_TIME_STAMP_ON
     __gm__ BlockInfo *blockInfo = GetBlockInfo();
@@ -671,6 +1072,42 @@ __aicore__ inline void DumpTimeStampImpl(uint32_t descId)
 #endif
 }
 
+__aicore__ inline void WriteFifoTimeStampInfo(uint32_t descId)
+{
+    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
+    if (blockFifoInfo == nullptr) {
+        return;
+    }
+    uint32_t fifoTlvLen = sizeof(TimeStampTlvInfo);
+    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+        return;
+    }
+
+    __gm__ TimeStampTlvInfo* fifoTlvAddr =
+        reinterpret_cast<__gm__ TimeStampTlvInfo*>(GetFifoTlvAddr(blockFifoInfo));
+    fifoTlvAddr->dumpType = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP);
+    fifoTlvAddr->dumpLength = fifoTlvLen - sizeof(uint32_t[2]);
+    fifoTlvAddr->descId = descId;
+    fifoTlvAddr->resv = static_cast<uint32_t>(0U);
+    fifoTlvAddr->cycle = static_cast<uint64_t>(GetSystemCycle());
+    fifoTlvAddr->pc = static_cast<uint64_t>(get_pc());
+    fifoTlvAddr->entry = static_cast<uint64_t>(0);
+    dcci((__gm__ uint64_t*)fifoTlvAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+
+    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+
+    UpdateWriteInfo(writeInfo, fifoTlvLen);
+}
+
+__aicore__ inline void DumpTimeStampImpl(uint32_t descId)
+{
+    if (g_sysPrintFifoSpace != nullptr) {
+        WriteFifoTimeStampInfo(descId);
+    } else {
+        WriteTimeStampInfo(descId);
+    }
+}
+
 __aicore__ inline void AscendCTimeStamp(uint32_t descId, uint64_t pcPtr = 0)
 {
 #ifdef ASCENDC_TIME_STAMP_ON  // 打点开关宏
@@ -681,6 +1118,9 @@ __aicore__ inline void AscendCTimeStamp(uint32_t descId, uint64_t pcPtr = 0)
 __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 {
 #if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+    if (g_sysPrintFifoSpace != nullptr) {
+        return;
+    }
     g_dumpWorkspaceReserved = GetSysWorkSpacePtr();
     InitDumpImpl(mixFlag, gmLen);
 #else
@@ -690,6 +1130,9 @@ __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
 __aicore__ inline void InitDump(bool mixFlag, GM_ADDR dumpStartAddr, uint32_t gmLen)
 {
 #if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+    if (g_sysPrintFifoSpace != nullptr) {
+        return;
+    }
     g_dumpWorkspaceReserved = dumpStartAddr + DUMP_WORKSPACE_SIZE;
     InitDumpImpl(mixFlag, gmLen);
 #else

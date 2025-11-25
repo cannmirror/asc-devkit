@@ -25,6 +25,19 @@
 namespace AscPlugin {
 
 namespace {
+inline uint32_t GetMaxCoreNumImpl(const ShortSocVersion& socVersion)
+{
+    constexpr uint32_t coreNumNormal = 75;
+    constexpr uint32_t coreNum91095 = 108;
+    if (socVersion == ShortSocVersion::ASCEND910_95) {
+        return coreNum91095;
+    }
+    if (socVersion == ShortSocVersion::ASCEND910B || socVersion == ShortSocVersion::ASCEND310P ||
+        socVersion == ShortSocVersion::ASCEND910 || socVersion == ShortSocVersion::ASCEND310B) {
+        return coreNumNormal;
+    }
+    return coreNumNormal;
+}
 // return index of first char that does not fit c++ variable naming rule.  return -1 means all chars are valid
 // Example: string: AA-XXX return 2, means "-" is invalid.
 int32_t GetFirstInvalidChar(const std::string& str, bool isUndef) {
@@ -354,6 +367,16 @@ uint32_t InfoManager::GetAscendMetaFlag() const
     return ascendMetaFlag_;
 }
 
+uint32_t InfoManager::GetMaxCoreNum(const ShortSocVersion& socVersion) const
+{
+    return GetMaxCoreNumImpl(socVersion);
+}
+
+uint32_t InfoManager::GetMaxCoreNum() const
+{
+    return GetMaxCoreNumImpl(shortSocVersion_);
+}
+
 size_t InfoManager::GetMetaFlagCounter() const
 {
     return metaFlagCounter_;
@@ -395,7 +418,12 @@ bool InfoManager::HasAssert() const
 
 bool InfoManager::IsDumpOn() const
 {
-    return (userDumpStatus_ && (hasPrintf_ || hasAssert_));
+    return userDumpStatus_ && (hasPrintf_ || hasAssert_);
+}
+
+bool InfoManager::IsFifoDumpOn() const
+{
+    return IsSupportFifoDump() && (IsDumpOn() || hasTimeStamp_);
 }
 
 uint32_t InfoManager::GetOneCoreDumpSize() const
@@ -426,6 +454,11 @@ bool InfoManager::IsFirstKernel() const
 bool InfoManager::IsAutoSyncOn() const
 {
     return isAutoSyncOn_;
+}
+
+bool InfoManager::IsSupportFifoDump() const
+{
+    return shortSocVersion_ == ShortSocVersion::ASCEND910B;
 }
 
 } // namespace AscPlugin
