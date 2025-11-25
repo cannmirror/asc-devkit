@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include "acl/acl.h"
 #include "securec.h"
+#include "aicpu_api/aicpu_api.h"
 #include "aicpu_rt.h"
 #include <unistd.h>
 #include <stdio.h>
