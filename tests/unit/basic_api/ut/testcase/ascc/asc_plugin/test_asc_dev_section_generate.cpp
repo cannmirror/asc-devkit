@@ -149,12 +149,10 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_generator)
 extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_dump_addr, int i, __attribute__((annotate("kfc_workspace"))) uint8_t* workspace, __attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
 {
     AscendC::InitDump(true, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);
-    AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_DUMP));
     icache_preload(1);
     if (g_sysFftsAddr != nullptr) {
         set_ffts_base_addr((uint64_t)g_sysFftsAddr);
     }
-    AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));
     uint64_t __ascendc_timestamp = 0;
     uint64_t __ascendc_version = 0;
      __gm__ char* __ascendc_version_str = nullptr;
@@ -174,7 +172,6 @@ extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__at
     ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);
     if constexpr (g_coreType == AscendC::AIC) {
         matmul::clearWorkspace(ascendc_workspace_param);
-        AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_CLEAR_WK_SPAC));
     }
     workspace = ascendc_workspace_usr;
     __origin__add<int, float>(i, workspace);
@@ -209,9 +206,8 @@ extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__at
     info.isTemplate = true;
     AscPlugin::AscDevStubGenerator devStubGen = AscPlugin::AscDevStubGenerator(
         info, {AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1}, AscPlugin::KfcScene::Open);
-    devStubGen.dumpAscendCStamp_ = true;
-    devStubGen.dumpTypeIsNotNone_ = true;
-    devStubGen.dumpTypeIsPrintf_ = true;
+    devStubGen.dumpIsNeedInit_ = true;
+    devStubGen.dumpIsNeedPrintVersion_ = true;
     devStubGen.socVersion_ = AscPlugin::ShortSocVersion::ASCEND910B;
     auto deviceStub = devStubGen.GenCode();
     EXPECT_EQ(deviceStub, golden);

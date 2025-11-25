@@ -51,9 +51,8 @@ private:
     KernelInfo kernelInfo_;
     std::unordered_set<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
     ShortSocVersion socVersion_ = ShortSocVersion::ASCEND910B;
-    bool dumpTypeIsNotNone_ = false;
-    bool dumpAscendCStamp_ = false;
-    bool dumpTypeIsPrintf_ = false;
+    bool dumpIsNeedInit_ = false;
+    bool dumpIsNeedPrintVersion_ = false;
     KfcScene kfcScene_ = KfcScene::Close;
     std::stringstream codeStream_;
     std::string originParamsCallList_;

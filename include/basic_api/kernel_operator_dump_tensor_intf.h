@@ -15,7 +15,6 @@
 #ifndef ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_H
 #include "kernel_tensor.h"
-inline __gm__ uint8_t* g_sysPrintFifoSpace = nullptr;
 namespace AscendC {
 template <typename T>
 __aicore__ inline void DumpTensor(const LocalTensor<T> &tensor, uint32_t desc, uint32_t dumpSize);
