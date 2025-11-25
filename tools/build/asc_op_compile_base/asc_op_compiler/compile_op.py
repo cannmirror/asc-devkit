@@ -49,7 +49,7 @@ from .ascendc_compile_v220 import gen_compile_cmd_v220, get_v220_kernel_type_mix
 from .ascendc_compile_v200 import call_bisheng_v200_static, call_bisheng_v200_dynamic
 from .ascendc_compile_gen_code import get_code_for_l2_cache, \
     gen_usr_origin_kernel_function_call, gen_template_tiling_params, add_time_stamp_codes, \
-    gen_init_dump_code, add_op_param_to_workspace, gen_dci_codes
+    gen_init_dump_code, add_op_param_to_workspace
 from .ascendc_compile_gen_json import _gen_mix_json_from_seperate_json, \
     _gen_mix_json_from_seperate_json_for_kernel_type, _dynamic_kernel_list_to_json, \
     _dynamic_regbase_kernel_list_to_json, _static_regbase_kernel_list_to_json, _gen_mix_sub_json, \
@@ -1127,17 +1127,21 @@ def _gen_set_mc2_ctx_param(opinfo: OpInfo):
     return source
 
 
-def _check_custom_dcci_end_false(compile_option_tuple) -> bool:
+def _check_custom_dcci_end_false(compile_option_tuple):
+    has_dcci_end_false: bool = False
     for option_list in [compile_option_tuple.mllvm_options, compile_option_tuple.compile_options]:
-        for option in reversed(option_list):
-            if not option.startswith('-cce-aicore-dcci-before-kernel-end='):
+        del_ids = []
+        for opt_id, option in enumerate(option_list):
+            if not option.startswith('-cce-aicore-dcci-before-kernel-end=false'):
                 continue
-            value = option.split('=')[1]
-            if value == 'true':
-                return False
-            elif value == 'false':
-                return True
-    return False
+            has_dcci_end_false = True
+            if opt_id != 0 and option_list[opt_id - 1] == '-mllvm':
+                del_ids.append(opt_id - 1)
+            del_ids.append(opt_id)
+        for i in reversed(del_ids):
+            del option_list[i]
+    if has_dcci_end_false:
+        compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
 
 
 def gen_meta_info_section(compile_info, op_info):
@@ -1374,8 +1378,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
 
     if not global_var_storage.get_variable("ascendc_enable_super_kernel") and \
                     (CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510()):
-        if _check_custom_dcci_end_false(compile_option_tuple):
-            source += gen_dci_codes()
+        _check_custom_dcci_end_false(compile_option_tuple)
 
     source += "}\n\n"
     source += kernel_func_dec

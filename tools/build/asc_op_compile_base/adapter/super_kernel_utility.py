@@ -21,7 +21,6 @@ from tbe.common.buildcfg.buildcfg_mapping import op_debug_config
 from .ascendc_constants import KernelMetaType, STR_TO_KERNEL_TYPE_V220
 from .ascendc_common_utility import CommonUtility, gen_func_align_attribute
 from .ascendc_compile_base import search_in_line, extract_file_path
-from .ascendc_compile_gen_code import gen_dci_codes
 from .log_utils import AscendCLogLevel, CompileStage
 from .super_kernel_constants import ERR_CODE
 

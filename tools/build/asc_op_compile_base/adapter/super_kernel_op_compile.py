@@ -326,6 +326,8 @@ def super_kernel_compile(kernel_info, compile_log_path):
         compile_option_tuple.mllvm_options.append('--cce-long-call=true')
         compile_option_tuple.mllvm_options.append('-mllvm')
         compile_option_tuple.mllvm_options.append('-cce-aicore-long-call')
+    if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
+        compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
     if kernel_info["timestamp_option"]:
         compile_options.append('-DONE_CORE_DUMP_SIZE=' + str(compile_info.super_kernel_info["debug_size"] / 75))
     _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info, compile_option_tuple, tiling_info) 
