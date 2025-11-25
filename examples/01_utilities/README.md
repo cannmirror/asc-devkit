@@ -1,13 +1,14 @@
 # Utilities样例介绍
 ## 概述
-编译工程和自定义工程、assert及debug功能、硬件平台信息的查询能力等.样例通过Ascend C编程语言实现了自定义算子，给出了对应的<<<>>>直调实现。
+样例通过Ascend C编程语言实现了自定义算子，实现assert及debug功能、硬件平台信息的查询能力等，并给出了对应的<<<>>>直调实现。
 
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [00_printf](./00_printf) | 本样例通过Ascend C编程语言实现了Matmul算子，同时在算子中添加printf调测 |
 | [01_assert](./01_assert) | 本样例通过Ascend C编程语言实现了Matmul算子，同时在算子中添加assert调测，给出了对应的端到端实现 |
-| [02_dumptensor](./02_dumptensor) | 本样例通过Ascend C编程语言实现了Add算子和Mmad算子，在算子中添加DumpTensor调测，同时在算子中添加printf调测，给出了对应的端到端实现 |
+| [02_dumptensor](./02_dumptensor) | 本样例通过Ascend C编程语言实现了Add算子和Mmad算子，在算子中添加DumpTensor调测，给出了对应的端到端实现 |
+| [03_cpudebug](./03_cpudebug) | 本样例通过Ascend C编程语言实现了Add算子的CPU Debug调测，给出了对应的端到端实现 |
 
 ## 获取样例代码<a name="codeready"></a>
 
@@ -19,10 +20,6 @@
    # 开发环境，非root用户命令行中执行以下命令下载源码仓。git_clone_path为用户自己创建的某个目录。
    cd ${git_clone_path}
    git clone https://gitcode.com/cann/asc-devkit-dev.git
-   ```
-   **注：如果需要切换到其它tag版本，以v0.5.0为例，可执行以下命令。**
-   ```bash
-   git checkout v0.5.0
    ```
  - 压缩包方式下载（下载时间较短，但步骤稍微复杂）。
 
