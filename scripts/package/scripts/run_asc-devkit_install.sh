@@ -144,6 +144,10 @@ new_install() {
         setenv_option="--setenv"
     fi
 
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 755 "$common_parse_dir/tools/ascendc_tools"
+    fi
+
     # 执行安装
     custom_options="--custom-options=--common-parse-dir=$common_parse_dir,--logfile=$logfile,--stage=install,--quiet=$is_quiet,--hetero-arch=$hetero_arch"
     sh "$curpath/install_common_parser.sh" --package="asc-devkit" --install --username="$username" --usergroup="$usergroup" --set-cann-uninstall \
@@ -153,6 +157,10 @@ new_install() {
     if [ $? -ne 0 ]; then
         log "ERROR" "ERR_NO:0x0085;ERR_DES:failed to install package."
         return 1
+    fi
+
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 550 "$common_parse_dir/tools/ascendc_tools"
     fi
 
     create_latest_linux_softlink
