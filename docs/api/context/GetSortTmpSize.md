@@ -7,7 +7,7 @@
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-inline uint32_t GetSortTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const uint32_t elemCount, const uint32_t dataTypeSize)
+uint32_t GetSortTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const uint32_t elemCount, const uint32_t dataTypeSize)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

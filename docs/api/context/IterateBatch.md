@@ -36,7 +36,7 @@
 
     ![](figures/跳写模式示意图.png)
 
-    ![](figures/跳写模式示意图-23.png)
+    ![](figures/跳写模式示意图-22.png)
 
 -   **BSNGD：**为原始BSH shape做reshape后的shape，S和D为单Batch的矩阵乘的M轴（或N轴）和K轴，一个SD为一个batch的计算数据，Layout格式如下图所示：
 
@@ -52,7 +52,7 @@
 
 实例化Matmul时，需要通过MatmulType设置输入输出的Layout格式，当前支持4种Layout类型：BSNGD、SBNGD、BNGS1S2、NORMAL（BMNK的数据排布格式使用NORMAL表示）。
 
-对于BSNGD、SBNGD、BNGS1S2 Layout格式，调用该接口之前需要在host Tiling实现中使用[SetALayout](SetALayout.md)、[SetBLayout](SetBLayout.md)、[SetCLayout](SetCLayout.md)、[SetBatchNum](SetBatchNum-33.md)设置A/B/C的Layout轴信息和最大BatchNum数；对于NORMAL  Layout格式则需使用[SetBatchInfoForNormal](SetBatchInfoForNormal.md)设置A/B/C的M/N/K轴信息和A/B矩阵的BatchNum数。
+对于BSNGD、SBNGD、BNGS1S2 Layout格式，调用该接口之前需要在host Tiling实现中使用[SetALayout](SetALayout.md)、[SetBLayout](SetBLayout.md)、[SetCLayout](SetCLayout.md)、[SetBatchNum](SetBatchNum-32.md)设置A/B/C的Layout轴信息和最大BatchNum数；对于NORMAL  Layout格式则需使用[SetBatchInfoForNormal](SetBatchInfoForNormal.md)设置A/B/C的M/N/K轴信息和A/B矩阵的BatchNum数。
 
 单个矩阵乘迭代顺序可通过tiling参数iterateOrder调整。
 

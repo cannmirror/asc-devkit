@@ -93,7 +93,7 @@ void GetPowerMaxMinTmpSize(const ge::Shape& srcShape1, const ge::Shape& srcShape
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-28.md)。
+完整的调用样例请参考[更多样例](更多样例-27.md)。
 
 -   Power\(dstTensor, srcTensor1, srcTensor2\)样例
 

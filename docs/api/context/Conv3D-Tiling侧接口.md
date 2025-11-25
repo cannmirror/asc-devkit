@@ -6,7 +6,7 @@
 
 -   **[TConv3DApiTiling结构体](TConv3DApiTiling结构体.md)**  
 
--   **[GetTiling](GetTiling-48.md)**  
+-   **[GetTiling](GetTiling-47.md)**  
 
 -   **[SetOrgWeightShape](SetOrgWeightShape.md)**  
 
@@ -14,13 +14,13 @@
 
 -   **[SetSingleWeightShape](SetSingleWeightShape.md)**  
 
--   **[SetSingleOutputShape](SetSingleOutputShape-49.md)**  
+-   **[SetSingleOutputShape](SetSingleOutputShape-48.md)**  
 
 -   **[SetInputType](SetInputType.md)**  
 
 -   **[SetWeightType](SetWeightType.md)**  
 
--   **[SetBiasType](SetBiasType-50.md)**  
+-   **[SetBiasType](SetBiasType-49.md)**  
 
 -   **[SetOutputType](SetOutputType.md)**  
 

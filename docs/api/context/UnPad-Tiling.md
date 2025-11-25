@@ -14,6 +14,10 @@ void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatf
 void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, optiling::UnPadTiling& tiling)
 ```
 
+```
+void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, AscendC::tiling::UnPadTiling& tiling)
+```
+
 ## 参数说明<a name="section113551597555"></a>
 
 **表 1** **GetUnPadMaxMinTmpSize接口参数说明**

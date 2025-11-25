@@ -50,6 +50,10 @@ bool GetBatchNormMaxMinTmpSize(const ge::Shape& srcShape, const ge::Shape& origi
 bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource, optiling::BatchNormTiling& tilling, const bool isBasicBlock = false)
 ```
 
+```
+bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::BatchNormTiling& tilling, const bool isBasicBlock = false)
+```
+
 ## 参数说明<a name="section193991541162015"></a>
 
 **表 1**  GetBatchNormMaxMinTmpSize接口参数说明

@@ -109,12 +109,14 @@
 <tr id="zh-cn_topic_0000002382908021_row1589112062510"><td class="cellrowborder" valign="top" width="15%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000002382908021_p378018478265"><a name="zh-cn_topic_0000002382908021_p378018478265"></a><a name="zh-cn_topic_0000002382908021_p378018478265"></a>srcGap</p>
 </td>
 <td class="cellrowborder" valign="top" width="85%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000002382908021_p19780547162614"><a name="zh-cn_topic_0000002382908021_p19780547162614"></a><a name="zh-cn_topic_0000002382908021_p19780547162614"></a>源操作数相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔），单位为DataBlock（32字节）。uint16_t类型，srcGap不要超出该数据类型的取值范围。</p>
+<p id="zh-cn_topic_0000002382908021_p14646122813194"><a name="zh-cn_topic_0000002382908021_p14646122813194"></a><a name="zh-cn_topic_0000002382908021_p14646122813194"></a>在L1 Buffer -&gt; Fixpipe Buffer场景中，srcGap特指源操作数相邻连续数据块的间隔（前面一个数据块的头与后面数据块的头的间隔），单位为DataBlock（32字节）。uint16_t类型，srcGap不要超出该数据类型的取值范围。</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000002382908021_row3593192082512"><td class="cellrowborder" valign="top" width="15%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000002382908021_p18780347152610"><a name="zh-cn_topic_0000002382908021_p18780347152610"></a><a name="zh-cn_topic_0000002382908021_p18780347152610"></a>dstGap</p>
 </td>
 <td class="cellrowborder" valign="top" width="85%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000002382908021_p18780947162613"><a name="zh-cn_topic_0000002382908021_p18780947162613"></a><a name="zh-cn_topic_0000002382908021_p18780947162613"></a>目的操作数相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔），单位为DataBlock（32字节）。uint16_t类型，dstGap不要超出该数据类型的取值范围。</p>
 <p id="zh-cn_topic_0000002382908021_p77262264817"><a name="zh-cn_topic_0000002382908021_p77262264817"></a><a name="zh-cn_topic_0000002382908021_p77262264817"></a>特别地，当dstLocal位于C2PIPE2GM时，单位为128B；当dstLocal位于C2时，单位为64B。</p>
+<p id="zh-cn_topic_0000002382908021_p1764792281920"><a name="zh-cn_topic_0000002382908021_p1764792281920"></a><a name="zh-cn_topic_0000002382908021_p1764792281920"></a>在L1 Buffer -&gt; Fixpipe Buffer场景中，dstGap特指源操作数相邻连续数据块的间隔（前面一个数据块的头与后面数据块的头的间隔），单位为DataBlock（32字节）。uint16_t类型，dstGap不要超出该数据类型的取值范围。</p>
 </td>
 </tr>
 </tbody>

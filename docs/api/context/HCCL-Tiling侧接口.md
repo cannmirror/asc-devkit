@@ -6,7 +6,7 @@
 
 -   **[HCCL Tiling构造函数](HCCL-Tiling构造函数.md)**  
 
--   **[GetTiling](GetTiling-43.md)**  
+-   **[GetTiling](GetTiling-42.md)**  
 
 -   **[SetOpType](SetOpType.md)**  
 

@@ -26,7 +26,7 @@
 
 -   **[REGIST\_MATMUL\_OBJ](REGIST_MATMUL_OBJ.md)**  
 
--   **[Init](Init-30.md)**  
+-   **[Init](Init-29.md)**  
 
 -   **[SetTensorA](SetTensorA.md)**  
 

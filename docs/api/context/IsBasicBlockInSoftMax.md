@@ -15,7 +15,7 @@
 -   AscendC命名空间下的计算接口
 
     ```
-    bool IsBasicBlockInSoftMax(SoftMaxTiling& tiling, const uint32_t dataTypeSize = 2)
+    bool IsBasicBlockInSoftMax(AscendC::tiling::SoftMaxTiling& tiling, const uint32_t dataTypeSize = 2)
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -35,7 +35,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="9.3%" headers="mcps1.2.4.1.2 "><p id="p186293346150"><a name="p186293346150"></a><a name="p186293346150"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.81%" headers="mcps1.2.4.1.3 "><p id="p14604183114514"><a name="p14604183114514"></a><a name="p14604183114514"></a>待判断的SoftMaxTiling结构，支持optiling::SoftMaxTiling形式入参和SoftMaxTiling形式入参。</p>
+<td class="cellrowborder" valign="top" width="73.81%" headers="mcps1.2.4.1.3 "><p id="p14604183114514"><a name="p14604183114514"></a><a name="p14604183114514"></a>待判断的SoftMaxTiling结构，支持optiling::SoftMaxTiling形式入参和AscendC::tiling::SoftMaxTiling形式入参。</p>
 </td>
 </tr>
 <tr id="row8141936124012"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p0605141113473"><a name="p0605141113473"></a><a name="p0605141113473"></a>dataTypeSize</p>

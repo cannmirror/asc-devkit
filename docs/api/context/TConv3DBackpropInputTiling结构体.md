@@ -2,7 +2,7 @@
 
 TConv3DBackpropInputTiling结构体包含Conv3DBackpropInput算子规格信息及Tiling切分算法的相关参数，被传递给Conv3DBackpropInput Kernel侧，用于数据切分、数据搬运和计算等。TConv3DBackpropInputTiling结构体的参数说明见下表。
 
-用户通过调用[GetTiling](GetTiling-57.md)接口获取TConv3DBackpropInputTiling结构体，具体流程请参考[Conv3DBackpropInput Tiling使用说明](Conv3DBackpropInput-Tiling使用说明.md)。当前暂不支持用户自定义配置TConv3DBackpropInputTiling结构体中的参数。
+用户通过调用[GetTiling](GetTiling-56.md)接口获取TConv3DBackpropInputTiling结构体，具体流程请参考[Conv3DBackpropInput Tiling使用说明](Conv3DBackpropInput-Tiling使用说明.md)。当前暂不支持用户自定义配置TConv3DBackpropInputTiling结构体中的参数。
 
 **表 1**  TConv3DBackpropInputTiling结构说明
 

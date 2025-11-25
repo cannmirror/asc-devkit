@@ -51,7 +51,7 @@ AscendC::DumpTensor(srcLocal, 5, dataLen);
 
 Dump时，每个block核的dump信息前会增加对应信息头DumpHead，用于记录核号和资源使用信息；每次Dump的Tensor数据前也会添加信息头DumpTensorHead，用于记录Tensor的相关信息。如下图所示，展示了多核打印场景下的打印信息结构。
 
-![](figures/流水任务运行示意图-20.png)
+![](figures/流水任务运行示意图-19.png)
 
 **DumpHead的具体信息如下：**
 

@@ -100,7 +100,7 @@ __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-本接口需要在SetTensorA接口、SetTensorB接口及SetSingleShape接口前调用。
+本接口需要在SetTensorA接口、SetTensorB接口、SetBias接口及SetSingleShape接口前调用。
 
 ## 调用示例<a name="section1665082013318"></a>
 
