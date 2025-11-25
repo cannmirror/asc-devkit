@@ -14,8 +14,8 @@ add_library(asc_plugin SHARED
 )
 
 if(BUILD_OPEN_PROJECT)
-    include(${CMAKE_SOURCE_DIR}/depend/third_party/llvm_clang.cmake)
-    include(${CMAKE_SOURCE_DIR}/depend/third_party/json.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/third_party/llvm_clang.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/third_party/json.cmake)
     add_dependencies(asc_plugin llvm_clang)
     target_include_directories(asc_plugin PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include/external

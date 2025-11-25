@@ -29,10 +29,9 @@
         <path value="$(TARGET_ENV)/tikcpp/tikcfw"/>
         <path value="$(TARGET_ENV)/tikcpp/tikcfw/include"/>
         <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake"/>
-        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules"/>
-        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules"/>
-        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules/util"/>
-        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules/util/makeself"/>
+        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules"/>
+        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util"/>
+        <path value="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util/makeself"/>
         <path value="$(TARGET_ENV)/pkg_inc"/>
         <path value="$(TARGET_ENV)/pkg_inc/asc"/>
         <path value="$(TARGET_ENV)/pkg_inc/asc/hccl"/>
@@ -150,7 +149,7 @@
         <file value="asc_opc"/>
     </file_info>
 
-    <file_info copy_type="source" src_path="build/makeself" dst_path="makeself" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/modules/ascend_modules/util/makeself">
+    <file_info copy_type="source" src_path="build/makeself" dst_path="makeself" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/fwk_modules/util/makeself">
         <file value="COPYING" install_mod="550"/>
         <file value="make-release.sh" install_mod="550"/>
         <file value="Makefile" install_mod="550"/>

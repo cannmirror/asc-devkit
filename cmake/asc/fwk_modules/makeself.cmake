@@ -17,6 +17,8 @@ execute_process(COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/util/makeself/makeself.sh
                 ERROR_VARIABLE  EXEC_ERROR
 )
 
+
+
 if (NOT "${EXEC_RESULT}x" STREQUAL "0x")
   message(FATAL_ERROR "CPack Command error: ${EXEC_RESULT}\n${EXEC_ERROR}")
 endif()

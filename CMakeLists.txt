@@ -45,8 +45,8 @@ if(ENABLE_TEST)
 endif()
 
 if(BUILD_OPEN_PROJECT)
-  include(depend/intf_pub_linux.cmake)
-  include(depend/dependencies.cmake)
+  include(cmake/intf_pub_linux.cmake)
+  include(cmake/dependencies.cmake)
 endif()
 
 add_subdirectory(tools)
