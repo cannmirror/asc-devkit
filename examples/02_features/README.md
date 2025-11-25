@@ -1,11 +1,11 @@
 # Features样例介绍
 ## 概述
-Ascend C的特性：Aclnn（ge入图）工程，LocalMemoryAllocator、Barrier单独内存申请和分配。
+Ascend C的特性：Aclnn（ge入图）工程，LocalMemoryAllocator、Barrier单独内存申请和分配、SIMT编程。
 
 ## 算子开发样例
-|  目录名称                                                   |  功能描述                                              |
-| ------------------------------------------------------------ | ---------------------------------------------------- |
-|  |  |
+| 目录名称 | 算子样例 | 功能描述 |
+| --------- | --------- | --------- |
+| [simt](./02_simt/) | [simt_gather_and_simd_adds](./02_simt/01_simt_gather_and_simd_adds) | 从长度为10万的一维向量中获取指定索引的8192个数据，将获取到的数据分别加1，返回相加结果。|
 
 ## 获取样例代码<a name="codeready"></a>
 
@@ -32,4 +32,5 @@ Ascend C的特性：Aclnn（ge入图）工程，LocalMemoryAllocator、Barrier�
 ## 更新说明
 | 时间       | 更新事项     |
 | ---------- | ------------ |
+| 2025/11/25 | 新增simt_gather_and_simd_adds用例 |
 | 2025/11/18 | 样例目录调整，新增本readme |
