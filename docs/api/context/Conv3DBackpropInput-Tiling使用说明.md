@@ -1,12 +1,12 @@
 # Conv3DBackpropInput Tiling使用说明<a name="ZH-CN_TOPIC_0000002103842729"></a>
 
-Ascend C提供一组Conv3DBackpropInput Tiling API，方便用户获取Conv3DBackpropInput Kernel计算时所需的Tiling参数。用户只需要传入Input/GradOutput/Weight的Position位置、Format格式和DType数据类型及相关参数等信息，调用API接口，即可获取[Init](Init-51.md)中TConv3DBackpropInputTiling结构体中的相关参数。
+Ascend C提供一组Conv3DBackpropInput Tiling API，方便用户获取Conv3DBackpropInput Kernel计算时所需的Tiling参数。用户只需要传入Input/GradOutput/Weight的Position位置、Format格式和DType数据类型及相关参数等信息，调用API接口，即可获取[Init](Init-50.md)中TConv3DBackpropInputTiling结构体中的相关参数。
 
 Conv3DBackpropInput Tiling API提供一个GetTiling接口获取Tiling参数，获取Tiling参数的流程如下：
 
 1.  创建一个单核Tiling对象。
-2.  设置Input、GradOutput、Weight的参数类型信息以及Shape信息，如果存在Padding、Stride参数，通过[SetPadding](SetPadding-60.md)、[SetStride](SetStride-61.md)接口设置。
-3.  调用[GetTiling](GetTiling-57.md)接口，获取Tiling信息。
+2.  设置Input、GradOutput、Weight的参数类型信息以及Shape信息，如果存在Padding、Stride参数，通过[SetPadding](SetPadding-59.md)、[SetStride](SetStride-60.md)接口设置。
+3.  调用[GetTiling](GetTiling-56.md)接口，获取Tiling信息。
 
 使用Conv3DBackpropInput Tiling接口获取Tiling参数的样例如下：
 

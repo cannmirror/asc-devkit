@@ -99,7 +99,7 @@ template <typename T> struct is_tensorTrait
     </th>
     </tr>
     </thead>
-    <tbody><tr id="row2053714299447"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p145371529164420"><a name="p145371529164420"></a><a name="p145371529164420"></a>基础API&gt;内存管理与同步控制&gt;TQue/TQueBind</p>
+    <tbody><tr id="row2053714299447"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p145371529164420"><a name="p145371529164420"></a><a name="p145371529164420"></a>基础API&gt;资源管理&gt;TQue/TQueBind</p>
     </td>
     <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p65371629164414"><a name="p65371629164414"></a><a name="p65371629164414"></a>AllocTensor、FreeTensor、EnQue、DeQue</p>
     </td>
@@ -116,35 +116,30 @@ template <typename T> struct is_tensorTrait
     </tr>
     <tr id="row1353742918445"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p1653742954413"><a name="p1653742954413"></a><a name="p1653742954413"></a>基础API&gt;矢量计算&gt;复合计算</p>
     </td>
-    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p1453742917447"><a name="p1453742917447"></a><a name="p1453742917447"></a>AddRelu、AddDeqRelu、SubRelu、MulAddDst、FusedMulAdd、FusedMulAddRelu、AddReluCast、SubReluCast、MulCast</p>
+    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p1453742917447"><a name="p1453742917447"></a><a name="p1453742917447"></a>CastDeq、AddRelu、AddDeqRelu、SubRelu、MulAddDst、FusedMulAdd、FusedMulAddRelu、AddReluCast、SubReluCast、MulCast</p>
     </td>
     </tr>
     <tr id="row3537129184413"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p15537329144411"><a name="p15537329144411"></a><a name="p15537329144411"></a>基础API&gt;数据搬运</p>
     </td>
-    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p753742915441"><a name="p753742915441"></a><a name="p753742915441"></a>DataCopy、Copy、Fixpipe</p>
+    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p753742915441"><a name="p753742915441"></a><a name="p753742915441"></a>DataCopy、Copy</p>
     </td>
     </tr>
-    <tr id="row1153772954413"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p35371729114419"><a name="p35371729114419"></a><a name="p35371729114419"></a>基础指令&gt;ISASI（体系结构相关）&gt;矩阵计算</p>
+    <tr id="row1153772954413"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p35371729114419"><a name="p35371729114419"></a><a name="p35371729114419"></a>基础API&gt;矩阵计算</p>
     </td>
-    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p15538192954414"><a name="p15538192954414"></a><a name="p15538192954414"></a>InitConstValue、LoadData、LoadDataWithTranspose、SetAippFunctions、LoadImageToLocal、LoadUnzipIndex、LoadDataUnzip、LoadDataWithSparse、Mmad、MmadWithSparse、BroadCastVecToMM、Gemm</p>
-    </td>
-    </tr>
-    <tr id="row61987635612"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p519919617562"><a name="p519919617562"></a><a name="p519919617562"></a>基础API&gt;矢量计算&gt;比较指令</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p171999635617"><a name="p171999635617"></a><a name="p171999635617"></a>Compare、GetCmpMask、SetCmpMask</p>
+    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p15538192954414"><a name="p15538192954414"></a><a name="p15538192954414"></a>InitConstValue、LoadData、LoadDataWithTranspose、SetAippFunctions、LoadImageToLocal、LoadUnzipIndex、LoadDataUnzip、LoadDataWithSparse、Mmad、MmadWithSparse、BroadCastVecToMM、Gemm、Fixpipe</p>
     </td>
     </tr>
-    <tr id="row1128094995110"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p132811049125119"><a name="p132811049125119"></a><a name="p132811049125119"></a>基础API&gt;矢量计算&gt;选择指令</p>
+    <tr id="row61987635612"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p519919617562"><a name="p519919617562"></a><a name="p519919617562"></a>基础API&gt;矢量计算&gt;比较与选择</p>
     </td>
-    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p9281349175119"><a name="p9281349175119"></a><a name="p9281349175119"></a>Select、GatherMask</p>
-    </td>
-    </tr>
-    <tr id="row17369134075319"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p19751786543"><a name="p19751786543"></a><a name="p19751786543"></a>基础API&gt;矢量计算&gt;精度转换指令</p>
-    </td>
-    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p13370194016534"><a name="p13370194016534"></a><a name="p13370194016534"></a>Cast、CastDeq</p>
+    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p171999635617"><a name="p171999635617"></a><a name="p171999635617"></a>Compare、GetCmpMask、SetCmpMask、Select、GatherMask</p>
     </td>
     </tr>
-    <tr id="row2480185119548"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p1748015518541"><a name="p1748015518541"></a><a name="p1748015518541"></a>基础API&gt;矢量计算&gt;归约指令</p>
+    <tr id="row17369134075319"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p19751786543"><a name="p19751786543"></a><a name="p19751786543"></a>基础API&gt;矢量计算&gt;类型转换</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p13370194016534"><a name="p13370194016534"></a><a name="p13370194016534"></a>Cast</p>
+    </td>
+    </tr>
+    <tr id="row2480185119548"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p1748015518541"><a name="p1748015518541"></a><a name="p1748015518541"></a>基础API&gt;矢量计算&gt;归约计算</p>
     </td>
     <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p948010513543"><a name="p948010513543"></a><a name="p948010513543"></a>ReduceMax、BlockReduceMax、WholeReduceMax、ReduceMin、BlockReduceMin、WholeReduceMin、ReduceSum、BlockReduceSum、WholeReduceSum、RepeatReduceSum、PairReduceSum</p>
     </td>
@@ -159,7 +154,7 @@ template <typename T> struct is_tensorTrait
     <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p122721642185615"><a name="p122721642185615"></a><a name="p122721642185615"></a>Brcb</p>
     </td>
     </tr>
-    <tr id="row2866124135816"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p786712415810"><a name="p786712415810"></a><a name="p786712415810"></a>基础API&gt;矢量计算&gt;数据分散/数据收集</p>
+    <tr id="row2866124135816"><td class="cellrowborder" valign="top" width="36.69%" headers="mcps1.2.3.1.1 "><p id="p786712415810"><a name="p786712415810"></a><a name="p786712415810"></a>基础API&gt;矢量计算&gt;离散与聚合</p>
     </td>
     <td class="cellrowborder" valign="top" width="63.31%" headers="mcps1.2.3.1.2 "><p id="p286711411582"><a name="p286711411582"></a><a name="p286711411582"></a>Gather、Gatherb、Scatter</p>
     </td>

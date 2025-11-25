@@ -60,6 +60,10 @@ bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatfo
 bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, optiling::TopkTiling &topKTiling)
 ```
 
+```
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, AscendC::tiling::TopkTiling &topKTiling)
+```
+
 ## 参数说明<a name="section7883162615235"></a>
 
 **表 1**  GetTopKMaxMinTmpSize接口参数列表

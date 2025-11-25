@@ -26,7 +26,7 @@
 
 集合通信AlltoAll的任务下发接口，返回该任务的标识handleId给用户。AlltoAll的功能为：每张卡向通信域内所有卡发送相同数据量的数据，并从所有卡接收相同数据量的数据。结合原型中的参数，描述接口功能，具体为，第j张卡接收到来自第i张卡的sendBuf中第j块数据，并将该数据存放到本卡recvBuf中第i块的位置。
 
-![](figures/allreduce-33.png)
+![](figures/allreduce-32.png)
 
 ## 函数原型<a name="section620mcpsimp"></a>
 

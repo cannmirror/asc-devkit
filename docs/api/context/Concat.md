@@ -113,5 +113,5 @@ __aicore__ inline void Concat(LocalTensor<T> &concat, const LocalTensor<T> &src,
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-请参见[MrgSort](MrgSort-38.md)的[调用示例](MrgSort-38.md#section642mcpsimp)。
+请参见[MrgSort](MrgSort-37.md)的[调用示例](MrgSort-37.md#section642mcpsimp)。
 

@@ -111,7 +111,7 @@ __aicore__ constexpr MatmulConfig GetIBShareNormConfig(const bool intrinsicsLimi
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-无
+IBShare模板当前仅适用于MIX场景，不支持纯CUBE场景。
 
 ## 调用示例<a name="section1665082013318"></a>
 

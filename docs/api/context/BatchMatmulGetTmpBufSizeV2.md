@@ -7,7 +7,7 @@ BatchMatmul Tiling调用[GetTiling](GetTiling.md)接口获取Tiling参数后，�
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-int32_t BatchMatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize)
+int32_t BatchMatmulGetTmpBufSizeV2(AscendC::tiling::TCubeTiling &tiling, matmul_tiling::SysTilingTempBufSize &bufSize)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -28,7 +28,7 @@ int32_t BatchMatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTiling
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p4506145791414"><a name="p4506145791414"></a><a name="p4506145791414"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p1959473193716"><a name="p1959473193716"></a><a name="p1959473193716"></a>BatchMatmul Tiling的结构体，即BatchMatmulTiling对象得到的TCubeTiling结构体。</p>
-<p id="p350610573140"><a name="p350610573140"></a><a name="p350610573140"></a>TCubeTiling为Kernel侧定义的Matmul TilingData，与入参为不带optiling命名空间的TCubeTiling结构体的<a href="GetTiling.md">GetTiling</a>接口配合使用。</p>
+<p id="p350610573140"><a name="p350610573140"></a><a name="p350610573140"></a>TCubeTiling为Kernel侧定义的Matmul TilingData，与入参为带AscendC::tiling命名空间的TCubeTiling结构体的<a href="GetTiling.md">GetTiling</a>接口配合使用。</p>
 </td>
 </tr>
 <tr id="row132515237117"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p19507257101413"><a name="p19507257101413"></a><a name="p19507257101413"></a>bufSize</p>
@@ -60,7 +60,7 @@ int32_t BatchMatmulGetTmpBufSizeV2(TCubeTiling &tiling, matmul_tiling::SysTiling
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::BatchMatmulTiling tiling(ascendcPlatform); 
-TCubeTiling tilingData;
+AscendC::tiling::TCubeTiling tilingData;
 ...  // 初始化tilingData，详见MatmulTiling类使用说明
 int ret = tiling.GetTiling(tilingData);    // 获取Tiling参数
 SysTilingTempBufSize bufSize;

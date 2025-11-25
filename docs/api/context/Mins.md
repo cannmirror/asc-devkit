@@ -198,7 +198,7 @@ dst和src使用[TensorTrait](TensorTrait.md)类型时，其数据类型TensorTra
 
 ## 调用示例<a name="section633mcpsimp"></a>
 
-更多样例可参考[LINK](更多样例-9.md)。
+更多样例可参考[LINK](更多样例-8.md)。
 
 -   tensor高维切分计算样例-mask连续模式
 

@@ -59,7 +59,7 @@ int32_t BatchMatmulGetTmpBufSize(optiling::TCubeTiling &tiling, matmul_tiling::S
 ```
 auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
 matmul_tiling::BatchMatmulTiling tiling(ascendcPlatform); 
-TCubeTiling tilingData;
+optiling::TCubeTiling tilingData;
 ...  // 初始化tilingData，详见MatmulTiling类使用说明
 int ret = tiling.GetTiling(tilingData);    // 获取Tiling参数
 SysTilingTempBufSize bufSize;

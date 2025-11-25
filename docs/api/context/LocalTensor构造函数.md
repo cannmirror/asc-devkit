@@ -60,7 +60,7 @@ LocalTensor构造函数。
 </thead>
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="16.28%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
-<td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><a name="ul171781281310"></a><a name="ul171781281310"></a><ul id="ul171781281310"><li>适用于Pipe编程框架的原型，支持基础数据类型以及<a href="TensorTrait.md">TensorTrait</a>类型。</li><li>适用于更底层编程的原型，支持的数据类型如下：<pre class="screen" id="screen148501140172610"><a name="screen148501140172610"></a><a name="screen148501140172610"></a>// 仅支持基础数据类型
+<td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><a name="ul171781281310"></a><a name="ul171781281310"></a><ul id="ul171781281310"><li>适用于Pipe编程框架的原型，支持基础数据类型以及<a href="TensorTrait.md">TensorTrait</a>类型。</li><li>适用于静态Tensor编程的原型，支持的数据类型如下：<pre class="screen" id="screen148501140172610"><a name="screen148501140172610"></a><a name="screen148501140172610"></a>// 仅支持基础数据类型
 __aicore__ inline LocalTensor&lt;T&gt;(TPosition pos, uint32_t addr, uint32_t tileSize)
 // 仅支持TensorTrait类型
 __aicore__ inline LocalTensor&lt;T&gt;(uint32_t addr)</pre>

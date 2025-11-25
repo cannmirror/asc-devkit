@@ -108,6 +108,10 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
         void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, optiling::LayerNormTiling& tiling)
         ```
 
+        ```
+        void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::LayerNormTiling& tiling)
+        ```
+
     -   输出归一化结果、均值和方差的LayerNorm接口所需的tiling参数（不推荐使用）
 
         ```
@@ -118,6 +122,10 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 
         ```
         void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, const bool isComputeRstd, optiling::LayerNormSeparateTiling& tiling)
+        ```
+
+        ```
+        void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, const bool isComputeRstd, AscendC::tiling::LayerNormSeparateTiling& tiling)
         ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

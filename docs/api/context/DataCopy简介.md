@@ -19,7 +19,7 @@ DataCopy系列接口提供全面的数据搬运功能，支持多种数据搬运
 </thead>
 <tbody><tr id="row1272474920205"><td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><a href="基础数据搬运.md">基础数据搬运</a></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a><span id="ph5281655142914"><a name="ph5281655142914"></a><a name="ph5281655142914"></a>提供基础的数据搬运能力，<span id="ph9532527185714"><a name="ph9532527185714"></a><a name="ph9532527185714"></a>数据在传输过程中保持原始格式和内容不变，</span>支持连续和非连续的数据搬运。</span></p>
+<td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a><span id="ph5281655142914"><a name="ph5281655142914"></a><a name="ph5281655142914"></a>提供基础的数据搬运能力，数据在传输过程中保持原始格式和内容不变，支持连续和非连续的数据搬运。</span></p>
 </td>
 <td class="cellrowborder" colspan="2" align="center" valign="top" headers="mcps1.1.9.1.3 "><p id="p1854115683315"><a name="p1854115683315"></a><a name="p1854115683315"></a>√</p>
 </td>
@@ -41,7 +41,7 @@ DataCopy系列接口提供全面的数据搬运功能，支持多种数据搬运
 </tr>
 <tr id="row173226882415"><td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><a href="切片数据搬运.md">切片数据搬运</a></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a><span id="ph1188502514571"><a name="ph1188502514571"></a><a name="ph1188502514571"></a>支持数据的切片搬运<span id="ph13519134793417"><a name="ph13519134793417"></a><a name="ph13519134793417"></a>，提取多维Tensor数据的子集进行搬运</span>。</span></p>
+<td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a><span id="ph1188502514571"><a name="ph1188502514571"></a><a name="ph1188502514571"></a>支持数据的切片搬运，提取多维Tensor数据的子集进行搬运。</span></p>
 </td>
 <td class="cellrowborder" colspan="2" align="center" valign="top" headers="mcps1.1.9.1.3 "><p id="p1350517207369"><a name="p1350517207369"></a><a name="p1350517207369"></a>√</p>
 </td>

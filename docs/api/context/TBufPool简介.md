@@ -11,7 +11,7 @@ TPipe可以管理全局内存资源，而TBufPool可以手动管理或复用Unif
 1.  通过TPipe::[InitBuffer](InitBuffer.md)接口可以申请Buffer内存并使用队列进行管理；
 2.  通过TPipe::[InitBufPool](InitBufPool.md)可以划分出资源池BufPool1；
 3.  通过TPipe::[InitBufPool](InitBufPool.md)可以指定BufPool1与BufPool3地址和长度复用;
-4.  通过TBufPool::[InitBuffer](InitBuffer-11.md)及TBufPool::[InitBufPool](InitBufPool-10.md)接口继续将BufPool1及BufPool3划分成Buffer或TBufPool资源池。
+4.  通过TBufPool::[InitBuffer](InitBuffer-10.md)及TBufPool::[InitBufPool](InitBufPool-9.md)接口继续将BufPool1及BufPool3划分成Buffer或TBufPool资源池。
 
 **图 1**  BufPool资源池划分<a name="fig14900125316552"></a>  
 ![](figures/BufPool资源池划分.png "BufPool资源池划分")

@@ -58,6 +58,10 @@ bool GetDeepNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
 bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, optiling::DeepNormTiling& tiling)
 ```
 
+```
+bool GetDeepNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, const bool isBasicBlock, AscendC::tiling::DeepNormTiling& tiling)
+```
+
 ## 参数说明<a name="section3614450358"></a>
 
 **表 1**  GetDeepNormMaxMinTmpSize接口参数说明

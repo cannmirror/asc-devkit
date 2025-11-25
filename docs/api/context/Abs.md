@@ -155,7 +155,7 @@
 
 ## 调用示例<a name="section176061616102911"></a>
 
-更多样例可参考[LINK](更多样例-9.md)。
+更多样例可参考[LINK](更多样例-8.md)。
 
 -   tensor高维切分计算样例-mask连续模式，srcLocal和dstLocal均为half类型
 

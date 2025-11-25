@@ -103,6 +103,7 @@
     ```
     template <typename T, typename U, typename S>
     __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm, const LocalTensor<S>& filter, const MmadParams& mmadParams)
+    
     ```
 
 -   传入bias
@@ -110,6 +111,7 @@
     ```
     template <typename T, typename U, typename S, typename V>
     __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm, const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadParams& mmadParams)
+    
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -193,9 +195,8 @@
 </td>
 <td class="cellrowborder" valign="top" width="10.341034103410342%" headers="mcps1.2.4.1.2 "><p id="p11287151451610"><a name="p11287151451610"></a><a name="p11287151451610"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="75.997599759976%" headers="mcps1.2.4.1.3 "><p id="p1642893817436"><a name="p1642893817436"></a><a name="p1642893817436"></a>矩阵乘相关参数，类型为MmadParams。</p>
-<p id="p17376814155615"><a name="p17376814155615"></a><a name="p17376814155615"></a>具体定义请参考<span id="ph10562197165916"><a name="ph10562197165916"></a><a name="ph10562197165916"></a>${INSTALL_DIR}</span>/include/ascendc/basic_api/interface/kernel_struct_mm.h，<span id="ph14322531015"><a name="ph14322531015"></a><a name="ph14322531015"></a>${INSTALL_DIR}</span>请替换为CANN软件安装后文件存储路径。</p>
-<p id="p12287014111614"><a name="p12287014111614"></a><a name="p12287014111614"></a>参数说明请参考<a href="#table15780447181917">表3</a>。</p>
+<td class="cellrowborder" valign="top" width="75.997599759976%" headers="mcps1.2.4.1.3 "><p id="p10391459201718"><a name="p10391459201718"></a><a name="p10391459201718"></a>矩阵乘相关参数，该参数类型的具体定义请参考<span id="ph10562197165916"><a name="ph10562197165916"></a><a name="ph10562197165916"></a>${INSTALL_DIR}</span>/include/ascendc/basic_api/interface/kernel_struct_mm.h，<span id="ph14322531015"><a name="ph14322531015"></a><a name="ph14322531015"></a>${INSTALL_DIR}</span>请替换为CANN软件安装后文件存储路径。</p>
+<p id="p1642893817436"><a name="p1642893817436"></a><a name="p1642893817436"></a>MmadParams参数说明请参考<a href="#table15780447181917">表3</a>。</p>
 </td>
 </tr>
 </tbody>
@@ -270,6 +271,7 @@
 </tr>
 </tbody>
 </table>
+
 
 **表 4**  dst、fm、filter支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
 
@@ -382,7 +384,7 @@
 
     数据为half类型，当M=30，K=70，N=40的时候，A2中有2x5个16x16矩阵，B2中有5x3个16x16矩阵，CO1中有2x3个16x16矩阵。在这种场景下M、K和N都不是16的倍数，A2中右下角的矩阵实际有效的数据只有14x6个，但是也需要占一个16x16矩阵的空间，其他无效数据在计算中会被忽略。一个16x16分形的数据块中，无效数据与有效数据排布的方式示意如下：
 
-    ![](figures/repeat-times-18.png)
+    ![](figures/repeat-times-17.png)
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

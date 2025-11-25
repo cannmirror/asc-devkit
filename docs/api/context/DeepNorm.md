@@ -73,7 +73,7 @@ SubLayer\(X\)通常是指在DeepNorm模型中的一个子层（sub-layer），�
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p10298195117267"><a name="p10298195117267"></a><a name="p10298195117267"></a>是否允许修改源操作数，默认值为false。如果开发者允许源操作数被改写，可以使能该参数，使能后能够节省部分内存空间。</p>
 <p id="p42981551112611"><a name="p42981551112611"></a><a name="p42981551112611"></a>设置为<strong id="b16299145110268"><a name="b16299145110268"></a><a name="b16299145110268"></a>true</strong>，则本接口内部计算时<strong id="b1929920514264"><a name="b1929920514264"></a><a name="b1929920514264"></a>复用</strong>srcLocal的内存空间，节省内存空间；设置为<strong id="b2299145172612"><a name="b2299145172612"></a><a name="b2299145172612"></a>false</strong>，则本接口内部计算时<strong id="b729905182619"><a name="b729905182619"></a><a name="b729905182619"></a>不复用</strong>srcLocal的内存空间。</p>
 <p id="p4299155115268"><a name="p4299155115268"></a><a name="p4299155115268"></a>对于float数据类型输入支持开启该参数，half数据类型输入不支持开启该参数。</p>
-<p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSrc的使用样例请参考<a href="更多样例-28.md#section639165323915">更多样例</a>。</p>
+<p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSrc的使用样例请参考<a href="更多样例-27.md#section639165323915">更多样例</a>。</p>
 </td>
 </tr>
 <tr id="row9756719122620"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p1682112447268"><a name="p1682112447268"></a><a name="p1682112447268"></a>isBasicBlock</p>

@@ -6,7 +6,7 @@
 
 -   **[TConv3DBackpropInputTiling结构体](TConv3DBackpropInputTiling结构体.md)**  
 
--   **[GetTiling](GetTiling-57.md)**  
+-   **[GetTiling](GetTiling-56.md)**  
 
 -   **[SetWeightShape](SetWeightShape.md)**  
 
@@ -14,17 +14,17 @@
 
 -   **[SetGradOutputShape](SetGradOutputShape.md)**  
 
--   **[SetWeightType](SetWeightType-58.md)**  
+-   **[SetWeightType](SetWeightType-57.md)**  
 
--   **[SetInputType](SetInputType-59.md)**  
+-   **[SetInputType](SetInputType-58.md)**  
 
 -   **[SetGradOutputType](SetGradOutputType.md)**  
 
--   **[SetPadding](SetPadding-60.md)**  
+-   **[SetPadding](SetPadding-59.md)**  
 
--   **[SetStride](SetStride-61.md)**  
+-   **[SetStride](SetStride-60.md)**  
 
--   **[SetDilation](SetDilation-62.md)**  
+-   **[SetDilation](SetDilation-61.md)**  
 
 -   **[SetOutputPadding](SetOutputPadding.md)**  
 

@@ -24,7 +24,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-设置是否使能HF32（矩阵乘计算时可采用的数据类型）模式。使能后，在矩阵乘计算时，float32数据类型会转换为hf32数据类型，可提升计算性能，但同时也会带来精度损失。
+在纯Cube模式（只有矩阵计算）下，设置是否使能HF32（矩阵乘计算时可采用的数据类型）模式。使能后，在矩阵乘计算时，float32数据类型会转换为hf32数据类型，可提升计算性能，但同时也会带来精度损失。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -68,16 +68,19 @@ __aicore__ inline void SetHF32(bool enableHF32 = false, int32_t transMode = 0)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-无
+本接口仅支持在纯Cube模式下调用。
 
 ## 调用示例<a name="section1665082013318"></a>
 
 ```
+//纯Cube模式
+#define ASCENDC_CUBE_ONLY
 REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);    //  A/B/C/BIAS类型是float
 mm.SetTensorA(gm_a);
 mm.SetTensorB(gm_b);
 mm.SetBias(gm_bias);
 mm.SetHF32(true);
 mm.IterateAll(gm_c);
+mm.SetHF32(false);
 ```
 

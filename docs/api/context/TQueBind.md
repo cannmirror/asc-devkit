@@ -4,21 +4,21 @@
 
 -   **[TQueBind构造函数](TQueBind构造函数.md)**  
 
--   **[AllocTensor](AllocTensor-15.md)**  
+-   **[AllocTensor](AllocTensor-14.md)**  
 
--   **[FreeTensor](FreeTensor-16.md)**  
+-   **[FreeTensor](FreeTensor-15.md)**  
 
--   **[EnQue](EnQue-17.md)**  
+-   **[EnQue](EnQue-16.md)**  
 
--   **[DeQue](DeQue-18.md)**  
+-   **[DeQue](DeQue-17.md)**  
 
--   **[VacantInQue](VacantInQue-19.md)**  
+-   **[VacantInQue](VacantInQue-18.md)**  
 
--   **[HasTensorInQue](HasTensorInQue-20.md)**  
+-   **[HasTensorInQue](HasTensorInQue-19.md)**  
 
--   **[GetTensorCountInQue](GetTensorCountInQue-21.md)**  
+-   **[GetTensorCountInQue](GetTensorCountInQue-20.md)**  
 
--   **[HasIdleBuffer](HasIdleBuffer-22.md)**  
+-   **[HasIdleBuffer](HasIdleBuffer-21.md)**  
 
 -   **[FreeAllEvent](FreeAllEvent.md)**  
 

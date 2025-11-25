@@ -44,6 +44,10 @@ bool GetRmsNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
 bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize, const uint32_t typeSize, optiling::RmsNormTiling& tiling, const bool isBasicBlock = false)
 ```
 
+```
+bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcShape, const uint32_t stackBufferByteSize, const uint32_t typeSize, AscendC::tiling::RmsNormTiling& tiling, const bool isBasicBlock = false)
+```
+
 ## 参数说明<a name="section522064613453"></a>
 
 **表 1**  GetRmsNormMaxMinTmpSize接口参数说明

@@ -2,7 +2,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-设置[细粒度通信](Iterate-42.md)时，通信算法的步长，即设置细粒度通信时，一次子通信任务执行或准备执行的通信算法的步骤数。例如，[图1 使用pairwise算法的AlltoAllV通信步骤示意图](Iterate-42.md#fig111591359143)中，该细粒度通信场景下，AlltoAllV通信任务的通信步长为1。
+设置[细粒度通信](Iterate-41.md)时，通信算法的步长，即设置细粒度通信时，一次子通信任务执行或准备执行的通信算法的步骤数。例如，[图1 使用pairwise算法的AlltoAllV通信步骤示意图](Iterate-41.md#fig111591359143)中，该细粒度通信场景下，AlltoAllV通信任务的通信步长为1。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
