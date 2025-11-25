@@ -18,8 +18,6 @@
 #include <atomic>
 #include <thread>
 
-#ifndef __AICPU_DEVICE__
-
 struct AicpuDumpThreadMutex {
     std::atomic<bool> stop{false};
 };
@@ -38,5 +36,3 @@ size_t* AicpuSetDumpConfig(const unsigned long *aicpuFileBuf, size_t fileSize);
 int AicpuGetDumpConfig(void **addr, size_t *size);
 void AicpuDumpPrintBuffer(const void *dumpBuffer, const size_t bufSize);
 }
-
-#endif

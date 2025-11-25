@@ -18,8 +18,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-#ifdef __AICPU_DEVICE__
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -41,5 +39,3 @@ static inline void DataStoreBarrier(void) {
     asm volatile("dsb st" ::: "memory");
 }
 }
-
-#endif

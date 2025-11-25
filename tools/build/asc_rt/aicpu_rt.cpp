@@ -13,7 +13,6 @@
  * \brief
  */
 
-#ifndef __AICPU_DEVICE__
 #include "acl/acl.h"
 #include "securec.h"
 #include "aicpu_rt.h"
@@ -154,4 +153,3 @@ size_t* AicpuSetDumpConfig(const unsigned long *aicpuFileBuf, size_t fileSize) {
     return kernelBuf;
 }
 }
-#endif
