@@ -142,7 +142,7 @@ __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &input, uint32_t in
     return;
 }
 
-#ifdef __NPU_DEVICE__
+#if defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 template <class... Args>
 __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 {
@@ -158,7 +158,7 @@ __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 #endif
 }
 
-#else
+#else // !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__) 
 
 #ifdef ASCENDC_CPU_DEBUG
 using ::printf;
@@ -173,7 +173,7 @@ inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)..
 #endif
 }
 
-#ifdef __NPU_HOST__
+#if defined(__NPU_HOST__) || defined(__ASCC_HOST__)
 template <class... Args>
 inline void PRINTF(const char* fmt, Args&&... args)
 {
@@ -181,7 +181,7 @@ inline void PRINTF(const char* fmt, Args&&... args)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
-#endif //__NPU_HOST__
+#endif // defined(__NPU_HOST__) || defined(__ASCC_HOST__)
 
 #else
 template <class... Args>
@@ -200,7 +200,7 @@ __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 #endif
 }
 #endif // ASCENDC_CPU_DEBUG
-#endif // __NPU_DEVICE__
+#endif // defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 
 #if defined(ASCENDC_DUMP_ASSERT_ONLY)
 __BLOCK_LOCAL__ __inline__ __gm__ uint8_t* g_dumpAddrAssertOnlyReserved;
@@ -231,7 +231,7 @@ __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args)
 
 // for auto open ASCENDC_DUMP macros
 #ifdef __CHECK_FEATURE_AT_PRECOMPILE
-#if !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__)
+#if !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
 #define DumpTensor(...)            \
     do {                           \
         ENABLE_PRINTF();           \
@@ -255,8 +255,8 @@ __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args)
         ENABLE_PRINTF();           \
         ENABLE_PRINTF_DUMP_SIZE(); \
     } while (0)
-#endif
-#endif
+#endif // !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
+#endif // __CHECK_FEATURE_AT_PRECOMPILE
 
 __aicore__ inline void PrintTimeStamp(uint32_t descId)
 {

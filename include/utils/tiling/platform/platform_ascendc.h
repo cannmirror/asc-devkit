@@ -19,7 +19,7 @@
 #include <cstdint>
 #include <mutex>
 
-#ifndef __NPU_DEVICE__
+#if !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 
 #define ASCENDC_ASSERT(cond, behavior) \
     do {                               \
@@ -29,14 +29,14 @@
         }                              \
     } while (0)
 
-#else // #ifdef __NPU_DEVICE__
+#else // defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 
 #ifndef ASCC_ASCENDC_ASSERT
 #define ASCC_ASCENDC_ASSERT
 #define ASCENDC_ASSERT(cond, behavior)
 #endif
 
-#endif // __NPU_DEVICE__
+#endif // !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 namespace fe {
 class PlatFormInfos;
 }
