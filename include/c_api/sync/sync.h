@@ -12,9 +12,28 @@
 #define C_API_SYNC_H
 
 #include "impl/c_api/instr/sync/sync.h"
- 
-__aicore__ inline void asc_SyncNotify(pipe_t src, pipe_t dst, int id);
- 
-__aicore__ inline void asc_SyncWait(pipe_t src, pipe_t dst, int id);
+#include "c_api/c_api_interf_util.h"
+
+template<typename Pipe, typename TPipe>
+__aicore__ inline void asc_sync_notify(Pipe pipe, TPipe tpipe, int id);
+
+template<typename Pipe, typename TPipe>
+__aicore__ inline void asc_sync_wait(Pipe pipe, TPipe tpipe, int id);
+
+__aicore__ inline void asc_sync(pipe_t pipe);
+
+__aicore__ inline void asc_sync_vec();
+
+__aicore__ inline void asc_sync_mte3(int id);
+
+__aicore__ inline void asc_sync_mte2(int id);
+
+__aicore__ inline void asc_sync_mte1(int id);
+
+__aicore__ inline void asc_sync_matrix(int id);
+
+__aicore__ inline void asc_sync_fixpipe(int id);
+
+__aicore__ inline void asc_sync();
 
 #endif

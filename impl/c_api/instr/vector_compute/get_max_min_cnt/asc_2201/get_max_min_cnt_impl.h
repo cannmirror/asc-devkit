@@ -21,7 +21,7 @@ __aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
     union {
         half h;
         uint16_t u;
-    } u162half = {.u = 0xffff & max_min_cnt};
+    } u162half = {.u = static_cast<uint16_t>(0xffff & max_min_cnt)};
     val = u162half.h;
     index = 0xffffffff & (max_min_cnt >> offset);
 }
@@ -32,7 +32,7 @@ __aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
     union {
         float f;
         uint32_t u;
-    } u322float = {.u = 0xffffffff & max_min_cnt};
+    } u322float = {.u = static_cast<uint32_t>(0xffffffff & max_min_cnt)};
     val = u322float.f;
     index = 0xffffffff & (max_min_cnt >> offset);
 }
