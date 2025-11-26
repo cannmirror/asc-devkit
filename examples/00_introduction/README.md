@@ -17,6 +17,7 @@
 | [09_unaligned_reducemin](./09_unaligned_reducemin) | 基于Ascend C的无DataCopyPad的非对齐ReduceMin算子核函数直调方法 |
 | [10_unaligned_wholereduces](./10_unaligned_wholereduces) | 基于Ascend C的非对齐WholeReduceSum算子的核函数直调方法 |
 | [11_vectoradd](./11_vectoradd) | 基于Ascend C的Add算子的核函数直调方法，算子支持单核运行 |
+| [12_pybind](./12_pybind) | 基于Ascend C的Add自定义Vector算子的核函数直调方法及pybind调用 |
 
 ## 更新说明
 | 时间       | 更新事项     |
