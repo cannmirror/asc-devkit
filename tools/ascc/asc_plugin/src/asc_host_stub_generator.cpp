@@ -47,7 +47,7 @@ public:
 AscHostStubGenerator::AscHostStubGenerator(const KernelInfo& kernelInfo,
     const std::unordered_set<KernelMetaType>& kernelType) : kernelInfo_(kernelInfo), kernelType_(kernelType) {}
 
-std::string AscHostStubGenerator::GenStubFuncDecl(bool hasNameSpace) const
+std::string AscHostStubGenerator::GenStubFuncDecl(bool hasNameSpace, bool hasAnonymousSpace) const
 {
     std::string functionEntryReplace = "";
     std::string paramsList = "(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream";
@@ -56,8 +56,18 @@ std::string AscHostStubGenerator::GenStubFuncDecl(bool hasNameSpace) const
     }
     paramsList += ")";
     std::string kernelNameSpace = "";
-    for (auto &nameSpace : kernelInfo_.namespaces) {
-        kernelNameSpace += nameSpace + "::";
+    if (hasAnonymousSpace) {
+        for (const auto& spaceName : kernelInfo_.namespaces) {
+            if (spaceName == std::string(ANONYMOUS_NAME)) {
+                functionEntryReplace += "namespace {\n";
+            } else {
+                functionEntryReplace += "namespace " + spaceName + " {\n";
+            }
+        }
+    } else {
+        for (auto &nameSpace : kernelInfo_.namespaces) {
+            kernelNameSpace += nameSpace + "::";
+        }
     }
     std::string kernelName = hasNameSpace ? kernelNameSpace + kernelInfo_.kernelName : kernelInfo_.kernelName;
     std::string tempParamDecl;
@@ -137,7 +147,12 @@ void AscHostStubGenerator::GenStubFuncImpl()
     bool isSupportFifoDump = infoManager.IsSupportFifoDump();
     KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     std::ostringstream funcImplCode;
-    funcImplCode << GenStubFuncDecl(/* hasNameSpace = */true) << "\n{\n";
+    bool hasAnonymous = false;
+    auto it = std::find(kernelInfo_.namespaces.begin(), kernelInfo_.namespaces.end(), std::string(ANONYMOUS_NAME));
+    if (it != kernelInfo_.namespaces.end()) {
+        hasAnonymous = true;
+    }
+    funcImplCode << GenStubFuncDecl(/* hasNameSpace = */true, hasAnonymous) << "\n{\n";
     funcImplCode << "    struct {\n";
     if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "        void* __ascendc_dump;\n";
@@ -204,6 +219,11 @@ void AscHostStubGenerator::GenStubFuncImpl()
     }
     funcImplCode << "    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);\n";
     funcImplCode << "}\n";
+    if (hasAnonymous) {
+        for (size_t i = 0; i < kernelInfo_.namespaces.size(); ++i) {
+            funcImplCode << "}\n";
+        }
+    }
     kernelCallStub_ << funcImplCode.str();
 }
 

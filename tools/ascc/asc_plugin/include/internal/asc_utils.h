@@ -236,6 +236,7 @@ constexpr uint32_t ASC_L2CACHE_HINT_MASK = 0x04;
 inline constexpr char ORIGIN_KERNEL_PREFIX[] = "__origin__";
 inline constexpr char DEVICE_STUB_PREFIX[] = "__device_stub__";
 inline constexpr size_t DEVICE_STUB_PREFIX_LEN = 15;
+inline constexpr char ANONYMOUS_NAME[] = "(Anonymous Namespace)";
 
 // key: kernel manglename
 // value: {kernel original name, variable1 type, variable1 name, variable2 type, variable2 name ....}
