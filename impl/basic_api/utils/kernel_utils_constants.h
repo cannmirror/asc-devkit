@@ -627,7 +627,7 @@ template <> struct GetDstType<mx_fp8_e4m3_t> {
     using Type = fp8_e4m3fn_t;
 };
 
-struct maskStruct {
+struct BasicAPIMaskStruct {
     uint64_t maskArray[MASK_ARRAY_SIZE] = { 0 };
 };
 #endif

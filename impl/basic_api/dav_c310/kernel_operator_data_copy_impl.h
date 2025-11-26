@@ -843,7 +843,7 @@ __aicore__ inline void DataCopyL0C2UBImpl(__ubuf__ T* dst, __cc__ U* src, const 
  * ************************************************************************************************* */
 namespace Internal {
 template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src, const maskStruct maskArrayStruct,
+__simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src, const BasicAPIMaskStruct maskArrayStruct,
                                            const uint64_t maskCount, const uint8_t repeatTime,
                                            const CopyRepeatParams repeatParams, __ubuf__ uint64_t* maskBuf)
 {
@@ -900,14 +900,15 @@ __aicore__ inline void VecCopyLevel0Template(__ubuf__ T* dst, __ubuf__ T* src, c
                                              const uint64_t maskCount, const uint8_t repeatTime,
                                              const CopyRepeatParams& repeatParams)
 {
+    BasicAPIMaskStruct maskArrayStruct;
     if constexpr (isMaskBitMode) {
         ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t* maskBuf = nullptr;
 
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit

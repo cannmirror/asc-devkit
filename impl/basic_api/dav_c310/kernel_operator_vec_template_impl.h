@@ -102,7 +102,7 @@ enum class BinaryFuncMode {
  */
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode,
     BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T, typename U>
-__simd_vf__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const maskStruct maskArrayStruct,
+__simd_vf__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const BasicAPIMaskStruct maskArrayStruct,
     const uint64_t maskCount, const uint8_t repeatTime, const BinaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
@@ -164,14 +164,15 @@ __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, 
 {
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
     using TT = typename Conditional<TUCompare, T, U>::type;
+    BasicAPIMaskStruct maskArrayStruct;
     if constexpr (isMaskBitMode) {
         ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
