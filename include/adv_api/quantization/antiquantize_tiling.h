@@ -31,6 +31,19 @@ namespace AscendC {
  */
 void GetAntiQuantizeMaxMinTmpSize(const ge::Shape &srcShape, const ge::Shape &scaleShape, bool isTranspose,
     ge::DataType inputDataType, ge::DataType outputDataType, uint32_t &maxValue, uint32_t &minValue);
+
+/*!
+ * \brief The calculation of the AntiQuantize interface requires the developer to reserve or apply for temporary space.
+ * The relationship between the maximum temporary space (maxTmpBuffer) and the space occupied by the input (inputSize x
+ * typeSize) is as follows: maxTmpBuffer = maxLiveNodeCount * inputSize * typeSize + extraBuf
+ * This interface is used to obtain maxLiveNodeCount and extraBuf.
+ * \param [in] srcShape, input shape information
+ * \param [in] scaleShape, scale shape information
+ * \param [in] inputDataType, input data type
+ * \param [in] outputDataType, output data type
+ * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
+ * \param [out] extraBuf, the size of the extra temporary space
+ */
 void GetAntiQuantizeTmpBufferFactorSize(const ge::Shape &srcShape, const ge::Shape &scaleShape,
     ge::DataType inputDataType, ge::DataType outputDataType, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
 } // namespace AscendC

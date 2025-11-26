@@ -9,15 +9,21 @@
 */
 
 /* !
- * \file cos_common_utils.h
+ * \file silu_tiling.cpp
  * \brief
  */
-
-#ifndef IMPL_MATH_COS_COS_COMMON_UTILS_H
-#define IMPL_MATH_COS_COS_COMMON_UTILS_H
+#include <cstdint>
+#include <set>
+#include "graph/tensor.h"
+#include "include/adv_api/activation/silu_tiling.h"
 
 namespace AscendC {
-constexpr CosConfig defaultCosConfig = { CosAlgo::POLYNOMIAL_APPROXIMATION };
+void GetSiluTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, 
+    uint32_t& maxValue, uint32_t& minValue) {
+    (void)srcShape;
+    (void)typeSize;
+    (void)isReuseSource;
+    maxValue = 0U;
+    minValue = 0U;
 }
-
-#endif // IMPL_MATH_COS_COS_COMMON_UTILS_H
+} // namespace AscendC

@@ -28,6 +28,16 @@ namespace AscendC {
  */
 void GetDequantizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue,
     uint32_t& minValue);
+
+/*!
+ * \brief The calculation of the Dequantize interface requires the developer to reserve or apply for temporary space.
+ * The relationship between the maximum temporary space (maxTmpBuffer) and the space occupied by the input (inputSize x
+ * typeSize) is as follows: maxTmpBuffer = maxLiveNodeCount * inputSize * typeSize + extraBuf
+ * This interface is used to obtain maxLiveNodeCount and extraBuf.
+ * \param [in] srcShape, input shape information
+ * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
+ * \param [out] extraBuf, the size of the extra temporary space
+ */
 void GetDequantizeTmpBufferFactorSize(const ge::Shape &srcShape, uint32_t &maxLiveNodeCnt, uint32_t &extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_DEQUANTIZE_TILING_H

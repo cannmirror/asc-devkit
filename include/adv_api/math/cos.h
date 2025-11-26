@@ -43,6 +43,7 @@
 #include "../../../impl/adv_api/detail/math/cos/cos_common_impl.h"
 #elif (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
     defined(__DAV_L311__) || defined(__DAV_L300__)
+#include "cos_utils.h"
 #include "../../../impl/adv_api/detail/math/cos/cos_c310_impl.h"
 #endif
 

@@ -84,18 +84,8 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
     LocalTensor<T> tempBuffer = tmpLocal.template ReinterpretCast<T>();
 
     if constexpr (config.algo == TopKAlgo::RADIX_SELECT) {
-        static_assert((SupportType<T,
-                          uint8_t,
-                          int8_t,
-                          uint16_t,
-                          int16_t,
-                          half,
-                          float,
-                          bfloat16_t,
-                          uint32_t,
-                          int32_t,
-                          uint64_t,
-                          int64_t>()),
+        static_assert((SupportType<T, uint8_t, int8_t, uint16_t, int16_t, half, float, bfloat16_t, uint32_t, int32_t,
+                          uint64_t, int64_t>()),
             "Type must be uint8_t/int8_t/uint16_t/int16_t/half/float/bfloat16_t/uint32_t/int32_t/uint64_t/int64_t in "
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
@@ -182,18 +172,8 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
     stackTensor.SetSize(tilling.tmpLocalSize);
 
     if constexpr (config.algo == TopKAlgo::RADIX_SELECT) {
-        static_assert((SupportType<T,
-                          uint8_t,
-                          int8_t,
-                          uint16_t,
-                          int16_t,
-                          half,
-                          float,
-                          bfloat16_t,
-                          uint32_t,
-                          int32_t,
-                          uint64_t,
-                          int64_t>()),
+        static_assert((SupportType<T, uint8_t, int8_t, uint16_t, int16_t, half, float, bfloat16_t, uint32_t, int32_t,
+                          uint64_t, int64_t>()),
             "Type must be uint8_t/int8_t/uint16_t/int16_t/half/float/bfloat16_t/uint32_t/int32_t/uint64_t/int64_t in "
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");

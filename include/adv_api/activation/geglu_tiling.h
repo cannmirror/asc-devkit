@@ -30,6 +30,7 @@ namespace AscendC {
  */
 void GetGeGLUMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
     uint32_t &maxValue, uint32_t &minValue);
+
 /*!
  * \brief The calculation of the GeGLU interface requires the developer to reserve or apply for temporary space. The
  * relationship between the maximum temporary space (maxTmpBuffer) and the space occupied by the input (inputSize x

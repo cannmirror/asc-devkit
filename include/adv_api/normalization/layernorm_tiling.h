@@ -19,6 +19,14 @@
 #include "layernorm_tilingdata.h"
 #include "kernel_tiling/kernel_tiling.h"
 namespace AscendC {
+/*!
+ * \brief calculate max and min tmp buffer size for LayerNorm interface.
+ * \param [in] srcShape: input shape
+ * \param [in] typeSize: data type size
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [out] maxValue: max size required for tmp buffer
+ * \param [out] minValue: min size required for tmp buffer
+ */
 void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
     uint32_t& maxValue, uint32_t& minValue);
 
@@ -26,10 +34,19 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
 void GetLayerNormNDTillingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const bool isReuseSource, optiling::LayerNormTiling& tilling);
 
+/*!
+ * \brief get tiling for LayerNorm interface.
+ * \param [in] srcShape: input shape
+ * \param [in] stackBufferSize: share temporary buffer size
+ * \param [in] typeSize: data type size
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [out] tiling: LayerNormSeparateTiling
+ */
 void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const bool isReuseSource, optiling::LayerNormTiling& tiling);
 void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
     const bool isReuseSource, AscendC::tiling::LayerNormTiling& tiling);
+
 /*!
  * \brief calculate max and min tmp buffer size for WelfordUpdate interface.
  * \param [in] srcShape: input shape
