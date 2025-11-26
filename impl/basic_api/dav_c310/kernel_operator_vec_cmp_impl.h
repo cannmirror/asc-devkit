@@ -687,7 +687,7 @@ __simd_vf__ inline void CompareScalarLevel2(__ubuf__ U *dst, __ubuf__ T *src0, c
             for (uint16_t i = 0; i < repeatTime; ++i) {
                 maskReg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
                 MicroAPI::DataCopy(src0Reg, src0 + i * repeatElm);
-                CompareEqDouble<uint64_t, CMPMODE::EQ>(dstReg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src0Reg, src1Reg, maskReg);  
+                CompareEqualDouble<uint64_t>(dstReg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src0Reg, src1Reg, maskReg);  
                 MicroAPI::DataCopyUnAlign((__ubuf__ uint32_t *&)dst, dstReg, uReg);
             }
         } else {        
@@ -1005,7 +1005,7 @@ __simd_vf__ inline void CompareSrc0ScalarLevel2(__ubuf__ U *dst, const T src0, _
             for (uint16_t i = 0; i < repeatTime; ++i) {
                 maskReg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
                 MicroAPI::DataCopy(src1Reg, src1 + i * repeatElm);
-                CompareEqDouble<uint64_t, CMPMODE::EQ>(dstReg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src1Reg, src0Reg, maskReg);
+                CompareEqualDouble<uint64_t>(dstReg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src1Reg, src0Reg, maskReg);
                 MicroAPI::DataCopyUnAlign((__ubuf__ uint32_t *&)dst, dstReg, uReg);
             }        
         } else {
@@ -1216,7 +1216,7 @@ __simd_vf__ inline void CompareScalarLevel2B64(
         for (uint16_t i = 0; i < repeatTime; ++i) {
             maskReg = MicroAPI::UpdateMask<double, MicroAPI::RegTraitNumTwo>(sreg);
             MicroAPI::DataCopy(src1Reg, src1 + i * repeatElm);
-            CompareEqDouble<uint64_t, CMPMODE::EQ>(dstReg, src0Reg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src1Reg, maskReg);   
+            CompareEqualDouble<uint64_t>(dstReg, src0Reg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src1Reg, maskReg);   
             MicroAPI::DataCopyUnAlign((__ubuf__ uint32_t *&)dst, dstReg, uReg);
         }
     } else {
@@ -1231,7 +1231,7 @@ __simd_vf__ inline void CompareScalarLevel2B64(
         for (uint16_t i = 0; i < repeatTime; ++i) {
             maskReg = MicroAPI::UpdateMask<double, MicroAPI::RegTraitNumTwo>(sreg);
             MicroAPI::DataCopy(src0Reg, src0 + i * repeatElm);
-            CompareEqDouble<uint64_t, CMPMODE::EQ>(dstReg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src0Reg, src1Reg, maskReg);   
+            CompareEqualDouble<uint64_t>(dstReg, (MicroAPI::RegTensor<uint64_t, MicroAPI::RegTraitNumTwo>&)src0Reg, src1Reg, maskReg);   
             MicroAPI::DataCopyUnAlign((__ubuf__ uint32_t *&)dst, dstReg, uReg);
         }
     }        
