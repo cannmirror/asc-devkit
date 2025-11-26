@@ -47,65 +47,65 @@ DumpTensor介绍：
     z = x + y
     ```
 - 算子规格：  
-- Cube场景Mmad算子：  
+  - Cube场景Mmad算子：  
 
-  在核函数直调样例中，算子实现支持的shape为：M = 32, N = 32, K = 32。
-  <table>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_custom</td></tr>
-  </table>
+    在核函数直调样例中，算子实现支持的shape为：M = 32, N = 32, K = 32。
+    <table>
+    <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+    <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td></tr>
+    <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td></tr>
+    </tr>
+    </tr>
+    <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td></tr>
+    </tr>
+    <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">mmad_custom</td></tr>
+    </table>
 
-- Vector场景Add算子：  
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
-  </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
-  </table>
+  - Vector场景Add算子：  
+    <table>
+    <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
+    </tr>
+    <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
+    <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+    <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+    </tr>
+    </tr>
+    <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+    </tr>
+    <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
+    </table>
 
 - 算子实现：  
-- Cube场景Mmad算子：
+  - Cube场景Mmad算子：
 
-  本样例中实现的是[m, n, k]固定为[32, 32, 32]的Mmad算子，并使用Ascend C基础API实现，同时添加DumpTensor用于Dump指定Tensor的内容。
+    本样例中实现的是[m, n, k]固定为[32, 32, 32]的Mmad算子，并使用Ascend C基础API实现，同时添加DumpTensor用于Dump指定Tensor的内容。
 
-  - kernel实现  
-    Mmad算子的数学表达式为：
-    $$
-    C = A * B
-    $$
-    其中A的形状为[32, 32], B的形状为[32, 32], C的形状为[32, 32]。
+    - kernel实现  
+      Mmad算子的数学表达式为：
+      $$
+      C = A * B
+      $$
+      其中A的形状为[32, 32], B的形状为[32, 32], C的形状为[32, 32]。
 
-    调用实现
+      调用实现
 
-    使用内核调用符<<<>>>调用核函数。
+      使用内核调用符<<<>>>调用核函数。
 
-- Vector场景Add算子： 
+  - Vector场景Add算子： 
 
-  本样例中实现的是固定shape为8*2048的Add算子，同时添加DumpTensor用于Dump指定Tensor的内容。
-  - kernel实现  
-    Add算子的数学表达式为：
-    ```
-    z = x + y
-    ```
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
+    本样例中实现的是固定shape为8*2048的Add算子，同时添加DumpTensor用于Dump指定Tensor的内容。
+    - kernel实现  
+      Add算子的数学表达式为：
+      ```
+      z = x + y
+      ```
+      计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
 
-    Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
+      Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
-  - 调用实现
+    - 调用实现
 
-    使用内核调用符<<<>>>调用核函数。
+      使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行：  
 - 配置环境变量  

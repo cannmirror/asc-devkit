@@ -9,8 +9,7 @@
 ```
 ├── basic_api_tque_add
 │   ├── CMakeLists.txt          // 编译工程文件
-│   ├── data_utils.h            // 数据读入写出函数
-│   └── add.asc      // AscendC算子实现,tque管理内存 & 调用样例
+│   └── add.asc                 // AscendC算子实现,tque管理内存 & 调用样例
 ```
 
 ## 算子描述
