@@ -17,16 +17,9 @@
 #include <cstdint>
 
 #include "graph/tensor.h"
+#include "cos_utils.h"
+
 namespace AscendC {
-enum class CosAlgo {
-    POLYNOMIAL_APPROXIMATION = 0,
-    RADIAN_REDUCTION,
-};
-
-struct CosConfig {
-    CosAlgo algo = CosAlgo::POLYNOMIAL_APPROXIMATION;
-};
-
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
  * The developer selects a proper space size based on this range as the tiling parameter.

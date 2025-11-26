@@ -18,14 +18,17 @@
 #include "register/tilingdata_base.h"
 
 namespace AscendC {
-inline void GetSwishTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& max,
-    uint32_t& min)
-{
-    (void)srcShape;
-    (void)typeSize;
-    (void)isReuseSource;
-    max = 0;
-    min = 0;
-}
+/*
+ * @ingroup GetSwishTmpSize
+ * @brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
+ *  The developer selects a proper space size based on this range as the tiling parameter.
+ * @param [in] srcShape : input src Tensor shape
+ * @param [in] typeSize : src tensor dtype size
+ * @param [in] isReuseSource: whether to reuse the input space of the source operand
+ * @param [out] maxValue: max temporary local space size
+ * @param [out] minValue: min temporary local space size
+ */
+ void GetSwishTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue,
+    uint32_t& minValue);
 } // namespace AscendC
 #endif

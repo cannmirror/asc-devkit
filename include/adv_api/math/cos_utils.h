@@ -9,15 +9,20 @@
 */
 
 /* !
- * \file cos_common_utils.h
+ * \file cos_utils.h
  * \brief
  */
-
-#ifndef IMPL_MATH_COS_COS_COMMON_UTILS_H
-#define IMPL_MATH_COS_COS_COMMON_UTILS_H
+#ifndef LIB_MATH_COS_UTILS_H
+#define LIB_MATH_COS_UTILS_H
 
 namespace AscendC {
-constexpr CosConfig defaultCosConfig = { CosAlgo::POLYNOMIAL_APPROXIMATION };
-}
+enum class CosAlgo {
+    POLYNOMIAL_APPROXIMATION = 0,
+    RADIAN_REDUCTION,
+};
 
-#endif // IMPL_MATH_COS_COS_COMMON_UTILS_H
+struct CosConfig {
+    CosAlgo algo = CosAlgo::POLYNOMIAL_APPROXIMATION;
+};
+}; // namespace AscendC
+#endif // LIB_MATH_COS_UTILS_H

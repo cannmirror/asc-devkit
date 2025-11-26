@@ -16,17 +16,16 @@
 #define LIB_NORMALIZATION_WELFORDFINALIZE_TILING_H
 #include "graph/tensor.h"
 #include "tiling/platform/platform_ascendc.h"
-namespace AscendC
-{
-    /*!
-    * \brief calculate max and min tmp buffer size for WelfordFinalize interface.
-    * \param [in] srcShape: input shape
-    * \param [in] typeSize: data type size
-    * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
-    * \param [out] maxValue: max size required for tmp buffer
-    * \param [out] minValue: min size required for tmp buffer
-    */
-    void GetWelfordFinalizeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-                                         uint32_t &maxValue, uint32_t &minValue);
+namespace AscendC {
+/*!
+* \brief calculate max and min tmp buffer size for WelfordFinalize interface.
+* \param [in] srcShape: input shape
+* \param [in] typeSize: data type size
+* \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+* \param [out] maxValue: max size required for tmp buffer
+* \param [out] minValue: min size required for tmp buffer
+*/
+void GetWelfordFinalizeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t &maxValue, uint32_t &minValue);
 }
 #endif // LIB_NORMALIZATION_WELFORDFINALIZE_TILING_H
