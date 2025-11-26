@@ -121,6 +121,7 @@ __simd_callee__ inline void Not(U& dstReg, U& srcReg, MaskReg& mask)
 {
     NotImpl<T, mode, U>(dstReg, srcReg, mask);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_SINGLE_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_VEC_SINGLE_INTERFACE_IMPL_H

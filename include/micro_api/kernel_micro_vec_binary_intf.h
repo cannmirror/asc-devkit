@@ -20,87 +20,87 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Add(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Add(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Sub(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Sub(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Mul(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Mul(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Div(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Div(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Max(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Max(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Min(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Min(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
-    typename S, typename V>
-__simd_callee__ inline void ShiftLeft(S &dstReg, S &srcReg0, V &srcReg1, MaskReg &mask);
+          typename S, typename V>
+__simd_callee__ inline void ShiftLeft(S& dstReg, S& srcReg0, V& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
-    typename S, typename V>
-__simd_callee__ inline void ShiftRight(S &dstReg, S &srcReg0, V &srcReg1, MaskReg &mask);
+          typename S, typename V>
+__simd_callee__ inline void ShiftRight(S& dstReg, S& srcReg0, V& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void And(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void And(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Or(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Or(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Xor(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Xor(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3103 || \
-    __NPU_ARCH__ == 3113)
+            __NPU_ARCH__ == 3113)
 template <typename T = DefaultType, typename IndexT = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
-    typename RegT, typename RegIndexT>
-__aicore__ inline void Round(RegT &dstReg, RegT &srcReg0, RegIndexT &srcReg1, MaskReg &mask);
+          typename RegT, typename RegIndexT>
+__aicore__ inline void Round(RegT& dstReg, RegT& srcReg0, RegIndexT& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void Mod(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask);
+__aicore__ inline void Mod(RegT& dstReg, RegT& srcReg0, RegT& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void SaturationAdd(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask);
+__aicore__ inline void SaturationAdd(RegT& dstReg, RegT& srcReg0, RegT& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void SaturationSub(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask);
+__aicore__ inline void SaturationSub(RegT& dstReg, RegT& srcReg0, RegT& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void Slide(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, int16_t slideAmount);
+__aicore__ inline void Slide(RegT& dstReg, RegT& srcReg0, RegT& srcReg1, int16_t slideAmount);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void Add3(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask);
+__aicore__ inline void Add3(RegT& dstReg, RegT& srcReg0, RegT& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, RoundControl rnd = RoundControl::NO_ROUND, typename RegT>
-__aicore__ inline void Mean(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask);
+__aicore__ inline void Mean(RegT& dstReg, RegT& srcReg0, RegT& srcReg1, MaskReg& mask);
 #endif
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Prelu(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Prelu(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void Mull(U &dstReg0, U &dstReg1, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void Mull(U& dstReg0, U& dstReg1, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void MulAddDst(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void MulAddDst(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void AddCarryOuts(MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1, MaskReg &carrysrcp,
-    MaskReg &mask);
+__simd_callee__ inline void AddCarryOuts(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
+    MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void SubCarryOuts(MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1, MaskReg &carrysrcp,
-    MaskReg &mask);
+__simd_callee__ inline void SubCarryOuts(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
+    MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void AddCarryOut(MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void AddCarryOut(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void SubCarryOut(MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask);
+__simd_callee__ inline void SubCarryOut(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 } // namespace MicroAPI
 } // namespace AscendC
 

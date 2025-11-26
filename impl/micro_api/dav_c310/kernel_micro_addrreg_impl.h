@@ -17,10 +17,11 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T> __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0)
+template <typename T>
+__simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8,
-        "CreateAddrReg only support type b8/b16/b32/b64 on current device");
+                  "CreateAddrReg only support type b8/b16/b32/b64 on current device");
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0);
 #endif
@@ -38,7 +39,7 @@ template <typename T>
 __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8,
-        "CreateAddrReg only support type b8/b16/b32/b64 on current device");
+                  "CreateAddrReg only support type b8/b16/b32/b64 on current device");
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0, index1, stride1);
 #endif
@@ -54,10 +55,10 @@ __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t strid
 
 template <typename T>
 __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
-    uint16_t index2, uint32_t stride2)
+                                                 uint16_t index2, uint32_t stride2)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8,
-        "CreateAddrReg only support type b8/b16/b32/b64 on current device");
+                  "CreateAddrReg only support type b8/b16/b32/b64 on current device");
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0, index1, stride1, index2, stride2);
 #endif
@@ -73,10 +74,10 @@ __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t strid
 
 template <typename T>
 __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
-    uint16_t index2, uint32_t stride2, uint16_t index3, uint32_t stride3)
+                                                 uint16_t index2, uint32_t stride2, uint16_t index3, uint32_t stride3)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4 || sizeof(T) == 8,
-        "CreateAddrReg only support type b8/b16/b32/b64 on current device");
+                  "CreateAddrReg only support type b8/b16/b32/b64 on current device");
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0, index1, stride1, index2, stride2, index3, stride3);
 #endif

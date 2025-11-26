@@ -20,16 +20,16 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, const RegTrait &regTrait = RegTraitNumOne>
-__aicore__ inline MaskReg UpdateMaskImpl(uint32_t &scalar)
+__aicore__ inline MaskReg UpdateMaskImpl(uint32_t &scalarValue)
 {
     static_assert(SupportBytes<T, 1, 2, 4>(), "UpdateMask only support type b8/b16/b32");
     MaskReg reg;
     if constexpr (sizeof(T) == 1) {
-        reg = plt_b8(scalar, POST_UPDATE);
+        reg = plt_b8(scalarValue, POST_UPDATE);
     } else if constexpr (sizeof(T) == 2) {
-        reg = plt_b16(scalar, POST_UPDATE);
+        reg = plt_b16(scalarValue, POST_UPDATE);
     } else if constexpr (sizeof(T) == 4) {
-        reg = plt_b32(scalar, POST_UPDATE);
+        reg = plt_b32(scalarValue, POST_UPDATE);
     }
     return reg;
 }

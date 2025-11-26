@@ -17,48 +17,48 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename RegT,
-    typename RegU>
-__simd_callee__ inline void PackImpl(RegT &dstReg, RegU &srcReg)
+template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename S,
+          typename V>
+__simd_callee__ inline void PackImpl(S& dstReg, V& srcReg)
 {
-    using ActualT = typename RegT::ActualT;
-    using ActualU = typename RegU::ActualT;
+    using ActualT = typename S::ActualT;
+    using ActualU = typename V::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
     static_assert((SupportType<Tuple<ActualT, ActualU>, Tuple<uint8_t, uint16_t>, Tuple<uint8_t, int16_t>,
-        Tuple<uint16_t, uint32_t>, Tuple<uint16_t, int32_t>, Tuple<uint32_t, uint64_t>, Tuple<uint32_t, int64_t>>()),
-        "unsupport datatype");
+                  Tuple<uint16_t, uint32_t>, Tuple<uint16_t, int32_t>, Tuple<uint32_t, uint64_t>, Tuple<uint32_t, 
+                  int64_t>>()), "unsupport datatype");
     constexpr auto partValue = std::integral_constant<::HiloPart, static_cast<::HiloPart>(part)>();
     if constexpr (sizeof(ActualU) != 8) {
         vpack(dstReg, srcReg, partValue);
     } else {
-        if constexpr (CheckRegTrait<RegU, RegTraitNumOne>()) {
+        if constexpr (CheckRegTrait<V, RegTraitNumOne>()) {
             RegTensor<uint32_t> zeroReg;
             RegTensor<uint32_t> dumpReg;
             MaskReg mask0 = CreateMask<uint32_t, MaskPattern::ALL>();
             Duplicate(zeroReg, 0, mask0);
             if constexpr (part == HighLowPart::LOWEST) {
-                DeInterleave((RegTensor<uint32_t> &)dstReg, dumpReg, (RegTensor<uint32_t> &)srcReg, zeroReg);
+                DeInterleave((RegTensor<uint32_t>&)dstReg, dumpReg, (RegTensor<uint32_t>&)srcReg, zeroReg);
             } else {
-                DeInterleave((RegTensor<uint32_t> &)dstReg, dumpReg, zeroReg, (RegTensor<uint32_t> &)srcReg);
+                DeInterleave((RegTensor<uint32_t>&)dstReg, dumpReg, zeroReg, (RegTensor<uint32_t>&)srcReg);
             }
-        } else if constexpr (CheckRegTrait<RegU, RegTraitNumTwo>()) {
-            Copy((RegTensor<uint32_t> &)dstReg, (RegTensor<uint32_t> &)srcReg.reg[0]);
+        } else if constexpr (CheckRegTrait<V, RegTraitNumTwo>()) {
+            Copy((RegTensor<uint32_t>&)dstReg, (RegTensor<uint32_t>&)srcReg.reg[0]);
         }
     }
 }
 
-template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename RegT,
-    typename RegU>
-__simd_callee__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
+template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename S,
+          typename V>
+__simd_callee__ inline void UnPackImpl(S& dstReg, V& srcReg)
 {
-    using ActualT = typename RegT::ActualT;
-    using ActualU = typename RegU::ActualT;
+    using ActualT = typename S::ActualT;
+    using ActualU = typename V::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
     static_assert((SupportType<Tuple<ActualT, ActualU>, Tuple<uint32_t, uint16_t>, Tuple<int32_t, int16_t>,
-        Tuple<uint16_t, uint8_t>, Tuple<int16_t, int8_t>, Tuple<uint64_t, uint32_t>, Tuple<int64_t, int32_t>>()),
-        "unsupport datatype");
+                  Tuple<uint16_t, uint8_t>, Tuple<int16_t, int8_t>, Tuple<uint64_t, uint32_t>, Tuple<int64_t, 
+                  int32_t>>()), "unsupport datatype");
     constexpr auto partValue = std::integral_constant<::HiloPart, static_cast<::HiloPart>(part)>();
     if constexpr (sizeof(ActualT) != 8) {
         vunpack(dstReg, srcReg, partValue);
@@ -66,20 +66,20 @@ __simd_callee__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
         RegTensor<uint32_t> padReg;
         MaskReg mask0 = CreateMask<ActualU, MaskPattern::ALL>();
         if constexpr (std::is_same_v<ActualU, int32_t>) {
-            ShiftRights<int32_t, int16_t>((RegTensor<int32_t> &)padReg, srcReg, 31, mask0);
+            ShiftRights<int32_t, int16_t>((RegTensor<int32_t>&)padReg, srcReg, 31, mask0);
         } else {
             Duplicate(padReg, 0, mask0);
         }
-        if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
+        if constexpr (CheckRegTrait<S, RegTraitNumOne>()) {
             RegTensor<uint32_t> dumpReg;
             if constexpr (part == HighLowPart::LOWEST) {
-                Interleave((RegTensor<uint32_t> &)dstReg, dumpReg, (RegTensor<uint32_t> &)srcReg, padReg);
+                Interleave((RegTensor<uint32_t>&)dstReg, dumpReg, (RegTensor<uint32_t>&)srcReg, padReg);
             } else {
-                Interleave(dumpReg, (RegTensor<uint32_t> &)dstReg, (RegTensor<uint32_t> &)srcReg, padReg);
+                Interleave(dumpReg, (RegTensor<uint32_t>&)dstReg, (RegTensor<uint32_t>&)srcReg, padReg);
             }
-        } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-            Copy((RegTensor<uint32_t> &)dstReg.reg[0], (RegTensor<uint32_t> &)srcReg);
-            Copy((RegTensor<uint32_t> &)dstReg.reg[1], padReg);
+        } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+            Copy((RegTensor<uint32_t>&)dstReg.reg[0], (RegTensor<uint32_t>&)srcReg);
+            Copy((RegTensor<uint32_t>&)dstReg.reg[1], padReg);
         }
     }
 }

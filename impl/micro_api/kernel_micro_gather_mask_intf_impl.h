@@ -29,35 +29,36 @@
 
 namespace AscendC {
 namespace MicroAPI {
-
 template <typename T, GatherMaskMode store, typename U>
-__simd_callee__ inline void GatherMask(U &dstReg, U &srcReg, MaskReg &mask)
+__simd_callee__ inline void GatherMask(U& dstReg, U& srcReg, MaskReg& mask)
 {
     GatherMaskImpl<T, store, U>(dstReg, srcReg, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void PrefixSum(U &dstReg, MaskReg &mask)
+__simd_callee__ inline void PrefixSum(U& dstReg, MaskReg& mask)
 {
     PrefixSumImpl<T, U>(dstReg, mask);
 }
 
 template <SpecialPurposeReg spr>
-__aicore__ inline int64_t GetSpr(){
+__aicore__ inline int64_t GetSpr()
+{
     return GetSprImpl<spr>();
 }
 
 template <SpecialPurposeReg spr>
-__simd_callee__ inline void ClearSpr(){
+__simd_callee__ inline void ClearSpr()
+{
     ClearSprImpl<spr>();
 }
 
 template <typename T, typename U, typename S, typename V>
-__simd_callee__ inline void Gather(S &dstReg, S &srcReg, V &indexReg)
+__simd_callee__ inline void Gather(S& dstReg, S& srcReg, V& indexReg)
 {
     GatherImpl<T, U, S, V>(dstReg, srcReg, indexReg);
 }
+} // namespace MicroAPI
+} // namespace AscendC
 
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_COPY_INTERFACE_IMPL_H
+#endif // ASCENDC_KERNEL_MICRO_COPY_INTERFACE_IMPL_H

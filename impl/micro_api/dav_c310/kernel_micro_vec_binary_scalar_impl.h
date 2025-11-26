@@ -17,105 +17,102 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void AddsComplexTraitTwoImpl(RegT &dstReg, RegT &srcReg, const ScalarT& scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void AddsComplexTraitTwoImpl(S& dstReg, S& srcReg, const U& scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    static_assert(CheckRegTrait<RegT, RegTraitNumTwo>(), "RegT should be RegTraitNumTwo");
+    using ActualT = typename S::ActualT;
+    static_assert(CheckRegTrait<S, RegTraitNumTwo>(), "S should be RegTraitNumTwo");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     RegTensor<typename ActualT::EleType> realSrc1tReg;
     RegTensor<typename ActualT::EleType> imagSrc1Reg;
-    ActualT scalarAux(scalar);
+    ActualT scalarAux(scalarValue);
     Duplicate(realSrc1tReg, scalarAux.real, mask);
     Duplicate(imagSrc1Reg, scalarAux.imag, mask);
 
-    vadd((RegTensor<typename ActualT::EleType> &)dstReg.reg[0], (RegTensor<typename ActualT::EleType> &)srcReg.reg[0],
-        realSrc1tReg, mask, modeValue);
-    vadd((RegTensor<typename ActualT::EleType> &)dstReg.reg[1], (RegTensor<typename ActualT::EleType> &)srcReg.reg[1],
-        imagSrc1Reg, mask, modeValue);
+    vadd((RegTensor<typename ActualT::EleType>&)dstReg.reg[0], (RegTensor<typename ActualT::EleType>&)srcReg.reg[0],
+         realSrc1tReg, mask, modeValue);
+    vadd((RegTensor<typename ActualT::EleType>&)dstReg.reg[1], (RegTensor<typename ActualT::EleType>&)srcReg.reg[1],
+         imagSrc1Reg, mask, modeValue);
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void AddsComplexTraitOneImpl(RegT &dstReg, RegT &srcReg, const ScalarT& scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void AddsComplexTraitOneImpl(S& dstReg, S& srcReg, const U& scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    static_assert(CheckRegTrait<RegT, RegTraitNumOne>(), "RegT should be RegTraitNumOne");
+    using ActualT = typename S::ActualT;
+    static_assert(CheckRegTrait<S, RegTraitNumOne>(), "S should be RegTraitNumOne");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     MaskReg maskTrait2;
     MaskPack(maskTrait2, mask);
     RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
     RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
     TraitOneToTaitTwoTmpl<RegTensor<ActualT, RegTraitNumTwo>, RegTensor<ActualT, RegTraitNumOne>, typename ActualT::EleType>(
-        traitTwoSrcReg, srcReg);
-    AddsComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, scalar, maskTrait2);
+                          traitTwoSrcReg, srcReg);
+    AddsComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
     TraitTwoToTaitOneTmpl<RegTensor<ActualT, RegTraitNumOne>, RegTensor<ActualT, RegTraitNumTwo>, typename ActualT::EleType>(
-        dstReg, traitTwoDstReg);
+                          dstReg, traitTwoDstReg);
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void AddsImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void AddsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(
-        SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
-            bfloat16_t, uint64_t, int64_t, complex32, complex64>(),
-        "current data type is not supported on current device!");
-    static_assert(
-        SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
-            bfloat16_t, uint64_t, int64_t, complex32, complex64>(),
-        "current scalar data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
+    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
+                  bfloat16_t, uint64_t, int64_t, complex32, complex64>(),
+                  "current data type is not supported on current device!");
+    static_assert(SupportType<U, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
+                  bfloat16_t, uint64_t, int64_t, complex32, complex64>(),
+                  "current scalarValue data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Adds api only supported Mode ZEROING on current device!");
-
+                  "current Adds api only supported Mode ZEROING on current device!");
 
     if constexpr(SupportType<ActualT, complex32>()) {
-        if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-            AddsComplexTraitTwoImpl(dstReg, srcReg, scalar, mask);
+        if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+            AddsComplexTraitTwoImpl(dstReg, srcReg, scalarValue, mask);
         } else {
-            AddsComplexTraitOneImpl(dstReg, srcReg, scalar, mask);
+            AddsComplexTraitOneImpl(dstReg, srcReg, scalarValue, mask);
         }
     } else if constexpr (sizeof(ActualT) == 8) {
         if constexpr(SupportType<ActualT, complex64>()) {
-            if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-                AddsComplexTraitTwoImpl(dstReg, srcReg, scalar, mask);
+            if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+                AddsComplexTraitTwoImpl(dstReg, srcReg, scalarValue, mask);
             } else {
                 MaskReg maskTrait2;
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
-                AddsComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, scalar, maskTrait2);
+                AddsComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
                 B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
             }
         } else {
-            RegT srcReg1;
-            Duplicate(srcReg1, scalar, mask);
+            S srcReg1;
+            Duplicate(srcReg1, scalarValue, mask);
             Add(dstReg, srcReg, srcReg1, mask);
         }
     } else {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
-        vadds(dstReg, srcReg, scalar, mask, modeValue);
+        vadds(dstReg, srcReg, scalarValue, mask, modeValue);
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void MulsKernel(RegT &dstReg, RegT &srcReg, const ScalarT& scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void MulsKernel(S& dstReg, S& srcReg, const U& scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    static_assert(CheckRegTrait<RegT, RegTraitNumTwo>(), "RegT should be RegTraitNumTwo");
+    using ActualT = typename S::ActualT;
+    static_assert(CheckRegTrait<S, RegTraitNumTwo>(), "S should be RegTraitNumTwo");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     RegTensor<typename ActualT::EleType> src1Real;
     RegTensor<typename ActualT::EleType> src1Imag;
-    ScalarT scalarAux(scalar);
+    U scalarAux(scalarValue);
     Duplicate(src1Real, scalarAux.real, mask);
     Duplicate(src1Imag, scalarAux.imag, mask);
-
-    RegTensor<typename ActualT::EleType> &src0Real= (RegTensor<typename ActualT::EleType> &)srcReg.reg[0];
-    RegTensor<typename ActualT::EleType> &src0Imag = (RegTensor<typename ActualT::EleType> &)srcReg.reg[1];
-    RegTensor<typename ActualT::EleType> &dstReal = (RegTensor<typename ActualT::EleType> &)dstReg.reg[0];
-    RegTensor<typename ActualT::EleType> &dstImag = (RegTensor<typename ActualT::EleType> &)dstReg.reg[1];
+ 
+    RegTensor<typename ActualT::EleType>& src0Real= (RegTensor<typename ActualT::EleType>&)srcReg.reg[0];
+    RegTensor<typename ActualT::EleType>& src0Imag = (RegTensor<typename ActualT::EleType>&)srcReg.reg[1];
+    RegTensor<typename ActualT::EleType>& dstReal = (RegTensor<typename ActualT::EleType>&)dstReg.reg[0];
+    RegTensor<typename ActualT::EleType>& dstImag = (RegTensor<typename ActualT::EleType>&)dstReg.reg[1];
     RegTensor<typename ActualT::EleType> e;
     RegTensor<typename ActualT::EleType> f;
     RegTensor<typename ActualT::EleType> g;
@@ -128,237 +125,233 @@ __simd_callee__ inline void MulsKernel(RegT &dstReg, RegT &srcReg, const ScalarT
     vadd(dstImag, g, h, mask, modeValue);
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void MulsImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void MulsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint16_t, int16_t, uint32_t, int32_t, half, float,
-        uint64_t, int64_t, complex32, complex64>(),
-        "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, uint16_t, int16_t, uint32_t, int32_t, half, float,
-        uint64_t, int64_t, complex32, complex64>(),
-        "current scalar data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
+                  uint64_t, int64_t, complex32, complex64>(),
+                  "current data type is not supported on current device!");
+    static_assert(SupportType<U, uint16_t, int16_t, uint32_t, int32_t, half, float,
+                  uint64_t, int64_t, complex32, complex64>(),
+                  "current scalarValue data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Muls api only supported Mode ZEROING on current device!");
+                  "current Muls api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (sizeof(ActualT) != 8) {
         if constexpr(SupportType<ActualT, complex32>()) {
-            if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-                MulsKernel<T, ScalarT, mode, RegTensor<ActualT, RegTraitNumTwo>>(dstReg, srcReg, scalar, mask);
+            if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+                MulsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumTwo>>(dstReg, srcReg, scalarValue, mask);
             } else {
                 MaskReg maskTrait2;
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 B32TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
-                MulsKernel<T, ScalarT, mode, RegTensor<ActualT, RegTraitNumTwo>>(
-                    traitTwoDstReg, traitTwoSrcReg, scalar, maskTrait2);
+                MulsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumTwo>>(
+                    traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
                 B32TraitTwoToTaitOne(dstReg, traitTwoDstReg);
             }
         } else {
-            vmuls(dstReg, srcReg, scalar, mask, modeValue);
+            vmuls(dstReg, srcReg, scalarValue, mask, modeValue);
         }
     } else {
         if constexpr(SupportType<ActualT, complex64>()) {
-            if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-                MulsKernel<T, ScalarT, mode, RegTensor<ActualT, RegTraitNumTwo>>(dstReg, srcReg, scalar, mask);
+            if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+                MulsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumTwo>>(dstReg, srcReg, scalarValue, mask);
             } else {
                 MaskReg maskTrait2;
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
-                MulsKernel<T, ScalarT, mode, RegTensor<ActualT, RegTraitNumTwo>>(
-                    traitTwoDstReg, traitTwoSrcReg, scalar, maskTrait2);
+                MulsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumTwo>>(
+                    traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
                 B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
             }
         } else {
-            RegT srcReg1;
-            Duplicate(srcReg1, scalar, mask);
+            S srcReg1;
+            Duplicate(srcReg1, scalarValue, mask);
             Mul(dstReg, srcReg, srcReg1, mask);
         }
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void MaxsImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void MaxsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(
-        SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
-            bfloat16_t, uint64_t, int64_t>(),
-        "current data type is not supported on current device!");
-    static_assert(
-        SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
-            bfloat16_t, uint64_t, int64_t>(),
-        "current scalar data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
+    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
+                  bfloat16_t, uint64_t, int64_t>(),
+                  "current data type is not supported on current device!");
+    static_assert(SupportType<U, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
+                  bfloat16_t, uint64_t, int64_t>(),
+                  "current scalarValue data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Maxs api only supported Mode ZEROING on current device!");
+                  "current Maxs api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (sizeof(ActualT) != 8) {
-        vmaxs(dstReg, srcReg, scalar, mask, modeValue);
+        vmaxs(dstReg, srcReg, scalarValue, mask, modeValue);
     } else {
-        RegT srcReg1;
-        Duplicate(srcReg1, scalar, mask);
+        S srcReg1;
+        Duplicate(srcReg1, scalarValue, mask);
         Max(dstReg, srcReg, srcReg1, mask);
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void MinsImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void MinsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(
-        SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t, uint64_t, int64_t>(),
-        "current data type is not supported on current device!");
-    static_assert(
-        SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t, uint64_t, int64_t>(),
-        "current scalar data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
+    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t, 
+                  uint64_t, int64_t>(), "current data type is not supported on current device!");
+    static_assert(SupportType<U, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t, uint64_t,
+                  int64_t>(), "current scalarValue data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current Mins api only supported Mode ZEROING on current device!");
+                  "current Mins api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (sizeof(ActualT) != 8) {
-        vmins(dstReg, srcReg, scalar, mask, modeValue);
+        vmins(dstReg, srcReg, scalarValue, mask, modeValue);
     } else {
-        RegT srcReg1;
-        Duplicate(srcReg1, scalar, mask);
+        S srcReg1;
+        Duplicate(srcReg1, scalarValue, mask);
         Min(dstReg, srcReg, srcReg1, mask);
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void ShiftLeftsImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void ShiftLeftsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
-        "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, int16_t>(), "current scalar data type is not supported on current device!");
+                  "current data type is not supported on current device!");
+    static_assert(SupportType<U, int16_t>(), "current scalarValue data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current ShiftLefts api only supported Mode ZEROING on current device!");
+                  "current ShiftLefts api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (sizeof(ActualT) != 8) {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
-        vshls(dstReg, srcReg, scalar, mask, modeValue);
+        vshls(dstReg, srcReg, scalarValue, mask, modeValue);
     } else {
-        if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-            RegT dstTemp;
-            ShiftLeftsB64Impl(dstTemp, srcReg, scalar, mask);
+        if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+            S dstTemp;
+            ShiftLeftsB64Impl(dstTemp, srcReg, scalarValue, mask);
             dstReg = dstTemp;
-        } else if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
+        } else if constexpr (CheckRegTrait<S, RegTraitNumOne>()) {
             MaskReg maskTrait2;
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg);
-            ShiftLeftsB64Impl(traitTwoDstReg, traitTwoSrcReg0, scalar, maskTrait2);
+            ShiftLeftsB64Impl(traitTwoDstReg, traitTwoSrcReg0, scalarValue, maskTrait2);
             B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
         }
     }
 }
 
-template <typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void ShiftLeftsB64Impl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void ShiftLeftsB64Impl(U& dstReg, U& srcReg, T scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     int16_t B32Width = 32;
     if constexpr (std::is_same_v<ActualT, uint64_t>) {
         RegTensor<uint32_t> tmpReg0;
         RegTensor<uint32_t> tmpReg1;
-        vshls(tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], scalar, mask, modeValue);
-        vshls(tmpReg1, (RegTensor<uint32_t> &)srcReg.reg[1], B32Width + scalar, mask, modeValue);
-        Or((RegTensor<uint32_t> &)dstReg.reg[0], tmpReg0, tmpReg1, mask);
-        vshrs(tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], B32Width - scalar, mask, modeValue);
-        vshls(tmpReg1, (RegTensor<uint32_t> &)srcReg.reg[1], scalar, mask, modeValue);
-        Or((RegTensor<uint32_t> &)dstReg.reg[1], tmpReg0, tmpReg1, mask);
+        vshls(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
+        vshls(tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], B32Width + scalarValue, mask, modeValue);
+        Or((RegTensor<uint32_t>&)dstReg.reg[0], tmpReg0, tmpReg1, mask);
+        vshrs(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], B32Width - scalarValue, mask, modeValue);
+        vshls(tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], scalarValue, mask, modeValue);
+        Or((RegTensor<uint32_t>&)dstReg.reg[1], tmpReg0, tmpReg1, mask);
     } else if constexpr (std::is_same_v<ActualT, int64_t>) {
         RegTensor<int32_t> tmpReg0;
         RegTensor<int32_t> tmpReg1;
-        vshls((RegTensor<uint32_t> &)tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], scalar, mask, modeValue);
-        vshls((RegTensor<uint32_t> &)tmpReg1, (RegTensor<uint32_t> &)srcReg.reg[1], B32Width + scalar, mask, modeValue);
-        Or((RegTensor<int32_t> &)dstReg.reg[0], tmpReg0, tmpReg1, mask);
-        vshrs((RegTensor<uint32_t> &)tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], B32Width - scalar, mask, modeValue);
-        vshls(tmpReg1, (RegTensor<int32_t> &)srcReg.reg[1], scalar, mask, modeValue);
-        Or((RegTensor<int32_t> &)dstReg.reg[1], tmpReg0, tmpReg1, mask);
+        vshls((RegTensor<uint32_t>&)tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
+        vshls((RegTensor<uint32_t>&)tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], B32Width + scalarValue, mask, modeValue);
+        Or((RegTensor<int32_t>&)dstReg.reg[0], tmpReg0, tmpReg1, mask);
+        vshrs((RegTensor<uint32_t>&)tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], B32Width - scalarValue, mask, modeValue);
+        vshls(tmpReg1, (RegTensor<int32_t>&)srcReg.reg[1], scalarValue, mask, modeValue);
+        Or((RegTensor<int32_t>&)dstReg.reg[1], tmpReg0, tmpReg1, mask);
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void ShiftRightsImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void ShiftRightsImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, uint64_t, int64_t>(),
-        "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, int16_t>(), "current scalar data type is not supported on current device!");
+                  "current data type is not supported on current device!");
+    static_assert(SupportType<U, int16_t>(), "current scalarValue data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current ShiftRights api only supported Mode ZEROING on current device!");
+                  "current ShiftRights api only supported Mode ZEROING on current device!");
     if constexpr (sizeof(ActualT) < 8) {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
-        vshrs(dstReg, srcReg, scalar, mask, modeValue);
+        vshrs(dstReg, srcReg, scalarValue, mask, modeValue);
     } else if constexpr (sizeof(ActualT) == 8) {
-        if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-            RegT dstTemp;
-            ShiftRightsB64Impl(dstTemp, srcReg, scalar, mask);
+        if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
+            S dstTemp;
+            ShiftRightsB64Impl(dstTemp, srcReg, scalarValue, mask);
             dstReg = dstTemp;
-        } else if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
+        } else if constexpr (CheckRegTrait<S, RegTraitNumOne>()) {
             MaskReg maskTrait2;
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg);
-            ShiftRightsB64Impl(traitTwoDstReg, traitTwoSrcReg0, scalar, maskTrait2);
+            ShiftRightsB64Impl(traitTwoDstReg, traitTwoSrcReg0, scalarValue, maskTrait2);
             B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
         }
     }
 }
 
-template <typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void ShiftRightsB64Impl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void ShiftRightsB64Impl(U& dstReg, U& srcReg, T scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     int16_t B32Width = 32;
     if constexpr (std::is_same_v<ActualT, uint64_t>) {
         RegTensor<uint32_t> tmpReg0;
         RegTensor<uint32_t> tmpReg1;
-        vshrs(tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], scalar, mask, modeValue);
-        vshls(tmpReg1, (RegTensor<uint32_t> &)srcReg.reg[1], B32Width - scalar, mask, modeValue);
-        Or((RegTensor<uint32_t> &)dstReg.reg[0], tmpReg0, tmpReg1, mask);
-        vshrs(tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], B32Width + scalar, mask, modeValue);
-        vshrs(tmpReg1, (RegTensor<uint32_t> &)srcReg.reg[1], scalar, mask, modeValue);
+        vshrs(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
+        vshls(tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], B32Width - scalarValue, mask, modeValue);
+        Or((RegTensor<uint32_t>&)dstReg.reg[0], tmpReg0, tmpReg1, mask);
+        vshrs(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], B32Width + scalarValue, mask, modeValue);
+        vshrs(tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], scalarValue, mask, modeValue);
         Or((RegTensor<uint32_t> &)dstReg.reg[1], tmpReg0, tmpReg1, mask);
     } else if constexpr (std::is_same_v<ActualT, int64_t>) {
         RegTensor<int32_t> tmpReg0;
         RegTensor<int32_t> tmpReg1;
-        vshrs((RegTensor<uint32_t> &)tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], scalar, mask, modeValue);
-        vshls((RegTensor<int32_t> &)tmpReg1, (RegTensor<int32_t> &)srcReg.reg[1], B32Width - scalar, mask, modeValue);
-        Or((RegTensor<int32_t> &)dstReg.reg[0], tmpReg0, tmpReg1, mask);
-        vshrs((RegTensor<uint32_t> &)tmpReg0, (RegTensor<uint32_t> &)srcReg.reg[0], B32Width + scalar, mask, modeValue);
-        vshrs(tmpReg1, (RegTensor<int32_t> &)srcReg.reg[1], scalar, mask, modeValue);
-        Or((RegTensor<int32_t> &)dstReg.reg[1], tmpReg0, tmpReg1, mask);
+        vshrs((RegTensor<uint32_t>&)tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], scalarValue, mask, modeValue);
+        vshls((RegTensor<int32_t>&)tmpReg1, (RegTensor<int32_t>&)srcReg.reg[1], B32Width - scalarValue, mask, modeValue);
+        Or((RegTensor<int32_t>&)dstReg.reg[0], tmpReg0, tmpReg1, mask);
+        vshrs((RegTensor<uint32_t>&)tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[0], B32Width + scalarValue, mask, modeValue);
+        vshrs(tmpReg1, (RegTensor<int32_t>&)srcReg.reg[1], scalarValue, mask, modeValue);
+        Or((RegTensor<int32_t>&)dstReg.reg[1], tmpReg0, tmpReg1, mask);
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void LeakyReluImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, half, float>(), "current scalar data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
+    static_assert(SupportType<U, half, float>(), "current scalarValue data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current LeakyRelu api only supported Mode ZEROING on current device!");
+                  "current LeakyRelu api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vlrelu(dstReg, srcReg, scalar, mask, modeValue);
+    vlrelu(dstReg, srcReg, scalarValue, mask, modeValue);
 }
 } // namespace MicroAPI
 } // namespace AscendC

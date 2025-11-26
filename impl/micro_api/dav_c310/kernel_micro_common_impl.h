@@ -24,7 +24,7 @@ template <typename T, StoreDist dist> __aicore__ inline constexpr StoreDist GetS
 {
     if constexpr (dist == StoreDist::DIST_NORM) {
         static_assert(SupportBytes<T, 1, 2, 4, 8>(),
-            "StoreDist DIST_NORM only support type b8/b16/b32/b64 on current device");
+                      "StoreDist DIST_NORM only support type b8/b16/b32/b64 on current device");
         if constexpr (sizeof(T) == 1) {
             return StoreDist::DIST_NORM_B8;
         } else if constexpr (sizeof(T) == 2) {
@@ -38,9 +38,9 @@ template <typename T, StoreDist dist> __aicore__ inline constexpr StoreDist GetS
     return dist;
 }
 
-template <typename RegT, const RegTrait &otherTrait = RegTraitNumOne> constexpr __aicore__ inline bool CheckRegTrait()
+template <typename T, const RegTrait& otherTrait = RegTraitNumOne> constexpr __aicore__ inline bool CheckRegTrait()
 {
-    constexpr RegTrait regTrait = RegT::trait;
+    constexpr RegTrait regTrait = T::trait;
     return regTrait.REG_NUM == otherTrait.REG_NUM;
 }
 
@@ -100,18 +100,18 @@ template <MaskMergeMode mode> __aicore__ inline constexpr auto GetMaskMergeMode(
 template <MemType src, MemType dst> __simd_callee__ inline void LocalMemBarImpl()
 {
     static_assert((SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::VEC_LOAD>()) ||
-        (SupportEnum<src, MemType::VEC_LOAD>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-        (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-        (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::SCALAR_LOAD>()) ||
-        (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::SCALAR_STORE>()) ||
-        (SupportEnum<src, MemType::VEC_LOAD>() && SupportEnum<dst, MemType::SCALAR_STORE>()) ||
-        (SupportEnum<src, MemType::SCALAR_STORE>() && SupportEnum<dst, MemType::VEC_LOAD>()) ||
-        (SupportEnum<src, MemType::SCALAR_STORE>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-        (SupportEnum<src, MemType::SCALAR_LOAD>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-        (SupportEnum<src, MemType::VEC_ALL>() && SupportEnum<dst, MemType::VEC_ALL>()) ||
-        (SupportEnum<src, MemType::VEC_ALL>() && SupportEnum<dst, MemType::SCALAR_ALL>()) ||
-        (SupportEnum<src, MemType::SCALAR_ALL>() && SupportEnum<dst, MemType::VEC_ALL>()),
-        "LocalMemBar does support current MemType Combination on current device!");
+                  (SupportEnum<src, MemType::VEC_LOAD>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
+                  (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
+                  (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::SCALAR_LOAD>()) ||
+                  (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::SCALAR_STORE>()) ||
+                  (SupportEnum<src, MemType::VEC_LOAD>() && SupportEnum<dst, MemType::SCALAR_STORE>()) ||
+                  (SupportEnum<src, MemType::SCALAR_STORE>() && SupportEnum<dst, MemType::VEC_LOAD>()) ||
+                  (SupportEnum<src, MemType::SCALAR_STORE>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
+                  (SupportEnum<src, MemType::SCALAR_LOAD>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
+                  (SupportEnum<src, MemType::VEC_ALL>() && SupportEnum<dst, MemType::VEC_ALL>()) ||
+                  (SupportEnum<src, MemType::VEC_ALL>() && SupportEnum<dst, MemType::SCALAR_ALL>()) ||
+                  (SupportEnum<src, MemType::SCALAR_ALL>() && SupportEnum<dst, MemType::VEC_ALL>()),
+                  "LocalMemBar does support current MemType Combination on current device!");
     if constexpr (src == MemType::VEC_STORE && dst == MemType::VEC_LOAD) {
         mem_bar(VST_VLD);
     } else if constexpr (src == MemType::VEC_LOAD && dst == MemType::VEC_STORE) {
@@ -140,34 +140,34 @@ template <MemType src, MemType dst> __simd_callee__ inline void LocalMemBarImpl(
 }
 #endif
 
-template <typename RegT2, typename RegT1, typename ShortType>
-__simd_callee__ inline void TraitOneToTaitTwoTmpl(RegT2 &dstReg, RegT1 &srcReg)
+template <typename T, typename U, typename ShortType>
+__simd_callee__ inline void TraitOneToTaitTwoTmpl(T& dstReg, U& srcReg)
 {
-    using ActualT1 = typename RegT1::ActualT;
-    using ActualT2 = typename RegT2::ActualT;
-    static_assert(CheckRegTrait<RegT2, RegTraitNumTwo>() && CheckRegTrait<RegT1, RegTraitNumOne>(),
-        "RegT2 should be RegTraitNumTwo and RegT1 should be RegTraitNumOne");
+    using ActualT1 = typename U::ActualT;
+    using ActualT2 = typename T::ActualT;
+    static_assert(CheckRegTrait<T, RegTraitNumTwo>() && CheckRegTrait<U, RegTraitNumOne>(),
+                  "T should be RegTraitNumTwo and U should be RegTraitNumOne");
     static_assert(sizeof(ActualT2) == (sizeof(ShortType) * 2) && sizeof(ActualT1) == (sizeof(ShortType) * 2),
-        "RegT2 and RegT1 should be 2 times of shortType lenth");
+                  "T and U should be 2 times of shortType lenth");
     RegTensor<ShortType> zeroReg;
     MaskReg maskFull = CreateMask<ShortType, MaskPattern::ALL>();
     Duplicate(zeroReg, 0, maskFull);
-    DeInterleave((RegTensor<ShortType> &)dstReg.reg[0], (RegTensor<ShortType> &)dstReg.reg[1],
-        (RegTensor<ShortType> &)srcReg, zeroReg);
+    DeInterleave((RegTensor<ShortType>&)dstReg.reg[0], (RegTensor<ShortType>&)dstReg.reg[1],
+                 (RegTensor<ShortType>&)srcReg, zeroReg);
 }
 
-template <typename RegT1, typename RegT2, typename ShortType>
-__simd_callee__ inline void TraitTwoToTaitOneTmpl(RegT1 &dstReg, RegT2 &srcReg)
+template <typename T, typename U, typename ShortType>
+__simd_callee__ inline void TraitTwoToTaitOneTmpl(T& dstReg, U& srcReg)
 {
-    using ActualT1 = typename RegT1::ActualT;
-    using ActualT2 = typename RegT2::ActualT;
-    static_assert(CheckRegTrait<RegT1, RegTraitNumOne>() && CheckRegTrait<RegT2, RegTraitNumTwo>(),
-        "RegT1 should be RegTraitNumOne and RegT2 should be RegTraitNumTwo");
+    using ActualT1 = typename T::ActualT;
+    using ActualT2 = typename U::ActualT;
+    static_assert(CheckRegTrait<T, RegTraitNumOne>() && CheckRegTrait<U, RegTraitNumTwo>(),
+                  "T should be RegTraitNumOne and U should be RegTraitNumTwo");
     static_assert(sizeof(ActualT2) == (sizeof(ShortType) * 2) && sizeof(ActualT1) == (sizeof(ShortType) * 2),
-        "RegT2 and RegT1 should be 2 times of shortType lenth");
+                  "U and T should be 2 times of shortType lenth");
     RegTensor<ShortType> dstRegShortFake;
-    Interleave((RegTensor<ShortType> &)dstReg, dstRegShortFake, (RegTensor<ShortType> &)srcReg.reg[0],
-        (RegTensor<ShortType> &)srcReg.reg[1]);
+    Interleave((RegTensor<ShortType>&)dstReg, dstRegShortFake, (RegTensor<ShortType>&)srcReg.reg[0],
+               (RegTensor<ShortType>&)srcReg.reg[1]);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::MERGING, typename RegT>
@@ -200,24 +200,28 @@ __simd_callee__ inline void CopyMerging(RegT& dstReg, RegT& srcReg, MaskReg& mas
     }
 }
 
-template <typename RegT2, typename RegT1> __simd_callee__ inline void B64TraitOneToTaitTwo(RegT2 &dstReg, RegT1 &srcReg)
+template <typename T, typename U>
+__simd_callee__ inline void B64TraitOneToTaitTwo(T& dstReg, U& srcReg)
 {
-    TraitOneToTaitTwoTmpl<RegT2, RegT1, uint32_t>(dstReg, srcReg);
+    TraitOneToTaitTwoTmpl<T, U, uint32_t>(dstReg, srcReg);
 }
 
-template <typename RegT1, typename RegT2> __simd_callee__ inline void B64TraitTwoToTaitOne(RegT1 &dstReg, RegT2 &srcReg)
+template <typename T, typename U>
+__simd_callee__ inline void B64TraitTwoToTaitOne(T& dstReg, U& srcReg)
 {
-    TraitTwoToTaitOneTmpl<RegT1, RegT2, uint32_t>(dstReg, srcReg);
+    TraitTwoToTaitOneTmpl<T, U, uint32_t>(dstReg, srcReg);
 }
 
-template <typename RegT2, typename RegT1> __simd_callee__ inline void B32TraitOneToTaitTwo(RegT2 &dstReg, RegT1 &srcReg)
+template <typename T, typename U>
+__simd_callee__ inline void B32TraitOneToTaitTwo(T& dstReg, U& srcReg)
 {
-    TraitOneToTaitTwoTmpl<RegT2, RegT1, uint16_t>(dstReg, srcReg);
+    TraitOneToTaitTwoTmpl<T, U, uint16_t>(dstReg, srcReg);
 }
 
-template <typename RegT1, typename RegT2> __simd_callee__ inline void B32TraitTwoToTaitOne(RegT1 &dstReg, RegT2 &srcReg)
+template <typename T, typename U>
+__simd_callee__ inline void B32TraitTwoToTaitOne(T& dstReg, U& srcReg)
 {
-    TraitTwoToTaitOneTmpl<RegT1, RegT2, uint16_t>(dstReg, srcReg);
+    TraitTwoToTaitOneTmpl<T, U, uint16_t>(dstReg, srcReg);
 }
 } // namespace MicroAPI
 } // namespace AscendC

@@ -18,14 +18,14 @@
 #include "kernel_micro_common_intf.h"
 namespace AscendC {
 namespace MicroAPI {
-template <typename T = DefaultType, typename U = DefaultType, const CastTrait &trait = castTrait, typename S,
-    typename V>
-__simd_callee__ inline void Cast(S &dstReg, V &srcReg, MaskReg &mask);
+template <typename T = DefaultType, typename U = DefaultType, const CastTrait& trait = castTrait, typename S,
+          typename V>
+__simd_callee__ inline void Cast(S& dstReg, V& srcReg, MaskReg& mask);
 
 // truncate f162f16/f322f32/bf162bf16
 template <typename T = DefaultType, RoundMode roundMode = RoundMode::CAST_NONE,
-    MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
-__simd_callee__ inline void Truncate(S &dstReg, S &srcReg, MaskReg &mask);
+          MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void Truncate(S& dstReg, S& srcReg, MaskReg& mask);
 } // namespace MicroAPI
 } // namespace AscendC
 

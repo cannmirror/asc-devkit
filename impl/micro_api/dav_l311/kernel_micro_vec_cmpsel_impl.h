@@ -42,24 +42,24 @@ __aicore__ inline void CompareImpl(MaskReg &dstMask, RegT &srcReg0, RegT &srcReg
 }
 
 template <typename T = DefaultType, CMPMODE mode = CMPMODE::EQ, typename RegT, typename ScalarT>
-__aicore__ inline void CompareScalarImpl(MaskReg &dstMask, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void CompareScalarImpl(MaskReg &dstMask, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     if constexpr (mode == CMPMODE::EQ) {
-        vcmps_eq(dstMask, srcReg0, scalar, mask);
+        vcmps_eq(dstMask, srcReg0, scalarValue, mask);
     } else if constexpr (mode == CMPMODE::NE) {
-        vcmps_ne(dstMask, srcReg0, scalar, mask);
+        vcmps_ne(dstMask, srcReg0, scalarValue, mask);
     } else if constexpr (mode == CMPMODE::GT) {
-        vcmps_gt(dstMask, srcReg0, scalar, mask);
+        vcmps_gt(dstMask, srcReg0, scalarValue, mask);
     } else if constexpr (mode == CMPMODE::GE) {
-        vcmps_ge(dstMask, srcReg0, scalar, mask);
+        vcmps_ge(dstMask, srcReg0, scalarValue, mask);
     } else if constexpr (mode == CMPMODE::LT) {
-        vcmps_lt(dstMask, srcReg0, scalar, mask);
+        vcmps_lt(dstMask, srcReg0, scalarValue, mask);
     } else if constexpr (mode == CMPMODE::LE) {
-        vcmps_le(dstMask, srcReg0, scalar, mask);
+        vcmps_le(dstMask, srcReg0, scalarValue, mask);
     }
 }
 

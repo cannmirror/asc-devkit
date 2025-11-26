@@ -19,12 +19,12 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename S,
-    typename V>
-__simd_callee__ inline void Pack(S &dstReg, V &srcReg);
+          typename V>
+__simd_callee__ inline void Pack(S& dstReg, V& srcReg);
 
 template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename S,
-    typename V>
-__simd_callee__ inline void UnPack(S &dstReg, V &srcReg);
+          typename V>
+__simd_callee__ inline void UnPack(S& dstReg, V& srcReg);
 } // namespace MicroAPI
 } // namespace AscendC
 

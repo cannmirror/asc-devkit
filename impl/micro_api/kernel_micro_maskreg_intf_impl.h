@@ -30,9 +30,9 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, const RegTrait& regTrait>
-__simd_callee__ inline MaskReg UpdateMask(uint32_t &scalar)
+__simd_callee__ inline MaskReg UpdateMask(uint32_t& scalarValue)
 {
-    return UpdateMaskImpl<T, regTrait>(scalar);
+    return UpdateMaskImpl<T, regTrait>(scalarValue);
 }
 
 template <typename T, MaskPattern mode, const RegTrait& regTrait>
@@ -41,40 +41,40 @@ __simd_callee__ inline MaskReg CreateMask()
     return CreateMaskImpl<T, mode, regTrait>();
 }
 
-__simd_callee__ inline void MaskNot(MaskReg &dstMask, MaskReg &srcMask, MaskReg &mask)
+__simd_callee__ inline void MaskNot(MaskReg& dst, MaskReg& src, MaskReg& mask)
 {
-    MaskNotImpl(dstMask, srcMask, mask);
+    MaskNotImpl(dst, src, mask);
 }
 
-template <typename T, int16_t Offset, typename RegT>
-__simd_callee__ inline void MaskGenWithRegTensor(MaskReg &dstMask, RegT &srcReg)
+template <typename T, int16_t offset, typename RegT>
+__simd_callee__ inline void MaskGenWithRegTensor(MaskReg& dst, RegT& srcReg)
 {
-    MaskGenWithRegTensorImpl<T, Offset, RegT>(dstMask, srcReg);
+    MaskGenWithRegTensorImpl<T, offset, RegT>(dst, srcReg);
 }
 
-__simd_callee__ inline void MaskAnd(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void MaskAnd(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask)
 {
-    MaskAndImpl(dstMask, srcMask0, srcMask1, mask);
+    MaskAndImpl(dst, src0, src1, mask);
 }
 
-__simd_callee__ inline void MaskOr(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void MaskOr(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask)
 {
-    MaskOrImpl(dstMask, srcMask0, srcMask1, mask);
+    MaskOrImpl(dst, src0, src1, mask);
 }
 
-__simd_callee__ inline void MaskXor(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void MaskXor(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask)
 {
-    MaskXorImpl(dstMask, srcMask0, srcMask1, mask);
+    MaskXorImpl(dst, src0, src1, mask);
 }
 
-__simd_callee__ inline void MaskMov(MaskReg &dstMask, MaskReg &srcMask, MaskReg &mask)
+__simd_callee__ inline void MaskMov(MaskReg& dst, MaskReg& src, MaskReg& mask)
 {
-    MaskMovImpl(dstMask, srcMask, mask);
+    MaskMovImpl(dst, src, mask);
 }
 
-__simd_callee__ inline void MaskMov(MaskReg &dstMask, MaskReg &srcMask)
+__simd_callee__ inline void MaskMov(MaskReg& dst, MaskReg& src)
 {
-    MaskMovImpl(dstMask, srcMask);
+    MaskMovImpl(dst, src);
 }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3103 || \
@@ -87,32 +87,32 @@ __aicore__ inline void MaskSlide(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &s
 #endif
 
 template <typename T>
-__simd_callee__ inline void MaskInterleave(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
+__simd_callee__ inline void MaskInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1)
 {
-    MaskInterleaveImpl<T>(dstMask0, dstMask1, srcMask0, srcMask1);
+    MaskInterleaveImpl<T>(dst0, dst1, src0, src1);
 }
 
 template <typename T>
-__simd_callee__ inline void MaskDeInterleave(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
+__simd_callee__ inline void MaskDeInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1)
 {
-    MaskDeInterleaveImpl<T>(dstMask0, dstMask1, srcMask0, srcMask1);
+    MaskDeInterleaveImpl<T>(dst0, dst1, src0, src1);
 }
 
-__simd_callee__ inline void MaskSel(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void MaskSel(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg &mask)
 {
-    MaskSelImpl(dstMask, srcMask0, srcMask1, mask);
-}
-
-template <HighLowPart part>
-__simd_callee__ inline void MaskPack(MaskReg &dstMask, MaskReg &srcMask)
-{
-    MaskPackImpl<part>(dstMask, srcMask);
+    MaskSelImpl(dst, src0, src1, mask);
 }
 
 template <HighLowPart part>
-__simd_callee__ inline void MaskUnPack(MaskReg &dstMask, MaskReg &srcMask)
+__simd_callee__ inline void MaskPack(MaskReg& dst, MaskReg& src)
 {
-    MaskUnPackImpl<part>(dstMask, srcMask);
+    MaskPackImpl<part>(dst, src);
+}
+
+template <HighLowPart part>
+__simd_callee__ inline void MaskUnPack(MaskReg& dst, MaskReg& src)
+{
+    MaskUnPackImpl<part>(dst, src);
 }
 
 template <typename T>
@@ -120,6 +120,7 @@ __simd_callee__ inline MaskReg MoveMask()
 {
     return MoveMaskImpl<T>();
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_MODULE_MICRO_MASKREG_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_MODULE_MICRO_MASKREG_INTERFACE_IMPL_H

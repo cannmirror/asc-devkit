@@ -20,17 +20,17 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename T1, typename RegT>
-__aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalar)
+__aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, int8_t, uint8_t, uint16_t, int16_t, uint32_t, int32_t, float, half>()),
         "unsupported datatype on current device!");
-    vbr(dstReg, (ActualT)scalar);
+    vbr(dstReg, (ActualT)scalarValue);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename T1, typename RegT>
-__aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalar, MaskReg &mask)
+__aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -38,7 +38,7 @@ __aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalar, MaskReg &mask)
         "unsupported datatype on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vdup(dstReg, (ActualT)scalar, mask, modeValue);
+    vdup(dstReg, (ActualT)scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, HighLowPart pos = HighLowPart::LOWEST, MaskMergeMode mode = MaskMergeMode::ZEROING,

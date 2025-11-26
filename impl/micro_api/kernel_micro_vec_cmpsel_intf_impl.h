@@ -30,22 +30,23 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, CMPMODE mode, typename U>
-__simd_callee__ inline void Compare(MaskReg &dstMask, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Compare(MaskReg& dst, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
-    CompareImpl<T, mode, U>(dstMask, srcReg0, srcReg1, mask);
+    CompareImpl<T, mode, U>(dst, srcReg0, srcReg1, mask);
 }
 
 template <typename T, CMPMODE mode, typename U, typename S>
-__simd_callee__ inline void CompareScalar(MaskReg &dstMask, U &srcReg, S scalar, MaskReg &mask)
+__simd_callee__ inline void CompareScalar(MaskReg& dst, U& srcReg, S scalarValue, MaskReg& mask)
 {
-    CompareScalarImpl<T, mode, U, S>(dstMask, srcReg, scalar, mask);
+    CompareScalarImpl<T, mode, U, S>(dst, srcReg, scalarValue, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void Select(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Select(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     SelectImpl<T, U>(dstReg, srcReg0, srcReg1, mask);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_CMPSEL_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_VEC_CMPSEL_INTERFACE_IMPL_H

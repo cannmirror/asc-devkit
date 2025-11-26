@@ -35,7 +35,7 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T, const RegTrait &regTrait>
+template <typename T, const RegTrait& regTrait>
 __aicore__ void RegTensor<T, regTrait>::Print() const
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -102,6 +102,7 @@ __simd_callee__ inline void LocalMemBar()
 {
     LocalMemBarImpl<src, dst>();
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_COMMON_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_COMMON_INTERFACE_IMPL_H

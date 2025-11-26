@@ -42,10 +42,11 @@ struct RegTrait {
     int REG_NUM = 1;
 };
 
-constexpr RegTrait RegTraitNumOne = { 1 };
-constexpr RegTrait RegTraitNumTwo = { 2 };
+constexpr RegTrait RegTraitNumOne = {1};
+constexpr RegTrait RegTraitNumTwo = {2};
 
-template <typename T, const RegTrait &regTrait = RegTraitNumOne> struct RegTensor {
+template <typename T, const RegTrait& regTrait = RegTraitNumOne>
+struct RegTensor {
     __simd_callee__ inline RegTensor(){};
     using ActualT = T;
     static constexpr RegTrait trait = regTrait;
@@ -53,7 +54,7 @@ template <typename T, const RegTrait &regTrait = RegTraitNumOne> struct RegTenso
     using RegType = typename TypeGet<T>::T;
     RegType reg[trait.REG_NUM];
 
-    __simd_callee__ inline operator RegType &()
+    __simd_callee__ inline operator RegType& ()
     {
         // only process one reg, two registers require explicit call
         return reg[0];
@@ -61,7 +62,8 @@ template <typename T, const RegTrait &regTrait = RegTraitNumOne> struct RegTenso
     __simd_callee__ void Print() const;
 };
 
-template <MemType src, MemType dst> __simd_callee__ inline void LocalMemBar();
+template <MemType src, MemType dst>
+__simd_callee__ inline void LocalMemBar();
 } // namespace MicroAPI
 } // namespace AscendC
 

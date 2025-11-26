@@ -29,19 +29,18 @@
 
 namespace AscendC {
 namespace MicroAPI {
-
-// truncate f162f16/f322f32/bf162bf16
 template <typename T, RoundMode roundMode, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Truncate(U &dstReg, U &srcReg, MaskReg &mask)
+__simd_callee__ inline void Truncate(U& dstReg, U& srcReg, MaskReg& mask)
 {
+    // truncate f162f16/f322f32/bf162bf16
     TruncateImpl<T, roundMode, mode>(dstReg, srcReg, mask);
 }
 
-template <typename T, typename U, const CastTrait &trait, typename S, typename V>
-__simd_callee__ inline void Cast(S &dstReg, V &srcReg, MaskReg &mask) {
+template <typename T, typename U, const CastTrait& trait, typename S, typename V>
+__simd_callee__ inline void Cast(S& dstReg, V& srcReg, MaskReg& mask) {
     CastImpl<T, U, trait>(dstReg, srcReg, mask);
 }
+} // namespace MicroAPI
+} // namespace AscendC
 
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_VCONV_INTERFACE_IMPL_H
+#endif // ASCENDC_KERNEL_MICRO_VEC_VCONV_INTERFACE_IMPL_H

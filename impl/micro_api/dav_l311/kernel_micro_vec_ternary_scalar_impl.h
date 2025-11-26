@@ -19,14 +19,14 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void AxpyImpl(RegT &dstReg, RegT &srcReg, const ScalarT scalar, const MaskReg &mask)
+__aicore__ inline void AxpyImpl(RegT &dstReg, RegT &srcReg, const ScalarT scalarValue, const MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current Axpy data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vaxpy(dstReg, srcReg, scalar, mask, modeValue);
+    vaxpy(dstReg, srcReg, scalarValue, mask, modeValue);
 }
 } // namespace MicroAPI
 } // namespace AscendC

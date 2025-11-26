@@ -19,25 +19,30 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T> struct TypeGet;
+template <typename T> 
+struct TypeGet;
 
-template <> struct TypeGet<complex32> {
+template <>
+struct TypeGet<complex32> {
     // only for passing compilation, T is actually ineffective here
- 
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_u32;
 #endif
 };
-template <> struct TypeGet<double> {
+
+template <>
+struct TypeGet<double> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_u64;
 #endif
 };
-template <> struct TypeGet<complex64> {
+
+template <> 
+struct TypeGet<complex64> {
     // only for passing compilation, T is actually ineffective here
 #if defined(__ASC_NPU_HOST__)
     using T = int;
@@ -46,77 +51,97 @@ template <> struct TypeGet<complex64> {
 #endif
 };
  
-template <> struct TypeGet<uint64_t> {
+template <>
+struct TypeGet<uint64_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_u64;
 #endif
 };
-template <> struct TypeGet<int64_t> {
+
+template <>
+struct TypeGet<int64_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_s64;
 #endif
 };
-template <> struct TypeGet<uint32_t> {
+
+template <>
+struct TypeGet<uint32_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_u32;
 #endif
 };
-template <> struct TypeGet<int32_t> {
+template <>
+struct TypeGet<int32_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_s32;
 #endif
 };
-template <> struct TypeGet<float> {
+
+template <>
+struct TypeGet<float> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_f32;
 #endif
 };
-template <> struct TypeGet<uint16_t> {
+
+template <>
+struct TypeGet<uint16_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_u16;
 #endif
 };
-template <> struct TypeGet<half> {
+
+template <>
+struct TypeGet<half> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_f16;
 #endif
 };
-template <> struct TypeGet<bfloat16_t> {
+
+template <>
+struct TypeGet<bfloat16_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_bf16;
 #endif
 };
-template <> struct TypeGet<int16_t> {
+
+template <>
+struct TypeGet<int16_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_s16;
 #endif
 };
-template <> struct TypeGet<uint8_t> {
+
+template <>
+struct TypeGet<uint8_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
     using T = vector_u8;
 #endif
 };
-template <> struct TypeGet<int8_t> {
+
+template <>
+struct TypeGet<int8_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
@@ -124,7 +149,8 @@ template <> struct TypeGet<int8_t> {
 #endif
 };
  
-template <> struct TypeGet<hifloat8_t> {
+template <>
+struct TypeGet<hifloat8_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
@@ -132,7 +158,8 @@ template <> struct TypeGet<hifloat8_t> {
 #endif
 };
  
-template <> struct TypeGet<fp8_e4m3fn_t> {
+template <>
+struct TypeGet<fp8_e4m3fn_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
@@ -140,7 +167,8 @@ template <> struct TypeGet<fp8_e4m3fn_t> {
 #endif
 };
  
-template <> struct TypeGet<fp8_e5m2_t> {
+template <>
+struct TypeGet<fp8_e5m2_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
@@ -148,7 +176,8 @@ template <> struct TypeGet<fp8_e5m2_t> {
 #endif
 };
  
-template <> struct TypeGet<fp4x2_e2m1_t> {
+template <>
+struct TypeGet<fp4x2_e2m1_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
@@ -156,7 +185,8 @@ template <> struct TypeGet<fp4x2_e2m1_t> {
 #endif
 };
  
-template <> struct TypeGet<fp4x2_e1m2_t> {
+template <>
+struct TypeGet<fp4x2_e1m2_t> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
@@ -165,12 +195,14 @@ template <> struct TypeGet<fp4x2_e1m2_t> {
 };
  
 #ifndef __ASC_NPU_HOST__
-template <> struct TypeGet<int4x2_t> {
+template <>
+struct TypeGet<int4x2_t> {
     using T = vector_s4x2;
 };
 #endif
  
-template <> struct TypeGet<bool> {
+template <>
+struct TypeGet<bool> {
 #if defined(__ASC_NPU_HOST__)
     using T = int;
 #else
