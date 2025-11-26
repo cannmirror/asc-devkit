@@ -21,6 +21,7 @@
 #include <fstream>
 #include <string>
 #include <unordered_set>
+#include <algorithm>
 
 #include "asc_utils.h"
 #include "asc_struct.h"
@@ -32,7 +33,7 @@ public:
     std::string GenCode();
 
 private:
-    std::string GenStubFuncDecl(bool hasNameSpace = false) const;
+    std::string GenStubFuncDecl(bool hasNameSpace, bool hasAnonymousSpace) const;
     std::string ManglingNameJudgeCode();
     void GenStubFuncImpl();
 
