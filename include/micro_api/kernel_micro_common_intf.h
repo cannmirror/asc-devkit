@@ -33,7 +33,8 @@
 namespace AscendC {
 namespace MicroAPI {
 using MaskReg = vector_bool;
-using UnalignReg = vector_align;
+using UnalignRegForLoad = vector_align;
+using UnalignRegForStore = vector_align;
 using AddrReg = vector_address;
 
 #define __local_mem__ __ubuf__

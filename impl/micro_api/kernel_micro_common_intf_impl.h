@@ -35,6 +35,8 @@
 
 namespace AscendC {
 namespace MicroAPI {
+using UnalignReg = vector_align;
+
 template <typename T, const RegTrait& regTrait>
 __aicore__ void RegTensor<T, regTrait>::Print() const
 {
