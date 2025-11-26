@@ -13,9 +13,10 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void asc_SyncWait(pipe_t pipe, pipe_t tpipe, int id)
+template<pipe_t pipe, pipe_t tpipe>
+__aicore__ inline void sync_wait_impl(int id)
 {
-    wait_flag(pipe, tpipe, id);
+    wait_flag(pipe, tpipe, static_cast<uint64_t>(id));
 }
 
 } // namespace CApiInternal

@@ -102,6 +102,21 @@ file(GLOB ASCENDC_TEST_ascend310p_CASE_SRC_FILES
     ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend310p/*.cpp
 )
 
+# ascend910B1 aic c api test cases
+file(GLOB ASCENDC_TEST_ascend910B1_AIC_CAPI_CASE_SRC_FILES
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/cube_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/cube_dmamove/*.cpp
+)
+
+# ascend910B1 aiv c api test cases
+file(GLOB ASCENDC_TEST_ascend910B1_AIV_CAPI_CASE_SRC_FILES
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/simd_atomic/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/sync/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/sys_var/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/vector_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/vector_datamove/*.cpp
+)
+
 # ascend910B1 aiv test cases
 file(GLOB ASCENDC_TEST_ascend910B1_AIV_CASE_SRC_FILES
     ${LOCAL_DIR}/testcase/tikcpp_case_common/test_data_copy_slice.cpp
@@ -252,9 +267,9 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend610>:${LOCAL_DIR}/../common/tik_pv_wrapper.cpp>
         $<$<STREQUAL:${product_type},ascend310p>:${ASCENDC_TEST_COMMON_CASE_SRC_FILES};${ASCENDC_API_CHECK_CASE_SRC_FILES}>
         $<$<STREQUAL:${product_type},ascend310p>:${LOCAL_DIR}/../common/tik_pv_wrapper.cpp>
-        $<$<STREQUAL:${product_type},ascend910B1_AIC>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
+        $<$<STREQUAL:${product_type},ascend910B1_AIC>:${ASCENDC_API_CHECK_CASE_SRC_FILES};${ASCENDC_TEST_ascend910B1_AIC_CAPI_CASE_SRC_FILES}>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
+        $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_API_CHECK_CASE_SRC_FILES};${ASCENDC_TEST_ascend910B1_AIV_CAPI_CASE_SRC_FILES}>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend310B1>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend610Lite>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
@@ -771,110 +786,108 @@ run_llt_test(
 # ############################################ ascc ut ############################################
 # # bisheng流程:  bishengcc参数解析，调用ascendfe
 
-if (NOT BUILD_OPEN_PROJECT)
-    # # bishengcc arguments
-    set(ASCC_TEST_HEADERS_FILES
-        ${LOCAL_DIR}/../common/
-        ${ASCENDC_DIR}/tools/ascc/ascc/include
-        ${ASCENDC_DIR}/tools/ascc/common/include
-        ${LOCAL_DIR}/testcase/ascc/
-    )
+# # bishengcc arguments
+set(ASCC_TEST_HEADERS_FILES
+    ${LOCAL_DIR}/../common/
+    ${ASCENDC_DIR}/tools/ascc/ascc/include
+    ${ASCENDC_DIR}/tools/ascc/common/include
+    ${LOCAL_DIR}/testcase/ascc/
+)
 
-    file(GLOB ASCC_SRC_FILES
-        ${ASCENDC_DIR}/tools/ascc/ascc/src/*.cpp
-        ${ASCENDC_DIR}/tools/ascc/common/src/*.cpp
-    )
+file(GLOB ASCC_SRC_FILES
+    ${ASCENDC_DIR}/tools/ascc/ascc/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/common/src/*.cpp
+)
 
-    file(GLOB TEST_ASCC_SRC_FILES
-        ${LOCAL_DIR}/main.cpp
-        ${LOCAL_DIR}/testcase/ascc/ascc/*.cpp
-        ${LOCAL_DIR}/testcase/ascc/llvm/Support/*.cpp
-    )
+file(GLOB TEST_ASCC_SRC_FILES
+    ${LOCAL_DIR}/main.cpp
+    ${LOCAL_DIR}/testcase/ascc/ascc/*.cpp
+    ${LOCAL_DIR}/testcase/ascc/llvm/Support/*.cpp
+)
 
-    add_executable(ascendc_utest_ascc
-        ${ASCC_SRC_FILES}
-        ${TEST_ASCC_SRC_FILES}
-    )
-    add_dependencies(ascendc_utest_ascc gen_ut_kernel_tiling)
-    target_compile_definitions(ascendc_utest_ascc PRIVATE
-        UT_TEST
-    )
-    target_compile_definitions(ascendc_utest_ascc PRIVATE ASCENDC_CPU_DEBUG=1)
-    target_include_directories(ascendc_utest_ascc PRIVATE
-        ${ASCC_TEST_HEADERS_FILES}
-        ${ASCENDC_SYS_DIR}/include
-        ${ASCENDC_SYS_DIR}/include/base/
-    )
-    target_compile_options(ascendc_utest_ascc PRIVATE
-        -g
-        -Werror
-    )
-    target_link_directories(ascendc_utest_ascc PRIVATE
-        ${ASCEND_DEP_LIB_DIR}
-    )
-    target_link_libraries(ascendc_utest_ascc PRIVATE
-        $<BUILD_INTERFACE:intf_llt_pub_basic>
-        -Wl,--no-as-needed
-        c_sec
-        -Wl,--as-needed
-    )
+add_executable(ascendc_utest_ascc
+    ${ASCC_SRC_FILES}
+    ${TEST_ASCC_SRC_FILES}
+)
+add_dependencies(ascendc_utest_ascc gen_ut_kernel_tiling)
+target_compile_definitions(ascendc_utest_ascc PRIVATE
+    UT_TEST
+)
+target_compile_definitions(ascendc_utest_ascc PRIVATE ASCENDC_CPU_DEBUG=1)
+target_include_directories(ascendc_utest_ascc PRIVATE
+    ${ASCC_TEST_HEADERS_FILES}
+    ${ASCENDC_SYS_DIR}/include
+    ${ASCENDC_SYS_DIR}/include/base/
+)
+target_compile_options(ascendc_utest_ascc PRIVATE
+    -g
+    -Werror
+)
+target_link_directories(ascendc_utest_ascc PRIVATE
+    ${ASCEND_DEP_LIB_DIR}
+)
+target_link_libraries(ascendc_utest_ascc PRIVATE
+    $<BUILD_INTERFACE:intf_llt_pub_basic>
+    -Wl,--no-as-needed
+    c_sec
+    -Wl,--as-needed
+)
 
-    run_llt_test(
-        TARGET ascendc_utest_ascc
-        TASK_NUM 1
-    )
+run_llt_test(
+    TARGET ascendc_utest_ascc
+    TASK_NUM 1
+)
 
-    set(ASCENDFE_TEST_HEADERS_FILES
-        ${LOCAL_DIR}/../common/
-        ${ASCENDC_DIR}/tools/ascc/ascendfe/include
-        ${ASCENDC_DIR}/tools/ascc/common/include
-        ${LOCAL_DIR}/testcase/ascc/
-    )
+set(ASCENDFE_TEST_HEADERS_FILES
+    ${LOCAL_DIR}/../common/
+    ${ASCENDC_DIR}/tools/ascc/ascendfe/include
+    ${ASCENDC_DIR}/tools/ascc/common/include
+    ${LOCAL_DIR}/testcase/ascc/
+)
 
-    file(GLOB ASCENDFE_SRC_FILES
-        ${LOCAL_DIR}/main.cpp
-        ${ASCENDC_DIR}/tools/ascc/common/src/*.cpp
-        ${ASCENDC_DIR}/tools/ascc/ascendfe/src/*.cpp
-    )
+file(GLOB ASCENDFE_SRC_FILES
+    ${LOCAL_DIR}/main.cpp
+    ${ASCENDC_DIR}/tools/ascc/common/src/*.cpp
+    ${ASCENDC_DIR}/tools/ascc/ascendfe/src/*.cpp
+)
 
-    file(GLOB TEST_ASCENDFE_SRC_FILES
-        ${LOCAL_DIR}/testcase/ascc/llvm/Support/*.cpp
-        ${LOCAL_DIR}/testcase/ascc/ascendfe/*.cpp
-    )
+file(GLOB TEST_ASCENDFE_SRC_FILES
+    ${LOCAL_DIR}/testcase/ascc/llvm/Support/*.cpp
+    ${LOCAL_DIR}/testcase/ascc/ascendfe/*.cpp
+)
 
-    add_executable(ascendc_utest_ascendfe
-        ${ASCENDFE_SRC_FILES}
-        ${TEST_ASCENDFE_SRC_FILES}
-    )
-    add_dependencies(ascendc_utest_ascendfe gen_ut_kernel_tiling)
-    target_compile_definitions(ascendc_utest_ascendfe PRIVATE
-        UT_TEST
-    )
-    target_compile_definitions(ascendc_utest_ascendfe PRIVATE ASCENDC_CPU_DEBUG=1)
-    target_include_directories(ascendc_utest_ascendfe PRIVATE
-        ${ASCENDFE_TEST_HEADERS_FILES}
-        ${ASCENDC_SYS_DIR}/include
-        ${ASCENDC_SYS_DIR}/include/base/
-    )
-    target_compile_options(ascendc_utest_ascendfe PRIVATE
-        -g
-        -Werror
-    )
-    target_link_directories(ascendc_utest_ascendfe PRIVATE
-        ${ASCEND_DEP_LIB_DIR}
-    )
-    target_link_libraries(ascendc_utest_ascendfe PRIVATE
-        $<BUILD_INTERFACE:intf_llt_pub_basic>
-        -Wl,--no-as-needed
-        c_sec
-        -Wl,--as-needed
-    )
+add_executable(ascendc_utest_ascendfe
+    ${ASCENDFE_SRC_FILES}
+    ${TEST_ASCENDFE_SRC_FILES}
+)
+add_dependencies(ascendc_utest_ascendfe gen_ut_kernel_tiling)
+target_compile_definitions(ascendc_utest_ascendfe PRIVATE
+    UT_TEST
+)
+target_compile_definitions(ascendc_utest_ascendfe PRIVATE ASCENDC_CPU_DEBUG=1)
+target_include_directories(ascendc_utest_ascendfe PRIVATE
+    ${ASCENDFE_TEST_HEADERS_FILES}
+    ${ASCENDC_SYS_DIR}/include
+    ${ASCENDC_SYS_DIR}/include/base/
+)
+target_compile_options(ascendc_utest_ascendfe PRIVATE
+    -g
+    -Werror
+)
+target_link_directories(ascendc_utest_ascendfe PRIVATE
+    ${ASCEND_DEP_LIB_DIR}
+)
+target_link_libraries(ascendc_utest_ascendfe PRIVATE
+    $<BUILD_INTERFACE:intf_llt_pub_basic>
+    -Wl,--no-as-needed
+    c_sec
+    -Wl,--as-needed
+)
 
-    run_llt_test(
-        TARGET ascendc_utest_ascendfe
-        TASK_NUM 1
-    )
-endif()
+run_llt_test(
+    TARGET ascendc_utest_ascendfe
+    TASK_NUM 1
+)
 
 # # libasc_plugin: 独立流程
 set(ASC_PLUGIN_TEST_HEADERS_FILES

@@ -8,19 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INTERF_UTIL_H
-#define C_API_INTERF_UTIL_H
+#ifndef C_API_ASC_C_API_INTEREF_UTIL_H
+#define C_API_ASC_C_API_INTEREF_UTIL_H
 
-union DeqScaleConfig
-{
-    uint64_t val;
-    struct {
-        uint64_t reserved1 : 5;
-        uint64_t offset : 9;
-        uint64_t signMode : 1;
-        uint64_t reserved2 : 17;
-        float scale;
-    };
-};
+#include "utils/c_api_constants.h"
+#include "utils/c_api_union.h"
+#include "utils/c_api_union_default_init.h"
 
 #endif

@@ -11,6 +11,7 @@
 #ifndef C_API_ASC_SIMD_H
 #define C_API_ASC_SIMD_H
 
+#include "c_api_interf_util.h"
 #include "cube_compute/cube_compute.h"
 #include "cube_dmamove/cube_dmamove.h"
 #include "simd_atomic/simd_atomic.h"

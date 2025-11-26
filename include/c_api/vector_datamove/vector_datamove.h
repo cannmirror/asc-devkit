@@ -15,4 +15,16 @@
 
 __aicore__ inline void asc_SetMovPadVal(uint64_t val);
 
+__aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src, const asc_copy_config& config);
+
+__aicore__ inline void asc_copy_gm2ub_sync(__ubuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, const asc_copy_config& config);
+
+__aicore__ inline void asc_copy_ub2gm_sync(__gm__ void* dst, __ubuf__ void* src, uint32_t size);
+
 #endif
