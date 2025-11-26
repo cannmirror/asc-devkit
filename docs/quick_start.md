@@ -70,9 +70,28 @@
 
    - lcov >= 1.13（可选，仅执行UT时依赖）
    
+     以Ubuntu系统为例，x86_64环境执行以下命令安装：
+     ```bash
+     apt install lcov
+     ```
+     以Euler系统为例，aarch64环境执行以下命令安装：
+     ```bash
+     yum install lcov
+     ```
+
    - pytest >= 5.4.2（可选，仅执行UT时依赖）
 
+     执行以下命令安装：
+     ```bash
+     pip3 install pytest
+     ```
+   
    - coverage >= 4.5.4（可选，仅执行UT时依赖）
+
+     执行以下命令安装：
+     ```bash
+     pip3 install coverage
+     ```
 
    - googletest（可选，仅执行UT时依赖，建议版本[release-1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)）
 
@@ -84,7 +103,7 @@
      make
      make install                         # root用户安装googletest
      # sudo make install                  # 非root用户安装googletest
-
+     ```
 2. **安装驱动与固件（运行态依赖）**
 
    运行算子时必须安装驱动与固件，若仅编译算子，可跳过本操作，安装指导详见《[CANN 软件安装指南](https://www.hiascend.com/document/redirect/CannCommunityInstSoftware)》。
