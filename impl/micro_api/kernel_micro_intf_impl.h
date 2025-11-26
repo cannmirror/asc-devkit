@@ -38,4 +38,4 @@
 #include "kernel_micro_histograms_intf_impl.h"
 #endif
 
-#endif  // ASCENDC_KERNEL_MICRO_INTF_IMPL_H
+#endif // ASCENDC_KERNEL_MICRO_INTF_IMPL_H

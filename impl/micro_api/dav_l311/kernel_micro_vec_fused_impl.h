@@ -21,7 +21,7 @@ namespace AscendC {
 namespace MicroAPI {
 
 template <typename T, typename U, typename ScalarT, RegLayout layout, typename RegT, typename RegU>
-__aicore__ inline void FusedMulsCastImpl(RegT &dstReg, RegU &srcReg, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void FusedMulsCastImpl(RegT &dstReg, RegU &srcReg, ScalarT scalarValue, MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "FusedMulsCast is not supported on current device!"); });
 }

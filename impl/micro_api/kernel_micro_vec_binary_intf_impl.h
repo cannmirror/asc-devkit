@@ -33,69 +33,67 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Add(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Add(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     AddImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Sub(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Sub(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     SubImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Mul(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Mul(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     MulImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, auto mode, typename U>
-__simd_callee__ inline void Div(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Div(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     DivImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Max(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Max(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     MaxImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Min(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Min(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     MinImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S, typename V>
-__simd_callee__ inline void ShiftLeft(
-    S &dstReg, S &srcReg0, V &srcReg1, MaskReg &mask)
+__simd_callee__ inline void ShiftLeft(S& dstReg, S& srcReg0, V& srcReg1, MaskReg& mask)
 {
     ShiftLeftImpl<T, U, mode, S, V>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S, typename V>
-__simd_callee__ inline void ShiftRight(
-    S &dstReg, S &srcReg0, V &srcReg1, MaskReg &mask)
+__simd_callee__ inline void ShiftRight(S& dstReg, S& srcReg0, V& srcReg1, MaskReg& mask)
 {
     ShiftRightImpl<T, U, mode, S, V>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void And(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void And(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     AndImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Or(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Or(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     OrImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Xor(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Xor(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     XorImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
@@ -146,57 +144,55 @@ __aicore__ inline void Mean(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg 
 #endif
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void Prelu(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Prelu(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     PreluImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void Mull(
-    U &dstReg0, U &dstReg1, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Mull(U& dstReg0, U& dstReg1, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     MullImpl<T, U>(dstReg0, dstReg1, srcReg0, srcReg1, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void MulAddDst(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MulAddDst(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     MulAddDstImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void Mula(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Mula(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     MulAddDstImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void AddCarryOut(
-    MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void AddCarryOut(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
-    AddCarryOutImpl<T, U>(carryp, dstReg, srcReg0, srcReg1, mask);
+    AddCarryOutImpl<T, U>(carry, dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void SubCarryOut(
-    MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void SubCarryOut(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
-    SubCarryOutImpl<T, U>(carryp, dstReg, srcReg0, srcReg1, mask);
+    SubCarryOutImpl<T, U>(carry, dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void AddCarryOuts(MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1,
-    MaskReg &carrysrcp, MaskReg &mask)
+__simd_callee__ inline void AddCarryOuts(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
+                                         MaskReg& mask)
 {
-    AddCarryOutsImpl<T, U>(carryp, dstReg, srcReg0, srcReg1, carrysrcp, mask);
+    AddCarryOutsImpl<T, U>(carry, dstReg, srcReg0, srcReg1, carrySrc, mask);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void SubCarryOuts(MaskReg &carryp, U &dstReg, U &srcReg0, U &srcReg1,
-    MaskReg &carrysrcp, MaskReg &mask)
+__simd_callee__ inline void SubCarryOuts(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
+                                         MaskReg& mask)
 {
-    SubCarryOutsImpl<T, U>(carryp, dstReg, srcReg0, srcReg1, carrysrcp, mask);
+    SubCarryOutsImpl<T, U>(carry, dstReg, srcReg0, srcReg1, carrySrc, mask);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_BINARY_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_VEC_BINARY_INTERFACE_IMPL_H

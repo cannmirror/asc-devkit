@@ -20,72 +20,72 @@
 namespace AscendC {
 namespace MicroAPI {
 
-#define BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(INSTRUCTION, REG_T, SCALAR_T, MASK_MODE, ...)                          \
-    using ActualT = typename REG_T::ActualT;                                                                       \
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");         \
-    static_assert(SupportType<ActualT, ##__VA_ARGS__>(), "current data type is not supported on current device!"); \
-    static_assert(                                                                                                 \
-        SupportType<SCALAR_T, ##__VA_ARGS__>(), "current scalar data type is not supported on current device!");   \
-    static_assert(SupportEnum<MASK_MODE, MaskMergeMode::MERGING>(),                                                \
-        "current api only supported Mode MERGING on current device!");                                             \
-    constexpr auto modeValue = GetMaskMergeMode<mode>();                                                           \
-    INSTRUCTION(dstReg, srcReg0, scalar, mask, modeValue)
+#define BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(INSTRUCTION, REG_T, SCALAR_T, MASK_MODE, ...)                              \
+    using ActualT = typename REG_T::ActualT;                                                                           \
+    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");             \
+    static_assert(SupportType<ActualT, ##__VA_ARGS__>(), "current data type is not supported on current device!");     \
+    static_assert(                                                                                                     \
+        SupportType<SCALAR_T, ##__VA_ARGS__>(), "current scalarValue data type is not supported on current device!");  \
+    static_assert(SupportEnum<MASK_MODE, MaskMergeMode::MERGING>(),                                                    \
+        "current api only supported Mode MERGING on current device!");                                                 \
+    constexpr auto modeValue = GetMaskMergeMode<mode>();                                                               \
+    INSTRUCTION(dstReg, srcReg0, scalarValue, mask, modeValue)
 
-#define BINARY_OP_VEC_SCALAR_IMPL_FIX_SCALAR_TYPE(INSTRUCTION, REG_T, SCALAR_T, SCALAR_ALLOW_T, MASK_MODE, ...)      \
-    using ActualT = typename REG_T::ActualT;                                                                       \
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");         \
-    static_assert(SupportType<ActualT, ##__VA_ARGS__>(), "current data type is not supported on current device!"); \
-    static_assert(                                                                                                 \
-        SupportType<SCALAR_T, SCALAR_ALLOW_T>(), "current scalar data type is not supported on current device!");  \
-    static_assert(SupportEnum<MASK_MODE, MaskMergeMode::MERGING>(),                                                \
-        "current api only supported Mode MERGING on current device!");                                             \
-    constexpr auto modeValue = GetMaskMergeMode<mode>();                                                           \
-    INSTRUCTION(dstReg, srcReg0, scalar, mask, modeValue)
+#define BINARY_OP_VEC_SCALAR_IMPL_FIX_SCALAR_TYPE(INSTRUCTION, REG_T, SCALAR_T, SCALAR_ALLOW_T, MASK_MODE, ...)        \
+    using ActualT = typename REG_T::ActualT;                                                                           \
+    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");             \
+    static_assert(SupportType<ActualT, ##__VA_ARGS__>(), "current data type is not supported on current device!");     \
+    static_assert(                                                                                                     \
+        SupportType<SCALAR_T, SCALAR_ALLOW_T>(), "current scalarValue data type is not supported on current device!"); \
+    static_assert(SupportEnum<MASK_MODE, MaskMergeMode::MERGING>(),                                                    \
+        "current api only supported Mode MERGING on current device!");                                                 \
+    constexpr auto modeValue = GetMaskMergeMode<mode>();                                                               \
+    INSTRUCTION(dstReg, srcReg0, scalarValue, mask, modeValue)
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void AddsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void AddsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(vadds, RegT, ScalarT, mode, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MulsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void MulsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(vmuls, RegT, ScalarT, mode, uint8_t, int8_t, uint16_t, int16_t, int32_t, half, float);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MaxsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void MaxsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(vmaxs, RegT, ScalarT, mode, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MinsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void MinsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(vmins, RegT, ScalarT, mode, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ShiftLeftsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void ShiftLeftsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_FIX_SCALAR_TYPE(vshls, RegT, ScalarT, int16_t, mode, uint8_t, uint16_t, int16_t, uint32_t, int32_t);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ShiftRightsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void ShiftRightsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_FIX_SCALAR_TYPE(vshrs, RegT, ScalarT, int16_t, mode, uint8_t, uint16_t, int16_t, uint32_t, int32_t);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void RoundsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void RoundsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_FIX_SCALAR_TYPE(vrnds, RegT, ScalarT, uint16_t, mode, int16_t, int32_t);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, T scalar, MaskReg &mask)
+__aicore__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, T scalarValue, MaskReg &mask)
 {
     BINARY_OP_VEC_SCALAR_IMPL_SAME_TYPE(vlrelu, RegT, T, mode, half, float);
 }

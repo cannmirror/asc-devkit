@@ -40,6 +40,7 @@ __simd_callee__ inline void Copy(U& dstReg, U& srcReg)
 {
     CopyImpl<T, U>(dstReg, srcReg);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_COPY_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_COPY_INTERFACE_IMPL_H

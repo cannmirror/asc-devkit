@@ -20,24 +20,24 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, IndexOrder order = IndexOrder::INCREASE_ORDER, typename T1, typename RegT>
-__aicore__ inline void ArangeImpl(RegT &dstReg, T1 scalar)
+__aicore__ inline void ArangeImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, int8_t, int16_t, int32_t, float, half>()),
     "unsupported datatype on current device!");
     constexpr auto orderMode = std::integral_constant<::Order, static_cast<::Order>(order)>();
-    vci(dstReg, (ActualT)scalar, orderMode);
+    vci(dstReg, (ActualT)scalarValue, orderMode);
 }
 
 template <typename T = DefaultType, typename T1, typename RegT>
-__aicore__ inline void ArangeWithPatternImpl(RegT &dstReg, T1 scalar)
+__aicore__ inline void ArangeWithPatternImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert((SupportType<ActualT, uint16_t, uint32_t, int16_t, int32_t>()),
     "unsupported datatype on current device!");
-    vcp(dstReg, (ActualT)scalar);
+    vcp(dstReg, (ActualT)scalarValue);
 }
 } // namespace MicroAPI
 } // namespace AscendC

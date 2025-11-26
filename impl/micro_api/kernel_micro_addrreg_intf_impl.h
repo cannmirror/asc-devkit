@@ -29,10 +29,9 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T>
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
+           (__NPU_ARCH__ == 3113))
 template <typename T>
 __aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0)
 {
@@ -46,18 +45,20 @@ __aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint1
 }
 
 template <typename T>
-__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1, uint16_t index2, uint16_t stride2)
+__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1,
+                                        uint16_t index2, uint16_t stride2)
 {
     return CreateAddrRegImpl<T>(index0, stride0, index1, stride1, index2, stride2);
 }
 
 template <typename T>
-__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1, uint16_t index2, uint16_t stride2,
-    uint16_t index3, uint16_t stride3)
+__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1, 
+                                        uint16_t index2, uint16_t stride2, uint16_t index3, uint16_t stride3)
 {
     return CreateAddrRegImpl<T>(index0, stride0, index1, stride1, index2, stride2, index3, stride3);
 }
 #else
+template <typename T>
 __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0)
 {
     return CreateAddrRegImpl<T>(index0, stride0);
@@ -70,18 +71,20 @@ __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, 
 }
 
 template <typename T>
-__simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1, uint16_t index2, uint32_t stride2)
+__simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
+                                             uint16_t index2, uint32_t stride2)
 {
     return CreateAddrRegImpl<T>(index0, stride0, index1, stride1, index2, stride2);
 }
 
 template <typename T>
-__simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1, uint16_t index2, uint32_t stride2,
-    uint16_t index3, uint32_t stride3)
+__simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
+                                             uint16_t index2, uint32_t stride2, uint16_t index3, uint32_t stride3)
 {
     return CreateAddrRegImpl<T>(index0, stride0, index1, stride1, index2, stride2, index3, stride3);
 }
 #endif
 } // namespace MicroAPI
 } // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_ADDRREG_INTERFACE_IMPL_H
+
+#endif // ASCENDC_KERNEL_MICRO_ADDRREG_INTERFACE_IMPL_H

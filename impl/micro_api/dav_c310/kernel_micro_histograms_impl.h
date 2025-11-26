@@ -18,11 +18,11 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, HistogramsBinType mode, HistogramsType type,
-    typename RegT, typename RegU>
-__simd_callee__ inline void HistogramsImpl(RegU &dstReg, RegT &srcReg, MaskReg &mask)
+          typename S, typename V>
+__simd_callee__ inline void HistogramsImpl(V& dstReg, S& srcReg, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    using ActualU = typename RegU::ActualT;
+    using ActualT = typename S::ActualT;
+    using ActualU = typename V::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
     static_assert((SupportType<ActualT, uint8_t>()), "current data type is not supported on current device!");
@@ -34,7 +34,6 @@ __simd_callee__ inline void HistogramsImpl(RegU &dstReg, RegT &srcReg, MaskReg &
         chistv2(dstReg, srcReg, mask, HistogramsMode);
     }
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-
+} // namespace MicroAPI
+} // namespace AscendC
 #endif // ASCENDC_MODULE_MICRO_HISTOGRAMS_IMPL_H

@@ -20,108 +20,108 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void AddsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void AddsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     static_assert(SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
-        "current scalar data type is not supported on current device!");
+        "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vadds(dstReg, srcReg0, scalar, mask, modeValue);
+    vadds(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MulsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void MulsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     static_assert(SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
-        "current scalar data type is not supported on current device!");
+        "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vmuls(dstReg, srcReg0, scalar, mask, modeValue);
+    vmuls(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MaxsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void MaxsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     static_assert(SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
-        "current scalar data type is not supported on current device!");
+        "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vmaxs(dstReg, srcReg0, scalar, mask, modeValue);
+    vmaxs(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MinsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void MinsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
     static_assert(SupportType<ScalarT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
-        "current scalar data type is not supported on current device!");
+        "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vmins(dstReg, srcReg0, scalar, mask, modeValue);
+    vmins(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ShiftLeftsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void ShiftLeftsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
         "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, int16_t>(), "current scalar data type is not supported on current device!");
+    static_assert(SupportType<ScalarT, int16_t>(), "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vshls(dstReg, srcReg0, scalar, mask, modeValue);
+    vshls(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ShiftRightsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void ShiftRightsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
         "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, int16_t>(), "current scalar data type is not supported on current device!");
+    static_assert(SupportType<ScalarT, int16_t>(), "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vshrs(dstReg, srcReg0, scalar, mask, modeValue);
+    vshrs(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void RoundsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalar, MaskReg &mask)
+__aicore__ inline void RoundsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int16_t, int32_t>(), "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, uint16_t>(), "current scalar data type is not supported on current device!");
+    static_assert(SupportType<ScalarT, uint16_t>(), "current scalarValue data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vrnds(dstReg, srcReg0, scalar, mask, modeValue);
+    vrnds(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, T scalar, MaskReg &mask)
+__aicore__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, T scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vlrelu(dstReg, srcReg0, scalar, mask, modeValue);
+    vlrelu(dstReg, srcReg0, scalarValue, mask, modeValue);
 }
 } // namespace MicroAPI
 } // namespace AscendC

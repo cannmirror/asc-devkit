@@ -21,7 +21,7 @@ namespace AscendC {
 namespace MicroAPI {
 
 template <typename T = DefaultType, IndexOrder order = IndexOrder::INCREASE_ORDER, typename T1, typename RegT>
-__aicore__ inline void ArangeImpl(RegT &dstReg, T1 scalar)
+__aicore__ inline void ArangeImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -29,11 +29,11 @@ __aicore__ inline void ArangeImpl(RegT &dstReg, T1 scalar)
         "current Arange data type is not supported on current device!");
     static_assert((SupportType<T1, int8_t, int16_t, int32_t, uint16_t, uint32_t>()),
         "current Arange data type is not supported on current device!");
-    vci(dstReg, scalar);
+    vci(dstReg, scalarValue);
 }
 
 template <typename T = DefaultType, typename T1, typename RegT>
-__aicore__ inline void ArangeWithPatternImpl(RegT &dstReg, T1 scalar)
+__aicore__ inline void ArangeWithPatternImpl(RegT &dstReg, T1 scalarValue)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ArangeWithPattern is not supported on current device!"); });
 }

@@ -29,13 +29,12 @@
 #endif
 namespace AscendC {
 namespace MicroAPI {
-template <typename T, typename U, HistogramsBinType mode, HistogramsType type,
-    typename RegT, typename RegU>
-__simd_callee__ inline void Histograms(RegU &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T, typename U, HistogramsBinType mode, HistogramsType type, typename S, typename V>
+__simd_callee__ inline void Histograms(V& dstReg, S& srcReg, MaskReg& mask)
 {
-    HistogramsImpl<T, U, mode, type, RegT, RegU>(dstReg, srcReg, mask);
+    HistogramsImpl<T, U, mode, type, S, V>(dstReg, srcReg, mask);
 }
-}
-}
+} // namespace MicroAPI
+} // namespace AscendC
  
 #endif // ASCENDC_MODULE_MICRO_HISTOGRAMS_INTERFACE_IMPL_H

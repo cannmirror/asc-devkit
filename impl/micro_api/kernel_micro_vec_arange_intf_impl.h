@@ -30,10 +30,11 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, IndexOrder order, typename U, typename S>
-__simd_callee__ inline void Arange(S &dstReg, U scalar)
+__simd_callee__ inline void Arange(S& dstReg, U scalarValue)
 {
-    ArangeImpl<T, order, U, S>(dstReg, scalar);
+    ArangeImpl<T, order, U, S>(dstReg, scalarValue);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_ARANGE_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_VEC_ARANGE_INTERFACE_IMPL_H

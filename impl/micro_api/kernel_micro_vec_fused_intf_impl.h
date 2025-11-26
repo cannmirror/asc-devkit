@@ -30,28 +30,28 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T0, typename T1, typename T2, RegLayout layout, typename T3, typename T4>
-__simd_callee__ inline void FusedMulsCast(T3 &dstReg, T4 &srcReg, T2 scalar, MaskReg &mask)
+__simd_callee__ inline void FusedMulsCast(T3& dstReg, T4& srcReg, T2 scalarValue, MaskReg& mask)
 {
-    FusedMulsCastImpl<T0, T1, T2, layout, T3, T4>(dstReg, srcReg, scalar, mask);
+    FusedMulsCastImpl<T0, T1, T2, layout, T3, T4>(dstReg, srcReg, scalarValue, mask);
 }
 
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void FusedAbsSub(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void FusedAbsSub(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     FusedAbsSubImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
 template <typename T, typename U, RegLayout layout, MaskMergeMode mode, typename S, typename V>
-__simd_callee__ inline void FusedExpSub(S &dstReg, V &srcReg0, V &srcReg1, MaskReg &mask)
+__simd_callee__ inline void FusedExpSub(S& dstReg, V& srcReg0, V& srcReg1, MaskReg& mask)
 {
     FusedExpSubImpl<T, U, layout, mode, S, V>(dstReg, srcReg0, srcReg1, mask);
 }
 template <typename T, MaskMergeMode mode, typename U>
-__simd_callee__ inline void FusedMulDstAdd(U &dstReg, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void FusedMulDstAdd(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
     FusedMulDstAddImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
+} // namespace MicroAPI
+} // namespace AscendC
 
-}
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_FUSED_INTERFACE_IMPL_H
+#endif // ASCENDC_KERNEL_MICRO_VEC_FUSED_INTERFACE_IMPL_H

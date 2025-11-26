@@ -17,32 +17,33 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T, typename U, typename ScalarT, RegLayout layout, typename RegT, typename RegU>
-__simd_callee__ inline void FusedMulsCastImpl(RegT &dstReg, RegU &srcReg, ScalarT scalar, MaskReg &mask)
+template <typename T0, typename T1, typename T2, RegLayout layout, typename T3, typename T4>
+__simd_callee__ inline void FusedMulsCastImpl(T3& dstReg, T4& srcReg, T2 scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    using ActualU = typename RegU::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
-    static_assert(SupportType<Tuple<ActualT, ActualU, ScalarT>, Tuple<half, float, float>>(),
-        "current data type is not supported on current device!");
+    using ActualT = typename T3::ActualT;
+    using ActualU = typename T4::ActualT;
+    static_assert(std::is_same_v<T0, DefaultType> || std::is_same_v<T0, ActualT>, "T0 type is not correct!");
+    static_assert(std::is_same_v<T1, DefaultType> || std::is_same_v<T1, ActualU>, "T1 type is not correct!");
+    static_assert(SupportType<Tuple<ActualT, ActualU, T2>, Tuple<half, float, float>>(),
+                  "current data type is not supported on current device!");
     static_assert(SupportEnum<layout, RegLayout::ZERO, RegLayout::ONE>(),
-        "current FusedMulsCast api only supported RegLayout ZERO, ONE on current device!");
+                  "current FusedMulsCast api only supported RegLayout ZERO, ONE on current device!");
 
     constexpr auto partModeValue = std::integral_constant<::Part, static_cast<::Part>(layout)>();
-    vmulscvt(dstReg, srcReg, scalar, mask, partModeValue);
+    vmulscvt(dstReg, srcReg, scalarValue, mask, partModeValue);
 }
 
-template <typename T, MaskMergeMode mode, typename RegT>
-__simd_callee__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+template <typename T, MaskMergeMode mode, typename U>
+__simd_callee__ inline void FusedAbsSubImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float, int64_t>(), "current data type is not supported on current device!");
+    static_assert(SupportType<ActualT, half, float, int64_t>(), 
+                  "current data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current FusedAbsSub api only supported Mode ZEROING on current device!");
+                  "current FusedAbsSub api only supported Mode ZEROING on current device!");
     if constexpr(sizeof(ActualT) == 8) {
-        if constexpr (CheckRegTrait<RegT, RegTraitNumOne>()) {
+        if constexpr (CheckRegTrait<U, RegTraitNumOne>()) {
             MaskReg maskTrait2;
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
@@ -53,7 +54,7 @@ __simd_callee__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &s
             Sub(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             Abs(traitTwoDstReg, traitTwoDstReg, maskTrait2);
             B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
-        } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
+        } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             Sub(dstReg, srcReg0, srcReg1, mask);
             Abs(dstReg, dstReg, mask);
         }
@@ -63,39 +64,41 @@ __simd_callee__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &s
         vabsdif(dstReg, srcReg0, srcReg1, mask, modeValue);
     }
 }
-template <typename T, typename U, RegLayout layout, MaskMergeMode mode, typename RegT, typename RegU>
-__simd_callee__ inline void FusedExpSubImpl(RegT &dstReg, RegU &srcReg0, RegU &srcReg1, MaskReg &mask)
+
+template <typename T, typename U, RegLayout layout, MaskMergeMode mode, typename S, typename V>
+__simd_callee__ inline void FusedExpSubImpl(S& dstReg, V& srcReg0, V& srcReg1, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    using ActualU = typename RegU::ActualT;
+    using ActualT = typename S::ActualT;
+    using ActualU = typename V::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(std::is_same_v<U, DefaultType> || std::is_same_v<U, ActualU>, "U type is not correct!");
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
     static_assert(SupportType<Tuple<ActualT, ActualU>, Tuple<half, half>, Tuple<float, float>>(),
-        "current data type is not supported on current device!");
+                  "current data type is not supported on current device!");
 #else
     static_assert(SupportType<Tuple<ActualT, ActualU>, Tuple<float, float>, Tuple<float, half>>(),
-        "current data type is not supported on current device!");
+                  "current data type is not supported on current device!");
 #endif
     static_assert(SupportEnum<layout, RegLayout::ZERO, RegLayout::ONE>(),
-        "current FusedExpSub api only supported RegLayout ZERO, ONE on current device!");
+                  "current FusedExpSub api only supported RegLayout ZERO, ONE on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
-        "current FusedExpSub api only supported Mode ZEROING on current device!");
+                  "current FusedExpSub api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     constexpr auto partModeValue = std::integral_constant<::Part, static_cast<::Part>(layout)>();
     vexpdif(dstReg, srcReg0, srcReg1, mask, partModeValue);
 }
 
-template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void FusedMulDstAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void FusedMulDstAddImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float, bfloat16_t>(), "current data type is not supported on current device!");
+    static_assert(SupportType<ActualT, half, float, bfloat16_t>(),
+                  "current data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(), "FusedMulDstAdd only support Mode ZEROING");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vmadd(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
-}
+} // namespace MicroAPI
 } // namespace AscendC
 #endif // ASCENDC_MODULE_MICRO_VEC_FUSED_IMPL_H

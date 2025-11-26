@@ -33,251 +33,244 @@ namespace AscendC {
 namespace MicroAPI {
 // vld
 template <typename T, LoadDist dist, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg, __ubuf__ T *srcUbAddr)
+__simd_callee__ inline void DataCopy(U& dstReg, __ubuf__ T* srcAddr)
 {
-    DataCopyImpl<T, dist, U>(dstReg, srcUbAddr);
+    DataCopyImpl<T, dist, U>(dstReg, srcAddr);
 }
 
 template <typename T, PostLiteral postMode, LoadDist dist, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg, __ubuf__ T *&srcUbAddr, int32_t postUpdateStride)
-
+__simd_callee__ inline void DataCopy(U& dstReg, __ubuf__ T*& srcAddr, int32_t postUpdateStride)
 {
-    DataCopyImpl<T, postMode, dist, U>(dstReg, srcUbAddr, postUpdateStride);
+    DataCopyImpl<T, postMode, dist, U>(dstReg, srcAddr, postUpdateStride);
 }
 
 template <typename T, LoadDist dist, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg, __ubuf__ T *srcUbAddr, AddrReg offset)
-
+__simd_callee__ inline void DataCopy(U& dstReg, __ubuf__ T* srcAddr, AddrReg offset)
 {
-    DataCopyImpl<T, dist, U>(dstReg, srcUbAddr, offset);
+    DataCopyImpl<T, dist, U>(dstReg, srcAddr, offset);
 }
 
 // vld dual
 template <typename T, LoadDist dist, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg0, U &dstReg1, __ubuf__ T *srcUbAddr)
+__simd_callee__ inline void DataCopy(U& dstReg0, U& dstReg1, __ubuf__ T* srcAddr)
 {
-    DataCopyImpl<T, dist, U>(dstReg0, dstReg1, srcUbAddr);
+    DataCopyImpl<T, dist, U>(dstReg0, dstReg1, srcAddr);
 }
 
 template <typename T, PostLiteral postMode, LoadDist dist, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg0, U &dstReg1, __ubuf__ T *&srcUbAddr, int32_t postUpdateStride)
-
+__simd_callee__ inline void DataCopy(U& dstReg0, U& dstReg1, __ubuf__ T*& srcAddr, int32_t postUpdateStride)
 {
-    DataCopyImpl<T, postMode, dist, U>(dstReg0, dstReg1, srcUbAddr, postUpdateStride);
+    DataCopyImpl<T, postMode, dist, U>(dstReg0, dstReg1, srcAddr, postUpdateStride);
 }
 
 template <typename T, LoadDist dist, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg0, U &dstReg1, __ubuf__ T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopy(U& dstReg0, U& dstReg1, __ubuf__ T* srcAddr, AddrReg offset)
 {
-    DataCopyImpl<T, dist, U>(dstReg0, dstReg1, srcUbAddr, offset);
+    DataCopyImpl<T, dist, U>(dstReg0, dstReg1, srcAddr, offset);
 }
 
 // vst
 template <typename T, StoreDist dist, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, U &srcReg, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, U& srcReg, MaskReg& mask)
 {
-    DataCopyImpl<T, dist, U>(dstUbAddr, srcReg, mask);
+    DataCopyImpl<T, dist, U>(dstAddr, srcReg, mask);
 }
 
 template <typename T, PostLiteral postMode, StoreDist dist, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *&dstUbAddr, U &srcReg, int32_t postUpdateStride, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T*& dstAddr, U& srcReg, int32_t postUpdateStride, MaskReg& mask)
 {
-    DataCopyImpl<T, postMode, dist, U>(dstUbAddr, srcReg, postUpdateStride, mask);
+    DataCopyImpl<T, postMode, dist, U>(dstAddr, srcReg, postUpdateStride, mask);
 }
 
 template <typename T, StoreDist dist, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, U &srcReg, AddrReg offset, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, U& srcReg, AddrReg offset, MaskReg& mask)
 {
-    DataCopyImpl<T, dist, U>(dstUbAddr, srcReg, offset, mask);
+    DataCopyImpl<T, dist, U>(dstAddr, srcReg, offset, mask);
 }
 
 // vst dual
 template <typename T, StoreDist dist, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, U &srcReg0, U &srcReg1, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, U& srcReg0, U& srcReg1, MaskReg& mask)
 {
-    DataCopyImpl<T, dist, U>(dstUbAddr, srcReg0, srcReg1, mask);
+    DataCopyImpl<T, dist, U>(dstAddr, srcReg0, srcReg1, mask);
 }
 
 template <typename T, StoreDist dist, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, U &srcReg0, U &srcReg1, AddrReg offset,
-    MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, U& srcReg0, U& srcReg1, AddrReg offset, MaskReg& mask)
 {
-    DataCopyImpl<T, dist, U>(dstUbAddr, srcReg0, srcReg1, offset, mask);
+    DataCopyImpl<T, dist, U>(dstAddr, srcReg0, srcReg1, offset, mask);
 }
 
 // vsldb
 template <typename T, DataCopyMode dataMode, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg, __ubuf__ T *srcUbAddr, uint32_t dataBlockStride, MaskReg &mask)
+__simd_callee__ inline void DataCopy(U& dstReg, __ubuf__ T* srcAddr, uint32_t dataBlockStride, MaskReg& mask)
 {
-    DataCopyImpl<T, dataMode, U>(dstReg, srcUbAddr, dataBlockStride, mask);
+    DataCopyImpl<T, dataMode, U>(dstReg, srcAddr, dataBlockStride, mask);
 }
 
 template <typename T, DataCopyMode dataMode, PostLiteral postMode, typename U>
-__simd_callee__ inline void DataCopy(U &dstReg, __ubuf__ T *&srcUbAddr, uint32_t dataBlockStride,
-    uint32_t repeatStride, MaskReg &mask)
+__simd_callee__ inline void DataCopy(U& dstReg, __ubuf__ T*& srcAddr, uint32_t dataBlockStride,
+                                     uint32_t repeatStride, MaskReg& mask)
 {
-    DataCopyImpl<T, dataMode, postMode, U>(dstReg, srcUbAddr, dataBlockStride, repeatStride, mask);
+    DataCopyImpl<T, dataMode, postMode, U>(dstReg, srcAddr, dataBlockStride, repeatStride, mask);
 }
 
 // vsstb
 template <typename T, DataCopyMode dataMode, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, U &srcReg, uint32_t dataBlockStride, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, U& srcReg, uint32_t dataBlockStride, MaskReg& mask)
 {
-    DataCopyImpl<T, dataMode, U>(dstUbAddr, srcReg, dataBlockStride, mask);
+    DataCopyImpl<T, dataMode, U>(dstAddr, srcReg, dataBlockStride, mask);
 }
 
 template <typename T, DataCopyMode dataMode, PostLiteral postMode, typename U>
-__simd_callee__ inline void DataCopy(__ubuf__ T *&dstUbAddr, U &srcReg, uint32_t dataBlockStride,
-    uint32_t repeatStride, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T*& dstAddr, U& srcReg, uint32_t dataBlockStride,
+                                     uint32_t repeatStride, MaskReg& mask)
 {
-    DataCopyImpl<T, dataMode, postMode, U>(dstUbAddr, srcReg, dataBlockStride, repeatStride, mask);
+    DataCopyImpl<T, dataMode, postMode, U>(dstAddr, srcReg, dataBlockStride, repeatStride, mask);
 }
 
 // vldas/vldus
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignPre(UnalignReg &ureg, __ubuf__ T *srcUbAddr)
+__simd_callee__ inline void DataCopyUnAlignPre(UnalignReg& ureg, __ubuf__ T* srcAddr)
 {
-    DataCopyUnAlignPreImpl<T>(ureg, srcUbAddr);
+    DataCopyUnAlignPreImpl<T>(ureg, srcAddr);
 }
 
 template <typename T, PostLiteral postMode, typename U>
-__simd_callee__ inline void DataCopyUnAlign(U &dstReg, UnalignReg &ureg, __ubuf__ T *&srcUbAddr, uint32_t postUpdateStride)
+__simd_callee__ inline void DataCopyUnAlign(U& dstReg, UnalignReg& ureg, __ubuf__ T*& srcAddr,
+                                            uint32_t postUpdateStride)
 {
-    DataCopyUnAlignImpl<T, postMode, U>(dstReg, ureg, srcUbAddr, postUpdateStride);
+    DataCopyUnAlignImpl<T, postMode, U>(dstReg, ureg, srcAddr, postUpdateStride);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void DataCopyUnAlign(U &dstReg, UnalignReg &ureg, __ubuf__ T *srcUbAddr)
+__simd_callee__ inline void DataCopyUnAlign(U& dstReg, UnalignReg& ureg, __ubuf__ T* srcAddr)
 {
-    DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcUbAddr);
+    DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr);
 }
 
 // vlda/vldu
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignPre(UnalignReg &ureg, __ubuf__ T *srcUbAddr, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlignPre(UnalignReg& ureg, __ubuf__ T* srcAddr, AddrReg& areg)
 {
-    DataCopyUnAlignPreImpl<T>(ureg, srcUbAddr, areg);
+    DataCopyUnAlignPreImpl<T>(ureg, srcAddr, areg);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void DataCopyUnAlign(U &dstReg, UnalignReg &ureg, __ubuf__ T *&srcUbAddr, AddrReg &areg,
-    uint32_t inc)
+__simd_callee__ inline void DataCopyUnAlign(U& dstReg, UnalignReg& ureg, __ubuf__ T*& srcAddr, AddrReg& areg,
+                                            uint32_t inc)
 {
-    DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcUbAddr, areg, inc);
+    DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr, areg, inc);
 }
 
 // vstus/vstas
 template <typename T, PostLiteral postMode , typename U>
-__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T *&dstUbAddr, U &srcReg, UnalignReg &ureg, uint32_t postUpdateStride)
-
+__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T*& dstAddr, U& srcReg, UnalignReg& ureg,
+                                            uint32_t postUpdateStride)
 {
-    DataCopyUnAlignImpl<T, postMode, U>(dstUbAddr, srcReg, ureg, postUpdateStride);
+    DataCopyUnAlignImpl<T, postMode, U>(dstAddr, srcReg, ureg, postUpdateStride);
 }
 
 template <typename T, PostLiteral postMode>
-__simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T *&dstUbAddr, UnalignReg &ureg, int32_t postUpdateStride)
+__simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T*& dstAddr, UnalignReg& ureg, int32_t postUpdateStride)
 {
-    DataCopyUnAlignPostImpl<T, postMode>(dstUbAddr, ureg, postUpdateStride);
+    DataCopyUnAlignPostImpl<T, postMode>(dstAddr, ureg, postUpdateStride);
 }
 
 // vstu/vsta
 template <typename T, PostLiteral postMode, typename U>
-__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T *&dstUbAddr, U &srcReg, UnalignReg &ureg, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T*& dstAddr, U& srcReg, UnalignReg& ureg, AddrReg& areg)
 {
-    DataCopyUnAlignImpl<T, postMode, U>(dstUbAddr, srcReg, ureg, areg);
+    DataCopyUnAlignImpl<T, postMode, U>(dstAddr, srcReg, ureg, areg);
 }
 
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T *&dstUbAddr, UnalignReg &ureg, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T*& dstAddr, UnalignReg& ureg, AddrReg& areg)
 {
-    DataCopyUnAlignPostImpl<T>(dstUbAddr, ureg, areg);
+    DataCopyUnAlignPostImpl<T>(dstAddr, ureg, areg);
 }
 
 // vstur/vstar
 template <typename T, PostLiteral postMode, typename U>
-__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T *dstUbAddr, U &srcReg, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T* dstAddr, U& srcReg, UnalignReg& ureg)
 {
-    DataCopyUnAlignImpl(dstUbAddr, srcReg, ureg);
+    DataCopyUnAlignImpl(dstAddr, srcReg, ureg);
 }
 
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T *dstUbAddr, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T* dstAddr, UnalignReg& ureg)
 {
-    DataCopyUnAlignPostImpl(dstUbAddr, ureg);
+    DataCopyUnAlignPostImpl(dstAddr, ureg);
 }
 
 // vgather2
 template <typename T0, typename T1, typename T2, typename T3, typename T4>
-__simd_callee__ inline void DataCopyGather(
-    T3 &dstReg, __ubuf__ T1 *baseAddr, T4 &index, MaskReg &mask)
+__simd_callee__ inline void DataCopyGather(T3& dstReg, __ubuf__ T1* baseAddr, T4& index, MaskReg& mask)
 {
     DataCopyGatherImpl<T0, T1, T2, T3, T4>(dstReg, baseAddr, index, mask);
 }
 
 // vgatherb
 template <typename T, typename U, typename S>
-__simd_callee__ inline void DataCopyGatherB(U &dstReg, __ubuf__ T *baseAddr, S &index,
-    MaskReg &mask)
-
+__simd_callee__ inline void DataCopyGatherB(U& dstReg, __ubuf__ T* baseAddr, S& index, MaskReg& mask)
 {
     DataCopyGatherBImpl<T, U, S>(dstReg, baseAddr, index, mask);
 }
 
 // vscatter
 template <typename T, typename U, typename S, typename V>
-__simd_callee__ inline void DataCopyScatter(__ubuf__ T *baseAddr, S &srcReg, V &index,
-    MaskReg &mask)
-
+__simd_callee__ inline void DataCopyScatter(__ubuf__ T* baseAddr, S& srcReg, V& index, MaskReg& mask)
 {
     DataCopyScatterImpl<T, U, S, V>(baseAddr, srcReg, index, mask);
 }
 
 // pld
 template <typename T, MaskDist dist>
-__simd_callee__ inline void DataCopy(MaskReg &mask, __ubuf__ T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopy(MaskReg& mask, __ubuf__ T* srcAddr, AddrReg offset)
 {
-    DataCopyImpl<T, dist>(mask, srcUbAddr, offset);
+    DataCopyImpl<T, dist>(mask, srcAddr, offset);
 }
 
 // plds
 template <typename T, MaskDist dist>
-__simd_callee__ inline void DataCopy(MaskReg &mask, __ubuf__ T *srcUbAddr)
+__simd_callee__ inline void DataCopy(MaskReg& mask, __ubuf__ T* srcAddr)
 {
-    DataCopyImpl<T, dist>(mask, srcUbAddr);
+    DataCopyImpl<T, dist>(mask, srcAddr);
 }
 
 template <typename T, PostLiteral postMode, MaskDist dist>
-__simd_callee__ inline void DataCopy(MaskReg &mask, __ubuf__ T *&srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(MaskReg& mask, __ubuf__ T*& srcAddr, int32_t offset)
 {
-    DataCopyImpl<T, postMode, dist>(mask, srcUbAddr, offset);
+    DataCopyImpl<T, postMode, dist>(mask, srcAddr, offset);
 }
 
 // pst
 template <typename T, MaskDist dist>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, MaskReg &mask, AddrReg offset)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, MaskReg& mask, AddrReg offset)
 {
-    DataCopyImpl<T, dist>(dstUbAddr, mask, offset);
+    DataCopyImpl<T, dist>(dstAddr, mask, offset);
 }
 
 // psts
 template <typename T, MaskDist dist>
-__simd_callee__ inline void DataCopy(__ubuf__ T *dstUbAddr, MaskReg &mask)
+__simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, MaskReg& mask)
 {
-    DataCopyImpl<T, dist>(dstUbAddr, mask);
+    DataCopyImpl<T, dist>(dstAddr, mask);
 }
 
 template <typename T, PostLiteral postMode, MaskDist dist>
-__simd_callee__ inline void DataCopy(__ubuf__ T *&dstUbAddr, MaskReg &mask, int32_t offset)
+__simd_callee__ inline void DataCopy(__ubuf__ T*& dstAddr, MaskReg& mask, int32_t offset)
 {
-    DataCopyImpl<T, postMode, dist>(dstUbAddr, mask, offset);
+    DataCopyImpl<T, postMode, dist>(dstAddr, mask, offset);
 }
 
 // pstu
 template <typename T>
-__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T *&dstUbAddr, MaskReg &mask, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlign(__ubuf__ T*& dstAddr, MaskReg& mask, UnalignReg& ureg)
 {
-    return DataCopyUnAlignImpl<T>(dstUbAddr, mask, ureg);
+    return DataCopyUnAlignImpl<T>(dstAddr, mask, ureg);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_DATACOPY_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_DATACOPY_INTERFACE_IMPL_H

@@ -27,7 +27,7 @@ struct ExpConfig {
     ExpAlgo algo = ExpAlgo::INTRINSIC;
 };
 
-constexpr ExpConfig DEFAULT_EXP_CONFIG = { ExpAlgo::INTRINSIC };
+constexpr ExpConfig DEFAULT_EXP_CONFIG = {ExpAlgo::INTRINSIC};
 
 enum class LnAlgo {
     INTRINSIC = 0,
@@ -38,7 +38,7 @@ struct LnConfig {
     LnAlgo algo = LnAlgo::INTRINSIC;
 };
 
-constexpr LnConfig DEFAULT_LN_CONFIG = { LnAlgo::INTRINSIC };
+constexpr LnConfig DEFAULT_LN_CONFIG = {LnAlgo::INTRINSIC};
 
 enum class LogAlgo {
     INTRINSIC = 0,
@@ -49,7 +49,7 @@ struct LogConfig {
     LogAlgo algo = LogAlgo::INTRINSIC;
 };
 
-constexpr LogConfig DEFAULT_Log_CONFIG = { LogAlgo::INTRINSIC };
+constexpr LogConfig DEFAULT_Log_CONFIG = {LogAlgo::INTRINSIC};
 
 enum class Log2Algo {
     INTRINSIC = 0,
@@ -60,7 +60,7 @@ struct Log2Config {
     Log2Algo algo = Log2Algo::INTRINSIC;
 };
 
-constexpr Log2Config DEFAULT_Log2_CONFIG = { Log2Algo::INTRINSIC };
+constexpr Log2Config DEFAULT_Log2_CONFIG = {Log2Algo::INTRINSIC};
 
 enum class Log10Algo {
     INTRINSIC = 0,
@@ -71,7 +71,7 @@ struct Log10Config {
     Log10Algo algo = Log10Algo::INTRINSIC;
 };
 
-constexpr Log10Config DEFAULT_Log10_CONFIG = { Log10Algo::INTRINSIC };
+constexpr Log10Config DEFAULT_Log10_CONFIG = {Log10Algo::INTRINSIC};
 
 enum class ReciprocalAlgo {
     INTRINSIC = 0,
@@ -82,7 +82,7 @@ struct ReciprocalConfig {
     ReciprocalAlgo algo = ReciprocalAlgo::INTRINSIC;
 };
 
-constexpr ReciprocalConfig DEFAULT_RECIPROCAL_CONFIG = { ReciprocalAlgo::INTRINSIC };
+constexpr ReciprocalConfig DEFAULT_RECIPROCAL_CONFIG = {ReciprocalAlgo::INTRINSIC};
 
 enum class DivAlgo {
     INTRINSIC = 0,
@@ -96,7 +96,7 @@ struct DivConfig {
     DivAlgo algo = DivAlgo::INTRINSIC;
 };
 
-constexpr DivConfig DEFAULT_DIV_CONFIG = { DivAlgo::INTRINSIC };
+constexpr DivConfig DEFAULT_DIV_CONFIG = {DivAlgo::INTRINSIC};
 
 enum class SqrtAlgo {
     INTRINSIC = 0,
@@ -109,7 +109,7 @@ struct SqrtConfig {
     SqrtAlgo algo = SqrtAlgo::INTRINSIC;
 };
 
-constexpr SqrtConfig DEFAULT_SQRT_CONFIG = { SqrtAlgo::INTRINSIC };
+constexpr SqrtConfig DEFAULT_SQRT_CONFIG = {SqrtAlgo::INTRINSIC};
 
 enum class RsqrtAlgo {
     INTRINSIC = 0,
@@ -122,7 +122,7 @@ struct RsqrtConfig {
     RsqrtAlgo algo = RsqrtAlgo::INTRINSIC;
 };
 
-constexpr RsqrtConfig DEFAULT_RSQRT_CONFIG = { RsqrtAlgo::INTRINSIC };
+constexpr RsqrtConfig DEFAULT_RSQRT_CONFIG = {RsqrtAlgo::INTRINSIC};
 
 namespace MicroAPI {
 enum class RegLayout {
@@ -345,7 +345,7 @@ struct SqrtSpecificMode {
 };
 #endif
 
-constexpr CastTrait castTrait = { RegLayout::UNKNOWN, SatMode::UNKNOWN, MaskMergeMode::UNKNOWN, RoundMode::UNKNOWN };
+constexpr CastTrait castTrait = {RegLayout::UNKNOWN, SatMode::UNKNOWN, MaskMergeMode::UNKNOWN, RoundMode::UNKNOWN};
 namespace util {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
@@ -357,7 +357,7 @@ __aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(MaskMergeMode mrg
     };
 }
 
-__aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(const DivSpecificMode *sprMode)
+__aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(const DivSpecificMode* sprMode)
 {
     return {
         .mrgMode = sprMode->mrgMode,
@@ -373,7 +373,7 @@ __aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(MaskMergeMode m
     };
 }
 
-__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(const SqrtSpecificMode *sprMode)
+__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(const SqrtSpecificMode* sprMode)
 {
     return {
         .mrgMode = sprMode->mrgMode,
@@ -397,7 +397,7 @@ enum class RoundControl {
     NO_ROUND,
     ROUND
 };
-
 } // namespace MicroAPI
 } // namespace AscendC
+
 #endif // ASCENDC_MODULE_MICRO_UTILS_H

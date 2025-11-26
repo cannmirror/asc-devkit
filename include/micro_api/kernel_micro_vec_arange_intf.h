@@ -20,7 +20,7 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, IndexOrder order = IndexOrder::INCREASE_ORDER, typename U, typename S>
-__simd_callee__ inline void Arange(S &dstReg, U scalar);
+__simd_callee__ inline void Arange(S& dstReg, U scalarValue);
 } // namespace MicroAPI
 } // namespace AscendC
 

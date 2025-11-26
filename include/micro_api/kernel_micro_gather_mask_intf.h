@@ -19,12 +19,11 @@
 
 namespace AscendC {
 namespace MicroAPI {
+template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_STORE_REG, typename U>
+__simd_callee__ inline void GatherMask(U& dstReg, U& srcReg, MaskReg& mask);
 
-template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_STORE_REG, typename RegT>
-__simd_callee__ inline void GatherMask(RegT &dstReg, RegT &srcReg, MaskReg &mask);
-
-template <typename T = DefaultType, typename RegT>
-__simd_callee__ inline void PrefixSum(RegT &dstReg, MaskReg &mask);
+template <typename T = DefaultType, typename U>
+__simd_callee__ inline void PrefixSum(U& dstReg, MaskReg& mask);
 
 template <SpecialPurposeReg spr>
 __aicore__ inline int64_t GetSpr();
@@ -32,9 +31,8 @@ __aicore__ inline int64_t GetSpr();
 template <SpecialPurposeReg spr>
 __simd_callee__ inline void ClearSpr();
 
-template <typename T = DefaultType, typename U = DefaultType, typename RegT, typename RegU>
-__simd_callee__ inline void Gather(RegT &dstReg, RegT &srcReg, RegU &indexReg);
-
+template <typename T = DefaultType, typename U = DefaultType, typename S, typename V>
+__simd_callee__ inline void Gather(S& dstReg, S& srcReg, V& indexReg);
 } // namespace MicroAPI
 } // namespace AscendC
 

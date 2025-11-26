@@ -18,7 +18,7 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
-__simd_callee__ inline void Axpy(S &dstReg, S &srcReg, const U scalar, MaskReg &mask);
+__simd_callee__ inline void Axpy(S& dstReg, S& srcReg, const U scalarValue, MaskReg& mask);
 } // namespace MicroAPI
 } // namespace AscendC
 

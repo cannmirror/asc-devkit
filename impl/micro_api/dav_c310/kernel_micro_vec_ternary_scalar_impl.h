@@ -17,27 +17,27 @@
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void AxpyImpl(RegT &dstReg, RegT &srcReg, const ScalarT scalar, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void AxpyImpl(S& dstReg, S& srcReg, const U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float, uint64_t, int64_t>(),
-        "current Axpy data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, half, float, uint64_t, int64_t>(),
-        "current Axpy data type is not supported on current device!");
-    static_assert(Std::is_convertible<ScalarT, ActualT>(), "scalar data type could be converted to RegTensor data type");
-    static_assert(
-        SupportEnum<mode, MaskMergeMode::ZEROING>(), "current Axpy api only supported Mode ZEROING on current device!");
+                  "current Axpy data type is not supported on current device!");
+    static_assert(SupportType<U, half, float, uint64_t, int64_t>(),
+                  "current Axpy data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
+    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
+                  "current Axpy api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     if constexpr (sizeof(ActualT) != 8) {
-        vaxpy(dstReg, srcReg, scalar, mask, modeValue);
+        vaxpy(dstReg, srcReg, scalarValue, mask, modeValue);
     } else {
-        RegT midReg;
-        Muls<ActualT, ScalarT, mode, RegT>(midReg, srcReg, scalar, mask);
-        Add<ActualT, mode, RegT>(dstReg, midReg, dstReg, mask);
+        S midReg;
+        Muls<ActualT, U, mode, S>(midReg, srcReg, scalarValue, mask);
+        Add<ActualT, mode, S>(dstReg, midReg, dstReg, mask);
     }
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_MODULE_MICRO_VEC_TERNARY_SCALAR_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+#endif // ASCENDC_MODULE_MICRO_VEC_TERNARY_SCALAR_IMPL_H

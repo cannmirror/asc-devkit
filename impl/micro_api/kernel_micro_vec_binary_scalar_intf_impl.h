@@ -32,55 +32,56 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void Adds(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void Adds(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    AddsImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    AddsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void Muls(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void Muls(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    MulsImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    MulsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void Maxs(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void Maxs(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    MaxsImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    MaxsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void Mins(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void Mins(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    MinsImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    MinsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void ShiftLefts(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void ShiftLefts(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    ShiftLeftsImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    ShiftLeftsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void ShiftRights(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void ShiftRights(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    ShiftRightsImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    ShiftRightsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3103 || \
     __NPU_ARCH__ == 3113)
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__aicore__ inline void Rounds(S &dstReg, S &srcReg0, U scalar, MaskReg &mask)
+__aicore__ inline void Rounds(S &dstReg, S &srcReg0, U scalarValue, MaskReg &mask)
 {
-    RoundsImpl<T, U, mode, S>(dstReg, srcReg0, scalar, mask);
+    RoundsImpl<T, U, mode, S>(dstReg, srcReg0, scalarValue, mask);
 }
 #endif
 
 template <typename T, typename U, MaskMergeMode mode, typename S>
-__simd_callee__ inline void LeakyRelu(S &dstReg, S &srcReg, U scalar, MaskReg &mask)
+__simd_callee__ inline void LeakyRelu(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    LeakyReluImpl<T, U, mode, S>(dstReg, srcReg, scalar, mask);
+    LeakyReluImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
-}  // namespace MicroAPI
-}  // namespace AscendC
-#endif  // ASCENDC_KERNEL_MICRO_VEC_BINARY_SCALAR_INTERFACE_IMPL_H
+} // namespace MicroAPI
+} // namespace AscendC
+
+#endif // ASCENDC_KERNEL_MICRO_VEC_BINARY_SCALAR_INTERFACE_IMPL_H
