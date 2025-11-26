@@ -20,7 +20,7 @@ install(FILES scripts/ascendc_parse_dumpinfo.py
 add_custom_command(
   OUTPUT ${CMAKE_BINARY_DIR}/ascendc_kernel_cmake
   COMMAND rm -rf ${CMAKE_BINARY_DIR}/ascendc_kernel_cmake
-  COMMAND cp -rf ${ASCENDC_DIR}/cmake ${CMAKE_BINARY_DIR}/ascendc_kernel_cmake
+  COMMAND cp -rf ${ASCENDC_DIR}/cmake/asc ${CMAKE_BINARY_DIR}/ascendc_kernel_cmake
   COMMAND cp -rf ${ASCENDC_DIR}/tools/ascc/cmake/. ${CMAKE_BINARY_DIR}/ascendc_kernel_cmake
   COMMAND cp -rf ${ASCENDC_DIR}/tools/build/scripts/AICPU_CMake ${CMAKE_BINARY_DIR}/ascendc_kernel_cmake
 )

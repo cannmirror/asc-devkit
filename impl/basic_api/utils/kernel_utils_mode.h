@@ -160,6 +160,9 @@ enum class DumpType : uint8_t {
     DUMP_META,
     DUMP_TIME_STAMP,
     DUMP_SIMT,
+    DUMP_BUFI,
+    DUMP_BUFO,
+    DUMP_SKIP
 };
 
 enum class CLAMPMODE {

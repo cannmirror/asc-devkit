@@ -46,9 +46,8 @@ __aicore__ void Async(Args... args)
 </thead>
 <tbody><tr id="row52838432246"><td class="cellrowborder" valign="top" width="16.28%" headers="mcps1.2.3.1.1 "><p id="p4283143162419"><a name="p4283143162419"></a><a name="p4283143162419"></a>engine</p>
 </td>
-<td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><p id="p14314255252"><a name="p14314255252"></a><a name="p14314255252"></a>引擎模式，参数取值分别为MIX、AIC、AIV。</p>
+<td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><p id="p14314255252"><a name="p14314255252"></a><a name="p14314255252"></a>引擎模式，参数取值分别为AIC、AIV。</p>
 <a name="screen1431192522519"></a><a name="screen1431192522519"></a><pre class="screen" codetype="Cpp" id="screen1431192522519">enum class EngineType : int32_t {
-    MIX = 0, // AIC和AIV混合，本接口暂不支持MIX模式
     AIC = 1, // 仅AIC
     AIV = 2  // 仅AIV
 };</pre>

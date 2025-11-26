@@ -124,7 +124,7 @@ TQueBind&lt;TPosition::VECOUT, TPosition::C1, 1&gt;</pre>
 
 -   如果不需要进行Vector计算，比如仅需要做格式随路转换等场景，可对上述流程进行优化，对VECIN和VECOUT进行绑定，绑定的效果可以实现输入输出使用相同buffer，实现double buffer。
 
-    ![](figures/图3-流水线并行示意图-9.png)
+    ![](figures/图3-流水线并行示意图-8.png)
 
 ## 模板参数<a name="section64347108319"></a>
 

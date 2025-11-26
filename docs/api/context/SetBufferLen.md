@@ -49,7 +49,7 @@ __aicore__ inline void SetBufferLen(uint32_t dataLen)
 </td>
 <td class="cellrowborder" valign="top" width="12.98%" headers="mcps1.2.4.1.2 "><p id="p158449584436"><a name="p158449584436"></a><a name="p158449584436"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.08%" headers="mcps1.2.4.1.3 "><p id="p199381338192512"><a name="p199381338192512"></a><a name="p199381338192512"></a>Buffer长度，单位为字节。</p>
+<td class="cellrowborder" valign="top" width="73.08%" headers="mcps1.2.4.1.3 "><p id="p199381338192512"><a name="p199381338192512"></a><a name="p199381338192512"></a>Buffer的元素个数。</p>
 </td>
 </tr>
 </tbody>

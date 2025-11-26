@@ -15,18 +15,10 @@
 #ifndef LIB_MATH_SIN_TILING_H
 #define LIB_MATH_SIN_TILING_H
 #include <cstdint>
-
 #include "graph/tensor.h"
+#include "sin_utils.h"
+
 namespace AscendC {
-enum class SinAlgo {
-    POLYNOMIAL_APPROXIMATION = 0,
-    RADIAN_REDUCTION,
-};
-
-struct SinConfig {
-    SinAlgo algo = SinAlgo::POLYNOMIAL_APPROXIMATION;
-};
-
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
  * The developer selects a proper space size based on this range as the tiling parameter.

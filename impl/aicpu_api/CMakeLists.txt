@@ -33,7 +33,6 @@ else()
 endif()
 
 target_compile_definitions(aicpu_api PRIVATE
-    $<$<STREQUAL:${PRODUCT_SIDE},device>:__AICPU_DEVICE__>
     $<$<STREQUAL:${PRODUCT_SIDE},device>:_FORTIFY_SOURCE=2>
     _GLIBCXX_USE_CXX11_ABI=0
 )

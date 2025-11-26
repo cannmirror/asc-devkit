@@ -87,7 +87,7 @@ std::vector<std::string> GetDeviceCommonCompileOptions(const KernelTypeResult& k
     ShortSocVersion socVersion = manager.GetShortSocVersion();
     std::vector<std::string> deviceCommonOptions = {"-std=c++17", optLevel, "-D__NPU_DEVICE__", "-DTILING_KEY_VAR=0"};
 
-    if (socVersion == ShortSocVersion::ASCEND910B) {
+    if (socVersion == ShortSocVersion::ASCEND910B || socVersion == ShortSocVersion::ASCEND910_95) {
         // MIX_1_1 and MIX_1_2 with either one having KFC at same time is not supported
         if ((kernelTypeRes.hasMixOneToOneWithKfc && kernelTypeRes.hasMixOneToTwo) ||
             (kernelTypeRes.hasMixOneToTwoWithKfc && kernelTypeRes.hasMixOneToOne)) {

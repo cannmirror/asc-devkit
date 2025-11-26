@@ -320,7 +320,7 @@ __aicore__ inline void Compute(Intf *self, Out2L1ScalarParams& out2L1Params)
         self->ctx.baseUseK_ = isLastKIter ? self->ctx.tailK_ : self->ctx.tiling_->baseK;
 
         /*
-        通过M*K的奇偶判断load到L1A ping还是L1A pong, BL1同理
+        Use the parity of M*K to determine whether the load is L1A ping or L1A pong. The same is true for BL1
                     kL1Idx=0  kL1Idx=1 kL1Idx=2
                     ----------------------------
         mL1Idx=0    |  ping  |  pong  |  ping  |
@@ -445,7 +445,7 @@ __aicore__ inline void UpdateIdxAndStep(Intf *self)
 
 template <class Intf>
 struct Init {
-    // 定义call函数的默认重载函数，支持任意类型任意数量的参数
+    // Define the default overloaded function of the call function, supporting any number of parameters of any type
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropFilterFunc);
     static __aicore__ inline void call(Intf *self, const TConv3DBpFilterTiling *__restrict tiling)
     {
@@ -482,7 +482,7 @@ struct SetSingleShape {
     {
         self->ctx.singleShapeCout_ = singleShapeM;
         self->ctx.singleShapeCin_ = ConvBackpropApi::DivHkWk(singleShapeN, self->ctx.hwK_);
-        // fp32场景下GM上8对齐
+        // 8 alignment on GM in fp32 scenario
         self->ctx.singleShapeCin_ =
             ConvBackpropApi::Ceil(self->ctx.singleShapeCin_, self->ctx.tiling_->channelSize) * self->ctx.tiling_->channelSize;
         self->ctx.singleShapeHo_ = singleShapeK / self->ctx.tiling_->wo;
@@ -521,17 +521,17 @@ struct Iterate {
         curNL0Idx_            ↑                   nIter_
         curNL1Idx_       next_curNL1Idx
 
-        order_N表示L1上驻留B循环A，顺序为L1A_ping * L1B_ping, L1A_pong * L1B_ping，L1A_ping * L1B_pong，L1A_pong * L1B_pong
-        L0上也是驻留B，循环A
+        order_N represents the resident B loop A on L1, the order is L1A_ping * L1B_ping, L1A_pong * L1B_ping, L1A_ping * L1B_pong, L1A_pong * L1B_pong
+        L0 also resides on B and loops on A
         order_N: L0A1*L0B1, L0A2*L0B1, L0A3*L0B1, L0A1*L0B2 ………… L0A3*L0B3，L0A4*L0B1，L0A5*L0B1 …… L0A6*L0B6
         order_M: L0A1*L0B1, L0A1*L0B2, L0A1*L0B3, L0A2*L0B1 ………… L0A3*L0B3，L0A1*L0B4，L0A1*L0B5 …… L0A6*L0B6
         */
-        // 更新idx，用L1、L1step、L0三个指针控制走位和计算offset，表示计算第几个mL0 * baseN
+        // Update idx, use three pointers L1, L1step, L0 to control the position and calculate offset, indicating which mL0 * baseN is calculated
 
-        // 以开DB为例，循环顺序NMK时，如果K方向需要两块buffer，M轴每循环到stepM最后一次时需要释放AL1上的ping pong buffer，第一次循环时载入
-        // 如果循环顺序为MNK时，如果K方向需要两块buffer，M轴最后一次循环时需要释放AL1上的ping pong buffer，第一次循环时载入
-        // 如果K方向需要的buffer数量大于bl1Pbuffer，当K循环到stepKa时就需要置换AL1
-        // B矩阵计算思路同A矩阵，区别是MN反过来
+        // Taking opening DB as an example, when looping sequence NMK, if two buffers are needed in the K direction, the M axis needs to release the ping pong buffer on AL1 every time it loops to stepM for the last time, and load it in the first loop
+        // If the cycle sequence is MNK, if two buffers are needed in the K direction, the ping pong buffer on AL1 needs to be released during the last cycle of the M axis and loaded in the first cycle
+        // If the number of buffers required in the K direction is greater than bl1Pbuffer, AL1 needs to be replaced when K loops to stepKa
+        // The calculation idea of ​​matrix B is the same as that of matrix A. The difference is that MN is reversed
         Out2L1ScalarParams out2L1Params;
         bool kIterCeilStepKaGreaterAl1Pbuffer =
             self->ctx.kIter_ > self->ctx.tiling_->stepKa * self->ctx.tiling_->al1Pbuffer;
@@ -579,19 +579,19 @@ struct Iterate {
                     }
                     UpdateIdxAndStep<Intf>(self);
                     if (self->ctx.curML0Idx_ == 0) {
-                        out2L1Params.isLoad2L1B = true; // OrderN, N轴循环结束，需要置换BL1
+                        out2L1Params.isLoad2L1B = true; // OrderN, N axis cycle ends, BL1 needs to be replaced
                     }
                 }
-                out2L1Params.isLoad2L1A = true; // OrderN, M轴循环结束，需要置换AL1
+                out2L1Params.isLoad2L1A = true; // OrderN, M-axis cycle ends, AL1 needs to be replaced
             }
             if (unlikely(self->ctx.curML0Idx_ == self->ctx.mIter_ - 1) ||
                 self->ctx.curML0Idx_ == self->ctx.curML1Idx_ + self->ctx.curStepM_ - 1) {
-                out2L1Params.isFreeAL1 = true; // OrderN, M轴最后一次循环，需要释放AL1
+                out2L1Params.isFreeAL1 = true; // OrderN, the last cycle of the M axis, AL1 needs to be released
             }
             if (unlikely(self->ctx.curML0Idx_ == self->ctx.mIter_ - 1) &&
                 (unlikely(self->ctx.curNL0Idx_ == self->ctx.nIter_ - 1) ||
                 self->ctx.curNL0Idx_ == self->ctx.curNL1Idx_ + self->ctx.curStepN_ - 1)) {
-                out2L1Params.isFreeBL1 = true; // OrderN, N轴最后一次循环，需要释放BL1
+                out2L1Params.isFreeBL1 = true; // OrderN, the last cycle of N axis, needs to release BL1
             }
         } else {  // order_M
             if (++self->ctx.curNL0Idx_ >= self->ctx.curNL1Idx_ + self->ctx.curStepN_) {
@@ -607,19 +607,19 @@ struct Iterate {
                     }
                     UpdateIdxAndStep<Intf>(self);
                     if (self->ctx.curNL0Idx_ == 0) {
-                        out2L1Params.isLoad2L1A = true; // OrderM, M轴循环结束，需要置换AL1
+                        out2L1Params.isLoad2L1A = true; // OrderM, M axis cycle ends, AL1 needs to be replaced
                     }
                 }
-                out2L1Params.isLoad2L1B = true; // OrderM, N轴循环结束，需要置换BL1
+                out2L1Params.isLoad2L1B = true; // OrderM, N-axis cycle ends, BL1 needs to be replaced
             }
             if (unlikely(self->ctx.curNL0Idx_ == self->ctx.nIter_ - 1) &&
                 (unlikely(self->ctx.curML0Idx_ == self->ctx.mIter_ - 1) ||
                 self->ctx.curML0Idx_ == self->ctx.curML1Idx_ + self->ctx.curStepM_ - 1)) {
-                out2L1Params.isFreeAL1 = true; // OrderM, M轴最后一次循环，需要释放AL1
+                out2L1Params.isFreeAL1 = true; // OrderM, the last cycle of the M axis, AL1 needs to be released
             }
             if (unlikely(self->ctx.curNL0Idx_ == self->ctx.nIter_ - 1) ||
                 self->ctx.curNL0Idx_ == self->ctx.curNL1Idx_ + self->ctx.curStepN_ - 1) {
-                out2L1Params.isFreeBL1 = true; // OrderM, N轴最后一次循环，需要释放BL1
+                out2L1Params.isFreeBL1 = true; // OrderM, the last cycle of N axis, needs to release BL1
             }
         }
         self->ctx.baseUseM_ =

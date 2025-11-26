@@ -37,7 +37,6 @@
 #include "mmpa/mmpa_api.h"
 #include "acl/acl_rt.h"
 #include "mem.h"
-// #include "register/stream_manage_func_registry.h"
 #include "ascendc_tool_log.h"
 #include "acl_rt.h"
 #include "acl/acl_base.h"
@@ -79,6 +78,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend910_9579", "ascend910_95"},
         {"ascend910_958b", "ascend910_95"},
         {"ascend910_957b", "ascend910_95"},
+        {"ascend910_957c", "ascend910_95"},
         {"ascend910_957d", "ascend910_95"},
         {"ascend910_950z", "ascend910_95"},
         {"ascend910_958a", "ascend910_95"},
@@ -122,6 +122,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend910_9579", "Ascend910_9579"},
         {"ascend910_958b", "Ascend910_958b"},
         {"ascend910_957b", "Ascend910_957b"},
+        {"ascend910_957c", "Ascend910_957c"},
         {"ascend910_957d", "Ascend910_957d"},
         {"ascend910_950z", "Ascend910_950z"},
         {"ascend910_958a", "Ascend910_958a"},

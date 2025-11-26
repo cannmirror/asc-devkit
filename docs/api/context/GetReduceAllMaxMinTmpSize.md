@@ -108,7 +108,7 @@ void GetReduceAllMaxMinTmpSize(const ge::Shape &srcShape, const ge::DataType dat
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-28.md)。
+完整的调用样例请参考[更多样例](更多样例-27.md)。
 
 ```
 // 输入shape为16*32的矩阵;算子输入的数据类型为float;不允许修改源操作数

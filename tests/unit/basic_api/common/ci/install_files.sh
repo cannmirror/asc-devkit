@@ -9,6 +9,8 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
+set -e
+
 TOP_DIR=$1
 INSTALL_PATH=$2
 DST_DIR=$3
@@ -18,7 +20,7 @@ echo "TOP_DIR is $TOP_DIR"
 echo "INSTALL_PATH is $INSTALL_PATH"
 echo "DST_PATH is ---- $DST_PATH"
 
-rm -rf $DST_PATH
+[ -n "$DST_PATH" ] && rm -rf $DST_PATH
 mkdir -p $DST_PATH
 
 # copy basic api

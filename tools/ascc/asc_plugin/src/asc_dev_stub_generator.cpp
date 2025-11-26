@@ -84,12 +84,10 @@ AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std
     codeStream_.str(std::move(buffer));
 
     // init dump flag
-    bool isDumpCloseManual = !InfoManager::GetInstance().UserDumpRequested();
-    bool printfFlag = InfoManager::GetInstance().HasPrintf();
-    bool assertFlag = InfoManager::GetInstance().HasAssert();
-    dumpTypeIsNotNone_ = !isDumpCloseManual && (printfFlag || assertFlag);
-    dumpTypeIsPrintf_ = !isDumpCloseManual && printfFlag;
-    dumpAscendCStamp_ = false;
+    const auto& infoManager = InfoManager::GetInstance();
+    bool isSupportFifoDump = infoManager.IsSupportFifoDump();
+    dumpIsNeedInit_ = !isSupportFifoDump && infoManager.IsDumpOn();
+    dumpIsNeedPrintVersion_ = !isSupportFifoDump && infoManager.UserDumpRequested() && infoManager.HasPrintf();
 
     // save origin params name
     originParamsCallList_ = JoinParamWithComma(kernelInfo_.kernelParameters, ParamJoinType::ONLY_NAME);
@@ -119,9 +117,9 @@ std::string AscDevStubGenerator::GetWorkspaceArgName() const
         return kernelInfo_.kernelParameters[kernelInfo_.kernelParameters.size() - 2].name;
     }
     for (const auto& param : kernelInfo_.kernelParameters) {
-        if (param.name == std::string("workspace")) {
+        if (param.attribute.find(std::string("kfc_workspace")) != std::string::npos) {
             ASC_LOGI("Kernel [%s] : the kernel utilizes the workspace.", kernelInfo_.kernelName.c_str());
-            return "workspace";
+            return param.name;
         }
     }
     ASC_LOGI("Kernel [%s] : the kernel does not utilize the workspace.", kernelInfo_.kernelName.c_str());
@@ -150,16 +148,11 @@ void AscDevStubGenerator::GenStubFuncDecl(const std::string& globalSymbol, const
 
 void AscDevStubGenerator::StubFuncDumpAndHardSyncImpl(const bool& isMix, const bool& isHardSync)
 {
-    if (dumpTypeIsNotNone_ || dumpAscendCStamp_) {
+    if (dumpIsNeedInit_) {
         if (isMix) {
             codeStream_ << "    AscendC::InitDump(true, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);\n";
         } else {
             codeStream_ << "    AscendC::InitDump(false, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);\n";
-        }
-        if (dumpAscendCStamp_) {
-            codeStream_ << "    "
-                        "AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_INIT_"
-                        "DUMP));\n";
         }
     }
     if (isHardSync) {
@@ -167,13 +160,8 @@ void AscDevStubGenerator::StubFuncDumpAndHardSyncImpl(const bool& isMix, const b
         codeStream_ << "    if (g_sysFftsAddr != nullptr) {\n";
         codeStream_ << "        set_ffts_base_addr((uint64_t)g_sysFftsAddr);\n";
         codeStream_ << "    }\n";
-        if (dumpAscendCStamp_) {
-            codeStream_ <<
-                "    "
-                "AscendC::AscendCTimeStamp(static_cast<uint32_t>(AscendC::TimeStampId::TIME_STAMP_WRAP_FFTS_ADDR));\n";
-        }
     }
-    if (dumpTypeIsPrintf_) {
+    if (dumpIsNeedPrintVersion_) {
         codeStream_ << "    uint64_t __ascendc_timestamp = 0;\n";
         codeStream_ << "    uint64_t __ascendc_version = 0;\n";
         codeStream_ << "     __gm__ char* __ascendc_version_str = nullptr;\n";
@@ -189,30 +177,26 @@ void AscDevStubGenerator::StubFuncDumpAndHardSyncImpl(const bool& isMix, const b
 
 void AscDevStubGenerator::StubFuncWorkSpaceImpl(const bool& isMix)
 {
-    if (workspaceArgName_.empty()) {
+    if (workspaceArgName_.empty() || kfcScene_ == KfcScene::Close) {
         ASC_LOGI("Kernel [%s] : the kernel no need to implement workspace.", kernelInfo_.kernelName.c_str());
         return;
     }
-    codeStream_ << "    GM_ADDR workspace_param;\n";
-    codeStream_ << "    GM_ADDR workspace_usr;\n";
-    codeStream_ << "    workspace_param = " << workspaceArgName_ << ";\n";
+    codeStream_ << "    GM_ADDR ascendc_workspace_param;\n";
+    codeStream_ << "    GM_ADDR ascendc_workspace_usr;\n";
+    codeStream_ << "    ascendc_workspace_param = " << workspaceArgName_ << ";\n";
     if (isMix) {
-        codeStream_ << "    if (workspace_param == nullptr) {\n";
+        codeStream_ << "    if (ascendc_workspace_param == nullptr) {\n";
         codeStream_ << "        return;\n";
         codeStream_ << "    }\n";
     }
-    codeStream_ << "    AscendC::SetSysWorkspaceForce(workspace_param);\n";
-    codeStream_ << "    workspace_usr = AscendC::GetUserWorkspace(workspace_param);\n";
+    codeStream_ << "    AscendC::SetSysWorkspaceForce(ascendc_workspace_param);\n";
+    codeStream_ << "    ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);\n";
     if (isMix && kfcScene_ == KfcScene::Open) {
         codeStream_ << "    if constexpr (g_coreType == AscendC::AIC) {\n";
-        codeStream_ << "        matmul::clearWorkspace(workspace_param);\n";
-        if (dumpAscendCStamp_) {
-            codeStream_ << "        AscendC::AscendCTimeStamp(static_cast<uint32_t>";
-            codeStream_ << "(AscendC::TimeStampId::TIME_STAMP_WRAP_CLEAR_WK_SPAC));\n";
-        }
+        codeStream_ << "        matmul::clearWorkspace(ascendc_workspace_param);\n";
         codeStream_ << "    }\n";
     }
-    codeStream_ << "    " << workspaceArgName_ << " = workspace_usr;\n";
+    codeStream_ << "    " << workspaceArgName_ << " = ascendc_workspace_usr;\n";
 }
 
 void AscDevStubGenerator::StubFuncCallImpl(const std::string& templateArgs)
@@ -222,6 +206,12 @@ void AscDevStubGenerator::StubFuncCallImpl(const std::string& templateArgs)
         codeStream_ << "<" << templateArgs << ">";
     }
     codeStream_ << "(" << originParamsCallList_ << ");\n";
+    ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
+    if (shortSoc == ShortSocVersion::ASCEND910_95) {
+        codeStream_ << "    pipe_barrier(PIPE_ALL);\n";
+        codeStream_ << "    dsb(mem_dsb_t::DSB_ALL);\n";
+        codeStream_ << "    dci();\n";
+    }
 }
 
 std::pair<bool, bool> AscDevStubGenerator::GetArchInfo(const ShortSocVersion& socVersion) const
@@ -257,7 +247,7 @@ void AscDevStubGenerator::GenStubFuncImpl(const bool& isMix, const bool& isHardS
 
 void AscDevStubGenerator::UpdateParams()
 {
-    if (dumpTypeIsNotNone_) {
+    if (dumpIsNeedInit_) {
         kernelInfo_.kernelParameters.emplace(kernelInfo_.kernelParameters.begin(), "uint8_t *", "__ascendc_dump_addr",
             false, "", "__attribute__((cce_global))");
         for (auto &inst : kernelInfo_.templateInstances) {

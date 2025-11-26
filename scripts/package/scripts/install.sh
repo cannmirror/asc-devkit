@@ -104,6 +104,10 @@ chmod_end() {
     chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base" 550 file
     chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base-0.1.0.dist-info" 550 dir
     chmod_recur "$pkg_install_path/python/site-packages/asc_op_compile_base-0.1.0.dist-info" 550 file
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool" 550 dir
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool" 550 file
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool-0.1.0.dist-info" 550 dir
+    chmod_recur "$pkg_install_path/python/site-packages/asc_opc_tool-0.1.0.dist-info" 550 file
 
     if [ $(id -u) -eq 0 ]; then
         chown "root:root" "$default_dir" 2> /dev/null
@@ -127,7 +131,7 @@ ver_check() {
         local dep_pkg_ver_file="${driver_install_path_param}/driver/version.info"
         if [ "$check" = "y" ]; then
             sh "${curpath}/ver_check.sh" "${version_info_file}" "driver" "${dep_pkg_ver_file}"
-        elif [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ] || [ "$upgrade" = "y" ]; then
+        elif [ "$is_install" = "y" ] || [ "$upgrade" = "y" ]; then
             sh "${curpath}/ver_check.sh" "${version_info_file}" "driver" "${dep_pkg_ver_file}" 1> /dev/null
             local ret=$?
             if [ "${ret}" -eq 1 ] && [ "$is_quiet" = "n" ]; then
@@ -487,7 +491,7 @@ unchattr_files() {
 
 # 创建普通用户的默认安装目录
 create_default_install_dir_for_common_user() {
-    if [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ]; then
+    if [ "$is_install" = "y" ]; then
         if [ ! -d "$pkg_install_path" ]; then
             create_install_dir "$pkg_install_path" "$username:$usergroup"
         fi
@@ -889,7 +893,7 @@ uninstall_none_multi_version() {
     fi
     local install_path="$1"
     if [ "$pkg_is_multi_version" = "true" ] && [ ! -L "$install_path" ] && [ -d "$install_path" ]; then
-        if [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ]; then
+        if [ "$is_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ]; then
             local path_version="$install_path/version.info"
             local path_install="$install_path/ascend_install.info"
             if [ -f "$path_version" ] && [ -f "$path_install" ] && [ -f "$install_path/script/uninstall.sh" ]; then
@@ -902,10 +906,7 @@ uninstall_none_multi_version() {
 ####################################################################################################
 runfilename=$(expr substr "$1" 5 $(expr ${#1} - 4))
 
-full_install=n
-run_install=n
-docker_install=n
-devel_install=n
+is_install=n
 uninstall=n
 upgrade=n
 installmode=""
@@ -928,7 +929,6 @@ uninstall_path_cmd="--uninstall"
 uninstall_path_param=""
 upgrade_path_cmd="--upgrade"
 upgrade_path_param=""
-docker_cmd="--docker"
 is_quiet=n
 check=n
 install_path_param=""
@@ -979,32 +979,11 @@ do
         param_usage
         exit 0
         ;;
-    --run)
+    --run | --full | --devel)
         unique_mode
         g_param_check_flag="True"
-        run_install=y
-        installmode="run"
-        shift
-        ;;
-    --full)
-        unique_mode
-        g_param_check_flag="True"
-        full_install=y
-        installmode="full"
-        shift
-        ;;
-    --docker)
-        unique_mode
-        g_param_check_flag="True"
-        docker_install=y
-        installmode="docker"
-        shift
-        ;;
-    --devel)
-        unique_mode
-        g_param_check_flag="True"
-        devel_install=y
-        installmode="devel"
+        is_install=y
+        installmode=$(echo ${1} | awk -F"--" '{print $2}')
         shift
         ;;
     --install-path=*)
@@ -1071,12 +1050,6 @@ do
         is_quiet=y
         shift
         ;;
-    --extract=*)
-        shift;
-        ;;
-    --keep)
-        shift;
-        ;;
     --check)
         check=y
         shift
@@ -1099,7 +1072,7 @@ done
 
 ###################### 检查参数冲突 ###################
 if [ "${is_quiet}" = "y" ]; then
-    if [ "${upgrade}" = "y" ] || [ "${full_install}" = "y" ] || [ "${run_install}" = "y" ] || [ "${devel_install}" = "y" ] || [ "${uninstall}" = "y" ]; then
+    if [ "${upgrade}" = "y" ] || [ "${is_install}" = "y" ] || [ "${uninstall}" = "y" ]; then
         is_quiet=y
     elif [ "${input_pre_check}" = "y" ] || [ "${check}" = "y" ]; then
         is_quiet=y
@@ -1111,7 +1084,7 @@ fi
 
 # 检查chip参数是否冲突
 if [ "${chip_flag}" = "y" ]; then
-    if [ "$upgrade" = "n" ] && [ "$full_install" = "n" ] && [ "$run_install" = "n" ] && [ "$devel_install" = "n" ]; then
+    if [ "$upgrade" = "n" ] && [ "$is_install" = "n" ]; then
         log "ERROR" "ERR_NO:0x0004;ERR_DES: Operation failed, '--chip' must be configured together with '--run', '--devel', '--full' or '--upgrade'."
         exit 1
     fi
@@ -1119,7 +1092,7 @@ fi
 
 # 检查feature参数是否冲突
 if [ "${feature_flag}" = "y" ]; then
-    if [ "$upgrade" = "n" ] && [ "$full_install" = "n" ] && [ "$run_install" = "n" ] && [ "$devel_install" = "n" ]; then
+    if [ "$upgrade" = "n" ] && [ "$is_install" = "n" ]; then
         log "ERROR" "ERR_NO:0x0004;ERR_DES: Operation failed, '--feature' must be configured together with '--run', '--devel', '--full' or '--upgrade'."
         exit 1
     fi
@@ -1127,14 +1100,14 @@ fi
 
 # 卸载参数只支持单独使用
 if [ "$uninstall" = "y" ]; then
-    if [ "$upgrade" = "y" ] || [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ] || [ "$docker_install" = "y" ] || [ "$check" = "y" ] || [ "$input_pre_check" = "y" ]; then
+    if [ "$upgrade" = "y" ] || [ "$is_install" = "y" ] || [ "$check" = "y" ] || [ "$input_pre_check" = "y" ]; then
         log "ERROR" "ERR_NO:0x0004;ERR_DES:Unsupported parameters, operation failed."
         exit 1
     fi
 fi
 
 # 检查必选参数
-if [ "${upgrade}" = "n" ] && [ "${full_install}" = "n" ] && [ "${run_install}" = "n" ] && [ "${devel_install}" = "n" ] && [ "${uninstall}" = "n" ] && [ "${input_pre_check}" = "n" ] && [ "${check}" = "n" ]; then
+if [ "${upgrade}" = "n" ] && [ "${is_install}" = "n" ] && [ "${uninstall}" = "n" ] && [ "${input_pre_check}" = "n" ] && [ "${check}" = "n" ]; then
     log "ERROR" "ERR_NO:0x0004;One of parameters '--full', '--devel', '--run', '--upgrade', '--uninstall', '--check' or '--pre-check' must be used."
     exit 1
 fi
@@ -1151,7 +1124,7 @@ fi
 is_multi_version_pkg "pkg_is_multi_version" "$pkg_version_path"
 get_version_dir "pkg_version_dir" "$pkg_version_path"
 
-if [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ]; then
+if [ "$is_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ]; then
     input_install_path=$(relative_path_to_absolute_path "${input_install_path}")
     get_install_path
 
@@ -1218,7 +1191,7 @@ if [ "$input_pre_check" = "y" ]; then
     else
         log "INFO" "AscDevkit do pre check finished."
     fi
-    if [ "$full_install" = "n" ] && [ "$run_install" = "n" ] && [ "$devel_install" = "n" ] && [ "$upgrade" = "n" ]; then
+    if [ "$is_install" = "n" ] && [ "$upgrade" = "n" ]; then
         exit_install_log 0
     fi
 fi
@@ -1234,10 +1207,10 @@ if [ "$check" = "y" ]; then
             log "INFO" "version compatibility check successfully!"
         fi
     fi
-    if [ "$full_install" = "n" ] && [ "$run_install" = "n" ] && [ "$devel_install" = "n" ] && [ "$upgrade" = "n" ]; then
+    if [ "$is_install" = "n" ] && [ "$upgrade" = "n" ]; then
         exit_install_log 0
     fi
-elif [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ] || [ "$upgrade" = "y" ]; then
+elif [ "$is_install" = "y" ] || [ "$upgrade" = "y" ]; then
     ver_check
     if [ -z "$pkg_version_dir" ]; then
         preinstall_process --install-path="$install_path_param" --script-dir="$curpath" --package="asc-devkit" --logfile="$logfile" --docker-root="$docker_root"
@@ -1252,7 +1225,7 @@ fi
 ##################################################################
 # 安装升级运行态时, 1/2包必须已安装, 且指定的用户必须存在且与1/2包同属组
 if [ "$(get_pkg_toolchain)" != "llvm" ] && [ "$input_install_for_all" = "n" ]; then
-    if [ "$run_install" = "y" ] || [ "$full_install" = "y" ] || [ "$devel_install" = "y" ]; then
+    if [ "$is_install" = "y" ]; then
         confirm=n
         if [ ! -f "$install_info_old" ]; then
             log "WARNING" "driver and firmware is not exists, please install first."
@@ -1284,7 +1257,7 @@ if [ "$upgrade" != "y" ] || [ "$hetero_arch_pkg_installed" != "installed-hetero-
 fi
 [ "$hetero_arch" = "y" ] && replace_filelist
 
-if [ "$full_install" = "y" ] || [ "$run_install" = "y" ] || [ "$devel_install" = "y" ]; then
+if [ "$is_install" = "y" ]; then
     create_default_dir
 fi
 
@@ -1319,7 +1292,7 @@ if [ "x$version_installed" != "x" -a "$version_installed" != "none" ] || [ -f "$
         upgrade_run "upgrade"
         exit_install_log 0
     # 安装场景
-    elif [ "$run_install" = "y" ] || [ "$full_install" = "y" ] || [ "$devel_install" = "y" ]; then
+    elif [ "$is_install" = "y" ]; then
         version_of_package=$(get_version_in_runpkg)
         if [ "$is_quiet" = "n" ]; then
             log "INFO" "AscDevkit package has been installed on the path ${pkg_install_path}, the version is ${version_installed}, and the version of this package is ${version_of_package}, do you want to continue? [y/n]"
@@ -1385,7 +1358,7 @@ else
             fi
         fi
     # 安装场景
-    elif [ "$run_install" = "y" ] || [ "$full_install" = "y" ] || [ "$devel_install" = "y" ]; then
+    elif [ "$is_install" = "y" ]; then
         install_run "install"
         exit_install_log 0
     fi

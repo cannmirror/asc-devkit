@@ -106,14 +106,14 @@
 </td>
 <td class="cellrowborder" align="left" valign="top" width="10.46104610461046%" headers="mcps1.2.4.1.2 "><p id="p113551749202919"><a name="p113551749202919"></a><a name="p113551749202919"></a>float</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.1079107910791%" headers="mcps1.2.4.1.3 "><p id="p6999183016349"><a name="p6999183016349"></a><a name="p6999183016349"></a>将src按照round_mode（精度转换处理模式，参见<a href="#section622mcpsimp">参数说明</a>中的round_mode参数）取整，仍以float格式存入dst中。</p>
+<td class="cellrowborder" valign="top" width="79.1079107910791%" headers="mcps1.2.4.1.3 "><p id="p6999183016349"><a name="p6999183016349"></a><a name="p6999183016349"></a>将src按照roundMode（精度转换处理模式，参见<a href="#section622mcpsimp">参数说明</a>中的roundMode参数）取整，仍以float格式存入dst中。</p>
 <p id="p2023513251345"><a name="p2023513251345"></a><a name="p2023513251345"></a>示例：输入0.5，</p>
 <p id="p1543914528509"><a name="p1543914528509"></a><a name="p1543914528509"></a>CAST_RINT模式输出0.0，CAST_FLOOR模式输出0.0，CAST_CEIL模式输出1.0，CAST_ROUND模式输出1.0，CAST_TRUNC模式输出0.0。</p>
 </td>
 </tr>
 <tr id="row14355204919294"><td class="cellrowborder" align="left" valign="top" headers="mcps1.2.4.1.1 "><p id="p1935534915297"><a name="p1935534915297"></a><a name="p1935534915297"></a>half</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p43071952153512"><a name="p43071952153512"></a><a name="p43071952153512"></a>将src按照round_mode取到half所能表示的数，以half格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p43071952153512"><a name="p43071952153512"></a><a name="p43071952153512"></a>将src按照roundMode取到half所能表示的数，以half格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p162319468358"><a name="p162319468358"></a><a name="p162319468358"></a>示例：输入0.5 + 2<sup id="sup69711611523"><a name="sup69711611523"></a><a name="sup69711611523"></a>-12</sup>，写成float的表示形式：2<sup id="sup61291556145210"><a name="sup61291556145210"></a><a name="sup61291556145210"></a>-1</sup> * (1 + 2<sup id="sup732521620210"><a name="sup732521620210"></a><a name="sup732521620210"></a>-11</sup>)，因此E = -1 + 127 = 126，M = 2<sup id="sup1315617330213"><a name="sup1315617330213"></a><a name="sup1315617330213"></a>-11。</sup></p>
 <p id="p673417168511"><a name="p673417168511"></a><a name="p673417168511"></a><a name="image1952310171059"></a><a name="image1952310171059"></a><span><img class="eddx" id="image1952310171059" src="figures/流水任务运行示意图-3.png"></span></p>
 <p id="p1862334619354"><a name="p1862334619354"></a><a name="p1862334619354"></a>half的指数位可以表示出2<sup id="sup156939018108"><a name="sup156939018108"></a><a name="sup156939018108"></a>-1</sup>，E = -1 + 15 = 14，但half只有10 bit尾数位，因此灰色部分要进行舍入。</p>
@@ -127,28 +127,28 @@
 </tr>
 <tr id="row7394104235320"><td class="cellrowborder" align="left" valign="top" headers="mcps1.2.4.1.1 "><p id="p103941542205314"><a name="p103941542205314"></a><a name="p103941542205314"></a>int64_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p5992104645711"><a name="p5992104645711"></a><a name="p5992104645711"></a>将src按照round_mode取整，以int64_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p5992104645711"><a name="p5992104645711"></a><a name="p5992104645711"></a>将src按照roundMode取整，以int64_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p197626427574"><a name="p197626427574"></a><a name="p197626427574"></a>示例：输入2<sup id="sup9635352887"><a name="sup9635352887"></a><a name="sup9635352887"></a>22</sup> + 0.5，</p>
 <p id="p9762134215714"><a name="p9762134215714"></a><a name="p9762134215714"></a>CAST_RINT模式输出2<sup id="sup2129612141616"><a name="sup2129612141616"></a><a name="sup2129612141616"></a>22</sup>，CAST_FLOOR模式输出2<sup id="sup1077211374169"><a name="sup1077211374169"></a><a name="sup1077211374169"></a>22</sup>，CAST_CEIL模式输出2<sup id="sup1797365810166"><a name="sup1797365810166"></a><a name="sup1797365810166"></a>22</sup> + 1，CAST_ROUND模式输出2<sup id="sup67489377179"><a name="sup67489377179"></a><a name="sup67489377179"></a>22</sup> + 1，CAST_TRUNC模式输出2<sup id="sup17685121615182"><a name="sup17685121615182"></a><a name="sup17685121615182"></a>22</sup>。</p>
 </td>
 </tr>
 <tr id="row127281637573"><td class="cellrowborder" align="left" valign="top" headers="mcps1.2.4.1.1 "><p id="p1972843105717"><a name="p1972843105717"></a><a name="p1972843105717"></a>int32_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1644991984013"><a name="p1644991984013"></a><a name="p1644991984013"></a>将src按照round_mode取整，以int32_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1644991984013"><a name="p1644991984013"></a><a name="p1644991984013"></a>将src按照roundMode取整，以int32_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p336661414407"><a name="p336661414407"></a><a name="p336661414407"></a>示例：输入2<sup id="sup107091910191917"><a name="sup107091910191917"></a><a name="sup107091910191917"></a>22 </sup> + 0.5，</p>
 <p id="p0366914184010"><a name="p0366914184010"></a><a name="p0366914184010"></a>CAST_RINT模式输出2<sup id="sup646984014195"><a name="sup646984014195"></a><a name="sup646984014195"></a>22</sup>，CAST_FLOOR模式输出2<sup id="sup969555315201"><a name="sup969555315201"></a><a name="sup969555315201"></a>22</sup> ，CAST_CEIL模式输出2<sup id="sup942324412117"><a name="sup942324412117"></a><a name="sup942324412117"></a>22</sup> + 1，CAST_ROUND模式输出2<sup id="sup189201223132217"><a name="sup189201223132217"></a><a name="sup189201223132217"></a>22</sup> + 1，CAST_TRUNC模式输出2<sup id="sup104451415132319"><a name="sup104451415132319"></a><a name="sup104451415132319"></a>22</sup>。</p>
 </td>
 </tr>
 <tr id="row178573216486"><td class="cellrowborder" align="left" valign="top" headers="mcps1.2.4.1.1 "><p id="p1778516322487"><a name="p1778516322487"></a><a name="p1778516322487"></a>int16_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17489160174910"><a name="p17489160174910"></a><a name="p17489160174910"></a>将src按照round_mode取整，以int16_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17489160174910"><a name="p17489160174910"></a><a name="p17489160174910"></a>将src按照roundMode取整，以int16_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p17904115784820"><a name="p17904115784820"></a><a name="p17904115784820"></a>示例：输入2<sup id="sup1777114542316"><a name="sup1777114542316"></a><a name="sup1777114542316"></a>22</sup> + 0.5，</p>
 <p id="p149041357194813"><a name="p149041357194813"></a><a name="p149041357194813"></a>CAST_RINT模式输出2<sup id="sup997595662418"><a name="sup997595662418"></a><a name="sup997595662418"></a>15</sup> - 1（溢出处理），CAST_FLOOR模式输出2<sup id="sup11919141717255"><a name="sup11919141717255"></a><a name="sup11919141717255"></a>15</sup> - 1（溢出处理），CAST_CEIL模式输出2<sup id="sup121521540132519"><a name="sup121521540132519"></a><a name="sup121521540132519"></a>15</sup> - 1（溢出处理），CAST_ROUND模式输出2<sup id="sup2082373312610"><a name="sup2082373312610"></a><a name="sup2082373312610"></a>15</sup> - 1（溢出处理），CAST_TRUNC模式输出2<sup id="sup15439589268"><a name="sup15439589268"></a><a name="sup15439589268"></a>15</sup> - 1（溢出处理）。</p>
 </td>
 </tr>
 <tr id="row494010912450"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1694010974510"><a name="p1694010974510"></a><a name="p1694010974510"></a>bfloat16_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p32441413463"><a name="p32441413463"></a><a name="p32441413463"></a>将src按照round_mode取到bfloat16_t所能表示的数，以bfloat16_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p32441413463"><a name="p32441413463"></a><a name="p32441413463"></a>将src按照roundMode取到bfloat16_t所能表示的数，以bfloat16_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p471962154618"><a name="p471962154618"></a><a name="p471962154618"></a>示例：输入0.5+ 2<sup id="sup374112013460"><a name="sup374112013460"></a><a name="sup374112013460"></a>-9</sup> + 2<sup id="sup3741190204611"><a name="sup3741190204611"></a><a name="sup3741190204611"></a>-11</sup> ，写成float的表示形式：2<sup id="sup17741110104616"><a name="sup17741110104616"></a><a name="sup17741110104616"></a>-1</sup> * (1 + 2<sup id="sup2074170114612"><a name="sup2074170114612"></a><a name="sup2074170114612"></a>-8</sup> + 2<sup id="sup27413094618"><a name="sup27413094618"></a><a name="sup27413094618"></a>-10</sup>)，因此E = -1 + 127 = 126，M = 2<sup id="sup87411054619"><a name="sup87411054619"></a><a name="sup87411054619"></a>-8</sup> + 2<sup id="sup107417094616"><a name="sup107417094616"></a><a name="sup107417094616"></a>-10</sup> 。</p>
 <p id="p143031654144710"><a name="p143031654144710"></a><a name="p143031654144710"></a><a name="image4303185416478"></a><a name="image4303185416478"></a><span><img class="eddx" id="image4303185416478" src="figures/流水任务运行示意图-4.png"></span></p>
 <p id="p1666754012468"><a name="p1666754012468"></a><a name="p1666754012468"></a>bfloat16_t的指数位位数和float的相同，有E = 126，但bfloat16_t只有7bit尾数位，因此灰色部分要进行舍入。</p>
@@ -169,28 +169,28 @@
 </tr>
 <tr id="row13100102112812"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p13101122102818"><a name="p13101122102818"></a><a name="p13101122102818"></a>int32_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p6430013183210"><a name="p6430013183210"></a><a name="p6430013183210"></a>将src按照round_mode取整，以int32_t格式存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p6430013183210"><a name="p6430013183210"></a><a name="p6430013183210"></a>将src按照roundMode取整，以int32_t格式存入dst中。</p>
 <p id="p26845910325"><a name="p26845910325"></a><a name="p26845910325"></a>示例：输入-1.5，</p>
 <p id="p1968413919321"><a name="p1968413919321"></a><a name="p1968413919321"></a>CAST_RINT模式输出-2，CAST_FLOOR模式输出-2，CAST_CEIL模式输出-1，CAST_ROUND模式输出-2，CAST_TRUNC模式输出-1。</p>
 </td>
 </tr>
 <tr id="row147081324102816"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1570912415289"><a name="p1570912415289"></a><a name="p1570912415289"></a>int16_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p318838153418"><a name="p318838153418"></a><a name="p318838153418"></a>将src按照round_mode取整，以int16_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p318838153418"><a name="p318838153418"></a><a name="p318838153418"></a>将src按照roundMode取整，以int16_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p119315133414"><a name="p119315133414"></a><a name="p119315133414"></a>示例：输入2<sup id="sup1872532420340"><a name="sup1872532420340"></a><a name="sup1872532420340"></a>7</sup> - 0.5，</p>
 <p id="p1393115173412"><a name="p1393115173412"></a><a name="p1393115173412"></a>CAST_RINT模式输出2<sup id="sup1719684453410"><a name="sup1719684453410"></a><a name="sup1719684453410"></a>7</sup>，CAST_FLOOR模式输出2<sup id="sup6293101012368"><a name="sup6293101012368"></a><a name="sup6293101012368"></a>7</sup> - 1，CAST_CEIL模式输出2<sup id="sup10950112913617"><a name="sup10950112913617"></a><a name="sup10950112913617"></a>7</sup>，CAST_ROUND模式输出2<sup id="sup067711568368"><a name="sup067711568368"></a><a name="sup067711568368"></a>7</sup>，CAST_TRUNC模式输出2<sup id="sup115261319113716"><a name="sup115261319113716"></a><a name="sup115261319113716"></a>7</sup> - 1。</p>
 </td>
 </tr>
 <tr id="row1719894510296"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p819834582915"><a name="p819834582915"></a><a name="p819834582915"></a>int8_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p125571958113816"><a name="p125571958113816"></a><a name="p125571958113816"></a>将src按照round_mode取整，以int8_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p125571958113816"><a name="p125571958113816"></a><a name="p125571958113816"></a>将src按照roundMode取整，以int8_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p495635313811"><a name="p495635313811"></a><a name="p495635313811"></a>示例：输入2<sup id="sup795091043917"><a name="sup795091043917"></a><a name="sup795091043917"></a>7</sup> - 0.5，</p>
 <p id="p16956553113810"><a name="p16956553113810"></a><a name="p16956553113810"></a>CAST_RINT模式输出2<sup id="sup1715172815397"><a name="sup1715172815397"></a><a name="sup1715172815397"></a>7</sup> - 1（溢出处理），CAST_FLOOR模式输出2<sup id="sup1620734511399"><a name="sup1620734511399"></a><a name="sup1620734511399"></a>7</sup> - 1，CAST_CEIL模式输出2<sup id="sup156381614403"><a name="sup156381614403"></a><a name="sup156381614403"></a>7</sup> - 1（溢出处理），CAST_ROUND模式输出2<sup id="sup167271828164019"><a name="sup167271828164019"></a><a name="sup167271828164019"></a>7</sup> - 1（溢出处理），CAST_TRUNC模式输出2<sup id="sup1841514480404"><a name="sup1841514480404"></a><a name="sup1841514480404"></a>7</sup> - 1。</p>
 </td>
 </tr>
 <tr id="row393435592914"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p9934855112913"><a name="p9934855112913"></a><a name="p9934855112913"></a>uint8_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p92056654211"><a name="p92056654211"></a><a name="p92056654211"></a>将src按照round_mode取整，以uint8_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p92056654211"><a name="p92056654211"></a><a name="p92056654211"></a>将src按照roundMode取整，以uint8_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p183531235417"><a name="p183531235417"></a><a name="p183531235417"></a>负数输入会被视为异常。</p>
 <p id="p989516320426"><a name="p989516320426"></a><a name="p989516320426"></a>示例：输入1.75，</p>
 <p id="p20895163184210"><a name="p20895163184210"></a><a name="p20895163184210"></a>CAST_RINT模式输出2，CAST_FLOOR模式输出1，CAST_CEIL模式输出2，CAST_ROUND模式输出2，CAST_TRUNC模式输出1。</p>
@@ -198,7 +198,7 @@
 </tr>
 <tr id="row1961614418139"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p961694171312"><a name="p961694171312"></a><a name="p961694171312"></a>int4b_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p111803722615"><a name="p111803722615"></a><a name="p111803722615"></a>将src按照round_mode取整，以int4b_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p111803722615"><a name="p111803722615"></a><a name="p111803722615"></a>将src按照roundMode取整，以int4b_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p51853713268"><a name="p51853713268"></a><a name="p51853713268"></a>示例：输入1.5，</p>
 <p id="p12185373262"><a name="p12185373262"></a><a name="p12185373262"></a>CAST_RINT模式输出2，CAST_FLOOR模式输出1，CAST_CEIL模式输出2，CAST_ROUND模式输出2，CAST_TRUNC模式输出1。</p>
 </td>
@@ -213,7 +213,7 @@
 </tr>
 <tr id="row12862146125415"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p16862366549"><a name="p16862366549"></a><a name="p16862366549"></a>int32_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17862466541"><a name="p17862466541"></a><a name="p17862466541"></a>将src按照round_mode取整，以int32_t格式（溢出默认按照饱和处理）存入dst中。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17862466541"><a name="p17862466541"></a><a name="p17862466541"></a>将src按照roundMode取整，以int32_t格式（溢出默认按照饱和处理）存入dst中。</p>
 <p id="p204322058185418"><a name="p204322058185418"></a><a name="p204322058185418"></a>示例：输入2<sup id="sup5432175855410"><a name="sup5432175855410"></a><a name="sup5432175855410"></a>6&nbsp;</sup>+ 0.5</p>
 <p id="p15432558115412"><a name="p15432558115412"></a><a name="p15432558115412"></a>CAST_RINT模式输出2<sup id="sup3432558115411"><a name="sup3432558115411"></a><a name="sup3432558115411"></a>6</sup>，CAST_FLOOR模式输出2<sup id="sup443285815414"><a name="sup443285815414"></a><a name="sup443285815414"></a>6</sup> ，CAST_CEIL模式输出2<sup id="sup18432195895416"><a name="sup18432195895416"></a><a name="sup18432195895416"></a>6</sup> + 1，CAST_ROUND模式输出2<sup id="sup7432558205416"><a name="sup7432558205416"></a><a name="sup7432558205416"></a>6 </sup>+ 1，CAST_TRUNC模式输出2<sup id="sup1243285875414"><a name="sup1243285875414"></a><a name="sup1243285875414"></a>6</sup>。</p>
 </td>
@@ -239,9 +239,9 @@
 </td>
 <td class="cellrowborder" valign="top" width="10.46104610461046%" headers="mcps1.2.4.1.2 "><p id="p12790165915516"><a name="p12790165915516"></a><a name="p12790165915516"></a>half</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.1079107910791%" headers="mcps1.2.4.1.3 "><p id="p125201712145516"><a name="p125201712145516"></a><a name="p125201712145516"></a>将src按照round_mode取到half所能表示的数，以half格式存入dst中。</p>
+<td class="cellrowborder" valign="top" width="79.1079107910791%" headers="mcps1.2.4.1.3 "><p id="p125201712145516"><a name="p125201712145516"></a><a name="p125201712145516"></a>将src按照roundMode取到half所能表示的数，以half格式存入dst中。</p>
 <p id="p444515755515"><a name="p444515755515"></a><a name="p444515755515"></a>示例：输入2<sup id="sup49961326125511"><a name="sup49961326125511"></a><a name="sup49961326125511"></a>12</sup> + 2，写成half的表示形式：2<sup id="sup7672537205516"><a name="sup7672537205516"></a><a name="sup7672537205516"></a>12</sup> * (1 + 2<sup id="sup818555811559"><a name="sup818555811559"></a><a name="sup818555811559"></a>-11</sup>)，要求E = 12 + 15 = 27，M = 2<sup id="sup144541154565"><a name="sup144541154565"></a><a name="sup144541154565"></a>-11</sup>：</p>
-<p id="p34593020244"><a name="p34593020244"></a><a name="p34593020244"></a><a name="image29321430152416"></a><a name="image29321430152416"></a><span><img class="eddx" id="image29321430152416" src="figures/流水任务运行示意图-5.png"></span></p>
+<p id="p34593020244"><a name="p34593020244"></a><a name="p34593020244"></a><a name="image25231243174110"></a><a name="image25231243174110"></a><span><img class="eddx" id="image25231243174110" src="figures/绘图1.png" width="339.33653250000003" height="107.74596000000001"></span></p>
 <p id="p10445117165520"><a name="p10445117165520"></a><a name="p10445117165520"></a>由于half只有10bit尾数位，因此灰色部分要进行舍入。</p>
 <p id="p1544518712559"><a name="p1544518712559"></a><a name="p1544518712559"></a>CAST_RINT模式舍入得尾数0000000000，E = 27，M = 0，最终表示的结果为2<sup id="sup23122675613"><a name="sup23122675613"></a><a name="sup23122675613"></a>12</sup>；</p>
 <p id="p1544518715520"><a name="p1544518715520"></a><a name="p1544518715520"></a>CAST_FLOOR模式舍入得尾数0000000000，E = 27，M = 0，最终表示的结果为2<sup id="sup61994343564"><a name="sup61994343564"></a><a name="sup61994343564"></a>12</sup>；</p>
@@ -260,9 +260,9 @@
 </td>
 <td class="cellrowborder" valign="top" width="10.46104610461046%" headers="mcps1.2.4.1.2 "><p id="p19100132843510"><a name="p19100132843510"></a><a name="p19100132843510"></a>float</p>
 </td>
-<td class="cellrowborder" valign="top" width="79.1079107910791%" headers="mcps1.2.4.1.3 "><p id="p19695047163718"><a name="p19695047163718"></a><a name="p19695047163718"></a>将src按照round_mode取到float所能表示的数，以float格式存入dst中。</p>
+<td class="cellrowborder" valign="top" width="79.1079107910791%" headers="mcps1.2.4.1.3 "><p id="p19695047163718"><a name="p19695047163718"></a><a name="p19695047163718"></a>将src按照roundMode取到float所能表示的数，以float格式存入dst中。</p>
 <p id="p1997114011372"><a name="p1997114011372"></a><a name="p1997114011372"></a>示例：输入2<sup id="sup69714407371"><a name="sup69714407371"></a><a name="sup69714407371"></a>25</sup> + 3，写成float的表示形式：2<sup id="sup1294995610373"><a name="sup1294995610373"></a><a name="sup1294995610373"></a>25</sup> * (1 + 2<sup id="sup1334610153816"><a name="sup1334610153816"></a><a name="sup1334610153816"></a>-24</sup> + 2<sup id="sup273410198386"><a name="sup273410198386"></a><a name="sup273410198386"></a>-25</sup>)，要求E = 25 + 127 = 152，   M = 2<sup id="sup9565173015402"><a name="sup9565173015402"></a><a name="sup9565173015402"></a>-24</sup> + 2<sup id="sup760021704012"><a name="sup760021704012"></a><a name="sup760021704012"></a>-25。</sup></p>
-<p id="p51981334183318"><a name="p51981334183318"></a><a name="p51981334183318"></a><a name="image292993463310"></a><a name="image292993463310"></a><span><img class="eddx" id="image292993463310" src="figures/流水任务运行示意图-6.png"></span></p>
+<p id="p51981334183318"><a name="p51981334183318"></a><a name="p51981334183318"></a><a name="image292993463310"></a><a name="image292993463310"></a><span><img class="eddx" id="image292993463310" src="figures/流水任务运行示意图-5.png"></span></p>
 <p id="p397214015374"><a name="p397214015374"></a><a name="p397214015374"></a>由于float只有23bit尾数位，因此灰色部分要进行舍入。</p>
 <p id="p18972104083713"><a name="p18972104083713"></a><a name="p18972104083713"></a>CAST_RINT模式舍入得尾数00000000000000000000001，E = 152，M = 2<sup id="sup13448105444217"><a name="sup13448105444217"></a><a name="sup13448105444217"></a>-23</sup>，最终表示的结果为2<sup id="sup284820194314"><a name="sup284820194314"></a><a name="sup284820194314"></a>25</sup> + 4；</p>
 <p id="p49721840143717"><a name="p49721840143717"></a><a name="p49721840143717"></a>CAST_FLOOR模式舍入得尾数00000000000000000000000，E = 152，M = 0，最终表示的结果为2<sup id="sup072718128436"><a name="sup072718128436"></a><a name="sup072718128436"></a>25</sup>；</p>
@@ -297,7 +297,7 @@
 
     ```
     template <typename T, typename U>
-    __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src, const RoundMode& round_mode, const uint32_t count)
+    __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src, const RoundMode& roundMode, const uint32_t count)
     ```
 
 -   tensor高维切分计算
@@ -305,14 +305,14 @@
 
         ```
         template <typename T, typename U, bool isSetMask = true>
-        __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src, const RoundMode& round_mode, const uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+        __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src, const RoundMode& roundMode, const uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
         ```
 
     -   mask连续模式
 
         ```
         template <typename T, typename U, bool isSetMask = true>
-        __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src, const RoundMode& round_mode, const uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+        __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src, const RoundMode& roundMode, const uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
         ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -329,15 +329,15 @@
 <tbody><tr id="row11492616168"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p19933113132715"><a name="p19933113132715"></a><a name="p19933113132715"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.65%" headers="mcps1.2.3.1.2 "><p id="p593343122716"><a name="p593343122716"></a><a name="p593343122716"></a>目的操作数数据类型。</p>
-<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
 <p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
+<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
 </td>
 </tr>
 <tr id="row1835857145817"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p5979215341"><a name="p5979215341"></a><a name="p5979215341"></a>U</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.65%" headers="mcps1.2.3.1.2 "><p id="p1526974512618"><a name="p1526974512618"></a><a name="p1526974512618"></a>源操作数数据类型。</p>
-<p id="p699315526532"><a name="p699315526532"></a><a name="p699315526532"></a><span id="ph1699315210539"><a name="ph1699315210539"></a><a name="ph1699315210539"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_2"><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
-<p id="p137234412501"><a name="p137234412501"></a><a name="p137234412501"></a><span id="ph18372174415016"><a name="ph18372174415016"></a><a name="ph18372174415016"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_2"><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
+<p id="p5994152433215"><a name="p5994152433215"></a><a name="p5994152433215"></a><span id="ph1399418245321"><a name="ph1399418245321"></a><a name="ph1399418245321"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_2"><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
+<p id="p29948244324"><a name="p29948244324"></a><a name="p29948244324"></a><span id="ph169941241329"><a name="ph169941241329"></a><a name="ph169941241329"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_2"><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
 </td>
 </tr>
 <tr id="row18835145716587"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p1383515717581"><a name="p1383515717581"></a><a name="p1383515717581"></a>isSetMask</p>
@@ -378,7 +378,7 @@
 <p id="p15798144016353"><a name="p15798144016353"></a><a name="p15798144016353"></a><span id="ph13451134110354"><a name="ph13451134110354"></a><a name="ph13451134110354"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 </td>
 </tr>
-<tr id="row1450110360599"><td class="cellrowborder" valign="top" width="16.49%" headers="mcps1.2.4.1.1 "><p id="p650118368599"><a name="p650118368599"></a><a name="p650118368599"></a>round_mode</p>
+<tr id="row1450110360599"><td class="cellrowborder" valign="top" width="16.49%" headers="mcps1.2.4.1.1 "><p id="p650118368599"><a name="p650118368599"></a><a name="p650118368599"></a>roundMode</p>
 </td>
 <td class="cellrowborder" valign="top" width="11.92%" headers="mcps1.2.4.1.2 "><p id="p6502936195912"><a name="p6502936195912"></a><a name="p6502936195912"></a>输入</p>
 </td>

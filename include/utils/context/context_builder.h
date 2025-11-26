@@ -63,10 +63,10 @@ private:
     friend class ContextBuilder;
     friend class ContextBuilderImpl;
     gert::KernelContext *kernelContext{nullptr};
-    KernelRunContextHolder(gert::ContextHolder<gert::KernelContext> &&ctxHolder, gert::KernelContext *kernelContext,
-        KernelRunContext *context);
+    KernelRunContextHolder(gert::ContextHolder<gert::KernelContext> &&ctxHolder, gert::KernelContext *kernelContextPtr,
+        KernelRunContext *contextPtr);
     KernelRunContextHolder(gert::ContextHolder<gert::TilingContext> &&ctxHolder,
-        std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, gert::KernelContext *kernelContext);
+        std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, gert::KernelContext *kernelContextPtr);
 };
 
 class ContextBuilder {

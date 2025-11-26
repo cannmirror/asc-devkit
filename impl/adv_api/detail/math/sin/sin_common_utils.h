@@ -16,15 +16,6 @@
 #define IMPL_MATH_SIN_SIN_COMMON_UTILS_H
 
 namespace AscendC {
-enum class SinAlgo {
-    POLYNOMIAL_APPROXIMATION = 0,
-    RADIAN_REDUCTION,
-};
-
-struct SinConfig {
-    SinAlgo algo = SinAlgo::POLYNOMIAL_APPROXIMATION;
-};
-
 constexpr SinConfig defaultSinConfig = { SinAlgo::POLYNOMIAL_APPROXIMATION };
 }
 

@@ -79,7 +79,7 @@ LayerNormGradBeta接口用于获取反向beta/gamma的数值，和LayerNormGrad�
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p515452344815"><a name="p515452344815"></a><a name="p515452344815"></a>是否允许修改源操作数，默认值为false。如果开发者允许源操作数被改写，可以使能该参数，使能后能够节省部分内存空间。</p>
 <p id="p6154162344810"><a name="p6154162344810"></a><a name="p6154162344810"></a>设置为<strong id="b015417235488"><a name="b015417235488"></a><a name="b015417235488"></a>true</strong>，则本接口内部计算时<strong id="b161541023194816"><a name="b161541023194816"></a><a name="b161541023194816"></a>复用</strong>inputDy的内存空间，节省内存空间；设置为<strong id="b6154142344810"><a name="b6154142344810"></a><a name="b6154142344810"></a>false</strong>，则本接口内部计算时<strong id="b19154152394811"><a name="b19154152394811"></a><a name="b19154152394811"></a>不复用</strong>inputDy的内存空间。</p>
 <p id="p171541323194818"><a name="p171541323194818"></a><a name="p171541323194818"></a>对于float数据类型输入支持开启该参数，half数据类型输入不支持开启该参数。</p>
-<p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-28.md#section639165323915">更多样例</a>。</p>
+<p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-27.md#section639165323915">更多样例</a>。</p>
 </td>
 </tr>
 </tbody>

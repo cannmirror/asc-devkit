@@ -82,7 +82,7 @@ void GetLog2MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, co
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-28.md)。
+完整的调用样例请参考[更多样例](更多样例-27.md)。
 
 -   GetLogMaxMinTmpSize接口样例：
 

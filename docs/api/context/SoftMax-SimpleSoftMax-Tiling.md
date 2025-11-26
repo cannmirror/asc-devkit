@@ -26,7 +26,7 @@
     -   AscendC命名空间下的计算接口
 
         ```
-        void SoftMaxTilingFunc(const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize, SoftMaxTiling& softmaxTiling)
+        void SoftMaxTilingFunc(const ge::Shape& srcShape, const uint32_t dataTypeSize, const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling& softmaxTiling)
         ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -102,7 +102,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="10.42%" headers="mcps1.2.4.1.2 "><p id="p42161432144610"><a name="p42161432144610"></a><a name="p42161432144610"></a>输出</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.71%" headers="mcps1.2.4.1.3 "><p id="p15563173404317"><a name="p15563173404317"></a><a name="p15563173404317"></a>输出SoftMax接口所需的tiling信息，支持optiling::SoftMaxTiling形式入参和SoftMaxTiling形式入参。</p>
+<td class="cellrowborder" valign="top" width="72.71%" headers="mcps1.2.4.1.3 "><p id="p15563173404317"><a name="p15563173404317"></a><a name="p15563173404317"></a>输出SoftMax接口所需的tiling信息，支持optiling::SoftMaxTiling形式入参和AscendC::tiling::SoftMaxTiling形式入参。</p>
 </td>
 </tr>
 </tbody>

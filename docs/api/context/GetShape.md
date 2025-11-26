@@ -1,4 +1,4 @@
-# GetShape<a name="ZH-CN_TOPIC_0000002340298157"></a>
+# GetShape<a name="ZH-CN_TOPIC_0000002297494516"></a>
 
 ## 产品支持情况<a name="section73648168211"></a>
 
@@ -24,38 +24,27 @@
 
 ## 功能说明<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section36583473819"></a>
 
-获取对应维度的shape信息。
+返回描述张量形状的Shape对象。
 
 ## 函数原型<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section13230182415108"></a>
 
 ```
-uint64_t GetShape(uint32_t offset)
+__aicore__ inline constexpr decltype(auto) GetShape() {}   
+__aicore__ inline constexpr decltype(auto) GetShape() const {}
 ```
 
 ## 参数说明<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section75395119104"></a>
 
-<a name="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_table111938719446"></a>
-<table><thead align="left"><tr id="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_row6223476444"><th class="cellrowborder" valign="top" width="17.22%" id="mcps1.1.4.1.1"><p id="p1085176175119"><a name="p1085176175119"></a><a name="p1085176175119"></a>参数名</p>
-</th>
-<th class="cellrowborder" valign="top" width="15.340000000000002%" id="mcps1.1.4.1.2"><p id="p1851763519"><a name="p1851763519"></a><a name="p1851763519"></a>输入/输出</p>
-</th>
-<th class="cellrowborder" valign="top" width="67.44%" id="mcps1.1.4.1.3"><p id="p148519610515"><a name="p148519610515"></a><a name="p148519610515"></a>描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="zh-cn_topic_0000002078486173_zh-cn_topic_0000001576727153_zh-cn_topic_0000001389787297_row152234713443"><td class="cellrowborder" valign="top" width="17.22%" headers="mcps1.1.4.1.1 "><p id="p12609185563419"><a name="p12609185563419"></a><a name="p12609185563419"></a>offset</p>
-</td>
-<td class="cellrowborder" valign="top" width="15.340000000000002%" headers="mcps1.1.4.1.2 "><p id="p9731042114910"><a name="p9731042114910"></a><a name="p9731042114910"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="67.44%" headers="mcps1.1.4.1.3 "><p id="p1661095563415"><a name="p1661095563415"></a><a name="p1661095563415"></a>索引值。</p>
-</td>
-</tr>
-</tbody>
-</table>
+无
 
 ## 返回值说明<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section25791320141317"></a>
 
-返回对应维度的shape信息。
+描述张量形状的Shape对象，Shape结构类型（[Std::tuple](容器函数.md)类型的别名），定义如下：
+
+```
+template <typename... Shapes>
+using Shape = Std::tuple<Shapes...>;
+```
 
 ## 约束说明<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section19165124931511"></a>
 
@@ -63,5 +52,16 @@ uint64_t GetShape(uint32_t offset)
 
 ## 调用示例<a name="zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section320753512363"></a>
 
-参考[调用示例](GetDataPtr.md#zh-cn_topic_0000002078447573_zh-cn_topic_0000001576806829_zh-cn_topic_0000001339187720_section320753512363)。
+```
+// 初始化Layout数据结构，获取对应数值
+AscendC::Shape<int,int,int> shape = AscendC::MakeShape(10, 20, 30);
+AscendC::Stride<int,int,int> stride = AscendC::MakeStride(1, 100, 200);
+
+auto layoutMake = AscendC::MakeLayout(shape, stride);
+AscendC::Layout<AscendC::Shape<int, int, int>, AscendC::Stride<int, int, int>> layoutInit(shape, stride);
+
+int value = AscendC::Std::get<0>(layoutMake.GetShape()); // value = 10
+value = AscendC::Std::get<1>(layoutMake.GetShape()); // value = 20
+value = AscendC::Std::get<2>(layoutMake.GetShape()); // value = 30
+```
 

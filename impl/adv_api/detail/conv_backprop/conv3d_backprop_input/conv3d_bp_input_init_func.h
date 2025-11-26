@@ -102,7 +102,7 @@ __aicore__ inline void InitParams(Intf *self)
         ASCENDC_ASSERT((self->ctx.tiling_->wk >= self->ctx.tiling_->strideW),
                        { KERNEL_LOG(KERNEL_ERROR, "kernelW should be GE strideW"); });
 #endif
-        // 泛化时需考虑不整除场景
+        // Non-divisible scenarios need to be considered when generalizing
         self->ctx.splitHk_ = self->ctx.tiling_->hk / self->ctx.tiling_->strideH;
         self->ctx.splitWk_ = self->ctx.tiling_->wk / self->ctx.tiling_->strideW;
         self->ctx.splitHkWk_ = self->ctx.splitHk_ * self->ctx.splitWk_;
@@ -126,12 +126,12 @@ __aicore__ inline void InitParams(Intf *self)
 template <class Intf>
 __aicore__ inline void InitTque(Intf *self)
 {
-    // fp32场景下baseK可能为8的倍数，非16倍数，但是GM中K0一定是16倍数，但是实际K可能仅有8，额外为padding数据
+    // In the fp32 scenario, baseK may be a multiple of 8, not a multiple of 16, but K0 in GM must be a multiple of 16, but the actual K may only be 8, with additional padding data
     uint32_t bMatrixByteSize = 0;
     uint32_t aMatrixByteSize = 0;
     if constexpr (Intf::conv3dConfig.enableKernelSplit) {
         uint32_t hoSize = (self->ctx.curHoSize_ < self->ctx.tiling_->ho) ? self->ctx.curHoSize_ : self->ctx.tiling_->ho;
-        // 泛化时，每个小kernel需要加载的wo大小可能不一样，可能是wo wo-1 wo-2 ...
+        // When generalizing, the size of wo that each small kernel needs to load may be different, maybe wo wo-1 wo-2...
         aMatrixByteSize = hoSize * (self->ctx.tiling_->wo - 1) *
                           self->ctx.tiling_->stepKa * self->ctx.tiling_->baseK / self->ctx.splitHkWk_ *
                           sizeof(typename Intf::SrcT);
@@ -176,11 +176,11 @@ __aicore__ inline void InitTque(Intf *self)
 template <class Intf>
 static __aicore__ inline void Compute(Intf *self)
 {
-    // 先刷新h方向的值，方便判断是否为有效计算
+    // First refresh the value in the h direction to facilitate judging whether it is a valid calculation.
     UpdateLoadToA2ParamsM<Intf>(self);
 
-    // 在跳过计算逻辑中，如果有部分无需跳过的操作逻辑。后续如果有类似逻辑，可以在此处继续增加
-    // 当前已存在的操作为isFreeB1_为true的情况(B1全加载且循环至最后一块运算空间，需要释放B1空间)。此时预期的只有ping空间被使用
+    // In the skip calculation logic, if there is some operation logic that does not need to be skipped. If you have similar logic in the future, you can continue to add it here
+    // The current existing operation is the case where isFreeB1_ is true (B1 is fully loaded and looped to the last piece of computing space, and the B1 space needs to be released). At this point only the ping space is expected to be used
     if (!self->ctx.needComputeFlag_) {
         if (self->ctx.isFreeB1_ && !self->ctx.isLoadB1_) {
             self->ctx.b1Ping_.FreeTensor(self->ctx.cacheB1BufPing_);
@@ -224,7 +224,7 @@ static __aicore__ inline void Compute(Intf *self)
                 continue;
             }
         } else {
-            // 由于膨胀卷积使dk的位置发生改变，求解dout_idx时，dk_idx需乘上膨胀系数再参与计算，才能求取正确的索引
+            // Since dilation convolution changes the position of dk, when solving dout_idx, dk_idx needs to be multiplied by the expansion coefficient and then participate in the calculation to obtain the correct index
             dTmp = self->ctx.curDinIdx_ + self->ctx.tiling_->padFront - curKdIdx * self->ctx.tiling_->dilationD;
             if (dTmp < 0 || ConvBackpropApi::CalcRemainder(dTmp, self->ctx.tiling_->strideD) > 0 ||
                 dTmp >= self->ctx.tiling_->dout * self->ctx.tiling_->strideD) {
@@ -258,7 +258,7 @@ static __aicore__ inline void Compute(Intf *self)
                 self->ctx.curLoadKbl1_ = (self->ctx.stepKbTail - 1) * self->ctx.tiling_->baseK + self->ctx.tailK_;
             }
             /*
-            通过M*K的奇偶判断load到L1A ping还是L1A pong, BL1同理
+            Use the parity of M*K to determine whether the load is L1A ping or L1A pong. The same is true for BL1
                         kL1Idx=0  kL1Idx=1 kL1Idx=2
                         ----------------------------
             mL1Idx=0    |  ping  |  pong  |  ping  |
@@ -270,7 +270,7 @@ static __aicore__ inline void Compute(Intf *self)
             */
             bool isLoadA1 = kaIdx == 0;
             if (isLoadA1 && self->ctx.tiling_->al1Pbuffer > 1) {
-                // 此处默认stepM = 1
+                // The default stepM = 1 here
                 a1PingPongFlag = ((self->ctx.curML1Idx_ * self->ctx.stepKaRound_ + kaStepIdx + 1) & 1);
             }
             ConvBackpropInputFunc::LoadToA1<Intf, typename Intf::SrcT>(self, kIdx, curDoutIdx, a1PingPongFlag,
@@ -278,7 +278,7 @@ static __aicore__ inline void Compute(Intf *self)
 
             bool isLoadB1 = kbIdx == 0;
             if (isLoadB1 && self->ctx.tiling_->bl1Pbuffer > 1) {
-                // 此处默认stepN = 1
+                // The default stepN = 1 here
                 b1PingPongFlag = ((self->ctx.curNL1Idx_ * self->ctx.stepKbRound_ + kbStepIdx + 1) & 1);
             }
             ConvBackpropInputFunc::LoadToB1<Intf, typename Intf::SrcT>(self, kIdx, curKdIdx, b1PingPongFlag,

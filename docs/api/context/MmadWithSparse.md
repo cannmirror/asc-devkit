@@ -24,7 +24,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-完成矩阵乘加操作，传入的左矩阵A为稀疏矩阵， 右矩阵B为稠密矩阵 。对于矩阵A，在MmadWithSparse计算时完成稠密化；对于矩阵B，在计算执行前的输入数据准备时自行完成稠密化（按照下文中介绍的稠密算法进行稠密化），所以输入本接口的B矩阵为稠密矩阵。B稠密矩阵需要通过调用[LoadDataWithSparse](LoadDataWithSparse(ISASI).md)载入，同时加载索引矩阵，索引矩阵在矩阵B稠密化的过程中生成，再用于A矩阵的稠密化。
+完成矩阵乘加操作，传入的左矩阵A为稀疏矩阵， 右矩阵B为稠密矩阵 。对于矩阵A，在MmadWithSparse计算时完成稠密化；对于矩阵B，在计算执行前的输入数据准备时自行完成稠密化（按照下文中介绍的稠密算法进行稠密化），所以输入本接口的B矩阵为稠密矩阵。B稠密矩阵需要通过调用[LoadDataWithSparse](LoadDataWithSparse.md)载入，同时加载索引矩阵，索引矩阵在矩阵B稠密化的过程中生成，再用于A矩阵的稠密化。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -294,7 +294,7 @@ __aicore__ inline void MmadWithSparse(const LocalTensor<T>& dst, const LocalTens
 
 该索引矩阵用于A矩阵的稠密化，根据索引矩阵从MatrixA中的4个元素中选择2个元素参与计算，如下图所示：
 
-![](figures/绘图4-19.png)
+![](figures/绘图4-18.png)
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

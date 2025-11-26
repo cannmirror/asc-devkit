@@ -15,10 +15,10 @@ if (BUILD_OPEN_PROJECT)
   include(${ASCENDC_UNIT_TESTS_DIR}/cmake/func.cmake)
 endif ()
 
-if (ENABLE_ADV_TEST)
+if (${TEST_MOD} STREQUAL "all" OR ${TEST_MOD} STREQUAL "adv")
   add_subdirectory(adv_api)
 endif ()
 
-if (ENABLE_BASIC_TEST)
+if (${TEST_MOD} STREQUAL "all" OR NOT ${TEST_MOD} STREQUAL "adv")
   add_subdirectory(basic_api)
 endif ()

@@ -105,6 +105,8 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce/mean_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/sign_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/reglu_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/activation/silu_tiling.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/activation/swish_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce/reduce_xor_sum_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce/sum_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce/reduce_tiling.cpp

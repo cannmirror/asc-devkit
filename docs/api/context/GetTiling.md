@@ -11,7 +11,7 @@ int64_t GetTiling(optiling::TCubeTiling &tiling)
 ```
 
 ```
-int64_t GetTiling(TCubeTiling &tiling)
+int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -32,7 +32,7 @@ int64_t GetTiling(TCubeTiling &tiling)
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p0108231864"><a name="p0108231864"></a><a name="p0108231864"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p2010102311619"><a name="p2010102311619"></a><a name="p2010102311619"></a>Tiling结构体存储最终的tiling结果。TCubeTiling结构介绍请参考<a href="TCubeTiling结构体.md#table1563162142915">表1</a>。</p>
-<a name="ul13980144110379"></a><a name="ul13980144110379"></a><ul id="ul13980144110379"><li>optiling::TCubeTiling：带有optiling命名空间的TCubeTiling结构体，该结构体为Host侧定义的Matmul TilingData。</li><li>TCubeTiling：不带optiling命名空间的TCubeTiling结构体，Kernel侧定义的Matmul TilingData，与使用标准C++语法定义TilingData结构体的开发方式配合使用。</li></ul>
+<a name="ul13980144110379"></a><a name="ul13980144110379"></a><ul id="ul13980144110379"><li>optiling::TCubeTiling：带有optiling命名空间的TCubeTiling结构体，该结构体为Host侧定义的Matmul TilingData。</li><li>AscendC::tiling::TCubeTiling：带有AscendC::tiling命名空间的TCubeTiling结构体，Kernel侧定义的Matmul TilingData，与使用标准C++语法定义TilingData结构体的开发方式配合使用。</li></ul>
 </td>
 </tr>
 </tbody>

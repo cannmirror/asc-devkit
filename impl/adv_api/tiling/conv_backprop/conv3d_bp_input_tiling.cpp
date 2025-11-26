@@ -30,8 +30,8 @@ constexpr int64_t ONE_S64 = 1;
 constexpr uint32_t BASIC_BLOCK_SIZE_256 = 256;
 constexpr uint32_t BASIC_BLOCK_SIZE_128 = 128;
 constexpr uint32_t BASIC_BLOCK_SIZE_64 = 64;
-constexpr int32_t W_MERGE_THRESHHOLD = 64; // 256基本块场景，w小于这个值拖尾影响不会大于1/8
-constexpr uint32_t L2_CACHE_SIZE_THRESHHOLD = 150994944; // 144 * 1024 * 1024, B2经验值, 越过144M后L2效率开始下降
+constexpr int32_t W_MERGE_THRESHHOLD = 64; // 256 basic block scenario, if w is smaller than this value, the tailing effect will not be greater than 1/8
+constexpr uint32_t L2_CACHE_SIZE_THRESHHOLD = 150994944; // 144 * 1024 * 1024, B2 experience value, L2 efficiency begins to decrease after crossing 144M
 }
 
 namespace ConvBackpropApi {
@@ -172,7 +172,7 @@ bool Conv3DBpInputTiling::CheckOutputHeight()
 
 bool Conv3DBpInputTiling::CheckTransposeOutputdingRange() 
 {
-  // outputPadding值需要小于同维度dilation或stride
+  // The outputPadding value needs to be less than the dilation or stride of the same dimension
   OP_TILING_CHECK((attrInfo.outputPadD >= attrInfo.strideD && attrInfo.outputPadD >= attrInfo.dilationD), 
     TILING_LOG_ERROR("outputPadD value[%ld] should smaller than dilationD[%ld] or strideD[%ld]",
     attrInfo.outputPadD, attrInfo.dilationD, attrInfo.strideD), return false);
@@ -270,7 +270,7 @@ void Conv3DBpInputTiling::SetBasicBlockAttrsTiling()
     mmInfo_.mValue = ConvBackpropApi::CeilAlign(static_cast<uint64_t>(shapeInfo.orgHi) * shapeInfo.orgWi, static_cast<uint64_t>(blockSize_));
     mmInfo_.nValue = shapeCalc.cin1G * blockSize_;
     mmInfo_.kValue = static_cast<uint64_t>(shapeInfo.orgkH) * shapeInfo.orgkW *
-        shapeCalc.cout1G * blockSize_; // kernel_d是单独的循环，不算在L0的K值上
+        shapeCalc.cout1G * blockSize_; // kernel_d is a separate loop and is not counted in the K value of L0
     lenHkWkC0_ = shapeInfo.orgkH * shapeInfo.orgkW * blockSize_;
 }
 
@@ -337,15 +337,15 @@ void Conv3DBpInputTiling::SetFinalTiling(optiling::Conv3DBackpropInputTilingData
     dxt.set_stepKa(tilingParams.stepKa);
     dxt.set_stepKb(tilingParams.stepKb);
 
-    dxt.set_al0Pbuffer(tilingParams.al0Pbuffer);  // 默认开
-    dxt.set_bl0Pbuffer(tilingParams.bl0Pbuffer);  // 默认开
+    dxt.set_al0Pbuffer(tilingParams.al0Pbuffer);  // default on
+    dxt.set_bl0Pbuffer(tilingParams.bl0Pbuffer);  // default on
     dxt.set_cl0Pbuffer(tilingParams.cl0Pbuffer);
     dxt.set_al1Pbuffer(tilingParams.al1Pbuffer);
     dxt.set_bl1Pbuffer(tilingParams.bl1Pbuffer);
     dxt.set_iterateOrder(tilingParams.iterateOrder);
 
     if (shapeInfo.orgkH * shapeInfo.orgkW == 1) {
-        loadB2Condition_ = 2; // 2表示Hk*Wk = 1的情况
+        loadB2Condition_ = 2; // 2 represents the case where Hk*Wk = 1
     } else if (tilingParams.baseK / blockSize_ >= static_cast<uint32_t>(shapeInfo.orgkH * shapeInfo.orgkW)) {
         loadB2Condition_ = 1;
     } else {
@@ -392,15 +392,15 @@ void Conv3DBpInputTiling::SetFinalTiling(AscendC::tiling::Conv3DBackpropInputTil
     dxt.stepKa = tilingParams.stepKa;
     dxt.stepKb = tilingParams.stepKb;
 
-    dxt.al0Pbuffer = tilingParams.al0Pbuffer;  // 默认开
-    dxt.bl0Pbuffer = tilingParams.bl0Pbuffer;  // 默认开
+    dxt.al0Pbuffer = tilingParams.al0Pbuffer;  // default on
+    dxt.bl0Pbuffer = tilingParams.bl0Pbuffer;  // default on
     dxt.cl0Pbuffer = tilingParams.cl0Pbuffer;
     dxt.al1Pbuffer = tilingParams.al1Pbuffer;
     dxt.bl1Pbuffer = tilingParams.bl1Pbuffer;
     dxt.iterateOrder = tilingParams.iterateOrder;
 
     if (shapeInfo.orgkH * shapeInfo.orgkW == 1) {
-        loadB2Condition_ = 2; // 2表示Hk*Wk = 1的情况
+        loadB2Condition_ = 2; // 2represents the case where Hk*Wk = 1
     } else if (tilingParams.baseK / blockSize_ >= static_cast<uint32_t>(shapeInfo.orgkH * shapeInfo.orgkW)) {
         loadB2Condition_ = 1;
     } else {
@@ -423,7 +423,7 @@ int64_t Conv3DBpInputTiling::Compute()
     OP_TILING_CHECK(!CalModifyBackpropPadHW(),
                     TILING_LOG_ERROR("CalModifyBackpropPadHW failed."),
                     return -1;);
-    SetBackpropPadInfo(); // 基本块对backpropPad进行修正
+    SetBackpropPadInfo(); // Basic block to modify backpropPad
     SetInitOutput();
 
     if (!MultiCoreSplitMN()) {
@@ -489,9 +489,9 @@ void Conv3DBpInputTiling::InitBaseMNK()
     tilingParams.bl0Pbuffer = DB_ON;
     tilingParams.cl0Pbuffer = DB_OFF;
 
-    // 选取原则一: 计算访存比最高的256*64*128基本块
-    // 选取原则二：L0A的MTE1效率是L0B两倍，对称场景优先让BaseM用256
-    // 选取原则三: 右矩阵转置逆序需要处理BaseK/C0次，控制BaseK不要太大，避免指令队列阻塞
+    // Selection principle one: Calculate the 256*64*128 basic block with the highest memory access ratio
+    // Selection Principle 2: The MTE1 efficiency of L0A is twice that of L0B. In symmetrical scenarios, BaseM is given priority to use 256
+    // Selection Principle 3: The reverse order of right matrix transpose needs to process BaseK/C0 times. Control BaseK not to be too large to avoid instruction queue blocking
     uint32_t baseM = mmInfo_.mValue >= mmInfo_.nValue ? BASIC_BLOCK_SIZE_256 : BASIC_BLOCK_SIZE_128;
     uint32_t baseN = mmInfo_.mValue >= mmInfo_.nValue ? BASIC_BLOCK_SIZE_128 : BASIC_BLOCK_SIZE_256;
     uint32_t baseK = BASIC_BLOCK_SIZE_128 / dtypeByte_;
@@ -513,7 +513,7 @@ void Conv3DBpInputTiling::AdjustBaseMNK(const uint32_t l0abPingPong, const uint3
     if (lenHkWkC0_ == 0) {
         return;
     }
-    // K对齐约束大，优先做调整, 从最优基本块往下找到能满足搬运对齐的块
+    // The K alignment constraint is large, so adjustments should be made first, starting from the optimal basic block and finding blocks that can satisfy the handling alignment
     baseK = std::min(static_cast<uint64_t>(baseK), mmInfo_.kValue);
     while (baseK > static_cast<uint32_t>(blockSize_)) {
         if (baseK % lenHkWkC0_ == 0 || lenHkWkC0_ % baseK == 0) {
@@ -530,14 +530,14 @@ void Conv3DBpInputTiling::AdjustBaseMNK(const uint32_t l0abPingPong, const uint3
 
     uint32_t mnL0Max = std::max(l0abMaxNum / baseK / blockSize_, ONE_U32) * blockSize_;
 
-    // N和K方向如果都比较小，M方向优化满足搬运对齐，而且做边界保护
+    // If the N and K directions are both relatively small, the M direction should be optimized to meet the handling alignment and boundary protection
     if (baseN < BASIC_BLOCK_SIZE_256 && baseK < BASIC_BLOCK_SIZE_128 / dtypeByte_) {
         uint32_t mL0cMax = std::max(l0cMaxNum / baseN / blockSize_, ONE_U32) * blockSize_;
         baseM = std::min(mnL0Max, mL0cMax);
         baseM = std::min(static_cast<uint64_t>(baseM), alingedMValue);
     }
 
-    // M和K方向如果都比较小，N方向优化满足搬运对齐，而且做边界保护
+    // If the M and K directions are both relatively small, the N direction should be optimized to meet the handling alignment and boundary protection
     if (baseM < BASIC_BLOCK_SIZE_256 && baseK < BASIC_BLOCK_SIZE_128 / dtypeByte_) {
         uint32_t nL0cMax = std::max(l0cMaxNum / baseM / blockSize_, ONE_U32) * blockSize_;
         baseN = std::min(mnL0Max, nL0cMax);
@@ -591,7 +591,7 @@ void Conv3DBpInputTiling::AlignCout1(uint32_t &cout1A, uint32_t &cout1B, bool ad
 
 void Conv3DBpInputTiling::EqualL1MatchStepMNK(uint32_t &stepKa, uint32_t &stepKb)
 {
-    uint32_t hoCal = CalFmapH(tilingParams.baseM);  // 此处默认stepM=1
+    uint32_t hoCal = CalFmapH(tilingParams.baseM);  // The default stepM=1 here
     uint64_t baseNHkWkC0Size = lenHkWkC0_ * tilingParams.baseN * dtypeByte_;
     uint64_t l1BSize = L1_SIZE / TWO / tilingParams.bl1Pbuffer;
     uint64_t l1ASize = L1_SIZE / TWO / tilingParams.al1Pbuffer;
@@ -599,7 +599,7 @@ void Conv3DBpInputTiling::EqualL1MatchStepMNK(uint32_t &stepKa, uint32_t &stepKb
     if (baseNHkWkC0Size == 0) {
         return;
     }
-    // fp32场景下Cout0为16，c0为8，而tiling中的Cout1是以C0对其，因此需保证加载的cout1要为2的倍数
+    // In the fp32 scenario, Cout0 is 16, c0 is 8, and Cout1 in tiling is aligned with C0, so it is necessary to ensure that the loaded cout1 is a multiple of 2
     uint32_t cout1B1 = std::max(ONE_U64, l1BSize / baseNHkWkC0Size);
     uint64_t curHiWiSize = static_cast<uint64_t>(dtypeByte_) * hoCal * shapeInfo.orgWo * attrInfo.strideW * blockSize_;
     if (curHiWiSize == 0) {
@@ -625,7 +625,7 @@ void Conv3DBpInputTiling::EqualL1MatchStepMNK(uint32_t &stepKa, uint32_t &stepKb
     } else {
         stepKb = ConvBackpropApi::FloorAlign(stepKb, stepKa);
     }
-    // fp32场景下需单独适配，以符合fp32场景要求
+    // The fp32 scenario requires separate adaptation to meet the requirements of the fp32 scenario
 }
 
 void Conv3DBpInputTiling::CalStepMNK()
@@ -635,7 +635,7 @@ void Conv3DBpInputTiling::CalStepMNK()
     tilingParams.al1Pbuffer = DB_ON;
     tilingParams.bl1Pbuffer = DB_OFF;
 
-    // 右矩阵是权重，总数据量小，优先让右矩阵全载
+    // The right matrix is ​​the weight, and the total amount of data is small. The right matrix is ​​given priority to be fully loaded
     uint64_t kIter = ConvBackpropApi::CeilDiv(mmInfo_.kValue, static_cast<uint64_t>(tilingParams.baseK));
     if(IsStepL1Valid(1, kIter) && shapeInfo.orgkD == 1) {
         uint32_t stepKaStrategy0 = 1;
@@ -658,7 +658,7 @@ void Conv3DBpInputTiling::CalStepMNK()
     uint32_t stepKbStrategy2 = 1;
     LadderMatchStepMNK(stepKaStrategy2, stepKbStrategy2);
 
-    // 优选基本块个数多的，载入一次尽可能多算
+    // It is preferred to have a large number of basic blocks and load as many as possible at one time
     if (IsStepL1Valid(stepKaStrategy1, stepKbStrategy1) &&
         (stepKaStrategy1 + stepKbStrategy1 > stepKaStrategy2 + stepKbStrategy2)) {
         tilingParams.stepKa = stepKaStrategy1;
@@ -678,7 +678,7 @@ void Conv3DBpInputTiling::LadderMatchStepKWithFullLoad(uint32_t &stepKa, const u
         }
         --stepKa;
     }
-    // 待kernel支持不对齐, 对齐HkWkC0的策略如果找不到，预期要按照再找一次
+    // When the kernel supports misalignment, if the strategy for aligning HkWkC0 is not found, it is expected that you will have to search again according to
 }
 
 void Conv3DBpInputTiling::LadderMatchStepMNK(uint32_t &stepKa, uint32_t &stepKb)
@@ -692,11 +692,11 @@ void Conv3DBpInputTiling::LadderMatchStepMNK(uint32_t &stepKa, uint32_t &stepKb)
         --stepKa;
         --stepKb;
     }
-    // 待kernel支持不对齐, 对齐HkWkC0的策略如果找不到，预期要按照再找一次
+    // When the kernel supports misalignment, if the strategy for aligning HkWkC0 is not found, it is expected that you will have to search again according to
 }
 
 void Conv3DBpInputTiling::ShrinkBasicBlock() {
-    // 在阶梯匹配过程中, stepK已经衰减为1，合法性保护主要从减少基本块层大小来入手
+    // During the ladder matching process, stepK has decayed to 1, and legality protection mainly starts by reducing the size of the basic block layer
     uint32_t baseMOri = tilingParams.baseM;
     uint32_t baseNOri = tilingParams.baseN;
     uint32_t baseKOri = tilingParams.baseK;
@@ -705,7 +705,7 @@ void Conv3DBpInputTiling::ShrinkBasicBlock() {
     uint32_t baseNStart = tilingParams.baseN;
     uint32_t baseKStart = tilingParams.baseK;
 
-    // K方向要满足对齐，载入量基本是固定的，优先从M和N方向调整
+    // The K direction must satisfy the alignment, and the loading amount is basically fixed. Priority is given to adjusting from the M and N directions
     uint32_t minBaseM = std::max(static_cast<uint32_t>(shapeInfo.orgWi), static_cast<uint32_t>(blockSize_));
     while (baseMStart > minBaseM || baseNStart > static_cast<uint32_t>(blockSize_)) {
         if (baseMStart > minBaseM && baseMStart > baseNStart) {
@@ -751,7 +751,7 @@ void Conv3DBpInputTiling::ShrinkBasicBlock() {
             return;
         }
     }
-// 如果stepK * baseK支持了不对齐KernelHW，这里可以考虑回来适当调大baseK
+// If stepK * baseK supports unaligned KernelHW, you can consider coming back and appropriately increasing baseK
     tilingParams.baseM = baseMOri;
     tilingParams.baseN = baseNOri;
     tilingParams.baseK = baseKOri;
@@ -759,18 +759,18 @@ void Conv3DBpInputTiling::ShrinkBasicBlock() {
 
 void Conv3DBpInputTiling::LegalProtection()
 {
-    // L1合法，直接结束
+    // L1 is legal, end directly
     if (IsStepL1Valid(tilingParams.stepKa, tilingParams.stepKb)) {
         return;
     }
 
-    // 减小基本块，L1合法，直接结束
+    // Reduce the basic block, L1 is legal, end directly
     ShrinkBasicBlock();
     if (IsStepL1Valid(tilingParams.stepKa, tilingParams.stepKb)) {
         return;
     }
 
-    // 从右往左依次关闭DB，再次尝试
+    // Close the DB from right to left and try again
     if (tilingParams.al1Pbuffer == DB_ON && tilingParams.bl1Pbuffer == DB_ON) {
         tilingParams.bl1Pbuffer = DB_OFF;
         LegalProtection();
@@ -790,20 +790,20 @@ void Conv3DBpInputTiling::LegalProtection()
 
 bool Conv3DBpInputTiling::MultiCoreSplitMN()
 {
-    // 更新并设置L0基本块
+    // Update and set up the L0 basic block
     InitBaseMNK();
 
-    // 更新并设置L1载入策略
+    //Update and set L1 loading strategy
     CalStepMNK();
 
-    // L1合法性兜底
+    // L1 legality guarantee
     LegalProtection();
     if (!IsStepL1Valid(tilingParams.stepKa, tilingParams.stepKb)) {
         TILING_LOG_ERROR("params exceed max L1 limit size");
         return false;
     }
 
-    // 设置L2 Cache和核间切分策略
+    // Set L2 Cache and inter-core sharding strategy
     SetSingleCoreInfo();
     return true;
 }
@@ -822,7 +822,7 @@ bool Conv3DBpInputTiling::IsL2Efficient(const uint64_t singleCoreM, const uint64
 
 void Conv3DBpInputTiling::SetSingleCoreInfo()
 {
-    tilingParams.iterateOrder = 1; // 默认orderN, 暂无左矩阵全载逻辑
+    tilingParams.iterateOrder = 1; // Default orderN, no left matrix full load logic yet
     tilingParams.singleCoreCout = shapeCalc.cout1G * blockSize_;
     tilingParams.singleCoreCout1 = shapeCalc.cout1G;
     tilingParams.singleCoreCin = tilingParams.stepN * tilingParams.baseN;
@@ -835,19 +835,19 @@ void Conv3DBpInputTiling::SetSingleCoreInfo()
     uint64_t singleCoreK = static_cast<uint64_t>(shapeInfo.orgkH) * shapeInfo.orgkW * shapeCalc.cout1G * blockSize_;
     tilingParams.singleCoreM = std::max(mAl1 / shapeInfo.orgWi, ONE_U64) * shapeInfo.orgWi;
 
-    // 场景一：其他方向核间分配均匀时，适度合并M方向的任务，减少头开销
-    // 场景二：因为搬运对齐，导致单轮基本块计算仿存比过低, 适度合并M方向的任务
+    // Scenario 1: When the cores in other directions are evenly distributed, moderately merge tasks in the M direction to reduce head overhead
+    // Scenario 2: Due to the transfer alignment, the single-round basic block calculation imitation-to-memory ratio is too low, moderately merge the tasks in the M direction
     if (shapeInfo.orgWi > W_MERGE_THRESHHOLD && mAl1 % shapeInfo.orgWi != 0 && shapeInfo.orgWi % mAl1 != 0) {
         uint64_t maxMCnt = ConvBackpropApi::CeilDiv(hwI, mAl1);
         for (uint64_t i = 1; i <= maxMCnt; ++i) {
             uint64_t tmpSingleCoreHWI =  ConvBackpropApi::CeilDiv(static_cast<uint64_t>(shapeInfo.orgHi), i) * shapeInfo.orgWi;
             uint64_t tmpCnt = ConvBackpropApi::CeilDiv(hwI, tmpSingleCoreHWI) * batchDepth * nCnt;
-            // 核间任务伦次原本就不能均分时，拖尾影响不超过1 / coreNum
+            // When the task sequence between cores cannot be divided equally, the tailing effect will not exceed 1 / coreNum
             if (tmpCnt % coreNum_ != 0 && tmpCnt < coreNum_ * coreNum_) {
                 continue;
             }
 
-            // 不超过L2 Cache，评估L时要充分考虑Load3D的影响
+            // No more than L2 Cache, the impact of Load3D must be fully considered when evaluating L
             if (!IsL2Efficient(tmpSingleCoreHWI, tilingParams.singleCoreCin, singleCoreK, tilingParams.baseM * tilingParams.baseN)) {
                 continue;
             }
@@ -864,7 +864,7 @@ void Conv3DBpInputTiling::SetSingleCoreInfo()
                 continue;
             }
 
-            // 不超过L2 Cache，评估L时要充分考虑Load3D的影响
+            // No more than L2 Cache, the impact of Load3D must be fully considered when evaluating L
             if (!IsL2Efficient(tmpSingleCoreHWI, tilingParams.singleCoreCin, singleCoreK, tilingParams.baseM * tilingParams.baseN)) {
                 continue;
             }
@@ -883,15 +883,15 @@ static int64_t CalBackpropPadAfter(int64_t inputDim, int64_t outputDim, int32_t 
 }
 
 bool Conv3DBpInputTiling::CalModifyBackpropPadD() {
-    int64_t pad_head_before = CalBackpropPadBefore(shapeInfo.orgkD, attrInfo.dilationD, attrInfo.padFront);
-    int64_t pad_tail_after = CalBackpropPadAfter(shapeInfo.orgDi, shapeInfo.orgDo, attrInfo.strideD, attrInfo.padFront);
-    OP_TILING_CHECK(IsOverflowInt32(pad_tail_after) || !CheckRange(static_cast<int32_t>(pad_tail_after), -PAD_DIM_UP, PAD_DIM_UP),
-    TILING_LOG_ERROR("pad_tail_after = (inputD - outputD * strideD + padHead)=%ld is invalid, it should be in[%d, %d]",
-    pad_tail_after, -PAD_DIM_UP, PAD_DIM_UP),
+    int64_t padHeadBefore = CalBackpropPadBefore(shapeInfo.orgkD, attrInfo.dilationD, attrInfo.padFront);
+    int64_t padTailAfter = CalBackpropPadAfter(shapeInfo.orgDi, shapeInfo.orgDo, attrInfo.strideD, attrInfo.padFront);
+    OP_TILING_CHECK(IsOverflowInt32(padTailAfter) || !CheckRange(static_cast<int32_t>(padTailAfter), -PAD_DIM_UP, PAD_DIM_UP),
+    TILING_LOG_ERROR("padTailAfter = (inputD - outputD * strideD + padHead)=%ld is invalid, it should be in[%d, %d]",
+    padTailAfter, -PAD_DIM_UP, PAD_DIM_UP),
     return false);
-    pad_tail_after = (pad_tail_after + abs(pad_tail_after)) / K_NUM_TWO;
-    attrInfo.backpropPadHead = pad_head_before;
-    attrInfo.backpropPadTail = pad_tail_after;
+    padTailAfter = (padTailAfter + abs(padTailAfter)) / K_NUM_TWO;
+    attrInfo.backpropPadHead = padHeadBefore;
+    attrInfo.backpropPadTail = padTailAfter;
     return true;
 }
 

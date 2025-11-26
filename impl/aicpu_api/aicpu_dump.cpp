@@ -19,6 +19,12 @@
 #include "securec.h"
 #include "aicpu_api/aicpu_api.h"
 
+struct DumpConfig {
+    void *dumpBufAddr;
+    size_t dumpBufSize;
+    size_t dumpOffset;
+};
+
 std::mutex dump_mutex;
 extern "C" {
 DumpConfig g_aicpuDumpConfig = {reinterpret_cast<void*>(0x8), 0x100000, 0x0};

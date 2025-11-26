@@ -10,6 +10,12 @@
 function(run_llt_test)
     cmake_parse_arguments(LLT "" "TARGET;TASK_NUM;ENV_FILE" "" ${ARGN})
 
+    string(REPLACE "," ";" TARGET_LIST "${TEST_MOD}")
+    list(REMOVE_ITEM TARGET_LIST "")
+    if (NOT "${TEST_MOD}" STREQUAL "all" AND NOT ${LLT_TARGET} IN_LIST TARGET_LIST)
+      return()
+    endif()
+
     if (ENABLE_ASAN)
         execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_MAJOR)
         string(REGEX MATCHALL "[0-9]+" GCC_MAJOR ${GCC_MAJOR})
@@ -38,13 +44,14 @@ function(run_llt_test)
         set(_collect_coverage_data_target collect_coverage_data)
 
         get_filename_component(_ops_builtin_bin_path ${CMAKE_BINARY_DIR} DIRECTORY)
+        get_filename_component(_pkg_path "${ASCEND_CANN_PACKAGE_PATH}/../" REALPATH)
         set(_cov_report ${CMAKE_BINARY_DIR}/cov_report)
         set(_cov_html ${_cov_report})
         set(_cov_data ${_cov_report}/coverage.info)
 
         if (NOT TARGET ${_collect_coverage_data_target})
             add_custom_target(${_collect_coverage_data_target} ALL
-                    COMMAND bash ${GENERATE_CPP_COV} ${_ops_builtin_bin_path} ${_cov_data} ${_cov_html}
+                    COMMAND bash ${GENERATE_CPP_COV} ${_ops_builtin_bin_path} ${_cov_data} ${_cov_html} ${_pkg_path}
                     COMMENT "Run collect coverage data"
             )
         endif()

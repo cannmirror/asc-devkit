@@ -56,10 +56,10 @@ usage() {
         echo "    -t, --test           Build and run all unit tests"
         echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
         echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
-        echo "    -adv_test            Build and run the adv part of unit tests"
-        echo "    -basic_test_one      Build and run the basic_one part of unit tests"
-        echo "    -basic_test_two      Build and run the basic_two part of unit tests"
-        echo "    -basic_test_three    Build and run the basic_three part of unit tests"
+        echo "    --adv_test            Build and run the adv part of unit tests"
+        echo "    --basic_test_one      Build and run the basic_one part of unit tests"
+        echo "    --basic_test_two      Build and run the basic_two part of unit tests"
+        echo "    --basic_test_three    Build and run the basic_three part of unit tests"
         echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
         echo "    --cov                Enable code coverage for unit tests"
         echo "    --asan               Enable ASAN (address Sanitizer)"
@@ -90,10 +90,10 @@ usage() {
   echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
   echo "    -t, --test           Build and run all unit tests"
   echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
-  echo "    -adv_test            Build and run the adv part of unit tests"
-  echo "    -basic_test_one      Build and run the basic_one part of unit tests"
-  echo "    -basic_test_two      Build and run the basic_two part of unit tests"
-  echo "    -basic_test_three    Build and run the basic_three part of unit tests"
+  echo "    --adv_test            Build and run the adv part of unit tests"
+  echo "    --basic_test_one      Build and run the basic_one part of unit tests"
+  echo "    --basic_test_two      Build and run the basic_two part of unit tests"
+  echo "    --basic_test_three    Build and run the basic_three part of unit tests"
   echo "    --pkg                Compile run package"
   echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
   echo "    --cov                Enable code coverage for unit tests"
@@ -340,10 +340,10 @@ set_options() {
 
 set_env() {
   if [ "${USER_ID}" != "0" ]; then
-    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/latest"
     DEFAULT_INSTALL_DIR="${HOME}/Ascend/latest"
   else
-    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/ascend-toolkit/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/latest"
     DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
   fi
 
@@ -405,13 +405,12 @@ function build_test() {
 
 function build_test_part() {
   if [[ "$TEST_PART" == "adv_test" ]]; then
-    CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_ADV_TEST=ON -DENABLE_BASIC_TEST=OFF"
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DTEST_MOD=adv"
     build_test
     return 0
   fi
 
   source ${CURRENT_DIR}/tests/unit/basic_api/common/ci/basic_tests_part.sh
-  CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_ADV_TEST=OFF -DENABLE_BASIC_TEST=ON"
 
   if [ "$TEST_PART" == "basic_test_one" ]; then
     BASIC_TEST_PART=("${test_one_targets[@]}")
@@ -423,7 +422,14 @@ function build_test_part() {
 
   for tag in "${BASIC_TEST_PART[@]}"; do
     TARGETS="${TARGETS} --target ${tag}"
+    TEST_MOD="${tag},${TEST_MOD}"
   done
+
+  CUSTOM_OPTION="${CUSTOM_OPTION} -DTEST_MOD=${TEST_MOD}"
+  if [ "${COV}" == "true" ]; then
+    TARGETS="${TARGETS} --target collect_coverage_data"
+  fi
+
   cmake_config
   cmake --build . ${TARGETS} -j ${THREAD_NUM}
   return 0
@@ -438,7 +444,7 @@ main() {
   CUSTOM_OPTION="${CUSTOM_OPTION} -DCUSTOM_ASCEND_CANN_PACKAGE_PATH=${ASCEND_CANN_PACKAGE_PATH}"
 
   if [ -n "${TEST}" ];then
-    CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=ON -DENABLE_ADV_TEST=ON -DENABLE_BASIC_TEST=ON"
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=ON -DTEST_MOD=all"
   fi
 
   if [ -n "${TEST_PART}" ]; then

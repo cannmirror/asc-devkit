@@ -12,9 +12,7 @@
 #include <mutex>
 #include <stdio.h>
 #include "securec.h"
-#define __AICPU_DEVICE__
 #include "aicpu_api/aicpu_api.h"
-#undef __AICPU_DEVICE__
 #include <mockcpp/mockcpp.hpp>
 
 class TEST_AICPU_DUMP : public testing::Test {
@@ -25,6 +23,13 @@ protected:
         GlobalMockObject::verify();
     }
 };
+
+struct DumpConfig {
+    void *dumpBufAddr;
+    size_t dumpBufSize;
+    size_t dumpOffset;
+};
+
 extern "C" {
 extern DumpConfig g_aicpuDumpConfig;
 }
@@ -35,13 +40,13 @@ TEST_F(TEST_AICPU_DUMP, printfTest)
     char buffer[buffer_size] = {0};
     g_aicpuDumpConfig.dumpBufAddr = buffer;
     g_aicpuDumpConfig.dumpBufSize = buffer_size;
-    g_aicpuDumpConfig.dumpOffset = 0;
+    g_aicpuDumpConfig.dumpOffset = 0ULL;
     *reinterpret_cast<size_t*>(buffer) = 0;
     EXPECT_NO_THROW(AscendC::printf("test\n"));
 
     {
         g_aicpuDumpConfig.dumpBufAddr = nullptr;
-        g_aicpuDumpConfig.dumpBufSize = 1024;
+        g_aicpuDumpConfig.dumpBufSize = 1024ULL;
         EXPECT_NO_THROW(AscendC::printf("test\n"));
     }
 

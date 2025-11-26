@@ -20,6 +20,7 @@ source ${BASE_PATH}/util.sh
 generate_coverage() {
   local _source_dir="$1"
   local _coverage_file="$2"
+  local _pkg_path="$3"
 
   if [[ -z "${_source_dir}" ]]; then
     logging "directory required to find the .da files"
@@ -46,8 +47,8 @@ generate_coverage() {
   if [[ ! -d "${_path_to_gen}" ]]; then
     mk_dir "${_path_to_gen}"
   fi
-  lcov -c -d "${_source_dir}" -o "${_coverage_file}"
-  lcov -r "${_coverage_file}" "/home/jenkins/Ascend/ascend-toolkit/latest/*" -o "${_coverage_file}"
+  lcov -c -d "${_source_dir}" -o "${_coverage_file}" --ignore-errors mismatch --exclude "${_pkg_path}"
+#  lcov -r "${_coverage_file}" "/home/jenkins/Ascend/ascend-toolkit/latest/*" -o "${_coverage_file}"
   logging "generated coverage file ${_coverage_file}"
 }
 
@@ -89,15 +90,16 @@ generate_html() {
 }
 
 
-if [[ $# -ne 3 ]]; then
-  logging "Usage: $0 DIR COV_FILE OUT_PATH"
+if [[ $# -ne 4 ]]; then
+  logging "Usage: $0 DIR COV_FILE OUT_PATH CANN_PATH"
   exit 0
 fi
 
 _src="$1"
 _cov_file="$2"
 _out="$3"
+_cann_path="$4"
 
-generate_coverage "${_src}" "${_cov_file}"
+generate_coverage "${_src}" "${_cov_file}" "${_cann_path}"
 filter_coverage   "${_cov_file}" "${_cov_file}_filtered"
 generate_html     "${_cov_file}_filtered" "${_out}"

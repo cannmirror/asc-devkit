@@ -95,6 +95,21 @@ file(GLOB ASCENDC_TEST_ascend310p_CASE_SRC_FILES
     ${LOCAL_DIR}/testcase/basic_api/tikcpp_case_ascend310p/*.cpp
 )
 
+# ascend910B1 aic c api test cases
+file(GLOB ASCENDC_TEST_ascend910B1_AIC_CAPI_CASE_SRC_FILES
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/cube_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/cube_dmamove/*.cpp
+)
+
+# ascend910B1 aiv c api test cases
+file(GLOB ASCENDC_TEST_ascend910B1_AIV_CAPI_CASE_SRC_FILES
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/simd_atomic/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/sync/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/sys_var/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/vector_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/asc_2201/vector_datamove/*.cpp
+)
+
 # ascend910B1 aiv test cases
 file(GLOB ASCENDC_TEST_ascend910B1_AIV_CASE_SRC_FILES
     ${LOCAL_DIR}/testcase/tikcpp_case_common/test_data_copy_slice.cpp
@@ -137,9 +152,9 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend610>:${LOCAL_DIR}/../common/tik_pv_wrapper.cpp>
         $<$<STREQUAL:${product_type},ascend310p>:${ASCENDC_TEST_COMMON_CASE_SRC_FILES};${ASCENDC_API_CHECK_CASE_SRC_FILES}>
         $<$<STREQUAL:${product_type},ascend310p>:${LOCAL_DIR}/../common/tik_pv_wrapper.cpp>
-        $<$<STREQUAL:${product_type},ascend910B1_AIC>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
+        $<$<STREQUAL:${product_type},ascend910B1_AIC>:${ASCENDC_API_CHECK_CASE_SRC_FILES};${ASCENDC_TEST_ascend910B1_AIC_CAPI_CASE_SRC_FILES}>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
-        $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_API_CHECK_CASE_SRC_FILES}>
+        $<$<STREQUAL:${product_type},ascend910B1_AIV>:${ASCENDC_API_CHECK_CASE_SRC_FILES};${ASCENDC_TEST_ascend910B1_AIV_CAPI_CASE_SRC_FILES}>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend310B1>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend610Lite>:${LOCAL_DIR}/../common/k3_pvwrap.cpp>

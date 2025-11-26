@@ -15,7 +15,16 @@ else()
     set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_CANN_PACKAGE_PATH} CACHE PATH "Path for CANN package")
 endif()
 
-find_program(CMAKE_ASC_COMPILER NAMES "bisheng" PATHS "${ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler/bin/" "$ENV{PATH}" "$ENV{ASCEND_HOME_PATH}" DOC "ASC Compiler")
+message(STATUS "System processer: ${CMAKE_SYSTEM_PROCESSOR}")
+if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
+    set(ASCEND_CANN_PACKAGE_LINUX_PATH ${ASCEND_CANN_PACKAGE_PATH}/x86_64-linux)
+elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|arm64|arm")
+    set(ASCEND_CANN_PACKAGE_LINUX_PATH ${ASCEND_CANN_PACKAGE_PATH}/aarch64-linux)
+else ()
+    message(FATAL_ERROR "Unknown architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+find_program(CMAKE_ASC_COMPILER NAMES "bisheng" PATHS "${ASCEND_CANN_PACKAGE_LINUX_PATH}/ccec_compiler/bin/" "$ENV{PATH}" "$ENV{ASCEND_HOME_PATH}" DOC "ASC Compiler")
 
 mark_as_advanced(CMAKE_ASC_COMPILER)
 message(STATUS "CMAKE_ASC_COMPILER: " ${CMAKE_ASC_COMPILER})
@@ -29,9 +38,11 @@ set(ascend910b_list Ascend910B1 Ascend910B2 Ascend910B2C Ascend910B3 Ascend910B4
                     Ascend910_9381 Ascend910_9372 Ascend910_9392 Ascend910_9382 Ascend910_9362)
 set(ascend310p_list Ascend310P1 Ascend310P3 Ascend310P5 Ascend310P7
                     Ascend310P3Vir01 Ascend310P3Vir02 Ascend310P3Vir04 Ascend310P3Vir08)
+set(ascend910_95_list Ascend910_957b Ascend910_950z Ascend910_958b Ascend910_958a
+                      Ascend910_9599 Ascend910_957d Ascend910_9581 Ascend910_9589 Ascend910_957c)
 if(DEFINED SOC_VERSION)
-    if(NOT ((SOC_VERSION IN_LIST ascend910b_list) OR (SOC_VERSION IN_LIST ascend310p_list)))
-        message(FATAL_ERROR "SOC_VERSION ${SOC_VERSION} is unsupported, support list is ${ascend910b_list} ${ascend310p_list}")
+    if(NOT ((SOC_VERSION IN_LIST ascend910b_list) OR (SOC_VERSION IN_LIST ascend310p_list) OR (SOC_VERSION IN_LIST ascend910_95_list)))
+        message(FATAL_ERROR "SOC_VERSION ${SOC_VERSION} is unsupported, support list is ${ascend910b_list} ${ascend310p_list} ${ascend910_95_list}")
     endif()
 endif()
 
@@ -39,6 +50,8 @@ if(SOC_VERSION IN_LIST ascend910b_list)
     set(CCE_AICORE_ARCH "dav-2201" CACHE STRING "Value for --npu-arch")
 elseif(SOC_VERSION IN_LIST ascend310p_list)
     set(CCE_AICORE_ARCH "dav-2002" CACHE STRING "Value for --npu-arch")
+elseif(SOC_VERSION IN_LIST ascend910_95_list)
+    set(CCE_AICORE_ARCH "dav-3101" CACHE STRING "Value for --npu-arch")
 endif()
 
 # 3. CMAKE_BUILD_TYPE only support Release / Debug
@@ -62,7 +75,7 @@ endif()
 
 # 第一次编译时顺序： CMakeDetermineASCCompiler.cmake -> CMakeASCInformation.cmake
 # 增量编译时顺序：   CMakeASCInformation.cmake
-find_program(CMAKE_ASC_LLD_LINKER NAMES "ld.lld" PATHS "${ASCEND_CANN_PACKAGE_PATH}/tools/ccec_compiler/bin/" DOC "ASC ld.lld Linker" NO_DEFAULT_PATH)
+find_program(CMAKE_ASC_LLD_LINKER NAMES "ld.lld" PATHS "${ASCEND_CANN_PACKAGE_LINUX_PATH}/ccec_compiler/bin/" DOC "ASC ld.lld Linker" NO_DEFAULT_PATH)
 
 if(DEFINED SOC_VERSION)
     message(STATUS "SOC_VERSION: " ${SOC_VERSION})
@@ -70,6 +83,7 @@ endif()
 message(STATUS "CMAKE_BUILD_TYPE: " ${CMAKE_BUILD_TYPE})
 message(STATUS "CMAKE_INSTALL_PREFIX: " ${CMAKE_INSTALL_PREFIX})
 message(STATUS "ASCEND_CANN_PACKAGE_PATH: " ${ASCEND_CANN_PACKAGE_PATH})
+message(STATUS "ASCEND_CANN_PACKAGE_LINUX_PATH: " ${ASCEND_CANN_PACKAGE_LINUX_PATH})
 message(STATUS "CMAKE_ASC_LLD_LINKER: ${CMAKE_ASC_LLD_LINKER}")
 
 # configure all variables set in this file

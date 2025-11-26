@@ -14,6 +14,10 @@ void GetPadMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, uin
 void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize, optiling::PadTiling& tiling)
 ```
 
+```
+void PadTilingFunc(const ge::Shape srcShape, const ge::Shape oriSrcShape, const uint32_t stackBufferSize, const uint32_t typeSize, AscendC::tiling::PadTiling& tiling)
+```
+
 ## 参数说明<a name="section9171145914274"></a>
 
 **表 1** **GetPadMaxMinTmpSize接口参数说明**

@@ -98,13 +98,13 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 </td>
 <td class="cellrowborder" valign="top" width="68.03%" headers="mcps1.2.4.1.3 "><p id="p7747203120"><a name="p7747203120"></a><a name="p7747203120"></a>输入矩阵形状等状态参数，类型为Conv2dParams。结构体具体定义为：</p>
 <a name="screen12333123510548"></a><a name="screen12333123510548"></a><pre class="screen" codetype="Cpp" id="screen12333123510548">struct Conv2dParams {
-    uint32_t imgShape[kConv2dImgSize];       // [H, W]
-    uint32_t kernelShape[kConv2dkernelSize]; // [Kh, Kw]
-    uint32_t stride[kConv2dStride];          // [stride_h, stride_w]
+    uint32_t imgShape[<span id="ph134285155915"><a name="ph134285155915"></a><a name="ph134285155915"></a>CONV2D_IMG_SIZE</span>];       // [H, W]
+    uint32_t kernelShape<span id="ph994017404586"><a name="ph994017404586"></a><a name="ph994017404586"></a>In</span>[<span id="ph389411507"><a name="ph389411507"></a><a name="ph389411507"></a>CONV2D_KERNEL_SIZE</span>]; // [Kh, Kw]
+    uint32_t stride[<span id="ph14325188602"><a name="ph14325188602"></a><a name="ph14325188602"></a>CONV2D_STRIDE</span>];          // [stride_h, stride_w]
     uint32_t cin;                            // cin = C0 * C1;
     uint32_t cout;
-    uint32_t padList[kConv2dPad];       // [pad_left, pad_right, pad_top, pad_bottom]
-    uint32_t dilation[kConv2dDilation]; // [dilation_h, dilation_w]
+    uint32_t padList[<span id="ph2817218012"><a name="ph2817218012"></a><a name="ph2817218012"></a>CONV2D_PAD</span>];       // [pad_left, pad_right, pad_top, pad_bottom]
+    uint32_t dilation[<span id="ph57552919018"><a name="ph57552919018"></a><a name="ph57552919018"></a>CONV2D_DILATION</span>]; // [dilation_h, dilation_w]
     uint32_t initY;
     uint32_t partialSum;
 };</pre>

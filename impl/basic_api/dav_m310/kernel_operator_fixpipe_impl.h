@@ -164,10 +164,10 @@ __aicore__ inline void CheckFixpipeL0C2UBParam(__ubuf__ T *dst, __cc__ U *src, c
             "value in Fixpipe, when src is int32_t, dst is int32_t, supported value is NoQuant");});
     }
     if (params.isChannelSplit) {
-        ASCENDC_DEBUG_ASSERT((IsSameType<U, float>::value && IsSameType<T, float>::value), "Failed to check "\
-            "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n");
-        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), "Failed to check format value in Fixpipe, "\
-            "when isChannelSplit is set true, format must be set as NZ \n");
+        ASCENDC_DEBUG_ASSERT((IsSameType<U, float>::value && IsSameType<T, float>::value), KERNEL_LOG(KERNEL_ERROR, "Failed to check "\
+            "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n"));
+        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), KERNEL_LOG(KERNEL_ERROR, "Failed to check format value in Fixpipe, "\
+            "when isChannelSplit is set true, format must be set as NZ \n"));
     }
 }
 
@@ -180,8 +180,8 @@ __aicore__ inline void CheckFixpipeL0C2L1Param(__cbuf__ T *dst, __cc__ U *src, c
     ASCENDC_ASSERT((dstAbsAddr % ONE_BLK_SIZE == 0), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dstLocal start "\
         "address alignment in Fixpipe, when dst position is A1, its start address must align with 32B");});
 #endif
-    ASCENDC_DEBUG_ASSERT((!(params.isChannelSplit)), "Failed to check isChannelSplit in Fixpipe, when src position is "\
-        "CO1 and dst position is A1, isChannelSplit must be set as false \n");
+    ASCENDC_DEBUG_ASSERT((!(params.isChannelSplit)), KERNEL_LOG(KERNEL_ERROR, "Failed to check isChannelSplit in Fixpipe, when src position is "\
+        "CO1 and dst position is A1, isChannelSplit must be set as false \n"));
 
     static_assert((SupportType<Tuple<U, T>, Tuple<float, int8_t>, Tuple<float, uint8_t>, Tuple<float, half>,
         Tuple<float, float>, Tuple<int32_t, int32_t>, Tuple<int32_t, int8_t>, Tuple<int32_t, uint8_t>, Tuple<int32_t, half>>()),
@@ -208,10 +208,10 @@ __aicore__ inline void CheckFixpipeL0C2GMParam(__gm__ T *dst, __cc__ U *src, con
             "value in Fixpipe, when src is int32_t, dst is int32_t, supported value is NoQuant");});
     }
     if (params.isChannelSplit) {
-        ASCENDC_DEBUG_ASSERT((IsSameType<U, float>::value && IsSameType<T, float>::value), "Failed to check "\
-            "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n");
-        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), "Failed to check format value in Fixpipe, "\
-            "when isChannelSplit is set true, format must be set as NZ \n");
+        ASCENDC_DEBUG_ASSERT((IsSameType<U, float>::value && IsSameType<T, float>::value), KERNEL_LOG(KERNEL_ERROR, "Failed to check "\
+            "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n"));
+        ASCENDC_DEBUG_ASSERT((config.format != CO2Layout::ROW_MAJOR), KERNEL_LOG(KERNEL_ERROR, "Failed to check format value in Fixpipe, "\
+            "when isChannelSplit is set true, format must be set as NZ \n"));
     }
 }
 

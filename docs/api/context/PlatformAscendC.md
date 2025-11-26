@@ -4,7 +4,7 @@
 
 -   **[构造及析构函数](构造及析构函数.md)**  
 
--   **[GetCoreNum](GetCoreNum-81.md)**  
+-   **[GetCoreNum](GetCoreNum-80.md)**  
 
 -   **[GetSocVersion](GetSocVersion.md)**  
 

@@ -32,9 +32,9 @@
 
     以上说明适用于如下型号：
 
-    Atlas A2 训练系列产品/Atlas A2 推理系列产品
-
     Atlas A3 训练系列产品/Atlas A3 推理系列产品
+
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 函数原型<a name="section620mcpsimp"></a>
 

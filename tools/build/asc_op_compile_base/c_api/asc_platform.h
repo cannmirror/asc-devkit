@@ -115,6 +115,7 @@ constexpr const char* Ascend_910_950y = "Ascend910_950y";
 constexpr const char* Ascend_910_950z = "Ascend910_950z";
 constexpr const char* Ascend_910_957b = "Ascend910_957b";
 constexpr const char* Ascend_910_957d = "Ascend910_957d";
+constexpr const char* Ascend_910_957c = "Ascend910_957c";
 constexpr const char* Ascend_910_9589 = "Ascend910_9589";
 constexpr const char* Ascend_910_958a = "Ascend910_958a";
 constexpr const char* Ascend_910_958b = "Ascend910_958b";
@@ -595,12 +596,12 @@ class CceConfBase {
       Ascend_910_93,    Ascend_910_9391,    Ascend_910_9392,    Ascend_910_9381,  Ascend_910_9382,
       Ascend_910_9372,  Ascend_910_9362,    kAscend610Lite,     BS9SX2AA,         BS9SX2AB,
       MC61AM21AA,     MC61AM21AB,           Ascend_035,         Ascend_035A,      Ascend_035B,   
-      AS31XM1,       AS31XM1X,              Ascend_910_950z,    Ascend_910_957b,  Ascend_910_957d,
-      Ascend_910_9589,    Ascend_910_958a,    Ascend_910_958b,  Ascend_910_9599,  Ascend_910_5591,
-      Ascend_910_950y,    Ascend_910_9579,  Ascend_910_9591,    Ascend_910_9592,  Ascend_910_9581,
-      Ascend_910_9582,    Ascend_910_9584,  Ascend_910_9587,    Ascend_910_9588,  Ascend_910_9572,
-      Ascend_910_9575,    Ascend_910_9576,  Ascend_910_9574,    Ascend_910_9577,  Ascend_910_9578,
-      MC62CM12AA};
+      AS31XM1,       AS31XM1X,              Ascend_910_950z,    Ascend_910_957b,  Ascend_910_957c,
+      Ascend_910_957d, Ascend_910_9589,    Ascend_910_958a,    Ascend_910_958b,  Ascend_910_9599,
+      Ascend_910_5591, Ascend_910_950y,    Ascend_910_9579,  Ascend_910_9591,    Ascend_910_9592,
+      Ascend_910_9581, Ascend_910_9582,    Ascend_910_9584,  Ascend_910_9587,    Ascend_910_9588,
+      Ascend_910_9572, Ascend_910_9575,    Ascend_910_9576,  Ascend_910_9574,    Ascend_910_9577,
+      Ascend_910_9578, MC62CM12AA};
   enum platformconf::TIK_VERSION current_tik_version_ = platformconf::TIK_VERSION::TIK_1_0;
   const std::map<const std::string, platformconf::TIK_VERSION> kStringToTikVersion = {
       {"TIK1.0", platformconf::TIK_VERSION::TIK_1_0},

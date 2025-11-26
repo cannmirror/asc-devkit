@@ -60,6 +60,10 @@ void GetLayerNormGradMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typ
 void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, optiling::LayerNormGradTiling &tiling)
 ```
 
+```
+void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::LayerNormGradTiling &tiling)
+```
+
 ## 参数说明<a name="section622mcpsimp"></a>
 
 **表 1**  GetLayerNormGradMaxMinTmpSize接口参数列表

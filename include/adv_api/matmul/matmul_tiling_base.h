@@ -21,9 +21,9 @@
 #include "tiling/platform/platform_ascendc.h"
 
 namespace matmul_tiling {
-#if !defined(__NPU_DEVICE__) && !defined(__NPU_HOST__)
+#if !defined(__NPU_DEVICE__) && !defined(__NPU_HOST__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
 using half = double;
-#endif
+#endif // !defined(__NPU_DEVICE__) && !defined(__NPU_HOST__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
 constexpr int32_t UINT8_BYTES = 1;
 constexpr int32_t INT8_BYTES = 1;
 constexpr int32_t FP32_BYTES = 4;
@@ -74,7 +74,7 @@ enum class DataType : int32_t {
     DT_MAX = 40             // Mark the boundaries of data types
 };
 
-#ifndef __NPU_DEVICE__
+#if !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 const std::map<DataType, uint32_t> DTYPE_BYTE_TAB = {
     {DataType::DT_FLOAT, 4}, {DataType::DT_FLOAT16, 2}, {DataType::DT_INT8, 1}, {DataType::DT_INT16, 2},
     {DataType::DT_UINT16, 2}, {DataType::DT_UINT8, 1}, {DataType::DT_INT32, 4}, {DataType::DT_INT64, 8},
@@ -90,7 +90,7 @@ const std::map<DataType, uint32_t> DTYPE_BIT_TAB = {
     {DataType::DT_INT4, 4}, {DataType::DT_FLOAT4_E2M1, 4}, {DataType::DT_FLOAT4_E1M2, 4}, {DataType::DT_HIFLOAT8, 8},
     {DataType::DT_FLOAT8_E4M3FN, 8}, {DataType::DT_FLOAT8_E5M2, 8}, {DataType::DT_FLOAT8_E8M0, 8}
 };
-#endif // __NPU_DEVICE__
+#endif // !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 /**
 * @enum class TPosition
 * @brief TPosition inherits from int32_t and includes a set of storage positions

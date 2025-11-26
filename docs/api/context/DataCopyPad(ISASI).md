@@ -33,21 +33,21 @@
 
         ```
         template <typename T>
-        __aicore__ inline void DataCopyPad(const LocalTensor<T> &dst, const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<T> &padParams)
+        __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const DataCopyExtParams& dataCopyParams, const DataCopyPadExtParams<T>& padParams)
         ```
 
     -   通路：Local Memory-\>Global Memory
 
         ```
         template <typename T>
-        __aicore__ inline void DataCopyPad(const GlobalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyExtParams &dataCopyParams)
+        __aicore__ inline void DataCopyPad(const GlobalTensor<T>& dst, const LocalTensor<T>& src, const DataCopyExtParams& dataCopyParams)
         ```
 
     -   通路：Local Memory-\>Local Memory，实际搬运过程是VECIN/VECOUT-\>GM-\>TSCM
 
         ```
         template <typename T>
-        __aicore__ inline void DataCopyPad(const LocalTensor<T> &dst, const LocalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const Nd2NzParams &nd2nzParams)
+        __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const LocalTensor<T>& src, const DataCopyExtParams& dataCopyParams, const Nd2NzParams& nd2nzParams)
         ```
 
 -   dataCopyParams为[DataCopyParams](#table9182515919)类型
@@ -77,24 +77,24 @@
 **表 1**  不同产品型号对函数原型的支持度
 
 <a name="table19300151419354"></a>
-<table><thead align="left"><tr id="row143011314143513"><th class="cellrowborder" valign="top" width="39.68%" id="mcps1.2.4.1.1"><p id="p19301171413514"><a name="p19301171413514"></a><a name="p19301171413514"></a>产品型号</p>
+<table><thead align="left"><tr id="row143011314143513"><th class="cellrowborder" valign="top" width="29.909999999999997%" id="mcps1.2.4.1.1"><p id="p19301171413514"><a name="p19301171413514"></a><a name="p19301171413514"></a>产品型号</p>
 </th>
-<th class="cellrowborder" valign="top" width="44.79%" id="mcps1.2.4.1.2"><p id="p1830141412353"><a name="p1830141412353"></a><a name="p1830141412353"></a>支持的数据传输通路</p>
+<th class="cellrowborder" valign="top" width="54.559999999999995%" id="mcps1.2.4.1.2"><p id="p1830141412353"><a name="p1830141412353"></a><a name="p1830141412353"></a>支持的数据传输通路</p>
 </th>
 <th class="cellrowborder" valign="top" width="15.53%" id="mcps1.2.4.1.3"><p id="p116921969216"><a name="p116921969216"></a><a name="p116921969216"></a>是否支持设置数据搬运模式mode（搬运模式包括单次搬运对齐和整块数据搬运对齐）</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row17301101417355"><td class="cellrowborder" valign="top" width="39.68%" headers="mcps1.2.4.1.1 "><p id="p7585124612359"><a name="p7585124612359"></a><a name="p7585124612359"></a><span id="ph758518467351"><a name="ph758518467351"></a><a name="ph758518467351"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row17301101417355"><td class="cellrowborder" valign="top" width="29.909999999999997%" headers="mcps1.2.4.1.1 "><p id="p7585124612359"><a name="p7585124612359"></a><a name="p7585124612359"></a><span id="ph758518467351"><a name="ph758518467351"></a><a name="ph758518467351"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
-<td class="cellrowborder" valign="top" width="44.79%" headers="mcps1.2.4.1.2 "><p id="p183162199399"><a name="p183162199399"></a><a name="p183162199399"></a>GM-&gt;VECIN/VECOUT、VECIN/VECOUT-&gt;GM、VECIN/VECOUT-&gt;TSCM</p>
+<td class="cellrowborder" valign="top" width="54.559999999999995%" headers="mcps1.2.4.1.2 "><p id="p183162199399"><a name="p183162199399"></a><a name="p183162199399"></a>GM-&gt;VECIN/VECOUT、VECIN/VECOUT-&gt;GM、VECIN/VECOUT-&gt;TSCM</p>
 </td>
 <td class="cellrowborder" valign="top" width="15.53%" headers="mcps1.2.4.1.3 "><p id="p769218692114"><a name="p769218692114"></a><a name="p769218692114"></a>否</p>
 </td>
 </tr>
-<tr id="row1630161420353"><td class="cellrowborder" valign="top" width="39.68%" headers="mcps1.2.4.1.1 "><p id="p55852046133515"><a name="p55852046133515"></a><a name="p55852046133515"></a><span id="ph1158524643516"><a name="ph1158524643516"></a><a name="ph1158524643516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row1630161420353"><td class="cellrowborder" valign="top" width="29.909999999999997%" headers="mcps1.2.4.1.1 "><p id="p55852046133515"><a name="p55852046133515"></a><a name="p55852046133515"></a><span id="ph1158524643516"><a name="ph1158524643516"></a><a name="ph1158524643516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
-<td class="cellrowborder" valign="top" width="44.79%" headers="mcps1.2.4.1.2 "><p id="p6822102933911"><a name="p6822102933911"></a><a name="p6822102933911"></a>GM-&gt;VECIN/VECOUT、VECIN/VECOUT-&gt;GM、VECIN/VECOUT-&gt;TSCM</p>
+<td class="cellrowborder" valign="top" width="54.559999999999995%" headers="mcps1.2.4.1.2 "><p id="p6822102933911"><a name="p6822102933911"></a><a name="p6822102933911"></a>GM-&gt;VECIN/VECOUT、VECIN/VECOUT-&gt;GM、VECIN/VECOUT-&gt;TSCM</p>
 </td>
 <td class="cellrowborder" valign="top" width="15.53%" headers="mcps1.2.4.1.3 "><p id="p12692266214"><a name="p12692266214"></a><a name="p12692266214"></a>否</p>
 </td>
@@ -116,8 +116,8 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="18.21%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.78999999999999%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数以及paddingValue（待填充数据值）的数据类型。</p>
-<p id="p5583135802514"><a name="p5583135802514"></a><a name="p5583135802514"></a><span id="ph164521232145312"><a name="ph164521232145312"></a><a name="ph164521232145312"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_2"><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/int16_t/uint16_t/float/int32_t/uint32_t/int8_t/uint8_t/int64_t/uint64_t/double</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_2"><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/int16_t/uint16_t/float/int32_t/uint32_t/int8_t/uint8_t/int64_t/uint64_t/double</p>
+<p id="p5583135802514"><a name="p5583135802514"></a><a name="p5583135802514"></a><span id="ph164521232145312"><a name="ph164521232145312"></a><a name="ph164521232145312"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_2"><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/int16_t/uint16_t/float/int32_t/uint32_t/int8_t/uint8_t/int64_t/uint64_t/double</p>
 </td>
 </tr>
 </tbody>
@@ -276,13 +276,13 @@
 <p id="p16581027171419"><a name="p16581027171419"></a><a name="p16581027171419"></a><strong id="b175814271148"><a name="b175814271148"></a><a name="b175814271148"></a>leftPadding、rightPadding所占的字节数均不能超过32字节。</strong></p>
 </td>
 </tr>
-<tr id="row1944916196475"><td class="cellrowborder" valign="top" width="18.44%" headers="mcps1.2.3.1.1 "><p id="p1397111514816"><a name="p1397111514816"></a><a name="p1397111514816"></a>rightPadding</p>
+<tr id="row1944916196475"><td class="cellrowborder" valign="top" width="18.44%" headers="mcps1.2.3.1.1 "><p id="p1397111514816"><a name="p1397111514816"></a><a name="p1397111514816"></a>rightPadValue</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.56%" headers="mcps1.2.3.1.2 "><p id="p144493191478"><a name="p144493191478"></a><a name="p144493191478"></a>连续搬运数据块右侧需要补充的数据范围，单位为元素个数。</p>
 <p id="p1190468201516"><a name="p1190468201516"></a><a name="p1190468201516"></a><strong id="b19904883152"><a name="b19904883152"></a><a name="b19904883152"></a>leftPadding、rightPadding所占的字节数均不能超过32字节。</strong></p>
 </td>
 </tr>
-<tr id="row2449119174717"><td class="cellrowborder" valign="top" width="18.44%" headers="mcps1.2.3.1.1 "><p id="p1217581074813"><a name="p1217581074813"></a><a name="p1217581074813"></a>paddingValue</p>
+<tr id="row2449119174717"><td class="cellrowborder" valign="top" width="18.44%" headers="mcps1.2.3.1.1 "><p id="p1217581074813"><a name="p1217581074813"></a><a name="p1217581074813"></a>padValue</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.56%" headers="mcps1.2.3.1.2 "><p id="p1445013195477"><a name="p1445013195477"></a><a name="p1445013195477"></a>左右两侧需要填充的数据值，需要保证在数据占用字节范围内。</p>
 <p id="p1126181121313"><a name="p1126181121313"></a><a name="p1126181121313"></a>数据类型和源操作数保持一致，T数据类型。</p>

@@ -117,5 +117,5 @@ __aicore__ inline void Extract(const LocalTensor<T> &dstValue, const LocalTensor
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-请参见[MrgSort](MrgSort-38.md)的调用示例。
+请参见[MrgSort](MrgSort-37.md)的调用示例。
 

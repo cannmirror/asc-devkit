@@ -16,6 +16,8 @@
 #define ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 
+inline __gm__ uint8_t* g_sysPrintFifoSpace = nullptr;
+
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_dump_tensor_impl.h"
 #elif __NPU_ARCH__ == 2002
@@ -39,7 +41,7 @@ namespace AscendC {
 template <typename T>
 __aicore__ inline void DumpTensor(const LocalTensor<T> &input, uint32_t desc, uint32_t dumpSize)
 {
-ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
+    ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #ifdef ASCENDC_DUMP
     DumpTensorLocal2GMImpl(input, desc, dumpSize);
 #endif
@@ -48,7 +50,7 @@ ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported i
 template <typename T>
 __aicore__ inline void DumpTensor(const GlobalTensor<T>& input, uint32_t desc, uint32_t dumpSize)
 {
-ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
+    ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #ifdef ASCENDC_DUMP
     DumpTensorGM2GMImpl(input, desc, dumpSize);
 #endif
@@ -57,7 +59,7 @@ ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported i
 template <typename T>
 __aicore__ inline void DumpTensor(const GlobalTensor<T>& input, uint32_t desc, uint32_t dumpSize, const ShapeInfo& shapeInfo)
 {
-ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
+    ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #ifdef ASCENDC_DUMP
     DumpShapeImpl(shapeInfo);
     DumpTensorGM2GMImpl(input, desc, dumpSize);
@@ -67,7 +69,7 @@ ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported i
 template <typename T>
 __aicore__ inline void DumpTensor(const LocalTensor<T>& input, uint32_t desc, uint32_t dumpSize, const ShapeInfo& shapeInfo)
 {
-ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
+    ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #ifdef ASCENDC_DUMP
     DumpShapeImpl(shapeInfo);
     DumpTensorLocal2GMImpl(input, desc, dumpSize);
@@ -78,7 +80,7 @@ ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported i
 template <typename T>
 __aicore__ inline void DumpAccChkPoint(const LocalTensor<T> &input, uint32_t index, uint32_t countOff, uint32_t dumpSize)
 {
-ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
+    ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
 #if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
     if (countOff > input.GetSize()) {
         ASCENDC_ASSERT((false),
@@ -94,7 +96,7 @@ ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not suppor
 template <typename T>
 __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &input, uint32_t index, uint32_t countOff, uint32_t dumpSize)
 {
-ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
+    ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
 #if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
     if (countOff > input.GetSize()) {
         ASCENDC_ASSERT((false),
@@ -108,7 +110,7 @@ ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not suppor
     return;
 }
 
-#ifdef __NPU_DEVICE__
+#if defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 template <class... Args>
 __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 {
@@ -124,7 +126,7 @@ __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 #endif
 }
 
-#else
+#else // !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__) 
 
 #ifdef ASCENDC_CPU_DEBUG
 using ::printf;
@@ -139,7 +141,7 @@ inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)..
 #endif
 }
 
-#ifdef __NPU_HOST__
+#if defined(__NPU_HOST__) || defined(__ASCC_HOST__)
 template <class... Args>
 inline void PRINTF(const char* fmt, Args&&... args)
 {
@@ -147,7 +149,7 @@ inline void PRINTF(const char* fmt, Args&&... args)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
-#endif //__NPU_HOST__
+#endif // defined(__NPU_HOST__) || defined(__ASCC_HOST__)
 
 #else
 template <class... Args>
@@ -166,7 +168,7 @@ __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 #endif
 }
 #endif // ASCENDC_CPU_DEBUG
-#endif // __NPU_DEVICE__
+#endif // defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 
 #if defined(ASCENDC_DUMP_ASSERT_ONLY)
 __BLOCK_LOCAL__ __inline__ __gm__ uint8_t* g_dumpAddrAssertOnlyReserved;
@@ -197,7 +199,7 @@ __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args)
 
 // for auto open ASCENDC_DUMP macros
 #ifdef __CHECK_FEATURE_AT_PRECOMPILE
-#if !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__)
+#if !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
 #define DumpTensor(...)            \
     do {                           \
         ENABLE_PRINTF();           \
@@ -221,8 +223,8 @@ __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args)
         ENABLE_PRINTF();           \
         ENABLE_PRINTF_DUMP_SIZE(); \
     } while (0)
-#endif
-#endif
+#endif // !defined(__NPU_HOST__) && !defined(__NPU_DEVICE__) && !defined(__ASCC_HOST__) && !defined(__ASCC_DEVICE__)
+#endif // __CHECK_FEATURE_AT_PRECOMPILE
 
 __aicore__ inline void PrintTimeStamp(uint32_t descId)
 {
@@ -233,4 +235,3 @@ __aicore__ inline void PrintTimeStamp(uint32_t descId)
 
 }  // namespace AscendC
 #endif  // END OF ASCENDC_MODULE_OPERATOR_DUMP_TENSOR_INTERFACE_IMPL_H
-

@@ -21,7 +21,6 @@ from asc_op_compile_base.common.buildcfg.buildcfg_mapping import op_debug_config
 from .ascendc_constants import KernelMetaType, STR_TO_KERNEL_TYPE_V220
 from .ascendc_common_utility import CommonUtility, gen_func_align_attribute
 from .ascendc_compile_base import search_in_line, extract_file_path
-from .ascendc_compile_gen_code import gen_dci_codes
 from asc_op_compile_base.common.utils.log_utils import AscendCLogLevel, CompileStage
 from .super_kernel_constants import ERR_CODE
 
@@ -65,7 +64,7 @@ def check_exist_forbidden_symbols(dst_i_file, forbidden_symbols, allow_path):
 
 def check_exist_instrinsic_when_super_kernel(dst_i_file):
     forbbiden_instrinsis = ['get_block_idx', 'get_block_num', 'get_task_ration', 'block_idx']
-    allow_instrinsic_path_mark = ['ccec_compiler', 'tikcpp/tikcfw']
+    allow_instrinsic_path_mark = ['ccec_compiler', 'tikcpp/tikcfw', 'asc/impl']
     result_symbol_list, path_list, line_result =\
         check_exist_forbidden_symbols(dst_i_file, forbbiden_instrinsis, allow_instrinsic_path_mark)
     result_str = ''
