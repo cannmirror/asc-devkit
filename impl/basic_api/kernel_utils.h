@@ -80,7 +80,7 @@ public:
 
     __aicore__ static inline void InitSocStateImpl()
     {
-    set_atomic_none();
+        set_atomic_none();
     #if __NPU_ARCH__ == 2201
         set_mask_norm();
         if ASCEND_IS_AIC {
@@ -413,13 +413,16 @@ public:
         if ASCEND_IS_NOT_AIV {
             if (status) {
                 uint64_t oriGmAddr = reinterpret_cast<uint64_t>(gmAddr);
-                const uint64_t sysOffset = g_opSystemRunCfg.l2Cacheoffset;
-                const uint64_t hintOffset = g_opL2CacheHintCfg.l2Cacheoffset;
-                if (sysOffset != 0 && oriGmAddr >= sysOffset) {
-                    oriGmAddr -= sysOffset;
-                } else if (oriGmAddr >= hintOffset) {
-                    oriGmAddr -= hintOffset;
+#ifdef __NPU_DEVICE__
+                const uint64_t l2Cacheoffset = g_opL2CacheHintCfg.l2Cacheoffset;
+                if (oriGmAddr >= l2Cacheoffset) {
+                    oriGmAddr -= l2Cacheoffset;
                 }
+#else // ifndef __NPU_DEVICE__
+                if (oriGmAddr >= g_opSystemRunCfg.l2Cacheoffset) {
+                    oriGmAddr -= g_opSystemRunCfg.l2Cacheoffset;
+                }
+#endif // __NPU_DEVICE__
                 gmAddrConvert = reinterpret_cast<uintptr_t>(oriGmAddr);
                 status = OOMCheckAddrIsOverflow(gmAddrConvert, gmLen);
             }
@@ -428,7 +431,7 @@ public:
         constexpr uint64_t errCode = 0X5A5A0001;
         if (status) {
 #if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 5102) ||    \
+    ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 5102) ||                              \
      (__NPU_ARCH__ == 3101))
             trap();
 #else

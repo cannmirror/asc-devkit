@@ -45,9 +45,10 @@ public:
             splitSize_ = (batchNum % DB_FACTOR == 0) ? DB_FACTOR : 1;
             splitBatchNum_ = batchNum / splitSize_;
         }
-
-        CalcBatchNum(tiling.GetBatchNum(), tiling.GetBatchNum());
-        batchNum_ = batchA_ > batchB_ ? batchA_ : batchB_;
+        batchA_ = tiling.GetBatchNum();
+        batchB_ = tiling.GetBatchNum();
+        totalBatchNum_ = batchA_;
+        batchNum_ = batchA_;
     }
 
     __aicore__ inline void SetBatchNum(int32_t batchNumA, int32_t batchNumB)

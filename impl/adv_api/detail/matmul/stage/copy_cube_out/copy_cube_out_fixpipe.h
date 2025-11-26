@@ -136,7 +136,7 @@ private:
         auto stride = baseWidth;
         int64_t dstOffset  = 0;
         if constexpr (!enSequentialWrite) {
-            stride = GetOrgWidth<isIntraBlock>();
+            stride = GetDstStride<isIntraBlock>();
             if constexpr (!IsBasic(MM_CFG)) {
                 dstOffset = GetDstOffset(curRow, curCol, baseHeight, stride);
             }
@@ -392,13 +392,43 @@ private:
     template <bool isIntraBlock = false>
     __aicore__ inline uint32_t GetOrgWidth()
     {
-        uint32_t dimN = GetOrgN<isIntraBlock>();
+        uint32_t dimN = MATMUL_MODULE(MatmulShapeInfo)->template GetOrgN<isIntraBlock>();
         if (GetOrgKc<isIntraBlock>() != 0) {
             dimN = GetOrgKc<isIntraBlock>();
         }
-        constexpr uint32_t blockCount = ONE_BLK_SIZE / sizeof(DstT);
         if constexpr (C_TYPE::format == CubeFormat::ND_ALIGN) {
+            constexpr uint32_t blockCount = ONE_BLK_SIZE / sizeof(DstT);
             dimN = Ceil(dimN, blockCount) * blockCount;
+        }
+        return dimN;
+    }
+
+    template <bool isIntraBlock = false>
+    __aicore__ inline uint32_t GetDstBNGStride()
+    {
+        int32_t alignedSingleCoreN = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoS2();
+        if constexpr (C_TYPE::format == CubeFormat::ND_ALIGN) {
+            constexpr uint32_t blockCount = ONE_BLK_SIZE / sizeof(DstT);
+
+            alignedSingleCoreN = Ceil(alignedSingleCoreN, blockCount) * blockCount;
+        }
+        if constexpr (C_TYPE::layout == LayoutMode::SBNGD) {
+            return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoG() * alignedSingleCoreN *
+                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoN() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoB();
+        } else if constexpr (C_TYPE::layout == LayoutMode::BSNGD) {
+            return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoG() * alignedSingleCoreN *
+                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoN();
+        }
+    }
+
+    template <bool IS_INTRA_BLOCK = false>
+    __aicore__ inline uint32_t GetDstStride()
+    {
+        uint32_t dimN;
+        if constexpr (C_TYPE::layout != LayoutMode::SBNGD && C_TYPE::layout != LayoutMode::BSNGD) { // Scenario 1: Continuous copy on M/N axis
+            dimN = GetOrgWidth();
+        } else { // Scenario 2: disconsecutive copy on M/N axis for SBNGD/BSNGD
+            dimN = GetDstBNGStride();
         }
         return dimN;
     }
@@ -424,20 +454,6 @@ private:
             return Ceil(MATMUL_MODULE(MatmulShapeInfo)->template GetOrgM<isIntraBlock>(), BLOCK_CUBE) * BLOCK_CUBE;
         } else {
             return MATMUL_MODULE(MatmulShapeInfo)->template GetOrgM<isIntraBlock>();
-        }
-    }
-
-    template <bool isIntraBlock = false>
-    __aicore__ inline uint32_t GetOrgN()
-    {
-        if constexpr (C_TYPE::layout == LayoutMode::SBNGD) {
-            return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoG() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoS2() *
-                MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoN() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoB();
-        } else if constexpr (C_TYPE::layout == LayoutMode::BSNGD) {
-            return MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoG() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoS2() *
-                    MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetCLayoutInfoN();
-        } else {
-            return MATMUL_MODULE(MatmulShapeInfo)->template GetOrgN<isIntraBlock>();
         }
     }
 
@@ -495,7 +511,7 @@ private:
             auto baseM = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
             auto baseN = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
             if constexpr (C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
-                dstStrideIn = GetOrgWidth();
+                dstStrideIn = GetDstStride();
                 nSize = static_cast<uint16_t>(baseWidth);
                 dstOffset = static_cast<int64_t>(static_cast<int64_t>(curRow * baseM) * dstStrideIn) +
                     static_cast<int64_t>(curCol * baseN);

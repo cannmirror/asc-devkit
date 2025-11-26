@@ -24,7 +24,7 @@ kernel侧Gelu、FasterGelu、FasterGeluV2接口的计算需要开发者预留/�
 -   获取Kernel接口计算所需最大/最小临时空间的接口
 
     ```
-    inline void GetGeluMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
+    void GetGeluMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

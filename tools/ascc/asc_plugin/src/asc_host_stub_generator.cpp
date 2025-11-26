@@ -125,7 +125,7 @@ std::string AscHostStubGenerator::ManglingNameJudgeCode()
     return judgeCode;
 }
 
-static std::string MapParamTypeToVoid(std::string paramType)
+inline std::string MapParamTypeToVoid(std::string paramType)
 {
     return (paramType == "uint8_t *" || paramType == "unsigned char *") ? "void*" : paramType;
 }
@@ -133,24 +133,24 @@ static std::string MapParamTypeToVoid(std::string paramType)
 void AscHostStubGenerator::GenStubFuncImpl()
 {
     auto &infoManager = InfoManager::GetInstance();
+    uint32_t maxCoreNum = infoManager.GetMaxCoreNum();
+    bool isSupportFifoDump = infoManager.IsSupportFifoDump();
     KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     std::ostringstream funcImplCode;
     funcImplCode << GenStubFuncDecl(/* hasNameSpace = */true) << "\n{\n";
     funcImplCode << "    struct {\n";
-    if (infoManager.IsDumpOn()) {
+    if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "        void* __ascendc_dump;\n";
     }
-
     for (auto &param : kernelInfo_.kernelParameters) {
         funcImplCode << "        alignas(((alignof(" << MapParamTypeToVoid(param.type) << ") + 3) >> 2) << 2) "
                      << MapParamTypeToVoid(param.type) << " " << param.name << ";\n";
     }
     funcImplCode << "        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;\n";
     funcImplCode << "    } __ascendc_args {";
-    if (infoManager.IsDumpOn()) {
+    if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "nullptr, ";
     }
-
     for (auto &param : kernelInfo_.kernelParameters) {
         funcImplCode << param.name << ", ";
     }
@@ -158,11 +158,11 @@ void AscHostStubGenerator::GenStubFuncImpl()
 
     // args declare code
     funcImplCode << "    uint32_t __ascendc_ret;\n";
-    if (infoManager.IsDumpOn()) {
+    if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "    constexpr uint32_t __ascendc_one_core_dump_size = "
                      << std::to_string(infoManager.GetOneCoreDumpSize()) << ";\n";
-        funcImplCode <<
-            "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * 75);\n";
+        funcImplCode << "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * "
+                     << maxCoreNum << ");\n";
     }
     funcImplCode << "    constexpr uint32_t __ascendc_overflow_status_size = 8;\n";
     funcImplCode <<
@@ -178,7 +178,7 @@ void AscHostStubGenerator::GenStubFuncImpl()
                     "\"call kernel function failure!\");\n";
     funcImplCode << "        return;\n";
     funcImplCode << "    }\n";
-    if (infoManager.IsDumpOn() && infoManager.HasAssert()) {
+    if (!isSupportFifoDump && infoManager.IsDumpOn() && infoManager.HasAssert()) {
         funcImplCode << "    __ascendc_ret = "
                         "AscPluginGenerator::ascendc_set_exception_dump_info(__ascendc_one_core_dump_size);\n";
         funcImplCode << "    if(__ascendc_ret != 0) {\n";
@@ -195,11 +195,11 @@ void AscHostStubGenerator::GenStubFuncImpl()
     funcImplCode << "        return;\n";
     funcImplCode << "    }\n";
     funcImplCode << "    AscPluginGenerator::GetHandleUnregisterInst();\n";
-    if (infoManager.IsDumpOn() && infoManager.HasPrintf()) {
-        funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, "
-                               "__ascendc_one_core_dump_size * 75, __ascendc_stream, __ascendc_name);\n";
+    if (!isSupportFifoDump && infoManager.IsDumpOn() && infoManager.HasPrintf()) {
+        funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * "
+                     << maxCoreNum << ", __ascendc_stream, __ascendc_name);\n";
     }
-    if (infoManager.IsDumpOn()) {
+    if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);\n";
     }
     funcImplCode << "    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);\n";

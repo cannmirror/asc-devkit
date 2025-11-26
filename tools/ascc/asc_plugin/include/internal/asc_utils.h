@@ -79,6 +79,7 @@ enum class ShortSocVersion : uint32_t {
     ASCEND310P = 1,
     ASCEND910 = 2,
     ASCEND310B = 3,
+    ASCEND910_95 = 4,
     INVALID_TYPE = 0xffffffff
 };
 
@@ -111,7 +112,7 @@ inline const std::unordered_map<KernelMetaType, PluginKernelType> META_KTYPE_TO_
 };
 
 const std::unordered_map<std::string, AscPlugin::ShortSocVersion> SOC_VERSION_MAP = {
-    {"Ascend910B1", AscPlugin::ShortSocVersion::ASCEND910B},     // ascend910b_list
+    {"Ascend910B1", AscPlugin::ShortSocVersion::ASCEND910B},        // ascend910b_list
     {"Ascend910B2", AscPlugin::ShortSocVersion::ASCEND910B},
     {"Ascend910B2C", AscPlugin::ShortSocVersion::ASCEND910B},
     {"Ascend910B3", AscPlugin::ShortSocVersion::ASCEND910B},
@@ -123,12 +124,14 @@ const std::unordered_map<std::string, AscPlugin::ShortSocVersion> SOC_VERSION_MA
     {"Ascend910_9392", AscPlugin::ShortSocVersion::ASCEND910B},
     {"Ascend910_9382", AscPlugin::ShortSocVersion::ASCEND910B},
     {"Ascend910_9362", AscPlugin::ShortSocVersion::ASCEND910B},
-    {"Ascend910A", AscPlugin::ShortSocVersion::ASCEND910},       // ascend910_list
+
+    {"Ascend910A", AscPlugin::ShortSocVersion::ASCEND910},          // ascend910_list
     {"Ascend910ProA", AscPlugin::ShortSocVersion::ASCEND910},
     {"Ascend910B", AscPlugin::ShortSocVersion::ASCEND910},
     {"Ascend910ProB", AscPlugin::ShortSocVersion::ASCEND910},
     {"Ascend910PremiumA", AscPlugin::ShortSocVersion::ASCEND910},
-    {"Ascend310P1", AscPlugin::ShortSocVersion::ASCEND310P},     // ascend310p_list
+
+    {"Ascend310P1", AscPlugin::ShortSocVersion::ASCEND310P},        // ascend310p_list
     {"Ascend310P3", AscPlugin::ShortSocVersion::ASCEND310P},
     {"Ascend310P5", AscPlugin::ShortSocVersion::ASCEND310P},
     {"Ascend310P7", AscPlugin::ShortSocVersion::ASCEND310P},
@@ -136,10 +139,21 @@ const std::unordered_map<std::string, AscPlugin::ShortSocVersion> SOC_VERSION_MA
     {"Ascend310P3Vir02", AscPlugin::ShortSocVersion::ASCEND310P},
     {"Ascend310P3Vir04", AscPlugin::ShortSocVersion::ASCEND310P},
     {"Ascend310P3Vir08", AscPlugin::ShortSocVersion::ASCEND310P},
-    {"Ascend310B1", AscPlugin::ShortSocVersion::ASCEND310B},     // ascend310b_list
+
+    {"Ascend310B1", AscPlugin::ShortSocVersion::ASCEND310B},        // ascend310b_list
     {"Ascend310B2", AscPlugin::ShortSocVersion::ASCEND310B},
     {"Ascend310B3", AscPlugin::ShortSocVersion::ASCEND310B},
-    {"Ascend310B4", AscPlugin::ShortSocVersion::ASCEND310B}
+    {"Ascend310B4", AscPlugin::ShortSocVersion::ASCEND310B},
+
+    {"Ascend910_957b", AscPlugin::ShortSocVersion::ASCEND910_95},   // ascend910_95_list
+    {"Ascend910_950z", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_958b", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_958a", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9599", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_957d", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9581", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9589", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_957c", AscPlugin::ShortSocVersion::ASCEND910_95},
 };
 
 const std::map<std::pair<AscPlugin::ShortSocVersion, AscPlugin::CoreType>, std::string> CCE_AICORE_MAP = {
@@ -150,7 +164,9 @@ const std::map<std::pair<AscPlugin::ShortSocVersion, AscPlugin::CoreType>, std::
     {{AscPlugin::ShortSocVersion::ASCEND910B, AscPlugin::CoreType::CUBE}, "dav-c220-cube"},
     {{AscPlugin::ShortSocVersion::ASCEND910B, AscPlugin::CoreType::VEC}, "dav-c220-vec"},
     {{AscPlugin::ShortSocVersion::ASCEND310B, AscPlugin::CoreType::CUBE}, "dav-m300"},
-    {{AscPlugin::ShortSocVersion::ASCEND310B, AscPlugin::CoreType::VEC}, "dav-m300"}
+    {{AscPlugin::ShortSocVersion::ASCEND310B, AscPlugin::CoreType::VEC}, "dav-m300"},
+    {{AscPlugin::ShortSocVersion::ASCEND910_95, AscPlugin::CoreType::CUBE}, "dav-c310-cube"},
+    {{AscPlugin::ShortSocVersion::ASCEND910_95, AscPlugin::CoreType::VEC}, "dav-c310-vec"},
 };
 
 const std::unordered_map<std::string, AscPlugin::ShortSocVersion> CCE_AICORE_ARCH_MAP = {
@@ -158,7 +174,10 @@ const std::unordered_map<std::string, AscPlugin::ShortSocVersion> CCE_AICORE_ARC
     {"dav-c220-vec", AscPlugin::ShortSocVersion::ASCEND910B},
     {"dav-c220", AscPlugin::ShortSocVersion::ASCEND910B},
     {"dav-m200", AscPlugin::ShortSocVersion::ASCEND310P},           // ascend310p_list
-    {"dav-m200-vec", AscPlugin::ShortSocVersion::ASCEND310P}
+    {"dav-m200-vec", AscPlugin::ShortSocVersion::ASCEND310P},
+    {"dav-c310-cube", AscPlugin::ShortSocVersion::ASCEND910_95},    // ascend910_95_list
+    {"dav-c310-vec", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"dav-c310", AscPlugin::ShortSocVersion::ASCEND910_95},
 };
 
 const std::unordered_map<AscPlugin::KernelMetaType, std::string> KERNEL_TYPE_STR_MAP = {
@@ -176,7 +195,8 @@ const std::unordered_map<AscPlugin::KernelMetaType, std::string> KERNEL_TYPE_STR
 
 const std::unordered_map<AscPlugin::ShortSocVersion, AscPlugin::KernelMetaType> DEFAULT_KERNEL_TYPE_MAP = {
     {AscPlugin::ShortSocVersion::ASCEND310P, AscPlugin::KernelMetaType::KERNEL_TYPE_AICORE},
-    {AscPlugin::ShortSocVersion::ASCEND910B, AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2}
+    {AscPlugin::ShortSocVersion::ASCEND910B, AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2},
+    {AscPlugin::ShortSocVersion::ASCEND910_95, AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2},
 };
 
 const std::unordered_map<std::string, AscPlugin::KernelMetaType> KERNEL_TYPE_MAP_V220 = {
@@ -191,6 +211,15 @@ const std::unordered_map<std::string, AscPlugin::KernelMetaType> KERNEL_TYPE_MAP
 const std::unordered_map<std::string, AscPlugin::KernelMetaType> KERNEL_TYPE_MAP_V200 = {
     {"KERNEL_TYPE_AICORE", AscPlugin::KernelMetaType::KERNEL_TYPE_AICORE},
     {"KERNEL_TYPE_MIX_VECTOR_CORE", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_VECTOR_CORE}
+};
+
+const std::unordered_map<std::string, AscPlugin::KernelMetaType> KERNEL_TYPE_MAP_C310 = {
+    {"KERNEL_TYPE_AIV_ONLY", AscPlugin::KernelMetaType::KERNEL_TYPE_AIV_ONLY},
+    {"KERNEL_TYPE_AIC_ONLY", AscPlugin::KernelMetaType::KERNEL_TYPE_AIC_ONLY},
+    {"KERNEL_TYPE_MIX_AIV_1_0", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0},
+    {"KERNEL_TYPE_MIX_AIC_1_0", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0},
+    {"KERNEL_TYPE_MIX_AIC_1_1", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1},
+    {"KERNEL_TYPE_MIX_AIC_1_2", AscPlugin::KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2}
 };
 
 constexpr int32_t ASC_SUCCESS = 0;

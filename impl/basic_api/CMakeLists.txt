@@ -36,6 +36,12 @@ install(FILES ${ASCENDC_INCLUDE_DIR}/kernel_operator.h
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include OPTIONAL
 )
 
+if(BUILD_OPEN_PROJECT)
+  install(DIRECTORY ${ASCENDC_INCLUDE_DIR}/basic_api/op_frame
+    DESTINATION ${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api OPTIONAL
+  )
+endif()
+
 install(DIRECTORY ${ASCENDC_INCLUDE_DIR}/basic_api
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include OPTIONAL
 )
@@ -106,7 +112,9 @@ install(CODE "file(CREATE_LINK ../basic_api/kernel_tpipe.h ${CMAKE_INSTALL_PREFI
 install(CODE "file(CREATE_LINK ../basic_api/kernel_type.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_type.h SYMBOLIC)")
 
 # 2 ascendc/include/basic_api
-install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
+if(NOT BUILD_OPEN_PROJECT)
+  install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
+endif()
 install(CODE "file(CREATE_LINK ../../../asc/include/interface ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/interface SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../asc/include/kernel_operator.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/kernel_operator.h SYMBOLIC)")
 

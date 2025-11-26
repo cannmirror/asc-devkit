@@ -2,20 +2,15 @@
 
 Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行编程。Ascend C编程类库API示意图如下所示，分为：
 
--   Kernel API：用于实现算子核函数的API接口。包括：
-    -   **基本数据结构**：kernel API中使用到的基本数据结构，比如GlobalTensor和LocalTensor。
-    -   **基础API**：实现对硬件能力的抽象，开放芯片的能力，保证完备性和兼容性。标注为ISASI（Instruction Set Architecture Special Interface，硬件体系结构相关的接口）类别的API，不能保证跨硬件版本兼容。
-    -   **高阶API**：实现一些常用的计算算法，用于提高编程开发效率，通常会调用多种基础API实现。高阶API包括数学库、Matmul、Softmax等API。高阶API可以保证兼容性。
-
--   **算子调测API**：用于算子调测的API，包括孪生调试，性能调测等。
-
-进行Ascend C算子Host侧编程时，需要使用基础数据结构和API；完成算子开发后，需要使用Runtime API完成算子的调用。
+-   **基础数据结构**：kernel API中使用到的基础数据结构，比如GlobalTensor和LocalTensor。
+-   **基础API**：实现对硬件能力的抽象，开放芯片的能力，保证完备性和兼容性。标注为ISASI（Instruction Set Architecture Special Interface，硬件体系结构相关的接口）类别的API，不能保证跨硬件版本兼容。
+-   **高阶API**：实现一些常用的计算算法，用于提高编程开发效率，通常会调用多种基础API实现。高阶API包括数学库、Matmul、Softmax等API。高阶API可以保证兼容性。
 
 ![](context/figures/编程API.png)
 
-## 基本数据结构<a name="section3119442205518"></a>
+## 基础数据结构<a name="section3119442205518"></a>
 
-**表 1**  基本数据结构列表
+**表 1**  基础数据结构列表
 
 <a name="table16268175715515"></a>
 <table><thead align="left"><tr id="row11268657105518"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p1026810577553"><a name="p1026810577553"></a><a name="p1026810577553"></a>接口名</p>
@@ -34,21 +29,6 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p625254835716"><a name="p625254835716"></a><a name="p625254835716"></a><span id="ph698815359590"><a name="ph698815359590"></a><a name="ph698815359590"></a>GlobalTensor用来存放Global Memory（外部存储）的全局数据。</span></p>
 </td>
 </tr>
-<tr id="row132691757135514"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p12663337155617"><a name="p12663337155617"></a><a name="p12663337155617"></a><a href="context\ShapeInfo.md">ShapeInfo</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p17251164811573"><a name="p17251164811573"></a><a name="p17251164811573"></a><span id="ph2676113715594"><a name="ph2676113715594"></a><a name="ph2676113715594"></a>ShapeInfo用来存放LocalTensor或GlobalTensor的shape信息。</span></p>
-</td>
-</tr>
-<tr id="row1726925715514"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p15191245165615"><a name="p15191245165615"></a><a name="p15191245165615"></a><a href="context\ListTensorDesc.md">ListTensorDesc</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1925111480570"><a name="p1925111480570"></a><a name="p1925111480570"></a><span id="ph151811939145918"><a name="ph151811939145918"></a><a name="ph151811939145918"></a>ListTensorDesc用来解析符合以下内存排布格式的数据， 并在kernel侧根据索引获取储存对应数据的地址及shape信息。</span></p>
-</td>
-</tr>
-<tr id="row826925718552"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p15871954155613"><a name="p15871954155613"></a><a name="p15871954155613"></a><a href="context\TensorDesc.md">TensorDesc</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p3250748125712"><a name="p3250748125712"></a><a name="p3250748125712"></a><span id="ph118431940145919"><a name="ph118431940145919"></a><a name="ph118431940145919"></a>TensorDesc用于储存<a href="context\ListTensorDesc.md">ListTensorDesc</a>.GetDesc()中根据index获取对应的Tensor描述信息。</span></p>
-</td>
-</tr>
 <tr id="row32691573557"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p8269195705514"><a name="p8269195705514"></a><a name="p8269195705514"></a><a href="context\Coordinate.md">Coordinate</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1825015488573"><a name="p1825015488573"></a><a name="p1825015488573"></a>Coordinate<span>本质上是一个元组（tuple），用于表示张量在不同维度的位置信息，即坐标值。</span></p>
@@ -62,16 +42,6 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <tr id="row97101411165713"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p5710711115712"><a name="p5710711115712"></a><a name="p5710711115712"></a><a href="context\TensorTrait.md">TensorTrait</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p167101111155717"><a name="p167101111155717"></a><a name="p167101111155717"></a><span id="ph287618459597"><a name="ph287618459597"></a><a name="ph287618459597"></a>TensorTrait数据结构是描述Tensor相关信息的基础模板类，包含Tensor的数据类型、逻辑位置和Layout内存布局。</span></p>
-</td>
-</tr>
-<tr id="row1462001485710"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p1726393614577"><a name="p1726393614577"></a><a name="p1726393614577"></a><a href="context\UnaryRepeatParams.md">UnaryRepeatParams</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p10620121414578"><a name="p10620121414578"></a><a name="p10620121414578"></a><span id="ph18941747105912"><a name="ph18941747105912"></a><a name="ph18941747105912"></a>UnaryRepeatParams为用于控制操作数地址步长的数据结构。结构体内包含操作数相邻迭代间相同<span id="zh-cn_topic_0000001487959374_ph1256166185416"><a name="zh-cn_topic_0000001487959374_ph1256166185416"></a><a name="zh-cn_topic_0000001487959374_ph1256166185416"></a>DataBlock</span>的地址步长，操作数同一迭代内不同<span id="zh-cn_topic_0000001487959374_ph763453417103"><a name="zh-cn_topic_0000001487959374_ph763453417103"></a><a name="zh-cn_topic_0000001487959374_ph763453417103"></a>DataBlock</span>的地址步长等参数。</span></p>
-</td>
-</tr>
-<tr id="row15620181775713"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p16620417185713"><a name="p16620417185713"></a><a name="p16620417185713"></a><a href="context\BinaryRepeatParams.md">BinaryRepeatParams</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p156203177576"><a name="p156203177576"></a><a name="p156203177576"></a><span id="ph17969749125910"><a name="ph17969749125910"></a><a name="ph17969749125910"></a>BinaryRepeatParams为用于控制操作数地址步长的数据结构。结构体内包含操作数相邻迭代间相同<span id="zh-cn_topic_0000001533390357_ph1256166185416"><a name="zh-cn_topic_0000001533390357_ph1256166185416"></a><a name="zh-cn_topic_0000001533390357_ph1256166185416"></a>DataBlock</span>的地址步长，操作数同一迭代内不同<span id="zh-cn_topic_0000001533390357_ph1672554912125"><a name="zh-cn_topic_0000001533390357_ph1672554912125"></a><a name="zh-cn_topic_0000001533390357_ph1672554912125"></a>DataBlock</span>的地址步长等参数。</span></p>
 </td>
 </tr>
 </tbody>
@@ -567,7 +537,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 6**  同步API列表
+**表 6**  同步控制API列表
 
 <a name="table921112251162"></a>
 <table><thead align="left"><tr id="row975619311161"><th class="cellrowborder" valign="top" width="40.37%" id="mcps1.2.3.1.1"><p id="p8307249121617"><a name="p8307249121617"></a><a name="p8307249121617"></a>接口名</p>
@@ -675,6 +645,11 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p764334516501"><a name="p764334516501"></a><a name="p764334516501"></a>获取当前AI处理器架构版本号。</p>
 </td>
 </tr>
+<tr id="row4284193416298"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p12284163417298"><a name="p12284163417298"></a><a name="p12284163417298"></a><a href="context\InitSocState.md">InitSocState</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1828453452913"><a name="p1828453452913"></a><a name="p1828453452913"></a>由于AI Core上存在一些全局状态，如原子累加状态、Mask模式等，在实际运行中，这些值可以被前序执行的算子修改而导致计算出现不符合预期的行为，在静态Tensor编程的场景中用户必须在Kernel入口处调用此函数来初始化AI Core状态 。</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -739,6 +714,11 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p9418735175516"><a name="p9418735175516"></a><a name="p9418735175516"></a>基于算子工程开发的算子，可以使用该接口Dump指定Tensor的内容。该接口可以支持指定偏移位置的Tensor打印。</p>
 </td>
 </tr>
+<tr id="row15977214153717"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1068951853720"><a name="p1068951853720"></a><a name="p1068951853720"></a><a href="context\PrintTimeStamp.md">PrintTimeStamp</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p149786149371"><a name="p149786149371"></a><a name="p149786149371"></a><span id="ph18761185413715"><a name="ph18761185413715"></a><a name="ph18761185413715"></a>提供时间戳打点功能，用于在算子Kernel代码中标记关键执行点。</span></p>
+</td>
+</tr>
 <tr id="row14208102016559"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p12418123512551"><a name="p12418123512551"></a><a name="p12418123512551"></a><a href="context\Trap.md">Trap</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1941853512557"><a name="p1941853512557"></a><a name="p1941853512557"></a>当软件产生异常后，使用该指令使kernel中止运行。</p>
@@ -794,7 +774,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 11**  工具类接口列表
+**表 11**  工具函数接口列表
 
 <a name="table9496143191816"></a>
 <table><thead align="left"><tr id="row14962043181812"><th class="cellrowborder" valign="top" width="40.089999999999996%" id="mcps1.2.3.1.1"><p id="p449784310180"><a name="p449784310180"></a><a name="p449784310180"></a>接口名</p>
@@ -1010,92 +990,92 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p14116577483"><a name="p14116577483"></a><a name="p14116577483"></a>根据输入的切分规则，将给定的两个输入张量做矩阵乘，输出至结果张量。将A和B两个输入矩阵乘法在一起，得到一个输出矩阵C。</p>
 </td>
 </tr>
-<tr id="row147451115151916"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p45523300491"><a name="p45523300491"></a><a name="p45523300491"></a><a href="context\SetFixPipeConfig(ISASI).md">SetFixPipeConfig</a></p>
+<tr id="row147451115151916"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p45523300491"><a name="p45523300491"></a><a name="p45523300491"></a><a href="context\SetFixPipeConfig.md">SetFixPipeConfig</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p17851154862112"><a name="p17851154862112"></a><a name="p17851154862112"></a><a href="context\随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路量化时，通过调用该接口设置量化流程中tensor量化参数。</p>
 </td>
 </tr>
-<tr id="row294174016209"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p65522030174916"><a name="p65522030174916"></a><a name="p65522030174916"></a><a href="context\SetFixpipeNz2ndFlag(ISASI).md">SetFixpipeNz2ndFlag</a></p>
+<tr id="row294174016209"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p65522030174916"><a name="p65522030174916"></a><a name="p65522030174916"></a><a href="context\SetFixpipeNz2ndFlag.md">SetFixpipeNz2ndFlag</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p2898124417263"><a name="p2898124417263"></a><a name="p2898124417263"></a><a href="context\随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路格式转换（NZ2ND）时，通过调用该接口设置NZ2ND相关配置。</p>
 </td>
 </tr>
-<tr id="row11129104162017"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p165521930144913"><a name="p165521930144913"></a><a name="p165521930144913"></a><a href="context\SetFixpipePreQuantFlag(ISASI).md">SetFixpipePreQuantFlag</a></p>
+<tr id="row11129104162017"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p165521930144913"><a name="p165521930144913"></a><a name="p165521930144913"></a><a href="context\SetFixpipePreQuantFlag.md">SetFixpipePreQuantFlag</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p16332111515234"><a name="p16332111515234"></a><a name="p16332111515234"></a><a href="context\随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM、CO1-&gt;A1）过程中进行随路量化时，通过调用该接口设置量化流程中scalar量化参数。</p>
 </td>
 </tr>
-<tr id="row19331114117200"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p278152219274"><a name="p278152219274"></a><a name="p278152219274"></a><a href="context\SetFixPipeClipRelu(ISASI).md">SetFixPipeClipRelu</a></p>
+<tr id="row19331114117200"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p278152219274"><a name="p278152219274"></a><a name="p278152219274"></a><a href="context\SetFixPipeClipRelu.md">SetFixPipeClipRelu</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p10787226279"><a name="p10787226279"></a><a name="p10787226279"></a><a href="context\随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM）过程中进行随路量化后，通过调用该接口设置ClipRelu操作的最大值。</p>
 </td>
 </tr>
-<tr id="row0541441152019"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1674634112715"><a name="p1674634112715"></a><a name="p1674634112715"></a><a href="context\SetFixPipeAddr(ISASI).md">SetFixPipeAddr</a></p>
+<tr id="row0541441152019"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1674634112715"><a name="p1674634112715"></a><a name="p1674634112715"></a><a href="context\SetFixPipeAddr.md">SetFixPipeAddr</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p71911024132712"><a name="p71911024132712"></a><a name="p71911024132712"></a><a href="context\随路量化激活搬运.md">DataCopy</a>（CO1-&gt;GM）过程中进行随路量化后，通过调用该接口设置element-wise操作时LocalTensor的地址。</p>
 </td>
 </tr>
-<tr id="row08411461812"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1955143017499"><a name="p1955143017499"></a><a name="p1955143017499"></a><a href="context\InitConstValue(ISASI).md">InitConstValue</a></p>
+<tr id="row08411461812"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1955143017499"><a name="p1955143017499"></a><a name="p1955143017499"></a><a href="context\InitConstValue.md">InitConstValue</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1489215634815"><a name="p1489215634815"></a><a name="p1489215634815"></a>初始化LocalTensor（TPosition为A1/A2/B1/B2）为某一个具体的数值。</p>
 </td>
 </tr>
-<tr id="row696114470313"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p455133074917"><a name="p455133074917"></a><a name="p455133074917"></a><a href="context\LoadData(ISASI).md">LoadData</a></p>
+<tr id="row696114470313"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p455133074917"><a name="p455133074917"></a><a name="p455133074917"></a><a href="context\LoadData.md">LoadData</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p3448142813492"><a name="p3448142813492"></a><a name="p3448142813492"></a>LoadData包括Load2D和Load3D数据加载功能。</p>
 </td>
 </tr>
-<tr id="row8181746635"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p20551143074919"><a name="p20551143074919"></a><a name="p20551143074919"></a><a href="context\LoadDataWithTranspose(ISASI).md">LoadDataWithTranspose</a></p>
+<tr id="row8181746635"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p20551143074919"><a name="p20551143074919"></a><a name="p20551143074919"></a><a href="context\LoadDataWithTranspose.md">LoadDataWithTranspose</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p124281245667"><a name="p124281245667"></a><a name="p124281245667"></a>该接口实现带转置的2D格式数据从A1/B1到A2/B2的加载。</p>
 </td>
 </tr>
-<tr id="row194791339636"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12211416165318"><a name="p12211416165318"></a><a name="p12211416165318"></a><a href="context\SetAippFunctions(ISASI).md">SetAippFunctions</a></p>
+<tr id="row194791339636"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12211416165318"><a name="p12211416165318"></a><a name="p12211416165318"></a><a href="context\SetAippFunctions.md">SetAippFunctions</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p192129164538"><a name="p192129164538"></a><a name="p192129164538"></a>设置图片预处理（AIPP，AI core pre-process）相关参数。</p>
 </td>
 </tr>
-<tr id="row1948463715319"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1061103015541"><a name="p1061103015541"></a><a name="p1061103015541"></a><a href="context\LoadImageToLocal(ISASI).md">LoadImageToLocal</a></p>
+<tr id="row1948463715319"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1061103015541"><a name="p1061103015541"></a><a name="p1061103015541"></a><a href="context\LoadImageToLocal.md">LoadImageToLocal</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p792614613548"><a name="p792614613548"></a><a name="p792614613548"></a>将图像数据从GM搬运到A1/B1。 搬运过程中可以完成图像预处理操作：包括图像翻转，改变图像尺寸（抠图，裁边，缩放，伸展），以及色域转换，类型转换等。</p>
 </td>
 </tr>
-<tr id="row0248535339"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p16995181110545"><a name="p16995181110545"></a><a name="p16995181110545"></a><a href="context\LoadUnzipIndex(ISASI).md">LoadUnZipIndex</a></p>
+<tr id="row0248535339"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p16995181110545"><a name="p16995181110545"></a><a name="p16995181110545"></a><a href="context\LoadUnzipIndex.md">LoadUnZipIndex</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p20995111113541"><a name="p20995111113541"></a><a name="p20995111113541"></a>加载GM上的压缩索引表到内部寄存器。</p>
 </td>
 </tr>
-<tr id="row132838331033"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1434981445411"><a name="p1434981445411"></a><a name="p1434981445411"></a><a href="context\LoadDataUnzip(ISASI).md">LoadDataUnzip</a></p>
+<tr id="row132838331033"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1434981445411"><a name="p1434981445411"></a><a name="p1434981445411"></a><a href="context\LoadDataUnzip.md">LoadDataUnzip</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p2349121415547"><a name="p2349121415547"></a><a name="p2349121415547"></a>将GM上的数据解压并搬运到A1/B1/B2上。</p>
 </td>
 </tr>
-<tr id="row7838730733"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1418115368566"><a name="p1418115368566"></a><a name="p1418115368566"></a><a href="context\LoadDataWithSparse(ISASI).md">LoadDataWithSparse</a></p>
+<tr id="row7838730733"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1418115368566"><a name="p1418115368566"></a><a name="p1418115368566"></a><a href="context\LoadDataWithSparse.md">LoadDataWithSparse</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p7263112805617"><a name="p7263112805617"></a><a name="p7263112805617"></a>用于搬运存放在B1里的512B的稠密权重矩阵到B2里，同时读取128B的索引矩阵用于稠密矩阵的稀疏化。</p>
 </td>
 </tr>
-<tr id="row66591928736"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1552163012493"><a name="p1552163012493"></a><a name="p1552163012493"></a><a href="context\SetFmatrix(ISASI).md">SetFmatrix</a></p>
+<tr id="row66591928736"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1552163012493"><a name="p1552163012493"></a><a name="p1552163012493"></a><a href="context\SetFmatrix.md">SetFmatrix</a></p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1365632015497"><a name="p1365632015497"></a><a name="p1365632015497"></a>用于调用<a href="context\LoadData(ISASI).md">Load3Dv1/Load3Dv2</a>时设置FeatureMap的属性描述。</p>
-</td>
-</tr>
-<tr id="row07692515218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p055233018498"><a name="p055233018498"></a><a name="p055233018498"></a><a href="context\SetLoadDataBoundary(ISASI).md">SetLoadDataBoundary</a></p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p37801058115614"><a name="p37801058115614"></a><a name="p37801058115614"></a>设置<a href="context\LoadData(ISASI).md">Load3D</a>时A1/B1边界值。</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p1365632015497"><a name="p1365632015497"></a><a name="p1365632015497"></a>用于调用<a href="context\LoadData.md">Load3Dv1/Load3Dv2</a>时设置FeatureMap的属性描述。</p>
 </td>
 </tr>
-<tr id="row3787671224"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1155273074915"><a name="p1155273074915"></a><a name="p1155273074915"></a><a href="context\SetLoadDataRepeat(ISASI).md">SetLoadDataRepeat</a></p>
+<tr id="row07692515218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p055233018498"><a name="p055233018498"></a><a name="p055233018498"></a><a href="context\SetLoadDataBoundary.md">SetLoadDataBoundary</a></p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p37801058115614"><a name="p37801058115614"></a><a name="p37801058115614"></a>设置<a href="context\LoadData.md">Load3D</a>时A1/B1边界值。</p>
+</td>
+</tr>
+<tr id="row3787671224"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p1155273074915"><a name="p1155273074915"></a><a name="p1155273074915"></a><a href="context\SetLoadDataRepeat.md">SetLoadDataRepeat</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p532619442559"><a name="p532619442559"></a><a name="p532619442559"></a>用于设置Load3Dv2接口的repeat参数。设置repeat参数后，可以通过调用一次Load3Dv2接口完成多个迭代的数据搬运。</p>
 </td>
 </tr>
-<tr id="row4662691428"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p18552183094913"><a name="p18552183094913"></a><a name="p18552183094913"></a><a href="context\SetLoadDataPaddingValue(ISASI).md">SetLoadDataPaddingValue</a></p>
+<tr id="row4662691428"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p18552183094913"><a name="p18552183094913"></a><a name="p18552183094913"></a><a href="context\SetLoadDataPaddingValue.md">SetLoadDataPaddingValue</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p53183549554"><a name="p53183549554"></a><a name="p53183549554"></a>设置padValue，用于Load3Dv1/Load3Dv2。</p>
 </td>
 </tr>
-<tr id="row165019119218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12552123034913"><a name="p12552123034913"></a><a name="p12552123034913"></a><a href="context\Fixpipe(ISASI).md">Fixpipe</a></p>
+<tr id="row165019119218"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p12552123034913"><a name="p12552123034913"></a><a name="p12552123034913"></a><a href="context\Fixpipe.md">Fixpipe</a></p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p7194151162615"><a name="p7194151162615"></a><a name="p7194151162615"></a>矩阵计算完成后，对结果进行处理，例如对计算结果进行量化操作，并把数据从CO1搬迁到Global Memory中。</p>
 </td>
@@ -1251,7 +1231,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1532914614126"><a name="p1532914614126"></a><a name="p1532914614126"></a>按元素做反双曲正切余弦函数计算。</p>
 </td>
 </tr>
-<tr id="row18329194631210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1032984631216"><a name="p1032984631216"></a><a name="p1032984631216"></a><a href="context\Axpy-26.md">Axpy</a></p>
+<tr id="row18329194631210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1032984631216"><a name="p1032984631216"></a><a name="p1032984631216"></a><a href="context\Axpy-25.md">Axpy</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p8329114612121"><a name="p8329114612121"></a><a name="p8329114612121"></a>源操作数中每个元素与标量求积后和目的操作数中的对应元素相加。</p>
 </td>
@@ -1301,7 +1281,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p13330204601215"><a name="p13330204601215"></a><a name="p13330204601215"></a>返回输入x的互补误差函数结果，积分区间为x到无穷大。</p>
 </td>
 </tr>
-<tr id="row13330144611210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p43301046151212"><a name="p43301046151212"></a><a name="p43301046151212"></a><a href="context\Exp-27.md">Exp</a></p>
+<tr id="row13330144611210"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p43301046151212"><a name="p43301046151212"></a><a name="p43301046151212"></a><a href="context\Exp-26.md">Exp</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p6330246201220"><a name="p6330246201220"></a><a name="p6330246201220"></a>按元素取自然指数。</p>
 </td>
@@ -1594,7 +1574,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p12688163811519"><a name="p12688163811519"></a><a name="p12688163811519"></a>按照元素执行Xor（按位异或）运算，并将计算结果ReduceSum求和。</p>
 </td>
 </tr>
-<tr id="row15688103871519"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p95115441718"><a name="p95115441718"></a><a name="p95115441718"></a><a href="context\ReduceSum-35.md">ReduceSum</a></p>
+<tr id="row15688103871519"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p95115441718"><a name="p95115441718"></a><a name="p95115441718"></a><a href="context\ReduceSum-34.md">ReduceSum</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p11517441717"><a name="p11517441717"></a><a name="p11517441717"></a>对一个多维向量按照指定的维度进行数据累加。</p>
 </td>
@@ -1604,12 +1584,12 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p09416377512"><a name="p09416377512"></a><a name="p09416377512"></a>对一个多维向量按照指定的维度求平均值。</p>
 </td>
 </tr>
-<tr id="row6979134616516"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p16979246851"><a name="p16979246851"></a><a name="p16979246851"></a><a href="context\ReduceMax-36.md">ReduceMax</a></p>
+<tr id="row6979134616516"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p16979246851"><a name="p16979246851"></a><a name="p16979246851"></a><a href="context\ReduceMax-35.md">ReduceMax</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p197934616510"><a name="p197934616510"></a><a name="p197934616510"></a>对一个多维向量在指定的维度求最大值。</p>
 </td>
 </tr>
-<tr id="row2429249255"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1542914496515"><a name="p1542914496515"></a><a name="p1542914496515"></a><a href="context\ReduceMin-37.md">ReduceMin</a></p>
+<tr id="row2429249255"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1542914496515"><a name="p1542914496515"></a><a name="p1542914496515"></a><a href="context\ReduceMin-36.md">ReduceMin</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p164291497518"><a name="p164291497518"></a><a name="p164291497518"></a>对一个多维向量在指定的维度求最小值。</p>
 </td>
@@ -1661,7 +1641,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p14758554166"><a name="p14758554166"></a><a name="p14758554166"></a>排序函数，按照数值大小进行降序排序。</p>
 </td>
 </tr>
-<tr id="row475815512168"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p17581591616"><a name="p17581591616"></a><a name="p17581591616"></a><a href="context\MrgSort-38.md">MrgSort</a></p>
+<tr id="row475815512168"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p17581591616"><a name="p17581591616"></a><a name="p17581591616"></a><a href="context\MrgSort-37.md">MrgSort</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1375885121617"><a name="p1375885121617"></a><a name="p1375885121617"></a>将已经排好序的最多4条队列，合并排列成1条队列，结果按照score域由大到小排序。</p>
 </td>
@@ -1678,7 +1658,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1943972012455"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p138751045194610"><a name="p138751045194610"></a><a name="p138751045194610"></a><a href="context\Select-39.md">Select</a></p>
+<tbody><tr id="row1943972012455"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p138751045194610"><a name="p138751045194610"></a><a name="p138751045194610"></a><a href="context\Select-38.md">Select</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p0875445174619"><a name="p0875445174619"></a><a name="p0875445174619"></a>给定两个源操作数src0和src1，根据maskTensor相应位置的值（非bit位）选取元素，得到目的操作数dst。</p>
 </td>
@@ -1700,7 +1680,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </th>
 </tr>
 </thead>
-<tbody><tr id="row02335914543"><td class="cellrowborder" valign="top" width="37.669999999999995%" headers="mcps1.2.3.1.1 "><p id="p192315965413"><a name="p192315965413"></a><a name="p192315965413"></a><a href="context\Transpose-40.md">Transpose</a></p>
+<tbody><tr id="row02335914543"><td class="cellrowborder" valign="top" width="37.669999999999995%" headers="mcps1.2.3.1.1 "><p id="p192315965413"><a name="p192315965413"></a><a name="p192315965413"></a><a href="context\Transpose-39.md">Transpose</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.33%" headers="mcps1.2.3.1.2 "><p id="p1248169212"><a name="p1248169212"></a><a name="p1248169212"></a>对输入数据进行数据排布及Reshape操作。</p>
 </td>
@@ -1907,24 +1887,73 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 28**  ContextBuilder API列表
+**表 28**  Tiling调测API列表
 
 <a name="table2675125415261"></a>
-<table><thead align="left"><tr id="row1967612545262"><th class="cellrowborder" valign="top" width="37.6%" id="mcps1.2.3.1.1"><p id="p367695412260"><a name="p367695412260"></a><a name="p367695412260"></a>接口名</p>
+<table><thead align="left"><tr id="row1967612545262"><th class="cellrowborder" valign="top" width="37.419999999999995%" id="mcps1.2.3.1.1"><p id="p367695412260"><a name="p367695412260"></a><a name="p367695412260"></a>接口名</p>
 </th>
-<th class="cellrowborder" valign="top" width="62.4%" id="mcps1.2.3.1.2"><p id="p0676145422615"><a name="p0676145422615"></a><a name="p0676145422615"></a>功能描述</p>
+<th class="cellrowborder" valign="top" width="62.580000000000005%" id="mcps1.2.3.1.2"><p id="p0676145422615"><a name="p0676145422615"></a><a name="p0676145422615"></a>功能描述</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1867785432614"><td class="cellrowborder" valign="top" width="37.6%" headers="mcps1.2.3.1.1 "><p id="p967795492618"><a name="p967795492618"></a><a name="p967795492618"></a><a href="context\ContextBuilder.md">ContextBuilder</a></p>
+<tbody><tr id="row1010110512216"><td class="cellrowborder" valign="top" width="37.419999999999995%" headers="mcps1.2.3.1.1 "><p id="p2010212532219"><a name="p2010212532219"></a><a name="p2010212532219"></a><a href="context\OpTilingRegistry.md">OpTilingRegistry</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.4%" headers="mcps1.2.3.1.2 "><p id="p56781254122619"><a name="p56781254122619"></a><a name="p56781254122619"></a>ContextBuilder类提供一系列的API接口，支持手动构造类来验证Tiling函数以及KernelContext类用于TilingParse函数的验证。</p>
+<td class="cellrowborder" valign="top" width="62.580000000000005%" headers="mcps1.2.3.1.2 "><p id="p710211522210"><a name="p710211522210"></a><a name="p710211522210"></a><span id="ph134802046173619"><a name="ph134802046173619"></a><a name="ph134802046173619"></a>OpTilingRegistry类属于context_ascendc命名空间，主要用于加载Tiling实现的动态库，并获取算子的Tiling函数指针以进行调试和验证。</span></p>
+</td>
+</tr>
+<tr id="row1867785432614"><td class="cellrowborder" valign="top" width="37.419999999999995%" headers="mcps1.2.3.1.1 "><p id="p967795492618"><a name="p967795492618"></a><a name="p967795492618"></a><a href="context\ContextBuilder.md">ContextBuilder</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="62.580000000000005%" headers="mcps1.2.3.1.2 "><p id="p56781254122619"><a name="p56781254122619"></a><a name="p56781254122619"></a>ContextBuilder类提供一系列的API接口，支持手动构造类来验证Tiling函数以及KernelContext类用于TilingParse函数的验证。</p>
 </td>
 </tr>
 </tbody>
 </table>
 
-**表 29**  RTC API列表
+**表 29**  Tiling模板编程API列表
+
+<a name="table2864441102011"></a>
+<table><thead align="left"><tr id="row4832193752110"><th class="cellrowborder" valign="top" width="37.44%" id="mcps1.2.3.1.1"><p id="p157001846132117"><a name="p157001846132117"></a><a name="p157001846132117"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="62.56%" id="mcps1.2.3.1.2"><p id="p1570016468218"><a name="p1570016468218"></a><a name="p1570016468218"></a>功能描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row1486515413204"><td class="cellrowborder" valign="top" width="37.44%" headers="mcps1.2.3.1.1 "><p id="p111901452192"><a name="p111901452192"></a><a name="p111901452192"></a><a href="context\模板参数定义.md">模板参数定义</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="62.56%" headers="mcps1.2.3.1.2 "><p id="p5191124551911"><a name="p5191124551911"></a><a name="p5191124551911"></a>通过该类接口进行模板参数ASCENDC_TPL_ARGS_DECL和模板参数组合ASCENDC_TPL_ARGS_SEL（即可使用的模板）的定义。</p>
+</td>
+</tr>
+<tr id="row198667417207"><td class="cellrowborder" valign="top" width="37.44%" headers="mcps1.2.3.1.1 "><p id="p17191145131910"><a name="p17191145131910"></a><a name="p17191145131910"></a><a href="context\GET_TPL_TILING_KEY.md">GET_TPL_TILING_KEY</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="62.56%" headers="mcps1.2.3.1.2 "><p id="p1619174520193"><a name="p1619174520193"></a><a name="p1619174520193"></a>Tiling模板编程时，开发者通过调用此接口自动生成TilingKey。该接口将传入的模板参数通过定义的位宽，转成二进制，按照顺序组合后转成uint64数值，即TilingKey。</p>
+</td>
+</tr>
+<tr id="row586654192019"><td class="cellrowborder" valign="top" width="37.44%" headers="mcps1.2.3.1.1 "><p id="p419110458198"><a name="p419110458198"></a><a name="p419110458198"></a><a href="context\ASCENDC_TPL_SEL_PARAM.md">ASCENDC_TPL_SEL_PARAM</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="62.56%" headers="mcps1.2.3.1.2 "><p id="p819119458193"><a name="p819119458193"></a><a name="p819119458193"></a><span id="ph1519110455190"><a name="ph1519110455190"></a><a name="ph1519110455190"></a>Tiling模板编程时，开发者通过调用此接口自动生成并配置TilingKey。</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+
+**表 30**  Tiling下沉API列表
+
+<a name="table2173036112514"></a>
+<table><thead align="left"><tr id="row161714011250"><th class="cellrowborder" valign="top" width="37.3%" id="mcps1.2.3.1.1"><p id="p96601406261"><a name="p96601406261"></a><a name="p96601406261"></a>接口名</p>
+</th>
+<th class="cellrowborder" valign="top" width="62.7%" id="mcps1.2.3.1.2"><p id="p26609019267"><a name="p26609019267"></a><a name="p26609019267"></a>功能描述</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row917323610256"><td class="cellrowborder" valign="top" width="37.3%" headers="mcps1.2.3.1.1 "><p id="p1419164561913"><a name="p1419164561913"></a><a name="p1419164561913"></a><a href="context\zh-cn_topic_0000002269484441.md">DEVICE_IMPL_OP_OPTILING</a></p>
+</td>
+<td class="cellrowborder" valign="top" width="62.7%" headers="mcps1.2.3.1.2 "><p id="p9191945151920"><a name="p9191945151920"></a><a name="p9191945151920"></a><span id="ph419114452199"><a name="ph419114452199"></a><a name="ph419114452199"></a>在<a href="context\zh-cn_topic_0000002130625528.md">Tiling下沉</a>场景中，该宏定义用于生成Tiling下沉的注册类，再通过调用注册类的成员函数来注册需要下沉的Tiling函数。</span></p>
+</td>
+</tr>
+</tbody>
+</table>
+
+**表 31**  RTC API列表
 
 <a name="table59039568269"></a>
 <table><thead align="left"><tr id="row99046568261"><th class="cellrowborder" valign="top" width="37.419999999999995%" id="mcps1.2.3.1.1"><p id="p1490425632618"><a name="p1490425632618"></a><a name="p1490425632618"></a>接口名</p>
@@ -1971,7 +2000,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 30**  log API列表
+**表 32**  log API列表
 
 <a name="table1514223372716"></a>
 <table><thead align="left"><tr id="row3142033112715"><th class="cellrowborder" valign="top" width="37.79%" id="mcps1.2.3.1.1"><p id="p181421633182714"><a name="p181421633182714"></a><a name="p181421633182714"></a>接口名</p>
@@ -1990,7 +2019,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 
 ## AI CPU API<a name="section06362251213"></a>
 
-**表 31**  AI CPU API列表
+**表 33**  AI CPU API列表
 
 <a name="table340354212211"></a>
 <table><thead align="left"><tr id="row1440344222113"><th class="cellrowborder" valign="top" width="37.419999999999995%" id="mcps1.2.3.1.1"><p id="p140384218217"><a name="p140384218217"></a><a name="p140384218217"></a>接口名</p>

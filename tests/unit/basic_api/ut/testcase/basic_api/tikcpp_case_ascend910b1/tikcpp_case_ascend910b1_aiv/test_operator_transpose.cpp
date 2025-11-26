@@ -151,9 +151,9 @@ INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_TRANSPOSE, Transpose4dTestsuite,
     // test tensor size overflow
     Transpose4dTestParams { 2, Transpose4D<uint16_t>, 50, 50, 16, 16, TransposeType::TRANSPOSE_ND2ND_B16, 256, true},
     Transpose4dTestParams { 2, Transpose4D<uint16_t>, 50, 50, 16, 16, TransposeType::TRANSPOSE_ND2ND_B16, 128, false, 1},  // 预期要512B
-    Transpose4dTestParams { 4, Transpose4D<float>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 32, false, 55}, // 不满足N*C*H*W 预期要48个元素
+    Transpose4dTestParams { 4, Transpose4D<float>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 32, false, 2}, // 不满足N*C*H*W 预期要48个元素
     Transpose4dTestParams { 4, Transpose4D<float>, 3, 2, 4, 2, TransposeType::TRANSPOSE_NHWC2NCHW, 48, true },
-    Transpose4dTestParams { 1, Transpose4D<int8_t>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 960, false, 6}, // 预期要1024个元素
+    Transpose4dTestParams { 1, Transpose4D<int8_t>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 960, false, 2}, // 预期要1024个元素
     Transpose4dTestParams { 1, Transpose4D<uint8_t>, 8, 4, 8, 4, TransposeType::TRANSPOSE_NCHW2NHWC, 1024, true}
 ));
 

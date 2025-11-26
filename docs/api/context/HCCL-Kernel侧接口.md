@@ -22,9 +22,9 @@
 
 -   **[Commit](Commit.md)**  
 
--   **[Wait](Wait-41.md)**  
+-   **[Wait](Wait-40.md)**  
 
--   **[Iterate](Iterate-42.md)**  
+-   **[Iterate](Iterate-41.md)**  
 
 -   **[Query](Query.md)**  
 

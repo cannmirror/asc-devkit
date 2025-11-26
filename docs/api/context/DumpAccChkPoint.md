@@ -51,7 +51,7 @@ AscendC::DumpAccChkPoint(srcLocal, 5, 32, dataLen);
 
 Dump时，每个block核的dump信息前会增加对应信息头DumpHead，用于记录核号和资源使用信息；每次Dump的Tensor数据前也会添加信息头DumpTensorHead，用于记录Tensor的相关信息。如下图所示，展示了多核打印场景下的打印信息结构。
 
-![](figures/流水任务运行示意图-21.png)
+![](figures/流水任务运行示意图-20.png)
 
 **DumpHead的具体信息如下：**
 
@@ -181,7 +181,7 @@ __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &tensor, uint32_t i
 
     在计算数据量时，若Dump的总长度未对齐，需要考虑padding数据的影响。当进行非对齐Dump时，如果实际Dump的元素长度不满足32字节对齐，系统会在其末尾自动补充一定数量的padding数据，以满足对齐要求。例如，Tensor1中用户需要Dump的元素长度为30字节，系统会在其后添加2字节的padding，使总长度对齐到32字节。但在实际解析时，仍只解析原始的30 字节数据，padding部分不会被使用。
 
-    ![](figures/dumptensor非对齐打印-22.png)
+    ![](figures/dumptensor非对齐打印-21.png)
 
 ## 调用示例<a name="section82241477610"></a>
 

@@ -61,26 +61,42 @@ public:
     using BASE_MODULE =
         AscendC::Impl::Detail::MatmulNormSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE>;
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 2201)
     __aicore__ inline void CheckBasicBlock()
     {
         ASCENDC_ASSERT((MM_CFG.basicM == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()), { 
-            KERNEL_LOG(KERNEL_ERROR, "The basicM of MatmulConfig is %d, which should be consistent with the parameter baseM %d in Matmul Tiling.", MM_CFG.basicM, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()); 
+            KERNEL_LOG(KERNEL_ERROR, "The basicM of MatmulConfig is %d, which should be consistent with the parameter baseM %d in Matmul Tiling.", 
+            MM_CFG.basicM, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()); 
         });
         ASCENDC_ASSERT((MM_CFG.basicN == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()), { 
-            KERNEL_LOG(KERNEL_ERROR, "The basicN of MatmulConfig is %d, which should be consistent with the parameter baseN %d in Matmul Tiling.", MM_CFG.basicN, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()); 
+            KERNEL_LOG(KERNEL_ERROR, "The basicN of MatmulConfig is %d, which should be consistent with the parameter baseN %d in Matmul Tiling.", 
+            MM_CFG.basicN, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()); 
         });
         ASCENDC_ASSERT((MM_CFG.basicK == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()), { 
-            KERNEL_LOG(KERNEL_ERROR, "The basicK of MatmulConfig is %d, which should be consistent with the parameter baseK %d in Matmul Tiling.", MM_CFG.basicK, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()); 
+            KERNEL_LOG(KERNEL_ERROR, "The basicK of MatmulConfig is %d, which should be consistent with the parameter baseK %d in Matmul Tiling.", 
+            MM_CFG.basicK, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()); 
         });
-        ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreM() % MM_CFG.basicM == 0) && ((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreN() % MM_CFG.basicN == 0)), { 
-            KERNEL_LOG(KERNEL_ERROR, "The BasicBlockConfig only supports conditions without tail basic blocks."); 
+        ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreM() % MM_CFG.basicM == 0 && 
+            MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreN() % MM_CFG.basicN == 0), { 
+            KERNEL_LOG(KERNEL_ERROR, "The BasicBlock template only supports conditions without tail basic blocks."); 
         });
-    }    
+        static_assert(SupportType<typename A_TYPE::T, half, bfloat16_t, float>() && SupportType<typename B_TYPE::T, half, bfloat16_t, float>(),
+            "The BasicBlock template supports only matrices A and B whose input is of the half, bfloat16_t, or float type \
+            rather than the int8_t or int4_t type.");
+        static_assert(A_TYPE::format != CubeFormat::VECTOR && A_TYPE::format != CubeFormat::SCALAR,
+            "The BasicBlock template does not support matrix A in scalar or vector format.");
+        static_assert(MM_CFG.scheduleType != ScheduleType::OUTER_PRODUCT,
+            "The BasicBlock template does not support the ScheduleType::OUTER_PRODUCT data movement mode.");     
+    }   
+#endif 
+
     __aicore__ inline bool ScheduleOnce(bool enPartialSum)
     {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 2201)
         if constexpr (DoMatmulBasicBlock(MM_CFG)) {
             CheckBasicBlock();
         }
+#endif
         MATMUL_MODULE(BiasScheduler)->SetBias(MATMUL_MODULE(BiasScheduler)->IsBias() && !enPartialSum);
         if (!BASE_MODULE::MoveNext()) {
             return false;

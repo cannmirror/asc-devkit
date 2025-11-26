@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_UTILS_MACROS_H
 #define USE_ISA_INS 1
 #define GM_ADDR __gm__ uint8_t*
+#define __kfc_workspace__ __attribute__((annotate("kfc_workspace")))
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 #define UB_ADDR __ubuf__ uint8_t*
 #define SSBUF_ADDR __ssbuf__ uint32_t*
@@ -146,8 +147,11 @@ struct OpSystemRunCfg {
     uint64_t l2Cacheoffset;
 };
 #ifdef L2_CACHE_HINT
-extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;
+#ifdef __NPU_DEVICE__
 inline __gm__ struct OpSystemRunCfg g_opL2CacheHintCfg = {0};
+#else // ifndef __NPU_DEVICE__
+extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;
+#endif // __NPU_DEVICE__
 #endif // L2_CACHE_HINT
 
 __aicore__ inline void GetCannVersion(__gm__ char*& versionStr, uint64_t& version, uint64_t& timeStamp)
@@ -238,9 +242,11 @@ template<class T, CacheRwMode rwMode = CacheRwMode::RW>
 __aicore__ inline __gm__ T* L2CacheAlter(__gm__ T* addr, CacheMode mode)
 {
 #if defined(L2_CACHE_HINT) && defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-    const uint64_t l2CacheOffset = g_opSystemRunCfg.l2Cacheoffset != 0
-                                       ? g_opSystemRunCfg.l2Cacheoffset
-                                       : g_opL2CacheHintCfg.l2Cacheoffset;
+#ifdef __NPU_DEVICE__
+    uint64_t l2CacheOffset = g_opL2CacheHintCfg.l2Cacheoffset;
+#else // ifndef __NPU_DEVICE__
+    uint64_t l2CacheOffset = g_opSystemRunCfg.l2Cacheoffset;
+#endif // __NPU_DEVICE__
     if (mode == CacheMode::CACHE_MODE_DISABLE) {
         return reinterpret_cast<__gm__ T*>((uint64_t)addr + l2CacheOffset);
     }
@@ -344,6 +350,30 @@ extern uint64_t g_tilingKey;
 #endif
 
 #define TILING_KEY_IS(k) (TILING_KEY_VAR == (k))
+
+#define TILING_KEY_LIST_INOUT(...) TILING_KEY_LIST_INOUT_IMPL(__VA_ARGS__)
+#define TILING_KEY_LIST_INOUT_IMPL(...) TILING_KEY_ARGS_CONCAT(TILING_KEY_INDEX_INOUT_, TILING_KEY_ARG_COUNT(__VA_ARGS__)(__VA_ARGS__))
+
+#define TILING_KEY_INDEX_INOUT_1(a) TILING_KEY_VAR == (a)
+#define TILING_KEY_INDEX_INOUT_2(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_1(__VA_ARGS__)
+#define TILING_KEY_INDEX_INOUT_3(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_2(__VA_ARGS__)
+#define TILING_KEY_INDEX_INOUT_4(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_3(__VA_ARGS__)
+#define TILING_KEY_INDEX_INOUT_5(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_4(__VA_ARGS__)
+#define TILING_KEY_INDEX_INOUT_6(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_5(__VA_ARGS__)
+#define TILING_KEY_INDEX_INOUT_7(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_6(__VA_ARGS__)
+#define TILING_KEY_INDEX_INOUT_8(a, ...) TILING_KEY_INDEX_INOUT_1(a) || TILING_KEY_INDEX_INOUT_7(__VA_ARGS__)
+
+#define TILING_KEY_ARG_COUNT(...) TILING_KEY_ARG_COUNT_IMPL(__VA_ARGS__,8,7,6,5,4,3,2,1,0)
+#define TILING_KEY_ARG_COUNT_IMPL(_1,_2,_3,_4,_5,_6,_7,_8,N,...) N
+
+#define TILING_KEY_ARGS_CONCAT(a,b) TILING_KEY_ARGS_CONCAT_IMPL(a,b)
+#define TILING_KEY_ARGS_CONCAT_IMPL(a, b) a##b
+
+#ifdef __CHECK_FEATURE_AT_PRECOMPILE
+#define TILING_KEY_LIST(...) (TILING_KEY_LIST_INOUT(__VA_ARGS__)) "TILING_KEY_LIST"
+#else
+#define TILING_KEY_LIST(...) (TILING_KEY_LIST_INOUT(__VA_ARGS__))
+#endif
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 namespace impl_mode {

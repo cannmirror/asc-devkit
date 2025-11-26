@@ -150,7 +150,7 @@ const uint32_t VECTOR_REG_WIDTH_2XVL = 512;
 const uint32_t ONE_BLOCK_SIZE = 32;
 #endif
 
-#ifndef __NPU_HOST__
+#if !defined(__NPU_HOST__) && !defined(__ASCC_HOST__)
 
 #ifndef ASCC_PARAM_BLOCK_CUBE
 #define ASCC_PARAM_BLOCK_CUBE
@@ -167,7 +167,7 @@ const uint16_t ONE_BLK_SIZE = 32;
 const int32_t CUBE_MAX_SIZE = 256;
 #endif
 
-#else // #ifdef __NPU_HOST__
+#else // defined(__NPU_HOST__) || defined(__ASCC_HOST__)
 
 #ifndef ASCC_PARAM_BLOCK_CUBE
 #define ASCC_PARAM_BLOCK_CUBE
@@ -184,7 +184,7 @@ constexpr uint32_t ONE_BLK_SIZE = 32;
 constexpr int32_t CUBE_MAX_SIZE = 256;
 #endif
 
-#endif // __NPU_HOST__
+#endif // !defined(__NPU_HOST__) && !defined(__ASCC_HOST__)
 const uint8_t PAD_SIZE = 4;
 const uint8_t MRG_SORT_ELEMENT_LEN = 4;
 const uint8_t DEFAULT_DATA_COPY_NBURST = 1;
@@ -561,7 +561,7 @@ template <> struct GetDstType<mx_fp8_e4m3_t> {
     using Type = fp8_e4m3fn_t;
 };
 
-struct maskStruct {
+struct BasicAPIMaskStruct {
     uint64_t maskArray[MASK_ARRAY_SIZE] = { 0 };
 };
 #endif

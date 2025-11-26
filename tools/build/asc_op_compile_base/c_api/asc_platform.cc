@@ -462,10 +462,11 @@ bool CceConfBase::SetOptionalCoreType(const std::string& key) {//COVER
         Ascend_910_9381,  Ascend_910_9392,  Ascend_910_9382,  Ascend_910_9372,  Ascend_910_9362,  Ascend_310B1, 
         Ascend_310B2,     Ascend_310B3,     Ascend_310B4,     Ascend_310P1,     Ascend_310P2,     Ascend_310P3, 
         Ascend_310P4,     Ascend_310P5,      Ascend_310P7,     Ascend_610B1,     Ascend_610B2,     AS31XM1X,
-        Ascend_910_950z,  Ascend_910_957b,  Ascend_910_957d,   Ascend_910_9589,  Ascend_910_958a,  Ascend_910_958b,
-        Ascend_910_9599,  Ascend_910_9579,  Ascend_910_5591,  Ascend_910_950y,   Ascend_910_9591,  Ascend_910_9592,
-        Ascend_910_9581,  Ascend_910_9582,  Ascend_910_9584,  Ascend_910_9587,   Ascend_910_9588,  Ascend_910_9572,
-        Ascend_910_9575,    Ascend_910_9576,  Ascend_910_9574,    Ascend_910_9577,  Ascend_910_9578, MC62CM12AA
+        Ascend_910_950z,  Ascend_910_957b,  Ascend_910_957c, Ascend_910_957d,   Ascend_910_9589,  Ascend_910_958a,
+        Ascend_910_958b, Ascend_910_9599,  Ascend_910_9579,  Ascend_910_5591,  Ascend_910_950y,   Ascend_910_9591,
+        Ascend_910_9592, Ascend_910_9581,  Ascend_910_9582,  Ascend_910_9584,  Ascend_910_9587,   Ascend_910_9588,
+        Ascend_910_9572, Ascend_910_9575,    Ascend_910_9576,  Ascend_910_9574,    Ascend_910_9577,  Ascend_910_9578,
+        MC62CM12AA
     };
     if (soc_vector_core.find(this->target_opti_compilation_infos_.GetSocVersion()) ==
         soc_vector_core.end()) {

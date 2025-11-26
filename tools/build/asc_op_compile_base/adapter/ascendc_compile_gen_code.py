@@ -143,16 +143,6 @@ def get_code_for_l2_cache(compile_info: CompileInfo, source, tiling_info: Tiling
     return source
 
 
-def gen_dci_codes():
-    source = ''
-    source += '#if defined(__DAV_C310__) || defined(__DAV_310R6__) || (__NPU_ARCH__ == 5102)\n'
-    source += '    pipe_barrier(PIPE_ALL);\n'
-    source += '    dsb(mem_dsb_t::DSB_ALL);\n'
-    source += '    dci();\n'
-    source += '#endif\n'
-    return source
-
-
 def skip_mc2_context_size(opinfo: OpInfo):
     content = ""
     if opinfo.mc2_ctx:

@@ -4,9 +4,9 @@
 
 -   **[TBufPool构造函数](TBufPool构造函数.md)**  
 
--   **[InitBufPool](InitBufPool-10.md)**  
+-   **[InitBufPool](InitBufPool-9.md)**  
 
--   **[InitBuffer](InitBuffer-11.md)**  
+-   **[InitBuffer](InitBuffer-10.md)**  
 
--   **[Reset](Reset-12.md)**  
+-   **[Reset](Reset-11.md)**  
 

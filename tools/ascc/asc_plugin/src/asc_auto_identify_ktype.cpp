@@ -168,7 +168,7 @@ void AscPlugin::AscCompileV220::MergeCompileOpt() {
     args_.customOption = coreType_;
     const CompileArgs &inputArgs = AscPlugin::InfoManager::GetInstance().GetCompileArgs();
     args_.file = AscPlugin::InfoManager::GetInstance().GetSourceFile();
-    const std::string intputFileDir = GetFilePath(args_.file);
+    const std::string inputFileDir = GetFilePath(args_.file);
     if (AscPlugin::InfoManager::GetInstance().SaveTempRequested()) {
         args_.outputPath = AscPlugin::InfoManager::GetInstance().GetTempPath() + "/identify_" + coreType_ + ".o";
     } else {
@@ -179,18 +179,11 @@ void AscPlugin::AscCompileV220::MergeCompileOpt() {
     }
 
     PathInfo pathInfo = AscPlugin::InfoManager::GetInstance().GetPathInfo();
-    args_.includePaths = {
-        "-I" + intputFileDir,
-        "-I" + pathInfo.cannIncludePath,
-        "-I" + pathInfo.hostApiPath,
-        "-I" + pathInfo.highLevelApiPath,
-        "-I" + pathInfo.tikcfwPath,
-        "-I" + pathInfo.tikcfwLibPath,
-        "-I" + pathInfo.tikcfwLibMatmulPath,
-        "-I" + pathInfo.tikcfwImplPath,
-        "-I" + pathInfo.tikcfwInterfacePath,
-        "-I" + pathInfo.ascendClangIncludePath
-    };
+    args_.includePaths = {"-I" + inputFileDir, "-I" + pathInfo.ascendClangIncludePath};
+    for (auto& incPath: pathInfo.cannIncludePath) {
+        args_.includePaths.emplace_back("-I" + incPath);
+    }
+
     args_.definitions.insert(args_.definitions.end(), inputArgs.definitions.begin(), inputArgs.definitions.end());
     std::vector<std::string> removeOpts = {"-DASCENDC_DUMP", "-DASCENDC_DUMP=1"};
     args_.RemoveOptions(removeOpts);

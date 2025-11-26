@@ -102,7 +102,7 @@ __aicore__ inline void CrossCoreSetFlag(uint16_t flagId)
     -   在纯Vector/Cube场景下，需设置Kernel类型为KERNEL\_TYPE\_MIX\_AIV\_1\_0或KERNEL\_TYPE\_MIX\_AIC\_1\_0。
     -   对于Vector和Cube混合场景，需根据实际情况灵活配置Kernel类型。
 
--   因为[Matmul高阶API](矩阵计算-29.md)内部实现中使用了本接口进行核间同步控制，所以不建议开发者同时使用该接口和Matmul高阶API，否则会有flagID冲突的风险。
+-   因为[Matmul高阶API](矩阵计算-28.md)内部实现中使用了本接口进行核间同步控制，所以不建议开发者同时使用该接口和Matmul高阶API，否则会有flagID冲突的风险。
 -   同一flagId的计数器最多设置15次。
 
 ## 调用示例<a name="section837496171220"></a>

@@ -57,8 +57,8 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="15.83%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="84.17%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
-<p id="p377618918578"><a name="p377618918578"></a><a name="p377618918578"></a><span id="ph14777119105720"><a name="ph14777119105720"></a><a name="ph14777119105720"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float</p>
 <p id="p1477716915716"><a name="p1477716915716"></a><a name="p1477716915716"></a><span id="ph1977719135715"><a name="ph1977719135715"></a><a name="ph1977719135715"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float</p>
+<p id="p377618918578"><a name="p377618918578"></a><a name="p377618918578"></a><span id="ph14777119105720"><a name="ph14777119105720"></a><a name="ph14777119105720"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001429830437_row18835145716587"><td class="cellrowborder" valign="top" width="15.83%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p1383515717581"><a name="zh-cn_topic_0000001429830437_p1383515717581"></a><a name="zh-cn_topic_0000001429830437_p1383515717581"></a>isSetMask</p>
@@ -161,7 +161,7 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
     -   通用的Counter模式：Mask代表**整个矢量计算参与计算的元素个数，迭代次数不生效**。
     -   Counter模式配合Copy高维切分计算API，Mask代表**每次Repeat中处理的元素个数，迭代次数生效。**示意图如下：
 
-        ![](figures/repeat-times-8.png)
+        ![](figures/repeat-times-7.png)
 
 ## 调用示例<a name="section1227835243314"></a>
 

@@ -52,14 +52,14 @@ template <typename T>
 __aicore__ inline CubeResGroupHandle<T>::CubeResGroupHandle(
     GM_ADDR workspace, uint8_t blockStart, uint8_t blockSize, uint8_t msgQueueSize, uint8_t evtIDIn)
 {
-    ASCENDC_DEBUG_ASSERT(((blockStart % MIX_NUM) == 0), "blockStart is %u, must be even number.", blockStart);
-    ASCENDC_DEBUG_ASSERT(((blockSize % MIX_NUM) == 0), "blockSize is %u, must be even number.", blockSize);
+    ASCENDC_DEBUG_ASSERT(((blockStart % MIX_NUM) == 0), KERNEL_LOG(KERNEL_ERROR, "blockStart is %u, must be even number.", blockStart));
+    ASCENDC_DEBUG_ASSERT(((blockSize % MIX_NUM) == 0), KERNEL_LOG(KERNEL_ERROR, "blockSize is %u, must be even number.", blockSize));
     aicSize = blockSize / MIX_NUM;
     aivSize = msgQueueSize;
 
     aivPerAic = Ceil(aivSize, aicSize);
     int8_t aivInLastAic = aivSize - (aicSize - 1) * aivPerAic;
-    ASCENDC_DEBUG_ASSERT((aivInLastAic > 0), "AIV num in last AIC must be positive");
+    ASCENDC_DEBUG_ASSERT((aivInLastAic > 0), KERNEL_LOG(KERNEL_ERROR, "AIV num in last AIC must be positive"));
     // aic update config，aivNumForAic in aiv need to be updated by AssignQueue
     aivNumForCurAic = (GetBlockIdxImpl() == blockStart / MIX_NUM + aicSize - 1) ? aivInLastAic : aivPerAic;
     aivWorkState = (static_cast<uint64_t>(1) << aivNumForCurAic) - 1;
@@ -86,22 +86,22 @@ __aicore__ inline CubeResGroupHandle<T>::CubeResGroupHandle(
 template <typename T>
 __aicore__ inline void CubeResGroupHandle<T>::AssignQueue(uint8_t queueIdIn)
 {
-    ASCENDC_DEBUG_ASSERT((queueIdIn < aivSize), "queueID (%u) must be less than msgQueueSize(%u)", queueIdIn, aivSize);
+    ASCENDC_DEBUG_ASSERT((queueIdIn < aivSize), KERNEL_LOG(KERNEL_ERROR, "queueID (%u) must be less than msgQueueSize(%u)", queueIdIn, aivSize));
     if ASCEND_IS_AIV {
         uint8_t aicSubgroupID = queueIdIn / aivPerAic;
         uint8_t aivSubgroupID = queueIdIn % aivPerAic;
         queueId = queueIdIn;
         ASCENDC_DEBUG_ASSERT(
-            (aicSubgroupID < aicSize), "aicSubgroupID (%u) must be less than aicSize (%u)", aicSubgroupID, aicSize);
+            (aicSubgroupID < aicSize), KERNEL_LOG(KERNEL_ERROR, "aicSubgroupID (%u) must be less than aicSize (%u)", aicSubgroupID, aicSize));
         if (aicSubgroupID != aicSize - 1) {
             aivNumForCurAic = aivPerAic;
         } else {  // if last aic, aiv num = total - sum(aivs for previous aics)
             aivNumForCurAic = aivSize - (aicSize - 1) * aivPerAic;
         }
-        ASCENDC_DEBUG_ASSERT((aivSubgroupID < aivNumForCurAic),
+        ASCENDC_DEBUG_ASSERT((aivSubgroupID < aivNumForCurAic), KERNEL_LOG(KERNEL_ERROR,
             "aivSubgroupID (%u) must be less than aivNumForCurAic (%u)",
             aivSubgroupID,
-            aivNumForCurAic);
+            aivNumForCurAic));
         msgHead += aicSubgroupID * aivPerAic * MAX_MSG_PER_AIV + aivSubgroupID;  // set msgHead and no more changes
         msgCurrent = msgHead;
     }
@@ -144,7 +144,7 @@ __aicore__ inline uint16_t CubeResGroupHandle<T>::PostMessage(__gm__ T *msg, T &
             __WriteGmCubeMsgByDatacopy(msg, msgInput);
             SetFlag<HardEvent::MTE3_S>((event_t)eventID);
         } else {
-            ASCENDC_DEBUG_ASSERT(false, "PostMessage Mode only support SCALAR_MODE or MTE3_MODE");
+            ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "PostMessage Mode only support SCALAR_MODE or MTE3_MODE"));
         }
     }
     return msg - msgHead;
@@ -191,9 +191,9 @@ __aicore__ inline void CubeResGroupHandle<T>::SetQuit(__gm__ T *msg)
     uint8_t aivID = queueId % aivPerAic;
     if ASCEND_IS_AIV {
         ASCENDC_DEBUG_ASSERT((aivID < aivNumForCurAic),
-            "In SendQuitMsg, aivID (%u) should not be larger than aivNumForCurAic (%u)",
+            KERNEL_LOG(KERNEL_ERROR, "In SendQuitMsg, aivID (%u) should not be larger than aivNumForCurAic (%u)",
             aivID,
-            aivNumForCurAic);
+            aivNumForCurAic));
         (msg->head).aivID = aivID;
         __WriteGmStateByScalar(msg, CubeMsgState::QUIT);
     }
@@ -206,11 +206,11 @@ __aicore__ inline void CubeResGroupHandle<T>::SetSkipMsg(uint8_t skipCnt)
 {
     if ASCEND_IS_AIC {
         aivWork += skipCnt;
-        ASCENDC_DEBUG_ASSERT((aivWork < aivNumForCurAic),
+        ASCENDC_DEBUG_ASSERT((aivWork < aivNumForCurAic), KERNEL_LOG(KERNEL_ERROR, 
             "aivWork + skipCnt(%u) is %u, it cannot be larger than aivNumForCurAic (%u)",
             skipCnt,
             aivWork,
-            aivNumForCurAic);
+            aivNumForCurAic));
         msgPos += skipCnt;
     }
 }
@@ -362,7 +362,7 @@ __aicore__ inline bool CubeResGroupHandle<T>::__AivIsRun(uint8_t aivID)
 template <typename T>
 __aicore__ inline void CubeResGroupHandle<T>::__WriteGmCubeMsgByScalar(__gm__ T *msg)
 {
-    ASCENDC_DEBUG_ASSERT((msg != nullptr), "In __WriteGmStateByScalar, msg can not be nullptr");
+    ASCENDC_DEBUG_ASSERT((msg != nullptr), KERNEL_LOG(KERNEL_ERROR, "In __WriteGmStateByScalar, msg can not be nullptr"));
     // Note: must first refresh last (n-1) * 64B msg content, then refresh first 64B of msgState
     for (uint32_t i = 1; i < sizeof(T) / sizeof(int64_t); i++) {
         dcci(reinterpret_cast<__gm__ int64_t *>(msg) + sizeof(int64_t) * i,
@@ -377,7 +377,7 @@ template <typename T>
 __aicore__ inline void CubeResGroupHandle<T>::__WriteGmStateByScalar(
     __gm__ T *msg, CubeMsgState newState)
 {
-    ASCENDC_DEBUG_ASSERT((msg != nullptr), "In __WriteGmStateByScalar, msg can not be nullptr");
+    ASCENDC_DEBUG_ASSERT((msg != nullptr), KERNEL_LOG(KERNEL_ERROR, "In __WriteGmStateByScalar, msg can not be nullptr"));
     (msg->head).msgState = newState;
     dcci(reinterpret_cast<__gm__ int64_t *>(msg), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
 }
@@ -386,7 +386,7 @@ template <typename T>
 __aicore__ inline void CubeResGroupHandle<T>::__WriteGmCubeMsgByDatacopy(
     __gm__ T *msgPtr, T &cubeMsgInput)
 {
-    ASCENDC_DEBUG_ASSERT((msgPtr != nullptr), "In __WriteGmCubeMsgByDatacopy, msg can not be nullptr");
+    ASCENDC_DEBUG_ASSERT((msgPtr != nullptr), KERNEL_LOG(KERNEL_ERROR, "In __WriteGmCubeMsgByDatacopy, msg can not be nullptr"));
     auto ubData = reinterpret_cast<__ubuf__ uint64_t *>(ubMsg);
     auto msgData = reinterpret_cast<uint64_t *>(&cubeMsgInput);
     for (uint32_t i = 0; i < sizeof(T) / sizeof(uint64_t); i++, ubData++, msgData++) {
@@ -415,7 +415,7 @@ __aicore__ inline CubeResGroupHandle<T> CreateCubeResGroup(
     KfcWorkspace &desc, uint8_t blockStart, uint8_t blockSize, uint8_t msgQueueSize, GM_ADDR tiling)
 {
     ASCENDC_DEBUG_ASSERT(
-        (sizeof(T) % 64 == 0), "CubeMsgType Size is %u must be aligned to 64B.", sizeof(T));
+        (sizeof(T) % 64 == 0), KERNEL_LOG(KERNEL_ERROR, "CubeMsgType Size is %u must be aligned to 64B.", sizeof(T)));
     CubeResGroupHandle handle =
         CubeResGroupHandle<T>(desc.GetKfcWorkspace(), blockStart, blockSize, msgQueueSize, GetEventId(desc));
     desc.UpdateKfcWorkspace(__GetMsgAreaLen(handle, sizeof(T)));

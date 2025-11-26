@@ -11,7 +11,18 @@ else()
     set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_CANN_PACKAGE_PATH} CACHE PATH "Path for CANN package")
 endif()
 
-find_program(CMAKE_AICPU_COMPILER NAMES "bisheng" PATHS "$ENV{ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler/bin" DOC "AICPU Compiler")
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_LOWER_PROCESSOR)
+if(EXISTS $ENV{ASCEND_CANN_PACKAGE_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/bin)
+    set(AICPU_COMPILER_PATH $ENV{ASCEND_CANN_PACKAGE_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/bin)
+else()
+    set(AICPU_COMPILER_PATH "$ENV{ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler/bin")
+endif()
+find_program(CMAKE_AICPU_COMPILER 
+    NAMES "bisheng" 
+    PATHS "${AICPU_COMPILER_PATH}" 
+    DOC "AICPU Compiler"
+)
+
 mark_as_advanced(CMAKE_AICPU_COMPILER)
 
 message(STATUS "Detecting AICPU compiler: " ${CMAKE_AICPU_COMPILER})

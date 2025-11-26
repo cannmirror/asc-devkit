@@ -9,7 +9,11 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row15984141454611"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 ">&nbsp;</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p8984151413464"><a name="p8984151413464"></a><a name="p8984151413464"></a><span id="ph344042535512"><a name="ph344042535512"></a><a name="ph344042535512"></a>√</span></p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -70,6 +74,14 @@ A1-\>A2; B1-\>B2。
 </td>
 <td class="cellrowborder" valign="top" width="83.45%" headers="mcps1.2.3.1.2 "><a name="ul062813586431"></a><a name="ul062813586431"></a>
 </td>
+</tr>
+<tr id="row09851744154415"><td class="cellrowborder" valign="top" width="16.55%" headers="mcps1.2.3.1.1 "><p id="p11985204464419"><a name="p11985204464419"></a><a name="p11985204464419"></a><span id="ph6814456194414"><a name="ph6814456194414"></a><a name="ph6814456194414"></a>Src</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="83.45%" headers="mcps1.2.3.1.2 ">&nbsp;</td>
+</tr>
+<tr id="row1130353815467"><td class="cellrowborder" valign="top" width="16.55%" headers="mcps1.2.3.1.1 "><p id="p1230363812467"><a name="p1230363812467"></a><a name="p1230363812467"></a><span id="ph8514741194616"><a name="ph8514741194616"></a><a name="ph8514741194616"></a>Dst</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="83.45%" headers="mcps1.2.3.1.2 ">&nbsp;</td>
 </tr>
 </tbody>
 </table>

@@ -195,6 +195,7 @@ class TilingParamType(Enum):
     TPL_BOOL = auto()
     TPL_TILING_STRUCT = auto()
     TPL_KERNEL_TYPE = auto()
+    TPL_SHARED_KERNEL_TYPE = auto()
     TPL_DETERMINISTIC = auto()
     TPL_NONE = auto()
 
@@ -283,6 +284,9 @@ class TilingTemplateParams:
                 if value >= ASCENDC_TPL_DATAFORMAT_MAX:
                     continue
                 encodes[bin(value)[2:].rjust(self.bit_width, "0")] = value
+        elif self.param_type == TilingParamType.TPL_SHARED_KERNEL_TYPE:
+            for value in self.values:
+                encodes[bin(value)[2:].rjust(self.bit_width, '0')] = value
         else:
             encodes['0'] = 0
             encodes['1'] = 1
@@ -328,6 +332,11 @@ def check_valid_select_param(tiling_param_list: List[TilingTemplateParams], name
             raise RuntimeError("There is missing marco define: {} in ASCENDC_TPL_{}_SEL.".format(
                 tiling_declare_param.name, tiling_declare_param.get_param_type_str()))
     total_bit_length = 0
+
+    has_shared_kernel = any(p.param_type == TilingParamType.TPL_SHARED_KERNEL_TYPE for p in tiling_param_list)
+    has_kernel = any(p.param_type == TilingParamType.TPL_KERNEL_TYPE for p in tiling_param_list)
+    if has_shared_kernel and has_kernel:
+        raise RuntimeError("There exists both TPL_KERNEL_TYPE and SHARED_KERNEL_TYPE")
     for tiling_param in tiling_param_list:
         if tiling_param.param_type == TilingParamType.TPL_TILING_STRUCT or \
             tiling_param.param_type == TilingParamType.TPL_KERNEL_TYPE or \
@@ -350,9 +359,20 @@ Total bit width cannot be greater than 64!")
                 "Cannot find ASCENDC_TPL_{}_SEL name: {} in ASCENDC_TPL_{}_DECL.".format(
                 tiling_param.get_param_type_str(), name, tiling_param.get_param_type_str()))
         if tpl_type != matched_param.param_type:
-            raise RuntimeError(
-                "{} has different type in ASCENDC_TPL_{}_SEL and ASCENDC_TPL_{}_DECL.".format(name,
-                tiling_param.get_param_type_str(), matched_param.get_param_type_str()))
+            if (
+                tpl_type == TilingParamType.TPL_FORMAT
+                and matched_param.param_type == TilingParamType.TPL_DATAFORMAT
+            ):
+                raise RuntimeError(
+                    "[Error] Not support both used custom FORMAT and native FORMAT, "
+                    "please check {} in ASCENDC_TPL_FORMAT_DECL.".format(name, tiling_param.get_param_type_str())
+                )
+            else:
+                raise RuntimeError(
+                    "{} has different type in ASCENDC_TPL_{}_SEL and ASCENDC_TPL_{}_DECL.".format(
+                        name, tiling_param.get_param_type_str(), matched_param.get_param_type_str()
+                    )
+                )
         if not set(vals).issubset(set(matched_param.values)):
             raise RuntimeError(
                 "Cannot find value {} from ASCENDC_TPL_{}_SEL {} in ASCENDC_TPL_{}_DECL,"
@@ -397,6 +417,7 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
             or sub_str.startswith("ASCENDC_TPL_TILING_STRUCT_SEL_")
             or sub_str.startswith("ASCENDC_TPL_KERNEL_TYPE_SEL")
             or sub_str.startswith("ASCENDC_TPL_DETERMINISTIC_SEL")
+            or sub_str.startswith("ASCENDC_TPL_SHARED_KERNEL_TYPE_SEL")
             else "DECL"
         )
         if sub_str.startswith("ASCENDC_TPL_DTYPE"):
@@ -431,7 +452,7 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
             uint_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_UINT_{}_'.format(macro_type))
             if macro_type == "SEL":
-                tiling_param.append(TilingTemplateParams(name, \
+                tiling_param.append(TilingTemplateParams(name,
                     TilingParamType.TPL_UINT, uint_list, bit_map[name], macro_type))
             else:
                 tiling_param.append(TilingTemplateParams(name, TilingParamType.TPL_UINT, uint_list, 0, macro_type))
@@ -439,6 +460,17 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
             bool_list = extract_num(tiling_param_list[i + 1])
             name = remove_prefix(sub_str, 'ASCENDC_TPL_BOOL_{}_'.format(macro_type))
             tiling_param.append(TilingTemplateParams(name, TilingParamType.TPL_BOOL, bool_list, 1, macro_type))
+        elif "ASCENDC_TPL_SHARED_KERNEL_TYPE" in sub_str:
+            shared_kernel_type_list = extract_num(tiling_param_list[i + 1])
+            name = remove_prefix(sub_str, 'ASCENDC_TPL_SHARED_KERNEL_TYPE_{}_'.format(macro_type))
+            tiling_param.append(TilingTemplateParams(name, TilingParamType.TPL_SHARED_KERNEL_TYPE, \
+                                                        shared_kernel_type_list, 8, macro_type))
+        elif "ASCENDC_TPL_KERNEL_TYPE" in sub_str:
+            if macro_type == "DECL":
+                shared_kernel_type_list = extract_num(tiling_param_list[i + 1])
+                name = remove_prefix(sub_str, 'ASCENDC_TPL_KERNEL_TYPE_{}_'.format(macro_type))
+                tiling_param.append(TilingTemplateParams(name, TilingParamType.TPL_SHARED_KERNEL_TYPE, \
+                    shared_kernel_type_list, 8, macro_type))
         elif "ASCENDC_TPL_TILING_STRUCT" in sub_str:
             # 用-1占位
             name = remove_prefix(sub_str, 'ASCENDC_TPL_TILING_STRUCT_{}_'.format(macro_type))
@@ -447,18 +479,30 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
         res.append(tiling_param)
     return res
 
+GROUP_ID = 0
+ID_LIST = []
+group_map = {}
 
-def get_concated_tiling_key(
-    template_param_list: List[TilingTemplateParams],
-    index: int,
-    tiling_key: str,
-    tiling_args: List[str],
-    encode_book: dict,
-    data: dict,
-) -> dict:
+
+def get_concated_tiling_key(template_param_list: List[TilingTemplateParams], \
+    index: int, tiling_key: str, tiling_args: List[int], encode_book: dict, data: dict, kernel_index: int) -> dict:
+    global ID_LIST
+    global GROUP_ID
+    global group_map
     result = dict()
     if index == len(template_param_list):
         data.update({"paramArgs": tiling_args})
+        if kernel_index != -1:
+            group_key = tuple(tiling_args[: kernel_index] + tiling_args[kernel_index + 1:])
+
+            if group_key in group_map:
+                group_id = group_map[group_key]
+            else:
+                GROUP_ID += 1
+                group_map[group_key] = GROUP_ID
+                group_id = GROUP_ID
+            data["groupId"] = group_id
+            ID_LIST.append(group_id)
         result[int(tiling_key, 2)] = copy.copy(data)
         return result
     template_param = template_param_list[index]
@@ -484,11 +528,13 @@ def get_concated_tiling_key(
             encode_ = encode_book[template_param.name][val]
             tiling_args_temp = tiling_args + [str(val)]
         else:
+            if template_param.param_type == TilingParamType.TPL_SHARED_KERNEL_TYPE:
+                data["kernelType"] = val
             encode_ = encode_book[template_param.name][val]
             tiling_args_temp = tiling_args + [str(val)]
         result.update(
             get_concated_tiling_key(
-                template_param_list, index + 1, encode_ + tiling_key, tiling_args_temp, encode_book, data
+                template_param_list, index + 1, encode_ + tiling_key, tiling_args_temp, encode_book, data, kernel_index
             )
         )
     return result
@@ -513,9 +559,11 @@ def extract_decl_param_options(op_info: OpInfo, option_name="dtype"):
             if val >= ASCENDC_TPL_INPUT_BIAS and val < ASCENDC_TPL_OUTPUT_BIAS:
                 decl_input_indexes.append(int(val % ASCENDC_TPL_INPUT_BIAS))
                 deck_select_indexes[-1] = True
+                break
             elif val >= ASCENDC_TPL_OUTPUT_BIAS:
                 decl_output_indexes.append(int(val % ASCENDC_TPL_OUTPUT_BIAS))
                 deck_select_indexes[-1] = True
+                break
 
     def _check_indexes(indexes: List[int], value_list, desc=""):
         if len(indexes) != 0 and (max(indexes) >= len(value_list) or min(indexes) < 0):
@@ -551,8 +599,11 @@ def decode_tiling(tiling_key: int = None) -> dict:
         reversed_encode_book[k] = reversed_book
     decode_results = dict()
     for tiling_template_select_param in TILING_SELECT_MAP:
+        kernel_index = next((i for i, param in enumerate(tiling_template_select_param) if \
+            param.param_type == TilingParamType.TPL_SHARED_KERNEL_TYPE), -1)
         decode_result = get_concated_tiling_key(
-            tiling_template_select_param, 0, "", [], reversed_encode_book, {"dtypeParams": [], "formatParams": []}
+            tiling_template_select_param, 0, "", [], reversed_encode_book, \
+                {"dtypeParams": [], "formatParams": []}, kernel_index
         )
         length_before = len(decode_result) + len(decode_results)
         decode_results.update(decode_result)

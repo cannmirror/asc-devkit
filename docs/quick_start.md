@@ -10,6 +10,70 @@
 
    - cmake >= 3.16.0
 
+   - ccache >= 4.6.1
+
+     建议版本[release-v4.6.1](https://github.com/ccache/ccache/releases/tag/v4.6.1)，x86_64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.6.1/ccache-4.6.1-linux-x86_64.tar.xz)，aarch64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.6.1/ccache-4.6.1.tar.gz)。
+
+     x86_64环境安装步骤如下：
+     
+     ```bash
+     # 在准备安装的路径下创建buildtools目录，如有则忽略
+     # 这里以安装路径/opt为例，对安装命令进行说明
+     mkdir /opt/buildtools
+     # 切换到安装包下载路径，将ccache解压到安装路径
+     tar -xf ccache-4.6.1-linux-x86_64.tar.xz -C /opt/buildtools
+     chmod 755 /opt/buildtools/ccache-4.6.1-linux-x86_64/ccache
+     mkdir -p /usr/local/ccache/bin
+     # 建立软链接
+     ln -sf /opt/buildtools/ccache-4.6.1-linux-x86_64/ccache /usr/local/bin/ccache
+     ln -sf /opt/buildtools/ccache-4.6.1-linux-x86_64/ccache /usr/local/ccache/bin/ccache
+     # 将ccache添加到环境变量PATH
+     export PATH=/usr/local/ccache/bin:$PATH
+     ```
+     
+     aarch64环境安装步骤如下：
+     - 下载依赖项  
+       下载[zstd](https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz)和[hiredis](https://github.com/redis/hiredis/archive/refs/tags/v1.0.2.tar.gz)。
+    
+     - 编译安装
+     
+        ```bash
+        # 在准备安装的路径下创建buildtools目录，如有则忽略
+        # 这里以安装路径/opt为例，对安装命令进行说明
+        mkdir /opt/buildtools
+        # 切换到安装包下载路径，将zstd解压到安装路径
+        tar -xf zstd-1.5.0.tar.gz -C /opt/buildtools
+        cd /opt/buildtools/zstd-1.5.0
+        make -j 24
+        make install
+        cd -
+        # 切换到安装包下载路径，将hiredis解压到安装路径
+        tar -xf hiredis-1.0.2.tar.gz -C /opt/buildtools
+        cd /opt/buildtools/hiredis-1.0.2
+        make -j 24 prefix=/opt/buildtools/hiredis-1.0.2 all
+        make prefix=/opt/buildtools/hiredis-1.0.2 install
+        cd -
+        # 切换到安装包下载路径，将ccache解压到安装路径
+        tar -xf ccache-4.6.1.tar.gz -C /opt/buildtools
+        cd /opt/buildtools/ccache-4.6.1
+        mkdir build
+        cd build/
+        cmake -DCMAKE_BUILD_TYPE=Release -DZSTD_LIBRARY=/usr/local/lib/libzstd.a -DZSTD_INCLUDE_DIR=/usr/local/include -DHIREDIS_LIBRARY=/usr/local/lib/libhiredis.a -DHIREDIS_INCLUDE_DIR=/usr/local/include ..
+        make -j 24
+        make install
+        mkdir -p /usr/local/ccache/bin
+        # 建立软链接
+        ln -sf /usr/local/bin/ccache /usr/local/ccache/bin/ccache
+        # 将ccache添加到环境变量PATH
+        export PATH=/usr/local/ccache/bin:$PATH
+        ```
+
+   - lcov >= 1.13（可选，仅执行UT时依赖）
+   
+   - pytest >= 5.4.2（可选，仅执行UT时依赖）
+
+   - coverage >= 4.5.4（可选，仅执行UT时依赖）
+
    - googletest（可选，仅执行UT时依赖，建议版本[release-1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)）
 
      下载[googletest源码](https://github.com/google/googletest.git)后，执行以下命令安装：
@@ -25,7 +89,7 @@
 
    运行算子时必须安装驱动与固件，若仅编译算子，可跳过本操作，安装指导详见《[CANN 软件安装指南](https://www.hiascend.com/document/redirect/CannCommunityInstSoftware)》。
 
-## 环境准备
+## 环境准备<a name="prepare&install"></a>
 本项目支持由源码编译，进行源码编译前，请根据如下步骤完成相关环境准备。
 
 1. **安装社区尝鲜版CANN toolkit包**
@@ -49,17 +113,17 @@
 - 默认路径，root用户安装
 
     ```bash
-    source /usr/local/Ascend/8.5.0.alpha001/set_env.sh
+    source /usr/local/Ascend/latest/bin/setenv.bash
     ```
 
 - 默认路径，非root用户安装
     ```bash
-    source $HOME/Ascend/8.5.0.alpha001/set_env.sh
+    source $HOME/Ascend/latest/bin/setenv.bash
     ```
 
 - 指定路径安装
     ```bash
-    source ${install_path}/8.5.0.alpha001/set_env.sh
+    source ${install_path}/latest/bin/setenv.bash
     ```
 
 3. **下载源码**
@@ -81,14 +145,14 @@
    bash build.sh --pkg
    ```
 
-   编译完成后会在`output`目录下生成cann-asc-devkit_*<cann_version>*_linux-*<arch>*.run软件包。
+   编译完成后会在`build_out`目录下生成cann-asc-devkit_*<cann_version>*_linux-*\<arch\>*.run软件包。
 2. 安装
 
    在开源仓根目录下执行下列命令，根据设置的环境变量路径，将编译生成的run包安装到CANN包的装包路径，同时会覆盖原CANN包中的Ascend C内容。
 
    ```bash
    # 切换到run包生成路径下
-   cd build_output
+   cd build_out
    # 默认路径安装run包
    ./cann-asc-devkit_<cann_version>_linux-<arch>.run --full
    # 指定路径安装run包

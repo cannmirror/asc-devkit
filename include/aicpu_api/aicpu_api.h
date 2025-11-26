@@ -18,14 +18,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-struct DumpConfig {
-    void *dumpBufAddr;
-    size_t dumpBufSize;
-    size_t dumpOffset;
-};
-
-#ifdef __AICPU_DEVICE__
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -47,5 +39,3 @@ static inline void DataStoreBarrier(void) {
     asm volatile("dsb st" ::: "memory");
 }
 }
-
-#endif

@@ -17,15 +17,6 @@
 #define IMPL_MATH_COS_COS_COMMON_UTILS_H
 
 namespace AscendC {
-enum class CosAlgo {
-    POLYNOMIAL_APPROXIMATION = 0,
-    RADIAN_REDUCTION,
-};
-
-struct CosConfig {
-    CosAlgo algo = CosAlgo::POLYNOMIAL_APPROXIMATION;
-};
-
 constexpr CosConfig defaultCosConfig = { CosAlgo::POLYNOMIAL_APPROXIMATION };
 }
 

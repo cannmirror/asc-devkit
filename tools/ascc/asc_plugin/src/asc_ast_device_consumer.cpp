@@ -50,20 +50,16 @@ llvm::DenseMap<KernelFuncInfo, std::pair<std::unordered_set<KernelMetaType>, Kfc
 bool ASTDeviceVisitor::VisitFunctionDecl(const clang::FunctionDecl *funcDecl)
 {
     bool hasGlobal = false;
-    bool hasDevice = false;
     static constexpr llvm::StringRef globalAttr = "global";
-    static constexpr llvm::StringRef deviceAttr = "device";
     for (const auto *attr : funcDecl->attrs()) {
         if (const auto *annotate = llvm::dyn_cast<clang::AnnotateAttr>(attr)) {
             llvm::StringRef annotation = annotate->getAnnotation();
             if (annotation == globalAttr) {
                 hasGlobal = true;
-            } else if (annotation == deviceAttr) {
-                hasDevice = true;
             }
         }
     }
-    if (hasGlobal && hasDevice) {
+    if (hasGlobal) {
         AscPlugin::KernelFuncInfo kernelKey = GetKernelInfo(funcDecl);
         llvm::StringRef funcName = funcDecl->getName();
         if (kernelKey.mangledName.empty()) {
@@ -154,14 +150,23 @@ void StoreFuncKernelType(const AscPlugin::KernelFuncInfo& kernelKey, const std::
     bool kernelTypeValid = false;
     ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
     // For each kernel, there should be only 1 Ascendc Kernel type
-    if (shortSoc == ShortSocVersion::ASCEND910B &&
-        KERNEL_TYPE_MAP_V220.find(kernelTypeStr) != KERNEL_TYPE_MAP_V220.end()) {
-        g_kernelFuncType[kernelKey].first = {KERNEL_TYPE_MAP_V220.at(kernelTypeStr)};
-        kernelTypeValid = true;
-    } else if (shortSoc == ShortSocVersion::ASCEND310P &&
-        KERNEL_TYPE_MAP_V200.find(kernelTypeStr) != KERNEL_TYPE_MAP_V200.end()) {
-        if (kernelTypeStr == "KERNEL_TYPE_AICORE") { // 310P only supports AICORE for now
-            g_kernelFuncType[kernelKey].first = {KERNEL_TYPE_MAP_V200.at(kernelTypeStr)};
+    if (shortSoc == ShortSocVersion::ASCEND910B) {
+        auto iter = KERNEL_TYPE_MAP_V220.find(kernelTypeStr);
+        if (iter != KERNEL_TYPE_MAP_V220.end()) {
+            g_kernelFuncType[kernelKey].first = {iter->second};
+            kernelTypeValid = true;
+        }
+    } else if (shortSoc == ShortSocVersion::ASCEND310P) {
+        auto iter = KERNEL_TYPE_MAP_V200.find(kernelTypeStr);
+        // 310P only supports AICORE for now
+        if (iter != KERNEL_TYPE_MAP_V200.end() && kernelTypeStr == "KERNEL_TYPE_AICORE") {
+            g_kernelFuncType[kernelKey].first = {iter->second};
+            kernelTypeValid = true;
+        }
+    } else if (shortSoc == ShortSocVersion::ASCEND910_95) {
+        auto iter = KERNEL_TYPE_MAP_C310.find(kernelTypeStr);
+        if (iter != KERNEL_TYPE_MAP_C310.end()) {
+            g_kernelFuncType[kernelKey].first = {iter->second};
             kernelTypeValid = true;
         }
     }

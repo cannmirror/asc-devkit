@@ -25,7 +25,7 @@ using namespace std;
 using namespace HcclApi;
 
 namespace AscendC {
-
+namespace{
 void PrintMc2InitTiling(const Mc2InitTilingInner &tiling)
 {
     TILING_LOG_DEBUG("Mc2InitTiling msg begin.");
@@ -58,7 +58,7 @@ void PrintMc2CcTiling(const Mc2CcTilingInner &tiling)
     TILING_LOG_DEBUG("Mc2CcTiling msg commEngine:%u", tiling.commEngine);
     TILING_LOG_DEBUG("Mc2CcTiling msg end.");
 }
-
+}
 uint32_t SetDevType(Mc2InitTilingInner *tilingInner)
 {
     char socVersion[50];

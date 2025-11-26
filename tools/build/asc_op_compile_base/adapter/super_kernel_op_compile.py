@@ -190,19 +190,48 @@ def gen_spk_kernel_call(super_split_info : SuperSplitInfo, split_mode, kernel_ty
             _sk_arch = f'dav-{chip_version}-cube'
 
         cmds = ["ccec", "-x", "cce"]
-        bisheng = os.environ.get('BISHENG_REAL_PATH')
-        if bisheng is None:
-            bisheng = shutil.which("bisheng")
-        if bisheng is not None:
-            bisheng_path = os.path.dirname(bisheng)
-            tikcpp_path = os.path.realpath(os.path.join(bisheng_path, "..", "..", "tikcpp"))
+        ascend_home_path = os.environ.get('ASCEND_HOME_PATH')
+        import platform
+        archlinux = platform.machine()
+        if ascend_home_path is None or ascend_home_path == '':
+            asc_opc_path = shutil.which("asc_opc")	
+            if asc_opc_path is not None:	
+                asc_opc_path_link = os.path.dirname(asc_opc_path)
+                asc_opc_real_path = os.path.realpath(asc_opc_path_link)
+                ascend_home_path = os.path.realpath(	
+                        os.path.join(asc_opc_real_path, "..", ".."))
+            else:	
+                ascend_home_path = "/usr/local/Ascend/latest"
+
+        if 'x86' in archlinux:
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))
         else:
-            tikcpp_path = os.path.realpath("/usr/local/Ascend/latest/compiler/tikcpp")
-        cmds.append("-I" + tikcpp_path)
-        cmds.append("-I" + os.path.join(tikcpp_path, "..", "..", "include"))
-        cmds.append("-I" + os.path.join(tikcpp_path, "tikcfw"))
-        cmds.append("-I" + os.path.join(tikcpp_path, "tikcfw", "impl"))
-        cmds.append("-I" + os.path.join(tikcpp_path, "tikcfw", "interface"))
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "aarch64-linux", "asc"))
+        if asc_path is None:
+            asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
+           
+        cmds.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "utils"))
+        cmds.append("-I" + os.path.join(asc_path, "include"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "adv_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "basic_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "c_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "simt_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "utils"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
+        cmds.append("-I" + os.path.join(asc_path, "impl"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "..", "include"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "..", "include", "ascendc"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "impl"))
+        cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp", "tikcfw", "interface"))
 
         if CommonUtility.is_c310():
             cmds += ["-D__DAV_C310__"]
@@ -306,6 +335,8 @@ def super_kernel_compile(kernel_info, compile_log_path):
         compile_option_tuple.mllvm_options.append('--cce-long-call=true')
         compile_option_tuple.mllvm_options.append('-mllvm')
         compile_option_tuple.mllvm_options.append('-cce-aicore-long-call')
+    if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
+        compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
     if kernel_info["timestamp_option"]:
         compile_options.append('-DONE_CORE_DUMP_SIZE=' + str(compile_info.super_kernel_info["debug_size"] / 75))
     _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info, compile_option_tuple, tiling_info) 

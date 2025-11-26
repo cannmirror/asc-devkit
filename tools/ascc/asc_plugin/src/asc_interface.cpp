@@ -99,8 +99,8 @@ inline bool IsMixKernelType(const KernelMetaType kType)
 void UpdateManglingNameSuffix(std::vector<std::string>& compileOptions, const CoreType coreType)
 {
     auto& manager = InfoManager::GetInstance();
-    ShortSocVersion soc = manager.GetShortSocVersion();
-    if (soc == ShortSocVersion::ASCEND910B) {
+    ShortSocVersion shortSoc = manager.GetShortSocVersion();
+    if (shortSoc == ShortSocVersion::ASCEND910B || shortSoc == ShortSocVersion::ASCEND910_95) {
         for (const auto& funcInfo : InfoManager::GetInstance().GetGlobalSymbolInfo()) {
             std::string manglingName = funcInfo.first;
             KernelMetaType kType = std::get<0>(funcInfo.second);
@@ -182,17 +182,10 @@ int32_t PluginGetPreCompileOpts(const char** result)
 
     auto& manager = InfoManager::GetInstance();
     PathInfo pathInfo = manager.GetPathInfo();
-    std::vector<std::string> compileOptions = {
-        "-I" + pathInfo.cannIncludePath,
-        "-I" + pathInfo.hostApiPath,
-        "-I" + pathInfo.highLevelApiPath,
-        "-I" + pathInfo.tikcfwPath,
-        "-I" + pathInfo.tikcfwLibPath,
-        "-I" + pathInfo.tikcfwLibMatmulPath,
-        "-I" + pathInfo.tikcfwImplPath,
-        "-I" + pathInfo.tikcfwInterfacePath,
-        "-std=c++17"
-    };
+    std::vector<std::string> compileOptions = {"-std=c++17"};
+    for (auto& incPath: pathInfo.cannIncludePath) {
+        compileOptions.emplace_back("-I" + incPath);
+    }
 
     PreCompileOptsResult res = {compileOptions};
     return DumpResultInfo(res, result);
@@ -252,7 +245,7 @@ int32_t PluginPrologue(const char** result, const char* config)
     if (manager.IsL2CacheEnabled()) {
         manager.SetAscendMetaFlag(ASC_L2CACHE_HINT_MASK);
     }
-    if (manager.IsDumpOn()) {
+    if (manager.IsFifoDumpOn()) {
         manager.SetAscendMetaFlag(ASC_PRINT_MASK);
     }
 
@@ -287,11 +280,15 @@ int32_t PluginGenKernel(const char** result, const char* info)
     }
 
     const auto& [kernelType, kfcScene] = GetKernelFuncScene(kernelInfo);
-    for (const auto& ktype : kernelType) {
-        if (ktype == KernelMetaType::KERNEL_TYPE_AIC_ONLY || ktype == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
-            continue;
+    ShortSocVersion shortSoc = manager.GetShortSocVersion();
+    // 910_95 no ffts, don't set flag means close
+    if (shortSoc != ShortSocVersion::ASCEND910_95) {
+        for (const auto& ktype : kernelType) {
+            if (ktype == KernelMetaType::KERNEL_TYPE_AIC_ONLY || ktype == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
+                continue;
+            }
+            manager.SetAscendMetaFlag(ASC_FFTS_MASK);
         }
-        InfoManager::GetInstance().SetAscendMetaFlag(ASC_FFTS_MASK);
     }
     const auto [deviceResult, deviceStub, metaInfo] = GetDeviceCode(kernelInfo, kernelType, kfcScene);
     if (deviceResult != 0) {

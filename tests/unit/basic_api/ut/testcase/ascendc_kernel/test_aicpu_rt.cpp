@@ -11,7 +11,7 @@
 #include "acl/acl.h"
 #include "securec.h"
 #include "aicpu_api/aicpu_api.h"
-#include "aicpu_dump_utils.h"
+#include "aicpu_rt.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,16 +29,6 @@ protected:
 };
 
 extern "C" {
-    aclrtBinHandle AicpuLoadBinaryFromBuffer(const unsigned long *aicpuFileBuf, size_t fileSize);
-    aclrtFuncHandle AicpuRegFunctionByName(const aclrtBinHandle binHandle, const char *funcName);
-    void AicpuLaunchKernel(aclrtFuncHandle funcHandle, uint32_t blockDim, aclrtStream stream, void *arg,
-        size_t argSize);
-    void AicpuDumpPrintBuffer(const void *dumpBuffer, const size_t bufSize);
-    int AicpuGetDumpConfig(void **addr, size_t *size);
-    void StartAscendProf(const char *name, uint64_t *startTime);
-    void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
-    int AscendProfRegister();
-    bool GetAscendProfStatus();
     int32_t ElfGetSymbolOffset(uint8_t* elf, size_t elfSize, const char* symbolName, size_t* offset, size_t* size);
 }
 
@@ -50,45 +40,30 @@ int AicpuGetDumpConfigStub(void **addr, size_t *size)
     return 0;
 }
 
-TEST_F(TEST_AICPU_RT, AicpuLoadBinaryFromBufferReturnNullptr)
+TEST_F(TEST_AICPU_RT, AicpuSetDumpConfigReturnNullptr)
 {
     const size_t fileSize = 1024;
     unsigned long* aicpuFileBuf = new unsigned long[fileSize / sizeof(unsigned long)];
     memset(aicpuFileBuf, 0, fileSize);
     MOCKER(ElfGetSymbolOffset).stubs().will(returnValue(1));
     MOCKER(AicpuGetDumpConfig).stubs().will(invoke(AicpuGetDumpConfigStub));
-    EXPECT_EQ(AicpuLoadBinaryFromBuffer(aicpuFileBuf, fileSize), nullptr);
+    EXPECT_EQ(AicpuSetDumpConfig(aicpuFileBuf, fileSize), nullptr);
     delete[] aicpuFileBuf;
 }
 
-TEST_F(TEST_AICPU_RT, AicpuLoadBinaryFromBufferTest)
+TEST_F(TEST_AICPU_RT, AicpuSetDumpConfigTest)
 {
     const size_t fileSize = 1024;
     unsigned long* aicpuFileBuf = new unsigned long[fileSize / sizeof(unsigned long)];
     memset(aicpuFileBuf, 0, fileSize);
     MOCKER(ElfGetSymbolOffset).stubs().will(returnValue(0));
     MOCKER(AicpuGetDumpConfig).stubs().will(invoke(AicpuGetDumpConfigStub));
-    EXPECT_EQ(AicpuLoadBinaryFromBuffer(aicpuFileBuf, fileSize), nullptr);
+    size_t* result = AicpuSetDumpConfig(aicpuFileBuf, fileSize);
+    EXPECT_NE(result, nullptr);
+    if (result != nullptr) {
+        free(result);
+    }
     delete[] aicpuFileBuf;
-}
-
-TEST_F(TEST_AICPU_RT, AicpuRegFunctionByNameTest)
-{
-    aclrtBinHandle binHandle;
-    const char *funcName = "testFunc";
-    EXPECT_NO_THROW(AicpuRegFunctionByName(binHandle, funcName));
-}
-
-TEST_F(TEST_AICPU_RT, AicpuLaunchKernelTest)
-{
-    aclrtFuncHandle funcHandle;
-    uint32_t blockDim = 1;
-    aclrtStream stream;
-    char argBuffer[256];
-    void *arg = &argBuffer;
-    size_t argSize = sizeof(argBuffer);
-    MOCKER(GetAscendProfStatus).stubs().will(returnValue(true));
-    EXPECT_NO_THROW(AicpuLaunchKernel(funcHandle, blockDim, stream, arg, argSize));
 }
 
 int aclrtGetDeviceStub(int32_t *devicdId)

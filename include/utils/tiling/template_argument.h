@@ -51,6 +51,7 @@
 #define ASCENDC_TPL_BOOL 3
 constexpr uint32_t ASCENDC_TPL_KERNEL_TYPE = 4;
 constexpr uint32_t ASCENDC_TPL_DETERMINISTIC = 5;
+constexpr uint32_t ASCENDC_TPL_SHARED_KERNEL_TYPE = 6;
 // index bias
 #define ASCENDC_TPL_INPUT_BIAS 100000000
 #define ASCENDC_TPL_OUTPUT_BIAS 900000000
@@ -67,6 +68,7 @@ constexpr uint32_t ASCENDC_TPL_DETERMINISTIC = 5;
 #define ASCENDC_TPL_FORMAT_DECL(x, ...) @@ASCENDC_TPL_FORMAT_DECL_##x@@ = {__VA_ARGS__}
 #define ASCENDC_TPL_UINT_DECL(x, ...) @@ASCENDC_TPL_UINT_DECL_##x@@ = {__VA_ARGS__}
 #define ASCENDC_TPL_BOOL_DECL(x, ...) @@ASCENDC_TPL_BOOL_DECL_##x@@ = {__VA_ARGS__}
+#define ASCENDC_TPL_KERNEL_TYPE_DECL(x, ...) @@ASCENDC_TPL_SHARED_KERNEL_TYPE_DECL_##x@@ = {__VA_ARGS__}
 
 #define ASCENDC_TPL_DTYPE_SEL(x, ...) @@ASCENDC_TPL_DTYPE_SEL_##x@@ = {__VA_ARGS__}
 #define ASCENDC_TPL_DATATYPE_SEL(x, ...) @@ASCENDC_TPL_DATATYPE_SEL_##x@@ = {__VA_ARGS__}
@@ -76,6 +78,7 @@ constexpr uint32_t ASCENDC_TPL_DETERMINISTIC = 5;
 #define ASCENDC_TPL_TILING_STRUCT_SEL(x, ...) @@ASCENDC_TPL_TILING_STRUCT_SEL_##x@@ = {__VA_ARGS__}
 #define ASCENDC_TPL_KERNEL_TYPE_SEL(...) @@ASCENDC_TPL_KERNEL_TYPE_SEL@@ = {__VA_ARGS__}
 #define ASCENDC_TPL_DETERMINISTIC_SEL(...) @@ASCENDC_TPL_DETERMINISTIC_SEL@@ = {__VA_ARGS__}
+#define ASCENDC_TPL_SHARED_KERNEL_TYPE_SEL(x, ...) @@ASCENDC_TPL_SHARED_KERNEL_TYPE_SEL_##x@@ = {__VA_ARGS__}
 
 #define ASCENDC_TPL_ARGS_DECL(x, ...) @@ASCENDC_TPL_ARGS_DECL_##x@@ = {__VA_ARGS__}
 #define ASCENDC_TPL_ARGS_SEL(...) @@{__VA_ARGS__}
@@ -209,6 +212,7 @@ ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E1M2, fp4x2_e1m2_t);    // fp4_e1m2 type
 #define ASCENDC_TPL_FORMAT_DECL(...)
 #define ASCENDC_TPL_UINT_DECL(...)
 #define ASCENDC_TPL_BOOL_DECL(...)
+#define ASCENDC_TPL_KERNEL_TYPE_DECL(...)
 
 #define ASCENDC_TPL_DTYPE_SEL(...)
 #define ASCENDC_TPL_DATATYPE_SEL(...)
@@ -218,6 +222,7 @@ ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E1M2, fp4x2_e1m2_t);    // fp4_e1m2 type
 #define ASCENDC_TPL_TILING_STRUCT_SEL(...)
 #define ASCENDC_TPL_KERNEL_TYPE_SEL(...)
 #define ASCENDC_TPL_DETERMINISTIC_SEL(...)
+#define ASCENDC_TPL_SHARED_KERNEL_TYPE_SEL(...)
 
 #define ASCENDC_TPL_ARGS_DECL(...)
 #define ASCENDC_TPL_ARGS_SEL(...)
@@ -242,6 +247,7 @@ using TilingSelectParams = std::vector<std::vector<ParamStruct>>;
 #define ASCENDC_TPL_FORMAT_DECL(x, ...) ParamStruct{#x, ASCENDC_TPL_FORMAT, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "DECL"}
 #define ASCENDC_TPL_UINT_DECL(x, bw, ...) ParamStruct{#x, ASCENDC_TPL_UINT, bw, {__VA_ARGS__}, "DECL"}
 #define ASCENDC_TPL_BOOL_DECL(x, ...) ParamStruct{#x, ASCENDC_TPL_BOOL, ASCENDC_TPL_1_BW, {__VA_ARGS__}, "DECL"}
+#define ASCENDC_TPL_KERNEL_TYPE_DECL(x, ...) ParamStruct{#x, ASCENDC_TPL_SHARED_KERNEL_TYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "DECL"}
 
 #define ASCENDC_TPL_DTYPE_SEL(x, ...) ParamStruct{#x, ASCENDC_TPL_DTYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
 #define ASCENDC_TPL_DATATYPE_SEL(x, ...) ParamStruct{#x, ASCENDC_TPL_DTYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
@@ -251,6 +257,7 @@ using TilingSelectParams = std::vector<std::vector<ParamStruct>>;
 #define ASCENDC_TPL_TILING_STRUCT_SEL(x, ...)
 #define ASCENDC_TPL_KERNEL_TYPE_SEL(...) ParamStruct{"kernel_type", ASCENDC_TPL_KERNEL_TYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
 #define ASCENDC_TPL_DETERMINISTIC_SEL(...) ParamStruct{"deterministic", ASCENDC_TPL_DETERMINISTIC, ASCENDC_TPL_1_BW, {__VA_ARGS__}, "SEL"}
+#define ASCENDC_TPL_SHARED_KERNEL_TYPE_SEL(x, ...) ParamStruct{#x, ASCENDC_TPL_SHARED_KERNEL_TYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
 
 #define ASCENDC_TPL_ARGS_DECL(x, ...) static TilingDeclareParams g_tilingDeclareParams{ __VA_ARGS__ }
 #define ASCENDC_TPL_ARGS_SEL(...) { __VA_ARGS__}

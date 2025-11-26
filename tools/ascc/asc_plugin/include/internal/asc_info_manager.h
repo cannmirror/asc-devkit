@@ -18,6 +18,7 @@
 #define __INCLUDE_INTERNAL_ASC_INFO_MANAGER_H__
 
 #include <tuple>
+#include <sys/utsname.h>
 
 #include "asc_ast_utils.h"
 #include "asc_utils.h"
@@ -29,41 +30,61 @@ struct PathInfo {
 
     PathInfo(const std::string& cannPathIn)
     {
-        cannPath = cannPathIn;
-        cannIncludePath = cannPathIn + "/include";
-        // highlevel
-        highLevelApiPath = cannPathIn + "/compiler/ascendc/include/highlevel_api";
-        highLevelApiLibPath = cannPathIn + "/compiler/ascendc/include/highlevel_api/lib";
-        highLevelApiLibMatmulPath = cannPathIn + "/compiler/ascendc/include/highlevel_api/lib/matmul";
-        highLevelApiImplPath = cannPathIn + "/compiler/ascendc/include/highlevel_api/impl";
-        // tikcfw
-        tikcfwPath = cannPathIn + "/compiler/tikcpp/tikcfw";
-        tikcfwInterfacePath = cannPathIn + "/compiler/tikcpp/tikcfw/interface";
-        tikcfwLibPath = cannPathIn + "/compiler/tikcpp/tikcfw/lib";
-        tikcfwLibMatmulPath = cannPathIn + "/compiler/tikcpp/tikcfw/lib/matmul";
-        tikcfwImplPath = cannPathIn + "/compiler/tikcpp/tikcfw/impl";
-        // hostapi
-        hostApiPath = cannPathIn + "/include/ascendc/host_api";
-        // cann version
-        cannVersionHeader = cannPathIn + "/include/version/cann_version.h";
+        struct utsname info;
+        std::string prefix;
+        if (uname(&info) < 0) {
+            prefix = "/compiler";
+        } else {
+            std::string machine = info.machine;
+            if (machine == "x86_64") {
+                prefix = "/x86_64-linux";
+            } else if (machine == "aarch64" || machine == "arm64" || machine == "arm") {
+                prefix = "/aarch64-linux";
+            } else {
+                prefix = "/compiler";
+            }
+        }
+        cannPath = cannPathIn + prefix;
 
-        ascendClangIncludePath = cannPathIn + "/compiler/ccec_compiler/lib/clang/15.0.5/include";
-        bishengPath = cannPathIn + "/compiler/ccec_compiler/bin/bisheng";
-        objdumpPath = cannPathIn + "/compiler/ccec_compiler/bin/llvm-objdump";
+        cannIncludePath = {
+            cannPath + "/include",
+
+            cannPath + "/include/ascendc/host_api",
+            cannPath + "/ascendc/include/highlevel_api",
+            cannPath + "/tikcpp/tikcfw",
+            cannPath + "/tikcpp/tikcfw/lib",
+            cannPath + "/tikcpp/tikcfw/lib/matmul",
+            cannPath + "/tikcpp/tikcfw/impl",
+            cannPath + "/tikcpp/tikcfw/interface",
+
+            cannPath + "/asc/impl/adv_api",
+            cannPath + "/asc/impl/basic_api",
+            cannPath + "/asc/impl/c_api",
+            cannPath + "/asc/impl/micro_api",
+            cannPath + "/asc/impl/simt_api",
+            cannPath + "/asc/impl/utils",
+
+            cannPath + "/asc/include",
+            cannPath + "/asc/include/adv_api",
+            cannPath + "/asc/include/adv_api/matmul",
+            cannPath + "/asc/include/aicpu_api",
+            cannPath + "/asc/include/basic_api",
+            cannPath + "/asc/include/c_api",
+            cannPath + "/asc/include/interface",
+            cannPath + "/asc/include/micro_api",
+            cannPath + "/asc/include/simt_api",
+            cannPath + "/asc/include/tiling",
+            cannPath + "/asc/include/utils"
+        };
+
+        cannVersionHeader = cannPath + "/include/version/cann_version.h";
+        ascendClangIncludePath = cannPath + "/ccec_compiler/lib/clang/15.0.5/include";
+        bishengPath = cannPath + "/ccec_compiler/bin/bisheng";
+        objdumpPath = cannPath + "/ccec_compiler/bin/llvm-objdump";
     }
 
     std::string cannPath;
-    std::string cannIncludePath;
-    std::string highLevelApiPath;
-    std::string highLevelApiLibPath;
-    std::string highLevelApiLibMatmulPath;
-    std::string highLevelApiImplPath;
-    std::string tikcfwPath;
-    std::string tikcfwInterfacePath;
-    std::string tikcfwLibPath;
-    std::string tikcfwLibMatmulPath;
-    std::string tikcfwImplPath;
-    std::string hostApiPath;
+    std::vector<std::string> cannIncludePath;
     std::string cannVersionHeader;
     std::string ascendClangIncludePath;
     std::string bishengPath;
@@ -113,6 +134,8 @@ public:
     const std::string& GetSourceFile() const;
     const std::unordered_map<std::string, GlobalFuncInfo>& GetGlobalSymbolInfo() const;
     uint32_t GetAscendMetaFlag() const;
+    uint32_t GetMaxCoreNum(const ShortSocVersion& socVersion) const;
+    uint32_t GetMaxCoreNum() const;
     size_t GetMetaFlagCounter() const;
     bool SaveTempRequested() const;
     bool UserDumpRequested() const;
@@ -127,6 +150,8 @@ public:
     bool HasOpSystemCfg() const;
     bool IsFirstKernel() const;
     bool IsAutoSyncOn() const;
+    bool IsSupportFifoDump() const;
+    bool IsFifoDumpOn() const;
 
 private:
     InfoManager() = default;

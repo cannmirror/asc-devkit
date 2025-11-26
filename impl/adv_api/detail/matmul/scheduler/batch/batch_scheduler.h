@@ -108,7 +108,7 @@ public:
                         if (batchOffsetInfo.setBiasFlag && (batchLoop->GetBatchIndex() % batchOffsetInfo.divisorBias == 1)) {
                             MATMUL_MODULE(BiasScheduler)->StopBias(bias);
                         }
-                        UpdateOffset(batchOffsetInfo, ctx);
+                        UpdateInnerOffset(batchOffsetInfo, ctx);
                         while (BASE_MODULE::MoveNext()) { // iterate
                             MATMUL_MODULE(CubeOutBuffer)->AllocTensor();
                             ComputeBatch(a1, b1, bias, enPartialSum, ctx);
@@ -143,7 +143,7 @@ public:
                         if (batchOffsetInfo.setBiasFlag && (batchLoop->GetBatchIndex() % batchOffsetInfo.divisorBias == 1)) {
                             MATMUL_MODULE(BiasScheduler)->StopBias(bias);
                         }
-                        UpdateOffset(batchOffsetInfo, ctx);
+                        UpdateInnerOffset(batchOffsetInfo, ctx);
                         while (BASE_MODULE::MoveNext()) { // iterate
                             MATMUL_MODULE(CubeOutBuffer)->AllocTensor();
                             ComputeBatch(a1, b1, bias, enPartialSum, ctx);
@@ -185,39 +185,46 @@ private:
         return batchOffsetInfo;
     }
 
-    __aicore__ inline void UpdateOffset(BatchOffsetInfo& batchOffsetInfo, BatchSchedulerContext& ctx)
+    __aicore__ inline void UpdateInnerOffset(BatchOffsetInfo& batchOffsetInfo, BatchSchedulerContext& ctx)
     {
         const auto& bL = MATMUL_MODULE(BatchLoop);
-        if constexpr (ToMatmulConfig(MM_CFG).batchMode != BatchMode::BATCH_LESS_THAN_L1) {
+        if constexpr (ToMatmulConfig(MM_CFG).batchMode != BatchMode::BATCH_LESS_THAN_L1) {  // only for NORMAL
             auto batchIndex = bL->GetBatchIndex();
-            ctx.offsetA = batchOffsetInfo.alignA *
-                (batchIndex % batchOffsetInfo.modA + batchIndex / batchOffsetInfo.divisorA);
-            ctx.offsetB = batchOffsetInfo.alignB *
-                (batchIndex % batchOffsetInfo.modB + batchIndex / batchOffsetInfo.divisorB);
+            ctx.offsetA = UpdateOffset<A_TYPE>(batchOffsetInfo.alignA, batchIndex, batchOffsetInfo.modA, batchOffsetInfo.divisorA);
+            ctx.offsetB = UpdateOffset<B_TYPE>(batchOffsetInfo.alignB, batchIndex, batchOffsetInfo.modB, batchOffsetInfo.divisorB);
             ctx.offsetBias = batchOffsetInfo.alignBias *
                 (batchIndex % batchOffsetInfo.modBias + batchIndex / batchOffsetInfo.divisorBias);
             if constexpr (ToMatmulConfig(MM_CFG).bmmOutMode != BatchOutMode::SINGLE_BATCH) {
                 bL->SetBatchOutCacheNum(bL->GetBatchOutCacheNum() + 1);
             }
         } else {
-            auto batchAIndex = 0, batchBIndex = 0;
             auto biasIndex = bL->GetBatchIndex();
-
-            batchAIndex = bL->GetBatchA() <= bL->GetSplitBatchNum() ? bL->GetBatchIndex()
+            if (bL->GetBatchA() == bL->GetBatchB()) {
+                auto batchIndex = bL->GetBatchIndex() % bL->GetSplitBatchNum();
+                ctx.offsetA = UpdateOffset<A_TYPE>(batchOffsetInfo.alignA, batchIndex, batchOffsetInfo.modA, batchOffsetInfo.divisorA);
+                ctx.offsetB = UpdateOffset<B_TYPE>(batchOffsetInfo.alignB, batchIndex, batchOffsetInfo.modB, batchOffsetInfo.divisorB);
+            } else {
+                auto batchAIndex = bL->GetBatchA() <= bL->GetSplitBatchNum() ? bL->GetBatchIndex()
                                                                     : bL->GetBatchIndex() % bL->GetSplitBatchNum();
-            ctx.offsetA = batchOffsetInfo.alignA *
-                (batchAIndex % batchOffsetInfo.modA + batchAIndex / batchOffsetInfo.divisorA);
-
-            batchBIndex = bL->GetBatchB() <= bL->GetSplitBatchNum() ? bL->GetBatchIndex()
+                auto batchBIndex = bL->GetBatchB() <= bL->GetSplitBatchNum() ? bL->GetBatchIndex()
                                                                     : bL->GetBatchIndex() % bL->GetSplitBatchNum();
-            ctx.offsetB = batchOffsetInfo.alignB *
-                (batchBIndex % batchOffsetInfo.modB + batchBIndex / batchOffsetInfo.divisorB);
-
+                ctx.offsetA = UpdateOffset<A_TYPE>(batchOffsetInfo.alignA, batchAIndex, batchOffsetInfo.modA, batchOffsetInfo.divisorA);
+                ctx.offsetB = UpdateOffset<B_TYPE>(batchOffsetInfo.alignB, batchBIndex, batchOffsetInfo.modB, batchOffsetInfo.divisorB);
+            }
             ctx.offsetBias = batchOffsetInfo.alignBias *
                 (biasIndex % batchOffsetInfo.modBias + biasIndex / batchOffsetInfo.divisorBias);
             if constexpr (ToMatmulConfig(MM_CFG).bmmOutMode != BatchOutMode::SINGLE_BATCH) {
                 bL->SetBatchOutCacheNum(bL->GetBatchOutCacheNum() + 1);
             }
+        }
+    }
+    
+    template <typename OFF_TYPE>
+    __aicore__ inline int32_t UpdateOffset(int32_t alignAB, int32_t batchIndex, int32_t modAB, int32_t divisorAB) {
+        if constexpr (OFF_TYPE::layout == LayoutMode::NORMAL) {
+            return alignAB * (batchIndex / divisorAB);
+        } else {
+            return alignAB * (batchIndex % modAB + batchIndex / divisorAB);
         }
     }
 

@@ -64,14 +64,16 @@ int32_t AscAstDeviceAnalyzer::Process()
     }
     return ASC_SUCCESS;
 }
+
 void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
 {
     auto npuArch = InfoManager::GetInstance().GetShortSocVersion();
     static const std::unordered_map<ShortSocVersion, std::vector<const char*>> DAV_VERSION_MAP = {
-            {ShortSocVersion::ASCEND910B, {"-D__DAV_C220_CUBE__", "-D__CCE_AICORE__=220", "-D__NPU_ARCH__=2201"}},
-            {ShortSocVersion::ASCEND310P, {"-D__DAV_M200__", "-D__CCE_AICORE__=200", "-D__NPU_ARCH__=2002"}},
-            {ShortSocVersion::ASCEND910, {"-D__DAV_C100__", "-D__CCE_AICORE__=100", "-D__NPU_ARCH__=1001"}},
-            {ShortSocVersion::ASCEND310B, {"-D__DAV_M300__", "-D__CCE_AICORE__=300", "-D__NPU_ARCH__=3002"}},
+        {ShortSocVersion::ASCEND910B, {"-D__DAV_C220_CUBE__", "-D__CCE_AICORE__=220", "-D__NPU_ARCH__=2201"}},
+        {ShortSocVersion::ASCEND310P, {"-D__DAV_M200__", "-D__CCE_AICORE__=200", "-D__NPU_ARCH__=2002"}},
+        {ShortSocVersion::ASCEND910, {"-D__DAV_C100__", "-D__CCE_AICORE__=100", "-D__NPU_ARCH__=1001"}},
+        {ShortSocVersion::ASCEND310B, {"-D__DAV_M300__", "-D__CCE_AICORE__=300", "-D__NPU_ARCH__=3002"}},
+        {ShortSocVersion::ASCEND910_95, {"-D__DAV_C310__", "-D__CCE_AICORE__=310", "-D__NPU_ARCH__=3101"}},
     };
 
     static const std::vector<std::string> innerOpts = {
@@ -79,7 +81,7 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
     };
     static const std::vector<std::string> innerDefinitions = {
         "-D__global__=__attribute__((annotate(\"global\")))",
-        "-D__aicore__=__attribute__((annotate(\"device\")))",
+        "-D__aicore__=",
         "-D__CCE__",
         "-DGM_ADDR= __gm__ uint8_t*",
         "-D__gm__= __attribute__((annotate(\"cce_global\")))",
@@ -90,24 +92,17 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
         "-Dbfloat16_t=__bf16",
         "-D__NPU_DEVICE__",
         // bisheng kernel type attribute
-        "-D__mix__(cube, vec)=__attribute__((annotate(\"device\")))",
-        "-D__cube__=__attribute__((annotate(\"device\")))",
-        "-D__vector__=__attribute__((annotate(\"device\")))"};
+        "-D__mix__(cube, vec)=",
+        "-D__cube__=",
+        "-D__vector__="};
     const CompileArgs &inputArgs = AscPlugin::InfoManager::GetInstance().GetCompileArgs();
-    const std::string intputFileDir = GetFilePath(source);
+    const std::string inputFileDir = GetFilePath(source);
     PathInfo pathInfo = InfoManager::GetInstance().GetPathInfo();
-    astDeviceArgs_.includePaths = {
-        "-I" + intputFileDir,
-        "-I" + pathInfo.cannIncludePath,
-        "-I" + pathInfo.hostApiPath,
-        "-I" + pathInfo.highLevelApiPath,
-        "-I" + pathInfo.tikcfwPath,
-        "-I" + pathInfo.tikcfwLibPath,
-        "-I" + pathInfo.tikcfwLibMatmulPath,
-        "-I" + pathInfo.tikcfwImplPath,
-        "-I" + pathInfo.tikcfwInterfacePath,
-        "-I" + pathInfo.ascendClangIncludePath
-    };
+    astDeviceArgs_.includePaths = {"-I" + inputFileDir, "-I" + pathInfo.ascendClangIncludePath};
+    for (auto& incPath: pathInfo.cannIncludePath) {
+        astDeviceArgs_.includePaths.emplace_back("-I" + incPath);
+    }
+
     astDeviceArgs_.file = source;
     astDeviceArgs_.options = innerOpts;
     astDeviceArgs_.includePaths.insert(astDeviceArgs_.includePaths.end(), inputArgs.includePaths.begin(),

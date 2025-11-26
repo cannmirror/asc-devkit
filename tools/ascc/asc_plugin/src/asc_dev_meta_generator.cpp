@@ -98,6 +98,19 @@ void AscDevMetaGenerator::GenMetaSection(const char* globalSymbol, const KernelM
         if (kernelType == KernelMetaType::KERNEL_TYPE_AICORE) {
             genKtypeWithArchMacro("__DAV_M200__", "");
         }
+    } else if (manager.GetShortSocVersion() == ShortSocVersion::ASCEND910_95) {
+        if (kernelType == KernelMetaType::KERNEL_TYPE_AIC_ONLY) {
+            genKtypeWithArchMacro("__DAV_C310_CUBE__", "");
+        } else if (kernelType == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
+            genKtypeWithArchMacro("__DAV_C310_VEC__", "");
+        } else if (kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0) {
+            genKtypeWithArchMacro("__DAV_C310_VEC__", "_mix_aiv");
+        } else if (kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0) {
+            genKtypeWithArchMacro("__DAV_C310_CUBE__", "_mix_aic");
+        } else {
+            genKtypeWithArchMacro("__DAV_C310_CUBE__", "_mix_aic");
+            genKtypeWithArchMacro("__DAV_C310_VEC__", "_mix_aiv");
+        }
     }
 }
 

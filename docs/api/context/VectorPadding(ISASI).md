@@ -182,7 +182,7 @@
 
 样例的srcLocal和dstLocal均为half类型。
 
-更多样例可参考[LINK](更多样例-9.md)。
+更多样例可参考[LINK](更多样例-8.md)。
 
 -   tensor高维切分计算样例-mask连续模式
 

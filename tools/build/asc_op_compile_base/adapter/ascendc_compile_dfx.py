@@ -14,7 +14,8 @@ ascendc compile dfx
 """
 import enum
 from functools import reduce
-from .ascendc_common_utility import CommonUtility, CompileInfo
+from .ascendc_common_utility import CommonUtility, CompileInfo, \
+    get_kernel_fun_name_with_tiling_key_and_kernel_type
 from .get_op_tiling import OpInfo, TilingInfo
 from tbe.common.buildcfg import get_current_build_config
 from tbe.tvm.error_mgr import TBE_DEFAULT_PYTHON_ERROR_CODE
@@ -344,30 +345,9 @@ class DFXSectionGenerator:
 
         return section_var
 
-    def generate_dfx_section(self, tiling_key: str, tiling_info: TilingInfo,\
-                            kernel_name: str, compile_info: CompileInfo, kernel_type_section: bool = False):
-        if self.is_support is False:
-            return ""
-
-        if not tiling_info.static_shape_flag and not global_var_storage.get_variable("ascendc_tiling_no_register"):
-            self._generate_binary_for_tiling(tiling_key, tiling_info, compile_info)
-
-        section_content = f"// generate dfx section for tiling_key:{tiling_key}"
-        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
-            chip_version = CommonUtility.get_chip_version().upper()
-            cube_core_type = f"__DAV_{chip_version}_CUBE__"
-            vec_core_type = f"__DAV_{chip_version}_VEC__"
-        else:
-            # for v200 cube_core_type is aicore type
-            cube_core_type = "__DAV_M200__"
-            vec_core_type = "__DAV_M200_VEC__"
-        if compile_info.sub_core_type == CORE_TYPE_CUBE:
-            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({cube_core_type})\n"
-        elif compile_info.sub_core_type == CORE_TYPE_VEC:
-            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({vec_core_type})\n"
-        else:
-            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL\n"
-
+    def generate_dfx_section_for_one_tiling_key(self, tiling_key: str, kernel_name: str, \
+                             compile_info: CompileInfo, kernel_type_section: bool = False):
+        section_content = ""
         #generate kernel type tlv section
         if kernel_type_section:
             section_content += self.generate_kernel_type_section(compile_info, kernel_name)
@@ -397,11 +377,51 @@ class DFXSectionGenerator:
             section_content += "};\n"
         if CommonUtility.is_c310() or CommonUtility.is_310r6():
             section_content += self.generate_meta_info_func_section(tiling_key, compile_info, kernel_name)
-        section_content += f"#endif\n"
+        return section_content
+
+    def generate_dfx_section(self, tiling_key: str, tiling_info: TilingInfo,\
+                            kernel_name: str, compile_info: CompileInfo, kernel_type_section: bool = False):
+        if self.is_support is False:
+            return ""
+
+        if not tiling_info.static_shape_flag and not global_var_storage.get_variable("ascendc_tiling_no_register"):
+            self._generate_binary_for_tiling(tiling_key, tiling_info, compile_info)
+
+        section_content = f"// generate dfx section for tiling_key:{tiling_key}"
+        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+            chip_version = CommonUtility.get_chip_version().upper()
+            cube_core_type = f"__DAV_{chip_version}_CUBE__"
+            vec_core_type = f"__DAV_{chip_version}_VEC__"
+        else:
+            # for v200 cube_core_type is aicore type
+            cube_core_type = "__DAV_M200__"
+            vec_core_type = "__DAV_M200_VEC__"
+
+        section_content_body = self.generate_dfx_section_for_one_tiling_key(tiling_key, kernel_name, \
+                        compile_info, kernel_type_section)
+
         # generate struct for dfx section
         if self.gen_dfx_struct_flag == False:
             if not global_var_storage.get_variable("ascendc_tiling_no_register"):
-                section_content = self._generate_dfx_info_struct() + section_content
+                section_content += self._generate_dfx_info_struct()
+
+        if compile_info.sub_core_type == CORE_TYPE_CUBE:
+            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({cube_core_type})\n"
+        elif compile_info.sub_core_type == CORE_TYPE_VEC:
+            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({vec_core_type})\n"
+        else:
+            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL\n"
+
+        section_content += section_content_body
+        if compile_info.tiling_key_group_map is not None:
+            if tiling_key in compile_info.tiling_key_group_map.keys():
+                for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                    kernel_name_slave = get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info, \
+                                                tiling_key_slave)
+                    section_content += self.generate_dfx_section_for_one_tiling_key(tiling_key_slave, \
+                                                kernel_name_slave, compile_info, kernel_type_section)
+        
+        section_content += f"#endif\n"
         return section_content
 
     def _generate_dfx_info_struct(self):

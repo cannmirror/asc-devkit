@@ -9,7 +9,11 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row135751326194613"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 ">&nbsp;</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p17575826104618"><a name="p17575826104618"></a><a name="p17575826104618"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -71,8 +75,8 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
    bool isSetFMatrix = true;
    bool isSetPadding = true;
 }; </pre>
-<p id="p165915548368"><a name="p165915548368"></a><a name="p165915548368"></a>isSetFMatrix配置为true，表示在接口内部设置FeatureMap的属性描述（包括l1H、l1W、padList，参数介绍参考<a href="#table679014222918">表3</a>、<a href="#table193501032193419">表4</a>）；设置为false，表示该接口传入的FeatureMap的属性描述不生效，开发者需要通过<a href="SetFmatrix(ISASI).md">SetFmatrix(ISASI)</a>进行设置。</p>
-<p id="p3104316173910"><a name="p3104316173910"></a><a name="p3104316173910"></a>isSetPadding配置为true，表示在接口内部设置Pad属性描述（即padValue参数，参数介绍参考<a href="#table679014222918">表3</a>、<a href="#table193501032193419">表4</a>）；设置为false，表示该接口传入的Pad属性不生效，开发者需要通过<a href="SetLoadDataPaddingValue(ISASI).md">SetLoadDataPaddingValue(ISASI)</a>进行设置。可参考样例<a href="SetFmatrix(ISASI).md#section642mcpsimp">调用示例</a>。</p>
+<p id="p165915548368"><a name="p165915548368"></a><a name="p165915548368"></a>isSetFMatrix配置为true，表示在接口内部设置FeatureMap的属性描述（包括l1H、l1W、padList，参数介绍参考<a href="#table679014222918">表3</a>、<a href="#table193501032193419">表4</a>）；设置为false，表示该接口传入的FeatureMap的属性描述不生效，开发者需要通过<a href="SetFmatrix.md">SetFmatrix</a>进行设置。</p>
+<p id="p3104316173910"><a name="p3104316173910"></a><a name="p3104316173910"></a>isSetPadding配置为true，表示在接口内部设置Pad属性描述（即padValue参数，参数介绍参考<a href="#table679014222918">表3</a>、<a href="#table193501032193419">表4</a>）；设置为false，表示该接口传入的Pad属性不生效，开发者需要通过<a href="SetLoadDataPaddingValue.md">SetLoadDataPaddingValue</a>进行设置。可参考样例<a href="SetFmatrix.md#section642mcpsimp">调用示例</a>。</p>
 <p id="p661153174917"><a name="p661153174917"></a><a name="p661153174917"></a>该参数的默认值如下：</p>
 <a name="screen1862315313517"></a><a name="screen1862315313517"></a><pre class="screen" codetype="Cpp" id="screen1862315313517">constexpr IsResetLoad3dConfig IS_RESER_LOAD3D_DEFAULT_CONFIG = {true, true};</pre>
 </td>
@@ -83,6 +87,14 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 <a name="ul16617163514483"></a><a name="ul16617163514483"></a><ul id="ul16617163514483"><li>当dst、src使用基础数据类型时， U和dst、src的数据类型T需保持一致，否则编译失败。</li><li>当dst 、src使用<a href="TensorTrait.md">TensorTrait</a>类型时，U和dst、src的数据类型T的LiteType需保持一致，否则编译失败。</li></ul>
 <p id="p101791414114819"><a name="p101791414114819"></a><a name="p101791414114819"></a>最后一个模板参数仅用于上述数据类型检查，用户无需关注。</p>
 </td>
+</tr>
+<tr id="row146301527557"><td class="cellrowborder" valign="top" width="16.55%" headers="mcps1.2.3.1.1 "><p id="p13631162185514"><a name="p13631162185514"></a><a name="p13631162185514"></a>Src</p>
+</td>
+<td class="cellrowborder" valign="top" width="83.45%" headers="mcps1.2.3.1.2 ">&nbsp;</td>
+</tr>
+<tr id="row1916738185515"><td class="cellrowborder" valign="top" width="16.55%" headers="mcps1.2.3.1.1 "><p id="p1716788165519"><a name="p1716788165519"></a><a name="p1716788165519"></a>Dst</p>
+</td>
+<td class="cellrowborder" valign="top" width="83.45%" headers="mcps1.2.3.1.2 ">&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -347,7 +359,7 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 </tr>
 <tr id="row1156362463118"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p154362933114"><a name="p154362933114"></a><a name="p154362933114"></a>fMatrixCtrl</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p143162943112"><a name="p143162943112"></a><a name="p143162943112"></a>表示LoadData3DV2指令从左矩阵还是右矩阵获取FeatureMap的属性描述，与<a href="SetFmatrix(ISASI).md">SetFmatrix(ISASI)</a>配合使用，当前只支持设置为false，默认值为false。</p>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p143162943112"><a name="p143162943112"></a><a name="p143162943112"></a>表示LoadData3DV2指令从左矩阵还是右矩阵获取FeatureMap的属性描述，与<a href="SetFmatrix.md">SetFmatrix</a>配合使用，当前只支持设置为false，默认值为false。</p>
 <a name="ul4431529183117"></a><a name="ul4431529183117"></a><ul id="ul4431529183117"><li>true：从右矩阵中获取FeatureMap的属性描述；</li><li>false：从左矩阵中获取FeatureMap的属性描述。</li></ul>
 </td>
 </tr>

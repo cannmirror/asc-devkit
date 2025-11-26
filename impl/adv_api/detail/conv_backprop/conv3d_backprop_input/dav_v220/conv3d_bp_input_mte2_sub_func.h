@@ -22,7 +22,7 @@
 namespace ConvBackpropInputFunc {
 constexpr int32_t MAX_16BITS_STRIDE = 65535;
 
-// 设置fmatrix参数
+// Set fmatrix parameters
 template <class Intf>
 __aicore__ inline void CalcSetFmatrixParams(Intf *self, uint32_t fmapH, uint32_t fmapW)
 {
@@ -30,7 +30,7 @@ __aicore__ inline void CalcSetFmatrixParams(Intf *self, uint32_t fmapH, uint32_t
     self->ctx.load3d_.l1W = fmapW;
     // H
     self->ctx.load3d_.l1H = fmapH;
-    // 设置pad, pad列表[left, right, top, down], 默认是0, 范围[0, 255]
+    // Set pad, pad list [left, right, top, down], default is 0, range [0, 255]
 
     if (self->ctx.curHoIdx_ < 0) {
         self->ctx.load3d_.padList[2] = abs(self->ctx.curHoIdx_);
@@ -72,7 +72,7 @@ __aicore__ inline void CalcLoadToA1DataCopyParams(Intf *self, AscendC::DataCopyP
     if (curHoSize <= hDstDataSkipLine) {
         dataCopyParams.blockCount = 0;
     } else if (strideW > 1) {
-        // 一次datacopy， 拷贝wo个c0,每个c0在目的地址间隔strideW-1, 一共拷贝
+        // One datacopy, copy wo c0, each c0 is at the destination address interval stride W-1, a total of copies
         dataCopyParams.blockLen = 1;
         dataCopyParams.blockCount = self->ctx.tiling_->wo;
         dataCopyParams.dstStride = (strideW - 1);
@@ -84,24 +84,25 @@ __aicore__ inline void CalcLoadToA1DataCopyParams(Intf *self, AscendC::DataCopyP
         padOffset = hDstDataSkipLine * dstDataStride;
     } else {
         loadToA1HLoop = 1;
-        if (strideH > 1) {  // 一次datacoy，拷贝curHo*Wo个c0，拷贝CurCout1次
+        if (strideH > 1) {  // Datacoy once, copy curHo*Wo c0, copy CurCout 1 time
             uint32_t curInputHoSize = (curHoSize - hDstDataSkipLine + (strideH - 1)) / strideH;
             dataCopyParams.srcStride = 0;
-            // 当前不支持(strideH - 1) * self->ctx.tiling_->wo 超过uint16_max的场景
+            // Currently does not support (strideH - 1) * self->ctx.tiling_->wo scenarios exceeding uint16_max
             dataCopyParams.dstStride = (strideH - 1) * self->ctx.tiling_->wo;
             dataCopyParams.blockLen = self->ctx.tiling_->wo;
             dataCopyParams.blockCount = curInputHoSize;
             uint32_t wDataStride = self->ctx.tiling_->wo * self->ctx.tiling_->c0;
-            // 防止Ho较大，uint32溢出
+            // Prevent Ho from being too large and uint32 to overflow
             srcDataStride = self->ctx.hwO_ * self->ctx.tiling_->c0;
             dstDataStride = wDataStride;
             loadToA1Cout1Loop = curCout1Size;
-            // 由于strideH 和Wo的限制，此处不会溢出
+            // Due to the limitations of strideH and Wo, there will be no overflow here
+
             padOffset = hDstDataSkipLine * wDataStride;
         } else {
-            // 原数据尾和头的间隔
+            // The interval between the tail and the head of the original data
             uint64_t dataCoptSrcStride = static_cast<uint64_t>(self->ctx.tiling_->ho - curHoSize) * self->ctx.tiling_->wo;
-            dataCopyParams.dstStride = 0;  // 目的数据尾和头的间隔
+            dataCopyParams.dstStride = 0;  // The interval between the tail and the head of the destination data
             dataCopyParams.blockLen = curHoSize * self->ctx.tiling_->wo;
             if (dataCoptSrcStride <= UINT16_MAX) {
                 dataCopyParams.srcStride = static_cast<uint16_t>(dataCoptSrcStride);
@@ -132,7 +133,7 @@ __aicore__ inline void LoadToA1(Intf *self, uint32_t kIdx, uint32_t curDoutIdx, 
 
         if constexpr (!Intf::conv3dConfig.enableKernelSplit) {
             if (unlikely(self->ctx.tiling_->strideW * self->ctx.tiling_->strideH > 1)) {
-                // block num 以32B为单位, 5用以替换除法运算
+                // block num is in 32B units, 5 is used to replace the division operation
                 uint32_t len = useA1Buf.GetSize() * sizeof(typename Intf::SrcT);
                 InitConstValue(useA1Buf, {1, static_cast<uint16_t>(len >> 5), 0, 0U});
                 AscendC::PipeBarrier<PIPE_MTE2>();
@@ -163,17 +164,17 @@ __aicore__ inline void LoadToA1(Intf *self, uint32_t kIdx, uint32_t curDoutIdx, 
                 loadToA1HLoop, srcDataStride, dstDataStride, padDataOffset, curHoSize, curCout1Idx);
         }
         if (dataCopyParams.blockCount > 0) {
-            // GM的绝对地址已经在API外部计算，这里采用绝对坐标时，需要去除起始坐标
+            // The absolute address of GM has been calculated outside the API. When absolute coordinates are used here, the starting coordinate needs to be removed
             int64_t curHoStartOffset = self->ctx.curHoStartIdx_ < 0 ? 0 : self->ctx.curHoStartIdx_;
             int64_t curHoIdx = self->ctx.curHoIdx_ < 0 ? 0 : (self->ctx.curHoIdx_ - curHoStartOffset);
-            // 换算回放大前的相对Ho坐标（以单核HoStartIdx为原点）
+            // Convert back to the relative Ho coordinates before amplification (taking single-core HoStartIdx as the origin)
             int64_t curOriHoIdx = curHoIdx;
 
             if (self->ctx.tiling_->strideH > 1) {
                 int64_t skipHoSize = curHoStartOffset % self->ctx.tiling_->strideH;
                 skipHoSize = skipHoSize > 0 ? (self->ctx.tiling_->strideH - skipHoSize) : skipHoSize;
                 curHoIdx = self->ctx.curHoIdx_ < 0 ? 0 : (self->ctx.curHoIdx_ - curHoStartOffset);
-                // 换算回放大前的相对Ho坐标（以单核HoStartIdx为原点）
+                // Convert back to the relative Ho coordinates before amplification (taking single-core HoStartIdx as the origin)
                 curOriHoIdx = (curHoIdx - skipHoSize + self->ctx.tiling_->strideH - 1) / self->ctx.tiling_->strideH;
             }
 
@@ -209,12 +210,12 @@ template <class Intf, class src1_T>
 __aicore__ inline void LoadToB1Fp32(Intf *self, const uint32_t kIdx, const uint32_t curDkIdx,
                                     AscendC::LocalTensor<typename Intf::SrcT> &useB1Buf, bool b1PingPongFlag)
 {
-    // 此处为原始输入的C0in，与dataType相关：bf16为16，fp32为8
+    // Here is the C0in of the original input, related to dataType: 16 for bf16, 8 for fp32
     uint32_t curCin1Idx = self->ctx.curNL1Idx_ * self->ctx.curCin1Size_;
 
-    // 此处C0跟dataType无关，与NZ分型相关
+    // C0 here has nothing to do with dataType, but is related to NZ type
     uint32_t curCout1Idx = kIdx * self->ctx.tiling_->baseK / (self->ctx.HkWk_ * AscendC::BLOCK_CUBE);
-    // 记录每次载入到L1中的绝对Cout坐标，用于计算load3dv2在M方向上的偏移，涉及到1:2的数据载入问题
+    // Record the absolute Cout coordinates loaded into L1 each time, which is used to calculate the offset of load3dv2 in the M direction, involving a 1:2 data loading problem
     if (b1PingPongFlag) {
         self->ctx.curPingCoutIdx_ = curCout1Idx;
     } else {
@@ -222,18 +223,18 @@ __aicore__ inline void LoadToB1Fp32(Intf *self, const uint32_t kIdx, const uint3
     }
 
     // kernel shape: (dk * cin1 * hk * wk, cout1, cout0, cin0)
-    // fp32场景Cout可能非16对齐，需要对齐到16
+    // fp32 scene Cout may not be aligned to 16 and needs to be aligned to 16
     uint64_t out2B1SrcAddrOffset = (static_cast<uint64_t>(curDkIdx) * self->ctx.tiling_->cin1G + curCin1Idx) *
-                                    self->ctx.HkWkC0_ * self->ctx.alignedCout_ +   // 与dataType相关
-                                    static_cast<uint64_t>(curCout1Idx) * AscendC::BLOCK_CUBE * self->ctx.tiling_->c0;  // 与NZ分型相关
+                                    self->ctx.HkWkC0_ * self->ctx.alignedCout_ +   // Related to dataType
+                                    static_cast<uint64_t>(curCout1Idx) * AscendC::BLOCK_CUBE * self->ctx.tiling_->c0;  // Related to NZ Fractal
 
-    // K方向非16对齐时，原始GM数据需要把K补齐到16对齐，可能含有padding数据
-    // 搬移数据时，需要考虑padding的数据
+    // When the K direction is not 16-aligned, the original GM data needs to be padded to 16-aligned, and may contain padding data
+    // When moving data, you need to consider padding data
     uint32_t curCin1Size = self->ctx.curCin1Size_ < (self->ctx.singleShapeCin1_ - curCin1Idx) ?
                            self->ctx.curCin1Size_ : (self->ctx.singleShapeCin1_ - curCin1Idx);
     uint32_t curCout1Size = DivCeil(self->ctx.curLoadKbl1_ / self->ctx.HkWkC0_, 2) * AscendC::BLOCK_CUBE;
-    // 由于L1B满载HkWKC0, 故tiling侧已保证HkWKC0 * curCin1Size * dataByte <= L1B, 假设L1B最大512KB
-    // 则HkWK * curCin1Size <= 16384, 不会超出uint16_max
+    // Since L1B is fully loaded with HkWKC0, the tiling side has guaranteed HkWKC0 * curCin1Size * dataByte <= L1B, assuming that L1B is up to 512KB
+    // Then HkWK * curCin1Size <= 16384, will not exceed uint16_max
     uint16_t blockCount = curCin1Size * self->ctx.HkWk_;
 
     AscendC::DataCopyParams dataCopyParams;
@@ -324,7 +325,7 @@ __aicore__ inline void LoadToB1(Intf *self, uint32_t kIdx, uint32_t curDkIdx, bo
             LoadToB1ForKernelSplit<Intf>(self, kIdx, curDkIdx, useB1Buf);
         } else {
             if constexpr ((std::is_same<typename Intf::SrcT, bfloat16_t>::value) || (std::is_same<typename Intf::SrcT, half>::value)) {
-                LoadToB1BF16<Intf, src1_T>(self, kIdx, curDkIdx, useB1Buf); // FP16也复用该函数
+                LoadToB1BF16<Intf, src1_T>(self, kIdx, curDkIdx, useB1Buf); // FP16 also reuses this function
             } else if constexpr (std::is_same<typename Intf::SrcT, float>::value) {
                 LoadToB1Fp32<Intf, src1_T>(self, kIdx, curDkIdx, useB1Buf, pingPongFlag);
             }
