@@ -64,7 +64,7 @@ enum class MC2_BUFFER_LOCATION {
 
 enum HcclServerType {
     HCCL_SERVER_TYPE_AICPU = 0,
-    HCCL_SERVER_TYPE_CCU,
+    HCCL_SERVER_TYPE_CCU = 5,
     HCCL_SERVER_TYPE_END
 };
 
