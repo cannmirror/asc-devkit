@@ -1,4 +1,3 @@
-#!/bin/bash
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -8,30 +7,12 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
+cmake_minimum_required(VERSION 3.10)
 
-set -e
-
-test_one_targets=(
-  tikcpp_utest_ascend910
-  tikcpp_utest_ascend610
-  tikcpp_utest_ascend310p
-  tikcpp_utest_ascend310B1
-  tikcpp_utest_ascend610Lite
+install(DIRECTORY ${ASCENDC_INCLUDE_DIR}/c_api
+  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include OPTIONAL
 )
 
-test_two_targets=(
-  ascendc_utest_kernel
-  ascendc_utest_aclrtc
-  tikcpp_utest_ascend910B1_AIC
-  tikcpp_utest_ascend910B1_AIV
-)
-
-test_three_targets=(
-  tikcpp_tiling_utest_ascend910
-  tikcpp_tiling_utest_ascend610
-  tikcpp_tiling_utest_ascend310p
-  tikcpp_tiling_utest_ascend910B1_AIC
-  tikcpp_tiling_utest_ascend910B1_AIV
-  tikcpp_tiling_utest_ascend310B1
-  tikcpp_tiling_utest_ascend610Lite
+install(DIRECTORY ${ASCENDC_IMPL_DIR}/c_api
+  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl OPTIONAL
 )
