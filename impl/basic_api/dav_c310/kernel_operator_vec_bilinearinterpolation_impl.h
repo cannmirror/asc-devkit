@@ -22,7 +22,7 @@ namespace AscendC {
 namespace Internal {
 template <bool isMaskBitMode, typename T>
 __simd_vf__ inline void BilinearInterpolationRepeatModeLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* src0Offset,
-    __ubuf__ T* src1, const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
+    __ubuf__ T* src1, const BasicAPIMaskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
     uint16_t dstBlkStride, uint16_t vROffset, __ubuf__ uint64_t* maskBuf)
 {
     uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
@@ -54,7 +54,7 @@ __simd_vf__ inline void BilinearInterpolationRepeatModeLevel0VFImpl(__ubuf__ T* 
 
 template <bool isMaskBitMode, typename T>
 __simd_vf__ inline void BilinearInterpolationNoRepeatModeLevel0VFImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* src0Offset,
-    __ubuf__ T* src1, const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
+    __ubuf__ T* src1, const BasicAPIMaskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
     uint16_t dstBlkStride, uint16_t vROffset, __ubuf__ uint64_t* maskBuf)
 {
     uint32_t count = VecMicroGetCount<true, true, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
@@ -87,13 +87,14 @@ __aicore__ inline void VecBilinearInterpolationLevel0Template(__ubuf__ T* dst, _
     __ubuf__ T* src1, const uint64_t maskArray[], const uint64_t maskCount, const uint8_t hRepeat, const uint8_t vRepeat,
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset)
 {
+    BasicAPIMaskStruct maskArrayStruct;
     if constexpr (isMaskBitMode) {
         ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
 
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if constexpr (isMaskBitMode) {
         SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
     }

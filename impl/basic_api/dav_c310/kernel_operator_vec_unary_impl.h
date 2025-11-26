@@ -175,7 +175,7 @@ __simd_vf__ inline void VecUnaryLevel2ImplB64(__ubuf__ T *dst, __ubuf__ T *src, 
 }
 
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_vf__ inline void VecUnaryLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const maskStruct maskArrayStruct,
+__simd_vf__ inline void VecUnaryLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const BasicAPIMaskStruct maskArrayStruct,
     const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
@@ -208,14 +208,14 @@ template <auto func, bool isSetMask, bool isMaskBitMode, typename T>
 __aicore__ inline void VecUnaryLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t maskArray[],
     const uint64_t maskCount, const uint8_t repeatTime, const UnaryRepeatParams &repeatParams)
 {
+    BasicAPIMaskStruct maskArrayStruct;
     if constexpr (isMaskBitMode) {
         ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
-    
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
 
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {

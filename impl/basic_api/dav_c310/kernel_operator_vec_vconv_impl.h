@@ -1498,7 +1498,7 @@ __aicore__ inline void CastImpl(
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__simd_vf__ inline void CastIntrinsicsB64ImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const maskStruct maskArrayStruct,
+__simd_vf__ inline void CastIntrinsicsB64ImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const BasicAPIMaskStruct maskArrayStruct,
     uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -1610,7 +1610,7 @@ __simd_callee__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::Re
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const maskStruct maskArrayStruct,
+__simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const BasicAPIMaskStruct maskArrayStruct,
     uint8_t repeatTime, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -1791,8 +1791,7 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     constexpr bool b64Cast = SupportType<Tuple<DST_TYPE, SRC_TYPE>, Tuple<float, int64_t>, Tuple<int64_t, float>,
         Tuple<int32_t, int64_t>, Tuple<int64_t, int32_t>>();
     bool isCounterMode = Internal::IsCounterMode();
-    
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(mask);
+
     if (isCounterMode) {
         __ubuf__ uint64_t *maskBuf = nullptr;
         if constexpr (!isSetMask) {
@@ -1806,6 +1805,10 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
                 dst, src, mask[0], maskBuf, repeatTime, repeatParams);
         }
     } else {
+        BasicAPIMaskStruct maskArrayStruct;
+        if (mask != nullptr) {
+            maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(mask));
+        }
         if constexpr (b64Cast) {
             if constexpr (isSetMask) {
                 SetVectorMask<uint32_t>(mask[1], mask[0]);

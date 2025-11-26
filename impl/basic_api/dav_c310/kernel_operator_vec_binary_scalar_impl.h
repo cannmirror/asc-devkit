@@ -47,7 +47,7 @@ __aicore__ inline void VecBinaryScalarLevel2ImplTemplate(__ubuf__ T *dst, __ubuf
 
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
 __simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
-    const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
+    const BasicAPIMaskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
     const UnaryRepeatParams repeatParams, __ubuf__ uint64_t *maskBuf)
 {
     uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
@@ -80,14 +80,15 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
     const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,
     const UnaryRepeatParams &repeatParams)
 {
+    BasicAPIMaskStruct maskArrayStruct;
     if constexpr (isMaskBitMode) {
         ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
@@ -127,7 +128,7 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
 
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T, MicroAPI::LoadDist pattern, uint8_t scalarIdx>
 __simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const maskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
+    const BasicAPIMaskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
     const UnaryRepeatParams repeatParams, __ubuf__ uint64_t *maskBuf)
 {
     uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
@@ -168,14 +169,15 @@ __aicore__ inline void VecBinaryScalarLevel0Template(__ubuf__ T *dst, __ubuf__ T
     const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,
     const UnaryRepeatParams &repeatParams)
 {
+    BasicAPIMaskStruct maskArrayStruct;
     if constexpr (isMaskBitMode) {
         ASCENDC_ASSERT(maskCount == 0, "maskCount must be 0 when isMaskBitMode is true.");
+        maskArrayStruct = *(reinterpret_cast<const BasicAPIMaskStruct*>(maskArray));
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
 
-    maskStruct &maskArrayStruct = reinterpret_cast<maskStruct&>(maskArray);
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
