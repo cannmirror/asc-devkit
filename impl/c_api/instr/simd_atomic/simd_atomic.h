@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INSTR_SIMD_ATOMIC_H
-#define C_API_INSTR_SIMD_ATOMIC_H
+#ifndef IMPL_C_API_INSTR_SIMD_ATOMIC_H
+#define IMPL_C_API_INSTR_SIMD_ATOMIC_H
 
 #include "dcci/asc_2201/dcci_impl.h"
 

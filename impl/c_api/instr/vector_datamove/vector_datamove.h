@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef C_API_INSTR_VECTOR_DATAMOVE_H
-#define C_API_INSTR_VECTOR_DATAMOVE_H
+#ifndef IMPL_C_API_INSTR_VECTOR_DATAMOVE_H
+#define IMPL_C_API_INSTR_VECTOR_DATAMOVE_H
 
 #include "copy_gm_to_ubuf/asc_2201/copy_gm_to_ubuf_impl.h"
 #include "copy_ubuf_to_gm/asc_2201/copy_ubuf_to_gm_impl.h"

@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef C_API_INSTR_CUBE_COMPUTE_H
-#define C_API_INSTR_CUBE_COMPUTE_H
+#ifndef IMPL_C_API_INSTR_CUBE_COMPUTE_H
+#define IMPL_C_API_INSTR_CUBE_COMPUTE_H
  
 #include "set_l0a_2d/asc_2201/set_l0a_2d_impl.h"
 #include "set_l0b_2d/asc_2201/set_l0b_2d_impl.h"

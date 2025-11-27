@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INSTR_SYNC_WAIT_FLAG_ASC_2201_WAIT_FLAG_IMPL_H
-#define C_API_INSTR_SYNC_WAIT_FLAG_ASC_2201_WAIT_FLAG_IMPL_H
+#ifndef IMPL_C_API_INSTR_SYNC_WAIT_FLAG_ASC_2201_WAIT_FLAG_IMPL_H
+#define IMPL_C_API_INSTR_SYNC_WAIT_FLAG_ASC_2201_WAIT_FLAG_IMPL_H
 
 namespace CApiInternal {
 

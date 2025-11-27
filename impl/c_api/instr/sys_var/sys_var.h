@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef C_API_INSTR_SYS_VAR_H
-#define C_API_INSTR_SYS_VAR_H
+#ifndef IMPL_C_API_INSTR_SYS_VAR_H
+#define IMPL_C_API_INSTR_SYS_VAR_H
  
 #include "get_core_id/asc_2201/get_core_id_impl.h"
 #include "get_ctrl/asc_2201/get_ctrl_impl.h"

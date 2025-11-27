@@ -20,7 +20,8 @@ __aicore__ inline void asc_sync_notify(Pipe pipe, TPipe tpipe, int id);
 template<typename Pipe, typename TPipe>
 __aicore__ inline void asc_sync_wait(Pipe pipe, TPipe tpipe, int id);
 
-__aicore__ inline void asc_sync(pipe_t pipe);
+template<typename Pipe>
+__aicore__ inline void asc_sync(Pipe pipe);
 
 __aicore__ inline void asc_sync_vec();
 

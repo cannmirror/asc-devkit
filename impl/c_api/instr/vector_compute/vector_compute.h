@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INSTR_VECTOR_COMPUTE_H
-#define C_API_INSTR_VECTOR_COMPUTE_H
+#ifndef IMPL_C_API_INSTR_VECTOR_COMPUTE_H
+#define IMPL_C_API_INSTR_VECTOR_COMPUTE_H
 
 #include "get_acc_val/asc_2201/get_acc_val_impl.h"
 #include "get_cmp_mask/asc_2201/get_cmp_mask_impl.h"
@@ -23,9 +23,12 @@
 #include "vadd/asc_2201/add_impl.h"
 #include "vadds/asc_2201/add_scalar_impl.h"
 #include "vbrcb/asc_2201/brcb_impl.h"
+#include "vcadd/asc_2201/repeat_reduce_sum_impl.h"
 #include "vcgadd/asc_2201/data_block_reduce_sum_impl.h"
 #include "vcgmax/asc_2201/data_block_reduce_max_impl.h"
 #include "vcgmin/asc_2201/data_block_reduce_min_impl.h"
+#include "vcmax/asc_2201/repeat_reduce_max_impl.h"
+#include "vcmin/asc_2201/repeat_reduce_min_impl.h"
 #include "vconv_bf162float/asc_2201/bf162float_impl.h"
 #include "vconv_bf162int32/asc_2201/bf162int32_impl.h"
 #include "vconv_float2float/asc_2201/float2float_impl.h"
@@ -240,7 +243,7 @@ __aicore__ inline void asc_brcb_sync(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* 
 }
 
 // ==========asc_datablock_reduce(half/float)==========
-__aicore__ inline void asc_datablock_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, const asc_reduce_config& config)
+__aicore__ inline void asc_datablock_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, const asc_block_reduce_config& config)
 {
     CApiInternal::data_block_reduce_sum_impl<half>(dst, src, config);
 }
@@ -255,7 +258,7 @@ __aicore__ inline void asc_datablock_reduce_sum_sync(__ubuf__ half* dst, __ubuf_
     CApiInternal::data_block_reduce_sum_sync_impl<half>(dst, src, count);
 }
 
-__aicore__ inline void asc_datablock_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, const asc_reduce_config& config)
+__aicore__ inline void asc_datablock_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, const asc_block_reduce_config& config)
 {
     CApiInternal::data_block_reduce_sum_impl<float>(dst, src, config);
 }
@@ -270,7 +273,7 @@ __aicore__ inline void asc_datablock_reduce_sum_sync(__ubuf__ float* dst, __ubuf
     CApiInternal::data_block_reduce_sum_sync_impl<float>(dst, src, count);
 }
 
-__aicore__ inline void asc_datablock_reduce_max(__ubuf__ half* dst, __ubuf__ half* src, const asc_reduce_config& config)
+__aicore__ inline void asc_datablock_reduce_max(__ubuf__ half* dst, __ubuf__ half* src, const asc_block_reduce_config& config)
 {
     CApiInternal::data_block_reduce_max_impl<half>(dst, src, config);
 }
@@ -285,7 +288,7 @@ __aicore__ inline void asc_datablock_reduce_max_sync(__ubuf__ half* dst, __ubuf_
     CApiInternal::data_block_reduce_max_sync_impl<half>(dst, src, count);
 }
 
-__aicore__ inline void asc_datablock_reduce_max(__ubuf__ float* dst, __ubuf__ float* src, const asc_reduce_config& config)
+__aicore__ inline void asc_datablock_reduce_max(__ubuf__ float* dst, __ubuf__ float* src, const asc_block_reduce_config& config)
 {
     CApiInternal::data_block_reduce_max_impl<float>(dst, src, config);
 }
@@ -300,7 +303,7 @@ __aicore__ inline void asc_datablock_reduce_max_sync(__ubuf__ float* dst, __ubuf
     CApiInternal::data_block_reduce_max_sync_impl<float>(dst, src, count);
 }
 
-__aicore__ inline void asc_datablock_reduce_min(__ubuf__ half* dst, __ubuf__ half* src, const asc_reduce_config& config)
+__aicore__ inline void asc_datablock_reduce_min(__ubuf__ half* dst, __ubuf__ half* src, const asc_block_reduce_config& config)
 {
     CApiInternal::data_block_reduce_min_impl<half>(dst, src, config);
 }
@@ -315,7 +318,7 @@ __aicore__ inline void asc_datablock_reduce_min_sync(__ubuf__ half* dst, __ubuf_
     CApiInternal::data_block_reduce_min_sync_impl<half>(dst, src, count);
 }
 
-__aicore__ inline void asc_datablock_reduce_min(__ubuf__ float* dst, __ubuf__ float* src, const asc_reduce_config& config)
+__aicore__ inline void asc_datablock_reduce_min(__ubuf__ float* dst, __ubuf__ float* src, const asc_block_reduce_config& config)
 {
     CApiInternal::data_block_reduce_min_impl<float>(dst, src, config);
 }
@@ -328,6 +331,97 @@ __aicore__ inline void asc_datablock_reduce_min(__ubuf__ float* dst, __ubuf__ fl
 __aicore__ inline void asc_datablock_reduce_min_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
 {
     CApiInternal::data_block_reduce_min_sync_impl<float>(dst, src, count);
+}
+
+// ==========asc_repeat_reduce(half/float)==========
+__aicore__ inline void asc_repeat_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, const asc_repeat_reduce_config& config)
+{
+    CApiInternal::repeat_reduce_sum_impl<half>(dst, src, config);
+}
+
+__aicore__ inline void asc_repeat_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
+{
+    CApiInternal::repeat_reduce_sum_impl<half>(dst, src, count);
+}
+
+__aicore__ inline void asc_repeat_reduce_sum_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
+{
+    CApiInternal::repeat_reduce_sum_sync_impl<half>(dst, src, count);
+}
+
+__aicore__ inline void asc_repeat_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, const asc_repeat_reduce_config& config)
+{
+    CApiInternal::repeat_reduce_sum_impl<float>(dst, src, config);
+}
+
+__aicore__ inline void asc_repeat_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
+{
+    CApiInternal::repeat_reduce_sum_impl<float>(dst, src, count);
+}
+
+__aicore__ inline void asc_repeat_reduce_sum_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
+{
+    CApiInternal::repeat_reduce_sum_sync_impl<float>(dst, src, count);
+}
+
+__aicore__ inline void asc_repeat_reduce_max(__ubuf__ half* dst, __ubuf__ half* src, const asc_repeat_reduce_config& config, order_t order)
+{
+    CApiInternal::repeat_reduce_max_impl<half>(dst, src, config, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_max(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_max_impl<half>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_max_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_max_sync_impl<half>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_max(__ubuf__ float* dst, __ubuf__ float* src, const asc_repeat_reduce_config& config, order_t order)
+{
+    CApiInternal::repeat_reduce_max_impl<float>(dst, src, config, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_max(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_max_impl<float>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_max_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_max_sync_impl<float>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_min(__ubuf__ half* dst, __ubuf__ half* src, const asc_repeat_reduce_config& config, order_t order)
+{
+    CApiInternal::repeat_reduce_min_impl<half>(dst, src, config, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_min(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_min_impl<half>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_min_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_min_sync_impl<half>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_min(__ubuf__ float* dst, __ubuf__ float* src, const asc_repeat_reduce_config& config, order_t order)
+{
+    CApiInternal::repeat_reduce_min_impl<float>(dst, src, config, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_min(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_min_impl<float>(dst, src, count, order);
+}
+
+__aicore__ inline void asc_repeat_reduce_min_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count, order_t order)
+{
+    CApiInternal::repeat_reduce_min_sync_impl<float>(dst, src, count, order);
 }
 
 // ==========asc_bf162float==========

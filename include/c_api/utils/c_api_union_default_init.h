@@ -21,7 +21,8 @@
 
 constexpr asc_binary_config CAPI_DEFAULT_BINARY_CFG{};
 constexpr asc_unary_config CAPI_DEFAULT_UNARY_CFG{};
-constexpr asc_reduce_config CAPI_DEFAULT_REDUCE_CFG{};
+constexpr asc_block_reduce_config CAPI_BLOCK_DEFAULT_REDUCE_CFG{};
+constexpr asc_repeat_reduce_config CAPI_REPEAT_DEFAULT_REDUCE_CFG{};
 constexpr asc_duplicate_config CAPI_DEFAULT_DUPLICATE_CFG{};
 
 #endif
