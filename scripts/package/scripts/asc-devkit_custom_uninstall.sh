@@ -160,8 +160,6 @@ custom_uninstall() {
         remove_stub_softlink "$ref_dir" "$common_parse_dir/../lib64/stub"
     fi
 
-    test -d "$WHL_SOFTLINK_INSTALL_DIR_PATH" && rm -rf "$WHL_SOFTLINK_INSTALL_DIR_PATH" > /dev/null 2>&1
-    remove_empty_dir "${common_parse_dir}/share/info/asc-devkit/python"
     if [ "$hetero_arch" != "y" ]; then
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base" 2> /dev/null
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base-0.1.0.dist-info" 2> /dev/null
