@@ -1,4 +1,4 @@
-## Pybind算子直调样例
+# Pybind算子直调样例
 
 ## 概述
 本样例以Add算子为示例，介绍了使用pybind方式调用核函数。
@@ -11,7 +11,7 @@
 ```
 ├── 12_pybind
 │   ├── CMakeLists.txt        // 编译工程文件
-│   ├── add_custom_test.py    // python调用脚本
+│   ├── add_custom_test.py    // Python调用脚本
 │   └── add_custom.asc        // AscendC算子实现 & Pybind封装
 ```
 
@@ -43,22 +43,22 @@
 
 - 调用实现：
 
-  通过PyTorch框架进行模型的训练、推理时，会调用到很多算子进行计算，调用方式也和kernel编译流程相关。用户可以使用内核调用符<<<>>>在pytorch中调用核函数，此样例演示的就是这种算子调用方式。
+  通过PyTorch框架进行模型的训练、推理时，会调用到很多算子进行计算，调用方式也和kernel编译流程相关。用户可以使用内核调用符<<<>>>在PyTorch中调用核函数，此样例演示的就是这种算子调用方式。
 
   add_custom.asc使用了pybind11库来将C++代码封装成Python模块。该代码实现中定义了一个名为m的pybind11模块，其中包含一个名为run_add_custom的函数。该函数与my_add::run_add_custom函数相同，用于将C++函数转成Python函数。在函数实现中，通过c10_npu::getCurrentNPUStream() 的函数获取当前NPU上的流，通过内核调用符<<<>>>调用自定义的Kernel函数add_custom，在NPU上执行算子。
 
   在add_custom_test.py调用脚本中，通过导入自定义模块add_custom，调用自定义模块add_custom中的run_add_custom函数，在NPU上执行x和y的加法操作，并将结果保存在变量z中。
 
 ## 编译运行
-- 安装pytorch (这里使用2.1.0版本为例)
+- 安装PyTorch (这里以使用2.1.0版本为例)
 
-  **aarch64:**
+  aarch64:
 
   ```bash
   pip3 install torch==2.1.0
   ```
 
-  **x86:**
+  x86:
 
   ```bash
   pip3 install torch==2.1.0+cpu  --index-url https://download.pytorch.org/whl/cpu
@@ -79,6 +79,7 @@
   ```
 
 - 打开样例目录
+
   以命令行方式下载样例代码，master分支为例。
   ```bash
   cd ${git_clone_path}/examples/00_introduction/12_pybind/
@@ -114,6 +115,7 @@
   ```
   执行结果如下，说明精度对比成功。
   ```bash
+  Ran 1 test in **s.
   OK
   ```
 
