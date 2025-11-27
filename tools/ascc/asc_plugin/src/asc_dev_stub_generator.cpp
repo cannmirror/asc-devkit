@@ -337,20 +337,11 @@ void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardS
     }
 }
 
-void AscDevStubGenerator::GenCodeForL2Cache()
-{
-    auto& infoManager = InfoManager::GetInstance();
-    if (infoManager.IsFirstKernel() && infoManager.IsL2CacheEnabled() && !infoManager.HasOpSystemCfg()) {
-        codeStream_ << "inline __gm__ struct OpSystemRunCfg g_opSystemRunCfg = {0};\n";
-    }
-}
-
 std::string AscDevStubGenerator::GenCode()
 {
     ASC_LOGI("Kernel [%s] : generate device stub function.", kernelInfo_.kernelName.c_str());
     const auto [isMix, isHardSync] = GetArchInfo(socVersion_);
     UpdateParams();
-    GenCodeForL2Cache();
     bool hasAnonymous = false;
     auto it = std::find(kernelInfo_.namespaces.begin(), kernelInfo_.namespaces.end(), std::string(ANONYMOUS_NAME));
     if (it != kernelInfo_.namespaces.end()) {

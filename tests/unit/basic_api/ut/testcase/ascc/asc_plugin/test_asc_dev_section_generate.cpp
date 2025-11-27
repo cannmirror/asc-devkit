@@ -279,7 +279,9 @@ TEST_DEV_META_GEN(
     "K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 1} };\n#endif\n\n#if "
     "defined(__DAV_C220_VEC__)\nstatic const struct FunLevelMixCoreType add_mangling_int_float_meta_section "
     "__attribute__((used, section(\".ascend.meta.add_mangling_int_float_mix_aiv\"))) = { {{F_TYPE_KTYPE, "
-    "sizeof(unsigned int)}, K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 1} };\n#endif\n",
+    "sizeof(unsigned int)}, K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 1} };\n#endif\n"
+    "static const struct AscendCFeatureFlag __ascendc_feature_ffts__0 __attribute__ ((used, section (\".ascend."
+    "meta\"))) = {4, 4, 2};\n",
     KERNEL_TYPE_MIX_AIC_1_1, true)
 
 TEST_DEV_META_GEN(
@@ -289,21 +291,27 @@ TEST_DEV_META_GEN(
     "K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 2} };\n#endif\n\n#if "
     "defined(__DAV_C220_VEC__)\nstatic const struct FunLevelMixCoreType add_mangling_int_float_meta_section "
     "__attribute__((used, section(\".ascend.meta.add_mangling_int_float_mix_aiv\"))) = { {{F_TYPE_KTYPE, "
-    "sizeof(unsigned int)}, K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 2} };\n#endif\n",
+    "sizeof(unsigned int)}, K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 2} };\n#endif\n"
+    "static const struct AscendCFeatureFlag __ascendc_feature_ffts__1 __attribute__ ((used, section (\".ascend."
+    "meta\"))) = {4, 4, 2};\n",
     KERNEL_TYPE_MIX_AIC_1_2, true)
 
 TEST_DEV_META_GEN(
     "\n#if defined(__DAV_C220_CUBE__)\nstatic const struct FunLevelMixCoreType "
     "add_mangling_int_float_meta_section __attribute__((used, "
     "section(\".ascend.meta.add_mangling_int_float_mix_aic\"))) = { {{F_TYPE_KTYPE, sizeof(unsigned int)}, "
-    "K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 0} };\n#endif\n",
+    "K_TYPE_MIX_AIC_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 1, 0} };\n#endif\n"
+    "static const struct AscendCFeatureFlag __ascendc_feature_ffts__2 __attribute__ ((used, section (\".ascend."
+    "meta\"))) = {4, 4, 2};\n",
     KERNEL_TYPE_MIX_AIC_1_0, true)
 
 TEST_DEV_META_GEN(
     "\n#if defined(__DAV_C220_VEC__)\nstatic const struct FunLevelMixCoreType "
     "add_mangling_int_float_meta_section __attribute__((used, "
     "section(\".ascend.meta.add_mangling_int_float_mix_aiv\"))) = { {{F_TYPE_KTYPE, sizeof(unsigned int)}, "
-    "K_TYPE_MIX_AIV_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 0, 1} };\n#endif\n",
+    "K_TYPE_MIX_AIV_MAIN}, {{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}, 0, 1} };\n#endif\n"
+    "static const struct AscendCFeatureFlag __ascendc_feature_ffts__3 __attribute__ ((used, section (\".ascend."
+    "meta\"))) = {4, 4, 2};\n",
     KERNEL_TYPE_MIX_AIV_1_0, true)
 
 TEST_DEV_META_GEN(
@@ -322,6 +330,3 @@ TEST_DEV_META_GEN("\n#if defined(__DAV_C220_VEC__)\nstatic const struct FunLevel
                   "__attribute__((used, section(\".ascend.meta.add_mangling\"))) = { {{F_TYPE_KTYPE, "
                   "sizeof(unsigned int)}, K_TYPE_AIV},  };\n#endif\n",
     KERNEL_TYPE_AIV_ONLY, false)
-
-TEST_DEV_META_GEN(
-    "\n#if defined(__DAV_C220_CUBE__)\n\n#endif\n\n#if defined(__DAV_C220_VEC__)\n\n#endif\n", KERNEL_TYPE_MAX, false)

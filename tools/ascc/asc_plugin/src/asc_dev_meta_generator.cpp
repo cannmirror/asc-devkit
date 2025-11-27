@@ -126,6 +126,13 @@ std::string AscDevMetaGenerator::GenCode()
         // when no template involved, always have 1 kernel type
         GenMetaSection(kernelInfo_.kernelMangledName.c_str(), defaultKtype);
     }
+
+    if (InfoManager::GetInstance().GetShortSocVersion() == ShortSocVersion::ASCEND910B && 
+        defaultKtype != KernelMetaType::KERNEL_TYPE_AIV_ONLY &&
+        defaultKtype != KernelMetaType::KERNEL_TYPE_AIC_ONLY) {
+        codeStream_ << GetAscFeatureMetaSection(FeatureFlag::ASC_FFTS_MASK);
+    }
+
     ASC_LOGD(
             "Kernel [%s] : meta section is [\n%s\n]", kernelInfo_.kernelName.c_str(), codeStream_.str().c_str());
     return codeStream_.str();

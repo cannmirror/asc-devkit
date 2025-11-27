@@ -89,6 +89,12 @@ enum class CoreType: uint32_t {
     VEC
 };
 
+enum class FeatureFlag: uint32_t {
+    ASC_PRINT_MASK = 1,
+    ASC_FFTS_MASK = 2,
+    ASC_L2CACHE_HINT_MASK = 3
+};
+
 inline const std::unordered_map<KernelMetaType, std::string> KTYPE_STR_MAP = {
     {KernelMetaType::KERNEL_TYPE_AIV_ONLY, "KERNEL_TYPE_AIV_ONLY"},
     {KernelMetaType::KERNEL_TYPE_AIC_ONLY, "KERNEL_TYPE_AIC_ONLY"},
@@ -229,10 +235,6 @@ constexpr int32_t ASC_CANNPATH_NOT_FOUND = 3;
 constexpr int32_t ASC_SOC_NOT_SUPPORT = 4;
 constexpr int32_t ASC_JSONSTR_ARG_MISSING = 5;
 
-constexpr uint32_t ASC_PRINT_MASK = 0x01;
-constexpr uint32_t ASC_FFTS_MASK = 0x02;
-constexpr uint32_t ASC_L2CACHE_HINT_MASK = 0x04;
-
 inline constexpr char ORIGIN_KERNEL_PREFIX[] = "__origin__";
 inline constexpr char DEVICE_STUB_PREFIX[] = "__device_stub__";
 inline constexpr size_t DEVICE_STUB_PREFIX_LEN = 15;
@@ -357,5 +359,11 @@ KernelMetaType ExtractKernelType(const std::unordered_set<KernelMetaType> kTypeS
  */
 std::string ToUpper(const std::string& str);
 
+/**
+ * @brief Get AscendC feature meta section string
+ * @param flag feature flag
+ * @return return string of feature meta section
+ */
+std::string GetAscFeatureMetaSection(FeatureFlag flag);
 } // namespace AscPlugin
 #endif // __INCLUDE_INTERNAL_ASC_UTILS_H__
