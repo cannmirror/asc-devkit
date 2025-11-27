@@ -260,7 +260,6 @@ else()
                         SOURCE_DIR ${LLVM_CLANG_SOURCE_PATH}
                         CONFIGURE_COMMAND ${CMAKE_COMMAND}
                             -G ${CMAKE_GENERATOR}
-                            -DLLVM_CCACHE_BUILD=ON
                             -DLLVM_ENABLE_PROJECTS=clang
                             -DLIBCLANG_BUILD_STATIC=ON
                             -DCMAKE_C_COMPILER_LAUNCHER=${CMAKE_C_COMPILER_LAUNCHER}
