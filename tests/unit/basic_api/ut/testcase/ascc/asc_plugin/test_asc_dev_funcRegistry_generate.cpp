@@ -58,6 +58,19 @@ uint32_t ascendc_set_exception_dump_info(uint32_t dumpSize);
         blockDim,                                                                           \
         ##__VA_ARGS__)
 
+namespace {
+struct AscendCBinaryVersion {
+    uint16_t type = 0;
+    uint16_t len = 4;
+    uint32_t version = 0;
+};
+
+struct AscendCFeatureFlag {
+    uint16_t type = 4;
+    uint16_t len = 4;
+    uint32_t flag = 0;
+};
+}
 static void AscFunctionRegister(void* g_kernel_handle)
 {
     int32_t retRegister = 0;

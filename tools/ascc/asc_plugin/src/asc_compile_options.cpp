@@ -128,8 +128,6 @@ std::vector<std::string> GetDeviceCommonCompileOptions(const KernelTypeResult& k
     }
     deviceCommonOptions.emplace_back("-include");
     deviceCommonOptions.emplace_back(cannPath + "/include/version/cann_version.h");
-    deviceCommonOptions.emplace_back(
-        std::string("-D__ASC_FEATURE_META_INFO") + std::to_string(manager.GetMetaFlagCounter()));
     return deviceCommonOptions;
 }
 

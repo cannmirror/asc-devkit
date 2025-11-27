@@ -117,10 +117,8 @@ public:
     void AddGlobalSymbolInfo(const std::string &mangling, const KernelMetaType &type, const std::string &fileName,
         const uint32_t lineNo, const uint32_t colNo, const KfcScene kfcScene);
     void UpdateOneCoreDumpSize();                       // must be called after hasPrintf_ and hasAssert_ is updated
-    void SetFirstKernel (const bool isFirstKernel);
-    void SetAscendMetaFlag(const uint32_t& flag);
-    size_t SetAndGetMetaFlagCounter();
     void ReportCompileArgs();
+    uint32_t SetKernelFuncFlag();
 
     const PathInfo& GetPathInfo() const;
     const CompileArgs& GetCompileArgs() const;
@@ -133,10 +131,8 @@ public:
     const std::string& GetOptimizeLevel() const;
     const std::string& GetSourceFile() const;
     const std::unordered_map<std::string, GlobalFuncInfo>& GetGlobalSymbolInfo() const;
-    uint32_t GetAscendMetaFlag() const;
     uint32_t GetMaxCoreNum(const ShortSocVersion& socVersion) const;
     uint32_t GetMaxCoreNum() const;
-    size_t GetMetaFlagCounter() const;
     bool SaveTempRequested() const;
     bool UserDumpRequested() const;
     bool HasTimeStamp() const;
@@ -148,10 +144,10 @@ public:
     uint32_t GetOneCoreDumpSize() const;                // for -DONE_CORE_DUMP_SIZE=xxx
     bool IsL2CacheEnabled() const;
     bool HasOpSystemCfg() const;
-    bool IsFirstKernel() const;
     bool IsAutoSyncOn() const;
     bool IsSupportFifoDump() const;
     bool IsFifoDumpOn() const;
+    bool HasKernelFunc() const;
 
 private:
     InfoManager() = default;
@@ -181,10 +177,8 @@ private:
     bool enableL2Cache_ = true;                 // default enable
     bool hasOpSystemCfg_ =false;
     uint32_t oneCoreDumpSize_ = 1048576;        // 1024 K
-    bool isFirstKernel_ = false;
     bool isAutoSyncOn_ = true;
-    uint32_t ascendMetaFlag_ = 0;
-    size_t metaFlagCounter_ = 0;
+    bool hasKernelFunc_ = false;
 
     // global func mangling name to tuple < ktype, filename, lineNo, colNo >
     std::unordered_map<std::string, GlobalFuncInfo> kernelFuncSymbolToFuncInfo_;

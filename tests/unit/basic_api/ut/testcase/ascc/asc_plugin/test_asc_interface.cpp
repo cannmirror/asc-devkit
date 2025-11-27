@@ -342,8 +342,7 @@ TEST_F(TEST_ASC_INTERFACE, asc_plugin_gen_kernel_failure_with_nullptr)
 
 TEST_F(TEST_ASC_INTERFACE, asc_plugin_gen_kernel_success)
 {
-    std::string golden = R"(inline __gm__ struct OpSystemRunCfg g_opSystemRunCfg = {0};
-namespace Foo1::Foo2 {
+    std::string golden = R"(namespace Foo1::Foo2 {
 extern "C" __global__ __aicore__ void __device_stub__mangling_add(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
 {
     icache_preload(1);
@@ -706,7 +705,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIV_Mix12)
         "-D__MIX_CORE_MACRO__=1",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom_mix_aic",
         "-D__device_stub__add_custom=add_custom_mix_aic",
@@ -722,7 +720,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIV_Mix12)
         "-D__MIX_CORE_MACRO__=1",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom_mix_aiv",
         "-D__device_stub__add_custom=add_custom_mix_aiv"
@@ -767,7 +764,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIC_Mix11)
         "-D__MIX_CORE_MACRO__=1", "-D__MIX_CORE_AIC_RATION__=1",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom_mix_aic",
         "-D__device_stub__add_custom=add_custom_mix_aic"
@@ -783,7 +779,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_WithMixAIC_Mix11)
         "-D__MIX_CORE_MACRO__=1", "-D__MIX_CORE_AIC_RATION__=1",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom_mix_aiv",
         "-D__device_stub__add_custom=add_custom_mix_aiv"
@@ -824,7 +819,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_device_call)
         "-DL2_CACHE_HINT",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube"
     };
 
@@ -837,7 +831,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_device_call)
         "-DL2_CACHE_HINT",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec"
     };
 
@@ -878,7 +871,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue)
         "-DL2_CACHE_HINT",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -893,7 +885,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue)
         "-DL2_CACHE_HINT",
         "--cce-auto-sync",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -941,7 +932,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_dump)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -958,7 +948,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_no_dump)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1009,7 +998,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_310P)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-m200",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1023,7 +1011,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_310P)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-m200-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom",
@@ -1078,7 +1065,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_optimize_lv1)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1094,7 +1080,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_optimize_lv1)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1146,7 +1131,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_no_dump)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1162,7 +1146,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_no_dump)
         "--cce-auto-sync",
         "-DASCENDC_DUMP=0",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1204,7 +1187,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on)
         "-DASCENDC_DUMP=1",
         "-DONE_CORE_DUMP_SIZE=1048576",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1221,7 +1203,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on)
         "-DASCENDC_DUMP=1",
         "-DONE_CORE_DUMP_SIZE=1048576",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1265,7 +1246,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on_assert)
         "-DASCENDC_DUMP=1",
         "-DONE_CORE_DUMP_SIZE=1024",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1282,7 +1262,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_dump_on_assert)
         "-DASCENDC_DUMP=1",
         "-DONE_CORE_DUMP_SIZE=1024",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1335,7 +1314,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_dump_on)
         "-DASCENDC_DUMP=1",
         "-DONE_CORE_DUMP_SIZE=1048576",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-cube",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
@@ -1352,7 +1330,6 @@ TEST_F(TEST_ASC_INTERFACE, asc_PluginEpilogue_user_dump_on)
         "-DASCENDC_DUMP=1",
         "-DONE_CORE_DUMP_SIZE=1048576",
         "-include", "A/include/version/cann_version.h",
-        "-D__ASC_FEATURE_META_INFO7",
         "--cce-aicore-arch=dav-c220-vec",
         "-D__device_stub__sub_custom=sub_custom",
         "-D__device_stub__add_custom=add_custom"
