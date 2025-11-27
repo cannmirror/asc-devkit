@@ -82,7 +82,7 @@ __simd_vf__ inline void MulCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ 
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
-        const uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(U));
+        const uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(U));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
         MicroAPI::RegTensor<T> dst0Reg;
         MicroAPI::RegTensor<U> dst1Reg;

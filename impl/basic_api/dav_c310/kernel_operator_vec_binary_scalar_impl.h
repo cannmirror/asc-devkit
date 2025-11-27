@@ -784,7 +784,7 @@ __simd_vf__ inline void FusedMulsCastImpl(__ubuf__ T *dst, __ubuf__ U *src0, __u
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<half, float>>(), "Failed to check dtype in "
         "FusedMulsCast, current api support dtype combination is src : float, dst: half, scalar: float.");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(U));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(U));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     U scalar = src1[0];
@@ -804,7 +804,7 @@ __simd_vf__ inline void FusedMulsCastImpl(__ubuf__ T *dst, __ubuf__ U *src, U sc
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<half, float>>(), "Failed to check dtype in "
         "FusedMulsCast, current api support dtype combination is src : float, dst: half, scalar: float.");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(U));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(U));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::RegTensor<T> vDstReg;

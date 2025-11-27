@@ -719,15 +719,15 @@ __aicore__ inline void ReduceSumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
             ReduceSumCounterMode<T, 3>(dstLocal, srcLocal, workLocal, count, 8);
         }
     }
-    if constexpr (std::is_same_v<T, float> || std::is_same_v<T, half>) {
+    if constexpr (AscendC::Std::is_same<T, float>::value || AscendC::Std::is_same<T, half>::value) {
         TEventID eventID = GetTPipePtr()->AllocEventID<HardEvent::V_S>();
         SetFlag<HardEvent::V_S>(eventID);
         WaitFlag<HardEvent::V_S>(eventID);
         GetTPipePtr()->ReleaseEventID<AscendC::HardEvent::V_S>(eventID);
         // extract the value from dstLocal and store it as a float in block_local
-        if constexpr (std::is_same_v<T, float>) {
+        if constexpr (AscendC::Std::is_same<T, float>::value) {
             accValFloat = dstLocal[0];
-        } else if constexpr (std::is_same_v<T, half>) {
+        } else if constexpr (AscendC::Std::is_same<T, half>::value) {
             accValHalf = dstLocal[0];
         }
     }
@@ -737,21 +737,21 @@ __aicore__ inline void ReduceSumImpl(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal,
 template <typename T>
 __aicore__ inline T GetMinValue()
 {
-    if constexpr (std::is_same_v<T, half>) {
+    if constexpr (AscendC::Std::is_same<T, half>::value) {
         return GetScalarBitcodeValue<uint16_t, T>(0xFBFF);
-    } else if constexpr (std::is_same_v<T, float>) {
+    } else if constexpr (AscendC::Std::is_same<T, float>::value) {
         return GetScalarBitcodeValue<uint32_t, T>(0xFF7FFFFF);
-    } else if constexpr (std::is_same_v<T, uint16_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, uint16_t>::value) {
         return 0;
-    } else if constexpr (std::is_same_v<T, int16_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, int16_t>::value) {
         return 0x8000;
-    } else if constexpr (std::is_same_v<T, uint32_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, uint32_t>::value) {
         return 0;
-    } else if constexpr (std::is_same_v<T, int32_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, int32_t>::value) {
         return 0x80000000;
-    } else if constexpr (std::is_same_v<T, uint64_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, uint64_t>::value) {
         return 0;
-    } else if constexpr (std::is_same_v<T, int64_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, int64_t>::value) {
         return 0x8000000000000000;
     }
 }
@@ -759,21 +759,21 @@ __aicore__ inline T GetMinValue()
 template <typename T>
 __aicore__ inline T GetMaxValue()
 {
-    if constexpr (std::is_same_v<T, half>) {
+    if constexpr (AscendC::Std::is_same<T, half>::value) {
         return GetScalarBitcodeValue<uint16_t, T>(0x7BFF);
-    } else if constexpr (std::is_same_v<T, float>) {
+    } else if constexpr (AscendC::Std::is_same<T, float>::value) {
         return GetScalarBitcodeValue<uint32_t, T>(0x7F7FFFFF);
-    } else if constexpr (std::is_same_v<T, uint16_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, uint16_t>::value) {
         return 0xFFFF;
-    } else if constexpr (std::is_same_v<T, int16_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, int16_t>::value) {
         return 0x7FFF;
-    } else if constexpr (std::is_same_v<T, uint32_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, uint32_t>::value) {
         return 0xFFFFFFFF;
-    } else if constexpr (std::is_same_v<T, int32_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, int32_t>::value) {
         return 0x7FFFFFFF;
-    } else if constexpr (std::is_same_v<T, uint64_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, uint64_t>::value) {
         return 0xFFFFFFFFFFFFFFFF;
-    } else if constexpr (std::is_same_v<T, int64_t>) {
+    } else if constexpr (AscendC::Std::is_same<T, int64_t>::value) {
         return 0x7FFFFFFFFFFFFFFF;
     }
 }
@@ -884,7 +884,7 @@ __simd_vf__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *sr
     MicroAPI::Duplicate(subIndexVreg, (IndexT)1);
     MicroAPI::Duplicate(maskIndexVreg, (IndexT)0);
     MicroAPI::Duplicate(dstValueVreg, initValue);
-    if constexpr (std::is_same_v<IndexT, uint16_t>) {
+    if constexpr (AscendC::Std::is_same<IndexT, uint16_t>::value) {
         MicroAPI::Arange((MicroAPI::RegTensor<int16_t> &)tmpIndexVreg, 1);
     } else {
         MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)tmpIndexVreg, 1);
@@ -1002,7 +1002,7 @@ __simd_vf__ inline void ReduceIndexTemplate(__ubuf__ T *dstLocal, __ubuf__ T *sr
     MicroAPI::Duplicate(dstValueVreg, initValue);
     MicroAPI::Duplicate(maskIndexVreg, (IndexT)0);
     MicroAPI::Duplicate(subIndexVreg, (IndexT)1);
-    if constexpr (std::is_same_v<IndexT, uint16_t>) {
+    if constexpr (AscendC::Std::is_same<IndexT, uint16_t>::value) {
         MicroAPI::Arange((MicroAPI::RegTensor<int16_t> &)tmpIndexVreg, 1);
     } else {
         MicroAPI::Arange((MicroAPI::RegTensor<int32_t> &)tmpIndexVreg, 1);

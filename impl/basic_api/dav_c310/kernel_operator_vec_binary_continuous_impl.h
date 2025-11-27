@@ -31,7 +31,7 @@ __simd_vf__ inline void BinaryContinuousImplTemplate(__ubuf__ T* dst, __ubuf__ T
     RegType dstReg;
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::MaskReg mask;
-    constexpr uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T) * RegType::trait.REG_NUM);
+    constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegType::trait.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
         mask = MicroAPI::UpdateMask<T, RegType::trait>(sreg);
@@ -51,7 +51,7 @@ __simd_vf__ inline void BinaryContinuousImplTemplate(__ubuf__ T* dst, __ubuf__ T
     RegTypeT dstReg;
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::MaskReg mask;
-    constexpr uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T) * RegTypeT::trait.REG_NUM);
+    constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T) * RegTypeT::trait.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
         mask = MicroAPI::UpdateMask<T, RegTypeT::trait>(sreg);
@@ -269,7 +269,7 @@ __simd_vf__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ 
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
         }
     } else {
-        constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+        constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
         MicroAPI::RegTensor<T> dstReg;
         MicroAPI::RegTensor<T> src0Reg;
@@ -366,7 +366,7 @@ __simd_vf__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubu
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
-        constexpr uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+        constexpr uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
         MicroAPI::RegTensor<T> src0Reg;
         MicroAPI::RegTensor<T> src1Reg;
@@ -413,7 +413,7 @@ __simd_vf__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, _
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
-        const uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+        const uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
         MicroAPI::RegTensor<T> src0Reg;
         MicroAPI::RegTensor<T> src1Reg;
@@ -458,7 +458,7 @@ __simd_vf__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf_
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
-        constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(T);
+        constexpr uint16_t numPerRep = GetVecLen() / sizeof(T);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
         MicroAPI::RegTensor<U> src0Reg, src1Reg;
         MicroAPI::RegTensor<T> dstReg;
@@ -478,7 +478,7 @@ __simd_vf__ inline void MulAddDstImpl(__ubuf__ float* dst, __ubuf__ half* src0, 
     const int32_t calCount)
 {
     uint32_t sregB32 = static_cast<uint32_t>(calCount);     // updated when float calculation
-    constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(float);     // each repeat 64 half->float to calculate
+    constexpr uint16_t numPerRep = GetVecLen() / sizeof(float);     // each repeat 64 half->float to calculate
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
     MicroAPI::RegTensor<half> src0Reg, src1Reg;
     MicroAPI::RegTensor<float> dstReg, castReg1, castReg2;
@@ -522,7 +522,7 @@ __simd_vf__ inline void SubReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ 
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
         }
     } else {
-        constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(T);
+        constexpr uint16_t numPerRep = GetVecLen() / sizeof(T);
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
         MicroAPI::RegTensor<T> dstReg, src0Reg, src1Reg;
         MicroAPI::MaskReg mask;
@@ -545,7 +545,7 @@ __simd_vf__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src
     const int32_t calCount)
 {
     const float scalarValue = 0.;
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(int32_t));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(int32_t));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     MicroAPI::RegTensor<half> dstReg;
     MicroAPI::RegTensor<float> tmpReg;
@@ -577,7 +577,7 @@ __simd_vf__ inline void PreluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T 
 {
     static_assert(SupportType<T, half, float>(),  "Failed to check dtype in Prelu, current api support "
         "dtype is half, float.");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::RegTensor<T> vDstReg0;
@@ -603,7 +603,7 @@ __simd_vf__ inline void MullImpl(
 {
     static_assert(SupportType<T, uint32_t, int32_t>(), "Failed to check dtype in Mull, current api support "
         "dtype is uint32_t, int32_t");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::RegTensor<T> vDstReg0;
@@ -631,7 +631,7 @@ __simd_vf__ inline void FusedAbsSubImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubu
 {
     static_assert(SupportType<T, half, float>(), "Failed to check dtype in FusedAbsSub, current api support "
         "dtype is src and dst both: half, float.");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::RegTensor<T> vDstReg0;
@@ -656,7 +656,7 @@ __simd_vf__ inline void FusedExpSubImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubu
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<float, half>, Tuple<float, float>>(), "Failed to check dtype in "
         "FusedExpSub, current api support dtype combination is src : half / float, dst: float.");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::RegTensor<T> vDstReg0;

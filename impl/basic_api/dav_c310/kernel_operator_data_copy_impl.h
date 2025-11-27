@@ -952,7 +952,7 @@ __simd_vf__ inline void CopyImpl(__ubuf__ T* dst, __ubuf__ T* src, const uint32_
     static_assert(SupportBytes<T, 1, 2, 4, 8>(),
                   "Copy from ubuf to ubuf only support type b8/b16/b32/b64 on current device");
     if constexpr (sizeof(T) == B8_BYTE_SIZE || sizeof(T) == B16_BYTE_SIZE || sizeof(T) == B32_BYTE_SIZE) {
-        constexpr uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(T);
+        constexpr uint32_t repeatElm = GetVecLen() / sizeof(T);
         uint32_t sreg = calCount;
         uint16_t repeatTime = CeilDivision(calCount, repeatElm);
         MicroAPI::RegTensor<T> vreg;
@@ -964,7 +964,7 @@ __simd_vf__ inline void CopyImpl(__ubuf__ T* dst, __ubuf__ T* src, const uint32_
         }
     } else if constexpr (sizeof(T) == B64_BYTE_SIZE) {
         uint32_t sreg = calCount * 2;
-        uint32_t oneRepSize = VECTOR_REG_WIDTH / sizeof(uint32_t);
+        uint32_t oneRepSize = GetVecLen() / sizeof(uint32_t);
         uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(sreg, oneRepSize));
         MicroAPI::MaskReg preg;
         MicroAPI::RegTensor<uint32_t> srcReg;
