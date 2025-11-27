@@ -647,12 +647,17 @@ def _tpl_tilingkey_deterministic_check(
 ):
     expect_tilingkey_set = set()
     cur_deterministic_flag = get_current_build_config("enable_deterministic_mode") == 1
+    deter_flag = False
     for k, v in decode_tiling_result.items():
         if "deterministic" in v:
             tiling_key_deterministic[str(k)] = v["deterministic"]
             deterministic_flag = True if v["deterministic"].lower() == "true" else False
+            deter_flag = deter_flag or deterministic_flag
             if deterministic_flag == cur_deterministic_flag:
                 expect_tilingkey_set.add(str(k))
+    if len(tiling_key_deterministic) > 0 and deter_flag is False:
+        tiling_key_deterministic.clear()
+        expect_tilingkey_set.clear()
     if len(expect_tilingkey_set) > 0 and len(decode_tiling_result) > 0:
         tiling_key_list = [x for x in tiling_key_list if x in expect_tilingkey_set]
         decode_tiling_result = {
