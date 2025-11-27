@@ -62,7 +62,7 @@ while true; do
 done
 
 WHL_INSTALL_DIR_PATH="${common_parse_dir}/python/site-packages"
-WHL_SOFTLINK_INSTALL_DIR_PATH="${common_parse_dir}/asc-devkit/python/site-packages"
+WHL_SOFTLINK_INSTALL_DIR_PATH="${common_parse_dir}/share/info/asc-devkit/python/site-packages"
 PYTHON_ASC_OP_COMPILE_BASE_NAME="asc_op_compile_base"
 PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH="${sourcedir}/../lib/asc_op_compile_base-0.1.0-py3-none-any.whl"
 PYTHON_ASC_OPC_TOOL_NAME="asc_opc_tool"
@@ -123,12 +123,12 @@ install_whl_package() {
 }
 
 custom_install() {
-    if [ -z "$common_parse_dir/asc-devkit" ]; then
+    if [ -z "$common_parse_dir/share/info/asc-devkit" ]; then
         log "ERROR" "ERR_NO:0x0001;ERR_DES:asc-devkit directory is empty"
         exit 1
     elif [ "$hetero_arch" != "y" ]; then
-        local arch_name="$(get_arch_name $common_parse_dir/asc-devkit)"
-        create_stub_softlink "$common_parse_dir/asc-devkit/lib64/stub" "linux/$arch_name"
+        local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
+        create_stub_softlink "$common_parse_dir/share/info/asc-devkit/lib64/stub" "linux/$arch_name"
         create_stub_softlink "$common_parse_dir/$arch_name-linux/devlib" "linux/$arch_name"
         create_stub_softlink "$common_parse_dir/$arch_name-linux/lib64/stub" "linux/$arch_name"
 
@@ -140,8 +140,8 @@ custom_install() {
         create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_opc_tool"
         create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_opc_tool-*.dist-info"
     else
-        local arch_name="$(get_arch_name $common_parse_dir/asc-devkit)"
-        create_stub_softlink "$common_parse_dir/asc-devkit/lib64/stub" "linux/$arch_name"
+        local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
+        create_stub_softlink "$common_parse_dir/share/info/asc-devkit/lib64/stub" "linux/$arch_name"
         create_stub_softlink "$common_parse_dir/../devlib" "linux/$arch_name"
         create_stub_softlink "$common_parse_dir/../lib64/stub" "linux/$arch_name"
     fi

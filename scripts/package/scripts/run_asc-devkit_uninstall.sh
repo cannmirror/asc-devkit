@@ -54,8 +54,8 @@ else
 fi
 logfile="${log_dir}/ascend_install.log"
 
-SOURCE_INSTALL_COMMON_PARSER_FILE="${common_parse_dir}/asc-devkit/script/install_common_parser.sh"
-SOURCE_FILELIST_FILE="${common_parse_dir}/asc-devkit/script/filelist.csv"
+SOURCE_INSTALL_COMMON_PARSER_FILE="${common_parse_dir}/share/info/asc-devkit/script/install_common_parser.sh"
+SOURCE_FILELIST_FILE="${common_parse_dir}/share/info/asc-devkit/script/filelist.csv"
 
 # 写日志
 log() {
@@ -79,13 +79,13 @@ log() {
 log "INFO" "step into run_asc-devkit_uninstall.sh ......"
 log "INFO" "uninstall target dir $common_parse_dir, type $common_parse_type."
 
-if [ ! -d "$common_parse_dir/asc-devkit" ]; then
-    log "ERROR" "ERR_NO:0x0001;ERR_DES:path $common_parse_dir/asc-devkit is not exist."
+if [ ! -d "$common_parse_dir/share/info/asc-devkit" ]; then
+    log "ERROR" "ERR_NO:0x0001;ERR_DES:path $common_parse_dir/share/info/asc-devkit is not exist."
     exit 1
 fi
 
 new_uninstall() {
-    if [ ! -d "${common_parse_dir}/asc-devkit" ]; then
+    if [ ! -d "${common_parse_dir}/share/info/asc-devkit" ]; then
         log "INFO" "no need to uninstall asc-devkit files."
         return 0
     fi
@@ -111,17 +111,21 @@ new_uninstall() {
             fi
         fi
     fi
-
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 755 "$common_parse_dir/tools/ascendc_tools"
+    fi
     # 执行卸载
     custom_options="--custom-options=--common-parse-dir=$common_parse_dir,--logfile=$logfile,--stage=uninstall,--quiet=$is_quiet,--hetero-arch=$hetero_arch"
     sh "$SOURCE_INSTALL_COMMON_PARSER_FILE" --package="asc-devkit" --uninstall --username="$username" --usergroup="$usergroup" ${recreate_softlink_option} \
-        --version=$pkg_version --version-dir=$pkg_version_dir \
+        --version=$pkg_version --version-dir=$pkg_version_dir --use-share-info \
         --docker-root="$docker_root" $custom_options "$common_parse_type" "$input_install_dir" "$SOURCE_FILELIST_FILE"
     if [ $? -ne 0 ]; then
         log "ERROR" "ERR_NO:0x0090;ERR_DES:failed to uninstall package."
         return 1
     fi
-
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 550 "$common_parse_dir/tools/ascendc_tools"
+    fi
     if [ -n "$latest_path" ] && [ -d "$latest_path" ] && [ "x$(ls -A $latest_path 2>&1)" = "x" ]; then
         rm -rf "$latest_path"
     fi

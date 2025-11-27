@@ -11,7 +11,7 @@
         <check_features>true</check_features>
     </package_info>
 
-    <generate_info value="scene.info" dst_path="asc-devkit" install_mod="640" feature="comm">
+    <generate_info value="scene.info" dst_path="asc-devkit" install_path="share/info/asc-devkit" install_mod="440">
         <os>$(OS_NAME)</os>
         <os_version>$(OS_VER)</os_version>
         <arch>$(ARCH)</arch>
@@ -23,6 +23,8 @@
     </block_info>
 
     <dir_info value="asc-devkit" install_mod="550">
+        <path value="share"/>
+        <path value="share/info"/>
         <path value="$(TARGET_ENV)/ascc"/>
         <path value="$(TARGET_ENV)/ascc/lib64"/>
         <path value="$(TARGET_ENV)/tikcpp"/>
@@ -61,13 +63,13 @@
         <path value="$(TARGET_ENV)/lib64/device"/>
         <path value="$(TARGET_ENV)/lib64/device/lib64"/>
     </dir_info>
-    <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="asc-devkit" install_type="all">
+    <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="share/info/asc-devkit" install_type="all">
         <file value="script" install_mod="550" entity="true"/>
         <file value="bin" install_mod="550" entity="true"/>
         <file value="version.info" install_mod="550" entity="true"/>
         <file value="scene.info" install_mod="550" entity="true"/>
     </file_info>
-    <file_info copy_type="delivery" src_path="asc-devkit/script" dst_path="asc-devkit/script" install_path="asc-devkit" install_type="all">
+    <file_info copy_type="delivery" src_path="asc-devkit/script" dst_path="asc-devkit/script" install_path="share/info/asc-devkit" install_type="all">
         <file value="filelist.csv" install_mod="550" entity="true"/>
     </file_info>
 
@@ -104,10 +106,6 @@
         <file value="impl" install_softlink="$(TARGET_ENV)/tikcpp/tikcfw/impl" install_mod="550" entity="true"/>
         <file value="op_frame" install_softlink="$(TARGET_ENV)/tikcpp/tikcfw/op_frame" install_mod="550" entity="true"/>
     </file_info>
-
-    <!-- <file_info copy_type="delivery" src_path="lib/host/ascendc/include/aicpu_api" dst_path="$(TARGET_ENV)/ascendc/include/aicpu_api" install_path="$(TARGET_ENV)/ascendc/include/aicpu_api" install_type="all">
-        <file value="aicpu_api.h" install_softlink="$(TARGET_ENV)/include/ascendc/aicpu_api/aicpu_api.h" install_mod="550" entity="true"/>
-    </file_info> -->
 
     <file_info copy_type="delivery" src_path="lib/host/ascendc/include/highlevel_api/utils/log" dst_path="$(TARGET_ENV)/ascendc/include/highlevel_api/utils/log" install_path="$(TARGET_ENV)/ascendc/include/highlevel_api/utils/log" install_type="all">
         <file value="asc_cpu_log.h" install_softlink="$(TARGET_ENV)/include/utils/log/asc_cpu_log.h" install_mod="550" entity="true"/>

@@ -648,8 +648,8 @@ prompt_set_env() {
         install_path="$install_path/$pkg_version_dir"
     fi
     echo "Please make sure that
-        - LD_LIBRARY_PATH includes ${install_path}/asc-devkit/lib64
-        - PYTHONPATH includes ${install_path}/asc-devkit/python/site-packages"
+        - LD_LIBRARY_PATH includes ${install_path}/share/info/asc-devkit/lib64
+        - PYTHONPATH includes ${install_path}/share/info/asc-devkit/python/site-packages"
 }
 
 check_docker_path() {
@@ -1166,9 +1166,9 @@ else
 fi
 
 if [ "$pkg_is_multi_version" = "true" ] && [ "$hetero_arch" != "y" ]; then
-    default_dir="${pkg_install_path}/$pkg_version_dir/asc-devkit"
+    default_dir="${pkg_install_path}/$pkg_version_dir/share/info/asc-devkit"
 else
-    default_dir="${pkg_install_path}/asc-devkit"
+    default_dir="${pkg_install_path}/share/info/asc-devkit"
 fi
 install_info="${default_dir}/ascend_install.info"
 
@@ -1248,7 +1248,7 @@ if [ "$(get_pkg_toolchain)" != "llvm" ] && [ "$input_install_for_all" = "n" ]; t
     fi
 fi
 
-uninstall_none_multi_version "$pkg_install_path/asc-devkit"
+uninstall_none_multi_version "$pkg_install_path/share/info/asc-devkit"
 check_install_for_all
 create_default_install_dir_for_common_user
 log_base_version

@@ -60,7 +60,7 @@ create_stub_softlink() {
 }
 
 do_create_stub_softlink() {
-    local arch_name="$(get_arch_name $install_path/$version_dir/asc-devkit)"
+    local arch_name="$(get_arch_name $install_path/$version_dir/share/info/asc-devkit)"
     local arch_linux_path="$install_path/$latest_dir/$arch_name-linux"
     if [ ! -e "$arch_linux_path" ] || [ -L "$arch_linux_path" ]; then
         return
