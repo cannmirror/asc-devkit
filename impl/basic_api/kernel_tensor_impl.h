@@ -940,7 +940,21 @@ __aicore__ inline LocalTensor<T>::LocalTensor(uint32_t addr)
     static_assert(is_tensorTrait_v<T>, "only support TensorTrait type Tensor!");
     static_assert((T::tPos != TPosition::GM) && (T::tPos != TPosition::MAX),
             "TensorTrait position should not be GM or MAX!");
-    uint32_t tensorSize = Prod(this->GetTensorTrait().GetLayout().GetShape());
+    using LayoutType = GetLayoutType<T>;
+    using type = typename T::LiteType;
+    constexpr uint32_t tensorSize = LayoutType::size;
+    static_assert((tensorSize * sizeof(type)) % ONE_BLK_SIZE == 0, "The size of localTensor must be align to 32Bytes");
+    CreateTensor<typename T::LiteType>(T::tPos, addr, tensorSize);
+}
+
+template <typename T>
+template <typename U>
+__aicore__ inline LocalTensor<T>::LocalTensor(uint32_t addr, const U& layout)
+{
+    static_assert(is_tensorTrait_v<T>, "only support TensorTrait type Tensor!");
+    static_assert((T::tPos != TPosition::GM) && (T::tPos != TPosition::MAX),
+            "TensorTrait position should not be GM or MAX!");
+    uint32_t tensorSize = layout.GetSize();
     CreateTensor<typename T::LiteType>(T::tPos, addr, tensorSize);
 }
 
@@ -1552,16 +1566,30 @@ __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc(uint32_t 
     head_ += SizeOfBits<DataType>::value * tileSize / SizeOfBits<uint8_t>::value;
     return output;
 }
-
 template <Hardware hard>
 template <class TensorTraitType>
 __aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc()
 {
     static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
     static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
-    LocalTensor<TensorTraitType> output(head_);
-    head_ += SizeOfBits<typename TensorTraitType::LiteType>::value * output.GetSize() / SizeOfBits<uint8_t>::value;
-    return output;
+    using liteType = typename TensorTraitType::LiteType;
+    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
+    LocalTensor<TensorTraitType> tensorOut(head_);
+    head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
+    return tensorOut;
 }
+
+template <Hardware hard>
+template <class TensorTraitType, typename LayoutType>
+__aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc(const LayoutType& layout)
+{
+    static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
+    static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
+    using liteType = typename TensorTraitType::LiteType;
+    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
+    LocalTensor<TensorTraitType> tensorOut(head_, layout);
+    head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
+    return tensorOut;
+}   
 }
 #endif // KERNEL_TENSOR_H

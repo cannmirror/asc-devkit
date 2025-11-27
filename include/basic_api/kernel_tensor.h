@@ -152,6 +152,8 @@ public:
     __aicore__ inline void SetAddrWithOffset(LocalTensor<S> &src, uint32_t offset);
 #endif
     __aicore__ inline LocalTensor<T>(TPosition pos, uint32_t addr, uint32_t tileSize);
+    template <typename U>
+    __aicore__ inline LocalTensor<T>(uint32_t addr, const U& layout);
     __aicore__ inline LocalTensor<T>(uint32_t addr);
     __aicore__ inline int32_t GetPosition() const;
     __aicore__ inline void SetSize(const uint32_t size);
@@ -270,6 +272,7 @@ public:
     template <class DataType, uint32_t tileSize> LocalTensor<DataType> __aicore__ inline Alloc();
     template <class DataType> LocalTensor<DataType> __aicore__ inline Alloc(uint32_t tileSize);
     template <class TensorTraitType> LocalTensor<TensorTraitType> __aicore__ inline Alloc();
+    template <class TensorTraitType, typename LayoutType> LocalTensor<TensorTraitType> __aicore__ inline Alloc(const LayoutType& layout);
 
 private:
     uint32_t head_ = 0;
