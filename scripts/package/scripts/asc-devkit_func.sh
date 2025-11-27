@@ -28,9 +28,9 @@ get_pkg_arch_name() {
 
 get_installed_pkg_arch_name() {
     if [ "$pkg_is_multi_version" = "true" ]; then
-        local scene_info="$docker_root$input_install_path/$pkg_version_dir/asc-devkit/scene.info"
+        local scene_info="$docker_root$input_install_path/$pkg_version_dir/share/info/asc-devkit/scene.info"
     else
-        local scene_info="$docker_root$input_install_path/asc-devkit/scene.info"
+        local scene_info="$docker_root$input_install_path/share/info/asc-devkit/scene.info"
     fi
     if [ ! -f "$scene_info" ]; then
         return
@@ -94,11 +94,11 @@ get_package_upgrade_install_info_hetero() {
 is_hetero_arch_pkg_installed() {
     if [ "$is_pkg_hetero_arch" = "y" ]; then
         if [ "$pkg_is_multi_version" = "true" ]; then
-            local path_version="$docker_root$input_install_path/$pkg_version_dir/$arch_scripts_path/asc-devkit/version.info"
-            local path_install="$docker_root$input_install_path/$pkg_version_dir/$arch_scripts_path/asc-devkit/ascend_install.info"
+            local path_version="$docker_root$input_install_path/$pkg_version_dir/$arch_scripts_path/share/info/asc-devkit/version.info"
+            local path_install="$docker_root$input_install_path/$pkg_version_dir/$arch_scripts_path/share/info/asc-devkit/ascend_install.info"
         else
-            local path_version="$docker_root$input_install_path/$arch_scripts_path/asc-devkit/version.info"
-            local path_install="$docker_root$input_install_path/$arch_scripts_path/asc-devkit/ascend_install.info"
+            local path_version="$docker_root$input_install_path/$arch_scripts_path/share/info/asc-devkit/version.info"
+            local path_install="$docker_root$input_install_path/$arch_scripts_path/share/info/asc-devkit/ascend_install.info"
         fi
         if [ -f "$path_version" ] && [ -f "$path_install" ]; then
             echo "installed-hetero"
@@ -106,11 +106,11 @@ is_hetero_arch_pkg_installed() {
         fi
 
         if [ "$pkg_is_multi_version" = "true" ]; then
-            local path_version="$docker_root$input_install_path/$pkg_version_dir/asc-devkit/version.info"
-            local path_install="$docker_root$input_install_path/$pkg_version_dir/asc-devkit/ascend_install.info"
+            local path_version="$docker_root$input_install_path/$pkg_version_dir/share/info/asc-devkit/version.info"
+            local path_install="$docker_root$input_install_path/$pkg_version_dir/share/info/asc-devkit/ascend_install.info"
         else
-            local path_version="$docker_root$input_install_path/asc-devkit/version.info"
-            local path_install="$docker_root$input_install_path/asc-devkit/ascend_install.info"
+            local path_version="$docker_root$input_install_path/share/info/asc-devkit/version.info"
+            local path_install="$docker_root$input_install_path/share/info/asc-devkit/ascend_install.info"
         fi
         if [ -f "$path_version" ] && [ -f "$path_install" ] && [ "$(get_installed_pkg_arch_name)" = "$(get_pkg_arch_name)" ]; then
             echo "installed-normal"

@@ -56,12 +56,12 @@ remove_stub_softlink() {
 }
 
 do_remove_stub_softlink() {
-    local arch_name="$(get_arch_name $install_path/$version_dir/asc-devkit)"
+    local arch_name="$(get_arch_name $install_path/$version_dir/share/info/asc-devkit)"
     local arch_linux_path="$install_path/$latest_dir/$arch_name-linux"
     if [ ! -e "$arch_linux_path" ] || [ -L "$arch_linux_path" ]; then
         return
     fi
-    local ref_dir="$install_path/$version_dir/asc-devkit/lib64/stub/linux/$arch_name"
+    local ref_dir="$install_path/$version_dir/share/info/asc-devkit/lib64/stub/linux/$arch_name"
     remove_stub_softlink "$ref_dir" "$arch_linux_path/devlib"
     remove_stub_softlink "$ref_dir" "$arch_linux_path/lib64/stub"
     if [ -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
