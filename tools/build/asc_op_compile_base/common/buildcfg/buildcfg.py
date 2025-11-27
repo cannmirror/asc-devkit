@@ -75,6 +75,9 @@ class BuildConfigWrapper(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         _build_cfg.reset(self.token)
 
+    def current(self):
+        return _build_cfg.get()
+        
 
 def build_config(**kwargs):
     """Configure the build behavior by setting config variables.

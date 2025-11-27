@@ -1,0 +1,72 @@
+#! /usr/bin/env python3
+# -*- coding: UTF-8 -*-
+# Copyright (c) Huawei Technologies Co., Ltd. 2024-2025. All rights reserved.
+import os
+import sys
+import shutil
+import unittest
+from unittest import mock
+import tbe
+from tbe.common.repository_manager import interface
+from tbe.common.platform import set_current_compile_soc_info, get_soc_spec
+from tbe.common import register
+from tbe.common import buildcfg
+
+THIS_FILE_NAME = __file__
+FILE_PATH = os.path.dirname(os.path.realpath(THIS_FILE_NAME))
+TOP_PATH = os.path.join(FILE_PATH, "../../../../")
+API_ROOT_PATH = os.path.join(
+    TOP_PATH, "build/adapter_ut")
+FRAMEWORK_PATH = os.path.join(
+    TOP_PATH, "tools/build/asc_op_compile_base/")
+sys.path.append(FRAMEWORK_PATH)
+
+from adapter.log_utils import LogUtil, AscendCLogLevel
+from adapter.global_storage import global_var_storage
+
+def SetCurrentSocInfo(soc: str):
+    set_current_compile_soc_info(soc)
+    global_var_storage.set_variable("ascendc_short_soc_version", get_soc_spec("SHORT_SOC_VERSION"))
+
+
+class TestLogUtils(unittest.TestCase):
+    def setUp(self):
+        # operator before each testcase
+        print(f"-------------------SetUp----------------")
+
+
+    def tearDown(self):
+        # operator after each testcase
+        print(f"-------------------TearDown-------------")
+
+
+    def test_dump_log_fail(self):
+        emptystr = ""
+        LogUtil.dump_log(emptystr)
+        self.assertEqual(emptystr, "")
+
+
+    def test_print_compile_log_lowlevel(self):
+        op_name = "test_op"
+        output = "a debug info"
+        with mock.patch('os.environ', {"ASCEND_GLOBAL_LOG_LEVEL": 3}):
+            LogUtil().print_compile_log(op_name, output, AscendCLogLevel.LOG_DEBUG)
+
+
+    def test_print_compile_plog_lowlevel(self):
+        op_name = "test_op"
+        output = "a debug info"
+        with mock.patch('os.environ', {"ASCEND_GLOBAL_LOG_LEVEL": 3}):
+            with mock.patch('os.environ', {"ASCEND_SLOG_PRINT_TO_STDOUT": 1}):
+                LogUtil().plog_print(op_name, output, AscendCLogLevel.LOG_DEBUG)
+                LogUtil().plog_print(op_name, output, AscendCLogLevel.LOG_INFO)
+                LogUtil().plog_print(op_name, output, AscendCLogLevel.LOG_WARNING)
+                LogUtil().plog_print(op_name, output, AscendCLogLevel.LOG_ERROR)
+                self.assertEqual(op_name, "test_op")
+
+
+    def test_detail_log_print(self):
+        op_name = "test_op"
+        output = "a detail info"
+        with mock.patch('os.environ', {"ASCEND_GLOBAL_EVENT_ENABLE": 1}):
+            LogUtil().detail_log_print(op_name, output, AscendCLogLevel.LOG_INFO)
