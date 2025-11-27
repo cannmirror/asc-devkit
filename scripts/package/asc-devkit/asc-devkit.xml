@@ -24,7 +24,7 @@
 
     <dir_info value="asc-devkit" install_mod="550">
         <path value="share"/>
-        <path value="share/info"/>
+        <path value="share/info" install_mod="750"/>
         <path value="$(TARGET_ENV)/ascc"/>
         <path value="$(TARGET_ENV)/ascc/lib64"/>
         <path value="$(TARGET_ENV)/tikcpp"/>

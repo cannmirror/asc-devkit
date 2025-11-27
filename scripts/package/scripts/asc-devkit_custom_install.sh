@@ -62,7 +62,6 @@ while true; do
 done
 
 WHL_INSTALL_DIR_PATH="${common_parse_dir}/python/site-packages"
-WHL_SOFTLINK_INSTALL_DIR_PATH="${common_parse_dir}/share/info/asc-devkit/python/site-packages"
 PYTHON_ASC_OP_COMPILE_BASE_NAME="asc_op_compile_base"
 PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH="${sourcedir}/../lib/asc_op_compile_base-0.1.0-py3-none-any.whl"
 PYTHON_ASC_OPC_TOOL_NAME="asc_opc_tool"
@@ -134,11 +133,6 @@ custom_install() {
 
         install_whl_package "${PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH}" "${PYTHON_ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
         install_whl_package "${PYTHON_ASC_OPC_TOOL_WHL_PATH}" "${PYTHON_ASC_OPC_TOOL_NAME}" "${WHL_INSTALL_DIR_PATH}"
-        mkdir -p "${WHL_SOFTLINK_INSTALL_DIR_PATH}"
-        create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_op_compile_base"
-        create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_op_compile_base-*.dist-info"
-        create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_opc_tool"
-        create_softlink_if_exists "${WHL_INSTALL_DIR_PATH}" "${WHL_SOFTLINK_INSTALL_DIR_PATH}" "asc_opc_tool-*.dist-info"
     else
         local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
         create_stub_softlink "$common_parse_dir/share/info/asc-devkit/lib64/stub" "linux/$arch_name"
