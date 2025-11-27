@@ -9,8 +9,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef C_API_INSTR_SYNC_H
-#define C_API_INSTR_SYNC_H
+#ifndef IMPL_C_API_INSTR_SYNC_H
+#define IMPL_C_API_INSTR_SYNC_H
 
 #include "c_api/c_api_interf_util.h"
 #include "set_flag/asc_2201/set_flag_impl.h"
@@ -29,9 +29,10 @@ __aicore__ inline void asc_sync_wait(Pipe pipe, TPipe tpipe, int id)
     CApiInternal::sync_wait_impl<Pipe::value, TPipe::value>(id);
 }
 
-__aicore__ inline void asc_sync(pipe_t pipe)
+template<typename Pipe>
+__aicore__ inline void asc_sync(Pipe pipe)
 {
-    CApiInternal::sync_impl(pipe);
+    CApiInternal::sync_impl<Pipe::value>();
 }
 
 __aicore__ inline void asc_sync_vec()

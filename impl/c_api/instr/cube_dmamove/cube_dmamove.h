@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef C_API_INSTR_CUBE_DMAMOVE_H
-#define C_API_INSTR_CUBE_DMAMOVE_H
+#ifndef IMPL_C_API_INSTR_CUBE_DMAMOVE_H
+#define IMPL_C_API_INSTR_CUBE_DMAMOVE_H
  
 #include "get_fpc/asc_2201/get_fpc_impl.h"
 #include "set_fmatrix/asc_2201/set_fmatrix_impl.h"

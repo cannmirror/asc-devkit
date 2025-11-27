@@ -24,6 +24,14 @@
 #define __aicore__ [aicore]
 #endif // __aicore__
 
+/*
+ * VALUE_INDEX = 0;
+ * INDEX_VALUE = 1;
+ * ONLY_VALUE = 2;
+ * ONLY_INDEX = 3;
+*/
+using order_t = Order_t;
+
 template<pipe_t PIPE>
 using PipeType = std::integral_constant<pipe_t, PIPE>;
 

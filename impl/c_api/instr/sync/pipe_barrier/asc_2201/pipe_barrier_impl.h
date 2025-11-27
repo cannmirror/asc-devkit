@@ -18,7 +18,8 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void sync_impl(pipe_t pipe)
+template<pipe_t pipe>
+__aicore__ inline void sync_impl()
 {
     pipe_barrier(pipe);
 }
