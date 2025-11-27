@@ -75,11 +75,34 @@ TEST_F(TEST_ALLOC_AIC, TestCustmizedGenIllegal)
 template <uint32_t v>
 using UIntImm = Std::integral_constant<uint32_t, v>;
 
-TEST_F(TEST_ALLOC_AIC, TestTensorTrait)
+TEST_F(TEST_ALLOC_AIC, TestTensorTrait1)
 {    
-    auto shape = AscendC::MakeShape(UIntImm<16>{}, UIntImm<16>{}, UIntImm<16>{});
-    auto stride = AscendC::MakeStride(UIntImm<1>{}, UIntImm<100>{}, UIntImm<200>{});
+    auto shape = AscendC::MakeShape(UIntImm<16>{}, UIntImm<16>{});
+    auto stride = AscendC::MakeStride(UIntImm<1>{}, UIntImm<16>{});
     auto layoutMake = AscendC::MakeLayout(shape, stride);
+    auto tensorTraitMake = AscendC::MakeTensorTrait<float, AscendC::TPosition::VECIN>(layoutMake);
+    uint32_t addr = 128;
+    auto tensor1 = AscendC::LocalTensor<decltype(tensorTraitMake)>(addr, layoutMake);
+
+    auto tensorTraitMake2 = AscendC::MakeTensorTrait<int4b_t, AscendC::TPosition::VECIN>(layoutMake);
+    auto tensor2 = AscendC::LocalTensor<decltype(tensorTraitMake2)>(addr, layoutMake);
+
+    EXPECT_EQ(AscendC::Std::get<0>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
+    EXPECT_EQ(tensor1.GetSize(), 16 * 16);
+    EXPECT_EQ(tensor1.GetLength(), 16 * 16 * sizeof(float));
+    EXPECT_EQ(tensor1.GetPosition(), static_cast<int32_t>(AscendC::TPosition::VECIN));
+    EXPECT_EQ(tensor2.GetSize(), 16 * 16);
+    EXPECT_EQ(tensor2.GetLength(), 16 * 16 / 2);
+    EXPECT_EQ(tensor2.GetPosition(), static_cast<int32_t>(AscendC::TPosition::VECIN));
+}
+
+
+TEST_F(TEST_ALLOC_AIC, TestTensorTrait2)
+{    
+    using shape = AscendC::Shape<AscendC::Std::Int<16>, AscendC::Std::Int<16>>;
+    using stride = AscendC::Stride<AscendC::Std::Int<1>, AscendC::Std::Int<16>>;
+    AscendC::Layout<shape, stride> layoutMake;
     auto tensorTraitMake = AscendC::MakeTensorTrait<float, AscendC::TPosition::VECIN>(layoutMake);
     uint32_t addr = 128;
     auto tensor1 = AscendC::LocalTensor<decltype(tensorTraitMake)>(addr);
@@ -89,30 +112,44 @@ TEST_F(TEST_ALLOC_AIC, TestTensorTrait)
 
     EXPECT_EQ(AscendC::Std::get<0>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
     EXPECT_EQ(AscendC::Std::get<1>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
-    EXPECT_EQ(AscendC::Std::get<2>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
-    EXPECT_EQ(tensor1.GetSize(), 16 * 16 * 16);
-    EXPECT_EQ(tensor1.GetLength(), 16 * 16 * 16 * sizeof(float));
+    EXPECT_EQ(tensor1.GetSize(), 16 * 16);
+    EXPECT_EQ(tensor1.GetLength(), 16 * 16 * sizeof(float));
     EXPECT_EQ(tensor1.GetPosition(), static_cast<int32_t>(AscendC::TPosition::VECIN));
-    EXPECT_EQ(tensor2.GetSize(), 16 * 16 * 16);
-    EXPECT_EQ(tensor2.GetLength(), 16 * 16 * 16 / 2);
+    EXPECT_EQ(tensor2.GetSize(), 16 * 16);
+    EXPECT_EQ(tensor2.GetLength(), 16 * 16 / 2);
     EXPECT_EQ(tensor2.GetPosition(), static_cast<int32_t>(AscendC::TPosition::VECIN));
 }
 
-TEST_F(TEST_ALLOC_AIC, TestLocalMemAllocatorTensorTrait)
+TEST_F(TEST_ALLOC_AIC, TestLocalMemAllocatorTensorTrait1)
 {
-    auto shape = AscendC::MakeShape(UIntImm<16>{}, UIntImm<16>{}, UIntImm<16>{});
-    auto stride = AscendC::MakeStride(UIntImm<1>{}, UIntImm<100>{}, UIntImm<200>{});
-    auto layoutMake = AscendC::MakeLayout(shape, stride);
+    using shape = AscendC::Shape<AscendC::Std::Int<16>, AscendC::Std::Int<16>>;
+    using stride = AscendC::Stride<AscendC::Std::Int<1>, AscendC::Std::Int<16>>;
+    AscendC::Layout<shape, stride> layoutMake;
     auto tensorTraitMake = AscendC::MakeTensorTrait<float, AscendC::TPosition::VECIN>(layoutMake);
     LocalMemAllocator allocator;
     auto tensor1 = allocator.Alloc<decltype(tensorTraitMake)>();
 
     EXPECT_EQ(AscendC::Std::get<0>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
     EXPECT_EQ(AscendC::Std::get<1>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
-    EXPECT_EQ(AscendC::Std::get<2>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
-    EXPECT_EQ(tensor1.GetSize(), 16 * 16 * 16);
+    EXPECT_EQ(tensor1.GetSize(), 16 * 16);
     EXPECT_EQ(tensor1.GetPosition(), static_cast<int32_t>(AscendC::TPosition::VECIN));
-    EXPECT_EQ(allocator.GetCurAddr(), 16 * 16 * 16 * sizeof(float));
+    EXPECT_EQ(allocator.GetCurAddr(), 16 * 16 * sizeof(float));
+}
+
+TEST_F(TEST_ALLOC_AIC, TestLocalMemAllocatorTensorTrait2)
+{
+    auto shape = AscendC::MakeShape(UIntImm<16>{}, UIntImm<16>{});
+    auto stride = AscendC::MakeStride(UIntImm<1>{}, UIntImm<16>{});
+    auto layoutMake = AscendC::MakeLayout(shape, stride);
+    auto tensorTraitMake = AscendC::MakeTensorTrait<float, AscendC::TPosition::VECIN>(layoutMake);
+    LocalMemAllocator allocator;
+    auto tensor1 = allocator.Alloc<decltype(tensorTraitMake)>(layoutMake);
+
+    EXPECT_EQ(AscendC::Std::get<0>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(tensor1.GetTensorTrait().GetLayout().GetShape()), 16);
+    EXPECT_EQ(tensor1.GetSize(), 16 * 16);
+    EXPECT_EQ(tensor1.GetPosition(), static_cast<int32_t>(AscendC::TPosition::VECIN));
+    EXPECT_EQ(allocator.GetCurAddr(), 16 * 16 * sizeof(float));
 }
 
 TEST_F(TEST_ALLOC_AIC, TestLocalMemAllocatorAlloc1)
