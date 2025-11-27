@@ -8,7 +8,7 @@
 
 ## 目录结构介绍
 ```
-├── ScatterCustomSample
+├── 02_scattercustomsample
 │   ├── scripts
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
@@ -50,7 +50,7 @@
   - 配置环境变量  
     以命令行方式下载样例代码，master分支为例。
     ```bash
-    cd ${git_clone_path}/examples/03_libraries/ScatterCustomSample
+    cd ${git_clone_path}/examples/03_libraries/02_scattercustomsample
     ```
     请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
@@ -65,7 +65,10 @@
       ```bash
       export ASCEND_INSTALL_PATH=${install_path}/latest
       ```
-
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
   - 样例执行
     ```bash
     mkdir -p build && cd build;   # 创建并进入build目录

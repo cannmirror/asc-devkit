@@ -14,25 +14,39 @@ import os
 import sys
 import numpy as np
 
+relative_tol = 1e-3
+absolute_tol = 1e-5
+error_tol = 1e-3
 
-LOSS = 1e-3 # 容忍偏差，一般fp16要求绝对误差和相对误差均不超过千分之一
-MINIMUM = 10e-10
-
-
-def verify_result(real_result, golden):
-    real_result = np.fromfile(real_result, dtype=np.float16) # 从bin文件读取实际运算结果
-    golden = np.fromfile(golden, dtype=np.float16) # 从bin文件读取预期运算结果
-    result = np.abs(real_result - golden) # 计算运算结果和预期结果偏差
-    deno = np.maximum(np.abs(real_result), np.abs(golden)) # 获取最大值并组成新数组
-    result_atol = np.less_equal(result, LOSS) # 计算绝对误差
-    result_rtol = np.less_equal(result / np.add(deno, MINIMUM), LOSS) # 计算相对误差
-    if not result_rtol.all() and not result_atol.all():
-        if np.sum(result_rtol == False) > real_result.size * LOSS \
-             and np.sum(result_atol == False) > real_result.size * LOSS:
-            print("[ERROR] result error")
-            return False
-    print("test pass")
-    return True
+def verify_result(output, golden):
+    output = np.fromfile(output, dtype=np.float16).reshape(-1)
+    golden = np.fromfile(golden, dtype=np.float16).reshape(-1)
+    different_element_results = np.isclose(output,
+                                           golden,
+                                           rtol=relative_tol,
+                                           atol=absolute_tol,
+                                           equal_nan=True)
+    different_element_indexes = np.where(different_element_results == False)[0]
+    for index in range(len(different_element_indexes)):
+        real_index = different_element_indexes[index]
+        golden_data = golden[real_index]
+        output_data = output[real_index]
+        print(
+            "data index: %06d, expected: %-.9f, actual: %-.9f, rdiff: %-.6f" %
+            (real_index, golden_data, output_data,
+             abs(output_data - golden_data) / golden_data))
+        if index == 100:
+            break
+    error_ratio = float(different_element_indexes.size) / golden.size
+    return error_ratio <= error_tol
 
 if __name__ == '__main__':
-    verify_result(sys.argv[1],sys.argv[2])
+    try:
+        res = verify_result(sys.argv[1], sys.argv[2])
+        if not res:
+            raise ValueError("[ERROR] result error")
+        else:
+            print("test pass")
+    except Exception as e:
+        print(e)
+        sys.exit(1)
