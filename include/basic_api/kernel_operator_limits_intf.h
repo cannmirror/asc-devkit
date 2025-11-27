@@ -25,23 +25,23 @@ public:
     {
         static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t>(),
             "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, uint8_t>) {
+        if constexpr (AscendC::Std::is_same<T, uint8_t>::value) {
             return GetScalarBitcodeValue<uint8_t, T>(0xFFu);
-        } else if constexpr (std::is_same_v<T, int8_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int8_t>::value) {
             return GetScalarBitcodeValue<uint8_t, T>(0x7Fu);
-        } else if constexpr (std::is_same_v<T, uint16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, uint16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0xFFFFu);
-        } else if constexpr (std::is_same_v<T, int16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7FFFu);
-        } else if constexpr (std::is_same_v<T, uint32_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, uint32_t>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0xFFFFFFFFu);
-        } else if constexpr (std::is_same_v<T, int32_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int32_t>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x7FFFFFFFu);
-        } else if constexpr (std::is_same_v<T, half>) {
+        } else if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7BFFu);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x7F7FFFFFu);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7F7Fu);
         }
         return T();
@@ -51,23 +51,23 @@ public:
     {
         static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t>(),
             "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, uint8_t>) {
+        if constexpr (AscendC::Std::is_same<T, uint8_t>::value) {
             return GetScalarBitcodeValue<uint8_t, T>(0x0u);
-        } else if constexpr (std::is_same_v<T, int8_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int8_t>::value) {
             return GetScalarBitcodeValue<uint8_t, T>(0x80u);
-        } else if constexpr (std::is_same_v<T, uint16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, uint16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x0u);
-        } else if constexpr (std::is_same_v<T, int16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x8000u);
-        } else if constexpr (std::is_same_v<T, uint32_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, uint32_t>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x0u);
-        } else if constexpr (std::is_same_v<T, int32_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int32_t>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x80000000u);
-        } else if constexpr (std::is_same_v<T, half>) {
+        } else if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0xFBFFu);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0xFF7FFFFFu);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0xFF7Fu);
         }
         return T();
@@ -77,23 +77,23 @@ public:
     {
         static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t>(),
             "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, uint8_t>) {
+        if constexpr (AscendC::Std::is_same<T, uint8_t>::value) {
             return GetScalarBitcodeValue<uint8_t, T>(0x0u);
-        } else if constexpr (std::is_same_v<T, int8_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int8_t>::value) {
             return GetScalarBitcodeValue<uint8_t, T>(0x80u);
-        } else if constexpr (std::is_same_v<T, uint16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, uint16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x0u);
-        } else if constexpr (std::is_same_v<T, int16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x8000u);
-        } else if constexpr (std::is_same_v<T, uint32_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, uint32_t>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x0u);
-        } else if constexpr (std::is_same_v<T, int32_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, int32_t>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x80000000u);
-        } else if constexpr (std::is_same_v<T, half>) {
+        } else if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x0400u);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x00800000u);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x0080u);
         }
         return T();
@@ -103,11 +103,11 @@ public:
     {
         static_assert(
             SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, half>) {
+        if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7C00u);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x7F800000u);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7F80u);
         }
         return T();
@@ -117,11 +117,11 @@ public:
     {
         static_assert(
             SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, half>) {
+        if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0xFC00u);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0xFF800000u);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0xFF80u);
         }
         return T();
@@ -131,11 +131,11 @@ public:
     {
         static_assert(
             SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, half>) {
+        if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7E00u);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x7FC00000u);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7FC0u);
         }
         return T();
@@ -145,11 +145,11 @@ public:
     {
         static_assert(
             SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, half>) {
+        if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7D00u);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x7FA00000u);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x7FA0u);
         }
         return T();
@@ -159,11 +159,11 @@ public:
     {
         static_assert(
             SupportType<T, half, float, bfloat16_t>(), "current data type is not supported on current device!");
-        if constexpr (std::is_same_v<T, half>) {
+        if constexpr (AscendC::Std::is_same<T, half>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x0001u);
-        } else if constexpr (std::is_same_v<T, float>) {
+        } else if constexpr (AscendC::Std::is_same<T, float>::value) {
             return GetScalarBitcodeValue<uint32_t, T>(0x00000001u);
-        } else if constexpr (std::is_same_v<T, bfloat16_t>) {
+        } else if constexpr (AscendC::Std::is_same<T, bfloat16_t>::value) {
             return GetScalarBitcodeValue<uint16_t, T>(0x0001u);
         }
         return T();

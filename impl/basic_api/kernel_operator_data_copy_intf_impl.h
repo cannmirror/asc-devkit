@@ -466,8 +466,8 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> 
  */
 // Copy::Level 0 - mask bit mode
 template <typename T, bool IsSetMask>
-__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const uint64_t mask[], const uint8_t repeatTime, const CopyRepeatParams &repeatParams)
+__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const uint64_t mask[], const uint8_t repeatTime, const CopyRepeatParams& repeatParams)
 {
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
@@ -482,8 +482,8 @@ __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T> &dst, const L
 
 // Copy::Level 0 - mask count mode
 template <typename T, bool IsSetMask>
-__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const uint64_t mask, const uint8_t repeatTime, const CopyRepeatParams &repeatParams)
+__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const uint64_t mask, const uint8_t repeatTime, const CopyRepeatParams& repeatParams)
 {
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
@@ -505,7 +505,7 @@ __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T> &dst, const L
  */
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask>
-__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
+__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const uint32_t count)
 {
     using PrimType = PrimT<T>;
@@ -1516,7 +1516,7 @@ __aicore__ inline void NdDmaDci() {
     NdDmaDciImpl();
 }
 
-__aicore__ inline void SetLoopModePara(const LoopModeParams &loopParams, DataCopyMVType type)
+__aicore__ inline void SetLoopModePara(const LoopModeParams& loopParams, DataCopyMVType type)
 {
     if (type == DataCopyMVType::UB_TO_OUT) {
         SetLoopModeUBParaImpl(loopParams);

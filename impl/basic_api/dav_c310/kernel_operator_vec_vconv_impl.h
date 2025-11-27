@@ -131,7 +131,7 @@ __simd_vf__ inline void CastIntrinsicsB64ImplVF(__ubuf__ DST_TYPE *dst, __ubuf__
     uint32_t sreg = static_cast<uint32_t>(calCount);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
-    if constexpr (std::is_same_v<SRC_TYPE, complex64> && std::is_same_v<DST_TYPE, complex32>) {
+    if constexpr (AscendC::Std::is_same<SRC_TYPE, complex64>::value && AscendC::Std::is_same<DST_TYPE, complex32>::value) {
         MicroAPI::MaskReg preg;
         MicroAPI::RegTensor<SRC_TYPE, MicroAPI::RegTraitNumTwo> srcVreg;
         MicroAPI::RegTensor<DST_TYPE, MicroAPI::RegTraitNumTwo> dstVreg;
@@ -147,7 +147,7 @@ __simd_vf__ inline void CastIntrinsicsB64ImplVF(__ubuf__ DST_TYPE *dst, __ubuf__
             MicroAPI::MaskPack(preg, preg);
             MicroAPI::DataCopy(dst + i * oneRepSize, dstVreg, preg);
         }
-    } else if constexpr (std::is_same_v<SRC_TYPE, complex64> && std::is_same_v<DST_TYPE, complex64>) {
+    } else if constexpr (AscendC::Std::is_same<SRC_TYPE, complex64>::value && AscendC::Std::is_same<DST_TYPE, complex64>::value) {
         MicroAPI::MaskReg preg;
         MicroAPI::RegTensor<SRC_TYPE, MicroAPI::RegTraitNumTwo> srcVreg;
         MicroAPI::RegTensor<DST_TYPE, MicroAPI::RegTraitNumTwo> dstVreg;
@@ -160,7 +160,7 @@ __simd_vf__ inline void CastIntrinsicsB64ImplVF(__ubuf__ DST_TYPE *dst, __ubuf__
                 (MicroAPI::RegTensor<float> &)srcVreg.reg[1], preg);
             MicroAPI::DataCopy(dst + i * oneRepSize, dstVreg, preg);
         }
-    } else if constexpr (std::is_same_v<SRC_TYPE, complex32> && std::is_same_v<DST_TYPE, complex64>) {
+    } else if constexpr (AscendC::Std::is_same<SRC_TYPE, complex32>::value && AscendC::Std::is_same<DST_TYPE, complex64>::value) {
         MicroAPI::MaskReg preg;
         MicroAPI::RegTensor<SRC_TYPE, MicroAPI::RegTraitNumTwo> srcVreg;
         MicroAPI::RegTensor<DST_TYPE, MicroAPI::RegTraitNumTwo> dstVreg;
@@ -257,10 +257,10 @@ __simd_vf__ inline void CastIntrinsicsImplVF(__ubuf__ DST_TYPE *dst, __ubuf__ SR
         } else {
             GenLoadL2<DST_TYPE, SRC_TYPE>(srcVreg, src + i * oneRepSize, preg);
         }
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int32_t>::value && AscendC::Std::is_same<DST_TYPE, half>::value) {
             MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, preg);
             MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, preg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (AscendC::Std::is_same<SRC_TYPE, float>::value && AscendC::Std::is_same<DST_TYPE, float>::value) {
             MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, preg);
         } else {
             MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, preg);
@@ -1556,21 +1556,21 @@ __simd_callee__ inline void GenLoadL0(MicroAPI::RegTensor<SRC_TYPE> &srcVreg, __
         MicroAPI::UnPack<uint32_t, uint16_t>(
             (MicroAPI::RegTensor<uint32_t> &)srcVreg, (MicroAPI::RegTensor<uint16_t> &)srcVreg);
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 2) {
-        if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int8_t>::value) {
             MicroAPI::UnPack<int16_t, int8_t>((MicroAPI::RegTensor<int16_t> &)srcVreg, srcVreg);
         } else {
             MicroAPI::UnPack<uint16_t, uint8_t>(
                 (MicroAPI::RegTensor<uint16_t> &)srcVreg, (MicroAPI::RegTensor<uint8_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 2 && sizeof(DST_TYPE) == 4) {
-        if constexpr (std::is_same_v<SRC_TYPE, int16_t>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int16_t>::value) {
             MicroAPI::UnPack<int32_t, int16_t>((MicroAPI::RegTensor<int32_t> &)srcVreg, srcVreg);
         } else {
             MicroAPI::UnPack<uint32_t, uint16_t>(
                 (MicroAPI::RegTensor<uint32_t> &)srcVreg, (MicroAPI::RegTensor<uint16_t> &)srcVreg);
         }
     } else if constexpr (sizeof(SRC_TYPE) == 1 && sizeof(DST_TYPE) == 4) {
-        if constexpr (std::is_same_v<SRC_TYPE, int8_t>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int8_t>::value) {
             MicroAPI::UnPack<int16_t, int8_t>((MicroAPI::RegTensor<int16_t> &)srcVreg, srcVreg);
             MicroAPI::UnPack<int32_t, int16_t>(
                 (MicroAPI::RegTensor<int32_t> &)srcVreg, (MicroAPI::RegTensor<int16_t> &)srcVreg);
@@ -1649,10 +1649,10 @@ __simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ S
     }
     for (uint16_t i = 0; i < repeatTime; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams, i);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int32_t>::value && AscendC::Std::is_same<DST_TYPE, half>::value) {
             MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (AscendC::Std::is_same<SRC_TYPE, float>::value && AscendC::Std::is_same<DST_TYPE, float>::value) {
             MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -1772,10 +1772,10 @@ __simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ub
             }
         }
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams, i);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int32_t>::value && AscendC::Std::is_same<DST_TYPE, half>::value) {
             MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (AscendC::Std::is_same<SRC_TYPE, float>::value && AscendC::Std::is_same<DST_TYPE, float>::value) {
             MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -2036,10 +2036,10 @@ __simd_vf__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ S
     }
     for (uint16_t i = 0; i < repeatTime; ++i) {
         GenLoadL0<DST_TYPE, SRC_TYPE>(srcVreg, src, ldPreg, repeatParams, i);
-        if constexpr (std::is_same_v<SRC_TYPE, int32_t> && std::is_same_v<DST_TYPE, half>) {
+        if constexpr (AscendC::Std::is_same<SRC_TYPE, int32_t>::value && AscendC::Std::is_same<DST_TYPE, half>::value) {
             MicroAPI::Cast<float, SRC_TYPE, castTrait>((MicroAPI::RegTensor<float> &)dstVreg, srcVreg, exPreg);
             MicroAPI::Cast<DST_TYPE, float, castTrait>(dstVreg, (MicroAPI::RegTensor<float> &)dstVreg, exPreg);
-        } else if constexpr (std::is_same_v<SRC_TYPE, float> && std::is_same_v<DST_TYPE, float>) {
+        } else if constexpr (AscendC::Std::is_same<SRC_TYPE, float>::value && AscendC::Std::is_same<DST_TYPE, float>::value) {
             MicroAPI::Truncate<DST_TYPE, roundMode>(dstVreg, srcVreg, exPreg);
         } else {
             MicroAPI::Cast<DST_TYPE, SRC_TYPE, castTrait>(dstVreg, srcVreg, exPreg);
@@ -2878,7 +2878,7 @@ __simd_vf__ inline void AddReluCastImpl(__ubuf__ T1 *dst, __ubuf__ T2 *src0, __u
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
-        constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T2));
+        constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T2));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
         MicroAPI::RegTensor<T1> dst0Reg;
         MicroAPI::RegTensor<T2> dst1Reg;
@@ -2987,7 +2987,7 @@ __simd_vf__ inline void SubReluCastImpl(__ubuf__ T1* dst, __ubuf__ T2* src0, __u
             MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
-        const uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T2));
+        const uint32_t repeatStride = static_cast<uint32_t>(GetVecLen() / sizeof(T2));
         const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
         MicroAPI::RegTensor<T2> src0Reg;
         MicroAPI::RegTensor<T2> src1Reg;
@@ -3068,7 +3068,7 @@ __simd_vf__ inline void TruncateImpl(__ubuf__ T *dst, __ubuf__ T *src, const uin
     static_assert(SupportEnum<roundMode, RoundMode::CAST_RINT, RoundMode::CAST_FLOOR, RoundMode::CAST_CEIL,
         RoundMode::CAST_ROUND, RoundMode::CAST_TRUNC>(), "Failed to check dtype in Truncate, "
         "current api support roundMode is CAST_RINT, CAST_FLOOR, CAST_CEIL, CAST_ROUND, CAST_TRUNC.");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
     MicroAPI::RegTensor<T> vDstReg;

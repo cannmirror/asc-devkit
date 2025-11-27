@@ -448,7 +448,7 @@ __simd_vf__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* 
         MicroAPI::RegTensor<float> vreg0;
         MicroAPI::RegTensor<float> vreg1;
         MicroAPI::MaskReg preg = MicroAPI::CreateMask<float>();
-        uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(float);
+        uint32_t repeatElm = GetVecLen() / sizeof(float);
         for (uint16_t i = 0; i < loopTimes; ++i) {
             MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
                 vreg0, vreg1, sortedLocal + i * repeatElm * 2);
@@ -470,7 +470,7 @@ __simd_vf__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* 
         MicroAPI::RegTensor<half> vreg2;
         MicroAPI::MaskReg indexPreg = MicroAPI::CreateMask<uint32_t>();
         MicroAPI::MaskReg preg1 = MicroAPI::CreateMask<half, MicroAPI::MaskPattern::H>();
-        uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(float);
+        uint32_t repeatElm = GetVecLen() / sizeof(float);
         for (uint16_t i = 0; i < loopTimes; ++i) {
             MicroAPI::DataCopy<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
                 vreg0, vreg1, (__ubuf__ float *)sortedLocal + i * repeatElm * 2);

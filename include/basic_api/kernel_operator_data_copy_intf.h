@@ -450,7 +450,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T>
 
 __aicore__ inline void NdDmaDci();
 
-__aicore__ inline void SetLoopModePara(const LoopModeParams &loopParams, DataCopyMVType type);
+__aicore__ inline void SetLoopModePara(const LoopModeParams& loopParams, DataCopyMVType type);
 
 __aicore__ inline void ResetLoopModePara(DataCopyMVType type);
 #endif

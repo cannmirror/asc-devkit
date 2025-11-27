@@ -569,13 +569,13 @@ __simd_vf__ inline void AbsImpl(__ubuf__ T *dst, __ubuf__ U *src, const uint32_t
 {
     static_assert(SupportType<T, half, float>() && SupportType<U, complex32, complex64>(),
         "current data type is not supported on current device!");
-    static_assert(std::is_same_v<T, typename U::EleType>, "dst type do not match with src complex elements' type");
+    static_assert(AscendC::Std::is_same<T, typename U::EleType>::value, "dst type do not match with src complex elements' type");
     MicroAPI::RegTensor<U, MicroAPI::RegTraitNumTwo> vSrcReg0;
     MicroAPI::RegTensor<T, MicroAPI::RegTraitNumOne> vDstReg0;
     uint32_t sreg = static_cast<uint32_t>(count);
     MicroAPI::MaskReg preg;
     static constexpr uint32_t repeatStride =
-        static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(U) * MicroAPI::RegTraitNumTwo.REG_NUM);
+        static_cast<uint32_t>(GetVecLen() / sizeof(U) * MicroAPI::RegTraitNumTwo.REG_NUM);
     uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, repeatStride));
     for (uint16_t i = 0; i < repeatTime; ++i) {
         preg = MicroAPI::UpdateMask<U, MicroAPI::RegTraitNumTwo>(sreg);
