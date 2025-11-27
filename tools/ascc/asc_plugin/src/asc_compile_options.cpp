@@ -126,8 +126,10 @@ std::vector<std::string> GetDeviceCommonCompileOptions(const KernelTypeResult& k
             deviceCommonOptions.emplace_back("-DONE_CORE_DUMP_SIZE=" + std::to_string(manager.GetOneCoreDumpSize()));
         }
     }
-    deviceCommonOptions.emplace_back("-include");
-    deviceCommonOptions.emplace_back(cannPath + "/include/version/cann_version.h");
+    if (!manager.GetPathInfo().cannVersionHeader.empty()) {
+        deviceCommonOptions.emplace_back("-include");
+        deviceCommonOptions.emplace_back(manager.GetPathInfo().cannVersionHeader);
+    }
     return deviceCommonOptions;
 }
 
