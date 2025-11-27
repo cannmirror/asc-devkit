@@ -48,10 +48,17 @@ target_link_libraries(asc_platform PRIVATE
   error_manager
 )
 target_compile_options(asc_platform PRIVATE 
-  -fPIC 
+  -fPIC
+  -fstack-protector-strong
+  -D_FORTIFY_SOURCE=2
+  -Os
   -D_GLIBCXX_USE_CXX11_ABI=0
   -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
   -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+)
+
+target_link_options(asc_platform PRIVATE
+  -Wl,-z,relro,-z,now,-z,noexecstack
 )
 
 # 将共享库复制到打包 asc_op_compile_base whl包的根目录下
