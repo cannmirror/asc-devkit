@@ -1,12 +1,12 @@
 # UnalignedWholeReduces算子直调样例
 ## 概述
-本样例介绍非对齐WholeReduceSum算子的核函数直调方法。
+本样例介绍非对齐WholeReduceSum算子的核函数直调方法，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行。
 ## 支持的AI处理器
 - Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```
-├── 10_unaligned_wholereduces
+├── 10_unaligned_wholereducesum
 │   ├── scripts
 │   │   ├── gen_data.py                // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py           // 验证输出数据和真值数据是否一致的验证脚本
@@ -50,7 +50,7 @@
 - 配置环境变量  
   以命令行方式下载样例代码，master分支为例。
   ```bash
-  cd ${git_clone_path}/examples/00_introduction/10_unaligned_wholereduces
+  cd ${git_clone_path}/examples/00_introduction/10_unaligned_wholereducesum
   ```
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
@@ -63,7 +63,7 @@
     ```
   - 指定路径install_path，安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/latest
+    export ASCEND_INSTALL_PATH=${install_path}/latest 
     ```
 
 - 样例执行
