@@ -26,5 +26,13 @@ else ()
     set(CMAKE_SKIP_RPATH TRUE)
 endif ()
 
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+    set(DEFAULT_BUILD_TYPE "Release")
+elseif (CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(DEFAULT_BUILD_TYPE "Debug")
+else ()
+    set(CMAKE_BUILD_TYPE "${DEFAULT_BUILD_TYPE}" CACHE STRING "Choose the build type: Release/Debug" FORCE)
+endif ()
+
 get_filename_component(ASCENDC_API_ADV_CMAKE_DIR "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 # include(${ASCENDC_API_ADV_CMAKE_DIR}/intf_pub_linux.cmake)
