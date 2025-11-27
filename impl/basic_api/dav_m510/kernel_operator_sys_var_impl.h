@@ -55,11 +55,15 @@ __aicore__ inline int64_t GetSystemCycleImpl()
 
 __aicore__ inline void SetPcieRDCtrlImpl(bool isSetPcie, uint8_t maxBurstLen)
 {
+    (void)isSetPcie;
+    (void)maxBurstLen;
     static_assert((__NPU_ARCH__ == 5102), "unsupported SetPcieRDCtrl on current device");
 }
 
 __aicore__ inline void SetPcieWRCtrlImpl(bool isSetPcie, uint8_t maxBurstLen)
 {
+    (void)isSetPcie;
+    (void)maxBurstLen;
     static_assert((__NPU_ARCH__ == 5102), "unsupported SetPcieWRCtrl on current device");
 }
 

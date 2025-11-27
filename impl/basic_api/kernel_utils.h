@@ -558,10 +558,13 @@ __aicore__ inline void DataCopyWithAtomicCom(__gm__ T* dst, __ubuf__ T* src, con
     // new one buffer and do add
     uint32_t dstOffset = 0;
     uint32_t srcOffset = 0;
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201))
     const int repeatTime = (lenBurst * ONE_BLK_SIZE) / ONE_REPEAT_BYTE_SIZE;
     const int countInRepeat = (ONE_REPEAT_BYTE_SIZE / halfSize);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201))
     const int tail = lenBurst * ONE_BLK_SIZE / halfSize - repeatTime * countInRepeat;
+#else
+    (void)src;
+    (void)dst;
 #endif
     for (int index = 0; index < nBurst; ++index) {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201))
