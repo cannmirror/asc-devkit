@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void asc_SetMaskCount()
+__aicore__ inline void set_mask_count_impl()
 {
     set_mask_count();
 }

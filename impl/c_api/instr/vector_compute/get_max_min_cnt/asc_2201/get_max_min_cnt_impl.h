@@ -15,7 +15,7 @@ namespace CApiInternal {
 
 constexpr uint8_t offset = 32;
 
-__aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
+__aicore__ inline void get_reduce_max_min_cnt_impl(half& val, uint32_t& index)
 {
     int64_t max_min_cnt = get_max_min_cnt();
     union {
@@ -26,7 +26,7 @@ __aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
     index = 0xffffffff & (max_min_cnt >> offset);
 }
 
-__aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
+__aicore__ inline void get_reduce_max_min_cnt_impl(float& val, uint32_t& index)
 {
     int64_t max_min_cnt = get_max_min_cnt();
     union {

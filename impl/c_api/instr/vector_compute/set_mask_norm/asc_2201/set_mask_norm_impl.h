@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void asc_SetMaskNorm()
+__aicore__ inline void set_mask_norm_impl()
 {
     set_mask_norm();
 }

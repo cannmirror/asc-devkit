@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t asc_GetAccVal()
+__aicore__ inline int64_t get_acc_val_impl()
 {
     return get_acc_val();
 }

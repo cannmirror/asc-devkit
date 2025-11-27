@@ -20,6 +20,10 @@
 #include <cstdint>
 #include <type_traits>
 
+#ifndef __aicore__
+#define __aicore__ [aicore]
+#endif // __aicore__
+
 template<pipe_t PIPE>
 using PipeType = std::integral_constant<pipe_t, PIPE>;
 
@@ -38,9 +42,9 @@ constexpr uint16_t CAPI_ONE_DATABLOCK_SIZE = 32;
 constexpr uint8_t CAPI_DEFAULT_REPEAT = 1;
 constexpr uint8_t CAPI_DEFAULT_BLOCK_STRIDE = 1;
 constexpr uint8_t CAPI_DEFAULT_REPEAT_STRIDE = 8;
-constexpr uint64_t CAPI_DEFAULT_BINARY_CONFIG_VALUE = 0x0101010808080001;
-constexpr uint64_t CAPI_DEFAULT_UNARY_CONFIG_VALUE = 0x000100010008000801;
-constexpr uint64_t CAPI_DEFAULT_REDUCE_CONFIG_VALUE = 0x0008000100080001;
-constexpr uint64_t CAPI_DEFAULT_DUPLICATE_CONFIG_VALUE = 0x000100010008000801;
+constexpr uint64_t CAPI_DEFAULT_BINARY_CONFIG_VALUE = 0x0100080808010101;
+constexpr uint64_t CAPI_DEFAULT_UNARY_CONFIG_VALUE = 0x0100800800010001;
+constexpr uint64_t CAPI_DEFAULT_REDUCE_CONFIG_VALUE = 0x0100000800010001;
+constexpr uint64_t CAPI_DEFAULT_DUPLICATE_CONFIG_VALUE = 0x0100800800010001;
 
 #endif

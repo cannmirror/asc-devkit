@@ -14,18 +14,6 @@
 #include "c_api_constants.h"
 #include <cstdint>
 
-union DeqScaleConfig
-{
-    uint64_t val;
-    struct {
-        uint64_t reserved1: 5;
-        uint64_t offset: 9;
-        uint64_t signMode: 1;
-        uint64_t reserved2: 17;
-        float scale;
-    };
-};
-
 union asc_copy_config {
     uint64_t config;
     struct {

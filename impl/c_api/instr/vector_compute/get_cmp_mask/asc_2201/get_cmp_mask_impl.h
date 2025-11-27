@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void asc_GetCmpMask(__ubuf__ void* dst)
+__aicore__ inline void get_cmp_mask_impl(__ubuf__ void* dst)
 {
     get_cmpmask(dst);
 }
