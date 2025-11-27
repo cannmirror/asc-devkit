@@ -19,6 +19,8 @@
 
 namespace HcclApi {
 constexpr uint32_t INIT_TILING_VERSION = 100U;
+constexpr uint8_t MC2_CC_TILING_STRUCT = 1U;
+constexpr uint8_t MC2_CC_TILING_INTERFACE = 2U;
 constexpr uint32_t MAX_CC_TILING_NUM = 8U;
 struct Mc2InitTilingInner {
     uint32_t version;
@@ -34,6 +36,17 @@ struct Mc2InitTilingInner {
 
 constexpr uint32_t GROUP_NAME_SIZE = 128U;
 constexpr uint32_t ALG_CONFIG_SIZE = 128U;
+struct AicpuContext {
+    uint64_t version; // context版本号
+    uint64_t workSpace; // 获取方式 CommGetKFCWorkSpace
+    uint64_t workSpaceSize;
+    uint32_t rankId; // 获取方式 HcclGetRankId
+    uint32_t rankNum; // 获取方式 HcclGetRankSize
+    uint64_t xnAddr; // A5 aiv+ccu场景使用
+    uint64_t ckeAddr; // A5 aiv+ccu场景使用
+    char reserved[120];
+};
+
 struct Mc2CcTilingInner {
     uint8_t skipLocalRankCopy;
     uint8_t skipBufferWindowCopy;
@@ -47,6 +60,8 @@ struct Mc2CcTilingInner {
     char algConfig[ALG_CONFIG_SIZE];
     uint32_t opType;
     uint32_t reduceType;
+    char reserved2[64];
+    AicpuContext aicpuContext;
 };
 } // namespace AscendC
 
