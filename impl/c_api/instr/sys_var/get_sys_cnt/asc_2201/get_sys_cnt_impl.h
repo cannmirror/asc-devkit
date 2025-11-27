@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t asc_GetSystemCycle()
+__aicore__ inline int64_t get_system_cycle_impl()
 {
     return get_sys_cnt();
 }

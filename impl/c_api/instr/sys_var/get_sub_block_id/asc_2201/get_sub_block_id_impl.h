@@ -12,7 +12,7 @@
  
 namespace CApiInternal {
 
-__aicore__ inline int64_t asc_GetSubBlockId()
+__aicore__ inline int64_t get_sub_block_id_impl()
 {
     return get_subblockid();
 }

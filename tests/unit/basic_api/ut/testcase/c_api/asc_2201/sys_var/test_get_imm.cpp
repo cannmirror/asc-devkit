@@ -8,16 +8,33 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INSTR_SYS_VAR_GET_CORE_ID_ASC_2201_GET_CORE_ID_IMPL_H
-#define C_API_INSTR_SYS_VAR_GET_CORE_ID_ASC_2201_GET_CORE_ID_IMPL_H
+#include <gtest/gtest.h>
+#include <mockcpp/mockcpp.hpp>
+#include "c_api/stub/cce_stub.h"
+#include "c_api/asc_simd.h"
+#include "c_api/c_api_interf_util.h"
 
-namespace CApiInternal {
+class TestSysVarGetImm : public testing::Test {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
 
-__aicore__ inline int64_t get_core_id_impl()
+namespace {
+uint64_t asc_get_imm_Stub(uint64_t offset)
 {
-    return get_coreid();
+    return 2U;
+}
 }
 
-} // namespace CApiInternal
+TEST_F(TestSysVarGetImm, get_imm_Succ)
+{
+    uint64_t offset = 0;
+    MOCKER_CPP(get_imm, uint64_t(uint64_t))
+            .times(1)
+            .will(invoke(asc_get_imm_Stub));
 
-#endif
+    uint64_t val = asc_get_phy_buf_addr(offset);
+    EXPECT_EQ(2, val);
+    GlobalMockObject::verify();
+}

@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline uint64_t asc_GetPhyBufAddr(uint64_t offset)
+__aicore__ inline uint64_t get_phy_buf_addr_impl(uint64_t offset)
 {
     return get_imm(offset);
 }

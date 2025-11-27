@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t asc_GetCtrl()
+__aicore__ inline int64_t get_ctrl_impl()
 {
     return get_ctrl();
 }

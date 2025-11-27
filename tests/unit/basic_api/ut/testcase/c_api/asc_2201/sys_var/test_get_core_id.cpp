@@ -8,16 +8,33 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INSTR_SYS_VAR_GET_FFTS_BASE_ADDR_ASC_2201_GET_FFTS_BASE_ADDR_IMPL_H
-#define C_API_INSTR_SYS_VAR_GET_FFTS_BASE_ADDR_ASC_2201_GET_FFTS_BASE_ADDR_IMPL_H
+#include <gtest/gtest.h>
+#include <mockcpp/mockcpp.hpp>
+#include "c_api/stub/cce_stub.h"
+#include "c_api/asc_simd.h"
+#include "c_api/c_api_interf_util.h"
 
-namespace CApiInternal {
+class TestSysVarGetCoreId : public testing::Test {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
 
-__aicore__ inline int64_t asc_GetFftsBaseAddr()
+namespace {   
+int64_t asc_get_core_id_stub()
 {
-    return get_ffts_base_addr();
+    return 2;
+}
 }
 
-} // namespace CApiInternal
+TEST_F(TestSysVarGetCoreId, get_core_id_Succ)
+{
 
-#endif
+    MOCKER_CPP(get_coreid, int64_t(void))
+            .times(1)
+            .will(invoke(asc_get_core_id_stub));
+
+    int64_t val = asc_get_core_id();
+    EXPECT_EQ(2, val);
+    GlobalMockObject::verify();
+}

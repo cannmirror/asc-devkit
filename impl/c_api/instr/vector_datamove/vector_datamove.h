@@ -10,15 +10,9 @@
  
 #ifndef C_API_INSTR_VECTOR_DATAMOVE_H
 #define C_API_INSTR_VECTOR_DATAMOVE_H
- 
-#include "set_mov_pad_val/asc_2201/set_mov_pad_val_impl.h"
+
 #include "copy_gm_to_ubuf/asc_2201/copy_gm_to_ubuf_impl.h"
 #include "copy_ubuf_to_gm/asc_2201/copy_ubuf_to_gm_impl.h"
-
-__aicore__ inline void asc_SetMovPadVal(uint64_t val)
-{
-    CApiInternal::asc_SetMovPadVal(val);
-}
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src, uint32_t size)
 {

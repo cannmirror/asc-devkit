@@ -13,20 +13,20 @@
 
 #include "impl/c_api/instr/sys_var/sys_var.h"
 
-__aicore__ inline void asc_SetCtrl(uint64_t config);
+__aicore__ inline void asc_set_ctrl(uint64_t config);
 
-__aicore__ inline int64_t asc_GetCoreId();
+__aicore__ inline int64_t asc_get_core_id();
 
-__aicore__ inline int64_t asc_GetCtrl();
+__aicore__ inline int64_t asc_get_ctrl();
 
-__aicore__ inline uint64_t asc_GetOverflowStatus();
+__aicore__ inline uint64_t asc_get_overflow_status();
 
-__aicore__ inline uint64_t asc_GetPhyBufAddr(uint64_t offset);
+__aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset);
 
-__aicore__ inline int64_t asc_GetSubBlockDim();
+__aicore__ inline int64_t asc_get_sub_block_dim();
 
-__aicore__ inline int64_t asc_GetSubBlockId();
+__aicore__ inline int64_t asc_get_sub_block_id();
 
-__aicore__ inline int64_t asc_GetSystemCycle();
+__aicore__ inline int64_t asc_get_system_cycle();
 
 #endif
