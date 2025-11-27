@@ -34,7 +34,13 @@ __aicore__ inline void bf162float_impl(__ubuf__ T* dst, __ubuf__ U* src, uint32_
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    bf162float_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 8;
+    config.src_repeat_stride = 4;
+    config.repeat = 1;
+    bf162float_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 

@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t asc_GetRsvdCount()
+__aicore__ inline int64_t get_rsvd_count_impl()
 {
     return get_rsvd_cnt();
 }

@@ -14,31 +14,23 @@
 #include "impl/c_api/instr/vector_compute/vector_compute.h"
 #include "c_api/c_api_interf_util.h"
 
-__aicore__ inline int64_t asc_GetAccVal();
+__aicore__ inline void asc_get_cmp_mask(__ubuf__ void* dst);
 
-__aicore__ inline void asc_GetCmpMask(__ubuf__ void* dst);
+__aicore__ inline void asc_get_reduce_max_min_cnt(half& val, uint32_t& index);
 
-__aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index);
+__aicore__ inline void asc_get_reduce_max_min_cnt(float& val, uint32_t& index);
 
-__aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index);
+__aicore__ inline int64_t asc_get_rsvd_count();
 
-__aicore__ inline int64_t asc_GetRsvdCount();
+__aicore__ inline void asc_get_vms4_sr(uint16_t sorted_num[4]);
 
-__aicore__ inline void asc_GetVms4Sr(uint16_t sortedNum[4]);
+__aicore__ inline void asc_set_cmp_mask(__ubuf__ void *sel_mask);
 
-__aicore__ inline void asc_SetCmpMask(__ubuf__ void *src);
+__aicore__ inline void asc_set_mask_count();
 
-__aicore__ inline void asc_SetDeqScale(half scaleValue);
+__aicore__ inline void asc_set_mask_norm();
 
-__aicore__ inline void asc_SetDeqScale(const DeqScaleConfig config);
-
-__aicore__ inline void asc_SetDeqScale(__ubuf__ uint64_t* config);
-
-__aicore__ inline void asc_SetMaskCount();
-
-__aicore__ inline void asc_SetMaskNorm();
-
-__aicore__ inline void asc_SetVectorMask(uint64_t mask1, uint64_t mask0);
+__aicore__ inline void asc_set_vector_mask(uint64_t mask1, uint64_t mask0);
 
 // ==========asc_add(half/float/int16_t/int32_t)==========
 __aicore__ inline void asc_add(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint32_t count);
@@ -72,23 +64,23 @@ __aicore__ inline void asc_add_scalar(__ubuf__ half* dst, __ubuf__ half* src, ha
 
 __aicore__ inline void asc_add_scalar_sync(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count);
 
-__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count);
+__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count);
 
-__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, const asc_unary_config& config);
+__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config);
 
-__aicore__ inline void asc_add_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count);
+__aicore__ inline void asc_add_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count);
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count);
+__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count);
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, const asc_unary_config& config);
+__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config);
 
-__aicore__ inline void asc_add_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count);
+__aicore__ inline void asc_add_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count);
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count);
+__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count);
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, const asc_unary_config& config);
+__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config);
 
-__aicore__ inline void asc_add_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count);
+__aicore__ inline void asc_add_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count);
 
 // ==========asc_brcb(uint16_t/uint32_t)==========
 __aicore__ inline void asc_brcb(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src, const asc_brcb_config& config);
@@ -536,23 +528,23 @@ __aicore__ inline void asc_mul_scalar(__ubuf__ half* dst, __ubuf__ half* src, ha
 
 __aicore__ inline void asc_mul_scalar_sync(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count);
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count);
+__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count);
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, const asc_unary_config& config);
+__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config);
 
-__aicore__ inline void asc_mul_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count);
+__aicore__ inline void asc_mul_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count);
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count);
+__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count);
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, const asc_unary_config& config);
+__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config);
 
-__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count);
+__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count);
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count);
+__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count);
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, const asc_unary_config& config);
+__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config);
 
-__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count);
+__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count);
 
 // ==========asc_select(half/float)==========
 __aicore__ inline void asc_select(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint32_t count);

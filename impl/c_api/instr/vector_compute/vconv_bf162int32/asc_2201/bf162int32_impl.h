@@ -33,7 +33,13 @@ __aicore__ inline void bf162int32_a_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    bf162int32_a_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 8;
+    config.src_repeat_stride = 4;
+    config.repeat = 1;
+    bf162int32_a_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -57,7 +63,13 @@ __aicore__ inline void bf162int32_c_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    bf162int32_c_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 8;
+    config.src_repeat_stride = 4;
+    config.repeat = 1;
+    bf162int32_c_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -81,7 +93,13 @@ __aicore__ inline void bf162int32_f_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    bf162int32_f_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 8;
+    config.src_repeat_stride = 4;
+    config.repeat = 1;
+    bf162int32_f_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -105,7 +123,13 @@ __aicore__ inline void bf162int32_r_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    bf162int32_r_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 8;
+    config.src_repeat_stride = 4;
+    config.repeat = 1;
+    bf162int32_r_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -129,7 +153,13 @@ __aicore__ inline void bf162int32_z_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    bf162int32_z_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 8;
+    config.src_repeat_stride = 4;
+    config.repeat = 1;
+    bf162int32_z_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 

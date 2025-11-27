@@ -33,7 +33,13 @@ __aicore__ inline void half2int16_a_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    half2int16_a_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 4;
+    config.src_repeat_stride = 8;
+    config.repeat = 1;
+    half2int16_a_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -57,7 +63,13 @@ __aicore__ inline void half2int16_c_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    half2int16_c_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 4;
+    config.src_repeat_stride = 8;
+    config.repeat = 1;
+    half2int16_c_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -81,7 +93,13 @@ __aicore__ inline void half2int16_f_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    half2int16_f_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 4;
+    config.src_repeat_stride = 8;
+    config.repeat = 1;
+    half2int16_f_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 
@@ -105,7 +123,13 @@ __aicore__ inline void half2int16_r_impl(__ubuf__ T* dst, __ubuf__ U* src, uint3
 {
     set_mask_count();
     set_vector_mask(static_cast<uint64_t>(0), static_cast<uint64_t>(count));
-    half2int16_r_impl<T, U>(dst, src, CAPI_DEFAULT_UNARY_CFG);
+    asc_unary_config config{};
+    config.dst_block_stride = 1;
+    config.src_block_stride = 1;
+    config.dst_repeat_stride = 4;
+    config.src_repeat_stride = 8;
+    config.repeat = 1;
+    half2int16_r_impl<T, U>(dst, src, config);
     set_mask_norm();
 }
 

@@ -17,7 +17,6 @@
 #include "get_rsvd_cnt/asc_2201/get_rsvd_cnt_impl.h"
 #include "get_vms4_sr/asc_2201/get_vms4_sr_impl.h"
 #include "set_cmp_mask/asc_2201/set_cmp_mask_impl.h"
-#include "set_deqscale/asc_2201/set_deqscale_impl.h"
 #include "set_mask_count/asc_2201/set_mask_count_impl.h"
 #include "set_mask_norm/asc_2201/set_mask_norm_impl.h"
 #include "set_vector_mask/asc_2201/set_vector_mask_impl.h"
@@ -47,69 +46,54 @@
 #include "vsub/asc_2201/sub_impl.h"
 #include "vsubs/asc_2201/sub_scalar_impl.h"
 
-__aicore__ inline int64_t asc_GetAccVal()
+__aicore__ inline int64_t asc_get_acc_val()
 {
-    return CApiInternal::asc_GetAccVal();
+    return CApiInternal::get_acc_val_impl();
 }
 
-__aicore__ inline void asc_GetCmpMask(__ubuf__ void* dst)
+__aicore__ inline void asc_get_cmp_mask(__ubuf__ void* dst)
 {
-    CApiInternal::asc_GetCmpMask(dst);
+    CApiInternal::get_cmp_mask_impl(dst);
 }
 
-__aicore__ inline void asc_GetReduceMaxMinCnt(half& val, uint32_t& index)
+__aicore__ inline void asc_get_reduce_max_min_cnt(half& val, uint32_t& index)
 {
-    CApiInternal::asc_GetReduceMaxMinCnt(val, index);
+    CApiInternal::get_reduce_max_min_cnt_impl(val, index);
 }
 
-__aicore__ inline void asc_GetReduceMaxMinCnt(float& val, uint32_t& index)
+__aicore__ inline void asc_get_reduce_max_min_cnt(float& val, uint32_t& index)
 {
-    CApiInternal::asc_GetReduceMaxMinCnt(val, index);
+    CApiInternal::get_reduce_max_min_cnt_impl(val, index);
 }
 
-__aicore__ inline int64_t asc_GetRsvdCount()
+__aicore__ inline int64_t asc_get_rsvd_count()
 {
-    return CApiInternal::asc_GetRsvdCount();
+    return CApiInternal::get_rsvd_count_impl();
 }
 
-__aicore__ inline void asc_GetVms4Sr(uint16_t sortedNum[4])
+__aicore__ inline void asc_get_vms4_sr(uint16_t sorted_num[4])
 {
-    CApiInternal::asc_GetVms4Sr(sortedNum);
+    CApiInternal::get_vms4_sr_impl(sorted_num);
 }
 
-__aicore__ inline void asc_SetCmpMask(__ubuf__ void *src)
+__aicore__ inline void asc_set_cmp_mask(__ubuf__ void *sel_mask)
 {
-    CApiInternal::asc_SetCmpMask(src);
+    CApiInternal::set_cmp_mask_impl(sel_mask);
 }
 
-__aicore__ inline void asc_SetDeqScale(half scaleValue)
+__aicore__ inline void asc_set_mask_count()
 {
-    CApiInternal::asc_SetDeqScale(scaleValue);
+    CApiInternal::set_mask_count_impl();
 }
 
-__aicore__ inline void asc_SetDeqScale(const DeqScaleConfig config)
+__aicore__ inline void asc_set_mask_norm()
 {
-    CApiInternal::asc_SetDeqScale(config);
+    CApiInternal::set_mask_norm_impl();
 }
 
-__aicore__ inline void asc_SetDeqScale(__ubuf__ uint64_t* config)
+__aicore__ inline void asc_set_vector_mask(uint64_t mask1, uint64_t mask0)
 {
-    CApiInternal::asc_SetDeqScale(config);
-}
-
-__aicore__ inline void asc_SetMaskCount()
-{
-    CApiInternal::asc_SetMaskCount();
-}
-
-__aicore__ inline void asc_SetMaskNorm()
-{
-    CApiInternal::asc_SetMaskNorm();
-}
-
-__aicore__ inline void asc_SetVectorMask(uint64_t mask1, uint64_t mask0)
-{
-    CApiInternal::asc_SetVectorMask(mask1, mask0);
+    CApiInternal::set_vector_mask_impl(mask1, mask0);
 }
 
 // ==========asc_add(half/float/int16_t/int32_t)==========
@@ -189,49 +173,49 @@ __aicore__ inline void asc_add_scalar_sync(__ubuf__ half* dst, __ubuf__ half* sr
     CApiInternal::add_scalar_sync_impl<half> (dst, src, a, count);
 }
 
-__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count)
+__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
 {
-    CApiInternal::add_scalar_impl<float>(dst, src0, src1, count);
+    CApiInternal::add_scalar_impl<float>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, const asc_unary_config& config)
+__aicore__ inline void asc_add_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config)
 {
-    CApiInternal::add_scalar_impl<float>(dst, src0, src1, config);
+    CApiInternal::add_scalar_impl<float>(dst, src, a, config);
 }
 
-__aicore__ inline void asc_add_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count)
+__aicore__ inline void asc_add_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
 {
-    CApiInternal::add_scalar_sync_impl<float>(dst, src0, src1, count);
+    CApiInternal::add_scalar_sync_impl<float>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count)
+__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
 {
-    CApiInternal::add_scalar_impl<int16_t>(dst, src0, src1, count);
+    CApiInternal::add_scalar_impl<int16_t>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, const asc_unary_config& config)
+__aicore__ inline void asc_add_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config)
 {
-    CApiInternal::add_scalar_impl<int16_t>(dst, src0, src1, config);
+    CApiInternal::add_scalar_impl<int16_t>(dst, src, a, config);
 }
 
-__aicore__ inline void asc_add_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count)
+__aicore__ inline void asc_add_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
 {
-    CApiInternal::add_scalar_sync_impl<int16_t>(dst, src0, src1, count);
+    CApiInternal::add_scalar_sync_impl<int16_t>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count)
+__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
 {
-    CApiInternal::add_scalar_impl<int32_t>(dst, src0, src1, count);
+    CApiInternal::add_scalar_impl<int32_t>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, const asc_unary_config& config)
+__aicore__ inline void asc_add_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config)
 {
-    CApiInternal::add_scalar_impl<int32_t>(dst, src0, src1, config);
+    CApiInternal::add_scalar_impl<int32_t>(dst, src, a, config);
 }
 
-__aicore__ inline void asc_add_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count)
+__aicore__ inline void asc_add_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
 {
-    CApiInternal::add_scalar_sync_impl<int32_t>(dst, src0, src1, count);
+    CApiInternal::add_scalar_sync_impl<int32_t>(dst, src, a, count);
 }
 
 // ==========asc_brcb(uint16_t/uint32_t)==========
@@ -1322,49 +1306,49 @@ __aicore__ inline void asc_mul_scalar_sync(__ubuf__ half* dst, __ubuf__ half* sr
     CApiInternal::mul_scalar_sync_impl<half> (dst, src, a, count);
 }
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count)
+__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
 {
-    CApiInternal::mul_scalar_impl<float>(dst, src0, src1, count);
+    CApiInternal::mul_scalar_impl<float>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, const asc_unary_config& config)
+__aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config)
 {
-    CApiInternal::mul_scalar_impl<float>(dst, src0, src1, config);
+    CApiInternal::mul_scalar_impl<float>(dst, src, a, config);
 }
 
-__aicore__ inline void asc_mul_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src0, __ubuf__ float src1, uint32_t count)
+__aicore__ inline void asc_mul_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
 {
-    CApiInternal::mul_scalar_sync_impl<float>(dst, src0, src1, count);
+    CApiInternal::mul_scalar_sync_impl<float>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count)
+__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
 {
-    CApiInternal::mul_scalar_impl<int16_t>(dst, src0, src1, count);
+    CApiInternal::mul_scalar_impl<int16_t>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, const asc_unary_config& config)
+__aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config)
 {
-    CApiInternal::mul_scalar_impl<int16_t>(dst, src0, src1, config);
+    CApiInternal::mul_scalar_impl<int16_t>(dst, src, a, config);
 }
 
-__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src0, __ubuf__ int16_t src1, uint32_t count)
+__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
 {
-    CApiInternal::mul_scalar_sync_impl<int16_t>(dst, src0, src1, count);
+    CApiInternal::mul_scalar_sync_impl<int16_t>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count)
+__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
 {
-    CApiInternal::mul_scalar_impl<int32_t>(dst, src0, src1, count);
+    CApiInternal::mul_scalar_impl<int32_t>(dst, src, a, count);
 }
 
-__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, const asc_unary_config& config)
+__aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config)
 {
-    CApiInternal::mul_scalar_impl<int32_t>(dst, src0, src1, config);
+    CApiInternal::mul_scalar_impl<int32_t>(dst, src, a, config);
 }
 
-__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t src1, uint32_t count)
+__aicore__ inline void asc_mul_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
 {
-    CApiInternal::mul_scalar_sync_impl<int32_t>(dst, src0, src1, count);
+    CApiInternal::mul_scalar_sync_impl<int32_t>(dst, src, a, count);
 }
 
 // ==========asc_select(half/float)==========

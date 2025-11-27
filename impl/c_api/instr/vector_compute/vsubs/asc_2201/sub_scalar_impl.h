@@ -23,7 +23,9 @@ namespace CApiInternal {
 template <typename T>
 __aicore__ inline void sub_scalar_impl(__ubuf__ T* dst, __ubuf__ T* src, T a, const asc_unary_config& config)
 {
-    add_scalar_impl<T>(dst, src, static_cast<T>(-1) * a, config);
+    float value = static_cast<float>(a);
+    value = 0 - value;
+    add_scalar_impl<T>(dst, src, static_cast<T>(value), config);
 }
 
 template <typename T>
