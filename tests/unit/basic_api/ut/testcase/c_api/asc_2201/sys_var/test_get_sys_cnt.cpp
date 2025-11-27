@@ -8,16 +8,32 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_INSTR_VECTOR_DATAMOVE_SET_MOV_PAD_VAL_ASC_2201_SET_MOV_PAD_VAL_IMPL_H
-#define C_API_INSTR_VECTOR_DATAMOVE_SET_MOV_PAD_VAL_ASC_2201_SET_MOV_PAD_VAL_IMPL_H
+#include <gtest/gtest.h>
+#include <mockcpp/mockcpp.hpp>
+#include "c_api/stub/cce_stub.h"
+#include "c_api/asc_simd.h"
+#include "c_api/c_api_interf_util.h"
 
-namespace CApiInternal {
+class TestSysVarGetSystemCycle : public testing::Test {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
 
-__aicore__ inline void asc_SetMovPadVal(uint64_t val)
+namespace {
+int64_t asc_get_system_cycle_Stub()
 {
-    set_mov_pad_val(val);
+    return 2;
+}
 }
 
-} // namespace CApiInternal
+TEST_F(TestSysVarGetSystemCycle, get_system_cycle_Succ)
+{
+    MOCKER_CPP(get_sys_cnt, int64_t(void))
+            .times(1)
+            .will(invoke(asc_get_system_cycle_Stub));
 
-#endif
+    int64_t val = asc_get_system_cycle();
+    EXPECT_EQ(2, val);
+    GlobalMockObject::verify();
+}

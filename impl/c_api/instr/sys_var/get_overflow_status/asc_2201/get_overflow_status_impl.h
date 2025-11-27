@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline uint64_t asc_GetOverflowStatus()
+__aicore__ inline uint64_t get_overflow_status_impl()
 {
     return get_overflow_status();
 }

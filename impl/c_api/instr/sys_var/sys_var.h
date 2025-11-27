@@ -19,57 +19,45 @@
 #include "get_sub_block_id/asc_2201/get_sub_block_id_impl.h"
 #include "get_sys_cnt/asc_2201/get_sys_cnt_impl.h"
 #include "set_ctrl/asc_2201/set_ctrl_impl.h"
-#include "get_ffts_base_addr/asc_2201/get_ffts_base_addr_impl.h"
-#include "set_ffts_base_addr/asc_2201/set_ffts_base_addr_impl.h"
 
-__aicore__ inline int64_t asc_GetCoreId()
+__aicore__ inline int64_t asc_get_core_id()
 {
-    return CApiInternal::asc_GetCoreId();
+    return CApiInternal::get_core_id_impl();
 }
 
-__aicore__ inline int64_t asc_GetCtrl()
+__aicore__ inline int64_t asc_get_ctrl()
 {
-    return CApiInternal::asc_GetCtrl();
+    return CApiInternal::get_ctrl_impl();
 }
 
-__aicore__ inline int64_t asc_GetFftsBaseAddr()
+__aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset)
 {
-    return CApiInternal::asc_GetFftsBaseAddr();
+    return CApiInternal::get_phy_buf_addr_impl(offset);
 }
 
-__aicore__ inline uint64_t asc_GetPhyBufAddr(uint64_t offset)
+__aicore__ inline uint64_t asc_get_overflow_status()
 {
-    return CApiInternal::asc_GetPhyBufAddr(offset);
+    return CApiInternal::get_overflow_status_impl();
 }
 
-__aicore__ inline uint64_t asc_GetOverflowStatus()
+__aicore__ inline int64_t asc_get_sub_block_dim()
 {
-    return CApiInternal::asc_GetOverflowStatus();
+    return CApiInternal::get_sub_block_dim_impl();
 }
 
-__aicore__ inline int64_t asc_GetSubBlockDim()
+__aicore__ inline int64_t asc_get_sub_block_id()
 {
-    return CApiInternal::asc_GetSubBlockDim();
+    return CApiInternal::get_sub_block_id_impl();
 }
 
-__aicore__ inline int64_t asc_GetSubBlockId()
+__aicore__ inline int64_t asc_get_system_cycle()
 {
-    return CApiInternal::asc_GetSubBlockId();
+    return CApiInternal::get_system_cycle_impl();
 }
 
-__aicore__ inline int64_t asc_GetSystemCycle()
+__aicore__ inline void asc_set_ctrl(uint64_t config)
 {
-    return CApiInternal::asc_GetSystemCycle();
-}
-
-__aicore__ inline void asc_SetCtrl(uint64_t config)
-{
-    CApiInternal::asc_SetCtrl(config);
-}
-
-__aicore__ inline void asc_SetFftsBaseAddr(uint64_t config)
-{
-    CApiInternal::asc_SetFftsBaseAddr(config);
+    CApiInternal::set_ctrl_impl(config);
 }
 
 #endif

@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void asc_SetCtrl(uint64_t config)
+__aicore__ inline void set_ctrl_impl(uint64_t config)
 {
     set_ctrl(config);
 }

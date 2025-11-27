@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t asc_GetSubBlockDim()
+__aicore__ inline int64_t get_sub_block_dim_impl()
 {
     return get_subblockdim();
 }
