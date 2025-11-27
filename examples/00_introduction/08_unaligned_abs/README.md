@@ -1,6 +1,6 @@
 # UnalignedAbs算子直调样例
 ## 概述
-本样例介绍无DataCopyPad的非对齐Abs算子核函数直调方法。
+本样例介绍无DataCopyPad的非对齐Abs算子实现，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行。
 ## 支持的AI处理器
 - Ascend 910C
 - Ascend 910B
