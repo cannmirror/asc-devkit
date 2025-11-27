@@ -414,7 +414,7 @@ __aicore__ inline void CopyData2TmpWorkspace(Intf *self, const AscendC::GlobalTe
     } else if constexpr(std::is_same<typename Intf::DstT, float>::value) {
         quantMode = NoQuant;
     }
-    int64_t dstOffset = block_idx * self->ctx.tiling_->baseM * self->ctx.tiling_->baseN;
+    int64_t dstOffset = GetBlockIdx() * self->ctx.tiling_->baseM * self->ctx.tiling_->baseN;
     if constexpr((std::is_same<typename Intf::SrcT, bfloat16_t>::value) || (std::is_same<typename Intf::SrcT, half>::value)) {
         AscendC::FixpipeParams<typename Intf::L0cT> fixpipeParams(
             static_cast<uint16_t>(Ceil(self->ctx.baseUseN_, 16)),
