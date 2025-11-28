@@ -1,0 +1,68 @@
+# asc_copy_ub2gm
+
+## AI处理器支持情况
+
+| AI处理器类型 | 是否支持  |
+| :----------------------- | :------: |
+| <term>Ascend 910C</term> |    √     |
+| <term>Ascend 910B</term> |    √     |
+
+## 功能说明
+
+将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)。
+
+## 函数原型
+
+- 前n个数据搬运
+
+```c++
+__aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, uint32_t size)
+```
+
+- 高维切分搬运
+
+```c++
+__aicore__ inline void asc_copy_ub2gm(__gm__ void* dst, __ubuf__ void* src, const asc_copy_config& config)
+```
+
+- 同步计算
+
+```c++
+__aicore__ inline void asc_copy_ub2gm_sync(__gm__ void* dst, __ubuf__ void* src, uint32_t size)
+```
+
+## 参数说明
+
+表1 参数说明
+| 参数名 | 输入/输出 | 描述 |
+| :--- | :--- | :--- |
+| dst | 输出 | 目的GM地址。 |
+| src | 输入 | 源UB地址。 |
+| size | 输入 | 搬运数据大小（字节）。 |
+| config | 输入 | 数据搬运配置结构体。 |
+
+## 返回值说明
+
+无
+
+## 流水类型
+
+PIPE_TYPE_MTE2
+
+## 约束说明
+
+- dst的起始地址要求按照对应数据类型所占字节数对齐。
+- src的起始地址要求32字节对齐。
+- 如果需要执行多条asc_copy_ub2gm指令，且asc_copy_ub2gm指令的目的地址存在重叠，需要插入同步指令，保证多个asc_copy_ub2gm指令的串行化，防止出现异常数据。
+- 同步计算包含同步等待。
+
+## 调用示例
+
+```cpp
+//total_Length指参与搬运的数据总长度
+uint64_t offset = 0;
+src_ub_ = (__ubuf__ half*)asc_GetPhyBufAddr(0);
+offset += totalLength * sizeof(half);
+dst_gm = (__gm__ half*)asc_GetPhyBufAddr(offset);
+asc_copy_ub2gm(dst_gm, src_ub, totalLength);
+```
