@@ -33,7 +33,7 @@ $$
     __aicore__ inline void asc_mul_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config)
     __aicore__ inline void asc_mul_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, const asc_unary_config& config)
     __aicore__ inline void asc_mul_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config)
-    __aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config);
+    __aicore__ inline void asc_mul_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config)
     ```
 
 - 同步计算
@@ -53,7 +53,7 @@ $$
 | src | 输入 | 源操作数地址。 |
 | a | 输入 | 源操作数。 |
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在非连续场景下使用的计算配置参数, 请参考[asc_unary_config](../数据结构/asc_unary_config.md)。 |
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数, 详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。 |
 
 ### 返回值说明
 
@@ -74,8 +74,8 @@ PIPE_TYPE_V
 uint64_t offset = 0;
 // total_length指参与计算的数据长度
 uint64_t offset = 0;
-__ubuf__ half* src = (__ubuf__ half*)asc_getphybufaddr(0);
+__ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
 offset += totalLength * sizeof(half);
-__ubuf__ half* dst = (__ubuf__ half*)asc_getphybufaddr(offset);
+__ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
 asc_mul_scalar(dst, src, scalar_val, total_length);
 ```
