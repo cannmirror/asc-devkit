@@ -11,9 +11,9 @@
 
 执行矢量和标量的减法运算。
 
-```katex
+$$
 dst_i = src_i - scalar
-```
+$$
 
 ## 函数原型
 
@@ -62,7 +62,7 @@ __aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* 
 
 ## 流水类型
 
-PIPE_V
+PIPE_TYPE_V
 
 ## 约束说明
 
@@ -74,6 +74,7 @@ PIPE_V
 ```c++
 // total_length指参与计算的数据总长度
 uint64_t offset = 0;
+half scalar = 0.0f;
 __ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
 offset += total_length * sizeof(half);
 __ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
