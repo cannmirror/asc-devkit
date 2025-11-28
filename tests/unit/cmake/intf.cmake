@@ -26,7 +26,7 @@ target_link_directories(intf_llt_pub INTERFACE
 )
 
 target_link_libraries(intf_llt_pub INTERFACE
-    GTest::gtest
+    gtest
     -lpthread
     $<$<BOOL:${ENABLE_GCOV}>:-lgcov>
 )

@@ -9,6 +9,8 @@
 # ----------------------------------------------------------------------------------------------------------
 get_filename_component(ASCENDC_UNIT_TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}" ABSOLUTE)
 
+include(${ASCENDC_DIR}/cmake/third_party/gtest.cmake)
+
 if (BUILD_OPEN_PROJECT)
   include(${ASCENDC_UNIT_TESTS_DIR}/cmake/config.cmake)
   include(${ASCENDC_UNIT_TESTS_DIR}/cmake/intf.cmake)
