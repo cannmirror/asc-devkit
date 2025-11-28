@@ -42,7 +42,7 @@ template <typename T>
 __aicore__ inline void VbitsortCal(__ubuf__ T* dstLocal, __ubuf__ T* src0Local, __ubuf__ uint32_t* src1Local,
     const ProposalIntriParams& intriParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         vbitsort(dstLocal, src0Local, src1Local, intriParams.repeat);
     }
 }
@@ -51,7 +51,7 @@ template <typename T>
 __aicore__ inline void Vmrgsort4Cal(__ubuf__ T* dstLocal, __ubuf__ T* addrArray[MRG_SORT_ELEMENT_LEN], uint64_t src1,
     uint64_t config)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         vmrgsort4(dstLocal, addrArray, src1, config);
     }
 }

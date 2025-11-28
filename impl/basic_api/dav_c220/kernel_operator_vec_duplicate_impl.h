@@ -36,7 +36,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue, uint64_t mask,
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         DuplicateIntrinsicsImpl(dstLocal, scalarValue, repeatTime, dstBlockStride, dstRepeatStride);
     }
@@ -46,7 +46,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue, uint64_t mask[],
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         DuplicateIntrinsicsImpl(dstLocal, scalarValue, repeatTime, dstBlockStride, dstRepeatStride);
     }
@@ -55,7 +55,7 @@ __aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue,
 template <typename T>
 __aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         SetMaskCount();
         AscendCUtils::SetMask<T>(0, count);
         DuplicateIntrinsicsImpl(dstLocal, scalarValue, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);

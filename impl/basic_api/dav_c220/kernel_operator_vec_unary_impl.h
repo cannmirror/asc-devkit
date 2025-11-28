@@ -111,7 +111,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ReluImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         ReluIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -121,7 +121,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ReluImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         ReluIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -130,7 +130,7 @@ __aicore__ inline void ReluImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask,
 // Relu::Level 2
 template <typename T> __aicore__ inline void ReluImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vrelu(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -146,7 +146,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ExpImpl(__ubuf__ T* dst, __ubuf__ T* src, const uint64_t mask[], const uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         ExpIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -156,7 +156,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ExpImpl(__ubuf__ T* dst, __ubuf__ T* src, const uint64_t mask, const uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         ExpIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -165,7 +165,7 @@ __aicore__ inline void ExpImpl(__ubuf__ T* dst, __ubuf__ T* src, const uint64_t 
 // Exp::Level 2
 template <typename T> __aicore__ inline void ExpImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vexp(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -181,7 +181,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void LnImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         LnIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -191,7 +191,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void LnImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         LnIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -200,7 +200,7 @@ __aicore__ inline void LnImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, u
 // Ln::Level 2
 template <typename T> __aicore__ inline void LnImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vln(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -216,7 +216,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AbsImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         AbsIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -226,7 +226,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AbsImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         AbsIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -235,7 +235,7 @@ __aicore__ inline void AbsImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, 
 // Ln::Level 2
 template <typename T> __aicore__ inline void AbsImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vabs(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -251,7 +251,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ReciprocalImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         ReciprocalIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -261,7 +261,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ReciprocalImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         ReciprocalIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -270,7 +270,7 @@ __aicore__ inline void ReciprocalImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t
 // Reciprocal::Level 2
 template <typename T> __aicore__ inline void ReciprocalImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vrec(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -286,7 +286,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void RsqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         RsqrtIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -296,7 +296,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void RsqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         RsqrtIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -305,7 +305,7 @@ __aicore__ inline void RsqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask
 // Rsqrt::Level 2
 template <typename T> __aicore__ inline void RsqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vrsqrt(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -321,7 +321,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void SqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         SqrtIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -331,7 +331,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void SqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         SqrtIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -340,7 +340,7 @@ __aicore__ inline void SqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask,
 // Rsqrt::Level 2
 template <typename T> __aicore__ inline void SqrtImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vsqrt(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),
@@ -356,7 +356,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void NotImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         NotIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -366,7 +366,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void NotImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         NotIntrinsicsImpl(dst, src, repeatTime, repeatParams);
     }
@@ -375,7 +375,7 @@ __aicore__ inline void NotImpl(__ubuf__ T* dst, __ubuf__ T* src, uint64_t mask, 
 // Not::Level 2
 template <typename T> __aicore__ inline void NotImpl(__ubuf__ T* dst, __ubuf__ T* src, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         set_mask_count();
         set_vector_mask(0, count);
         vnot(dst, src, 1, static_cast<uint16_t>(DEFAULT_BLK_STRIDE), static_cast<uint16_t>(DEFAULT_BLK_STRIDE),

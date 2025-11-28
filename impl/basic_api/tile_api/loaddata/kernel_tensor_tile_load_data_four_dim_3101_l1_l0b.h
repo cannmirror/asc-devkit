@@ -116,7 +116,7 @@ private:
     __aicore__ inline void LoadL1ToL0BAlignV2(__cb__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {

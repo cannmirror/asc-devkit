@@ -52,7 +52,7 @@ private:
     __aicore__ inline void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen,
         uint8_t leftPaddingCnt, uint8_t rigntPaddingCnt, uint8_t cacheMode, int64_t srcStride, int64_t dstStride)
     {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             return;
         }
 
@@ -311,7 +311,7 @@ private:
         uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue,
         uint32_t dValue, uint64_t loop4SrcStride, bool enableSmallC0)
     {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             return;
         }
 
@@ -435,7 +435,7 @@ private:
         uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue,
         uint32_t dValue, uint64_t loop4SrcStride, bool enableSmallC0)
     {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             return;
         }
 

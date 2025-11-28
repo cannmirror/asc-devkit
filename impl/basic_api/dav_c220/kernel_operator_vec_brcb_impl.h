@@ -24,7 +24,7 @@ template <typename T>
 __aicore__ inline void BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ResetMask();
         if constexpr(sizeof(T) == B16_BYTE_SIZE) {
             vbrcb((__ubuf__ uint16_t*)dst, (__ubuf__ uint16_t*)src0, repeatParams.dstBlkStride,

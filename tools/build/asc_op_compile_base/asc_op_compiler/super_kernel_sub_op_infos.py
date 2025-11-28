@@ -149,7 +149,7 @@ param_offset={self.notify_param_offset + index}\n"
                 index += 1
             notify_block_aic += "}\n"
 
-            notify_block_aiv = "if (ASCEND_IS_AIV) {\n"
+            notify_block_aiv = "if ASCEND_IS_AIV {\n"
             index = 0
             for send_index in self.send_event_list:
                 if send_index not in inner_event_id_set:
@@ -201,7 +201,7 @@ param_offset={self.wait_param_offset + index}\n"
                 wait_block += "}\n"
                 self.wait_block = wait_block if found else ''
             else:
-                wait_block = "if (ASCEND_IS_AIV) {\n"
+                wait_block = "if ASCEND_IS_AIV {\n"
                 index = 0
                 for recv_index in self.recv_event_list:
                     if recv_index not in inner_event_id_set:
@@ -433,7 +433,7 @@ GM_ADDR __ac_dynamic_block_dim_{self.index}, GM_ADDR __ac_wait_lock_{self.index}
             self.kernel_call_block += indent_code_func(\
                 f"AscendC::SyncAll<false>(); // reason: double stream need syncall to wait switch func\n")
         if self.kernel_type in [KernelMetaType.KERNEL_TYPE_AIV_ONLY, KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0]:
-            self.kernel_call_block += f"if (ASCEND_IS_AIV) {{\n"
+            self.kernel_call_block += f"if ASCEND_IS_AIV {{\n"
         else:
             self.kernel_call_block += f"if ASCEND_IS_AIC {{\n"
         aiv_func_addr = self.gen_param_code('aiv_func_addr')
@@ -491,7 +491,7 @@ kernelType == {KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2.value}) {{
 kernelType == {KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0.value}) {{
         if (AscendC::GetBlockIdx() < blockDim) {{
             uint8_t coreid = get_coreid();
-            if (ASCEND_IS_AIV){{
+            if ASCEND_IS_AIV{{
                 {self.dynamic_gen_split_call_code('aiv_ptr', "args_offset")}
             }}
         }}

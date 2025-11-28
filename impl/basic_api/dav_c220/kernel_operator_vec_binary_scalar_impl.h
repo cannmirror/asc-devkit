@@ -35,7 +35,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AddsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         AddsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -45,7 +45,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AddsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         AddsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -55,7 +55,7 @@ __aicore__ inline void AddsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scala
 template <typename T, bool isSetMask = true>
 __aicore__ inline void AddsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             AddsIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
@@ -88,7 +88,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MulsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MulsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -98,7 +98,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MulsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MulsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -108,7 +108,7 @@ __aicore__ inline void MulsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scala
 template <typename T, bool isSetMask = true>
 __aicore__ inline void MulsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             MulsIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
@@ -141,7 +141,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MaxsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MaxsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -151,7 +151,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MaxsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MaxsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -160,7 +160,7 @@ __aicore__ inline void MaxsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scala
 template <typename T, bool isSetMask = true>
 __aicore__ inline void MaxsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             MaxsIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
@@ -193,7 +193,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MinsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MinsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -203,7 +203,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MinsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MinsIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -213,7 +213,7 @@ __aicore__ inline void MinsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scala
 template <typename T, bool isSetMask = true>
 __aicore__ inline void MinsImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             MinsIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
@@ -248,7 +248,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftLeftImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         ShiftLeftIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -258,7 +258,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftLeftImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         ShiftLeftIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -268,7 +268,7 @@ __aicore__ inline void ShiftLeftImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& 
 template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftLeftImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             ShiftLeftIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });
@@ -320,7 +320,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftRightImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams, bool roundEn = false)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         ShiftRightIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams, roundEn);
     }
@@ -330,7 +330,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftRightImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams, bool roundEn = false)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         ShiftRightIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams, roundEn);
     }
@@ -340,7 +340,7 @@ __aicore__ inline void ShiftRightImpl(__ubuf__ T* dst, __ubuf__ T* src, const T&
 template <typename T, bool isSetMask = true>
 __aicore__ inline void ShiftRightImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             ShiftRightIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE }, false);
@@ -373,7 +373,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void LeakyReluImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask[],
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         LeakyReluIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -383,7 +383,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void LeakyReluImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const uint64_t mask,
     uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         LeakyReluIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -393,7 +393,7 @@ __aicore__ inline void LeakyReluImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& 
 template <typename T, bool isSetMask = true>
 __aicore__ inline void LeakyReluImpl(__ubuf__ T* dst, __ubuf__ T* src, const T& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (!isSetMask) {
             LeakyReluIntrinsicsImpl(dst, src, scalarValue, 1,
                 { DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE });

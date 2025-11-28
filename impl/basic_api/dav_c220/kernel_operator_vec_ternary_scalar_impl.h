@@ -34,7 +34,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue, const uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (isSetMask) {
             if (sizeof(T) > sizeof(U)) {
                 AscendCUtils::SetMask<T>(mask);
@@ -51,7 +51,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue, const uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         AxpyIntrinsicsImpl(dst, src, scalarValue, repeatTime, repeatParams);
     }
@@ -61,7 +61,7 @@ __aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scala
 template <typename T, typename U>
 __aicore__ inline void AxpyImpl(__ubuf__ T* dst, __ubuf__ U* src, const U& scalarValue, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         SetMaskCount();
         AscendCUtils::SetMask<U>(0, count);
         if constexpr (sizeof(T) > sizeof(U)) {

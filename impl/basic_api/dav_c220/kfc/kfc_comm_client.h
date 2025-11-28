@@ -42,7 +42,7 @@ public:
 public:
     __aicore__ inline KfcCommClient(GM_ADDR workspace, int subBlockID, uint8_t enableHardWare = 0)
     {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             this->enableHardWare = enableHardWare;
             if (enableHardWare) {
                 return;
@@ -79,7 +79,7 @@ public:
 
     __aicore__ inline ~KfcCommClient()
     {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             if (this->enableHardWare) {
                 return;
             }

@@ -201,7 +201,7 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
         }                                                                                                                 \
     }                                                                                                                     \
     AscendC::KfcCommClient __kfcClient__(workspace, AscendC::GetSubBlockIdx(), enableHardPollKfc, asEnableMixDualMaster); \
-    if (ASCEND_IS_AIV) {                                                                                                    \
+    if ASCEND_IS_AIV {                                                                                                    \
         if constexpr (!asEnableMixDualMaster) {                                                                           \
             AscendC::g_kfcClient = &__kfcClient__;                                                                        \
         } else {                                                                                                          \
@@ -238,7 +238,7 @@ template <class T, class... Args> __aicore__ inline void CountMatmulObj(AscendC:
         }                                                                                              \
     }                                                                                                  \
     AscendC::KfcCommClient __kfcClient__(workspace, AscendC::GetSubBlockIdx(), asEnableMixDualMaster); \
-    if (ASCEND_IS_AIV) {                                                                                 \
+    if ASCEND_IS_AIV {                                                                                 \
         if constexpr (!asEnableMixDualMaster) {                                                        \
             AscendC::g_kfcClient = &__kfcClient__;                                                     \
         } else {                                                                                       \

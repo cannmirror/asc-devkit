@@ -36,7 +36,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         AddIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -46,7 +46,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         AddIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -56,7 +56,7 @@ __aicore__ inline void AddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void AddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float, int16_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in Add, current api support dtype combination is src and dst both: half / float / "
             "int16_t / int32_t.");});
@@ -87,7 +87,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void SubImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         SubIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -97,7 +97,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void SubImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         SubIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -107,7 +107,7 @@ __aicore__ inline void SubImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void SubImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float, int16_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in Sub, current api support dtype combination is src and dst both: half / float / "
             "int16_t / int32_t.");});
@@ -137,7 +137,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MulImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MulIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -147,7 +147,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MulImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MulIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -157,7 +157,7 @@ __aicore__ inline void MulImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void MulImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float, int16_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in Mul, current api support dtype combination is src and dst both: half / float / "
             "int16_t / int32_t.");});
@@ -187,7 +187,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void DivImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         DivIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -197,7 +197,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void DivImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         DivIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -207,7 +207,7 @@ __aicore__ inline void DivImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void DivImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Div, "
             "current api support dtype combination is src and dst both: half / float.");});
         set_mask_count();
@@ -237,7 +237,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MaxImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MaxIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -247,7 +247,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MaxImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MaxIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -257,7 +257,7 @@ __aicore__ inline void MaxImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void MaxImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float, int16_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in Max, current api support dtype combination is src and dst both: half / float / "
             "int16_t / int32_t.");});
@@ -288,7 +288,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MinImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MinIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -298,7 +298,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void MinImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MinIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -308,7 +308,7 @@ __aicore__ inline void MinImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void MinImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float, int16_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in Min, current api support dtype combination is src and dst both: half / float / "
             "int16_t / int32_t.");});
@@ -339,7 +339,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AndImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         AndIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -349,7 +349,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AndImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         AndIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -359,7 +359,7 @@ __aicore__ inline void AndImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* sr
 template <typename T>
 __aicore__ inline void AndImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, int16_t, uint16_t, uint32_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in And, current api support dtype combination is src and dst both: int16_t / "
             "uint16_t / uint32_t / int32_t.");});
@@ -392,7 +392,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void OrImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         OrIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -402,7 +402,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void OrImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         OrIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -412,7 +412,7 @@ __aicore__ inline void OrImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src
 template <typename T>
 __aicore__ inline void OrImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, int16_t, uint16_t, uint32_t, int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
             "Failed to check dtype in Or, current api support dtype combination is src and dst both: int16_t / uint16_t"
             " / uint32_t / int32_t.");});
@@ -446,7 +446,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         AddReluIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -456,7 +456,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         AddReluIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -466,7 +466,7 @@ __aicore__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T
 template <typename T>
 __aicore__ inline void AddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, int16_t, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
             "AddRelu, current api support dtype combination is src and dst both: int16_t / half / float.");});
         set_mask_count();
@@ -615,7 +615,7 @@ __aicore__ inline void GetAddDeqReluParamCal(AddDeqReluParams &params, uint8_t r
 __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0, __ubuf__ int32_t *src1,
     const int32_t &count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AddDeqReluParams params;
         params.needTmpSize = count;
         GetAddDeqReluParamCal(params, 1);
@@ -642,7 +642,7 @@ template <bool isSetMask = true>
 __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0, __ubuf__ int32_t *src1,
     const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AddDeqReluParams params;
         params.maskMode = ADDDEQRELU_MASK_MODE_ONE;
         params.mask1 = mask;
@@ -678,7 +678,7 @@ template <bool isSetMask = true>
 __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0, __ubuf__ int32_t *src1,
     const uint64_t mask[], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AddDeqReluParams params;
         params.maskMode = ADDDEQRELU_MASK_MODE_TWO;
         params.mask2[0] = mask[0];
@@ -729,7 +729,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         FusedMulAddIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -739,7 +739,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         FusedMulAddIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -749,7 +749,7 @@ __aicore__ inline void FusedMulAddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf
 template <typename T>
 __aicore__ inline void FusedMulAddImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
             "FusedMulAdd, current api support dtype combination is src and dst both: half / float.");});
         set_mask_count();
@@ -781,7 +781,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         MulAddDstIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -791,7 +791,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         MulAddDstIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -801,7 +801,7 @@ __aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__
 template <typename T, typename U>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>()),
             {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in MulAddDst, current api support dtype combination is "
             "src: half, dst: half / float; src: float, dst: float.");});
@@ -839,7 +839,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     const uint64_t mask[], const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         FusedMulAddReluIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -849,7 +849,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         FusedMulAddReluIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -859,7 +859,7 @@ __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __
 template <typename T>
 __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
             "FusedMulAddRelu, current api support dtype combination is src and dst both: half / float.");});
         set_mask_count();
@@ -888,7 +888,7 @@ __aicore__ inline void SubReluIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ T* src0, 
 template <typename T>
 __aicore__ inline void SubReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const int32_t& count)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, int16_t, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
             "SubRelu, current api support dtype combination is src and dst both: int16_t / half / float.");});
         set_mask_count();
@@ -905,7 +905,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void SubReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask[],
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         SubReluIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -915,7 +915,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void SubReluImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint64_t mask,
     const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         SubReluIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
