@@ -11,12 +11,12 @@
 
 将float类型数据转换为half类型，支持多种舍入模式：
 
-- RINT舍入模式：四舍六入五成双舍入
-- ROUND舍入模式：四舍五入舍入
-- FLOOR舍入模式：向负无穷舍入
-- CEIL舍入模式：向正无穷舍入
-- TRUNC舍入模式：向零舍入
-- ODD舍入模式：Von Neumann rounding，最近邻奇数舍入
+- RINT舍入模式：四舍六入五成双舍入。
+- ROUND舍入模式：四舍五入舍入。
+- FLOOR舍入模式：向负无穷舍入。
+- CEIL舍入模式：向正无穷舍入。
+- TRUNC舍入模式：向零舍入。
+- ODD舍入模式：Von Neumann rounding，最近邻奇数舍入。
 
 ## 函数原型
 
@@ -104,7 +104,7 @@
 | dst | 输出 | 目的操作数。 |
 | src  | 输入 | 源操作数。|
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在非连续场景下使用的计算配置参数，请参考[asc_binary_config](../数据结构/asc_binary_config.md)。|
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。|
 
 ## 返回值说明
 
