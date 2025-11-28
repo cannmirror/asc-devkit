@@ -1,20 +1,20 @@
 # ICPU\_RUN\_KF<a name="ZH-CN_TOPIC_0000002080882157"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## AI处理器支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
@@ -77,7 +77,50 @@
 
 ## 调用示例<a name="zh-cn_topic_0000001963799134_zh-cn_topic_0000001541924164_section82241477610"></a>
 
-```
-ICPU_RUN_KF(sort_kernel0, coreNum, (uint8_t*)x, (uint8_t*)y);
-```
+下面代码以add\_custom算子为例，介绍算子核函数在CPU侧验证时，算子调用的应用程序如何编写。您在实现自己的应用程序时，需要关注由于算子核函数不同带来的修改，包括算子核函数名，入参出参的不同等，合理安排相应的内存分配、内存拷贝和文件读写等，相关API的调用方式直接复用即可。
+
+1.  按需包含头文件，通过ASCENDC\_CPU\_DEBUG宏区分CPU和NPU侧需要包含的头文件。
+
+    ```
+    #include "data_utils.h"
+    #ifndef ASCENDC_CPU_DEBUG
+    #include "acl/acl.h"
+    #else
+    #include "tikicpulib.h"
+    extern "C" __global__ __aicore__ void add_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z); // 核函数声明
+    #endif
+    ```
+
+2.  CPU侧运行验证。完成算子核函数CPU侧运行验证的步骤如下：
+
+    **图 1**  CPU侧运行验证步骤<a name="fig13576112114442"></a>  
+    ![](figures/CPU侧运行验证步骤.png "CPU侧运行验证步骤")
+
+    ```
+    int32_t main(int32_t argc, char* argv[])
+    {
+        uint32_t blockDim = 8;
+        size_t inputByteSize = 8 * 2048 * sizeof(uint16_t);
+        size_t outputByteSize = 8 * 2048 * sizeof(uint16_t);
+    
+       // 使用GmAlloc分配共享内存，并进行数据初始化
+        uint8_t* x = (uint8_t*)AscendC::GmAlloc(inputByteSize);
+        uint8_t* y = (uint8_t*)AscendC::GmAlloc(inputByteSize);
+        uint8_t* z = (uint8_t*)AscendC::GmAlloc(outputByteSize);
+    
+        ReadFile("./input/input_x.bin", inputByteSize, x, inputByteSize);
+        ReadFile("./input/input_y.bin", inputByteSize, y, inputByteSize);
+        // 矢量算子需要设置内核模式为AIV模式
+        AscendC::SetKernelMode(KernelMode::AIV_MODE);
+        // 调用ICPU_RUN_KF调测宏，完成核函数CPU侧的调用
+        ICPU_RUN_KF(add_custom, blockDim, x, y, z);
+        // 输出数据写出
+        WriteFile("./output/output_z.bin", z, outputByteSize);
+        // 调用GmFree释放申请的资源
+        AscendC::GmFree((void *)x);
+        AscendC::GmFree((void *)y);
+        AscendC::GmFree((void *)z);
+        return 0;
+    }
+    ```
 

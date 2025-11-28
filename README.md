@@ -3,8 +3,10 @@
 ## 🔥Latest News
 
 - [2025/11] Ascend C项目基于Ascend 910C/Ascend 910B全面开源开放，包含以下新特性：
-  - 实现分仓分包，支持分包独立安装部署，包括Ascend C算子开发所需的核心仓asc-devkit、调试工具仓[asc-tools](https://gitcode.com/cann/ascend-c-tools)、Vector算子模板库仓（[atvc](https://gitcode.com/cann/atvc)、[atvos](https://gitcode.com/cann/atvos)）、Python前端仓[pyasc](https://gitcode.com/cann/pyasc)。
-  - 编程API能力扩展，基础API新增LocalMemAllocator内存分配接口。
+  - 实现分仓分包，支持分包独立安装部署，包括Ascend C算子开发所需的核心仓asc-devkit、调试工具仓[asc-tools](https://gitcode.com/cann/ascend-c-tools)、Vector算子模板库仓[atvc](https://gitcode.com/cann/atvc)和[atvoss](https://gitcode.com/cann/atvoss)、Python前端仓[pyasc](https://gitcode.com/cann/pyasc)。
+  - 编程API能力扩展
+    - 新增语言扩展层C API，提供与业界相似的编程体验。
+    - 基础API新增LocalMemAllocator内存分配接口。
   - 全面支持异构编译与<<<>>> 直调，通过文件后缀名“.asc”或编译选项“-x asc”使能异构编译。
   - 算子编译CMake接口标准化，提供Cmake module接口，支持不同编译场景。
   - 支持CPU&NPU孪生调试的能力一致性，一套代码同时支持CPU和NPU调试。
@@ -17,13 +19,13 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 
 ![原理图](docs/figures/architecture.png)
 
-- 语言扩展层（未来支持）：纯C接口，开放芯片完备编程能力，支持数组分配内存，一般基于指针编程，提供与业界一致的C语言编程体验。
+- 语言扩展层：纯C接口，开放芯片完备编程能力，支持数组分配内存，一般基于指针编程，提供与业界一致的C语言编程体验。
 - 基础API/微指令API（未来支持）/SIMT API（未来支持）：单指令抽象的C++类库API，一般基于Tensor编程，支持Tile编程能力。
 - 高阶API：基于单核对常见算法进行抽象和封装，提供公共算法的实现。
 - 算子模板库：基于模板提供算子的完整实现参考，简化Tiling开发，支持用户自定义扩展。
 - Python前端：PyAsc基于Python原生接口，提供芯片底层完备编程能力，并将逐步支持Tensor Tile编程、SIMT编程等能力，实现基于Python接口开发高性能Ascend C算子。
 
-本仓主要包含Ascend C编程API（基础API、高阶API）和必要的编译脚本，是算子开发所需的核心模块。
+本仓主要包含Ascend C编程API（语言扩展层C API、基础API、高阶API）和必要的编译脚本，是算子开发所需的核心模块。
 
 
 ## 🔍目录结构说明
@@ -37,10 +39,12 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 ├── impl                                # Ascend C API接口实现源代码
 │   ├── adv_api                         # Ascend C 高阶API实现源代码
 │   ├── basic_api                       # Ascend C 基础API实现源代码
+│   ├── c_api                           # Ascend C 语言扩展层C API实现源代码
 │   └── utils                           # Ascend C 工具类实现源代码
 ├── include                             # Ascend C API接口声明源代码
 │   ├── adv_api                         # Ascend C 高阶API声明源代码
 │   ├── basic_api                       # Ascend C 基础API声明源代码
+│   ├── c_api                           # Ascend C 语言扩展层C API声明源代码
 │   └── utils                           # Ascend C 工具类声明源代码
 ├── scripts                             # 打包相关脚本
 ├── tests                               # Ascend C API的UT用例
@@ -71,7 +75,7 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
   |[Ascend C最佳实践](https://hiascend.com/document/redirect/CannCommunityAscendCBestPractice) | 基于已完成开发的Ascend C算子，介绍如何进一步优化算子性能。 |
 
 ## 📌后续规划
-- 新增语言扩展层C API，提供与业界相似的编程体验。
+
 - 基础API新增Tensor Tile API，Tensor扩展Layout支持Tile编程。
 - 新增语言扩展层SIMT C API，提供与业界类似的SIMT编程体验。
 - 新增微指令C API，支持SIMD/SIMT异构编程，充分发挥SIMD/SIMT各自的优势。

@@ -918,7 +918,7 @@ target_compile_definitions(ascendc_utest_asc_plugin PRIVATE
 target_compile_definitions(ascendc_utest_asc_plugin PRIVATE ASCENDC_CPU_DEBUG=1)
 target_include_directories(ascendc_utest_asc_plugin PRIVATE
     ${ASC_PLUGIN_TEST_HEADERS_FILES}
-    ${ASCENDC_DIR}/tests/unit/basic_api/third_party/json_src/include/
+    ${JSON_PATH}/include/
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/experiment/
 )

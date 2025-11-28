@@ -5,9 +5,10 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 -   **基础数据结构**：kernel API中使用到的基础数据结构，比如GlobalTensor和LocalTensor。
 -   **基础API**：实现对硬件能力的抽象，开放芯片的能力，保证完备性和兼容性。标注为ISASI（Instruction Set Architecture Special Interface，硬件体系结构相关的接口）类别的API，不能保证跨硬件版本兼容。
 -   **高阶API**：实现一些常用的计算算法，用于提高编程开发效率，通常会调用多种基础API实现。高阶API包括数学库、Matmul、Softmax等API。高阶API可以保证兼容性。
+-   **Utils API（公共辅助函数）**：丰富的通用工具类，涵盖标准库、平台信息获取、运行时编译及日志输出等功能，支持开发者高效实现算子开发与性能优化。
 -   **C API**：C 提供了一系列C语言风格的接口，可以让用户更加灵活、高效的完成计算任务。
 
-![](context/figures/编程API.png)
+![](context/figures/成长地图.png)
 
 ## 基础数据结构<a name="section3119442205518"></a>
 
@@ -2044,4 +2045,4 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 
 ## C API
 
-[C API](context\c_api\README.md)
+[C API列表](context/c_api/README.md)

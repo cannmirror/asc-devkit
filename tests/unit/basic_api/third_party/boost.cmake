@@ -1,5 +1,5 @@
 set(BOOST_NAME "boost")
-set(BOOST_PATH ${ASCENDC_TOOLS_ROOT_DIR}/third_party/boost_src)
+set(BOOST_PATH ${CANN_3RD_LIB_PATH}/boost)
 
 # 默认配置的boost不存在则下载
 if (NOT EXISTS "${BOOST_PATH}/boost/config.hpp")
