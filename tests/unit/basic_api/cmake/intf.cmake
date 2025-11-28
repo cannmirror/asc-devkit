@@ -36,7 +36,7 @@ target_link_directories(intf_llt_pub_basic INTERFACE
 )
 
 target_link_libraries(intf_llt_pub_basic INTERFACE
-    GTest::gtest
+    gtest
     -lpthread
     mockcpp_static
     $<$<BOOL:${ENABLE_GCOV}>:-lgcov>
