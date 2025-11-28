@@ -4,9 +4,8 @@
 本样例通过Ascend C编程语言实现了Add算子的CPU Debug调测。
 
 ## 支持的AI处理器
-- Ascend 910A
-- Ascend 910B
 - Ascend 910C
+- Ascend 910B
  
 ## 目录结构介绍
 ```

@@ -1,4 +1,16 @@
 #!/bin/bash
+# ----------------------------------------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+# ----------------------------------------------------------------------------------------------------------
+
+set -e
+
 CURRENT_DIR=$(
     cd $(dirname ${BASH_SOURCE:-$0})
     pwd
@@ -49,7 +61,7 @@ fi
 source $_ASCEND_INSTALL_PATH/bin/setenv.bash
 export ASCEND_HOME_PATH=$_ASCEND_INSTALL_PATH
 
-PYTHON_VERSION=`python3 -V 2>&1 | awk '{print $2}' | awk -F '.' '{print $1"."$2}'`
+PYTHON_VERSION=$(python3 -V 2>&1 | awk '{print $2}' | awk -F '.' '{print $1"."$2}')
 export HI_PYTHON=python${PYTHON_VERSION}
 export PYTHONPATH=$ASCEND_INSTALL_PATH/python/site-packages:$PYTHONPATH
 export PATH=$ASCEND_INSTALL_PATH/python/site-packages/bin:$PATH
@@ -83,8 +95,8 @@ print(get_soc_version())
         echo "ERROR: SOC_VERSION_CONCAT is invalid!"
         return 1
     fi
-    SOC_FULL_VERSION=`echo $SOC_VERSION_CONCAT | cut -d ',' -f 1`
-    SOC_SHORT_VERSION=`echo $SOC_VERSION_CONCAT | cut -d ',' -f 2`
+    SOC_FULL_VERSION=$(echo $SOC_VERSION_CONCAT | cut -d ',' -f 1)
+    SOC_SHORT_VERSION=$(echo $SOC_VERSION_CONCAT | cut -d ',' -f 2)
 }
 
 function main() {
@@ -100,17 +112,17 @@ function main() {
     cp -rf op_dev/op_host/*.cpp op_dev/op_host/*.h custom_op/op_host
     cp -rf op_dev/op_kernel/*.cpp op_dev/op_kernel/*.h custom_op/op_kernel
 
-    sed -i "s#/usr/local/Ascend/latest#$ASCEND_INSTALL_PATH#g" `grep "/usr/local/Ascend/latest" -rl custom_op/CMakePresets.json`
+    sed -i "s#/usr/local/Ascend/latest#$ASCEND_INSTALL_PATH#g" $(grep "/usr/local/Ascend/latest" -rl custom_op/CMakePresets.json)
 
     # 测试不同输入数据类型, 修改对应代码
     if [[ ${DTYPE} == "float16" ]]; then
-        sed -i "s/.astype(.*)/.astype(np.float16)/g" `grep ".astype(.*)" -rl op_verify/scripts/generate_data.py`
-        sed -i "s/aclDataType dataType =.*;/aclDataType dataType = ACL_FLOAT16;/g" `grep "aclDataType dataType =.*;" -rl op_verify/src/main.cpp`
-        sed -i "s/dtype=.*)/dtype=np.float16)/g" `grep "dtype=.*)" -rl op_verify/scripts/verify_result.py`
+        sed -i "s/.astype(.*)/.astype(np.float16)/g" $(grep ".astype(.*)" -rl op_verify/scripts/generate_data.py)
+        sed -i "s/aclDataType dataType =.*;/aclDataType dataType = ACL_FLOAT16;/g" $(grep "aclDataType dataType =.*;" -rl op_verify/src/main.cpp)
+        sed -i "s/dtype=.*)/dtype=np.float16)/g" $(grep "dtype=.*)" -rl op_verify/scripts/verify_result.py)
     elif [[ ${DTYPE} == "float" ]]; then
-        sed -i "s/.astype(.*)/.astype(np.float32)/g" `grep ".astype(.*)" -rl op_verify/scripts/generate_data.py`
-        sed -i "s/aclDataType dataType =.*;/aclDataType dataType = ACL_FLOAT;/g" `grep "aclDataType dataType =.*;" -rl op_verify/src/main.cpp`
-        sed -i "s/dtype=.*)/dtype=np.float32)/g" `grep "dtype=.*)" -rl op_verify/scripts/verify_result.py`
+        sed -i "s/.astype(.*)/.astype(np.float32)/g" $(grep ".astype(.*)" -rl op_verify/scripts/generate_data.py)
+        sed -i "s/aclDataType dataType =.*;/aclDataType dataType = ACL_FLOAT;/g" $(grep "aclDataType dataType =.*;" -rl op_verify/src/main.cpp)
+        sed -i "s/dtype=.*)/dtype=np.float32)/g" $(grep "dtype=.*)" -rl op_verify/scripts/verify_result.py)
     else
         echo "ERROR: DTYPE is invalid!"
         return 1

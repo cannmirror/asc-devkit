@@ -1,12 +1,12 @@
 # Libraries样例介绍
 ## 概述
-高阶API、基础API类库的使用样例，包括数学库，激活函数等。
+基于Ascend C API类库的使用样例，通过<<<>>>直调的实现方式，介绍了数学库，激活函数等API类库。
 
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [01_addcdivcustomsample](./01_addcdivcustomsample) | 本样例通过Ascend C编程语言实现了Addcdiv算子，给出了对应的端到端实现 |
-| [02_scattercustomsample](./02_scattercustomsample) | 本样例介绍兼容Scatter算子实现及核函数直调方法，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，给出了对应的端到端实现 |
+| [00_addcdivcustom](./00_addcdivcustom) | 本样例通过Ascend C编程语言实现了Addcdiv算子，给出了对应的端到端实现 |
+| [02_scattercustom](./01_scattercustom) | 本样例介绍兼容Scatter算子实现及核函数直调方法，给出了对应的端到端实现 |
 
 ## 更新说明
 | 时间       | 更新事项     |
