@@ -117,12 +117,9 @@ private:
 
     __aicore__ inline void InitInner(GM_ADDR context, HcclTilingVersion version);
 
-    __aicore__ inline void InitContext(uint64_t ccTilingAddr);
-
 private:
     uint64_t ccOpTilingDataTable_[static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL)] = {0UL};
     __gm__ HcclCombineOpParam *hcclContext_;
-    __gm__ AicpuContext *aicpuContext_ = nullptr;
     __gm__ HcclMsgArea *hcclMsgArea_;
     uint64_t tilingBaseAddr_;
     uint16_t queueNum_ = 0U;

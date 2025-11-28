@@ -411,27 +411,6 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::InitV2(GM_ADDR context
     tilingBaseAddr_ = reinterpret_cast<uint64_t>(initTiling);
 }
 
-template <const auto &config>
-__aicore__ inline void
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::InitContext(uint64_t ccTilingAddr)
-{
-    __gm__ Mc2CcTilingInner *ccTilingPtr = reinterpret_cast<__gm__ Mc2CcTilingInner *>(ccTilingAddr);
-    if (ccTilingPtr->version == MC2_CC_TILING_INTERFACE) {
-        aicpuContext_ = reinterpret_cast<__gm__ AicpuContext *>(&(ccTilingPtr->aicpuContext));
-        uint64_t msgAddr = aicpuContext_->workSpace;
-        if (unlikely(msgAddr == 0UL)) {
-            return;
-        }
-        // ensure hcclMsgArea 512B aligned
-        if (msgAddr & 0x1ff) {
-            msgAddr = (msgAddr & (~((uint64_t)0x1ff))) + 0x200;
-        }
-        hcclMsgArea_ = (__gm__ HcclMsgArea *)msgAddr;
-    } else {
-        aicpuContext_ = nullptr;
-    }
-}
-
 template<const auto &config>
 __aicore__ inline int32_t
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::SetCcTiling(__gm__ void *ccOpTilingData)
@@ -445,7 +424,6 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::SetCcTiling(__gm__ voi
                             { return HCCL_FAILED; }, "Call SetCcTiling failed, ensure cmdType is valid");
     KERNEL_LOG(KERNEL_INFO, "CmdType = %d, ccOpTilingData = %lu ", opType, reinterpret_cast<uint64_t>(ccOpTilingData));
     ccOpTilingDataTable_[opType] = reinterpret_cast<uint64_t>(ccOpTilingData);
-    InitContext(ccOpTilingDataTable_[opType]);
     return HCCL_SUCCESS;
 }
 
@@ -459,7 +437,6 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, confi
     ASCENDC_HCCL_API_ASSERT(opType >= 0 && opType < static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL),
                             { return HCCL_FAILED; }, "Call SetCcTiling failed, ensure cmdType is valid");
     ccOpTilingDataTable_[opType] = offset;
-    InitContext(tilingBaseAddr_ + offset);
     return HCCL_SUCCESS;
 }
 
@@ -513,10 +490,9 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::SendMsgToServer(const 
         FlushDataCache(hcclSendMsg);
     } while ((debugMode_ != HCCL_ONLY_COMPUTE) && (hcclSendMsg->valid == HCCL_MSG_VALID_MASK));
     KERNEL_LOG(KERNEL_INFO, "Hccl send extMsg[%u] is available now.", curMsgPosition_[0U]);
-    uint32_t rankNum = aicpuContext_ != nullptr ? aicpuContext_->rankNum : hcclContext_->rankNum;
-    AssembleHcclMsgExt(param, rankNum, hcclSendMsg);
+    AssembleHcclMsgExt(param, hcclContext_->rankNum, hcclSendMsg);
     GlobalTensor<int64_t> globalHcclMsgArea;
-    for (uint32_t i = 0U; i < rankNum; i += MAX_DCCI_CNT / sizeof(uint64_t)) {
+    for (uint32_t i = 0U; i < hcclContext_->rankNum; i += MAX_DCCI_CNT / sizeof(uint64_t)) {
         FlushDataCache(globalHcclMsgArea, (hcclSendMsg->sendCounts + i));
         FlushDataCache(globalHcclMsgArea, (hcclSendMsg->sendOffset + i));
         FlushDataCache(globalHcclMsgArea, (hcclSendMsg->recvCounts + i));
