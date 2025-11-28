@@ -19,7 +19,7 @@ namespace AscendC {
 __aicore__ inline KfcWorkspace::KfcWorkspace(GM_ADDR workspace)
 {
     msgStart = workspace;
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         evtID = GetTPipePtr()->AllocEventID<HardEvent::MTE3_S>();
         SetFlag<HardEvent::MTE3_S>(evtID);
     }
@@ -37,7 +37,7 @@ __aicore__ inline GM_ADDR KfcWorkspace::GetKfcWorkspace()
 
 __aicore__ inline KfcWorkspace::~KfcWorkspace()
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         WaitFlag<HardEvent::MTE3_S>(evtID);
         GetTPipePtr()->ReleaseEventID<HardEvent::MTE3_S>(evtID);
     }
@@ -67,7 +67,7 @@ __aicore__ inline CubeResGroupHandle<T>::CubeResGroupHandle(
     msgSize = aivPerAic * aicSize * MAX_MSG_PER_AIV;
     msgHead = (__gm__ T *)__GetAicMsgHead(workspace, blockStart / MIX_NUM, aivPerAic * MAX_MSG_PER_AIV);
     msgCurrent = msgHead;
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         eventID = evtIDIn;
         uint32_t ubMsgAddr = TOTAL_UB_SIZE - ONE_BLK_SIZE * AIV_CORE_NUM - sizeof(T);
 
@@ -87,7 +87,7 @@ template <typename T>
 __aicore__ inline void CubeResGroupHandle<T>::AssignQueue(uint8_t queueIdIn)
 {
     ASCENDC_DEBUG_ASSERT((queueIdIn < aivSize), KERNEL_LOG(KERNEL_ERROR, "queueID (%u) must be less than msgQueueSize(%u)", queueIdIn, aivSize));
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         uint8_t aicSubgroupID = queueIdIn / aivPerAic;
         uint8_t aivSubgroupID = queueIdIn % aivPerAic;
         queueId = queueIdIn;
@@ -113,7 +113,7 @@ template <typename T>
 template <PipeMode pipeMode>
 __aicore__ inline __gm__ T *CubeResGroupHandle<T>::AllocMessage()
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (pipeMode == PipeMode::MTE3_MODE) {
             WaitFlag<HardEvent::MTE3_S>((event_t)eventID);
         }
@@ -136,7 +136,7 @@ template <typename T>
 template <PipeMode pipeMode>
 __aicore__ inline uint16_t CubeResGroupHandle<T>::PostMessage(__gm__ T *msg, T &msgInput)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr (pipeMode == PipeMode::SCALAR_MODE) {
             __CopyCubeMsg(msg, msgInput);
             __WriteGmCubeMsgByScalar(msg);
@@ -178,7 +178,7 @@ __aicore__ inline uint16_t CubeResGroupHandle<T>::FreeMessage(__gm__ T *msg, Cub
 template <typename T>
 __aicore__ inline uint16_t CubeResGroupHandle<T>::PostFakeMsg(__gm__ T *msg)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         __WriteGmStateByScalar(msg, CubeMsgState::FAKE);
     }
     return msg - msgHead;
@@ -189,7 +189,7 @@ template <typename T>
 __aicore__ inline void CubeResGroupHandle<T>::SetQuit(__gm__ T *msg)
 {
     uint8_t aivID = queueId % aivPerAic;
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_DEBUG_ASSERT((aivID < aivNumForCurAic),
             KERNEL_LOG(KERNEL_ERROR, "In SendQuitMsg, aivID (%u) should not be larger than aivNumForCurAic (%u)",
             aivID,
@@ -221,7 +221,7 @@ template <typename T>
 template <bool sync>
 __aicore__ inline bool CubeResGroupHandle<T>::Wait(uint16_t offset)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         __gm__ T *cubeMsgCur = msgHead + offset;
         dcci(
             reinterpret_cast<__gm__ int64_t *>(cubeMsgCur), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
@@ -420,7 +420,7 @@ __aicore__ inline CubeResGroupHandle<T> CreateCubeResGroup(
         CubeResGroupHandle<T>(desc.GetKfcWorkspace(), blockStart, blockSize, msgQueueSize, GetEventId(desc));
     desc.UpdateKfcWorkspace(__GetMsgAreaLen(handle, sizeof(T)));
 
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         return handle;
     }
 

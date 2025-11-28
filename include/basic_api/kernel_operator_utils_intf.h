@@ -25,7 +25,7 @@ template <EngineType engine, auto funPtr, class... Args>
 __aicore__ void Async(Args... args)
 {
     if constexpr (engine == EngineType::AIV) {
-        if (ASCEND_IS_AIV) {
+        if ASCEND_IS_AIV {
             funPtr(args...);
         }
     } else if constexpr (engine == EngineType::AIC) {

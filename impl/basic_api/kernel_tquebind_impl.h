@@ -480,7 +480,7 @@ __aicore__ inline TBufHandle TQueBind<src, dst, depth, mask>::AllocBuffer()
                 if constexpr (srcHardType == Hardware::UB) {
                     break;
                 } else if constexpr (srcHardType == Hardware::GM) {
-                    if (ASCEND_IS_AIV) {
+                    if ASCEND_IS_AIV {
                         break;
                     }
                 }

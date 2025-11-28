@@ -44,7 +44,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<PrimT<U>, isSetMask>(mask);
         MulCastIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -55,7 +55,7 @@ __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<
     const LocalTensor<U> &src1, uint64_t mask[], const uint8_t repeatTime,
     const BinaryRepeatParams &repeatParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         AscendCUtils::SetMask<PrimT<T>, isSetMask>(mask[1], mask[0]);
         MulCastIntrinsicsImpl(dst, src0, src1, repeatTime, repeatParams);
     }
@@ -67,7 +67,7 @@ __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<
 {
     ASCENDC_ASSERT((SupportType<PrimT<U>, half>() && SupportType<PrimT<T>, int8_t, uint8_t>()), {KERNEL_LOG(KERNEL_ERROR, "Failed "
         "to check dtype in MulCast, current api support dtype combination is src: half, dst: int8_t / uint8_t");});
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         BinaryRepeatParams repeatParams;
         repeatParams.dstRepStride = HALF_DEFAULT_REPEAT_STRIDE;
         set_mask_count();

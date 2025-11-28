@@ -21,7 +21,7 @@ namespace AscendC {
 __aicore__ inline void InitDetermineComputeWorkspaceCalc(GlobalTensor<int32_t> &gmWorkspace,
     LocalTensor<int32_t> &ubWorkspace)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         PipeBarrier<PIPE_ALL>();
         event_t eventID;
         auto tmpBlockNum = GetBlockNum();
@@ -59,7 +59,7 @@ __aicore__ inline bool CheckUBWorkspace(LocalTensor<int32_t> &ubWorkspace, int64
 
 __aicore__ inline void WaitPreBlockCalc(GlobalTensor<int32_t> &gmWorkspace, LocalTensor<int32_t> &ubWorkspace)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         PipeBarrier<PIPE_ALL>();
         event_t eventID;
         auto blockIdx = GetBlockIdx();
@@ -81,7 +81,7 @@ __aicore__ inline void WaitPreBlockCalc(GlobalTensor<int32_t> &gmWorkspace, Loca
 
 __aicore__ inline void NotifyNextBlockCalc(GlobalTensor<int32_t> &gmWorkspace, LocalTensor<int32_t> &ubWorkspace)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         PipeBarrier<PIPE_ALL>();
         event_t eventID;
         auto blockIdx = GetBlockIdx();

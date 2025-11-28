@@ -162,7 +162,7 @@ __aicore__ inline FixpipeTilingV220 GenFixpipeTilingV220(uint16_t n)
 __aicore__ inline void CopyDeqTensorToFbuf(
     __cbuf__ uint64_t *cbufWorkspace, const FixpipeTilingV220 &fixpipeTiling, uint16_t calNSize, uint16_t nIterIndex)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         return;
     }
     uint16_t deqDataSize = DivCeil(calNSize * sizeof(uint64_t), 128) * 128;

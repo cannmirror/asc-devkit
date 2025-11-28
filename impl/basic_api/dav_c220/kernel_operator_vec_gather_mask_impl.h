@@ -21,7 +21,7 @@ __aicore__ inline void GatherMaskImpl(__ubuf__ uint16_t* dst, __ubuf__ uint16_t*
     const uint8_t patternMode, const bool reduceMode, const uint32_t mask, const GatherMaskParams& gatherMaskParams,
     uint64_t& rsvdCnt)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if (reduceMode) {
             SetMaskCount();
         } else {
@@ -47,7 +47,7 @@ __aicore__ inline void GatherMaskImpl(__ubuf__ uint32_t* dst, __ubuf__ uint32_t*
     const uint8_t patternMode, const bool reduceMode, const uint32_t mask, const GatherMaskParams& gatherMaskParams,
     uint64_t& rsvdCnt)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if (reduceMode) {
             SetMaskCount();
         } else {
@@ -73,7 +73,7 @@ template <typename T>
 __aicore__ inline void GatherMaskImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1, const uint8_t patternMode,
     const GatherMaskParams& gatherMaskParams)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_ASSERT((SupportType<T, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
             {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in GatherMask, current api support dtype combination is "
             "src and dst both: half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t.");});

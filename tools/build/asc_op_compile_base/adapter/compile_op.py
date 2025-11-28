@@ -1283,7 +1283,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
 
     if (CommonUtility.is_c310() or CommonUtility.is_310r6()) and dump_info:
         source += "#if defined(ASCENDC_DUMP) && defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"
-        source += "    if (ASCEND_IS_AIV) {\n"
+        source += "    if ASCEND_IS_AIV {\n"
         source += "        AscendC::EnableL1Dump();\n"
         source += "        workspace += " + \
             str(global_var_storage.get_variable(

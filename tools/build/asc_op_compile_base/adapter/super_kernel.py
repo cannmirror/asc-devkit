@@ -241,7 +241,7 @@ def gen_clear_wait_sync_addr_code(super_operator):
                     result += indent_code_func("if ASCEND_IS_AIC {\n")
                     result += indent_code_func(f"    if (get_block_idx() == 0) {{\n")
                 else:
-                    result += indent_code_func("if (ASCEND_IS_AIV) {\n")
+                    result += indent_code_func("if ASCEND_IS_AIV {\n")
                     result += indent_code_func(f"    if (AscendC::GetBlockIdx() == 0) {{\n")
                 recv_wait_lock_offset = op.wait_param_offset + index
                 result += indent_code_func(f"\
@@ -506,7 +506,7 @@ __aicore__ inline bool ProfilingAreaIsValid()
 
 __aicore__ inline uint8_t GetProfilingBlockIdx()
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         return get_block_idx() * get_subblockdim() + get_subblockid();
     } else {
         return get_block_idx() + 50;
@@ -703,7 +703,7 @@ if ASCEND_IS_AIC {{
     AscendC::g_superKernelAutoSyncAllConfigGmAddr = \
 AscendC::g_superKernelAutoSyncAllConfigGmBaseAddr + {sub_op_index} * 64;
 }}
-if (ASCEND_IS_AIV) {{
+if ASCEND_IS_AIV {{
     AscendC::g_superKernelAutoSyncAllConfigGmAddr = \
 AscendC::g_superKernelAutoSyncAllConfigGmBaseAddr + {total_op_num} * 64 + {sub_op_index} * 64;
 }}
@@ -737,7 +737,7 @@ if ASCEND_IS_AIC {{
     elif super_operator.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0:
         gen_code += \
 f"""
-if (ASCEND_IS_AIV) {{
+if ASCEND_IS_AIV {{
     uint32_t sizePerCore = {super_operator.workspace_size} / get_block_num();
     const uint32_t repeatTimes = sizePerCore / 512;
     __gm__ uint8_t* startAddr  = (__gm__ uint8_t*)(workspace + sizePerCore * AscendC::GetBlockIdxImpl());
@@ -761,7 +761,7 @@ if (ASCEND_IS_AIV) {{
         if CommonUtility.is_c310():
             gen_code += \
 f"""
-if (ASCEND_IS_AIV) {{
+if ASCEND_IS_AIV {{
     uint32_t sizePerCore = {workspace_size} / get_block_num();
     const uint32_t repeatTimes = sizePerCore / 512;
     __gm__ uint8_t* startAddr  = (__gm__ uint8_t*)(workspace + sizePerCore * AscendC::GetBlockIdxImpl());
@@ -785,7 +785,7 @@ if ASCEND_IS_AIC {{
         else:
             gen_code += \
 f"""
-if (ASCEND_IS_AIV) {{
+if ASCEND_IS_AIV {{
     uint32_t sizePerCore = {workspace_size} / get_block_num();
     const uint32_t repeatTimes = sizePerCore / 512;
     __gm__ uint8_t* startAddr  = (__gm__ uint8_t*)(workspace + sizePerCore * AscendC::GetBlockIdxImpl());

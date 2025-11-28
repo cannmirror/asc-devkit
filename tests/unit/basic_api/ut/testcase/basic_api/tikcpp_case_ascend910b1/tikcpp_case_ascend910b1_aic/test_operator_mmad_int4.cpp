@@ -223,7 +223,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load3dv2)
     uint16_t n = 64;
     uint16_t k = 64;
 
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         return;
     }
     uint8_t a[m * k * sizeof(int8_t)] = {0};
@@ -244,7 +244,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load2d)
     uint16_t n = 64;
     uint16_t k = 64;
 
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         return;
     }
     uint8_t a[m * k * sizeof(int8_t)] = {0};

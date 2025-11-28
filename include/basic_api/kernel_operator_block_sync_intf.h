@@ -36,7 +36,7 @@ __aicore__ inline void SetFlag(int32_t eventID)
             return;
         }
     }
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr ((event == HardEvent::MTE2_MTE1) || (event == HardEvent::MTE1_MTE2) ||
                       (event == HardEvent::MTE1_M) || (event == HardEvent::M_MTE1) || (event == HardEvent::M_FIX) ||
                       (event == HardEvent::FIX_M)) {
@@ -61,7 +61,7 @@ __aicore__ inline void WaitFlag(int32_t eventID)
             return;
         }
     }
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if constexpr ((event == HardEvent::MTE2_MTE1) || (event == HardEvent::MTE1_MTE2) ||
                       (event == HardEvent::MTE1_M) || (event == HardEvent::M_MTE1) || (event == HardEvent::M_FIX) ||
                       (event == HardEvent::FIX_M)) {

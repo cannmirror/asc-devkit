@@ -21,7 +21,7 @@ template <PipeMode pipeMode>
 __aicore__ inline GroupBarrier<pipeMode>::GroupBarrier(
     GM_ADDR groupWorkspace, uint32_t arriveSizeIn, uint32_t waitSizeIn)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_DEBUG_ASSERT(
             (pipeMode == PipeMode::MTE3_MODE), KERNEL_LOG(KERNEL_ERROR, "Currently GroupBarrier only support PipeMode::MTE3_MODE"));
         ASCENDC_DEBUG_ASSERT((arriveSizeIn > 0), KERNEL_LOG(KERNEL_ERROR, "arriveSizeIn is %u, which should be larger than 0", arriveSizeIn));
@@ -56,7 +56,7 @@ __aicore__ inline GroupBarrier<pipeMode>::GroupBarrier(
 template <PipeMode pipeMode>
 __aicore__ inline void GroupBarrier<pipeMode>::Arrive(uint32_t arriveIndex)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         if (counter > 1) {  // must wait last round to end
             uint32_t expectedWaitNum = (counter - 1) * waitSize;
             GlobalTensor<uint32_t> barrierInfoWaitGlobal;
@@ -80,7 +80,7 @@ __aicore__ inline void GroupBarrier<pipeMode>::Wait(uint32_t waitIndex)
     // Get the counter by whether that aiv call arrive before wait
     // Ex: aiv call arrive + wait: In arrive, counter++. thus in wait, should counter - 1
     // Ex: aiv call only wait:     No arrive. thus no need to update counter
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         uint32_t waitCounter = (hasArrive) ? counter - 1 : counter;
         uint32_t expectedArriveNum = waitCounter * arriveSize;
         __gm__ BarrierInfo *barrierInfoAddr = barrierInfoArrive + (CACHE_LINE_LEN / sizeof(BarrierInfo)) * waitIndex;
@@ -98,7 +98,7 @@ __aicore__ inline void GroupBarrier<pipeMode>::Wait(uint32_t waitIndex)
 template <PipeMode pipeMode>
 __aicore__ inline uint64_t GroupBarrier<pipeMode>::GetWorkspaceLen()
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         ASCENDC_DEBUG_ASSERT((arriveSize > 0), KERNEL_LOG(KERNEL_ERROR, "arriveSize is %u, it must be larger than 0", arriveSize));
         ASCENDC_DEBUG_ASSERT((waitSize > 0), KERNEL_LOG(KERNEL_ERROR, "waitSize is %u, it must be larger than 0", waitSize));
         ASCENDC_DEBUG_ASSERT(
@@ -112,7 +112,7 @@ __aicore__ inline uint64_t GroupBarrier<pipeMode>::GetWorkspaceLen()
 template <PipeMode pipeMode>
 __aicore__ inline void GroupBarrier<pipeMode>::__WriteCurrentValue(__gm__ BarrierInfo *barrierInfoAddr)
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         uint32_t num = (arriveSize >= waitSize) ? arriveSize : waitSize;
         event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_MTE3));
         SetFlag<HardEvent::S_MTE3>(eventID);

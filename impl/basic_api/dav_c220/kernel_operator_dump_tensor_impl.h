@@ -37,7 +37,7 @@ template <typename T> __aicore__ inline uint32_t GetDataType(T data)
 
 __aicore__ inline uint8_t GetDumpBlockIdx()
 {
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         return GetBlockIdxImpl();
     } else {
         return GetBlockIdxImpl() + AIV_CORE_NUM;

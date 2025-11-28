@@ -756,7 +756,7 @@ __aicore__ inline void LocalTensor<T>::SetBufferLen(uint32_t dataLen)
 {
     this->address_.dataLen = dataLen;
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    if (ASCEND_IS_AIV) {
+    if ASCEND_IS_AIV {
         this->address_.bufferAddr = set_ub_addr_upper_bound(this->address_.bufferAddr, dataLen * sizeof(T));
     }
 #endif
