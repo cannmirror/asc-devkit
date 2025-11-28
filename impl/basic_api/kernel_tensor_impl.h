@@ -1182,7 +1182,7 @@ template <typename T> __aicore__ inline
 #endif
 }
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T>
 template <typename U>
 __aicore__ inline uintptr_t GlobalTensor<T>::AlignPtr(__gm__ U* buffer) const
@@ -1192,7 +1192,7 @@ __aicore__ inline uintptr_t GlobalTensor<T>::AlignPtr(__gm__ U* buffer) const
 }
 #endif
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T> __aicore__ inline __inout_pipe__(S)
     typename GlobalTensor<T>::PrimType GlobalTensor<T>::GetValue(const uint64_t offset)
 {
@@ -1263,7 +1263,7 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
 #else
     if constexpr (IsHalfByteDataType<PrimType>()) {
         __gm__ uint8_t *addr = reinterpret_cast<__gm__ uint8_t *>(this->oriAddress_) + offset / INT4_TWO;
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         uintptr_t tmpAddr = AlignPtr<uint8_t>(addr);
         dcci(reinterpret_cast<__gm__ uint64_t *>(tmpAddr),
                 cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
@@ -1276,7 +1276,7 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
         return static_cast<T>((*addr) >> (INT2_BIT_NUM * (offset % INT2_FOUR)));
 #endif
     } else {
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         uintptr_t tmpAddr = AlignPtr<PrimType>(this->oriAddress_ + offset);
         dcci(reinterpret_cast<__gm__ uint64_t *>(tmpAddr),
                 cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
@@ -1286,7 +1286,7 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
 #endif
 }
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T> __aicore__ inline __inout_pipe__(S)
     __gm__ typename GlobalTensor<T>::PrimType& GlobalTensor<T>::operator()(const uint64_t offset)
 {
@@ -1313,7 +1313,7 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
     __gm__ PrimType* addr = ExtractL2CacheGmAddr(this->address_);
     return addr[offset];
 #else
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     uintptr_t tmpAddr = AlignPtr<PrimType>(this->oriAddress_ + offset);
     dcci(reinterpret_cast<__gm__ uint64_t *>(tmpAddr),
         cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
@@ -1353,7 +1353,7 @@ template <typename T> __aicore__ inline
         __gm__ uint8_t *addr = reinterpret_cast<__gm__ uint8_t *>(this->oriAddress_) + offset / INT4_TWO;
         uint8_t mask = (offset % INT4_TWO == 0)? 0xf0 : 0xf;
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         if (lastWriteCacheAddr == 0) {
             lastWriteCacheAddr = AlignPtr<uint8_t>(addr);
         } else {
@@ -1391,7 +1391,7 @@ template <typename T> __aicore__ inline
         *addr = val + (value.storage << shift);
 #endif
     } else {
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         if (lastWriteCacheAddr == 0) {
             lastWriteCacheAddr = AlignPtr<PrimType>(this->oriAddress_ + offset);
         } else {
@@ -1410,13 +1410,13 @@ template <typename T> __aicore__ inline
 
 template <typename T> __aicore__ inline GlobalTensor<T>::GlobalTensor()
 {
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     this->lastWriteCacheAddr = 0;
     this->lastReadCacheAddr = 0;
 #endif
 }
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T> __aicore__ inline GlobalTensor<T>::~GlobalTensor()
 {
     if (lastWriteCacheAddr != 0) {

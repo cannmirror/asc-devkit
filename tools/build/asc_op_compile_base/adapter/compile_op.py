@@ -831,6 +831,10 @@ def _json_except_info(compile_info: CompileInfo):
             sub_operater_infos['sub_operator_early_start_set_flag']
             sub_dfx_info["sub_operator_early_start_wait_flag"] = \
                 sub_operater_infos['sub_operator_early_start_wait_flag']
+            sub_dfx_info["sub_operator_call_dcci_before_kernel_start"] = \
+                sub_operater_infos.get('sub_operator_call_dcci_before_kernel_start', False)
+            sub_dfx_info["sub_operator_call_dcci_after_kernel_end"] = \
+                sub_operater_infos.get('sub_operator_call_dcci_after_kernel_end', False)
             sub_dfx_info["streamid"] = sub_op.get('stream_id')
             sub_dfx_info["send_event_list"] = compile_info.super_kernel_info["send_event_list"][i]
             sub_dfx_info["recv_event_list"] = compile_info.super_kernel_info["recv_event_list"][i]

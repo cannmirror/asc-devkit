@@ -25,6 +25,41 @@ from .super_kernel_constants import FUNC_STR, OBJ_FILES_STR, AI_CORE_STR, \
     SuperKernelStreamFusionMode, SuperKernelEarlyStartMode, SuperKernelFeedSyncAllMode
 
 
+def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info, is_static_shape):
+    if not is_static_shape:
+        # dynamic op runs offline compilation, dcci-before-kernel-start can not modify offline compilation
+        # so call dcci in gm get set value by default
+        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_before_kernel_start", False)
+        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_after_kernel_end", False)
+        compile_option_tuple.compile_options.append("-D__ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__")
+        return
+
+    dcci_before_kernel_start_op_list = [
+        part_op.strip()
+        for part_op in compile_info.super_kernel_info["sp_options"].get('dcci-before-kernel-start', "").split(',')
+        if part_op.strip()
+    ]
+    dcci_after_kernel_end_op_list = [
+        part_op.strip()
+        for part_op in compile_info.super_kernel_info["sp_options"].get('dcci-after-kernel-end', "").split(',')
+        if part_op.strip()
+    ]
+
+    if compile_info.op_type in dcci_before_kernel_start_op_list:
+        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_before_kernel_start", True)
+    if compile_info.op_type in dcci_after_kernel_end_op_list:
+        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_after_kernel_end", True)
+
+    if compile_info.op_type in dcci_before_kernel_start_op_list or \
+        compile_info.op_type in dcci_after_kernel_end_op_list:
+        # do not call dcci in global tensor get set value, call dcci-all before or after sub kernel
+        return
+
+    # dcci-all before sub op end has been removed in sk, so call dcci in global tensor get set value by default
+    # in case of performance degradation, try dcci-before-kernel-start or dcci-after-kernel-end options
+    compile_option_tuple.compile_options.append("-D__ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__")
+
+
 def gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info):
     early_start_mode = compile_info.super_kernel_info["sp_options"].get('early-start', \
         SuperKernelEarlyStartMode.EarlyStartEnableV2)
@@ -77,6 +112,8 @@ def gen_sub_super_kernel_compile_options(compile_option_tuple, tiling_info, comp
     # dynamic can not open early start, because do not now id in graph
     if tiling_info.static_shape_flag:
         gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info)
+
+    gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info, tiling_info.static_shape_flag)
     return
 
 
@@ -149,6 +186,10 @@ def add_sub_super_kernel_info(js, static_shape_flag, compile_info):
             "ascendc_sub_super_kernel_early_start_set_flag")
         js["sub_operator_early_start_wait_flag"] = global_var_storage.get_variable(
             "ascendc_sub_super_kernel_early_start_wait_flag")
+        js["sub_operator_call_dcci_before_kernel_start"] = global_var_storage.get_variable(
+            "ascendc_sub_super_kernel_call_dcci_before_kernel_start")
+        js["sub_operator_call_dcci_after_kernel_end"] = global_var_storage.get_variable(
+            "ascendc_sub_super_kernel_call_dcci_after_kernel_end")
         js["sub_op_with_sync_all"] = global_var_storage.get_variable(
             "ascendc_op_with_syncall")
         if static_shape_flag:

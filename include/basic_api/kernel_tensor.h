@@ -218,7 +218,7 @@ template <typename T> class GlobalTensor : public BaseGlobalTensor<T>, public Ba
 public:
     using PrimType = PrimT<T>;
     __aicore__ inline GlobalTensor<T>();
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     __aicore__ inline ~GlobalTensor<T>();
 #endif
     __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer, uint64_t bufferSize);
@@ -228,7 +228,7 @@ public:
 
     __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset) const;
     __aicore__ inline __inout_pipe__(S) __gm__ PrimType& operator()(const uint64_t offset) const;
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset);
     __aicore__ inline __inout_pipe__(S) __gm__ PrimType& operator()(const uint64_t offset);
 #endif
@@ -251,12 +251,12 @@ public:
     typename ShapeInfoParams<T, PrimType>::Params shapeInfo_;
 #endif
     CacheMode cacheMode_ = CacheMode::CACHE_MODE_NORMAL;
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     uintptr_t lastWriteCacheAddr;
     uintptr_t lastReadCacheAddr;
 #endif
 private:
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     template<typename U>
     __aicore__ inline uintptr_t AlignPtr(__gm__ U* buffer) const;
 #endif
