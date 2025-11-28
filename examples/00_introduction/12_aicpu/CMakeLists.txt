@@ -11,21 +11,22 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-find_package(ASC REQUIRED)
+find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
+find_package(AICPU REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
 
-project(kernel_samples LANGUAGES ASC CXX)
+project(kernel_samples LANGUAGES ASC AICPU CXX)
 
 add_executable(demo
-    tensor_tile_custom.asc
+    hello_world.aicpu
+    main.asc
 )
 
-target_link_libraries(demo PRIVATE
-    tiling_api
-    register
-    platform
-    m
+set_target_properties(demo PROPERTIES LINKER_LANGUAGE ASC)
+
+target_include_directories(demo PUBLIC
+    ${ASCEND_CANN_PACKAGE_PATH}/include/ascendc/aicpu_api    
 )
 
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )

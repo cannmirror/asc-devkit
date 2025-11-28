@@ -1,6 +1,6 @@
 # Add算子直调样例
 ## 概述
-本样例介绍基于静态Tensor方式编程的场景下Add算子的实现方法，支持main函数和Kernel函数在同一个cpp文件中实现，并提供<<<>>>直调方法。
+本样例介绍基于静态Tensor方式编程的场景下Add算子的实现方法，支持main函数和kernel函数在同一个cpp文件中实现，并提供<<<>>>直调方法。
 
 ## 支持的AI处理器
 - Ascend 910C
@@ -89,8 +89,6 @@
   ```bash
   # 配置CANN环境变量
   source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  # 添加AscendC CMake Module搜索路径至环境变量
-  export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
   ```
 
 - 样例执行

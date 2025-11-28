@@ -58,7 +58,11 @@
       ```bash
       export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
       ```
-
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
   - 样例执行
     ```bash
     mkdir -p build && cd build;   # 创建并进入build目录

@@ -3,6 +3,7 @@
 本样例以Add算子为示例，展示了Tiling模板编程。本样例使用自定义算子工程，编译并部署自定义算子包到自定义算子库中，并调用执行自定义算子。
 
 ## 支持的AI处理器
+- Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```
@@ -61,7 +62,7 @@ Add算子实现了两个数据相加，返回相加结果的功能。本样例�
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_template_custom</td></tr>
   <tr><td rowspan="6" align="center">模板参数</td><td colspan="4" align="center">template&lt;typename D_T_X, typename D_T_Y, typename D_T_Z, int TILE_NUM, int IS_SPLIT&gt;</td>
       <tr><td>D_T_X</td><td colspan="1">typename</td><td colspan="2">数据类型(float16，float)</td></tr>
       <tr><td>D_T_Y</td><td colspan="1">typename</td><td colspan="2">数据类型(float16，float)</td></tr>
@@ -97,22 +98,21 @@ Add算子实现了两个数据相加，返回相加结果的功能。本样例�
     请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
+      export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
       ```
     - 默认路径，非root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
+      export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
       ```
     - 指定路径install_path，安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
+      export ASCEND_INSTALL_PATH=${install_path}/latest
       ```
     配置安装路径后，执行以下命令统一配置环境变量。
     ```bash
     # 配置CANN环境变量
     source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
     ```
-
   - 样例执行
     ```bash
     bash run.sh -v float16

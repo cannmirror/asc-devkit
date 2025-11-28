@@ -126,13 +126,17 @@ DumpTensor介绍：
     ```bash
     export ASCEND_INSTALL_PATH=${install_path}/latest
     ```
-
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
 - 样例执行
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
   cmake ..;make -j;             # 编译工程
   ```
-  执行mmad_custom_cube.asc样例的命令如下所示：
+  执行cube.asc样例的命令如下所示：
   ```bash
   python3 ../scripts/gen_data_cube.py   # 生成测试输入数据
   ./cube               # 执行编译生成的可执行程序，执行样例
@@ -142,7 +146,7 @@ DumpTensor介绍：
   ```bash
   test pass
   ```
-  执行mmad_custom_vector.asc样例的命令如下所示：
+  执行vector.asc样例的命令如下所示：
   ```bash
   python3 ../scripts/gen_data_vector.py      # 生成测试输入数据
   ./vector                # 执行编译生成的可执行程序，执行样例

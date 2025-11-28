@@ -1,14 +1,14 @@
 # Sub算子直调样例
 ## 概述
-本样例基于SubCustom算子工程，实现两个张量的逐元素相减，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行。
+本样例基于Sub算子工程，实现两个张量的逐元素相减，采用核函数<<<>>>调用，有效降低调度开销，实现高效的算子执行。
 ## 支持的AI处理器
 - Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```
-├── 07_sub_frameworklaunch    
-│   ├── CMakeLists.txt          // 编译工程文件
-│   └── broadcast_custom.asc    // AscendC算子实现 & 调用样例
+├── 07_sub  
+│   ├── CMakeLists.txt    // 编译工程文件
+│   └── sub_custom.asc    // AscendC算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能：  
@@ -18,7 +18,7 @@
   ```
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">SubCustom</td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Sub</td></tr>
   </tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
@@ -30,7 +30,7 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">sub_custom</td></tr>
   </table>
 - 算子实现：   
-  Add算子的数学表达式为：
+  Sub算子的数学表达式为：
 
   计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相减，得到最终结果，再搬出到外部存储上。
 
@@ -60,7 +60,11 @@
     ```bash
     export ASCEND_INSTALL_PATH=${install_path}/latest
     ```
-
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
 - 样例执行
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
