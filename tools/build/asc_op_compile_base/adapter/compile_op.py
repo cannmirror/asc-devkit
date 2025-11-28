@@ -402,7 +402,7 @@ REGISTER_TILING_DEFAULT')
                 fd.close()
         except Exception as err:
             raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("read dst_i_file failed, reason is:", err))
-        keywords = ['ccec_compiler', 'tikcpp/tikcfw', 'gnu/bits', 'include/c++', \
+        keywords = ['bisheng_compiler', 'ccec_compiler', 'tikcpp/tikcfw', 'gnu/bits', 'include/c++', \
             'include/kernel_tiling/kernel_tiling.h']
         is_op_block: bool = True
         for line in lines:
