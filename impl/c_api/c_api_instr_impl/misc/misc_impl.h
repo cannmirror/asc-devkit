@@ -13,7 +13,7 @@
  
 #include "init_soc_state_impl.h"
  
-__aicore__ inline void init_soc_state()
+__aicore__ inline void asc_init_soc_state()
 {
     CApiInternal::init_soc_state_impl();
 }

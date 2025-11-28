@@ -13,6 +13,6 @@
  
 #include "c_api_instr_impl/misc/misc_impl.h"
  
-__aicore__ inline void init_soc_state();
+__aicore__ inline void asc_init_soc_state();
  
 #endif
