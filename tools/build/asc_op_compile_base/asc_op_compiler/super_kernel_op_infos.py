@@ -576,6 +576,30 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
             sub_op.code_gen(self.inner_event_id_set, self.enable_double_stream)
             param_offset += len(sub_op.kernel_params) + len(sub_op.extra_kernel_params)
 
+
+    def update_superkernel_blockdim_by_debug_options(self):
+        debug_aic_num = self.op_options.get('debug-aic-num', 0)
+        debug_aiv_num = self.op_options.get('debug-aiv-num', 0)
+
+        if debug_aic_num == 0 and debug_aiv_num == 0:
+            return
+        if debug_aic_num > 0 and debug_aiv_num == 0:
+            self.kernel_type = KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0
+            self.block_dim = debug_aic_num
+        elif debug_aic_num == 0 and debug_aiv_num > 0:
+            self.kernel_type = KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0
+            self.block_dim = debug_aiv_num
+        elif debug_aic_num == debug_aiv_num:
+            self.kernel_type = KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1
+            self.block_dim = debug_aic_num
+        elif debug_aiv_num == 2 * debug_aic_num:
+            self.kernel_type = KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2
+            self.block_dim = debug_aic_num
+        else:
+            CommonUtility().ascendc_raise_python_err(ERR_CODE, (\
+f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {debug_aiv_num} is invalid."))
+
+
     def get_finale_type_and_block_dim(self, final_kernel_type, max_aic_num, max_aiv_num):
         # get kernel type of super kernel
         if final_kernel_type == 0b1:
@@ -601,6 +625,9 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
                 self.kernel_type = KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2
                 max_1_2_aiv_block_dim = math.ceil(max_aiv_num / 2)
                 self.block_dim = max_aic_num if max_aic_num >= max_1_2_aiv_block_dim else max_1_2_aiv_block_dim
+
+        self.update_superkernel_blockdim_by_debug_options()
+
 
     def get_summary_type_and_options(self):
         """set superkernel kernel type and block dim."""

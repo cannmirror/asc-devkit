@@ -375,8 +375,8 @@ def gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub
                     KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
                 sync_and_event_code += '// reason3: for continues notify/wait event\n'
                 sync_and_event_code += \
-                    'ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n'
-                sync_and_event_code += 'wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n'
+                    "ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n"
+                sync_and_event_code += "wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n"
             else:
                 sync_and_event_code += '// reason3: for continues notify/wait event\n'
                 sync_and_event_code += \
@@ -809,6 +809,21 @@ if ASCEND_IS_AIC {{
     return gen_code
 
 
+def gen_wait_block_extra_sync(super_operator, pre_sub_operator, sub_operator):
+    extra_sync = ""
+    # some inter op barrier do not contain aiv only syncall, so extra sync will be needed
+    extra_sync_pairs = {(KernelMetaType.KERNEL_TYPE_AIC_ONLY, KernelMetaType.KERNEL_TYPE_AIV_ONLY)}
+
+    if (pre_sub_operator.kernel_type, sub_operator.kernel_type) not in extra_sync_pairs:
+        return extra_sync
+
+    # in sk aic only cases, inter op barrier contains aic only sync all, no extra sync will be needed
+    extra_sync += "// extra sync for wait event\n"
+    extra_sync += "AscendC::SyncAll<true>();\n\n"
+
+    return extra_sync
+
+
 def gen_sync_and_event_code(super_operator, pre_sub_operator, sub_operator):
     sync_and_event_code = ""
     if len(sub_operator.recv_event_list) != 0 and len(pre_sub_operator.send_event_list) != 0:
@@ -825,6 +840,8 @@ def gen_sync_and_event_code(super_operator, pre_sub_operator, sub_operator):
     else:
         if len(sub_operator.recv_event_list) != 0:
             sync_and_event_code += indent_code_func(sub_operator.wait_block)
+            sync_and_event_code += \
+                indent_code_func(gen_wait_block_extra_sync(super_operator, pre_sub_operator, sub_operator))
         sync_and_event_code += indent_code_func(gen_inter_ops_barrier(super_operator,
                                                                     pre_sub_operator,
                                                                     sub_operator))

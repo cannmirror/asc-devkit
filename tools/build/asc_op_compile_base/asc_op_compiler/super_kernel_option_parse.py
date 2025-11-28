@@ -98,6 +98,21 @@ class NonEmptyParser(OptionParser):
         return value
 
 
+class BlockDimParser(OptionParser):
+    def __init__(self, key_value: str):
+        self.key = key_value
+
+    def parse_option(self, value: str):
+        if not value.isdigit():
+            raise Exception(f"Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
+        number = int(value)
+        if number <= 0:
+            raise Exception(
+                f"Invalid compile option: {self.key} option should be positive integer, {number} is invalid."
+            )
+        return number
+
+
 def setup_super_kernel_option_parsers() -> ParserFactory:
     """init super kernel_validate"""
     factory = ParserFactory()
@@ -137,7 +152,11 @@ def setup_super_kernel_option_parsers() -> ParserFactory:
                                                 }))
     factory.register(NonEmptyParser('compile-options'))
     factory.register(NonEmptyParser('strict-scope-check'))
+    factory.register(NonEmptyParser('dcci-before-kernel-start'))
+    factory.register(NonEmptyParser('dcci-after-kernel-end'))
     factory.register(NumberParser('split-mode'))
+    factory.register(BlockDimParser('debug-aic-num'))
+    factory.register(BlockDimParser('debug-aiv-num'))
 
     return factory
 
