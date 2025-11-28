@@ -25,22 +25,7 @@ using namespace std;
 using namespace HcclApi;
 
 namespace AscendC {
-namespace {
-using HcclResult = uint32_t;
-using HcclComm = void*;
-using HcomGetCommHandleByGroupFunc = HcclResult (*)(const char *, HcclComm *);
-using HcclAllocComResourceByTilingFunc = HcclResult (*)(HcclComm, void *, void *, void **);
-using HcclGetRankIdFunc = HcclResult (*)(HcclComm, uint32_t *);
-using HcclGetRankSizeFunc = HcclResult (*)(HcclComm, uint32_t *);
-using CommGetKFCWorkSpaceFunc = HcclResult (*)(HcclComm, void **, uint64_t *);
-
-void* g_handle = nullptr;
-HcomGetCommHandleByGroupFunc g_hcomGetCommHandleByGroup = nullptr;
-HcclAllocComResourceByTilingFunc  g_hcclAllocComResourceByTiling = nullptr;
-HcclGetRankIdFunc  g_hcclGetRankId = nullptr;
-HcclGetRankSizeFunc g_hcclGetRankSize = nullptr;
-CommGetKFCWorkSpaceFunc g_commGetKFCWorkSpace = nullptr;
-
+namespace{
 void PrintMc2InitTiling(const Mc2InitTilingInner &tiling)
 {
     TILING_LOG_DEBUG("Mc2InitTiling msg begin.");
@@ -71,10 +56,6 @@ void PrintMc2CcTiling(const Mc2CcTilingInner &tiling)
     TILING_LOG_DEBUG("Mc2CcTiling msg dstDataType:%u", tiling.dstDataType);
     TILING_LOG_DEBUG("Mc2CcTiling msg srcDataType:%u", tiling.srcDataType);
     TILING_LOG_DEBUG("Mc2CcTiling msg commEngine:%u", tiling.commEngine);
-    TILING_LOG_DEBUG("Mc2CcTiling msg workSpace:%p", tiling.aicpuContext.workSpace);
-    TILING_LOG_DEBUG("Mc2CcTiling msg workSpaceSize:%u", tiling.aicpuContext.workSpaceSize);
-    TILING_LOG_DEBUG("Mc2CcTiling msg rankId:%u", tiling.aicpuContext.rankId);
-    TILING_LOG_DEBUG("Mc2CcTiling msg rankNum:%u", tiling.aicpuContext.rankNum);
     TILING_LOG_DEBUG("Mc2CcTiling msg end.");
 }
 }
@@ -98,74 +79,6 @@ uint32_t SetDevType(Mc2InitTilingInner *tilingInner)
     tilingInner->devType = (devType.find("Ascend910B") != std::string::npos)
                          ? static_cast<uint8_t>(platform_ascendc::SocVersion::ASCEND910B)
                          : UINT8_MAX;
-    return EXIT_SUCCESS;
-}
-
-uint32_t GetHcclFuncHandle()
-{
-    g_handle = dlopen("libhccl.so", RTLD_LAZY);
-    ASCENDC_HOST_ASSERT(g_handle != nullptr, return EXIT_FAILURE, "Dlopen libhccl.so failed.");
-
-    g_hcomGetCommHandleByGroup = reinterpret_cast<HcomGetCommHandleByGroupFunc>(
-                                 dlsym(g_handle, "HcomGetCommHandleByGroup"));
-    ASCENDC_HOST_ASSERT(g_hcomGetCommHandleByGroup != nullptr, return EXIT_FAILURE,
-                        "Get g_hcomGetCommHandleByGroup is null.");
-
-    g_hcclAllocComResourceByTiling = reinterpret_cast<HcclAllocComResourceByTilingFunc>(
-                                     dlsym(g_handle, "HcclAllocComResourceByTiling"));
-    ASCENDC_HOST_ASSERT(g_hcclAllocComResourceByTiling != nullptr, return EXIT_FAILURE,
-                        "Get g_hcclAllocComResourceByTiling is null.");
-
-    g_hcclGetRankId = reinterpret_cast<HcclGetRankIdFunc>(dlsym(g_handle, "HcclGetRankId"));
-    ASCENDC_HOST_ASSERT(g_hcclGetRankId != nullptr, return EXIT_FAILURE, "Get g_hcclGetRankId is null.");
-
-    g_hcclGetRankSize = reinterpret_cast<HcclGetRankSizeFunc>(dlsym(g_handle, "HcclGetRankSize"));
-    ASCENDC_HOST_ASSERT(g_hcclGetRankSize != nullptr, return EXIT_FAILURE, "Get g_hcclGetRankSize is null.");
-
-    g_commGetKFCWorkSpace = reinterpret_cast<CommGetKFCWorkSpaceFunc>(dlsym(g_handle, "CommGetKFCWorkSpace"));
-    ASCENDC_HOST_ASSERT(g_commGetKFCWorkSpace != nullptr, return EXIT_FAILURE, "Get g_commGetKFCWorkSpace is null.");
-
-    return EXIT_SUCCESS;
-}
-
-uint32_t SetAicpuContext(const char *group, uint64_t initTilingAddr, Mc2CcTilingInner *tilingInner)
-{
-    if (g_commGetKFCWorkSpace == nullptr) {
-        if (GetHcclFuncHandle() != EXIT_SUCCESS) {
-            TILING_LOG_WARNING("GetHcclFuncHandle failed.");
-            tilingInner->version = MC2_CC_TILING_STRUCT;
-            return EXIT_SUCCESS;
-        }
-    }
-
-    HcclComm commHandle = nullptr;
-    void *context = nullptr;
-    HcclResult ret = g_hcomGetCommHandleByGroup(group, &commHandle);
-    ASCENDC_HOST_ASSERT(ret == 0U, return EXIT_FAILURE, "g_hcomGetCommHandleByGroup failed.");
-
-    ret = g_hcclAllocComResourceByTiling(commHandle, tilingInner,
-                                         reinterpret_cast<void *>(static_cast<uintptr_t>(initTilingAddr)), &context);
-    ASCENDC_HOST_ASSERT(ret == 0U, return EXIT_FAILURE, "g_hcclAllocComResourceByTiling failed.");
-
-    uint32_t rankId = 0U;
-    ret = g_hcclGetRankId(commHandle, &rankId);
-    ASCENDC_HOST_ASSERT(ret == 0U, return EXIT_FAILURE, "g_hcclGetRankId failed.");
-
-    uint32_t rankSize = 0U;
-    ret = g_hcclGetRankSize(commHandle, &rankSize);
-    ASCENDC_HOST_ASSERT(ret == 0U, return EXIT_FAILURE, "g_hcclGetRankSize failed.");
-
-    void *workSpace = nullptr;
-    uint64_t workSpaceSize = 0U;
-    ret = g_commGetKFCWorkSpace(commHandle, &workSpace, &workSpaceSize);
-    ASCENDC_HOST_ASSERT(ret == 0U, return EXIT_FAILURE, "g_commGetKFCWorkSpace failed.");
-
-    tilingInner->version = MC2_CC_TILING_INTERFACE;
-    tilingInner->aicpuContext.rankId = rankId;
-    tilingInner->aicpuContext.rankNum = rankSize;
-    tilingInner->aicpuContext.workSpace = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(workSpace));
-    tilingInner->aicpuContext.workSpaceSize = workSpaceSize;
-
     return EXIT_SUCCESS;
 }
 
@@ -200,6 +113,7 @@ Mc2CcTilingConfig::Mc2CcTilingConfig(const std::string &groupName, uint32_t opTy
 
 Mc2CcTilingConfig::~Mc2CcTilingConfig() = default;
 
+constexpr uint8_t MC2_CC_TILING_VERSION = 1U;
 uint32_t Mc2CcTilingConfig::GetTiling(::Mc2InitTiling &tiling)
 {
     // It is not a reduce type or a reduce type, and the reduce type is valid
@@ -252,6 +166,7 @@ uint32_t Mc2CcTilingConfig::GetTiling(::Mc2CcTiling &tiling)
     tilingInner->skipLocalRankCopy = impl_.skipLocalRankCopy_;
     tilingInner->skipBufferWindowCopy = impl_.skipBufferWindowCopy_;
     tilingInner->stepSize = impl_.stepSize_;
+    tilingInner->version = MC2_CC_TILING_VERSION;
     (void)memset_s(tilingInner->reserved, sizeof(tilingInner->reserved), 0, sizeof(tilingInner->reserved));
     auto ret = strcpy_s(tilingInner->groupName, sizeof(tilingInner->groupName), impl_.groupName_.c_str());
     ASCENDC_HOST_ASSERT(ret == EOK, return EXIT_FAILURE, "groupName(%s) copy failed.", impl_.groupName_.c_str());
@@ -262,16 +177,10 @@ uint32_t Mc2CcTilingConfig::GetTiling(::Mc2CcTiling &tiling)
     tilingInner->srcDataType = impl_.srcDataType_;
     tilingInner->dstDataType = impl_.dstDataType_;
     tilingInner->commEngine = impl_.commEngine_;
-
-    uint64_t ccTilingAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&tiling));
-    ASCENDC_HOST_ASSERT(UpdateMc2InitTiling(impl_.initTilingAddr_, ccTilingAddr) == EXIT_SUCCESS,
-                        return EXIT_FAILURE, "UpdateMc2InitTiling failed.");
-
-    ASCENDC_HOST_ASSERT(SetAicpuContext(impl_.groupName_.c_str(), impl_.initTilingAddr_, tilingInner) == EXIT_SUCCESS,
-                        return EXIT_FAILURE, "SetAicpuContext failed.");
     PrintMc2CcTiling(*tilingInner);
 
-    return EXIT_SUCCESS;
+    uint64_t ccTilingAddr = static_cast<uint64_t>(reinterpret_cast<uintptr_t>(&tiling));
+    return UpdateMc2InitTiling(impl_.initTilingAddr_, ccTilingAddr);
 }
 
 uint32_t Mc2CcTilingConfig::SetOpType(uint32_t opType)
