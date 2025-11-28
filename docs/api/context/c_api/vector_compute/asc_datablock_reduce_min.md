@@ -23,8 +23,8 @@
 - 非连续数据计算
 
  ```c++
- __aicore__ inline void asc_datablock_reduce_min(__ubuf__ half* dst, __ubuf__ half* src, const asc_reduce_config& config)
- __aicore__ inline void asc_datablock_reduce_min(__ubuf__ float* dst, __ubuf__ float* src, const asc_reduce_config& config)
+ __aicore__ inline void asc_datablock_reduce_min(__ubuf__ half* dst, __ubuf__ half* src, const asc_block_reduce_config& config)
+ __aicore__ inline void asc_datablock_reduce_min(__ubuf__ float* dst, __ubuf__ float* src, const asc_block_reduce_config& config)
  ```
 
 - 数据同步计算
@@ -43,7 +43,7 @@
 | dst     | 输出     | 目的操作数。   |
 | src     | 输入     | 源操作数。|
 | count   | 输入     | 参与连续计算的元素个数。|
-| config  | 输入     | 在非连续场景下使用的计算配置参数。|
+| config  | 输入     | 在非连续场景下使用的计算配置参数。请参考[asc_block_reduce_config](../struct/asc_block_reduce_config.md)|
 
 ## 返回值说明
 
