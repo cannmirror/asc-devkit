@@ -1,6 +1,6 @@
 # Broatcast算子直调样例
 ## 概述
-本样例基于BroadcastCustom算子工程，介绍了单算子直调。样例支持将输入张量按目标形状进行广播，通过直接<<<>>>调用核函数，免去框架调度开销，实现高效、低延时的张量扩展运算。
+本样例基于Broadcast算子工程，介绍了单算子直调。样例支持将输入张量按目标形状进行广播，通过直接<<<>>>调用核函数，免去框架调度开销，实现高效、低延时的张量扩展运算。
 ## 支持的AI处理器
 - Ascend 910C
 - Ascend 910B
@@ -50,7 +50,11 @@
     ```bash
     export ASCEND_INSTALL_PATH=${install_path}/latest
     ```
-
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
 - 样例执行  
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录

@@ -1,16 +1,17 @@
-# HelloWorld算子直调样例
+# Aicpu算子直调样例
 ## 概述
-本样例通过使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，核函数内通过printf打印输出结果。
+本样例介绍了基于Ascend C的AI CPU算子的核函数直调方法，演示了HelloWorld。
 
 ## 支持的AI处理器
 - Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```
-├── 00_helloworld
+
+├── 12_aicpu
 │   ├── CMakeLists.txt      // 编译工程文件
 │   ├── hello_world.aicpu   // AI CPU算子实现
-|   └── main.asc            //AI CPU算子调用
+|   └── main.asc            // AI CPU算子调用
 ```
 
 ## 编译运行
@@ -18,7 +19,7 @@
 - 配置环境变量  
   以命令行方式下载样例代码，master分支为例。
   ```bash
-  cd ${git_clone_path}/examples/00_introduction/13_aicpu_example
+  cd ${git_clone_path}/examples/00_introduction/12_aicpu
   ```
 
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
@@ -38,8 +39,6 @@
   ```bash
   # 配置CANN环境变量
   source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  # 添加AscendC CMake Module搜索路径至环境变量
-  export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
   ```
 - 样例执行
   ```bash
@@ -47,7 +46,7 @@
   cmake ..;make -j;             # 编译工程
   ./demo                        # 执行样例
   ```
-  执行结果如下，说明精度对比成功。
+  执行结果如下，说明执行成功。
   ```bash
   Hello World!!!
   ```

@@ -1,6 +1,6 @@
 # Reduce算子直调样例
 ## 概述
-本样例介绍了调用Sum高阶API实现sum算子，算子对输入张量沿最后一个维度进行求和，采用<<<>>>直调的方式，规避框架调度开销，实现高效的归约计算。
+本样例介绍了调用Sum高阶API实现reduce算子，算子对输入张量沿最后一个维度进行求和，采用<<<>>>直调的方式，规避框架调度开销，实现高效的归约计算。
 ## 支持的AI处理器
 - Ascend 910C
 - Ascend 910B
@@ -16,10 +16,10 @@
 ```
 ## 算子描述
 - 算子功能：  
-  SumCustom算子，获取输入数据最后一个维度的元素总和。如果输入是向量，则对向量中各元素进行累加；如果输入是矩阵，则沿最后一个维度对每行中元素求和。
+  reduce算子，获取输入数据最后一个维度的元素总和。如果输入是向量，则对向量中各元素进行累加；如果输入是矩阵，则沿最后一个维度对每行中元素求和。
 - 算子规格：
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">SumCustom</td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">reduce</td></tr>
 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
@@ -30,11 +30,11 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">sum_custom</td></tr>
   </table>
 - 算子实现：  
-  本样例中实现的是固定shape为输入x[7, 2023]，输出y[8]的SumCustom算子，其中y中的有效值数量为7，对输入x的每行元素求和后，输出y的有效数据为前7位，最后一位为padding填充的数据。
+  本样例中实现的是固定shape为输入x[7, 2023]，输出y[8]的reduce算子，其中y中的有效值数量为7，对输入x的每行元素求和后，输出y的有效数据为前7位，最后一位为padding填充的数据。
 
   计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Sum高阶API接口完成sum计算，得到最终结果，再搬出到外部存储上。
 
-  SumCustom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责对srcLocal执行sum计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
+  reduce算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责对srcLocal执行sum计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   根据输入数据的内轴长度、内轴实际长度、外轴长度确定所需tiling参数，例如输出内轴补齐后长度等。调用GetSumMaxMinTmpSize接口获取Sum接口完成计算所需的临时空间大小。
 ## 编译运行
@@ -56,7 +56,11 @@
     ```bash
     export ASCEND_INSTALL_PATH=${install_path}/latest
     ```
-
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
 - 样例执行  
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
