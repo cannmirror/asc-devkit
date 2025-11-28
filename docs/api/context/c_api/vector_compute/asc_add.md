@@ -53,7 +53,7 @@ __aicore__ inline void asc_add_sync(_ubuf__ float* dst, _ubuf__ float* src0, _ub
 | dst       | 输出    | 目的操作数。            |
 | src0、src1 | 输入    | 源操作数。             |
 | count     | 输入    | 参与计算的元素个数。        |
-| config    | 输入    | 在非连续场景下使用的计算配置参数。请参考[asc_binary_config](../struct/asc_binary_config.md) 。 |
+| config    | 输入    | 在高维切分计算场景下使用的计算配置参数。<br/>详细说明请参考[asc_binary_config](../struct/asc_binary_config.md)。 |
 
 ## 返回值说明
 
@@ -78,5 +78,5 @@ offset += total_length * sizeof(half);
 __ubuf__ half* src1 = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
 offset += total_length * sizeof(half);
 __ubuf__ half* dst= (__ubuf__ half*)asc_get_phy_buf_addr(offset);
-asc_add(dst, src0, src1, totalLength );
+asc_add(dst, src0, src1, total_length );
 ```
