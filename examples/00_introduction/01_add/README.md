@@ -5,8 +5,8 @@
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [basic_api_memory_allocator_add](./basic_api_memory_allocator_add) | 基于静态Tensor方式编程的场景下Add算子的实现方法，并提供<<<>>>直调方法 |
-| [basic_api_tque_add](./basic_api_tque_add) | 本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程，并提供<<<>>>直调方法 |
+| [basic_api_memory_allocator_add](./basic_api_memory_allocator_add) | 基于静态Tensor方式编程的场景下Add算子的实现方法 |
+| [basic_api_tque_add](./basic_api_tque_add) | 本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程 |
 | [c_api_add](./c_api_add) | 本样例使用C_API实现Add算子 |
 
 ## 更新说明

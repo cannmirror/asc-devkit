@@ -5,8 +5,8 @@
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [00_introduction](./00_introduction) | 基于Ascend C的简单的示例，通过Ascend C编程语言实现了自定义算子，并按照不同的算子调用方式分别给出了对应的<<<>>>直调实现，适合初学者 |
-| [01_utilities](./01_utilities) | 样例通过Ascend C编程语言实现了自定义算子，实现printf、assert及debug功能等 |
-| [02_features](./02_features) | Ascend C的特性：Aclnn（ge入图）工程，LocalMemoryAllocator、Barrier单独内存申请和分配、SIMT编程 |
-| [03_libraries](./03_libraries) | 高阶API、基础API类库的使用示例，包括数学库，激活函数等 |
-| [04_best_practices](./04_best_practices) | 最佳实践示例 |
+| [00_introduction](./00_introduction) | 基于Ascend C的简单的示例，通过Ascend C编程语言实现了自定义算子，分别给出对应的<<<>>>直调实现，适合初学者 |
+| [01_utilities](./01_utilities) | 基于Ascend C的简单样例，通过printf、assert、debug等API介绍上板打印、异常检测、CPU孪生调试等系统工具使用方法，适用于调试阶段 |
+| [02_features](./02_features) | 基于Ascend C特性样例，介绍了Aclnn（ge入图）工程、LocalMemoryAllocator、Barrier单独内存申请分配等特性 |
+| [03_libraries](./03_libraries) | 基于Ascend C API类库的使用样例，通过<<<>>>直调的实现方式，介绍了数学库，激活函数等API类库 |
+| [04_best_practices](./04_best_practices) | 基于Ascend C的性能优化实践，聚焦于关键算子与内存访问的调优，旨在提升在Ascend平台上的运行效率 |
