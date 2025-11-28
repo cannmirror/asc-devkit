@@ -2045,4 +2045,4 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 
 ## C API
 
-[C API列表](context\c_api\README.md)
+[C API列表](context/c_api/README.md)
