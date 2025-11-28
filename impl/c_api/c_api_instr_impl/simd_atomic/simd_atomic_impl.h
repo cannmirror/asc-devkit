@@ -13,7 +13,7 @@
 
 #include "dcci/asc_2201/dcci_impl.h"
 
-__aicore__ inline void asc_data_cache_clean_and_invalid(__gm__ void *dst, uint64_t entire)
+__aicore__ inline void asc_data_cache_clean_and_invalid(__gm__ void* dst, uint64_t entire)
 {
     CApiInternal::data_cache_clean_and_invalid_impl(dst, entire);
 }

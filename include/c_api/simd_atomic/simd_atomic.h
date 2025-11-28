@@ -8,11 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef INCLUDE_C_API_SIMD_AOTMIC_H
-#define INCLUDE_C_API_SIMD_AOTMIC_H
+#ifndef INCLUDE_C_API_SIMD_ATOMIC_H
+#define INCLUDE_C_API_SIMD_ATOMIC_H
  
 #include "c_api_instr_impl/simd_atomic/simd_atomic_impl.h"
  
-__aicore__ inline void asc_data_cache_clean_and_invalid(__gm__ void *dst, uint64_t entire);
+__aicore__ inline void asc_data_cache_clean_and_invalid(__gm__ void* dst, uint64_t entire);
  
 #endif
