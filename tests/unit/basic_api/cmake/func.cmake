@@ -65,7 +65,7 @@ function(run_python_llt_test)
     add_custom_target(${PYTHON_TARGET} ALL DEPENDS ${CMAKE_INSTALL_PREFIX}/${PYTHON_TARGET}.timestamp)
 
     if(NOT DEFINED PYTHON_PYVERSION)
-        set(PYTHON_PYVERSION python3.9)
+        set(PYTHON_PYVERSION python3)
     endif()
 
     if((NOT DEFINED PYTHON_EXPORT_PYTHONPATH) OR (PYTHON_EXPORT_PYTHONPATH STREQUAL ""))
