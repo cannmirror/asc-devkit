@@ -42,10 +42,10 @@ PIPE_TYPE_S
 ```cpp
 // 假设src0，src1，dst三个操作数均包含64个half类型的数据。
 uint64_t offset = 0;                                   // 首先为src0申请内存，从0开始。
-__ubuf__ half* src0 = asc_get_phy_buf_addr(offset);    // 获取src0的地址，通过__ubuf__关键字指定该地址指向UB内存。
+__ubuf__ half* src0 = (__ubuf__ half*)asc_get_phy_buf_addr(offset);    // 获取src0的地址，通过__ubuf__关键字指定该地址指向UB内存。
 offset += 64 * sizeof(half);                           // 通过offset将src1的起始地址设置在src0之后。
-__ubuf__ half* src1 = asc_get_phy_buf_addr(offset);    // 获取src1的地址，通过__ubuf__关键字指定该地址指向UB内存。
+__ubuf__ half* src1 = (__ubuf__ half*)asc_get_phy_buf_addr(offset);    // 获取src1的地址，通过__ubuf__关键字指定该地址指向UB内存。
 offset += 64 * sizeof(half);                           // 通过offset将src1的起始地址设置在src0之后。
-__ubuf__ half* dst = asc_get_phy_buf_addr(offset);     // 获取dst的地址，通过__ubuf__关键字指定该地址指向UB内存。
+__ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);     // 获取dst的地址，通过__ubuf__关键字指定该地址指向UB内存。
 ...... // 使用src0、src1、dst中的数据进行后续计算或数据搬运操作。
 ```

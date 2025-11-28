@@ -82,7 +82,7 @@
 | dst | 输出 | 目的操作数。 |
 | src  | 输入 | 源操作数。|
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在非连续场景下使用的计算配置参数。|
+| config  | 输入     | 在非连续场景下使用的计算配置参数。请参考[asc_unary_config](../struct/asc_unary_config.md)|
 
 ## 返回值说明
 
@@ -102,9 +102,9 @@ PIPE_TYPE_V
 ```cpp
 // 假设src操作数包含128个bfloat16_t类型的数据，dst操作数包含128个int32_t类型的数据。
 uint64_t offset = 0;
-__ubuf__ bfloat16_t* src = asc_get_phy_buf_addr(offset);
-offset += 128 * sizeof(half);
-__ubuf__ half* dst = asc_get_phy_buf_addr(offset);
+__ubuf__ bfloat16_t* src = (__ubuf__ bfloat16_t*)asc_get_phy_buf_addr(offset);
+offset += 128 * sizeof(bfloat16_t);
+__ubuf__ int32_t* dst = (__ubuf__ int32_t*)asc_get_phy_buf_addr(offset);
 ...... // 将源操作数搬运到src0、src1.
 asc_bf162int32_a(dst, src, 128);
 ...... // 使用dst中的数据进行后续计算或数据搬运操作。
