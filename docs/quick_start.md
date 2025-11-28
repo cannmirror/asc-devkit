@@ -113,7 +113,7 @@
 
 1. **安装社区尝鲜版CANN toolkit包**
 
-    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ge/Ascend-cann-toolkit_8.5.0.alpha001_linux-x86_64.run)、[toolkit aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ge/Ascend-cann-toolkit_8.5.0.alpha001_linux-aarch64.run)。
+    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/Ascend-cann-toolkit_8.5.0.alpha001_linux-x86_64.run)、[toolkit aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/Ascend-cann-toolkit_8.5.0.alpha001_linux-aarch64.run)。
 
     ```bash
     # 确保安装包具有可执行权限
@@ -127,7 +127,25 @@
     - 缺省--install-path时， 则使用默认路径安装。
     若使用root用户安装，安装完成后相关软件存储在“/usr/local/Ascend/latest”路径下；若使用非root用户安装，安装完成后相关软件存储在“$HOME/Ascend/latest”路径下。
 
-2. **配置环境变量**
+2. **安装社区版CANN legacy包（运行态依赖）**
+
+    运行算子前必须安装本包，若仅编译算子，可跳过本操作。
+
+    根据产品型号和环境架构，下载对应`cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run`包，下载链接如下：
+
+    - Ascend 910B：[legacy x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910b-ops-legacy_8.5.0.0.0_linux-x86_64.run)、[legacy aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910b-ops-legacy_8.5.0.0.0_linux-aarch64.run)。
+    - Ascend 910C：[legacy x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910_93-ops-legacy_8.5.0.0.0_linux-x86_64.run)、[legacy aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910_93-ops-legacy_8.5.0.0.0_linux-aarch64.run)。
+
+    ```bash
+    # 确保安装包具有可执行权限
+    chmod +x cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run
+    # 安装命令
+    ./cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run --full --install-path=${install_path}
+    ```
+    - \$\{soc\_name\}：表示NPU型号名称，即\$\{soc\_version\}删除“ascend”后剩余的内容。
+    - \$\{install\_path\}：表示指定安装路径，需要与toolkit包安装在相同路径，默认安装在`/usr/local/Ascend`目录。
+
+3. **配置环境变量**
 
 - 默认路径，root用户安装
 
@@ -145,12 +163,12 @@
     source ${install_path}/latest/bin/setenv.bash
     ```
 
-3. **下载源码**
+4. **下载源码**
 
     开发者可通过如下命令下载本仓源码：
     ```bash
     # 下载项目源码，以master分支为例
-    git clone https://gitcode.com/cann/asc-devkit-dev.git
+    git clone https://gitcode.com/cann/asc-devkit.git
     ``` 
 
 
@@ -180,14 +198,11 @@
 
 ## UT验证
 
-在开源仓根目录执行下列命令之一，将依次批跑tests目录下的用例，得到结果日志，用于看护编译是否正常。
+在开源仓根目录执行下列命令，将按各模块依次批跑tests目录下的用例，得到结果日志，用于看护编译是否正常。
 
 ```bash
-bash build.sh -t
-```
-
-或
-
-```bash
-bash build.sh --test
+bash build.sh --adv_test                         # 批跑tests目录下adv_api里的用例
+bash build.sh --basic_test_one                   # 批跑tests目录下basic_api part-one里的用例
+bash build.sh --basic_test_two                   # 批跑tests目录下basic_api part-two里的用例
+bash build.sh --basic_test_three                 # 批跑tests目录下basic_api part-three里的用例
 ```
