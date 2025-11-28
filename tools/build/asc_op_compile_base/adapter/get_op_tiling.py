@@ -20,6 +20,7 @@ import stat
 import struct
 import math
 import glob
+import copy
 from pathlib import Path
 from collections import namedtuple
 from tbe.common.context import get_context
@@ -452,7 +453,8 @@ def get_struct_tiling_data(struct_tiling_def, struct_tiling_data, has_arr, struc
     return tiling_data_val, has_arr
 
 
-def gen_all_dynamic_struct_def_except_self(is_optype_self, tiling_key, tiling_key_list, optype):
+def gen_all_dynamic_struct_def_except_self(is_optype_self, tiling_key, tiling_key_list, optype, \
+                                           tiling_key_group_map):
     tiling_def_list_of_key = []
     struct_tiling_def_base = {}
 
@@ -465,11 +467,19 @@ def gen_all_dynamic_struct_def_except_self(is_optype_self, tiling_key, tiling_ke
     for one_tiling_key in tiling_key_list:
         optype_with_tilingkey = optype + "_" + one_tiling_key
         tiling_def = get_tiling_def(optype_with_tilingkey)
+        tiling_key_slave = None
+        if one_tiling_key in tiling_key_group_map.keys():
+            tiling_def = _get_tiling_def_with_group(tiling_def, optype, one_tiling_key, tiling_key_group_map)
+            tiling_key_slave = tiling_key_group_map[one_tiling_key][0]
         if tiling_def is not None:
             struct_tiling_def_base = get_struct_tiling_info(tiling_def, struct_tiling_def_base)
             tiling_def.class_def = get_dynamic_tiling_struct(tiling_def, struct_tiling_def_base)
             tiling_def.tiling_key = one_tiling_key
             tiling_def_list_of_key.append(tiling_def)
+        if tiling_key_slave is not None and tiling_key_slave != one_tiling_key:
+            tiling_def_slave = copy.deepcopy(tiling_def)
+            tiling_def_slave.tiling_key = tiling_key_slave
+            tiling_def_list_of_key.append(tiling_def_slave)
 
     optype_tiling_def.class_def = get_dynamic_tiling_struct(optype_tiling_def, struct_tiling_def_base)
 
@@ -1309,7 +1319,8 @@ def get_tiling_info_v2(op_info: OpInfo, tiling_key_list: list, default_tiling_st
     return tiling_info
 
 
-def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends: dict = None, enable_vd=False):
+def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends: dict = None, \
+                    enable_vd=False, tiling_key_group_map: dict = None):
     """get tiling define and tiling data registered by operator developer
 
     Args:
@@ -1345,8 +1356,17 @@ def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends
         tiling_info.tiling_key = run_info['tiling_key']
         if "local_memory_size" in run_info:
             tiling_info.local_memory_size = run_info["local_memory_size"]
-        optype_with_tilingkey = optype + "_" + str(tiling_info.tiling_key)
-        tiling_def = get_tiling_def(optype_with_tilingkey)
+        
+        tiling_key_master, has_tiling_key_group = get_master_tiling_key_from_group(
+            str(tiling_info.tiling_key), tiling_key_group_map)
+        if has_tiling_key_group:
+            optype_with_tilingkey = optype + "_" + tiling_key_master
+            tiling_def = get_tiling_def(optype_with_tilingkey)
+            tiling_def = _get_tiling_def_with_group(tiling_def, optype, tiling_key_master, \
+                                                    tiling_key_group_map)
+        else:
+            optype_with_tilingkey = optype + "_" + str(tiling_info.tiling_key)
+            tiling_def = get_tiling_def(optype_with_tilingkey)
         # judge the tilingkey of this shape now use if the tiling struct of optype itslef
         # or the special registered tilingkey struct
         is_optype_self = False
@@ -1363,7 +1383,7 @@ def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends
         tiling_info.schedule_mode = run_info.get("schedule_mode", 0)
         # all tiling struct info by dynamic, except the only one top-level struct of static-shape one itself
         all_dynamic_struct_def_except_self = gen_all_dynamic_struct_def_except_self(\
-            is_optype_self, str(tiling_info.tiling_key), tiling_key_list, optype)
+            is_optype_self, str(tiling_info.tiling_key), tiling_key_list, optype, tiling_key_group_map)
         tiling_info.file_content = gen_static_shape(\
             tiling_def, run_info["tiling_data"], struct_tiling_def_base, all_dynamic_struct_def_except_self)
         tiling_info.tiling_data_size = tiling_def.data_size
@@ -1394,6 +1414,8 @@ def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends
         for tiling_key in tiling_key_list:
             optype_with_tilingkey = optype + "_" + tiling_key
             tiling_def = get_tiling_def(optype_with_tilingkey)
+            if tiling_key in tiling_key_group_map.keys():
+                tiling_def = _get_tiling_def_with_group(tiling_def, optype, tiling_key, tiling_key_group_map)
             if tiling_def is not None:
                 struct_tiling_def_base = get_struct_tiling_info(tiling_def, struct_tiling_def_base)
                 tiling_def.class_def = get_dynamic_tiling_struct(tiling_def, struct_tiling_def_base)
@@ -1426,6 +1448,38 @@ def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends
         tiling_info.tiling_data_size = max(tiling_max_data_size, optype_tiling_def.data_size)
         tiling_info.default_tiling_size = optype_tiling_def.data_size
     return tiling_info
+
+
+def get_master_tiling_key_from_group(tiling_key: str, tiling_key_group_map: dict = None):
+    if tiling_key_group_map is None:
+        return "", False
+    if tiling_key in tiling_key_group_map.keys():
+        return tiling_key, True
+    for tiling_key_master, tiling_key_slave_list in tiling_key_group_map.items():
+        for tiling_key_slave in tiling_key_slave_list:
+            if tiling_key_slave == tiling_key:
+                return tiling_key_master, True
+    return "", False
+
+
+def _get_tiling_def_with_group(tiling_def: TilingDef, optype: str, tiling_key_master: str, \
+                               tiling_key_group_map: dict):
+    """Get tiling definition considering tiling key groups."""
+    for tiling_key_slave in tiling_key_group_map[tiling_key_master]:
+        optype_with_tilingkey_slave = optype + "_" + tiling_key_slave
+        tiling_def_slave = get_tiling_def(optype_with_tilingkey_slave)
+        if tiling_def is None:
+            tiling_def = tiling_def_slave
+        elif tiling_def_slave is None:
+            continue
+        else:
+            if tiling_def.class_name != tiling_def_slave.class_name:
+                raise Exception(f"tiling struct in tiling_key_group is different, the tiling \
+                                struct of tiling_key: {tiling_key_master} is {tiling_def.class_name}, \
+                                but the tiling struct of tiling_key: {tiling_key_slave} is \
+                                {tiling_def_slave.class_name}")
+
+    return tiling_def
 
 
 def get_tiling_declaration(optype: str):
