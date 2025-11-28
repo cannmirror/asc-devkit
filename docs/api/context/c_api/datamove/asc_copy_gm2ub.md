@@ -39,7 +39,7 @@ __aicore__ inline void asc_copy_gm2ub_sync(__ubuf__ void* dst, __gm__ void* src,
 | dst | 输出 | 目的GM地址。 |
 | src | 输入 | 源UB地址。 |
 | size | 输入 | 搬运数据大小（字节）。 |
-| [config](../struct/asc_copy_config.md) | 输入 | 数据搬运配置结构体。 |
+| config | 输入 | 在高维切分场景下使用的数据搬运配置参数。详细说明请参考[asc_copy_config](../struct/asc_copy_config.md) 。|
 
 ## 返回值说明
 

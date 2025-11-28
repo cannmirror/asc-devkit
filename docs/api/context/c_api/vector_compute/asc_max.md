@@ -52,7 +52,7 @@ __aicore__ inline void asc_max_sync(__ubuf__ float* dst, __ubuf__ float* src0, _
 | dst       | 输出    | 目的操作数。 |
 | src、src1 | 输入    | 源操作数。 |
 | count     | 输入    | 参与计算的元素个数。 |
-| [config](../struct/asc_binary_config.md) | 输入    | 在非连续场景下使用的计算配置参数。 |
+| config | 输入    | 在高维切分场景下使用的计算配置参数。详细说明请参考[asc_binary_config](../struct/asc_binary_config.md) 。 |
 
 ## 返回值说明
 
