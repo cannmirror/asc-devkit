@@ -56,7 +56,7 @@
 | dst | 输出 | 目的操作数地址 |
 | src | 输入 | 源标量值 |
 | count | 输入 | 参与连续复制的元素个数 |
-| config | 输入 | 在非连续场景下使用的复制配置参数 |
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_duplicate_config](../struct/asc_duplicate_config.md) |
 
 ## 返回值说明
 
@@ -68,12 +68,12 @@ PIPE_V
 
 ## 约束说明
 
-- dst、src的起始地址需要32字节对齐。
+- dst的起始地址需要32字节对齐。
 
 ## 调用示例
 
 ```cpp
-__ubuf__ half* dst = (__ubuf__ half*)asc_GetPhyBufAddr(0);
+__ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(0);
 half val(18.0);
 asc_duplicate(dst, val, 128);
 ```
