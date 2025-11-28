@@ -27,7 +27,7 @@ __aicore__ inline void asc_add_scalar(_ubuf__ float* dst, _ubuf__ float* src, fl
 
 ```
 
-- 非连续数据计算
+- 高维切分计算
 
 ```cpp
 _aicore__ inline void asc_add_scalar_(ubuf__ int16_t* dst, _ubuf__ int16_t* src, int16_t a, const asc_binary_config& config)
@@ -51,10 +51,10 @@ __aicore__ inline void asc_add_scalar_sync(_ubuf__ float* dst, _ubuf__ float* sr
 
 | 参数名       | 输入/输出 | 描述               |
 | --------- | ----- | ---------------- |
-| dst       | 输出    | 目的操作数            |
-| src0、src1 | 输入    | 源操作数             |
-| count     | 输入    | 参与连续计算的元素个数      |
-| config    | 输入    | 在非连续场景下使用的计算配置参数 |
+| dst       | 输出    | 目的操作数。            |
+| src0、src1 | 输入    | 源操作数。            |
+| count     | 输入    | 参与连续计算的元素个数。      |
+| config    | 输入    | 在高维切分计算场景下使用的计算配置参数。<br/>详细说明请参考[asc_binary_config](../struct/asc_binary_config.md)。 |
 
 
 ## 返回值说明
