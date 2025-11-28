@@ -46,7 +46,7 @@ from .ascendc_common_utility import CommonUtility, CompileInfo, \
 from .ascendc_compile_dfx import DFXParamType, DFXPointType, DFXArgInfo, DFXSectionGenerator
 from .ascendc_compile_v220 import gen_compile_cmd_v220, get_v220_kernel_type_mix_flag, call_bisheng_v220, \
     get_ktype_section_variable, get_code_channel_v220_by_first_tiling_key, \
-    set_dynamic_sub_func_names_of_super_kernel_with_kernel_type, gen_compile_cmd_for_meta_info
+    set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group, gen_compile_cmd_for_meta_info
 from .ascendc_compile_v200 import call_bisheng_v200_static, call_bisheng_v200_dynamic
 from .ascendc_compile_gen_code import get_code_for_l2_cache, \
     gen_usr_origin_kernel_function_call, gen_template_tiling_params, add_time_stamp_codes, \
@@ -2300,13 +2300,13 @@ def _get_compile_cmd_and_section_content(compile_info: CompileInfo, arch: str, \
         if kernel_type.value >= 2:
             current_kernel_name = compile_info.kernel_name[:-7] + tiling_key + compile_info.kernel_name[-8:]
             compile_cmd += [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
-            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch, kernel_type.name, \
-                                                            current_kernel_name)
+            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, arch, kernel_type.name, \
+                                                            current_kernel_name, compile_info)
         else:
             current_kernel_name = compile_info.kernel_name + '_%s' % tiling_key
             compile_cmd += [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
-            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, "AiCore", kernel_type.name, \
-                                                            current_kernel_name)
+            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, "AiCore", kernel_type.name, \
+                                                            current_kernel_name, compile_info)
     if kernel_type.value >= 6 and kernel_type.value <= 7:
         compile_cmd += [f"-D{MIX_CORE_MACRO}={1}"]
     if kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:

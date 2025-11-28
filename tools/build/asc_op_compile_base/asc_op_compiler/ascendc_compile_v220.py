@@ -18,7 +18,7 @@ import stat
 import subprocess
 from asc_op_compile_base.common.buildcfg import get_current_build_config
 from .global_storage import global_var_storage
-from .ascendc_common_utility import CommonUtility, CompileInfo
+from .ascendc_common_utility import CommonUtility, CompileInfo, get_kernel_fun_name_with_tiling_key_and_kernel_type
 from .get_op_tiling import TilingInfo
 from asc_op_compile_base.common.utils.log_utils import CompileStage
 from .ascendc_constants import CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC, ASCENDC_OOM, KernelMetaType, \
@@ -237,6 +237,19 @@ def set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch
     sub_super_kernel_func_names.setdefault("dynamic_func_names", {}).setdefault(tiling_key, {})[arch] = kernel_func_name
     sub_super_kernel_func_names["dynamic_func_names"][tiling_key]["kernel_type"] = kernel_type
     global_var_storage.set_variable("ascendc_sub_super_kernel_fun_names", sub_super_kernel_func_names)
+    return
+
+
+def set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, arch, kernel_type, \
+                                                                      kernel_func_name, compile_info: CompileInfo):
+    set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch, kernel_type, kernel_func_name)
+    if tiling_key in compile_info.tiling_key_group_map.keys():
+        for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+            kernel_type_slave = compile_info.tiling_key_kernel_type[str(tiling_key_slave)]
+            kernel_func_name = get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info, \
+                                                                                   str(tiling_key_slave))
+            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key_slave, arch, \
+                                                                        kernel_type_slave.name, kernel_func_name)
     return
 
 
