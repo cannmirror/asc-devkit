@@ -8,23 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_UTILS_C_API_UNION_H
-#define C_API_UTILS_C_API_UNION_H
+#ifndef INCLUDE_C_API_UTILS_C_API_UNION_H
+#define INCLUDE_C_API_UTILS_C_API_UNION_H
 
 #include "c_api_constants.h"
 #include <cstdint>
-
-union DeqScaleConfig
-{
-    uint64_t val;
-    struct {
-        uint64_t reserved1: 5;
-        uint64_t offset: 9;
-        uint64_t signMode: 1;
-        uint64_t reserved2: 17;
-        float scale;
-    };
-};
 
 union asc_copy_config {
     uint64_t config;
@@ -64,12 +52,23 @@ union asc_unary_config {
     };
 };
 
-union asc_reduce_config {
+union asc_block_reduce_config {
     uint64_t config = CAPI_DEFAULT_REDUCE_CONFIG_VALUE;
     struct {
         uint64_t dst_repeat_stride: 16;
-        uint64_t src0_stride: 16;
-        uint64_t src1_stride: 16;
+        uint64_t src_block_stride: 16;
+        uint64_t src_repeat_stride: 16;
+        uint64_t reserved: 8;
+        uint64_t repeat : 8;
+    };
+};
+
+union asc_repeat_reduce_config {
+    uint64_t config = CAPI_DEFAULT_REDUCE_CONFIG_VALUE;
+    struct {
+        uint64_t dst_repeat_stride: 16;
+        uint64_t src_block_stride: 16;
+        uint64_t src_repeat_stride: 16;
         uint64_t reserved: 8;
         uint64_t repeat : 8;
     };
