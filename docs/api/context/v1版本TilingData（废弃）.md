@@ -1,6 +1,6 @@
 # v1版本TilingData（废弃）<a name="ZH-CN_TOPIC_0000001940699904"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >该结构体废弃，并将在后续版本移除，请不要使用该结构体。无需直接对该结构体中的成员进行设置，统一使用HCCL Tiling提供的接口设置即可。
 >对于本节介绍的TilingData结构体，当构建通信计算融合算子时，通算融合算子的TilingData结构体中，计算Tiling结构体部分必须在本节的通信Tiling结构体后追加。
 >对于v1和v2两个版本的TilingData，Tiling结构体的第一个uint32\_t字段用于区分两个版本，即[v1版本](#table4835205712588)的preparePosition字段，[v2版本](v2版本TilingData（废弃）.md#table4835205712588)的version字段。若使用v2版本的Tiling结构体，则必须设置version=2；若使用v1版本的Tiling结构体，则设置preparePosition=1。用户使用任意版本的TilingData时，都必须严格按照对应版本的Tiling结构体，将其作为算子TilingData结构体的组成部分。

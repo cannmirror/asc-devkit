@@ -1,6 +1,6 @@
 # SetNextTaskStart<a name="ZH-CN_TOPIC_0000002337763421"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >本接口为试验接口，在后续版本中可能会调整或改进，不保证后续兼容性。请开发者在使用过程中关注后续版本更新。
 
 ## AI处理器支持情况<a name="section17196114513104"></a>

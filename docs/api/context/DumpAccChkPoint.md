@@ -32,7 +32,7 @@
 AscendC::DumpAccChkPoint(srcLocal, 5, 32, dataLen);
 ```
 
->![](public_sys-resources/icon-caution.gif) **注意：** 
+> [!CAUTION]注意  
 >DumpAccChkPoint接口打印功能会对算子实际运行的性能带来一定影响，通常在调测阶段使用。开发者可以按需通过如下方式关闭打印功能。
 >-   自定义算子工程
 >    修改算子工程op\_kernel目录下的CMakeLists.txt文件，首行增加编译选项-DASCENDC\_DUMP=0，关闭ASCENDC\_DUMP开关，示例如下：

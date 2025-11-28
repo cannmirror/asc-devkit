@@ -24,7 +24,7 @@ Kernel侧实现Conv3DBackpropInput求解反向传播误差运算的步骤概括�
 4.  完成卷积反向操作。
 5.  结束卷积反向操作。
 
-    >![](public_sys-resources/icon-note.gif) **说明：** 
+    > [!NOTE]说明 
     >下文中提及的M轴方向，即为GradOutput矩阵纵向；K轴方向，即为GradOutput矩阵横向或Weight矩阵纵向；N轴方向，即为Weight矩阵横向。
 
 使用Conv3DBackpropInput高阶API求解反向传播误差运算的具体步骤如下：

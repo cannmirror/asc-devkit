@@ -1,6 +1,6 @@
 # SetCcTiling（废弃）<a name="ZH-CN_TOPIC_0000002120951556"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >该接口废弃，并将在后续版本移除，请不要使用该接口。请使用[SetCcTilingV2](SetCcTilingV2.md)接口设置通信算法的Tiling地址。
 
 ## AI处理器支持情况<a name="section1586581915393"></a>

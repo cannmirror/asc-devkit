@@ -57,7 +57,7 @@
 
 -   **单行读取**：源图片中仅读取一行。
 
-    >![](public_sys-resources/icon-note.gif) **说明：** 
+    > [!NOTE]说明 
     >调用数据搬运接口时，开启单行读取后设置的目的图片高度参数无效，如[LoadImageToLocal](LoadImageToLocal.md)接口的loadImageToLocalParams.vertSize。
 
 -   **数据类型转换**：转换像素的数据类型，支持uint8\_t转换为int8\_t或half。当uint8\_t转换成int8\_t的时候，输出数据范围限制在\[-128， 127\]。
@@ -69,7 +69,7 @@
     uint8_t -> fp16:  output[i][j][k] = (input[i][j][k] - mean[k] - min[k]) * var[k]
     ```
 
-    >![](public_sys-resources/icon-note.gif) **说明：** 
+    > [!NOTE]说明 
     >转换后的数据类型是由模板参数U配置，U为uint8\_t时数据类型转换功能不生效。
     >调用数据搬运接口时，目的Tensor的数据类型需要与本接口输出数据类型保持一致，如[LoadImageToLocal](LoadImageToLocal.md)的dstLocal参数的数据类型。
 

@@ -12,7 +12,7 @@ Ascend C提供一组Conv3D高阶API，方便用户快速实现3维卷积正向�
 **图 1**  3维正向卷积示意图<a name="fig198021635102613"></a>  
 ![](figures/3维正向卷积示意图.png "3维正向卷积示意图")
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >Cin为Input的输入通道大小Channel；Din为Input的Depth维度大小；Hin为Input的Height维度大小；Win为Input的Width维度大小；Cout为Weight、Output的输出通道大小；Dout为Output的Depth维度的大小；Hout为Output的Height维度大小；Wout为Output的Width维度大小；下文中提及的M维度，为卷积正向操作过程中的输入Input在img2col展开后的纵轴，数值上等于Hout \* Wout。
 >Channel、Depth、Height、Width后续简称为C、D、H、W。
 

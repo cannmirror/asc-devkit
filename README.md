@@ -38,11 +38,13 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 ├── examples                            # Ascend C API样例工程
 ├── impl                                # Ascend C API接口实现源代码
 │   ├── adv_api                         # Ascend C 高阶API实现源代码
+│   ├── aicpu_api                       # Ascend C AI CPU API实现源代码
 │   ├── basic_api                       # Ascend C 基础API实现源代码
 │   ├── c_api                           # Ascend C 语言扩展层C API实现源代码
 │   └── utils                           # Ascend C 工具类实现源代码
 ├── include                             # Ascend C API接口声明源代码
 │   ├── adv_api                         # Ascend C 高阶API声明源代码
+│   ├── aicpu_api                       # Ascend C AI CPU API声明源代码
 │   ├── basic_api                       # Ascend C 基础API声明源代码
 │   ├── c_api                           # Ascend C 语言扩展层C API声明源代码
 │   └── utils                           # Ascend C 工具类声明源代码

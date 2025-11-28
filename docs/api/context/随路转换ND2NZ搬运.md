@@ -50,7 +50,7 @@
     __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src, const Nd2NzParams& intriParams)
     ```
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >各原型支持的具体数据通路和数据类型，请参考[支持的通路和数据类型](#section87413163309)。
 
 ## 参数说明<a name="section1251613311396"></a>
