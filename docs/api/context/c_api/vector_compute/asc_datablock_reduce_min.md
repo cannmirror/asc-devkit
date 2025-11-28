@@ -51,7 +51,7 @@
 
 ## 流水类型
 
-PIPE_V
+PIPE_TYPE_V
 
 ## 约束说明
 
