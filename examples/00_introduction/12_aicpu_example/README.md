@@ -7,10 +7,10 @@
 - Ascend 910B
 ## 目录结构介绍
 ```
-├── 00_helloworld
+├── 12_aicpu_example
 │   ├── CMakeLists.txt      // 编译工程文件
 │   ├── hello_world.aicpu   // AI CPU算子实现
-|   └── main.asc            //AI CPU算子调用
+|   └── main.asc            // AI CPU算子调用
 ```
 
 ## 编译运行
@@ -18,7 +18,7 @@
 - 配置环境变量  
   以命令行方式下载样例代码，master分支为例。
   ```bash
-  cd ${git_clone_path}/examples/00_introduction/13_aicpu_example
+  cd ${git_clone_path}/examples/00_introduction/12_aicpu_example
   ```
 
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
