@@ -81,13 +81,13 @@ Add算子：
     配置安装路径后，执行以下命令统一配置环境变量。
     ```bash
     # 选择芯片型号
-    SOC_VERSION=${1:-[SOC_VERSION]}
+    SOC_VERSION=${1:-SOC_VERSION}
     # 配置CANN环境变量
     source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
     # 添加AscendC CMake Module搜索路径至环境变量
     export LD_LIBRARY_PATH=${ASCEND_INSTALL_PATH}/tools/tikicpulib/lib:${ASCEND_INSTALL_PATH}/tools/tikicpulib/lib/${SOC_VERSION}:${ASCEND_INSTALL_PATH}/tools/simulator/${SOC_VERSION}/lib:$LD_LIBRARY_PATH
     ```
-    - SOC_VERSION：昇腾AI处理器型号，如果无法确定具体的[SOC_VERSION]，则在安装昇腾AI处理器的服务器执行npu-smi info命令进行查询，在查询到的“Name”前增加Ascend信息，例如“Name”对应取值为xxxyy，实际配置的[SOC_VERSION]值为Ascendxxxyy。
+    - SOC_VERSION：昇腾AI处理器型号，如果无法确定具体的SOC_VERSION，则在安装昇腾AI处理器的服务器执行npu-smi info命令进行查询，在查询到的“Name”前增加Ascend信息，例如“Name”对应取值为xxxyy，实际配置的SOC_VERSION值为Ascendxxxyy。
 
   - 样例执行
     执行add.cpp样例的命令如下所示：
@@ -112,6 +112,12 @@ Add算子：
   - 进入gdb模式调试
     在上述指令中"./add"前加入"gdb --args"，再次执行指令即可进入gdb模式。
     ```bash
+    set -e && rm -rf build out && mkdir -p build
+    cmake -B build -DCMAKE_INSTALL_PREFIX=./ -DSOC_VERSION=${SOC_VERSION}
+    cmake --build build -j
+    cmake --install build
+    rm -f add
+    cp ./build/add ./
     python3 scripts/gen_data.py
     (
       export LD_LIBRARY_PATH=$(pwd)/out/lib:$(pwd)/out/lib64:${ASCEND_INSTALL_PATH}/lib64:$LD_LIBRARY_PATH
