@@ -1,9 +1,9 @@
 # DataCacheCleanAndInvalid<a name="ZH-CN_TOPIC_0000001787873306"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## AI处理器支持情况<a name="section1550532418810"></a>
 
 <a name="table18341227114216"></a>
-<table><thead align="left"><tr id="row1834122714219"><th class="cellrowborder" valign="top" width="53.64%" id="mcps1.1.4.1.1"><p id="p83416275429"><a name="p83416275429"></a><a name="p83416275429"></a><span id="ph93442717421"><a name="ph93442717421"></a><a name="ph93442717421"></a>产品</span></p>
+<table><thead align="left"><tr id="row1834122714219"><th class="cellrowborder" valign="top" width="53.64%" id="mcps1.1.4.1.1"><p id="p83416275429"><a name="p83416275429"></a><a name="p83416275429"></a><span id="ph93442717421"><a name="ph93442717421"></a><a name="ph93442717421"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="24.63%" id="mcps1.1.4.1.2"><p id="p103412764211"><a name="p103412764211"></a><a name="p103412764211"></a>是否支持（<span>支持配置dcciDst</span>的原型）</p>
 </th>
@@ -11,14 +11,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row835162718427"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1835227144211"><a name="p1835227144211"></a><a name="p1835227144211"></a><span id="ph1351727134210"><a name="ph1351727134210"></a><a name="ph1351727134210"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row835162718427"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1835227144211"><a name="p1835227144211"></a><a name="p1835227144211"></a><span id="ph1351727134210"><a name="ph1351727134210"></a><a name="ph1351727134210"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="24.63%" headers="mcps1.1.4.1.2 "><p id="p113512277421"><a name="p113512277421"></a><a name="p113512277421"></a>√</p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="21.73%" headers="mcps1.1.4.1.3 "><p id="p105659373436"><a name="p105659373436"></a><a name="p105659373436"></a>√</p>
 </td>
 </tr>
-<tr id="row935927124211"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p143562715428"><a name="p143562715428"></a><a name="p143562715428"></a><span id="ph135927124210"><a name="ph135927124210"></a><a name="ph135927124210"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row935927124211"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p143562715428"><a name="p143562715428"></a><a name="p143562715428"></a><span id="ph135927124210"><a name="ph135927124210"></a><a name="ph135927124210"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="24.63%" headers="mcps1.1.4.1.2 "><p id="p193518270426"><a name="p193518270426"></a><a name="p193518270426"></a>√</p>
 </td>
@@ -95,7 +95,7 @@
 <tr id="row429315710413"><td class="cellrowborder" valign="top" width="18.14%" headers="mcps1.2.3.1.1 "><p id="p172937571143"><a name="p172937571143"></a><a name="p172937571143"></a>dcciDst</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.86%" headers="mcps1.2.3.1.2 "><p id="p172935571246"><a name="p172935571246"></a><a name="p172935571246"></a>表示使用该接口来保证Data Cache与哪一种存储保持一致性，类型为DcciDst枚举类。</p>
-<a name="ul0740116780"></a><a name="ul0740116780"></a><ul id="ul0740116780"><li>CACHELINE_ALL：与CACHELINE_OUT效果一致。</li><li>CACHELINE_UB：预留参数，暂未支持。</li><li>CACHELINE_OUT：表示通过该接口来保证Data Cache与Global Memory的一致性。</li><li>CACHELINE_ATOMIC：<a name="ul174370221398"></a><a name="ul174370221398"></a><ul id="ul174370221398"><li><span id="ph191391637074"><a name="ph191391637074"></a><a name="ph191391637074"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span>，预留参数，暂未支持。</li><li><span id="ph1410413421715"><a name="ph1410413421715"></a><a name="ph1410413421715"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，预留参数，暂未支持。</li></ul>
+<a name="ul0740116780"></a><a name="ul0740116780"></a><ul id="ul0740116780"><li>CACHELINE_ALL：与CACHELINE_OUT效果一致。</li><li>CACHELINE_UB：预留参数，暂未支持。</li><li>CACHELINE_OUT：表示通过该接口来保证Data Cache与Global Memory的一致性。</li><li>CACHELINE_ATOMIC：<a name="ul174370221398"></a><a name="ul174370221398"></a><ul id="ul174370221398"><li><span id="ph191391637074"><a name="ph191391637074"></a><a name="ph191391637074"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，预留参数，暂未支持。</li><li><span id="ph1410413421715"><a name="ph1410413421715"></a><a name="ph1410413421715"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，预留参数，暂未支持。</li></ul>
 </li></ul>
 </td>
 </tr>

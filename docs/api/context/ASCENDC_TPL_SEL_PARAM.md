@@ -59,31 +59,16 @@ do {                                                  \
 #include "tiling_key_add_custom.h"
 static ge::graphStatus TilingFunc(gert::TilingContext *context)
 {
-    TilingData tiling;
+    TilingDataTemplate tiling;
     uint32_t totalLength = context->GetInputShape(0)->GetOriginShape().GetShapeSize();
     ge::DataType dtype_x = context->GetInputDesc(0)->GetDataType();
     ge::DataType dtype_y = context->GetInputDesc(1)->GetDataType();
-    ge::DataType dtype_z = context->GetOutputDesc(1)->GetDataType();
-    uint32_t D_T_X = ADD_TPL_FP32, D_T_Y=ADD_TPL_FP32, D_T_Z=ADD_TPL_FP32, TILE_NUM=1, IS_SPLIT=0;
-    if(dtype_x == ge::DataType::DT_FLOAT){
-        D_T_X = ADD_TPL_FP32;
-    }else if(dtype_x == ge::DataType::DT_FLOAT16){
-        D_T_X = ADD_TPL_FP16;
-    }
-    if(dtype_y == ge::DataType::DT_FLOAT){
-        D_T_Y = ADD_TPL_FP32;
-    }else if(dtype_y == ge::DataType::DT_FLOAT16){
-        D_T_Y = ADD_TPL_FP16;
-    }
-    if(dtype_z == ge::DataType::DT_FLOAT){
-        D_T_Z = ADD_TPL_FP32;
-    }else if(dtype_z == ge::DataType::DT_FLOAT16){
-        D_T_Z = ADD_TPL_FP16;
-    }
-    if(totalLength< MIN_LENGTH_FOR_SPLIT){
+    ge::DataType dtype_z = context->GetOutputDesc(0)->GetDataType();
+    uint32_t D_T_X = static_cast<int>(dtype_x), D_T_Y = static_cast<int>(dtype_y), D_T_Z = static_cast<int>(dtype_z), TILE_NUM = 1, IS_SPLIT = 0;
+    if (totalLength < MIN_LENGTH_FOR_SPLIT) {
         IS_SPLIT = 0;
         TILE_NUM = 1;
-    }else{
+    } else {
         IS_SPLIT = 1;
         TILE_NUM = DEFAULT_TILE_NUM;
     }

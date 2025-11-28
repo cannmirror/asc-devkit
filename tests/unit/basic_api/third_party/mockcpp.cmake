@@ -22,7 +22,7 @@ if (ABI_ZERO STREQUAL true)
     set(mockcpp_FLAGS "${mockcpp_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 endif()
 
-set(BOOST_INCLUDE_DIRS ${mockcpp_SRC_DIR}/../boost_src)
+set(BOOST_INCLUDE_DIRS ${BOOST_PATH})
 if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}/mockcpp/lib/libmockcpp.a" OR TRUE)
     set(PATCH_FILE ${third_party_TEM_DIR}/mockcpp-2.7_py3.patch)
     if (NOT EXISTS ${PATCH_FILE})

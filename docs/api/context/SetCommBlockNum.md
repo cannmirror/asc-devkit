@@ -40,7 +40,7 @@ uint32_t SetCommBlockNum(uint16_t num)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-本接口仅在Atlas A3 训练系列产品/Atlas A3 推理系列产品上通信类型为HCCL\_CMD\_BATCH\_WRITE时生效。
+本接口仅在Ascend 910C上通信类型为HCCL\_CMD\_BATCH\_WRITE时生效。
 
 ## 调用示例<a name="section1665082013318"></a>
 

@@ -1,20 +1,20 @@
 # Fixpipe<a name="ZH-CN_TOPIC_0000001449528792"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## AI处理器支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>仅支持包含FixpipeParamsV220参数的接口。</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>仅支持包含FixpipeParamsV220参数的接口。</p>
 </td>
@@ -136,8 +136,8 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 <td class="cellrowborder" valign="top" width="10.291029102910292%" headers="mcps1.2.4.1.2 "><p id="p5590551181016"><a name="p5590551181016"></a><a name="p5590551181016"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="75.52755275527552%" headers="mcps1.2.4.1.3 "><p id="p255711621817"><a name="p255711621817"></a><a name="p255711621817"></a>目的操作数，类型为<a href="GlobalTensor.md">GlobalTensor</a>。</p>
-<a name="ul16146134605518"></a><a name="ul16146134605518"></a><ul id="ul16146134605518"><li>针对GlobalTensor：<p id="p1415845205514"><a name="p1415845205514"></a><a name="p1415845205514"></a><span id="ph29201555165"><a name="ph29201555165"></a><a name="ph29201555165"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
-<p id="p51581952155513"><a name="p51581952155513"></a><a name="p51581952155513"></a><span id="ph1920105519169"><a name="ph1920105519169"></a><a name="ph1920105519169"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
+<a name="ul16146134605518"></a><a name="ul16146134605518"></a><ul id="ul16146134605518"><li>针对GlobalTensor：<p id="p1415845205514"><a name="p1415845205514"></a><a name="p1415845205514"></a><span id="ph29201555165"><a name="ph29201555165"></a><a name="ph29201555165"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
+<p id="p51581952155513"><a name="p51581952155513"></a><a name="p51581952155513"></a><span id="ph1920105519169"><a name="ph1920105519169"></a><a name="ph1920105519169"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
 <p id="p15158175275514"><a name="p15158175275514"></a><a name="p15158175275514"></a>数据格式为NZ或ND格式。经过Fixpipe处理，在量化操作之后，会将矩阵计算中多申请的数据删除。</p>
 </li></ul>
 </td>
@@ -167,7 +167,7 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 </tbody>
 </table>
 
-**表 3** FixpipeParamsV220结构体内参数定义
+**表 3**  Fixpipe搬运参数结构体说明
 
 <a name="table16798200165314"></a>
 <table><thead align="left"><tr id="row1979815015536"><th class="cellrowborder" valign="top" width="13.459999999999999%" id="mcps1.2.4.1.1"><p id="p1979819019535"><a name="p1979819019535"></a><a name="p1979819019535"></a>参数名称</p>
@@ -265,7 +265,11 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 </td>
 <td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p1930735614442"><a name="p1930735614442"></a><a name="p1930735614442"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="76.49000000000001%" headers="mcps1.2.4.1.3 "><p id="p9307115654415"><a name="p9307115654415"></a><a name="p9307115654415"></a>预留参数，用户无需关心，使用默认值0即可。</p>
+<td class="cellrowborder" valign="top" width="76.49000000000001%" headers="mcps1.2.4.1.3 "><p id="p45001373112"><a name="p45001373112"></a><a name="p45001373112"></a>unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。取值说明如下：</p>
+<p id="p1225131744220"><a name="p1225131744220"></a><a name="p1225131744220"></a>0：保留值；</p>
+<p id="p3836113514213"><a name="p3836113514213"></a><a name="p3836113514213"></a>2：使能unitFlag，硬件执行完指令之后，不会设置寄存器；</p>
+<p id="p53431612144318"><a name="p53431612144318"></a><a name="p53431612144318"></a>3：使能unitFlag，硬件执行完指令之后，会将unitFlag关闭。</p>
+<p id="p14988589213"><a name="p14988589213"></a><a name="p14988589213"></a>使能该功能时，Fixpipe指令的unitFlag设置为3即可。</p>
 </td>
 </tr>
 <tr id="row189241520171518"><td class="cellrowborder" valign="top" width="13.459999999999999%" headers="mcps1.2.4.1.1 "><p id="p1092412021519"><a name="p1092412021519"></a><a name="p1092412021519"></a>isChannelSplit</p>
