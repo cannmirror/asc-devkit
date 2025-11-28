@@ -39,7 +39,7 @@ __aicore__ inline void asc_copy_ub2gm_sync(__gm__ void* dst, __ubuf__ void* src,
 | dst | 输出 | 目的GM地址。 |
 | src | 输入 | 源UB地址。 |
 | size | 输入 | 搬运数据大小（字节）。 |
-| config | 输入 | 数据搬运配置结构体。 |
+| [config](../struct/asc_copy_config.md) | 输入 | 数据搬运配置结构体。 |
 
 ## 返回值说明
 
@@ -59,10 +59,10 @@ PIPE_TYPE_MTE2
 ## 调用示例
 
 ```cpp
-//total_Length指参与搬运的数据总长度
+//total_length指参与搬运的数据总长度
 uint64_t offset = 0;
-src_ub_ = (__ubuf__ half*)asc_GetPhyBufAddr(0);
-offset += totalLength * sizeof(half);
-dst_gm = (__gm__ half*)asc_GetPhyBufAddr(offset);
-asc_copy_ub2gm(dst_gm, src_ub, totalLength);
+src_ub_ = (__ubuf__ half*)asc_get_phy_buf_addr(0);
+offset += total_length * sizeof(half);
+dst_gm = (__gm__ half*)asc_get_phy_buf_addr(offset);
+asc_copy_ub2gm(dst_gm, src_ub, total_length);
 ```
