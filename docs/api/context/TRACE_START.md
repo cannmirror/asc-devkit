@@ -28,7 +28,7 @@
 
 用于表示起始位置打点，一般与[TRACE\_STOP](TRACE_STOP.md)配套使用。
 
->![](public_sys-resources/icon-caution.gif) **注意：** 
+> [!CAUTION]注意  
 >该功能主要用于**调试和性能分析**，开启后会对算子性能产生一定影响，通常在调测阶段使用，**生产环境建议关闭**。
 >默认情况下，该功能关闭，开发者可以按需通过如下方式开启打点功能。
 >修改Kernel直调工程cmake目录下的npu\_lib.cmake文件，在ascendc\_compile\_definitions命令中增加-DASCENDC\_TRACE\_ON编译选项，来开启打点功能。示例如下：

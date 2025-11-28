@@ -194,7 +194,7 @@ sharedTmpBuffer空间需要开发者申请并传入，根据是否需要获取�
 
 以上计算出来的最终的空间大小单位是元素个数，若转成Bytes数表示为finalWorkLocalNeedSize \* typeSize \(Bytes\)，具体计算示例请参考[调用示例](#section107745237168)中sharedTmpBufferl空间计算示例。
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >开发者为了节省地址空间，可以选择sharedTmpBuffer空间复用源操作数的空间。此时因为sharedTmpBuffer需要的最小空间一定小于源操作数的空间，所以无需关注和计算最小空间。
 
 ## 返回值说明<a name="section17124037164714"></a>

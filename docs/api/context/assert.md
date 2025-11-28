@@ -24,7 +24,7 @@
 
 ## 功能说明<a name="section259105813316"></a>
 
->![](public_sys-resources/icon-notice.gif) **须知：** 
+> [!CAUTION]注意 
 >为了避免部分场景下和标准的assert接口产生冲突，assert\(expr, \_\_gm\_\_ const char \*fmt, Args&&... args\)接口将被废弃，并将在后续版本移除。请不要使用该接口，可使用[ascendc\_assert](ascendc_assert.md)的对应接口作为替代。
 
 基于算子工程开发的算子，可以使用该接口实现CPU/NPU域assert断言功能。算子执行中，如果assert内部条件判断不为真，则输出assert条件并将输入的信息格式化打印在屏幕上。
@@ -37,7 +37,7 @@ int assertFlag = 10;
 assert(assertFlag == 10);
 ```
 
->![](public_sys-resources/icon-caution.gif) **注意：** 
+> [!CAUTION]注意  
 >assert接口打印功能会对算子实际运行的性能带来一定影响（每一条assert，系统会额外增加一条逻辑判断，具体性能影响取决于代码中assert的使用数量），通常在调测阶段使用。开发者可以按需通过如下方式关闭打印功能。
 >-   自定义算子工程
 >    修改算子工程op\_kernel目录下的CMakeLists.txt文件，首行增加编译选项-DASCENDC\_DUMP=0，关闭ASCENDC\_DUMP开关，示例如下：

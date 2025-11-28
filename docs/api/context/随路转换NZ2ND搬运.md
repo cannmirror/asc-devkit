@@ -33,7 +33,7 @@ template <typename T>
 __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>& src, const Nz2NdParamsFull& intriParams)
 ```
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >各原型支持的具体数据通路和数据类型，请参考[支持的通路和数据类型](#section189171223121916)。
 
 ## 参数说明<a name="section14983445508"></a>

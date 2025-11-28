@@ -6,7 +6,7 @@
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >GetConfusionTransposeMaxMinTmpSize、GetConfusionTransposeTilingInfo接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetTransposeMaxMinTmpSize、GetTransposeTilingInfo接口。
 
 -   获取最小临时空间大小

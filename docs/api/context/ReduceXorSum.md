@@ -26,7 +26,7 @@
 
 按照元素执行Xor（按位异或）运算，并将计算结果ReduceSum求和。
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >**注意：当最终计算结果超出int16范围\[-32768，32767\]后，将输出-32768 或者 32767。**
 
 ## 函数原型<a name="section620mcpsimp"></a>

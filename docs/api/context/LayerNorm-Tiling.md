@@ -85,7 +85,7 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >GetLayerNormNDTillingInfo接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetLayerNormNDTilingInfo接口。
 
 -   GetLayerNormMaxMinTmpSize接口

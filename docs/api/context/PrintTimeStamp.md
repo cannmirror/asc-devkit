@@ -37,7 +37,7 @@
 descId is 65577, rsv is 0, timeStamp is 13806084506158, pcPtr is 20619064414544.
 ```
 
->![](public_sys-resources/icon-caution.gif) **注意：** 
+> [!CAUTION]注意  
 >该功能主要用于**调试和性能分析**，开启后会对算子性能产生一定影响，**生产环境建议关闭**。
 >默认情况下，该功能关闭，开发者可以按需通过如下方式开启打点功能。
 >-   Kernel直调工程

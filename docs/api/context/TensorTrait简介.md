@@ -86,7 +86,7 @@ template <typename T> struct is_tensorTrait
 -   非TensorTrait类型和TensorTrait类型的GlobalTensor/LocalTensor相互之间不支持拷贝构造和赋值运算符。
 -   TensorTrait特性当前仅支持如下接口：
 
-    >![](public_sys-resources/icon-note.gif) **说明：** 
+    > [!NOTE]说明 
     >-   和API配合使用时，当前暂不支持TensorTrait结构配置pos、LayoutType模板参数，需要使用构造函数构造TensorTrait，pos、LayoutType保持默认值即可。
     >-   DataCopy切片数据搬运接口需要ShapeInfo信息，不支持输入TensorTrait类型的GlobalTensor/LocalTensor。
 
