@@ -54,7 +54,9 @@ set(ASCENDC_TEST_HEADER_FILES
     ${ASCENDC_DIR}/include/
     ${ASCENDC_DIR}/include/basic_api/
     ${ASCENDC_DIR}/include/utils/
+    ${ASCENDC_DIR}/include/c_api/
     ${ASCENDC_DIR}/impl/
+    ${ASCENDC_DIR}/impl/c_api/
     ${ASCENDC_DIR}/impl/basic_api/
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw
     ${ASCENDC_SYS_DIR}/tikcpp/tikcfw/interface

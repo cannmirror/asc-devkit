@@ -11,9 +11,9 @@
 
 执行矢量和标量的减法运算。
 
-```katex
+$$
 dst_i = src_i - scalar
-```
+$$
 
 ## 函数原型
 
@@ -62,7 +62,7 @@ __aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* 
 
 ## 流水类型
 
-PIPE_V
+PIPE_TYPE_V
 
 ## 约束说明
 

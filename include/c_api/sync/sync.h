@@ -8,11 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_SYNC_H
-#define C_API_SYNC_H
+#ifndef INCLUDE_C_API_SYNC_H
+#define INCLUDE_C_API_SYNC_H
 
-#include "impl/c_api/instr/sync/sync.h"
-#include "c_api/c_api_interf_util.h"
+#include "c_api_instr_impl/sync/sync_impl.h"
+#include "c_api_interf_util.h"
 
 template<typename Pipe, typename TPipe>
 __aicore__ inline void asc_sync_notify(Pipe pipe, TPipe tpipe, int id);
@@ -20,7 +20,8 @@ __aicore__ inline void asc_sync_notify(Pipe pipe, TPipe tpipe, int id);
 template<typename Pipe, typename TPipe>
 __aicore__ inline void asc_sync_wait(Pipe pipe, TPipe tpipe, int id);
 
-__aicore__ inline void asc_sync(pipe_t pipe);
+template<typename Pipe>
+__aicore__ inline void asc_sync(Pipe pipe);
 
 __aicore__ inline void asc_sync_vec();
 

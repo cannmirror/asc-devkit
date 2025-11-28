@@ -19,7 +19,6 @@
 | [asc_get_cmp_mask](vector_compute/asc_get_cmp_mask.md) | 获取compare操作的比较结果。 |
 | [asc_set_cmp_mask](vector_compute/asc_set_cmp_mask.md) | 为Select操作设置用于选择的掩码。 |
 | [asc_get_rsvd_count](vector_compute/asc_get_rsvd_count.md) | 获取GatherMask操作后剩余的元素数量。 |
-| [asc_get_vms4_sr](vector_compute/asc_get_vms4_sr.md) | 获取MrgSort已经处理过的队列里的Region Proposal个数。 |
 | [asc_set_mask_count](vector_compute/asc_set_mask_count.md) | 设置Mask模式为Counter模式。 |
 | [asc_set_mask_norm](vector_compute/asc_set_mask_norm.md) | 设置Mask模式为Normal模式。 |
 | [asc_set_vector_mask](vector_compute/asc_set_vector_mask.md) | 设置Mask值。 |
