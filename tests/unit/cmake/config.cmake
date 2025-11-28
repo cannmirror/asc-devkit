@@ -1,0 +1,1 @@
+set(GENERATE_CPP_COV ${ASCENDC_UNIT_TESTS_DIR}/cmake/scripts/generate_cpp_cov.sh)
