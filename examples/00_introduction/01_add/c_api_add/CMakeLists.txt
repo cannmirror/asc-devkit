@@ -15,10 +15,10 @@ find_package(ASC REQUIRED)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(demo
-    add.asc
+add_executable(c_api_add
+    c_api_add.asc
 )
 
-target_compile_options(demo PRIVATE
+target_compile_options(c_api_add PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )

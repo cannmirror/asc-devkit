@@ -6,9 +6,9 @@
 - Atlas A2 训练系列产品/Atlas 800I A2 推理产品
 ## 目录结构介绍
 ```
-├── 05_c_api
-│   ├── CMakeLists.txt      // 编译工程文件
-│   └── add.asc      // AscendC算子实现 & 调用样例
+├── 00_sync_add
+│   ├── CMakeLists.txt         // cmake编译文件
+|   └── c_api_add.asc          // 算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -49,7 +49,7 @@
   - 打开样例目录   
     以命令行方式下载样例代码，master分支为例。
     ```bash
-    cd ${git_clone_path}/examples/05_c_api/01_add
+    cd ${git_clone_path}/examples/02_features/01_c_api/00_sync_add/
     ```
   - 配置环境变量
 
@@ -77,9 +77,9 @@
   - 样例执行
     ```bash
     mkdir -p build && cd build;   # 创建并进入build目录
-    bisheng ../add.asc --npu-arch=dav-2201 -o demo -I${ASCEND_INSTALL_PATH}/x86_64-linux/asc/include/ -I${ASCEND_INSTALL_PATH}/x86_64-linux/asc/             # 编译工程
-    cd ../
-    ./build/demo                        # 执行样例
+    cmake ..;make -j;             # 编译工程
+    # 在build目录执行以下内容
+    ./c_api_add                         # 执行样例
     ```
     执行结果如下，说明精度对比成功。
     ```bash
