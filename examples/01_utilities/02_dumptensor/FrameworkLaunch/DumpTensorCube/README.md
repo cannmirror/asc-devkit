@@ -82,15 +82,15 @@ CANN软件包中提供了工程创建工具msOpGen，MmadCustom算子工程可�
       请根据当前环境上CANN开发套件包的[安装方式](https://hiascend.com/document/redirect/CannCommunityInstSoftware)，选择对应配置环境变量命令。
       - 默认路径，root用户安装CANN软件包
         ```bash
-        export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
+        export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
         ```
       - 默认路径，非root用户安装CANN软件包
         ```bash
-        export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
+        export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
         ```
       - 指定路径install_path，安装CANN软件包
         ```bash
-        export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
+        export ASCEND_INSTALL_PATH=${install_path}/latest
         ```
         运行install.sh脚本
         ```bash
@@ -113,11 +113,11 @@ CANN软件包中提供了工程创建工具msOpGen，MmadCustom算子工程可�
 - 部署自定义算子包前，请确保存在自定义算子包默认部署路径环境变量ASCEND_OPP_PATH
     ```bash
     echo $ASCEND_OPP_PATH
-    # 输出示例 /usr/local/Ascend/ascend-toolkit/latest/opp
+    # 输出示例 /usr/local/Ascend/latest/opp
 
     # 若没有，则需导出CANN环境变量
     source [ASCEND_INSTALL_PATH]/bin/setenv.bash
-    # 例如 source /usr/local/Ascend/ascend-toolkit/latest/bin/setenv.bash
+    # 例如 source /usr/local/Ascend/latest/bin/setenv.bash
     ```
     参数说明：
     - ASCEND_INSTALL_PATH：CANN软件包安装路径，一般和上一步中指定的路径保持一致

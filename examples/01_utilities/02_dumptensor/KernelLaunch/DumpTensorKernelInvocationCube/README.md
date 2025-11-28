@@ -57,15 +57,15 @@
     请根据当前环境上CANN开发套件包的[安装方式](https://hiascend.com/document/redirect/CannCommunityInstSoftware)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
+      export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
       ```
     - 默认路径，非root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
+      export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
       ```
     - 指定路径install_path，安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
+      export ASCEND_INSTALL_PATH=${install_path}/latest
       ```
 
   - 样例执行

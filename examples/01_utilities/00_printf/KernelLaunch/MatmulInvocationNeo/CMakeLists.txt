@@ -12,7 +12,7 @@ project(Ascend_c)
 
 set(RUN_MODE "npu" CACHE STRING "cpu/sim/npu")
 set(SOC_VERSION "Ascend310P3" CACHE STRING "system on chip type")
-set(ASCEND_CANN_PACKAGE_PATH "/usr/local/Ascend/ascend-toolkit/latest"
+set(ASCEND_CANN_PACKAGE_PATH "/usr/local/Ascend/latest"
     CACHE STRING "ASCEND CANN package installation directory"
 )
 if(NOT CMAKE_BUILD_TYPE)
