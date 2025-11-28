@@ -1,20 +1,20 @@
 # Conv2D（废弃）<a name="ZH-CN_TOPIC_0000001499035949"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## AI处理器支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>x</p>
 </td>
@@ -98,13 +98,13 @@ __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams)
 </td>
 <td class="cellrowborder" valign="top" width="68.03%" headers="mcps1.2.4.1.3 "><p id="p7747203120"><a name="p7747203120"></a><a name="p7747203120"></a>输入矩阵形状等状态参数，类型为Conv2dParams。结构体具体定义为：</p>
 <a name="screen12333123510548"></a><a name="screen12333123510548"></a><pre class="screen" codetype="Cpp" id="screen12333123510548">struct Conv2dParams {
-    uint32_t imgShape[<span id="ph134285155915"><a name="ph134285155915"></a><a name="ph134285155915"></a>CONV2D_IMG_SIZE</span>];       // [H, W]
-    uint32_t kernelShape<span id="ph994017404586"><a name="ph994017404586"></a><a name="ph994017404586"></a>In</span>[<span id="ph389411507"><a name="ph389411507"></a><a name="ph389411507"></a>CONV2D_KERNEL_SIZE</span>]; // [Kh, Kw]
-    uint32_t stride[<span id="ph14325188602"><a name="ph14325188602"></a><a name="ph14325188602"></a>CONV2D_STRIDE</span>];          // [stride_h, stride_w]
+    uint32_t imgShape[CONV2D_IMG_SIZE];       // [H, W]
+    uint32_t kernelShapeIn[CONV2D_KERNEL_SIZE]; // [Kh, Kw]
+    uint32_t stride[CONV2D_STRIDE];          // [stride_h, stride_w]
     uint32_t cin;                            // cin = C0 * C1;
     uint32_t cout;
-    uint32_t padList[<span id="ph2817218012"><a name="ph2817218012"></a><a name="ph2817218012"></a>CONV2D_PAD</span>];       // [pad_left, pad_right, pad_top, pad_bottom]
-    uint32_t dilation[<span id="ph57552919018"><a name="ph57552919018"></a><a name="ph57552919018"></a>CONV2D_DILATION</span>]; // [dilation_h, dilation_w]
+    uint32_t padList[CONV2D_PAD];       // [pad_left, pad_right, pad_top, pad_bottom]
+    uint32_t dilation[CONV2D_DILATION]; // [dilation_h, dilation_w]
     uint32_t initY;
     uint32_t partialSum;
 };</pre>

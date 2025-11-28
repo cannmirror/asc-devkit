@@ -241,7 +241,7 @@ def gen_clear_wait_sync_addr_code(super_operator):
                     result += indent_code_func("if ASCEND_IS_AIC {\n")
                     result += indent_code_func(f"    if (get_block_idx() == 0) {{\n")
                 else:
-                    result += indent_code_func("if ASCEND_IS_AIV {\n")
+                    result += indent_code_func("if (ASCEND_IS_AIV) {\n")
                     result += indent_code_func(f"    if (AscendC::GetBlockIdx() == 0) {{\n")
                 recv_wait_lock_offset = op.wait_param_offset + index
                 result += indent_code_func(f"\
@@ -314,7 +314,7 @@ kernel_name:{op.kernel_name}, send_info:{op.send_info}\n'
                 code += '// send sync of V->C;\n'
                 code += 'ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));\n\n'
                 need_sync_self = True
-            
+
         super_kernel_file += \
             process_gen_stream_send_code(super_operator, op, arch, need_sync_self or need_sync_event_for_notify, code)
     return super_kernel_file
@@ -387,7 +387,7 @@ def gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub
         sync_and_event_code += \
             indent_code_func(gen_2_real_stream_sync_code(super_operator, pre_sub_operator, sub_operator, arch))
 
-        # pre op send to outside 
+        # pre op send to outside
         if pre_sub_operator is not None:
             if len(pre_sub_operator.send_event_list) != 0:
                 sync_and_event_code += indent_code_func(pre_sub_operator.notify_block[arch])
@@ -417,7 +417,7 @@ auto_gen_{super_operator.kernel_name}_kernel_{arch}(void) {{\n"
 
         #generate switch case func of dynamic
         super_kernel_file += gen_switch_case_call_block_of_dynamic_op(super_operator, next_sub_operator, \
-                                                sub_operator, pre_sub_operator)    
+                                                sub_operator, pre_sub_operator)
 
         # add preload of current func
         if super_operator.preload_mode == SuperKernelPreLoadMode.PreLoadStepByStep:
@@ -500,19 +500,19 @@ constexpr uint32_t ONE_PROFILING_HEAD_SIZE = 16;
 constexpr uint32_t ONE_PROFILING_DATA_SIZE = 16;
 __aicore__ inline bool ProfilingAreaIsValid()
 {
-    return (*((__gm__ uint64_t*)g_profiling_base_addr) == PROFILING_MAGIC_NUMBER) && 
+    return (*((__gm__ uint64_t*)g_profiling_base_addr) == PROFILING_MAGIC_NUMBER) &&
         ((*((__gm__ uint64_t*)g_profiling_working_addr)) < (*((__gm__ uint64_t*)g_profiling_max_addr)));
 }
 
 __aicore__ inline uint8_t GetProfilingBlockIdx()
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return get_block_idx() * get_subblockdim() + get_subblockid();
     } else {
         return get_block_idx() + 50;
     }
 }
- 
+
 __aicore__ inline void RecordProfiling()
 {
     if (g_profiling_off) {
@@ -529,7 +529,7 @@ __aicore__ inline void RecordProfiling()
     }
     dcci((__gm__ uint64_t*)g_profiling_working_addr, 0, 2);
 }
- 
+
 __aicore__ inline void RecordProfiling(uint32_t index, uint8_t profilingType, bool startFlag)
 {
     if (g_profiling_off) {
@@ -551,7 +551,7 @@ __aicore__ inline void RecordProfiling(uint32_t index, uint8_t profilingType, bo
     }
     dcci((__gm__ uint64_t*)g_profiling_working_addr, 0, 2);
 }
- 
+
 __aicore__ inline void InitProfiling(uint32_t taskId, GM_ADDR profilingPtr)
 {
     g_profiling_off = false;
@@ -703,7 +703,7 @@ if ASCEND_IS_AIC {{
     AscendC::g_superKernelAutoSyncAllConfigGmAddr = \
 AscendC::g_superKernelAutoSyncAllConfigGmBaseAddr + {sub_op_index} * 64;
 }}
-if ASCEND_IS_AIV {{
+if (ASCEND_IS_AIV) {{
     AscendC::g_superKernelAutoSyncAllConfigGmAddr = \
 AscendC::g_superKernelAutoSyncAllConfigGmBaseAddr + {total_op_num} * 64 + {sub_op_index} * 64;
 }}
@@ -737,7 +737,7 @@ if ASCEND_IS_AIC {{
     elif super_operator.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0:
         gen_code += \
 f"""
-if ASCEND_IS_AIV {{
+if (ASCEND_IS_AIV) {{
     uint32_t sizePerCore = {super_operator.workspace_size} / get_block_num();
     const uint32_t repeatTimes = sizePerCore / 512;
     __gm__ uint8_t* startAddr  = (__gm__ uint8_t*)(workspace + sizePerCore * AscendC::GetBlockIdxImpl());
@@ -761,7 +761,7 @@ if ASCEND_IS_AIV {{
         if CommonUtility.is_c310():
             gen_code += \
 f"""
-if ASCEND_IS_AIV {{
+if (ASCEND_IS_AIV) {{
     uint32_t sizePerCore = {workspace_size} / get_block_num();
     const uint32_t repeatTimes = sizePerCore / 512;
     __gm__ uint8_t* startAddr  = (__gm__ uint8_t*)(workspace + sizePerCore * AscendC::GetBlockIdxImpl());
@@ -785,7 +785,7 @@ if ASCEND_IS_AIC {{
         else:
             gen_code += \
 f"""
-if ASCEND_IS_AIV {{
+if (ASCEND_IS_AIV) {{
     uint32_t sizePerCore = {workspace_size} / get_block_num();
     const uint32_t repeatTimes = sizePerCore / 512;
     __gm__ uint8_t* startAddr  = (__gm__ uint8_t*)(workspace + sizePerCore * AscendC::GetBlockIdxImpl());
@@ -909,7 +909,7 @@ auto_gen_{super_operator.kernel_name}_kernel(void) {{\n"
 
         #generatre switch case func of dynamic
         super_kernel_file += gen_switch_case_call_block_of_dynamic_op(super_operator, next_sub_operator, \
-                                                sub_operator, pre_sub_operator)    
+                                                sub_operator, pre_sub_operator)
 
         # add preload of current func
         if super_operator.preload_mode == SuperKernelPreLoadMode.PreLoadStepByStep:
@@ -977,7 +977,7 @@ def compile(kernel_infos, called_kernel_name="ascendc_super_kernel_plus", impl_m
         Args:
             kernel_infos: infos of sub kernel
                 {
-                    "op_list": 
+                    "op_list":
                         [{"op1": {"bin_path": "", "json_path": ""}, "op2": {xxx}}],
                     "super_kernel_options": compile_option
                 }

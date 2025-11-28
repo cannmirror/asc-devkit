@@ -115,7 +115,7 @@ __aicore__ inline void SetNextTaskStartImpl()
     if ASCEND_IS_AIC {
         ffts_cross_core_sync(AIC_PIPE, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));
     }
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         ffts_cross_core_sync(AIV_PIPE, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
     }
     return;
@@ -129,7 +129,7 @@ __aicore__ inline void WaitPreTaskEndV2Impl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
         }
     } else if (g_super_kernel_early_start_config == ASCENDC_SUPER_KERNEL_EARLY_START_AIV_TO_AIV) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
         }
     } else if (g_super_kernel_early_start_config == ASCENDC_SUPER_KERNEL_EARLY_START_AIC_TO_AIV) {
@@ -137,14 +137,14 @@ __aicore__ inline void WaitPreTaskEndV2Impl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
     } else if (g_super_kernel_early_start_config == ASCENDC_SUPER_KERNEL_EARLY_START_AIV_TO_AIC) {
         if ASCEND_IS_AIC {
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         }
@@ -153,7 +153,7 @@ __aicore__ inline void WaitPreTaskEndV2Impl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
@@ -162,7 +162,7 @@ __aicore__ inline void WaitPreTaskEndV2Impl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         }
@@ -171,14 +171,14 @@ __aicore__ inline void WaitPreTaskEndV2Impl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
     } else if (g_super_kernel_early_start_config == ASCENDC_SUPER_KERNEL_EARLY_START_AIV_TO_MIX) {
         if ASCEND_IS_AIC {
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         }
@@ -188,7 +188,7 @@ __aicore__ inline void WaitPreTaskEndV2Impl()
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
@@ -208,7 +208,7 @@ __aicore__ inline void WaitPreTaskEndImpl()
         ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         wait_flag_dev(AscendC::SYNC_AIV_FLAG);
     }
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
         ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
@@ -222,7 +222,7 @@ __aicore__ inline void WaitPreTaskEndImpl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
         }
     } else if constexpr (earlyStartConfig == ASCENDC_SUPER_KERNEL_EARLY_START_AIV_TO_AIV) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
         }
     } else if constexpr (earlyStartConfig == ASCENDC_SUPER_KERNEL_EARLY_START_AIC_TO_AIV) {
@@ -230,14 +230,14 @@ __aicore__ inline void WaitPreTaskEndImpl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
     } else if constexpr (earlyStartConfig == ASCENDC_SUPER_KERNEL_EARLY_START_AIV_TO_AIC) {
         if ASCEND_IS_AIC {
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         }
@@ -246,7 +246,7 @@ __aicore__ inline void WaitPreTaskEndImpl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
@@ -255,7 +255,7 @@ __aicore__ inline void WaitPreTaskEndImpl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         }
@@ -264,14 +264,14 @@ __aicore__ inline void WaitPreTaskEndImpl()
             wait_flag_dev(AscendC::SYNC_AIC_FLAG);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
         }
     } else if constexpr (earlyStartConfig == ASCENDC_SUPER_KERNEL_EARLY_START_AIV_TO_MIX) {
         if ASCEND_IS_AIC {
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
         }
@@ -281,7 +281,7 @@ __aicore__ inline void WaitPreTaskEndImpl()
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIC_AIV_FLAG));
             wait_flag_dev(AscendC::SYNC_AIV_FLAG);
         }
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
             ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
             wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);
@@ -323,7 +323,7 @@ template <bool isAIVOnly = true> __aicore__ inline void SyncAllImpl()
         ffts_cross_core_sync(PIPE_MTE3, GetffstMsg(0x02, SYNC_AIC_AIV_FLAG));
         return;
     }
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         ffts_cross_core_sync(PIPE_MTE3, GetffstMsg(0x02, SYNC_AIV_FLAG));
         wait_flag_dev(SYNC_AIC_AIV_FLAG);
         return;
@@ -347,7 +347,7 @@ template <bool isAIVOnly = true> __aicore__ inline void SuperKernelAutoSyncAllIm
         ffts_cross_core_sync(PIPE_MTE3, GetffstMsg(0x02, SYNC_AIC_AIV_FLAG));
         return;
     }
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         ffts_cross_core_sync(PIPE_MTE3, GetffstMsg(0x02, SYNC_AIV_FLAG));
         wait_flag_dev(SYNC_AIC_AIV_FLAG);
         return;

@@ -1,20 +1,20 @@
 # TopK<a name="ZH-CN_TOPIC_0000001746624125"></a>
 
-## 产品支持情况<a name="section1586581915393"></a>
+## AI处理器支持情况<a name="section1586581915393"></a>
 
 <a name="table169596713360"></a>
-<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>产品</span></p>
+<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p89594763612"><a name="p89594763612"></a><a name="p89594763612"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
 </td>
@@ -48,56 +48,59 @@
 
 ## 实现原理<a name="section13229175017585"></a>
 
-以float类型，ND格式，shape为\[outter,  inner\]的输入Tensor为例，描述TopK高阶API内部算法框图，如下图所示。
+-   **MERGE\_SORT算法**
 
-**图 1**  TopK算法框图<a name="fig19454111161219"></a>  
-![](figures/TopK算法框图.png "TopK算法框图")
+    以float类型，ND格式，shape为\[outter,  inner\]的输入Tensor为例，描述TopK高阶API内部算法框图，如下图所示。
 
-根据TopKMode不同的模式选择，可分为两个分支。
+    **图 1**  TopK算法框图<a name="fig19454111161219"></a>  
+    ![](figures/TopK算法框图.png "TopK算法框图")
 
--   计算TopK NORMAL模式，过程如下：
-    1.  模板参数isInitIndex为false，需生成0到inner - 1的索引；
+    根据TopKMode不同的模式选择，可分为两个分支。
 
-        Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式二。
+    -   计算TopK NORMAL模式，过程如下：
+        1.  模板参数isInitIndex为false，需生成0到inner - 1的索引；
 
-        Atlas A2 训练系列产品/Atlas A2 推理系列产品采用方式二。
+            Ascend 910C采用方式二。
 
-        -   方式一：使用CreateVecIndex生成0到inner - 1的索引。
-        -   方式二：使用Arange生成0到inner - 1的索引。
+            Ascend 910B采用方式二。
 
-    2.  isLargest参数为false，由于Sort32指令默认为降序排序，则给数据乘以-1；
-    3.  对输入数据完成全排序。
+            -   方式一：使用CreateVecIndex生成0到inner - 1的索引。
+            -   方式二：使用Arange生成0到inner - 1的索引。
 
-        Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式二。
+        2.  isLargest参数为false，由于Sort32指令默认为降序排序，则给数据乘以-1；
+        3.  对输入数据完成全排序。
 
-        Atlas A2 训练系列产品/Atlas A2 推理系列产品采用方式二。
+            Ascend 910C采用方式二。
 
-        -   方式一：
+            Ascend 910B采用方式二。
+
+            方式一：
 
             使用高阶API Sort对数据完成全排序。
 
-        -   方式二：
+            方式二：
+
             1.  使用Sort32对数据排序，保证每32个数据是有序的。
             2.  使用MrgSort指令对所有的已排序数据块归并排序。
 
-    4.  使用GatherMask指令提取前k个数据和索引；
-    5.  finishLocal\[i\]为true时，则更新该行对应的排序结果为无效索引n；
-    6.  isLargest参数为false，则给数据乘以-1还原数据。
+        4.  使用GatherMask指令提取前k个数据和索引；
+        5.  finishLocal\[i\]为true时，则更新该行对应的排序结果为无效索引n；
+        6.  isLargest参数为false，则给数据乘以-1还原数据。
 
--   计算TopK SMALL模式，过程如下：
-    1.  模板参数isInitIndex为false，需生成0到inner - 1的索引，并使用Copy指令将数据复制为outter条；
+    -   计算TopK SMALL模式，过程如下：
+        1.  模板参数isInitIndex为false，需生成0到inner - 1的索引，并使用Copy指令将数据复制为outter条；
 
-        Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式二。
+            Ascend 910C采用方式二。
 
-        Atlas A2 训练系列产品/Atlas A2 推理系列产品采用方式二。
+            Ascend 910B采用方式二。
 
-        -   方式一：使用CreateVecIndex生成0到inner - 1的索引。
-        -   方式二：使用Arange生成0到inner - 1的索引。
+            -   方式一：使用CreateVecIndex生成0到inner - 1的索引。
+            -   方式二：使用Arange生成0到inner - 1的索引。
 
-    2.  isLargest参数为false，由于Sort32指令默认为降序排序，则给输入数据乘以-1；
-    3.  使用Sort32对数据排序；
-    4.  使用GatherMask指令提取前k个数据和索引；
-    5.  isLargest参数为false，则给输入数据乘以-1还原数据。
+        2.  isLargest参数为false，由于Sort32指令默认为降序排序，则给输入数据乘以-1；
+        3.  使用Sort32对数据排序；
+        4.  使用GatherMask指令提取前k个数据和索引；
+        5.  isLargest参数为false，则给输入数据乘以-1还原数据。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -135,8 +138,8 @@
 <tbody><tr id="row12299165018421"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p1329915004219"><a name="p1329915004219"></a><a name="p1329915004219"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.82000000000001%" headers="mcps1.2.3.1.2 "><p id="p8299155010420"><a name="p8299155010420"></a><a name="p8299155010420"></a>待排序数据的数据类型。</p>
-<p id="p103633814478"><a name="p103633814478"></a><a name="p103633814478"></a><span id="ph183683884711"><a name="ph183683884711"></a><a name="ph183683884711"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_4"><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_4"><a name="zh-cn_topic_0000001312391781_term12835255145414_4"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_4"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
-<p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_4"><a name="zh-cn_topic_0000001312391781_term1551319498507_4"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_4"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
+<p id="p103633814478"><a name="p103633814478"></a><a name="p103633814478"></a><span id="ph183683884711"><a name="ph183683884711"></a><a name="ph183683884711"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_4"><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a>Ascend 910C</term></span>，支持的数据类型为：half、float。</p>
+<p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Ascend 910B</term></span>，支持的数据类型为：half、float。</p>
 </td>
 </tr>
 <tr id="row5299125054217"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p9777142884312"><a name="p9777142884312"></a><a name="p9777142884312"></a>isInitIndex</p>

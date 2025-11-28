@@ -98,7 +98,7 @@ private:
     __aicore__ inline void CopyCbufToFbuf(uint64_t dst, __cbuf__ T *src, uint16_t blockCount,
         uint16_t blockLen, uint16_t srcStride, uint16_t dstStride, uint32_t deqValueOffset)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {
@@ -130,13 +130,13 @@ private:
         uint32_t srcStride, uint32_t dstStride, uint8_t cacheMode, bool reluEn, uint8_t unitFlag, bool isChannelSplit,
         bool nz2ndEn, bool nz2dnEn)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {
             copy_matrix_cc_to_gm(dst, src, 0, nSize, mSize, dstStride, srcStride, cacheMode, 0, unitFlag, static_cast<uint64_t>(quantPre),
-                reluEn, isChannelSplit, nz2ndEn, static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false, false, false, 
-                nz2dnEn); 
+                reluEn, isChannelSplit, nz2ndEn, static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false, false, false,
+                nz2dnEn);
         }
     }
 };
@@ -169,7 +169,7 @@ private:
     template <typename T>
     __aicore__ inline void SetQuantPre(const T& quant)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {
@@ -180,7 +180,7 @@ private:
     template <typename T>
     __aicore__ inline void SetParamsToRegister(uint32_t ndNum, uint32_t dstNDStride, uint32_t srcNDStride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {
@@ -194,7 +194,7 @@ private:
     template <typename T>
     __aicore__ inline void SetParamsToRegister(uint32_t dnNum, uint32_t dstDNStride, uint32_t srcNZMatrixStride, uint32_t srcNZC0Stride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {

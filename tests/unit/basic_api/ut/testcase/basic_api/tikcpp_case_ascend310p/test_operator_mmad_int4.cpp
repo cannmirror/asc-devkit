@@ -230,7 +230,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load3dv2)
     uint16_t n = 64;
     uint16_t k = 64;
 
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
     uint8_t a[m * k * sizeof(int8_t)] = {0};
@@ -239,7 +239,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load3dv2)
     AscendC::KernelMmadInt4 op;
     op.Init(a, b, c, false);
     op.Process();
-    
+
     for (int32_t i = 0; i < m * n * sizeof(int32_t) / 2; i++) {
         EXPECT_EQ(c[i], 0x00);
     }
@@ -251,7 +251,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load2d)
     uint16_t n = 64;
     uint16_t k = 64;
 
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
     uint8_t a[m * k * sizeof(int8_t)] = {0};
@@ -260,7 +260,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load2d)
     AscendC::KernelMmadInt4 op;
     op.Init(a, b, c, true);
     op.Process();
-    
+
     for (int32_t i = 0; i < m * n * sizeof(int32_t) / 2; i++) {
         EXPECT_EQ(c[i], 0x00);
     }

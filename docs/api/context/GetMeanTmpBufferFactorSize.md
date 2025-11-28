@@ -6,7 +6,7 @@
 
 推算示例如下：
 
--   算子实现需要调用MeanMax/ClampMin接口，开发者为其预留currBuff大小的空间，利用GetMeanTmpBufferFactorSize接口得到maxLiveNodeCnt、extraBuf输出值，可推导算子单次最大计算元素数量为：
+-   算子实现需要调用Mean接口，开发者为其预留currBuff大小的空间，利用GetMeanTmpBufferFactorSize接口得到maxLiveNodeCnt、extraBuf输出值，可推导算子单次最大计算元素数量为：
 
     **currentShapeSize = \(currBuff - extraBuf\) / maxLiveNodeCnt / typeSize**
 

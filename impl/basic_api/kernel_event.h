@@ -266,7 +266,7 @@ __aicore__ inline void PipeBarrierInternal()
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     if constexpr (IsSplitVectorPipe<pipe>() || pipe == PIPE_ALL) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             pipe_barrier(pipe);
         }
     }
@@ -285,7 +285,7 @@ __aicore__ inline void SetFlagInternal(event_t evt)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     if constexpr (IsSplitVectorPipe<srcPipe>() && IsSplitVectorPipe<dstPipe>()) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             set_flag(srcPipe, dstPipe, evt);
         }
     }
@@ -304,7 +304,7 @@ __aicore__ inline void WaitFlagInternal(event_t evt)
 {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     if constexpr (IsSplitVectorPipe<srcPipe>() && IsSplitVectorPipe<dstPipe>()) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             wait_flag(srcPipe, dstPipe, evt);
         }
     }
@@ -623,7 +623,7 @@ template <pipe_t pipe, bool mode>
 __aicore__ inline void GetBufInternal(uint8_t bufId) {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     if constexpr (IsSplitVectorPipe<pipe>()) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             get_buf(pipe, bufId, mode);
         }
     }
@@ -641,7 +641,7 @@ template <pipe_t pipe, bool mode>
 __aicore__ inline void RlsBufInternal(uint8_t bufId) {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     if constexpr (IsSplitVectorPipe<pipe>()) {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             rls_buf(pipe, bufId, mode);
         }
     }
@@ -1044,7 +1044,7 @@ __aicore__ inline void WaitFlagImpl(const HardEvent event, int32_t eventID)
             break;
         case HardEvent::M_S:
             WaitFlagInternal<PIPE_M, PIPE_S>(e);
-            break; 
+            break;
         case HardEvent::S_V:
             WaitFlagInternal<PIPE_S, PIPE_V>(e);
             break;

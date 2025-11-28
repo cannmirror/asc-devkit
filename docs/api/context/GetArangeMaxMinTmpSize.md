@@ -8,7 +8,7 @@
 
 ## 函数原型<a name="section7471740471"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >GetArithProgressionMaxMinTmpSize接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetArangeMaxMinTmpSize接口。
 
 ```

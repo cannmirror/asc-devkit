@@ -95,7 +95,7 @@ private:
     __aicore__ inline void CopyCbufToBt(uint64_t dst, __cbuf__ T* src, bool convControl, uint16_t blockCount, uint16_t blockLen,
         uint16_t srcStride, uint16_t dstStride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
 

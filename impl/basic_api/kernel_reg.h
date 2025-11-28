@@ -561,7 +561,7 @@ __aicore__ inline void SetAippFunctionsImpl(__gm__ T* src0, __gm__ T* src1,
     AippInputFormat format, AippParams<U>& config)
 {
 #if __NPU_ARCH__ == 2201
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
 #endif // __NPU_ARCH__ == 2201
@@ -603,7 +603,7 @@ template <typename T, typename U>
 __aicore__ inline void SetAippFunctionsImpl(__gm__ T* src0, AippInputFormat format, AippParams<U> config)
 {
 #if __NPU_ARCH__ == 2201
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
 #endif // __NPU_ARCH__ == 2201

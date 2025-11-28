@@ -38,7 +38,7 @@ private:
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
             "LoadDataFourDim3101L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<16> type!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3101L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!"); 
+            "LoadDataFourDim3101L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
@@ -47,7 +47,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
             "LoadDataFourDim3101L12L0B Layout->Stride->Column->ZeroDim is not Std::Int<1> type!");
     }
-    
+
     template<typename T>
     __aicore__ inline constexpr void CheckZNTemplate()
     {
@@ -57,7 +57,7 @@ private:
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
             "LoadDataFourDim3101L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<16> type!");
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3101L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<C0Size/Type> type!"); 
+            "LoadDataFourDim3101L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<C0Size/Type> type!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
@@ -98,7 +98,7 @@ private:
         // Nz -> Nz
         uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
-        auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;        
+        auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
         auto params = Std::make_tuple(mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         return params;
     }
@@ -116,7 +116,7 @@ private:
     __aicore__ inline void LoadL1ToL0BAlignV2(__cb__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {

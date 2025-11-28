@@ -1,9 +1,9 @@
 # Mmad<a name="ZH-CN_TOPIC_0000001449620518"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## AI处理器支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="52.800000000000004%" id="mcps1.1.4.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="52.800000000000004%" id="mcps1.1.4.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="24.51%" id="mcps1.1.4.1.2"><p id="p78368183115"><a name="p78368183115"></a><a name="p78368183115"></a>是否支持（</p>
 <p id="p18297174143119"><a name="p18297174143119"></a><a name="p18297174143119"></a>不传入bias的原型</p>
@@ -15,14 +15,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="24.51%" headers="mcps1.1.4.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="22.689999999999998%" headers="mcps1.1.4.1.3 "><p id="p33014304302"><a name="p33014304302"></a><a name="p33014304302"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="24.51%" headers="mcps1.1.4.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
@@ -237,8 +237,8 @@
 <td class="cellrowborder" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p46815014712"><a name="p46815014712"></a><a name="p46815014712"></a>配置C矩阵初始值是否来源于C2（存放Bias的硬件缓存区）。默认值为false。</p>
 <a name="ul36813507713"></a><a name="ul36813507713"></a><ul id="ul36813507713"><li>false：来源于CO1；</li></ul>
 <a name="ul206805011715"></a><a name="ul206805011715"></a><ul id="ul206805011715"><li>true：来源于C2。</li></ul>
-<p id="p136815501475"><a name="p136815501475"></a><a name="p136815501475"></a><span id="ph14689501479"><a name="ph14689501479"></a><a name="ph14689501479"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span>，支持配置为true/false。</p>
-<p id="p91531273575"><a name="p91531273575"></a><a name="p91531273575"></a><span id="ph9153152715719"><a name="ph9153152715719"></a><a name="ph9153152715719"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span>，支持配置为true/false。</p>
+<p id="p136815501475"><a name="p136815501475"></a><a name="p136815501475"></a><span id="ph14689501479"><a name="ph14689501479"></a><a name="ph14689501479"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持配置为true/false。</p>
+<p id="p91531273575"><a name="p91531273575"></a><a name="p91531273575"></a><span id="ph9153152715719"><a name="ph9153152715719"></a><a name="ph9153152715719"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持配置为true/false。</p>
 <p id="p18124101113283"><a name="p18124101113283"></a><a name="p18124101113283"></a>注意：带bias输入的接口配置该参数无效，会根据bias输入的位置来判断C矩阵初始值是否来源于CO1还是C2。</p>
 </td>
 </tr>
@@ -249,9 +249,21 @@
 <a name="ul1530653162214"></a><a name="ul1530653162214"></a><ul id="ul1530653162214"><li>false：矩阵乘，无需累加初始矩阵，C = A * B。</li><li>true：矩阵乘加，需要累加初始矩阵，C += A * B。</li></ul>
 </td>
 </tr>
+<tr id="row55001333313"><td class="cellrowborder" valign="top" width="15.25%" headers="mcps1.2.3.1.1 "><p id="p115000313310"><a name="p115000313310"></a><a name="p115000313310"></a><span id="ph1287098193117"><a name="ph1287098193117"></a><a name="ph1287098193117"></a>unitFlag</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p103614380020"><a name="p103614380020"></a><a name="p103614380020"></a>unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。取值说明如下：</p>
+<p id="p1225131744220"><a name="p1225131744220"></a><a name="p1225131744220"></a>0：保留值；</p>
+<p id="p3836113514213"><a name="p3836113514213"></a><a name="p3836113514213"></a>2：使能unitFlag，硬件执行完指令之后，不会关闭unitFlag功能；</p>
+<p id="p173663815011"><a name="p173663815011"></a><a name="p173663815011"></a>3：使能unitFlag，硬件执行完指令之后，会将unitFlag功能关闭。</p>
+<p id="p14988589213"><a name="p14988589213"></a><a name="p14988589213"></a>使能该功能时，Mmad指令的unitFlag在最后1个分形设置为3、其余分形计算设置为2即可。</p>
+<p id="p181158034917"><a name="p181158034917"></a><a name="p181158034917"></a>该参数仅支持如下型号</p>
+<p id="p15910825145415"><a name="p15910825145415"></a><a name="p15910825145415"></a><span id="ph1292674871116"><a name="ph1292674871116"></a><a name="ph1292674871116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span></p>
+<p id="p29873508148"><a name="p29873508148"></a><a name="p29873508148"></a><span id="ph13754548217"><a name="ph13754548217"></a><a name="ph13754548217"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span></p>
+</td>
+</tr>
 <tr id="row429212884719"><td class="cellrowborder" valign="top" width="15.25%" headers="mcps1.2.3.1.1 "><p id="p92641454114714"><a name="p92641454114714"></a><a name="p92641454114714"></a>fmOffset</p>
 </td>
-<td class="cellrowborder" rowspan="6" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p6264205416479"><a name="p6264205416479"></a><a name="p6264205416479"></a>预留参数。为后续的功能做保留，开发者暂时无需关注，使用默认值即可。</p>
+<td class="cellrowborder" rowspan="5" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p6264205416479"><a name="p6264205416479"></a><a name="p6264205416479"></a>预留参数。为后续的功能做保留，开发者暂时无需关注，使用默认值即可。</p>
 </td>
 </tr>
 <tr id="row209292371475"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12264175418478"><a name="p12264175418478"></a><a name="p12264175418478"></a>enSsparse</p>
@@ -263,17 +275,13 @@
 <tr id="row2694932114712"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p152651254104718"><a name="p152651254104718"></a><a name="p152651254104718"></a>enWinogradB</p>
 </td>
 </tr>
-<tr id="row237710305477"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p162651954174717"><a name="p162651954174717"></a><a name="p162651954174717"></a>unitFlag</p>
-</td>
-</tr>
 <tr id="row1916264744713"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p926555412477"><a name="p926555412477"></a><a name="p926555412477"></a>kDirectionAlign</p>
 </td>
 </tr>
 </tbody>
 </table>
 
-
-**表 4**  dst、fm、filter支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
+**表 4**  dst、fm、filter支持的精度类型组合（Ascend 910B）（Ascend 910C）
 
 <a name="table311391475117"></a>
 <table><thead align="left"><tr id="row1411401414517"><th class="cellrowborder" valign="top" width="33.306669333066694%" id="mcps1.2.4.1.1"><p id="p811451465120"><a name="p811451465120"></a><a name="p811451465120"></a><strong id="b911411143514"><a name="b911411143514"></a><a name="b911411143514"></a>左矩阵fm type</strong></p>
@@ -322,7 +330,7 @@
 </tbody>
 </table>
 
-**表 5**  dst、fm、filter、bias支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
+**表 5**  dst、fm、filter、bias支持的精度类型组合（Ascend 910B）（Ascend 910C）
 
 <a name="table1068062217226"></a>
 <table><thead align="left"><tr id="row14680182202213"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.5.1.1"><p id="p1680192219225"><a name="p1680192219225"></a><a name="p1680192219225"></a><strong id="b126801322112219"><a name="b126801322112219"></a><a name="b126801322112219"></a>左矩阵fm type</strong></p>

@@ -40,7 +40,7 @@ uint32_t SetStepSize(uint8_t stepSize)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-Atlas A2 训练系列产品/Atlas A2 推理系列产品暂不支持该接口。
+Ascend 910B暂不支持该接口。
 
 ## 调用示例<a name="section1665082013318"></a>
 

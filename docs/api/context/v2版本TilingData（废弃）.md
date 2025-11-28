@@ -1,6 +1,6 @@
 # v2版本TilingData（废弃）<a name="ZH-CN_TOPIC_0000002024389216"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >该结构体废弃，并将在后续版本移除，请不要使用该结构体。无需直接对该结构体中的成员进行设置，统一使用HCCL Tiling提供的接口设置即可。
 
 ## 功能说明<a name="section77005157231"></a>

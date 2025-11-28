@@ -54,7 +54,7 @@ private:
         CheckNDTemplate<T>();
         CheckNDTemplate<U>();
 #if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3101
-        static_assert(Std::is_one_of_v<srcType, bool, int8_t, uint8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, fp8_e8m0_t, int16_t, uint16_t, 
+        static_assert(Std::is_one_of_v<srcType, bool, int8_t, uint8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, fp8_e8m0_t, int16_t, uint16_t,
             half, bfloat16_t, int32_t, uint32_t, float, complex32, int64_t, uint64_t, double, complex64>, "The source data type is not supported.");
 #endif
     }
@@ -95,7 +95,7 @@ private:
     __aicore__ inline void CopyCbufToFb(uint64_t dst, __cbuf__ U* src, uint16_t blockCount, uint16_t blockLen,
         uint16_t srcStride, uint16_t dstStride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
 

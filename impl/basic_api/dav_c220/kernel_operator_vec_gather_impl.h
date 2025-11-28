@@ -24,7 +24,7 @@ template <typename T>
 __aicore__ inline void GatherbImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ uint32_t* offset,
     const uint32_t srcLength, uint8_t repeatTime, const GatherRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         ASCENDC_ASSERT((SupportType<T, uint16_t, uint32_t>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
             "Gatherb, current api support dtype combination is src and dst both: uint16_t, uint32_t");});
         ResetMask();
@@ -44,7 +44,7 @@ __aicore__ inline void GatherImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __
     const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime,
     const uint16_t dstRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         ASCENDC_ASSERT((SupportType<T, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
             {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Gather, current api support dtype combination is src and "
             "dst both: half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});
@@ -69,7 +69,7 @@ __aicore__ inline void GatherImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __
     const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime,
     const uint16_t dstRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         ASCENDC_ASSERT((SupportType<T, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
             {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Gather, current api support dtype combination is src and "
             "dst both: half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});
