@@ -11,9 +11,9 @@
 
 执行逐元素取最大值运算，计算公式如下：
 
-```katex
+$$
 dst_i = max(src0_i, src1_i)
-```
+$$
 
 ## 函数原型
 
@@ -52,7 +52,7 @@ __aicore__ inline void asc_max_sync(__ubuf__ float* dst, __ubuf__ float* src0, _
 | dst       | 输出    | 目的操作数。 |
 | src、src1 | 输入    | 源操作数。 |
 | count     | 输入    | 参与计算的元素个数。 |
-| config    | 输入    | 在非连续场景下使用的计算配置参数。 |
+| [config](../struct/asc_binary_config.md) | 输入    | 在非连续场景下使用的计算配置参数。 |
 
 ## 返回值说明
 
@@ -70,12 +70,12 @@ PIPE_TYPE_V
 ## 调用示例
 
 ```cpp
-//total_Length指参与计算的数据总长度
+//total_length指参与计算的数据总长度
 uint64_t offset = 0;
 __ubuf__ half* src0 = (__ubuf__ half*)asc_get_phy_buf_addr(0);
-offset += totalLength * sizeof(half);
+offset += total_length * sizeof(half);
 __ubuf__ half* src1 = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
-offset += totalLength * sizeof(half);
+offset += total_length * sizeof(half);
 __ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
-asc_max(dst, src0, src1, totalLength);
+asc_max(dst, src0, src1, total_length);
 ```
