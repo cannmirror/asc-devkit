@@ -1,6 +1,6 @@
 # Utilities样例介绍
 ## 概述
-样例通过Ascend C编程语言实现了自定义算子，实现printf、assert及debug功能等，并给出了对应的<<<>>>直调实现。
+基于Ascend C的简单样例，通过printf、assert、debug等API介绍上板打印、异常检测、CPU孪生调试等系统工具使用方法，适用于调试阶段。
 
 ## 算子开发样例
 |  目录名称                                                   |  功能描述                                              |
