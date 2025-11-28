@@ -8,10 +8,10 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_SYS_VAR_H
-#define C_API_SYS_VAR_H
+#ifndef INCLUDE_C_API_SYS_VAR_H
+#define INCLUDE_C_API_SYS_VAR_H
 
-#include "impl/c_api/instr/sys_var/sys_var.h"
+#include "c_api_instr_impl/sys_var/sys_var_impl.h"
 
 __aicore__ inline void asc_set_ctrl(uint64_t config);
 

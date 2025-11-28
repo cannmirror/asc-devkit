@@ -8,10 +8,10 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#ifndef C_API_SIMD_AOTMIC_H
-#define C_API_SIMD_AOTMIC_H
+#ifndef INCLUDE_C_API_MISC_H
+#define INCLUDE_C_API_MISC_H
  
-#include "impl/c_api/instr/misc/misc.h"
+#include "c_api_instr_impl/misc/misc_impl.h"
  
 __aicore__ inline void init_soc_state();
  
