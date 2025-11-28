@@ -113,7 +113,7 @@ TQueBind&lt;TPosition::VECOUT, TPosition::C1, 1&gt;</pre>
 </tbody>
 </table>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >上述表格中的Cube相关数据通路建议使用Cube高阶API（如Matmul）实现，直接使用TQueBind控制会相对复杂。
 
 下面通过两个具体的示例展示了矢量编程场景下TQueBind的使用方法：

@@ -67,9 +67,9 @@ que.FreeTensor(a2);</pre>
 
 由于TQue分配的Buffer存储着同步事件eventID，故同一个TPosition上TQue Buffer的数量与硬件的同步事件eventID有关。
 
-Atlas A2 训练系列产品/Atlas A2 推理系列产品，eventID的数量为8
+Ascend 910B，eventID的数量为8
 
-Atlas A3 训练系列产品/Atlas A3 推理系列产品，eventID的数量为8
+Ascend 910C，eventID的数量为8
 
 QUE的Buffer数量最大也分别为8个或4个，即能插入的同步事件的个数为8个或4个。当用TPipe的InitBuffer申请TQue时，会受到Buffer数量的限制，TQue能申请到的最大个数分别为8个或4个。
 

@@ -149,7 +149,7 @@ param_offset={self.notify_param_offset + index}\n"
                 index += 1
             notify_block_aic += "}\n"
 
-            notify_block_aiv = "if ASCEND_IS_AIV {\n"
+            notify_block_aiv = "if (ASCEND_IS_AIV) {\n"
             index = 0
             for send_index in self.send_event_list:
                 if send_index not in inner_event_id_set:
@@ -176,7 +176,7 @@ param_offset={self.notify_param_offset + index}\n"
                     self.notify_block['aic'] = ''
 
                     self.tmp_notify_block['aiv'] = ''
-                    self.tmp_notify_block['aic'] = notify_block_aic if found_aic else '' 
+                    self.tmp_notify_block['aic'] = notify_block_aic if found_aic else ''
                 else:
                     self.notify_block = notify_block_aiv if found_aiv else ''
 
@@ -201,7 +201,7 @@ param_offset={self.wait_param_offset + index}\n"
                 wait_block += "}\n"
                 self.wait_block = wait_block if found else ''
             else:
-                wait_block = "if ASCEND_IS_AIV {\n"
+                wait_block = "if (ASCEND_IS_AIV) {\n"
                 index = 0
                 for recv_index in self.recv_event_list:
                     if recv_index not in inner_event_id_set:
@@ -280,7 +280,7 @@ operator inherits super kernel opton."))
 donot match with super kernel split_mode: {self.split_mode} please check whether sub\
 operator inherits super kernel opton."))
         except Exception as err:
-            CommonUtility().ascendc_raise_python_err(ERR_CODE, 
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
                 (f"read sub op json file failed, json name {self.json_path}, reason is:", err))
 
     def gen_select_addr_code(self, func_addr_str, aicore_kernel_name):
@@ -412,14 +412,14 @@ GM_ADDR __ac_dynamic_block_dim_{self.index}, GM_ADDR __ac_wait_lock_{self.index}
         result = ''
         if self.split_mode > 1:
             result += f'''if ((coreid % {self.split_mode}) == 0) {{
- 
+
                 {func_name}({params});'''
             for i in range(1, self.split_mode - 1):
                 result += f'''\n            }} else if ((coreid % {self.split_mode}) == {i}) {{
             {func_name}_split{i}({params});'''
             result += f'''\n            }} else {{
- 
- 
+
+
                 {func_name}_split{self.split_mode - 1}({params});
             }}'''
         else:
@@ -433,7 +433,7 @@ GM_ADDR __ac_dynamic_block_dim_{self.index}, GM_ADDR __ac_wait_lock_{self.index}
             self.kernel_call_block += indent_code_func(\
                 f"AscendC::SyncAll<false>(); // reason: double stream need syncall to wait switch func\n")
         if self.kernel_type in [KernelMetaType.KERNEL_TYPE_AIV_ONLY, KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0]:
-            self.kernel_call_block += f"if ASCEND_IS_AIV {{\n"
+            self.kernel_call_block += f"if (ASCEND_IS_AIV) {{\n"
         else:
             self.kernel_call_block += f"if ASCEND_IS_AIC {{\n"
         aiv_func_addr = self.gen_param_code('aiv_func_addr')
@@ -449,7 +449,7 @@ GM_ADDR __ac_dynamic_block_dim_{self.index}, GM_ADDR __ac_wait_lock_{self.index}
 }}
 call_func_of_{self.kernel_name}({self.param_offset}, {aiv_func_addr}, {aic_func_addr}, dy_blockDim);\n
 """
-        
+
 
     def gen_dynamic_op_call_func(self, enable_double_stream: bool):
         func_type = f"using FuncType = void (*)(uint64_t args_offset);"
@@ -491,7 +491,7 @@ kernelType == {KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2.value}) {{
 kernelType == {KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0.value}) {{
         if (AscendC::GetBlockIdx() < blockDim) {{
             uint8_t coreid = get_coreid();
-            if ASCEND_IS_AIV{{
+            if (ASCEND_IS_AIV){{
                 {self.dynamic_gen_split_call_code('aiv_ptr', "args_offset")}
             }}
         }}
@@ -832,7 +832,7 @@ f"""else {{
             self.preload_call_block = self.gen_call_func(preload_call_block, "ASCEND_IS_AIC", "get_block_idx")
             self.set_early_start_complement_blocks("ASCEND_IS_AIC", f"get_block_idx() >= {self.block_dim}")
             self.set_early_start_complement_blocks("ASCEND_IS_AIV", "true")
-        elif self.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:  
+        elif self.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:
             # need check of sub block id
             aicore_kernel_name = self.called_kernel_name[f"dav-{chip_version}-cube"]["func_name"]
             self.sub_kernel_names.append(aicore_kernel_name)

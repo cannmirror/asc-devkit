@@ -1,20 +1,20 @@
 # Select<a name="ZH-CN_TOPIC_0000001550716925"></a>
 
-## 产品支持情况<a name="section1550532418810"></a>
+## AI处理器支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
@@ -34,9 +34,9 @@
 -   模式1：根据selMask在1个tensor和1个scalar标量中选取元素，selMask无有效数据限制。多轮迭代时，每轮迭代连续使用selMask的不同部分。
 -   模式2：根据selMask在两个tensor中选取元素，selMask无有效数据限制。多轮迭代时，每轮迭代连续使用selMask的不同部分。
 
-Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持模式0、1、2。
+Ascend 910B，支持模式0、1、2。
 
-Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持模式0、1、2。
+Ascend 910C，支持模式0、1、2。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -152,8 +152,8 @@ Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持模式0、1、2�
 <td class="cellrowborder" valign="top" width="72.37723772377238%" headers="mcps1.2.4.1.3 "><p id="p785913161268"><a name="p785913161268"></a><a name="p785913161268"></a>目的操作数。</p>
 <p id="p5945720195112"><a name="p5945720195112"></a><a name="p5945720195112"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p775563112310"><a name="p775563112310"></a><a name="p775563112310"></a><span id="ph1479701815419"><a name="ph1479701815419"></a><a name="ph1479701815419"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
-<p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_2"><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
-<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_2"><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
+<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
 <tr id="row59491678111"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p29491174110"><a name="p29491174110"></a><a name="p29491174110"></a>selMask</p>
@@ -175,7 +175,7 @@ Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持模式0、1、2�
 <td class="cellrowborder" valign="top" width="72.37723772377238%" headers="mcps1.2.4.1.3 "><p id="p196813815325"><a name="p196813815325"></a><a name="p196813815325"></a>源操作数。</p>
 <p id="p143305234322"><a name="p143305234322"></a><a name="p143305234322"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p5959172813321"><a name="p5959172813321"></a><a name="p5959172813321"></a><span id="ph1957118292320"><a name="ph1957118292320"></a><a name="ph1957118292320"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
-<p id="p2871051186"><a name="p2871051186"></a><a name="p2871051186"></a><span id="ph987358181"><a name="ph987358181"></a><a name="ph987358181"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_3"><a name="zh-cn_topic_0000001312391781_term1551319498507_3"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_3"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p2871051186"><a name="p2871051186"></a><a name="p2871051186"></a><span id="ph987358181"><a name="ph987358181"></a><a name="ph987358181"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
 <tr id="row4956154125018"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p10576203116349"><a name="p10576203116349"></a><a name="p10576203116349"></a>src1</p>
@@ -187,8 +187,8 @@ Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持模式0、1、2�
 <p id="p847110341322"><a name="p847110341322"></a><a name="p847110341322"></a><span id="ph18349535163213"><a name="ph18349535163213"></a><a name="ph18349535163213"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 </li></ul>
 <a name="ul19867850131915"></a><a name="ul19867850131915"></a><ul id="ul19867850131915"><li>当selMode为模式1时，类型为T，标量数据类型。</li></ul>
-<p id="p125121917151913"><a name="p125121917151913"></a><a name="p125121917151913"></a><span id="ph19386638131813"><a name="ph19386638131813"></a><a name="ph19386638131813"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_4"><a name="zh-cn_topic_0000001312391781_term1551319498507_4"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_4"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
-<p id="p576254116240"><a name="p576254116240"></a><a name="p576254116240"></a><span id="ph876313416245"><a name="ph876313416245"></a><a name="ph876313416245"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_3"><a name="zh-cn_topic_0000001312391781_term12835255145414_3"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_3"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p125121917151913"><a name="p125121917151913"></a><a name="p125121917151913"></a><span id="ph19386638131813"><a name="ph19386638131813"></a><a name="ph19386638131813"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
+<p id="p576254116240"><a name="p576254116240"></a><a name="p576254116240"></a><span id="ph876313416245"><a name="ph876313416245"></a><a name="ph876313416245"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
 <tr id="row1495634115010"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p10974181411356"><a name="p10974181411356"></a><a name="p10974181411356"></a>selMode</p>
@@ -248,8 +248,8 @@ Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持模式0、1、2�
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 -   操作数地址重叠约束请参考[通用地址重叠约束](通用说明和约束.md#section668772811100)。
 
--   针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
--   针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
+-   针对Ascend 910B，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
+-   针对Ascend 910C，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

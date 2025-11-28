@@ -55,7 +55,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void BlockReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         BlockReduceSumIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -65,7 +65,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void BlockReduceMaxImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         BlockReduceMaxIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -75,7 +75,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void BlockReduceMinImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         BlockReduceMinIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -85,7 +85,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void PairReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const int32_t mask, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         PairReduceSumIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -95,7 +95,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void BlockReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         BlockReduceSumIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -105,7 +105,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void BlockReduceMaxImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         BlockReduceMaxIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -115,7 +115,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void BlockReduceMinImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         BlockReduceMinIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -125,7 +125,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void PairReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
     const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         PairReduceSumIntrinsicsImpl(dstLocal, srcLocal, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     }
@@ -136,7 +136,7 @@ __aicore__ inline void RepeatReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* src
     const int32_t elemsInOneRepeat, const int32_t dstBlkStride, const int32_t srcBlkStride, const int32_t dstRepStride,
     const int32_t srcRepStride)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(elemsInOneRepeat);
         RepeatReduceSumIntrinsicsImpl(dstLocal, srcLocal, repeatTime, srcBlkStride, dstRepStride, srcRepStride);
     }
@@ -145,7 +145,7 @@ __aicore__ inline void RepeatReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* src
 template <typename T, bool isSetMask = true>
 __aicore__ inline void ReduceSumImpl(__ubuf__ T* dst, __ubuf__ T* src, uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (isSetMask) {
             set_mask_count();
             set_vector_mask(0, count);
@@ -174,7 +174,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void WholeReduceMaxImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, struct ReduceRepeatParams& params,
     const ReduceOrder order)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(params.highMask, params.lowMask);
         if (order == ReduceOrder::ORDER_VALUE_INDEX) {
             vcmax(dstLocal, srcLocal, params.repeatTimes, params.dstRepStride, params.srcBlkStride, params.srcRepStride,
@@ -214,7 +214,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void WholeReduceMinImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, struct ReduceRepeatParams& params,
     const ReduceOrder order)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(params.highMask, params.lowMask);
         if (order == ReduceOrder::ORDER_VALUE_INDEX) {
             vcmin(dstLocal, srcLocal, params.repeatTimes, params.dstRepStride, params.srcBlkStride, params.srcRepStride,
@@ -253,7 +253,7 @@ __aicore__ inline void WholeReduceMinImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcL
 template <typename T, bool isSetMask = true>
 __aicore__ inline void WholeReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, struct ReduceRepeatParams& params)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(params.highMask, params.lowMask);
         vcadd(dstLocal, srcLocal, params.repeatTimes, params.dstRepStride, params.srcBlkStride, params.srcRepStride, 0);
     }
@@ -738,7 +738,7 @@ template <typename T>
 __aicore__ inline void ReduceImplWithIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params, const ReduceMode& mode)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if (params.repeatTimes == 1) {
             ReduceOperation<T>(dstLocal, srcLocal, 1, params.srcRepStride, params.highMask, params.lowMask, mode);
         } else {
@@ -761,7 +761,7 @@ template <typename T>
 __aicore__ inline void ReduceImplNoIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params, const ReduceMode& mode)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if (params.repeatTimes == 1) {
             ReduceOperation<T>(sharedTmpBuffer, srcLocal, 1, params.srcRepStride, params.highMask, params.lowMask, mode);
             event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));

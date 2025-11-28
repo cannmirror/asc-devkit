@@ -812,7 +812,7 @@ template <typename T, typename U>
 __aicore__ inline void CastImpl(__ubuf__ T* dst, __ubuf__ U* src, const RoundMode& roundMode,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         CheckCastDatatype<T, U>();
         set_mask_count();
         set_vector_mask(0, count);
@@ -843,7 +843,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void CastImpl(__ubuf__ T* dst, __ubuf__ U* src, const RoundMode& roundMode,
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         CheckCastDatatype<T, U>();
         if constexpr (isSetMask) {
             if (sizeof(T) >= sizeof(U)) {
@@ -861,7 +861,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void CastImpl(__ubuf__ T* dst, __ubuf__ U* src, const RoundMode& roundMode,
     const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         CheckCastDatatype<T, U>();
         if constexpr (isSetMask) {
             if (sizeof(T) >= sizeof(U)) {
@@ -908,7 +908,7 @@ __aicore__ inline void CastDeqImpl(__ubuf__ T* dst, __ubuf__ U* src,
     ASCENDC_ASSERT((SupportType<Tuple<U, T>, Tuple<int16_t, int8_t>, Tuple<int16_t, uint8_t>, Tuple<int32_t, half>>()),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in CastDeqImpl, current api support dtype combination is src:"
         "int16_t dst: int8_t/uint8_t , src:int32_t dst:half.");});
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         set_mask_count();
         set_vector_mask(0, count);
         struct UnaryRepeatParams repeatParams;
@@ -934,7 +934,7 @@ __aicore__ inline void CastDeqImpl(__ubuf__ T* dst, __ubuf__ U* src,
     ASCENDC_ASSERT((SupportType<Tuple<U, T>, Tuple<int16_t, int8_t>, Tuple<int16_t, uint8_t>, Tuple<int32_t, half>>()),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in CastDeqImpl, current api support dtype combination is src:"
         "int16_t dst: int8_t/uint8_t , src:int32_t dst:half.");});
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<U, isSetMask>(mask[1], mask[0]);
         if constexpr (sizeof(U) == sizeof(int32_t)) {
             CastImpl<T, U, isSetMask>(dst, src, RoundMode::CAST_RINT, mask, repeatTime, repeatParams);
@@ -956,7 +956,7 @@ __aicore__ inline void CastDeqImpl(__ubuf__ T* dst, __ubuf__ U* src,
     ASCENDC_ASSERT((SupportType<Tuple<U, T>, Tuple<int16_t, int8_t>, Tuple<int16_t, uint8_t>, Tuple<int32_t, half>>()),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in CastDeqImpl, current api support dtype combination is src:"
         "int16_t dst: int8_t/uint8_t , src:int32_t dst:half.");});
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<U, isSetMask>(mask);
         if constexpr (sizeof(U) == sizeof(int32_t)) {
             CastImpl<T, U, isSetMask>(dst, src, RoundMode::CAST_RINT, mask, repeatTime, repeatParams);
@@ -997,7 +997,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void AddReluCastImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1,
     const uint64_t mask, uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (isSetMask) {
             if constexpr (sizeof(T) >= sizeof(U)) {
                 AscendCUtils::SetMask<U>(mask);
@@ -1014,7 +1014,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void AddReluCastImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1,
     const uint64_t mask[], uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (isSetMask) {
             if constexpr (sizeof(T) >= sizeof(U)) {
                 AscendCUtils::SetMask<U>(mask[1], mask[0]);
@@ -1031,7 +1031,7 @@ template <typename T, typename U>
 __aicore__ inline void AddReluCastImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         set_mask_count();
         set_vector_mask(0, count);
         if constexpr (sizeof(T) > sizeof(U)) {
@@ -1077,7 +1077,7 @@ template <typename T, typename U>
 __aicore__ inline void SubReluCastImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         set_mask_count();
         set_vector_mask(0, count);
         if constexpr (sizeof(T) > sizeof(U)) {
@@ -1100,7 +1100,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void SubReluCastImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1,
     const uint64_t mask, uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (isSetMask) {
             if constexpr (sizeof(T) >= sizeof(U)) {
                 AscendCUtils::SetMask<U>(mask);
@@ -1117,7 +1117,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void SubReluCastImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1,
     const uint64_t mask[], uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (isSetMask) {
             if constexpr (sizeof(T) >= sizeof(U)) {
                 AscendCUtils::SetMask<U>(mask[1], mask[0]);

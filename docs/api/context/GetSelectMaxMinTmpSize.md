@@ -9,7 +9,7 @@ kernel侧Select接口的计算需要开发者申请临时空间，本接口用�
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
->![](public_sys-resources/icon-note.gif) **说明：** 
+> [!NOTE]说明 
 >GetSelectWithBytesMaskMinTmpSize、GetSelectWithBytesMaskMaxTmpSize、GetSelectWithBytesMaskMaxMinTmpSize接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetSelectMinTmpSize、GetSelectMaxTmpSize、GetSelectMaxMinTmpSize接口。
 
 -   获取最小临时空间大小

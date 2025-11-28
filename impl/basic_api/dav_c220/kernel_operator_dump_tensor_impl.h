@@ -37,7 +37,7 @@ template <typename T> __aicore__ inline uint32_t GetDataType(T data)
 
 __aicore__ inline uint8_t GetDumpBlockIdx()
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return GetBlockIdxImpl();
     } else {
         return GetBlockIdxImpl() + AIV_CORE_NUM;
@@ -786,7 +786,7 @@ __aicore__ __gm__ inline BlockWriteInfo* GetBlockFifoWriteInfo(__gm__ BlockPrint
 __aicore__ inline bool CheckAndWaitPrintFifoSpace(__gm__ BlockPrintFiFoInfo* blockFifoInfo, const uint32_t& fifoTlvLen)
 {
     constexpr uint32_t minTlvLen = sizeof(BlockSkipInfo);
-    
+
     __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
     uint32_t fifoBuffLen = blockFifoInfo->remainLen;
 
@@ -828,9 +828,9 @@ __aicore__ inline void PrintfFifoImpl(DumpType printType, __gm__ const char* fmt
     if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
         return;
     }
-    
+
     __gm__ PrintTlvInfoHead* fifoTlvAddr = reinterpret_cast<__gm__ PrintTlvInfoHead*>(GetFifoTlvAddr(blockFifoInfo));
-    
+
     WriteFifoTlvHead(printType, fifoTlvAddr, fifoTlvLen, argsNum);
     WriteFifoTlvData(fifoTlvAddr, fmt, args...);
 

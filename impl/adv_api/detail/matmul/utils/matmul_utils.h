@@ -304,7 +304,7 @@ template <bool AShare, bool BShare> __aicore__ __inline__ void SyncCubeWithVec()
         }
     }
 
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (AShare && BShare) {
             constexpr uint16_t eventID = 9U;
             NotifyEvent<PIPE_MTE3>(eventID);

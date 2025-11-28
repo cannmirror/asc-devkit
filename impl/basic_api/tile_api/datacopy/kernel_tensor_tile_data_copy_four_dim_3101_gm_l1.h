@@ -49,10 +49,10 @@ private:
     }
 
     template <typename T>
-    __aicore__ inline void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen, 
+    __aicore__ inline void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen,
         uint8_t leftPaddingCnt, uint8_t rigntPaddingCnt, uint8_t cacheMode, int64_t srcStride, int64_t dstStride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
 
@@ -181,23 +181,23 @@ private:
 
         auto dstLayout = dst.GetTensorTrait().GetLayout();
         auto srcLayout = src.GetTensorTrait().GetLayout();
- 
+
         auto dstShapeRows = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         auto dstShapeColumns = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
         auto dstStrideRows = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
         auto srcStrideRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
- 
+
         uint8_t leftPaddingCnt = 0;
         uint8_t rigntPaddingCnt = 0;
         uint8_t cacheMode = GetCacheModeFromTensor(src);
- 
+
         using type = typename GetTensorTraitType<U>::LiteType;
- 
+
         auto blockCount = dstShapeRows;
         auto blockLen = dstShapeColumns * sizeof(type);
         auto srcStride = srcStrideRows * sizeof(type);
         auto dstStride = dstStrideRows * sizeof(type);
- 
+
         return Std::make_tuple(blockCount, blockLen, leftPaddingCnt, rigntPaddingCnt, cacheMode, srcStride, dstStride);
     }
 };
@@ -251,7 +251,7 @@ private:
         using srcType = typename U::LiteType;
         using dstType = typename T::LiteType;
         static_assert(Std::is_same_v<srcType, dstType>, "The source data and target data have inconsistent data types.");
-        
+
         CheckDNTemplate<U>();
         CheckNZTemplate<T>();
 
@@ -307,11 +307,11 @@ private:
     }
 
     template <typename T>
-    __aicore__ inline void CopyGmToCbufMultiDn2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t dnNum, uint16_t loop2DstStride, 
-        uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue, 
+    __aicore__ inline void CopyGmToCbufMultiDn2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t dnNum, uint16_t loop2DstStride,
+        uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue,
         uint32_t dValue, uint64_t loop4SrcStride, bool enableSmallC0)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
 
@@ -375,7 +375,7 @@ private:
         using srcType = typename U::LiteType;
         using dstType = typename T::LiteType;
         static_assert(Std::is_same_v<srcType, dstType>, "The source data and target data have inconsistent data types.");
-        
+
         CheckNDTemplate<U>();
         CheckNZTemplate<T>();
 
@@ -431,11 +431,11 @@ private:
     }
 
     template <typename T>
-    __aicore__ inline void CopyGmToCbufMultiNd2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t ndNum, uint16_t loop2DstStride, 
-        uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue, 
+    __aicore__ inline void CopyGmToCbufMultiNd2nz(__cbuf__ T* dst, __gm__ T* src, uint16_t ndNum, uint16_t loop2DstStride,
+        uint16_t loop3DstStride, uint16_t loop4DstStride, uint64_t loop1SrcStride, uint8_t cacheMode, uint16_t nValue,
         uint32_t dValue, uint64_t loop4SrcStride, bool enableSmallC0)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
 

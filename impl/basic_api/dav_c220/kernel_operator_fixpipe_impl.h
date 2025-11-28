@@ -305,7 +305,7 @@ template <typename T, typename U>
 __aicore__ inline void FixpipeL0cToL1(__cbuf__ T* dst, __cc__ U* src,
     const FixpipeInfoParams<U>& fixpipeInfo, uint16_t calNSize, uint16_t nIterIndex = 0)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
     uint16_t cburstNum = fixpipeInfo.tiling.nSize / 16;
@@ -347,7 +347,7 @@ template <typename T, typename U>
 __aicore__ inline void FixpipeL0cToOut(__gm__ T* dst, __cc__ U* src,
     const FixpipeInfoParams<U>& fixpipeInfo, uint16_t calNSize, uint16_t nIterIndex = 0)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
     uint16_t cburstNum = fixpipeInfo.tiling.nSize / 16;
@@ -375,7 +375,7 @@ template <typename T>
 __aicore__ inline void CopyDeqTensorToFbuf(const FixpipeInfoParams<T>& fixpipeInfo, uint16_t calNSize,
     uint16_t nIterIndex)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
     uint16_t deqDataSize = DivCeil(calNSize * sizeof(uint64_t), 128) * 128;

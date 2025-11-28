@@ -174,7 +174,7 @@ TEST_F(TEST_MMAD_SP, MMAD_SP_Case)
     uint16_t n = 16;
     uint16_t k = 64;
 
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
     uint8_t a[m * k * sizeof(int8_t)] = {0};
@@ -184,7 +184,7 @@ TEST_F(TEST_MMAD_SP, MMAD_SP_Case)
     AscendC::KernelMatmulSp op;
     op.Init(a, b, idx, c, m, k, n);
     op.Process();
-    
+
     for (int32_t i = 0; i < m * n * sizeof(int32_t); i++) {
         EXPECT_EQ(c[i], 0x00);
     }

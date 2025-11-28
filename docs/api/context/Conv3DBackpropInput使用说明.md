@@ -24,7 +24,7 @@ Kernel侧实现Conv3DBackpropInput求解反向传播误差运算的步骤概括�
 4.  完成卷积反向操作。
 5.  结束卷积反向操作。
 
-    >![](public_sys-resources/icon-note.gif) **说明：** 
+    > [!NOTE]说明 
     >下文中提及的M轴方向，即为GradOutput矩阵纵向；K轴方向，即为GradOutput矩阵横向或Weight矩阵纵向；N轴方向，即为Weight矩阵横向。
 
 使用Conv3DBackpropInput高阶API求解反向传播误差运算的具体步骤如下：
@@ -126,7 +126,7 @@ Kernel侧实现Conv3DBackpropInput求解反向传播误差运算的步骤概括�
     </td>
     <td class="cellrowborder" valign="top" width="14.39%" headers="mcps1.2.6.1.4 "><p id="p296222664917"><a name="p296222664917"></a><a name="p296222664917"></a>half</p>
     </td>
-    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul1427715527471"></a><a name="ul1427715527471"></a><ul id="ul1427715527471"><li><span id="ph18238371566"><a name="ph18238371566"></a><a name="ph18238371566"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414"><a name="zh-cn_topic_0000001312391781_term12835255145414"></a><a name="zh-cn_topic_0000001312391781_term12835255145414"></a>Atlas A3 推理系列产品</term></span></li><li><span id="ph8457252154413"><a name="ph8457252154413"></a><a name="ph8457252154413"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507"><a name="zh-cn_topic_0000001312391781_term1551319498507"></a><a name="zh-cn_topic_0000001312391781_term1551319498507"></a>Atlas A2 推理系列产品</term></span></li></ul>
+    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul1427715527471"></a><a name="ul1427715527471"></a><ul id="ul1427715527471"><li><span id="ph18238371566"><a name="ph18238371566"></a><a name="ph18238371566"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></li><li><span id="ph8457252154413"><a name="ph8457252154413"></a><a name="ph8457252154413"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></li></ul>
     </td>
     </tr>
     <tr id="row68030432129"><td class="cellrowborder" valign="top" width="17.88%" headers="mcps1.2.6.1.1 "><p id="p10184164871215"><a name="p10184164871215"></a><a name="p10184164871215"></a>bfloat16_t</p>
@@ -137,7 +137,7 @@ Kernel侧实现Conv3DBackpropInput求解反向传播误差运算的步骤概括�
     </td>
     <td class="cellrowborder" valign="top" width="14.39%" headers="mcps1.2.6.1.4 "><p id="p12990122417259"><a name="p12990122417259"></a><a name="p12990122417259"></a>bfloat16_t</p>
     </td>
-    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul41845482127"></a><a name="ul41845482127"></a><ul id="ul41845482127"><li><span id="ph08421725717"><a name="ph08421725717"></a><a name="ph08421725717"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term12835255145414_1"><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a><a name="zh-cn_topic_0000001312391781_term12835255145414_1"></a>Atlas A3 推理系列产品</term></span></li><li><span id="ph17184848161211"><a name="ph17184848161211"></a><a name="ph17184848161211"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term1551319498507_1"><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a><a name="zh-cn_topic_0000001312391781_term1551319498507_1"></a>Atlas A2 推理系列产品</term></span></li></ul>
+    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul41845482127"></a><a name="ul41845482127"></a><ul id="ul41845482127"><li><span id="ph08421725717"><a name="ph08421725717"></a><a name="ph08421725717"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span></li><li><span id="ph17184848161211"><a name="ph17184848161211"></a><a name="ph17184848161211"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span></li></ul>
     </td>
     </tr>
     </tbody>

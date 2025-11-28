@@ -134,7 +134,7 @@ template <typename T, typename U>
 __aicore__ inline void CompareCompute(__ubuf__ U* dst, __ubuf__ T* src0, __ubuf__ T* src1, CMPMODE cmpMode,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         struct BinaryRepeatParams repeatParams;
         uint32_t sumRepeat = count * sizeof(T) / ONE_REPEAT_BYTE_SIZE;
         constexpr uint32_t repeatNormal = 252;
@@ -162,7 +162,7 @@ __aicore__ inline void VcmpvImpl(__ubuf__ U* dst, __ubuf__ T* src0, __ubuf__ T* 
     const uint64_t mask[], uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
     (void)(mask);
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         VcmpvIntrinsicsImpl(reinterpret_cast<__ubuf__ uint8_t*>(dst), src0, src1, cmpMode,
             repeatTime, repeatParams);
     }
@@ -172,7 +172,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void VcmpImpl(__ubuf__ T* src0, __ubuf__ T* src1, CMPMODE cmpMode,
     const uint64_t mask[], const BinaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask[1], mask[0]);
         VcmpIntrinsicsImpl(src0, src1, cmpMode, repeatParams);
     }
@@ -184,7 +184,7 @@ __aicore__ inline void VcmpvImpl(__ubuf__ U* dst, __ubuf__ T* src0, __ubuf__ T* 
     const uint64_t mask, uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
     (void)(mask);
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         VcmpvIntrinsicsImpl(reinterpret_cast<__ubuf__ uint8_t*>(dst), src0, src1, cmpMode,
             repeatTime, repeatParams);
     }
@@ -194,7 +194,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void VcmpImpl(__ubuf__ T* src0, __ubuf__ T* src1, CMPMODE cmpMode,
     const uint64_t mask, const BinaryRepeatParams& repeatParams)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         AscendCUtils::SetMask<T, isSetMask>(mask);
         VcmpIntrinsicsImpl(src0, src1, cmpMode, repeatParams);
     }
@@ -205,7 +205,7 @@ template <typename T, typename U>
 __aicore__ inline void VcmpvImpl(__ubuf__ U* dst, __ubuf__ T* src0, __ubuf__ T* src1, CMPMODE cmpMode,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (IsSameType<T, int32_t>::value) {
             ASCENDC_ASSERT((cmpMode == CMPMODE::EQ),
                 { KERNEL_LOG(KERNEL_ERROR, "Failed to check CMPMODE in Compare, current api only support "
@@ -281,7 +281,7 @@ template <typename T, typename U>
 __aicore__ inline void CompareScalarCompute(__ubuf__ U* dst, __ubuf__ T* src0, T src1, CMPMODE cmpMode,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         struct UnaryRepeatParams repeatParams;
         uint32_t sumRepeat = count * sizeof(T) / ONE_REPEAT_BYTE_SIZE;
         constexpr uint32_t repeatNormal = 252;
@@ -308,7 +308,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U* dst, __ubuf__ T* src0, T src1, CMP
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
     (void)(mask);
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         VcmpvsIntrinsicsImpl(reinterpret_cast<__ubuf__ uint8_t*>(dst), src0, src1, cmpMode,
             repeatTime, repeatParams);
     }
@@ -320,7 +320,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U* dst, __ubuf__ T* src0, T src1, CMP
     const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
     (void)(mask);
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         VcmpvsIntrinsicsImpl(reinterpret_cast<__ubuf__ uint8_t*>(dst), src0, src1, cmpMode,
             repeatTime, repeatParams);
     }
@@ -331,7 +331,7 @@ template <typename T, typename U>
 __aicore__ inline void VcmpvsImpl(__ubuf__ U* dst, __ubuf__ T* src0, T src1, CMPMODE cmpMode,
     const uint32_t count)
 {
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         if constexpr (IsSameType<T, int32_t>::value) {
             ASCENDC_ASSERT((cmpMode == CMPMODE::EQ),
                 { KERNEL_LOG(KERNEL_ERROR, "Failed to check CMPMODE in CompareScalar, current api only support "

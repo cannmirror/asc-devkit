@@ -188,7 +188,7 @@ static __aicore__ inline void Compute(Intf *self)
         return;
     }
 
-    if ASCEND_IS_AIV {
+    if (ASCEND_IS_AIV) {
         return;
     }
 

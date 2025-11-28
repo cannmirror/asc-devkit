@@ -892,7 +892,7 @@ def _json_post_process(compile_info: CompileInfo, op_info: OpInfo, tiling_info: 
         js["runInfo"] = tiling_info.raw_run_info
 
     # gen sub operator infos for super kernel feature
-    js = add_sub_super_kernel_info(js, tiling_info.static_shape_flag, compile_info)        
+    js = add_sub_super_kernel_info(js, tiling_info.static_shape_flag, compile_info)
 
     if compile_info.super_kernel_info.get("timestamp_option") is not None and \
         compile_info.super_kernel_info.get("timestamp_option"):
@@ -1261,7 +1261,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
 
     if (CommonUtility.is_c310() or CommonUtility.is_310r6()) and dump_info:
         source += "#if defined(ASCENDC_DUMP) && defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"
-        source += "    if ASCEND_IS_AIV {\n"
+        source += "    if (ASCEND_IS_AIV) {\n"
         source += "        AscendC::EnableL1Dump();\n"
         source += "        workspace += " + \
             str(global_var_storage.get_variable(
@@ -1479,7 +1479,7 @@ def gen_tiling_struct_size_and_dfx_section_file(compile_info: CompileInfo, tilin
                     tiling_info, tiling_key_struct_size_map, kernel_name)
         else:
             for tiling_key in compile_info.tiling_key_list:
-                kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]  
+                kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
                 if kernel_type.value >= 6 and kernel_type.value <= 7:
                     cube_marker = "_mix_aic"
                     kernel_name = compile_info.kernel_name + '_%s' % tiling_key + cube_marker
@@ -1684,13 +1684,13 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     import platform
     archlinux = platform.machine()
     if ascend_home_path is None or ascend_home_path == '':
-        asc_opc_path = shutil.which("asc_opc")	
-        if asc_opc_path is not None:	
+        asc_opc_path = shutil.which("asc_opc")
+        if asc_opc_path is not None:
             asc_opc_path_link = os.path.dirname(asc_opc_path)
             asc_opc_real_path = os.path.realpath(asc_opc_path_link)
-            ascend_home_path = os.path.realpath(	
+            ascend_home_path = os.path.realpath(
                     os.path.join(asc_opc_real_path, "..", ".."))
-        else:	
+        else:
             ascend_home_path = "/usr/local/Ascend/latest"
 
     if 'x86' in archlinux:
@@ -1764,7 +1764,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     tiling_key_group_map = infered_info_from_ifile.tiling_key_group_map
     context_tiling_key = get_context().get_addition("tiling_key")
     # override customized tiling key list if the input is passed from
-    customize_tiling_key = "customized_tiling_key_list" 
+    customize_tiling_key = "customized_tiling_key_list"
     if customize_tiling_key in extend_options and isinstance(extend_options[customize_tiling_key], list):
         context_tiling_key = extend_options[customize_tiling_key]
     if context_tiling_key:

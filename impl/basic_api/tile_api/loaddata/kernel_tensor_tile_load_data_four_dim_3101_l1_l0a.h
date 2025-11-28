@@ -37,7 +37,7 @@ private:
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
             "LoadDataFourDim3101L12L0A Layout->Shape->Row->ZeroDim is not Std::Int<16> type!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3101L12L0A Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!"); 
+            "LoadDataFourDim3101L12L0A Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
@@ -65,7 +65,7 @@ private:
     __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src)
     {
         CheckTemplate<GetTensorTraitType<T>, GetTensorTraitType<U>, trait>();
-        
+
         using DstType = typename GetTensorTraitType<T>::LiteType;
         auto dstLayout = dst.GetLayout();
         auto srcLayout = src.GetLayout();
@@ -95,7 +95,7 @@ private:
     __aicore__ inline void LoadL1ToL0AAlignV2(__ca__ T* dst, __cbuf__ T* src, uint16_t mStartPosition,
         uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride)
     {
-        if ASCEND_IS_AIV {
+        if (ASCEND_IS_AIV) {
             return;
         }
 
