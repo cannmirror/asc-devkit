@@ -1,6 +1,6 @@
 # Add算子直调样例
 ## 概述
-本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程，支持main函数和Kernel函数在同一个cpp文件中实现。
+本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程，支持main函数和kernel函数在同一个cpp文件中实现。
 
 ## 支持的AI处理器
 - Ascend 910C
@@ -59,7 +59,7 @@
 - 配置环境变量  
   以命令行方式下载样例代码，master分支为例。
   ```bash
-  cd ${git_clone_path}/examples/00_introduction/01_add
+  cd ${git_clone_path}/examples/00_introduction/01_add/basic_api_tque_add
   ```
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
@@ -78,8 +78,6 @@
   ```bash
   # 配置CANN环境变量
   source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  # 添加AscendC CMake Module搜索路径至环境变量
-  export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
   ```
 
 - 样例执行

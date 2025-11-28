@@ -6,7 +6,7 @@
 - Ascend 910B
 ## 目录结构介绍
 ```
-├── 02_matmul
+├── normal_matmul
 │   └── scripts
 │       ├── gen_data.py         // 输入数据和真值数据生成脚本文件
 │       └── verify_result.py    // 真值对比文件
@@ -47,7 +47,7 @@
 - 配置环境变量  
   以命令行方式下载样例代码，master分支为例。
   ```bash
-  cd ${git_clone_path}/examples/00_introduction/02_matmul
+  cd ${git_clone_path}/examples/00_introduction/02_matmul/normal_matmul
   ```
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
@@ -62,6 +62,11 @@
       ```bash
       export ASCEND_INSTALL_PATH=${install_path}/latest
       ```
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
 - 样例执行  
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录

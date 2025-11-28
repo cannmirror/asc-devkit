@@ -4,6 +4,7 @@
 使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，给出了对应的端到端实现。
 
 ## 支持的AI处理器
+- Ascend 910C
 - Ascend 910B
 
 ## 目录结构介绍
@@ -13,12 +14,12 @@
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
-│   └── scatter_custom.asc         // AscendC算子实现 & 调用样例
+│   └── scatter_custom.asc      // AscendC算子实现 & 调用样例
 ```
 
 ## 算子描述
 - 算子功能：  
-本调用样例中实现的是对于Scatter功能变换的兼容,Ascend910B不支持Scatter指令，使用标量搬出的方式进行兼容。
+本调用样例中实现的是对于Scatter功能变换的兼容，Ascend910C/Ascend910B不支持Scatter指令，使用标量搬出的方式进行兼容。
 
   Scatter计算逻辑是：给定一个连续的输入张量和一个目的地址偏移张量，Scatter指令根据偏移地址生成新的结果张量后将输入张量分散到结果张量中。
 
@@ -50,7 +51,7 @@
   - 配置环境变量  
     以命令行方式下载样例代码，master分支为例。
     ```bash
-    cd ${git_clone_path}/examples/03_libraries/02_scattercustomsample
+    cd ${git_clone_path}/examples/03_libraries/01_scattercustom
     ```
     请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包

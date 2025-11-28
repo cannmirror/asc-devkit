@@ -37,8 +37,6 @@
   ```bash
   # 配置CANN环境变量
   source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  # 添加AscendC CMake Module搜索路径至环境变量
-  export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
   ```
 - 样例执行
   ```bash
@@ -46,7 +44,7 @@
   cmake ..;make -j;             # 编译工程
   ./demo                        # 执行样例
   ```
-  执行结果如下，说明精度对比成功。
+  执行结果如下，说明执行成功。
   ```bash
   Hello World!!!
   ```
