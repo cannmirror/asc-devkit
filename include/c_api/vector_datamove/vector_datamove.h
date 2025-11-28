@@ -8,10 +8,10 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_VECTOR_DATAMOVE_H
-#define C_API_VECTOR_DATAMOVE_H
+#ifndef INCLUDE_C_API_VECTOR_DATAMOVE_H
+#define INCLUDE_C_API_VECTOR_DATAMOVE_H
 
-#include "impl/c_api/instr/vector_datamove/vector_datamove.h"
+#include "c_api_instr_impl/vector_datamove/vector_datamove_impl.h"
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src, uint32_t size);
 

@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_UTILS_C_API_UNION_H
-#define C_API_UTILS_C_API_UNION_H
+#ifndef INCLUDE_C_API_UTILS_C_API_UNION_H
+#define INCLUDE_C_API_UTILS_C_API_UNION_H
 
 #include "c_api_constants.h"
 #include <cstdint>

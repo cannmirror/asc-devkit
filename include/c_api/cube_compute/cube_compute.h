@@ -8,9 +8,9 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_CUBE_COMPUTE_H
-#define C_API_CUBE_COMPUTE_H
+#ifndef INCLUDE_C_API_CUBE_COMPUTE_H
+#define INCLUDE_C_API_CUBE_COMPUTE_H
 
-#include "impl/c_api/instr/cube_compute/cube_compute.h"
+#include "c_api_instr_impl/cube_compute/cube_compute_impl.h"
 
 #endif

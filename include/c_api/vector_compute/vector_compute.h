@@ -8,11 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_VECTOR_COMPUTE_H
-#define C_API_VECTOR_COMPUTE_H
+#ifndef INCLUDE_C_API_VECTOR_COMPUTE_H
+#define INCLUDE_C_API_VECTOR_COMPUTE_H
 
-#include "impl/c_api/instr/vector_compute/vector_compute.h"
-#include "c_api/c_api_interf_util.h"
+#include "c_api_instr_impl/vector_compute/vector_compute_impl.h"
+#include "c_api_interf_util.h"
 
 __aicore__ inline void asc_get_cmp_mask(__ubuf__ void* dst);
 

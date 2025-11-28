@@ -14,8 +14,8 @@
  * \brief
  */
 
-#ifndef C_API_UTILS_C_API_CONSTANTS_H
-#define C_API_UTILS_C_API_CONSTANTS_H
+#ifndef INCLUDE_C_API_UTILS_C_API_CONSTANTS_H
+#define INCLUDE_C_API_UTILS_C_API_CONSTANTS_H
 
 #include <cstdint>
 #include <type_traits>

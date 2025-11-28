@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef C_API_ASC_SIMD_H
-#define C_API_ASC_SIMD_H
+#ifndef INCLUDE_C_API_ASC_SIMD_H
+#define INCLUDE_C_API_ASC_SIMD_H
 
 #include "c_api_interf_util.h"
 #include "cube_compute/cube_compute.h"
@@ -19,5 +19,6 @@
 #include "sys_var/sys_var.h"
 #include "vector_compute/vector_compute.h"
 #include "vector_datamove/vector_datamove.h"
+#include "misc/misc.h"
 
 #endif
