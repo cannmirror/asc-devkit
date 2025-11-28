@@ -27,7 +27,7 @@ __aicore__ inline void asc_brcb_sync(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* 
 | :--- | :--- | :--- |
 | dst | 输出 | 目的操作数地址 |
 | src | 输入 | 源操作数地址 |
-| config | 输入 | 广播配置参数 |
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_brcb_config](../struct/asc_brcb_config.md) |
 
 ## 返回值说明
 
@@ -44,10 +44,10 @@ PIPE_V
 ## 调用示例
 
 ```cpp
+//total_length 指参与计算的数据长度
 uint64_t offset = 0;
-__ubuf__ half* src = (__ubuf__ half*)asc_GetPhyBufAddr(0);
-offset += totalLength * sizeof(half);
-__ubuf__ half* dst = (__ubuf__ half*)asc_GetPhyBufAddr(offset);
-offset += totalLength * sizeof(half);
+__ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
+offset += total_length * sizeof(half);
+__ubuf__ half* dst= (__ubuf__ half*)asc_get_phy_buf_addr(offset);
 asc_brcb(dst, src, config);
 ```
