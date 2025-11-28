@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-# coding=utf-8
-
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -11,32 +8,25 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-import sys
-import os
-import torch
-import torch_npu
-from torch_npu.testing.testcase import TestCase, run_tests
+cmake_minimum_required(VERSION 3.16)
 
-sys.path.append(os.getcwd())
-import add_custom
+find_package(ASC REQUIRED)
+find_package(AICPU REQUIRED)
 
-torch.npu.config.allow_internal_format = False
+project(kernel_samples LANGUAGES ASC AICPU CXX)
 
+add_executable(demo
+    aicore_kernel.asc
+    main.asc
+    aicpu_tiling.aicpu
+)
 
-class TestCustomAdd(TestCase):
+set_target_properties(demo PROPERTIES LINKER_LANGUAGE ASC)
 
-    def test_add_custom_ops(self):
-        length = [8, 2048]
-        x = torch.rand(length, device='cpu', dtype=torch.float16)
-        y = torch.rand(length, device='cpu', dtype=torch.float16)
+target_include_directories(demo PUBLIC
+    ${ASCEND_CANN_PACKAGE_PATH}/include/ascendc/aicpu_api    
+)
 
-        x_npu = x.npu()
-        y_npu = y.npu()
-        output = add_custom.run_add_custom(x_npu, y_npu)
-        cpuout = torch.add(x, y)
-
-        self.assertRtolEqual(output, cpuout)
-
-
-if __name__ == "__main__":
-    run_tests()
+target_compile_options(demo PRIVATE
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+)

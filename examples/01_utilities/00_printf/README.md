@@ -85,7 +85,11 @@
     ```bash
     export ASCEND_INSTALL_PATH=${install_path}/latest
     ```
-
+  配置安装路径后，执行以下命令统一配置环境变量。
+  ```bash
+  # 配置CANN环境变量
+  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+  ```
 - 样例执行
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
@@ -94,7 +98,7 @@
   ./demo                        # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
-  执行结果如下，说明精度对比成功。
+  最终执行结果如下，说明精度对比成功。
   ```bash
   test pass
   ```

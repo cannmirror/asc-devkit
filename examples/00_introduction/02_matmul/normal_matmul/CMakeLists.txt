@@ -10,12 +10,12 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-find_package(ASC REQUIRED)
+find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
 
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    tensor_tile_custom.asc
+    matmul.asc
 )
 
 target_link_libraries(demo PRIVATE
@@ -23,8 +23,9 @@ target_link_libraries(demo PRIVATE
     register
     platform
     m
+    dl
 )
 
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
