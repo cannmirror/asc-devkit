@@ -664,7 +664,8 @@ format(str(stage), output))
                                       infered_info_from_ifile.default_tiling_struct,
                                       infered_info_from_ifile.tiling_key_struct_map, value_depends, enable_vd)
         else:
-            return get_tiling_info(op_info, infered_info_from_ifile.tiling_key_list, value_depends, enable_vd)
+            return get_tiling_info(op_info, infered_info_from_ifile.tiling_key_list, value_depends, \
+                                   enable_vd, infered_info_from_ifile.tiling_key_group_map)
 
 
 def is_enable_sanitizer(compile_options):
