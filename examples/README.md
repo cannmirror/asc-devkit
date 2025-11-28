@@ -10,4 +10,3 @@
 | [02_features](./02_features) | Ascend C的特性：Aclnn（ge入图）工程，LocalMemoryAllocator、Barrier单独内存申请和分配、SIMT编程 |
 | [03_libraries](./03_libraries) | 高阶API、基础API类库的使用示例，包括数学库，激活函数等 |
 | [04_best_practices](./04_best_practices) | 最佳实践示例 |
-| [05_c_api](./05_c_api) | 基于C_API的使用示例 |
