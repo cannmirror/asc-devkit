@@ -19,10 +19,22 @@
 #include "get_sub_block_id/asc_2201/get_sub_block_id_impl.h"
 #include "get_sys_cnt/asc_2201/get_sys_cnt_impl.h"
 #include "set_ctrl/asc_2201/set_ctrl_impl.h"
+#include "get_block_idx/asc_2201/get_block_idx_impl.h"
+#include "get_block_num/asc_2201/get_block_num_impl.h"
 
 __aicore__ inline int64_t asc_get_core_id()
 {
     return CApiInternal::get_core_id_impl();
+}
+
+__aicore__ inline int64_t asc_get_block_idx()
+{
+    return CApiInternal::get_block_idx_impl();
+}
+
+__aicore__ inline int64_t asc_get_block_num()
+{
+    return CApiInternal::get_block_num_impl();
 }
 
 __aicore__ inline int64_t asc_get_ctrl()

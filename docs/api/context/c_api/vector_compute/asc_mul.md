@@ -51,7 +51,7 @@ $$
 | dst | 输出 | 目的操作数地址。 |
 | src0、src1 | 输入 | 源操作数地址。 |
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在高维切分计算场景下使用的计算配置参数, 详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。 |
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数, 详细说明请参考[asc_binary_config](../struct/asc_binary_config.md)。 |
 
 ### 返回值说明
 

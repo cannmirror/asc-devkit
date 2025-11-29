@@ -9,12 +9,13 @@
 
 ## 功能说明
 
-流水线同步屏障，等待指定流水线或所有流水线操作完成。
+等待指定流水线或所有流水线操作完成。
 
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_sync(pipe_t pipe)
+template<typename Pipe>
+__aicore__ inline void asc_sync(Pipe pipe);
 __aicore__ inline void asc_sync()
 ```
 
@@ -30,7 +31,7 @@ __aicore__ inline void asc_sync()
 
 ## 流水类型
 
-PIPE_S
+PIPE_TYPE_S
 
 ## 约束说明
 
@@ -39,5 +40,5 @@ PIPE_S
 ## 调用示例
 
 ```cpp
-asc_sync_vec();
+asc_sync();
 ```

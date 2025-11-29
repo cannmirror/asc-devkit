@@ -7,30 +7,16 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+#ifndef IMPL_C_API_INSTR_SYS_VAR_GET_BLOCK_IDX_ASC_2201_GET_BLOCK_IDX_IMPL_H
+#define IMPL_C_API_INSTR_SYS_VAR_GET_BLOCK_IDX_ASC_2201_GET_BLOCK_IDX_IMPL_H
 
-#ifndef INCLUDE_C_API_SYS_VAR_H
-#define INCLUDE_C_API_SYS_VAR_H
+namespace CApiInternal {
 
-#include "c_api_instr_impl/sys_var/sys_var_impl.h"
+__aicore__ inline int64_t get_block_idx_impl()
+{
+    return get_block_idx();
+}
 
-__aicore__ inline void asc_set_ctrl(uint64_t config);
-
-__aicore__ inline int64_t asc_get_core_id();
-
-__aicore__ inline int64_t asc_get_block_idx();
-
-__aicore__ inline int64_t asc_get_block_num();
-
-__aicore__ inline int64_t asc_get_ctrl();
-
-__aicore__ inline uint64_t asc_get_overflow_status();
-
-__aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset);
-
-__aicore__ inline int64_t asc_get_sub_block_dim();
-
-__aicore__ inline int64_t asc_get_sub_block_id();
-
-__aicore__ inline int64_t asc_get_system_cycle();
+}
 
 #endif

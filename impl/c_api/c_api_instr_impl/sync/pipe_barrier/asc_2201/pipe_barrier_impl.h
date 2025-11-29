@@ -28,8 +28,6 @@ __aicore__ inline void sync_vec_impl()
     pipe_barrier(pipe_t::PIPE_ALL);
 }
 
-__aicore__ inline void sync_mte1_impl(int id) { }
-
 __aicore__ inline void sync_mte2_impl(int id)
 {
     set_flag(pipe_t::PIPE_MTE2, pipe_t::PIPE_MTE3, id);
@@ -47,10 +45,6 @@ __aicore__ inline void sync_mte3_impl(int id)
     wait_flag(pipe_t::PIPE_MTE3, pipe_t::PIPE_V, id);
     pipe_barrier(pipe_t::PIPE_MTE3);
 }
-
-__aicore__ inline void sync_matrix_impl(int id) { }
-
-__aicore__ inline void sync_fixpipe_impl(int id) { }
 
 __aicore__ inline void sync_impl()
 {

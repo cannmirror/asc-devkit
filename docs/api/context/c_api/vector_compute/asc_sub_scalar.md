@@ -12,7 +12,7 @@
 执行矢量和标量的减法运算。
 
 $$
-dst_i = src_i - scalar
+dst_i = src_i - a
 $$
 
 ## 函数原型
@@ -54,7 +54,7 @@ __aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* 
 | src     | 输入     | 矢量源操作数。|
 | a     | 输入     | 标量源操作数。|
 | count   | 输入     | 参与连续计算的元素个数。|
-| config  | 输入     | 在非连续场景下使用的计算配置参数。|
+| config  | 输入     | 在非连续场景下使用的计算配置参数。<br/>详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。|
 
 ## 返回值说明
 
