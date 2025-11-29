@@ -21,22 +21,6 @@
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
-enum class TopKAlgo {
-    RADIX_SELECT,
-    MERGE_SORT
-};
-
-enum class TopKOrder {
-    UNSET,
-    LARGEST,
-    SMALLEST
-};
-
-struct TopKConfig {
-    TopKAlgo algo = TopKAlgo::MERGE_SORT;
-    TopKOrder order = TopKOrder::UNSET;
-    bool sorted = true;
-};
 
 /*
  * @ingroup GetTopKMaxMinTmpSize

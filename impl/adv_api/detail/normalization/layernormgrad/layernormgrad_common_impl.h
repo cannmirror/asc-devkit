@@ -23,7 +23,8 @@ const uint32_t LAYERNORM_GRAD_B32_BYTE_SIZE = 4;
 const uint32_t LAYERNORM_GRAD_B16_BYTE_SIZE = 2;
 
 namespace AscendC {
-
+#ifndef ASCC_STRUCT_LAYERNORMGRADPARAMS
+#define ASCC_STRUCT_LAYERNORMGRADPARAMS
 struct LayerNormGradParams {
     __aicore__ LayerNormGradParams(LayerNormGradTiling &tiling, LocalTensor<float> &stackBuffer)
         : bLength(tiling.bLength),
@@ -87,6 +88,7 @@ struct LayerNormGradParams {
     LocalTensor<float> tmpTensor2;   // tmp for intermediate use
     LocalTensor<float> tmpTensorBSH; // tmp for intermediate use
 };
+#endif
 
 __aicore__ inline void DuplicateLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t bsLength, const uint32_t hLength)

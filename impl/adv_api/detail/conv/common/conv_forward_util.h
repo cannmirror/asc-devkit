@@ -65,10 +65,13 @@ static __aicore__ inline size_t GetInputkInOneC0Block()
     return C0_SIZE / sizeof(typename Intf::InputT);
 }
 
+#ifndef ASCC_STRUCT_ITERATEORDER
+#define ASCC_STRUCT_ITERATEORDER
 enum class IterateOrder : uint32_t {
     ORDER_MTERFIRST = 0,
     ORDER_NTERFIRST,
     UNDEF,
 };
+#endif
 }  // namespace ConvApi
 #endif  // __API_CONV3D_UTIL_H__

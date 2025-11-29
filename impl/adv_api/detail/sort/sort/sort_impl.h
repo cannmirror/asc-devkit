@@ -16,16 +16,16 @@
 #define IMPL_SORT_SORT_SORT_IMPL_H
 
 #include "../sort_common_utils.h"
+#include "include/adv_api/sort/sort_utils_constants.h"
 
 namespace AscendC {
-enum class SortType {
-    RADIX_SORT,
-    MERGE_SORT
-};
+#ifndef ASCC_STRUCT_SORTCONFIG
+#define ASCC_STRUCT_SORTCONFIG
 struct SortConfig {
     SortType type = SortType::RADIX_SORT;
     bool isDescend = false;
 };
+#endif
 
 namespace internal {
 constexpr SortConfig defaultSortConfig = { SortType::RADIX_SORT, false };

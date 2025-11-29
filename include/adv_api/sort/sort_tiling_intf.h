@@ -15,6 +15,7 @@
 #include "graph/tensor.h"
 #include "graph/types.h"
 #include "tiling/platform/platform_ascendc.h"
+#include "sort_utils_constants.h"
 
 namespace AscendC {
 constexpr uint32_t REGION_PROPOSAL_DATA_SIZE_V200 = 8;
@@ -43,16 +44,15 @@ uint32_t GetConcatTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatfo
 uint32_t GetSortTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const uint32_t elemCount,
     const uint32_t dataTypeSize);
 
-enum class SortType {
-    RADIX_SORT,
-    MERGE_SORT
-};
+#ifndef ASCC_STRUCT_SORTCONFIG
+#define ASCC_STRUCT_SORTCONFIG
 struct SortConfig {
     SortType type = SortType::RADIX_SORT;
     bool isDescend = false;
     bool hasSrcIndex = false;
     bool hasDstIndex = false;
 };
+#endif
 
 void GetSortMaxMinTmpSize(const ge::Shape &srcShape, ge::DataType valueType, ge::DataType indexType, bool isReuseSource,
     const SortConfig &config, uint32_t &maxValue, uint32_t &minValue);

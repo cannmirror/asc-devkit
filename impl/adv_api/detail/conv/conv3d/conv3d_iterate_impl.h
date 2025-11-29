@@ -20,6 +20,8 @@
 namespace Conv3dApiFunc {
 
 template <class Intf, uint32_t ImplType>
+#ifndef ASCC_STRUCT_ITERATEALL
+#define ASCC_STRUCT_ITERATEALL
 struct Iterate {
     template <bool sync = true>
     static __aicore__ inline bool call(Intf *self, bool enPartialSum = false)
@@ -357,6 +359,7 @@ struct Iterate {
         return true;
     }
 };
+#endif
 
 }  // namespace Conv3dApiFunc
 

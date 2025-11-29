@@ -37,6 +37,8 @@ using TypeFalse = const struct {
 };
 
 template <class Intf, uint32_t ImplType>
+#ifndef ASCC_STRUCT_GETTENSORC
+#define ASCC_STRUCT_GETTENSORC
 struct GetTensorC {
     template <bool sync = true>
     static __aicore__ inline bool call(
@@ -56,8 +58,11 @@ struct GetTensorC {
         return false;
     }
 };
+#endif
 
 template <class Intf, uint32_t ImplType>
+#ifndef ASCC_STRUCT_ITERATEALL
+#define ASCC_STRUCT_ITERATEALL
 struct IterateAll {
     template <bool sync = true>
     static __aicore__ inline bool call(
@@ -217,6 +222,7 @@ struct IterateAll {
         self->ctx.groupOptIter = 0;
     }
 };
+#endif
 
 }  // namespace Conv3dApiFunc
 
