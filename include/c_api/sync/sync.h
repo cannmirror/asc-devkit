@@ -29,12 +29,6 @@ __aicore__ inline void asc_sync_mte3(int id);
 
 __aicore__ inline void asc_sync_mte2(int id);
 
-__aicore__ inline void asc_sync_mte1(int id);
-
-__aicore__ inline void asc_sync_matrix(int id);
-
-__aicore__ inline void asc_sync_fixpipe(int id);
-
 __aicore__ inline void asc_sync();
 
 #endif

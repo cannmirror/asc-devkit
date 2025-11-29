@@ -46,7 +46,7 @@ __aicore__ inline void asc_repeat_reduce_max_sync(__ubuf__ float* dst, __ubuf__ 
 | dst | 输出 | 目的操作数。 |
 | src  | 输入 | 源操作数。|
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_repeat_reduce_config](../struct/asc_repeat_reduce_config.md)|
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_repeat_reduce_config](../struct/asc_repeat_reduce_config.md)。|
 | order | 输入 | 使用order参数指定dst中index与value的相对位置以及返回结果行为，取值范围如下：<br>VALUE_INDEX：表示value位于低半部，返回结果存储顺序为[value, index]。<br>INDEX_VALUE：表示index位于低半部，返回结果存储顺序为[index, value]。<br>ONLY_VALUE：表示只返回最值，返回结果存储顺序为[value]。<br>ONLY_INDEX：表示只返回最值索引，返回结果存储顺序为[index]。 |
 
 ## 返回值说明
