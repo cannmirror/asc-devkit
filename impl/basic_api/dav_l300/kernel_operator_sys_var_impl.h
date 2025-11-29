@@ -75,7 +75,7 @@ __aicore__ inline int64_t GetSystemCycleImpl()
     const int32_t timeExp = 1000000000;
     struct timespec ts;
     clock_gettime(CLOCK_REALTIME, &ts);
-    int64_t timeStamp = (int64_t)ts.tv_sec * timeExp + ts.tv_nsec;
+    int64_t timeStamp = static_cast<int64_t>(ts.tv_sec) * timeExp + ts.tv_nsec;
     return timeStamp;
 #else
     uint64_t sysCnt = 0;

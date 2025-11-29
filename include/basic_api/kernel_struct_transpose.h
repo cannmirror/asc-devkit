@@ -14,6 +14,7 @@
  */
 #ifndef ASCENDC_MODULE_STRUCT_TRANSPOSE_H
 #define ASCENDC_MODULE_STRUCT_TRANSPOSE_H
+#include <cstdint>
 
 namespace AscendC {
 enum class TransposeType : uint8_t {
