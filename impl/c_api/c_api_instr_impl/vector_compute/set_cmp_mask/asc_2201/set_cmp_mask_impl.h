@@ -13,7 +13,7 @@
 
 namespace CApiInternal {
 
-__aicore__ inline void set_cmp_mask_impl(__ubuf__ void *sel_mask)
+__aicore__ inline void set_cmp_mask_impl(__ubuf__ void* sel_mask)
 {
     set_cmpmask(sel_mask);
 }

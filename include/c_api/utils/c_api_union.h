@@ -11,8 +11,8 @@
 #ifndef INCLUDE_C_API_UTILS_C_API_UNION_H
 #define INCLUDE_C_API_UTILS_C_API_UNION_H
 
-#include "c_api_constants.h"
 #include <cstdint>
+#include "c_api_constants.h"
 
 union asc_copy_config {
     uint64_t config;
@@ -24,8 +24,6 @@ union asc_copy_config {
         uint64_t dst_gap: 16;
     };
 };
-
-union asc_copy_align_config { };
 
 union asc_binary_config {
     uint64_t config = CAPI_DEFAULT_BINARY_CONFIG_VALUE;
@@ -48,7 +46,7 @@ union asc_unary_config {
         uint64_t src_block_stride: 16;
         uint64_t dst_repeat_stride: 12;
         uint64_t src_repeat_stride: 12;
-        uint64_t repeat : 8;
+        uint64_t repeat: 8;
     };
 };
 
@@ -59,7 +57,7 @@ union asc_block_reduce_config {
         uint64_t src_block_stride: 16;
         uint64_t src_repeat_stride: 16;
         uint64_t reserved: 8;
-        uint64_t repeat : 8;
+        uint64_t repeat: 8;
     };
 };
 
@@ -70,7 +68,7 @@ union asc_repeat_reduce_config {
         uint64_t src_block_stride: 16;
         uint64_t src_repeat_stride: 16;
         uint64_t reserved: 8;
-        uint64_t repeat : 8;
+        uint64_t repeat: 8;
     };
 };
 
@@ -95,7 +93,5 @@ union asc_brcb_config {
         uint64_t repeat: 8;
     };
 };
-
-union asc_mrgsort_config { };
 
 #endif

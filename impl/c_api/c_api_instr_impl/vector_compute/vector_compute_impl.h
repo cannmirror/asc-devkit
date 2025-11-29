@@ -79,7 +79,7 @@ __aicore__ inline void asc_get_vms4_sr(uint16_t sorted_num[4])
     CApiInternal::get_vms4_sr_impl(sorted_num);
 }
 
-__aicore__ inline void asc_set_cmp_mask(__ubuf__ void *sel_mask)
+__aicore__ inline void asc_set_cmp_mask(__ubuf__ void* sel_mask)
 {
     CApiInternal::set_cmp_mask_impl(sel_mask);
 }
