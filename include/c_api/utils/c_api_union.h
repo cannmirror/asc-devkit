@@ -11,8 +11,8 @@
 #ifndef INCLUDE_C_API_UTILS_C_API_UNION_H
 #define INCLUDE_C_API_UTILS_C_API_UNION_H
 
-#include "c_api_constants.h"
 #include <cstdint>
+#include "c_api_constants.h"
 
 union asc_copy_config {
     uint64_t config;

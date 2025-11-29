@@ -9,7 +9,7 @@
 
 ## 功能说明
 
-针对MTE3流水线执行特定的同步操作序列（设置并等待标志，然后执行屏障）。
+针对PIPE_TYPE_MTE3流水线执行同步操作。
 
 ## 函数原型
 
@@ -29,7 +29,7 @@ __aicore__ inline void asc_sync_mte3(int id)
 
 ## 流水类型
 
-PIPE_S
+PIPE_TYPE_S
 
 ## 约束说明
 
