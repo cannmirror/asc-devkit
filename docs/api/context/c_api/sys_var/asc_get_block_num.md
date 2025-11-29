@@ -1,20 +1,20 @@
-# asc_sync_vec
+# asc_get_block_num
 
 ## AI处理器支持情况
 
-| AI处理器类型 | 是否支持  |
+| AI处理器类型 | 是否支持 |
 | :-----------| :------: |
-| Ascend 910C |    √     |
-| Ascend 910B |    √     |
+| Ascend 910C |    √    |
+| Ascend 910B |    √    |
 
 ## 功能说明
 
-针对所有流水线执行同步操作。
+获取AI核数。
 
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_sync_vec()
+__aicore__ inline int64_t asc_get_block_num()
 ```
 
 ## 参数说明
@@ -35,6 +35,4 @@ PIPE_TYPE_S
 
 ## 调用示例
 
-```cpp
-asc_sync_vec();
-```
+无

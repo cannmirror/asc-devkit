@@ -43,5 +43,6 @@ PIPE_TYPE_S
 ## 调用示例
 
 ```c++
+//dst为外部输入的待刷新的目标地址。
 asc_data_cache_clean_and_invalid(dst, 0);
 ```
