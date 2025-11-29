@@ -15,7 +15,6 @@
 #include "include/adv_api/activation/swiglu_tiling.h"
 
 #include <cstdint>
-#include <set>
 
 #include "graph/tensor.h"
 #include "../../detail/host_log.h"

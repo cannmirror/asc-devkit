@@ -90,20 +90,19 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            MicroAPI::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(
-                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, 
-                topKInfo, isLargest);
+            MicroAPI::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
         }
 
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            MicroAPI::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(
-                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, 
-                topKInfo, isLargest);
+            MicroAPI::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
         }
         return;
     }
 
-    if constexpr (config.algo != TopKAlgo::RADIX_SELECT) {
+    if constexpr (config.algo == TopKAlgo::MERGE_SORT) {
+        static_assert((SupportType<T, half, float>()), "Type must be half/float in topk merge select algorithm.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
             TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(dstValueLocal, dstIndexLocal, srcLocal,
                 srcIndexLocal, finishLocal, tempBuffer, k, tilling, topKInfo, isLargest);
@@ -178,20 +177,19 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
             "topk radix select algorithm.");
         static_assert((!isHasfinish), "Topk radix select algorithm cannot support to set finish flag.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
-            MicroAPI::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(
-                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling,
-                topKInfo, isLargest);
+            MicroAPI::RadixSelectTopK::TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo, isLargest);
         }
 
         if constexpr (topkMode == TopKMode::TOPK_NSMALL) {
-            MicroAPI::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(
-                dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, 
-                topKInfo, isLargest);
+            MicroAPI::RadixSelectTopK::TopKNSmall<T, isInitIndex, isHasfinish, isReuseSrc, config>(dstValueLocal,
+                dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling, topKInfo, isLargest);
         }
         return;
     }
 
-    if constexpr (config.algo != TopKAlgo::RADIX_SELECT) {
+    if constexpr (config.algo == TopKAlgo::MERGE_SORT) {
+        static_assert((SupportType<T, half, float>()), "Type must be half/float in topk merge select algorithm.");
         if constexpr (topkMode == TopKMode::TOPK_NORMAL) {
             TopKNormal<T, isInitIndex, isHasfinish, isReuseSrc>(
                 dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, stackTensor, k, tilling,

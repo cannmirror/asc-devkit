@@ -256,7 +256,7 @@ __simd_callee__ inline void DigammaComputeImpl(
 template <typename T = float, bool isReuseSource = false>
 __simd_vf__ inline void DigammaImpl(__ubuf__ float *dstUb, __ubuf__ float *srcUb, uint32_t calCount)
 {
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     MicroAPI::MaskReg fullMask = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
     MicroAPI::RegTensor<float> dstReg;

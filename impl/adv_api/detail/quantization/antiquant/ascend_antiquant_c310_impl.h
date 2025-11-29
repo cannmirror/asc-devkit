@@ -21,8 +21,8 @@
 #include "ascend_antiquant_common.h"
 
 namespace AscendC {
-constexpr uint32_t ANTIQUANT_B16_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint16_t);
-constexpr uint32_t ANTIQUANT_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
+constexpr uint32_t ANTIQUANT_B16_VF_LEN = GetVecLen() / sizeof(uint16_t);
+constexpr uint32_t ANTIQUANT_B32_VF_LEN = GetVecLen() / sizeof(uint32_t);
 
 template <typename SrcType, typename OutType>
 __aicore__ inline void CheckApiDtypeValid()
@@ -1408,7 +1408,7 @@ __simd_vf__ inline void AntiQuantPerTokenForB8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint32_t sreg = para.n;
 
@@ -1463,7 +1463,7 @@ __simd_vf__ inline void AntiQuantPerTokenTransposeForB8VF(__ubuf__ dstT* dstUb, 
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint32_t sreg = para.n;
 
@@ -1632,7 +1632,7 @@ __simd_vf__ inline void AntiQuantPerGroupForColB8VF(__ubuf__ dstT* dstUb, __ubuf
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint32_t sreg = para.n;
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
@@ -1688,7 +1688,7 @@ __simd_vf__ inline void AntiQuantPerGroupForColFp4VF(__ubuf__ dstT* dstUb, __ubu
     __ubuf__ scaleT* scaleUb, const AscendAntiQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(dstT);
+    uint32_t vecLen = GetVecLen() / sizeof(dstT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint32_t sreg = para.n;
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
@@ -1798,7 +1798,7 @@ __simd_vf__ inline void AntiQuantPerGroupForRowFp4VF(__ubuf__ dstT* dstUb, __ubu
     __ubuf__ scaleT* scaleUb, const AscendAntiQuantParam para, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(dstT);
+    uint32_t vecLen = GetVecLen() / sizeof(dstT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
 
     MicroAPI::MaskReg preg;
@@ -1946,7 +1946,7 @@ __simd_vf__ inline void AntiQuantPerGroupForRowB8VF(__ubuf__ dstT* dstUb, __ubuf
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
 
     MicroAPI::MaskReg preg;

@@ -93,7 +93,7 @@ __simd_vf__ inline void FastGeluHighPrecisionAlgVF(__ubuf__ T* dst, __ubuf__ T* 
     MicroAPI::RegTensor<T> dstVreg;
     MicroAPI::RegTensor<float> dstVregFloat;
 
-    constexpr uint32_t stackSize = VECTOR_REG_WIDTH / sizeof(float);
+    constexpr uint32_t stackSize = GetVecLen() / sizeof(float);
     uint32_t sreg = dataSize;
 
     MicroAPI::RegTensor<float> stackVregFloat;
@@ -129,7 +129,7 @@ __simd_vf__ inline void FastGeluAlgVF(__ubuf__ T* dst, __ubuf__ T* src,
 {
     MicroAPI::RegTensor<T> srcVreg;
     MicroAPI::RegTensor<T> dstVreg;
-    constexpr uint32_t stackSize = VECTOR_REG_WIDTH / sizeof(T);
+    constexpr uint32_t stackSize = GetVecLen() / sizeof(T);
     uint32_t sreg = dataSize;
     MicroAPI::RegTensor<T> stackVreg;
     MicroAPI::MaskReg mask;
@@ -191,7 +191,7 @@ __simd_vf__ inline void FastGeluV2HighPrecisionAlgVF(__ubuf__ T* dst, __ubuf__ T
     MicroAPI::RegTensor<T> dstVreg;
     MicroAPI::RegTensor<float> dstVregFloat;
 
-    constexpr uint32_t stackSize = VECTOR_REG_WIDTH / sizeof(float);
+    constexpr uint32_t stackSize = GetVecLen() / sizeof(float);
     uint32_t sreg = dataSize;
 
     MicroAPI::RegTensor<float> stackVregFloat;
@@ -231,7 +231,7 @@ __simd_vf__ inline void FastGeluV2AlgVF(__ubuf__ T* dst, __ubuf__ T* src,
 {
     MicroAPI::RegTensor<T> srcVreg;
     MicroAPI::RegTensor<T> dstVreg;
-    constexpr uint32_t stackSize = VECTOR_REG_WIDTH / sizeof(T);
+    constexpr uint32_t stackSize = GetVecLen() / sizeof(T);
     uint32_t sreg = dataSize;
 
     MicroAPI::RegTensor<T> stackVregA;

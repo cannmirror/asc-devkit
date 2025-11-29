@@ -19,7 +19,7 @@
 #include "include/adv_api/quantization/ascend_quant_utils.h"
 
 namespace AscendC {
-constexpr uint32_t ASCENDC_QUANT_PER_GROUP_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
+constexpr uint32_t ASCENDC_QUANT_PER_GROUP_B32_VF_LEN = GetVecLen() / sizeof(uint32_t);
 
 template <typename dstT, typename srcT, typename scaleT, const AscendQuantConfig& config>
 __simd_vf__ inline void QuantPerTokenForFp8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
@@ -84,7 +84,7 @@ __simd_vf__ inline void QuantPerTokenForHif8VF(__ubuf__ dstT* dstUb, __ubuf__ sr
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -134,7 +134,7 @@ __simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -239,7 +239,7 @@ __simd_vf__ inline void QuantPerTokenForHif8VF(__ubuf__ dstT* dstUb, __ubuf__ sr
     __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -287,7 +287,7 @@ __simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT
     __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -336,7 +336,7 @@ __simd_vf__ inline void QuantPerGroupForKColFp4VF(__ubuf__ dstT* dstUb, __ubuf__
     __ubuf__ scaleT* scaleUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -435,7 +435,7 @@ __simd_vf__ inline void QuantPerGroupForKColHif8VF(__ubuf__ dstT* dstUb, __ubuf_
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -488,7 +488,7 @@ __simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     __ubuf__ scaleT* scaleUb, __ubuf__ scaleT* offsetUb, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -595,7 +595,7 @@ __simd_vf__ inline void QuantPerGroupForKColHif8VF(__ubuf__ dstT* dstUb, __ubuf_
     __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -645,7 +645,7 @@ __simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     __ubuf__ scaleT* scaleUb, const scaleT offset, const AscendQuantParam para)
 {
     uint16_t rowNum = para.calCount / para.n;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     uint16_t scaleK = CeilDivision(para.n, para.groupSize);
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -718,7 +718,7 @@ __simd_vf__ inline void QuantPerGroupForKRowFp4VF(__ubuf__ dstT* dstUb, __ubuf__
     __ubuf__ scaleT* scaleUb, const AscendQuantParam para, uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -908,7 +908,7 @@ __simd_vf__ inline void QuantPerGroupForKRowHif8VF(__ubuf__ dstT* dstUb, __ubuf_
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -1004,7 +1004,7 @@ __simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -1192,7 +1192,7 @@ __simd_vf__ inline void QuantPerGroupForKRowHif8VF(__ubuf__ dstT* dstUb, __ubuf_
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};
@@ -1284,7 +1284,7 @@ __simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     uint16_t rowNum, uint16_t tailRow)
 {
     uint16_t mainRowGroup = rowNum / para.groupSize;
-    uint32_t vecLen = VECTOR_REG_WIDTH / sizeof(scaleT);
+    uint32_t vecLen = GetVecLen() / sizeof(scaleT);
     uint16_t repeat = CeilDivision(para.n, vecLen);
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, config.roundMode};

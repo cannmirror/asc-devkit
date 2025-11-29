@@ -56,7 +56,7 @@ __simd_vf__ inline void ComputeMean64(__ubuf__ float *meanUb, __ubuf__ float *va
     __ubuf__ T *srcUb, const uint32_t aLength, const uint32_t rLength, const uint32_t rLengthWithPadding,
     const float k2Rec, const float k2RRec, const float rRecWithCorrection)
 {
-    constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(float)); // 64
+    constexpr uint16_t sregLower = static_cast<uint16_t>(GetVecLen() / sizeof(float)); // 64
     uint32_t count = rLength;
     MicroAPI::RegTensor<float> src0Reg;
     MicroAPI::RegTensor<float> src1Reg;
@@ -86,7 +86,7 @@ __simd_vf__ inline void ComputeMeanVF(__ubuf__ float *meanUb, __ubuf__ float *va
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec, const float k2RRec,
     float rRecWithCorrection, uint32_t workCount, int16_t halfAddRepeatTimes)
 {
-    constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(float)); // 64
+    constexpr uint16_t sregLower = static_cast<uint16_t>(GetVecLen() / sizeof(float)); // 64
     const uint32_t m = rLength - rHeadLength;
     uint32_t count;
     const uint32_t mVL = static_cast<uint32_t>(CeilDivision(m, sregLower) * sregLower);
@@ -167,7 +167,7 @@ __aicore__ inline void ComputeMean(__ubuf__ float *meanUb, __ubuf__ float *varia
     const uint32_t rLengthWithPadding, const uint32_t rHeadLength, const float k2Rec, const float k2RRec,
     float rRecWithCorrection)
 {
-    constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(float)); // 64
+    constexpr uint16_t sregLower = static_cast<uint16_t>(GetVecLen() / sizeof(float)); // 64
     uint32_t workCount =
         static_cast<uint32_t>(CeilDivision(rHeadLength / sregLower * sizeof(float), sregLower * Internal::kWelfordFinalizeFoldNum) *
         (sregLower * Internal::kWelfordFinalizeFoldNum)); // 256 * 4 = 1024; 1024/128 * 128
@@ -183,7 +183,7 @@ template <bool isCorrection = false>
 __aicore__ inline void BinaryReduceSum(__ubuf__ float *dstUb, __ubuf__ float *srcUb, __ubuf__ float *workUbOrigin,
     uint32_t rLength, uint32_t rHeadLength, float k2Rec, float k2RRec, float rRecWithCorrection)
 {
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(float));
     if (rLength < sregLower) {
         ComputeMean64<float, isCorrection>(dstUb, nullptr, srcUb, 1, rLength, rLength, k2Rec, k2RRec,
             rRecWithCorrection);

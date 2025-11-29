@@ -24,7 +24,7 @@ namespace AscendC {
 template <typename T>
 __simd_vf__ inline void CumSumCopyLastRowVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t len)
 {
-    constexpr uint16_t sregLower = static_cast<uint16_t>(VECTOR_REG_WIDTH / sizeof(T));
+    constexpr uint16_t sregLower = static_cast<uint16_t>(GetVecLen() / sizeof(T));
     uint32_t count = len;
     uint16_t repeatTimes = CeilDivision(count, sregLower);
 

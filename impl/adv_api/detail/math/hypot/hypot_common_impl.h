@@ -137,7 +137,7 @@ __simd_vf__ inline void VfHypotImpl(__ubuf__ T *dstUb, __ubuf__ T *src0Ub, __ubu
     MicroAPI::MaskReg cmpMaskSrc1NAN;
 
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     if constexpr ((IsSameType<T, bfloat16_t>::value) || (IsSameType<T, half>::value)) {
         sregLower = sregLower >> 1;
         sreg = sreg * 2;

@@ -56,7 +56,7 @@ __simd_vf__ inline void IsFiniteVFImpl(__ubuf__ U *dstUb, __ubuf__ T *srcUb, uin
     MicroAPI::MaskReg preg;
     MicroAPI::MaskReg cmpMaskNAN, cmpMaskPINF, cmpMaskNINF, cmpMaskINF, cmpMaskReg;
 
-    uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumOne>(sreg);
@@ -106,12 +106,11 @@ __aicore__ inline void IsFiniteImpl(const LocalTensor<U>& dst, const LocalTensor
         {KERNEL_LOG(KERNEL_ERROR, "CalCount should <= %d", src.GetSize());
         return;});
 
-    static_assert(SupportType<T, float, half, bfloat16_t>(),
-            "IsFinite do not support this type on current device");
- 
-    static_assert(SupportType<U, bool, float, half, bfloat16_t>(),
-            "IsFinite do not support this output type on current device");
- 
+    static_assert((SupportType<Tuple<U, T>, Tuple<half, half>, Tuple<bool, half>, Tuple<float, float>,
+                               Tuple<bool, float>, Tuple<bfloat16_t, bfloat16_t>, Tuple<bool, bfloat16_t>>()),
+                  "Failed to check dtype in IsInf, current api support dtype combination is U : half/bool, "
+                  "T : half; U : float/bool, T : float, U: bfloat16_t/bool, T: bfloat16_t");
+
     __ubuf__ T *srcUb = (__ubuf__ T *)src.GetPhyAddr();
     __ubuf__ U *dstUb = (__ubuf__ U *)dst.GetPhyAddr();
 

@@ -19,8 +19,8 @@
 #include "include/adv_api/quantization/ascend_quant_utils.h"
 
 namespace AscendC {
-constexpr uint32_t ASCENDC_QUANT_B16_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint16_t);
-constexpr uint32_t ASCENDC_QUANT_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
+constexpr uint32_t ASCENDC_QUANT_B16_VF_LEN = GetVecLen() / sizeof(uint16_t);
+constexpr uint32_t ASCENDC_QUANT_B32_VF_LEN = GetVecLen() / sizeof(uint32_t);
 
 template <typename dstT, typename srcT>
 __simd_vf__ inline void QuantPertensorForB8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT* srcUb,
