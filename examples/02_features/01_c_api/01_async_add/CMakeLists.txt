@@ -15,10 +15,10 @@ find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascend
 
 project(kernel_samples LANGUAGES ASC CXX)
 
-add_executable(c_api_add
+add_executable(c_api_add_example
     c_api_add.asc
 )
 
-target_compile_options(c_api_add PRIVATE
+target_compile_options(c_api_add_example PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
