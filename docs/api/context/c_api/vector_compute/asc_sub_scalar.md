@@ -54,7 +54,7 @@ __aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* 
 | src     | 输入     | 矢量源操作数。|
 | a     | 输入     | 标量源操作数。|
 | count   | 输入     | 参与连续计算的元素个数。|
-| config  | 输入     | 在非连续场景下使用的计算配置参数。|
+| config  | 输入     | 在非连续场景下使用的计算配置参数。<br/>详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。|
 
 ## 返回值说明
 
@@ -74,6 +74,7 @@ PIPE_TYPE_V
 ```c++
 // total_length指参与计算的数据总长度
 uint64_t offset = 0;
+half scalar = 0.0f;
 __ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
 offset += total_length * sizeof(half);
 __ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
