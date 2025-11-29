@@ -1804,12 +1804,12 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </th>
 </tr>
 </thead>
-<tbody><tr id="row99811354881"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p29811545811"><a name="p29811545811"></a><a name="p29811545811"></a><a href="context\max.md">max</a></p>
+<tbody><tr id="row99811354881"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p29811545811"><a name="p29811545811"></a><a name="p29811545811"></a><a href="context\max-1.md">max</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p138701595101"><a name="p138701595101"></a><a name="p138701595101"></a>比较相同数据类型的两个数中的最大值。</p>
 </td>
 </tr>
-<tr id="row99818543818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p179811546812"><a name="p179811546812"></a><a name="p179811546812"></a><a href="context\min.md">min</a></p>
+<tr id="row99818543818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p179811546812"><a name="p179811546812"></a><a name="p179811546812"></a><a href="context\min-1.md">min</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p986935911109"><a name="p986935911109"></a><a name="p986935911109"></a>比较相同数据类型的两个数中的最小值。</p>
 </td>
@@ -1824,7 +1824,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p88681259101020"><a name="p88681259101020"></a><a name="p88681259101020"></a><span>允许存储多个不同类型元素</span>的容器。</p>
 </td>
 </tr>
-<tr id="row19821854887"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1829135316100"><a name="p1829135316100"></a><a name="p1829135316100"></a><a href="context\get.md">get</a></p>
+<tr id="row19821854887"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1829135316100"><a name="p1829135316100"></a><a name="p1829135316100"></a><a href="context\get-1.md">get</a></p>
 </td>
 <td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p42902537103"><a name="p42902537103"></a><a name="p42902537103"></a><span>从</span>tuple<span>容器中提取指定位置的元素</span>。</p>
 </td>
