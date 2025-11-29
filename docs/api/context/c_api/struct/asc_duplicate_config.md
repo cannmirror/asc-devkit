@@ -9,11 +9,11 @@ constexpr uint64_t CAPI_DEFAULT_DUPLICATE_CONFIG_VALUE = 0x0100800800010001;
 union asc_duplicate_config {
     uint64_t config = CAPI_DEFAULT_DUPLICATE_CONFIG_VALUE;
     struct {
-        uint64_t dst_block_stride: 16;
-        uint64_t src_block_stride: 16;
-        uint64_t dst_repeat_stride: 12;
-        uint64_t src_repeat_stride: 12;
-        uint64_t repeat: 8;
+        uint64_t dst_block_stride : 16;
+        uint64_t src_block_stride : 16;
+        uint64_t dst_repeat_stride : 12;
+        uint64_t src_repeat_stride : 12;
+        uint64_t repeat : 8;
     };
 };
 ```

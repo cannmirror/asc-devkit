@@ -12,11 +12,7 @@
 #define INCLUDE_C_API_MISC_H
  
 #include "c_api_instr_impl/misc/misc_impl.h"
-
-__aicore__ inline void asc_init();
  
-__aicore__ inline int64_t asc_get_block_idx();
-
-__aicore__ inline int64_t asc_get_block_num();
+__aicore__ inline void asc_init();
 
 #endif

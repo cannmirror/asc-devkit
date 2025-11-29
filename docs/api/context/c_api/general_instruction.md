@@ -158,3 +158,42 @@ asc_add(dst, src0, src1, config);
 mask过程如下：<br>
 mask={6148914691236517205, 0}（注：6148914691236517205表示64位二进制数0b010101....01）
 ![ ](figures/mask_proc2.png)
+
+## 以数组方式申请内存
+
+编译器支持以数组方式申请内存。但需注意以下约束：
+
+- 当前仅支持Ascend 910C和Ascend 910B产品。
+- 数组方式的申请方式，和asc_get_phy_buf_addr API接口不能混用。否则可能导致地址重叠。
+- 不支持多维数组和嵌套的数组。
+- 封装到数据结构中时，不支持隐式构造。
+- 不支持动态数组。
+
+基本使用方式如下：
+
+~~~cpp
+// 数组长度必须为编译期常量。
+constexpr uint32_t src_len = 1024;
+constexpr uint32_t dst_len = 128;
+
+// 方式1：直接使用。
+__ubuf__ float src[src_len];
+__ubuf__ float dst[dst_len];
+
+// 方式2：封装到结构体中使用。
+struct UbBuff {
+    float src[src_len];
+    float dst[dst_len];
+}
+__ubuf__ UbBuff buff{}; // 必须加{}，不支持隐式构造。
+
+// 不支持的场景举例：
+__ubuf__ UbBuff buff[32];  // 不支持数组嵌套，UbBuff中也存在数组。
+__ubuf__ float buff[src_len][dst_len]; // 不支持多维数组。
+__ubuf__ float buff[result_len]; // 不支持动态数组。result_len为前置操作的计算结果。
+
+// 不支持两种地址申请方式混用。下面的写法获取的src0和src1的起始位置相同：
+__ubuf__ float* src0 = asc_get_phy_buf_addr(0);
+__ubuf__ float src1[src_len];
+
+~~~
