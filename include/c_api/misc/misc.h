@@ -15,8 +15,4 @@
  
 __aicore__ inline void asc_init();
 
-__aicore__ inline int64_t asc_get_block_idx();
-
-__aicore__ inline int64_t asc_get_block_num();
-
 #endif

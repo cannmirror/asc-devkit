@@ -12,7 +12,7 @@
 执行矢量加法运算。计算公式如下：
 
 $$
-dst_i = src0_i + scalar
+dst_i = src0_i + a
 $$
 
 ## 函数原型
@@ -30,10 +30,10 @@ __aicore__ inline void asc_add_scalar(_ubuf__ float* dst, _ubuf__ float* src, fl
 - 高维切分计算
 
 ```cpp
-_aicore__ inline void asc_add_scalar_(ubuf__ int16_t* dst, _ubuf__ int16_t* src, int16_t a, const asc_binary_config& config)
-__aicore__ inline void asc_add_scalar(_ubuf__ half* dst, _ubuf__ half* src0, half a, const asc_binary_config& config)
-__aicore__ inline void asc_add_scalar(_ubuf__ int32_t* dst, _ubuf__ int32_t* src0, int32_t a, const asc_binary_config& config)
-__aicore__ inline void asc_add_scalar(_ubuf__ float* dst, _ubuf__ float* src0, float a, const asc_binary_config& config)
+_aicore__ inline void asc_add_scalar(ubuf__ int16_t* dst, _ubuf__ int16_t* src, int16_t a, const asc_unary_config& config)
+__aicore__ inline void asc_add_scalar(_ubuf__ half* dst, _ubuf__ half* src, half a, const asc_unary_config& config)
+__aicore__ inline void asc_add_scalar(_ubuf__ int32_t* dst, _ubuf__ int32_t* src, int32_t a, const asc_unary_config& config)
+__aicore__ inline void asc_add_scalar(_ubuf__ float* dst, _ubuf__ float* src0, float a, const asc_unary_config& config)
 ```
 
 - 同步计算
@@ -52,9 +52,10 @@ __aicore__ inline void asc_add_scalar_sync(_ubuf__ float* dst, _ubuf__ float* sr
 | 参数名       | 输入/输出 | 描述               |
 | --------- | ----- | ---------------- |
 | dst       | 输出    | 目的操作数。            |
-| src0、src1 | 输入    | 源操作数。            |
+| src | 输入    | 源操作数。            |
+| a | 输入    | 标量源操作数。       |
 | count     | 输入    | 参与连续计算的元素个数。      |
-| config    | 输入    | 在高维切分计算场景下使用的计算配置参数。<br/>详细说明请参考[asc_binary_config](../struct/asc_binary_config.md)。 |
+| config    | 输入    | 在高维切分计算场景下使用的计算配置参数。<br/>详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。 |
 
 
 ## 返回值说明
