@@ -52,6 +52,14 @@ __aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, 
     LoadDataImpl(dst, src, loadDataParams);
 }
 
+template <TPosition Dst, TPosition Src, typename T>
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load2DBitModeParam& loadDataParams)
+{
+    CheckLoadData2dDatatype<T>();
+    LoadDataImpl<Dst, Src, T>(dst, src, loadDataParams);
+}
+
 /* **************************************************************************************************
  * LoadData 2dV2                                             *
  * ************************************************************************************************* */
@@ -186,6 +194,13 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 #endif
     LoadDataImpl<T, defaultConfig>(dst, src, loadDataParams);
 }
+
+template <TPosition Dst, TPosition Src, typename T>
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load3DBitModeParam& loadDataParams)
+{
+    LoadDataImpl<Dst, Src, T>(dst, src, loadDataParams);
+}
 /* **************************************************************************************************
  * LoadData 3dv2Pro                                             *
  * enhanced from v1, suitable for aicore > 200                                             *
@@ -305,6 +320,22 @@ __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
 {
     MmadImpl(dst, fm, filter, bias, mmadParams);
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+template <typename T, typename U, typename S>
+__aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const MmadBitModeParams& mmadParams)
+{
+    MmadImpl(dst, fm, filter, mmadParams);
+}
+
+template <typename T, typename U, typename S, typename V>
+__aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadBitModeParams& mmadParams)
+{
+    MmadImpl(dst, fm, filter, bias, mmadParams);
+}
+#endif
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
     (__NPU_ARCH__ == 3113))
@@ -506,6 +537,13 @@ __aicore__ inline void SetFmatrix(uint16_t l1H, uint16_t l1W, const uint8_t padL
     ASCENDC_CHECK_VALUE_RANGE(l1W, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1W", "SetFmatrix");
     SetFmatrixImpl(l1H, l1W, padList, fmatrixMode);
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+__aicore__ inline void SetFmatrix(const SetFMatrixBitModeParams& param, const FmatrixMode& fmatrixMode)
+{
+    SetFmatrixImpl(param, fmatrixMode);
+}
+#endif
 
 /* **************************************************************************************************
  * SetLoadDataBoundary                                             *

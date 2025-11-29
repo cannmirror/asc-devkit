@@ -100,6 +100,7 @@ install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_gemm_intf.h ${CMAKE_
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_intf.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_limits_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_limits_intf.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_list_tensor_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_list_tensor_intf.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_mm_bitmode_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_mm_bitmode_intf.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_mm_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_mm_intf.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_proposal_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_proposal_intf.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_scalar_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_scalar_intf.h SYMBOLIC)")
@@ -143,7 +144,7 @@ install(CODE "file(CREATE_LINK ../basic_api/kernel_type.h ${CMAKE_INSTALL_PREFIX
 
 # 2 ascendc/include/basic_api
 if(NOT BUILD_OPEN_PROJECT)
-  install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
 endif()
 install(CODE "file(CREATE_LINK ../../../asc/include/interface ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/interface SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../asc/include/kernel_operator.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/kernel_operator.h SYMBOLIC)")
@@ -183,6 +184,8 @@ install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_la
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_list_tensor_intf_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_list_tensor_intf_impl.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_mm_base_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_mm_base_impl.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_mm_check.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_mm_check.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_mm_bitmode_intf_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_mm_bitmode_intf_impl.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_mm_bitmode_struct.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_mm_bitmode_struct.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_mm_intf_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_mm_intf_impl.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_mm_load2d_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_mm_load2d_impl.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_operator_proposal_base_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_operator_proposal_base_impl.h SYMBOLIC)")

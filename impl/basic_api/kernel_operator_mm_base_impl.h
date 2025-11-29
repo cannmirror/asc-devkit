@@ -255,6 +255,32 @@ __aicore__ inline __inout_pipe__(MTE2) void LoadDataImpl(const LocalTensor<T>& d
 }
 #endif
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+template <TPosition Dst, TPosition Src, typename T>
+__aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load3DBitModeParam& loadDataParams)
+{
+    CheckTensorAlign<T>(src, ONE_BLK_SIZE, "src", "LoadData with LoadData3DParams");
+    CheckTensorAlign<T>(dst, VALUE_512, "dst", "LoadData with LoadData3DParams");
+
+    if constexpr (Src != TPosition::A1 && Src != TPosition::A2) {
+        ASCENDC_CHECK_TPOSITION(false, "src", "A1 / B1",
+            "LoadData with LoadDataBitModeParams",
+            ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(src.GetPosition())));
+    };
+    if constexpr (Dst == TPosition::A2) {
+        LoadData3DV2L12L0ACal((__ca__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else if constexpr (Dst == TPosition::B2) {
+        LoadData3DV2L12L0BCal((__cb__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else {
+        ASCENDC_CHECK_TPOSITION(false, "dst", "A2 / B2",
+            "LoadData with LoadData3DParams",
+            ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(dst.GetPosition())));
+    }
+}
+#endif
 /* **************************************************************************************************
  * LoadData 3dv2Pro                                             *
  * enhanced from v1, suitable for aicore > 200                                             *
@@ -397,6 +423,47 @@ __aicore__ inline void MmadImpl(const LocalTensor<T>& dst, const LocalTensor<U>&
     MmadCal((__cc__ PrimT<T>*)dst.GetPhyAddr(), (__ca__ PrimT<U>*)fm.GetPhyAddr(),
         (__cb__ PrimT<S>*)filter.GetPhyAddr(), (uint64_t)bias.GetPhyAddr(), mmadParams, cmatrixSource);
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+template <typename T, typename U, typename S>
+__aicore__ inline void MmadImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const MmadBitModeParams& mmadParams)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckMmadParams(dst, fm, filter, mmadParams.GetConfig0(), "Mmad")) {
+        ASCENDC_REPORT_CHECK_ERROR("Mmad", KernelFuncType::NONE_MODE);
+    }
+    CheckMmadAlign(dst, fm, filter);
+#endif
+    MmadCal((__cc__ PrimT<T>*)dst.GetPhyAddr(), (__ca__ PrimT<U>*)fm.GetPhyAddr(),
+        (__cb__ PrimT<S>*)filter.GetPhyAddr(), mmadParams);
+}
+
+template <typename T, typename U, typename S, typename V>
+__aicore__ inline void MmadImpl(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadBitModeParams& mmadParams)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckMmadParams(dst, fm, filter, bias, mmadParams.GetConfig0(), "Mmad with bias")) {
+        ASCENDC_REPORT_CHECK_ERROR("Mmad with bias", KernelFuncType::NONE_MODE);
+    }
+    CheckMmadAlign(dst, fm, filter);
+    CheckTensorAlign<V>(bias, 128, "bias", "Mmad");
+#endif
+    const Hardware biasScope = GetPhyType((TPosition)bias.GetPosition());
+    bool cmatrixSource = false;
+    if (biasScope == Hardware::BIAS) {
+        cmatrixSource = true;
+    } else if (biasScope == Hardware::L0C) {
+        cmatrixSource = false;
+    } else {
+        ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR,
+            "Failed to check bias tensor position in Mmad, supported positions are CO1 or C2"); });
+    }
+    MmadCal((__cc__ PrimT<T>*)dst.GetPhyAddr(), (__ca__ PrimT<U>*)fm.GetPhyAddr(),
+        (__cb__ PrimT<S>*)filter.GetPhyAddr(), (uint64_t)bias.GetPhyAddr(), mmadParams);
+}
+#endif
 
 #if __NPU_ARCH__ == 2201
 template <typename T = int32_t, typename U = int8_t,
@@ -590,6 +657,17 @@ __aicore__ inline void SetFmatrixImpl(uint16_t l1H, uint16_t l1W, const uint8_t 
         Load3DSetFMatrixBCal(l1H, l1W, padList);
     }
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+__aicore__ inline void SetFmatrixImpl(const SetFMatrixBitModeParams &param, const FmatrixMode &fmatrixMode)
+{
+    if (fmatrixMode == FmatrixMode::FMATRIX_LEFT) {
+        Load3DSetFMatrixCal(param.GetConfig0());
+    } else if (fmatrixMode == FmatrixMode::FMATRIX_RIGHT) {
+        Load3DSetFMatrixBCal(param.GetConfig0());
+    }
+}
+#endif
 
 /* **************************************************************************************************
  * SetLoadDataBoundary                                             *
