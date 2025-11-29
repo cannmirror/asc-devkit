@@ -114,7 +114,7 @@ __aicore__ inline void CumSumCopyWithCast(const LocalTensor<U>& dstTensor, const
 {
     __ubuf__ T* src = (__ubuf__ T*)srcTensor.GetPhyAddr();
     __ubuf__ U* dst = (__ubuf__ U*)dstTensor.GetPhyAddr();
-    constexpr uint16_t innerOneRepNum = (uint16_t)(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint16_t innerOneRepNum = (uint16_t)(GetVecLen() / sizeof(float));
     uint16_t mainRepeatTime = inner / innerOneRepNum;
     uint32_t tailCount = inner % innerOneRepNum;
     uint16_t tailRepeatTime = tailCount > 0 ? 1 : 0;
@@ -198,7 +198,7 @@ __aicore__ inline void CumSumCopyOut(const LocalTensor<T>& dstTensor, const Loca
 {
     __ubuf__ T* src = (__ubuf__ T*)srcTensor.GetPhyAddr();
     __ubuf__ T* dst = (__ubuf__ T*)dstTensor.GetPhyAddr();
-    constexpr uint16_t innerOneRepNum = VECTOR_REG_WIDTH / sizeof(T);
+    constexpr uint16_t innerOneRepNum = GetVecLen() / sizeof(T);
     constexpr uint16_t elePerBlock = ONE_BLK_SIZE / sizeof(T);
     uint16_t mainRepeatTime = inner / innerOneRepNum;
     uint32_t tailCount = inner % innerOneRepNum;
@@ -383,7 +383,7 @@ __aicore__ inline void TransposeAB(const LocalTensor<D>& dstTensor, const LocalT
 {
     uint32_t srcStride1 = 1;
     uint32_t srcStride2 = inner;
-    constexpr uint16_t vlSize = VECTOR_REG_WIDTH / sizeof(float);
+    constexpr uint16_t vlSize = GetVecLen() / sizeof(float);
     TransposeCommonGather<D, T, MicroAPI::RegTraitNumOne, vlSize>(
         (__ubuf__ D*)dstTensor.GetPhyAddr(), (__ubuf__ T*)srcTensor.GetPhyAddr(), inner, outer, srcStride1, srcStride2);
 }
@@ -435,7 +435,7 @@ __aicore__ inline void CumSumFirstDimSklansky(const LocalTensor<float>& dstTenso
 
     uint32_t currRound = 1;
     __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
-    constexpr uint16_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint16_t sregLower = (uint32_t)(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = CeilDivision(inner, sregLower);
 
     while (round >= 1) {
@@ -500,7 +500,7 @@ __simd_vf__ inline void CumSumFirstDimBasicVF(__ubuf__ float* dst, uint16_t oute
 __aicore__ inline void CumSumFirstDimBasic(const LocalTensor<float>& dstTensor, uint32_t outer, uint32_t inner)
 {
     __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
-    constexpr uint16_t innerOneRepNum = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint16_t innerOneRepNum = (uint32_t)(GetVecLen() / sizeof(float));
     uint16_t mainRepeatTime = 0;
     if constexpr (innerOneRepNum > 0) {
         mainRepeatTime = inner / innerOneRepNum;

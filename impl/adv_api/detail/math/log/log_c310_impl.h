@@ -23,7 +23,7 @@ template <typename T> __simd_vf__ inline void LogImpl(__ubuf__ T *dst, __ubuf__ 
 {
     static_assert((std::is_same_v<T, half> || std::is_same_v<T, float>),
         "current data type is not supported on current device!");
-    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    constexpr uint32_t sregLower = static_cast<uint32_t>(GetVecLen() / sizeof(T));
     uint16_t repeatTimes = CeilDivision(calCount, sregLower);
     MicroAPI::RegTensor<T> vreg0;
     MicroAPI::RegTensor<T> vreg1;
@@ -42,7 +42,7 @@ __simd_vf__ inline void LogXImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_
 {
     static_assert((std::is_same_v<T, half> || std::is_same_v<T, float>),
         "current data type is not supported on current device!");
-    constexpr uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint32_t sregLower = (uint32_t)(GetVecLen() / sizeof(float));
     uint16_t repeatTimes = CeilDivision(calCount, sregLower);
     static constexpr MicroAPI::CastTrait castTraitB16ToB32 = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN, MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};

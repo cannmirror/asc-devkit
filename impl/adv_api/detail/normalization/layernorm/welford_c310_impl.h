@@ -183,8 +183,10 @@ __aicore__ inline void WelfordUpdateImpl(const LocalTensor<U>& outputMean, const
     const LocalTensor<U>& inputMean, const LocalTensor<U>& inputVariance, const LocalTensor<T>& inputX,
     const WelfordUpdateParam& para)
 {
-    CHECK_FUNC_HIGHLEVEL_API(WelfordUpdate, (T, U, isReuseSource, config), (outputMean, outputVariance, inputMean, inputVariance, inputX, para));
+    CHECK_FUNC_HIGHLEVEL_API(WelfordUpdate, (T, U, isReuseSource, config),
+        (outputMean, outputVariance, inputMean, inputVariance, inputX, para));
 
+    static_assert(SupportType<T, half, bfloat16_t, float>(), "current data type is not supported on current device!");
     static_assert(SupportType<U, float>(), "current data type is not supported on current device!");
     __ubuf__ T* srcUb = (__ubuf__ T*)inputX.GetPhyAddr();
     __ubuf__ float* inMean = (__ubuf__ float*)inputMean.GetPhyAddr();
@@ -204,7 +206,6 @@ __aicore__ inline void WelfordUpdateImpl(const LocalTensor<U>& outputMean, const
     const LocalTensor<U>& inputMean, const LocalTensor<U>& inputVariance, const LocalTensor<T>& inputX,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const WelfordUpdateParam& para)
 {
-    static_assert(SupportType<T, half, bfloat16_t, float>(), "current data type is not supported on current device!");
     WelfordUpdateImpl<T, float, isReuseSource, config>(
         outputMean, outputVariance, inputMean, inputVariance, inputX, para);
 }

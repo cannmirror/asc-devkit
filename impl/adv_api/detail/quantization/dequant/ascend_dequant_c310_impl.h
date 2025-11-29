@@ -19,7 +19,7 @@
 #include "ascend_dequant_common.h"
 
 namespace AscendC {
-constexpr uint32_t ASCENDC_DEQUANT_B32_VF_LEN = VECTOR_REG_WIDTH / sizeof(uint32_t);
+constexpr uint32_t ASCENDC_DEQUANT_B32_VF_LEN = GetVecLen() / sizeof(uint32_t);
 template <typename dstT, typename scaleT, DeQuantMode mode>
 __simd_vf__ inline void DequantPerchannelVFImpl(__ubuf__ half* dstUb, __ubuf__ int32_t* srcUb,
     __ubuf__ float* scaleUb, DequantParams params)

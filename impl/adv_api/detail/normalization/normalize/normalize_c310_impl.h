@@ -89,7 +89,7 @@ __simd_vf__ inline void NormalizeVFImpl(__ubuf__ float *rstdUb, __ubuf__ float *
     __ubuf__ U *gammaUb, __ubuf__ U *betaUb, __ubuf__ float *workUb, const LocalTensor<uint8_t> sharedTmpBuffer,
     const float epsilon, const NormalizePara para, uint16_t aLength, uint16_t tailARepeatTimes)
 {
-    constexpr uint16_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(float));
+    constexpr uint16_t sregLower = (uint32_t)(GetVecLen() / sizeof(float));
     uint32_t rLength = para.rLength;
     uint32_t rLengthWithPadding = para.rLengthWithPadding;
     uint16_t repeatTimes = CeilDivision(rLength, sregLower);

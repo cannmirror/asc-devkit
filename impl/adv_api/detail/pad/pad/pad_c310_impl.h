@@ -166,6 +166,8 @@ template <typename T>
 __aicore__ inline void PadCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
     PadParams &padParams, const LocalTensor<uint8_t> &sharedTmpBuffer, PadTiling &tiling)
 {
+    static_assert(SupportType<T, int16_t, uint16_t, half, int32_t, uint32_t, float>(),
+        "Pad only support int16_t/uint16_t/half/int32_t/uint32_t/float data type on current device!");
     // 32B aligned
     uint32_t regBlockElementCnt = CUBE_MAX_SIZE / sizeof(T);
     uint32_t lastRegBlockPerRowElementCnt = tiling.srcWidth % regBlockElementCnt;
@@ -194,6 +196,9 @@ template <typename T>
 __aicore__ inline void UnPadCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
     UnPadParams &unPadParams, LocalTensor<uint8_t> &sharedTmpBuffer, UnPadTiling &tiling)
 {
+    static_assert(SupportType<T, int16_t, uint16_t, half, int32_t, uint32_t, float>(),
+        "UnPad only support int16_t/uint16_t/half/int32_t/uint32_t/float data type on current device!");
+
     uint32_t regBlockElementCnt = CUBE_MAX_SIZE / sizeof(T);
     uint32_t lastRegBlockPerRowElementCnt = tiling.srcWidth % regBlockElementCnt;
     PadInternal::UnPad<T>((__ubuf__ T *)dstTensor.GetPhyAddr(),
