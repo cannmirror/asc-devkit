@@ -17,7 +17,7 @@
 
 #include "include/adv_api/sort/topk_utils.h"
 
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_L311__)
 namespace {
 constexpr uint16_t MIN_SORT32_SIZE = 32;
 constexpr uint16_t MIN_RPSORT16_SIZE = 16;

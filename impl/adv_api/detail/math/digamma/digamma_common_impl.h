@@ -27,7 +27,7 @@
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
 #endif
-#if __CCE_AICORE__ >= 200 && !defined(__DAV_C310__) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 namespace AscendC {
 #pragma begin_pipe(V)
@@ -487,6 +487,6 @@ __aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTens
 #pragma end_pipe
 } // namespace AscendC
 
-#endif // __CCE_AICORE__ >= 200
+#endif
 
 #endif // IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_IMPL_H

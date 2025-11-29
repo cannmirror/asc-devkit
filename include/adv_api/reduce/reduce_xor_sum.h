@@ -28,8 +28,7 @@
 #include <type_traits>
 #endif
 
-#if (__NPU_ARCH__ == 5102) || (defined(__CCE_AICORE__) && \
-(__CCE_AICORE__ >= 220 || __CCE_AICORE__ == 200) || defined(__DAV_C310__) || defined(__DAV_310R6__))
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || defined(__DAV_C310__) || defined(__DAV_310R6__)
 
 namespace AscendC {
 #pragma begin_pipe(V)

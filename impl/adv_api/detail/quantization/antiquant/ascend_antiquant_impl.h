@@ -22,7 +22,7 @@
 #include "../../api_check/kernel_api_check.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "ascend_antiquant_c310_impl.h"
-#elif __CCE_AICORE__ >= 220
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 #include "ascend_antiquant_c220_impl.h"
 #else
 #include "ascend_antiquant_m200_impl.h"
