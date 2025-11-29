@@ -32,7 +32,7 @@ __aicore__ inline void asc_sync_wait(Pipe pipe, TPipe tpipe, int id)
 
 ## 流水类型
 
-PIPE_S
+PIPE_TYPE_S
 
 ## 约束说明
 
