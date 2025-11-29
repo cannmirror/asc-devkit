@@ -47,7 +47,7 @@
     -   [Layout](Layout.md)
         -   [Layout简介](Layout简介.md)
         -   [Layout构造函数](Layout构造函数.md)
-        -   [layout](layout.md)
+        -   [layout](layout-1.md)
         -   [运算符重载](运算符重载.md)
         -   [GetShape](GetShape.md)
         -   [GetStride](GetStride.md)
@@ -261,7 +261,7 @@
                 -   [GetWithOffset](GetWithOffset.md)
 
         -   [临时空间管理](临时空间管理.md)
-            -   [workspace](workspace.md)
+            -   [workspace](workspace-1.md)
                 -   [GetSysWorkSpacePtr](GetSysWorkSpacePtr.md)
                 -   [SetSysWorkSpace](SetSysWorkSpace.md)
                 -   [GetUserWorkspace](GetUserWorkspace.md)
@@ -982,12 +982,12 @@
 -   [Utils API](Utils-API.md)
     -   [C++标准库](C++标准库.md)
         -   [算法](算法.md)
-            -   [max](max.md)
-            -   [min](min.md)
+            -   [max](max-1.md)
+            -   [min](min-1.md)
 
         -   [容器函数](容器函数.md)
             -   [tuple](tuple.md)
-            -   [get](get.md)
+            -   [get](get-1.md)
             -   [make\_tuple](make_tuple.md)
 
         -   [类型特性](类型特性.md)
@@ -1063,7 +1063,7 @@
         -   [aclrtcGetCompileLog](aclrtcGetCompileLog.md)
         -   [RTC错误码](RTC错误码.md)
 
-    -   [log](log.md)
+    -   [log](log-1.md)
         -   [ASC\_CPU\_LOG](ASC_CPU_LOG.md)
 
 -   [AI CPU API](AI-CPU-API.md)
