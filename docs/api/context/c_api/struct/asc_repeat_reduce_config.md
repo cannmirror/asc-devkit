@@ -9,11 +9,11 @@ constexpr uint64_t CAPI_DEFAULT_REDUCE_CONFIG_VALUE = 0x0100000800010001;
 union asc_repeat_reduce_config {
     uint64_t config = CAPI_DEFAULT_REDUCE_CONFIG_VALUE;
     struct {
-        uint64_t dst_repeat_stride: 16;
-        uint64_t src_block_stride: 16;
-        uint64_t src_repeat_stride: 16;
-        uint64_t reserved: 8;
-        uint64_t repeat: 8;
+        uint64_t dst_repeat_stride : 16;
+        uint64_t src_block_stride : 16;
+        uint64_t src_repeat_stride : 16;
+        uint64_t reserved : 8;
+        uint64_t repeat : 8;
     };
 };
 ```

@@ -17,6 +17,10 @@ __aicore__ inline void asc_set_ctrl(uint64_t config);
 
 __aicore__ inline int64_t asc_get_core_id();
 
+__aicore__ inline int64_t asc_get_block_idx();
+
+__aicore__ inline int64_t asc_get_block_num();
+
 __aicore__ inline int64_t asc_get_ctrl();
 
 __aicore__ inline uint64_t asc_get_overflow_status();
