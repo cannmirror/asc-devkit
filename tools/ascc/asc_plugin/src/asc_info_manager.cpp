@@ -163,7 +163,9 @@ void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>:
 
 void InfoManager::SetCompileArgs(const std::vector<std::string>& compileArgs)
 {
-    compileArgs_.includeFiles = {"-include", pathInfo_.cannVersionHeader};
+    if (!pathInfo_.cannVersionHeader.empty()) {
+        compileArgs_.includeFiles = {"-include", pathInfo_.cannVersionHeader};
+    }
     bool hasHostStart = false;   // for -Xhost-start
     for (auto it = compileArgs.begin(); it != compileArgs.end(); ++it) {
         std::string compileArg = *it;
