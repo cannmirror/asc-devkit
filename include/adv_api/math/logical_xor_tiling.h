@@ -15,7 +15,7 @@
 #ifndef LIB_MATH_LOGICAL_XOR_TILING_H
 #define LIB_MATH_LOGICAL_XOR_TILING_H
 
-#include "graph/graph.h"
+#include "graph/tensor.h"
 #include "tiling/platform/platform_ascendc.h"
 namespace AscendC {
 /*!
