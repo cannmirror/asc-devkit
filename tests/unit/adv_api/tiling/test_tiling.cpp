@@ -7415,7 +7415,7 @@ TEST_F(TestTiling, TestGeGLUTilingHalf)
     EXPECT_EQ(extraBuf, 0);
 }
 
-#if __CCE_AICORE__ >=200 && !defined(__DAV_C310__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 TEST_F(TestTiling, TestDigammaTilingFp32)
 {
     fe::PlatFormInfos platformInfo;

@@ -16,7 +16,7 @@
 #define LIB_SOFTMAX_LOGSOFTMAX_H
 
 #include "kernel_tensor.h"
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 5102)
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_common.h"
 #include "../../../impl/adv_api/detail/activation/softmax/logsoftmax_base_impl.h"
 #pragma begin_pipe(V)

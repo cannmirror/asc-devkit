@@ -19,7 +19,7 @@
 #include "kernel_operator_intf.h"
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 5102)
 #include "include/adv_api/math/cumsum_utils.h"
 
 namespace AscendC {

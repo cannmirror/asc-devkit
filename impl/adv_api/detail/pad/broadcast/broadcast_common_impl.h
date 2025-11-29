@@ -27,7 +27,8 @@
 #else
 #include "broadcast_v200_impl.h"
 #endif
-#if __CCE_AICORE__ >= 200 || (__NPU_ARCH__ == 5102)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 ||  __NPU_ARCH__ == 5102)) || \
+    defined(__DAV_L311__) || defined(__DAV_L300__)
 
 namespace AscendC {
 constexpr uint32_t TWO_DIM = 2;
