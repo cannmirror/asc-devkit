@@ -24,6 +24,56 @@ using namespace optiling;
 using namespace AscendC;
 using namespace HcclApi;
 
+namespace {
+using HcclResult = uint32_t;
+using HcclComm = void*;
+HcclResult HcomGetCommHandleByGroup(const char *group, HcclComm *comm)
+{
+    return 0U;
+}
+
+HcclResult HcclAllocComResourceByTiling(HcclComm comm, void *stream, void *tiling, void **context)
+{
+    return 0U;
+}
+
+HcclResult HcclGetRankId(HcclComm comm, uint32_t *rank)
+{
+    return 0U;
+}
+
+HcclResult HcclGetRankSize(HcclComm comm, uint32_t *rankSize)
+{
+    return 0U;
+}
+
+HcclResult CommGetKFCWorkSpace(HcclComm comm, void **addr, uint64_t *size)
+{
+    return 0U;
+}
+
+map<string, void *> HcclFuncMap = {
+        {"HcomGetCommHandleByGroup",     (void *) HcomGetCommHandleByGroup},
+        {"HcclAllocComResourceByTiling", (void *) HcclAllocComResourceByTiling},
+        {"HcclGetRankId",                (void *) HcclGetRankId},
+        {"HcclGetRankSize",              (void *) HcclGetRankSize},
+        {"CommGetKFCWorkSpace",          (void *) CommGetKFCWorkSpace},
+};
+
+void *DlsymStub(void *handle, const char *symbol)
+{
+    if (symbol == nullptr) {
+        return nullptr;
+    }
+    string symStr = symbol;
+    auto it = HcclFuncMap.find(symStr);
+    if (it != HcclFuncMap.cend()) {
+        return it->second;
+    }
+    return nullptr;
+}
+}
+
 class TestHcclTiling : public testing::Test {
 protected:
     static void SetUpTestCase() {}
