@@ -504,7 +504,7 @@ private:
                 bL0Params.kAxisL1Len = MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() != -1 ?
                     MATMUL_MODULE(MatmulShapeInfo)->GetOrgKb() : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetSingleCoreK();
             }
-        } else {
+        } else if constexpr (!IsStaticPaddingEnable(MM_CFG)) {
             bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), MX_BASEK_FACTOR);
         }
 
