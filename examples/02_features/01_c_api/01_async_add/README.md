@@ -1,9 +1,9 @@
 # 使用C_API构建Add算子样例
 ## 概述
 本样例展示了使用C_API 基于异步搬运/计算和统一同步接口构建Add算子样例的编译流程，支持main函数和kernel函数在同一个cpp文件中实现。
-## 支持的产品型号
-本样例支持如下产品型号：
-- Atlas A2 训练系列产品/Atlas 800I A2 推理产品
+## 支持的AI处理器
+- Ascend 910C
+- Ascend 910B
 ## 目录结构介绍
 ```
 ├── 01_async_add
@@ -57,7 +57,7 @@
     ```
   - 配置环境变量
 
-    请根据当前环境上CANN开发套件包的[安装方式](https://hiascend.com/document/redirect/CannCommunityInstSoftware)，选择对应配置环境变量的命令。
+    请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
       ```bash
       export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
@@ -90,3 +90,8 @@
     ```bash
     [Success] Case accurary is verification passed.
     ```
+
+## 更新说明
+| 时间       | 更新事项     |
+| ---------- | ------------ |
+| 2025/11/28 | 新增本readme |
