@@ -64,37 +64,6 @@ do_remove_stub_softlink() {
     local ref_dir="$install_path/$version_dir/asc-devkit/lib64/stub/linux/$arch_name"
     remove_stub_softlink "$ref_dir" "$arch_linux_path/devlib"
     remove_stub_softlink "$ref_dir" "$arch_linux_path/lib64/stub"
-    if [ -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
-        if [ -z "$(ls -A "$install_path/$latest_dir/tools/ascendc_tools")" ]; then
-            rm -f "$install_path/$latest_dir/tools/ascendc_tools/"
-        else
-            rm -f "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
-        fi
-    fi
-
-    if [ -L "$install_path/$version_dir/compiler/bin/asc_opc" ]; then
-        rm "$install_path/$version_dir/compiler/bin/asc_opc"
-    fi
-    if [ -z "$(ls -A "$install_path/$version_dir/compiler/bin")" ]; then
-        rm -r "$install_path/$version_dir/compiler/bin/"
-    fi
-    if [ -z "$(ls -A "$install_path/$version_dir/compiler")" ]; then
-        rm -r "$install_path/$version_dir/compiler/"
-    fi
-
-    if [ -L "$install_path/$latest_dir/compiler/bin/asc_opc" ]; then
-        rm "$install_path/$latest_dir/compiler/bin/asc_opc"
-    fi
-    if [ -z "$(ls -A "$install_path/$latest_dir/compiler/bin")" ]; then
-        rm -r "$install_path/$latest_dir/compiler/bin/"
-    fi
-    if [ -z "$(ls -A "$install_path/$latest_dir/compiler")" ]; then
-        rm -r "$install_path/$latest_dir/compiler/"
-    fi
-    
-    if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
-        rm -rf "$arch_linux_path/pkg_inc/asc"
-    fi
 }
 
 do_remove_stub_softlink
