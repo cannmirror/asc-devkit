@@ -20,6 +20,8 @@
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {
+#ifndef ASCC_STRUCT_LAYERNORMGRADBETAPARAMS
+#define ASCC_STRUCT_LAYERNORMGRADBETAPARAMS
 struct LayerNormGradBetaParams {
     __aicore__ LayerNormGradBetaParams(){};
 
@@ -37,6 +39,7 @@ struct LayerNormGradBetaParams {
     LocalTensor<float> inputDyTmpTensor;
     LocalTensor<float> resForGammaTmpTensor;
 };
+#endif
 
 
 template <bool isClearDst = false>

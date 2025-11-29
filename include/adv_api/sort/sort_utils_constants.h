@@ -9,16 +9,17 @@
 */
 
 /* !
- * \file cos_common_utils.h
+ * \file sort_utils_constants.h
  * \brief
  */
-
-#ifndef IMPL_MATH_COS_COS_COMMON_UTILS_H
-#define IMPL_MATH_COS_COS_COMMON_UTILS_H
-#include "include/adv_api/math/cos_utils.h" 
+#ifndef INCLUDE_SORT_SORT_UTILS_CONSTANTS_H
+#define INCLUDE_SORT_SORT_UTILS_CONSTANTS_H
 
 namespace AscendC {
-constexpr CosConfig defaultCosConfig = { CosAlgo::POLYNOMIAL_APPROXIMATION };
-}
+enum class SortType {
+    RADIX_SORT,
+    MERGE_SORT
+};
 
-#endif // IMPL_MATH_COS_COS_COMMON_UTILS_H
+}; // namespace AscendC
+#endif // INCLUDE_SORT_SORT_UTILS_CONSTANTS_H

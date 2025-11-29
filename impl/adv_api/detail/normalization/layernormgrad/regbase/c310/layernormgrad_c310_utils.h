@@ -78,6 +78,8 @@ __simd_callee__ inline void StoreDataWithT(
 } // namespace LayernormGrad
 } // namespace Internal
 
+#ifndef ASCC_STRUCT_LAYERNORMGRADPARAMS
+#define ASCC_STRUCT_LAYERNORMGRADPARAMS
 struct LayerNormGradParams {
     __aicore__ LayerNormGradParams(
         uint32_t b, uint32_t s, uint32_t h, float lastDimValueBack, float lastDimValueBackMulTwo)
@@ -97,5 +99,7 @@ struct LayerNormGradParams {
     float oneOverH;
     float twoOverH;
 };
+#endif
+
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORMGRAD_REGBASE_C310_LAYERNORMGRAD_C310_UTILS_H_

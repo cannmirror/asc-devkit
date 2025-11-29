@@ -36,11 +36,14 @@ using TypeFalse = struct {
     __uint128_t _[1024];
 };
 
+#ifndef ASCC_STRUCT_ITERATEALL
+#define ASCC_STRUCT_ITERATEALL
 enum class IterateOrder {
     ORDER_M = 0,
     ORDER_N,
     UNDEF,
 };
+#endif
 
 template <class Intf>
 __aicore__ inline void CheckTiling(Intf *self)
@@ -139,6 +142,8 @@ static __aicore__ inline void UpdateIdxAndStep(Intf *self)
 }
 
 template <class Intf>
+#ifndef ASCC_STRUCT_INIT
+#define ASCC_STRUCT_INIT
 struct Init {
     // Define the default overloaded function of the call function, supporting any number of parameters of any type
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
@@ -151,8 +156,11 @@ struct Init {
         InitTque<Intf>(self);    
     }
 };
+#endif
 
 template <class Intf>
+#ifndef ASCC_STRUCT_SETWEIGHT
+#define ASCC_STRUCT_SETWEIGHT
 struct SetWeight {
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self, const AscendC::GlobalTensor<typename Intf::SrcT> &weight)
@@ -160,6 +168,7 @@ struct SetWeight {
         self->ctx.weightGlobal_ = weight;
     }
 };
+#endif
 
 template <class Intf>
 struct SetOutBackprop {
@@ -171,6 +180,8 @@ struct SetOutBackprop {
 };
 
 template <class Intf>
+#ifndef ASCC_STRUCT_SETSINGLESHAPE
+#define ASCC_STRUCT_SETSINGLESHAPE
 struct SetSingleShape {
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self, uint64_t singleShapeM, uint64_t singleShapeK, uint32_t singleShapeN)
@@ -194,8 +205,11 @@ struct SetSingleShape {
         self->ctx.stepKbTail = self->ctx.kIter_ - self->ctx.kIterStepKbTail;
     }
 };
+#endif
 
 template <class Intf>
+#ifndef ASCC_STRUCT_SETSTARTPOSITION
+#define ASCC_STRUCT_SETSTARTPOSITION
 struct SetStartPosition {
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self, uint32_t curDinStartIdx, int32_t curHoStartIdx) {
@@ -203,6 +217,7 @@ struct SetStartPosition {
         self->ctx.curHoStartIdx_ = curHoStartIdx;
     }
 };
+#endif
 
 template <class Intf>
 static __aicore__ inline void JudgeIterateSkip(Intf *self)
@@ -220,6 +235,8 @@ static __aicore__ inline void JudgeIterateSkip(Intf *self)
 }
 
 template <class Intf, bool sync>
+#ifndef ASCC_STRUCT_ITERATE
+#define ASCC_STRUCT_ITERATE
 struct Iterate {
     // An iterate calculation (baseM, baseN, baseD), current baseD=1
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
@@ -327,8 +344,11 @@ struct Iterate {
         return true;
     }
 };
+#endif
 
 template <class Intf, bool sync>
+#ifndef ASCC_STRUCT_ITERATEALL
+#define ASCC_STRUCT_ITERATEALL
 struct IterateAll {
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self, const AscendC::GlobalTensor<typename Intf::DstT> &output, uint8_t enAtomic)
@@ -339,8 +359,11 @@ struct IterateAll {
         self->ctx.isFirstIter_ = true;
     }
 };
+#endif
 
 template <class Intf, bool sync>
+#ifndef ASCC_STRUCT_GETTENSORC
+#define ASCC_STRUCT_GETTENSORC
 struct GetTensorC {
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self, const AscendC::GlobalTensor<typename Intf::DstT> &output,
@@ -349,8 +372,11 @@ struct GetTensorC {
         LoadL0c2Gm<Intf>(self, output, enAtomic, enSequentialWrite);
     }
 };
+#endif
 
 template <class Intf>
+#ifndef ASCC_STRUCT_END
+#define ASCC_STRUCT_END
 struct End {
     DECLARE_DEFAULT_OVERLOADING_FUN(Intf, ConvBackpropInputFunc);
     static __aicore__ inline void call(Intf *self)
@@ -372,5 +398,7 @@ struct End {
         }
     }
 };
+#endif
+
 }  // namespace ConvBackpropInputFunc
 #endif
