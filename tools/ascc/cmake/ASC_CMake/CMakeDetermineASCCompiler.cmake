@@ -39,7 +39,12 @@ set(ascend910b_list Ascend910B1 Ascend910B2 Ascend910B2C Ascend910B3 Ascend910B4
 set(ascend310p_list Ascend310P1 Ascend310P3 Ascend310P5 Ascend310P7
                     Ascend310P3Vir01 Ascend310P3Vir02 Ascend310P3Vir04 Ascend310P3Vir08)
 set(ascend910_95_list Ascend910_957b Ascend910_950z Ascend910_958b Ascend910_958a
-                      Ascend910_9599 Ascend910_957d Ascend910_9581 Ascend910_9589 Ascend910_957c)
+                      Ascend910_9599 Ascend910_957d Ascend910_9581 Ascend910_9589 Ascend910_957c
+                      Ascend910_95A1 Ascend910_95A2 Ascend910_9591 Ascend910_9592 Ascend910_9595
+                      Ascend910_9596 Ascend910_9581 Ascend910_9582 Ascend910_9583 Ascend910_9584
+                      Ascend910_9585 Ascend910_9586 Ascend910_9587 Ascend910_9588 Ascend910_9571
+                      Ascend910_9572 Ascend910_9573 Ascend910_9574 Ascend910_9575 Ascend910_9576
+                      Ascend910_9577 Ascend910_9578)
 if(DEFINED SOC_VERSION)
     if(NOT ((SOC_VERSION IN_LIST ascend910b_list) OR (SOC_VERSION IN_LIST ascend310p_list) OR (SOC_VERSION IN_LIST ascend910_95_list)))
         message(FATAL_ERROR "SOC_VERSION ${SOC_VERSION} is unsupported, support list is ${ascend910b_list} ${ascend310p_list} ${ascend910_95_list}")
