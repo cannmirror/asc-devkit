@@ -97,69 +97,118 @@ __aicore__ inline void LoadData2DL12L0BCal(__cb__ T* dst, __cbuf__ T* src, const
  * LoadData 2dv2                                             *
  * ************************************************************************************************* */
 template <typename T>
-__aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const LoadData2DParamsV2 &loadDataParam)
+__aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const Load2DBitModeParam &loadDataParam)
 {
     static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
                 float, int32_t, uint32_t>(),
         "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
          half, bfloat16_t, float, int32_t, uint32_t on current device!");
     if ASCEND_IS_AIC {
-        if (loadDataParam.ifTranspose) {
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        if (loadDataParam.GetIfTranspose()) {
             load_cbuf_to_ca(dst,
                 src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
+                loadDataParam.GetMStartPosition(),
+                loadDataParam.GetKStartPosition(),
+                loadDataParam.GetMStep(),
+                loadDataParam.GetKStep(),
+                loadDataParam.GetSrcStride(),
+                loadDataParam.GetDstStride(),
                 1);
         } else {
             load_cbuf_to_ca(dst,
                 src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
+                loadDataParam.GetMStartPosition(),
+                loadDataParam.GetKStartPosition(),
+                loadDataParam.GetMStep(),
+                loadDataParam.GetKStep(),
+                loadDataParam.GetSrcStride(),
+                loadDataParam.GetDstStride(),
                 0);
         }
+#else
+        if constexpr (SupportType<T, int4b_t, fp4x2_e2m1_t, fp4x2_e1m2_t, hifloat4x2_t>()) {
+            if (loadDataParam.GetIfTranspose()) {
+                load_cbuf_to_ca_s4((__ca__ T *)dst, (__cbuf__ T *)src,
+                    loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), true);
+            } else {
+                load_cbuf_to_ca_s4((__ca__ T *)dst, (__cbuf__ T *)src,
+                    loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), false);
+            }
+        } else {
+            if (loadDataParam.GetIfTranspose()) {
+                load_cbuf_to_ca(dst, src, loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), true);
+            } else {
+                load_cbuf_to_ca(dst, src, loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), false);
+            }
+        }
+#endif
     }
+}
+
+template <typename T>
+__aicore__ inline void LoadData2DL12L0BCal(__cb__ T *dst, __cbuf__ T *src, const Load2DBitModeParam &loadDataParam)
+{
+    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
+                float, int32_t, uint32_t>(),
+        "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
+         half, bfloat16_t, float, int32_t, uint32_t on current device!");
+    if ASCEND_IS_AIC {
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        if (loadDataParam.GetIfTranspose()) {
+            load_cbuf_to_cb(dst,
+                src,
+                loadDataParam.GetMStartPosition(),
+                loadDataParam.GetKStartPosition(),
+                loadDataParam.GetMStep(),
+                loadDataParam.GetKStep(),
+                loadDataParam.GetSrcStride(),
+                loadDataParam.GetDstStride(),
+                1);
+        } else {
+            load_cbuf_to_cb(dst,
+                src,
+                loadDataParam.GetMStartPosition(),
+                loadDataParam.GetKStartPosition(),
+                loadDataParam.GetMStep(),
+                loadDataParam.GetKStep(),
+                loadDataParam.GetSrcStride(),
+                loadDataParam.GetDstStride(),
+                0);
+        }
+#else
+        if constexpr (SupportType<T, int4b_t, fp4x2_e2m1_t, fp4x2_e1m2_t, hifloat4x2_t>()) {
+            if (loadDataParam.GetIfTranspose()) {
+                load_cbuf_to_cb_s4((__cb__ T *)dst, (__cbuf__ T *)src,
+                    loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), true);
+            } else {
+                load_cbuf_to_cb_s4((__cb__ T *)dst, (__cbuf__ T *)src,
+                    loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), false);
+            }
+        } else {
+            if (loadDataParam.GetIfTranspose()) {
+                load_cbuf_to_cb(dst, src, loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), true);
+            } else {
+                load_cbuf_to_cb(dst, src, loadDataParam.GetConfig0(), loadDataParam.GetConfig1(), false);
+            }
+        }
+#endif
+    }
+}
+
+template <typename T>
+__aicore__ inline void LoadData2DL12L0ACal(__ca__ T *dst, __cbuf__ T *src, const LoadData2DParamsV2 &loadDataParam)
+{
+    Load2DBitModeParam param(loadDataParam);
+    LoadData2DL12L0ACal(dst, src, param);
 }
 
 template <typename T>
 __aicore__ inline void LoadData2DL12L0BCal(__cb__ T *dst, __cbuf__ T *src, const LoadData2DParamsV2 &loadDataParam)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, half, bfloat16_t,
-                float, int32_t, uint32_t>(),
-        "LoadData 2dv2 only support uint8_t, int8_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, \
-         half, bfloat16_t, float, int32_t, uint32_t on current device!");
-    if ASCEND_IS_AIC {
-        if (loadDataParam.ifTranspose) {
-            load_cbuf_to_cb(dst,
-                src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
-                1);
-        } else {
-            load_cbuf_to_cb(dst,
-                src,
-                loadDataParam.mStartPosition,
-                loadDataParam.kStartPosition,
-                loadDataParam.mStep,
-                loadDataParam.kStep,
-                loadDataParam.srcStride,
-                loadDataParam.dstStride,
-                0);
-        }
-    }
+    Load2DBitModeParam param(loadDataParam);
+    LoadData2DL12L0BCal(dst, src, param);
 }
-
 /* **************************************************************************************************
  * LoadDataWithTranspose                                        *
  * ************************************************************************************************* */
@@ -546,6 +595,82 @@ __aicore__ inline void MmadCal(
 #endif
     }
 }
+
+template <typename DstT, typename Src0T, typename Src1T>
+__aicore__ inline void MmadCal(__cc__ DstT* c, __ca__ Src0T* a, __cb__ Src1T* b, const MmadBitModeParams& mmadParams)
+{
+    if ASCEND_IS_AIC {
+        constexpr bool isMx = SupportType<Tuple<DstT, Src0T, Src1T>,
+            Tuple<float, fp4x2_e1m2_t, fp4x2_e1m2_t>,
+            Tuple<float, fp4x2_e1m2_t, fp4x2_e2m1_t>,
+            Tuple<float, fp4x2_e2m1_t, fp4x2_e1m2_t>,
+            Tuple<float, fp4x2_e2m1_t, fp4x2_e2m1_t>,
+            Tuple<float, mx_fp8_e4m3_t, mx_fp8_e4m3_t>,
+            Tuple<float, mx_fp8_e4m3_t, mx_fp8_e5m2_t>,
+            Tuple<float, mx_fp8_e5m2_t, mx_fp8_e4m3_t>,
+            Tuple<float, mx_fp8_e5m2_t, mx_fp8_e5m2_t>>();
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        if constexpr (isMx) {
+            using AType = typename GetDstType<Src0T>::Type;
+            using BType = typename GetDstType<Src1T>::Type;
+            mad_mx(c, (__ca__ AType*)a, (__cb__ BType*)b, mmadParams.GetM(), mmadParams.GetK(), mmadParams.GetN(),
+                mmadParams.GetUnitFlag(), mmadParams.GetDisableGemv(), mmadParams.GetCmatrixSource(),
+                mmadParams.GetCmatrixInitVal());
+        } else {
+            mad(c, a, b, mmadParams.GetM(), mmadParams.GetK(), mmadParams.GetN(), mmadParams.GetUnitFlag(),
+                mmadParams.GetDisableGemv(), mmadParams.GetCmatrixSource(), mmadParams.GetCmatrixInitVal());
+        }
+#else
+        if constexpr (isMx) {
+            using AType = typename GetDstType<Src0T>::Type;
+            using BType = typename GetDstType<Src1T>::Type;
+            mad_mx(c, (__ca__ AType*)a, (__cb__ BType*)b, mmadParams.GetConfig0());
+        } else {
+            mad(c, a, b, mmadParams.GetConfig0());
+        }
+#endif
+    }
+}
+
+template <typename DstT, typename Src0T, typename Src1T>
+__aicore__ inline void MmadCal(
+    __cc__ DstT* c, __ca__ Src0T* a, __cb__ Src1T* b, uint64_t bias, MmadBitModeParams& mmadParams)
+{
+    if ASCEND_IS_AIC {
+        mmadParams.SetCmatrixInitVal(false);
+        constexpr bool isMx = SupportType<Tuple<DstT, Src0T, Src1T>,
+            Tuple<float, fp4x2_e1m2_t, fp4x2_e1m2_t>,
+            Tuple<float, fp4x2_e1m2_t, fp4x2_e2m1_t>,
+            Tuple<float, fp4x2_e2m1_t, fp4x2_e1m2_t>,
+            Tuple<float, fp4x2_e2m1_t, fp4x2_e2m1_t>,
+            Tuple<float, mx_fp8_e4m3_t, mx_fp8_e4m3_t>,
+            Tuple<float, mx_fp8_e4m3_t, mx_fp8_e5m2_t>,
+            Tuple<float, mx_fp8_e5m2_t, mx_fp8_e4m3_t>,
+            Tuple<float, mx_fp8_e5m2_t, mx_fp8_e5m2_t>>();
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        if constexpr (isMx) {
+            using AType = typename GetDstType<Src0T>::Type;
+            using BType = typename GetDstType<Src1T>::Type;
+            mad_mx((__cc__ DstT*)c, (__ca__ AType*)a, (__cb__ BType*)b, bias, mmadParams.GetM(), mmadParams.GetK(),
+                mmadParams.GetN(), mmadParams.GetUnitFlag(), mmadParams.GetDisableGemv(), mmadParams.GetCmatrixSource(),
+                mmadParams.GetCmatrixInitVal());
+        } else {
+            mad(c, a, b, bias, mmadParams.GetM(), mmadParams.GetK(), mmadParams.GetN(), mmadParams.GetUnitFlag(),
+                mmadParams.GetDisableGemv(), mmadParams.GetCmatrixSource(), mmadParams.GetCmatrixInitVal());
+        }
+#else
+        // Xd[31:0]: matrix c addr in L0C, Xd[63:32]: bias addr in bias table buffer;
+        uint64_t xd = ((uint64_t)c) & 0xffffffffULL | ((bias & 0xffffffffULL) << 32);
+        if constexpr (isMx) {
+            using AType = typename GetDstType<Src0T>::Type;
+            using BType = typename GetDstType<Src1T>::Type;
+            mad_mx((__cc__ DstT*)xd, (__ca__ AType*)a, (__cb__ BType*)b, mmadParams.GetConfig0());
+        } else {
+            mad((__cc__ DstT*)xd, a, b, mmadParams.GetConfig0());
+        }
+#endif
+    }
+}
 #endif
 
 /* **************************************************************************************************
@@ -647,6 +772,13 @@ __aicore__ inline void Load3DSetFMatrixCal(uint16_t l1H, uint16_t l1W, const uin
     }
 }
 
+__aicore__ inline void Load3DSetFMatrixCal(uint64_t regFMatrix)
+{
+    if ASCEND_IS_AIC {
+        set_fmatrix(regFMatrix);
+    }
+}
+
 __aicore__ inline void Load3DSetFMatrixBCal(uint16_t l1H, uint16_t l1W, const uint8_t padList[4])
 {
     if ASCEND_IS_AIC {
@@ -662,6 +794,13 @@ __aicore__ inline void Load3DSetFMatrixBCal(uint16_t l1H, uint16_t l1W, const ui
         for (uint32_t i = 0; i < padNumber; i++) {
             regFMatrix |= uint64_t(padList[i] & 0xFF) << (padListShiftBase + i * padListShiftBit);
         }
+        set_fmatrix_b(regFMatrix);
+    }
+}
+
+__aicore__ inline void Load3DSetFMatrixBCal(uint64_t regFMatrix)
+{
+    if ASCEND_IS_AIC {
         set_fmatrix_b(regFMatrix);
     }
 }
@@ -770,6 +909,53 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ half* dst, __cbuf__ half* sr
 template <typename T>
 __aicore__ inline void LoadData3DV2L12UBCal(__ubuf__ T* dst, __cbuf__ T* src,
     const LoadData3DParamsV2<T>& loadDataParams)
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "LoadData3DV2L12UB is not supported on current device"); });
+}
+
+template <typename T>
+__aicore__ inline void LoadData3DV2L12L0ACal(__ca__ half* dst, __cbuf__ half* src, const Load3DBitModeParam& loadDataParams)
+{
+    if ASCEND_IS_AIC {
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        img2colv2_cbuf_to_ca(dst, src, loadDataParams.GetKExtension(), loadDataParams.GetMExtension(), loadDataParams.GetKStartPt(),
+            loadDataParams.GetMStartPt(), loadDataParams.GetStrideW(), loadDataParams.GetStrideH(), loadDataParams.GetFilterW(),
+            loadDataParams.GetFilterH(), loadDataParams.GetDilationFilterW(), loadDataParams.GetDilationFilterH(),
+            loadDataParams.GetFilterSizeW(), loadDataParams.GetFilterSizeH(), loadDataParams.GetTranspose(),
+            loadDataParams.GetFMatrixCtrl(), loadDataParams.GetChannelSize());
+#else
+        if constexpr (std::is_same<T, bfloat16_t>::value) {
+            img2colv2_cbuf_to_ca((__ca__ half *)dst, (__cbuf__ half *)src, loadDataParams.GetConfig0(), loadDataParams.GetConfig1());
+        } else {
+            img2colv2_cbuf_to_ca(dst, src, loadDataParams.GetConfig0(), loadDataParams.GetConfig1());
+        }
+#endif
+    }
+}
+
+template <typename T>
+__aicore__ inline void LoadData3DV2L12L0BCal(__cb__ half* dst, __cbuf__ half* src, const Load3DBitModeParam& loadDataParams)
+{
+    if ASCEND_IS_AIC {
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        img2colv2_cbuf_to_cb(dst, src, loadDataParams.GetKExtension(), loadDataParams.GetMExtension(), loadDataParams.GetKStartPt(),
+            loadDataParams.GetMStartPt(), loadDataParams.GetStrideW(), loadDataParams.GetStrideH(), loadDataParams.GetFilterW(),
+            loadDataParams.GetFilterH(), loadDataParams.GetDilationFilterW(), loadDataParams.GetDilationFilterH(),
+            loadDataParams.GetFilterSizeW(), loadDataParams.GetFilterSizeH(), loadDataParams.GetTranspose(),
+            loadDataParams.GetFMatrixCtrl(), loadDataParams.GetChannelSize());
+#else
+        if constexpr (std::is_same<T, bfloat16_t>::value) {
+            img2colv2_cbuf_to_cb((__cb__ half *)dst, (__cbuf__ half *)src, loadDataParams.GetConfig0(), loadDataParams.GetConfig1());
+        } else {
+            img2colv2_cbuf_to_cb(dst, src, loadDataParams.GetConfig0(), loadDataParams.GetConfig1());
+        }
+#endif
+    }
+}
+
+template <typename T>
+__aicore__ inline void LoadData3DV2L12UBCal(__ubuf__ T* dst, __cbuf__ T* src,
+    const Load3DBitModeParam& loadDataParams)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "LoadData3DV2L12UB is not supported on current device"); });
 }
