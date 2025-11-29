@@ -46,7 +46,7 @@ __aicore__ inline void asc_repeat_reduce_sum_sync(__ubuf__ float* dst, __ubuf__ 
 | dst | 输出 | 目的操作数。 |
 | src  | 输入 | 源操作数。|
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_repeat_reduce_config](../struct/asc_repeat_reduce_config.md)|
+| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_repeat_reduce_config](../struct/asc_repeat_reduce_config.md)。|
 
 ## 返回值说明
 

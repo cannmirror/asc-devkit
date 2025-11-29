@@ -59,10 +59,8 @@ PIPE_TYPE_MTE2
 ## 调用示例
 
 ```cpp
-//total_length指参与搬运的数据总长度
+//total_length指参与搬运的数据总长度。dst是外部输入的half类型的GM内存。
 uint64_t offset = 0;
-src_ub_ = (__ubuf__ half*)asc_get_phy_buf_addr(0);
-offset += total_length * sizeof(half);
-dst_gm = (__gm__ half*)asc_get_phy_buf_addr(offset);
-asc_copy_ub2gm(dst_gm, src_ub, total_length);
+src = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
+asc_copy_ub2gm(dst, src, total_length * sizeof(half));
 ```

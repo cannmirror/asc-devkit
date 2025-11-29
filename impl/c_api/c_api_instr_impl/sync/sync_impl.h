@@ -50,21 +50,6 @@ __aicore__ inline void asc_sync_mte2(int id)
     CApiInternal::sync_mte2_impl(id);
 }
 
-__aicore__ inline void asc_sync_mte1(int id)
-{
-    CApiInternal::sync_mte1_impl(id);
-}
-
-__aicore__ inline void asc_sync_matrix(int id)
-{
-    CApiInternal::sync_matrix_impl(id);
-}
-
-__aicore__ inline void asc_sync_fixpipe(int id)
-{
-    CApiInternal::sync_fixpipe_impl(id);
-}
-
 __aicore__ inline void asc_sync()
 {
     CApiInternal::sync_impl();

@@ -12,22 +12,10 @@
 #define IMPL_C_API_INSTR_MISC_H
  
 #include "init_soc_state_impl.h"
-#include "get_block_idx_impl.h"
-#include "get_block_num_impl.h"
 
 __aicore__ inline void asc_init()
 {
     CApiInternal::init_soc_state_impl();
-}
-
-__aicore__ inline int64_t asc_get_block_idx()
-{
-    CApiInternal::get_block_idx_impl();
-}
-
-__aicore__ inline int64_t asc_get_block_num()
-{
-    CApiInternal::get_block_num_impl();
 }
 
 #endif

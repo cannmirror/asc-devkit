@@ -24,7 +24,7 @@ __aicore__ inline int64_t asc_get_rsvd_count();
 
 __aicore__ inline void asc_get_vms4_sr(uint16_t sorted_num[4]);
 
-__aicore__ inline void asc_set_cmp_mask(__ubuf__ void *sel_mask);
+__aicore__ inline void asc_set_cmp_mask(__ubuf__ void* sel_mask);
 
 __aicore__ inline void asc_set_mask_count();
 

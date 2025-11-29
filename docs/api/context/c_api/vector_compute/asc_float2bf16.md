@@ -123,7 +123,7 @@
 | dst | 输出 | 目的操作数。 |
 | src  | 输入 | 源操作数。|
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在非连续场景下使用的计算配置参数。|
+| config | 输入 | 在非连续场景下使用的计算配置参数。<br/>详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。|
 
 ## 返回值说明
 
