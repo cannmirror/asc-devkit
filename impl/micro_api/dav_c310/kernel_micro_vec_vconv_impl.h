@@ -502,6 +502,9 @@ __simd_callee__ inline void CastImpl(S& dstReg, V& srcReg, MaskReg& mask)
     if constexpr (trait.mrgMode == MaskMergeMode::MERGING) {
         static_assert(SupportEnum<trait.layoutMode, RegLayout::UNKNOWN, RegLayout::ZERO>(),
             "current Cast api only supported MERGING Mode for RegLayout::UNKNOWN/ZERO on current device!");
+        static_assert(!(SupportType<ActualT, fp4x2_e2m1_t, fp4x2_e1m2_t, int4x2_t>() ||
+                        SupportType<ActualU, fp4x2_e2m1_t, fp4x2_e1m2_t, int4x2_t>()),
+            "current Cast api do not support MERGING Mode for fp4x2_e2m1_t/fp4x2_e1m2_t/int4x2_t on current device!");
     }
     constexpr bool layoutMerge = SupportType<Tuple<ActualT, ActualU>, Tuple<uint16_t, uint8_t>, Tuple<int16_t, int8_t>,
         Tuple<uint32_t, uint16_t>, Tuple<uint32_t, int16_t>, Tuple<int32_t, int16_t>, Tuple<int64_t, int32_t>,
