@@ -30,7 +30,16 @@ if(NOT DEFINED CMAKE_EXECUTABLE_RUNTIME_AICPU_FLAG)
     set(CMAKE_EXECUTABLE_RUNTIME_AICPU_FLAG ${CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG})
 endif()
 
-set(kernel_compile_options_list -O2 -c -std=c++17 -fvisibility=default -fvisibility-inlines-hidden -D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE --cce-aicpu-L$ENV{ASCEND_HOME_PATH}/toolkit/lib64/device/lib64 --cce-aicpu-laicpu_api --cce-aicpu-toolkit-path=$ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/bin)
+set(kernel_compile_options_list -O2 -c -std=c++17 -fvisibility=default -fvisibility-inlines-hidden 
+    -D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE 
+    --cce-aicpu-L$ENV{ASCEND_HOME_PATH}/toolkit/lib64/device/lib64 --cce-aicpu-laicpu_api 
+    --cce-aicpu-toolkit-path=$ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/bin
+    --cce-aicpu-sysroot=$ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/sysroot
+    -isystem $ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/aarch64-target-linux-gnu/include
+    -isystem $ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/aarch64-target-linux-gnu/include/c++/7.3.0
+    -isystem $ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/aarch64-target-linux-gnu/include/c++/7.3.0/aarch64-target-linux-gnu
+    -isystem $ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/aarch64-target-linux-gnu/include/c++/7.3.0/backward
+    )
 list(JOIN kernel_compile_options_list " " KERNEL_OPTIONS_LIST)
 
 if(NOT CMAKE_AICPU_COMPILE_OBJECT)
