@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef INCLUDE_C_API_MISC_GET_BLOCK_IDX_IMPL_H
-#define INCLUDE_C_API_MISC_GET_BLOCK_IDX_IMPL_H
+#ifndef IMPL_C_API_INSTR_MISC_GET_BLOCK_IDX_IMPL_H
+#define IMPL_C_API_INSTR_MISC_GET_BLOCK_IDX_IMPL_H
 
 namespace CApiInternal {
 

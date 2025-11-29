@@ -13,6 +13,6 @@
  
 #include "c_api_instr_impl/simd_atomic/simd_atomic_impl.h"
  
-__aicore__ inline void asc_data_cache_clean_and_invalid(__gm__ void *dst, uint64_t entire);
+__aicore__ inline void asc_data_cache_clean_and_invalid(__gm__ void* dst, uint64_t entire);
  
 #endif
