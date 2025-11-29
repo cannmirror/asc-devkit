@@ -7,16 +7,16 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-#ifndef IMPL_C_API_INSTR_MISC_GET_BLOCK_IDX_IMPL_H
-#define IMPL_C_API_INSTR_MISC_GET_BLOCK_IDX_IMPL_H
+#ifndef IMPL_C_API_INSTR_SYS_VAR_GET_BLOCK_NUM_ASC_2201_GET_BLOCK_NUM_IMPL_H
+#define IMPL_C_API_INSTR_SYS_VAR_GET_BLOCK_NUM_ASC_2201_GET_BLOCK_NUM_IMPL_H
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t get_block_idx_impl()
+__aicore__ inline int64_t get_block_num_impl()
 {
-    return get_block_idx();
+    return get_block_num();
 }
-
+    
 }
 
 #endif

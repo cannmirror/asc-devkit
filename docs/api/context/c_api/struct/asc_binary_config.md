@@ -9,14 +9,14 @@ constexpr uint64_t CAPI_DEFAULT_BINARY_CONFIG_VALUE = 0x0100080808010101;
 union asc_binary_config {
     uint64_t config = CAPI_DEFAULT_BINARY_CONFIG_VALUE;
     struct {
-        uint64_t dst_block_stride: 8;
-        uint64_t src0_block_stride: 8;
-        uint64_t src1_block_stride: 8;
-        uint64_t dst_repeat_stride: 8;
-        uint64_t src0_repeat_stride: 8;
-        uint64_t src1_repeat_stride: 8;
-        uint64_t reserved: 8;
-        uint64_t repeat: 8;
+        uint64_t dst_block_stride : 8;
+        uint64_t src0_block_stride : 8;
+        uint64_t src1_block_stride : 8;
+        uint64_t dst_repeat_stride : 8;
+        uint64_t src0_repeat_stride : 8;
+        uint64_t src1_repeat_stride : 8;
+        uint64_t reserved : 8;
+        uint64_t repeat : 8;
     };
 };
 ```

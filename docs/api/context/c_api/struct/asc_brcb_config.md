@@ -8,11 +8,11 @@ asc_brcb_config为控制操作数地址步长的数据结构。具体使用方�
 union asc_brcb_config {
     uint64_t config;
     struct {
-        uint64_t dst_block_stride: 16;
-        uint64_t reserved1: 16;
-        uint64_t dst_repeat_stride: 12;
-        uint64_t reserved2: 12;
-        uint64_t repeat: 8;
+        uint64_t dst_block_stride : 16;
+        uint64_t reserved1 : 16;
+        uint64_t dst_repeat_stride : 12;
+        uint64_t reserved2 : 12;
+        uint64_t repeat : 8;
     };
 };
 ```
