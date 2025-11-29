@@ -243,12 +243,13 @@ def set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch
 def set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, arch, kernel_type, \
                                                                       kernel_func_name, compile_info: CompileInfo):
     set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch, kernel_type, kernel_func_name)
-    if tiling_key in compile_info.tiling_key_group_map.keys():
-        for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
-            kernel_type_slave = compile_info.tiling_key_kernel_type[str(tiling_key_slave)]
-            kernel_func_name = get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info, \
-                                                                                   str(tiling_key_slave))
-            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key_slave, arch, \
+    if compile_info.tiling_key_group_map is not None and len(compile_info.tiling_key_group_map) > 0:
+        if tiling_key in compile_info.tiling_key_group_map.keys():
+            for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                kernel_type_slave = compile_info.tiling_key_kernel_type[str(tiling_key_slave)]
+                kernel_func_name = get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info, \
+                                                                                    str(tiling_key_slave))
+                set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key_slave, arch, \
                                                                         kernel_type_slave.name, kernel_func_name)
     return
 
