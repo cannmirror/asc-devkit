@@ -24,18 +24,18 @@
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   </tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
 
 - 算子实现：
   - kernel实现  
-    C_API输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
+    计算逻辑是：C_API输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
 
     Add算子的实现流程分为3个步骤：
 
@@ -44,9 +44,6 @@
     第二步对xLocal、yLocal执行加法操作，计算结果存储在zLocal中。
     
     第三步将输出数据从zLocal搬运至Global Memory上的输出z中。
-  - tiling实现  
-
-    TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本示例算子使用了2个tiling参数：totalLength、tileNum。totalLength是指需要计算的数据量大小，tileNum是指每个核上总计算数据分块个数。比如，totalLength这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
@@ -56,27 +53,29 @@
   - 打开样例目录   
     以命令行方式下载样例代码，master分支为例。
     ```bash
-    cd ${git_clone_path}/examples/02_features/01_c_api/01_async_add/
+    cd ${git_clone_path}/examples/02_features/01_c_api/01_async_add
     ```
   - 配置环境变量
 
     请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
+      export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
       ```
     - 默认路径，非root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
+      export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
       ```
     - 指定路径install_path，安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/latest
+      export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
       ```
     配置安装路径后，执行以下命令统一配置环境变量。
     ```bash
     # 配置CANN环境变量
     source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+    # 添加AscendC CMake Module搜索路径至环境变量（x86平台）
+    export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/x86_64-linux/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
     ```
 
   - 样例执行
@@ -85,9 +84,14 @@
     cmake ..;make -j;             # 编译工程
 
     # 在build目录执行以下内容
-    ./c_api_add                        # 执行样例
+    ./c_api_add_example           # 执行样例
     ```
     执行结果如下，说明精度对比成功。
     ```bash
     [Success] Case accurary is verification passed.
     ```
+
+## 更新说明
+| 时间       | 更新事项     |
+| ---------- | ------------ |
+| 2025/11/28 | 新增本readme |
