@@ -9,7 +9,7 @@
 
 ## 功能说明
 
-针对矩阵计算流水线执行同步操作。
+针对PIPE_TYPE_M（矩阵计算流水线）执行同步操作。
 
 ## 函数原型
 
@@ -29,7 +29,7 @@ __aicore__ inline void asc_sync_matrix(int id)
 
 ## 流水类型
 
-PIPE_S
+PIPE_TYPE_S
 
 ## 约束说明
 
