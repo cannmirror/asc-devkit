@@ -7,12 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
- 
+
 /*!
  * \file context_builder_impl.cpp
  * \brief
  */
- 
+
 #include "context_builder_impl.h"
 #include <fstream>
 #include <limits.h>
@@ -66,7 +66,7 @@ void ContextBuilderImpl::NodeIoNum(size_t inputNum, size_t outputNum)
     inputNum_ = inputNum;
     outputNum_ = outputNum;
 }
- 
+
 void ContextBuilderImpl::IrInstanceNum(std::vector<uint32_t> instanceNum)
 {
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return , CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
@@ -359,7 +359,7 @@ void ContextBuilderImpl::PlatformInfo(void *platformInfo)
 
 namespace DataUtils{
 constexpr int64_t OFFSET = 2;
- 
+
 uint16_t FloatToBF16(const ge::float32_t value)
 {
     union Fp32 {
@@ -371,7 +371,7 @@ uint16_t FloatToBF16(const ge::float32_t value)
     constexpr uint32_t kInt16BitsNum = 16U;
     return uint16_t(temp.u >> kInt16BitsNum);
 }
- 
+
 uint16_t FloatToUint16(const float value)
 {
     union Fp32 {
@@ -386,7 +386,7 @@ uint16_t FloatToUint16(const float value)
     temp.f = value;
     const uint32_t sign = temp.u & signMask;
     temp.u ^= sign;
- 
+
     if (temp.u >= f32Infty.u) {
         constexpr uint32_t roundMax = 0x7FFFU;
         constexpr uint32_t dstAddr = 0x7C00U;
@@ -396,7 +396,7 @@ uint16_t FloatToUint16(const float value)
         constexpr Fp32 f16Infty = { static_cast<uint32_t>(31) << static_cast<uint32_t>(23) };
         constexpr Fp32 magic = { static_cast<uint32_t>(15) << static_cast<uint32_t>(23) };
         constexpr uint32_t roundMask = static_cast<uint32_t>(~0xFFFU);
- 
+
         temp.u &= roundMask;
         temp.f *= magic.f;
         temp.u -= roundMask;
@@ -408,7 +408,7 @@ uint16_t FloatToUint16(const float value)
     out = uint16_t(out | (sign >> rightShift16));
     return out;
 }
- 
+
 bool ReadBinFile(const std::string& fileName, void *buf, std::size_t bufferLen)
 {
     try {
@@ -440,7 +440,7 @@ bool ReadBinFile(const std::string& fileName, void *buf, std::size_t bufferLen)
     }
     return true;
 }
- 
+
 int64_t GetTensorSizeByStorageShape(const gert::StorageShape& storageShape, const ge::DataType &dtype)
 {
     int64_t dataSize = storageShape.GetStorageShape().GetShapeSize();
@@ -455,7 +455,7 @@ int64_t GetTensorSizeByStorageShape(const gert::StorageShape& storageShape, cons
     }
     return tensorSize;
 }
- 
+
 bool SetConstDataWithFloat16(void *rawData, int64_t bufferLen, int64_t holderSize,
     std::unique_ptr<uint8_t[]> &dstData)
 {
@@ -479,7 +479,7 @@ bool SetConstDataWithFloat16(void *rawData, int64_t bufferLen, int64_t holderSiz
     }
     return true;
 }
- 
+
 bool SetConstDataWithBF16(void *rawData, int64_t bufferLen, int64_t holderSize,
     std::unique_ptr<uint8_t[]> &dstData)
 {

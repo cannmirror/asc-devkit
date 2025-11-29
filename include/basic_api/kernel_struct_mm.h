@@ -739,7 +739,7 @@ struct LoadDataPaddingParam {
 };
 #endif // Kirin versions
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 struct LoadData2DMxParams {
     __aicore__ LoadData2DMxParams() {}
 
@@ -763,7 +763,7 @@ struct LoadData2DMxParams {
 };
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 template <typename TYPE>
 struct LoadData3DParamsV1 {
     using T = typename GetPadValueType<TYPE>::Type;
@@ -829,7 +829,7 @@ struct LoadData3DParamsV1 {
     int16_t leftTopH = 0;
 };
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 template <typename TYPE>
 struct LoadData3DParamsV2 {
     using T = typename GetPadValueType<TYPE>::Type;
@@ -1824,7 +1824,7 @@ struct MmadParams {
     bool cmatrixSource = false;
     // Indicates the initial matrix, 1: the number in C matrix is 0, 0：use the real number in C matrix
     bool cmatrixInitVal = true;
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
     bool disableGemv = false;
 #endif
 };
@@ -1852,162 +1852,162 @@ struct ConvFixParams {
         postProcessBandwithCtrl = false;
         instrId = instr_id_t::ID_0;
     }
- 
+
     __aicore__ inline void SetM(uint16_t m_)
     {
         (void)m_;
     }
- 
+
     __aicore__ inline void SetN(uint16_t n_)
     {
         n = n_;
     }
- 
+
     __aicore__ inline void SetK(uint16_t k_)
     {
         (void)k_;
     }
- 
+
     __aicore__ inline void SetIsBias(bool isBias_)
     {
         (void)isBias_;
     }
- 
+
     __aicore__ inline void SetEnSsparse(bool enSsparse_)
     {
         (void)enSsparse_;
     }
- 
+
     __aicore__ inline void SetEnWinogradA(bool enWinogradA_)
     {
         (void)enWinogradA_;
     }
- 
+
     __aicore__ inline void SetEnWinogradB(bool enWinogradB_)
     {
         (void)enWinogradB_;
     }
- 
+
     __aicore__ inline void SetKDirectionAlign(bool kDirectionAlign_)
     {
         (void)kDirectionAlign_;
     }
- 
+
     __aicore__ inline void SetFmOffset(int32_t fmOffset_)
     {
         (void)fmOffset_;
     }
- 
+
     __aicore__ inline void SetSmaskBufferAddr(uint8_t smaskBufferAddr_)
     {
         (void)smaskBufferAddr_;
     }
- 
+
     __aicore__ inline void SetUnitFlag(uint8_t unitFlag_)
     {
         (void)unitFlag_;
     }
- 
+
     __aicore__ inline void SetS16S8RightShift(bool s16s8rightShift_)
     {
         (void)s16s8rightShift_;
     }
- 
+
     __aicore__ inline void SetS16S8SubDtype(bool s16s8subDtype_)
     {
         (void)s16s8subDtype_;
     }
- 
+
     __aicore__ inline void SetIsWeightOffset(bool isWeightOffset_)
     {
         (void)isWeightOffset_;
     }
- 
+
     __aicore__ inline void SetGemvCtrl(bool gemvCtrl_)
     {
         gemvCtrl = gemvCtrl_;
     }
- 
+
     __aicore__ inline void SetCmatrixSource(bool cmatrixSource_)
     {
         (void)cmatrixSource_;
     }
- 
+
     __aicore__ inline void SetCmatrixInitVal(bool cmatrixInitVal_)
     {
         (void)cmatrixInitVal_;
     }
- 
+
     __aicore__ inline void SetBiasMatrixInitVal(bool biasMatrixInitVal_)
     {
         biasMatrixInitVal = biasMatrixInitVal_;
     }
- 
+
     __aicore__ inline void SetBiasMatrixBroadcast(bool biasMatrixBroadcast_)
     {
         biasMatrixBroadcast = biasMatrixBroadcast_;
     }
- 
+
     __aicore__ inline void SetPreQuantMode(QuantMode_t preQuantMode_)
     {
         preQuantMode = preQuantMode_;
     }
- 
+
     __aicore__ inline void SetPreReluMode(ReluMode_t preReluMode_)
     {
         preReluMode = preReluMode_;
     }
- 
+
     __aicore__ inline void SetPostQuantMode(QuantMode_post postQuantMode_)
     {
         postQuantMode = postQuantMode_;
     }
- 
+
     __aicore__ inline void SetActPostEnable(bool actPostEnable_) // new
     {
         actPostEnable = actPostEnable_;
     }
- 
+
     __aicore__ inline void SetPreClipReluMode(bool preClipReluMode_)
     {
         preClipReluMode = preClipReluMode_;
     }
- 
+
     __aicore__ inline void SetEltwiseOp(eltwise_op_t eltwiseOp_)
     {
         eltwiseOp = eltwiseOp_;
     }
- 
+
     __aicore__ inline void SetEltwiseAntiqEnable(bool eltwiseAntiqEnable_)
     {
         eltwiseAntiqEnable = eltwiseAntiqEnable_;
     }
- 
+
     __aicore__ inline void SetEltwiseBroadcastEnable(bool eltwiseBroadcastEnable_)
     {
         eltwiseBroadcastEnable = eltwiseBroadcastEnable_;
     }
- 
+
     __aicore__ inline void SetLsbMask(lsb_mask_t lsbMask_)
     {
         lsbMask = lsbMask_;
     }
- 
+
     __aicore__ inline void SetDependEnable(bool dependEnable_)
     {
         dependEnable = dependEnable_;
     }
- 
+
     __aicore__ inline void SetPostProcessBandwithCtrl (bool postProcessBandwithCtrl_)
     {
         postProcessBandwithCtrl = postProcessBandwithCtrl_;
     }
- 
+
     __aicore__ inline void SetInstrId(instr_id_t instrId_)
     {
         instrId = instrId_;
     }
- 
+
     uint16_t n = 0;
     bool biasMatrixInitVal = true;
     bool biasMatrixBroadcast = false;
@@ -2396,7 +2396,7 @@ struct LoadDataRepeatParam {
 };
 #endif
 #else
-#if __NPU_ARCH__ == 3102 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 struct LoadDataRepeatParam {
     __aicore__ LoadDataRepeatParam() {}
 
