@@ -20,10 +20,10 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_STORE_REG, typename U>
-__simd_callee__ inline void GatherMask(U& dstReg, U& srcReg, MaskReg& mask);
+__simd_callee__ inline void Squeeze(U& dstReg, U& srcReg, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void PrefixSum(U& dstReg, MaskReg& mask);
+__simd_callee__ inline void Unsqueeze(U& dstReg, MaskReg& mask);
 
 template <SpecialPurposeReg spr>
 __aicore__ inline int64_t GetSpr();

@@ -25,20 +25,20 @@ __simd_callee__ inline MaskReg UpdateMask(uint32_t& scalarValue);
 template <typename T, MaskPattern mode = MaskPattern::ALL, const RegTrait& regTrait = RegTraitNumOne>
 __simd_callee__ inline MaskReg CreateMask();
 
-__simd_callee__ inline void MaskNot(MaskReg& dst, MaskReg& src, MaskReg& mask);
+__simd_callee__ inline void Not(MaskReg& dst, MaskReg& src, MaskReg& mask);
 
-__simd_callee__ inline void MaskAnd(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
+__simd_callee__ inline void And(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
 
 template <typename T = DefaultType, int16_t offset, typename U>
 __simd_callee__ inline void MaskGenWithRegTensor(MaskReg& dst, U& srcReg);
 
-__simd_callee__ inline void MaskOr(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
+__simd_callee__ inline void Or(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
 
-__simd_callee__ inline void MaskXor(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
+__simd_callee__ inline void Xor(MaskReg& dst, MaskReg& src0, MaskReg& src1, MaskReg& mask);
 
-__simd_callee__ inline void MaskMov(MaskReg& dst, MaskReg& src, MaskReg& mask);
+__simd_callee__ inline void Move(MaskReg& dst, MaskReg& src, MaskReg& mask);
 
-__simd_callee__ inline void MaskMov(MaskReg& dst, MaskReg& src);
+__simd_callee__ inline void Move(MaskReg& dst, MaskReg& src);
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2103 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3103 || \
     __NPU_ARCH__ == 3113)
@@ -52,13 +52,13 @@ __simd_callee__ inline void MaskInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg
 template <typename T>
 __simd_callee__ inline void MaskDeInterleave(MaskReg& dst0, MaskReg& dst1, MaskReg& src0, MaskReg& src1);
 
-__simd_callee__ inline void MaskSel(MaskReg &dst, MaskReg &src0, MaskReg& src1, MaskReg& mask);
+__simd_callee__ inline void Select(MaskReg &dst, MaskReg &src0, MaskReg& src1, MaskReg& mask);
 
 template <HighLowPart part = HighLowPart::LOWEST>
-__simd_callee__ inline void MaskPack(MaskReg& dst, MaskReg& src);
+__simd_callee__ inline void Pack(MaskReg& dst, MaskReg& src);
 
 template <HighLowPart part = HighLowPart::LOWEST>
-__simd_callee__ inline void MaskUnPack(MaskReg& dst, MaskReg& src);
+__simd_callee__ inline void UnPack(MaskReg& dst, MaskReg& src);
 
 template <typename T>
 __simd_callee__ inline MaskReg MoveMask();

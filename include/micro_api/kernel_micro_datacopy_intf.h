@@ -129,25 +129,25 @@ __simd_callee__ inline void Scatter(__ubuf__ T* baseAddr, S& srcReg, V& index, M
 
 // pld
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void Load(MaskReg& mask, __ubuf__ T* srcAddr, AddrReg offset);
+__simd_callee__ inline void LoadAlign(MaskReg& mask, __ubuf__ T* srcAddr, AddrReg offset);
 
 // plds
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void Load(MaskReg& mask, __ubuf__ T* srcAddr);
+__simd_callee__ inline void LoadAlign(MaskReg& mask, __ubuf__ T* srcAddr);
 
 template <typename T, PostLiteral postMode, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void Load(MaskReg& mask, __ubuf__ T*& srcAddr, int32_t offset);
+__simd_callee__ inline void LoadAlign(MaskReg& mask, __ubuf__ T*& srcAddr, int32_t offset);
 
 // pst
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void Store(__ubuf__ T* dstAddr, MaskReg& mask, AddrReg offset);
+__simd_callee__ inline void StoreAlign(__ubuf__ T* dstAddr, MaskReg& mask, AddrReg offset);
 
 // psts
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void Store(__ubuf__ T* dstAddr, MaskReg& mask);
+__simd_callee__ inline void StoreAlign(__ubuf__ T* dstAddr, MaskReg& mask);
 
 template <typename T, PostLiteral postMode, MaskDist dist = MaskDist::DIST_NORM>
-__simd_callee__ inline void Store(__ubuf__ T*& dstAddr, MaskReg& mask, int32_t offset);
+__simd_callee__ inline void StoreAlign(__ubuf__ T*& dstAddr, MaskReg& mask, int32_t offset);
 
 // pstu
 template <typename T>

@@ -397,6 +397,16 @@ enum class RoundControl {
     NO_ROUND,
     ROUND
 };
+
+enum class ReduceType {
+    SUM = 0,
+    MAX,
+    MIN,
+};
+
+enum class PairReduce {
+    SUM = 0,
+};
 } // namespace MicroAPI
 } // namespace AscendC
 

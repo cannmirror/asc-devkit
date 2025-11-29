@@ -23,20 +23,30 @@
 #include "micro_api/dav_l310/kernel_micro_copy_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "micro_api/dav_l311/kernel_micro_copy_impl.h"
-#else 
+#else
 #include "micro_api/dav_c310/kernel_micro_copy_impl.h"
 #endif
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T, MaskMergeMode mode, typename U>
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::MERGING, typename U>
 __simd_callee__ inline void Copy(U& dstReg, U& srcReg, MaskReg mask)
 {
     CopyImpl<T, mode, U>(dstReg, srcReg, mask);
 }
+template <typename T, MaskMergeMode mode, typename U>
+__simd_callee__ inline void Move(U& dstReg, U& srcReg, MaskReg mask)
+{
+    CopyImpl<T, mode, U>(dstReg, srcReg, mask);
+}
 
-template <typename T, typename U>
+template <typename T = DefaultType, typename U>
 __simd_callee__ inline void Copy(U& dstReg, U& srcReg)
+{
+    CopyImpl<T, U>(dstReg, srcReg);
+}
+template <typename T, typename U>
+__simd_callee__ inline void Move(U& dstReg, U& srcReg)
 {
     CopyImpl<T, U>(dstReg, srcReg);
 }

@@ -23,20 +23,30 @@
 #include "micro_api/dav_l310/kernel_micro_gather_mask_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "micro_api/dav_l311/kernel_micro_gather_mask_impl.h"
-#else 
+#else
 #include "micro_api/dav_c310/kernel_micro_gather_mask_impl.h"
 #endif
 
 namespace AscendC {
 namespace MicroAPI {
-template <typename T, GatherMaskMode store, typename U>
+template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_STORE_REG, typename U>
 __simd_callee__ inline void GatherMask(U& dstReg, U& srcReg, MaskReg& mask)
 {
     GatherMaskImpl<T, store, U>(dstReg, srcReg, mask);
 }
+template <typename T, GatherMaskMode store, typename U>
+__simd_callee__ inline void Squeeze(U& dstReg, U& srcReg, MaskReg& mask)
+{
+    GatherMaskImpl<T, store, U>(dstReg, srcReg, mask);
+}
 
-template <typename T, typename U>
+template <typename T = DefaultType, typename U>
 __simd_callee__ inline void PrefixSum(U& dstReg, MaskReg& mask)
+{
+    PrefixSumImpl<T, U>(dstReg, mask);
+}
+template <typename T, typename U>
+__simd_callee__ inline void Unsqueeze(U& dstReg, MaskReg& mask)
 {
     PrefixSumImpl<T, U>(dstReg, mask);
 }

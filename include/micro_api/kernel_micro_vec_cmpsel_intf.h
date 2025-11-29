@@ -23,7 +23,7 @@ template <typename T = DefaultType, CMPMODE mode = CMPMODE::EQ, typename U>
 __simd_callee__ inline void Compare(MaskReg& dst, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, CMPMODE mode = CMPMODE::EQ, typename U, typename S>
-__simd_callee__ inline void CompareScalar(MaskReg& dst, U& srcReg, S scalarValue, MaskReg& mask);
+__simd_callee__ inline void Compares(MaskReg& dst, U& srcReg, S scalarValue, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
 __simd_callee__ inline void Select(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);

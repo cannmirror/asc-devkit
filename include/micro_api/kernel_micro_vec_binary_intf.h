@@ -89,18 +89,18 @@ template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
 __simd_callee__ inline void MulAddDst(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void AddCarryOuts(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
-    MaskReg& mask);
+__simd_callee__ inline void AddC(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
+                                 MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void SubCarryOuts(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
-    MaskReg& mask);
+__simd_callee__ inline void SubC(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& carrySrc,
+                                 MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void AddCarryOut(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
+__simd_callee__ inline void Add(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void SubCarryOut(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
+__simd_callee__ inline void Sub(MaskReg& carry, U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 } // namespace MicroAPI
 } // namespace AscendC
 
