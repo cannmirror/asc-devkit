@@ -35,8 +35,13 @@ __simd_callee__ inline void Compare(MaskReg& dst, U& srcReg0, U& srcReg1, MaskRe
     CompareImpl<T, mode, U>(dst, srcReg0, srcReg1, mask);
 }
 
-template <typename T, CMPMODE mode, typename U, typename S>
+template <typename T = DefaultType, CMPMODE mode = CMPMODE::EQ, typename U, typename S>
 __simd_callee__ inline void CompareScalar(MaskReg& dst, U& srcReg, S scalarValue, MaskReg& mask)
+{
+    CompareScalarImpl<T, mode, U, S>(dst, srcReg, scalarValue, mask);
+}
+template <typename T, CMPMODE mode, typename U, typename S>
+__simd_callee__ inline void Compares(MaskReg& dst, U& srcReg, S scalarValue, MaskReg& mask)
 {
     CompareScalarImpl<T, mode, U, S>(dst, srcReg, scalarValue, mask);
 }

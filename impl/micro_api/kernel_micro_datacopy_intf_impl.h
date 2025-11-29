@@ -215,7 +215,7 @@ __simd_callee__ inline void DataCopyUnAlignPre(UnalignReg& ureg, __ubuf__ T* src
     DataCopyUnAlignPreImpl<T>(ureg, srcAddr);
 }
 template <typename T>
-__simd_callee__ inline void LoadUnAlignPre(UnalignReg& ureg, __ubuf__ T* srcAddr)
+__simd_callee__ inline void LoadUnAlignPre(UnalignRegForLoad& ureg, __ubuf__ T* srcAddr)
 {
     DataCopyUnAlignPreImpl<T>(ureg, srcAddr);
 }
@@ -226,7 +226,7 @@ __simd_callee__ inline void DataCopyUnAlign(U& dstReg, UnalignReg& ureg, __ubuf_
     DataCopyUnAlignImpl<T, postMode, U>(dstReg, ureg, srcAddr, postUpdateStride);
 }
 template <typename T, PostLiteral postMode, typename U>
-__simd_callee__ inline void LoadUnAlign(U& dstReg, UnalignReg& ureg, __ubuf__ T*& srcAddr, uint32_t postUpdateStride)
+__simd_callee__ inline void LoadUnAlign(U& dstReg, UnalignRegForLoad& ureg, __ubuf__ T*& srcAddr, uint32_t postUpdateStride)
 {
     DataCopyUnAlignImpl<T, postMode, U>(dstReg, ureg, srcAddr, postUpdateStride);
 }
@@ -237,7 +237,7 @@ __simd_callee__ inline void DataCopyUnAlign(U& dstReg, UnalignReg& ureg, __ubuf_
     DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr);
 }
 template <typename T, typename U>
-__simd_callee__ inline void LoadUnAlign(U& dstReg, UnalignReg& ureg, __ubuf__ T* srcAddr)
+__simd_callee__ inline void LoadUnAlign(U& dstReg, UnalignRegForLoad& ureg, __ubuf__ T* srcAddr)
 {
     DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr);
 }
@@ -249,7 +249,7 @@ __simd_callee__ inline void DataCopyUnAlignPre(UnalignReg& ureg, __ubuf__ T* src
     DataCopyUnAlignPreImpl<T>(ureg, srcAddr, areg);
 }
 template <typename T>
-__simd_callee__ inline void LoadUnAlignPre(UnalignReg& ureg, __ubuf__ T* srcAddr, AddrReg& areg)
+__simd_callee__ inline void LoadUnAlignPre(UnalignRegForLoad& ureg, __ubuf__ T* srcAddr, AddrReg& areg)
 {
     DataCopyUnAlignPreImpl<T>(ureg, srcAddr, areg);
 }
@@ -261,7 +261,7 @@ __simd_callee__ inline void DataCopyUnAlign(U& dstReg, UnalignReg& ureg, __ubuf_
     DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr, areg, inc);
 }
 template <typename T, typename U>
-__simd_callee__ inline void LoadUnAlign(U& dstReg, UnalignReg& ureg, __ubuf__ T*& srcAddr, AddrReg& areg,
+__simd_callee__ inline void LoadUnAlign(U& dstReg, UnalignRegForLoad& ureg, __ubuf__ T*& srcAddr, AddrReg& areg,
                                         uint32_t inc)
 {
     DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr, areg, inc);
@@ -274,7 +274,7 @@ __simd_callee__ inline void DataCopyUnAlign(__ubuf__ T*& dstAddr, U& srcReg, Una
     DataCopyUnAlignImpl<T, postMode, U>(dstAddr, srcReg, ureg, postUpdateStride);
 }
 template <typename T, PostLiteral postMode , typename U>
-__simd_callee__ inline void StoreUnAlign(__ubuf__ T*& dstAddr, U& srcReg, UnalignReg& ureg, uint32_t postUpdateStride)
+__simd_callee__ inline void StoreUnAlign(__ubuf__ T*& dstAddr, U& srcReg, UnalignRegForStore& ureg, uint32_t postUpdateStride)
 {
     DataCopyUnAlignImpl<T, postMode, U>(dstAddr, srcReg, ureg, postUpdateStride);
 }
@@ -285,7 +285,7 @@ __simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T*& dstAddr, UnalignReg
     DataCopyUnAlignPostImpl<T, postMode>(dstAddr, ureg, postUpdateStride);
 }
 template <typename T, PostLiteral postMode>
-__simd_callee__ inline void StoreUnAlignPost(__ubuf__ T*& dstAddr, UnalignReg& ureg, int32_t postUpdateStride)
+__simd_callee__ inline void StoreUnAlignPost(__ubuf__ T*& dstAddr, UnalignRegForStore& ureg, int32_t postUpdateStride)
 {
     DataCopyUnAlignPostImpl<T, postMode>(dstAddr, ureg, postUpdateStride);
 }
@@ -297,7 +297,7 @@ __simd_callee__ inline void DataCopyUnAlign(__ubuf__ T*& dstAddr, U& srcReg, Una
     DataCopyUnAlignImpl<T, postMode, U>(dstAddr, srcReg, ureg, areg);
 }
 template <typename T, PostLiteral postMode, typename U>
-__simd_callee__ inline void StoreUnAlign(__ubuf__ T*& dstAddr, U& srcReg, UnalignReg& ureg, AddrReg& areg)
+__simd_callee__ inline void StoreUnAlign(__ubuf__ T*& dstAddr, U& srcReg, UnalignRegForStore& ureg, AddrReg& areg)
 {
     DataCopyUnAlignImpl<T, postMode, U>(dstAddr, srcReg, ureg, areg);
 }
@@ -308,7 +308,7 @@ __simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T*& dstAddr, UnalignReg
     DataCopyUnAlignPostImpl<T>(dstAddr, ureg, areg);
 }
 template <typename T>
-__simd_callee__ inline void StoreUnAlignPost(__ubuf__ T*& dstAddr, UnalignReg& ureg, AddrReg& areg)
+__simd_callee__ inline void StoreUnAlignPost(__ubuf__ T*& dstAddr, UnalignRegForStore& ureg, AddrReg& areg)
 {
     DataCopyUnAlignPostImpl<T>(dstAddr, ureg, areg);
 }
@@ -320,7 +320,7 @@ __simd_callee__ inline void DataCopyUnAlign(__ubuf__ T* dstAddr, U& srcReg, Unal
     DataCopyUnAlignImpl(dstAddr, srcReg, ureg);
 }
 template <typename T, PostLiteral postMode, typename U>
-__simd_callee__ inline void StoreUnAlign(__ubuf__ T* dstAddr, U& srcReg, UnalignReg& ureg)
+__simd_callee__ inline void StoreUnAlign(__ubuf__ T* dstAddr, U& srcReg, UnalignRegForStore& ureg)
 {
     DataCopyUnAlignImpl(dstAddr, srcReg, ureg);
 }
@@ -331,7 +331,7 @@ __simd_callee__ inline void DataCopyUnAlignPost(__ubuf__ T* dstAddr, UnalignReg&
     DataCopyUnAlignPostImpl(dstAddr, ureg);
 }
 template <typename T>
-__simd_callee__ inline void StoreUnAlignPost(__ubuf__ T* dstAddr, UnalignReg& ureg)
+__simd_callee__ inline void StoreUnAlignPost(__ubuf__ T* dstAddr, UnalignRegForStore& ureg)
 {
     DataCopyUnAlignPostImpl(dstAddr, ureg);
 }
@@ -382,7 +382,7 @@ __simd_callee__ inline void DataCopy(MaskReg& mask, __ubuf__ T* srcAddr, AddrReg
     DataCopyImpl<T, dist>(mask, srcAddr, offset);
 }
 template <typename T, MaskDist dist>
-__simd_callee__ inline void Load(MaskReg& mask, __ubuf__ T* srcAddr, AddrReg offset)
+__simd_callee__ inline void LoadAlign(MaskReg& mask, __ubuf__ T* srcAddr, AddrReg offset)
 {
     DataCopyImpl<T, dist>(mask, srcAddr, offset);
 }
@@ -394,7 +394,7 @@ __simd_callee__ inline void DataCopy(MaskReg& mask, __ubuf__ T* srcAddr)
     DataCopyImpl<T, dist>(mask, srcAddr);
 }
 template <typename T, MaskDist dist>
-__simd_callee__ inline void Load(MaskReg& mask, __ubuf__ T* srcAddr)
+__simd_callee__ inline void LoadAlign(MaskReg& mask, __ubuf__ T* srcAddr)
 {
     DataCopyImpl<T, dist>(mask, srcAddr);
 }
@@ -405,7 +405,7 @@ __simd_callee__ inline void DataCopy(MaskReg& mask, __ubuf__ T*& srcAddr, int32_
     DataCopyImpl<T, postMode, dist>(mask, srcAddr, offset);
 }
 template <typename T, PostLiteral postMode, MaskDist dist>
-__simd_callee__ inline void Load(MaskReg& mask, __ubuf__ T*& srcAddr, int32_t offset)
+__simd_callee__ inline void LoadAlign(MaskReg& mask, __ubuf__ T*& srcAddr, int32_t offset)
 {
     DataCopyImpl<T, postMode, dist>(mask, srcAddr, offset);
 }
@@ -417,7 +417,7 @@ __simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, MaskReg& mask, AddrReg
     DataCopyImpl<T, dist>(dstAddr, mask, offset);
 }
 template <typename T, MaskDist dist>
-__simd_callee__ inline void Store(__ubuf__ T* dstAddr, MaskReg& mask, AddrReg offset)
+__simd_callee__ inline void StoreAlign(__ubuf__ T* dstAddr, MaskReg& mask, AddrReg offset)
 {
     DataCopyImpl<T, dist>(dstAddr, mask, offset);
 }
@@ -429,7 +429,7 @@ __simd_callee__ inline void DataCopy(__ubuf__ T* dstAddr, MaskReg& mask)
     DataCopyImpl<T, dist>(dstAddr, mask);
 }
 template <typename T, MaskDist dist>
-__simd_callee__ inline void Store(__ubuf__ T* dstAddr, MaskReg& mask)
+__simd_callee__ inline void StoreAlign(__ubuf__ T* dstAddr, MaskReg& mask)
 {
     DataCopyImpl<T, dist>(dstAddr, mask);
 }
@@ -440,7 +440,7 @@ __simd_callee__ inline void DataCopy(__ubuf__ T*& dstAddr, MaskReg& mask, int32_
     DataCopyImpl<T, postMode, dist>(dstAddr, mask, offset);
 }
 template <typename T, PostLiteral postMode, MaskDist dist>
-__simd_callee__ inline void Store(__ubuf__ T*& dstAddr, MaskReg& mask, int32_t offset)
+__simd_callee__ inline void StoreAlign(__ubuf__ T*& dstAddr, MaskReg& mask, int32_t offset)
 {
     DataCopyImpl<T, postMode, dist>(dstAddr, mask, offset);
 }
@@ -452,7 +452,7 @@ __simd_callee__ inline void DataCopyUnAlign(__ubuf__ T*& dstAddr, MaskReg& mask,
     return DataCopyUnAlignImpl<T>(dstAddr, mask, ureg);
 }
 template <typename T>
-__simd_callee__ inline void StoreUnAlign(__ubuf__ T*& dstAddr, MaskReg& mask, UnalignReg& ureg)
+__simd_callee__ inline void StoreUnAlign(__ubuf__ T*& dstAddr, MaskReg& mask, UnalignRegForStore& ureg)
 {
     return DataCopyUnAlignImpl<T>(dstAddr, mask, ureg);
 }

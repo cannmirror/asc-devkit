@@ -127,8 +127,8 @@ __simd_callee__ inline void AbsB64Impl(T& dstReg, T& srcReg, MaskReg& mask)
     MaskReg carryMask, carryLow, carryHigh;
     vbr(zeroReg, 0);
     vcmp_lt(carryMask, (RegTensor<int32_t>&)srcReg.reg[1], zeroReg, mask);
-    SubCarryOut(carryLow, lowReg, zeroReg, (RegTensor<int32_t>&)srcReg.reg[0], carryMask);
-    SubCarryOuts(carryHigh, highReg, zeroReg, (RegTensor<int32_t>&)srcReg.reg[1], carryLow, carryMask);
+    Sub(carryLow, lowReg, zeroReg, (RegTensor<int32_t>&)srcReg.reg[0], carryMask);
+    SubC(carryHigh, highReg, zeroReg, (RegTensor<int32_t>&)srcReg.reg[1], carryLow, carryMask);
     vsel((RegTensor<int32_t>&)dstReg.reg[0], lowReg, (RegTensor<int32_t>&)srcReg.reg[0], carryMask);
     vsel((RegTensor<int32_t>&)dstReg.reg[1], highReg, (RegTensor<int32_t>&)srcReg.reg[1], carryMask);
 }
@@ -397,7 +397,7 @@ template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename
 __simd_callee__ inline void SqrtImpl(U& dstReg, U& srcReg, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode), 
+    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
                   const SqrtSpecificMode *>::value, "mode type must be either MaskMergeMode or const SqrtSpecificMode* ");
     static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     constexpr SqrtSpecificMode sprMode = Internal::GetSqrtSpecificMode(mode);
@@ -521,7 +521,7 @@ __simd_callee__ inline void LogImpl(U& dstReg, U& srcReg, MaskReg& mask)
 }
 
 template <MaskMergeMode mode = MaskMergeMode::ZEROING>
-__simd_callee__ inline void LogXImpl(RegTensor<half>& dstReg, RegTensor<half>& srcReg, MaskReg& mask, 
+__simd_callee__ inline void LogXImpl(RegTensor<half>& dstReg, RegTensor<half>& srcReg, MaskReg& mask,
                                      const float lnXReciprocal)
 {
     vector_f16 f16RegLow;
@@ -568,8 +568,8 @@ __simd_callee__ inline void Log2Impl(U& dstReg, U& srcReg, MaskReg& mask)
     using ActualT = typename U::ActualT;
     static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode), 
-                  const Log2SpecificMode*>::value, 
+    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
+                  const Log2SpecificMode*>::value,
                   "mode type must be either MaskMergeMode or const Log2SpecificMode* ");
     constexpr Log2SpecificMode sprMode = Internal::GetLog2SpecificMode(mode);
     static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),

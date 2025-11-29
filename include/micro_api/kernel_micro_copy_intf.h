@@ -20,10 +20,10 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::MERGING, typename U>
-__simd_callee__ inline void Copy(U& dstReg, U& srcReg, MaskReg mask);
+__simd_callee__ inline void Move(U& dstReg, U& srcReg, MaskReg mask);
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void Copy(U& dstReg, U& srcReg);
+__simd_callee__ inline void Move(U& dstReg, U& srcReg);
 } // namespace MicroAPI
 } // namespace AscendC
 

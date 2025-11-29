@@ -19,17 +19,17 @@ namespace AscendC {
 namespace MicroAPI {
 template <typename T0 = DefaultType, typename T1 = DefaultType, typename T2, RegLayout layout = RegLayout::ZERO,
           typename T3, typename T4>
-__simd_callee__ inline void FusedMulsCast(T3& dstReg, T4& srcReg, T2 scalarValue, MaskReg& mask);
+__simd_callee__ inline void MulsCast(T3& dstReg, T4& srcReg, T2 scalarValue, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void FusedAbsSub(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
+__simd_callee__ inline void AbsSub(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, typename U = DefaultType, RegLayout layout = RegLayout::ZERO,
           MaskMergeMode mode = MaskMergeMode::ZEROING, typename S, typename V>
-__simd_callee__ inline void FusedExpSub(S& dstReg, V& srcReg0, V& srcReg1, MaskReg& mask);
+__simd_callee__ inline void ExpSub(S& dstReg, V& srcReg0, V& srcReg1, MaskReg& mask);
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void FusedMulDstAdd(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
+__simd_callee__ inline void MulDstAdd(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask);
 } // namespace MicroAPI
 } // namespace AscendC
 

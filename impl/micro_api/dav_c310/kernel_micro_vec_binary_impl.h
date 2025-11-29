@@ -59,14 +59,14 @@ __simd_callee__ inline void AddB64Impl(U& dstReg, U& srcReg0, U& srcReg1, MaskRe
         MaskReg carryMask;
         MaskReg carrySrcMask;
         if constexpr (Std::is_same_v<ActualT, uint64_t>) {
-            AddCarryOut(carryMask, (RegTensor<uint32_t>&)dstReg.reg[0], (RegTensor<uint32_t>&)srcReg0.reg[0],
+            Add(carryMask, (RegTensor<uint32_t>&)dstReg.reg[0], (RegTensor<uint32_t>&)srcReg0.reg[0],
                         (RegTensor<uint32_t>&)srcReg1.reg[0], mask);
-            AddCarryOuts(carrySrcMask, (RegTensor<uint32_t>&)dstReg.reg[1], (RegTensor<uint32_t>&)srcReg0.reg[1],
+            AddC(carrySrcMask, (RegTensor<uint32_t>&)dstReg.reg[1], (RegTensor<uint32_t>&)srcReg0.reg[1],
                          (RegTensor<uint32_t>&)srcReg1.reg[1], carryMask, mask);
         } else if constexpr (Std::is_same_v<ActualT, int64_t>) {
-            AddCarryOut(carryMask, (RegTensor<int32_t>&)dstReg.reg[0], (RegTensor<int32_t>&)srcReg0.reg[0],
+            Add(carryMask, (RegTensor<int32_t>&)dstReg.reg[0], (RegTensor<int32_t>&)srcReg0.reg[0],
                         (RegTensor<int32_t>&)srcReg1.reg[0], mask);
-            AddCarryOuts(carrySrcMask, (RegTensor<int32_t>&)dstReg.reg[1], (RegTensor<int32_t>&)srcReg0.reg[1],
+            AddC(carrySrcMask, (RegTensor<int32_t>&)dstReg.reg[1], (RegTensor<int32_t>&)srcReg0.reg[1],
                          (RegTensor<int32_t>&)srcReg1.reg[1], carryMask, mask);
         }
     }
@@ -162,14 +162,14 @@ __simd_callee__ inline void SubB64Impl(U& dstReg, U& srcReg0, U& srcReg1, MaskRe
         SubComplex64Impl(dstReg, srcReg0, srcReg1, mask);
     } else {
         if constexpr (Std::is_same_v<ActualT, uint64_t>) {
-            SubCarryOut(carryMask, (RegTensor<uint32_t>&)dstReg.reg[0], (RegTensor<uint32_t>&)srcReg0.reg[0],
+            Sub(carryMask, (RegTensor<uint32_t>&)dstReg.reg[0], (RegTensor<uint32_t>&)srcReg0.reg[0],
                         (RegTensor<uint32_t>&)srcReg1.reg[0], mask);
-            SubCarryOuts(carrySrcMask, (RegTensor<uint32_t>&)dstReg.reg[1], (RegTensor<uint32_t>&)srcReg0.reg[1],
+            SubC(carrySrcMask, (RegTensor<uint32_t>&)dstReg.reg[1], (RegTensor<uint32_t>&)srcReg0.reg[1],
                          (RegTensor<uint32_t>&)srcReg1.reg[1], carryMask, mask);
         } else if constexpr (Std::is_same_v<ActualT, int64_t>) {
-            SubCarryOut(carryMask, (RegTensor<int32_t>&)dstReg.reg[0], (RegTensor<int32_t>&)srcReg0.reg[0],
+            Sub(carryMask, (RegTensor<int32_t>&)dstReg.reg[0], (RegTensor<int32_t>&)srcReg0.reg[0],
                         (RegTensor<int32_t>&)srcReg1.reg[0], mask);
-            SubCarryOuts(carrySrcMask, (RegTensor<int32_t> &)dstReg.reg[1], (RegTensor<int32_t>&)srcReg0.reg[1],
+            SubC(carrySrcMask, (RegTensor<int32_t> &)dstReg.reg[1], (RegTensor<int32_t>&)srcReg0.reg[1],
                          (RegTensor<int32_t>&)srcReg1.reg[1], carryMask, mask);
         }
     }
@@ -446,17 +446,17 @@ __simd_callee__ inline void B128Calc(T& vSrc0, U& vSrc1, S& vSrc2, MaskReg& mask
          (RegTensor<uint32_t>&)vSrc0.reg[1], (RegTensor<uint32_t>&)vSrc1.reg[0], mask);
     Mull((RegTensor<uint32_t>&)vTmp128Mul3.reg[0], (RegTensor<uint32_t>&)vTmp128Mul3.reg[1],
          (RegTensor<uint32_t>&)vSrc0.reg[1], (RegTensor<uint32_t>&)vSrc1.reg[1], mask);
-    AddCarryOut(pTmp128Carry0, vTmp128Dst0, (RegTensor<uint32_t>&)vTmp128Mul0.reg[1],
+    Add(pTmp128Carry0, vTmp128Dst0, (RegTensor<uint32_t>&)vTmp128Mul0.reg[1],
                 (RegTensor<uint32_t>&)vTmp128Mul1.reg[0], mask);
-    AddCarryOut(pTmp128Carry1, vTmp128Dst1, vTmp128Dst0, (RegTensor<uint32_t>&)vTmp128Mul2.reg[0],
+    Add(pTmp128Carry1, vTmp128Dst1, vTmp128Dst0, (RegTensor<uint32_t>&)vTmp128Mul2.reg[0],
                 mask);
-    AddCarryOuts(pTmp128Carry0, vTmp128Dst0, (RegTensor<uint32_t>&)vTmp128Mul3.reg[0],
+    AddC(pTmp128Carry0, vTmp128Dst0, (RegTensor<uint32_t>&)vTmp128Mul3.reg[0],
                  (RegTensor<uint32_t>&)vTmp128Mul1.reg[1], pTmp128Carry0, mask);
-    AddCarryOuts(pTmp128Carry1, (RegTensor<uint32_t>&)vSrc1.reg[0], vTmp128Dst0,
+    AddC(pTmp128Carry1, (RegTensor<uint32_t>&)vSrc1.reg[0], vTmp128Dst0,
                  (RegTensor<uint32_t>&)vTmp128Mul2.reg[1], pTmp128Carry1, mask);
-    AddCarryOuts(pTmp128Carry0, vTmp128Dst0, vSrc2, (RegTensor<uint32_t>&)vTmp128Mul3.reg[1],
+    AddC(pTmp128Carry0, vTmp128Dst0, vSrc2, (RegTensor<uint32_t>&)vTmp128Mul3.reg[1],
                  pTmp128Carry0, mask);
-    AddCarryOuts(pTmp128Carry0, (RegTensor<uint32_t>&)vSrc1.reg[1], vSrc2, vTmp128Dst0,
+    AddC(pTmp128Carry0, (RegTensor<uint32_t>&)vSrc1.reg[1], vSrc2, vTmp128Dst0,
                  pTmp128Carry1, mask);
 }
 
@@ -492,9 +492,9 @@ template <typename T, typename U, typename S>
 __simd_callee__ inline void VaddUsingU32(T& vDst, U& vSrc0, S& vSrc1, MaskReg& mask)
 {
     MaskReg pTmpAdd0, pTmpAdd1;
-    AddCarryOut(pTmpAdd0, (RegTensor<uint32_t>&)vDst.reg[0], (RegTensor<uint32_t>&)vSrc0.reg[0],
+    Add(pTmpAdd0, (RegTensor<uint32_t>&)vDst.reg[0], (RegTensor<uint32_t>&)vSrc0.reg[0],
                 (RegTensor<uint32_t>&)vSrc1.reg[0], mask);
-    AddCarryOuts(pTmpAdd1, (RegTensor<uint32_t>&)vDst.reg[1], (RegTensor<uint32_t>&)vSrc0.reg[1],
+    AddC(pTmpAdd1, (RegTensor<uint32_t>&)vDst.reg[1], (RegTensor<uint32_t>&)vSrc0.reg[1],
                  (RegTensor<uint32_t>&)vSrc1.reg[1], pTmpAdd0, mask);
 }
 
@@ -1105,7 +1105,7 @@ __simd_callee__ inline void DivIEEE754FloatImpl(RegTensor<float>& dst, RegTensor
 }
 
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void DivIEEE754HalfImpl(RegTensor<half>& dst, RegTensor<half>& src0, 
+__simd_callee__ inline void DivIEEE754HalfImpl(RegTensor<half>& dst, RegTensor<half>& src0,
                                                RegTensor<half>& src1, MaskReg& mask)
 {
     constexpr uint16_t exponentExtractor = 0x83FF;
@@ -1320,7 +1320,7 @@ __simd_callee__ inline void DivImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& 
                       "only float and complex64 data type is supported in precsion mode.");
     }
     if constexpr (sprMode.algo == DivAlgo::PRECISION_1ULP_FTZ_FALSE) {
-        static_assert(SupportType<T, half, float>(), 
+        static_assert(SupportType<T, half, float>(),
                       "MicroAPI Div for PRECISION_1ULP_FTZ_FALSE only supports half/float.");
     } else if constexpr (sprMode.algo == DivAlgo::PRECISION_0ULP_FTZ_FALSE) {
         static_assert(SupportType<T, float>(), "MicroAPI Div for PRECISION_0ULP_FTZ_FALSE only supports float.");

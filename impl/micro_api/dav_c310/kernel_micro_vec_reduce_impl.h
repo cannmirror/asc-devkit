@@ -119,13 +119,13 @@ __simd_callee__ inline void ReduceMaxB64Impl(T& dstReg, T srcReg, MaskReg mask)
     if constexpr(SupportType<ActualT, uint64_t>()) {
         RegTensor<uint32_t> tmpReg0;
         RegTensor<uint32_t> tmpReg1;
-        ReduceMax<DefaultType, mode>(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[1], mask);
+        Reduce<ReduceType::MAX, DefaultType, DefaultType, mode>(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[1], mask);
         MaskReg mask0 = CreateMask<uint32_t, MaskPattern::ALL>();
         Duplicate(tmpReg1, tmpReg0, mask0);
         MaskReg mask1;
         Compare(mask1, tmpReg1, (RegTensor<uint32_t> &)srcReg.reg[1], mask);
         RegTensor<uint32_t> tmpReg2;
-        ReduceMax<DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
+        Reduce<ReduceType::MAX, DefaultType, DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
         mask0 = CreateMask<uint32_t, MaskPattern::VL1>();
         And(tmpReg1, tmpReg0, tmpReg0, mask0);
         Copy((RegTensor<uint32_t>&)dstReg.reg[1], tmpReg1);
@@ -133,13 +133,13 @@ __simd_callee__ inline void ReduceMaxB64Impl(T& dstReg, T srcReg, MaskReg mask)
     } else if constexpr(SupportType<ActualT, int64_t>()) {
         RegTensor<int32_t> tmpReg0;
         RegTensor<int32_t> tmpReg1;
-        ReduceMax<DefaultType, mode>(tmpReg0, (RegTensor<int32_t>&)srcReg.reg[1], mask);
+        Reduce<ReduceType::MAX, DefaultType, DefaultType, mode>(tmpReg0, (RegTensor<int32_t>&)srcReg.reg[1], mask);
         MaskReg mask0 = CreateMask<int32_t, MaskPattern::ALL>();
         Duplicate(tmpReg1, tmpReg0, mask0);
         MaskReg mask1;
         Compare(mask1, tmpReg1, (RegTensor<int32_t>&)srcReg.reg[1], mask);
         RegTensor<uint32_t> tmpReg2;
-        ReduceMax<DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
+        Reduce<ReduceType::MAX, DefaultType, DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
         mask0 = CreateMask<uint32_t, MaskPattern::VL1>();
         And(tmpReg1, tmpReg0, tmpReg0, mask0);
         Copy((RegTensor<int32_t>&)dstReg.reg[1], tmpReg1);
@@ -187,13 +187,13 @@ __simd_callee__ inline void ReduceMinB64Impl(T& dstReg, T srcReg, MaskReg mask)
     if constexpr(SupportType<ActualT, uint64_t>()) {
         RegTensor<uint32_t> tmpReg0;
         RegTensor<uint32_t> tmpReg1;
-        ReduceMin<DefaultType, mode>(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[1], mask);
+        Reduce<ReduceType::MIN, DefaultType, DefaultType, mode>(tmpReg0, (RegTensor<uint32_t>&)srcReg.reg[1], mask);
         MaskReg mask0 = CreateMask<uint32_t, MaskPattern::ALL>();
         Duplicate(tmpReg1, tmpReg0, mask0);
         MaskReg mask1;
         Compare(mask1, tmpReg1, (RegTensor<uint32_t>&)srcReg.reg[1], mask);
         RegTensor<uint32_t> tmpReg2;
-        ReduceMin<DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
+        Reduce<ReduceType::MIN, DefaultType, DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
         mask0 = CreateMask<uint32_t, MaskPattern::VL1>();
         And(tmpReg1, tmpReg0, tmpReg0, mask0);
         Copy((RegTensor<uint32_t>&)dstReg.reg[1], tmpReg1);
@@ -201,13 +201,13 @@ __simd_callee__ inline void ReduceMinB64Impl(T& dstReg, T srcReg, MaskReg mask)
     } else if constexpr(SupportType<ActualT, int64_t>()) {
         RegTensor<int32_t> tmpReg0;
         RegTensor<int32_t> tmpReg1;
-        ReduceMin<DefaultType, mode>(tmpReg0, (RegTensor<int32_t>&)srcReg.reg[1], mask);
+        Reduce<ReduceType::MIN, DefaultType, DefaultType, mode>(tmpReg0, (RegTensor<int32_t>&)srcReg.reg[1], mask);
         MaskReg mask0 = CreateMask<int32_t, MaskPattern::ALL>();
         Duplicate(tmpReg1, tmpReg0, mask0);
         MaskReg mask1;
         Compare(mask1, tmpReg1, (RegTensor<int32_t>&)srcReg.reg[1], mask);
         RegTensor<uint32_t> tmpReg2;
-        ReduceMin<DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
+        Reduce<ReduceType::MIN, DefaultType, DefaultType, mode>(tmpReg2, (RegTensor<uint32_t>&)srcReg.reg[0], mask1);
         mask0 = CreateMask<uint32_t, MaskPattern::VL1>();
         And(tmpReg1, tmpReg0, tmpReg0, mask0);
         Copy((RegTensor<int32_t>&)dstReg.reg[1], tmpReg1);
