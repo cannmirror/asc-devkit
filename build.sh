@@ -334,11 +334,9 @@ set_options() {
       ;;
     --build-type=*)
       BUILD_TYPE="${1#*=}"
-      shift 2
       ;;
     --build-type)
       BUILD_TYPE="$2"
-      shift 2
       ;;
     *)
       log "[ERROR] Undefined option: $1"
