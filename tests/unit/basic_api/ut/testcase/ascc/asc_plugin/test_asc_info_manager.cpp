@@ -91,7 +91,7 @@ TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs)
     std::vector<std::string> compileArgs = {"-DFFF", "-UFFF", "-UAAAA", "-DAAA","-include", "F.h", "-DSSS", "-l", "AAA",
         "-lBBB", "-DGEN_ACLRT=/tmp/sss"};
     std::vector<std::string> expectDef = {"-DFFF", "-UFFF", "-UAAAA", "-DAAA", "-DSSS", "-DGEN_ACLRT=/tmp/sss"};
-    std::vector<std::string> expectIncFiles = {"-include", "", "-include", "F.h"};
+    std::vector<std::string> expectIncFiles = {"-include", "F.h"};
     std::vector<std::string> expectLinkFiles = {"-l", "AAA", "-lBBB"};
     manager.compileArgs_ = a;   // clean up
 
@@ -113,7 +113,7 @@ TEST_F(TEST_ASC_INFO_MANAGER, asc_SetCompileArgs_with_host_options)
         "-Xhost-start", "-DBBBB", "-Xhost-end",};
     std::vector<std::string> expectDef = {"-DFFF", "-DAAA"};
     std::vector<std::string> expectHostDef = {"-DBBBB"};
-    std::vector<std::string> expectIncFiles = {"-include", ""};
+    std::vector<std::string> expectIncFiles = {};
     manager.compileArgs_ = a;   // clean up
 
     manager.SetCompileArgs(compileArgs);
