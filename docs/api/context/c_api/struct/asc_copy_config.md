@@ -8,11 +8,11 @@ asc_copy_config为数据搬运操作的控制参数。
 union asc_copy_config {
     uint64_t config;
     struct {
-        uint64_t sid: 4;
-        uint64_t n_burst: 12;
-        uint64_t burst_len: 16;
-        uint64_t src_gap: 16;
-        uint64_t dst_gap: 16;
+        uint64_t sid : 4;
+        uint64_t n_burst : 12;
+        uint64_t burst_len : 16;
+        uint64_t src_gap : 16;
+        uint64_t dst_gap : 16;
     };
 };
 ```
