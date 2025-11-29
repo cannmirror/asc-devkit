@@ -23,7 +23,7 @@ add_executable(demo
 set_target_properties(demo PROPERTIES LINKER_LANGUAGE ASC)
 
 target_include_directories(demo PUBLIC
-    ${ASCEND_CANN_PACKAGE_PATH}/include/ascendc/aicpu_api    
+    $ENV{ASCEND_INSTALL_PATH}/include/ascendc/aicpu_api   
 )
 
 target_compile_options(demo PRIVATE
