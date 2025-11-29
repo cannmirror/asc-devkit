@@ -26,7 +26,7 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 - 算子模板库：基于模板提供算子的完整实现参考，简化Tiling开发，支持用户自定义扩展。
 - Python前端：PyAsc基于Python原生接口，提供芯片底层完备编程能力，并将逐步支持Tensor Tile编程、SIMT编程等能力，实现基于Python接口开发高性能Ascend C算子。
 
-本仓主要包含Ascend C编程API（语言扩展层C API、基础API、高阶API）和必要的编译脚本，是算子开发所需的核心模块。
+本仓主要包含Ascend C编程API和必要的编译脚本，是算子开发所需的核心模块。
 
 
 ## 🔍目录结构说明
