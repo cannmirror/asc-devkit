@@ -146,9 +146,9 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
     }
 
     // Process tail folds
-    mask = MicroAPI::UpdateMask<T, Trait>(tailA);
     for (uint16_t i = 0; i < foldOne; i++) {
         for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+            mask = MicroAPI::UpdateMask<T, Trait>(tailA);
             // L0
             DataCopy(vreg0, addr + loopA * vlSize);
             DataCopy(vreg1, addr + dimA + loopA * vlSize);
@@ -160,6 +160,7 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
 
     for (uint16_t i = 0; i < foldTwo; i++) {
         for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+            mask = MicroAPI::UpdateMask<T, Trait>(tailA);
             // L0
             DataCopy(vreg0, addr + loopA * vlSize);
             DataCopy(vreg1, addr + dimA + loopA * vlSize);
@@ -176,6 +177,7 @@ __simd_vf__ inline void ReduceRAOverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
 
     for (uint16_t i = 0; i < foldThree; i++) {
         for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+            mask = MicroAPI::UpdateMask<T, Trait>(tailA);
             // L0
             DataCopy(vreg0, addr + loopA * vlSize);
             DataCopy(vreg1, addr + dimA + loopA * vlSize);
@@ -683,9 +685,9 @@ __simd_vf__ inline void ReduceRAB64ReuseSourceVF(__ubuf__ T *dstAddr, __ubuf__ T
     }
 
     // Process tail folds
-    mask = MicroAPI::UpdateMask<T, Trait>(tailA);
     for (uint16_t i = 0; i < foldOne; i++) {
         for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+            mask = MicroAPI::UpdateMask<T, Trait>(tailA);
             // L0
             DataCopy(b64Vreg0, addr + loopA * vlSize);
             DataCopy(b64Vreg1, addr + dimA + loopA * vlSize);
@@ -697,6 +699,7 @@ __simd_vf__ inline void ReduceRAB64ReuseSourceVF(__ubuf__ T *dstAddr, __ubuf__ T
 
     for (uint16_t i = 0; i < foldTwo; i++) {
         for (uint16_t loopA = 0; loopA < loopANum; loopA++) {
+            mask = MicroAPI::UpdateMask<T, Trait>(tailA);
             // L0
             DataCopy(b64Vreg0, addr + loopA * vlSize);
             DataCopy(b64Vreg1, addr + dimA + loopA * vlSize);
