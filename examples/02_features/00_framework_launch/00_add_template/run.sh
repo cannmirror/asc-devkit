@@ -107,10 +107,6 @@ function main() {
 
     # 增加自定义算子工程样例
     JSON_NAME=add_template_custom
-    rm -rf custom_op/op_host/*.cpp custom_op/op_host/*.h
-    rm -rf custom_op/op_kernel/*.cpp custom_op/op_kernel/*.h
-    cp -rf op_dev/op_host/*.cpp op_dev/op_host/*.h custom_op/op_host
-    cp -rf op_dev/op_kernel/*.cpp op_dev/op_kernel/*.h custom_op/op_kernel
 
     sed -i "s#/usr/local/Ascend/latest#$ASCEND_INSTALL_PATH#g" $(grep "/usr/local/Ascend/latest" -rl custom_op/CMakePresets.json)
 
@@ -143,10 +139,6 @@ function main() {
 
     # 编译acl可执行文件并运行
     bash op_verify/run.sh $HEIGHT $WIDTH
-
-    # 清除自定义算子工程样例
-    rm -rf custom_op/op_host/*.cpp custom_op/op_host/*.h
-    rm -rf custom_op/op_kernel/*.cpp custom_op/op_kernel/*.h
 }
 
 check_soc_version

@@ -1,9 +1,12 @@
 npu_op_kernel_sources(ascendc_kernels
-    KERNEL_DIR ./
+    OP_TYPE AddTemplateCustom
+    KERNEL_DIR ./op_kernel/
+    COMPUTE_UNIT Ascend910B1
+    KERNEL_FILE add_template_custom.cpp
 )
 
 npu_op_kernel_library(ascendc_kernels
-    SRC_BASE ${CMAKE_SOURCE_DIR}/op_kernel/
+    SRC_BASE ${CMAKE_SOURCE_DIR}/
     TILING_LIBRARY cust_optiling
 )
 
