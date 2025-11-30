@@ -19,6 +19,7 @@ if(BUILD_OPEN_PROJECT)
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/include/ge
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
