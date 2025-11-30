@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 #include "register/op_def_registry.h"
-#include "../op_kernel/add_template_custom_tiling.h"
-#include "../op_kernel/tiling_key_add_template_custom.h"
+#include "add_template_custom_tiling.h"
+#include "tiling_key_add_template_custom.h"
 
 namespace optiling {
 const uint32_t BLOCK_DIM = 8;
@@ -21,26 +21,7 @@ static ge::graphStatus TilingFunc(gert::TilingContext *context)
     ge::DataType dtype_x = context->GetInputDesc(0)->GetDataType();
     ge::DataType dtype_y = context->GetInputDesc(1)->GetDataType();
     ge::DataType dtype_z = context->GetOutputDesc(0)->GetDataType();
-    uint32_t D_T_X = C_DT_FLOAT;
-    uint32_t D_T_Y = C_DT_FLOAT;
-    uint32_t D_T_Z = C_DT_FLOAT;
-    uint32_t TILE_NUM = 1;
-    uint32_t IS_SPLIT = 0;
-    if (dtype_x == ge::DataType::DT_FLOAT) {
-        D_T_X = C_DT_FLOAT;
-    } else if (dtype_x == ge::DataType::DT_FLOAT16) {
-        D_T_X = C_DT_FLOAT16;
-    }
-    if (dtype_y == ge::DataType::DT_FLOAT) {
-        D_T_Y = C_DT_FLOAT;
-    } else if (dtype_y == ge::DataType::DT_FLOAT16) {
-        D_T_Y = C_DT_FLOAT16;
-    }
-    if (dtype_z == ge::DataType::DT_FLOAT) {
-        D_T_Z = C_DT_FLOAT;
-    } else if (dtype_z == ge::DataType::DT_FLOAT16) {
-        D_T_Z = C_DT_FLOAT16;
-    }
+    uint32_t D_T_X = static_cast<int>(dtype_x), D_T_Y = static_cast<int>(dtype_y), D_T_Z = static_cast<int>(dtype_z), TILE_NUM = 1, IS_SPLIT = 0;
     if (totalLength < MIN_LENGTH_FOR_SPLIT) {
         IS_SPLIT = 0;
         TILE_NUM = 1;
@@ -52,9 +33,7 @@ static ge::graphStatus TilingFunc(gert::TilingContext *context)
     TilingDataTemplate *tiling = context->GetTilingData<TilingDataTemplate>();
     tiling->totalLength = totalLength;
     context->GetRawTilingData()->SetDataSize(sizeof(TilingDataTemplate));
-    const uint64_t tilingKey = GET_TPL_TILING_KEY(D_T_X, D_T_Y, D_T_Z, TILE_NUM, IS_SPLIT);  // 模板参数tilingkey配置
-    context->SetTilingKey(tilingKey);
-    ASCENDC_TPL_SEL_PARAM(context, D_T_X, D_T_Y, D_T_Z, TILE_NUM, IS_SPLIT);
+    ASCENDC_TPL_SEL_PARAM(context, D_T_X, D_T_Y, D_T_Z, TILE_NUM, IS_SPLIT);    // 模板参数tilingkey配置
     size_t *currentWorkspace = context->GetWorkspaceSizes(1);
     currentWorkspace[0] = 0;
     return ge::GRAPH_SUCCESS;
