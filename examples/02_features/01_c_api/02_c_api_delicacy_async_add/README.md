@@ -3,8 +3,8 @@
 本样例采用C_API接口编写Add算子样例，基于异步搬运、计算接口和精细化同步接口实现。
 
 ## 支持的AI处理器
-- Ascend 910B
 - Ascend 910C
+- Ascend 910B
 
 ## 目录结构介绍
 ```
@@ -58,22 +58,20 @@ z = x + y
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=/usr/local/Ascend/ascend-toolkit/latest
+    export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
     ```
   - 默认路径，非root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=$HOME/Ascend/ascend-toolkit/latest
+    export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
     ```
   - 指定路径install_path，安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/ascend-toolkit/latest
+    export ASCEND_INSTALL_PATH=${install_path}/latest
     ```
   - 配置安装路径后，执行以下命令统一配置环境变量。
     ```bash
     # 配置CANN环境变量
     source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-    # 添加AscendC CMake Module搜索路径至环境变量(x86平台)
-    export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/x86_64-linux/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
     ```   
   - 样例执行
     ```bash
