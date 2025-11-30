@@ -757,8 +757,10 @@ target_include_directories(ascendc_utest_kernel PRIVATE
     ${ASCENDC_SYS_DIR}/include/experiment/runtime/
     ${ASCENDC_SYS_DIR}/include/experiment/runtime/runtime/
     ${ASCENDC_SYS_DIR}/include/experiment/msprof/
+    ${ASCENDC_SYS_DIR}/include/experiment/msprof/toolchain
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/acl/
+    ${ASCENDC_SYS_DIR}/pkg_inc/profiling/
     ${ASCENDC_DIR}/tools/build/asc_rt/
     ${ASCENDC_DIR}/tools/build/elf_tool/
 )

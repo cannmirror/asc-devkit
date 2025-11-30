@@ -8,7 +8,7 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 #include <stdio.h>
-#include "toolchain/prof_api.h"
+#include "aprof_pub.h"
 
 int32_t MsprofReportCompactInfo(uint32_t agingFlag, const VOID_PTR data, uint32_t length)
 {
@@ -26,6 +26,11 @@ int32_t MsprofReportApi(uint32_t agingFlag, const MsprofApi *api)
 }
 
 uint64_t MsprofGetHashId(const char *hashInfo, size_t length)
+{
+    return 0;
+}
+
+uint64_t MsprofStr2Id(const char *hashInfo, size_t length)
 {
     return 0;
 }
