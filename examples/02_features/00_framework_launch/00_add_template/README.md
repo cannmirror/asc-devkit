@@ -3,7 +3,6 @@
 本样例以Add算子为示例，展示了Tiling模板编程。本样例使用自定义算子工程，编译并部署自定义算子包到自定义算子库中，并调用执行自定义算子。
 
 ## 支持的AI处理器
-- Ascend 910C
 - Ascend 910B
 ## 目录结构介绍
 ```
@@ -95,7 +94,7 @@ Add算子实现了两个数据相加，返回相加结果的功能。本样例�
     ```bash
     cd ${git_clone_path}/examples/02_features/00_framework_launch/00_add_template
     ```
-    请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+    请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
       ```bash
       export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest

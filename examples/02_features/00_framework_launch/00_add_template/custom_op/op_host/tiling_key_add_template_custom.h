@@ -12,7 +12,9 @@
 #include "ascendc/host_api/tiling/template_argument.h"
 /**
 ASCENDC_TPL_ARGS_DECL(args0, ...):算子的模板参数定义, args0表示算子唯一标识, 建议与opType保持一致,后续为若干个DTYPE、FORMAT、UINT、BOOL的模板参数定义
-    ASCENDC_TPL_DTYPE_DECL(args0, ...): DTYPE类型的模板参数定义,args0表示参数名,后续若干个参数为穷举的DTYPE枚举值
+    ASCENDC_TPL_DATATYPE_DECL(args0, ...): DATATYPE类型的模板参数定义
+        args0表示参数名。
+        args1-argsn：存在两种情况，后续若干个参数为穷举的原生DATADTYPE选项，或者为对应的输入参数的索引值（使用ASCENDC_TPL_INPUT(x)进行指定，其中x为对应数值）或对应输出参数的索引值（使用ASCENDC_TPL_OUTPUT(x)进行指定，其中x为对应数值），注意：存在多个是，仅第一个生效。
     ASCENDC_TPL_FORMAT_DECL(args0, ...): FORMAT类型的模板参数定义,args0表示参数名,后续若干个参数为穷举的FORMAT枚举值
     ASCENDC_TPL_UINT_DECL(args0, args1, args2, ...): UINT类型的模板参数定义
         args0: 参数名
@@ -30,16 +32,18 @@ ASCENDC_TPL_ARGS_DECL(args0, ...):算子的模板参数定义, args0表示算子
     ASCENDC_TPL_BOOL_DECL(args0, ...): bool类型的模板参数定义,args0表示参数名,后续可自定义true、false中的一个或两个值
 */
 ASCENDC_TPL_ARGS_DECL(AddTemplateCustom, //唯一标识,建议与OpType保持一致
-ASCENDC_TPL_DATATYPE_DECL(D_T_X, C_DT_FLOAT16, C_DT_FLOAT), //编码位宽为8比特
-ASCENDC_TPL_DATATYPE_DECL(D_T_Y, C_DT_FLOAT16, C_DT_FLOAT),
-ASCENDC_TPL_DATATYPE_DECL(D_T_Z, C_DT_FLOAT16, C_DT_FLOAT),
+ASCENDC_TPL_DATATYPE_DECL(D_T_X, C_DT_FLOAT16, C_DT_FLOAT, ASCENDC_TPL_INPUT(0)), //编码位宽为8比特
+ASCENDC_TPL_DATATYPE_DECL(D_T_Y, C_DT_FLOAT16, C_DT_FLOAT, ASCENDC_TPL_INPUT(1)),
+ASCENDC_TPL_DATATYPE_DECL(D_T_Z, C_DT_FLOAT16, C_DT_FLOAT, ASCENDC_TPL_OUTPUT(0)),
 ASCENDC_TPL_UINT_DECL(TILE_NUM, ASCENDC_TPL_8_BW, ASCENDC_TPL_UI_MIX, 2, 0, 2, 3, 5, 10, 12, 13, 9, 8),//编码位宽位为用户定义的ASCENDC_TPL_8_BW比特,注意用户指定的位宽需要大于定义的参数个数
 ASCENDC_TPL_BOOL_DECL(IS_SPLIT, 0, 1), //编码位宽为1比特
 );
 /**
 ASCENDC_TPL_SEL(...):算子的模板参数整体组合,可设置多个模板参数组合
     ASCENDC_TPL_ARGS_DSEL(...):算子的模板参数组合,可设置多个参数组合
-        ASCENDC_TPL_DTYPE_SEL(args0, ...): DTYPE类型的模板参数组合,args0表示参数名,后续若干个参数为对应的ASCENDC_TPL_DTYPE_DECL定义的参数范围子集
+        ASCENDC_TPL_DATATYPE_SEL(args0, ...): DATATYPE类型的模板参数组合。
+            args0表示参数名。
+            args1-argsn：后续若干个参数为对应的ASCENDC_TPL_DATATYPE_DECL定义的参数选项范围的子集
         ASCENDC_TPL_FORMAT_SEL(args0, ...): FORMAT类型的模板参数组合,args0表示参数名,后续若干个参数为对应的ASCENDC_TPL_FORMAT_DECL定义的参数范围子集
         ASCENDC_TPL_UINT_SEL(args0, args1, args2, ...): UINT类型的模板参数定义,args0表示参数名,args1是参数的表示类型,支持的表示类型为ASCENDC_TPL_UI_RANGE,ASCENDC_TPL_UI_LIST,ASCENDC_TPL_UI_MIX,后续的数值定义参考ASCENDC_TPL_UINT_DECL的规则
         ASCENDC_TPL_BOOL_SEL(args0, ...): bool类型的模板参数定义,args0表示参数名,后续若干个参数为对应的ASCENDC_TPL_BOOL_DECL定义的参数范围子集

@@ -8,9 +8,10 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 #include "kernel_operator.h"
-#include "add_template_custom_tiling.h"
-#include "tiling_key_add_template_custom.h"
-constexpr int32_t BUFFER_NUM = 2;  // tensor num for each queue
+#include "../op_host/add_template_custom_tiling.h"
+#include "../op_host/tiling_key_add_template_custom.h"
+
+constexpr int32_t BUFFER_NUM = 2;   // tensor num for each queue
 
 template <class dtypeX, class dtypeY, class dtypeZ>
 class KernelAdd {
@@ -93,20 +94,13 @@ template <typename D_T_X, typename D_T_Y, typename D_T_Z, int TILE_NUM, int IS_S
  __global__ __aicore__ void add_template_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z, GM_ADDR workspace, GM_ADDR tiling)
 {
     REGISTER_TILING_DEFAULT(TilingDataTemplate);
-    if constexpr (std::is_same_v<D_T_X, float> && std::is_same_v<D_T_Z, float> && std::is_same_v<D_T_Z, float>) {
-        GET_TILING_DATA_WITH_STRUCT(TilingDataTemplate, tiling_data, tiling);
-        KernelAdd<float, float, float> op;
-        op.Init(x, y, z, tiling_data.totalLength, TILE_NUM);
+    GET_TILING_DATA_WITH_STRUCT(TilingDataTemplate, tiling_data, tiling);
+    KernelAdd<D_T_X, D_T_Y, D_T_Z> op;
+    op.Init(x, y, z, tiling_data.totalLength, TILE_NUM);
+
+    if (IS_SPLIT == 0) {
         op.Process1();
-    } else if constexpr (std::is_same_v<D_T_X, half> && std::is_same_v<D_T_Z, half> && std::is_same_v<D_T_Z, half>) {
-        GET_TILING_DATA_WITH_STRUCT(TilingDataTemplate, tiling_data, tiling);
-        KernelAdd<half, half, half> op;
-        if constexpr (IS_SPLIT == 0) {
-            op.Init(x, y, z, tiling_data.totalLength, TILE_NUM);
-            op.Process1();
-        } else if constexpr (IS_SPLIT == 1) {
-            op.Init(x, y, z, tiling_data.totalLength, TILE_NUM);
-            op.Process2();
-        }
+    } else if (IS_SPLIT == 1) {
+        op.Process2();
     }
 }
