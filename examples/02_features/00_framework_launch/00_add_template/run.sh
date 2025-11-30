@@ -47,25 +47,6 @@ do
     esac
 done
 
-if [ -n "$ASCEND_INSTALL_PATH" ]; then
-    _ASCEND_INSTALL_PATH=$ASCEND_INSTALL_PATH
-elif [ -n "$ASCEND_HOME_PATH" ]; then
-    _ASCEND_INSTALL_PATH=$ASCEND_HOME_PATH
-else
-    if [ -d "$HOME/Ascend/latest" ]; then
-        _ASCEND_INSTALL_PATH=$HOME/Ascend/latest
-    else
-        _ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
-    fi
-fi
-source $_ASCEND_INSTALL_PATH/bin/setenv.bash
-export ASCEND_HOME_PATH=$_ASCEND_INSTALL_PATH
-
-PYTHON_VERSION=$(python3 -V 2>&1 | awk '{print $2}' | awk -F '.' '{print $1"."$2}')
-export HI_PYTHON=python${PYTHON_VERSION}
-export PYTHONPATH=$ASCEND_INSTALL_PATH/python/site-packages:$PYTHONPATH
-export PATH=$ASCEND_INSTALL_PATH/python/site-packages/bin:$PATH
-
 # 检查当前昇腾芯片的类型
 function check_soc_version() {
     SOC_VERSION_CONCAT=`(export ASCEND_SLOG_PRINT_TO_STDOUT=0 && python3 -c '''
@@ -112,11 +93,11 @@ function main() {
 
     # 测试不同输入数据类型, 修改对应代码
     if [[ ${DTYPE} == "float16" ]]; then
-        sed -i "s/.astype(.*)/.astype(np.float16)/g" $(grep ".astype(.*)" -rl op_verify/scripts/generate_data.py)
+        sed -i "s/.astype(.*)/.astype(np.float16)/g" $(grep ".astype(.*)" -rl op_verify/scripts/gen_data.py)
         sed -i "s/aclDataType dataType =.*;/aclDataType dataType = ACL_FLOAT16;/g" $(grep "aclDataType dataType =.*;" -rl op_verify/src/main.cpp)
         sed -i "s/dtype=.*)/dtype=np.float16)/g" $(grep "dtype=.*)" -rl op_verify/scripts/verify_result.py)
     elif [[ ${DTYPE} == "float" ]]; then
-        sed -i "s/.astype(.*)/.astype(np.float32)/g" $(grep ".astype(.*)" -rl op_verify/scripts/generate_data.py)
+        sed -i "s/.astype(.*)/.astype(np.float32)/g" $(grep ".astype(.*)" -rl op_verify/scripts/gen_data.py)
         sed -i "s/aclDataType dataType =.*;/aclDataType dataType = ACL_FLOAT;/g" $(grep "aclDataType dataType =.*;" -rl op_verify/src/main.cpp)
         sed -i "s/dtype=.*)/dtype=np.float32)/g" $(grep "dtype=.*)" -rl op_verify/scripts/verify_result.py)
     else
@@ -133,7 +114,6 @@ function main() {
     echo "INFO: build and install custom op run package success!"
 
     # 编译离线om模型
-    source $ASCEND_INSTALL_PATH/vendors/customize/bin/set_env.bash
     export ASCEND_CUSTOM_OPP_PATH=$(realpath $(dirname $0))/custom_op/build_out/lib/
     atc --singleop=op_verify/scripts/${JSON_NAME}.json --output=op_verify/run_out/op_models/ --soc_version=${SOC_FULL_VERSION} --op_debug_level=0
 
