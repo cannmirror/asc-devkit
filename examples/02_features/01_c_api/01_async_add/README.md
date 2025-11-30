@@ -74,8 +74,6 @@
     ```bash
     # 配置CANN环境变量
     source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-    # 添加AscendC CMake Module搜索路径至环境变量（x86平台）
-    export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/x86_64-linux/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
     ```
 
   - 样例执行
