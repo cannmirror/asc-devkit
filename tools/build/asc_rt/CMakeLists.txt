@@ -23,6 +23,7 @@ if(BUILD_OPEN_PROJECT)
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
     ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/msprof
+    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/msprof/toolchain
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../include
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
   )
@@ -34,6 +35,7 @@ else()
     ${TOP_DIR}/metadef/inc
     ${TOP_DIR}/metadef/inc/external/
     ${TOP_DIR}/abl/msprof/inc
+    ${TOP_DIR}/abl/msprof/inc/toolchain
     ${TOP_DIR}/abl/libc_sec/include
     ${TOP_DIR}/abl/mmpa/inc
     ${TOP_DIR}/abl/slog/inc/toolchain

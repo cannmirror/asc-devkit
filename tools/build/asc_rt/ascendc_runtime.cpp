@@ -33,7 +33,7 @@
 #include "runtime/stream.h"
 #include "rt_ffts.h"
 #include "kernel.h"
-#include "toolchain/prof_api.h"
+#include "aprof_pub.h"
 #include "mmpa/mmpa_api.h"
 #include "acl/acl_rt.h"
 #include "mem.h"
@@ -321,7 +321,7 @@ static void MsprofRc(const char *name, const uint64_t timeStamp)
     contextIdInfo->ctxIds[0] = 0U;
 
     const size_t typeLen = strlen(name);
-    const uint64_t typeHash = MsprofGetHashId(name, typeLen);
+    const uint64_t typeHash = MsprofStr2Id(name, typeLen);
     contextIdInfo->opName = typeHash;
     MsprofReportAdditionalInfo(static_cast<uint32_t>(true), &info, static_cast<uint32_t>(sizeof(MsprofAdditionalInfo)));
 }
@@ -342,7 +342,7 @@ static void AscendBuildNodeBasicInfo(uint32_t blockDim, const std::pair<uint64_t
 
 static void MsprofRn(const char *name, uint32_t blockDim, const uint64_t time, uint32_t taskType)
 {
-    const uint64_t typeHash = MsprofGetHashId(name, strlen(name));
+    const uint64_t typeHash = MsprofStr2Id(name, strlen(name));
     MsprofCompactInfo nodeBasicInfo{};
     AscendBuildNodeBasicInfo(blockDim, { typeHash, typeHash }, static_cast<uint32_t>(taskType), time, nodeBasicInfo);
     MsprofReportCompactInfo(static_cast<uint32_t>(true), &nodeBasicInfo,
@@ -368,7 +368,7 @@ static void AscendReportLaunchInfo(const uint64_t beginTime, const char *const o
     MsprofApi info{};
     info.type = MSPROF_REPORT_NODE_LAUNCH_TYPE;
     const size_t typeLen = strlen(opType);
-    info.itemId = MsprofGetHashId(opType, typeLen);
+    info.itemId = MsprofStr2Id(opType, typeLen);
     info.level = MSPROF_REPORT_NODE_LEVEL;
     AscendMsprofReportApi(beginTime, info);
 }
@@ -495,7 +495,7 @@ static inline uint32_t AscendCExecutorPreportProfiling(
     const char *const opType, uint32_t blockDim, const uint32_t taskType, const uint64_t launchBeginTime)
 {
     const size_t typeLen = strlen(opType);
-    const uint64_t itemId = MsprofGetHashId(opType, typeLen);
+    const uint64_t itemId = MsprofStr2Id(opType, typeLen);
     AscendCInnerReportLaunchInfo(launchBeginTime, itemId);
     ASCENDC_ASSERT_RTOK_RETVAL(AscendCReportAdditionInfo(opType, blockDim, taskType,
         launchBeginTime + 1U, itemId));
