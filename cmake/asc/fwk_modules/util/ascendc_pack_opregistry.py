@@ -140,7 +140,7 @@ class PackKernel:
                 fd.write('#include "register/op_bin_info.h"\n')
                 fd.write('#include "register/op_lib_register.h"\n')
                 fd.write('#include <dlfcn.h>\n')
-                fd.write('#include "toolchain/slog.h"\n\n')
+                fd.write('#include "../pkg_inc/base/dlog_pub.h"\n\n')
                 fd.write(var_str)
                 fd.write('\n')
                 fd.write("#define ASCENDC_MODULE_NAME static_cast<int32_t>(ASCENDCKERNEL)\n")
