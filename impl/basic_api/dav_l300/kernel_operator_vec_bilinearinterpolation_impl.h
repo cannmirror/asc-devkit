@@ -12,8 +12,8 @@
  * \file kernel_operator_vec_bilinearinterpolation_impl.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPALATION_IMPL_H
-#define ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPALATION_IMPL_H
+#ifndef ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H
+#define ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPOLATION_IMPL_H
 #include "kernel_tensor.h"
 #if ASCENDC_CPU_DEBUG
 #include "kernel_check.h"
@@ -22,7 +22,7 @@
 #pragma begin_pipe(V)
 namespace AscendC {
 template <typename T>
-__aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dst, const LocalTensor<T> &src0,
+__simd_vf__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dst, const LocalTensor<T> &src0,
     const LocalTensor<uint32_t> &src0Offset, const LocalTensor<T> &src1, uint64_t mask, uint8_t hRepeat,
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
@@ -32,7 +32,7 @@ __aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dst, cons
 }
 
 template <typename T>
-__aicore__ inline void BilinearInterpolationCalc(LocalTensor<T> &dst, LocalTensor<T> &src0,
+__simd_vf__ inline void BilinearInterpolationCalc(LocalTensor<T> &dst, LocalTensor<T> &src0,
     LocalTensor<uint32_t> &src0Offset, LocalTensor<T> &src1, uint64_t mask[2], uint8_t hRepeat,
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)

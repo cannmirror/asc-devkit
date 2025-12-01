@@ -59,7 +59,7 @@ __aicore__ inline void CopyCbufToGmAlign(__gm__ T* dst, __cbuf__ T* src, const u
     uint32_t burstLength = blockLen * BYTE_32_ALIGN;
     uint64_t actSrcStride = srcStride;
     uint32_t actDstStride = dstStride * BYTE_32_ALIGN;
-    copy_cbuf_to_gm_align((__gm__ T*)dst, (__cbuf__ T*)src, 0, blockCount, burstLength,
+    copy_cbuf_to_gm_align((__gm__ uint8_t*)dst, (__cbuf__ uint8_t*)src, 0, blockCount, burstLength,
         actSrcStride, actDstStride);
 }
 
@@ -332,7 +332,7 @@ __aicore__ inline void DataCopyPadL12GMImpl(__gm__ T* dst, __cbuf__ T* src, cons
         AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, (uint64_t)true, intriParams);
     }
 
-    copy_cbuf_to_gm_align(dst, src, 0, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride, intriParams.dstStride);
+    copy_cbuf_to_gm_align((__gm__ uint8_t*)dst, (__cbuf__ uint8_t*)src, 0, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride, intriParams.dstStride);
 }
 
 template <typename T>
@@ -343,7 +343,7 @@ __aicore__ inline void DataCopyPadL12GMImpl(__gm__ T* dst, __cbuf__ T* src, cons
         AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, (uint64_t)true, intriParams);
     }
 
-    copy_cbuf_to_gm_align(dst, src, 0, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride, intriParams.dstStride);
+    copy_cbuf_to_gm_align((__gm__ uint8_t*)dst, (__cbuf__ uint8_t*)src, 0, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride, intriParams.dstStride);
 }
 
 template <typename T>
@@ -403,45 +403,41 @@ __aicore__ inline void DataCopyL12GMNZ2NDImpl(__gm__ T* dst, __cbuf__ T* src, co
  * Copy                                             *
  * ************************************************************************************************* */
 template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__aicore__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint64_t maskArray[],
-    const uint64_t maskCount, const uint8_t repeatTimes, const CopyRepeatParams &repeatParams,
+__simd_vf__ inline void VecCopyLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, const BasicAPIMaskStruct maskArrayStruct,
+    const uint64_t maskCount, const uint8_t repeatTimes, const CopyRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = Internal::VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = Internal::VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = Internal::VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTimes);
     MicroAPI::MaskReg maskReg;
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
     if constexpr (isNormalMode) {
-        __VEC_SCOPE__{
-            maskReg = Internal::VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
-            for (uint16_t index = 0; index < newRepeatTimes; ++index) {
-                MicroAPI::RegTensor<T> srcVreg;
-                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
-                    src + index * repeatParams.srcRepeatSize * ElePerBlkT, repeatParams.srcStride, maskReg);
-                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
-                    dst + index * repeatParams.dstRepeatSize * ElePerBlkT, srcVreg, repeatParams.dstStride, maskReg);
-            }
+        maskReg = Internal::VecMicroGetMaskReg<T, isSetMask, isNormalMode, isMaskBitMode>(maskBuf, count);
+        for (uint16_t index = 0; index < newRepeatTimes; ++index) {
+            MicroAPI::RegTensor<T> srcVreg;
+            MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(srcVreg,
+                src + index * repeatParams.srcRepeatSize * ElePerBlkT, repeatParams.srcStride, maskReg);
+            MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY>(
+                dst + index * repeatParams.dstRepeatSize * ElePerBlkT, srcVreg, repeatParams.dstStride, maskReg);
         }
     } else {
-        __VEC_SCOPE__{
-            MicroAPI::RegTensor<T> srcReg;
-            MicroAPI::MaskReg maskReg;
-            uint32_t sreg;
-            __ubuf__ T *dstTmp = dst;
-            __ubuf__ T *srcTmp = src;
-            uint32_t srcRepeatStride = repeatParams.srcStride * DEFAULT_BLK_NUM;
-            uint32_t dstRepeatStride = repeatParams.dstStride * DEFAULT_BLK_NUM;
-            sreg = static_cast<uint32_t>(count);
-            for (uint16_t i = 0; i < static_cast<uint16_t>(newRepeatTimes); ++i) {
-                    maskReg = MicroAPI::UpdateMask<T>(sreg);
-                    MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
-                    MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
-                        srcReg, src, repeatParams.srcStride, srcRepeatStride, maskReg);
-                    MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
-                        dst, srcReg, repeatParams.dstStride, dstRepeatStride, maskReg);
-            }
+        MicroAPI::RegTensor<T> srcReg;
+        MicroAPI::MaskReg maskReg;
+        uint32_t sreg;
+        __ubuf__ T *dstTmp = dst;
+        __ubuf__ T *srcTmp = src;
+        uint32_t srcRepeatStride = repeatParams.srcStride * DEFAULT_BLK_NUM;
+        uint32_t dstRepeatStride = repeatParams.dstStride * DEFAULT_BLK_NUM;
+        sreg = static_cast<uint32_t>(count);
+        for (uint16_t i = 0; i < static_cast<uint16_t>(newRepeatTimes); ++i) {
+                maskReg = MicroAPI::UpdateMask<T>(sreg);
+                MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
+                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                    srcReg, src, repeatParams.srcStride, srcRepeatStride, maskReg);
+                MicroAPI::DataCopy<T, MicroAPI::DataCopyMode::DATA_BLOCK_COPY, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
+                    dst, srcReg, repeatParams.dstStride, dstRepeatStride, maskReg);
         }
     }
 }
@@ -456,12 +452,16 @@ __aicore__ inline void VecCopyLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, c
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
- 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    BasicAPIMaskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, src, maskArray, maskCount, repeatTimes,
+        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, src, maskArrayStruct, maskCount, repeatTimes,
             repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -470,7 +470,7 @@ __aicore__ inline void VecCopyLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, c
         if constexpr (isMaskBitMode && isSetMask) {
             SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
         }
-        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, true, T>(dst, src, maskArray, maskCount, repeatTimes,
+        VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, true, T>(dst, src, maskArrayStruct, maskCount, repeatTimes,
             repeatParams, maskBuf);
     }
 }
@@ -557,8 +557,23 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
         AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, static_cast<uint64_t>(true), intriParams);
     }
-    copy_gm_to_ubuf_align(dst, src, 0, intriParams.blockCount, intriParams.blockLen, padParams.leftPadding,
-        padParams.rightPadding, static_cast<uint32_t>(intriParams.srcStride), static_cast<uint32_t>(intriParams.dstStride));
+    uint32_t uintOfBytes = (padParams.isPad) ? 1 : BYTE_32_ALIGN;
+    uint32_t burstLength = intriParams.blockCount *uintOfBytes;
+    uint64_t srcGap300 = intriParams.srcStride * uintOfBytes;
+    uint32_t dstGap300 = intriParams.dstStride;
+    if constexpr (sizeof(T) == 8) {
+        copy_gm_to_ubuf_align((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding * 2,
+            padParams.rightPadding * 2, srcGap300, dstGap300);
+    } else if constexpr (sizeof(T) == 4){
+        copy_gm_to_ubuf_align((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding,
+            padParams.rightPadding, srcGap300, dstGap300);
+    } else if constexpr (sizeof(T) == 2) {
+        copy_gm_to_ubuf_align((__ubuf__ uint16_t*)dst, (__gm__ uint16_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding,
+            padParams.rightPadding, srcGap300, dstGap300);
+    } else if constexpr (sizeof(T) == 1) {
+        copy_gm_to_ubuf_align((__ubuf__ uint8_t*)dst, (__gm__ uint8_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding,
+            padParams.rightPadding, srcGap300, dstGap300);
+    }
 }
 
 template <typename T>
@@ -572,8 +587,23 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
         AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, static_cast<uint64_t>(true), intriParams);
     }
-    copy_gm_to_ubuf_align(dst, src, 0, intriParams.blockCount, intriParams.blockLen, padParams.leftPadding,
-        padParams.rightPadding, static_cast<uint32_t>(intriParams.srcStride), static_cast<uint32_t>(intriParams.dstStride));
+    uint32_t uintOfBytes = (padParams.isPad) ? 1 : BYTE_32_ALIGN;
+    uint32_t burstLength = intriParams.blockCount * uintOfBytes;
+    uint64_t srcGap300 = intriParams.srcStride * uintOfBytes;
+    uint32_t dstGap300 = intriParams.dstStride;
+    if constexpr (sizeof(T) == 8) {
+        copy_gm_to_ubuf_align((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding * 2,
+            padParams.rightPadding * 2, srcGap300, dstGap300);
+    } else if constexpr (sizeof(T) == 4){
+        copy_gm_to_ubuf_align((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding,
+            padParams.rightPadding, srcGap300, dstGap300);
+    } else if constexpr (sizeof(T) == 2) {
+        copy_gm_to_ubuf_align((__ubuf__ uint16_t*)dst, (__gm__ uint16_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding,
+            padParams.rightPadding, srcGap300, dstGap300);
+    } else if constexpr (sizeof(T) == 1) {
+        copy_gm_to_ubuf_align((__ubuf__ uint8_t*)dst, (__gm__ uint8_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding,
+            padParams.rightPadding, srcGap300, dstGap300);
+    }
 }
 
 
@@ -635,7 +665,7 @@ __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, cons
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
         AscendCUtils::CheckGmMemOverflowNormal(dst, workSpace, false, (uint64_t)true, intriParams);
     }
-    copy_ubuf_to_gm_align(dst, src, 0, intriParams.blockCount, intriParams.blockLen,
+    copy_ubuf_to_gm_align((__gm__ uint8_t*)dst, (__ubuf__ uint8_t*)src, 0, intriParams.blockCount, intriParams.blockLen,
         static_cast<uint32_t>(intriParams.srcStride), static_cast<uint32_t>(intriParams.dstStride));
 }
 

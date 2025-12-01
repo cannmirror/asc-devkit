@@ -29,9 +29,6 @@ constexpr MicroAPI::CastTrait layoutZSatSMrgZ = {MicroAPI::RegLayout::ZERO, Micr
 constexpr MicroAPI::CastTrait layoutZSatSMrgZRndA = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
                                                      MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_ROUND};
 
-constexpr MicroAPI::CastTrait layoutZSatSMrgZRndH = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
-                                                     MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_HYBRID};
-
 constexpr MicroAPI::CastTrait layoutZSatSMrgZRndR = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT,
                                                      MicroAPI::MaskMergeMode::ZEROING, RoundMode::CAST_RINT};
 
@@ -596,7 +593,7 @@ __aicore__ inline void CastImpl(__ubuf__ U *dst, __ubuf__ T *src, const RoundMod
 }
 
 template <typename DST_TYPE, typename SRC_TYPE>
-__aicore__ inline void GenLoadL0(MicroAPI::RegTensor<SRC_TYPE> &srcVreg, __ubuf__ SRC_TYPE *&srcAddr,
+__simd_callee__ inline void GenLoadL0(MicroAPI::RegTensor<SRC_TYPE> &srcVreg, __ubuf__ SRC_TYPE *&srcAddr,
     MicroAPI::MaskReg &preg, const UnaryRepeatParams &repeatParams)
  
 {
@@ -637,7 +634,7 @@ __aicore__ inline void GenLoadL0(MicroAPI::RegTensor<SRC_TYPE> &srcVreg, __ubuf_
 }
  
 template <typename DST_TYPE, typename SRC_TYPE>
-__aicore__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::RegTensor<DST_TYPE> &dstVreg,
+__simd_callee__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::RegTensor<DST_TYPE> &dstVreg,
     MicroAPI::MaskReg &preg, const UnaryRepeatParams &repeatParams)
 {
     if constexpr (SupportType<DST_TYPE, int4b_t>() && sizeof(SRC_TYPE) == 2) {
@@ -663,7 +660,7 @@ __aicore__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::RegTens
 }
  
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
-__aicore__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask[],
+__simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const BasicAPIMaskStruct maskArrayStruct,
     uint8_t repeatTimes, const UnaryRepeatParams &repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -717,7 +714,7 @@ __aicore__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SR
 }
  
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
-__aicore__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
+__simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
     __ubuf__ uint64_t *maskBuf, uint8_t repeatTimes, const UnaryRepeatParams &repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
@@ -790,12 +787,17 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     uint8_t repeatTimes, const UnaryRepeatParams &repeatParams)
 {
     bool isCounterMode = Internal::IsCounterMode();
+    uint16_t maskArraySize = (mask == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    BasicAPIMaskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = mask[i];
+    }
     if (isCounterMode) {
         __ubuf__ uint64_t *maskBuf = nullptr;
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
-        VF_CALL<CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+        CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask[0], maskBuf, repeatTimes, repeatParams);
     } else {
             if constexpr (isSetMask) {
@@ -805,8 +807,8 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
                     SetVectorMask<DST_TYPE>(mask[1], mask[0]);
                 }
             }
-            VF_CALL<CastIntrinsicsImplVF2<DST_TYPE, SRC_TYPE, roundMode>>(
-                dst, src, mask, repeatTimes, repeatParams);
+            CastIntrinsicsImplVF2<DST_TYPE, SRC_TYPE, roundMode>(
+                dst, src, maskArrayStruct, repeatTimes, repeatParams);
     }
 }
  
@@ -889,8 +891,8 @@ __aicore__ inline void CastImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, 
 }
 
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
-__aicore__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
-    uint8_t repeatTimes, const UnaryRepeatParams &repeatParams)
+__simd_vf__ inline void CastIntrinsicsImplVF1(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
+    uint8_t repeatTimes, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -965,10 +967,10 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
-        VF_CALL<CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+        CastIntrinsicsImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask, maskBuf, repeatTimes, repeatParams);
     } else {
-        VF_CALL<CastIntrinsicsImplVF1<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
+        CastIntrinsicsImplVF1<DST_TYPE, SRC_TYPE, roundMode, isSetMask>(
                 dst, src, mask, repeatTimes, repeatParams);
     }
 }
@@ -1161,7 +1163,7 @@ __aicore__ inline void SetDeqScaleImpl(T config)
 
 // Truncate::Level2
 template <typename T, RoundMode roundMode>
-__aicore__ inline void TruncateImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t calCount)
+__simd_vf__ inline void TruncateImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint32_t calCount)
 {
     static_assert(SupportType<T, half, float, bfloat16_t>(), "Failed to check dtype in Truncate, current api "
         "support dtype is src and dst both: half, float, bfloat16_t.");
@@ -1171,17 +1173,14 @@ __aicore__ inline void TruncateImpl(__ubuf__ T *dst, __ubuf__ T *src, const uint
     constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     const uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
     uint32_t sreg = static_cast<uint32_t>(calCount);
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<T> vDstReg;
-        MicroAPI::RegTensor<T> vSrcReg;
-        MicroAPI::MaskReg mask;
-        for (uint16_t i = 0; i < repeatTimes; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(vSrcReg, src + i * sregLower);
-            MicroAPI::Truncate<T, roundMode>(vDstReg, vSrcReg, mask);
-            MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
-        }
+    MicroAPI::RegTensor<T> vDstReg;
+    MicroAPI::RegTensor<T> vSrcReg;
+    MicroAPI::MaskReg mask;
+    for (uint16_t i = 0; i < repeatTimes; ++i) {
+        mask = MicroAPI::UpdateMask<T>(sreg);
+        MicroAPI::DataCopy(vSrcReg, src + i * sregLower);
+        MicroAPI::Truncate<T, roundMode>(vDstReg, vSrcReg, mask);
+        MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
     }
 }
 

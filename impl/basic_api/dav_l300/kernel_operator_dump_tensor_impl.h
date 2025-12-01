@@ -214,7 +214,7 @@ __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& tensor, uint
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DESC_POS) = desc;
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_BUFFERID_POS) = 0;
     *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_POSITION_POS) = position;
-    *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_RSV_POS) = 0;
+    *((__gm__ uint32_t *)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DUMP_SIZE_POS) = 0;
     // update block info
     ptr->dumpAddr += sizeof(DumpMessageHead);
     ptr->dumpOffset -= sizeof(DumpMessageHead);
@@ -318,7 +318,7 @@ __aicore__ inline void DumpBlockInfoImpl(const GlobalTensor<T>& globTensor, uint
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DESC_POS) = desc;
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_BUFFERID_POS) = 0;
     *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_POSITION_POS) = position;
-    *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_RSV_POS) = 0;
+    *((__gm__ uint32_t*)ptr->dumpAddr + DUMP_MESSAGE_HEAD_DUMP_SIZE_POS) = 0;
 
     ptr->dumpAddr += sizeof(DumpMessageHead);
     ptr->dumpOffset -= sizeof(DumpMessageHead);

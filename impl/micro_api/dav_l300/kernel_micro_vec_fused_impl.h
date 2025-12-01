@@ -21,13 +21,13 @@ namespace AscendC {
 namespace MicroAPI {
 
 template <typename T, typename U, typename ScalarT, RegLayout layout, typename RegT, typename RegU>
-__aicore__ inline void FusedMulsCastImpl(RegT &dstReg, RegU &srcReg, ScalarT scalarValue, MaskReg &mask)
+__simd_callee__ inline void FusedMulsCastImpl(RegT &dstReg, RegU &srcReg, ScalarT scalarValue, MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "FusedMulsCast is not supported on current device!"); });
 }
 
 template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void FusedMulDstAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void FusedMulDstAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -38,7 +38,7 @@ __aicore__ inline void FusedMulDstAddImpl(RegT &dstReg, RegT &srcReg0, RegT &src
 }
 
 template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -49,7 +49,7 @@ __aicore__ inline void FusedAbsSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg
 }
 
 template <typename T, typename U, RegLayout layout, MaskMergeMode mode, typename RegT, typename RegU>
-__aicore__ inline void FusedExpSubImpl(RegT &dstReg, RegU &srcReg0, RegU &srcReg1, MaskReg &mask)
+__simd_callee__ inline void FusedExpSubImpl(RegT &dstReg, RegU &srcReg0, RegU &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vsub(srcReg0, srcReg0, srcReg1, mask, modeValue);

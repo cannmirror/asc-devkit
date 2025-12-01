@@ -256,12 +256,9 @@ __aicore__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, RegT &srcReg0, RegT &
     constexpr auto distValue = std::integral_constant<::DistVST, static_cast<::DistVST>(GetStoreDist<T, dist>())>();
     static_assert(SupportBytes<ActualT, 1, 2, 4>(), "DataCopy only support type b8/b16/b32 on current device");
     if constexpr (std::is_same_v<T, bool>) {
-        vsts((RegTensor<int8_t> &)srcReg0,
-            (RegTensor<int8_t> &)srcReg1,
-            (__ubuf__ int8_t *)dstUbAddr,
-            0,
-            distValue,
-            mask);
+        vsts((RegTensor<int8_t> &)srcReg0, (RegTensor<int8_t> &)srcReg1, (__ubuf__ int8_t *)dstUbAddr, 0, distValue, mask);
+    } else if constexpr (SupportBytes<ActualT, 4>()) {
+        vsts((RegTensor<int32_t> &)srcReg0, (RegTensor<int32_t> &)srcReg1, (__ubuf__ int32_t *)dstUbAddr, 0, distValue, mask);
     } else {
         vsts(srcReg0, srcReg1, dstUbAddr, 0, distValue, mask);
     }
@@ -650,7 +647,7 @@ __aicore__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, MaskReg &mask, AddrRe
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
 __aicore__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, MaskReg &mask)
 {
-    static_assert(SupportBytes<T, 1, 2, 4>(), "DataCopy only support type b8/b16/b32 on current device");
+    static_assert(SupportBytes<T, 1, 2, 4, 8>(), "DataCopy only support type b8/b16/b32/b64 on current device");
     static_assert(SupportEnum<dist, MaskDist::DIST_NORM, MaskDist::DIST_PACK>(),
         "DataCopy not support this dist on current device");
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();

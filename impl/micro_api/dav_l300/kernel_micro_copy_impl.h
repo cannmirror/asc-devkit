@@ -19,7 +19,7 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void CopyImpl(RegT &dstReg, RegT &srcReg, MaskReg mask)
+__simd_callee__ inline void CopyImpl(RegT &dstReg, RegT &srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -29,7 +29,7 @@ __aicore__ inline void CopyImpl(RegT &dstReg, RegT &srcReg, MaskReg mask)
     vmov(dstReg, srcReg, mask, modeValue);
 }
 
-template <typename T = DefaultType, typename RegT> __aicore__ inline void CopyImpl(RegT &dstReg, RegT &srcReg)
+template <typename T = DefaultType, typename RegT> __simd_callee__ inline void CopyImpl(RegT &dstReg, RegT &srcReg)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");

@@ -92,7 +92,7 @@ template <MaskMergeMode mode> __aicore__ inline constexpr auto GetMaskMergeMode(
 #endif
 }
 
-template <MemType src, MemType dst> __aicore__ inline void LocalMemBarImpl()
+template <MemType src, MemType dst> __simd_callee__ inline void LocalMemBarImpl()
 {
     if constexpr (src == MemType::VEC_STORE && dst == MemType::VEC_LOAD) {
         mem_bar(VST_VLD);
@@ -121,6 +121,56 @@ template <MemType src, MemType dst> __aicore__ inline void LocalMemBarImpl()
     } else {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current MemType Combination is not supported!"); });
     }
+}
+
+template <typename RegT2, typename RegT1, typename ShortType>
+__simd_callee__ inline void TraitOneToTaitTwoTmpl(RegT2 &dstReg, RegT1 &srcReg)
+{
+    using ActualT1 = typename RegT1::ActualT;
+    using ActualT2 = typename RegT2::ActualT;
+    static_assert(CheckRegTrait<RegT2, RegTraitNumTwo>() && CheckRegTrait<RegT1, RegTraitNumOne>(),
+        "RegT2 should be RegTraitNumTwo and RegT1 should be RegTraitNumOne");
+    static_assert(sizeof(ActualT2) == (sizeof(ShortType) * 2) && sizeof(ActualT1) == (sizeof(ShortType) * 2),
+        "RegT2 and RegT1 should be 2 times of shortType lenth");
+    RegTensor<ShortType> zeroReg;
+    MaskReg maskFull = CreateMask<ShortType, MaskPattern::ALL>();
+    Duplicate(zeroReg, 0, maskFull);
+    DeInterleave((RegTensor<ShortType> &)dstReg.reg[0], (RegTensor<ShortType> &)dstReg.reg[1],
+        (RegTensor<ShortType> &)srcReg, zeroReg);
+}
+
+template <typename RegT1, typename RegT2, typename ShortType>
+__simd_callee__ inline void TraitTwoToTaitOneTmpl(RegT1 &dstReg, RegT2 &srcReg)
+{
+    using ActualT1 = typename RegT1::ActualT;
+    using ActualT2 = typename RegT2::ActualT;
+    static_assert(CheckRegTrait<RegT1, RegTraitNumOne>() && CheckRegTrait<RegT2, RegTraitNumTwo>(),
+        "RegT1 should be RegTraitNumOne and RegT2 should be RegTraitNumTwo");
+    static_assert(sizeof(ActualT2) == (sizeof(ShortType) * 2) && sizeof(ActualT1) == (sizeof(ShortType) * 2),
+        "RegT2 and RegT1 should be 2 times of shortType lenth");
+    RegTensor<ShortType> dstRegShortFake;
+    Interleave((RegTensor<ShortType> &)dstReg, dstRegShortFake, (RegTensor<ShortType> &)srcReg.reg[0],
+        (RegTensor<ShortType> &)srcReg.reg[1]);
+}
+
+template <typename RegT2, typename RegT1> __simd_callee__ inline void B64TraitOneToTaitTwo(RegT2 &dstReg, RegT1 &srcReg)
+{
+    TraitOneToTaitTwoTmpl<RegT2, RegT1, uint32_t>(dstReg, srcReg);
+}
+
+template <typename RegT1, typename RegT2> __simd_callee__ inline void B64TraitTwoToTaitOne(RegT1 &dstReg, RegT2 &srcReg)
+{
+    TraitTwoToTaitOneTmpl<RegT1, RegT2, uint32_t>(dstReg, srcReg);
+}
+
+template <typename RegT2, typename RegT1> __simd_callee__ inline void B32TraitOneToTaitTwo(RegT2 &dstReg, RegT1 &srcReg)
+{
+    TraitOneToTaitTwoTmpl<RegT2, RegT1, uint16_t>(dstReg, srcReg);
+}
+
+template <typename RegT1, typename RegT2> __simd_callee__ inline void B32TraitTwoToTaitOne(RegT1 &dstReg, RegT2 &srcReg)
+{
+    TraitTwoToTaitOneTmpl<RegT1, RegT2, uint16_t>(dstReg, srcReg);
 }
 } // namespace MicroAPI
 } // namespace AscendC

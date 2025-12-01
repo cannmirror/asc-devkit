@@ -37,11 +37,11 @@ template <typename T> constexpr __aicore__ inline void CheckDuplicateL0Supported
 }
 namespace Internal {
 template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__aicore__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T& scalarValue, const uint64_t maskArray[],
+__simd_vf__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T& scalarValue, const BasicAPIMaskStruct maskArrayStruct,
     const uint64_t maskCount, const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
@@ -72,12 +72,16 @@ __aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValu
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
- 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    BasicAPIMaskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VF_CALL<VecDupLevel0VFImpl<isSetMask, isMaskBitMode, false, T>>(dst, scalarValue, maskArray, maskCount,
+        VecDupLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, scalarValue, maskArrayStruct, maskCount,
             repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -102,7 +106,7 @@ __aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValu
             }
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VF_CALL<VecDupLevel0VFImpl<isSetMask, isMaskBitMode, true, T>>(dst, scalarValue, maskArray, maskCount,
+        VecDupLevel0VFImpl<isSetMask, isMaskBitMode, true, T>(dst, scalarValue, maskArrayStruct, maskCount,
             repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
         if constexpr (isMaskBitMode && SupportBytes<T, 1>()) {
             AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
@@ -174,6 +178,346 @@ __aicore__ inline void DuplicateImpl(__ubuf__ T* dstLocal, const T& scalarValue,
     CheckDuplicateL0SupportedType<T>();
     Internal::VecDupLevel0Template<isSetMask, true>(dstLocal, scalarValue, mask, 0,
                                         repeatTime, dstBlockStride, dstRepeatStride);
+}
+
+template <typename T, bool hasUnalign = true>
+__simd_vf__ inline void InterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+    __ubuf__ T *src1Local, const int32_t calCount)
+{
+    MicroAPI::RegTensor<T> src0Reg, src1Reg, dst0Reg, dst1Reg;
+    // split two part to process
+    uint32_t halfCount = static_cast<uint32_t>(calCount) / 2;
+    MicroAPI::MaskReg preg;
+
+    uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    uint16_t repeatTime = CeilDivision(halfCount, sregLower);
+    uint32_t sreg = calCount;
+    // first process dst0Local
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        MicroAPI::DataCopy(src0Reg, src0Local + i * sregLower);
+        MicroAPI::DataCopy(src1Reg, src1Local + i * sregLower);
+        MicroAPI::Interleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+        // two dst reg all need update mask
+        preg = MicroAPI::UpdateMask<T>(sreg);
+        MicroAPI::DataCopy(dst0Local + i * 2 * sregLower, dst0Reg, preg);
+        preg = MicroAPI::UpdateMask<T>(sreg);
+        MicroAPI::DataCopy(dst0Local + i * 2 * sregLower + sregLower, dst1Reg, preg);
+    }
+    // second process dst1Local, second element num is same as first element num
+    if constexpr (!hasUnalign) {
+        sreg = calCount;
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            MicroAPI::DataCopy(src0Reg, src0Local + halfCount + i * sregLower);
+            MicroAPI::DataCopy(src1Reg, src1Local + halfCount + i * sregLower);
+            MicroAPI::Interleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            // two dst reg all need update mask
+            preg = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower, dst0Reg, preg);
+            preg = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower + sregLower, dst1Reg, preg);
+        }
+    } else {
+        sreg = calCount;
+        MicroAPI::UnalignReg ureg;
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            // unalign process, copy element is sregeLower
+            MicroAPI::DataCopyUnAlignPre(ureg, src0Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlign(src0Reg, ureg, src0Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlignPre(ureg, src1Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlign(src1Reg, ureg, src1Local + halfCount + i * sregLower);
+            MicroAPI::Interleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            // two dst reg all need update mask
+            preg = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower, dst0Reg, preg);
+            preg = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower + sregLower, dst1Reg, preg);
+        }
+    }
+}
+
+template <typename T, bool hasUnalign = true>
+__simd_vf__ inline void InterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+    __ubuf__ T *src1Local, const int32_t calCount)
+{
+    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> src0Reg, src1Reg, dst0Reg, dst1Reg;
+    uint32_t halfCount = static_cast<uint32_t>(calCount) / 2;
+    MicroAPI::MaskReg preg;
+
+    uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH * 2 / sizeof(T));
+    uint16_t repeatTime = CeilDivision(halfCount, sregLower);
+    uint32_t sreg = calCount;
+    // first process dst0Local
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        MicroAPI::DataCopy(src0Reg, src0Local + i * sregLower);
+        MicroAPI::DataCopy(src1Reg, src1Local + i * sregLower);
+        MicroAPI::Interleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+        preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+        MicroAPI::DataCopy(dst0Local + i * 2 * sregLower, dst0Reg, preg);
+        preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+        MicroAPI::DataCopy(dst0Local + i * 2 * sregLower + sregLower, dst1Reg, preg);
+    }
+    // second process dst1Local, second element num is same as first element num
+    sreg = calCount;
+    if constexpr (!hasUnalign) {
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            MicroAPI::DataCopy(src0Reg, src0Local + halfCount + i * sregLower);
+            MicroAPI::DataCopy(src1Reg, src1Local + halfCount + i * sregLower);
+            MicroAPI::Interleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower, dst0Reg, preg);
+            preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower + sregLower, dst1Reg, preg);
+        }
+    } else {
+        MicroAPI::UnalignReg ureg;
+        MicroAPI::RegTensor<T> src0RegTmp0, src0RegTmp1, src1RegTmp0, src1RegTmp1;
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            // unalign process, copy element is sregeLower
+            MicroAPI::DataCopyUnAlignPre(ureg, src0Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlign(src0RegTmp0, ureg, src0Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlignPre(ureg, src0Local + halfCount + i * sregLower + VECTOR_REG_WIDTH / sizeof(T));
+            MicroAPI::DataCopyUnAlign(src0RegTmp1, ureg,
+                src0Local + halfCount + i * sregLower + VECTOR_REG_WIDTH / sizeof(T));
+            MicroAPI::DataCopyUnAlignPre(ureg, src1Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlign(src1RegTmp0, ureg, src1Local + halfCount + i * sregLower);
+            MicroAPI::DataCopyUnAlignPre(ureg, src1Local + halfCount + i * sregLower + VECTOR_REG_WIDTH / sizeof(T));
+            MicroAPI::DataCopyUnAlign(src1RegTmp1, ureg,
+                src1Local + halfCount + i * sregLower + VECTOR_REG_WIDTH / sizeof(T));
+            // simulate dual intlv to combine two regs
+            MicroAPI::DeInterleave((MicroAPI::RegTensor<uint32_t> &)src0Reg.reg[0],
+                (MicroAPI::RegTensor<uint32_t> &)src0Reg.reg[1], (MicroAPI::RegTensor<uint32_t> &)src0RegTmp0,
+                (MicroAPI::RegTensor<uint32_t> &)src0RegTmp1);
+            MicroAPI::DeInterleave((MicroAPI::RegTensor<uint32_t> &)src1Reg.reg[0],
+                (MicroAPI::RegTensor<uint32_t> &)src1Reg.reg[1], (MicroAPI::RegTensor<uint32_t> &)src1RegTmp0,
+                (MicroAPI::RegTensor<uint32_t> &)src1RegTmp1);
+            // dual intlv
+            MicroAPI::Interleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower, dst0Reg, preg);
+            preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(dst1Local + i * 2 * sregLower + sregLower, dst1Reg, preg);
+        }
+    }
+}
+
+template <typename T>
+__aicore__ inline void InterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+    __ubuf__ T *src1Local, const int32_t calCount)
+{
+    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+        uint64_t, int64_t>(),
+        "current data type is not supported on current device!");
+    ASCENDC_ASSERT((calCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "calCount % 2 = 0!"); });
+    if constexpr (sizeof(T) != 8) {
+        if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
+            InterleaveImplNormal<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        } else {
+            InterleaveImplNormal<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        }
+    } else {
+        if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
+            InterleaveImplB64<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        } else {
+            InterleaveImplB64<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        }
+    }
+}
+
+template <typename T, bool hasUnalign = true, bool hasSrc1 = true>
+__simd_vf__ inline void DeInterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+    __ubuf__ T *src1Local, const int32_t calCount)
+{
+    MicroAPI::RegTensor<T> src0Reg, src1Reg, dst0Reg, dst1Reg;
+    uint32_t halfCount = static_cast<uint32_t>(calCount) / 2;
+    MicroAPI::MaskReg preg;
+
+    uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    uint16_t repeatTime = CeilDivision(halfCount, sregLower);
+    uint32_t sreg = halfCount;
+    // first process src0Local
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        MicroAPI::DataCopy(src0Reg, src0Local + i * 2 * sregLower);
+        MicroAPI::DataCopy(src1Reg, src0Local + i * 2 * sregLower + sregLower);
+        MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+        preg = MicroAPI::UpdateMask<T>(sreg);
+        MicroAPI::DataCopy(dst0Local + i * sregLower, dst0Reg, preg);
+        MicroAPI::DataCopy(dst1Local + i * sregLower, dst1Reg, preg);
+    }
+    if constexpr (!hasSrc1) {
+        return;
+    }
+    // second process src1Local
+    if constexpr (!hasUnalign) {
+        sreg = halfCount;
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            MicroAPI::DataCopy(src0Reg, src1Local + i * 2 * sregLower);
+            MicroAPI::DataCopy(src1Reg, src1Local + i * 2 * sregLower + sregLower);
+            MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            preg = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(dst0Local + halfCount + i * sregLower, dst0Reg, preg);
+            MicroAPI::DataCopy(dst1Local + halfCount + i * sregLower, dst1Reg, preg);
+        }
+    } else {
+        MicroAPI::UnalignReg ureg;
+        // split main and tail, because dst copy element is diffrent with main block
+        for (uint16_t i = 0; i < repeatTime - 1; ++i) {
+            MicroAPI::DataCopy(src0Reg, src1Local + i * 2 * sregLower);
+            MicroAPI::DataCopy(src1Reg, src1Local + i * 2 * sregLower + sregLower);
+            MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            __ubuf__ T *dst0LocalTmp = dst0Local + halfCount + i * sregLower;
+            __ubuf__ T *dst1LocalTmp = dst1Local + halfCount + i * sregLower;
+            // unalign process, copy element is sregeLower
+            MicroAPI::DataCopyUnAlign(dst0LocalTmp, dst0Reg, ureg, sregLower);
+            MicroAPI::DataCopyUnAlignPost(dst0LocalTmp, ureg, 0);
+            MicroAPI::DataCopyUnAlign(dst1LocalTmp, dst1Reg, ureg, sregLower);
+            MicroAPI::DataCopyUnAlignPost(dst1LocalTmp, ureg, 0);
+        }
+        MicroAPI::DataCopy(src0Reg, src1Local + (repeatTime - 1) * 2 * sregLower);
+        MicroAPI::DataCopy(src1Reg, src1Local + (repeatTime - 1) * 2 * sregLower + sregLower);
+        MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+        // cal tail num
+        uint32_t tailNum = halfCount - (repeatTime - 1) * sregLower;
+        __ubuf__ T *dst0LocalTmp = dst0Local + halfCount + (repeatTime - 1) * sregLower;
+        __ubuf__ T *dst1LocalTmp = dst1Local + halfCount + (repeatTime - 1) * sregLower;
+        MicroAPI::DataCopyUnAlign(dst0LocalTmp, dst0Reg, ureg, tailNum);
+        MicroAPI::DataCopyUnAlignPost(dst0LocalTmp, ureg, 0);
+        MicroAPI::DataCopyUnAlign(dst1LocalTmp, dst1Reg, ureg, tailNum);
+        MicroAPI::DataCopyUnAlignPost(dst1LocalTmp, ureg, 0);
+    }
+}
+
+template <typename T, bool hasUnalign = true, bool hasSrc1 = true>
+__simd_vf__ inline void DeInterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+    __ubuf__ T *src1Local, const int32_t calCount)
+{
+    MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> src0Reg, src1Reg, dst0Reg, dst1Reg;
+    uint32_t halfCount = static_cast<uint32_t>(calCount) / 2;
+    MicroAPI::MaskReg b64Preg;
+
+    constexpr uint32_t sregLower = static_cast<uint32_t>(VECTOR_REG_WIDTH * 2 / sizeof(T));
+    uint16_t repeatTime = CeilDivision(halfCount, sregLower);
+    // first process src0Local
+    uint32_t sreg = halfCount;
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        MicroAPI::DataCopy(src0Reg, src0Local + i * 2 * sregLower);
+        MicroAPI::DataCopy(src1Reg, src0Local + i * 2 * sregLower + sregLower);
+        MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+        b64Preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+        MicroAPI::DataCopy(dst0Local + i * sregLower, dst0Reg, b64Preg);
+        MicroAPI::DataCopy(dst1Local + i * sregLower, dst1Reg, b64Preg);
+    }
+    if constexpr (!hasSrc1) {
+        return;
+    }
+    // second process src1Local
+    if constexpr (!hasUnalign) {
+        sreg = halfCount;
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            MicroAPI::DataCopy(src0Reg, src1Local + i * 2 * sregLower);
+            MicroAPI::DataCopy(src1Reg, src1Local + i * 2 * sregLower + sregLower);
+            MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            b64Preg = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(dst0Local + halfCount + i * sregLower, dst0Reg, b64Preg);
+            MicroAPI::DataCopy(dst1Local + halfCount + i * sregLower, dst1Reg, b64Preg);
+        }
+    } else {
+        MicroAPI::UnalignReg ureg;
+        // split main and tail
+        MicroAPI::RegTensor<T> dst0RegTmp0, dst0RegTmp1, dst1RegTmp0, dst1RegTmp1;
+        for (uint16_t i = 0; i < repeatTime - 1; ++i) {
+            // main block process
+            MicroAPI::DataCopy(src0Reg, src1Local + i * 2 * sregLower);
+            MicroAPI::DataCopy(src1Reg, src1Local + i * 2 * sregLower + sregLower);
+            // dual deintlv
+            MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+            __ubuf__ T *dst0LocalTmp = dst0Local + halfCount + i * sregLower;
+            __ubuf__ T *dst1LocalTmp = dst1Local + halfCount + i * sregLower;
+            // simulate dual intlv to combine two regs
+            MicroAPI::Interleave((MicroAPI::RegTensor<uint32_t> &)dst0RegTmp0,
+                (MicroAPI::RegTensor<uint32_t> &)dst0RegTmp1, (MicroAPI::RegTensor<uint32_t> &)dst0Reg.reg[0],
+                (MicroAPI::RegTensor<uint32_t> &)dst0Reg.reg[1]);
+            MicroAPI::Interleave((MicroAPI::RegTensor<uint32_t> &)dst1RegTmp0,
+                (MicroAPI::RegTensor<uint32_t> &)dst1RegTmp1, (MicroAPI::RegTensor<uint32_t> &)dst1Reg.reg[0],
+                (MicroAPI::RegTensor<uint32_t> &)dst1Reg.reg[1]);
+            // unalign process, copy element is sregeLower / 2
+            MicroAPI::DataCopyUnAlign(dst0LocalTmp, dst0RegTmp0, ureg, sregLower / 2);
+            MicroAPI::DataCopyUnAlignPost(dst0LocalTmp, ureg, 0);
+            MicroAPI::DataCopyUnAlign(dst0LocalTmp, dst0RegTmp1, ureg, sregLower / 2);
+            MicroAPI::DataCopyUnAlignPost(dst0LocalTmp, ureg, 0);
+            MicroAPI::DataCopyUnAlign(dst1LocalTmp, dst1RegTmp0, ureg, sregLower / 2);
+            MicroAPI::DataCopyUnAlignPost(dst1LocalTmp, ureg, 0);
+            MicroAPI::DataCopyUnAlign(dst1LocalTmp, dst1RegTmp1, ureg, sregLower / 2);
+            MicroAPI::DataCopyUnAlignPost(dst1LocalTmp, ureg, 0);
+        }
+        // tail block process, because dst copy element is diffrent with main block
+        // vld dual src
+        MicroAPI::DataCopy(src0Reg, src1Local + (repeatTime - 1) * 2 * sregLower);
+        MicroAPI::DataCopy(src1Reg, src1Local + (repeatTime - 1) * 2 * sregLower + sregLower);
+        // dual deintlv
+        MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
+        uint32_t tailNum = halfCount - (repeatTime - 1) * sregLower;
+        uint16_t tailNumMain = tailNum;
+        uint16_t tailNumRemain = 0;
+        // cal tail main and remain
+        if (tailNum > VECTOR_REG_WIDTH / sizeof(T)) {
+            tailNumMain = VECTOR_REG_WIDTH / sizeof(T);
+            tailNumRemain = tailNum - tailNumMain;
+        }
+        // cal dst unalign addr
+        __ubuf__ T *dst0LocalTmp = dst0Local + halfCount + (repeatTime - 1) * sregLower;
+        __ubuf__ T *dst1LocalTmp = dst1Local + halfCount + (repeatTime - 1) * sregLower;
+        // simulate dual intlv to combine two regs
+        MicroAPI::Interleave((MicroAPI::RegTensor<uint32_t> &)dst0RegTmp0, (MicroAPI::RegTensor<uint32_t> &)dst0RegTmp1,
+            (MicroAPI::RegTensor<uint32_t> &)dst0Reg.reg[0], (MicroAPI::RegTensor<uint32_t> &)dst0Reg.reg[1]);
+        MicroAPI::Interleave((MicroAPI::RegTensor<uint32_t> &)dst1RegTmp0, (MicroAPI::RegTensor<uint32_t> &)dst1RegTmp1,
+            (MicroAPI::RegTensor<uint32_t> &)dst1Reg.reg[0], (MicroAPI::RegTensor<uint32_t> &)dst1Reg.reg[1]);
+        // unalign vst dst0 and dst1 same time and split main and remain
+        MicroAPI::DataCopyUnAlign(dst0LocalTmp, dst0RegTmp0, ureg, tailNumMain);
+        MicroAPI::DataCopyUnAlign(dst0LocalTmp, dst0RegTmp1, ureg, tailNumRemain);
+        MicroAPI::DataCopyUnAlignPost(dst0LocalTmp, ureg, 0);
+        MicroAPI::DataCopyUnAlign(dst1LocalTmp, dst1RegTmp0, ureg, tailNumMain);
+        MicroAPI::DataCopyUnAlign(dst1LocalTmp, dst1RegTmp1, ureg, tailNumRemain);
+        MicroAPI::DataCopyUnAlignPost(dst1LocalTmp, ureg, 0);
+    }
+}
+
+template <typename T>
+__aicore__ inline void DeInterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
+    __ubuf__ T *src1Local, const int32_t calCount)
+{
+    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+        uint64_t, int64_t>(),
+        "current data type is not supported on current device!");
+    ASCENDC_ASSERT((calCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "calCount % 2 = 0!"); });
+    if constexpr (sizeof(T) != 8) {
+        if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
+            DeInterleaveImplNormal<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        } else {
+            DeInterleaveImplNormal<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        }
+    } else {
+        if (calCount * sizeof(T) / 2 % ONE_BLOCK_SIZE == 0) {
+            DeInterleaveImplB64<T, false>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        } else {
+            DeInterleaveImplB64<T, true>(dst0Local, dst1Local, src0Local, src1Local, calCount);
+        }
+    }
+}
+
+template <typename T>
+__aicore__ inline void DeInterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *srcLocal,
+    const int32_t srcCount)
+{
+    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+        uint64_t, int64_t>(),
+        "current data type is not supported on current device!");
+    ASCENDC_ASSERT((srcCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "srcCount % 2 = 0!"); });
+    // no unalign problem
+    if constexpr (sizeof(T) != 8) {
+        DeInterleaveImplNormal<T, false, false>(dst0Local, dst1Local, srcLocal, nullptr, srcCount);
+    } else {
+        DeInterleaveImplB64<T, false, false>(dst0Local, dst1Local, srcLocal, nullptr, srcCount);
+    }
 }
 
 } // namespace AscendC

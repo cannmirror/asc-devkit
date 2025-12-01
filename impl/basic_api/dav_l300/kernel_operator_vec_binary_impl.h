@@ -366,7 +366,7 @@ __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__
  * ************************************************************************************************* */
 // MulAddDst::Level 2
 template <typename T, typename U>
-__aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const int32_t calCount)
+__simd_vf__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const int32_t calCount)
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>(),
         "Failed to check dtype in MulAddDst, current api "
@@ -374,43 +374,37 @@ __aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__
     uint32_t sreg = static_cast<uint32_t>(calCount);
     constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(T);
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<U> src0Reg, src1Reg;
-        MicroAPI::RegTensor<T> dstReg;
-        MicroAPI::MaskReg mask;
-        for (uint16_t i = 0; i < repeatTime; ++i) {
-            mask = MicroAPI::UpdateMask<T>(sreg);
-            MicroAPI::DataCopy(src0Reg, src0 + i * numPerRep);
-            MicroAPI::DataCopy(src1Reg, src1 + i * numPerRep);
-            MicroAPI::DataCopy(dstReg, dst + i * numPerRep);
-            MicroAPI::MulAddDst(dstReg, src0Reg, src1Reg, mask);
-            MicroAPI::DataCopy(dst + i * numPerRep, dstReg, mask);
-        }
+    MicroAPI::RegTensor<U> src0Reg, src1Reg;
+    MicroAPI::RegTensor<T> dstReg;
+    MicroAPI::MaskReg mask;
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        mask = MicroAPI::UpdateMask<T>(sreg);
+        MicroAPI::DataCopy(src0Reg, src0 + i * numPerRep);
+        MicroAPI::DataCopy(src1Reg, src1 + i * numPerRep);
+        MicroAPI::DataCopy(dstReg, dst + i * numPerRep);
+        MicroAPI::MulAddDst(dstReg, src0Reg, src1Reg, mask);
+        MicroAPI::DataCopy(dst + i * numPerRep, dstReg, mask);
     }
 }
 
-__aicore__ inline void MulAddDstImpl(__ubuf__ float* dst, __ubuf__ half* src0, __ubuf__ half* src1,
+__simd_vf__ inline void MulAddDstImpl(__ubuf__ float* dst, __ubuf__ half* src0, __ubuf__ half* src1,
     const int32_t calCount)
 {
     uint32_t sregB32 = static_cast<uint32_t>(calCount);     // updated when float calculation
     constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(float);     // each repeat 64 half->float to calculate
     const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<half> src0Reg, src1Reg;
-        MicroAPI::RegTensor<float> dstReg, castReg1, castReg2;
-        MicroAPI::MaskReg maskB32;                              // updated when float calculation
-        for (uint16_t i = 0; i < repeatTime; ++i) {
-            maskB32 = MicroAPI::UpdateMask<float>(sregB32);
-            MicroAPI::DataCopy<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src0Reg, src0 + i * numPerRep); // 64 half
-            MicroAPI::DataCopy<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src1Reg, src1 + i * numPerRep); // 64 half
-            MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg1, src0Reg, maskB32);           // 64 float
-            MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg2, src1Reg, maskB32);           // 64 float
-            MicroAPI::DataCopy(dstReg, dst + i * numPerRep);
-            MicroAPI::MulAddDst(dstReg, castReg1, castReg2, maskB32);
-            MicroAPI::DataCopy(dst + i * numPerRep, dstReg, maskB32);
-        }
+    MicroAPI::RegTensor<half> src0Reg, src1Reg;
+    MicroAPI::RegTensor<float> dstReg, castReg1, castReg2;
+    MicroAPI::MaskReg maskB32;                              // updated when float calculation
+    for (uint16_t i = 0; i < repeatTime; ++i) {
+        maskB32 = MicroAPI::UpdateMask<float>(sregB32);
+        MicroAPI::DataCopy<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src0Reg, src0 + i * numPerRep); // 64 half
+        MicroAPI::DataCopy<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src1Reg, src1 + i * numPerRep); // 64 half
+        MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg1, src0Reg, maskB32);           // 64 float
+        MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg2, src1Reg, maskB32);           // 64 float
+        MicroAPI::DataCopy(dstReg, dst + i * numPerRep);
+        MicroAPI::MulAddDst(dstReg, castReg1, castReg2, maskB32);
+        MicroAPI::DataCopy(dst + i * numPerRep, dstReg, maskB32);
     }
 }
 
@@ -439,9 +433,9 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
     const uint8_t repeatTimes, const BinaryRepeatParams &repeatParams)
 {
-    static_assert(SupportType<T, half, float, bfloat16_t>(),
+    static_assert(SupportType<T, half, float>(),
         "Failed to check dtype in FusedMulAdd, current api support dtype "
-        "combination is src and dst both: half/float/bfloat16_t.");
+        "combination is src and dst both: half/float.");
     constexpr auto func = MicroAPI::FusedMulDstAdd<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, true, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
         mask, 0, repeatTimes, repeatParams);
@@ -451,58 +445,52 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
     const uint8_t repeatTimes, const BinaryRepeatParams &repeatParams)
 {
-    static_assert(SupportType<T, half, float, bfloat16_t>(),
+    static_assert(SupportType<T, half, float>(),
         "Failed to check dtype in FusedMulAdd, current api support dtype "
-        "combination is src and dst both: half/float/bfloat16_t.");
+        "combination is src and dst both: half/float.");
     constexpr auto func = MicroAPI::FusedMulDstAdd<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
     Internal::VecBinaryImplTemplate<func, isSetMask, false, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
         nullptr, mask, repeatTimes, repeatParams);
 }
 
 template <typename T, bool isSetMask = true>
-__aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const int32_t &calCount)
+__simd_vf__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
+    const int32_t calCount)
 {
-    static_assert(SupportType<T, half, float, bfloat16_t, uint64_t, int64_t>(), "Failed to check dtype in FusedMulAdd,"
-        "current api support dtype combination is src and dst both: half / float / bfloat16_t / uint64_t / int64_t.");
+    static_assert(SupportType<T, half, float>(), "Failed to check dtype in FusedMulAdd,"
+        "current api support dtype combination is src and dst both: half / float.");
     uint32_t sreg = static_cast<uint32_t>(calCount);
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg1;
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-            MicroAPI::MaskReg mask;
-            for (uint16_t i = 0; i < repeatTimes; ++i) {
-                mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-                MicroAPI::DataCopy(vSrcReg0, src0 + i * sregLower);
-                MicroAPI::DataCopy(vSrcReg1, src1 + i * sregLower);
-                MicroAPI::DataCopy(vDstReg0, dst + i * sregLower);
-                MicroAPI::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
-                MicroAPI::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
-                MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
-            }
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg1;
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
+        MicroAPI::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(vSrcReg0, src0 + i * sregLower);
+            MicroAPI::DataCopy(vSrcReg1, src1 + i * sregLower);
+            MicroAPI::DataCopy(vDstReg0, dst + i * sregLower);
+            MicroAPI::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
+            MicroAPI::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
+            MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
         }
     } else {
         constexpr uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
         const uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, repeatStride));
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T> src0Reg;
-            MicroAPI::RegTensor<T> src1Reg;
-            MicroAPI::RegTensor<T> dstReg;
-            MicroAPI::MaskReg mask;
-            for (uint16_t i = 0; i < repeatTimes; ++i) {
-                mask = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::DataCopy(src0Reg, src0 + i * repeatStride);
-                MicroAPI::DataCopy(src1Reg, src1 + i * repeatStride);
-                MicroAPI::DataCopy(dstReg, dst + i * repeatStride);
-                MicroAPI::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
-                MicroAPI::DataCopy(dst + i * repeatStride, dstReg, mask);
-            }
+        MicroAPI::RegTensor<T> src0Reg;
+        MicroAPI::RegTensor<T> src1Reg;
+        MicroAPI::RegTensor<T> dstReg;
+        MicroAPI::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            mask = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(src0Reg, src0 + i * repeatStride);
+            MicroAPI::DataCopy(src1Reg, src1 + i * repeatStride);
+            MicroAPI::DataCopy(dstReg, dst + i * repeatStride);
+            MicroAPI::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
+            MicroAPI::DataCopy(dst + i * repeatStride, dstReg, mask);
         }
     }
 }
@@ -567,8 +555,8 @@ __aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
  * ************************************************************************************************* */
 // SubRelu::Level 2
 template <typename T>
-__aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const int32_t &calCount)
+__simd_vf__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
+    const int32_t calCount)
 {
     static_assert(SupportType<T, half, float, int16_t, uint64_t, int64_t>(), "Failed to check dtype in SubRelu, "
         "current api support dtype combination is src and dst both: half / float / int16_t / uint64_t / int64_t.");
@@ -577,36 +565,30 @@ __aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
     if constexpr (sizeof(T) == 8) {
         constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
         const uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg;
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
-            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
-            MicroAPI::MaskReg mask;
-            for (uint16_t i = 0; i < repeatTimes; ++i) {
-                mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
-                MicroAPI::DataCopy(vSrcReg0, src0 + i * sregLower);
-                MicroAPI::DataCopy(vSrcReg1, src1 + i * sregLower);
-                MicroAPI::Sub(vDstReg, vSrcReg0, vSrcReg1, mask);
-                MicroAPI::Maxs(vDstReg, vDstReg, scalarValue, mask);
-                MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
-            }
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg;
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
+        MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
+        MicroAPI::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+            MicroAPI::DataCopy(vSrcReg0, src0 + i * sregLower);
+            MicroAPI::DataCopy(vSrcReg1, src1 + i * sregLower);
+            MicroAPI::Sub(vDstReg, vSrcReg0, vSrcReg1, mask);
+            MicroAPI::Maxs(vDstReg, vDstReg, scalarValue, mask);
+            MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
         }
     } else {
         constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(T);
         const uint16_t repeatTimes = static_cast<uint16_t>(CeilDivision(calCount, numPerRep));
-        __VEC_SCOPE__
-        {
-            MicroAPI::RegTensor<T> dstReg, src0Reg, src1Reg;
-            MicroAPI::MaskReg mask;
-            for (uint16_t i = 0; i < repeatTimes; ++i) {
-                mask = MicroAPI::UpdateMask<T>(sreg);
-                MicroAPI::DataCopy(src0Reg, src0 + i * numPerRep);
-                MicroAPI::DataCopy(src1Reg, src1 + i * numPerRep);
-                MicroAPI::Sub(dstReg, src0Reg, src1Reg, mask);
-                MicroAPI::Maxs(dstReg, dstReg, scalarValue, mask);
-                MicroAPI::DataCopy(dst + i * numPerRep, dstReg, mask);
-            }
+        MicroAPI::RegTensor<T> dstReg, src0Reg, src1Reg;
+        MicroAPI::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTimes; ++i) {
+            mask = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(src0Reg, src0 + i * numPerRep);
+            MicroAPI::DataCopy(src1Reg, src1 + i * numPerRep);
+            MicroAPI::Sub(dstReg, src0Reg, src1Reg, mask);
+            MicroAPI::Maxs(dstReg, dstReg, scalarValue, mask);
+            MicroAPI::DataCopy(dst + i * numPerRep, dstReg, mask);
         }
     }
 }

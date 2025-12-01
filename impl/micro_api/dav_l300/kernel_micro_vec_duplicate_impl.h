@@ -20,7 +20,7 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename T1, typename RegT>
-__aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue)
+__simd_callee__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -30,7 +30,7 @@ __aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue)
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename T1, typename RegT>
-__aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue, MaskReg &mask)
+__simd_callee__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -43,7 +43,7 @@ __aicore__ inline void DuplicateImpl(RegT &dstReg, T1 scalarValue, MaskReg &mask
 
 template <typename T = DefaultType, HighLowPart pos = HighLowPart::LOWEST, MaskMergeMode mode = MaskMergeMode::ZEROING,
     typename RegT>
-__aicore__ inline void DuplicateImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+__simd_callee__ inline void DuplicateImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -57,7 +57,7 @@ __aicore__ inline void DuplicateImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void InterleaveImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg0, RegT &srcReg1)
+__simd_callee__ inline void InterleaveImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg0, RegT &srcReg1)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -66,7 +66,7 @@ __aicore__ inline void InterleaveImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void DeInterleaveImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg0, RegT &srcReg1)
+__simd_callee__ inline void DeInterleaveImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg0, RegT &srcReg1)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
