@@ -52,7 +52,7 @@ PIPE_TYPE_S
 ```cpp
 // 将CTRL[48]设置为非饱和模式
 uint64_t ori_config = asc_get_ctrl();
-uint64_t mask = (uint64_t(1) << 49);
+uint64_t mask = (static_cast<uint64_t>(1) << 49);
 uint64_t config = ori_config | mask;
 asc_set_ctrl(config);
 ```
