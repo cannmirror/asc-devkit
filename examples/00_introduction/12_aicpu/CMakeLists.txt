@@ -23,10 +23,6 @@ add_executable(demo
 
 set_target_properties(demo PROPERTIES LINKER_LANGUAGE ASC)
 
-target_include_directories(demo PUBLIC
-    ${ASCEND_CANN_PACKAGE_PATH}/include/ascendc/aicpu_api    
-)
-
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )

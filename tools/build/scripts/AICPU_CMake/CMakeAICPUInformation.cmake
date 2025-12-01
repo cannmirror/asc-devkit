@@ -31,9 +31,11 @@ if(NOT DEFINED CMAKE_EXECUTABLE_RUNTIME_AICPU_FLAG)
 endif()
 
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_LOWER_PROCESSOR)
-set(kernel_compile_options_list -O2 -c -std=c++17 -fvisibility=default -fvisibility-inlines-hidden 
-    -D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE 
-    --cce-aicpu-L$ENV{ASCEND_HOME_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/lib64/device/lib64 --cce-aicpu-laicpu_api 
+set(kernel_compile_options_list -O2 -c -std=c++17 -fvisibility=default -fvisibility-inlines-hidden
+    -D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -D_GNU_SOURCE
+    -I$ENV{ASCEND_HOME_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/asc/include/aicpu_api
+    --cce-aicpu-L$ENV{ASCEND_HOME_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/lib64/device/lib64 
+    --cce-aicpu-laicpu_api
     --cce-aicpu-toolkit-path=$ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/bin
     --cce-aicpu-sysroot=$ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/sysroot
     -isystem $ENV{ASCEND_HOME_PATH}/toolkit/toolchain/hcc/aarch64-target-linux-gnu/include
