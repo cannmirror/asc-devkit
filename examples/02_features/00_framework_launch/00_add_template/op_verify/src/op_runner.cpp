@@ -14,8 +14,6 @@
 #include "acl/acl_op_compiler.h"
 #include "common.h"
 
-using namespace std;
-
 extern bool g_isDevice;
 
 OpRunner::OpRunner(OperatorDesc *opDesc) : opDesc_(opDesc)
