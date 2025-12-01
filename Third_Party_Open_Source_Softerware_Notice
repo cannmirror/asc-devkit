@@ -134,6 +134,82 @@ Copyright 2018 Google Inc.
 Copyright 2016 Ismael Jimenez Martinez
 Copyright 2021 Google Inc.
 Copyright 2017 Roman Lebedev
+
+This project includes code snippets from the following open source projects:
+
+Software:samples 0.2.0
+Official Repository: https://github.com/Ascend/samples/
+Usage:
+examples/00_introduction/01_add/basic_api_memory_allocator_add/data_utils.h
+examples/00_introduction/02_matmul/normal_matmul/data_utils.h
+examples/00_introduction/03_matmulleakyrelu/data_utils.h
+examples/00_introduction/05_broadcast/data_utils.h
+examples/00_introduction/06_reduce/data_utils.h
+examples/00_introduction/08_unaligned_abs/data_utils.h
+examples/00_introduction/09_unaligned_reducemin/data_utils.h
+examples/00_introduction/10_unaligned_wholereducesum/data_utils.h
+examples/00_introduction/11_vectoradd/data_utils.h
+examples/01_utilities/00_printf/data_utils.h
+examples/01_utilities/01_assert/data_utils.h
+examples/01_utilities/02_dumptensor/data_utils.h
+examples/01_utilities/03_cpudebug/data_utils.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/common.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/src/common.cpp
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/operator_desc.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/op_runner.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/op_runner.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/operator_desc.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/src/op_runner.cpp
+examples/03_libraries/00_addcdivcustom/data_utils.h
+examples/04_best_practices/00_group_matmul/data_utils.h
+cmake/asc/fwk_modules/util/gen_ops_filter.sh
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+
+Software:canncamp 29aa8e4
+Official Repository: https://gitee.com/ascend/canncamp
+Usage:
+cmake/asc/fwk_modules/util/insert_op_info.py
+cmake/asc/fwk_modules/util/parse_ini_to_json.py
+Copyright Notice(s): 
+Copyright (C) 2020-2021. Huawei Technologies Co., Ltd
+
+Software:akg 0.5.0-beta
+Official Repository: https://github.com/mindspore-ai/akg
+Usage:
+tests/unit/basic_api/ut/testcase/c_api/stub/cce_stub.h
+tests/unit/basic_api/ut/stub/stub_fun.h
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+
+Software:akg 1.2.0
+Official Repository: https://github.com/mindspore-ai/akg
+Usage:
+impl/adv_api/detail/math/math_constant_util.h
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+
+Software:123 0.3.0
+Official Repository: https://github.com/coldenheart/123
+Usage:
+examples/02_features/00_framework_launch/00_add_template/op_verify/src/main.cpp
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+
+Software:tensorflow 43812c0
+Official Repository: https://gitee.com/ascend/tensorflow/repository
+Usage:
+scripts/package/scripts/run_asc-devkit_install.sh
+Copyright Notice(s): 
+Copyright (C) 2019-2020. Huawei Technologies Co., Ltd
+
+Software:metadef fedff4f
+Official Repository: https://gitee.com/ascend/metadef/repository
+Usage:
+scripts/package/scripts/run_asc-devkit_install.sh
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+
 License: Apache 2.0 with LLVM Exception
 ==============================================================================
 The LLVM Project is under the Apache License v2.0 with LLVM Exceptions:
