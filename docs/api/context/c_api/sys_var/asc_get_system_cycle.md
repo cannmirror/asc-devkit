@@ -37,9 +37,9 @@ PIPE_TYPE_S
 
 ```cpp
 asc_sync_notify(PIPE_TYPE_V, PIPE_TYPE_S, 0);
-int64_t systemCycleBefore = asc_get_system_cycle(); // 计算操作指令前的cycle数
+int64_t system_cycle_before = asc_get_system_cycle(); // 计算操作指令前的cycle数
 ......// 进行PIPE_V流水的计算操作
 asc_sync_notify(PIPE_TYPE_V, PIPE_TYPE_S, 0);
-int64_t systemCycleAfter = asc_get_system_cycle(); // 计算操作指令后的cycle数
-int64_t GetBlockNumCycle = systemCycleAfter - systemCycleBefore; // 执行Add指令所用的cycle数
+int64_t system_cycle_after = asc_get_system_cycle(); // 计算操作指令后的cycle数
+int64_t total_cycle = system_cycle_after - system_cycle_before; // 执行Add指令所用的cycle数
 ```

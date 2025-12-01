@@ -22,9 +22,9 @@ __aicore__ inline void asc_sync_notify(Pipe pipe, TPipe tpipe, int id)
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :--- | :--- |
-| pipe | 输入 | 源流水线类型 |
-| tpipe | 输入 | 目标流水线类型 |
-| id | 输入 | 同步ID |
+| pipe | 输入 | 源流水线类型。 |
+| tpipe | 输入 | 目标流水线类型。 |
+| id | 输入 | 同步ID。 |
 
 ## 返回值说明
 
