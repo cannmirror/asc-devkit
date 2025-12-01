@@ -383,13 +383,6 @@ __aicore__ inline void SetCubeStrideParaImpl(uint64_t config)
     });
 }
 
-__aicore__ inline void SetCubeStrideParaImpl(const CubeStrideParams &params)
-{
-    ASCENDC_ASSERT((false), {
-        KERNEL_LOG(KERNEL_ERROR, "unsupported SetCubeStridePara on this version");
-    });
-}
-
 /* **************************************************************************************************
  * LoadData Register                                           *
  * ************************************************************************************************* */

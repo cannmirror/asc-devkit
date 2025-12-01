@@ -20,7 +20,7 @@ namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, HistogramsBinType mode, HistogramsType type,
     typename RegT, typename RegU>
-__aicore__ inline void HistogramsImpl(RegU &dstReg, RegT &srcReg, MaskReg &mask)
+__simd_callee__ inline void HistogramsImpl(RegU &dstReg, RegT &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;

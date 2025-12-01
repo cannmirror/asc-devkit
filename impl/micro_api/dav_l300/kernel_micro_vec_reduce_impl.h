@@ -20,7 +20,7 @@ namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
     typename DstRegT, typename SrcRegT>
-__aicore__ inline void ReduceSumImpl(DstRegT &dstReg, SrcRegT srcReg, MaskReg mask)
+__simd_callee__ inline void ReduceSumImpl(DstRegT &dstReg, SrcRegT srcReg, MaskReg mask)
 {
     using ActualDstRegT = typename DstRegT::ActualT;
     using ActualSrcRegT = typename SrcRegT::ActualT;
@@ -36,7 +36,7 @@ __aicore__ inline void ReduceSumImpl(DstRegT &dstReg, SrcRegT srcReg, MaskReg ma
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ReduceMaxImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
+__simd_callee__ inline void ReduceMaxImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -48,7 +48,7 @@ __aicore__ inline void ReduceMaxImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ReduceMinImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
+__simd_callee__ inline void ReduceMinImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -60,7 +60,7 @@ __aicore__ inline void ReduceMinImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ReduceSumWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
+__simd_callee__ inline void ReduceSumWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -71,7 +71,7 @@ __aicore__ inline void ReduceSumWithDataBlockImpl(RegT &dstReg, RegT srcReg, Mas
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ReduceMaxWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
+__simd_callee__ inline void ReduceMaxWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -82,7 +82,7 @@ __aicore__ inline void ReduceMaxWithDataBlockImpl(RegT &dstReg, RegT srcReg, Mas
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void ReduceMinWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
+__simd_callee__ inline void ReduceMinWithDataBlockImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -93,7 +93,7 @@ __aicore__ inline void ReduceMinWithDataBlockImpl(RegT &dstReg, RegT srcReg, Mas
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void PairReduceSumImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
+__simd_callee__ inline void PairReduceSumImpl(RegT &dstReg, RegT srcReg, MaskReg mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");

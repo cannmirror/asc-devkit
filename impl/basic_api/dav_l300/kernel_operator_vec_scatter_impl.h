@@ -39,135 +39,123 @@ constexpr MicroAPI::CastTrait castTraitOdd = { MicroAPI::RegLayout::ONE, MicroAP
     MicroAPI::MaskMergeMode::ZEROING };
 
 template <typename T>
-__aicore__ inline void ScatterImplB16(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
+__simd_vf__ inline void ScatterImplB16(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
     const uint32_t dstBaseOffset, const uint32_t count)
 {
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint16_t> indexU16;
-        MicroAPI::RegTensor<uint32_t> indexRegSec;
-        MicroAPI::RegTensor<uint16_t> lowerU16Reg;
-        MicroAPI::RegTensor<uint16_t> highU16Reg;
-        MicroAPI::MaskReg preg;
-        uint32_t sregPlt = static_cast<uint32_t>(count);
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-        uint16_t repeatTime = CeilDivision(count, srcRep128);
-        for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
-            preg = MicroAPI::UpdateMask<T>(sregPlt);
-            MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
-            MicroAPI::DataCopy<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16Reg, indexReg, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16Reg, indexRegSec, indexMask);
-            MicroAPI::DeInterleave(lowerU16Reg, highU16Reg, lowerU16Reg, highU16Reg);
-            MicroAPI::Select(indexU16, lowerU16Reg, highU16Reg, selectMask);
-            MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRep128);
-            MicroAPI::DataCopyScatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, preg);
-        }
+    MicroAPI::RegTensor<T> srcReg;
+    MicroAPI::RegTensor<uint32_t> indexReg;
+    MicroAPI::RegTensor<uint16_t> indexU16;
+    MicroAPI::RegTensor<uint32_t> indexRegSec;
+    MicroAPI::RegTensor<uint16_t> lowerU16Reg;
+    MicroAPI::RegTensor<uint16_t> highU16Reg;
+    MicroAPI::MaskReg preg;
+    uint32_t sregPlt = static_cast<uint32_t>(count);
+    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
+    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
+    uint16_t repeatTime = CeilDivision(count, srcRep128);
+    for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
+        preg = MicroAPI::UpdateMask<T>(sregPlt);
+        MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
+        MicroAPI::DataCopy<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
+        MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
+        MicroAPI::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
+        MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16Reg, indexReg, indexMask);
+        MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16Reg, indexRegSec, indexMask);
+        MicroAPI::DeInterleave(lowerU16Reg, highU16Reg, lowerU16Reg, highU16Reg);
+        MicroAPI::Select(indexU16, lowerU16Reg, highU16Reg, selectMask);
+        MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRep128);
+        MicroAPI::DataCopyScatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, preg);
     }
 }
 
 template <typename T, bool isNormalMode = true, bool isMaskBitMode = true>
-__aicore__ inline void ScatterImplB16(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
+__simd_vf__ inline void ScatterImplB16(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
     const uint32_t dstLength, const uint32_t dstBaseOffset, const uint64_t mask, const uint8_t repeatTime,
     const uint8_t srcRepStride)
 {
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<uint32_t> indexRegSec;
-        MicroAPI::RegTensor<uint16_t> indexU16;
-        MicroAPI::RegTensor<uint16_t> lowerU16;
-        MicroAPI::RegTensor<uint16_t> highU16;
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg b16SrcMask;
-        uint32_t maskV = static_cast<uint32_t>(mask);
-        if constexpr (isNormalMode) {
-            if constexpr (isMaskBitMode) {
-                b16SrcMask = MicroAPI::MoveMask<T>();
-                MicroAPI::MaskPack(b16SrcMask, b16SrcMask);
-                MicroAPI::MaskUnPack(b16SrcMask, b16SrcMask);
-            } else {
-                b16SrcMask = MicroAPI::UpdateMask<T>(maskV);
-            }
+    MicroAPI::RegTensor<uint32_t> indexReg;
+    MicroAPI::RegTensor<uint32_t> indexRegSec;
+    MicroAPI::RegTensor<uint16_t> indexU16;
+    MicroAPI::RegTensor<uint16_t> lowerU16;
+    MicroAPI::RegTensor<uint16_t> highU16;
+    MicroAPI::RegTensor<T> srcReg;
+    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
+    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
+    MicroAPI::MaskReg b16SrcMask;
+    uint32_t maskV = static_cast<uint32_t>(mask);
+    if constexpr (isNormalMode) {
+        if constexpr (isMaskBitMode) {
+            b16SrcMask = MicroAPI::MoveMask<T>();
+            MicroAPI::MaskPack(b16SrcMask, b16SrcMask);
+            MicroAPI::MaskUnPack(b16SrcMask, b16SrcMask);
+        } else {
+            b16SrcMask = MicroAPI::UpdateMask<T>(maskV);
         }
-        for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); i++) {
-            if constexpr (!isNormalMode) {
-                b16SrcMask = MicroAPI::UpdateMask<T>(maskV);
-            }
-            MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
-            MicroAPI::DataCopy<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
-            MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
-            MicroAPI::DeInterleave(lowerU16, highU16, lowerU16, highU16);
-            MicroAPI::Select(indexU16, lowerU16, highU16, selectMask);
-            MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRepStride * b16BlkElems);
-            MicroAPI::DataCopyScatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, b16SrcMask);
+    }
+    for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); i++) {
+        if constexpr (!isNormalMode) {
+            b16SrcMask = MicroAPI::UpdateMask<T>(maskV);
         }
+        MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + 2 * i * indexRepElems);
+        MicroAPI::DataCopy<uint32_t>(indexRegSec, dstOffsetLocal + (2 * i + 1) * indexRepElems);
+        MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b16ShiftVal, indexMask);
+        MicroAPI::ShiftRights<uint32_t, int16_t>(indexRegSec, indexRegSec, b16ShiftVal, indexMask);
+        MicroAPI::Cast<uint16_t, uint32_t, castTraitEven>(lowerU16, indexReg, indexMask);
+        MicroAPI::Cast<uint16_t, uint32_t, castTraitOdd>(highU16, indexRegSec, indexMask);
+        MicroAPI::DeInterleave(lowerU16, highU16, lowerU16, highU16);
+        MicroAPI::Select(indexU16, lowerU16, highU16, selectMask);
+        MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRepStride * b16BlkElems);
+        MicroAPI::DataCopyScatter<T, uint16_t>(dstLocal + dstBaseOffset, srcReg, indexU16, b16SrcMask);
     }
 }
 
 template <typename T>
-__aicore__ inline void ScatterImplB32(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
+__simd_vf__ inline void ScatterImplB32(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
     const uint32_t dstBaseOffset, const uint32_t count)
 {
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        MicroAPI::RegTensor<T> srcReg;
-        uint32_t sregPlt = static_cast<uint32_t>(count);
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg preg;
-        uint16_t repeatTime = CeilDivision(count, srcRepElems);
+    MicroAPI::RegTensor<uint32_t> indexReg;
+    MicroAPI::RegTensor<T> srcReg;
+    uint32_t sregPlt = static_cast<uint32_t>(count);
+    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
+    MicroAPI::MaskReg preg;
+    uint16_t repeatTime = CeilDivision(count, srcRepElems);
 
-        for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
-            preg = MicroAPI::UpdateMask<T>(sregPlt);
-            MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
-            MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRepElems);
-            MicroAPI::DataCopyScatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, preg);
-        }
+    for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
+        preg = MicroAPI::UpdateMask<T>(sregPlt);
+        MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
+        MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
+        MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRepElems);
+        MicroAPI::DataCopyScatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, preg);
     }
 }
 
 template <typename T, bool isNormalMode = true, bool isMaskBitMode = true>
-__aicore__ inline void ScatterImplB32(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
+__simd_vf__ inline void ScatterImplB32(__ubuf__ T *dstLocal, __ubuf__ T *srcLocal, __ubuf__ uint32_t *dstOffsetLocal,
     const uint32_t dstLength, const uint32_t dstBaseOffset, const uint64_t mask, const uint8_t repeatTime,
     const uint8_t srcRepStride)
 {
-    __VEC_SCOPE__
-    {
-        MicroAPI::RegTensor<uint32_t> indexReg;
-        uint32_t maskV = static_cast<uint32_t>(mask);
-        MicroAPI::RegTensor<T> srcReg;
-        MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
-        MicroAPI::MaskReg b32SrcMask;
-        if constexpr (isNormalMode) {
-            if constexpr (isMaskBitMode) {
-                b32SrcMask = MicroAPI::MoveMask<T>();
-                MicroAPI::MaskPack(b32SrcMask, b32SrcMask);
-                MicroAPI::MaskUnPack(b32SrcMask, b32SrcMask);
-            } else {
-                b32SrcMask = MicroAPI::UpdateMask<T>(maskV);
-            }
+    MicroAPI::RegTensor<uint32_t> indexReg;
+    uint32_t maskV = static_cast<uint32_t>(mask);
+    MicroAPI::RegTensor<T> srcReg;
+    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint8_t>();
+    MicroAPI::MaskReg b32SrcMask;
+    if constexpr (isNormalMode) {
+        if constexpr (isMaskBitMode) {
+            b32SrcMask = MicroAPI::MoveMask<T>();
+            MicroAPI::MaskPack(b32SrcMask, b32SrcMask);
+            MicroAPI::MaskUnPack(b32SrcMask, b32SrcMask);
+        } else {
+            b32SrcMask = MicroAPI::UpdateMask<T>(maskV);
         }
-        for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); i++) {
-            if constexpr (!isNormalMode) {
-                b32SrcMask = MicroAPI::UpdateMask<T>(maskV);
-            }
-            MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
-            MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
-            MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRepStride * b32BlkElems);
-            MicroAPI::DataCopyScatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, b32SrcMask);
+    }
+    for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); i++) {
+        if constexpr (!isNormalMode) {
+            b32SrcMask = MicroAPI::UpdateMask<T>(maskV);
         }
+        MicroAPI::DataCopy<uint32_t>(indexReg, dstOffsetLocal + i * srcRepElems);
+        MicroAPI::ShiftRights<uint32_t, int16_t>(indexReg, indexReg, b32ShiftVal, indexMask);
+        MicroAPI::DataCopy<T>(srcReg, srcLocal + i * srcRepStride * b32BlkElems);
+        MicroAPI::DataCopyScatter<T, uint32_t>(dstLocal + dstBaseOffset, srcReg, indexReg, b32SrcMask);
     }
 }
 template <typename T>

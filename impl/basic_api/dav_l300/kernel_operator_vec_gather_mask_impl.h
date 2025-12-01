@@ -42,6 +42,7 @@ __aicore__ inline int64_t GetGatherMaskRemainCountImpl()
     const bool reduceMode, const uint32_t mask, const GatherMaskParams& reducev2Params, uint64_t& rsvdCnt)             \
     {                                                                                                                  \
         uint32_t blockElm = ONE_BLOCK_SIZE / sizeof(half);                                                             \
+        uint16_t loopNum = (uint16_t)reducev2Params.repeatTimes;                                                       \
         if (reduceMode) {                                                                                              \
             __VEC_SCOPE__ {                                                                                            \
                 vector_align ureg0;                                                                                    \
@@ -56,7 +57,7 @@ __aicore__ inline int64_t GetGatherMaskRemainCountImpl()
                 uint32_t strideConfig0 = (((uint32_t)reducev2Params.src0BlockStride) << 16);                           \
                 uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(half);                                                  \
                 uint16_t counterLoop = (mask + repeatElm - 1) / repeatElm;                                             \
-                for (uint16_t i = 0; i < (uint16_t)reducev2Params.repeatTimes; ++i) {                                  \
+                for (uint16_t i = 0; i < loopNum; ++i) {                                  \
                     sreg0 = mask;                                                                                      \
                     for (uint16_t j = 0; j < (uint16_t)counterLoop; ++j) {                                             \
                         preg0 = plt_b16(sreg0, POST_UPDATE);                                                           \
@@ -81,7 +82,7 @@ __aicore__ inline int64_t GetGatherMaskRemainCountImpl()
                 sprclr(SPR_AR);                                                                                        \
                 uint64_t hoist_let_var0 = ((uint64_t)dst);                                                             \
                 uint32_t strideConfig0 = (((uint32_t)reducev2Params.src0BlockStride) << 16);                           \
-                for (uint16_t i = 0; i < (uint16_t)reducev2Params.repeatTimes; ++i) {                                  \
+                for (uint16_t i = 0; i < loopNum; ++i) {                                  \
                     vsldb(vreg0, src0 + i * reducev2Params.src0RepeatStride * blockElm, strideConfig0, preg1);         \
                     plds(preg0, ((__ubuf__ uint32_t *)src1), i * reducev2Params.src1RepeatStride * 32, US);            \
                     vsqz(vreg1, vreg0, preg0, MODE_STORED);                                                            \
@@ -102,6 +103,7 @@ REGISTER_GATHER_MASK_B16(int16_t, s16)
         const bool reduceMode, const uint32_t mask, const GatherMaskParams& reducev2Params, uint64_t& rsvdCnt)         \
     {                                                                                                                  \
         uint32_t blockElm = ONE_BLOCK_SIZE / sizeof(float);                                                            \
+        uint16_t loopNum = (uint16_t)reducev2Params.repeatTimes;                                                       \
         if (reduceMode) {                                                                                              \
             __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);              \
             event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));                   \
@@ -126,7 +128,7 @@ REGISTER_GATHER_MASK_B16(int16_t, s16)
                 uint32_t strideConfig0 = (((uint32_t)reducev2Params.src0BlockStride) << 16);                           \
                 uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(float);                                                 \
                 uint16_t counterLoop= (mask + repeatElm - 1) / repeatElm;                                              \
-                for (uint16_t i = 0; i < (uint16_t)reducev2Params.repeatTimes; ++i) {                                  \
+                for (uint16_t i = 0; i < loopNum; ++i) {                                  \
                     sreg0 = mask;                                                                                      \
                     for (uint16_t j = 0; j < (uint16_t)counterLoop; ++j) {                                             \
                         preg0 = plt_b32(sreg0, POST_UPDATE);                                                           \
@@ -159,7 +161,7 @@ REGISTER_GATHER_MASK_B16(int16_t, s16)
                 sprclr(SPR_AR);                                                                                        \
                 uint64_t hoist_let_var0 = ((uint64_t)dst);                                                             \
                 uint32_t strideConfig0 = (((uint32_t)reducev2Params.src0BlockStride) << 16);                           \
-                for (uint16_t i = 0; i < (uint16_t)reducev2Params.repeatTimes; ++i) {                                  \
+                for (uint16_t i = 0; i < loopNum; ++i) {                                  \
                     vsldb(vreg0, src0 + i * reducev2Params.src0RepeatStride * blockElm, strideConfig0, preg1);         \
                     plds(preg0, ((__ubuf__ uint32_t *)src1), i*reducev2Params.src1RepeatStride * 32, US);              \
                     punpack(preg2, preg0, LOWER);                                                                      \

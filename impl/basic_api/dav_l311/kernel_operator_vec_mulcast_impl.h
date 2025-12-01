@@ -21,17 +21,17 @@
 
 #pragma begin_pipe(V)
 namespace AscendC {
-template <typename T, typename U, bool isSetMask = true>
+template <typename T, typename U>
 __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
-    const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+    const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTimes, const BinaryRepeatParams &repeatParams)
 {
     ASCENDC_ASSERT(false,
     { KERNEL_LOG(KERNEL_ERROR, "unsupported MulCast"); });
 }
 
-template <typename T, typename U, bool isSetMask = true>
+template <typename T, typename U>
 __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
-    const LocalTensor<U> &src1, uint64_t mask[2], const uint8_t repeatTime,
+    const LocalTensor<U> &src1, uint64_t mask[2], const uint8_t repeatTimes,
     const BinaryRepeatParams &repeatParams)
 {
     ASCENDC_ASSERT(false,

@@ -48,6 +48,14 @@ template <> struct TypeGet<int8_t> {
     using T = vector_s8;
 };
 
+template <> struct TypeGet<bool> {
+    using T = vector_s8;
+};
+
+template <> struct TypeGet<int4x2_t> {
+    using T = vector_s4x2;
+};
+
 using MaskReg = vector_bool;
 using UnalignReg = vector_align;
 using AddrReg = vector_address;
@@ -252,6 +260,18 @@ __aicore__ inline GM_ADDR GetUserWorkspace(GM_ADDR workspace)
     // reserved 0 Bytes
     return g_sysWorkspaceReserved;
 #endif
+}
+
+template<pipe_t AIV_PIPE = PIPE_MTE3, pipe_t AIC_PIPE = PIPE_FIX>
+__aicore__ inline void SetNextTaskStartImpl()
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported SetNextTaskStart!"); });
+}
+
+template<int8_t earlyStartConfig = -1>
+__aicore__ inline void WaitPreTaskEndImpl()
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported WaitPreTaskEnd!"); });
 }
 
 template<bool isAIVOnly = true>

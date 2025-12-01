@@ -27,9 +27,9 @@ __aicore__ inline bool IsCounterMode()
     constexpr uint32_t CTRL_COUNTER = 56;
     return ((get_ctrl() >> CTRL_COUNTER) & 0x1) == 0x1;
 }
- 
+
 template <bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
-__simd_callee__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const uint64_t maskCount,
+__aicore__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const uint64_t maskCount,
     __ubuf__ uint64_t *maskBuf)
 {
     if constexpr (isNormalMode && !isMaskBitMode && !isSetMask) { // no count, return 0
@@ -57,18 +57,18 @@ __simd_callee__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], con
     }
     return count;
 }
- 
+
 template <typename T, bool isNormalMode = true>
-__simd_callee__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t repeatTimes)
+__aicore__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t repeatTime)
 {
     if constexpr (isNormalMode) {
-        return repeatTimes;
+        return repeatTime;
     }
     return CeilDivision(count, GetVecLen() / sizeof(T));
 }
- 
+
 template <typename T, bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
-__simd_callee__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
+__aicore__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
 {
     MicroAPI::MaskReg maskReg;
     if constexpr (isNormalMode && !isMaskBitMode && !isSetMask) {
@@ -88,7 +88,7 @@ __simd_callee__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *m
     }
     return maskReg;
 }
- 
+
 enum class BinaryFuncMode {
     NORMAL,        // Add, Sub, Mul, Div, Max, Min, And, Or etc..
     DST_SRC_INPUT, // FusedMulAdd, FusedMulAddRelu, MulAddDst
@@ -102,15 +102,15 @@ enum class BinaryFuncMode {
  */
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode,
     BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T, typename U>
-__simd_vf__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const BasicAPIMaskStruct maskArrayStruct,
-    const uint64_t maskCount, const uint8_t repeatTimes, const BinaryRepeatParams &repeatParams,
+__aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTime, const BinaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
-    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
     using TT = typename Conditional<TUCompare, T, U>::type;
-    newRepeatTimes = VecMicroGetRepeatTimes<TT, isNormalMode>(count, repeatTimes);
+    newRepeatTimes = VecMicroGetRepeatTimes<TT, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
     MicroAPI::MaskReg maskRegDst;
     MicroAPI::MaskReg maskRegSrc;
@@ -153,11 +153,11 @@ __simd_vf__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubu
             dst + index * repeatParams.dstRepStride * ElePerBlkT, dstVreg, repeatParams.dstBlkStride, maskRegDst);
     }
 }
- 
+
 template <auto func, bool isSetMask, bool isMaskBitMode, BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T,
     typename U>
 __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1,
-    const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTimes,
+    const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,
     const BinaryRepeatParams &repeatParams)
 {
     constexpr bool TUCompare = sizeof(T) > sizeof(U);
@@ -168,17 +168,13 @@ __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, 
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
     __ubuf__ uint64_t *maskBuf = nullptr;
-    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
-    BasicAPIMaskStruct maskArrayStruct;
-    for (uint16_t i = 0; i < maskArraySize; i++) {
-        maskArrayStruct.maskArray[i] = maskArray[i];
-    }
+
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
             maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
         }
-        VecBinaryVFImpl<func, isSetMask, isMaskBitMode, false, funcMode, T, U>(dst, src0, src1, maskArrayStruct,
-            maskCount, repeatTimes, repeatParams, maskBuf);
+        VF_CALL<VecBinaryVFImpl<func, isSetMask, isMaskBitMode, false, funcMode, T, U>>(dst, src0, src1, maskArray,
+            maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (!isSetMask) {
             AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
         }
@@ -202,8 +198,8 @@ __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, 
             }
         }
         // when isSetMask is false, normal mode, maskBuf = nullptr, not support B8
-        VecBinaryVFImpl<func, isSetMask, isMaskBitMode, true, funcMode, T, U>(dst, src0, src1, maskArrayStruct,
-            maskCount, repeatTimes, repeatParams, maskBuf);
+        VF_CALL<VecBinaryVFImpl<func, isSetMask, isMaskBitMode, true, funcMode, T, U>>(dst, src0, src1, maskArray,
+            maskCount, repeatTime, repeatParams, maskBuf);
         if constexpr (isMaskBitMode && SupportBytes<TT, 1>()) {
             AscendC::AscendCUtils::FreeTemporaryBuffer<uint64_t>(maskBuf);
         }

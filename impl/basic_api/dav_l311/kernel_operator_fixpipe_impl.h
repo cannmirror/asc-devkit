@@ -698,6 +698,12 @@ __aicore__ inline void FixpipeL0C2L1Impl(__cbuf__ T *dst, __cc__ U *src, const F
 }
 
 template <typename T, typename U, const FixpipeConfig &config>
+__aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ T *dst, __cc__ U *src, const FixpipeParamsV220 &intriParams)
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported fixpipe"); });
+}
+
+template <typename T, typename U, const FixpipeConfig &config>
 __aicore__ inline void FixpipeL0C2L1Impl(
     __cbuf__ T *dst, __cc__ U *src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
 {

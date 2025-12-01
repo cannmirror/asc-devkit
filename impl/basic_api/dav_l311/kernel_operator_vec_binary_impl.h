@@ -19,6 +19,16 @@
 #include "kernel_operator_vec_binary_continuous_impl.h"
 
 namespace AscendC {
+
+namespace CastParam {
+constexpr MicroAPI::CastTrait mulAddDstTrait = {MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::UNKNOWN,
+    MicroAPI::MaskMergeMode::ZEROING, RoundMode::UNKNOWN};
+}
+
+const uint32_t B64_DATA_NUM_PER_REPEAT = 32;
+const uint32_t B4_BYTE_SIZE_PER_REPEAT = 64;
+const uint32_t L1_DUMP_UB_SIZE = TOTAL_UB_SIZE - 32 * 1024;
+
 // for Level 0 binary op
 #define BINARY_OP_IMPL_NOT_SUPPORT(FUNC_NAME)                                                                      \
     template <typename T, bool isSetMask = true>                                                                   \
@@ -101,141 +111,31 @@ namespace AscendC {
         }                                                                                                                   \
     }
 /* **************************************************************************************************
- * Add                                                                                              *
- * **************************************************************************************************/
-// Add::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(AddImpl)
-BINARY_OP_IMPL(AddImpl, Add, int16_t)
-BINARY_OP_IMPL(AddImpl, Add, uint16_t)
-BINARY_OP_IMPL(AddImpl, Add, int32_t)
-BINARY_OP_IMPL(AddImpl, Add, uint32_t)
-BINARY_OP_IMPL(AddImpl, Add, half)
-BINARY_OP_IMPL(AddImpl, Add, float)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(AddImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, half)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AddImpl, Add, float)
-/* **************************************************************************************************
- * Sub                                                                                              *
- * **************************************************************************************************/
-// Sub::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(SubImpl)
-BINARY_OP_IMPL(SubImpl, Sub, int16_t)
-BINARY_OP_IMPL(SubImpl, Sub, uint16_t)
-BINARY_OP_IMPL(SubImpl, Sub, int32_t)
-BINARY_OP_IMPL(SubImpl, Sub, uint32_t)
-BINARY_OP_IMPL(SubImpl, Sub, half)
-BINARY_OP_IMPL(SubImpl, Sub, float)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(SubImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, half)
-BINARY_OP_CONTINUOUS_MASK_IMPL(SubImpl, Sub, float)
-
-/* **************************************************************************************************
- * Mul                                                                                              *
- * **************************************************************************************************/
-// Mul::Level
-BINARY_OP_IMPL_NOT_SUPPORT(MulImpl)
-BINARY_OP_IMPL(MulImpl, Mul, int16_t)
-BINARY_OP_IMPL(MulImpl, Mul, uint16_t)
-BINARY_OP_IMPL(MulImpl, Mul, int32_t)
-BINARY_OP_IMPL(MulImpl, Mul, uint32_t)
-BINARY_OP_IMPL(MulImpl, Mul, half)
-BINARY_OP_IMPL(MulImpl, Mul, float)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(MulImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, half)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MulImpl, Mul, float)
-/* **************************************************************************************************
- * Div                                                                                              *
- * **************************************************************************************************/
-// Div::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(DivImpl)
-BINARY_OP_IMPL(DivImpl, Div, int16_t)
-BINARY_OP_IMPL(DivImpl, Div, uint16_t)
-BINARY_OP_IMPL(DivImpl, Div, int32_t)
-BINARY_OP_IMPL(DivImpl, Div, uint32_t)
-BINARY_OP_IMPL(DivImpl, Div, half)
-BINARY_OP_IMPL(DivImpl, Div, float)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(DivImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(DivImpl, Div, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(DivImpl, Div, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(DivImpl, Div, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(DivImpl, Div, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(DivImpl, Div, half)
-BINARY_OP_CONTINUOUS_MASK_IMPL(DivImpl, Div, float)
-
-/* **************************************************************************************************
- * Max                                                                                              *
- * **************************************************************************************************/
-// Max::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(MaxImpl)
-BINARY_OP_IMPL(MaxImpl, Max, int16_t)
-BINARY_OP_IMPL(MaxImpl, Max, uint16_t)
-BINARY_OP_IMPL(MaxImpl, Max, int32_t)
-BINARY_OP_IMPL(MaxImpl, Max, uint32_t)
-BINARY_OP_IMPL(MaxImpl, Max, half)
-BINARY_OP_IMPL(MaxImpl, Max, float)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(MaxImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, half)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MaxImpl, Max, float)
-/* **************************************************************************************************
- * Min                                                                                              *
- * **************************************************************************************************/
-// Min::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(MinImpl)
-BINARY_OP_IMPL(MinImpl, Min, int16_t)
-BINARY_OP_IMPL(MinImpl, Min, uint16_t)
-BINARY_OP_IMPL(MinImpl, Min, int32_t)
-BINARY_OP_IMPL(MinImpl, Min, uint32_t)
-BINARY_OP_IMPL(MinImpl, Min, half)
-BINARY_OP_IMPL(MinImpl, Min, float)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(MinImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, half)
-BINARY_OP_CONTINUOUS_MASK_IMPL(MinImpl, Min, float)
-/* **************************************************************************************************
  * And                                                                                              *
  * **************************************************************************************************/
 // And::Level 0
-BINARY_OP_IMPL_NOT_SUPPORT(AndImpl)
-BINARY_OP_IMPL(AndImpl, And, int16_t)
-BINARY_OP_IMPL(AndImpl, And, uint16_t)
-BINARY_OP_IMPL(AndImpl, And, int32_t)
-BINARY_OP_IMPL(AndImpl, And, uint32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL_NOT_SUPPORT(AndImpl)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AndImpl, And, int8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AndImpl, And, uint8_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AndImpl, And, int16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AndImpl, And, uint16_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AndImpl, And, int32_t)
-BINARY_OP_CONTINUOUS_MASK_IMPL(AndImpl, And, uint32_t)
+// BINARY_OP_IMPL_NOT_SUPPORT(AndImpl)
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void AndImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, int16_t, uint16_t, uint32_t, int32_t>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void AndImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, int16_t, uint16_t, uint32_t, int32_t>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::And<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
 /* **************************************************************************************************
  * Or                                                                                               *
  * **************************************************************************************************/
@@ -252,6 +152,125 @@ BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, int16_t)
 BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, uint16_t)
 BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, int32_t)
 BINARY_OP_CONTINUOUS_MASK_IMPL(OrImpl, Or, uint32_t)
+template <typename T, bool isSetMask = true>
+__aicore__ inline void AddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Add<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void SubImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Sub<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void MulImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void DivImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, uint16_t, int16_t, uint32_t, int32_t, half, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Div<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void MaxImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void MinImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void AddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Add<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void SubImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Sub<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void MulImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Mul<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void DivImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, uint16_t, int16_t, uint32_t, int32_t, half, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Div<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void MaxImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Max<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
+
+template <typename T, bool isSetMask = true>
+__aicore__ inline void MinImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert((SupportType<T, half, uint16_t, int16_t, uint32_t, int32_t, float>()),
+        "current data type is not supported on current device!");
+    constexpr auto func = MicroAPI::Min<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
+}
 
 /* **************************************************************************************************
  * AddDeqRelu                                             *
@@ -293,25 +312,108 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported AddDeqRelu"); });
 }
 
+/* **************************************************************************************************
+ * MulAddDst                                             *
+ * ************************************************************************************************* */
+// MulAddDst::Level 0
+namespace MicroAPIMulAddDst {
+template <typename T, typename U, typename S, typename V>
+__aicore__ inline void MulAddDst(S &dstReg, V &srcReg0, V &srcReg1, MicroAPI::MaskReg &mask)
+{
+    if constexpr (std::is_same<T, U>::value) {
+        MicroAPI::MulAddDst(dstReg, srcReg0, srcReg1, mask);
+    } else {
+        MicroAPI::RegTensor<half> fp16RegTemp;
+        MicroAPI::RegTensor<float> castReg1, castReg2;
+        // the first 64 half is needed to do muladddst in each repeat
+        MicroAPI::UnPack<uint32_t, uint16_t, AscendC::MicroAPI::HighLowPart::LOWEST>(
+            (MicroAPI::RegTensor<uint32_t> &)fp16RegTemp, (MicroAPI::RegTensor<uint16_t> &)srcReg0);
+        MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg1, fp16RegTemp, mask);
+        MicroAPI::UnPack<uint32_t, uint16_t, AscendC::MicroAPI::HighLowPart::LOWEST>(
+            (MicroAPI::RegTensor<uint32_t> &)fp16RegTemp, (MicroAPI::RegTensor<uint16_t> &)srcReg1);
+        MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg2, fp16RegTemp, mask);
+        MicroAPI::MulAddDst(dstReg, castReg1, castReg2, mask);
+    }
+}
+} // namespace MicroAPIMulAddDst
+
 template <typename T, typename U, bool isSetMask>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1,
     const uint64_t mask[2], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported MulAddDst"); });
+    static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>(), "Failed to "
+        "check dtype in MulAddDst, current api support dtype combination is src: half, dst: half / float; src: float, "
+        "dst: float.");
+    MicroAPI::RegTensor<half> fp16RegTemp;
+    MicroAPI::RegTensor<float> castReg1, castReg2;
+    constexpr auto func = MicroAPIMulAddDst::MulAddDst<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
+        mask, 0, repeatTime, repeatParams);
 }
 
 template <typename T, typename U, bool isSetMask>
 __aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1,
     const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported MulAddDst"); });
+    static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>(), "Failed to "
+        "check dtype in MulAddDst, current api support dtype combination is src: half, dst: half / float; src: float, "
+        "dst: float.");
+    constexpr auto func = MicroAPIMulAddDst::MulAddDst<T, U, MicroAPI::RegTensor<T>, MicroAPI::RegTensor<U>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
+        nullptr, mask, repeatTime, repeatParams);
 }
 
-template <typename T, typename U, bool isSetMask>
-__aicore__ inline void MulAddDstImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1,
-    const int32_t &count)
+/* **************************************************************************************************
+ * MulAddDst                                             *
+ * ************************************************************************************************* */
+// MulAddDst::Level 2
+template <typename T, typename U>
+__aicore__ inline void MulAddDstImpl(__ubuf__ T* dst, __ubuf__ U* src0, __ubuf__ U* src1, const int32_t count)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported MulAddDst"); });
+    static_assert(SupportType<Tuple<T, U>, Tuple<half, half>, Tuple<float, float>, Tuple<float, half>>(),
+        "Failed to check dtype in MulAddDst, current api "
+        "support dtype combination is src: half, dst: half / float; src: float, dst: float");
+    uint32_t sreg = static_cast<uint32_t>(count);
+    constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(T);
+    const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, numPerRep));
+    __VEC_SCOPE__
+    {
+        MicroAPI::RegTensor<U> src0Reg, src1Reg;
+        MicroAPI::RegTensor<T> dstReg;
+        MicroAPI::MaskReg mask;
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            mask = MicroAPI::UpdateMask<T>(sreg);
+            MicroAPI::DataCopy(src0Reg, src0 + i * numPerRep);
+            MicroAPI::DataCopy(src1Reg, src1 + i * numPerRep);
+            MicroAPI::DataCopy(dstReg, dst + i * numPerRep);
+            MicroAPI::MulAddDst(dstReg, src0Reg, src1Reg, mask);
+            MicroAPI::DataCopy(dst + i * numPerRep, dstReg, mask);
+        }
+    }
+}
+
+__aicore__ inline void MulAddDstImpl(__ubuf__ float* dst, __ubuf__ half* src0, __ubuf__ half* src1,
+    const int32_t count)
+{
+    uint32_t sregB32 = static_cast<uint32_t>(count);     // updated when float calculation
+    constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(float);     // each repeat 64 half->float to calculate
+    const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, numPerRep));
+    __VEC_SCOPE__
+    {
+        MicroAPI::RegTensor<half> src0Reg, src1Reg;
+        MicroAPI::RegTensor<float> dstReg, castReg1, castReg2;
+        MicroAPI::MaskReg maskB32;                              // updated when float calculation
+        for (uint16_t i = 0; i < repeatTime; ++i) {
+            maskB32 = MicroAPI::UpdateMask<float>(sregB32);
+            MicroAPI::DataCopy<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src0Reg, src0 + i * numPerRep); // 64 half
+            MicroAPI::DataCopy<half, MicroAPI::LoadDist::DIST_UNPACK_B16>(src1Reg, src1 + i * numPerRep); // 64 half
+            MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg1, src0Reg, maskB32);           // 64 float
+            MicroAPI::Cast<float, half, CastParam::mulAddDstTrait>(castReg2, src1Reg, maskB32);           // 64 float
+            MicroAPI::DataCopy(dstReg, dst + i * numPerRep);
+            MicroAPI::MulAddDst(dstReg, castReg1, castReg2, maskB32);
+            MicroAPI::DataCopy(dst + i * numPerRep, dstReg, maskB32);
+        }
+    }
 }
 
 template <typename T, bool isSetMask>
@@ -335,25 +437,76 @@ __aicore__ inline void AddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported AddRelu"); });
 }
 
-template <typename T, bool isSetMask>
-__aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const uint64_t mask[2], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+template <typename T, bool isSetMask = true>
+__aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported FusedMulAdd"); });
+    static_assert(SupportType<T, half, float>(),
+        "Failed to check dtype in FusedMulAdd, current api support dtype "
+        "combination is src and dst both: half/float.");
+    constexpr auto func = MicroAPI::FusedMulDstAdd<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
+        mask, 0, repeatTime, repeatParams);
 }
 
-template <typename T, bool isSetMask>
-__aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+template <typename T, bool isSetMask = true>
+__aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported FusedMulAdd"); });
+    static_assert(SupportType<T, half, float>(),
+        "Failed to check dtype in FusedMulAdd, current api support dtype "
+        "combination is src and dst both: half/float.");
+    constexpr auto func = MicroAPI::FusedMulDstAdd<T, MicroAPI::MaskMergeMode::ZEROING, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false, Internal::BinaryFuncMode::DST_SRC_INPUT>(dst, src0, src1,
+        nullptr, mask, repeatTime, repeatParams);
 }
 
-template <typename T, bool isSetMask>
+template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
     const int32_t &count)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported FusedMulAdd"); });
+    static_assert(SupportType<T, half, float>(), "Failed to check dtype in FusedMulAdd,"
+        "current api support dtype combination is src and dst both: half / float.");
+    uint32_t sreg = static_cast<uint32_t>(count);
+    if constexpr (sizeof(T) == 8) {
+        constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
+        const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, sregLower));
+        __VEC_SCOPE__
+        {
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg0;
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg1;
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
+            MicroAPI::MaskReg mask;
+            for (uint16_t i = 0; i < repeatTime; ++i) {
+                mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+                MicroAPI::DataCopy(vSrcReg0, src0 + i * sregLower);
+                MicroAPI::DataCopy(vSrcReg1, src1 + i * sregLower);
+                MicroAPI::DataCopy(vDstReg0, dst + i * sregLower);
+                MicroAPI::Mul(vDstReg1, vSrcReg0, vDstReg0, mask);
+                MicroAPI::Add(vDstReg0, vDstReg1, vSrcReg1, mask);
+                MicroAPI::DataCopy(dst + i * sregLower, vDstReg0, mask);
+            }
+        }
+    } else {
+        constexpr uint32_t repeatStride = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+        const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, repeatStride));
+        __VEC_SCOPE__
+        {
+            MicroAPI::RegTensor<T> src0Reg;
+            MicroAPI::RegTensor<T> src1Reg;
+            MicroAPI::RegTensor<T> dstReg;
+            MicroAPI::MaskReg mask;
+            for (uint16_t i = 0; i < repeatTime; ++i) {
+                mask = MicroAPI::UpdateMask<T>(sreg);
+                MicroAPI::DataCopy(src0Reg, src0 + i * repeatStride);
+                MicroAPI::DataCopy(src1Reg, src1 + i * repeatStride);
+                MicroAPI::DataCopy(dstReg, dst + i * repeatStride);
+                MicroAPI::FusedMulDstAdd(dstReg, src0Reg, src1Reg, mask);
+                MicroAPI::DataCopy(dst + i * repeatStride, dstReg, mask);
+            }
+        }
+    }
 }
 
 template <typename T, bool isSetMask>
@@ -377,25 +530,87 @@ __aicore__ inline void FusedMulAddReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported FusedMulAddRelu"); });
 }
 
-template <typename T, bool isSetMask>
-__aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const uint64_t mask[2], const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+/* **************************************************************************************************
+ * SubRelu                                             *
+ * ************************************************************************************************* */
+// SubRelu::Level 0
+namespace MicroAPISubRelu {
+template <typename T, typename U>
+__aicore__ inline void SubRelu(U &dstReg, U &srcReg0, U &srcReg1, MicroAPI::MaskReg &mask)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported SubRelu"); });
+    MicroAPI::Sub(dstReg, srcReg0, srcReg1, mask);
+    MicroAPI::Maxs(dstReg, dstReg, (T)0, mask);
+}
+} // namespace MicroAPISubRelu
+
+// SubRelu::Level 0
+template <typename T, bool isSetMask = true>
+__aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask[],
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+{
+    static_assert(SupportType<T, half, float, int16_t>(), "Failed to check dtype in SubRelu, current api support dtype "
+        "combination is src and dst both: half / float / int16_t.");
+    constexpr auto func = MicroAPISubRelu::SubRelu<T, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, true>(dst, src0, src1, mask, 0, repeatTime, repeatParams);
 }
 
-template <typename T, bool isSetMask>
-__aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
-    const uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
+template <typename T, bool isSetMask = true>
+__aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1, const uint64_t mask,
+    const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported SubRelu"); });
+    static_assert(SupportType<T, half, float, int16_t>(), "Failed to check dtype in SubRelu, current api support dtype "
+        "combination is src and dst both: half / float / int16_t.");
+    constexpr auto func = MicroAPISubRelu::SubRelu<T, MicroAPI::RegTensor<T>>;
+    Internal::VecBinaryImplTemplate<func, isSetMask, false>(dst, src0, src1, nullptr, mask, repeatTime, repeatParams);
 }
 
-template <typename T, bool isSetMask>
+/* **************************************************************************************************
+ * SubRelu                                             *
+ * ************************************************************************************************* */
+// SubRelu::Level 2
+template <typename T>
 __aicore__ inline void SubReluImpl(__ubuf__ T *dst, __ubuf__ T *src0, __ubuf__ T *src1,
     const int32_t &count)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported SubRelu"); });
+    static_assert(SupportType<T, half, float, int16_t, uint64_t, int64_t>(), "Failed to check dtype in SubRelu, "
+        "current api support dtype combination is src and dst both: half / float / int16_t / uint64_t / int64_t.");
+    uint32_t sreg = static_cast<uint32_t>(count);
+    const T scalarValue = 0;
+    if constexpr (sizeof(T) == 8) {
+        constexpr uint32_t sregLower = static_cast<uint32_t>(B64_DATA_NUM_PER_REPEAT * 2);
+        const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, sregLower));
+        __VEC_SCOPE__
+        {
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vDstReg;
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg0;
+            MicroAPI::RegTensor<T, MicroAPI::RegTraitNumTwo> vSrcReg1;
+            MicroAPI::MaskReg mask;
+            for (uint16_t i = 0; i < repeatTime; ++i) {
+                mask = MicroAPI::UpdateMask<T, MicroAPI::RegTraitNumTwo>(sreg);
+                MicroAPI::DataCopy(vSrcReg0, src0 + i * sregLower);
+                MicroAPI::DataCopy(vSrcReg1, src1 + i * sregLower);
+                MicroAPI::Sub(vDstReg, vSrcReg0, vSrcReg1, mask);
+                MicroAPI::Maxs(vDstReg, vDstReg, scalarValue, mask);
+                MicroAPI::DataCopy(dst + i * sregLower, vDstReg, mask);
+            }
+        }
+    } else {
+        constexpr uint16_t numPerRep = VECTOR_REG_WIDTH / sizeof(T);
+        const uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, numPerRep));
+        __VEC_SCOPE__
+        {
+            MicroAPI::RegTensor<T> dstReg, src0Reg, src1Reg;
+            MicroAPI::MaskReg mask;
+            for (uint16_t i = 0; i < repeatTime; ++i) {
+                mask = MicroAPI::UpdateMask<T>(sreg);
+                MicroAPI::DataCopy(src0Reg, src0 + i * numPerRep);
+                MicroAPI::DataCopy(src1Reg, src1 + i * numPerRep);
+                MicroAPI::Sub(dstReg, src0Reg, src1Reg, mask);
+                MicroAPI::Maxs(dstReg, dstReg, scalarValue, mask);
+                MicroAPI::DataCopy(dst + i * numPerRep, dstReg, mask);
+            }
+        }
+    }
 }
 }
 

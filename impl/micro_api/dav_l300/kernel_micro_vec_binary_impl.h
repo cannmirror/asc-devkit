@@ -20,7 +20,7 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -32,7 +32,7 @@ __aicore__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void SubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void SubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -44,7 +44,7 @@ __aicore__ inline void SubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MulImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MulImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -56,7 +56,7 @@ __aicore__ inline void MulImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void DivImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void DivImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(
@@ -72,7 +72,7 @@ __aicore__ inline void DivImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MaxImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MaxImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -84,7 +84,7 @@ __aicore__ inline void MaxImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MinImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MinImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -97,7 +97,7 @@ __aicore__ inline void MinImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 
 template <typename T = DefaultType, typename SHIFT_T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
     typename RegT, typename RegShiftT>
-__aicore__ inline void ShiftLeftImpl(RegT &dstReg, RegT &srcReg0, RegShiftT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void ShiftLeftImpl(RegT &dstReg, RegT &srcReg0, RegShiftT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualShiftT = typename RegShiftT::ActualT;
@@ -115,7 +115,7 @@ __aicore__ inline void ShiftLeftImpl(RegT &dstReg, RegT &srcReg0, RegShiftT &src
 
 template <typename T = DefaultType, typename SHIFT_T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
     typename RegT, typename RegShiftT>
-__aicore__ inline void ShiftRightImpl(RegT &dstReg, RegT &srcReg0, RegShiftT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void ShiftRightImpl(RegT &dstReg, RegT &srcReg0, RegShiftT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualShiftT = typename RegShiftT::ActualT;
@@ -132,7 +132,7 @@ __aicore__ inline void ShiftRightImpl(RegT &dstReg, RegT &srcReg0, RegShiftT &sr
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void AndImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void AndImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -144,7 +144,7 @@ __aicore__ inline void AndImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void OrImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void OrImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -156,7 +156,7 @@ __aicore__ inline void OrImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskRe
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void XorImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void XorImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -169,7 +169,7 @@ __aicore__ inline void XorImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 
 template <typename T = DefaultType, typename IndexT = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
     typename RegT, typename RegIndexT>
-__aicore__ inline void RoundImpl(RegT &dstReg, RegT &srcReg0, RegIndexT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void RoundImpl(RegT &dstReg, RegT &srcReg0, RegIndexT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualIndexT = typename RegIndexT::ActualT;
@@ -185,7 +185,7 @@ __aicore__ inline void RoundImpl(RegT &dstReg, RegT &srcReg0, RegIndexT &srcReg1
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void PreluImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void PreluImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -196,7 +196,7 @@ __aicore__ inline void PreluImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, Mas
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void ModImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void ModImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = std::integral_constant<::Mode, static_cast<::Mode>(Mode::ZEROING)>();
     vdiv(dstReg, srcReg0, srcReg1, mask, modeValue);
@@ -205,52 +205,52 @@ __aicore__ inline void ModImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskR
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void MullImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MullImpl(RegT &dstReg0, RegT &dstReg1, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Mull api is not supported on current device!"); });
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void MulAddDstImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MulAddDstImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(
-        SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t>(),
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(SupportType<ActualT, uint16_t, int16_t, uint32_t, int32_t, half, float, int64_t, uint64_t>(),
         "current data type is not supported on current device!");
-
+    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
+        "current MulAddDst api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vmula(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void AddCarryOutImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void AddCarryOutImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "AddCarryOut api is not supported on current device!"); });
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void SubCarryOutImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void SubCarryOutImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "SubCarryOut api is not supported on current device!"); });
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void AddCarryOutsImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &carrysrcp,
+__simd_callee__ inline void AddCarryOutsImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &carrysrcp,
     MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "AddCarryOuts api is not supported on current device!"); });
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void SubCarryOutsImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &carrysrcp,
+__simd_callee__ inline void SubCarryOutsImpl(MaskReg &carryp, RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &carrysrcp,
     MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "SubCarryOuts api is not supported on current device!"); });
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void SaturationAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void SaturationAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -261,7 +261,7 @@ __aicore__ inline void SaturationAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcR
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void SaturationSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void SaturationSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -272,7 +272,7 @@ __aicore__ inline void SaturationSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcR
 }
 
 template <typename T = DefaultType, typename RegT>
-__aicore__ inline void SlideImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, int16_t slideAmount)
+__simd_callee__ inline void SlideImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, int16_t slideAmount)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -282,7 +282,7 @@ __aicore__ inline void SlideImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, int
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void Add3Impl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Add3Impl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
@@ -294,7 +294,7 @@ __aicore__ inline void Add3Impl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, Mask
 }
 
 template <typename T = DefaultType, RoundControl rnd = RoundControl::NO_ROUND, typename RegT>
-__aicore__ inline void MeanImpl(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
+__simd_callee__ inline void MeanImpl(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");

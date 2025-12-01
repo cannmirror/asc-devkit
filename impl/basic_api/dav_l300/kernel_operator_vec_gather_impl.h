@@ -18,8 +18,8 @@
 namespace AscendC {
 
 template <typename T, bool isNormalMode>
-__aicore__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
+__simd_vf__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg0;
@@ -67,13 +67,13 @@ __aicore__ inline void GatherApi0B16Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint32_t blkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
-    VF_CALL<VfGatherApi0B16<T, isNormalMode>>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
+    VfGatherApi0B16<T, isNormalMode>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
         dstRepeatCount, u32OffsetRepeatCount, blkCount, maskCount);
 }
 
 template <typename T, bool isNormalMode>
-__aicore__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
-    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
+__simd_vf__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffsetLocal,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t dstRepStride, uint32_t dstRepeatCount,
     uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
 {
     MicroAPI::RegTensor<uint32_t> offsetReg;
@@ -105,7 +105,7 @@ __aicore__ inline void GatherApi0B32Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubu
     uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
     uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
     uint32_t blkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
-    VF_CALL<VfGatherApi0B32<T, isNormalMode>>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
+    VfGatherApi0B32<T, isNormalMode>(dst, src, srcOffsetLocal, srcBaseIndex, repeatTime, dstRepStride,
         dstRepeatCount, u32OffsetRepeatCount, blkCount, maskCount);
 }
 

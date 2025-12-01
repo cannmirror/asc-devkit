@@ -16,7 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_PROPOSAL_IMPL_H
  
 namespace AscendC {
-constexpr uint32_t singleSortElementCountL311 = 32;
+constexpr uint32_t singleSortElementCountL300 = 32;
 constexpr uint32_t regionProposalDataSize = 8;
 template <typename T>
 __aicore__ inline void Vmrgsort4Cal(__ubuf__ T* dstLocal, __ubuf__ T* addrArray[MRG_SORT_ELEMENT_LEN], uint64_t config)
@@ -184,7 +184,7 @@ template <typename T>
 __aicore__ inline void DoFullSort(const LocalTensor<T> &dstLocal, const LocalTensor<T> &concatLocal,
     const LocalTensor<uint32_t> &indexLocal, LocalTensor<T> &tmpLocal, const int32_t repeatTimes)
 {
-    uint32_t singleMergeElementCount = singleSortElementCountL311;
+    uint32_t singleMergeElementCount = singleSortElementCountL300;
     uint32_t loopTimes = GetFullSortInnerLoopTimes(repeatTimes);
     uint16_t singleMergeTmpElementCount = singleMergeElementCount;
     uint32_t srcLocalElementCount = repeatTimes * singleMergeElementCount;

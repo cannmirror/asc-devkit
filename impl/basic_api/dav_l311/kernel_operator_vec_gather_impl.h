@@ -17,6 +17,98 @@
 #include "kernel_operator_common_impl.h"
 namespace AscendC {
 
+template <typename T, bool isNormalMode>
+__aicore__ inline void VfGatherApi0B16(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffset,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
+    uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
+{
+    MicroAPI::RegTensor<uint32_t> offsetReg0;
+    MicroAPI::RegTensor<uint32_t> offsetReg1;
+    MicroAPI::RegTensor<uint16_t> indexReg;
+    MicroAPI::RegTensor<uint16_t> dstReg;
+    uint32_t sregPlt = static_cast<uint32_t>(maskCount);
+    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<uint32_t>();
+    MicroAPI::MaskReg selectMask = MicroAPI::CreateMask<uint16_t, MicroAPI::MaskPattern::H>();
+    MicroAPI::MaskReg dstMask;
+    if constexpr (isNormalMode) {
+        dstMask = MicroAPI::MoveMask<T>();
+    }
+    for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
+        if constexpr (!isNormalMode) {
+            dstMask = MicroAPI::UpdateMask<T>(sregPlt);
+        }
+        DataCopy(offsetReg0, srcOffset + (2 * i) * u32OffsetRepeatCount);
+        DataCopy(offsetReg1, srcOffset + (2 * i + 1) * u32OffsetRepeatCount);
+        // convert addr offset into B16 element index: divide by 2 (implemented by ShiftRight 1 bit)
+        ShiftRights(offsetReg0, offsetReg0, (int16_t)1, indexMask);
+        ShiftRights(offsetReg1, offsetReg1, (int16_t)1, indexMask);
+        // extract the lower 16-bit of uint32_t offset data into uint16_t index data:
+        // for offsetReg0，pack every lower 16-bit into the lower half of the vreg：
+        // 0x00FF00FE00FD... ->0xFFFEFD...000000...
+        // for offsetReg1, pack every higher 16-bit into the higher half of the vreg:
+        // 0x001100120013... -> 0x000000...111213...
+        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::LOWEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg0,
+            offsetReg0);
+        MicroAPI::Pack<uint16_t, uint32_t, MicroAPI::HighLowPart::HIGHEST>((MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+            offsetReg1);
+        // Select the effective data in offsetReg0 and offsetReg1 and joint them into a complete uint16_t type
+        // indexReg：0xFFFEFD...111213...
+        Select(indexReg, (MicroAPI::RegTensor<uint16_t> &)offsetReg0, (MicroAPI::RegTensor<uint16_t> &)offsetReg1,
+            selectMask);
+        DataCopyGather(dstReg, (__ubuf__ uint16_t *)src + srcBaseIndex, indexReg, dstMask);
+        DataCopy((__ubuf__ uint16_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
+    }
+}
+
+template <typename T, bool isNormalMode>
+__aicore__ inline void GatherApi0B16Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffset,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, const uint64_t maskCount)
+{
+    uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
+    uint32_t blkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
+    VF_CALL<VfGatherApi0B16<T, isNormalMode>>(dst, src, srcOffset, srcBaseIndex, repeatTime, dstRepStride,
+        dstRepeatCount, u32OffsetRepeatCount, blkCount, maskCount);
+}
+
+template <typename T, bool isNormalMode>
+__aicore__ inline void VfGatherApi0B32(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffset,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, uint32_t dstRepeatCount,
+    uint32_t u32OffsetRepeatCount, uint32_t blkCount, const uint64_t maskCount)
+{
+    MicroAPI::RegTensor<uint32_t> offsetReg;
+    MicroAPI::RegTensor<uint32_t> indexReg;
+    MicroAPI::RegTensor<uint32_t> dstReg;
+    uint32_t sregPlt = static_cast<uint32_t>(maskCount);
+    MicroAPI::MaskReg indexMask = MicroAPI::CreateMask<T>();
+    MicroAPI::MaskReg dstMask;
+    MicroAPI::MaskReg offsetMask = MicroAPI::CreateMask<uint32_t>();
+    if constexpr (isNormalMode) {
+        dstMask = MicroAPI::MoveMask<T>();
+    }
+    for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
+        if constexpr (!isNormalMode) {
+            dstMask = MicroAPI::UpdateMask<T>(sregPlt);
+        }
+        DataCopy(offsetReg, srcOffset + i * u32OffsetRepeatCount);
+        // convert addr offset into B32 element index: divide by 4 (implemented by ShiftRight 2 bit)
+        ShiftRights(indexReg, offsetReg, (int16_t)2, indexMask);
+        DataCopyGather(dstReg, (__ubuf__ uint32_t *)src + srcBaseIndex, indexReg, dstMask);
+        DataCopy((__ubuf__ uint32_t *)dst + i * dstRepStride * blkCount, dstReg, dstMask);
+    }
+}
+
+template <typename T, bool isNormalMode>
+__aicore__ inline void GatherApi0B32Impl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffset,
+    const uint32_t srcBaseIndex, const uint8_t repeatTime, const uint16_t &dstRepStride, const uint64_t maskCount)
+{
+    uint32_t dstRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(T));
+    uint32_t u32OffsetRepeatCount = static_cast<uint32_t>(VECTOR_REG_WIDTH / sizeof(uint32_t));
+    uint32_t blkCount = static_cast<uint32_t>(ONE_BLK_SIZE / sizeof(T));
+    VF_CALL<VfGatherApi0B32<T, isNormalMode>>(dst, src, srcOffset, srcBaseIndex, repeatTime, dstRepStride,
+        dstRepeatCount, u32OffsetRepeatCount, blkCount, maskCount);
+}
+
 /* **************************************************************************************************
  * Gather                                                                                           *
  * **************************************************************************************************/
@@ -32,7 +124,6 @@ __aicore__ inline void GatherImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ ui
         uint8_t dstBlkStd = repeatParams.dstBlkStride;
         RegTensor<T> vDst;
         RegTensor<uint32_t> vregIndex;
-        UnalignReg ureg;
         uint32_t sreg = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));
         MaskReg preg = CreatePredicate<T>(sreg);
         for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
@@ -44,184 +135,82 @@ __aicore__ inline void GatherImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ ui
     }
 }
 
-// for gather op
-#define GATHER_OP_B8_MASK_COUNT_MODE(T, U)                                                                        \
-    uint64_t mask1;                                                                                               \
-    uint64_t mask2;                                                                                               \
-    if (mask > ELE_CNT_B16) {                                                                                     \
-        mask1 = ELE_CNT_B16;                                                                                      \
-        mask2 = mask - ELE_CNT_B16;                                                                               \
-    } else {                                                                                                      \
-        mask1 = mask;                                                                                             \
-        mask2 = 0;                                                                                                \
-    }                                                                                                             \
-    __VEC_SCOPE__                                                                                                 \
-    {                                                                                                             \
-        RegTensor<uint16_t> vreg0;                                                                                \
-        RegTensor<uint16_t> vreg1;                                                                                \
-        RegTensor<uint16_t> vregEven;                                                                             \
-        RegTensor<uint16_t> vregOdd;                                                                              \
-        RegTensor<uint16_t> vregIndex0;                                                                           \
-        RegTensor<uint16_t> vregIndex1;                                                                           \
-        RegTensor<uint8_t> vregOut;                                                                               \
-        RegTensor<uint8_t> vregOut0;                                                                              \
-        RegTensor<uint8_t> vregOut1;                                                                              \
-        uint32_t sreg = (uint32_t)mask;                                                                           \
-        MaskReg preg = CreatePredicate<T>(sreg);                                                                  \
-        uint32_t sreg1 = (uint32_t)mask1;                                                                         \
-        MaskReg preg1 = CreatePredicate<uint16_t>(sreg1);                                                         \
-        uint32_t sreg2 = (uint32_t)mask2;                                                                         \
-        MaskReg preg2 = CreatePredicate<uint16_t>(sreg2);                                                         \
-        MaskReg cast_preg = CreatePredicate<uint16_t>();                                                          \
-        for (uint16_t i = 0; i <= (uint16_t)repeatTime; ++i)                                                     \
-        {                                                                                                         \
-            AddrReg vgather_offset = CreateAddrReg<uint16_t>(ELE_CNT_B8);                                         \
-            DataCopy<uint16_t, Dist::DIST_NORM>(vregIndex0, (__ubuf__ uint16_t *)srcOffset, vgather_offset); \
-            DataCopy<uint16_t, Dist::DIST_NORM>(vregIndex1, (__ubuf__ uint16_t *)srcOffset + ELE_CNT_B16,    \
-                                                vgather_offset);                                                  \
-            DataCopyGather(vreg0, src + srcBaseAddr / sizeof(uint8_t), vregIndex0, preg1);                   \
-            DataCopyGather(vreg1, src + srcBaseAddr / sizeof(uint8_t), vregIndex1, preg2);                   \
-            DeInterleave<uint16_t>(vregEven, vregOdd, vreg0, vreg1);                                              \
-            Cast<uint8_t, uint16_t, Mode::ZEROING, SatMode::SAT, PartMode::EVEN>(vregOut0, vregEven, cast_preg);  \
-            Cast<uint8_t, uint16_t, Mode::ZEROING, SatMode::SAT, PartMode::ODD>(vregOut1, vregOdd, cast_preg);    \
-            Or<uint8_t>(vregOut, vregOut0, vregOut1, preg);                                                       \
-            if constexpr (std::is_same_v<T, uint8_t>) {                                                           \
-                DataCopy(dst, vregOut, 1, i * dstRepStride, preg);                                           \
-            } else {                                                                                              \
-                DataCopy((__ubuf__ uint8_t*)dst, vregOut, 1, i * dstRepStride, preg);                        \
-            }                                                                                                     \
-        }                                                                                                         \
-    }
-
-#define GATHER_OP_B16B32_MASK_COUNT_MODE(T, U)                                                      \
-    __VEC_SCOPE__                                                                                   \
-    {                                                                                               \
-        RegTensor<uint32_t> index_src0Reg;                                                          \
-        RegTensor<uint32_t> index_src1Reg;                                                          \
-        RegTensor<uint32_t> index_dst0Reg;                                                          \
-        RegTensor<uint32_t> index_dst1Reg;                                                          \
-        RegTensor<uint16_t> indexReg;                                                               \
-        RegTensor<uint16_t> indexReg0;                                                              \
-        RegTensor<uint16_t> indexReg1;                                                              \
-        MaskReg index_preg = CreatePredicate<U>();                                                  \
-        RegTensor<T> vDst;                                                                          \
-        uint32_t sreg = (uint32_t)mask;                                                             \
-        MaskReg preg = CreatePredicate<T>(sreg);                                                    \
-        uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));                              \
-        if constexpr (sizeof(T) == sizeof(uint16_t) && sizeof(U) == sizeof(uint32_t))               \
-        {                                                                                           \
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i)                                    \
-            {                                                                                       \
-                AddrReg indexOffset = CreateAddrReg<uint32_t>(VECTOR_REG_WIDTH / B16_BYTE_SIZE);    \
-                DataCopy<uint32_t, Dist::DIST_NORM>(index_src0Reg, srcOffset, indexOffset);    \
-                DataCopy<uint32_t, Dist::DIST_NORM>(index_src1Reg,                                  \
-                    srcOffset + (VECTOR_REG_WIDTH / B32_BYTE_SIZE), indexOffset);              \
-                DeInterleave<uint32_t>(index_dst0Reg, index_dst1Reg, index_src0Reg, index_src1Reg); \
-                Cast<uint16_t, uint32_t, Mode::ZEROING, SatMode::SAT, PartMode::EVEN>(indexReg0,    \
-                    index_dst0Reg, index_preg);                                                     \
-                Cast<uint16_t, uint32_t, Mode::ZEROING, SatMode::SAT, PartMode::ODD>(indexReg1,     \
-                    index_dst1Reg, index_preg);                                                     \
-                Or<uint16_t>(indexReg, indexReg0, indexReg1, preg);                                 \
-                ShiftRights<uint16_t, uint16_t>(indexReg, indexReg, sizeof(T) / 2, preg);           \
-                DataCopyGather(vDst, src + srcBaseAddr / sizeof(T), indexReg, preg);           \
-                DataCopy(dst, vDst, 1, i * dstRepStride, preg);                                \
-            }                                                                                       \
-        } else {                                                                                    \
-            RegTensor<U> vregIndex;                                                                 \
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i)                                    \
-            {                                                                                       \
-                DataCopy(vregIndex, srcOffset, i * sregLower);                                 \
-                ShiftRights<U, U>(vregIndex, vregIndex, sizeof(T) / 2, preg);                       \
-                DataCopyGather(vDst, src + srcBaseAddr / sizeof(T), vregIndex, preg);          \
-                DataCopy(dst, vDst, 1, i * dstRepStride, preg);                                \
-            }                                                                                       \
-        }                                                                                           \
-    }
-
-// gather::Level 0 - mask count mode
-template <typename T, typename U = uint32_t>
-__aicore__ inline void GatherImpl(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ U* srcOffset,
+// Gather::Level 0 Normal mode
+template <typename T>
+__aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffset,
     const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime,
-    const uint16_t dstRepStride)
+    const uint16_t &dstRepStride)
 {
-    if constexpr (sizeof(T) == sizeof(uint8_t)) {
-        GATHER_OP_B8_MASK_COUNT_MODE(T, U);
-    } else if constexpr (sizeof(T) == sizeof(uint16_t) || sizeof(T) == sizeof(uint32_t)) {
-        GATHER_OP_B16B32_MASK_COUNT_MODE(T, U);
+    static_assert(SupportBytes<T, 2, 4>(), "Gather only support type b16/b32 on current device");
+
+    uint8_t newRepeatTimes = repeatTime;
+    bool isNormalMode = !Internal::IsCounterMode();
+    if (isNormalMode) {
+        if constexpr (sizeof(T) == 2) {
+            SetVectorMask<uint16_t>(mask);
+        } else {
+            SetVectorMask<uint32_t>(mask);
+        }
     } else {
-        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "data type should be b8 b16 or b32"); });
+        newRepeatTimes = static_cast<uint8_t>(Internal::VecMicroGetRepeatTimes<T, false>(mask, repeatTime));
+    }
+
+    uint32_t srcBaseIndex;
+    if constexpr (sizeof(T) == 2) {
+        srcBaseIndex = srcBaseAddr / sizeof(T);
+        if (isNormalMode) {
+            GatherApi0B16Impl<T, true>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
+        } else {
+            GatherApi0B16Impl<T, false>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
+        }
+    } else if constexpr (sizeof(T) == 4) {
+        srcBaseIndex = srcBaseAddr / sizeof(T);
+        if (isNormalMode) {
+            GatherApi0B32Impl<T, true>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
+        } else {
+            GatherApi0B32Impl<T, false>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask);
+        }
     }
 }
 
-#define GATHER_OP_B16_MASK_BIT_MODE(T, U)                                                           \
-    SetVectorMask<uint16_t>(mask[1], mask[0]);                                                      \
-    __VEC_SCOPE__                                                                                   \
-    {                                                                                               \
-        RegTensor<uint32_t> index_src0Reg;                                                          \
-        RegTensor<uint32_t> index_src1Reg;                                                          \
-        RegTensor<uint32_t> index_dst0Reg;                                                          \
-        RegTensor<uint32_t> index_dst1Reg;                                                          \
-        RegTensor<uint16_t> indexReg;                                                               \
-        RegTensor<uint16_t> indexReg0;                                                              \
-        RegTensor<uint16_t> indexReg1;                                                              \
-        RegTensor<T> vDst;                                                                          \
-        MaskReg preg = movp_b16();                                                                  \
-        MaskReg index_preg = CreatePredicate<U>();                                                  \
-        uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));                              \
-        if constexpr (sizeof(T) == sizeof(uint16_t) && sizeof(U) == sizeof(uint32_t)) {             \
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {                                  \
-                AddrReg indexOffset = CreateAddrReg<uint32_t>(VECTOR_REG_WIDTH / B16_BYTE_SIZE);    \
-                DataCopy<uint32_t, Dist::DIST_NORM>(index_src0Reg, srcOffset, indexOffset);    \
-                DataCopy<uint32_t, Dist::DIST_NORM>(index_src1Reg,                                  \
-                    srcOffset + (VECTOR_REG_WIDTH / B32_BYTE_SIZE), indexOffset);              \
-                DeInterleave<uint32_t>(index_dst0Reg, index_dst1Reg, index_src0Reg, index_src1Reg); \
-                Cast<uint16_t, uint32_t, Mode::ZEROING, SatMode::SAT, PartMode::EVEN>(indexReg0,    \
-                    index_dst0Reg, index_preg);                                                     \
-                Cast<uint16_t, uint32_t, Mode::ZEROING, SatMode::SAT, PartMode::ODD>(indexReg1,     \
-                    index_dst1Reg, index_preg);                                                     \
-                Or<uint16_t>(indexReg, indexReg0, indexReg1, preg);                                 \
-                ShiftRights<uint16_t, uint16_t>(indexReg, indexReg, sizeof(T) / 2, preg);           \
-                DataCopyGather(vDst, src + srcBaseAddr / sizeof(T), indexReg, preg);           \
-                DataCopy(dst, vDst, 1, i * dstRepStride, preg);                                \
-            }                                                                                       \
-        } else {                                                                                    \
-            for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {                                  \
-                DataCopy(indexReg, srcOffset, i * sregLower);                                  \
-                ShiftRights<uint16_t, uint16_t>(indexReg, indexReg, sizeof(T) / 2, preg);           \
-                DataCopyGather(vDst, src + srcBaseAddr / sizeof(T), indexReg, preg);           \
-                DataCopy(dst, vDst, 1, i * dstRepStride, preg);                                \
-            }                                                                                       \
-        }                                                                                           \
-    }
-
-#define GATHER_OP_B32_MASK_BIT_MODE(T, U)                                                    \
-    SetVectorMask<uint32_t>(mask[1], mask[0]);                                               \
-    __VEC_SCOPE__                                                                            \
-    {                                                                                        \
-        RegTensor<T> vDst;                                                                   \
-        RegTensor<U> vregIndex;                                                              \
-        MaskReg preg = movp_b32();                                                           \
-        uint32_t sregLower = (uint32_t)(VECTOR_REG_WIDTH / sizeof(T));                       \
-        for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {                               \
-            DataCopy(vregIndex, srcOffset, i * sregLower);                              \
-            ShiftRights<U, U>(vregIndex, vregIndex, sizeof(T) / 2, preg);                    \
-            DataCopyGather(vDst, src + srcBaseAddr / sizeof(T), vregIndex, preg);       \
-            DataCopy(dst, vDst, 1, i * dstRepStride, preg);                             \
-        }                                                                                    \
-    }
-
-// gather::Level 0 - mask bit mode
-template <typename T, typename U = uint32_t>
-__aicore__ inline void GatherImpl(__ubuf__ T* dst, __ubuf__ T* src, __ubuf__ U* srcOffset,
-    const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask[2], const uint8_t repeatTime,
-    const uint16_t dstRepStride)
+/* **************************************************************************************************
+ * Gather                                             *
+ * ************************************************************************************************* */
+// Gather::Level 0 Bit-wise mode
+template <typename T>
+__aicore__ inline void GatherImpl(__ubuf__ T *dst, __ubuf__ T *src, __ubuf__ uint32_t *srcOffset,
+    const uint32_t srcLength, const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime,
+    const uint16_t &dstRepStride)
 {
-    if constexpr (sizeof(T) == sizeof(uint16_t)) {
-        GATHER_OP_B16_MASK_BIT_MODE(T, U);
-    } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        GATHER_OP_B32_MASK_BIT_MODE(T, U);
+    static_assert(SupportBytes<T, 2, 4>(), "Gather only support type b16/b32 on current device");
+
+    uint8_t newRepeatTimes = repeatTime;
+    bool isNormalMode = !Internal::IsCounterMode();
+    if (isNormalMode) {
+        if constexpr (sizeof(T) == 2) {
+            SetVectorMask<uint16_t>(mask[1], mask[0]);
+        } else {
+            SetVectorMask<uint32_t>(mask[1], mask[0]);
+        }
     } else {
-        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "data type should be b16 or b32"); });
+        newRepeatTimes = static_cast<uint8_t>(Internal::VecMicroGetRepeatTimes<T, false>(mask[0], repeatTime));
+    }
+
+    uint32_t srcBaseIndex;
+    if constexpr (sizeof(T) == 2) {
+        srcBaseIndex = srcBaseAddr / sizeof(T);
+        if (isNormalMode) {
+            GatherApi0B16Impl<T, true>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
+        } else {
+            GatherApi0B16Impl<T, false>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
+        }
+    } else if constexpr (sizeof(T) == 4) {
+        srcBaseIndex = srcBaseAddr / sizeof(T);
+        if (isNormalMode) {
+            GatherApi0B32Impl<T, true>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
+        } else {
+            GatherApi0B32Impl<T, false>(dst, src, srcOffset, srcBaseIndex, newRepeatTimes, dstRepStride, mask[0]);
+        }
     }
 }
 

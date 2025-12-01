@@ -19,7 +19,7 @@
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, typename U, RegLayout layoutMode, MaskMergeMode mode>
-__aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
 {
     constexpr bool partCondition = SupportType<Tuple<T, U>, Tuple<uint16_t, uint8_t>, Tuple<int16_t, int8_t>,
         Tuple<uint32_t, uint16_t>, Tuple<uint32_t, int16_t>, Tuple<int32_t, int16_t>, Tuple<float, half>,
@@ -48,7 +48,7 @@ __aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, Mask
 }
 
 template <typename T, typename U, SatMode satMode, RegLayout layoutMode, MaskMergeMode mode>
-__aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
 {
     constexpr bool partCondition = SupportType<Tuple<T, U>, Tuple<uint8_t, uint16_t>, Tuple<uint8_t, int16_t>,
         Tuple<uint16_t, uint32_t>, Tuple<int16_t, uint32_t>, Tuple<uint16_t, int32_t>, Tuple<int16_t, int32_t>>();
@@ -74,10 +74,10 @@ __aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, Mask
 // vcvt_fi f322s16/f162u8/f162s8
 // vcvt_ff f322f16
 template <typename T, typename U, RoundMode roundMode, SatMode satMode, RegLayout layoutMode, MaskMergeMode mode>
-__aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<int16_t, float>, Tuple<uint8_t, half>, Tuple<int8_t, half>,
-        Tuple<half, float>>(),
+        Tuple<half, float>, Tuple<int64_t, float>, Tuple<int4x2_t, half>>(),
         "current cast data type is not supported!");
     static_assert(SupportEnum<layoutMode, RegLayout::ZERO, RegLayout::ONE>(),
         "current cast api RegLayout Mode is not supported!");
@@ -86,12 +86,17 @@ __aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, Mask
         std::integral_constant<::RoundingSaturation, static_cast<::RoundingSaturation>(satMode)>();
     constexpr auto partModeValue = std::integral_constant<::Part, static_cast<::Part>(layoutMode)>();
     constexpr auto roundModeValue = std::integral_constant<::ROUND, GetRound<roundMode>()>();
-    vcvt(dstReg, srcReg, mask, roundModeValue, satModeValue, partModeValue, modeValue);
+    if constexpr (SupportType<Tuple<T, U>, Tuple<int4x2_t, half>>()) {
+        constexpr auto ppModeValue = std::integral_constant<::Part_T, static_cast<::Part_T>(layoutMode)>();
+        vcvt_f162s4(dstReg, srcReg, mask, roundModeValue, satModeValue, ppModeValue, modeValue);
+    } else {
+        vcvt(dstReg, srcReg, mask, roundModeValue, satModeValue, partModeValue, modeValue);
+    }
 }
 
 // vcvt_fi f322s32/f162s16
 template <typename T, typename U, RoundMode roundMode, SatMode satMode, MaskMergeMode mode>
-__aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<int32_t, float>, Tuple<int16_t, half>>(),
         "current cast data type is not supported!");
@@ -104,7 +109,7 @@ __aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, Mask
 
 // vcvt_fi f162s32
 template <typename T, typename U, RoundMode roundMode, RegLayout layoutMode, MaskMergeMode mode>
-__aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<int32_t, half>>(),
         "current cast data type is not supported!");
@@ -118,7 +123,7 @@ __aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, Mask
 
 // vcvt_if s162f16/s322f32
 template <typename T, typename U, RoundMode roundMode, MaskMergeMode mode>
-__aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, MaskReg &mask)
 {
     static_assert(SupportType<Tuple<T, U>, Tuple<half, int16_t>, Tuple<float, int32_t>>(),
         "current cast data type is not supported!");
@@ -129,7 +134,7 @@ __aicore__ inline void CastImpl(RegTensor<T> &dstReg, RegTensor<U> &srcReg, Mask
 
 // truncate f162f16/f322f32
 template <typename T, RoundMode roundMode = RoundMode::CAST_NONE, MaskMergeMode mode = MaskMergeMode::ZEROING>
-__aicore__ inline void TruncateImpl(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
+__simd_callee__ inline void TruncateImpl(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     static_assert(SupportType<T, half, float>(), "current trunc data type is not supported!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
@@ -137,9 +142,110 @@ __aicore__ inline void TruncateImpl(RegTensor<T> &dstReg, RegTensor<T> &srcReg, 
     vtrc(dstReg, srcReg, roundModeValue, mask, modeValue);
 }
 
+// s322s64 RegTraitNumOne -> RegTraitNumTwo
+template <typename T, typename U, MaskMergeMode mode, typename RegT,
+    typename RegU>
+__simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
+    using ActualU = typename RegU::ActualT;
+    static_assert(
+        SupportEnum<mode, MaskMergeMode::ZEROING>(), "current Cast api only supported Mode ZEROING on current device!");
+    static_assert(SupportType<Tuple<ActualT, ActualU>,
+        Tuple<int64_t, int32_t>>(),
+        "CastImpl unsupport this datatype on current device");
+    static_assert(CheckRegTrait<RegU, RegTraitNumOne>(),  "RegTensor srcReg can only be RegTraitNumOne");
+    RegTensor<int32_t> tmpReg0;
+    RegTensor<int32_t> tmpReg1;
+    RegTensor<int32_t> zeroReg;
+    MaskReg maskFull = CreateMask<int32_t, MaskPattern::ALL>();
+    MaskReg lowMask, highMask;
+    Duplicate(zeroReg, 0, maskFull);
+    MaskInterleave<int32_t>(lowMask, highMask, mask, mask);
+    Interleave(tmpReg0, tmpReg1, srcReg, zeroReg);
+    CastImpl<ActualT, ActualU, RegLayout::ZERO, mode>((RegTensor<int64_t> &)tmpReg0, tmpReg0, lowMask);
+    CastImpl<ActualT, ActualU, RegLayout::ZERO, mode>((RegTensor<int64_t> &)tmpReg1, tmpReg1, highMask);
+    DeInterleave((RegTensor<int32_t> &)dstReg.reg[0], (RegTensor<int32_t> &)dstReg.reg[1], tmpReg0, tmpReg1);
+}
+
+// s64s32 RegTraitNumTwo -> RegTraitNumOne
+template <typename T, typename U, SatMode satMode, MaskMergeMode mode, typename RegT, typename RegU>
+__simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
+    using ActualU = typename RegU::ActualT;
+    static_assert(
+        SupportEnum<mode, MaskMergeMode::ZEROING>(), "current Cast api only supported Mode ZEROING on current device!");
+    static_assert(SupportType<Tuple<ActualT, ActualU>,
+        Tuple<int32_t, int64_t>>(),
+        "CastImpl unsupport this datatype on current device");
+    static_assert(CheckRegTrait<RegT, RegTraitNumOne>(),  "RegTensor dstReg can only be RegTraitNumOne");
+    constexpr auto modeValue = GetMaskMergeMode<mode>();
+    constexpr auto satModeValue =
+        std::integral_constant<::RoundingSaturation, static_cast<::RoundingSaturation>(satMode)>();
+    RegTensor<int32_t> tmpReg0;
+    RegTensor<int32_t> tmpReg1;
+    MaskReg lowMask, highMask;
+    MaskInterleave<int32_t>(lowMask, highMask, mask, mask);
+    Interleave(tmpReg0, tmpReg1, (RegTensor<int32_t> &)srcReg.reg[0], (RegTensor<int32_t> &)srcReg.reg[1]);
+    CastImpl<ActualT, ActualU, satMode, RegLayout::ZERO, mode>(tmpReg0, (RegTensor<int64_t> &)tmpReg0, lowMask);
+    CastImpl<ActualT, ActualU, satMode, RegLayout::ZERO, mode>(tmpReg1, (RegTensor<int64_t> &)tmpReg1, highMask);
+    DeInterleave(dstReg, tmpReg0, tmpReg0, tmpReg1);
+}
+
+// f322s64 RegTraitNumOne -> RegTraitNumTwo
+template <typename T, typename U, RoundMode roundMode, SatMode satMode, MaskMergeMode mode, typename RegT,
+    typename RegU>
+__simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
+    using ActualU = typename RegU::ActualT;
+    static_assert(
+        SupportEnum<mode, MaskMergeMode::ZEROING>(), "current Cast api only supported Mode ZEROING on current device!");
+    static_assert(SupportType<Tuple<ActualT, ActualU>,
+        Tuple<int64_t, float>>(),
+        "CastImpl unsupport this datatype on current device");
+    static_assert(CheckRegTrait<RegU, RegTraitNumOne>(),  "RegTensor srcReg can only be RegTraitNumOne");
+    RegTensor<float> tmpReg0;
+    RegTensor<float> tmpReg1;
+    RegTensor<int32_t> zeroReg;
+    MaskReg maskFull = CreateMask<int32_t, MaskPattern::ALL>();
+    Duplicate(zeroReg, 0, maskFull);
+    MaskReg lowMask, highMask;
+    MaskInterleave<int32_t>(lowMask, highMask, mask, mask);
+    Interleave(tmpReg0, tmpReg1, srcReg, (RegTensor<float> &)zeroReg);
+    CastImpl<ActualT, ActualU, roundMode, satMode, RegLayout::ZERO, mode>((RegTensor<int64_t> &)tmpReg0, tmpReg0, lowMask);
+    CastImpl<ActualT, ActualU, roundMode, satMode, RegLayout::ZERO, mode>((RegTensor<int64_t> &)tmpReg1, tmpReg1, highMask);
+    DeInterleave((RegTensor<float> &)dstReg.reg[0], (RegTensor<float> &)dstReg.reg[1], tmpReg0, tmpReg1);
+}
+
+// s642f32 RegTraitNumTwo -> RegTraitNumOne
+template <typename T, typename U, RoundMode roundMode, MaskMergeMode mode, typename RegT, typename RegU>
+__simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
+{
+    using ActualT = typename RegT::ActualT;
+    using ActualU = typename RegU::ActualT;
+    static_assert(
+        SupportEnum<mode, MaskMergeMode::ZEROING>(), "current Cast api only supported Mode ZEROING on current device!");
+    static_assert(SupportType<Tuple<ActualT, ActualU>,
+        Tuple<float, int64_t>>(),
+        "CastImpl unsupport this datatype on current device");
+    static_assert(CheckRegTrait<RegT, RegTraitNumOne>(),  "RegTensor dstReg can only be RegTraitNumOne");
+    constexpr auto modeValue = GetMaskMergeMode<mode>();
+    const auto partModeValue = std::integral_constant<::Part, static_cast<::Part>(RegLayout::ZERO)>();
+    constexpr auto roundModeValue = std::integral_constant<::ROUND, GetRound<roundMode>()>();
+    RegTensor<float> tmpReg0;
+    RegTensor<float> tmpReg1;
+    MaskReg lowMask, highMask;
+    MaskInterleave<int32_t>(lowMask, highMask, mask, mask);
+    Interleave(tmpReg0, tmpReg1, (RegTensor<float> &)srcReg.reg[0], (RegTensor<float> &)srcReg.reg[1]);
+    CastImpl<ActualT, ActualU, roundMode, RegLayout::ZERO, mode>(tmpReg0, (RegTensor<int64_t> &)tmpReg0, lowMask);
+    CastImpl<ActualT, ActualU, roundMode, RegLayout::ZERO, mode>(tmpReg1, (RegTensor<int64_t> &)tmpReg1, highMask);
+    DeInterleave(dstReg, tmpReg0, tmpReg0, tmpReg1);
+}
 
 template <typename T, typename U, const CastTrait &trait, typename RegT, typename RegU>
-__aicore__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
+__simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
@@ -154,7 +260,7 @@ __aicore__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
         Tuple<uint8_t, int16_t>, Tuple<uint16_t, uint32_t>, Tuple<int16_t, uint32_t>, Tuple<uint16_t, int32_t>,
         Tuple<int16_t, int32_t>, Tuple<uint8_t, uint32_t>, Tuple<uint8_t, int32_t>>();
     constexpr bool rndSatLayoutMergeCast = SupportType<Tuple<ActualT, ActualU>, Tuple<int16_t, float>,
-        Tuple<uint8_t, half>, Tuple<int8_t, half>, Tuple<int64_t, float>, Tuple<half, float>>();
+        Tuple<uint8_t, half>, Tuple<int8_t, half>, Tuple<int64_t, float>, Tuple<half, float>, Tuple<int4x2_t, half>>();
     constexpr bool rndSatMergeCast =
         SupportType<Tuple<ActualT, ActualU>, Tuple<int32_t, float>, Tuple<int16_t, half>>();
     constexpr bool rndLayoutMergeCast = SupportType<Tuple<ActualT, ActualU>, Tuple<int32_t, half>>();
@@ -162,16 +268,33 @@ __aicore__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
     constexpr bool allNotSupport = !(layoutMerge && satLayMergeCast && rndSatLayoutMergeCast && rndSatMergeCast &&
         rndLayoutMergeCast && rndMergeCast);
     if constexpr (layoutMerge) {
-        CastImpl<ActualT, ActualU, trait.layoutMode, trait.mrgMode>(dstReg, srcReg, mask);
+        if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
+            CastImpl<T, U, trait.mrgMode, RegT, RegU>(dstReg, srcReg, mask);
+        } else {
+            CastImpl<ActualT, ActualU, trait.layoutMode, trait.mrgMode>(dstReg, srcReg, mask);
+        }
     } else if constexpr (satLayMergeCast) {
-        CastImpl<ActualT, ActualU, trait.satMode, trait.layoutMode, trait.mrgMode>(dstReg, srcReg, mask);
+        if constexpr (CheckRegTrait<RegU, RegTraitNumTwo>()) {
+            CastImpl<T, U, trait.satMode, trait.mrgMode, RegT, RegU>(dstReg, srcReg, mask);
+        } else {
+            CastImpl<ActualT, ActualU, trait.satMode, trait.layoutMode, trait.mrgMode>(dstReg, srcReg, mask);
+        }
     } else if constexpr (rndSatLayoutMergeCast) {
-        CastImpl<ActualT, ActualU, trait.roundMode, trait.satMode, trait.layoutMode, trait.mrgMode>(dstReg, srcReg,
-            mask);
+        if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
+            CastImpl<T, U, trait.roundMode, trait.satMode, trait.mrgMode, RegT, RegU>(
+                dstReg, srcReg, mask);
+        } else {
+            CastImpl<ActualT, ActualU, trait.roundMode, trait.satMode, trait.layoutMode, trait.mrgMode>(
+                dstReg, srcReg, mask);
+        }
     } else if constexpr (rndSatMergeCast) {
         CastImpl<ActualT, ActualU, trait.roundMode, trait.satMode, trait.mrgMode>(dstReg, srcReg, mask);
     } else if constexpr (rndLayoutMergeCast) {
-        CastImpl<ActualT, ActualU, trait.roundMode, trait.layoutMode, trait.mrgMode>(dstReg, srcReg, mask);
+        if constexpr (CheckRegTrait<RegU, RegTraitNumTwo>()) {
+            CastImpl<T, U, trait.roundMode, trait.mrgMode, RegT, RegU>(dstReg, srcReg, mask);
+        } else {
+            CastImpl<ActualT, ActualU, trait.roundMode, trait.layoutMode, trait.mrgMode>(dstReg, srcReg, mask);
+        }
     } else if constexpr (rndMergeCast) {
         CastImpl<ActualT, ActualU, trait.roundMode, trait.mrgMode>(dstReg, srcReg, mask);
     } else {

@@ -36,12 +36,12 @@ template <typename T> constexpr __aicore__ inline void CheckCreateVecIndexApi2Su
 }
 namespace Internal {
 template <bool isMaskBitMode, bool isNormalMode, typename T>
-__aicore__ inline void VecCreateVecIndexLevel0VFImpl(__ubuf__ T *dst, const T firstValue, const uint64_t maskArray[],
+__simd_vf__ inline void VecCreateVecIndexLevel0VFImpl(__ubuf__ T *dst, const T firstValue, const BasicAPIMaskStruct maskArrayStruct,
     const uint64_t maskCount, const uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride,
     __ubuf__ uint64_t *maskBuf)
 {
     constexpr uint16_t sreg = GetVecLen() / sizeof(T);
-    uint32_t count = VecMicroGetCount<true, isNormalMode, isMaskBitMode>(maskArray, maskCount, maskBuf);
+    uint32_t count = VecMicroGetCount<true, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = VecMicroGetRepeatTimes<T, isNormalMode>(count, repeatTime);
     MicroAPI::MaskReg maskReg;
     if constexpr (isNormalMode) {
@@ -69,15 +69,19 @@ __aicore__ inline void VecCreateVecIndexLevel0Template(__ubuf__ T *dst, const T 
     } else {
         ASCENDC_ASSERT(maskArray == nullptr, "maskArray must be nullptr when isMaskBitMode is false.");
     }
- 
+    uint16_t maskArraySize = (maskArray == nullptr) ? 0 : MASK_ARRAY_SIZE;
+    BasicAPIMaskStruct maskArrayStruct;
+    for (uint16_t i = 0; i < maskArraySize; i++) {
+        maskArrayStruct.maskArray[i] = maskArray[i];
+    }
     if (Internal::IsCounterMode()) {
-        VF_CALL<VecCreateVecIndexLevel0VFImpl<isMaskBitMode, false, T>>(dst, firstValue, maskArray, maskCount,
+        VecCreateVecIndexLevel0VFImpl<isMaskBitMode, false, T>(dst, firstValue, maskArrayStruct, maskCount,
             repeatTime, dstBlkStride, dstRepStride, nullptr);
     } else {
         if constexpr (isMaskBitMode) {
             SetVectorMask<T>(maskArray[1], maskArray[0]); // set mask to SPR.MASK, movp in VF
         }
-        VF_CALL<VecCreateVecIndexLevel0VFImpl<isMaskBitMode, true, T>>(dst, firstValue, maskArray, maskCount,
+       VecCreateVecIndexLevel0VFImpl<isMaskBitMode, true, T>(dst, firstValue, maskArrayStruct, maskCount,
             repeatTime, dstBlkStride, dstRepStride, nullptr);
     }
 }
