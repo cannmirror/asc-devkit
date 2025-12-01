@@ -203,6 +203,10 @@ void InfoManager::SetCompileArgs(const std::vector<std::string>& compileArgs)
         if (StartsWith(compileArg, "--cce-aicore-input-parameter-size=")) {
             compileArgs_.options.emplace_back(compileArg);
         }
+
+        if (StartsWith(compileArg, "--cce-aicpu-launch-with-interface")) {
+            compileArgs_.options.emplace_back(compileArg);
+        }
     }
 
     ReportCompileArgs();
