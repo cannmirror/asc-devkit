@@ -20,97 +20,45 @@
 ## 函数原型
 
 - 前n个数据连续计算
-  - RINT舍入模式
-
     ```cpp
+    // RINT舍入模式
     __aicore__ inline void asc_float2bf16_r(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - ROUND舍入模式
-
-    ```cpp
+    // ROUND舍入模式
     __aicore__ inline void asc_float2bf16_a(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - FLOOR舍入模式
-
-    ```cpp
+    // FLOOR舍入模式
     __aicore__ inline void asc_float2bf16_f(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - CEIL舍入模式
-
-    ```cpp
+    // CEIL舍入模式
     __aicore__ inline void asc_float2bf16_c(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - TRUNC舍入模式
-
-    ```cpp
+    // TRUNC舍入模式
     __aicore__ inline void asc_float2bf16_z(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
     ```
 
 - 高维切分计算
 
-  - RINT舍入模式
-
     ```cpp
+    // RINT舍入模式
     __aicore__ inline void asc_float2bf16_r(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-    ```
-
-  - ROUND舍入模式
-
-    ```cpp
+    // ROUND舍入模式
     __aicore__ inline void asc_float2bf16_a(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-    ```
-
-  - FLOOR舍入模式
-
-    ```cpp
+    // FLOOR舍入模式
     __aicore__ inline void asc_float2bf16_f(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-    ```
-
-  - CEIL舍入模式
-
-    ```cpp
+    // CEIL舍入模式
     __aicore__ inline void asc_float2bf16_c(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-    ```
-
-  - TRUNC舍入模式
-
-    ```cpp
+    // TRUNC舍入模式
     __aicore__ inline void asc_float2bf16_z(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-    ```
 
 - 同步计算
 
-  - RINT舍入模式
-
     ```cpp
+    // RINT舍入模式
     __aicore__ inline void asc_float2bf16_r_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - ROUND舍入模式
-
-    ```cpp
+    //ROUND舍入模式
     __aicore__ inline void asc_float2bf16_a_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - FLOOR舍入模式
-
-    ```cpp
+    // FLOOR舍入模式
     __aicore__ inline void asc_float2bf16_f_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - CEIL舍入模式
-
-    ```cpp
+    // CEIL舍入模式
     __aicore__ inline void asc_float2bf16_c_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-    ```
-
-  - TRUNC舍入模式
-
-    ```cpp
+    // TRUNC舍入模式
     __aicore__ inline void asc_float2bf16_z_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
     ```
 
