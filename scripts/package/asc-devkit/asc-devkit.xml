@@ -49,6 +49,7 @@
         <path value="$(TARGET_ENV)/ascendc/include/highlevel_api/kernel_tiling"/>
         <path value="$(TARGET_ENV)/ascendc/include/highlevel_api/utils"/>
         <path value="$(TARGET_ENV)/ascendc/include/highlevel_api/utils/log"/>
+        <path value="$(TARGET_ENV)/include/acl"/>
         <path value="$(TARGET_ENV)/include/ascendc"/>
         <path value="$(TARGET_ENV)/include/ascendc/include"/>
         <path value="$(TARGET_ENV)/include/ascendc/highlevel_api"/>
@@ -171,6 +172,9 @@
 
     <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/tikcpp">
         <file value="ascendc_kernel_cmake" entity="true"/>
+    </file_info>
+    <file_info value="acl_rt"  copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/acl" install_path="$(TARGET_ENV)/include/acl" install_mod="440">
+        <file value="acl_rt_compile.h"/>
     </file_info>
 
 </config>
