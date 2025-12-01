@@ -27,7 +27,7 @@ __aicore__ inline int64_t asc_get_rsvd_count()
 
 ## 流水类型
 
-PIPE_S
+PIPE_TYPE_S
 
 ## 约束说明
 
@@ -38,7 +38,7 @@ PIPE_S
 
 ```cpp
 ...                                       // 进行GatherMask计算
-asc_sync_notify(PIPE_V, PIPE_S, 0);       // 设置等待和同步信号
-asc_sync_wait(PIPE_V, PIPE_S, 0);
+asc_sync_notify(PIPE_TYPE_V, PIPE_TYPE_S, 0);       // 设置等待和同步信号
+asc_sync_wait(PIPE_TYPE_V, PIPE_TYPE_S, 0);
 int64_t result = asc_get_rsvd_count();    // 获取结果
 ```

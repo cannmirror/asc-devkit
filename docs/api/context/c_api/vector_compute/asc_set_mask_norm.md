@@ -9,7 +9,7 @@
 
 ## 功能说明
 
-设置mask模式为Normal模式，该模式为系统默认模式。
+设置Mask模式为Normal模式，该模式为系统默认模式。
 
 ## 函数原型
 
@@ -27,7 +27,7 @@ __aicore__ inline void asc_set_mask_norm()
 
 ## 流水类型
 
-PIPE_S
+PIPE_TYPE_S
 
 ## 约束说明
 

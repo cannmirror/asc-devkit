@@ -25,22 +25,17 @@
   ```cpp
   // 在转换有精度损失时表示RINT舍入模式，不涉及精度损失时表示不舍入
   __aicore__ inline void asc_float2half(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // RINT舍入模式
   __aicore__ inline void asc_float2half_r(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // ROUND舍入模式
   __aicore__ inline void asc_float2half_a(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // FLOOR舍入模式
   __aicore__ inline void asc_float2half_f(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // CEIL舍入模式
   __aicore__ inline void asc_float2half_c(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // TRUNC舍入模式
   __aicore__ inline void asc_float2half_z(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-  
+
   // ODD舍入模式
   __aicore__ inline void asc_float2half_o(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
   ```
@@ -50,22 +45,16 @@
   ```cpp
   // 在转换有精度损失时表示RINT舍入模式，不涉及精度损失时表示不舍入
   __aicore__ inline void asc_float2half(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-
   // RINT舍入模式
   __aicore__ inline void asc_float2half_r(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-
   // ROUND舍入模式
   __aicore__ inline void asc_float2half_a(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-
   // FLOOR舍入模式
   __aicore__ inline void asc_float2half_f(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-
   // CEIL舍入模式
   __aicore__ inline void asc_float2half_c(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-
   // TRUNC舍入模式
   __aicore__ inline void asc_float2half_z(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
-  
   // ODD舍入模式
   __aicore__ inline void asc_float2half_o(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
   ```
@@ -75,22 +64,16 @@
     ```cpp
   // 在转换有精度损失时表示RINT舍入模式，不涉及精度损失时表示不舍入
   __aicore__ inline void asc_float2half_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // RINT舍入模式
   __aicore__ inline void asc_float2half_r_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // ROUND舍入模式
   __aicore__ inline void asc_float2half_a_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // FLOOR舍入模式
   __aicore__ inline void asc_float2half_f_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // CEIL舍入模式
   __aicore__ inline void asc_float2half_c_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-
   // TRUNC舍入模式
   __aicore__ inline void asc_float2half_z_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
-  
   // ODD舍入模式
   __aicore__ inline void asc_float2half_o_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
   ```

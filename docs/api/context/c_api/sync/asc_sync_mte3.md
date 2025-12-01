@@ -21,7 +21,7 @@ __aicore__ inline void asc_sync_mte3(int id)
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :--- | :--- |
-| id | 输入 | 同步ID |
+| id | 输入 | 同步ID。 |
 
 ## 返回值说明
 

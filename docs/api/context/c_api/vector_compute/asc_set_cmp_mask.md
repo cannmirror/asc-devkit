@@ -38,7 +38,7 @@ PIPE_V
 ## 调用示例
 
 ```cpp
-__ubuf__ void* sel_mask = asc_get_phy_buf_addr(0);
+__ubuf__ void* sel_mask = (__ubuf__ void*)asc_get_phy_buf_addr(0);
 ...     //计算sel_mask的值
 asc_set_cmp_mask(sel_mask);
 ...    // 进行Select操作
