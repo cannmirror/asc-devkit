@@ -4,9 +4,9 @@
 
 |结构名|说明|
 |-----------------------|-----------------------|
-| [asc_binary_config](struct/asc_binary_config.md) | 双目非连续计算API读写控制参数 |
-| [asc_unary_config](struct/asc_unary_config.md) | 单目非连续计算API读写控制参数 |
-| [asc_copy_config](struct/asc_copy_config.md) | 单目非连续计算API读写控制参数 |
+| [asc_binary_config](struct/asc_binary_config.md) | 双目高维切分计算API读写控制参数 |
+| [asc_unary_config](struct/asc_unary_config.md) | 单目高维切分计算API读写控制参数 |
+| [asc_copy_config](struct/asc_copy_config.md) | 数据搬运API读写控制参数 |
 | [asc_block_reduce_config](struct/asc_block_reduce_config.md) | block reduce类计算API配置参数 |
 | [asc_repeat_reduce_config](struct/asc_repeat_reduce_config.md) | repeat reduce类计算API配置参数 |
 | [asc_duplicate_config](struct/asc_duplicate_config.md) | asc_duplicate API配置参数 |
@@ -16,9 +16,8 @@
 
 |   API名称   |   说明   |
 |----------|-----------|
-| [asc_get_cmp_mask](vector_compute/asc_get_cmp_mask.md) | 获取compare操作的比较结果。 |
+| [asc_get_cmp_mask](vector_compute/asc_get_cmp_mask.md) | 获取Compare操作的比较结果。 |
 | [asc_set_cmp_mask](vector_compute/asc_set_cmp_mask.md) | 为Select操作设置用于选择的掩码。 |
-| [asc_get_rsvd_count](vector_compute/asc_get_rsvd_count.md) | 获取GatherMask操作后剩余的元素数量。 |
 | [asc_set_mask_count](vector_compute/asc_set_mask_count.md) | 设置Mask模式为Counter模式。 |
 | [asc_set_mask_norm](vector_compute/asc_set_mask_norm.md) | 设置Mask模式为Normal模式。 |
 | [asc_set_vector_mask](vector_compute/asc_set_vector_mask.md) | 设置Mask值。 |
@@ -55,8 +54,8 @@
 
 |   API名称   |   说明   |
 |----------|-----------|
-| [asc_copy_ub2gm](datamove/asc_copy_ub2gm.md) | 将UB中的数据搬运到GM中。 |
-| [asc_copy_gm2ub](datamove/asc_copy_gm2ub.md) | 将GM中的数据搬运到UB中。 |
+| [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm.md) | 将UB中的数据搬运到GM中。 |
+| [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md) | 将GM中的数据搬运到UB中。 |
 
 ## 同步控制
 
