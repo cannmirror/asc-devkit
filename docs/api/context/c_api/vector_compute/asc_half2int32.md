@@ -26,50 +26,27 @@
   ```cpp
   //RINT舍入模式
   __aicore__ inline void asc_half2int32_r(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //ROUND舍入模式
   __aicore__ inline void asc_half2int32_a(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //FLOOR舍入模式
   __aicore__ inline void asc_half2int32_f(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //CEIL舍入模式
   __aicore__ inline void asc_half2int32_c(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //TRUNC舍入模式
   __aicore__ inline void asc_half2int32_z(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
   ```
+
 - 高维切分计算
   
   ```cpp
   //RINT舍入模式
   __aicore__ inline void asc_half2int32_r(__ubuf__ int32_t* dst, __ubuf__ half* src, const asc_unary_config& config)
-  ```
-  
-  ```cpp
   //ROUND舍入模式
   __aicore__ inline void asc_half2int32_a(__ubuf__ int32_t* dst, __ubuf__ half* src, const asc_unary_config& config)
-  ```
-  
-  ```cpp
   //FLOOR舍入模式
   __aicore__ inline void asc_half2int32_f(__ubuf__ int32_t* dst, __ubuf__ half* src, const asc_unary_config& config)
-  ```
-  
-  ```cpp
   //CEIL舍入模式
   __aicore__ inline void asc_half2int32_c(__ubuf__ int32_t* dst, __ubuf__ half* src, const asc_unary_config& config)
-  ```
-  
-  ```cpp
   //TRUNC舍入模式
   __aicore__ inline void asc_half2int32_z(__ubuf__ int32_t* dst, __ubuf__ half* src, const asc_unary_config& config)
   ```
@@ -79,24 +56,12 @@
   ```cpp
   //RINT舍入模式
   __aicore__ inline void asc_half2int32_r_sync(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //ROUND舍入模式
   __aicore__ inline void asc_half2int32_a_sync(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //FLOOR舍入模式
   __aicore__ inline void asc_half2int32_f_sync(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //CEIL舍入模式
   __aicore__ inline void asc_half2int32_c_sync(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
-  ```
-  
-  ```cpp
   //TRUNC舍入模式
   __aicore__ inline void asc_half2int32_z_sync(__ubuf__ int32_t* dst, __ubuf__ half* src, uint32_t count)
   ```
