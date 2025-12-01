@@ -80,27 +80,6 @@ log() {
     echo "[AscDevkit] [$cur_date] [$log_type]: $*" >> "$logfile"
 }
 
-get_arch_name() {
-    local pkg_dir="$1"
-    local scene_file="$pkg_dir/scene.info"
-    grep '^arch=' $scene_file | cut -d"=" -f2
-}
-
-create_stub_softlink() {
-    local stub_dir="$1"
-    if [ ! -d "$stub_dir" ]; then
-        return
-    fi
-    local arch_name="$2"
-    local pwdbak="$(pwd)"
-    cd $stub_dir && [ -d "$arch_name" ] && for so_file in $(find "$arch_name" -type f -o -type l); do
-        ln -sf "$so_file" "$(basename $so_file)"
-    done
-    [ -d "linux/x86_64" ] && ln -snf "linux/x86_64" "x86_64"
-    [ -d "linux/aarch64" ] && ln -snf "linux/aarch64" "aarch64"
-    cd $pwdbak
-}
-
 install_whl_package() {
     local _package_path="$1"
     local _package_name="$2"
@@ -126,18 +105,8 @@ custom_install() {
         log "ERROR" "ERR_NO:0x0001;ERR_DES:asc-devkit directory is empty"
         exit 1
     elif [ "$hetero_arch" != "y" ]; then
-        local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
-        create_stub_softlink "$common_parse_dir/share/info/asc-devkit/lib64/stub" "linux/$arch_name"
-        create_stub_softlink "$common_parse_dir/$arch_name-linux/devlib" "linux/$arch_name"
-        create_stub_softlink "$common_parse_dir/$arch_name-linux/lib64/stub" "linux/$arch_name"
-
         install_whl_package "${PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH}" "${PYTHON_ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
         install_whl_package "${PYTHON_ASC_OPC_TOOL_WHL_PATH}" "${PYTHON_ASC_OPC_TOOL_NAME}" "${WHL_INSTALL_DIR_PATH}"
-    else
-        local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
-        create_stub_softlink "$common_parse_dir/share/info/asc-devkit/lib64/stub" "linux/$arch_name"
-        create_stub_softlink "$common_parse_dir/../devlib" "linux/$arch_name"
-        create_stub_softlink "$common_parse_dir/../lib64/stub" "linux/$arch_name"
     fi
     return 0
 }

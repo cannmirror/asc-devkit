@@ -71,28 +71,6 @@ log() {
     echo "$log_format" >> "$logfile"
 }
 
-get_arch_name() {
-    local pkg_dir="$1"
-    local scene_file="$pkg_dir/scene.info"
-    grep '^arch=' $scene_file | cut -d"=" -f2
-}
-
-remove_stub_softlink() {
-    local ref_dir="$1"
-    if [ ! -d "$ref_dir" ]; then
-        return
-    fi
-    local stub_dir="$2"
-    if [ ! -d "$stub_dir" ]; then
-        return
-    fi
-    local pwdbak="$(pwd)"
-    cd $stub_dir && chmod u+w . && ls -1 "$ref_dir" | xargs --no-run-if-empty rm -rf
-    [ -L "x86_64" ] && rm -rf "x86_64"
-    [ -L "aarch64" ] && rm -rf "aarch64"
-    cd $pwdbak
-}
-
 whl_uninstall_package() {
     local _module="$1"
     local _module_path="$2"
@@ -146,18 +124,6 @@ custom_uninstall() {
     if [ -z "$common_parse_dir/share/info/asc-devkit" ]; then
         log "ERROR" "ERR_NO:0x0001;ERR_DES:asc-devkit directory is empty"
         exit 1
-    elif [ "$hetero_arch" != "y" ]; then
-        local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
-        local ref_dir="$common_parse_dir/share/info/asc-devkit/lib64/stub/linux/$arch_name"
-        remove_stub_softlink "$ref_dir" "$common_parse_dir/share/info/asc-devkit/lib64/stub"
-        remove_stub_softlink "$ref_dir" "$common_parse_dir/$arch_name-linux/devlib"
-        remove_stub_softlink "$ref_dir" "$common_parse_dir/$arch_name-linux/lib64/stub"
-    else
-        local arch_name="$(get_arch_name $common_parse_dir/share/info/asc-devkit)"
-        local ref_dir="$common_parse_dir/share/info/asc-devkit/lib64/stub/linux/$arch_name"
-        remove_stub_softlink "$ref_dir" "$common_parse_dir/share/info/asc-devkit/lib64/stub"
-        remove_stub_softlink "$ref_dir" "$common_parse_dir/../devlib"
-        remove_stub_softlink "$ref_dir" "$common_parse_dir/../lib64/stub"
     fi
 
     if [ "$hetero_arch" != "y" ]; then
