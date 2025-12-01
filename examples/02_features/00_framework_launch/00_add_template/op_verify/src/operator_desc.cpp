@@ -10,8 +10,6 @@
 #include "common.h"
 #include "operator_desc.h"
 
-using namespace std;
-
 OperatorDesc::OperatorDesc(std::string opType) : opType(std::move(opType))
 {
     opAttr = aclopCreateAttr();
