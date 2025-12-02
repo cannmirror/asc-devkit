@@ -10,9 +10,9 @@
 
    - cmake >= 3.16.0
 
-   - ccache >= 4.6.1
+   - ccache >= 4.8.2（可选，缓存编译结果，避免重复编译，缩短项目构建时间）
 
-     建议版本[release-v4.6.1](https://github.com/ccache/ccache/releases/tag/v4.6.1)，x86_64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.6.1/ccache-4.6.1-linux-x86_64.tar.xz)，aarch64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.6.1/ccache-4.6.1.tar.gz)。
+     建议版本[release-v4.8.2](https://gitcode.com/cann-src-third-party/ccache/releases/4.8.2)，x86_64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.8.2/ccache-4.8.2-linux-x86_64.tar.xz)，aarch64环境[下载链接](https://gitcode.com/cann-src-third-party/ccache/releases/download/4.8.2/ccache-4.8.2.tar.gz)。
 
      x86_64环境安装步骤如下：
      
@@ -21,19 +21,18 @@
      # 这里以安装路径/opt为例，对安装命令进行说明
      mkdir /opt/buildtools
      # 切换到安装包下载路径，将ccache解压到安装路径
-     tar -xf ccache-4.6.1-linux-x86_64.tar.xz -C /opt/buildtools
-     chmod 755 /opt/buildtools/ccache-4.6.1-linux-x86_64/ccache
+     tar -xf ccache-4.8.2-linux-x86_64.tar.xz -C /opt/buildtools
+     chmod 755 /opt/buildtools/ccache-4.8.2-linux-x86_64/ccache
      mkdir -p /usr/local/ccache/bin
      # 建立软链接
-     ln -sf /opt/buildtools/ccache-4.6.1-linux-x86_64/ccache /usr/local/bin/ccache
-     ln -sf /opt/buildtools/ccache-4.6.1-linux-x86_64/ccache /usr/local/ccache/bin/ccache
+     ln -sf /opt/buildtools/ccache-4.8.2-linux-x86_64/ccache /usr/local/bin/ccache
+     ln -sf /opt/buildtools/ccache-4.8.2-linux-x86_64/ccache /usr/local/ccache/bin/ccache
      # 将ccache添加到环境变量PATH
      export PATH=/usr/local/ccache/bin:$PATH
      ```
      
      aarch64环境安装步骤如下：
-     - 下载依赖项  
-       下载[zstd](https://github.com/facebook/zstd/releases/download/v1.5.0/zstd-1.5.0.tar.gz)和[hiredis](https://github.com/redis/hiredis/archive/refs/tags/v1.0.2.tar.gz)。
+     - 下载编译ccache的依赖项：[zstd](https://gitcode.com/cann-src-third-party/zstd/releases/download/1.5.6/zstd-1.5.6.tar.gz)和[hiredis](https://gitcode.com/cann-src-third-party/hiredis/releases/download/1.3.0/hiredis-1.3.0.tar.gz)。
     
      - 编译安装
      
@@ -42,20 +41,20 @@
         # 这里以安装路径/opt为例，对安装命令进行说明
         mkdir /opt/buildtools
         # 切换到安装包下载路径，将zstd解压到安装路径
-        tar -xf zstd-1.5.0.tar.gz -C /opt/buildtools
-        cd /opt/buildtools/zstd-1.5.0
+        tar -xf zstd-1.5.6.tar.gz -C /opt/buildtools
+        cd /opt/buildtools/zstd-1.5.6
         make -j 24
         make install
         cd -
         # 切换到安装包下载路径，将hiredis解压到安装路径
-        tar -xf hiredis-1.0.2.tar.gz -C /opt/buildtools
-        cd /opt/buildtools/hiredis-1.0.2
-        make -j 24 prefix=/opt/buildtools/hiredis-1.0.2 all
-        make prefix=/opt/buildtools/hiredis-1.0.2 install
+        tar -xf hiredis-1.3.0.tar.gz -C /opt/buildtools
+        cd /opt/buildtools/hiredis-1.3.0
+        make -j 24 prefix=/opt/buildtools/hiredis-1.3.0 all
+        make prefix=/opt/buildtools/hiredis-1.3.0 install
         cd -
         # 切换到安装包下载路径，将ccache解压到安装路径
-        tar -xf ccache-4.6.1.tar.gz -C /opt/buildtools
-        cd /opt/buildtools/ccache-4.6.1
+        tar -xf ccache-4.8.2.tar.gz -C /opt/buildtools
+        cd /opt/buildtools/ccache-4.8.2
         mkdir build
         cd build/
         cmake -DCMAKE_BUILD_TYPE=Release -DZSTD_LIBRARY=/usr/local/lib/libzstd.a -DZSTD_INCLUDE_DIR=/usr/local/include -DHIREDIS_LIBRARY=/usr/local/lib/libhiredis.a -DHIREDIS_INCLUDE_DIR=/usr/local/include ..
@@ -93,12 +92,14 @@
      pip3 install coverage
      ```
 
-   - googletest（可选，仅执行UT时依赖，建议版本[release-1.11.0](https://github.com/google/googletest/releases/tag/release-1.11.0)）
+   - googletest（可选，仅执行UT时依赖，建议版本[release-1.14.0](https://gitcode.com/cann-src-third-party/googletest/releases/v1.14.0)）
 
-     下载[googletest源码](https://github.com/google/googletest.git)后，执行以下命令安装：
+     下载[googletest源码](https://gitcode.com/cann-src-third-party/googletest/releases/download/v1.14.0/googletest-1.14.0.tar.gz)后，执行以下命令安装：
 
      ```bash
-     mkdir temp && cd temp                 # 在googletest源码根目录下创建临时目录并进入
+     tar -xf googletest-1.14.0.tar.gz
+     cd googletest-1.14.0
+     mkdir temp && cd temp                # 在googletest源码根目录下创建临时目录并进入
      cmake .. -DCMAKE_CXX_FLAGS="-fPIC -D_GLIBCXX_USE_CXX11_ABI=0"
      make
      make install                         # root用户安装googletest
