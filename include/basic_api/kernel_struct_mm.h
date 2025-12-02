@@ -2562,7 +2562,7 @@ namespace AscendC {
 struct LoadDataTrait {
     __aicore__ constexpr LoadDataTrait() {}
 
-    __aicore__ constexpr LoadDataTrait(const bool transposed) : transposed(transposed) {}
+    __aicore__ constexpr LoadDataTrait(const bool transposedIn) : transposed(transposedIn) {}
 
     bool transposed = false;
 };
