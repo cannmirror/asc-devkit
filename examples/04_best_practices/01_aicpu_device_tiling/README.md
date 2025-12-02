@@ -14,12 +14,12 @@
 │   ├── aicore_kernel.asc                  // AI Core算子实现
 │   ├── kernel_args.h                      // tiling结构体头文件
 │   ├── main.asc                           // AI CPU算子与AI Core算子调用
-│   └── aicpu_tiling.aicpu                 // AI CPU算子
+│   └── aicpu_tiling.aicpu                 // AI CPU算子实现
 ```
 
 ## 算子描述
-- main.asc中内AI CPU算子与AI Core算子均使用内核调用符<<<...>>>进行调用，AI CPU算子将tiling计算的结果传给AI Core算子
-- AI CPU算子与AI Core算子在不同stream上进行launch，样例中分别为stream与stream2。AI CPU算子使用event来表示，使用aclrtRecordEvent在stream中进行event的异步下发，使用aclrtStreamWaitEvent进行stream的阻塞，直到event完成。
+- main.asc中内AI CPU算子与AI Core算子均使用内核调用符<<<...>>>进行调用，AI CPU算子将tiling计算的结果传给AI Core算子。
+- AI CPU算子与AI Core算子在不同stream上进行launch，样例中分别为stream与stream2，event用于记录stream上已下发的任务。使用aclrtRecordEvent在指定stream中记录event，使用aclrtStreamWaitEvent阻塞指定的stream，直到指定的event完成。
 
 ## 编译运行
 - 配置环境变量  
