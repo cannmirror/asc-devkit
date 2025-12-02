@@ -48,6 +48,8 @@ else()
 endif()
 
 target_compile_options(ascend_runtime_base PRIVATE
+  -Wextra
+  -Wfloat-equal
   -fvisibility-inlines-hidden
   -fvisibility=hidden
 )

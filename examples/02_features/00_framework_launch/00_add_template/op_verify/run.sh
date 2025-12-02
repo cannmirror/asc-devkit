@@ -32,7 +32,7 @@ export DDK_PATH=$ASCEND_INSTALL_PATH
 arch=$(uname -m)
 export NPU_HOST_LIB=$ASCEND_INSTALL_PATH/${arch}-linux/lib64
 
-function main {
+function main() {
     # 1. 生成输入数据和真值数据
     cd $CURRENT_DIR/scripts
     python3 gen_data.py $HEIGHT $WIDTH
