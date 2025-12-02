@@ -23,7 +23,7 @@ namespace AscendC {
 namespace Internal {
 template <typename T>
 __simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, MicroAPI::RegTensor<float>& dstReg,
-                                          MicroAPI::MaskReg& dstPreg, uint32_t srcOffset)
+                                          MicroAPI::MaskReg& dstPreg, uint16_t srcOffset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
         MicroAPI::RegTensor<T> srcOrigin;
@@ -36,7 +36,7 @@ __simd_callee__ inline void LoadDataWithT(__ubuf__ T* src, MicroAPI::RegTensor<f
 
 template <typename T>
 __simd_callee__ inline void SaveDataWithT(__ubuf__ T* dst, MicroAPI::RegTensor<float>& srcReg,
-                                          MicroAPI::MaskReg& dstPreg, uint32_t dstOffset)
+                                          MicroAPI::MaskReg& dstPreg, uint16_t dstOffset)
 {
     if constexpr (IsSameType<T, half>::value || IsSameType<T, bfloat16_t>::value) {
         MicroAPI::RegTensor<T> regT;
@@ -497,6 +497,36 @@ __simd_vf__ inline void CumSumFirstDimBasicVF(__ubuf__ float* dst, uint16_t oute
     }
 }
 
+__simd_vf__ inline void CumSumFirstDimBasic2VF(__ubuf__ float* dst, uint16_t outerRepeatTime, uint16_t inner,
+                                               uint16_t mainRepeatTime, uint16_t innerOneRepNum, uint16_t tailTime,
+                                               uint32_t tailCount, uint16_t halfMainRepeatTime,
+                                               uint16_t mainTailRepeatTime, uint16_t innerTailOffset1,
+                                               uint16_t innerTailOffset2)
+{
+    MicroAPI::MaskReg pregFull = MicroAPI::CreateMask<float, MicroAPI::MaskPattern::ALL>();
+    MicroAPI::MaskReg pregTail = MicroAPI::UpdateMask<float>(tailCount);
+    MicroAPI::RegTensor<float> srcLeftReg;
+    MicroAPI::RegTensor<float> dstLeftReg;
+
+    for (uint16_t j = 0; j < mainRepeatTime; ++j) {
+        MicroAPI::DataCopy(dstLeftReg, dst + j * innerOneRepNum);
+        for (uint16_t i = 0; i < outerRepeatTime; ++i) {
+            MicroAPI::DataCopy(srcLeftReg, dst + (i + 1) * inner + j * innerOneRepNum);
+            MicroAPI::Add(dstLeftReg, srcLeftReg, dstLeftReg, pregFull);
+            MicroAPI::DataCopy(dst + (i + 1) * inner + j * innerOneRepNum, dstLeftReg, pregFull);
+        }
+    }
+
+    MicroAPI::DataCopy(dstLeftReg, dst + innerTailOffset2);
+    for (uint16_t i = 0; i < outerRepeatTime; ++i) {
+        for (uint16_t j = 0; j < tailTime; ++j) {
+            MicroAPI::DataCopy(srcLeftReg, dst + (i + 1) * inner + innerTailOffset2);
+            MicroAPI::Add(dstLeftReg, srcLeftReg, dstLeftReg, pregTail);
+            MicroAPI::DataCopy(dst + (i + 1) * inner + innerTailOffset2, dstLeftReg, pregTail);
+        }
+    }
+}
+
 __aicore__ inline void CumSumFirstDimBasic(const LocalTensor<float>& dstTensor, uint32_t outer, uint32_t inner)
 {
     __ubuf__ float* dst = (__ubuf__ float*)dstTensor.GetPhyAddr();
@@ -513,8 +543,8 @@ __aicore__ inline void CumSumFirstDimBasic(const LocalTensor<float>& dstTensor, 
     uint16_t castedInner = static_cast<uint16_t>(inner);
     uint16_t innerTailOffset1 = halfMainRepeatTime * innerOneRepNum * 2;
     uint16_t innerTailOffset2 = mainRepeatTime * innerOneRepNum;
-    CumSumFirstDimBasicVF(dst, outterRepeatTime, castedInner, mainRepeatTime, innerOneRepNum, tailRepeatTime, tailCount,
-                          halfMainRepeatTime, mainTailRepeatTime, innerTailOffset1, innerTailOffset2);
+    CumSumFirstDimBasic2VF(dst, outterRepeatTime, castedInner, mainRepeatTime, innerOneRepNum, tailRepeatTime,
+                           tailCount, halfMainRepeatTime, mainTailRepeatTime, innerTailOffset1, innerTailOffset2);
 }
 
 __aicore__ inline TransDataTo5HDParams ExtractTransDataParam(uint8_t repeatTimes, uint32_t inner, uint16_t alignOutter,

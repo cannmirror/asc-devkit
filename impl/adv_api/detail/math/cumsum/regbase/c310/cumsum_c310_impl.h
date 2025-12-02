@@ -1,12 +1,12 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
-* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-* CANN Open Software License Agreement Version 2.0 (the "License").
-* Please refer to the License for details. You may not use this file except in compliance with the License.
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-* See LICENSE in the root of the software repository for the full text of the License.
-*/
+ * Copyright (c) 2025 Huawei Technologies Co., Ltd.
+ * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+ * CANN Open Software License Agreement Version 2.0 (the "License").
+ * Please refer to the License for details. You may not use this file except in compliance with the License.
+ * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+ * See LICENSE in the root of the software repository for the full text of the License.
+ */
 
 /* !
  * \file cumsum_c310_impl.h
@@ -85,8 +85,13 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<half>& dstTensor, const L
         Internal::CumSumFirstDimBasic(floatTempBuffer, cumSumInfo.inner, alignOutter);
     }
     Internal::CumSumCopyWithCast(tempBuffer, floatTempBuffer, cumSumInfo.inner, alignOutter);
-    Internal::Transpose5HDBA(tempBuffer2, tempBuffer, cumSumInfo);
-    Internal::CumSumCopyOut(dstTensor, tempBuffer2, cumSumInfo.outter, cumSumInfo.inner);
+
+    if (cumSumInfo.outter % NCHW_CONV_ADDR_LIST_SIZE == 0 && cumSumInfo.inner % NCHW_CONV_ADDR_LIST_SIZE == 0) {
+        Internal::Transpose5HDBA(dstTensor, tempBuffer, cumSumInfo);
+    } else {
+        Internal::Transpose5HDBA(tempBuffer2, tempBuffer, cumSumInfo);
+        Internal::CumSumCopyOut(dstTensor, tempBuffer2, cumSumInfo.outter, cumSumInfo.inner);
+    }
 }
 
 template <typename T, const CumSumConfig& config>
