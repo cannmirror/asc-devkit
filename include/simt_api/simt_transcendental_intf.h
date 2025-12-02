@@ -89,21 +89,12 @@ __simt_callee__ inline void sincosf(float x, float &s, float &c);
  */
 __simt_callee__ inline void sincospif(float x, float &s, float &c);
 
-__simt_callee__ inline float expf(float x);
-
 __simt_callee__ inline float exp2f(float x);
 
 __simt_callee__ inline float exp10f(float x);
 
 __simt_callee__ inline float expm1f(float x);
 
-/**
- * The square root of x
- * @param   x  a float value.
- * @return  the square root of x
- *          if x<0 return Nan
- */
-__simt_callee__ inline float sqrtf(float x);
 
 /**
  * The reciprocal of the square root of x
@@ -230,10 +221,6 @@ __simt_callee__ inline float normf(int n, float* a);
  *      If n is less than 1, return 1/|a[0]|.
  */
 __simt_callee__ inline float rnormf(int n, float* a);
-
-__simt_callee__ inline float logf(float x);
-
-__simt_callee__ inline float powf(float x, float y);
 
 __simt_callee__ inline float log2f(float x);
 

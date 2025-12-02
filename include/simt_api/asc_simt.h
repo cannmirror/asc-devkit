@@ -9,15 +9,14 @@
 */
 
 /* !
- * \file simt_intf.h
+ * \file asc_simt.h
  * \brief
  */
 #ifndef ASCENDC_MODULE_SIMT_C_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_C_INTERFACE_H
 
-#include "kernel_simt_intf.h"
-
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#include "kernel_simt_intf.h"
 #include "simt_common_intf.h"
 #include "simt_atomic_intf.h"
 #include "simt_transcendental_intf.h"
@@ -25,4 +24,4 @@
 #include "simt_bessel_intf.h"
 #endif
 
-#endif  // ASCENDC_MODULE_SIMT_INTERFACE_H
+#endif  // ASCENDC_MODULE_SIMT_C_INTERFACE_H
