@@ -8,7 +8,7 @@
 ```
 ├── 04_addn        
 │   ├── CMakeLists.txt          // 编译工程文件
-│   └── addn.asc                // AscendC算子实现 & 调用样例
+│   └── addn.asc                // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述

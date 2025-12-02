@@ -8,7 +8,7 @@
 ```
 ├── 07_sub  
 │   ├── CMakeLists.txt    // 编译工程文件
-│   └── sub_custom.asc    // AscendC算子实现 & 调用样例
+│   └── sub_custom.asc    // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能：  
@@ -69,7 +69,7 @@
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
   cmake ..;make -j;             # 编译工程
-  ./demo                       # 执行编译生成的可执行程序，执行样例
+  ./demo                        # 执行编译生成的可执行程序，执行样例
   ```
   执行结果如下，说明精度对比成功。
   ```bash
