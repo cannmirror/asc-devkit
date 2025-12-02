@@ -17,7 +17,8 @@
 #define ASC_CPU_LOG_H
 #include <cassert>
 #include <cstdint>
-#include "dlog_pub.h"
+// relative to CANN_PACKAGE_PATH/include
+#include "../pkg_inc/base/dlog_pub.h"
 #include "base/alog_pub.h"
 #include "aicpu/cust_cpu_utils.h"
 
