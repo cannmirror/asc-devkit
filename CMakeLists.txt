@@ -51,11 +51,6 @@ endif()
 
 add_subdirectory(tools)
 
-install(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/ascendc/asc_devkit_version.h
-    DESTINATION ${INSTALL_LIBRARY_DIR}/include/ascendc OPTIONAL
-)
-
 if(PACKAGE_OPEN_PROJECT)
   cmake_minimum_required(VERSION 3.16)
   project(asc-devkit VERSION 1.0.0)
