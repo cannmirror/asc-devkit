@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef COMMON_GRAPH_DEBUG_GE_LOG_H
-#define COMMON_GRAPH_DEBUG_GE_LOG_H
+#ifndef COMMON_DEBUG_STUB_LOG_H
+#define COMMON_DEBUG_STUB_LOG_H
 
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -47,5 +47,5 @@
 #define GELOGD
 #endif
 
-#endif  // COMMON_GRAPH_DEBUG_GE_LOG_H_
+#endif  // COMMON_DEBUG_STUB_LOG_H_
 
