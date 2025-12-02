@@ -137,79 +137,6 @@ Copyright 2017 Roman Lebedev
 
 This project includes code snippets from the following open source projects:
 
-Software:samples 0.2.0
-Official Repository: https://github.com/Ascend/samples/
-Usage:
-examples/00_introduction/01_add/basic_api_memory_allocator_add/data_utils.h
-examples/00_introduction/02_matmul/normal_matmul/data_utils.h
-examples/00_introduction/03_matmulleakyrelu/data_utils.h
-examples/00_introduction/05_broadcast/data_utils.h
-examples/00_introduction/06_reduce/data_utils.h
-examples/00_introduction/08_unaligned_abs/data_utils.h
-examples/00_introduction/09_unaligned_reducemin/data_utils.h
-examples/00_introduction/10_unaligned_wholereducesum/data_utils.h
-examples/00_introduction/11_vectoradd/data_utils.h
-examples/01_utilities/00_printf/data_utils.h
-examples/01_utilities/01_assert/data_utils.h
-examples/01_utilities/02_dumptensor/data_utils.h
-examples/01_utilities/03_cpudebug/data_utils.h
-examples/02_features/00_framework_launch/00_add_template/op_verify/inc/common.h
-examples/02_features/00_framework_launch/00_add_template/op_verify/src/common.cpp
-examples/02_features/00_framework_launch/00_add_template/op_verify/inc/operator_desc.h
-examples/02_features/00_framework_launch/00_add_template/op_verify/inc/op_runner.h
-examples/02_features/00_framework_launch/00_add_template/op_verify/inc/op_runner.h
-examples/02_features/00_framework_launch/00_add_template/op_verify/inc/operator_desc.h
-examples/02_features/00_framework_launch/00_add_template/op_verify/src/op_runner.cpp
-examples/03_libraries/00_addcdivcustom/data_utils.h
-examples/04_best_practices/00_group_matmul/data_utils.h
-cmake/asc/fwk_modules/util/gen_ops_filter.sh
-Copyright Notice(s): 
-Copyright (C) 2020. Huawei Technologies Co., Ltd
-
-Software:canncamp 29aa8e4
-Official Repository: https://gitee.com/ascend/canncamp
-Usage:
-cmake/asc/fwk_modules/util/insert_op_info.py
-cmake/asc/fwk_modules/util/parse_ini_to_json.py
-Copyright Notice(s): 
-Copyright (C) 2020-2021. Huawei Technologies Co., Ltd
-
-Software:akg 0.5.0-beta
-Official Repository: https://github.com/mindspore-ai/akg
-Usage:
-tests/unit/basic_api/ut/testcase/c_api/stub/cce_stub.h
-tests/unit/basic_api/ut/stub/stub_fun.h
-Copyright Notice(s): 
-Copyright (C) 2020. Huawei Technologies Co., Ltd
-
-Software:akg 1.2.0
-Official Repository: https://github.com/mindspore-ai/akg
-Usage:
-impl/adv_api/detail/math/math_constant_util.h
-Copyright Notice(s): 
-Copyright (C) 2020. Huawei Technologies Co., Ltd
-
-Software:123 0.3.0
-Official Repository: https://github.com/coldenheart/123
-Usage:
-examples/02_features/00_framework_launch/00_add_template/op_verify/src/main.cpp
-Copyright Notice(s): 
-Copyright (C) 2020. Huawei Technologies Co., Ltd
-
-Software:tensorflow 43812c0
-Official Repository: https://gitee.com/ascend/tensorflow/repository
-Usage:
-scripts/package/scripts/run_asc-devkit_install.sh
-Copyright Notice(s): 
-Copyright (C) 2019-2020. Huawei Technologies Co., Ltd
-
-Software:metadef fedff4f
-Official Repository: https://gitee.com/ascend/metadef/repository
-Usage:
-scripts/package/scripts/run_asc-devkit_install.sh
-Copyright Notice(s): 
-Copyright (C) 2020. Huawei Technologies Co., Ltd
-
 License: Apache 2.0 with LLVM Exception
 ==============================================================================
 The LLVM Project is under the Apache License v2.0 with LLVM Exceptions:
@@ -465,34 +392,89 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
 SOFTWARE.
 
-==============================================================================
+Software:samples 0.2.0
+Official Repository: https://github.com/Ascend/samples
+Usage:
+examples/00_introduction/01_add/basic_api_memory_allocator_add/data_utils.h
+examples/00_introduction/02_matmul/normal_matmul/data_utils.h
+examples/00_introduction/03_matmulleakyrelu/data_utils.h
+examples/00_introduction/05_broadcast/data_utils.h
+examples/00_introduction/06_reduce/data_utils.h
+examples/00_introduction/08_unaligned_abs/data_utils.h
+examples/00_introduction/09_unaligned_reducemin/data_utils.h
+examples/00_introduction/10_unaligned_wholereducesum/data_utils.h
+examples/00_introduction/11_vectoradd/data_utils.h
+examples/01_utilities/00_printf/data_utils.h
+examples/01_utilities/01_assert/data_utils.h
+examples/01_utilities/02_dumptensor/data_utils.h
+examples/01_utilities/03_cpudebug/data_utils.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/common.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/src/common.cpp
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/operator_desc.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/op_runner.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/op_runner.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/inc/operator_desc.h
+examples/02_features/00_framework_launch/00_add_template/op_verify/src/op_runner.cpp
+examples/03_libraries/00_addcdivcustom/data_utils.h
+examples/04_best_practices/00_group_matmul/data_utils.h
+cmake/asc/fwk_modules/util/gen_ops_filter.sh
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
 
-Copyright (c) 2009-2014 by the contributors listed in CREDITS.TXT
+Software:canncamp 29aa8e4
+Official Repository: https://gitee.com/ascend/canncamp
+Usage:
+cmake/asc/fwk_modules/util/insert_op_info.py
+cmake/asc/fwk_modules/util/parse_ini_to_json.py
+Copyright Notice(s): 
+Copyright (C) 2020-2021. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Software:akg 0.5.0-beta
+Official Repository: https://github.com/mindspore-ai/akg
+Usage:
+tests/unit/basic_api/ut/testcase/c_api/stub/cce_stub.h
+tests/unit/basic_api/ut/stub/stub_fun.h
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+Software:akg 1.2.0
+Official Repository: https://github.com/mindspore-ai/akg
+Usage:
+impl/adv_api/detail/math/math_constant_util.h
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+Software:123 0.3.0
+Official Repository: https://github.com/coldenheart/123
+Usage:
+examples/02_features/00_framework_launch/00_add_template/op_verify/src/main.cpp
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
 
-Written Offer
-This product contains software whose rights holders license it on the terms of the GNU General Public License, version 2 (GPLv2) and/or other open source software licenses. We will provide you and any third party with the source code of the software licensed under an open source software license if you send us a written request by mail or email to the following addresses: 
-foss@huawei.com
-detailing the name of the product and the firmware version for which you need the source code and indicating how we can contact you.
+Software:tensorflow 43812c0
+Official Repository: https://gitee.com/ascend/tensorflow/repository
+Usage:
+scripts/package/scripts/run_asc-devkit_install.sh
+Copyright Notice(s): 
+Copyright (C) 2019-2020. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
 
-Please note you need to make a payment before you obtain the complete Corresponding Source Code from us. For how much you will pay and how we will deliver the complete Corresponding Source Code to you, we will further discuss it by mail or email.
-This offer is valid to anyone in receipt of this information.
-
-THIS OFFER IS VALID FOR THREE YEARS FROM THE MOMENT WE DISTRIBUTED THE PRODUCT OR FIRMWARE.
+Software:metadef fedff4f
+Official Repository: https://gitee.com/ascend/metadef/repository
+Usage:
+scripts/package/scripts/run_asc-devkit_install.sh
+Copyright Notice(s): 
+Copyright (C) 2020. Huawei Technologies Co., Ltd
+License: Apache License V2.0
+Please see above
