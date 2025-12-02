@@ -468,7 +468,6 @@ REGISTER_TILING_DEFAULT')
                         if tiling_key_in_group not in tiling_key_kernel_type.keys():
                             tiling_key_kernel_type[tiling_key_in_group] = default_kernel_type_for_group
 
-        auto_adaption_mix_flag = False
         if declare_param_str and select_param_str:
             # TPL
             extract_template_tiling_info(declare_param_str, select_param_str)
@@ -512,9 +511,6 @@ REGISTER_TILING_DEFAULT')
             if len(tiling_key_list_tmp) > 0:
                 tiling_key_list = tiling_key_list_tmp
 
-            for _, v in decode_tiling_result.items():
-                auto_adaption_mix_flag = "groupId" in v
-
         KernelInfoInfer.dfx_for_func_name(cce_file, origin_func_name, func_name_exist)
 
         if tiling_no_register_flag:
@@ -536,14 +532,11 @@ REGISTER_TILING_DEFAULT')
             else:
                 no_set_kernel_type = True
         else:
-            tiling_key_length_is_valid = len(tiling_key_kernel_type) > 0 and \
-                len(tiling_key_kernel_type) != len(tiling_key_list)
-            if tiling_key_length_is_valid \
-                and default_kernel_type == KernelMetaType.KERNEL_TYPE_MAX and not auto_adaption_mix_flag:
+            tilingkey_without_kernel_type_set = set(tiling_key_list) - set(tiling_key_kernel_type.keys())
+            if len(tilingkey_without_kernel_type_set) > 0 and default_kernel_type == KernelMetaType.KERNEL_TYPE_MAX:
                 raise Exception(f'must provide default kernel type')
-            for tiling_key in tiling_key_list:
-                if tiling_key not in tiling_key_kernel_type:
-                    tiling_key_kernel_type[tiling_key] = default_kernel_type
+            for tiling_key in tilingkey_without_kernel_type_set:
+                tiling_key_kernel_type[tiling_key] = default_kernel_type
             if get_current_build_config(enable_vector_core):
                 CommonUtility.dump_log(\
                     "Information Library Configuration Does Not Take Effect After the Macro Is Enabled",\
