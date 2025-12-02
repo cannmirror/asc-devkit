@@ -103,11 +103,6 @@ __simt_callee__ inline void sincospif(float x, float &s, float &c)
     AscendC::Simt::SinCospiImpl(x, s, c);
 }
 
-__simt_callee__ inline float expf(float x)
-{
-    return AscendC::Simt::ExpImpl(x);
-}
-
 __simt_callee__ inline float exp2f(float x)
 {
     return AscendC::Simt::Exp2Impl(x);
@@ -121,11 +116,6 @@ __simt_callee__ inline float exp10f(float x)
 __simt_callee__ inline float expm1f(float x)
 {
     return AscendC::Simt::Expm1Impl(x);
-}
-
-__simt_callee__ inline float sqrtf(float x)
-{
-    return AscendC::Simt::SqrtImpl(x);
 }
 
 __simt_callee__ inline float rsqrtf(float x)
@@ -180,16 +170,6 @@ __simt_callee__ inline float normf(int n, float* a)
 __simt_callee__ inline float rnormf(int n, float* a)
 {
     return AscendC::Simt::RnormImpl(n, a);
-}
-
-__simt_callee__ inline float logf(float x)
-{
-    return AscendC::Simt::LogImpl(x);
-}
-
-__simt_callee__ inline float powf(float x, float y)
-{
-    return AscendC::Simt::PowImpl(x, y);
 }
 
 __simt_callee__ inline float log2f(float x)

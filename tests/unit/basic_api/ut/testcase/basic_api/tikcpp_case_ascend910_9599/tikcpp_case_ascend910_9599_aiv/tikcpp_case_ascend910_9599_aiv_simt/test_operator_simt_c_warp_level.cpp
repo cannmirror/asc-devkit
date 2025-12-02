@@ -8,7 +8,7 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 #include <gtest/gtest.h>
-#include "simt_api/simt_intf.h"
+#include "simt_api/asc_simt.h"
 #include "kernel_operator.h"
 
 using namespace std;
