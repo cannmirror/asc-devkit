@@ -8,7 +8,7 @@
 ```
 ├── 01_async_add
 │   ├── CMakeLists.txt      // 编译工程文件
-│   ├── c_api_add.asc       // AscendC算子实现 & 调用样例
+│   ├── c_api_add.asc       // Ascend C算子实现 & 调用样例
 │   └── README.md
 ```
 

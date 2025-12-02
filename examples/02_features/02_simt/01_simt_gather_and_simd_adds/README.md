@@ -102,7 +102,7 @@
     ```bash
     # 配置CANN环境变量
     source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-    # 添加AscendC CMake Module搜索路径至环境变量
+    # 添加Ascend C CMake Module搜索路径至环境变量
     export CMAKE_PREFIX_PATH=${ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake:$CMAKE_PREFIX_PATH
     ```
 

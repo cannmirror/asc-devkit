@@ -11,7 +11,7 @@
 ├── 02_c_api_delicacy_async_add
 │   ├── CMakeLists.txt      // 编译工程文件
 │   ├── README.md           // 说明文档
-│   └── c_api_add.asc      // C_API算子实现 & 调用样例
+│   └── c_api_add.asc       // C_API算子实现 & 调用样例
 ```
 
 ## 算子描述

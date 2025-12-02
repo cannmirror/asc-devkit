@@ -9,7 +9,7 @@
 ```
 ├── 00_helloworld
 │   ├── CMakeLists.txt      // 编译工程文件
-│   └── hello_world.asc     // AscendC算子实现 & 调用样例
+│   └── hello_world.asc     // Ascend C算子实现 & 调用样例
 ```
 
 ## 编译运行
