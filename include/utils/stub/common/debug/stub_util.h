@@ -9,14 +9,14 @@
 */
 
 /*!
- * \file ge_util.h
+ * \file stub_util.h
  * \brief
  */
 
-#ifndef COMMON_GRAPH_DEBUG_GE_UTIL_H
-#define COMMON_GRAPH_DEBUG_GE_UTIL_H
+#ifndef COMMON_DEBUG_STUB_UTIL_H
+#define COMMON_DEBUG_STUB_UTIL_H
 
-#include "common/ge_common/debug/ge_log.h"
+#include "common/debug/stub_log.h"
 #include "graph/ge_error_codes.h"
 namespace ge {
 
@@ -35,4 +35,4 @@ static inline std::shared_ptr<T> ComGraphMakeShared(Args &&...args)
 }
 
 }  // namespace ge
-#endif  // COMMON_GRAPH_DEBUG_GE_UTIL_H_
+#endif  // COMMON_DEBUG_STUB_UTIL_H_

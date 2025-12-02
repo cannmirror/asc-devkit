@@ -11,7 +11,7 @@
 #include <inttypes.h>
 #include <algorithm>
 #include "graph/tensor.h"
-#include "debug/ge_util.h"
+#include "debug/stub_util.h"
 namespace {
 const int64_t UNKNOWN_DIM_SIZE = -1;
 }  // namespace

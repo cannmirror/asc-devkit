@@ -679,7 +679,7 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         ${ASCENDC_INCLUDE_DIR}/utils/context/
         ${ASCENDC_INCLUDE_DIR}/utils/tiling/platform
         ${ASCENDC_INCLUDE_DIR}/utils/stub
-        ${ASCENDC_INCLUDE_DIR}/utils/stub/common/ge_common
+        ${ASCENDC_INCLUDE_DIR}/utils/stub/common
     )
 
     target_compile_options(tikcpp_tiling_utest_${product_type} PRIVATE
