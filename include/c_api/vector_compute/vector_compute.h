@@ -483,6 +483,19 @@ __aicore__ inline void asc_exp(__ubuf__ float* dst, __ubuf__ float* src, uint32_
 
 __aicore__ inline void asc_exp_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count);
 
+// ==========asc_log(half/float)==========
+__aicore__ inline void asc_log(__ubuf__ half* dst, __ubuf__ half* src, const asc_unary_config& config);
+
+__aicore__ inline void asc_log(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count);
+
+__aicore__ inline void asc_log_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count);
+
+__aicore__ inline void asc_log(__ubuf__ float* dst, __ubuf__ float* src, const asc_unary_config& config);
+
+__aicore__ inline void asc_log(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count);
+
+__aicore__ inline void asc_log_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count);
+
 // ==========asc_max(half/float/int16_t/int32_t)==========
 __aicore__ inline void asc_max(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint32_t count);
 

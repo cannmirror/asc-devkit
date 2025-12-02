@@ -41,6 +41,7 @@
 #include "vdiv/asc_2201/div_impl.h"
 #include "vector_dup/asc_2201/duplicate_impl.h"
 #include "vexp/asc_2201/exp_impl.h"
+#include "vlog/asc_2201/log_impl.h"
 #include "vmax/asc_2201/max_impl.h"
 #include "vmin/asc_2201/min_impl.h"
 #include "vmul/asc_2201/mul_impl.h"
@@ -1199,6 +1200,37 @@ __aicore__ inline void asc_exp(__ubuf__ float* dst, __ubuf__ float* src, uint32_
 __aicore__ inline void asc_exp_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
 {
     CApiInternal::exp_sync_impl<float>(dst, src, count);
+}
+
+// ==========asc_log(half/float)==========
+__aicore__ inline void asc_log(__ubuf__ half* dst, __ubuf__ half* src, const asc_unary_config& config)
+{
+    CApiInternal::log_impl<half> (dst, src, config);
+}
+
+__aicore__ inline void asc_log(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
+{
+    CApiInternal::log_impl<half> (dst, src, count);
+}
+
+__aicore__ inline void asc_log_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
+{
+    CApiInternal::log_sync_impl<half>(dst, src, count);
+}
+
+__aicore__ inline void asc_log(__ubuf__ float* dst, __ubuf__ float* src, const asc_unary_config& config)
+{
+    CApiInternal::log_impl<float> (dst, src, config);
+}
+
+__aicore__ inline void asc_log(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
+{
+    CApiInternal::log_impl<float> (dst, src, count);
+}
+
+__aicore__ inline void asc_log_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
+{
+    CApiInternal::log_sync_impl<float>(dst, src, count);
 }
 
 // ==========asc_max(half/float/int16_t/int32_t)==========
