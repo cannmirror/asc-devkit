@@ -80,8 +80,7 @@ target_compile_options(asc_plugin PRIVATE
     -Wformat
     -D_FORTIFY_SOURCE=2
     -Os
-    -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-    -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+    -UNDEBUG
 )
 
 target_link_options(asc_plugin PRIVATE

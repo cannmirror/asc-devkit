@@ -53,8 +53,6 @@ target_compile_options(asc_platform PRIVATE
   -D_FORTIFY_SOURCE=2
   -Os
   -D_GLIBCXX_USE_CXX11_ABI=0
-  -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-  -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
 )
 
 target_link_options(asc_platform PRIVATE
