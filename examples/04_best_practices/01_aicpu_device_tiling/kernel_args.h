@@ -15,11 +15,11 @@
 
 #pragma once
 
-#include "stdint.h"
+#include <cstdint>
 
 namespace KernelInfo {
 struct TilingInfo {
-    uint64_t lock;
+    uint64_t lock;  // Synchronization lock between aicpu/aicore
     int8_t type;
     int8_t mode;
     int8_t len;
@@ -29,6 +29,6 @@ struct KernelArgs {
     uint32_t *xDevice;
     uint32_t *yDevice;
     uint32_t *zDevice;
-    TilingInfo *ti;
+    TilingInfo *ti;  // Parameters shared with aicore are used for synchronizing tiling selection
 };
 }
