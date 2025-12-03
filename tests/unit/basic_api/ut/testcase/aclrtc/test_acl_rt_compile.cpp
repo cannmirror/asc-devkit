@@ -47,7 +47,7 @@ extern asrtcGetProgramLogFuncPtr asrtcGetProgramLogPtr;
 
 extern aclError aclrtcAddNameExpr(aclrtcProg prog, const char *nameExpr);
 extern aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpr, const char **manglingName);
-extern bool EndsWith(const std::string& srcStr, const std::string& suffix);
+extern inline bool EndsWith(std::string_view str, std::string_view suffix);
 extern std::string ExtractCannPath(const std::string& pluginPath);
 extern bool PathCheck(const char* path);
 extern void* handle;
