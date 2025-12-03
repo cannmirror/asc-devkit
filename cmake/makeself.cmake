@@ -40,7 +40,7 @@ endif()
 # 生成安装配置文件
 set(CSV_OUTPUT ${STAGING_DIR}/filelist.csv)
 execute_process(
-    COMMAND python3 ${CPACK_CMAKE_SOURCE_DIR}/scripts/package/package.py --pkg_name ${CPACK_PACKAGE_NAME} --os_arch linux-${CPACK_ARCH} --version_dir ${CPACK_VERSION}
+    COMMAND python3 ${CPACK_CMAKE_SOURCE_DIR}/scripts/package/package.py --pkg_name ${CPACK_PACKAGE_NAME} --os_arch linux-${CPACK_ARCH}
     WORKING_DIRECTORY ${CPACK_CMAKE_BINARY_DIR}
     OUTPUT_VARIABLE result
     ERROR_VARIABLE error
