@@ -914,7 +914,7 @@ __aicore__ inline void LoadData3DV2L12UBCal(__ubuf__ T* dst, __cbuf__ T* src,
 }
 
 template <typename T>
-__aicore__ inline void LoadData3DV2L12L0ACal(__ca__ half* dst, __cbuf__ half* src, const Load3DBitModeParam& loadDataParams)
+__aicore__ inline void LoadData3DV2L12L0ACal(__ca__ T* dst, __cbuf__ T* src, const Load3DBitModeParam& loadDataParams)
 {
     if ASCEND_IS_AIC {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -934,7 +934,7 @@ __aicore__ inline void LoadData3DV2L12L0ACal(__ca__ half* dst, __cbuf__ half* sr
 }
 
 template <typename T>
-__aicore__ inline void LoadData3DV2L12L0BCal(__cb__ half* dst, __cbuf__ half* src, const Load3DBitModeParam& loadDataParams)
+__aicore__ inline void LoadData3DV2L12L0BCal(__cb__ T* dst, __cbuf__ T* src, const Load3DBitModeParam& loadDataParams)
 {
     if ASCEND_IS_AIC {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
