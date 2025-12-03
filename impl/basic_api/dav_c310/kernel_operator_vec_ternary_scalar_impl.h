@@ -126,7 +126,7 @@ __aicore__ inline void VecAxpyImplTemplate(__ubuf__ T *dst, __ubuf__ U *src, U s
 
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2); // maskReg 256bit PK-> 128bit
         }
         VecAxpyVFImpl<func, isSetMask, isMaskBitMode, false, T, U>(dst, src, scalarValue, maskArrayStruct, maskCount,
             repeatTime, repeatParams, maskBuf);

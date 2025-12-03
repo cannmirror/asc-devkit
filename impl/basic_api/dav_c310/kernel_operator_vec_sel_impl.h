@@ -116,7 +116,7 @@ __aicore__ inline void SelectCal(
     static_assert(SupportType<T, half, int16_t, uint16_t, int32_t, uint32_t, float, bfloat16_t>(),
         "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
-    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);
     WaitFlag<HardEvent::V_S>(eventIdVToS);
@@ -205,7 +205,7 @@ __aicore__ inline void SelectCal(
     SetFlag<HardEvent::S_V>(eventIdSToV);
     WaitFlag<HardEvent::S_V>(eventIdSToV);
     if (isCounterMode) {
-        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         SelectWithoutMaskMode1ImplVF<T, U, true>(dst, sel, src0, scalar, tempBuf, repeat, repeatParams);
         AscendCUtils::FreeTemporaryBuffer<uint64_t>(tempBuf);
     } else {

@@ -170,7 +170,7 @@ __aicore__ inline void GatherMaskSqueezeNormal(
             }
         }
     }
-    __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 32);
+    __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(GetRuntimeUBSize(), 32);
     GatherMaskSqueezeNormalTmpBuffer<T, solidPattern>(dst, src0, tempBuf, reducev2Params);
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
@@ -267,7 +267,7 @@ __aicore__ inline void GatherMaskSqueezeReduce(
             }
         }
     }
-    __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 32);
+    __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(GetRuntimeUBSize(), 32);
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
     constexpr uint32_t ElePerVec = GetVecLen() / sizeof(T);
     uint16_t innerRepeatTimes = CeilDivision(mask, ElePerVec);

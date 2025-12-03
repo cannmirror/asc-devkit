@@ -744,7 +744,7 @@ __aicore__ inline void VecCopyLevel0Template(__ubuf__ T *dst, __ubuf__ T *src, c
 
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2); // maskReg 256bit PK-> 128bit
         }
         VF_CALL<VecCopyLevel0VFImpl<isSetMask, isMaskBitMode, false, T>>(dst, src, maskArray, maskCount, repeatTime,
             repeatParams, maskBuf);

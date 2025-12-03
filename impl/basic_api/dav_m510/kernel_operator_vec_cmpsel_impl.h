@@ -80,7 +80,7 @@ __aicore__ inline void VcmpImpl(
     event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
     SetFlag<HardEvent::S_V>(eventIdSToV);
     WaitFlag<HardEvent::S_V>(eventIdSToV);
-    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
     if (isCounterMode) {
         switch (cmpMode) {
             case CMPMODE::LT: {
@@ -165,7 +165,7 @@ __aicore__ inline void VcmpImpl(
     event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
     SetFlag<HardEvent::S_V>(eventIdSToV);
     WaitFlag<HardEvent::S_V>(eventIdSToV);
-    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
     if (isCounterMode) {
         switch (cmpMode) {
             case CMPMODE::LT: {
@@ -508,7 +508,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U *dst, __ubuf__ T *src0, const T src
     static_assert(SupportType<U, uint8_t>(), "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         switch (cmpMode) {
             case CMPMODE::LT: {
                 VF_CALL<CompareScalarLevel0CounterMode<T, U, CMPMODE::LT, isSetMask>>(
@@ -594,7 +594,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U *dst, __ubuf__ T *src0, const T src
     static_assert(SupportType<U, uint8_t>(), "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         switch (cmpMode) {
             case CMPMODE::LT: {
                 VF_CALL<CompareScalarLevel0CounterMode<T, U, CMPMODE::LT, isSetMask>>(
@@ -813,7 +813,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U *dst, const T src0, __ubuf__ T *src
     static_assert(SupportType<U, uint8_t>(), "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         switch (cmpMode) {
             case CMPMODE::LT: {
                 VF_CALL<CompareSrc0ScalarLevel0CounterMode<T, U, CMPMODE::LT, isSetMask>>(
@@ -899,7 +899,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U *dst, const T src0, __ubuf__ T *src
     static_assert(SupportType<U, uint8_t>(), "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-         __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+         __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         switch (cmpMode) {
             case CMPMODE::LT: {
                 VF_CALL<CompareSrc0ScalarLevel0CounterMode<T, U, CMPMODE::LT, isSetMask>>(
@@ -1304,7 +1304,7 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U *dst, __ubuf__ T *src0, __ubuf__ T 
 {
     bool isCounterMode = Internal::IsCounterMode();
     if (isCounterMode) {
-        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         switch (cmpMode) {
             case CMPMODE::LT: {
                 VF_CALL<CompareScalarBothTensorLevel0CounterMode<T, U, CMPMODE::LT, isBitMapMode, scalarIdx, pattern, isSetMask>>(dst, src0, src1, mask, tempBuf, repeatParams);
@@ -1495,7 +1495,7 @@ __aicore__ inline void SelectCal(
     static_assert(SupportType<T, half, int16_t, uint16_t, int32_t, uint32_t, float, bfloat16_t>(),
         "current data type is not supported!");
     bool isCounterMode = Internal::IsCounterMode();
-    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);
     WaitFlag<HardEvent::V_S>(eventIdVToS);
@@ -1584,7 +1584,7 @@ __aicore__ inline void SelectCal(
     SetFlag<HardEvent::S_V>(eventIdSToV);
     WaitFlag<HardEvent::S_V>(eventIdSToV);
     if (isCounterMode) {
-        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+        __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         VF_CALL<SelectWithoutMaskMode1ImplVF<T, U, true>>(dst, sel, src0, scalar, tempBuf, repeat, repeatParams);
         AscendCUtils::FreeTemporaryBuffer<uint64_t>(tempBuf);
     } else {
