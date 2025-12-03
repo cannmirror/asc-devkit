@@ -27,7 +27,7 @@ __aicore__ inline uint64_t asc_get_overflow_status();
 
 __aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset);
 
-__aicore__ inline int64_t asc_get_sub_block_dim();
+__aicore__ inline int64_t asc_get_sub_block_num();
 
 __aicore__ inline int64_t asc_get_sub_block_id();
 

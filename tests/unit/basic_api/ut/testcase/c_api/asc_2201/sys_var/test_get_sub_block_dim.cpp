@@ -33,7 +33,7 @@ TEST_F(TestSysVarGetSubBlockDim, get_sub_block_dim_Succ)
             .times(1)
             .will(invoke(asc_get_sub_block_dim_Stub));
 
-    int64_t val = asc_get_sub_block_dim();
+    int64_t val = asc_get_sub_block_num();
     EXPECT_EQ(2, val);
     GlobalMockObject::verify();
 }
