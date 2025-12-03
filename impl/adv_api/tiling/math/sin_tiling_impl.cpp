@@ -48,7 +48,7 @@ inline uint32_t GetSinMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeS
         calcFactor = isReuseSource ? SIN_FLOAT_REUSE_CALC_FAC : SIN_FLOAT_NOREUSE_CALC_FAC;
     } else {
         ASCENDC_HOST_ASSERT(isReuseSource == false,
-            return 0, "when the input data type is half, isReuseSource is not support");
+            return 0, "when the input data type is half, isReuseSource is not supported");
         calcFactor = SIN_HALF_CALC_FAC;
     }
     return inputSize * calcFactor * typeSize;
@@ -63,7 +63,7 @@ inline uint32_t GetSinMinTmpSize(const ge::Shape& srcShape, const uint32_t typeS
         calcFactor = isReuseSource ? SIN_FLOAT_REUSE_CALC_FAC : SIN_FLOAT_NOREUSE_CALC_FAC;
     } else {
         ASCENDC_HOST_ASSERT(isReuseSource == false,
-            return 0, "when the input data type is half, isReuseSource is not support");
+            return 0, "when the input data type is half, isReuseSource is not supported");
         calcFactor = SIN_HALF_CALC_FAC;
     }
     return calcFactor * SIN_ONE_REPEAT_BYTE_SIZE;
