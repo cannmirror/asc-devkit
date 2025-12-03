@@ -13,10 +13,13 @@
 ascendc compile gen code
 """
 import re
+import os
 from functools import reduce
+from tbe.common.buildcfg import get_current_build_config
 from .get_op_tiling import TilingInfo
 from .ascendc_common_utility import CommonUtility, CompileInfo
-from .ascendc_constants import TILING_KEY_MACRO, CORE_TYPE_CUBE, INPUT_OUTPUT_DTYPE_LEN
+from .ascendc_constants import TILING_KEY_MACRO, CORE_TYPE_CUBE, INPUT_OUTPUT_DTYPE_LEN, \
+    ASCENDC_OOM
 from .get_op_tiling import OpInfo
 from .global_storage import global_var_storage
 
@@ -328,3 +331,58 @@ def add_op_param_to_workspace(opinfo: OpInfo, tiling_info: TilingInfo, source: s
     if count > 128:
         raise Exception(f"input and output num exceed 128")
     return source
+
+
+def _gen_compile_cmd(src_file: str, dst_file: str, compile_option_tuple, tiling_file: str, \
+                            with_tiling_file: bool = True):
+    """
+    Generate the compile command for the v100/v200 compiler.
+    :param src_file: the source file
+    :param dst_file: the destination file
+    :param extra_options: the extra options
+    :param with_tiling_file: whether with the tiling file
+    :return: the compile command
+    """
+    jump_expand_flag = '-cce-aicore-jump-expand=true' in compile_option_tuple.compile_options
+    compile_cmd = CommonUtility.ascendc_build_aicore_compile_cmd(src_file, dst_file, "")
+    if global_var_storage.get_variable("ascendc_enable_ccache") == True:
+        compile_cmd = [os.environ.get("ASCENDC_CCACHE_EXECUTABLE")] + compile_cmd
+    to_del_idx = []
+    for cmd_idx, cmd in enumerate(compile_cmd):
+        if '-fcce-vf-vl=256' in cmd:
+            to_del_idx.append(cmd_idx - 1)
+            to_del_idx.append(cmd_idx)
+        if '-cce-aicore-fp-ceiling' in cmd:
+            to_del_idx.append(cmd_idx - 1)
+            to_del_idx.append(cmd_idx)
+        # whether auto sync or not, it should be ascendc`s charge
+        elif '--cce-auto-sync' in cmd:
+            to_del_idx.append(cmd_idx)
+        # if customize set op jump open, then change jump expand setting which was auto generated
+        elif (jump_expand_flag or global_var_storage.get_variable("ascendc_enable_sanitizer")) and \
+            '-cce-aicore-jump-expand=false' == cmd:
+            compile_cmd[cmd_idx] = '-cce-aicore-jump-expand=true'
+        elif cmd == 'ccec':
+            compile_cmd[cmd_idx] = global_var_storage.get_variable("ascendc_compiler_path")
+    for idx in reversed(to_del_idx):
+        del compile_cmd[idx]
+
+    # v100 / v200 add stack size compile_cmd = [cmd.replace('16000', '32000') for cmd in compile_cmd]
+    compile_cmd_front = compile_cmd[:3]
+    compile_cmd_backend = compile_cmd[3:]
+    for option in compile_option_tuple.compile_options:
+        compile_cmd_front += [option]
+    compile_cmd = compile_cmd_front + compile_cmd_backend
+    for opt in compile_option_tuple.mllvm_options:
+        compile_cmd += [opt]
+    if global_var_storage.get_variable("ascendc_enable_sanitizer"):
+        compile_cmd += ["--cce-enable-sanitizer", "-g"]
+        compile_cmd += ["-mllvm", "-cce-aicore-long-call", "-mllvm", "-cce-aicore-jump-expand=true"]
+    if with_tiling_file:
+        compile_cmd += ["-include", tiling_file]
+    compile_cmd += ["-std=c++17"]
+    compile_cmd += ["--cce-mask-opt"]
+    if "oom" in get_current_build_config("tir.op_debug_config"):
+        compile_cmd += [f"-D{ASCENDC_OOM}={1}"]
+    compile_cmd += ["--cce-long-call=true"]
+    return compile_cmd
