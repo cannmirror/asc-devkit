@@ -77,7 +77,7 @@
 | [asc_get_block_idx](sys_var/asc_get_block_idx.md) | 获取当前运行核的索引。 |
 | [asc_get_core_id](sys_var/asc_get_core_id.md) | 获取当前核的编号。 |
 | [asc_get_sub_block_id](sys_var/asc_get_sub_block_id.md) | 获取AI Core上Vector核的ID。 |
-| [asc_get_sub_block_dim](sys_var/asc_get_sub_block_dim.md) | 分离模式下，获取一个AI Core上Cube Core（AIC）或者Vector Core（AIV）的数量。 |
+| [asc_get_sub_block_num](sys_var/asc_get_sub_block_num.md) | 分离模式下，获取一个AI Core上Cube Core（AIC）或者Vector Core（AIV）的数量。 |
 | [asc_set_ctrl](sys_var/asc_set_ctrl.md) | 设置CTRL寄存器（控制寄存器）的值。 |
 | [asc_get_ctrl](sys_var/asc_get_ctrl.md) | 读取CTRL寄存器（控制寄存器）的值。 |
 | [asc_get_phy_buf_addr](sys_var/asc_get_phy_buf_addr.md) | 基于偏移量获取片上实际物理地址。 |

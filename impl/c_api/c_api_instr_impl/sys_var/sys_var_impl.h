@@ -15,7 +15,7 @@
 #include "get_ctrl/asc_2201/get_ctrl_impl.h"
 #include "get_imm/asc_2201/get_imm_impl.h"
 #include "get_overflow_status/asc_2201/get_overflow_status_impl.h"
-#include "get_sub_block_dim/asc_2201/get_sub_block_dim_impl.h"
+#include "get_sub_block_num/asc_2201/get_sub_block_num_impl.h"
 #include "get_sub_block_id/asc_2201/get_sub_block_id_impl.h"
 #include "get_sys_cnt/asc_2201/get_sys_cnt_impl.h"
 #include "set_ctrl/asc_2201/set_ctrl_impl.h"
@@ -52,9 +52,9 @@ __aicore__ inline uint64_t asc_get_overflow_status()
     return CApiInternal::get_overflow_status_impl();
 }
 
-__aicore__ inline int64_t asc_get_sub_block_dim()
+__aicore__ inline int64_t asc_get_sub_block_num()
 {
-    return CApiInternal::get_sub_block_dim_impl();
+    return CApiInternal::get_sub_block_num_impl();
 }
 
 __aicore__ inline int64_t asc_get_sub_block_id()
