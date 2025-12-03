@@ -31,8 +31,8 @@ from .ascendc_common_utility import CommonUtility
 from .ascendc_compile_v220 import gen_compile_cmd_v220
 from .super_kernel_utility import check_exist_instrinsic_when_super_kernel
 from .ascendc_compile_gen_code import _gen_compile_cmd
-from .ascendc_compile_check import _tpl_tilingkey_kernel_type_check, _tpl_tilingkey_deterministic_check, \
-    _tpl_tilingkey_native_check
+from .ascendc_compile_utils import tpl_tilingkey_kernel_type_check, tpl_tilingkey_deterministic_extract, \
+    tpl_tilingkey_native_extract
 
 DEFAULT_TILING_KEY = '0'
 
@@ -434,18 +434,22 @@ REGISTER_TILING_DEFAULT')
             extract_template_tiling_info(declare_param_str, select_param_str)
             decode_tiling_result = decode_tiling()
             tiling_key_list = [str(k) for k in decode_tiling_result.keys()]
-            tiling_key_list, decode_tiling_result = _tpl_tilingkey_kernel_type_check(
+            # ==================== All SEL checks
+            tiling_key_list, decode_tiling_result = tpl_tilingkey_kernel_type_check(
                 tiling_key_list, decode_tiling_result, tiling_key_kernel_type
             )
-            tiling_key_list, decode_tiling_result = _tpl_tilingkey_deterministic_check(
+            
+            # ==================== Filter SEL : ALL to Group
+            tiling_key_list, decode_tiling_result = tpl_tilingkey_native_extract(
+                tiling_key_list, decode_tiling_result, op_info
+            )
+            # ==================== Group SEL checks
+            tiling_key_list, decode_tiling_result = tpl_tilingkey_deterministic_extract(
                 tiling_key_list,
                 decode_tiling_result,
                 tiling_key_deterministic,
             )
-            tiling_key_list, decode_tiling_result = _tpl_tilingkey_native_check(
-                tiling_key_list, decode_tiling_result, op_info
-            )
-
+            # ==================== check done
             group_to_key = {}
             group_id_to_all_keys = {}
             for key, value in decode_tiling_result.items():

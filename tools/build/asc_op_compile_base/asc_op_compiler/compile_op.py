@@ -58,7 +58,7 @@ from .super_kernel_sub_op_compile import gen_sub_kernel_name, split_sub_kernel_o
 from .super_kernel_constants import SuperKernelStreamFusionMode
 from .super_kernel_option_parse import parse_super_kernel_options
 from .kernel_info_infer import KernelInfoInfer
-from .ascendc_compile_check import _check_custom_dcci_end_false, _check_if_gen_placehoder
+from .ascendc_compile_utils import check_custom_dcci_end_false, check_if_gen_placehoder
 
 DEFAULT_TILING_KEY = '0'
 COMPILE_INFO_KEY = 'compileInfo'
@@ -480,8 +480,8 @@ def gen_meta_info_section(compile_info, op_info):
     section_var += f" {{{{B_TYPE_DYNAMIC_PARAM, 2}}, {dynamic_param}}};\n"
 
     #optinalparam
-    optional_input_mode = 1 if _check_if_gen_placehoder(op_info, True) else 0
-    optional_output_mode = 1 if _check_if_gen_placehoder(op_info, False) else 0
+    optional_input_mode = 1 if check_if_gen_placehoder(op_info, True) else 0
+    optional_output_mode = 1 if check_if_gen_placehoder(op_info, False) else 0
     section_var += \
         f"static const struct BinaryMetaOptionalParam "
     section_var += f"{kernel_name}_kernel_metainfo_optionalparam_section __attribute__ "
@@ -675,7 +675,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
 
     if not global_var_storage.get_variable("ascendc_enable_super_kernel") and \
                     (CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510()):
-        _check_custom_dcci_end_false(compile_option_tuple)
+        check_custom_dcci_end_false(compile_option_tuple)
 
     source += "}\n\n"
     source += kernel_func_dec
@@ -1045,8 +1045,8 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     if global_var_storage.get_variable("ascendc_compile_debug_config"):
         compile_log_path = os.path.join(kernel_meta_dir, op_info.kernel_name + distinct_tag + '.log')
 
-    input_gen_placehoder = _check_if_gen_placehoder(op_info, True)
-    output_gen_placehoder = _check_if_gen_placehoder(op_info, False)
+    input_gen_placehoder = check_if_gen_placehoder(op_info, True)
+    output_gen_placehoder = check_if_gen_placehoder(op_info, False)
 
     LogUtil.detail_log_print(
         op_info.kernel_name,
