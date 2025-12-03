@@ -386,6 +386,12 @@ template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&
 using complex32 = AscendC::Complex<half>;
 using complex64 = AscendC::Complex<float>;
 
+template <auto funcPtr, typename... Args> __aicore__ inline void asc_call_vf(Args &&... args)
+{
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) 
+        funcPtr(args...);
+#endif
+}
 namespace AscendC {
 template <typename T> class LocalTensor;
 
