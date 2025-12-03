@@ -184,13 +184,13 @@ def {}({}, kernel_name="{}"{}):
     import platform
     archlinux = platform.machine()
     if ascend_home_path is None or ascend_home_path == '':
-        asc_opc_path = shutil.which("asc_opc")	
-        if asc_opc_path is not None:	
+        asc_opc_path = shutil.which("asc_opc")
+        if asc_opc_path is not None:
             asc_opc_path_link = os.path.dirname(asc_opc_path)
             asc_opc_real_path = os.path.realpath(asc_opc_path_link)
-            ascend_home_path = os.path.realpath(	
+            ascend_home_path = os.path.realpath(
                     os.path.join(asc_opc_real_path, "..", ".."))
-        else:	
+        else:
             ascend_home_path = "/usr/local/Ascend/latest"
 
     if 'x86' in archlinux:
@@ -525,7 +525,7 @@ src_ini_config.get(sub_sections, "kernel_dir"), src_ini_config.get(sub_sections,
                 self.argsdefv.append(None)
 
     def _write_head(self: any, fd: object):
-        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        now = datetime.datetime.now()
         curr_year = now.year
         former_year = curr_year - 1
         fd.write(IMPL_HEAD.format(former_year, curr_year, self.input_ori_name, self.output_ori_name))

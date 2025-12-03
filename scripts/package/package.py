@@ -17,7 +17,7 @@ import traceback
 import csv
 from argparse import Namespace
 from collections import namedtuple
-from datetime import datetime, timezone
+from datetime import datetime
 from functools import partial
 from itertools import chain
 from typing import Dict, Iterator, List, Set, Tuple, TextIO
@@ -51,7 +51,7 @@ def get_comments(package_name: PackageName) -> str:
 
 
 def get_compress_cmd(delivery_dir: str,
-                     build_dir: str, 
+                     build_dir: str,
                      pkg_args: Namespace,
                      xml_config: XmlConfig) -> str:
     """获取makeself压缩命令"""
@@ -547,7 +547,7 @@ def generate_config_inc(package_attr: Dict, build_dir: str,):
     """生成config.inc文件。"""
     if 'parallel' not in package_attr and 'parallel_limit' not in package_attr and 'use_move' not in package_attr:
         return
-    year = datetime.now(timezone.utc).year
+    year = datetime.now().year
     config_inc = os.path.join(build_dir, 'config.inc')
     header = [
         '#!/bin/sh\n',
@@ -677,11 +677,11 @@ def args_parse():
                         help="This parameter define package func name, has higher priority than func name in xml")
     parser.add_argument('--source_root', metavar='source_root', required=False, dest='source_root', nargs='?', const='',
                         help='source root dir.')
-    parser.add_argument('--makeself_dir', metavar='makeself_dir', required=False, dest='makeself_dir', 
+    parser.add_argument('--makeself_dir', metavar='makeself_dir', required=False, dest='makeself_dir',
                         nargs='?', const='', help='makeself dir.')
-    parser.add_argument('--delivery_dir', metavar='delivery_dir', required=False, dest='delivery_dir', 
+    parser.add_argument('--delivery_dir', metavar='delivery_dir', required=False, dest='delivery_dir',
                         nargs='?', const='', help='delivery dir.')
-    parser.add_argument('--independent_pkg', action='store_true', help='Independent pkg.')                    
+    parser.add_argument('--independent_pkg', action='store_true', help='Independent pkg.')
     parser.add_argument('--pkg-output-dir', default='', help='Package dirpath.')
     parser.add_argument('--version_dir', nargs='?', const='', default='', help='Set version dir.')
     parser.add_argument('--tag', metavar='tag', nargs='?', const='', default='')

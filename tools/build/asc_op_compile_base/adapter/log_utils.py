@@ -20,7 +20,7 @@ import sys
 import inspect
 from enum import Enum
 from types import MappingProxyType
-from datetime import datetime, timezone
+from datetime import datetime
 from .global_storage import global_var_storage
 from tbe.common.platform.platform_info import set_current_compile_soc_info
 from tbe.tvm.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
@@ -49,10 +49,10 @@ class AscendCLogLevel(Enum):
 
 
 LOG_LEVEL_TO_STR = {
-    AscendCLogLevel.LOG_DEBUG : "\033[32mDEBUG\033[0m",
-    AscendCLogLevel.LOG_INFO : "\033[32mINFO\033[0m",
-    AscendCLogLevel.LOG_WARNING : "\033[93mWARNING\033[0m",
-    AscendCLogLevel.LOG_ERROR : "\033[31mERROR\033[0m",
+    AscendCLogLevel.LOG_DEBUG: "DEBUG",
+    AscendCLogLevel.LOG_INFO: "INFO",
+    AscendCLogLevel.LOG_WARNING: "WARNING",
+    AscendCLogLevel.LOG_ERROR: "ERROR",
 }
 
 
@@ -123,13 +123,13 @@ class LogUtil:
     @staticmethod
     def log_print(kernel_name: str, msg_info: str, log_level: AscendCLogLevel, option: Option = Option.DEFAULT):
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        current_time = datetime.now(tz=timezone.utc)
-        tim_head = "[\033[32m{}-{}-{} {}:{}:{}\033[0m]".format(current_time.year, 
-                                                               current_time.month,
-                                                               current_time.day,
-                                                               current_time.hour,
-                                                               current_time.minute,
-                                                               current_time.second)
+        current_time = datetime.now()
+        tim_head = "[{}-{}-{} {}:{}:{}]".format(current_time.year,
+                                                current_time.month,
+                                                current_time.day,
+                                                current_time.hour,
+                                                current_time.minute,
+                                                current_time.second)
         level_info = " [{}]".format(LOG_LEVEL_TO_STR[log_level])
         log_msg = tim_head + level_info
         if option is not LogUtil.Option.NON_SOC:
@@ -163,12 +163,12 @@ class LogUtil:
             else:
                 file_line = "[unknown:0]"
             del frame
-    
+
             log_msg += " {} [tid: {}] {}".format(file_line, thread_id, msg_info)
             log_msg += " , timestamp: {}ns".format(nanoseconds)
             print(log_msg, flush=True)
 
-            
+
     @staticmethod
     def plog_print(kernel_name: str, msg_info: str, log_level: AscendCLogLevel, option: Option = Option.DEFAULT):
         # plog print
