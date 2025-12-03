@@ -18,7 +18,6 @@ target_compile_options(intf_pub INTERFACE
   -Wall
   -fPIC
   $<IF:$<VERSION_GREATER:${CMAKE_C_COMPILER_VERSION},4.8.5>,-fstack-protector-strong,-fstack-protector-all>
-  $<$<CONFIG:Debug>:-g>
   $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>
 )
 target_compile_definitions(intf_pub INTERFACE
@@ -45,7 +44,6 @@ target_compile_options(intf_pub_cxx14 INTERFACE
   -Wall
   -fPIC
   $<IF:$<VERSION_GREATER:${CMAKE_C_COMPILER_VERSION},4.8.5>,-fstack-protector-strong,-fstack-protector-all>
-  $<$<CONFIG:Debug>:-g>
   $<$<COMPILE_LANGUAGE:CXX>:-std=c++14>
 )
 target_compile_definitions(intf_pub_cxx14 INTERFACE
@@ -72,7 +70,6 @@ target_compile_options(intf_pub_cxx17 INTERFACE
     -Wall
     -fPIC
     $<IF:$<VERSION_GREATER:${CMAKE_C_COMPILER_VERSION},4.8.5>,-fstack-protector-strong,-fstack-protector-all>
-    $<$<CONFIG:Debug>:-g>
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++17>)
 target_compile_definitions(intf_pub_cxx17 INTERFACE
     _GLIBCXX_USE_CXX11_ABI=0
@@ -95,7 +92,6 @@ target_compile_options(intf_pub_aicpu INTERFACE
   -Wall
   -fPIC
   $<IF:$<VERSION_GREATER:${CMAKE_C_COMPILER_VERSION},4.8.5>,-fstack-protector-strong,-fstack-protector-all>
-  $<$<CONFIG:Debug>:-g>
   $<$<COMPILE_LANGUAGE:CXX>:-std=c++11>
 )
 target_compile_definitions(intf_pub_aicpu INTERFACE
