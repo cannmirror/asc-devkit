@@ -12,8 +12,10 @@
 #include <limits.h>
 #include <unistd.h>
 #include <unordered_map>
+#include <thread>
 #include <vector>
 #include <string>
+#include <string_view>
 #include <unistd.h>
 
 #include "acl_base.h"
@@ -38,6 +40,12 @@ const int ACL_ERROR_RTC_FAILURE = 576000;                               // ACLRT
 enum class AclrtcType {
     ACL_RTC_TYPE_AICORE = 0,
     ACL_RTC_TYPE_AICPU
+};
+
+enum class CompileType : uint32_t {
+    ASC = 0,
+    AICPU,
+    CCE,
 };
 
 class AclrtcProgram {
@@ -71,11 +79,12 @@ typedef enum {
 } asrtcResult;
 
 // utils function
-bool EndsWith(const std::string& srcStr, const std::string& suffix) {
-    if (suffix.size() > srcStr.size()) {
+inline bool EndsWith(std::string_view str, std::string_view suffix) noexcept
+{
+    if (str.length() < suffix.length()) {
         return false;
     }
-    return srcStr.compare(srcStr.size() - suffix.size(), suffix.size(), suffix) == 0;
+    return str.substr(str.length() - suffix.length()) == suffix;
 }
 
 std::string ExtractCannPath(const std::string& pluginPath) {
@@ -106,6 +115,29 @@ std::string GetCannPath() {
 
 bool PathCheck(const char* path) {
     return (access(path, W_OK) == 0 || access(path, R_OK) == 0 || access(path, F_OK) == 0);
+}
+
+// set compile type
+inline CompileType& GetCompileType()
+{
+    static thread_local CompileType type = CompileType::ASC;
+    return type;
+}
+
+inline void SetCompileTypeWithSuffix(const char* name)
+{
+    auto checkAndSetType = [name](CompileType type) {
+        constexpr const char* compile_suffix_list[] = {
+            ".asc",
+            ".aicpu",
+            ".cce"
+        };
+        if (EndsWith(name, compile_suffix_list[static_cast<uint32_t>(type)])) {
+            GetCompileType() = type;
+        }
+    };
+    // check .cce suffix
+    checkAndSetType(CompileType::CCE);
 }
 
 // 1. define function pointer
@@ -198,12 +230,15 @@ aclError aclrtcGetLoweredName(aclrtcProg prog, const char *nameExpr, const char 
 
 aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, int numHeaders, const char **headers,
     const char **includeNames) {
+    SetCompileTypeWithSuffix(name);
     return ErrorCodeProcess(asrtcCreateProgramPtr(prog, src, name, numHeaders, headers, includeNames));
 }
 
 aclError aclrtcCompileProg(aclrtcProg prog, int numOptions, const char **options) {
     std::vector<const char*> optionsPlugin;
-    optionsPlugin.emplace_back("-cce-enable-plugin");
+    if (GetCompileType() == CompileType::ASC) {
+        optionsPlugin.emplace_back("-xasc");
+    }
     optionsPlugin.emplace_back("-std=c++17");
     std::string cannPath = GetCannPath();
     std::string includePath = cannPath + "/include";
