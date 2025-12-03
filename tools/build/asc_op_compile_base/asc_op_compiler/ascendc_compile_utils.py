@@ -32,7 +32,7 @@ def get_kernel_meta_type(value):
     return None
 
 
-def _check_custom_dcci_end_false(compile_option_tuple):
+def check_custom_dcci_end_false(compile_option_tuple):
     has_dcci_end_false: bool = False
     for option_list in [compile_option_tuple.mllvm_options, compile_option_tuple.compile_options]:
         del_ids = []
@@ -49,44 +49,7 @@ def _check_custom_dcci_end_false(compile_option_tuple):
         compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
 
 
-def _check_sel_match_by_verifyParams(
-    tiling_key: str,
-    decode_tiling_map: dict,
-    value_list: List[str] = None,
-    verifyParams: str = "dtypeParams",
-    verify_indexes: List[bool] = None,
-) -> bool:
-    if value_list is None:
-        return True
-    if (
-        int(tiling_key) not in decode_tiling_map
-        or verifyParams not in decode_tiling_map[int(tiling_key)]
-        or not decode_tiling_map[int(tiling_key)][verifyParams]
-    ):
-        return True
-    target_params = value_list
-    verify_params = decode_tiling_map[int(tiling_key)][verifyParams]
-    if verify_indexes is not None:
-        verify_params = [
-            verify_params[i] for i, x in enumerate(verify_indexes) if x == True
-        ]
-    if "unknown" in verify_params:
-        CommonUtility.print_compile_log(
-            "",
-            f"Tiling key: '{tiling_key}' {verifyParams} exist 'unknown' Params, please check it. {verify_params}",
-            AscendCLogLevel.LOG_ERROR,
-        )
-    if len(target_params) != len(verify_params):
-        CommonUtility.print_compile_log(
-            "",
-            f"Tiling key: '{tiling_key}' {verifyParams} length do not match, "
-            f"expect is {len(target_params)}, but is {len(verify_params)}",
-            AscendCLogLevel.LOG_ERROR,
-        )
-    return target_params == verify_params
-
-
-def _check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
+def check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
     context = get_context()
     input_output_info = op_info.inputs if is_input is True else op_info.outputs
     if is_input:
@@ -106,7 +69,7 @@ def _check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
     return True
 
 
-def _tpl_tilingkey_kernel_type_check(
+def tpl_tilingkey_kernel_type_check(
     tiling_key_list, decode_tiling_result, tiling_key_kernel_type
 ):
     tpl_set_kernel_type_cnt = 0
@@ -137,7 +100,7 @@ def _tpl_tilingkey_kernel_type_check(
     return tiling_key_list, decode_tiling_result
 
 
-def _tpl_tilingkey_deterministic_check(
+def tpl_tilingkey_deterministic_extract(
     tiling_key_list,
     decode_tiling_result,
     tiling_key_deterministic
@@ -165,7 +128,7 @@ def _tpl_tilingkey_deterministic_check(
     return tiling_key_list, decode_tiling_result
 
 
-def _tpl_tilingkey_native_check(tiling_key_list, decode_tiling_result, op_info):
+def tpl_tilingkey_native_extract(tiling_key_list, decode_tiling_result, op_info):
     decl_dtype_indexes, decl_dtype_select_indexes = extract_decl_param_options(
         op_info, "dtype"
     )
@@ -174,17 +137,17 @@ def _tpl_tilingkey_native_check(tiling_key_list, decode_tiling_result, op_info):
     )
     post_filter_tilingkey_list = []
     for x in tiling_key_list:
-        if _check_sel_match_by_verifyParams(
+        if _filter_sel_match_by_verify_option(
             x,
             decode_tiling_result,
             decl_dtype_indexes,
-            verifyParams="dtypeParams",
+            verify_params="dtypeParams",
             verify_indexes=decl_dtype_select_indexes,
-        ) and _check_sel_match_by_verifyParams(
+        ) and _filter_sel_match_by_verify_option(
             x,
             decode_tiling_result,
             decl_format_indexes,
-            verifyParams="formatParams",
+            verify_params="formatParams",
             verify_indexes=decl_format_select_indexes,
         ):
             post_filter_tilingkey_list.append(x)
@@ -194,3 +157,39 @@ def _tpl_tilingkey_native_check(tiling_key_list, decode_tiling_result, op_info):
     }
     return tiling_key_list, decode_tiling_result
 
+
+def _filter_sel_match_by_verify_option(
+    tiling_key: str,
+    decode_tiling_map: dict,
+    value_list: List[str] = None,
+    verify_params: str = "dtypeParams",
+    verify_indexes: List[bool] = None,
+) -> bool:
+    if value_list is None:
+        return True
+    if (
+        int(tiling_key) not in decode_tiling_map
+        or verify_params not in decode_tiling_map[int(tiling_key)]
+        or not decode_tiling_map[int(tiling_key)][verify_params]
+    ):
+        return True
+    target_params = value_list
+    verify_params = decode_tiling_map[int(tiling_key)][verify_params]
+    if verify_indexes is not None:
+        verify_params = [
+            verify_params[i] for i, x in enumerate(verify_indexes) if x == True
+        ]
+    if "unknown" in verify_params:
+        CommonUtility.print_compile_log(
+            "",
+            f"Tiling key: '{tiling_key}' {verify_params} exist 'unknown' Params, please check it. {verify_params}",
+            AscendCLogLevel.LOG_ERROR,
+        )
+    if len(target_params) != len(verify_params):
+        CommonUtility.print_compile_log(
+            "",
+            f"Tiling key: '{tiling_key}' {verify_params} length do not match, "
+            f"expect is {len(target_params)}, but is {len(verify_params)}",
+            AscendCLogLevel.LOG_ERROR,
+        )
+    return target_params == verify_params
