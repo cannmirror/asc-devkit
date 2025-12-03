@@ -8,12 +8,12 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef IMPL_C_API_INSTR_SYS_VAR_GET_SUB_BLOCK_DIM_ASC_2201_GET_SUBBLOCK_DIM_IMPL_H
-#define IMPL_C_API_INSTR_SYS_VAR_GET_SUB_BLOCK_DIM_ASC_2201_GET_SUBBLOCK_DIM_IMPL_H
+#ifndef IMPL_C_API_INSTR_SYS_VAR_GET_SUB_BLOCK_NUM_ASC_2201_GET_SUBBLOCK_NUM_IMPL_H
+#define IMPL_C_API_INSTR_SYS_VAR_GET_SUB_BLOCK_NUM_ASC_2201_GET_SUBBLOCK_NUM_IMPL_H
 
 namespace CApiInternal {
 
-__aicore__ inline int64_t get_sub_block_dim_impl()
+__aicore__ inline int64_t get_sub_block_num_impl()
 {
     return get_subblockdim();
 }
