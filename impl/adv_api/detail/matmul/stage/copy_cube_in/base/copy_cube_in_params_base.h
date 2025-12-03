@@ -288,9 +288,14 @@
      __aicore__ inline int32_t GetBaseSize()
      {
          if constexpr (INPUT_TYPE::format == CubeFormat::VECTOR && !(IsTypeOneOfV<SrcT, float> || IsNeedC0Align<SrcT>())) {
-             return GetBaseWidth();
+#ifdef ASCENDC_CPU_DEBUG
+            // cpu mode need L1 buffer aligned to 512B
+            return GetBaseHeightAlign() * GetBaseWidthAlign();
+#else
+            return GetBaseWidth();
+#endif
          } else {
-             return GetBaseHeightAlign() * GetBaseWidthAlign();
+            return GetBaseHeightAlign() * GetBaseWidthAlign();
          }
      }
  };
@@ -547,9 +552,9 @@
      __aicore__ inline int32_t GetBaseSize()
      {
          if constexpr (INPUT_TYPE::format == CubeFormat::VECTOR && !(IsTypeOneOfV<SrcT, float> || IsNeedC0Align<SrcT>())) {
-             return GetBaseWidth();
+            return GetBaseWidth();
          } else {
-             return GetBaseHeightAlign() * GetBaseWidthAlign();
+            return GetBaseHeightAlign() * GetBaseWidthAlign();
          }
      }
  
