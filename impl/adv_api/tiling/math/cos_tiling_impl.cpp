@@ -35,7 +35,7 @@ inline uint32_t GetCosMaxTmpSize(const uint32_t inputSize, const uint32_t typeSi
         calcPro = isReuseSource ? COS_FLOAT_REUSE_CALC_FAC : COS_FLOAT_NOREUSE_CALC_FAC;
     } else {
         ASCENDC_HOST_ASSERT(!isReuseSource,
-            return 0, "when the input data type is half, isReuseSource is not support");
+            return 0, "when the input data type is half, isReuseSource is not supported");
         calcPro = COS_HALF_CALC_FAC;
     }
     return calcPro * std::max(inputSize * typeSize, COS_ONE_REPEAT_BYTE_SIZE);
@@ -48,7 +48,7 @@ inline uint32_t GetCosMinTmpSize(const uint32_t typeSize, const bool isReuseSour
         calcPro = isReuseSource ? COS_FLOAT_REUSE_CALC_FAC : COS_FLOAT_NOREUSE_CALC_FAC;
     } else {
         ASCENDC_HOST_ASSERT(!isReuseSource,
-            return 0, "when the input data type is half, isReuseSource is not support");
+            return 0, "when the input data type is half, isReuseSource is not supported");
         calcPro = COS_HALF_CALC_FAC;
     }
     return calcPro * COS_ONE_REPEAT_BYTE_SIZE;
