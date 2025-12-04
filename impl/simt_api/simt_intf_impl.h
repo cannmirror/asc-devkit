@@ -18,6 +18,8 @@
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #include "simt_atomic_intf_impl.h"
 #include "simt_common_intf_impl.h"
+#include "simt_cast_intf_impl.h"
+#include "simt_math_intf_impl.h"
 #include "simt_transcendental_intf_impl.h"
 #include "simt_warp_level_intf_impl.h"
 #include "simt_bessel_intf_impl.h"

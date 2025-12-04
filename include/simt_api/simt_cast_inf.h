@@ -9,21 +9,21 @@
 */
 
 /* !
- * \file asc_simt.h
+ * \file simt_cast_inf.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_SIMT_C_INTERFACE_H
-#define ASCENDC_MODULE_SIMT_C_INTERFACE_H
+#ifndef ASCENDC_MODULE_SIMT_C_CAST_INTERFACE_H
+#define ASCENDC_MODULE_SIMT_C_CAST_INTERFACE_H
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-#include "simt_api/cpp/kernel_simt_intf.h"
-#include "simt_common_intf.h"
-#include "simt_atomic_intf.h"
-#include "simt_cast_inf.h"
-#include "simt_math_intf.h"
-#include "simt_transcendental_intf.h"
-#include "simt_warp_level_intf.h"
-#include "simt_bessel_intf.h"
-#endif
+__simt_callee__ inline long int lroundf(float x);
 
-#endif  // ASCENDC_MODULE_SIMT_C_INTERFACE_H
+__simt_callee__ inline long long int llroundf(float x);
+
+__simt_callee__ inline long int lrintf(float x);
+
+__simt_callee__ inline long long int llrintf(float x);
+
+__simt_callee__ inline float truncf(float x);
+
+#include "impl/simt_api/simt_cast_intf_impl.h"
+#endif  // ASCENDC_MODULE_SIMT_C_CAST_INTERFACE_H
