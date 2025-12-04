@@ -18,8 +18,9 @@ install(
 
 install(
   DIRECTORY ${ASCENDC_INCLUDE_DIR}/utils/
-  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/utils/
-  OPTIONAL)
+  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/utils/ OPTIONAL
+  PATTERN "utils/stub" EXCLUDE
+)
 
 install(FILES ${ASCENDC_INCLUDE_DIR}/utils/tiling/platform/platform_ascendc.h
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/include/tiling/platform OPTIONAL
