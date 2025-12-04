@@ -272,7 +272,6 @@ public:
             }
         }
     }
-    __aicore__ inline void SetHIF8(MSG_POS KfcMsg* msg);
     __aicore__ inline bool IterateBatch(MSG_POS KfcMsg* msg);
     __aicore__ inline void StartIterateNBatch(MsgTmpPos MatmulConfigParams* body, uint32_t &cntIterator);
     __aicore__ inline bool IterateNBatch(MSG_POS KfcMsg* msg);
@@ -468,12 +467,6 @@ public:
             SetHF32(msg);
             return true;
         }
-#if defined(USE_SSBUF)
-        if (funID == KFC_Enum::MMFUN_SET_HIF8) {
-            SetHIF8(msg);
-            return true;
-        }
-#endif
         ASSERT("illegal function ID.");
         return true;
     }

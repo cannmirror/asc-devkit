@@ -445,12 +445,6 @@ public:
         }
     }
 #if defined(USE_SSBUF)
-    __aicore__ inline void SetHIF8(bool enableHIF8 = false)
-    {
-        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
-            cubeObj.cubeObj[0].mul.SetHIF8(enableHIF8);
-        }
-    }
     __aicore__ inline void SetTensorScaleA(const GlobalTensor<fp8_e8m0_t> &a, bool isTransposeScaleA = false)
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,

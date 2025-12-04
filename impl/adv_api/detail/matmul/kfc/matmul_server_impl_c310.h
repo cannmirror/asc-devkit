@@ -41,14 +41,6 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
 
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetHIF8(MSG_POS KfcMsg* msg)
-{
-    bool enableHIF8 = static_cast<bool>(msg->body.enHIF8);
-    mul.SetHIF8(enableHIF8);
-}
-
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
-    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::GetOffsetSize(
     MsgTmpPos MatmulConfigParams *body, KFC_Enum funID, uint32_t sync, uint64_t &offsetSize, uint32_t &enSequentialWrite, bool hasSetWorkspace)
 {
