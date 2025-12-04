@@ -10,9 +10,9 @@
 
    - cmake >= 3.16.0
 
-   - ccache >= 4.8.2（可选，缓存编译结果，避免重复编译，缩短项目构建时间）
+   - ccache >= 4.8.2（可选）
 
-     建议版本[release-v4.8.2](https://gitcode.com/cann-src-third-party/ccache/releases/4.8.2)，x86_64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.8.2/ccache-4.8.2-linux-x86_64.tar.xz)，aarch64环境[下载链接](https://gitcode.com/cann-src-third-party/ccache/releases/download/4.8.2/ccache-4.8.2.tar.gz)。
+     用于缓存编译结果，避免重复编译，缩短项目构建时间。建议版本[release-v4.8.2](https://gitcode.com/cann-src-third-party/ccache/releases/4.8.2)，x86_64环境[下载链接](https://github.com/ccache/ccache/releases/download/v4.8.2/ccache-4.8.2-linux-x86_64.tar.xz)，aarch64环境[下载链接](https://gitcode.com/cann-src-third-party/ccache/releases/download/4.8.2/ccache-4.8.2.tar.gz)。
 
      x86_64环境安装步骤如下：
      
@@ -67,15 +67,14 @@
         export PATH=/usr/local/ccache/bin:$PATH
         ```
 
-   - lcov >= 1.13（可选，仅执行UT时依赖）
+   - lcov >= 1.16（可选，仅执行UT时依赖）
    
-     以Ubuntu系统为例，x86_64环境执行以下命令安装：
+     下载[lcov源码](https://gitcode.com/cann-src-third-party/lcov/releases/download/v1.16/lcov-1.16.tar.gz)后，执行以下命令安装：
      ```bash
-     apt install lcov
-     ```
-     以Euler系统为例，aarch64环境执行以下命令安装：
-     ```bash
-     yum install lcov
+     tar -xf lcov-1.16.tar.gz
+     cd lcov-1.16
+     make install                         # root用户安装
+     # sudo make install                  # 非root用户安装
      ```
 
    - pytest >= 5.4.2（可选，仅执行UT时依赖）
