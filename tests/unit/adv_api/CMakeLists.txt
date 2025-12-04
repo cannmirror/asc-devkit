@@ -27,6 +27,8 @@ set(ASCENDC_DEP_HEADER_DIR
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/base
     ${ASCENDC_SYS_DIR}/pkg_inc/base
+    ${CMAKE_BINARY_DIR}
+    ${ASCENDC_UTILS_INCLUDE}
     ${ASCEND_CANN_PACKAGE_PATH}/tools/tikicpulib/lib/include
 )
 

@@ -12,7 +12,7 @@
 #include "kernel_operator.h"
 #include "test_utils.h"
 #undef ASCENDC_CPU_DEBUG
-#include "impl/kfc/kernel_kfc.h"
+#include "impl/adv_api/detail/kfc/kernel_kfc.h"
 #define ASCENDC_CPU_DEBUG
 
 using namespace std;
