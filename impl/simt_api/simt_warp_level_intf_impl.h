@@ -38,7 +38,47 @@ __simt_callee__ inline int32_t asc_shfl(int32_t var, int32_t srcLane, int32_t wi
     return AscendC::Simt::ShflSyncImpl(var, srcLane, width);
 }
 
+__simt_callee__ inline uint32_t asc_shfl(uint32_t var, int32_t srcLane, int32_t width)
+{
+    return AscendC::Simt::ShflSyncImpl(var, srcLane, width);
+}
+
+__simt_callee__ inline float asc_shfl(float var, int32_t srcLane, int32_t width)
+{
+    return AscendC::Simt::ShflSyncImpl(var, srcLane, width);
+}
+
+__simt_callee__ inline int64_t asc_shfl(int64_t var, int32_t srcLane, int32_t width)
+{
+    return AscendC::Simt::ShflSyncImpl(var, srcLane, width);
+}
+
+__simt_callee__ inline uint64_t asc_shfl(uint64_t var, int32_t srcLane, int32_t width)
+{
+    return AscendC::Simt::ShflSyncImpl(var, srcLane, width);
+}
+
 __simt_callee__ inline int32_t asc_shfl_up(int32_t var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflUpSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline uint32_t asc_shfl_up(uint32_t var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflUpSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline float asc_shfl_up(float var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflUpSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline int64_t asc_shfl_up(int64_t var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflUpSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline uint64_t asc_shfl_up(uint64_t var, uint32_t delta, int32_t width)
 {
     return AscendC::Simt::ShflUpSyncImpl(var, delta, width);
 }
@@ -48,7 +88,47 @@ __simt_callee__ inline int32_t asc_shfl_down(int32_t var, uint32_t delta, int32_
     return AscendC::Simt::ShflDownSyncImpl(var, delta, width);
 }
 
+__simt_callee__ inline uint32_t asc_shfl_down(uint32_t var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflDownSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline float asc_shfl_down(float var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflDownSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline int64_t asc_shfl_down(int64_t var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflDownSyncImpl(var, delta, width);
+}
+
+__simt_callee__ inline uint64_t asc_shfl_down(uint64_t var, uint32_t delta, int32_t width)
+{
+    return AscendC::Simt::ShflDownSyncImpl(var, delta, width);
+}
+
 __simt_callee__ inline int32_t asc_shfl_xor(int32_t var, int32_t laneMask, int32_t width)
+{
+    return AscendC::Simt::ShflXorSyncImpl(var, laneMask, width);
+}
+
+__simt_callee__ inline uint32_t asc_shfl_xor(uint32_t var, int32_t laneMask, int32_t width)
+{
+    return AscendC::Simt::ShflXorSyncImpl(var, laneMask, width);
+}
+
+__simt_callee__ inline float asc_shfl_xor(float var, int32_t laneMask, int32_t width)
+{
+    return AscendC::Simt::ShflXorSyncImpl(var, laneMask, width);
+}
+
+__simt_callee__ inline int64_t asc_shfl_xor(int64_t var, int32_t laneMask, int32_t width)
+{
+    return AscendC::Simt::ShflXorSyncImpl(var, laneMask, width);
+}
+
+__simt_callee__ inline uint64_t asc_shfl_xor(uint64_t var, int32_t laneMask, int32_t width)
 {
     return AscendC::Simt::ShflXorSyncImpl(var, laneMask, width);
 }
@@ -58,12 +138,42 @@ __simt_callee__ inline int32_t asc_reduce_add(int32_t val)
     return AscendC::Simt::ReduceAddSyncImpl(val);
 }
 
+__simt_callee__ inline uint32_t asc_reduce_add(uint32_t val)
+{
+    return AscendC::Simt::ReduceAddSyncImpl(val);
+}
+
+__simt_callee__ inline float asc_reduce_add(float val)
+{
+    return AscendC::Simt::ReduceAddSyncImpl(val);
+}
+
 __simt_callee__ inline int32_t asc_reduce_max(int32_t val)
 {
     return AscendC::Simt::ReduceMaxSyncImpl(val);
 }
 
+__simt_callee__ inline uint32_t asc_reduce_max(uint32_t val)
+{
+    return AscendC::Simt::ReduceMaxSyncImpl(val);
+}
+
+__simt_callee__ inline float asc_reduce_max(float val)
+{
+    return AscendC::Simt::ReduceMaxSyncImpl(val);
+}
+
 __simt_callee__ inline int32_t asc_reduce_min(int32_t val)
+{
+    return AscendC::Simt::ReduceMinSyncImpl(val);
+}
+
+__simt_callee__ inline uint32_t asc_reduce_min(uint32_t val)
+{
+    return AscendC::Simt::ReduceMinSyncImpl(val);
+}
+
+__simt_callee__ inline float asc_reduce_min(float val)
 {
     return AscendC::Simt::ReduceMinSyncImpl(val);
 }
