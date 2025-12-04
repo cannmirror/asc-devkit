@@ -15,7 +15,7 @@ find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascend
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    abs_duplicate_custom.asc
+    vector_add_custom.asc
 )
 
 target_link_libraries(demo PRIVATE
