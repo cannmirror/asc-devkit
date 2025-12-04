@@ -9,11 +9,13 @@
 | [01_c_api](./01_c_api) | [00_sync_add](./01_c_api/00_sync_add) | 本样例展示了使用C_API构建Add算子样例的编译流程 |
 | [02_simt](./02_simt/) | [01_simt_gather_and_simd_adds](./02_simt/01_simt_gather_and_simd_adds) | 从长度为10万的一维向量中获取指定索引的8192个数据，将获取到的数据分别加1，返回相加结果 |
 | [03_pytorch_integration](./03_pytorch_integration) | [00_pybind](./03_pytorch_integration/00_pybind) | 本样例介绍了基于Ascend C的Add自定义Vector算子的核函数直调方法及Pybind调用 |
+| [04_add_simd](./04_add_simd) |  | 本样例介绍Add算子的核函数直调方法，算子支持单核运行，不同流水线之间使用VEC_LOAD和VEC_STORE同步 |
 
 
 ## 更新说明
 | 时间       | 更新事项     |
 | ---------- | ------------ |
+| 2025/12/03 | 新增04_add_simd用例|
 | 2025/12/02 | 新增00_pybind用例|
 | 2025/11/28 | 新增add用例 |
 | 2025/11/25 | 新增simt_gather_and_simd_adds用例 |
