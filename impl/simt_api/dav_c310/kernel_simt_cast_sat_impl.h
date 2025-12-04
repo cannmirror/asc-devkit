@@ -226,6 +226,8 @@ __aicore__ inline T CastSat(U x)
                 y = __cvt_half<ROUND::O, RoundingSaturation::RS_ENABLE_VALUE>(x);
             }
             break;
+        default:
+            break;
     }
     return y;
 }
@@ -254,6 +256,8 @@ __aicore__ inline T CastNoSat(U x)
             if constexpr (std::is_same<Tuple<T, U>, Tuple<half, float>>::value) {
                 y = __cvt_half<ROUND::O, RoundingSaturation::RS_DISABLE_VALUE>(x);
             }
+            break;
+        default:
             break;
     }
     return y;
