@@ -128,6 +128,6 @@
 #endif
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 // SIMT API
-#include "simt_api/kernel_simt_intf.h"
+#include "simt_api/cpp/kernel_simt_intf.h"
 #endif
 #endif // ASCENDC_MODULE_OPERATOR_INTERFACE_H

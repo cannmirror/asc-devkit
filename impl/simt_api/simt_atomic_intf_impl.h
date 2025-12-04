@@ -374,4 +374,4 @@ __simt_callee__ inline uint64_t asc_atomic_xor(__gm__ uint64_t *address, uint64_
 {
     return AscendC::Simt::AtomicXorImpl(address, val);
 }
-#endif  // ASCENDC_MODULE_SIMT_ATOMIC_INTERFACE_IMPL_H
+#endif  // ASCENDC_MODULE_SIMT_C_ATOMIC_INTERFACE_IMPL_H

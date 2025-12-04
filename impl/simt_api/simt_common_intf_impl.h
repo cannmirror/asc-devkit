@@ -27,4 +27,4 @@ __simt_callee__ inline int32_t asc_get_block_num()
     return AscendC::Simt::GetBlockNumImpl();
 }
 
-#endif  // ASCENDC_MODULE_SIMT_COMMON_INTERFACE_IMPL_H
+#endif  // ASCENDC_MODULE_SIMT_C_COMMON_INTERFACE_IMPL_H

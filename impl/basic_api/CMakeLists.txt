@@ -25,6 +25,7 @@ target_include_directories(tikcfw_headers INTERFACE
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/basic_api/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/simt_api/>
+  $<BUILD_INTERFACE:${ASCENDC_DIR}/include/simt_api/cpp/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/micro_api/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/c_api/>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
@@ -35,6 +36,7 @@ target_include_directories(tikcfw_headers INTERFACE
   $<INSTALL_INTERFACE:include/asc/include>
   $<INSTALL_INTERFACE:include/asc/include/basic_api>
   $<INSTALL_INTERFACE:include/asc/include/simt_api>
+  $<INSTALL_INTERFACE:include/asc/include/simt_api/cpp>
   $<INSTALL_INTERFACE:include/asc/include/micro_api>
   $<INSTALL_INTERFACE:include/asc/include/c_api>
   $<INSTALL_INTERFACE:include/asc/impl>

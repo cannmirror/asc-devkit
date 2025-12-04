@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 #include <cmath>
-#include "simt_api/kernel_simt_intf.h"
 #include "kernel_operator.h"
 
 using namespace std;

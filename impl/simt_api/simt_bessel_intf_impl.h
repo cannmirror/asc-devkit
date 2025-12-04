@@ -43,4 +43,4 @@ __simt_callee__ inline float ynf(int n, float x)
     return AscendC::Simt::YnImpl(n, x);
 }
 
-#endif  // ASCENDC_MODULE_SIMT_BESSEL_INTERFACE_IMPL_H
+#endif  // ASCENDC_MODULE_SIMT_C_BESSEL_INTERFACE_IMPL_H

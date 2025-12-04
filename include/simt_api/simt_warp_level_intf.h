@@ -40,4 +40,4 @@ __simt_callee__ inline void asc_syncthreads();
 __simt_callee__ inline void asc_threadfence();
 
 #include "impl/simt_api/simt_warp_level_intf_impl.h"
-#endif  // ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_H
+#endif  // ASCENDC_MODULE_SIMT_C_WARP_LEVEL_INTERFACE_H

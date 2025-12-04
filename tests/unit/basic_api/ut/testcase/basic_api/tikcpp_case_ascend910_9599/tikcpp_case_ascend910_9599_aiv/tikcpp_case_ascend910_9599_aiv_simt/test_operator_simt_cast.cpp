@@ -10,7 +10,6 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 #include "kernel_operator.h"
-#include "simt_api/kernel_simt_intf.h"
 
 using namespace std;
 using namespace AscendC;

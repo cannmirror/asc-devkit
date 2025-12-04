@@ -23,4 +23,4 @@
 #include "simt_bessel_intf_impl.h"
 #endif
 
-#endif  // ASCENDC_MODULE_SIMT_INTF_IMPL_H
+#endif  // ASCENDC_MODULE_SIMT_C_INTF_IMPL_H

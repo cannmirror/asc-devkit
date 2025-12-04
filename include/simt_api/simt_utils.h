@@ -27,4 +27,4 @@ __aicore__ inline void asc_call_vf(dim3 threadNums, Args &&...args)
 #endif
 }
 
-#endif  // ASCENDC_MODULE_SIMT_UTILS_H
+#endif  // ASCENDC_MODULE_SIMT_C_UTILS_H

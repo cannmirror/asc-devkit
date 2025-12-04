@@ -257,4 +257,4 @@ __simt_callee__ inline float normcdff(float x)
     return AscendC::Simt::NormcdfImpl(x);
 }
 
-#endif  // ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H
+#endif  // ASCENDC_MODULE_SIMT_C_TRANSCENDENTAL_INTERFACE_IMPL_H

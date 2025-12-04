@@ -376,4 +376,4 @@ __simt_callee__ inline float cyl_bessel_i1f(float x);
 __simt_callee__ inline float normcdff(float x);
 
 #include "impl/simt_api/simt_transcendental_intf_impl.h"
-#endif  // ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_H
+#endif  // ASCENDC_MODULE_SIMT_C_TRANSCENDENTAL_INTERFACE_H
