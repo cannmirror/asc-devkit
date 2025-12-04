@@ -13,7 +13,7 @@
 #define private public
 #define protected public
 #define ENABLE_TILING_DEBUG
-#include "tiling/tiling_api.h"
+#include "tiling_api.h"
 #include "include/adv_api/conv_backprop/conv3d_bp_input_tilingdata.h"
 #include "include/adv_api/conv_backprop/conv3d_bp_input_tiling.h"
 #include "include/adv_api/conv/common/conv_common.h"

@@ -14,7 +14,7 @@
 #if defined  ASCENDC_TPL_KERNEL || defined ASCENDC_TPL_PRE
 #include "utils/tiling/template_argument.h"
 #else
-#include <tiling/tiling_api.h>
+#include "tiling_api.h"
 #endif
 
 //// data types
