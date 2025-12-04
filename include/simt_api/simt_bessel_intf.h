@@ -24,4 +24,4 @@ __simt_callee__ inline float y1f(float x);
 __simt_callee__ inline float ynf(int n, float x);
 
 #include "impl/simt_api/simt_bessel_intf_impl.h"
-#endif  // ASCENDC_MODULE_SIMT_BESSEL_INTERFACE_H
+#endif  // ASCENDC_MODULE_SIMT_C_BESSEL_INTERFACE_H

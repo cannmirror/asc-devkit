@@ -77,4 +77,4 @@ __simt_callee__ inline void asc_threadfence()
 {
     AscendC::Simt::ThreadFenceImpl();
 }
-#endif  // ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_IMPL_H
+#endif  // ASCENDC_MODULE_SIMT_C_WARP_LEVEL_INTERFACE_IMPL_H

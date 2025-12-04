@@ -147,4 +147,4 @@ __simt_callee__ inline int64_t asc_atomic_xor(__gm__ int64_t *address, int64_t v
 __simt_callee__ inline uint64_t asc_atomic_xor(__gm__ uint64_t *address, uint64_t val);
 
 #include "impl/simt_api/simt_atomic_intf_impl.h"
-#endif  // ASCENDC_MODULE_SIMT_ATOMIC_INTERFACE_H
+#endif  // ASCENDC_MODULE_SIMT_C_ATOMIC_INTERFACE_H

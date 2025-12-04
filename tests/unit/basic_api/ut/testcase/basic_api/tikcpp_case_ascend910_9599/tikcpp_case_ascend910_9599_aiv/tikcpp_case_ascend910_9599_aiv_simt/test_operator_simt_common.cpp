@@ -9,7 +9,6 @@
 */
 #include <gtest/gtest.h>
 #include <type_traits>
-#include "simt_api/kernel_simt_intf.h"
 #include "kernel_operator.h"
 
 class CommonTestsuite : public testing::Test {

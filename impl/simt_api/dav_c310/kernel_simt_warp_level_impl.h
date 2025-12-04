@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "kernel_utils.h"
-#include "simt_api/kernel_simt_utils.h"
+#include "simt_api/cpp/kernel_simt_utils.h"
 #include "stub_def.h"
 #endif
 #include "kernel_simt_common_impl.h"

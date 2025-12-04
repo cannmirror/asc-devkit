@@ -16,7 +16,7 @@
 #define ASCENDC_MODULE_SIMT_C_INTERFACE_H
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-#include "kernel_simt_intf.h"
+#include "simt_api/cpp/kernel_simt_intf.h"
 #include "simt_common_intf.h"
 #include "simt_atomic_intf.h"
 #include "simt_transcendental_intf.h"
