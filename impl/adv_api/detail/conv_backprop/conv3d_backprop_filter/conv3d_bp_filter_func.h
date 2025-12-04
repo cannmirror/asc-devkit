@@ -53,8 +53,8 @@ using TypeFalse = struct {
     __uint128_t _[1024];
 };
 
-#ifndef ASCC_STRUCT_ITERATEALL
-#define ASCC_STRUCT_ITERATEALL
+#ifndef ASCC_STRUCT_ITERATEORDER
+#define ASCC_STRUCT_ITERATEORDER
 enum class IterateOrder {
     ORDER_M = 0,
     ORDER_N,
