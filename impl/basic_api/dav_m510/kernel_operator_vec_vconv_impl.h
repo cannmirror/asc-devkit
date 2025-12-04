@@ -738,7 +738,7 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     if (isCounterMode) {
         __ubuf__ uint64_t *maskBuf = nullptr;
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
         if constexpr (b64Cast) {
             VF_CALL<CastIntrinsicsB64ImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
@@ -1014,7 +1014,7 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
     if (isCounterMode) {
         __ubuf__ uint64_t *maskBuf = nullptr;
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
         }
         if constexpr (b64Cast) {
             VF_CALL<CastIntrinsicsB64ImplCounterVF<DST_TYPE, SRC_TYPE, roundMode, isSetMask>>(
@@ -1645,7 +1645,7 @@ __aicore__ inline void CastDeqImpl(
         "Failed to check dtype in CastDeqImpl, current api support dtype combination is src: int16_t dst: int8_t/uint8_t"
         ", src:int32_t dst:half.");
     bool isCounterMode = Internal::IsCounterMode();
-    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 4);
+    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
     if constexpr (isSetMask) {
         SetVectorMask<T>(mask[1], mask[0]);
     }
@@ -1706,7 +1706,7 @@ __aicore__ inline void CastDeqImpl(
         "Failed to check dtype in CastDeqImpl, current api support dtype combination is src: int16_t dst: int8_t/uint8_t"
         ", src:int32_t dst:half.");
     bool isCounterMode = Internal::IsCounterMode();
-    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 4);
+    __ubuf__ uint64_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
     if constexpr (IsSameType<T, int32_t>::value) {
         half scale = g_deqValue;
         event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));

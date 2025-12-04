@@ -25,7 +25,7 @@ template <TPosition pos> __aicore__ inline uint64_t GetEndAddress()
 #if __NPU_ARCH__ == 2201
     return TOTAL_UB_SIZE - sizeof(KfcMsg);
 #elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-    return GetRuntimeUBSize();
+    return TMP_UB_OFFSET;
 #else
     return TOTAL_UB_SIZE;
 #endif
