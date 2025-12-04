@@ -280,20 +280,6 @@ public:
     }
 
 #if defined(USE_SSBUF)
-    __aicore__ inline void SetHIF8(bool enableHIF8 = false)
-    {
-        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
-    #if ASCENDC_CPU_DEBUG
-            if ASCEND_IS_AIC {
-                cubeObj.cubeObj[0].mul.SetHIF8(enableHIF8);
-            }
-    #endif
-            return;
-        }
-        kfcMsg_.body.enHIF8 = enableHIF8;
-        PostMessage<KFC_Enum::MMFUN_SET_HIF8, false>();
-    }
-
     __aicore__ inline void SetTensorA(const LocalTensor<SrcAT>& leftMatrix, bool isTransposeA = false)
     {
         static_assert(!ToMatmulConfig(MM_CFG).enableMixDualMaster,

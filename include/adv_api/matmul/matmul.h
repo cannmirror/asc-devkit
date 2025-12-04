@@ -345,12 +345,6 @@ public:
      */
     __aicore__ inline void SetHF32(bool enableHF32 = false, int32_t transMode = 0) {}
     /**
-     * @brief Set whether to enable HIF8 mode
-     * @param [in] enableHIF8: whether to enable HIF8 mode
-     * @note  enable HIF8 mode can improve performance but it may also reult in a loss of precision
-     */
-     __aicore__ inline void SetHIF8(bool enableHIF8 = false) {}
-    /**
      * @brief Set sub-block index
      * @param [in] subBlockIdx: sub-block index
      */
