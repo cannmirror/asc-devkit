@@ -15,7 +15,7 @@
 #ifndef ASCENDC_MODULE_SIMT_C_UTILS_H
 #define ASCENDC_MODULE_SIMT_C_UTILS_H
 
-#include "simt_api/kernel_simt_utils.h"
+#include "simt_api/cpp/kernel_simt_utils.h"
 
 using dim3 = cce::dim3;
 
