@@ -123,9 +123,16 @@ TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(AddScalar, asc_add_scalar, vadds, int16_t
 TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(AddScalar, asc_add_scalar, vadds, int32_t);
 
 // ==========asc_sub_scalar(half/float/int16_t/int32_t)==========
+// invoke asc_add_scalar()
 
 // ==========asc_mul_scalar(half/float/int16_t/int32_t)==========
 TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MulScalar, asc_mul_scalar, vmuls, half);
 TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MulScalar, asc_mul_scalar, vmuls, float);
 TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MulScalar, asc_mul_scalar, vmuls, int16_t);
 TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MulScalar, asc_mul_scalar, vmuls, int32_t);
+
+// ==========asc_max_scalar(half/float/int16_t/int32_t)==========
+TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MaxScalar, asc_max_scalar, vmaxs, half);
+TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MaxScalar, asc_max_scalar, vmaxs, float);
+TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MaxScalar, asc_max_scalar, vmaxs, int16_t);
+TEST_VECTOR_COMPUTE_UNARY_SCALAR_INSTR(MaxScalar, asc_max_scalar, vmaxs, int32_t);

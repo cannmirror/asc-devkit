@@ -42,6 +42,7 @@
 #include "vector_dup/asc_2201/duplicate_impl.h"
 #include "vexp/asc_2201/exp_impl.h"
 #include "vmax/asc_2201/max_impl.h"
+#include "vmaxs/asc_2201/max_scalar_impl.h"
 #include "vmin/asc_2201/min_impl.h"
 #include "vmul/asc_2201/mul_impl.h"
 #include "vmuls/asc_2201/mul_scalar_impl.h"
@@ -1260,6 +1261,67 @@ __aicore__ inline void asc_max(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __
 __aicore__ inline void asc_max_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t* src1, uint32_t count)
 {
     CApiInternal::max_sync_impl<int32_t>(dst, src0, src1, count);
+}
+
+// ==========asc_max_scalar(half/float/int16_t/int32_t)==========
+__aicore__ inline void asc_max_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count)
+{
+    CApiInternal::max_scalar_impl<half>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, const asc_unary_config& config)
+{
+    CApiInternal::max_scalar_impl<half>(dst, src, a, config);
+}
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count)
+{
+    CApiInternal::max_scalar_sync_impl<half>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
+{
+    CApiInternal::max_scalar_impl<float>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config)
+{
+    CApiInternal::max_scalar_impl<float>(dst, src, a, config);
+}
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
+{
+    CApiInternal::max_scalar_sync_impl<float>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
+{
+    CApiInternal::max_scalar_impl<int16_t>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config)
+{
+    CApiInternal::max_scalar_impl<int16_t>(dst, src, a, config);
+}
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
+{
+    CApiInternal::max_scalar_sync_impl<int16_t>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
+{
+    CApiInternal::max_scalar_impl<int32_t>(dst, src, a, count);
+}
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config)
+{
+    CApiInternal::max_scalar_impl<int32_t>(dst, src, a, config);
+}
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
+{
+    CApiInternal::max_scalar_sync_impl<int32_t>(dst, src, a, count);
 }
 
 // ==========asc_min(half/float/int16_t/int32_t)==========

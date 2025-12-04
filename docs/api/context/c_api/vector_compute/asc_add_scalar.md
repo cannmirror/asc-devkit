@@ -24,7 +24,6 @@ __aicore__ inline void asc_add_scalar(_ubuf__ int16_t* dst, _ubuf__ int16_t* src
 __aicore__ inline void asc_add_scalar(_ubuf__ half* dst, _ubuf__ half* src, half a, uint32_t count)
 __aicore__ inline void asc_add_scalar(_ubuf__ int32_t* dst, _ubuf__ int32_t* src, int32_t a, uint32_t count)
 __aicore__ inline void asc_add_scalar(_ubuf__ float* dst, _ubuf__ float* src, float a, uint32_t count)
-
 ```
 
 - 高维切分计算
@@ -80,5 +79,5 @@ uint64_t offset = 0;
 __ubuf__ half* src0 = (__ubuf__ half*)asc_get_phy_buf_addr(0);
 offset += total_length * sizeof(half);
 __ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
-asc_add_scalar(dst, src, a, total_length );
+asc_add_scalar(dst, src, a, total_length);
 ```

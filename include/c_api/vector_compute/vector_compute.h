@@ -508,6 +508,31 @@ __aicore__ inline void asc_max(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __
 
 __aicore__ inline void asc_max_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src0, __ubuf__ int32_t* src1, uint32_t count);
 
+// ==========asc_max_scalar(half/float/int16_t/int32_t)==========
+__aicore__ inline void asc_max_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, const asc_unary_config& config);
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config);
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config);
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count);
+
+__aicore__ inline void asc_max_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config);
+
+__aicore__ inline void asc_max_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count);
+
 // ==========asc_min(half/float/int16_t/int32_t)==========
 __aicore__ inline void asc_min(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint32_t count);
 
