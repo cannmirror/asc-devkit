@@ -20,9 +20,9 @@
 #include "include/utils/std/utility.h"
 
 namespace AscendC {
-namespace LayoutInternal { 
-    constexpr size_t TWO_DIM_DEPTH = 2;
-    constexpr size_t FOUR_DIM_DEPTH = 4;
+namespace LayoutInternal {
+constexpr size_t TWO_DIM_DEPTH = 2;
+constexpr size_t FOUR_DIM_DEPTH = 4;
 }
 
 template <typename T, typename U, typename S>
@@ -33,15 +33,6 @@ using Shape = Std::tuple<Shapes...>;
 
 template <typename... Strides>
 using Stride = Std::tuple<Strides...>;
-
-template<typename T>
-struct dynamic_type : Std::true_type {};
-
-template<size_t v>
-struct dynamic_type<Std::Int<v>> : Std::false_type {};
-
-template<typename T>
-constexpr bool dynamic_type_v = dynamic_type<T>::value;
 
 template <typename T>
 struct nesting_depth {
@@ -61,16 +52,72 @@ struct nesting_depth<Std::tuple<Args...>> {
 template <typename T>
 constexpr size_t nesting_depth_v = nesting_depth<T>::value;
 
-template <typename T>
-struct include_dynamic_type {
-    static constexpr bool value = dynamic_type_v<T>;
+template <size_t Dim, typename T, typename U>
+struct IsStaticLayout {
+private:
+    template<typename T1>
+    struct include_dynamic_type : Std::true_type {};
+
+    template<size_t v>
+    struct include_dynamic_type<Std::Int<v>> : Std::false_type {};
+
+    template <typename... Args>
+    struct include_dynamic_type<Std::tuple<Args...>> : Std::bool_constant<(include_dynamic_type<Args>::value || ...)> {};
+
+    __aicore__ inline static constexpr auto TestStaticLayout()
+    {
+        if constexpr (nesting_depth_v<T> == Dim && 
+            !(include_dynamic_type<T>::value || include_dynamic_type<U>::value)) {
+            return true;
+        }
+        return false;
+    }
+public:
+    static constexpr bool value = TestStaticLayout();
 };
 
-template <typename... Args>
-struct include_dynamic_type<Std::tuple<Args...>> : std::bool_constant<(include_dynamic_type<Args>::value || ...)> {};
+template<typename T, typename U>
+struct StaticLayoutSize {
+private:
+    __aicore__ inline static constexpr auto GetFourDimStaticLayoutSize() 
+    {
+        using rowShapeType = typename Std::tuple_element<0, T>::type;
+        using colShapeType = typename Std::tuple_element<1, T>::type;
+        using rowStrideType = typename Std::tuple_element<0, U>::type;
+        using colStrideType = typename Std::tuple_element<1, U>::type;
 
-template <typename T>
-constexpr bool include_dynamic_type_v = include_dynamic_type<T>::value;
+        using outterRowNumType = typename Std::tuple_element<1, rowShapeType>::type;
+        using outterRowStrideType = typename Std::tuple_element<1, rowStrideType>::type;
+        using outterColNumType = typename Std::tuple_element<1, colShapeType>::type;
+        using outterColStrideType = typename Std::tuple_element<1, colStrideType>::type;
+
+        return (outterRowNumType {} * outterRowStrideType {}) > (outterColNumType {} * outterColStrideType {}) ? 
+            (outterRowNumType {} * outterRowStrideType {}) : (outterColNumType {} * outterColStrideType {});
+    }
+
+    __aicore__ inline static constexpr auto GetTwoDimStaticLayoutSize() 
+    {
+        using rowNumType = typename Std::tuple_element<0, T>::type;
+        using colNumType = typename Std::tuple_element<1, T>::type;
+        using rowStrideType = typename Std::tuple_element<0, U>::type;
+        using colStrideType = typename Std::tuple_element<1, U>::type;
+
+        return (rowNumType {} * rowStrideType {}) > (colNumType {} * colStrideType {}) ? 
+            (rowNumType {} * rowStrideType {}) : (colNumType {} * colStrideType {});
+    }
+
+    __aicore__ inline static constexpr auto GetStaticLayoutSize() {
+        if constexpr (IsStaticLayout<LayoutInternal::FOUR_DIM_DEPTH, T, U>::value) {
+            return GetFourDimStaticLayoutSize();
+        } else if constexpr (IsStaticLayout<LayoutInternal::TWO_DIM_DEPTH, T, U>::value) {
+            return GetTwoDimStaticLayoutSize();
+        } else {
+            return Std::Int<0>{};
+        }
+    }
+public:
+    static constexpr size_t size = GetStaticLayoutSize();
+};
 
 template <typename... Ts>
 __aicore__ inline constexpr Shape<Ts...> MakeShape(const Ts&... t)
@@ -83,43 +130,6 @@ __aicore__ inline constexpr Stride<Ts...> MakeStride(const Ts&... t)
 {
     return {t...};
 }
-
-template <typename T, typename U, typename Enable = void>
-struct StaticLayoutSize;
-
-template <typename T, typename U>
-struct StaticLayoutSize<T, U, typename Std::enable_if<nesting_depth_v<T> == LayoutInternal::FOUR_DIM_DEPTH 
-    && !include_dynamic_type_v<T>>::type> {
-    using rowShapeType = typename Std::tuple_element<0, T>::type;
-    using colShapeType = typename Std::tuple_element<1, T>::type;
-    using rowStrideType = typename Std::tuple_element<0, U>::type;
-    using colStrideType = typename Std::tuple_element<1, U>::type;
-
-    using outterRowNumType = typename Std::tuple_element<1, rowShapeType>::type;
-    using outterRowStrideType = typename Std::tuple_element<1, rowStrideType>::type;
-    using outterColNumType = typename Std::tuple_element<1, colShapeType>::type;
-    using outterColStrideType = typename Std::tuple_element<1, colStrideType>::type;
-
-    static constexpr auto size = (outterRowNumType {} * outterRowStrideType {}) > (outterColNumType {} * outterColStrideType {}) ? 
-        (outterRowNumType {} * outterRowStrideType {}) : (outterColNumType {} * outterColStrideType {});
-};
-
-template <typename T, typename U>
-struct StaticLayoutSize<T, U, typename Std::enable_if<nesting_depth_v<T> == LayoutInternal::TWO_DIM_DEPTH 
-    && !include_dynamic_type_v<T>>::type> {
-    using rowNumType = typename Std::tuple_element<0, T>::type;
-    using colNumType = typename Std::tuple_element<1, T>::type;
-    using rowStrideType = typename Std::tuple_element<0, U>::type;
-    using colStrideType = typename Std::tuple_element<1, U>::type;
-
-    static constexpr auto size = (rowNumType {} * rowStrideType {}) > (colNumType {} * colStrideType {}) ? 
-        (rowNumType {} * rowStrideType {}) : (colNumType {} * colStrideType {});
-};
-
-template <typename T, typename U, typename Enable>
-struct StaticLayoutSize {
-    static constexpr auto size = Std::Int<0> {};
-};
 
 template <typename T, typename U>
 struct Layout : private Std::tuple<T, U>
