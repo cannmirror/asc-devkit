@@ -97,7 +97,7 @@ __aicore__ inline void AssembleHcclMsg(const CommonPrepareParam &param, HcclTili
 __aicore__ inline void AssembleHcclMsg(const CommonPrepareParam &param, int8_t srcGroupID,
                                        HcclHandle srcHandleID, __gm__ HcclMsg *dst)
 {
-    HcclMsg tmp;
+    HcclMsg tmp{};
     tmp.commType.msgType = param.commType.msgType;
     tmp.addMsg.v0Msg.commDepGroupID = srcGroupID;
     tmp.addMsg.v0Msg.commDepHandleID = srcHandleID;
