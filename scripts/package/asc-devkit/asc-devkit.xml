@@ -66,6 +66,7 @@
         <path value="$(TARGET_ENV)/asc/impl"/>
         <path value="$(TARGET_ENV)/asc/impl/adv_api"/>
         <path value="$(TARGET_ENV)/lib64"/>
+        <path value="$(TARGET_ENV)/lib64/cmake"/>
         <path value="$(TARGET_ENV)/lib64/device"/>
         <path value="$(TARGET_ENV)/lib64/device/lib64"/>
     </dir_info>
@@ -170,12 +171,20 @@
         <file value="VERSION" install_mod="550"/>
     </file_info>
 
-    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/tikcpp">
-        <file value="ascendc_kernel_cmake" entity="true"/>
+    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake">
+        <file value="fwk_modules"/>
+        <file value="legacy_modules"/>
+        <file value="ASC_CMake"/>
+        <file value="AICPU_CMake"/>
+        <file value="ascendc.cmake"/>
+    </file_info>
+
+    <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/lib64/cmake">
+        <file value="AICPUConfig.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/AICPUConfig.cmake"/>
+        <file value="ASCConfig.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/ASCConfig.cmake"/>
     </file_info>
     <file_info value="acl_rt"  copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/acl" install_path="$(TARGET_ENV)/include/acl" install_mod="440">
         <file value="acl_rt_compile.h"/>
     </file_info>
 
 </config>
-
