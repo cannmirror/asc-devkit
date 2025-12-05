@@ -407,6 +407,11 @@ bool InfoManager::HasAssert() const
     return hasAssert_;
 }
 
+bool InfoManager::HasUbufDynamicSize() const
+{
+    return hasUbufDynamicSize_;
+}
+
 bool InfoManager::IsDumpOn() const
 {
     return userDumpStatus_ && (hasPrintf_ || hasAssert_);

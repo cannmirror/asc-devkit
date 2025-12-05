@@ -52,7 +52,7 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace)
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType, 0);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
@@ -126,7 +126,7 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aiv_1_0)
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType, 0);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
@@ -200,7 +200,7 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aic_1_0)
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType, 0);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
@@ -277,7 +277,7 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_bisheng_core_ratio)
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType, 0);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
@@ -356,7 +356,7 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_printf)
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType, 0);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
@@ -417,7 +417,7 @@ template<typename T, int32_t Y, const auto& U, template<typename , typename > cl
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
         return;
     }
-    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
+    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType, 0);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;

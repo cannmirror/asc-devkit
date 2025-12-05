@@ -45,8 +45,8 @@ void AdumpPrintWorkSpace(const void *workSpaceAddr, const size_t dumpWorkSpaceSi
 namespace AscPluginGenerator {
 typedef void (*KernelFuncRegister)(void*);
 int32_t BindKernelRegisterFunc(KernelFuncRegister func);
-uint32_t LaunchAndProfiling(
-    const char *stubFunc, uint32_t blockDim, void *stream, void **args, uint32_t size, uint32_t ktype);
+uint32_t LaunchAndProfiling(const char *stubFunc, uint32_t blockDim, void *stream, void **args, uint32_t size,
+                            uint32_t ktype, const uint32_t ubufDynamicSize);
 void GetHandleUnregisterInst();
 uint32_t ascendc_set_exception_dump_info(uint32_t dumpSize);
 } // namespace AscPluginGenerator

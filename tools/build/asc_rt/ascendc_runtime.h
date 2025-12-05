@@ -61,6 +61,6 @@ extern "C" bool AscendCheckSoCVersion(const char *socVersion, char *errMsg);
 extern "C" uint32_t GetCoreNumForMixVectorCore(uint32_t *aiCoreNum, uint32_t *vectorCoreNum);
 extern "C" int32_t AscendDevBinaryRegister(const void *fileBuf, size_t fileSize, void **handle);
 extern "C" int32_t AscendFunctionRegister(void *handle, const char *stubFunc);
-extern "C" int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockDim, void **args, uint32_t size,
-    const rtStream_t stream);
+extern "C" int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockDim, void **args,
+                                                uint32_t size, const rtStream_t stream, const uint32_t ubufDynamicSize);
 #endif // __ASCENDC_RUNTIME_H__

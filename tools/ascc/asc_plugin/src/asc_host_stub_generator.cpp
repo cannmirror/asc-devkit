@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <atomic>
+#include <cstdio>
 
 #include "asc_log.h"
 #include "asc_utils.h"
@@ -50,7 +51,15 @@ AscHostStubGenerator::AscHostStubGenerator(const KernelInfo& kernelInfo,
 std::string AscHostStubGenerator::GenStubFuncDecl(bool hasNameSpace, bool hasAnonymousSpace) const
 {
     std::string functionEntryReplace = "";
-    std::string paramsList = "(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream";
+    auto &infoManager = InfoManager::GetInstance();
+    ShortSocVersion shortSoc = infoManager.GetShortSocVersion();
+    std::string paramsList = "";
+    if (shortSoc == ShortSocVersion::ASCEND910_95 && infoManager.HasUbufDynamicSize()) {
+        paramsList = "(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream, "
+                     "uint32_t __ascendc_ubufDynamicSize";
+    } else {
+        paramsList = "(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream";
+    }
     for (auto &param : kernelInfo_.kernelParameters) {
         paramsList += ", " + param.type + " " + param.name;
     }
@@ -202,8 +211,19 @@ void AscHostStubGenerator::GenStubFuncImpl()
         funcImplCode << "        return;\n";
         funcImplCode << "    }\n";
     }
-    funcImplCode << "    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, "
-        "__ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);\n";
+    const char *fmtLaunchAndProfiling =
+        "    __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, "
+        "__ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), "
+        "__ascendc_kType, %s);\n";
+    constexpr uint32_t bufMaxSize = 512;
+    char buffer[bufMaxSize];
+    ShortSocVersion shortSoc = infoManager.GetShortSocVersion();
+    if (shortSoc == ShortSocVersion::ASCEND910_95 && infoManager.HasUbufDynamicSize()) {
+        snprintf_s(buffer, sizeof(buffer), sizeof(buffer) - 1, fmtLaunchAndProfiling, "__ascendc_ubufDynamicSize");
+    } else {
+        snprintf_s(buffer, sizeof(buffer), sizeof(buffer) - 1, fmtLaunchAndProfiling, "0");
+    }
+    funcImplCode << buffer;
     funcImplCode << "    if(__ascendc_ret != 0) {\n";
     funcImplCode << "        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "
                     "\"kernel launch failure!\");\n";
