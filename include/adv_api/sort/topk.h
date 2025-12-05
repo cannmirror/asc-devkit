@@ -24,7 +24,7 @@
 #include "../../../impl/adv_api/detail/sort/topk/topk_common_utils.h"
 #include "../../../impl/adv_api/detail/api_check/kernel_api_check.h"
 
-#if !(defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L311__)) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 #include "../../../impl/adv_api/detail/sort/topk/topk_common_impl.h"
 #endif
 

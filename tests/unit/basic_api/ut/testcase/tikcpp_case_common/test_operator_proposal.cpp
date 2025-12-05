@@ -128,7 +128,7 @@ protected:
 
 INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_MRGSORT4, MrgSort4Testsuite,
     ::testing::Values(
-#if __CCE_AICORE__ >= 200 // dav-m200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201) // dav-m200
     MrgSort4TestParams { 4, MainMrgSort4<float> },
     MrgSort4TestParams { 4, MainMrgSort4<TensorTrait<float>> },
 #endif
@@ -196,7 +196,7 @@ protected:
 
 INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_RPSORT16, RpSort16Testsuite,
     ::testing::Values(
-#if __CCE_AICORE__ >= 200 // dav-m200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201) // dav-m200
     RpSort16TestParams { 4, MainRpsort16<float> },
     RpSort16TestParams { 4, MainRpsort16<TensorTrait<float>> },
 #endif
@@ -302,7 +302,7 @@ INSTANTIATE_TEST_CASE_P(TEST_OPEARATION_PROPOSAL, ProposalTestsuite,
     ::testing::Values(ProposalTestParams { 2, MainConcatTest<half>, 32, 256, 5 },
     ProposalTestParams { 2, MainConcatTest<half>, 16, 128, 3 },
     ProposalTestParams { 2, MainExtractTest<half>, 128, 16, 3 },
-#if __CCE_AICORE__ >= 200 // dav-m200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201) // dav-m200
     ProposalTestParams { 4, MainConcatTest<float>, 16, 128, 4 },
     ProposalTestParams { 4, MainExtractTest<float>, 256, 32, 4 },
 #endif

@@ -32,7 +32,7 @@
 
 namespace AscendC {
 
-#if !(defined(__DAV_C310__) || defined(__DAV_310R6__) || defined(__DAV_L300__) || defined(__DAV_L311__)) && (__NPU_ARCH__ != 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 1001)
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void SigmoidImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)

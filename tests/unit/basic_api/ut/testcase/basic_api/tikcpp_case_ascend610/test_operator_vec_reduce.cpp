@@ -270,7 +270,7 @@ protected:
 
 INSTANTIATE_TEST_CASE_P(TEST_REDUCE_SIMPLE, ReduceSimpleTestsuite,
     ::testing::Values(ReduceTestParams { MainAllReduceSimple<half>, 128, 16, 2, 0 },
-#if __CCE_AICORE__ >= 200 // dav-m200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002) // dav-m200
     ReduceTestParams { MainAllReduceSimple<float>, 64, 16, 4, 0 },
     ReduceTestParams { MainAllReduceSimple<float>, 64, 16, 4, 2 },
     ReduceTestParams { MainAllReduceSimple<float>, 16648, 16, 4, 0 },

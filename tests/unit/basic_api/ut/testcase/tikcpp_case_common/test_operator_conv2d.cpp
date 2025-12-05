@@ -108,7 +108,7 @@ extern "C" __global__ __aicore__ void main_Conv2D_doublebuffer_test(__gm__ half 
     DataCopy(biaslocal, bias_global, conv2dParams.cout);
 
     Conv2D(output, biaslocal, input0, input1, conv2dParams, tilling);
-#if __CCE_AICORE__ >= 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
     FixpipeParams<float> fixpipeParams(static_cast<uint16_t>(conv2dParams.cout / BLOCK_CUBE),
         static_cast<uint16_t>(tilling.howo * BLOCK_CUBE * sizeof(float) / ONE_BLK_SIZE),
         0,
@@ -146,7 +146,7 @@ protected:
 
 INSTANTIATE_TEST_CASE_P(TEST_PACKAGE_Conv2D, Conv2DTestSuite,
     ::testing::Values(
-#if __CCE_AICORE__ == 100
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001)
     Conv2DTestParams { { 40, 40 }, { 5, 5 }, { 2, 2 }, 32, 16, { 0, 0, 0, 0 }, { 3, 3 }, 2, false, LoopMode::MODE_MN },
     Conv2DTestParams { { 16, 16 }, { 2, 2 }, { 1, 1 }, 32, 16, { 0, 0, 0, 0 }, { 1, 1 }, 0, false, LoopMode::MODE_NM }
 #else
@@ -178,7 +178,7 @@ TEST_P(Conv2DTestSuite, Conv2DTestCase)
     half input1Gm[roundn * roundk]{0x0000};
     float outputGm[roundm * roundn]{0x00000000};
     float bias[conv2dParams.cout]{0x00000000};
-#if __CCE_AICORE__ == 100
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001)
     main_Conv2D_doublebuffer_test(input0Gm, input1Gm, outputGm, bias, conv2dParams, tilling);
 #else
     main_Conv2D_test(input0Gm, input1Gm, outputGm, conv2dParams, tilling);

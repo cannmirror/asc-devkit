@@ -28,10 +28,10 @@ INSTANTIATE_TEST_CASE_P(SET_PHY_TYPE, TEST_GET_PHY_TYPE,
     ::testing::Values(PhyTypeParams { TPosition::GM, Hardware::GM }, PhyTypeParams { TPosition::A1, Hardware::L1 },
     PhyTypeParams { TPosition::A2, Hardware::L0A }, PhyTypeParams { TPosition::B1, Hardware::L1 },
     PhyTypeParams { TPosition::B2, Hardware::L0B },
-#if (__CCE_AICORE__ <= 200)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
     PhyTypeParams { TPosition::C1, Hardware::UB }, PhyTypeParams { TPosition::C2, Hardware::L0C },
     PhyTypeParams { TPosition::CO2, Hardware::UB },
-#elif (__CCE_AICORE__ == 220)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
     PhyTypeParams { TPosition::C1, Hardware::L1 }, PhyTypeParams { TPosition::C2, Hardware::BIAS },
     PhyTypeParams { TPosition::CO2, Hardware::L1 },
 #endif
@@ -335,7 +335,7 @@ constexpr int32_t R_0 = 0;
 constexpr int32_t R_1 = 1;
 constexpr int32_t R_2 = 2;
 constexpr int32_t R_3 = 3;
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 constexpr int32_t R_4 = 4;
 constexpr int32_t R_5 = 5;
 constexpr int32_t R_6 = 6;

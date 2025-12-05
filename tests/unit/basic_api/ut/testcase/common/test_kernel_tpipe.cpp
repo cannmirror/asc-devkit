@@ -37,10 +37,10 @@ INSTANTIATE_TEST_CASE_P(
     ::testing::Values(PhyTypeParams{ TPosition::GM, Hardware::GM }, PhyTypeParams{ TPosition::A1, Hardware::L1 },
                       PhyTypeParams{ TPosition::A2, Hardware::L0A }, PhyTypeParams{ TPosition::B1, Hardware::L1 },
                       PhyTypeParams{ TPosition::B2, Hardware::L0B },
-#if (__CCE_AICORE__ <= 200)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 1001)
                       PhyTypeParams{ TPosition::C1, Hardware::UB }, PhyTypeParams{ TPosition::C2, Hardware::L0C },
                       PhyTypeParams{ TPosition::CO2, Hardware::UB },
-#elif (__CCE_AICORE__ == 220)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
                       PhyTypeParams{ TPosition::C1, Hardware::L1 }, PhyTypeParams{ TPosition::C2, Hardware::BIAS },
                       PhyTypeParams{ TPosition::CO2, Hardware::L1 },
 #endif
@@ -95,7 +95,7 @@ INSTANTIATE_TEST_CASE_P(GET_POSITION_TYPE, TEST_GET_POSITION,
                                           GetPositionParams{ TPosition::SPM, true, TPosition::VECOUT },
                                           GetPositionParams{ TPosition::SPM, false, TPosition::GM },
                                           GetPositionParams{ TPosition::SHM, true, TPosition::VECOUT },
-#if (__CCE_AICORE__ <= 200)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 1001)
                                           GetPositionParams{ TPosition::SHM, false, TPosition::GM }));
 #else
                                           GetPositionParams{ TPosition::SHM, false, TPosition::GM },
@@ -150,9 +150,9 @@ INSTANTIATE_TEST_CASE_P(GET_Q_EVT, TEST_GET_Q_EVT,
                                           GetQueEvtParams{ Hardware::L0A, Hardware::L0C, true, HardEvent::M_V },
                                           GetQueEvtParams{ Hardware::L0A, Hardware::L0C, false, HardEvent::V_M },
                                           GetQueEvtParams{ Hardware::L0C, Hardware::UB, true, HardEvent::M_V },
-#if (__CCE_AICORE__ <= 200)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 1001)
                                           GetQueEvtParams{ Hardware::L0C, Hardware::UB, false, HardEvent::V_M }));
-#elif
+#else
                                           GetQueEvtParams{ Hardware::L0C, Hardware::UB, false, HardEvent::V_M },
                                           GetQueEvtParams{ Hardware::L1, Hardware::FIXBUF, true, HardEvent::MTE1_FIX },
                                           GetQueEvtParams{ Hardware::L1, Hardware::FIXBUF, false,
@@ -362,7 +362,7 @@ constexpr int32_t R_0 = 0;
 constexpr int32_t R_1 = 1;
 constexpr int32_t R_2 = 2;
 constexpr int32_t R_3 = 3;
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 constexpr int32_t R_4 = 4;
 constexpr int32_t R_5 = 5;
 constexpr int32_t R_6 = 6;
@@ -1192,7 +1192,7 @@ TEST_F(TEST_TPIPE, TQueBindEnQueTest)
     EXPECT_EQ(retTensor5.GetPhyAddr(), tensor5.GetPhyAddr());
 }
 
-#if (__CCE_AICORE__ <= 200)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
 extern int32_t logLevel;
 /* ************************ TQueSync Test **************************** */
 struct TQueSyncParams {

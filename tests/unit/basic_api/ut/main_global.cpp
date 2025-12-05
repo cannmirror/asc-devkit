@@ -19,7 +19,7 @@ int32_t main(int32_t argc, char** argv)
 
 __aicore__ AscendC::TPipe* GetTPipePtr()
 {
-#if __CCE_AICORE__ == 220 || defined(__DAV_C310__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
 #ifdef SPLIT_CORE_CUBE
     return g_cubeTPipePtr;
 #elif defined(SPLIT_CORE_VEC)

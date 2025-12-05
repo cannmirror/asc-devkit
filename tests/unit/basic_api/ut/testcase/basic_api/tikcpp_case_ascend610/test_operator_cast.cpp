@@ -132,7 +132,7 @@ void MainVecCastF162s4Demo(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* _
         }                                                                                                 \
     }
 
-#if __CCE_AICORE__ >= 100
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
 VEC_CAST_TESTCASE(half, int32_t, CAST_RINT, LEVEL2);
 VEC_CAST_TESTCASE(half, int32_t, CAST_FLOOR, LEVEL2);
 VEC_CAST_TESTCASE(half, int32_t, CAST_CEIL, LEVEL2);
@@ -171,7 +171,7 @@ VEC_CAST_TESTCASE(uint8_t, half, CAST_NONE, LEVEL2);
 VEC_CAST_TESTCASE(int8_t, half, CAST_NONE, LEVEL2);
 #endif
 
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
 VEC_CAST_TESTCASE(half, int16_t, CAST_RINT, LEVEL2);
 
 VEC_CAST_TESTCASE(int16_t, half, CAST_NONE, LEVEL2);
