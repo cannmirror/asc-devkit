@@ -279,7 +279,7 @@ uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t blo
 }
 
 int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockDim, void **args, uint32_t size,
-    const rtStream_t stream)
+    const rtStream_t stream, const uint32_t ubufDynamicSize)
 {
     rtArgsEx_t argsInfo = {
         .args = nullptr,
@@ -293,6 +293,11 @@ int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockD
         .reserved = {0, 0, 0, 0}};
     argsInfo.args = static_cast<void*>(args);
     argsInfo.argsSize = size;
+    if (ubufDynamicSize > 0) {
+        rtTaskCfgInfo_t cfgInfo = {0};
+        cfgInfo.localMemorySize = ubufDynamicSize;
+        return rtKernelLaunchWithFlagV2(stubFunc, blockDim, &argsInfo, nullptr, stream, 0, &cfgInfo);
+    }
     return rtKernelLaunchWithFlagV2(stubFunc, blockDim, &argsInfo, nullptr, stream, 0, nullptr);
 }
 

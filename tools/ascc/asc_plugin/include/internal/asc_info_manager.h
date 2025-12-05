@@ -143,6 +143,7 @@ public:
     bool HasTiling() const;
     bool HasPrintf() const;
     bool HasAssert() const;
+    bool HasUbufDynamicSize() const;                    // simt: <<<blockDim, nullptr, stream, ubufDynamicSize>>>
     bool IsDumpOn() const;   // when user not pass -DASCENDC_DUMP=0, and uses printf/ assert
     uint32_t GetOneCoreDumpSize() const;                // for -DONE_CORE_DUMP_SIZE=xxx
     bool IsL2CacheEnabled() const;
@@ -177,6 +178,7 @@ private:
     bool hasTiling_ = false;                    // for -DHAVE_TILING in KernelLaunch
     bool hasPrintf_ = false;
     bool hasAssert_ = false;
+    bool hasUbufDynamicSize_ = true;
     bool enableL2Cache_ = true;                 // default enable
     bool hasOpSystemCfg_ =false;
     uint32_t oneCoreDumpSize_ = 1048576;        // 1024 K

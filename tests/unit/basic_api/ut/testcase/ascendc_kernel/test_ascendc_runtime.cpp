@@ -86,7 +86,7 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeDevBinaryRegisterTest) {
     void **args = nullptr;
     uint32_t size;
     rtStream_t stream = nullptr;
-    ret = AscendKernelLaunchWithFlagV2(stubFunc, blockDim, args, size, stream);
+    ret = AscendKernelLaunchWithFlagV2(stubFunc, blockDim, args, size, stream, 0);
     EXPECT_EQ(ret, 0);
 }
 

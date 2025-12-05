@@ -74,7 +74,7 @@ __attribute__ ((visibility("hidden"))) uint32_t ascendc_set_exception_dump_info(
 extern "C" {
 int32_t AscendDevBinaryRegister(const void *fileBuf, size_t fileSize, void **handle);
 int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockDim, void **args,
-    uint32_t size, const void *stream);
+    uint32_t size, const void *stream, const uint32_t ubufDynamicSize);
 int UnregisterAscendBinary(void *hdl);
 void StartAscendProf(const char *name, uint64_t *startTime);
 void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
@@ -168,8 +168,8 @@ __attribute__ ((visibility("hidden"))) void GetHandleUnregisterInst() {
     auto& regMng = KernelHandleGradUnregister::GetInstance();
 }
 
-__attribute__ ((visibility("hidden"))) uint32_t LaunchAndProfiling(
-    const char *stubFunc, uint32_t blockDim, void *stream, void **args, uint32_t size, uint32_t ktype)
+__attribute__ ((visibility("hidden"))) uint32_t LaunchAndProfiling(const char *stubFunc, uint32_t blockDim,
+    void *stream, void **args, uint32_t size, uint32_t ktype, const uint32_t ubufDynamicSize)
 {
     const auto& reg = AscendCOperatorRegister::GetInstance();
     uint64_t startTime;
@@ -182,7 +182,7 @@ __attribute__ ((visibility("hidden"))) uint32_t LaunchAndProfiling(
         ::printf("[ERROR] [AscPlugin] %s\n", ascendcErrMsg);
         return 1;
     }
-    int32_t retLaunch = AscendKernelLaunchWithFlagV2(stubFunc, blockDim, args, size, stream);
+    int32_t retLaunch = AscendKernelLaunchWithFlagV2(stubFunc, blockDim, args, size, stream, ubufDynamicSize);
     if (retLaunch != 0) {
         ::printf("[ERROR] [AscPlugin] AscendKernelLaunchWithFlagV2 ret %u\n", retLaunch);
     }
