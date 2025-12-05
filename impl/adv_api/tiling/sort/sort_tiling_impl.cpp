@@ -46,7 +46,7 @@ void GetSortMaxMinTmpSize(const ge::Shape &srcShape, ge::DataType valueType, ge:
     ASCENDC_HOST_ASSERT(platform != nullptr, return, "Failed to get PlatformAscendC");
     platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
     ASCENDC_HOST_ASSERT(socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55, return,
+        socVersion == platform_ascendc::SocVersion::ASCEND910_55 || socVersion == platform_ascendc::SocVersion::MC62CM12A, return,
         "Unsupported SocVersion for Sort API.");
     std::set<ge::DataType> supportValueType = { ge::DT_INT8, ge::DT_UINT8, ge::DT_FLOAT, ge::DT_FLOAT16, ge::DT_BF16,  ge::DT_INT16,
         ge::DT_INT32, ge::DT_UINT16,  ge::DT_UINT32, ge::DT_UINT64, ge::DT_INT64 };
