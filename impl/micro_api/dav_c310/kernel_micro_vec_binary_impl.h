@@ -1392,12 +1392,16 @@ __simd_callee__ inline void MaxOperator(U& dstReg, U& srcReg0, U& srcReg1, MaskR
             MaskReg selMask;
             Compare<ActualT, CMPMODE::GT>(selMask, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             Select(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, selMask);
+            Duplicate(traitTwoSrcReg0, 0);
+            Select(traitTwoDstReg, traitTwoDstReg, traitTwoSrcReg0, maskTrait2);
             B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
         }
     } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
         MaskReg selMask;
         Compare<ActualT, CMPMODE::GT>(selMask, srcReg0, srcReg1, mask);
         Select(dstReg, srcReg0, srcReg1, selMask);
+        Duplicate(srcReg0, 0);
+        Select(dstReg, dstReg, srcReg0, mask);
     }
 }
 
@@ -1438,12 +1442,16 @@ __simd_callee__ inline void MinOperator(U& dstReg, U& srcReg0, U& srcReg1, MaskR
             MaskReg selMask;
             Compare<ActualT, CMPMODE::LT>(selMask, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             Select(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, selMask);
+            Duplicate(traitTwoSrcReg0, 0);
+            Select(traitTwoDstReg, traitTwoDstReg, traitTwoSrcReg0, maskTrait2);
             B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
         }
     } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
         MaskReg selMask;
         Compare<ActualT, CMPMODE::LT>(selMask, srcReg0, srcReg1, mask);
         Select(dstReg, srcReg0, srcReg1, selMask);
+        Duplicate(srcReg0, 0);
+        Select(dstReg, dstReg, srcReg0, mask);
     }
 }
 
