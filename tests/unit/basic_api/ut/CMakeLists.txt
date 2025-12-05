@@ -343,6 +343,7 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
             __NPU_ARCH__=2201
             __DAV_C220__
             __DAV_C220_CUBE__
+            __DAV_CUBE__
         )
         target_link_directories(tikcpp_utest_${product_type} PRIVATE
             ${ASCEND_DEP_LIB_DIR}
@@ -356,6 +357,7 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
             __NPU_ARCH__=2201
             __DAV_C220__
             __DAV_C220_VEC__
+            __DAV_VEC__
         )
         target_link_directories(tikcpp_utest_${product_type} PRIVATE
             ${ASCEND_DEP_LIB_DIR}

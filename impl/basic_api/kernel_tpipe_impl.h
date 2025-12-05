@@ -124,9 +124,9 @@ __aicore__ inline void TPipe::Init()
         bufferInitLen.at(Hardware::FIXBUF));
 #endif
 #if __NPU_ARCH__ == 2201
-#ifdef __DAV_C220_CUBE__
+#if defined(__DAV_CUBE__)
     g_cubeTPipePtr = this;
-#elif defined(__DAV_C220_VEC__)
+#elif defined(__DAV_VEC__)
     g_vecTPipePtr = this;
 #else
     g_tPipePtr = this;

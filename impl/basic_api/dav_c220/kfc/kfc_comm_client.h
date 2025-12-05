@@ -200,8 +200,8 @@ public:
 
 
 #if __NPU_ARCH__ == 2201
-#ifdef __DAV_C220_CUBE__
-#elif defined(__DAV_C220_VEC__)
+#if defined(__DAV_CUBE__) 
+#elif defined(__DAV_VEC__)
 __BLOCK_LOCAL__ __inline__ AscendC::KfcCommClient* g_kfcClient;
 #else
 __BLOCK_LOCAL__ __inline__ AscendC::KfcCommClient* g_kfcClient;
@@ -211,7 +211,7 @@ __BLOCK_LOCAL__ __inline__ AscendC::KfcCommClient* g_kfcClient;
 __aicore__ inline AscendC::KfcCommClient* GetKfcClient()
 {
 #if __NPU_ARCH__ == 2201
-#ifndef __DAV_C220_CUBE__
+#if !defined(__DAV_CUBE__) 
     return reinterpret_cast<AscendC::KfcCommClient*>(g_kfcClient);
 #else
     return nullptr;

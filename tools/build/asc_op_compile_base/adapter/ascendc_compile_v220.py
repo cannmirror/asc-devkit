@@ -422,9 +422,15 @@ def get_ktype_section_variable(variable_name: str, section_func_name: str, kerne
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:
         section_var = f""
         if "mix_aic" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_CUBE__)\n"
+            if CommonUtility.is_v220():
+                section_var += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
+            elif CommonUtility.is_c310():
+                section_var += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)\n"
         elif "mix_aiv" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_VEC__)\n"
+            if CommonUtility.is_v220():
+                section_var += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
+            elif CommonUtility.is_c310():
+                section_var += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)\n"
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIC_MAIN}},\
@@ -433,9 +439,15 @@ def get_ktype_section_variable(variable_name: str, section_func_name: str, kerne
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2:
         section_var = f""
         if "mix_aic" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_CUBE__)\n"
+            if CommonUtility.is_v220():
+                section_var += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
+            elif CommonUtility.is_c310():
+                section_var += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)\n"
         elif "mix_aiv" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_VEC__)\n"
+            if CommonUtility.is_v220():
+                section_var += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
+            elif CommonUtility.is_c310():
+                section_var += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)\n"
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIC_MAIN}},\

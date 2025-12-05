@@ -199,14 +199,14 @@ public:
     }
 };
  
-#if defined(__DAV_C310__) && !defined(__DAV_C310_CUBE__)
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101 && !defined(__DAV_CUBE__))
 __BLOCK_LOCAL__ __inline__ AscendC::KfcCommClient* g_kfcClient;
 #endif
  
 __aicore__ inline AscendC::KfcCommClient* GetKfcClient()
 {
-#ifdef __DAV_C310__
-#ifndef __DAV_C310_CUBE__
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if !defined(__DAV_CUBE__) || __NPU_ARCH__ != 3101
     return reinterpret_cast<AscendC::KfcCommClient*>(g_kfcClient);
 #else
     return nullptr;
