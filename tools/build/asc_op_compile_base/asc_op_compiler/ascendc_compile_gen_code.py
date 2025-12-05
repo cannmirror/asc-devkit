@@ -13,6 +13,7 @@
 ascendc compile gen code
 """
 import re
+import os
 from functools import reduce
 from asc_op_compile_base.common.buildcfg import get_current_build_config
 from .get_op_tiling import TilingInfo
