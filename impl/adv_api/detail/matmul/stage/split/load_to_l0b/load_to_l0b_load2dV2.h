@@ -88,12 +88,6 @@ private:
             loadDataParams.kStep = CeilAlign(loadDataParams.kStep, K_STEP_MIN_VAL_B32);
         }
 
-#if __NPU_ARCH__ == 5102
-        if constexpr (IsSupportB4<B_T>() || IsSupportB8<B_T>()) {
-            bL1K = CeilAlign(bL1K, c0Size_);
-        }
-#endif
-
         loadDataParams.srcStride = CeilDiv(bL1K, ALIGN_NUM);
         loadDataParams.dstStride = CeilDiv(madN, ALIGN_NUM);
         loadDataParams.ifTranspose = true;

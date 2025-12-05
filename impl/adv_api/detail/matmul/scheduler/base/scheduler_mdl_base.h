@@ -97,10 +97,8 @@ protected:
                 if (likely(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() == static_cast<int>(IterateOrder::ORDER_M))) {
                     return MoveOnIterateOrderM();
                 } else {
-                    ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() ==
-                        static_cast<int>(IterateOrder::ORDER_N)), {
-                        KERNEL_LOG(KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N",
-                        MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());
+                    ASCENDC_ASSERT((MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder() == static_cast<int>(IterateOrder::ORDER_N)), {
+                        KERNEL_LOG(KERNEL_ERROR, "iterateOrder is %d , which should be ORDER_N", MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetIterateOrder());
                     });
                     return MoveOnIterateOrderN();
                 }
@@ -130,8 +128,7 @@ protected:
             // when M inner loop is finished, clear left matrix's data in L1 buffer
             if (!MATMUL_MODULE(MLoop)->InnerNext()) {
                 if constexpr (!PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
-                    if ((MATMUL_MODULE(KLoop)->IsAKL1FullLoad() && !MATMUL_MODULE(MLoop)->IsAML1FullLoad()) ||
-                        (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
+                    if ((MATMUL_MODULE(KLoop)->IsAKL1FullLoad() && !MATMUL_MODULE(MLoop)->IsAML1FullLoad()) || (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
                         MATMUL_MODULE(CopyCubeInA)->ClearLoadData();
                     }
                 }
@@ -139,8 +136,7 @@ protected:
                 // and restart M outer and inner loop
                 if (!MATMUL_MODULE(MLoop)->OuterNext()) {
                     if constexpr (!PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
-                        if ((MATMUL_MODULE(KLoop)->IsBKL1FullLoad() && !MATMUL_MODULE(NLoop)->IsBNL1FullLoad()) ||
-                            (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
+                        if ((MATMUL_MODULE(KLoop)->IsBKL1FullLoad() && !MATMUL_MODULE(NLoop)->IsBNL1FullLoad()) || (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
                             MATMUL_MODULE(CopyCubeInB)->ClearLoadData();
                         }
                     }
@@ -166,8 +162,7 @@ protected:
             // when N inner loop is finished, clear right matrix's data in L1 buffer
             if (!MATMUL_MODULE(NLoop)->InnerNext()) {
                 if constexpr (!PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
-                    if ((MATMUL_MODULE(KLoop)->IsBKL1FullLoad() && !MATMUL_MODULE(NLoop)->IsBNL1FullLoad()) ||
-                        (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
+                    if ((MATMUL_MODULE(KLoop)->IsBKL1FullLoad() && !MATMUL_MODULE(NLoop)->IsBNL1FullLoad()) || (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
                         MATMUL_MODULE(CopyCubeInB)->ClearLoadData();
                     }
                 }
@@ -175,8 +170,7 @@ protected:
                 // and restart N outer and inner loop
                 if (!MATMUL_MODULE(NLoop)->OuterNext()) {
                     if constexpr (!PhyPosIsL1OrUB<MM_CFG>(A_TYPE::pos)) {
-                        if ((MATMUL_MODULE(KLoop)->IsAKL1FullLoad() && !MATMUL_MODULE(MLoop)->IsAML1FullLoad()) ||
-                            (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
+                        if ((MATMUL_MODULE(KLoop)->IsAKL1FullLoad() && !MATMUL_MODULE(MLoop)->IsAML1FullLoad()) || (MATMUL_MODULE(MLoop)->IsLastOuterIter() && MATMUL_MODULE(NLoop)->IsLastOuterIter())) {
                             MATMUL_MODULE(CopyCubeInA)->ClearLoadData();
                         }
                     }
@@ -196,10 +190,8 @@ protected:
 
     __aicore__ inline void CopyIn(LocalTensor<TransAT>& a1, LocalTensor<TransBT>& b1)
     {
-        a1 = MATMUL_MODULE(CopyCubeInA)->LoadData(MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(KLoop)->GetInnerStartIdx(),
-            MATMUL_MODULE(MLoop)->GetTileShape(), MATMUL_MODULE(KLoop)->GetTileShapeA());
-        b1 = MATMUL_MODULE(CopyCubeInB)->LoadData(MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
-            MATMUL_MODULE(KLoop)->GetTileShapeB(), MATMUL_MODULE(NLoop)->GetTileShape());
+        a1 = MATMUL_MODULE(CopyCubeInA)->LoadData(MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(MLoop)->GetTileShape(), MATMUL_MODULE(KLoop)->GetTileShapeA());
+        b1 = MATMUL_MODULE(CopyCubeInB)->LoadData(MATMUL_MODULE(KLoop)->GetInnerStartIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(), MATMUL_MODULE(KLoop)->GetTileShapeB(), MATMUL_MODULE(NLoop)->GetTileShape());
 
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportUBToL1Singleshape()) {
             MATMUL_MODULE(MatmulCrossCoreSync)->WaitL1Ready();
@@ -465,7 +457,11 @@ protected:
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
             bL0Params.kAxisL1Offset = kInnerIdx * tilingBaseK;
         } else {
+#if __NPU_ARCH__ == 5102
+            bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), c0SizeB_);
+#else
             bL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->GetTileBlockShapeB() * c0Size_;
+#endif
             int32_t tilingStepKb = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepKb();
             bL0Params.kAxisL1Offset = (kInnerIdx - kInnerIdx / tilingStepKb * tilingStepKb) * tilingBaseK;
         }
@@ -566,6 +562,9 @@ protected:
 protected:
     bool isFirstIter_ = true;
     constexpr static int32_t c0Size_ = AuxGetC0Size<typename A_TYPE::T>();
+#if __NPU_ARCH__ == 5102
+    constexpr static int32_t c0SizeB_ = AuxGetC0Size<TransBT>();
+#endif
     int32_t cacheA1Factor_, cacheB1Factor_;
 };
 
