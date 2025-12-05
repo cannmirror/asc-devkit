@@ -7,7 +7,7 @@ if(NOT PROJECT_VERSION)
     message(FATAL_ERROR "Failed to read version from version.info")
 endif()
 
-function(parse_semantic_version version_str out_major out_minor out_patch out_prerelease out_version_num)
+function(parse_semantic_version version_str out_major out_minor out_patch out_prerelease out_version_num out_timestamp)
     # 解析主/次/补丁版本（格式：MAJOR.MINOR.PATCH）
     string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-.*)?" VERSION_MATCH "${version_str}")
     if(NOT VERSION_MATCH)
@@ -49,12 +49,19 @@ function(parse_semantic_version version_str out_major out_minor out_patch out_pr
         math(EXPR version_num "${base_value} - ${weight} + ${pr_num}")
     endif()
 
+    execute_process(
+        COMMAND date +%Y%m
+        OUTPUT_VARIABLE timestamp
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
     # 输出变量（传递到函数外部）
     set(${out_major} ${major} PARENT_SCOPE)
     set(${out_minor} ${minor} PARENT_SCOPE)
     set(${out_patch} ${patch} PARENT_SCOPE)
     set(${out_prerelease} "${prerelease}" PARENT_SCOPE)
     set(${out_version_num} ${version_num} PARENT_SCOPE)
+    set(${out_timestamp} ${timestamp} PARENT_SCOPE)
 endfunction()
 
 # --------------------------
@@ -67,6 +74,7 @@ parse_semantic_version(
     PATCH
     PRERELEASE
     VERSION_NUM
+    TIMESTAMP
 )
 
 # -------------------------
