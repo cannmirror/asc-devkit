@@ -45,7 +45,6 @@ enum class KFC_Enum : uint16_t {
     MMFUN_INIT = 0x0301,
     MMFUN_GET_TENSOR_C,
     MMFUN_SET_HF32,
-    MMFUN_SET_HIF8,
     MMFUN_SET_USER_DEF_INFO,
     MMFUN_ITERATE_BATCH_ALL,
     MMFUN_ITERATE_N_BATCH_ALL,
@@ -106,7 +105,6 @@ struct MatmulConfigParams {
     uint32_t sync : 1;
     uint32_t enHF32 : 1;
     uint32_t hf32TransMode : 1;
-    uint32_t enHIF8 : 1;
     uint32_t setQuant : 1;
     uint32_t setBatch : 1;
     uint32_t waitIterateAll : 1;
