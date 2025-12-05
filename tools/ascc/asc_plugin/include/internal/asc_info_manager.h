@@ -115,6 +115,7 @@ public:
     void SetSaveTempRequested(const bool saveTemp);
     void SetUserDumpStatus(const bool dumpStatus);
     void SetHasPrintf(const bool hasPrintf);
+    void SetHasSimtPrintf(const bool hasSimtPrintf);
     void SetHasAssert(const bool hasAssert);
     void SetOpSystemCfg(const bool hasOpSystemCfg);
     void AddGlobalSymbolInfo(const std::string &mangling, const KernelMetaType &type, const std::string &fileName,
@@ -142,6 +143,7 @@ public:
     bool HasWorkspace() const;
     bool HasTiling() const;
     bool HasPrintf() const;
+    bool HasSimtPrintf() const;
     bool HasAssert() const;
     bool HasUbufDynamicSize() const;                    // simt: <<<blockDim, nullptr, stream, ubufDynamicSize>>>
     bool IsDumpOn() const;   // when user not pass -DASCENDC_DUMP=0, and uses printf/ assert
@@ -177,6 +179,7 @@ private:
     bool hasWorkspace_ = false;                 // for -DHAVE_WORKSPACE in KernelLaunch
     bool hasTiling_ = false;                    // for -DHAVE_TILING in KernelLaunch
     bool hasPrintf_ = false;
+    bool hasSimtPrintf_ = false;                // only for 910_95 simt
     bool hasAssert_ = false;
     bool hasUbufDynamicSize_ = true;
     bool enableL2Cache_ = true;                 // default enable

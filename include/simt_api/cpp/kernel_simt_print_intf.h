@@ -15,7 +15,7 @@ namespace AscendC {
 namespace Simt {
 
 #ifndef ASCENDC_CPU_DEBUG
-#ifndef __CHECK_FEATURE_AT_PRECOMPILE
+#if !defined(__CHECK_FEATURE_AT_PRECOMPILE) || (defined(__CHECK_FEATURE_AT_PRECOMPILE) && defined(__NPU_DEVICE__))
 template <class... Args>
 __aicore__ inline void PRINTF(const __gm__ char* fmt, Args&&... args);
 

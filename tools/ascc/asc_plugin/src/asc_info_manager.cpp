@@ -272,6 +272,11 @@ void InfoManager::SetHasPrintf(const bool hasPrintf)
     hasPrintf_ = hasPrintf;
 }
 
+void InfoManager::SetHasSimtPrintf(const bool hasSimtPrintf)
+{
+    hasSimtPrintf_ = hasSimtPrintf;
+}
+
 void InfoManager::SetHasAssert(const bool hasAssert)
 {
     hasAssert_ = hasAssert;
@@ -402,6 +407,11 @@ bool InfoManager::HasPrintf() const
     return hasPrintf_;
 }
 
+bool InfoManager::HasSimtPrintf() const
+{
+    return hasSimtPrintf_;
+}
+
 bool InfoManager::HasAssert() const
 {
     return hasAssert_;
@@ -414,7 +424,7 @@ bool InfoManager::HasUbufDynamicSize() const
 
 bool InfoManager::IsDumpOn() const
 {
-    return userDumpStatus_ && (hasPrintf_ || hasAssert_);
+    return userDumpStatus_ && (hasPrintf_ || hasAssert_ || hasSimtPrintf_);
 }
 
 bool InfoManager::IsFifoDumpOn() const

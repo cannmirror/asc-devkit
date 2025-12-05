@@ -67,7 +67,7 @@ int32_t AscAstDeviceAnalyzer::Process()
 
 void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
 {
-    auto npuArch = InfoManager::GetInstance().GetShortSocVersion();
+    auto shortSoc = InfoManager::GetInstance().GetShortSocVersion();
     static const std::unordered_map<ShortSocVersion, std::vector<const char*>> DAV_VERSION_MAP = {
         {ShortSocVersion::ASCEND910B, {"-D__DAV_C220_CUBE__", "-D__CCE_AICORE__=220", "-D__NPU_ARCH__=2201", "-D__DAV_CUBE__"}},
         {ShortSocVersion::ASCEND310P, {"-D__DAV_M200__", "-D__CCE_AICORE__=200", "-D__NPU_ARCH__=2002"}},
@@ -111,7 +111,7 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
     std::vector<std::string> removeOpts = {"-DL2_CACHE_HINT"};
     astDeviceArgs_.RemoveOptions(removeOpts);
     astDeviceArgs_.definitions.insert(astDeviceArgs_.definitions.end(), innerDefinitions.begin(), innerDefinitions.end());
-    const auto& archOptionList = DAV_VERSION_MAP.at(npuArch);
+    const auto& archOptionList = DAV_VERSION_MAP.at(shortSoc);
     for (const auto& option : archOptionList) {
         astDeviceArgs_.definitions.emplace_back(option);
     }
