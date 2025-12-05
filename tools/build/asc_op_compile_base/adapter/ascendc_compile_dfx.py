@@ -389,13 +389,16 @@ class DFXSectionGenerator:
 
         section_content = f"// generate dfx section for tiling_key:{tiling_key}"
         if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
-            chip_version = CommonUtility.get_chip_version().upper()
-            cube_core_type = f"__DAV_{chip_version}_CUBE__"
-            vec_core_type = f"__DAV_{chip_version}_VEC__"
+            if CommonUtility.is_v220():
+                cube_core_marco = "(defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)"
+                vec_core_marco = "(defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)"
+            elif CommonUtility.is_c310():
+                cube_core_marco = "(defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)"
+                vec_core_marco = "(defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)"
         else:
             # for v200 cube_core_type is aicore type
-            cube_core_type = "__DAV_M200__"
-            vec_core_type = "__DAV_M200_VEC__"
+            cube_core_marco = "defined(__DAV_M200__)"
+            vec_core_marco = "defined(__DAV_M200_VEC__)"
 
         section_content_body = self.generate_dfx_section_for_one_tiling_key(tiling_key, kernel_name, \
                         compile_info, kernel_type_section)
@@ -406,9 +409,9 @@ class DFXSectionGenerator:
                 section_content += self._generate_dfx_info_struct()
 
         if compile_info.sub_core_type == CORE_TYPE_CUBE:
-            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({cube_core_type})\n"
+            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && {cube_core_marco}\n"
         elif compile_info.sub_core_type == CORE_TYPE_VEC:
-            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({vec_core_type})\n"
+            section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && {vec_core_marco}\n"
         else:
             section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL\n"
 

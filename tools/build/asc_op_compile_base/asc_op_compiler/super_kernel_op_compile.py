@@ -118,9 +118,9 @@ def gen_system_run_cfg(kernel_type):
     file_header = ''
     if kernel_type == KernelMetaType.KERNEL_TYPE_AIV_ONLY or \
         kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0:
-        file_header += "#if defined(__DAV_C220_VEC__)\n"
+        file_header += "#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
     else:
-        file_header += "#if defined(__DAV_C220_CUBE__)\n"
+        file_header += "#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
  
     file_header += f"    __gm__ struct OpSystemRunCfg g_opSystemRunCfg = {{{0}}};\n"
     file_header += f"#else\n"

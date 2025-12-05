@@ -894,9 +894,9 @@ AsccStatus TaskDeviceStubCompileO(const std::string& file, const PathInfo& pathI
             .AddArg(stubFileName);
 
         if (coreType == CoreType::SPLIT_VEC) {
-            taskContent.AddArg("--cce-auto-sync").AddArg("-D__DAV_C220_VEC__");
+            taskContent.AddArg("--cce-auto-sync").AddArg("-D__NPU_ARCH__=2201 -D__DAV_VEC__");
         } else {
-            taskContent.AddArg("-D__DAV_C220_CUBE__");
+            taskContent.AddArg("-D__NPU_ARCH__=2201 -D__DAV_CUBE__");
         }
         groupCompile.AddTask(taskContent);
         executor.AddTaskGroup(groupCompile);
