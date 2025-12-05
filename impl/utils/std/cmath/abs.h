@@ -15,6 +15,10 @@
 #ifndef IMPL_STD_ABS_H
 #define IMPL_STD_ABS_H
 
+#ifdef ASCENDC_CPU_DEBUG
+#include <cmath>
+#endif
+
 #include "../type_traits/is_one_of.h"
 
 namespace AscendC {
@@ -24,7 +28,11 @@ __aicore__ inline T abs(const T src)
 {
     static_assert(is_one_of<T, int8_t, int16_t, int32_t, float, int64_t>(), 
                 "current data type is not supported on current device!");
+#ifndef ASCENDC_CPU_DEBUG
     return bisheng::cce::abs(src);
+#else
+    return ::abs(src);
+#endif
 }
 }
 }
