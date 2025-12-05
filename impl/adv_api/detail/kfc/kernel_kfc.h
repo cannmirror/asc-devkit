@@ -191,10 +191,6 @@ public:
                     }
                     switchPoll = true;
                 } else if (funID == KFC_Enum::SERVICE_QUIT) {
-                    if (msg->ubAddr == 1) {
-                        TRACE_STOP(TraceId::KFC_SERVER_RUN);
-                        return;
-                    }
                     quitSize++;
                     switchPoll = true;
                 } else {
