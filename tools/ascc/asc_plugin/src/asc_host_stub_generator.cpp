@@ -185,8 +185,13 @@ void AscHostStubGenerator::GenStubFuncImpl()
     if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "    constexpr uint32_t __ascendc_one_core_dump_size = "
                      << std::to_string(infoManager.GetOneCoreDumpSize()) << ";\n";
-        funcImplCode << "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * "
-                     << maxCoreNum << ");\n";
+        if (infoManager.HasSimtPrintf()) {
+            funcImplCode << "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * "
+                         << maxCoreNum << " + 72 * 2048 * 2048);\n";
+        } else {
+            funcImplCode << "    AllocAscendMemDevice(&(__ascendc_args.__ascendc_dump), __ascendc_one_core_dump_size * "
+                         << maxCoreNum << ");\n";
+        }
     }
     funcImplCode << "    constexpr uint32_t __ascendc_overflow_status_size = 8;\n";
     funcImplCode <<
@@ -224,15 +229,21 @@ void AscHostStubGenerator::GenStubFuncImpl()
         snprintf_s(buffer, sizeof(buffer), sizeof(buffer) - 1, fmtLaunchAndProfiling, "0");
     }
     funcImplCode << buffer;
+
     funcImplCode << "    if(__ascendc_ret != 0) {\n";
     funcImplCode << "        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "
                     "\"kernel launch failure!\");\n";
     funcImplCode << "        return;\n";
     funcImplCode << "    }\n";
     funcImplCode << "    AscPluginGenerator::GetHandleUnregisterInst();\n";
-    if (!isSupportFifoDump && infoManager.IsDumpOn() && infoManager.HasPrintf()) {
-        funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * "
-                     << maxCoreNum << ", __ascendc_stream, __ascendc_name);\n";
+    if (!isSupportFifoDump && infoManager.IsDumpOn() && (infoManager.HasPrintf() || infoManager.HasSimtPrintf())) {
+        if (infoManager.HasSimtPrintf()) {
+            funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * "
+                         << maxCoreNum << " + 72 * 2048 * 2048, __ascendc_stream, __ascendc_name);\n";
+        } else {
+            funcImplCode << "    Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * "
+                         << maxCoreNum << ", __ascendc_stream, __ascendc_name);\n";
+        }
     }
     if (!isSupportFifoDump && infoManager.IsDumpOn()) {
         funcImplCode << "    FreeAscendMemDevice(__ascendc_args.__ascendc_dump);\n";
