@@ -517,7 +517,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
     ResetMask();
 }
 
-#if !defined(__DAV_C310__) && !defined(__DAV_310R6__) && !defined(__DAV_L311__) && !(__NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 template <typename SrcType, typename DstType, bool isTranspose>
 __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
     const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,

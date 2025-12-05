@@ -184,7 +184,7 @@ TEST_F(TestSchedulerNorm, DISABLED_ScheduleOnce_Basic) {
     ASSERT_FALSE(mm2.ScheduleOnce(false));
 }
 
-#if __CCE_AICORE__ != 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 2201)
 TEST_F(TestSchedulerNorm, DISABLED_TrianMatmul) {
     EXPECT_THROW(mm2.CheckSupportTrianMatmul(), std::runtime_error);
 }

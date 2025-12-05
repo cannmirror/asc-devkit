@@ -97,13 +97,4 @@ TEST_P(AxpyTestsuite, AxpyLevel2TestCase)
     for (int32_t i = 0; i < param.dataSize * param.srcTypeBytes; i++) {
         EXPECT_EQ(dstGm[i], 0x00);
     }
-//     ModelFactory& modelFactory = ModelFactory::Instance();
-// #if __CCE_AICORE__ == 100
-//     EXPECT_EQ(modelFactory.maskLow_, param.finalMaskLow);
-//     EXPECT_EQ(modelFactory.maskHigh_, param.finalMaskHigh);
-// #else
-//     // mask counter mode, reset mask after level2 Axpy
-//     EXPECT_EQ(modelFactory.maskLow_, FULL_MASK);
-//     EXPECT_EQ(modelFactory.maskHigh_, FULL_MASK);
-// #endif
 }

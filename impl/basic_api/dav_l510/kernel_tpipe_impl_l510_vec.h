@@ -1457,7 +1457,7 @@ __aicore__ inline void InitShareBufStart(TPipe* tpipe, uint32_t mode, uint32_t* 
         Hardware::L1, subBlockIdx);
     tpipe->AuxShareBufStart(mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::L0C),
         Hardware::L0C, subBlockIdx);
-#if __CCE_AICORE__ < 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
     tpipe->AuxShareBufStart(mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::UB),
         Hardware::UB, subBlockIdx);
 #endif
@@ -1478,7 +1478,7 @@ __aicore__ inline void InitShareBufEnd(TPipe* tpipe)
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::L1)];
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::L0C)].maxAddr =
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::L0C)];
-#if __CCE_AICORE__ < 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::UB)].maxAddr =
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::UB)];
 #endif

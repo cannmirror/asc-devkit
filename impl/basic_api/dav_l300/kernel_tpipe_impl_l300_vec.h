@@ -1533,14 +1533,14 @@ __aicore__ inline void InitShareBufStart(
     tpipe->AuxShareBufStart(mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::L1), Hardware::L1, subBlockIdx);
     tpipe->AuxShareBufStart(
         mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::L0C), Hardware::L0C, subBlockIdx);
-#if __CCE_AICORE__ < 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ = 2002)
     tpipe->AuxShareBufStart(mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::UB), Hardware::UB, subBlockIdx);
 #endif
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::L0A)].maxAddr = 0;
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::L0B)].maxAddr = 0;
     // v100 Shouldn't Use Bias Table
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::BIAS)].maxAddr = 0;
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     tpipe->g_tpipeImpl.sharedEvtId_ = tpipe->g_tpipeImpl.bufIdPool_;
 #endif
     return;
@@ -1553,12 +1553,12 @@ __aicore__ inline void InitShareBufEnd(TPipe *tpipe)
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::L1)];
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::L0C)].maxAddr =
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::L0C)];
-#if __CCE_AICORE__ < 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ = 2002)
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::UB)].maxAddr =
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::UB)];
 #endif
 
-#if defined(__DAV_C310__) || defined(__DAV_310R6__)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     tpipe->g_tpipeImpl.bufIdPool_ = tpipe->g_tpipeImpl.sharedEvtId_;
 #endif
     return;

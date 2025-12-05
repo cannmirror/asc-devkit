@@ -96,7 +96,7 @@ TEST_F(TestTiling, TestPlatformAscendCReserveLocalMemory)
     plat.ReserveLocalMemory(static_cast<platform_ascendc::ReservedSize>(5));
 }
 
-#if __CCE_AICORE__ == 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
 TEST_F(TestTiling, TestPlatformAscendC)
 {
     fe::PlatFormInfos platform_info;
@@ -113,7 +113,7 @@ TEST_F(TestTiling, TestPlatformAscendC)
 }
 #endif
 
-#if __CCE_AICORE__ == 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 extern void platfrom_stub_set_num_aic(const char *num);
 extern void platfrom_stub_set_num_aiv(const char *num);
 extern void platfrom_stub_set_num_cub(const char *num);
@@ -193,7 +193,7 @@ TEST_F(TestTiling, TestPlatformAscendC)
 }
 #endif
 
-#if __CCE_AICORE__ == 300
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3002)
 extern void platfrom_stub_set_num_aic(const char *num);
 extern void platfrom_stub_set_num_aiv(const char *num);
 extern void platfrom_stub_set_num_cub(const char *num);
