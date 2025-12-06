@@ -85,7 +85,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelWarpLevelComputeComp
 template <typename T>
 __aicore__ inline void KernelWarpLevelCompute<T>::Process(const int mode, __gm__ T* dst, const int predicate, const int laneOp, const int width)
 {
-    asc_call_vf<KernelWarpLevelComputeCompute<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
+    asc_vf_call<KernelWarpLevelComputeCompute<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
 }
 
 template <typename T>
@@ -140,7 +140,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelWarpLevelComputeComp
 template <typename T>
 __aicore__ inline void KernelWarpLevelCompute<T>::Process2(const int mode, __gm__ T* dst, const int predicate, const int laneOp, const int width)
 {
-    asc_call_vf<KernelWarpLevelComputeCompute2<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
+    asc_vf_call<KernelWarpLevelComputeCompute2<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
 }
 
 template <typename T>
@@ -196,7 +196,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelWarpLevelComputeComp
 template <typename T>
 __aicore__ inline void KernelWarpLevelCompute<T>::Process3(const int mode, __gm__ T* dst, const int predicate, const int laneOp, const int width)
 {
-    asc_call_vf<KernelWarpLevelComputeCompute3<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
+    asc_vf_call<KernelWarpLevelComputeCompute3<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
 }
 
 template <typename T>
@@ -251,7 +251,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelWarpLevelComputeComp
 template <typename T>
 __aicore__ inline void KernelWarpLevelCompute<T>::Process4(const int mode, __gm__ T* dst, const int predicate, const int laneOp, const int width)
 {
-    asc_call_vf<KernelWarpLevelComputeCompute4<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
+    asc_vf_call<KernelWarpLevelComputeCompute4<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
 }
 
 template <typename T>
@@ -306,7 +306,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelWarpLevelComputeComp
 template <typename T>
 __aicore__ inline void KernelWarpLevelCompute<T>::Process5(const int mode, __gm__ T* dst, const int predicate, const int laneOp, const int width)
 {
-    asc_call_vf<KernelWarpLevelComputeCompute5<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
+    asc_vf_call<KernelWarpLevelComputeCompute5<T>>(dim3(THREAD_DIM, 1, 1), mode, dst, predicate, laneOp, width);
 }
 
 // ================================ Test int32_t start ================================
