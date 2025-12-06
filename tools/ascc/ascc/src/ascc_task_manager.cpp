@@ -568,7 +568,7 @@ std::vector<std::string> GetDeviceDefaultIncludePath(const PathInfo& pathInfo, c
         "-I" + pathInfo.cannPath + "/compiler/tikcpp/tikcfw/interface",
         "-I" + pathInfo.cannPath + "/compiler/tikcpp/tikcfw/impl",
         "-I" + fileDir,
-        "-include", pathInfo.cannPath + "/include/version/cann_version.h"
+        "-include", pathInfo.cannPath + "/include/ascendc/asc_devkit_version.h"
     };
 }
 

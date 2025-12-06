@@ -1003,7 +1003,7 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     if asc_path is None:
         asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
     cann_version_file_path = os.path.join(asc_path, "..", "..",
-                                          "include", "version", "cann_version.h")
+                                          "include", "ascendc", "asc_devkit_version.h")
     compile_options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
@@ -1029,7 +1029,7 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
         compile_options.append("-include" + cann_version_file_path)
     else:
         CommonUtility.print_compile_log(
-            kernel_name, "not found cann_version.h", AscendCLogLevel.LOG_WARNING)
+            kernel_name, "not found asc_devkit_version.h", AscendCLogLevel.LOG_WARNING)
 
     if extend_options.get('opp_kernel_hidden_dat_path', None) is not None:
         compile_options.append("-cce-vfs")

@@ -189,20 +189,20 @@ extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;
 
 __aicore__ inline void GetCannVersion(__gm__ char*& versionStr, uint64_t& version, uint64_t& timeStamp)
 {
-#ifdef CANN_VERSION_STR
-    versionStr = const_cast<__gm__ char*>(CANN_VERSION_STR);
+#ifdef ASC_DEVKIT_VERSION_STR
+    versionStr = const_cast<__gm__ char*>(ASC_DEVKIT_VERSION_STR);
 #else
-    versionStr = const_cast<__gm__ char*>("Unknown CANN version");
+    versionStr = const_cast<__gm__ char*>("Unknown ASC_DEVKIT version");
 #endif
 
-#ifdef CANN_TIMESTAMP
-    timeStamp = static_cast<uint64_t>(CANN_TIMESTAMP);
+#ifdef ASC_DEVKIT_TIMESTAMP
+    timeStamp = static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP);
 #else
     timeStamp = 0;
 #endif
 
-#ifdef CANN_VERSION
-    version = static_cast<uint64_t>(CANN_VERSION);
+#ifdef ASC_DEVKIT_VERSION
+    version = static_cast<uint64_t>(ASC_DEVKIT_VERSION);
 #else
     version = 0;
 #endif
