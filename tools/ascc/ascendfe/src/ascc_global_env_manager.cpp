@@ -138,7 +138,7 @@ uint32_t AsccGlobalEnvManager::Init(const char* cannPath)
     this->ascendTikcfwInterfacePath = curCannPath + "/compiler/tikcpp/tikcfw/interface";
     this->ascendTikcpulibPath = curCannPath + "/tools/tikicpulib/lib/include";
     this->ascendClangIncPath = curCannPath + "/compiler/ccec_compiler/lib/clang/15.0.5/include";
-    this->ascendVersionHeader = curCannPath + "/include/version/cann_version.h";
+    this->ascendVersionHeader = curCannPath + "/include/ascendc/asc_devkit_version.h";
     this->ccecPath = curCannPath + "/tools/ccec_compiler/bin";
     this->ascendCompiler = curCannPath + "/tools/ccec_compiler/bin/bisheng";
     this->ascendLinker = curCannPath + "/tools/ccec_compiler/bin/ld.lld";

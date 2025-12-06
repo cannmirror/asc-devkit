@@ -15,7 +15,7 @@ target_compile_options(device_intf_pub INTERFACE
     "SHELL:--cce-aicore-lang"
 )
 
-set(CANN_VERSION_HEADER ${ASCENDC_DEVKIT_PATH}/../include/version/cann_version.h)
+set(CANN_VERSION_HEADER ${ASCENDC_DEVKIT_PATH}/../include/ascendc/asc_devkit_version.h)
 if(EXISTS ${CANN_VERSION_HEADER})
     target_compile_options(device_intf_pub INTERFACE
         "SHELL:-include ${CANN_VERSION_HEADER}"
