@@ -51,21 +51,17 @@
 
 ## 编译运行
 - 安装PyTorch (这里以使用2.1.0版本为例)
-
   aarch64:
-
   ```bash
   pip3 install torch==2.1.0
   ```
 
   x86:
-
   ```bash
   pip3 install torch==2.1.0+cpu  --index-url https://download.pytorch.org/whl/cpu
   ```
 
 - 安装torch-npu （以Pytorch2.1.0、python3.9、CANN版本8.0.RC1.alpha002为例）
-
   ```bash
   git clone https://gitee.com/ascend/pytorch.git -b v6.0.rc1.alpha002-pytorch2.1.0
   cd pytorch/
@@ -77,47 +73,28 @@
   ```bash
   pip3 install pybind11
   ```
-
-- 打开样例目录
-
-  以命令行方式下载样例代码，master分支为例。
-  ```bash
-  cd ${git_clone_path}/examples/02_features/03_pytorch_integration/00_pybind
-  ```
-
-  请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+- 配置环境变量  
+  请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
+    source /usr/local/Ascend/cann/set_env.bash
     ```
   - 默认路径，非root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
+    source $HOME/Ascend/cann/set_env.bash
     ```
   - 指定路径install_path，安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/latest
+    source ${install_path}/cann/set_env.bash
     ```
-
-  配置安装路径后，执行以下命令统一配置环境变量。
-  ```bash
-  # 配置CANN环境变量
-  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  ```
-
 - 样例执行
   ```bash
-  rm -rf build; mkdir -p build; cd build  # 创建并进入build目录
-  cmake ..; make -j                       # 编译算子so
-  python3 ../add_custom_test.py           # 执行样例
+  mkdir -p build; cd build             # 创建并进入build目录
+  cmake ..; make -j                    # 编译算子so
+  python3 ../add_custom_test.py        # 执行样例
   ```
   执行结果如下，说明精度对比成功。
   ```bash
   Ran 1 test in **s.
   OK
   ```
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/26 | 样例目录调整，新增本readme |

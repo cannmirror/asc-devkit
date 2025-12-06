@@ -96,7 +96,6 @@ int32_t main(int32_t argc, char *argv[])
     size_t inputByteSize = 8 * 2048 * sizeof(uint16_t);
     size_t outputByteSize = 8 * 2048 * sizeof(uint16_t);
 
-#ifdef ASCENDC_CPU_DEBUG
     uint8_t *x = (uint8_t *)AscendC::GmAlloc(inputByteSize);
     uint8_t *y = (uint8_t *)AscendC::GmAlloc(inputByteSize);
     uint8_t *z = (uint8_t *)AscendC::GmAlloc(outputByteSize);
@@ -112,6 +111,5 @@ int32_t main(int32_t argc, char *argv[])
     AscendC::GmFree((void *)x);
     AscendC::GmFree((void *)y);
     AscendC::GmFree((void *)z);
-#endif
     return 0;
 }

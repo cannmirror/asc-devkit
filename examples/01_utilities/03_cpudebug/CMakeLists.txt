@@ -12,7 +12,7 @@
 cmake_minimum_required(VERSION 3.16)
 project(cpudebug)
 
-set(CMAKE_PREFIX_PATH $ENV{ASCEND_INSTALL_PATH}/tools/tikicpulib/lib/cmake)
+set(CMAKE_PREFIX_PATH $ENV{ASCEND_HOME_PATH}/tools/tikicpulib/lib/cmake)
 find_package(tikicpulib REQUIRED)
 add_executable(add ${CMAKE_CURRENT_SOURCE_DIR}/add.cpp)
 target_compile_options(add PRIVATE

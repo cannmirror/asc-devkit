@@ -11,7 +11,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-find_package(ASC REQUIRED HINTS $ENV{ASCEND_INSTALL_PATH}/compiler/tikcpp/ascendc_kernel_cmake)
+find_package(ASC REQUIRED HINTS $ENV{ASCEND_HOME_PATH}/lib64/cmake)
 
 execute_process(COMMAND python3 -c "import os; import torch; print(os.path.dirname(torch.__file__))"
     OUTPUT_STRIP_TRAILING_WHITESPACE
