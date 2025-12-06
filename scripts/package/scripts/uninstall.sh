@@ -18,7 +18,7 @@ DEFAULT_NORMAL_DIR="${HOME}/Ascend"   # 普通用户默认安装路径
 
 curpath="$(dirname $(readlink -f $0))" # 脚本目录
 common_func_path="${curpath}/common_func.inc"
-asc-devkit_func_path="${curpath}/asc-devkit_func.sh"
+asc_devkit_func_path="${curpath}/asc-devkit_func.sh"
 UNINSTALL_SHELL="${curpath}/run_asc-devkit_uninstall.sh" # 卸载脚本路径
 install_path_param="$(dirname "${curpath}")"
 
@@ -32,7 +32,7 @@ RUN_CMD_TYPE="Uninstall"   # 执行程序命令类型
 IS_QUIET="n"               # 静默模式默认为否
 
 . "${common_func_path}"
-. "${asc-devkit_func_path}"
+. "${asc_devkit_func_path}"
 
 # 执行程序等级
 case "${RUN_CMD_TYPE}" in
@@ -237,28 +237,28 @@ uninstall_run() {
     chmod_start
     local num=0
     local operation="${RUN_CMD_TYPE}"
-    local asc-devkit_install_path_param="$(get_pkg_install_path_param)"
+    local asc_devkit_install_path_param="$(get_pkg_install_path_param)"
     local install_top_path="$(get_install_top_path)"
 
     if [ -f "$ASCEND_INSTALL_INFO_FILE" ]; then
-        local asc-devkit_install_type=$(get_install_param "Asc-Devkit_Install_Type" "${ASCEND_INSTALL_INFO_FILE}")
+        local asc_devkit_install_type=$(get_install_param "Asc-Devkit_Install_Type" "${ASCEND_INSTALL_INFO_FILE}")
     elif [ -f "${ASCEND_INSTALL_INFO_OLD_FILE}" ]; then
         num=$(grep -c -i asc-devkit_install_path_param "${ASCEND_INSTALL_INFO_OLD_FILE}")
         if [ "${num}" != "0" ]; then
-            local asc-devkit_install_type="$(grep -iw asc-devkit_install_type "$ASCEND_INSTALL_INFO_OLD_FILE" | cut -d"=" -f2-)"
+            local asc_devkit_install_type="$(grep -iw asc-devkit_install_type "$ASCEND_INSTALL_INFO_OLD_FILE" | cut -d"=" -f2-)"
         fi
     else
         err_no0x0080 "please complete ${ASCEND_INSTALL_INFO_FILE} or ${ASCEND_INSTALL_INFO_OLD_FILE}"
     fi
     if [ $? -eq 0 ]; then
-        log "INFO" "${RUN_CMD} ${asc-devkit_install_path_param} ${asc-devkit_install_type}"
-        sh "${UNINSTALL_SHELL}" "${RUN_CMD}" "${asc-devkit_install_path_param}" "${asc-devkit_install_type}" "${IS_QUIET}" "n" "" "y"
+        log "INFO" "${RUN_CMD} ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
+        sh "${UNINSTALL_SHELL}" "${RUN_CMD}" "${asc_devkit_install_path_param}" "${asc_devkit_install_type}" "${IS_QUIET}" "n" "" "y"
         if [ $? -eq 0 ]; then
             rm -f "${ASCEND_INSTALL_INFO_FILE}"
             rm -f "${version_info_file}"
             if [ $? -eq 0 ] && [ -f "${ASCEND_INSTALL_INFO_OLD_FILE}" ] && [ -w "${ASCEND_INSTALL_INFO_OLD_FILE}" ] && [ "${num}" != "0" ]; then
-                sed -i '/asc-devkit_install_path_param=/Id' "${ASCEND_INSTALL_INFO_OLD_FILE}"
-                sed -i '/asc-devkit_install_type=/Id' "${ASCEND_INSTALL_INFO_OLD_FILE}"
+                sed -i '/asc_devkit_install_path_param=/Id' "${ASCEND_INSTALL_INFO_OLD_FILE}"
+                sed -i '/asc_devkit_install_type=/Id' "${ASCEND_INSTALL_INFO_OLD_FILE}"
             fi
             remove_dir_recursive "$install_top_path" "$install_path_param"
             new_echo "INFO" "AscDevkit package uninstalled successfully! Uninstallation takes effect immediately."
