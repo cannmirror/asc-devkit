@@ -61,37 +61,30 @@ CPU Debug介绍
     Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
 ## 编译运行：  
-  - 配置环境变量  
-    以命令行方式下载样例代码，master分支为例。
+在本样例根目录下执行如下步骤，编译并执行算子。
+- 配置环境变量  
+  请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
+  - 默认路径，root用户安装CANN软件包
     ```bash
-    cd ${git_clone_path}/examples/01_utilities/03_cpudebug
+    source /usr/local/Ascend/cann/set_env.bash
     ```
-    请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
-    - 默认路径，root用户安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
-      ```
-    - 默认路径，非root用户安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
-      ```
-    - 指定路径install_path，安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/latest
-      ```
-    配置安装路径后，执行以下命令统一配置环境变量。
+  - 默认路径，非root用户安装CANN软件包
+    ```bash
+    source $HOME/Ascend/cann/set_env.bash
+    ```
+  - 指定路径install_path，安装CANN软件包
+    ```bash
+    source ${install_path}/cann/set_env.bash
+    ```
     ```bash
     # 选择芯片型号
     SOC_VERSION=${1:-SOC_VERSION}
-    # 配置CANN环境变量
-    source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
     # 添加Ascend C CMake Module搜索路径至环境变量
-    export LD_LIBRARY_PATH=${ASCEND_INSTALL_PATH}/tools/tikicpulib/lib:${ASCEND_INSTALL_PATH}/tools/tikicpulib/lib/${SOC_VERSION}:${ASCEND_INSTALL_PATH}/tools/simulator/${SOC_VERSION}/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=${ASCEND_HOME_PATH}/tools/tikicpulib/lib:${ASCEND_HOME_PATH}/tools/tikicpulib/lib/${SOC_VERSION}:${ASCEND_HOME_PATH}/tools/simulator/${SOC_VERSION}/lib:$LD_LIBRARY_PATH
     ```
     - SOC_VERSION：昇腾AI处理器型号，如果无法确定具体的SOC_VERSION，则在安装昇腾AI处理器的服务器执行npu-smi info命令进行查询，在查询到的“Name”前增加Ascend信息，例如“Name”对应取值为xxxyy，实际配置的SOC_VERSION值为Ascendxxxyy。
 
   - 样例执行
-    执行add.cpp样例的命令如下所示：
     ```bash
     set -e && rm -rf build out && mkdir -p build
     cmake -B build -DCMAKE_INSTALL_PREFIX=./ -DSOC_VERSION=${SOC_VERSION}
@@ -101,7 +94,7 @@ CPU Debug介绍
     cp ./build/add ./
     python3 scripts/gen_data.py
     (
-      export LD_LIBRARY_PATH=$(pwd)/out/lib:$(pwd)/out/lib64:${ASCEND_INSTALL_PATH}/lib64:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$(pwd)/out/lib:$(pwd)/out/lib64:${ASCEND_HOME_PATH}/lib64:$LD_LIBRARY_PATH
       ./add | tee $file_path
     )
     python3 scripts/verify_result.py output_z.bin golden.bin
@@ -121,14 +114,9 @@ CPU Debug介绍
     cp ./build/add ./
     python3 scripts/gen_data.py
     (
-      export LD_LIBRARY_PATH=$(pwd)/out/lib:$(pwd)/out/lib64:${ASCEND_INSTALL_PATH}/lib64:$LD_LIBRARY_PATH
+      export LD_LIBRARY_PATH=$(pwd)/out/lib:$(pwd)/out/lib64:${ASCEND_HOME_PATH}/lib64:$LD_LIBRARY_PATH
       #在下一行最前方加入"gdb --args"
       gdb --args ./add | tee $file_path
     )
     python3 scripts/verify_result.py output_z.bin golden.bin
     ```
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/21 | 样例目录调整，新增本readme |

@@ -16,10 +16,5 @@
 | [08_unaligned_abs](./08_unaligned_abs) | 本样例介绍了基于Ascend C的DataCopyPad的非对齐Abs算子核函数直调方法，有效降低调度开销，实现高效的算子执行 |
 | [09_unaligned_reducemin](./09_unaligned_reducemin) | 本样例介绍了基于Ascend C的无DataCopyPad的非对齐ReduceMin算子核函数直调方法，有效降低调度开销，实现高效的算子执行 |
 | [10_unaligned_wholereducesum](./10_unaligned_wholereducesum) | 本样例介绍了基于Ascend C的非对齐WholeReduceSum算子的核函数直调方法，有效降低调度开销，实现高效的算子执行 |
-| [11_vectoradd](./11_vectoradd) | 本样例介绍了于Ascend C的Add算子的核函数直调方法，算子支持单核运行，有效降低调度开销，实现高效的算子执行 |
+| [11_vectoradd](./11_vectoradd) | 本样例介绍了基于Ascend C的Add算子的核函数直调方法，算子支持单核运行，有效降低调度开销，实现高效的算子执行 |
 | [12_aicpu](./12_aicpu) | 本样例介绍了基于Ascend C的AI CPU算子的核函数直调方法，演示了HelloWorld |
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/06 | 样例目录调整，新增本readme |
