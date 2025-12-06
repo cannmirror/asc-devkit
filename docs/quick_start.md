@@ -129,7 +129,7 @@
    编译完成后会在`build_out`目录下生成cann-asc-devkit_*<cann_version>*_linux-*\<arch\>*.run软件包。
 2. 安装
 
-   在开源仓根目录下执行下列命令，根据设置的环境变量路径，将编译生成的run包安装到CANN包的装包路径，同时会覆盖原CANN包中的Ascend C内容。
+   在开源仓根目录下执行下列命令，将编译生成的run包安装到默认路径（/usr/local/Ascend）；或安装到指定的CANN包的装包路径（${install_path}），同时会覆盖原CANN包中的Ascend C内容。
 
    ```bash
    # 切换到run包生成路径下
