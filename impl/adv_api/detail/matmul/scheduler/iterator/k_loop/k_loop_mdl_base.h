@@ -375,6 +375,7 @@ protected:
 
         // update inner loop common params
         baseSize_ = (outerIdx_ + 1 == kIter_) ? tailK_ : MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
+        baseShape_ = baseSize_;
         baseBlockShape_ = Ceil(baseSize_, c0Size_);
         int32_t baseBlockSize = baseBlockShape_ * c0Size_;
         int32_t tileShape = tileShapeA_ > tileShapeB_ ? tileShapeB_ : tileShapeA_;
