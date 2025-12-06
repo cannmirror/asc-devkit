@@ -425,12 +425,14 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 namespace AscendC{
 #ifdef ASCENDC_DEBUG
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
+#define KERNEL_LOG_INTERNAL(level, format, ...) KERNEL_LOG_##level(format, ##__VA_ARGS__)
 #define ASCENDC_DEBUG_ASSERT(...) ASCENDC_ASSERT(__VA_ARGS__)
 #else
-#define KERNEL_LOG(level, format, ...) format, ##__VA_ARGS__
+#define KERNEL_LOG_INTERNAL(level, format, ...) format, ##__VA_ARGS__
 #define ASCENDC_DEBUG_ASSERT(...) ASCENDC_DEBUG_ASSERT_IMPL(__VA_ARGS__)
 #endif
 #else
+#define KERNEL_LOG_INTERNAL(level, format, ...)
 #define ASCENDC_DEBUG_ASSERT(...)
 #endif
 }

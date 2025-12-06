@@ -207,7 +207,7 @@ __aicore__ inline void DataCopyL12GMNZ2NDImplBase(__gm__ T* dstAddr, __cbuf__ T*
     uint16_t srcNStride, uint16_t dstDStride)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::A1>(reinterpret_cast<uint64_t>(srcAddr) % ONE_BLK_SIZE == 0)),
-        KERNEL_LOG(KERNEL_ERROR, "src address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     const uint16_t highBlock = MAX_REPEAT_TIMES;
     const uint16_t highBlocks = high / highBlock;
     const uint16_t highTail = high % highBlock;
@@ -240,7 +240,7 @@ template <typename T>
 __aicore__ inline void DataCopyL12GMNZ2NDImpl(__gm__ T* dst, __cbuf__ T* src, const Nz2NdParamsFull& intriParams)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::A1>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "src address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     const uint16_t ndNum = intriParams.ndNum;
     const uint16_t nValue = intriParams.nValue;
     const uint16_t dValue = intriParams.dValue;

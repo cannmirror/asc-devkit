@@ -69,7 +69,7 @@ __aicore__ inline void DataCopyGM2UBImpl(__ubuf__ T* dst, __gm__ T* src, const D
     if ASCEND_IS_AIV {
         CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
         ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0),
-            KERNEL_LOG(KERNEL_ERROR, "dst address should be 32B aligned \n"));
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dst address should be 32B aligned \n"));
         if constexpr (g_gm_overflow_check) {
             __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
             AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, false, intriParams);
@@ -114,7 +114,7 @@ __aicore__ inline void DataCopyUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, const D
         ASCENDC_ASSERT((dst != nullptr), { KERNEL_LOG(KERNEL_ERROR, "dst ptr can not be nullptr"); });
         ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
         CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
 
         if constexpr (g_gm_overflow_check) {
@@ -131,9 +131,9 @@ __aicore__ inline void DataCopyUB2UBImpl(__ubuf__ T* dst, __ubuf__ T* src, const
 {
     if ASCEND_IS_AIV {
         CheckDataCopyParams(intriParams.blockCount, intriParams.blockLen);
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "dst address should be 32B aligned \n"));
         copy_ubuf_to_ubuf((__ubuf__ void*)dst, (__ubuf__ void*)src, 0, intriParams.blockCount, intriParams.blockLen,
             intriParams.srcStride, intriParams.dstStride);
@@ -149,7 +149,7 @@ __aicore__ inline void DataCopyUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, const
     ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
     if ASCEND_IS_AIV {
         ASCENDC_ASSERT((GetKfcClient() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "kfc client ptr can not be nullptr"); });
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
         // 1.获取GM的地址
         uint32_t tensorSize = intriParams.blockCount * intriParams.blockLen * 32;
@@ -197,7 +197,7 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
     ASCENDC_ASSERT((src != nullptr), { KERNEL_LOG(KERNEL_ERROR, "src ptr can not be nullptr"); });
     if ASCEND_IS_AIV {
         ASSERT(GetKfcClient() != nullptr);
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "src address should be 32B aligned \n"));
         uint32_t tensorSize = intriParams.nValue * intriParams.dValue;
         int32_t ubAddr = -1;
@@ -407,7 +407,7 @@ __aicore__ inline void DataCopyUB2L0CImpl(__cc__ T* dst, __ubuf__ U* src, const 
 template <typename T>
 __aicore__ inline void DataCopySliceGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, const DataCopyParams& intriParamsIn)
 {
-    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
         "dst address should be 32B aligned \n"));
     DataCopyPadExtParams<T> padParams{ false, 0, 0, 0 };
     uint16_t burstLen = intriParamsIn.blockLen * ONE_BLK_SIZE;
@@ -423,7 +423,7 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
     if ASCEND_IS_AIC {
         return;
     }
-    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
         "Failed to check dst tensor address alignment in DataCopyPad from GM to VECIN / VECOUT, it should be 32B aligned.\n"));
     CheckDataCopyPadParams<T>(intriParams.blockCount, static_cast<uint32_t>(intriParams.blockLen), true);
     if (padParams.isPad) {
@@ -460,7 +460,7 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
     if ASCEND_IS_AIC {
         return;
     }
-    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, "Failed "
+    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
         "to check dst tensor address alignment in DataCopyPad from GM to VECIN / VECOUT, it should be 32B aligned.\n"));
     CheckDataCopyPadParams<T>(intriParams.blockCount, intriParams.blockLen, true);
     if (padParams.isPad) {
@@ -493,7 +493,7 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
 template <typename T>
 __aicore__ inline void DataCopySliceUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, const DataCopyParams& intriParamsIn)
 {
-    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
         "src address should be 32B aligned \n"));
     uint32_t burstLen = intriParamsIn.blockLen * ONE_BLK_SIZE;
     DataCopyExtParams intriParams{ intriParamsIn.blockCount, burstLen, intriParamsIn.srcStride, intriParamsIn.dstStride,
@@ -507,7 +507,7 @@ __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, cons
     if ASCEND_IS_AIC {
         return;
     }
-    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, "Failed "
+    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
         "to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to GM, it should be 32B aligned.\n"));
     CheckDataCopyPadParams<T>(intriParams.blockCount, static_cast<uint32_t>(intriParams.blockLen), false);
     if constexpr (g_gm_overflow_check && (sizeof(T) == B8_BYTE_SIZE || sizeof(T) == B16_BYTE_SIZE
@@ -537,7 +537,7 @@ __aicore__ inline void DataCopyPadUB2GMImpl(__gm__ T* dst, __ubuf__ T* src, cons
     if ASCEND_IS_AIC {
         return;
     }
-    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, "Failed "
+    ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed "
         "to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to GM, it should be 32B aligned.\n"));
     CheckDataCopyPadParams<T>(intriParams.blockCount, intriParams.blockLen, false);
     if constexpr (g_gm_overflow_check && (sizeof(T) == B8_BYTE_SIZE || sizeof(T) == B16_BYTE_SIZE
@@ -572,7 +572,7 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, co
     CheckDataCopyPadParams<T>(intriParams.blockCount, static_cast<uint32_t>(intriParams.blockLen), false);
     if ASCEND_IS_AIV {
         ASCENDC_ASSERT((GetKfcClient() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "kfc client ptr can not be nullptr"); });
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "Failed to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to TSCM, it should be 32B "
             "aligned.\n"));
         uint32_t tensorSize = nd2nzParams.nValue * nd2nzParams.dValue;
@@ -621,7 +621,7 @@ __aicore__ inline void DataCopyPadUB2L1Impl(__cbuf__ T* dst, __ubuf__ T* src, co
     CheckDataCopyPadParams<T>(intriParams.blockCount, intriParams.blockLen, false);
     if ASCEND_IS_AIV {
         ASCENDC_ASSERT((GetKfcClient() != nullptr), { KERNEL_LOG(KERNEL_ERROR, "kfc client ptr can not be nullptr"); });
-        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, 
+        ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "Failed to check src tensor address alignment in DataCopyPad from VECIN / VECOUT to TSCM, it should be 32B "
             "aligned.\n"));
         uint32_t tensorSize = nd2nzParams.nValue * nd2nzParams.dValue;
@@ -729,7 +729,7 @@ __aicore__ inline void DataCopyGM2UBSingleImpl(__ubuf__ T* dst, __gm__ T* src, c
     const int copyTime, const int computeNum)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "dst address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dst address should be 32B aligned \n"));
     const uint16_t &nValue = intriParams.nValue;
     const uint16_t& dValue = intriParams.dValue;
     const uint16_t& computeLen = computeNum * sizeof(T);
@@ -765,7 +765,7 @@ __aicore__ inline void DataCopyGM2UBND2NZImpl(__ubuf__ T* dst, __gm__ T* src, co
         return;
     }
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "dst address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dst address should be 32B aligned \n"));
     const uint16_t &ndNum = intriParams.ndNum;
     const uint16_t& dValue = intriParams.dValue;
     const uint16_t& srcNdMatrixStride = intriParams.srcNdMatrixStride;
@@ -789,7 +789,7 @@ __aicore__ inline void DataCopyUB2GMNZ2NDImplBase(__gm__ T* dstAddr, __ubuf__ T*
     uint16_t width, uint16_t srcNStride, uint16_t dstDStride)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(srcAddr) % ONE_BLK_SIZE == 0)),
-        KERNEL_LOG(KERNEL_ERROR, "src address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     const uint16_t blkCntLimit = UINT12_MAX;                            // DataCopyPad max blockCount is 4095
     const uint16_t repeatTime = height / blkCntLimit;
     const uint16_t tailBlock = height % blkCntLimit;
@@ -816,7 +816,7 @@ template <typename T>
 __aicore__ inline void DataCopyUB2GMNZ2NDImpl(__gm__ T* dst, __ubuf__ T* src, const Nz2NdParamsFull& intriParams)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "src address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     ASCENDC_ASSERT((sizeof(T) == sizeof(int16_t) || sizeof(T) == sizeof(int32_t)),
         {KERNEL_LOG(KERNEL_ERROR, "DataCopy NZ2ND only suppports dtype B16 and B32");});
     const uint16_t ndNum = intriParams.ndNum;
@@ -843,7 +843,7 @@ __aicore__ inline void DataCopyGM2UBSingleImpl(__ubuf__ float* dst, __gm__ float
     const int copyTime, const int computeNum)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "dst address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dst address should be 32B aligned \n"));
     const uint16_t &nValue = intriParams.nValue;
     const uint16_t& dValue = intriParams.dValue;
     const uint16_t& computeLen = computeNum * sizeof(float);
@@ -886,7 +886,7 @@ __aicore__ inline void DataCopyGM2UBND2NZImpl(__ubuf__ float* dst, __gm__ float*
         return;
     }
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(dst)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "dst address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dst address should be 32B aligned \n"));
     const uint16_t &ndNum = intriParams.ndNum;
     const uint16_t& dValue = intriParams.dValue;
     const uint16_t& srcNdMatrixStride = intriParams.srcNdMatrixStride;

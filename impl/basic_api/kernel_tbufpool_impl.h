@@ -77,14 +77,14 @@ template <class T>
 __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBuffer(T &que, uint8_t num, uint32_t len)
 {
     static_assert((T::isTQue), "TBufPool::InitBuffer(T& que, uint8_t num, uint32_t len) not supports T as TBuf");
-    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
+    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
     len = (len + ONE_BLK_SIZE - MIN_BLOCK_LEN) / ONE_BLK_SIZE * ONE_BLK_SIZE;
     que.value = num;
     que.bufStart = this->tBufPoolImpl.buf_ + this->tBufPoolImpl.curBufSize_;
     DEBUG_CODE(que.bufLen = num * len);
     ASCENDC_DEBUG_ASSERT(
         (this->tBufPoolImpl.maxAddr_ + num * len <= this->tBufPoolImpl.startAddr_ + this->tBufPoolImpl.maxLen_),
-            KERNEL_LOG(KERNEL_ERROR,
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR,
                 "Buffer Init length exceeds limit of BufPool. Max Length of BufPool is %u",
                 this->tBufPoolImpl.maxLen_));
     auto curPoolAddr = this->tBufPoolImpl.maxAddr_;
@@ -92,16 +92,16 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBuffer(T &que, uint8_t num,
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     Hardware pool = GetBufferPos(T::srcPosition, T::dstPosition);
     ASCENDC_DEBUG_ASSERT(
-        (pool == GetPhyType(pos)), KERNEL_LOG(KERNEL_ERROR, "buffer pos should be same with pos of TbufPool"));
+        (pool == GetPhyType(pos)), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer pos should be same with pos of TbufPool"));
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_DEBUG_ASSERT((num * len <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceed limits %d", num * len, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer size is %d, exceed limits %d", num * len, bufferInitLen.at(pool)));
     auto bufPos = GetPosition(T::srcPosition, T::dstPosition);
     auto absAddr = GetTPipePtr()->GetBaseAddr(static_cast<int8_t>(bufPos));
     AscendCBufInit(static_cast<uint8_t>(bufPos), 0, num, reinterpret_cast<uint64_t>(curPoolAddr + absAddr), len);
     que.SetTBufPoolHandle(reinterpret_cast<uint64_t>(&tBufPoolImpl));
     ASCENDC_DEBUG_ASSERT((curPoolAddr + num * len <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "curPoolAddr is %d, limits is %d", curPoolAddr, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "curPoolAddr is %d, limits is %d", curPoolAddr, bufferInitLen.at(pool)));
 #endif
     for (int32_t i = 0; i < num; i++, ptr++) {
         ptr->state = TBufState::FREE;
@@ -116,7 +116,7 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBuffer(T &que, uint8_t num,
     this->tBufPoolImpl.maxAddr_ = curPoolAddr;
     this->tBufPoolImpl.curBufSize_ += num;
     ASCENDC_DEBUG_ASSERT((this->tBufPoolImpl.curBufSize_ <= QBUFPOOL_MAX_LEN),
-        KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, limits is %d", this->tBufPoolImpl.curBufSize_, QBUFPOOL_MAX_LEN));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer size is %d, limits is %d", this->tBufPoolImpl.curBufSize_, QBUFPOOL_MAX_LEN));
     return true;
 }
 
@@ -124,7 +124,7 @@ template <TPosition pos, uint32_t bufIDSize>
 template <TPosition bufPos>
 __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBuffer(TBuf<bufPos> &buf, uint32_t len)
 {
-    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
+    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
     len = (len + ONE_BLK_SIZE - MIN_BLOCK_LEN) / ONE_BLK_SIZE * ONE_BLK_SIZE;
     constexpr int32_t bufHandleSize = 1;
     buf.bufStart = this->tBufPoolImpl.buf_ + this->tBufPoolImpl.curBufSize_;
@@ -132,18 +132,18 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBuffer(TBuf<bufPos> &buf, u
     buf.offset = 0;
     ASCENDC_DEBUG_ASSERT(
         (this->tBufPoolImpl.maxAddr_ + len <= this->tBufPoolImpl.startAddr_ + this->tBufPoolImpl.maxLen_),
-            KERNEL_LOG(KERNEL_ERROR,
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR,
                 "Buffer Init length exceeds limit of BufPool. Max Length of BufPool is %u",
                 this->tBufPoolImpl.maxLen_));
     constexpr auto pool = GetPhyType(bufPos);
     ASCENDC_DEBUG_ASSERT((GetPhyType(bufPos) == GetPhyType(pos)),
-        KERNEL_LOG(KERNEL_ERROR, "buffer pos should be same with pos of TBufPool"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer pos should be same with pos of TBufPool"));
     auto curPoolAddr = this->tBufPoolImpl.maxAddr_;
     auto ptr = buf.bufStart;
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_DEBUG_ASSERT((len <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "len is %u, exceed limits %d", len, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "len is %u, exceed limits %d", len, bufferInitLen.at(pool)));
     auto absAddr = GetTPipePtr()->GetBaseAddr(static_cast<int8_t>(bufPos));
     AscendCBufInit(static_cast<uint8_t>(bufPos), 1, 1, reinterpret_cast<uint64_t>(curPoolAddr + absAddr), len);
     buf.SetTBufPoolHandle(reinterpret_cast<uint64_t>(&tBufPoolImpl));
@@ -159,12 +159,12 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBuffer(TBuf<bufPos> &buf, u
     }
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     ASCENDC_DEBUG_ASSERT((curPoolAddr <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "curPoolAddr is %d, exceed limits %d", curPoolAddr, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "curPoolAddr is %d, exceed limits %d", curPoolAddr, bufferInitLen.at(pool)));
 #endif
     this->tBufPoolImpl.maxAddr_ = curPoolAddr;
     this->tBufPoolImpl.curBufSize_ += bufHandleSize;
     ASCENDC_DEBUG_ASSERT((this->tBufPoolImpl.curBufSize_ <= QBUFPOOL_MAX_LEN),
-        KERNEL_LOG(KERNEL_ERROR,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "current total buffer num is %d, exceed limits %d",
             this->tBufPoolImpl.curBufSize_,
             QBUFPOOL_MAX_LEN));
@@ -177,7 +177,7 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBufPool(T &bufPool, uint32_
 {
     static_assert(
         (T::isTbufPool), "TBufPool::InitBufPool(T& bufPool, uint32_t len, U& shareBuf) only supports T as TbufPool");
-    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
+    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
     len = (len + ONE_BLK_SIZE - MIN_BLOCK_LEN) / ONE_BLK_SIZE * ONE_BLK_SIZE;
     constexpr auto pool = GetPhyType(T::poolPos);
     bufPool.tBufPoolImpl.startAddr_ = this->tBufPoolImpl.maxAddr_;
@@ -185,14 +185,14 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBufPool(T &bufPool, uint32_
     bufPool.tBufPoolImpl.maxLen_ = len;
     ASCENDC_DEBUG_ASSERT(
         (this->tBufPoolImpl.maxAddr_ + len <= this->tBufPoolImpl.startAddr_ + this->tBufPoolImpl.maxLen_),
-            KERNEL_LOG(KERNEL_ERROR,
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR,
                 "Buffer Init length exceeds limit of BufPool. Max Length of BufPool is %u",
                 this->tBufPoolImpl.maxLen_));
     auto curPoolAddr = this->tBufPoolImpl.maxAddr_;
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_DEBUG_ASSERT((len <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceed limits %d", len, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer size is %d, exceed limits %d", len, bufferInitLen.at(pool)));
     auto bufPos = T::poolPos;
     auto absAddr = GetTPipePtr()->GetBaseAddr(static_cast<int8_t>(bufPos));
     AscendCTBufPoolInit(static_cast<uint8_t>(bufPos),
@@ -205,7 +205,7 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBufPool(T &bufPool, uint32_
     curPoolAddr += len;
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     ASCENDC_DEBUG_ASSERT((curPoolAddr <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "curPoolAddr is %d, limits is %d", curPoolAddr, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "curPoolAddr is %d, limits is %d", curPoolAddr, bufferInitLen.at(pool)));
 #endif
     this->tBufPoolImpl.maxAddr_ = curPoolAddr;
     return true;
@@ -217,23 +217,23 @@ __aicore__ inline bool TBufPool<pos, bufIDSize>::InitBufPool(T &bufPool, uint32_
 {
     static_assert((T::isTbufPool && U::isTbufPool),
         "TBufPool::InitBufPool(T& bufPool, uint32_t len, U& shareBuf) only supports T and U as TBufPool");
-    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
+    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
     len = (len + ONE_BLK_SIZE - MIN_BLOCK_LEN) / ONE_BLK_SIZE * ONE_BLK_SIZE;
     constexpr auto pool = GetPhyType(T::poolPos);
     constexpr auto sharedPool = GetPhyType(U::poolPos);
     ASCENDC_DEBUG_ASSERT((pool == sharedPool),
-        KERNEL_LOG(KERNEL_ERROR, "Position of input bufPool should be same with position of shareBuf"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Position of input bufPool should be same with position of shareBuf"));
     bufPool.tBufPoolImpl.startAddr_ = shareBuf.tBufPoolImpl.startAddr_;
     bufPool.tBufPoolImpl.maxAddr_ = bufPool.tBufPoolImpl.startAddr_;
     bufPool.tBufPoolImpl.maxLen_ = shareBuf.tBufPoolImpl.maxLen_;
     ASCENDC_DEBUG_ASSERT((len <= shareBuf.tBufPoolImpl.maxLen_),
-        KERNEL_LOG(KERNEL_ERROR,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "Length of input bufPool should be no longer than length of shareBuf, which is %u",
             shareBuf.tBufPoolImpl.maxLen_));
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_DEBUG_ASSERT((len <= bufferInitLen.at(pool)),
-        KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceed limits %d", len, bufferInitLen.at(pool)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer size is %d, exceed limits %d", len, bufferInitLen.at(pool)));
     auto bufPos = T::poolPos;
     auto absAddr = GetTPipePtr()->GetBaseAddr(static_cast<int8_t>(bufPos));
     AscendCTBufPoolInit(static_cast<uint8_t>(bufPos),

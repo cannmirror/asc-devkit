@@ -146,7 +146,7 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
         ASCENDC_DEBUG_ASSERT(CheckCastOverlappingHigh(
             static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
             static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())), sizeof(DstPrimType), sizeof(SrcPrimType),
-            count), KERNEL_LOG(KERNEL_ERROR, "Failed to pass Cast count mode check."));
+            count), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to pass Cast count mode check."));
     }
     CastImpl((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src.GetPhyAddr(), roundMode, count);
 }
