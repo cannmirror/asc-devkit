@@ -21,7 +21,8 @@ from .get_op_tiling import OpInfo
 from .template_tiling import extract_decl_param_options
 from .log_utils import AscendCLogLevel
 from .ascendc_common_utility import CommonUtility
-from .ascendc_constants import KernelMetaType
+from .ascendc_constants import KernelMetaType, KERNEL_TYPE_TO_STR, KERNEL_TYPE_STR_TO_TPL, \
+    STR_TO_KERNEL_TYPE_V220, STR_TO_KERNEL_TYPE_V200
 
 GEN_PLACE_HOLDER_STR = 'gen_placeholder'
 
@@ -70,6 +71,23 @@ def check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
     return True
 
 
+def check_tpl_kernel_type(kernel_type_name):
+    tpl_kernel_type_name = KERNEL_TYPE_STR_TO_TPL.get(kernel_type_name, "UNKNOWN_KERNEL_TYPE")
+    if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+        if kernel_type_name in STR_TO_KERNEL_TYPE_V220.keys():
+            return STR_TO_KERNEL_TYPE_V220[kernel_type_name]
+        else:
+            raise Exception(f"The current kernel type: {tpl_kernel_type_name} is not supported in current core version")
+    elif CommonUtility.is_v200():
+        if kernel_type_name in STR_TO_KERNEL_TYPE_V200.keys():
+            return STR_TO_KERNEL_TYPE_V200[kernel_type_name]
+        else:
+            raise Exception(f"The current kernel type: {tpl_kernel_type_name} is not supported in current core version")
+    else:
+        raise Exception(f"The TPL kernel type set is not supported in current core version.")
+    return None
+
+
 def tpl_tilingkey_kernel_type_check(
     tiling_key_list, decode_tiling_result, tiling_key_kernel_type
 ):
@@ -82,21 +100,22 @@ def tpl_tilingkey_kernel_type_check(
                 internal_dict["kernelType"]
             )
             if tpl_kernel_type is not None:
-                tiling_key_kernel_type[str(k)] = tpl_kernel_type
+                kernel_type_name = KERNEL_TYPE_TO_STR.get(tpl_kernel_type, "UNKNOWN_KERNEL_TYPE")
+                if kernel_type_name == "UNKNOWN_KERNEL_TYPE":
+                    raise Exception(f"UNKNOWN TPL KERNEL_TYPE, value is {tpl_kernel_type}")
+                else:
+                    check_result = check_tpl_kernel_type(kernel_type_name)
+                    if check_result is not None and check_result == tpl_kernel_type:
+                        tiling_key_kernel_type[str(k)] = tpl_kernel_type
+                    else:
+                        raise Exception(f"check_tpl_kernel_type no pass: check_result {check_result} \
+                            is no equal to {tpl_kernel_type}")
             else:
-                CommonUtility.print_compile_log(
-                    "",
-                    "get_kernel_meta_type return tpl_kernel_type is None, kernel_type value is {}".format(
-                        internal_dict["kernelType"]
-                    ),
-                    AscendCLogLevel.LOG_ERROR,
-                )
+                raise Exception(f"get_kernel_meta_type return tpl_kernel_type is None, kernel_type value \
+                    is {internal_dict['kernelType']}")
+
     if tpl_set_kernel_type_cnt != 0 and tpl_set_kernel_type_cnt != len(tiling_key_list):
-        CommonUtility.print_compile_log(
-            "",
-            "All ASCENDC_TPL_ARGS_SEL must set ASCENDC_TPL_KERNEL_TYPE_SEL simultaneously!",
-            AscendCLogLevel.LOG_ERROR,
-        )
+        raise Exception(f"All ASCENDC_TPL_ARGS_SEL must set ASCENDC_TPL_KERNEL_TYPE_SEL simultaneously!")
 
     return tiling_key_list, decode_tiling_result
 
