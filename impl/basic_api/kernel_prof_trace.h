@@ -44,7 +44,7 @@ __aicore__ inline void ProfStartImpl()
 #if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
     bisheng::cce::metrics_prof_start();
 #else
-    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "MetricsProfStart is not supported on current device\n"));
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "MetricsProfStart is not supported on current device\n"));
 #endif
 #endif
 }
@@ -55,7 +55,7 @@ __aicore__ inline void ProfStopImpl()
 #if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
     bisheng::cce::metrics_prof_stop();
 #else
-    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "MetricsProfStart is not supported on current device\n"));
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "MetricsProfStart is not supported on current device\n"));
 #endif
 #endif
 }

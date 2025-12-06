@@ -178,7 +178,7 @@ __aicore__ inline void FixpipeL0cToL1(__cbuf__ DstT* dst, __cc__ SrcT* src,
     const FixpipeParamsC310<config.format>& intriParams, const FixpipeTiling& fixpipeTiling, uint16_t calNSize,
     uint16_t nIterIndex = 0)
 {
-    ASCENDC_DEBUG_ASSERT((!(intriParams.isChannelSplit)), KERNEL_LOG(KERNEL_ERROR, "Failed to check isChannelSplit in Fixpipe, when src position is "
+    ASCENDC_DEBUG_ASSERT((!(intriParams.isChannelSplit)), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check isChannelSplit in Fixpipe, when src position is "
         "CO1 and dst position is C1, isChannelSplit must be set as false \n"));
 
     uint16_t cburstNum = fixpipeTiling.nSize / BLOCK_CUBE;
@@ -214,7 +214,7 @@ __aicore__ inline void FixpipeL0cToUB(__ubuf__ DstT* dst, __cc__ SrcT* src,
     const FixpipeParamsC310<config.format>& intriParams, const FixpipeTiling& fixpipeTiling, uint16_t calNSize,
     uint16_t nIterIndex = 0)
 {
-    ASCENDC_DEBUG_ASSERT((!(intriParams.isChannelSplit)), KERNEL_LOG(KERNEL_ERROR, "Failed to check isChannelSplit in Fixpipe, when src position is "
+    ASCENDC_DEBUG_ASSERT((!(intriParams.isChannelSplit)), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check isChannelSplit in Fixpipe, when src position is "
         "CO1 and dst position is VECIN/VECCALC/VECOUT, isChannelSplit must be set as false \n"));
 
     // dual destination mode limit
@@ -288,9 +288,9 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ DstT* dst, __cc__ SrcT* src,
     const uint8_t cacheMode, uint16_t nIterIndex = 0)
 {
     if (intriParams.isChannelSplit) {
-        ASCENDC_DEBUG_ASSERT((IsSameType<SrcT, float>::value && IsSameType<DstT, float>::value), KERNEL_LOG(KERNEL_ERROR, "Failed to check "
+        ASCENDC_DEBUG_ASSERT((IsSameType<SrcT, float>::value && IsSameType<DstT, float>::value), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check "
             "isChannelSplit value in Fixpipe, isChannelSplit can be set true only when src and dst are both float \n"));
-        ASCENDC_DEBUG_ASSERT((config.format == CO2Layout::NZ), KERNEL_LOG(KERNEL_ERROR, "Failed to check format value in Fixpipe, "
+        ASCENDC_DEBUG_ASSERT((config.format == CO2Layout::NZ), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check format value in Fixpipe, "
             "when isChannelSplit is set true, format must be set as NZ \n"));
     }
     uint16_t cburstNum = fixpipeTiling.nSize / BLOCK_CUBE;

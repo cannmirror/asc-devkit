@@ -117,14 +117,14 @@ __aicore__ inline void Fixpipe(const GlobalTensor<T> &dst, const LocalTensor<U> 
 template <typename T, typename U, const FixpipeConfig& config>
 __aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ T *dst, __cc__ U *src, const FixpipeParamsV220 &intriParams)
 {
-    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"));
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"));
 }
 
 template <typename T, typename U, const FixpipeConfig &config>
 __aicore__ inline void FixpipeL0C2UBImpl(
     __ubuf__ T *dst, __cc__ U *src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
 {
-    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"));
+    ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"));
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_FIXPIPE_IMPL_H

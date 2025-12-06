@@ -288,10 +288,10 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
     uint16_t dstNzNStride = intriParams.dstNzNStride;           // 目的nz矩阵中，Z型矩阵相邻行起始地址之间的偏移，单位：block
     uint16_t dstNzMatrixStride = intriParams.dstNzMatrixStride; // 目的nz矩阵中，相邻nz矩阵起始地址间的偏移，要求32B对齐
 
-    ASCENDC_DEBUG_ASSERT(((dValue * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG(KERNEL_ERROR, "dValue should be 32B aligned \n"));
-    ASCENDC_DEBUG_ASSERT(((srcNdMatrixStride * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG(KERNEL_ERROR, "srcNdMatrixStride should be 32B aligned \n"));
-    ASCENDC_DEBUG_ASSERT(((srcDValue * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG(KERNEL_ERROR, "dValue should be 32B aligned \n"));
-    ASCENDC_DEBUG_ASSERT(((dstNzMatrixStride * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG(KERNEL_ERROR, "dValue should be 32B aligned \n"));
+    ASCENDC_DEBUG_ASSERT(((dValue * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dValue should be 32B aligned \n"));
+    ASCENDC_DEBUG_ASSERT(((srcNdMatrixStride * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "srcNdMatrixStride should be 32B aligned \n"));
+    ASCENDC_DEBUG_ASSERT(((srcDValue * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dValue should be 32B aligned \n"));
+    ASCENDC_DEBUG_ASSERT(((dstNzMatrixStride * sizeof(T)) % BYTE_32_ALIGN == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "dValue should be 32B aligned \n"));
 
     uint32_t elementsPerBlock = ONE_BLK_SIZE / sizeof(T);
     uint32_t NBlockSize = dValue / elementsPerBlock;
@@ -351,7 +351,7 @@ __aicore__ inline void DataCopyL12GMNZ2NDImplBase(__gm__ T* dstAddr, __cbuf__ T*
     uint16_t srcNStride, uint16_t dstDStride)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::A1>(reinterpret_cast<uint64_t>(srcAddr) % ONE_BLK_SIZE == 0)),
-        KERNEL_LOG(KERNEL_ERROR, "src address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     const uint16_t highBlock = MAX_REPEAT_TIMES;
     const uint16_t highBlocks = high / highBlock;
     const uint16_t highTail = high % highBlock;
@@ -384,7 +384,7 @@ template <typename T>
 __aicore__ inline void DataCopyL12GMNZ2NDImpl(__gm__ T* dst, __cbuf__ T* src, const Nz2NdParamsFull& intriParams)
 {
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::A1>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0),
-        KERNEL_LOG(KERNEL_ERROR, "src address should be 32B aligned \n"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     const uint16_t ndNum = intriParams.ndNum;
     const uint16_t nValue = intriParams.nValue;
     const uint16_t dValue = intriParams.dValue;
