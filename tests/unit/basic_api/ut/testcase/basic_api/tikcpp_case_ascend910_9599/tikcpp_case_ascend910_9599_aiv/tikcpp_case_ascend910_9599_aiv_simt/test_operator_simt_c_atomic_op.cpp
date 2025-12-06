@@ -67,7 +67,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelAtomicCompute(__gm__
 template <typename T>
 __aicore__ inline void KernelAtomic<T>::Process(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
-    asc_call_vf<KernelAtomicCompute<T>>(dim3(THREAD_DIM, 1, 1), dst, value, compare, num, mode);
+    asc_vf_call<KernelAtomicCompute<T>>(dim3(THREAD_DIM, 1, 1), dst, value, compare, num, mode);
 }
 
 template <typename T>
@@ -103,7 +103,7 @@ __simt_vf__ inline void VfCallProcessStub(__gm__ T *dst, T value, T compare, int
 template <typename T>
 __aicore__ inline void KernelAtomic<T>::VfCallProcess(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
-    asc_call_vf<VfCallProcessStub<T>>(cce::dim3(THREAD_DIM), dst, value, compare, num, mode);
+    asc_vf_call<VfCallProcessStub<T>>(cce::dim3(THREAD_DIM), dst, value, compare, num, mode);
 }
 
 template <typename T>
@@ -135,7 +135,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelAtomicCompute2(__gm_
 template <typename T>
 __aicore__ inline void KernelAtomic<T>::Process2(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
-    asc_call_vf<KernelAtomicCompute2<T>>(dim3(THREAD_DIM, 1, 1), dst, value, compare, num, mode);
+    asc_vf_call<KernelAtomicCompute2<T>>(dim3(THREAD_DIM, 1, 1), dst, value, compare, num, mode);
 }
 
 template <typename T>
@@ -167,7 +167,7 @@ __simt_vf__ inline void VfCallProcessStub2(__gm__ T *dst, T value, T compare, in
 template <typename T>
 __aicore__ inline void KernelAtomic<T>::VfCallProcess2(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
-    asc_call_vf<VfCallProcessStub2<T>>(cce::dim3(THREAD_DIM), dst, value, compare, num, mode);
+    asc_vf_call<VfCallProcessStub2<T>>(cce::dim3(THREAD_DIM), dst, value, compare, num, mode);
 }
 
 template <typename T>
@@ -189,7 +189,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelAtomicCompute3(__gm_
 template <typename T>
 __aicore__ inline void KernelAtomic<T>::Process3(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
-    asc_call_vf<KernelAtomicCompute3<T>>(dim3(THREAD_DIM, 1, 1), dst, value, compare, num, mode);
+    asc_vf_call<KernelAtomicCompute3<T>>(dim3(THREAD_DIM, 1, 1), dst, value, compare, num, mode);
 }
 
 template <typename T>
@@ -211,7 +211,7 @@ __simt_vf__ inline void VfCallProcessStub3(__gm__ T *dst, T value, T compare, in
 template <typename T>
 __aicore__ inline void KernelAtomic<T>::VfCallProcess3(__gm__ T* dst, T value, T compare, const int num, const int mode)
 {
-    asc_call_vf<VfCallProcessStub3<T>>(cce::dim3(THREAD_DIM), dst, value, compare, num, mode);
+    asc_vf_call<VfCallProcessStub3<T>>(cce::dim3(THREAD_DIM), dst, value, compare, num, mode);
 }
 
 // ================================ Test int32_t start ================================

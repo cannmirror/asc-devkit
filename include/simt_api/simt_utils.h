@@ -20,7 +20,7 @@
 using dim3 = cce::dim3;
 
 template <auto funcPtr, typename... Args>
-__aicore__ inline void asc_call_vf(dim3 threadNums, Args &&...args)
+__aicore__ inline void asc_vf_call(dim3 threadNums, Args &&...args)
 {
 #if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 5102) || defined(SPLIT_CORE_VEC) || defined(ASCENDC_CPU_DEBUG)
     cce::async_invoke<funcPtr>(threadNums, args...);

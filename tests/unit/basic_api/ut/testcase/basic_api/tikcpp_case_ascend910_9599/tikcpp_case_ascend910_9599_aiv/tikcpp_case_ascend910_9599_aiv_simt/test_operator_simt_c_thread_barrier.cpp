@@ -52,7 +52,7 @@ __simt_vf__ LAUNCH_BOUND(1024) inline __aicore__  void KernelThreadBarrierComput
 template <typename T>
 __aicore__ inline void KernelThreadBarrier<T>::Process(__gm__ T* dst)
 {
-    asc_call_vf<KernelThreadBarrierCompute<T>>(dim3(THREAD_DIM, 1, 1), dst);
+    asc_vf_call<KernelThreadBarrierCompute<T>>(dim3(THREAD_DIM, 1, 1), dst);
 }
 
 struct ThreadBarriercParams {
