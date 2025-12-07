@@ -58,7 +58,7 @@ def split_dynamic_o_in_super_kernel(orign_bin_path, rename_file_path, i, compile
     if os.path.exists(new_bin_path):
         str_lst = f'WARNING: ALLREADY EXISTS split .o path: {new_bin_path}'
         CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, compile_log_path)
-    cmds = ['cp'] + ['-rf'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
+    cmds = ['cp'] + ['-rfL'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
     try:
         CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, compile_log_path)
         subprocess.run(cmds)
@@ -703,7 +703,7 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
         if os.path.exists(new_bin_path):
             str_lst = f'WARNING: ALLREADY EXISTS split .o path: {new_bin_path}'
             CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
-        cmds = ['cp'] + ['-rf'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
+        cmds = ['cp'] + ['-rfL'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
         try:
             CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
             subprocess.run(cmds)
