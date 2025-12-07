@@ -125,7 +125,7 @@ def split_kernel(sub_kernels_dict, func_name, obj_path, split_mode, compile_log_
         if os.path.exists(new_bin_path):
             str_lst = f'ERROR: ALLREADY EXISTS split .o path: {new_bin_path}'
             CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, compile_log_path)
-        cmds = ['cp'] + ['-rf'] + [f'{obj_path}'] + [f'{new_bin_path}']
+        cmds = ['cp'] + ['-rfL'] + [f'{obj_path}'] + [f'{new_bin_path}']
         run_local_cmd(cmds, compile_log_path)
         new_kernel_name = f"{func_name}_split{i}"
         cmds = ['llvm-objcopy', f'--redefine-sym={func_name}={new_kernel_name}', f'{new_bin_path}']
