@@ -209,6 +209,32 @@ AscendCLogLevel.LOG_ERROR)
         return None
 
     @staticmethod
+    def get_kernel_type_enum_for_group(kernel_type):
+        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+            if kernel_type in STR_TO_KERNEL_TYPE_V220.keys():
+                return STR_TO_KERNEL_TYPE_V220[kernel_type]
+            elif kernel_type in STR_TO_KERNEL_TYPE_V200.keys():
+                return STR_TO_KERNEL_TYPE_V200[kernel_type]
+            else:
+                raise Exception("current kernel type: {} is not support in current core version".format(kernel_type))
+        return None
+
+    @staticmethod
+    def is_valid_kernel_type_in_group(kernel_type, tiling_key=None):
+        if kernel_type is None or kernel_type == "":
+            return False
+        tiling_key_info = "" if tiling_key is None else f"of tiling key {tiling_key} "
+        kernel_type_info = str(kernel_type).split('.')[-1]
+        if kernel_type not in STR_TO_KERNEL_TYPE_V220.values():
+            raise Exception(f"kernel type: {kernel_type_info} {tiling_key_info}is not support in current \
+core version")
+        elif kernel_type not in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
+            raise Exception(f"kernel type: {kernel_type_info} {tiling_key_info}is not support in \
+TILING_KEY_LIST, please set to KERNEL_TYPE_MIX_AIC_1_1 or KERNEL_TYPE_MIX_AIC_1_2")
+        else:
+            return True
+
+    @staticmethod
     def gen_tiling_struct_macro_src_file(tiling_key_list, tiling_struct_expr_map, src_file):
         file_contents = ""
         for key, value in tiling_struct_expr_map.items():
@@ -350,8 +376,10 @@ REGISTER_TILING_DEFAULT')
             wait_task_bar = False
         enable_deterministic = KernelInfoInfer.get_enable_deterministic_var_from_i_file(content)
         tiling_key_kernel_type = {}
+        tiling_key_kernel_type_full = {}
         tiling_key_deterministic = {}
         default_kernel_type = KernelMetaType.KERNEL_TYPE_MAX
+        default_kernel_type_for_group = KernelMetaType.KERNEL_TYPE_MAX
         dump_info = KernelInfoInfer.get_dump_info_from_i_file(content)
         func_name_exist = False
 
@@ -402,12 +430,14 @@ REGISTER_TILING_DEFAULT')
                     cur_kernel_type = KernelInfoInfer.get_kernel_type_enum(kernel_type, compile_log_path)
                     if cur_kernel_type is not None:
                         default_kernel_type = cur_kernel_type
+                    default_kernel_type_for_group = KernelInfoInfer.get_kernel_type_enum_for_group(kernel_type)
                 if tiling_key is not None and kernel_type is not None:
                     cur_kernel_type = KernelInfoInfer.get_kernel_type_enum(kernel_type, compile_log_path)
                     if cur_kernel_type is not None:
                         tiling_key_kernel_type[str(int(tiling_key))] = cur_kernel_type
+                    tiling_key_kernel_type_full[str(int(tiling_key))] = \
+                        KernelInfoInfer.get_kernel_type_enum_for_group(kernel_type)
             tiling_no_register_flag |= KernelInfoInfer.find_tiling_struct_no_register_flag(line)
-            default_kernel_type_for_group = default_kernel_type
             numbers, is_tiling_key_list = KernelInfoInfer.find_tilingkey(line)
             if numbers is None:
                 continue
@@ -425,9 +455,13 @@ REGISTER_TILING_DEFAULT')
                             raise Exception(f"tiling_key {number_slave} is exists in tiling_key_list.")
                     tiling_key_list.append(str(int(numbers[0])))
                     tiling_key_group_map[str(int(numbers[0]))] = numbers[1:]
-                    for tiling_key_in_group in numbers:
-                        if tiling_key_in_group not in tiling_key_kernel_type.keys():
-                            tiling_key_kernel_type[tiling_key_in_group] = default_kernel_type_for_group
+
+        if tiling_key_group_map is not None and len(tiling_key_group_map) > 0:
+            KernelInfoInfer.get_tiling_key_kernel_type_full(tiling_key_group_map, \
+                                                           tiling_key_kernel_type_full, \
+                                                           default_kernel_type_for_group)
+        KernelInfoInfer.get_tiling_key_kernel_type_in_group(tiling_key_kernel_type, \
+                                                            tiling_key_kernel_type_full)
 
         if declare_param_str and select_param_str:
             # TPL
@@ -520,6 +554,42 @@ REGISTER_TILING_DEFAULT')
                                            default_kernel_type, dump_info, decode_tiling_result,
                                            default_tiling_struct, tiling_struct_expr_map, tiling_key_struct_map,\
                                            set_task_bar, wait_task_bar, tiling_key_deterministic, tiling_key_group_map)
+
+    @staticmethod
+    def get_tiling_key_kernel_type_in_group(tiling_key_kernel_type, tiling_key_kernel_type_origin):
+        if tiling_key_kernel_type_origin is not None:
+            for tiling_key in tiling_key_kernel_type_origin.keys():
+                if tiling_key not in tiling_key_kernel_type.keys():
+                    tiling_key_kernel_type[str(int(tiling_key))] = tiling_key_kernel_type_origin[tiling_key]
+
+    @staticmethod
+    def get_tiling_key_kernel_type_full(tiling_key_group_map, tiling_key_kernel_type_full, \
+                                        default_kernel_type_for_group):
+        for master_key, slave_keys in tiling_key_group_map.items():
+            if master_key in tiling_key_kernel_type_full.keys():
+                master_kernel_type = tiling_key_kernel_type_full[master_key]
+                KernelInfoInfer.is_valid_kernel_type_in_group(master_kernel_type, master_key)
+            else:
+                KernelInfoInfer.set_default_kernel_type_for_group(tiling_key_kernel_type_full, \
+                                                                  master_key, \
+                                                                  default_kernel_type_for_group)
+
+            for slave_key in slave_keys:
+                if slave_key in tiling_key_kernel_type_full.keys():
+                    slave_kernel_type = tiling_key_kernel_type_full[slave_key]
+                    KernelInfoInfer.is_valid_kernel_type_in_group(slave_kernel_type, slave_key)
+                else:
+                    KernelInfoInfer.set_default_kernel_type_for_group(tiling_key_kernel_type_full, \
+                                                                      slave_key, \
+                                                                      default_kernel_type_for_group)
+    
+    @staticmethod
+    def set_default_kernel_type_for_group(tiling_key_kernel_type_full, tiling_key, \
+                                          default_kernel_type_for_group):
+        if KernelInfoInfer.is_valid_kernel_type_in_group(default_kernel_type_for_group):
+            tiling_key_kernel_type_full[tiling_key] = default_kernel_type_for_group
+        else:
+            raise Exception(f'must set kernel type for tiling_key {tiling_key} in group')
 
     @staticmethod
     def get_tiling_key_list_and_simple_infer_code_channel(op_info: OpInfo, cce_file: str, dst_i_file: str, \
