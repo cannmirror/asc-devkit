@@ -105,9 +105,7 @@ public:
     {
         isPerTensor_ = true;
         quantScalar_ = quantScalar;
-#if (__NPU_ARCH__ == 5102)
-        quantScalar_ = ScaleQuantScalar<SrcT, DstT>(quantScalar);
-#endif
+
         if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, half>) {
             quantMode_ = QuantMode_t::DEQF16; 
         } else if constexpr (IsSameTypeV<L0cT, int32_t> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {

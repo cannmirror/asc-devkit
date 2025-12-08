@@ -46,21 +46,6 @@ __aicore__ inline constexpr static bool IsQuantSenario()
     return false;
 }
 
-#if (__NPU_ARCH__ == 5102)
-template <typename SrcT, typename DstT>
-__aicore__ inline uint64_t ScaleQuantScalar(const uint64_t quantScalar)
-{
-    if constexpr (IsSameTypeV<SrcT, half> && IsTypeOneOfV<DstT, int8_t, uint8_t, half, bfloat16_t>) {
-        constexpr uint16_t shift = 23;
-        constexpr uint64_t mask = 0xFFULL << shift;
-        uint64_t originalBits = (quantScalar & mask) >> shift;
-        uint64_t newBits = (originalBits - 16) & 0xFF;
-        return (quantScalar & ~mask) | (newBits << shift);
-    } else {
-        return quantScalar;
-    }
-}
-#endif
 
 }  // namespace Detail
 }  // namespace Impl
