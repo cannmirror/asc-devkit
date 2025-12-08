@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.1)
+cmake_minimum_required(VERSION 3.16.0)
 project(ascendc_py_ut)
 
 message(STATUS "ascendc_python_ut compile start")

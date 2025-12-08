@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.1)
+cmake_minimum_required(VERSION 3.16.0)
 project(opc_st)
 message(STATUS "llt/atc/opcompiler/opc/st compile start")
 
