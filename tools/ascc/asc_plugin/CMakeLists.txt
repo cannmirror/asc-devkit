@@ -20,7 +20,6 @@ if(BUILD_OPEN_PROJECT)
     target_include_directories(asc_plugin PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include/external
             ${CMAKE_CURRENT_SOURCE_DIR}/include/internal
-            ${ASCEND_CANN_PACKAGE_PATH}/include/experiment
             ${LLVM_CLANG_INSTALL_PATH}/include/
             ${JSON_INCLUDE_DIR}
         )
