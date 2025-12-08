@@ -902,9 +902,12 @@ def get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info: CompileInf
         full_kernel_name = full_kernel_name[:-8] + f"_{tiling_key}" + full_kernel_name[-8:]
         return full_kernel_name
     full_kernel_name += f"_{tiling_key}"
+    kernel_type = None
     if compile_info.tiling_key_kernel_type is not None:
         if tiling_key in compile_info.tiling_key_kernel_type.keys():
             kernel_type = compile_info.tiling_key_kernel_type[tiling_key]
+    if kernel_type is None:
+        raise Exception(f"get kernel type failed for tiling key {tiling_key} in TILING_KEY_LIST")
     suffix_marker = ""
     if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2, \
         KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
