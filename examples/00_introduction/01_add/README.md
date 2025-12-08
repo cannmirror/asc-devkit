@@ -7,7 +7,6 @@
 | ------------------------------------------------------------ | ---------------------------------------------------- |
 | [basic_api_memory_allocator_add](./basic_api_memory_allocator_add) | 基于静态Tensor方式编程的场景下Add算子的实现方法 |
 | [basic_api_tque_add](./basic_api_tque_add) | 本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程 |
-| [c_api_add](./c_api_add) | 本样例展示了使用C_API 基于同步搬运/计算接口构建Add算子样例的编译流程，支持main函数和kernel函数在同一个cpp文件中实现 |
 
 ## 更新说明
 | 时间       | 更新事项     |
