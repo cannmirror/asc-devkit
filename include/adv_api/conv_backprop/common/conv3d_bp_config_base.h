@@ -67,16 +67,10 @@ struct Conv3dConfig {
     bool enableKernelSplit = false;
 };
 
-// 该函数提供默认的模板参数，完成最基本的算子功能场景，尽量泛化
-__aicore__ constexpr Conv3dConfig GetDefaultConfig()
-{
-    return {
+constexpr Conv3dConfig CONV3D_CFG_DEFAULT = {
         .loadB2Condition = B2Condition::BASEK_GE_HKWK,
         .enableKernelSplit = false,
     };
-}
-
-constexpr Conv3dConfig CONV3D_CFG_DEFAULT = GetDefaultConfig();
 
 // 打包字段，内部实现的上下文，包含了用户构造的ConvBpParam
 template <class A, class B, class C, class D>
