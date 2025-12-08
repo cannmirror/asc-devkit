@@ -408,6 +408,9 @@ class DFXSectionGenerator:
             if not global_var_storage.get_variable("ascendc_tiling_no_register"):
                 section_content += self._generate_dfx_info_struct()
 
+        if section_content_body is None or section_content_body == "":
+            return section_content + f"#endif\n"
+
         if compile_info.sub_core_type == CORE_TYPE_CUBE:
             section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && {cube_core_marco}\n"
         elif compile_info.sub_core_type == CORE_TYPE_VEC:
