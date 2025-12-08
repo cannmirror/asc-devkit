@@ -196,7 +196,8 @@ void AscDevStubGenerator::StubFuncWorkSpaceImpl(const bool& isMix)
     }
     codeStream_ << "    AscendC::SetSysWorkspaceForce(ascendc_workspace_param);\n";
     codeStream_ << "    ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);\n";
-    if (isMix && kfcScene_ == KfcScene::Open) {
+    ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
+    if (isMix && kfcScene_ == KfcScene::Open && shortSoc != ShortSocVersion::ASCEND910_95) {
         codeStream_ << "    if constexpr (g_coreType == AscendC::AIC) {\n";
         codeStream_ << "        matmul::clearWorkspace(ascendc_workspace_param);\n";
         codeStream_ << "    }\n";
