@@ -57,7 +57,7 @@ __aicore__ inline int64_t GetGatherMaskRemainCountImpl()
                 uint32_t strideConfig0 = (((uint32_t)reducev2Params.src0BlockStride) << 16);                           \
                 uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(half);                                                  \
                 uint16_t counterLoop = (mask + repeatElm - 1) / repeatElm;                                             \
-                for (uint16_t i = 0; i < loopNum; ++i) {                                  \
+                for (uint16_t i = 0; i < loopNum; ++i) {                                                               \
                     sreg0 = mask;                                                                                      \
                     for (uint16_t j = 0; j < (uint16_t)counterLoop; ++j) {                                             \
                         preg0 = plt_b16(sreg0, POST_UPDATE);                                                           \
@@ -128,7 +128,7 @@ REGISTER_GATHER_MASK_B16(int16_t, s16)
                 uint32_t strideConfig0 = (((uint32_t)reducev2Params.src0BlockStride) << 16);                           \
                 uint32_t repeatElm = VECTOR_REG_WIDTH / sizeof(float);                                                 \
                 uint16_t counterLoop= (mask + repeatElm - 1) / repeatElm;                                              \
-                for (uint16_t i = 0; i < loopNum; ++i) {                                  \
+                for (uint16_t i = 0; i < loopNum; ++i) {                                                               \
                     sreg0 = mask;                                                                                      \
                     for (uint16_t j = 0; j < (uint16_t)counterLoop; ++j) {                                             \
                         preg0 = plt_b32(sreg0, POST_UPDATE);                                                           \

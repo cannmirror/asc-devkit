@@ -32,6 +32,14 @@ constexpr SortConfig defaultSortConfig = { SortType::RADIX_SORT, false };
 
 } // namespace internal
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003)
+constexpr auto singleSortElementCount = singleSortElementCountL300;
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3113)
+constexpr auto singleSortElementCount = singleSortElementCountL311;
+#else
+constexpr auto singleSortElementCount = singleSortElementCountC310;
+#endif
+
 namespace MicroAPI {
 namespace internal {
 __simd_callee__ inline void ConvertRegToWithShift(__ubuf__ uint32_t *&input, RegTensor<uint8_t> &dst,
@@ -829,11 +837,11 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, const LocalTensor<T> &
     if constexpr (sortType == SortType::MERGE_SORT) {
         static_assert(SupportType<T, half, float>(),
             "Advanced Sort API MERGE_MODE only supports data value with half/float types.");
-        ASCENDC_ASSERT((count % singleSortElementCountC310 == 0),
+        ASCENDC_ASSERT((count % singleSortElementCount == 0),
             { KERNEL_LOG(KERNEL_ERROR, "calCount should be align to 32 in MERGE_MODE!"); });
         ASCENDC_ASSERT((dstLocal.GetSize() * sizeof(T) >= count * 8),
             { KERNEL_LOG(KERNEL_ERROR, "dstLocal size should be greater equal to 8 * count!"); });
-        const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCountC310);
+        const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCount);
         if constexpr (!isDescend) {
             DescendProcess<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
         }
@@ -980,11 +988,11 @@ __aicore__ inline void SortImpl(LocalTensor<T> &dstLocal, LocalTensor<uint32_t> 
     if constexpr (sortType == SortType::MERGE_SORT) {
         static_assert(SupportType<T, half, float>(),
             "Advanced Sort API MERGE_MODE only supports data value with half/float types.");
-        ASCENDC_ASSERT((count % singleSortElementCountC310 == 0),
+        ASCENDC_ASSERT((count % singleSortElementCount == 0),
             { KERNEL_LOG(KERNEL_ERROR, "calCount should be align to 32 in MERGE_MODE!"); });
         ASCENDC_ASSERT((dstLocal.GetSize() * sizeof(T) >= count * 8),
             { KERNEL_LOG(KERNEL_ERROR, "dstLocal size should be greater equal to 8 * count!"); });
-        const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCountC310);
+        const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCount);
         if constexpr (!isDescend) {
             DescendProcess<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
         }
@@ -1143,11 +1151,11 @@ __aicore__ inline void SortImpl(const LocalTensor<T> &dstLocal, const LocalTenso
             "Advanced Sort API MERGE_MODE only supports data value with half/float types.");
         static_assert(SupportType<U, uint32_t>(),
             "Advanced Sort API MERGE_MODE only supports src index with uint32_t types.");
-        ASCENDC_ASSERT((count % singleSortElementCountC310 == 0),
+        ASCENDC_ASSERT((count % singleSortElementCount == 0),
             { KERNEL_LOG(KERNEL_ERROR, "calCount should be align to 32 in MERGE_MODE!"); });
         ASCENDC_ASSERT((dstLocal.GetSize() * sizeof(T) >= count * 8),
             { KERNEL_LOG(KERNEL_ERROR, "dstLocal size should be greater equal to 8 * count!"); });
-        const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCountC310);
+        const int32_t repeatTime = static_cast<int32_t>(count / singleSortElementCount);
         if constexpr (!isDescend) {
             DescendProcess<T>((__ubuf__ T*)srcLocal.GetPhyAddr(), count);
         }

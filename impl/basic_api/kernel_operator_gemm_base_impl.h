@@ -207,8 +207,8 @@ __aicore__ inline void LoadL0A(uint32_t kBlocks, uint32_t mBlocks, GemmTiling ti
     }
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113))
 template <typename T, typename U, typename S>
 __aicore__ inline void MmadFunc(const LocalTensor<U>& l0a, const LocalTensor<S>& l0b,
     const LocalTensor<T>& l0c, int32_t initValue, GemmTiling tilling, size_t i)

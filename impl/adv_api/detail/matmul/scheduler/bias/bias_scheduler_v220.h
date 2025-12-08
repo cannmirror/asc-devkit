@@ -106,7 +106,11 @@ public:
     {
         if (BASE_MODULE::enableBias_ && MATMUL_MODULE(KLoop)->FirstOuterIter()) {
             auto biasC2 = MATMUL_MODULE(C2Buffer)->Allocate();
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+            MATMUL_MODULE(LoadBias2C2)->Load(biasC2, biasC1[srcOffset], dataLen * 4 / sizeof(BiasT)); // dataLen向上对齐，half向上对齐到4B
+#else
             MATMUL_MODULE(LoadBias2C2)->Load(biasC2, biasC1[srcOffset], dataLen);
+#endif
             MATMUL_MODULE(C2Buffer)->EnQue();
             MATMUL_MODULE(C2Buffer)->DeQue();
         }

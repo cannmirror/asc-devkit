@@ -103,7 +103,7 @@ enum class BinaryFuncMode {
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode,
     BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T, typename U>
 __simd_vf__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const BasicAPIMaskStruct maskArrayStruct,
-    const uint64_t maskCount, const uint8_t repeatTimes, const BinaryRepeatParams &repeatParams,
+    const uint64_t maskCount, const uint8_t repeatTimes, const BinaryRepeatParams repeatParams,
     __ubuf__ uint64_t *maskBuf)
 {
     uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);

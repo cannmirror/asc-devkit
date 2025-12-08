@@ -19,7 +19,8 @@
 
 namespace AscendC {
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || \
+    __NPU_ARCH__ == 3113)
 enum class PowerAlgo {
     INTRINSIC = 0,
     DOUBLE_FLOAT_TECH, 

@@ -37,7 +37,7 @@ template <typename T> constexpr __aicore__ inline void CheckDuplicateL0Supported
 }
 namespace Internal {
 template <bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
-__simd_vf__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T& scalarValue, const BasicAPIMaskStruct maskArrayStruct,
+__simd_vf__ inline void VecDupLevel0VFImpl(__ubuf__ T *dst, const T scalarValue, const BasicAPIMaskStruct maskArrayStruct,
     const uint64_t maskCount, const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride,
     __ubuf__ uint64_t *maskBuf)
 {

@@ -397,10 +397,12 @@ __aicore__ inline void SetCubeStridePara(uint64_t config)
     SetCubeStrideParaImpl(config);
 }
 
+#if (__NPU_ARCH__ != 3003) && (__NPU_ARCH__ != 3113)
 __aicore__ inline void SetCubeStridePara(const CubeStrideParams &params)
 {
     SetCubeStrideParaImpl(params);
 }
+#endif
 #endif
 
 #if __NPU_ARCH__ == 2201

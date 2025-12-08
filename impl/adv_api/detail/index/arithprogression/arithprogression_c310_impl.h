@@ -40,7 +40,11 @@ __simd_vf__ inline void VfCallArithProgression(__ubuf__ T *dstLocalAddr, const T
     uint32_t sreg = static_cast<uint32_t>(count);
     MicroAPI::MaskReg preg;
     const uint32_t sregLower = static_cast<uint32_t>(regTrait.REG_NUM * ONE_REPEAT_BYTE_SIZE / sizeof(T));
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+    MicroAPI::Duplicate(stepReg, static_cast<T>(static_cast<int32_t>(sregLower)));
+#else
     MicroAPI::Duplicate(stepReg, static_cast<T>(sregLower));
+#endif
     MicroAPI::Muls(stepReg, stepReg, diffValue, fullMask);
     for (uint16_t i = 0; i < repeatTimes; ++i) {
         preg = MicroAPI::UpdateMask<T, regTrait>(sreg);

@@ -240,6 +240,11 @@ const int32_t SRC_GAP_SIZE_BYTE = 32;
 const int32_t DST_BURST_LEN_SIZE_ELE = 256;
 const int32_t VREDUCE_PER_REP_OUTPUT = 2;
 const uint16_t ONE_PARAM_SIZE = 8;
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
+    (__NPU_ARCH__ == 3113)|| (__NPU_ARCH__ == 5101))
+const int32_t BLOCK_COUT = 16;
+const uint16_t TWO_BLK_SIZE = 64;
+#endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 const uint16_t AIV_CORE_NUM = 72;
 #else
@@ -626,7 +631,9 @@ template <> struct GetDstType<mx_fp8_e5m2_t> {
 template <> struct GetDstType<mx_fp8_e4m3_t> {
     using Type = fp8_e4m3fn_t;
 };
+#endif
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct BasicAPIMaskStruct {
     uint64_t maskArray[MASK_ARRAY_SIZE] = { 0 };
 };

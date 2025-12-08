@@ -661,7 +661,7 @@ __simd_callee__ inline void GenStoreL0(__ubuf__ DST_TYPE *&dstAddr, MicroAPI::Re
  
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode>
 __simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const BasicAPIMaskStruct maskArrayStruct,
-    uint8_t repeatTimes, const UnaryRepeatParams &repeatParams)
+    uint8_t repeatTimes, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};
@@ -715,7 +715,7 @@ __simd_vf__ inline void CastIntrinsicsImplVF2(__ubuf__ DST_TYPE *dst, __ubuf__ S
  
 template <typename DST_TYPE, typename SRC_TYPE, RoundMode roundMode, bool isSetMask>
 __simd_vf__ inline void CastIntrinsicsImplCounterVF(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_TYPE *src, const uint64_t mask,
-    __ubuf__ uint64_t *maskBuf, uint8_t repeatTimes, const UnaryRepeatParams &repeatParams)
+    __ubuf__ uint64_t *maskBuf, uint8_t repeatTimes, const UnaryRepeatParams repeatParams)
 {
     static constexpr MicroAPI::CastTrait castTrait = {
         MicroAPI::RegLayout::ZERO, MicroAPI::SatMode::SAT, MicroAPI::MaskMergeMode::ZEROING, roundMode};

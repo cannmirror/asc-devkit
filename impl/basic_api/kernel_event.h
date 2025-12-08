@@ -65,11 +65,6 @@ enum class HardEvent : uint8_t {
     MTE1_FIX,
     FIX_MTE1,
     FIX_FIX,
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-    M_MTE3,
-    MTE3_M,
-#endif
     MAX,
 };
 
@@ -99,11 +94,6 @@ enum class HardEventAic : uint8_t {
     MTE1_FIX,
     FIX_MTE1,
     FIX_FIX,
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-    M_MTE3,
-    MTE3_M,
-#endif
     MAX,
 };
 
@@ -191,13 +181,6 @@ __aicore__ constexpr uint8_t EventToIndexAic(HardEvent evt)
         return static_cast<uint8_t>(HardEventAic::MTE1_FIX);
     } else if (evt == HardEvent::FIX_FIX) {
         return static_cast<uint8_t>(HardEventAic::FIX_FIX);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-    } else if (evt == HardEvent::M_MTE3) {
-        return static_cast<uint8_t>(HardEventAic::M_MTE3);
-    } else if (evt == HardEvent::MTE3_M) {
-        return static_cast<uint8_t>(HardEventAic::MTE3_M);
-#endif
     } else {
         return static_cast<uint8_t>(HardEventAic::MAX);
     }
@@ -661,10 +644,6 @@ __aicore__ constexpr HardEvent GetQueEvt(TPosition src, TPosition dst, bool fwdD
         if (dst == TPosition::C2) {
             return fwdDirect ? HardEvent::MTE1_M : HardEvent::M_MTE1;
         }
-    } else if (src == TPosition::CO1) {
-        if (dst == TPosition::CO2 || dst == TPosition::GM) {
-            return fwdDirect ? HardEvent::M_MTE3 : HardEvent::MTE3_M;
-        }
     }
     return GetQueEvt(GetPhyType(src), GetPhyType(dst), fwdDirect, false, false);
 }
@@ -985,15 +964,6 @@ __aicore__ inline void SetFlagImpl(int32_t eventID)
         case HardEvent::MTE3_S:
             SetFlagInternal<PIPE_MTE3, PIPE_S>(e);
             break;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
-    (__NPU_ARCH__ == 3113))
-        case HardEvent::M_MTE3:
-            SetFlagInternal<PIPE_M, PIPE_MTE3>(e);
-            break;
-        case HardEvent::MTE3_M:
-            SetFlagInternal<PIPE_MTE3, PIPE_M>(e);
-            break;
-#endif
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||           \
     (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) ||           \

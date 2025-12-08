@@ -16,9 +16,9 @@
 #define LIB_MATH_COS_C310_IMPL_H
 
 #include "kernel_tensor.h"
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)) || \
-    defined(__DAV_L311__) || defined(__DAV_L300__)
-#ifndef __DAV_L300__
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if __NPU_ARCH__ != 3003 && __NPU_ARCH__ != 3113
 #include "../sincos/sincos_c310_impl.h"
 #endif
 #include "cos_common_utils.h"

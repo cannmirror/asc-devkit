@@ -71,6 +71,16 @@ struct MatmulPrivateModules {
     using BatchCopyCubeInB = BatchCopyCubeIn<IMPL, MM_CFG, MatmulInputBType<B_TYPE, typename TRANS_B_TYPE::T>>;
     using QtableProcessor = AscendC::Impl::Detail::QtableProcessor<IMPL, MM_CFG>;
 
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+    using CopyCubeInParamsScaleA = CopyCubeInParams<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, A_TYPE>>;
+    using CopyCubeInParamsScaleB = CopyCubeInParams<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, B_TYPE>>;
+    using MatmulTensorInfoScaleA = MatmulTensorInfo<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, A_TYPE>>;
+    using MatmulTensorInfoScaleB = MatmulTensorInfo<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, B_TYPE>>;
+    using DataCopyUtilsScaleA = CopyTileToCubeWrapper<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, A_TYPE>>;
+    using DataCopyUtilsScaleB = CopyTileToCubeWrapper<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, B_TYPE>>;
+    using DataCopyWrapperScaleA = DataCopyWrapper<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, A_TYPE>>;
+    using DataCopyWrapperScaleB = DataCopyWrapper<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, B_TYPE>>;
+#else
     using CopyCubeInParamsScaleA = CopyCubeInParams<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, fp8_e8m0_t>>;
     using CopyCubeInParamsScaleB = CopyCubeInParams<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, fp8_e8m0_t>>;
     using MatmulTensorInfoScaleA = MatmulTensorInfo<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, fp8_e8m0_t>>;
@@ -79,6 +89,7 @@ struct MatmulPrivateModules {
     using DataCopyUtilsScaleB = CopyTileToCubeWrapper<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, fp8_e8m0_t>>;
     using DataCopyWrapperScaleA = DataCopyWrapper<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, fp8_e8m0_t>>;
     using DataCopyWrapperScaleB = DataCopyWrapper<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, fp8_e8m0_t>>;
+#endif
 
     using L1Manager = AscendC::Impl::Detail::L1Manager<IMPL, MM_CFG>;
     using LocalWorkspace = MatmulLocalWorkspace<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG>;

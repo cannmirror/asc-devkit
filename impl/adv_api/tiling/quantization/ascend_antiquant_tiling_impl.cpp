@@ -70,9 +70,11 @@ uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape &srcShape, const ge::Shape
     ge::DataType inputDataType, ge::DataType outputDataType)
 {
     CheckAnitQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMaxTmpSize", srcShape, isTranspose, inputDataType);
+#if !(defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
     if (inputDataType == ge::DT_FLOAT4_E2M1 || inputDataType == ge::DT_FLOAT4_E1M2) {
         return GetAscendAntiQuantTmpSizeOfFp4(scaleShape, isTranspose);
     }
+#endif
     if (outputDataType == ge::DT_FLOAT16) {
         return 0;
     }
@@ -104,9 +106,11 @@ uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape &srcShape, const ge::Shape
     ge::DataType inputDataType, ge::DataType outputDataType)
 {
     CheckAnitQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMinTmpSize", srcShape, isTranspose, inputDataType);
+#if !(defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
     if (inputDataType == ge::DT_FLOAT4_E2M1 || inputDataType == ge::DT_FLOAT4_E1M2) {
         return GetAscendAntiQuantTmpSizeOfFp4(scaleShape, isTranspose);
     }
+#endif
     if (outputDataType == ge::DT_FLOAT16) {
         return 0;
     }

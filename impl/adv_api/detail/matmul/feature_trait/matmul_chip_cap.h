@@ -24,6 +24,7 @@ enum class FixpipeParamsType: int8_t {
     V220,
     V300,
     V310,
+    V311,
     V510,
     NONE
 };
@@ -63,7 +64,9 @@ private:
         CHIP_TYPE_300,
         CHIP_TYPE_310,
         CHIP_TYPE_310R6,
-        CHIP_TYPE_510R2
+        CHIP_TYPE_510R2,
+        CHIP_TYPE_L300,
+        CHIP_TYPE_L311,
     };
 
     __aicore__ inline constexpr static uint8_t GetChipType()
@@ -76,6 +79,10 @@ private:
             return CHIP_TYPE_220;
         #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
             return CHIP_TYPE_300;
+        #elif __NPU_ARCH__ == 3003
+            return CHIP_TYPE_L300;
+        #elif __NPU_ARCH__ == 3113
+            return CHIP_TYPE_L311;
         #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
             return CHIP_TYPE_310;
         #elif __NPU_ARCH__ == 5102
@@ -97,7 +104,9 @@ private:
         /*300*/ {true, false, true, false, FixpipeParamsType::V220, true, true, false, false, true, false, false, false, false, false, false},
         /*310*/ {true, false, false, true, FixpipeParamsType::V310, true, false, true, false, true, true, true, false, true, false, true},
         /*310R6*/ {true, false, false, true, FixpipeParamsType::V310, true, false, true, false, true, true, true, true, true, false, true},
-        /*510R2*/ {true, false, true, false, FixpipeParamsType::V510, true, true, true, false, true, false, false, true, true, false, true}};
+        /*510R2*/ {true, false, true, false, FixpipeParamsType::V510, true, true, true, false, true, false, false, true, true, false, true},
+        /*L300*/ {true, false, false, true, FixpipeParamsType::V300, true, true, false, false, true, true, false, false, true, true, false},
+        /*L311*/ {true, false, true, false, FixpipeParamsType::V311, true, true, false, false, true, false, false, false, false, false, false}};
 };
 }  // namespace Detail
 }  // namespace Impl

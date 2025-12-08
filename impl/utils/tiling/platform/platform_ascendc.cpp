@@ -170,8 +170,7 @@ SocVersion PlatformAscendC::GetSocVersion(void) const
         {"MC62CM12A", SocVersion::MC62CM12A},
         {"SD3403", SocVersion::SD3403},
         {"KirinX90", SocVersion::KIRINX90},
-        {"Kirin9010", SocVersion::KIRIN9010},
-        {"Kirin9020", SocVersion::KIRIN9020}
+        {"Kirin9030", SocVersion::KIRIN9030}
     };
     auto it = convertMap.find(socVersionStr);
     if (it != convertMap.end()) {
@@ -258,7 +257,9 @@ SocVersion PlatformAscendCManager::SocVersionMap(const char *socVersionStr)
         {"Ascend310B", SocVersion::ASCEND310B},
         {"Ascend910_95", SocVersion::ASCEND910_95},
         {"Ascend910_55", SocVersion::ASCEND910_55},
-        {"MC62CM12A", SocVersion::MC62CM12A}
+        {"MC62CM12A", SocVersion::MC62CM12A},
+        {"KirinX90", SocVersion::KIRINX90},
+        {"Kirin9030", SocVersion::KIRIN9030}
     };
     const auto &iter = convertMap.find(socVersionStr);
     if (iter != convertMap.end()) {
@@ -324,7 +325,9 @@ const static std::map<std::string, std::string> convertMapInAicpu = {
     {"Ascend910_957d", "Ascend910_95"},
     {"Ascend910_957c", "Ascend910_95"},
     {"Ascend910_9589", "Ascend910_95"}, // ascend910_95_list
-    {"MC62CM12AA", "MC62CM12A"}
+    {"MC62CM12AA", "MC62CM12A"},
+    {"KirinX90", "KirinX90"},
+    {"Kirin9030", "Kirin9030"}
 };
 bool SwitchIntoShortSocVersion(const char *socVersionStr, std::string &shortSocVersion)
 {

@@ -159,7 +159,11 @@ __simd_callee__ inline void TrigComputeHLQ(MicroAPI::RegTensor<float> &regDh, Mi
     constexpr uint64_t P_AND_COEFF2 = 0x2000000000000000ULL;
     constexpr uint64_t P_SUBS_COEFF = 0x4000000000000000ULL;
     constexpr float P_MULS = 2.0f;
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ ==3003 || __NPU_ARCH__ ==3113))
+    constexpr float B64_SHIFT_BITS = static_cast<float>(1ULL << 32);
+#else
     constexpr uint64_t B64_SHIFT_BITS = 1ULL << 32;
+#endif
 
     MicroAPI::RegTensor<int64_t, MicroAPI::RegTraitNumTwo> tmpI64Reg;
     MicroAPI::RegTensor<int32_t> tmpRegQ;

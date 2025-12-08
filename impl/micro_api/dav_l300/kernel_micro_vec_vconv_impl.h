@@ -143,8 +143,7 @@ __simd_callee__ inline void TruncateImpl(RegTensor<T> &dstReg, RegTensor<T> &src
 }
 
 // s322s64 RegTraitNumOne -> RegTraitNumTwo
-template <typename T, typename U, MaskMergeMode mode, typename RegT,
-    typename RegU>
+template <typename T, typename U, MaskMergeMode mode, typename RegT, typename RegU>
 __simd_callee__ inline void CastImpl(RegT &dstReg, RegU &srcReg, MaskReg &mask)
 {
     using ActualT = typename RegT::ActualT;

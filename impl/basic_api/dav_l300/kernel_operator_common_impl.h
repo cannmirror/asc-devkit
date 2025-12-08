@@ -1167,7 +1167,6 @@ template <typename T, Mode mode = Mode::ZEROING, typename T1>
 __aicore__ inline void Duplicate(RegTensor<T> &dstReg, T1 scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vdup(dstReg, (T)scalar, mask, modeValue);
 }
 
@@ -1176,7 +1175,6 @@ __aicore__ inline void Duplicate(RegTensor<T> &dstReg, RegTensor<T> &srcReg, Mas
 {
     constexpr auto posValue = std::integral_constant<::Pos, static_cast<::Pos>(pos)>();
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vdup(dstReg, srcReg, mask, posValue, modeValue);
 }
 

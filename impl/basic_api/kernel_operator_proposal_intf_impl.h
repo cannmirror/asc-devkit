@@ -426,7 +426,7 @@ __aicore__ inline void MrgSort(const LocalTensor<T>& dst, const MrgSortSrcList<T
     MrgSort4(dst, sortList, mrgSortInfo);
 #endif
     if (isExhaustedSuspension) {
-#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
         constexpr uint32_t validBitMask = 0xFFFF;
         constexpr uint32_t shiftBase = 16;     // register is 16 bit per num
 #elif __NPU_ARCH__ == 2002

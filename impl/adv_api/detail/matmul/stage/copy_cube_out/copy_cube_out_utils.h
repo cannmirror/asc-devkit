@@ -32,6 +32,10 @@ struct FixpipeParamsUtil
     using TYPE = typename AscendC::Conditional<C_TYPE::format == CubeFormat::NZ, FixpipeParamsC310<CO2Layout::NZ>,
         typename AscendC::Conditional<C_TYPE::format == CubeFormat::COLUMN_MAJOR,
             FixpipeParamsC310<CO2Layout::COLUMN_MAJOR>, FixpipeParamsC310<CO2Layout::ROW_MAJOR>>::type>::type;
+#elif __NPU_ARCH__ == 3003
+    using TYPE = FixpipeParamsV300<SrcT>;
+#elif __NPU_ARCH__ == 3113
+    using TYPE = FixpipeParamsV311Gen<SrcT>;
 #else
     using TYPE = FixpipeParamsV220;
 #endif
@@ -83,12 +87,20 @@ public:
 
     __aicore__ inline void SetQuantMode(QuantMode_t quantMode)
     {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+        params_.quantParams.preQuantMode = quantMode;
+#else
         params_.quantPre = quantMode;
+#endif
     }
 
     __aicore__ inline void SetQuantScalar(uint64_t scalar)
     {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+        params_.quantParams.preScalarValue = scalar;
+#else
         params_.deqScalar = scalar;
+#endif
     }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
@@ -112,6 +124,14 @@ public:
         } else {
             params_.params.dstNdStride = static_cast<uint16_t>(baseHeight * baseWidth);
         }
+#elif __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+        params_.nz2ndParams.ndNum = static_cast<uint16_t>(ndNum);
+        params_.nz2ndParams.srcNdStride = static_cast<uint16_t>(baseM * baseBlockWidth);
+        if constexpr ((C_TYPE::layout == LayoutMode::BSNGD) || (C_TYPE::layout == LayoutMode::SBNGD)) {
+            params_.nz2ndParams.dstNdStride = static_cast<uint16_t>(baseWidth);
+        } else {
+            params_.nz2ndParams.dstNdStride = static_cast<uint16_t>(baseHeight * baseWidth);
+        }
 #else
         constexpr static int32_t fractalSize = 1024;
         params_.ndNum = static_cast<uint16_t>(ndNum);
@@ -129,17 +149,51 @@ public:
     {
         if constexpr (C_TYPE::format == CubeFormat::NZ) {
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportL0CToUB() && PhyPosIsUB(C_TYPE::pos)) {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = false;
+                Fixpipe<DstT, SrcT>(dst, colLocal, quantTensor, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_NZ_UB>(dst, colLocal, quantTensor, params_);
+#endif
             } else {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = false;
+                Fixpipe<DstT, SrcT>(dst, colLocal, quantTensor, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_NZ>(dst, colLocal, quantTensor, params_);
+#endif
             }
         } else if constexpr (C_TYPE::format == CubeFormat::COLUMN_MAJOR) {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+            Fixpipe<DstT, SrcT>(dst, colLocal, quantTensor, params_);
+#else
             Fixpipe<DstT, SrcT, CFG_COLUMN_MAJOR>(dst, colLocal, quantTensor, params_);
+#endif
         } else {
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportL0CToUB() && PhyPosIsUB(C_TYPE::pos)) {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = true;
+                FixpipeLoop3Params intriParams;
+                intriParams.loopSize = params_.nz2ndParams.ndNum;
+                intriParams.srcStride = params_.nz2ndParams.srcNdStride;
+                intriParams.dstStride = params_.nz2ndParams.dstNdStride;
+                SetFixpipeLoop3Impl(intriParams);
+                Fixpipe<DstT, SrcT>(dst, colLocal, quantTensor, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_ROW_MAJOR_UB>(dst, colLocal, quantTensor, params_);
+#endif
             } else {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = true;
+                FixpipeLoop3Params intriParams;
+                intriParams.loopSize = params_.nz2ndParams.ndNum;
+                intriParams.srcStride = params_.nz2ndParams.srcNdStride;
+                intriParams.dstStride = params_.nz2ndParams.dstNdStride;
+                SetFixpipeLoop3Impl(intriParams);
+                Fixpipe<DstT, SrcT>(dst, colLocal, quantTensor, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_ROW_MAJOR>(dst, colLocal, quantTensor, params_);
+#endif
             }
         }
     }
@@ -149,17 +203,51 @@ public:
     {
         if constexpr (C_TYPE::format == CubeFormat::NZ) {
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportL0CToUB() && PhyPosIsUB(C_TYPE::pos)) {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = false;
+                Fixpipe<DstT, SrcT>(dst, colLocal, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_NZ_UB>(dst, colLocal, params_);
+#endif
             } else {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = false;
+                Fixpipe<DstT, SrcT>(dst, colLocal, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_NZ>(dst, colLocal, params_);
+#endif
             }
         } else if constexpr (C_TYPE::format == CubeFormat::COLUMN_MAJOR) {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+            Fixpipe<DstT, SrcT>(dst, colLocal, params_);
+#else
             Fixpipe<DstT, SrcT, CFG_COLUMN_MAJOR>(dst, colLocal, params_);
+#endif
         } else {
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportL0CToUB() && PhyPosIsUB(C_TYPE::pos)) {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = true;
+                FixpipeLoop3Params intriParams;
+                intriParams.loopSize = params_.nz2ndParams.ndNum;
+                intriParams.srcStride = params_.nz2ndParams.srcNdStride;
+                intriParams.dstStride = params_.nz2ndParams.dstNdStride;
+                SetFixpipeLoop3Impl(intriParams);
+                Fixpipe<DstT, SrcT>(dst, colLocal, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_ROW_MAJOR_UB>(dst, colLocal, params_);
+#endif
             } else {
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+                params_.nz2ndEnable = true;
+                FixpipeLoop3Params intriParams;
+                intriParams.loopSize = params_.nz2ndParams.ndNum;
+                intriParams.srcStride = params_.nz2ndParams.srcNdStride;
+                intriParams.dstStride = params_.nz2ndParams.dstNdStride;
+                SetFixpipeLoop3Impl(intriParams);
+                Fixpipe<DstT, SrcT>(dst, colLocal, params_);
+#else
                 Fixpipe<DstT, SrcT, CFG_ROW_MAJOR>(dst, colLocal, params_);
+#endif
             }
         }
     }

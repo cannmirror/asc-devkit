@@ -557,9 +557,9 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
         AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, static_cast<uint64_t>(true), intriParams);
     }
-    uint32_t uintOfBytes = (padParams.isPad) ? 1 : BYTE_32_ALIGN;
-    uint32_t burstLength = intriParams.blockCount *uintOfBytes;
-    uint64_t srcGap300 = intriParams.srcStride * uintOfBytes;
+    uint32_t unitOfBytes = (padParams.isPad) ? 1 : BYTE_32_ALIGN;
+    uint32_t burstLength = intriParams.blockCount * unitOfBytes;
+    uint64_t srcGap300 = intriParams.srcStride * unitOfBytes;
     uint32_t dstGap300 = intriParams.dstStride;
     if constexpr (sizeof(T) == 8) {
         copy_gm_to_ubuf_align((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding * 2,
@@ -587,9 +587,9 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
         AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, static_cast<uint64_t>(true), intriParams);
     }
-    uint32_t uintOfBytes = (padParams.isPad) ? 1 : BYTE_32_ALIGN;
-    uint32_t burstLength = intriParams.blockCount * uintOfBytes;
-    uint64_t srcGap300 = intriParams.srcStride * uintOfBytes;
+    uint32_t unitOfBytes = (padParams.isPad) ? 1 : BYTE_32_ALIGN;
+    uint32_t burstLength = intriParams.blockCount * unitOfBytes;
+    uint64_t srcGap300 = intriParams.srcStride * unitOfBytes;
     uint32_t dstGap300 = intriParams.dstStride;
     if constexpr (sizeof(T) == 8) {
         copy_gm_to_ubuf_align((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, intriParams.blockCount, burstLength, padParams.leftPadding * 2,

@@ -1295,9 +1295,9 @@ __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &d
             "DataCopyPad from LocalTensor to GlobalTensor with DataCopyParams",
             ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(src.GetPosition())));
 #endif
+#endif
     }
 }
-#endif
 #endif
 
 template <typename T>
