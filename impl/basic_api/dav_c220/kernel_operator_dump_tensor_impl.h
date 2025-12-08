@@ -714,11 +714,11 @@ __aicore__ inline void SkipPrintFifoWithInfo(
 }
 
 __aicore__ inline bool WaitFifoReadIdx(
-    __gm__ BlockReadInfo* readInfo, uint64_t writeIdx, const uint32_t& fifoTlvLen)
+    __gm__ BlockReadInfo* readInfo, __gm__ BlockWriteInfo* writeInfo, const uint32_t& fifoTlvLen)
 {
     const uint64_t& firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
     constexpr uint64_t TIMEOUT_CYCLE = 50 * 1000 * 1000 * 5; // 5s
-    while(writeIdx + fifoTlvLen > readInfo->readIdx) {
+    while (writeInfo->writeIdx < readInfo->readIdx && writeInfo->writeIdx + fifoTlvLen >= readInfo->readIdx) {
         uint64_t spendTime = static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp;
         if (spendTime > TIMEOUT_CYCLE) {
             return false;
@@ -786,7 +786,7 @@ __aicore__ __gm__ inline BlockWriteInfo* GetBlockFifoWriteInfo(__gm__ BlockPrint
 __aicore__ inline bool CheckAndWaitPrintFifoSpace(__gm__ BlockPrintFiFoInfo* blockFifoInfo, const uint32_t& fifoTlvLen)
 {
     constexpr uint32_t minTlvLen = sizeof(BlockSkipInfo);
-    
+
     __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
     uint32_t fifoBuffLen = blockFifoInfo->remainLen;
 
@@ -801,9 +801,9 @@ __aicore__ inline bool CheckAndWaitPrintFifoSpace(__gm__ BlockPrintFiFoInfo* blo
         SkipPrintFifoWithInfo(writeInfo, fifoBuffHead, fifoBuffLen);
     }
     if (writeInfo->packIdx > 0 &&
-        writeInfo->writeIdx <= readInfo->readIdx &&
-        writeInfo->writeIdx + fifoTlvLen > readInfo->readIdx) {
-        return WaitFifoReadIdx(readInfo, writeInfo->writeIdx, fifoTlvLen);
+        writeInfo->writeIdx < readInfo->readIdx &&
+        writeInfo->writeIdx + fifoTlvLen >= readInfo->readIdx) {
+        return WaitFifoReadIdx(readInfo, writeInfo, fifoTlvLen);
     }
     return true;
 }
@@ -828,9 +828,9 @@ __aicore__ inline void PrintfFifoImpl(DumpType printType, __gm__ const char* fmt
     if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
         return;
     }
-    
+
     __gm__ PrintTlvInfoHead* fifoTlvAddr = reinterpret_cast<__gm__ PrintTlvInfoHead*>(GetFifoTlvAddr(blockFifoInfo));
-    
+
     WriteFifoTlvHead(printType, fifoTlvAddr, fifoTlvLen, argsNum);
     WriteFifoTlvData(fifoTlvAddr, fmt, args...);
 
