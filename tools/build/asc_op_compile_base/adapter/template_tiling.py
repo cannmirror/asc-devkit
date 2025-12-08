@@ -302,6 +302,7 @@ class TilingTemplateParams:
             TilingParamType.TPL_UINT: "UINT",
             TilingParamType.TPL_DETERMINISTIC: "DETERMINISTIC",
             TilingParamType.TPL_NONE: "",
+            TilingParamType.TPL_SHARED_KERNEL_TYPE: "SHARED_KERNEL_TYPE",
         }
         return name_dict.get(self.param_type, "")
 
