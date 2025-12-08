@@ -430,7 +430,6 @@ REGISTER_TILING_DEFAULT')
                             tiling_key_kernel_type[tiling_key_in_group] = default_kernel_type_for_group
 
         if declare_param_str and select_param_str:
-            default_kernel_type = KernelMetaType.KERNEL_TYPE_MAX
             # TPL
             extract_template_tiling_info(declare_param_str, select_param_str)
             decode_tiling_result = decode_tiling()
