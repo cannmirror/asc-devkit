@@ -141,7 +141,11 @@ __aicore__ inline void CompareNegZero(MicroAPI::MaskReg &filterMask, MicroAPI::R
 {
     MicroAPI::RegTensor<uint32_t> tmpReg;
     MicroAPI::ShiftRights(tmpReg, (MicroAPI::RegTensor<uint32_t>&)srcReg, COMPARE_ZERO_OFFSET, mask);
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ ==3003 || __NPU_ARCH__ ==3113))
+    MicroAPI::CompareScalar<uint32_t, CMPMODE::EQ>(filterMask, tmpReg, 0, mask);
+#else
     MicroAPI::CompareScalar<uint32_t, CMPMODE::EQ>(filterMask, tmpReg, 0.0f, mask);
+#endif
 }
 
 __aicore__ inline void CopySignF(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,

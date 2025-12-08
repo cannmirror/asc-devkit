@@ -22,7 +22,7 @@
 #include "base/copy_cube_in_mdl.h"
 #include "base/copy_cube_in_mdl_fullload.h"
 #include "base/copy_cube_in_norm.h"
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "base/copy_cube_in_mdl_sparse.h"
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)

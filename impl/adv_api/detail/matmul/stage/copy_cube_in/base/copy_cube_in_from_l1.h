@@ -34,7 +34,11 @@ GetCopyCubeInType<INPUT_TYPE, MM_CFG>() == CopyCubeInType::FROM_L1>>
 {
     MATMUL_USE_MODULE_ON(MatmulTensorInfo, INPUT_TYPE::TAG);
     using TransT = typename INPUT_TYPE::TRANS_T;
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+    using SrcT = typename INPUT_TYPE::T;
+#else
     using SrcT = typename Conditional<IsSameType<TransT, fp8_e8m0_t>::value, fp8_e8m0_t, typename INPUT_TYPE::T>::type;
+#endif
 
 public:
     __aicore__ inline CopyCubeIn() = default;

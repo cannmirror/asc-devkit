@@ -16,7 +16,7 @@
 #ifndef LIB_MATH_SINCOS_H
 #define LIB_MATH_SINCOS_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/sincos/sincos_c310_impl.h"
 

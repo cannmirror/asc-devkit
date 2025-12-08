@@ -459,7 +459,7 @@ template <typename T, typename U, bool isSetMask = true,
 __aicore__ inline void LeakyRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src, const U& scalarValue,
     const int32_t& count);
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 /* **************************************************************************************************
  * Subs                                             *
  * ************************************************************************************************* */

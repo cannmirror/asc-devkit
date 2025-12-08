@@ -24,7 +24,8 @@
 namespace AscendC {
 #if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) ||                       \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                       \
-    (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+    (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) ||                       \
+    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 class ListTensorDesc;
 template<class T> class TensorDesc {
 public:
@@ -77,7 +78,8 @@ public:
     }
 #if (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) ||                       \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                       \
-    (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+    (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) ||                       \
+    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
     template<class T> __aicore__ inline void GetDesc(TensorDesc<T>& desc, uint32_t index)
     {
         listTensorDesc.GetDesc(&desc.tensorDesc, index);

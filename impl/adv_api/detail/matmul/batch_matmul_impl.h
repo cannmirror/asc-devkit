@@ -150,6 +150,18 @@ public:
         MATMUL_MODULE(BatchScheduler)->Schedule(ubCmatrix, enPartialSum, enAtomic, enSequentialWrite, matrixStrideA,
             matrixStrideB, matrixStrideC);
     }
+
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+    template <bool sync = true, bool waitIterateBatch = false>
+    __aicore__ inline void IterateBatch(const GlobalTensor<DstT>& gm, uint32_t batchA, uint32_t batchB,
+        bool enSequentialWrite, const uint32_t matrixStrideA = 0, const uint32_t matrixStrideB = 0,
+        const uint32_t matrixStrideC = 0, const bool enPartialSum = false, const uint8_t enAtomic = 0)
+    {
+        SetBatchNum(batchA, batchB);
+        IterateBatch(gm, enPartialSum, enAtomic, enSequentialWrite, matrixStrideA, matrixStrideB, matrixStrideC);
+        End();
+    }
+#endif
 };
 
 } // namespace AscendC

@@ -271,7 +271,7 @@ enum class DataCopyMode {
     DATA_BLOCK_COPY,
 };
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || defined(__ASC_NPU_HOST__)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || defined(__ASC_NPU_HOST__)
 struct ExpSpecificMode {
     MaskMergeMode mrgMode = MaskMergeMode::ZEROING;
     ExpAlgo algo = ExpAlgo::INTRINSIC;
@@ -387,6 +387,12 @@ enum class GatherMaskMode {
     NO_STORE_REG,
     STORE_REG
 };
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+enum class SpecialPurposeReg {
+    AR = 0,
+};
+#endif
 
 enum class StoreMode {
     NOSTORED = 0,

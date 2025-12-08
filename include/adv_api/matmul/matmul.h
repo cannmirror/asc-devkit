@@ -385,5 +385,8 @@ namespace matmul = AscendC;
 #include "../../../impl/adv_api/detail/matmul/matmul_impl_base.h"
 #include "../../../impl/adv_api/detail/matmul/matmul_impl.h"
 #include "../../../impl/adv_api/detail/matmul/batch_matmul_impl.h"
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+#else
 #include "../../../impl/adv_api/detail/matmul/mx_matmul_impl.h"
+#endif
 #endif

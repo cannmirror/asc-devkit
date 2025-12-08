@@ -25,7 +25,7 @@ struct AscendQuantConfig {
     uint32_t scaleCount = 0;
     uint32_t workLocalSize = 0;
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     __aicore__ constexpr AscendQuantConfig(const uint32_t calcCount, const uint32_t offsetCount,
         const uint32_t scaleCount, const uint32_t workLocalSize, const bool hasOffset, const int32_t kDim,
         const RoundMode roundMode): calcCount(calcCount), offsetCount(offsetCount), scaleCount(scaleCount),
@@ -49,7 +49,7 @@ constexpr AscendQuantConfig ASCEND_QUANT_DEFAULT_CFG = {0, 0, 0, 0, false, 1, Ro
 constexpr AscendQuantConfig ASCEND_QUANT_DEFAULT_CFG = {0, 0, 0, 0};
 #endif
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101  || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 enum class AscendQuantPolicy : int32_t {
     PER_TENSOR,
     PER_CHANNEL,

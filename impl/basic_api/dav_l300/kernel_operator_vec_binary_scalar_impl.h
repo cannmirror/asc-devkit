@@ -188,7 +188,7 @@ __aicore__ inline void VecBinaryScalarLevel2ImplTemplate(__ubuf__ T *dst, __ubuf
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode, typename T>
 __simd_vf__ inline void VecBinaryScalarLevel0VFImpl(__ubuf__ T *dst, __ubuf__ T *src, T scalarValue,
     const BasicAPIMaskStruct maskArrayStruct, const uint64_t maskCount, const uint8_t repeatTime,
-    const UnaryRepeatParams &repeatParams, __ubuf__ uint64_t *maskBuf)
+    const UnaryRepeatParams repeatParams, __ubuf__ uint64_t *maskBuf)
 {
     uint32_t count = VecMicroGetCount<isSetMask, isNormalMode, isMaskBitMode>(maskArrayStruct.maskArray, maskCount, maskBuf);
     uint16_t newRepeatTimes = 0;

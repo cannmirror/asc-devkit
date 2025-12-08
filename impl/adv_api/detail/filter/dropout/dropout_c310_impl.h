@@ -189,9 +189,6 @@ __simd_vf__ inline void VFDropOutByteModeCalc(__ubuf__ T* dstUb, __ubuf__ T* src
             if constexpr (SupportType<T, half>()) {
                 MicroAPI::Mul(vDstReg, vFP16Reg, vSrcReg, maskReg);
             } else {
-#if defined(__DAV_L300__)
-                ASCENDC_ASSERT(0, "L300 Platform not support BF16");
-#endif
                 MicroAPI::Cast<bfloat16_t, half, MrgZRndR>(vBF16Reg, vFP16Reg, maskReg);
                 MicroAPI::Mul(vDstReg, vBF16Reg, vSrcReg, maskReg);
             }
@@ -233,9 +230,6 @@ __simd_vf__ inline void VFDropOutByteModeCalcInfo(__ubuf__ T* dstUb, __ubuf__ T*
                 if constexpr (SupportType<T, half>()) {
                     MicroAPI::Mul(vDstReg, vFP16Reg, vSrcReg, maskReg);
                 } else {
-#if defined(__DAV_L300__)
-                    ASCENDC_ASSERT(0, "L300 Platform not support BF16");
-#endif
                     MicroAPI::Cast<bfloat16_t, half, MrgZRndR>(vBF16Reg, vFP16Reg, maskReg);
                     MicroAPI::Mul(vDstReg, vBF16Reg, vSrcReg, maskReg);
                 }

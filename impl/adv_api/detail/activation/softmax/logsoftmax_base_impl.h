@@ -15,7 +15,7 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_LOGSOFTMAX_BASE_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_LOGSOFTMAX_BASE_IMPL_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "regbase/c310/logsoftmax_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "membase/common/logsoftmax_common_impl.h"

@@ -449,7 +449,7 @@ __aicore__ inline void SetCastOverflowMode()
     SetCastOverflowModeImpl<castMode>();
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 /*
  * @ingroup Truncate Level 2
  * @brief dst[i] = Precision conversion

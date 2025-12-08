@@ -615,6 +615,13 @@ struct LoadData2dTransposeParamsV311Gen {
         qmode = 0;
     }
 
+#if __NPU_ARCH__ == 3113
+    __aicore__ LoadData2dTransposeParamsV311Gen(const uint16_t startIndexIn, const uint8_t repeatTimesIn,
+        const uint16_t srcStrideIn, const uint16_t dstGapIn, const uint16_t dstfracGapIn, const uint8_t addrModeIn)
+    {
+    }
+#endif
+
     __aicore__ LoadData2dTransposeParamsV311Gen(const uint32_t mStartPositionIn, const uint32_t kStartPositionIn,
         const uint16_t mStepIn, const uint16_t kStepIn, const uint32_t srcStrideIn, const uint16_t dstStrideIn,
         const bool ifTransposeIn, const uint8_t sidIn, const uint8_t qmodeIn)
@@ -1248,7 +1255,7 @@ struct MmadParamsV300 {
 
     __aicore__ inline void SetIsBias(bool isBias_)
     {
-        (void)isBias_;
+        isBias = isBias_;
     }
 
     __aicore__ inline void SetEnSsparse(bool enSsparse_)
@@ -1268,7 +1275,7 @@ struct MmadParamsV300 {
 
     __aicore__ inline void SetKDirectionAlign(bool kDirectionAlign_)
     {
-        (void)kDirectionAlign_;
+        kDirectionAlign = kDirectionAlign_;
     }
 
     __aicore__ inline void SetFmOffset(int32_t fmOffset_)
@@ -1385,6 +1392,8 @@ struct MmadParamsV300 {
     bool isWeightOffset = false;
     bool cmatrixSource = false;
     bool cmatrixInitVal = true;
+    bool kDirectionAlign = false;
+    bool isBias = false;
 };
 #endif
 
@@ -1623,7 +1632,7 @@ struct MmadParamsV311Gen {
 
     __aicore__ inline void SetIsBias(bool isBias_)
     {
-        (void)isBias_;
+        isBias = isBias_;
     }
 
     __aicore__ inline void SetEnSsparse(bool enSsparse_)
@@ -1643,7 +1652,7 @@ struct MmadParamsV311Gen {
 
     __aicore__ inline void SetKDirectionAlign(bool kDirectionAlign_)
     {
-        (void)kDirectionAlign_;
+        kDirectionAlign = kDirectionAlign_;
     }
 
     __aicore__ inline void SetFmOffset(int32_t fmOffset_)
@@ -1763,6 +1772,8 @@ struct MmadParamsV311Gen {
     bool gemvCtrl = false;
     bool cmatrixSource = false;
     bool cmatrixInitVal = true;
+    bool kDirectionAlign = false;
+    bool isBias = false;
 };
 #endif
 
