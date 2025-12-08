@@ -19,9 +19,10 @@ from tbe.common.buildcfg import get_current_build_config
 from .get_op_tiling import TilingInfo
 from .ascendc_common_utility import CommonUtility, CompileInfo
 from .ascendc_constants import TILING_KEY_MACRO, CORE_TYPE_CUBE, INPUT_OUTPUT_DTYPE_LEN, \
-    ASCENDC_OOM
+    ASCENDC_OOM, KernelMetaType, CORE_TYPE_VEC, CORE_TYPE_MIX
 from .get_op_tiling import OpInfo
 from .global_storage import global_var_storage
+from .ascendc_compile_dfx import DFXSectionGenerator
 
 
 def add_time_stamp_codes(desc_id, space_len: int = 1):
@@ -386,3 +387,147 @@ def _gen_compile_cmd(src_file: str, dst_file: str, compile_option_tuple, tiling_
         compile_cmd += [f"-D{ASCENDC_OOM}={1}"]
     compile_cmd += ["--cce-long-call=true"]
     return compile_cmd
+
+
+def get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compile_info, dec_data):
+    if '_' in name_part:
+        tiling_struct, tiling_key_value = name_part.rsplit('_', 1)
+        if tiling_key_value.endswith('UL'):
+            tiling_key_value = tiling_key_value[:-2]
+        tiling_key_struct_size_map[tiling_key_value] = (tiling_struct, dec_data)
+        if compile_info.tiling_key_group_map is None:
+            return tiling_key_struct_size_map
+        if tiling_key_value in compile_info.tiling_key_group_map.keys():
+            for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key_value]:
+                tiling_key_struct_size_map[tiling_key_slave] = (tiling_struct, dec_data)
+    return tiling_key_struct_size_map
+
+
+def gen_tiling_struct_and_dfx_section_head():
+    source = f"#undef __global__\n"
+    source += f"#define __global__ inline\n"
+    source += "#include \"kernel_utils.h\"\n"
+    source += "#undef __global__\n"
+    source += "#if ASCENDC_CPU_DEBUG\n"
+    source += "#define __global__\n"
+    source += "#else\n"
+    source += "#define __global__ __attribute__((cce_kernel))\n"
+    source += "#endif\n\n"
+    return source
+
+
+def gen_tiling_struct_size_for_group_key_no_size(compile_info: CompileInfo):
+    source = ""
+    for tiling_key in compile_info.tiling_key_list:
+        source += f"extern __gm__ uint64_t g_custom_tiling_size_meta_{tiling_key};\n"
+        if compile_info.tiling_key_group_map is None:
+            continue
+        if tiling_key in compile_info.tiling_key_group_map.keys():
+            for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                source += f"extern __gm__ uint64_t g_custom_tiling_size_meta_{tiling_key_slave};\n"
+    return source
+
+
+def gen_tiling_struct_size_for_group_key(compile_info: CompileInfo, \
+                                         tiling_key_struct_size_map: dict):
+    source = ""
+    for tiling_key in compile_info.tiling_key_list:
+        tiling_struct_info = tiling_key_struct_size_map.get(str(tiling_key), None)
+        if tiling_struct_info is None:
+            continue
+        _, tiling_struct_size = tiling_struct_info
+        source += f"__gm__ uint64_t g_custom_tiling_size_meta_{tiling_key} = {tiling_struct_size};\n"
+        if compile_info.tiling_key_group_map is None:
+            continue
+        if tiling_key in compile_info.tiling_key_group_map.keys():
+            for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                source += f"__gm__ uint64_t g_custom_tiling_size_meta_{tiling_key_slave} = {tiling_struct_size};\n"
+    return source
+
+
+def gen_dfx_section_for_one_tiling_key_static(compile_info: CompileInfo, tiling_key, \
+                                              tiling_info: TilingInfo, tiling_key_struct_size_map: dict):
+    source = ""
+    if compile_info.no_set_kernel_type is False:
+        kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
+        if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
+            cube_marker = "_mix_aic"
+            kernel_name = compile_info.kernel_name + cube_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+            vec_marker = "_mix_aiv"
+            kernel_name = compile_info.kernel_name + vec_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+        else:
+            current_kernel_name = compile_info.get_kernel_func_name()
+            kernel_name = current_kernel_name
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+    else:
+        if compile_info.code_channel == CORE_TYPE_MIX:
+            cube_marker = "_mix_aic"
+            kernel_name = compile_info.kernel_name + cube_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+            vec_marker = "_mix_aiv"
+            kernel_name = compile_info.kernel_name + vec_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+        elif compile_info.hard_sync and compile_info.code_channel in [CORE_TYPE_VEC, CORE_TYPE_CUBE]:
+            core_type_marker = "_mix_aic" if compile_info.code_channel == CORE_TYPE_CUBE else "_mix_aiv"
+            kernel_name = compile_info.kernel_name + core_type_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+        else:
+            kernel_name = compile_info.get_kernel_func_name()
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+    return source
+
+
+def gen_dfx_section_for_one_tiling_key_dynamic(compile_info: CompileInfo, tiling_key, \
+                                               tiling_info: TilingInfo, tiling_key_struct_size_map: dict):
+    source = ""
+    if compile_info.no_set_kernel_type is False:
+        kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]  
+        if kernel_type.value >= 6 and kernel_type.value <= 7:
+            cube_marker = "_mix_aic"
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key + cube_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+            vec_marker = "_mix_aiv"
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key + vec_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+        elif kernel_type.value >= 2 and kernel_type.value <= 5:
+            if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC, \
+                KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+                sub_marker = "_mix_aic"
+            else:
+                sub_marker = "_mix_aiv"
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key + sub_marker
+        elif kernel_type.value >= 0 and kernel_type.value <= 1:
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+    else:
+        if compile_info.code_channel == CORE_TYPE_MIX:
+            cube_marker = "_mix_aic"
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key + cube_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+            vec_marker = "_mix_aiv"
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key + vec_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+        elif compile_info.hard_sync and compile_info.code_channel in [CORE_TYPE_VEC, CORE_TYPE_CUBE]:
+            core_type_marker = "_mix_aic" if compile_info.code_channel == CORE_TYPE_CUBE else "_mix_aiv"
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key + core_type_marker
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+        else:
+            kernel_name = compile_info.kernel_name + '_%s' % tiling_key
+            source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
+                tiling_info, tiling_key_struct_size_map, kernel_name)
+    return source
