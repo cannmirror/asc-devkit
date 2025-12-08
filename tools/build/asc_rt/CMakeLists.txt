@@ -11,9 +11,6 @@ add_library(ascend_runtime_base OBJECT ascendc_runtime.cpp aicpu_rt.cpp)
 
 if(BUILD_OPEN_PROJECT)
   target_include_directories(ascend_runtime_base PRIVATE
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime/runtime
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
     ${ASCEND_CANN_PACKAGE_PATH}/include/base
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
@@ -23,8 +20,6 @@ if(BUILD_OPEN_PROJECT)
     ${ASCEND_CANN_PACKAGE_PATH}/include/ge
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/msprof
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/msprof/toolchain
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../include
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
   )

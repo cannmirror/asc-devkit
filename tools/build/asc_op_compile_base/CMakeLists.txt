@@ -26,9 +26,7 @@ if(BUILD_OPEN_PROJECT)
     ${CMAKE_CURRENT_SOURCE_DIR}/c_api
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${ASCEND_CANN_PACKAGE_PATH}/include
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment
     ${ASCEND_CANN_PACKAGE_PATH}/include/base
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
   )
 else()
   target_include_directories(asc_platform PRIVATE
