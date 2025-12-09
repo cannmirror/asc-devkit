@@ -40,15 +40,15 @@ dir_to_delete=$targetdir/$vendordir
 
 if [[ ! -d $dir_to_delete ]]; then
     log "[INFO] no need to delete ops $dir_to_delete files"
-    return 0
-fi
-
-log "[INFO] Starting to delete $vendor_name ..."
-chmod u+x -R $dir_to_delete
-rm -rf $dir_to_delete
-if [ $? -ne 0 ]; then
-    log "[INFO] Failed to delete $vendor_name."
     exit 1
+else
+    log "[INFO] Starting to delete $vendor_name ..."
+    chmod u+x -R $dir_to_delete
+    rm -rf $dir_to_delete
+    if [ $? -ne 0 ]; then
+        log "[INFO] Failed to delete $vendor_name."
+        exit 1
+    fi
 fi
 
 config_file=${targetdir}/vendors/config.ini
