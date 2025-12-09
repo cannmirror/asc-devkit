@@ -26,7 +26,7 @@ __aicore__ inline void Init(GM_ADDR srcGm, GM_ADDR dstGm, uint32_t firstAxis, ui
     uint32_t padLast = AlignUp(last, ONE_BLK_SIZE / sizeof(T));
     uint32_t reduceAxis = isAr ? last : first;
     srcSize = padLast * first;
-    padRet = AlignUp(reduceAxis, 32);
+    padRet = AlignUp(reduceAxis, ONE_BLK_SIZE / sizeof(T));
     srcGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T *>(srcGm), srcSize * sizeof(T));
     dstGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ T *>(dstGm), padRet * sizeof(T));
 
