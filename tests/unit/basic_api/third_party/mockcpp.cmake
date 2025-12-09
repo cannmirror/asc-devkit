@@ -39,7 +39,9 @@ if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}/mockcpp/lib/libmockcpp.a" OR TRUE)
         URL_HASH SHA256=73ab0a8b6d1052361c2cebd85e022c0396f928d2e077bf132790ae3be766f603
         DOWNLOAD_DIR ${third_party_TEM_DIR}
         SOURCE_DIR ${mockcpp_SRC_DIR}
-        PATCH_COMMAND git init && git apply ${PATCH_FILE}
+        TLS_VERIFY OFF
+        PATCH_COMMAND git init && git apply ${PATCH_FILE} && sed -i
+        "1icmake_minimum_required(VERSION 3.16.0)" CMakeLists.txt && rm -rf .git
 
         CONFIGURE_COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR}
             -DCMAKE_CXX_FLAGS=${mockcpp_CXXFLAGS}

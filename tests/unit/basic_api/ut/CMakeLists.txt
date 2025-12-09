@@ -8,7 +8,7 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 project(ascendc_devkit_ut)
-cmake_minimum_required(VERSION 3.14.1)
+cmake_minimum_required(VERSION 3.16.0)
 
 set(PRODUCT_TYPE_LIST
     ascend910 ascend610 ascend310p ascend910B1_AIC ascend910B1_AIV ascend310B1 ascend610Lite)
