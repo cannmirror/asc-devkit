@@ -111,7 +111,9 @@ new_uninstall() {
             fi
         fi
     fi
-
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 755 "$common_parse_dir/tools/ascendc_tools"
+    fi
     # 执行卸载
     custom_options="--custom-options=--common-parse-dir=$common_parse_dir,--logfile=$logfile,--stage=uninstall,--quiet=$is_quiet,--hetero-arch=$hetero_arch"
     sh "$SOURCE_INSTALL_COMMON_PARSER_FILE" --package="asc-devkit" --uninstall --username="$username" --usergroup="$usergroup" ${recreate_softlink_option} \
@@ -121,7 +123,9 @@ new_uninstall() {
         log "ERROR" "ERR_NO:0x0090;ERR_DES:failed to uninstall package."
         return 1
     fi
-
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 550 "$common_parse_dir/tools/ascendc_tools"
+    fi
     if [ -n "$latest_path" ] && [ -d "$latest_path" ] && [ "x$(ls -A $latest_path 2>&1)" = "x" ]; then
         rm -rf "$latest_path"
     fi
