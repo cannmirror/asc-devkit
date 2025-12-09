@@ -1,17 +1,17 @@
-# AddVisualization算子直调样例
+# Microadd算子直调样例
 ## 概述
-本样例介绍Add算子的核函数直调方法，算子支持批量张量相加，通过流水线机制实现高效数据搬运与计算。算子支持单核运行。
+本样例介绍Add算子的核函数直调方法，通过微指令API直接对芯片中涉及Vector计算的寄存器进行操作，算子支持单核运行。
 ## 支持的AI处理器
-- Ascend 910B
+- Ascend 910D
 ## 目录结构介绍
 ```
-├── add_visualization
+├── micro_add
 │   ├── scripts
 │   │   ├── gen_data.py          // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py     // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt           // 编译工程文件
 │   ├── data_utils.h             // 数据读入写出函数
-│   └── vector_add_custom.asc    // Ascend C算子实现 & 调用样例
+│   └── micro_add_custom.asc     // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能：  
@@ -24,24 +24,24 @@
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   </tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">640 * 270</td><td align="center">half</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">640 * 270</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">x</td><td align="center">1 * 16</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">1 * 16</td><td align="center">half</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">640 * 270</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">1 * 16</td><td align="center">half</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_simple_kernel</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
 - 算子实现：  
+  Add算子的数学表达式为：
+  ```
+  z = x + y
+  ```
   计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。  
 
-  Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。
-  
-  CopyIn任务负责从Global Memory上分块搬运输入数据搬运到片上输入队列，完成数据对齐与填充。
-  
-  Compute任务负责从输入队列中读取数据，执行适量加法操作，结果写入输出队列，期间利用掩码机制处理边界数据。
-  
-  CopyOut任务负责将输出数据从队列搬运至Global Memory上，完成最终的输出。
+  Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
+
+  微指令API与基础API功能相似，但与基础API输入和输出数据必须为LocalTensor不同，微指令API的输入或输出数据可以是RegTensor或MaskReg。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
@@ -63,10 +63,10 @@
     ```
 - 样例执行
   ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
+  mkdir -p build && cd build;      # 创建并进入build目录
+  cmake ..;make -j;                # 编译工程
   python3 ../scripts/gen_data.py   # 生成测试输入数据
-  ./demo                        # 执行编译生成的可执行程序，执行样例
+  ./demo                           # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin   # 验证输出结果是否正确，确认算法逻辑正确
   ```
   执行结果如下，说明精度对比成功。
