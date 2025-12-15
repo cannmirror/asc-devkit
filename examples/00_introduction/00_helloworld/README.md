@@ -14,7 +14,7 @@
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量  
+- 配置环境变量
   以命令行方式下载样例代码，master分支为例。
   ```bash
   cd ${git_clone_path}/examples/00_introduction/00_helloworld
@@ -46,10 +46,18 @@
   ```
   执行结果如下，说明执行成功。
   ```bash
-  Hello World!!!
+  [Block (0/8)]: Hello World!!!
+  [Block (1/8)]: Hello World!!!
+  [Block (2/8)]: Hello World!!!
+  [Block (3/8)]: Hello World!!!
+  [Block (4/8)]: Hello World!!!
+  [Block (5/8)]: Hello World!!!
+  [Block (6/8)]: Hello World!!!
+  [Block (7/8)]: Hello World!!!
   ```
 
 ## 更新说明
 | 时间       | 更新事项     |
 | ---------- | ------------ |
+| 2025/12/15 | 更新手动打印block idx的hello world样例 |
 | 2025/11/06 | 样例目录调整，新增本readme |
