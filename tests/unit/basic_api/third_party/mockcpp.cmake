@@ -27,7 +27,7 @@ if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}/mockcpp/lib/libmockcpp.a" OR TRUE)
     set(PATCH_FILE ${third_party_TEM_DIR}/mockcpp-2.7_py3.patch)
     if (NOT EXISTS ${PATCH_FILE})
         file(DOWNLOAD
-            "https://raw.gitcode.com/cann-src-third-party/mockcpp/blobs/7207d936a909ab59b7748da8c63c2419ae37297f/mockcpp-2.7_py3.patch"
+            "https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h1/mockcpp-2.7_py3.patch"
             ${PATCH_FILE}
             TIMEOUT 60
             EXPECTED_HASH SHA256=f1e9091992bf5c340af7d8c2f800b8d43d198fe4a8130f7bcd3f7cba1b0a324b
@@ -35,7 +35,7 @@ if (NOT EXISTS "${CMAKE_INSTALL_PREFIX}/mockcpp/lib/libmockcpp.a" OR TRUE)
     endif()
     include(ExternalProject)
     ExternalProject_Add(mockcpp
-        URL "https://raw.gitcode.com/cann-src-third-party/mockcpp/blobs/868e1f78ddb352f201145283e0b8761a6245bde1/mockcpp-2.7.tar.gz"
+        URL "https://gitcode.com/cann-src-third-party/mockcpp/releases/download/v2.7-h1/mockcpp-2.7.tar.gz"
         URL_HASH SHA256=73ab0a8b6d1052361c2cebd85e022c0396f928d2e077bf132790ae3be766f603
         DOWNLOAD_DIR ${third_party_TEM_DIR}
         SOURCE_DIR ${mockcpp_SRC_DIR}
