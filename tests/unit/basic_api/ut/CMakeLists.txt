@@ -25,13 +25,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(LOCAL_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(ASCENDC_SYS_DIR ${ASCEND_CANN_PACKAGE_PATH}/${CMAKE_SYSTEM_PROCESSOR}-linux)
 
-include(${LOCAL_DIR}/../cmake/dependencies.cmake)
-
 ############# gen tiling head file
 set(tiling_script ${LOCAL_DIR}/scripts/gen_kernel_tiling_data_def.py)
 set(TILING_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(tiling_gen_file ${TILING_GEN_DIR}/kernel_tiling/kernel_tiling.h)
-set(tiling_data_def_path ${ASCENDC_SYS_DIR}/ascendc/include/highlevel_api/lib/)
+set(tiling_data_def_path ${ASCENDC_INCLUDE_DIR}/adv_api)
 
 add_custom_command(OUTPUT ${tiling_gen_file}
     COMMAND python3  ${tiling_script} ${tiling_data_def_path} ${tiling_gen_file}
@@ -268,7 +266,7 @@ foreach(product_type ${TIKCPP_UT_PRODUCT_TYPE_LIST})
         ${LOCAL_DIR}/stub/
         ${ASCENDC_TEST_HEADER_FILES}
         ${ASCENDC_SYS_DIR}/include/base/
-        ${ASCENDC_SYS_DIR}/include/experiment/metadef/
+        ${ASCENDC_SYS_DIR}/include/metadef/
         mmpa_headers
         slog_headers
     )
@@ -383,6 +381,7 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         ${ASCENDC_DIR}/
         ${ASCENDC_IMPL_DIR}/
         ${ASCENDC_SYS_DIR}/include/
+        ${ASCENDC_SYS_DIR}/pkg_inc/
         ${ASCENDC_SYS_DIR}/pkg_inc/base/
         ${ASCENDC_INCLUDE_DIR}/
         ${ASCENDC_INCLUDE_DIR}/utils/context/
@@ -409,6 +408,8 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         -Wl,--as-needed
     )
 
+    target_compile_definitions(tikcpp_tiling_utest_${product_type} PRIVATE ASCENDC_TPL_DEBUG)
+
     run_llt_test(
         TARGET tikcpp_tiling_utest_${product_type}
         TASK_NUM 1
@@ -426,8 +427,7 @@ set(ASCEND_KERNEL_TEST_HEADERS_FILES
     ${ASCENDC_DIR}/tools/build/asc_pack_kernel/
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/base/
-    ${ASCENDC_SYS_DIR}/include/experiment/metadef/
-    ${ASCENDC_SYS_DIR}/include/experiment/
+    ${ASCENDC_SYS_DIR}/include/metadef/
     ${ASCENDC_DIR}/tikcpulib/inc/
     ${ASCENDC_DIR}/tikcpulib/cpulib/api_check
     ${ASCENDC_DIR}/tikcpulib/cpulib/api_check/inc
@@ -461,13 +461,13 @@ target_compile_definitions(ascendc_utest_kernel PRIVATE ASCENDC_CPU_DEBUG=1)
 target_include_directories(ascendc_utest_kernel PRIVATE
     ${ASCEND_KERNEL_TEST_HEADERS_FILES}
     ${ASCENDC_SYS_DIR}/include/base/
-    ${ASCENDC_SYS_DIR}/include/experiment/metadef/
-    ${ASCENDC_SYS_DIR}/include/experiment/
-    ${ASCENDC_SYS_DIR}/include/experiment/runtime/
-    ${ASCENDC_SYS_DIR}/include/experiment/runtime/runtime/
-    ${ASCENDC_SYS_DIR}/include/experiment/msprof/
     ${ASCENDC_SYS_DIR}/include
     ${ASCENDC_SYS_DIR}/include/acl/
+    ${ASCENDC_SYS_DIR}/pkg_inc/
+    ${ASCENDC_SYS_DIR}/pkg_inc/base/
+    ${ASCENDC_SYS_DIR}/pkg_inc/runtime/
+    ${ASCENDC_SYS_DIR}/pkg_inc/runtime/runtime/
+    ${ASCENDC_SYS_DIR}/pkg_inc/profiling/
     ${ASCENDC_DIR}/tools/build/asc_rt/
     ${ASCENDC_DIR}/tools/build/elf_tool/
 )
