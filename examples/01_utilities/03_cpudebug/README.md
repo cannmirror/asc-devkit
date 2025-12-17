@@ -68,22 +68,22 @@ CPU Debug介绍
     请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
     - 默认路径，root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
+      export ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
       ```
     - 默认路径，非root用户安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/latest
+      export ASCEND_INSTALL_PATH=$HOME/Ascend/cann
       ```
     - 指定路径install_path，安装CANN软件包
       ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/latest
+      export ASCEND_INSTALL_PATH=${install_path}/cann
       ```
     配置安装路径后，执行以下命令统一配置环境变量。
     ```bash
     # 选择芯片型号
     SOC_VERSION=${1:-SOC_VERSION}
     # 配置CANN环境变量
-    source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
+    source ${ASCEND_INSTALL_PATH}/set_env.sh
     # 添加AscendC CMake Module搜索路径至环境变量
     export LD_LIBRARY_PATH=${ASCEND_INSTALL_PATH}/tools/tikicpulib/lib:${ASCEND_INSTALL_PATH}/tools/tikicpulib/lib/${SOC_VERSION}:${ASCEND_INSTALL_PATH}/tools/simulator/${SOC_VERSION}/lib:$LD_LIBRARY_PATH
     ```
