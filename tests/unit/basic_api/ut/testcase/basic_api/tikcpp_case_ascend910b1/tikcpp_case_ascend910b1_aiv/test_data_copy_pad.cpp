@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <type_traits>
 #include "kernel_operator.h"
+// #include "api_check/kernel_cpu_check.h"
 #include "mockcpp/mockcpp.hpp"
 
 using namespace std;

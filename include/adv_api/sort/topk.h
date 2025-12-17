@@ -16,13 +16,14 @@
 #define LIB_SORT_TOPK_H
 
 #include "include/adv_api/sort/topk_utils.h"
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 #include "kernel_tensor.h"
 #include "kernel_utils.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "../../../impl/adv_api/detail/sort/topk/topk_common_utils.h"
 #include "../../../impl/adv_api/detail/api_check/kernel_api_check.h"
+
 #include "../../../impl/adv_api/detail/sort/topk/topk_common_impl.h"
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
@@ -133,7 +134,6 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
             dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, k, tilling, topKInfo, isLargest);
     }
 }
-
 #pragma end_pipe
 }  // namespace AscendC
 

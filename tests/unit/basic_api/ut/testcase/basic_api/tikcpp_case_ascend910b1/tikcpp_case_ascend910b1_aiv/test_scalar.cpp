@@ -9,6 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
+// #include "model/model_factory.h"
 #include "stub_def.h"
 #include "stub_fun.h"
 

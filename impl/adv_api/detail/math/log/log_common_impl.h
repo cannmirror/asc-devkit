@@ -20,7 +20,7 @@
 #include "../../common/check.h"
 #include "../../api_check/kernel_api_check.h"
 
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 namespace AscendC {
 template <typename T>
@@ -111,7 +111,6 @@ __aicore__ inline void Log2Impl(const LocalTensor<T>& dstTensor, const LocalTens
     SetMaskNorm();
     SetVectorMask<half, MaskMode::NORMAL>(FULL_MASK, FULL_MASK);
 }
-
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void Log10Impl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,

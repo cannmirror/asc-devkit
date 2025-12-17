@@ -63,7 +63,7 @@ __aicore__ inline void Sum(const LocalTensor<T> &dstTensor, const LocalTensor<T>
     if ASCEND_IS_AIC {
         return;
     }
-#if __CCE_AICORE__ >= 200
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });

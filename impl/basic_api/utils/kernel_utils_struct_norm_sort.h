@@ -199,7 +199,7 @@ template <typename T> struct AscendDequantParams {
     LocalTensor<T> tmpAddrB;
 };
 
-template <typename T> __aicore__ inline uint64_t GetScalarBitcodeValue(T scalarValue)
+template <typename T> constexpr __aicore__ inline uint64_t GetScalarBitcodeValue(T scalarValue)
 {
     union ScalarBitcode {
         __aicore__ ScalarBitcode() {}
@@ -211,7 +211,7 @@ template <typename T> __aicore__ inline uint64_t GetScalarBitcodeValue(T scalarV
     return data.output;
 }
 
-template <typename T, typename U> __aicore__ inline U GetScalarBitcodeValue(T scalarValue)
+template <typename T, typename U> constexpr __aicore__ inline U GetScalarBitcodeValue(T scalarValue)
 {
     union ScalarBitcode {
         __aicore__ ScalarBitcode() {}
@@ -223,7 +223,7 @@ template <typename T, typename U> __aicore__ inline U GetScalarBitcodeValue(T sc
     return static_cast<U>(data.output);
 }
 
-template <typename T> __aicore__ inline half GetScalarBitcodeToHalf(T scalarValue)
+template <typename T> constexpr __aicore__ inline half GetScalarBitcodeToHalf(T scalarValue)
 {
     union ScalarBitcode {
         __aicore__ ScalarBitcode() {}

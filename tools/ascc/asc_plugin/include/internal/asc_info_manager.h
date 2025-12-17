@@ -59,9 +59,6 @@ struct PathInfo {
 
             cannPath + "/asc/impl/adv_api",
             cannPath + "/asc/impl/basic_api",
-            cannPath + "/asc/impl/c_api",
-            cannPath + "/asc/impl/micro_api",
-            cannPath + "/asc/impl/simt_api",
             cannPath + "/asc/impl/utils",
 
             cannPath + "/asc/include",
@@ -69,15 +66,15 @@ struct PathInfo {
             cannPath + "/asc/include/adv_api/matmul",
             cannPath + "/asc/include/aicpu_api",
             cannPath + "/asc/include/basic_api",
-            cannPath + "/asc/include/c_api",
             cannPath + "/asc/include/interface",
-            cannPath + "/asc/include/micro_api",
-            cannPath + "/asc/include/simt_api",
             cannPath + "/asc/include/tiling",
             cannPath + "/asc/include/utils"
         };
 
-        cannVersionHeader = cannPath + "/include/version/cann_version.h";
+        std::string expectedCannVersionHeader = cannPath + "/include/ascendc/asc_devkit_version.h";
+        if (PathCheck(expectedCannVersionHeader.c_str(), false) != PathStatus::NOT_EXIST) {
+            cannVersionHeader = cannPath + "/include/ascendc/asc_devkit_version.h";
+        }
         ascendClangIncludePath = cannPath + "/ccec_compiler/lib/clang/15.0.5/include";
         bishengPath = cannPath + "/ccec_compiler/bin/bisheng";
         objdumpPath = cannPath + "/ccec_compiler/bin/llvm-objdump";
@@ -117,10 +114,8 @@ public:
     void AddGlobalSymbolInfo(const std::string &mangling, const KernelMetaType &type, const std::string &fileName,
         const uint32_t lineNo, const uint32_t colNo, const KfcScene kfcScene);
     void UpdateOneCoreDumpSize();                       // must be called after hasPrintf_ and hasAssert_ is updated
-    void SetFirstKernel (const bool isFirstKernel);
-    void SetAscendMetaFlag(const uint32_t& flag);
-    size_t SetAndGetMetaFlagCounter();
     void ReportCompileArgs();
+    uint32_t SetKernelFuncFlag();
 
     const PathInfo& GetPathInfo() const;
     const CompileArgs& GetCompileArgs() const;
@@ -133,25 +128,21 @@ public:
     const std::string& GetOptimizeLevel() const;
     const std::string& GetSourceFile() const;
     const std::unordered_map<std::string, GlobalFuncInfo>& GetGlobalSymbolInfo() const;
-    uint32_t GetAscendMetaFlag() const;
     uint32_t GetMaxCoreNum(const ShortSocVersion& socVersion) const;
     uint32_t GetMaxCoreNum() const;
-    size_t GetMetaFlagCounter() const;
     bool SaveTempRequested() const;
     bool UserDumpRequested() const;
     bool HasTimeStamp() const;
-    bool HasWorkspace() const;
-    bool HasTiling() const;
     bool HasPrintf() const;
     bool HasAssert() const;
     bool IsDumpOn() const;   // when user not pass -DASCENDC_DUMP=0, and uses printf/ assert
     uint32_t GetOneCoreDumpSize() const;                // for -DONE_CORE_DUMP_SIZE=xxx
     bool IsL2CacheEnabled() const;
     bool HasOpSystemCfg() const;
-    bool IsFirstKernel() const;
     bool IsAutoSyncOn() const;
     bool IsSupportFifoDump() const;
     bool IsFifoDumpOn() const;
+    bool HasKernelFunc() const;
 
 private:
     InfoManager() = default;
@@ -174,17 +165,13 @@ private:
     bool saveTempRequested_ = false;
     bool userDumpStatus_ = true;                // if user passed -DASCENDC_DUMP, then update. True means = 1
     bool hasTimeStamp_ = false;                 // for -DASCENDC_TIME_STAMP_ON
-    bool hasWorkspace_ = false;                 // for -DHAVE_WORKSPACE in KernelLaunch
-    bool hasTiling_ = false;                    // for -DHAVE_TILING in KernelLaunch
     bool hasPrintf_ = false;
     bool hasAssert_ = false;
     bool enableL2Cache_ = true;                 // default enable
     bool hasOpSystemCfg_ =false;
     uint32_t oneCoreDumpSize_ = 1048576;        // 1024 K
-    bool isFirstKernel_ = false;
     bool isAutoSyncOn_ = true;
-    uint32_t ascendMetaFlag_ = 0;
-    size_t metaFlagCounter_ = 0;
+    bool hasKernelFunc_ = false;
 
     // global func mangling name to tuple < ktype, filename, lineNo, colNo >
     std::unordered_map<std::string, GlobalFuncInfo> kernelFuncSymbolToFuncInfo_;

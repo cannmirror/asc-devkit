@@ -322,4 +322,21 @@ std::string ToUpper(const std::string& str)
     return tmpStr;
 }
 
+std::string GetAscFeatureMetaSection(FeatureFlag flag)
+{
+    static uint32_t nameCounter = 0;
+    std::string varName("static const struct AscendCFeatureFlag");
+    if (flag == FeatureFlag::ASC_L2CACHE_HINT_MASK) {
+        varName += " __ascendc_feature_l2cache__";
+    } else if (flag == FeatureFlag::ASC_PRINT_MASK) {
+        varName += " __ascendc_feature_print__";
+    } else if (flag == FeatureFlag::ASC_FFTS_MASK) {
+        varName += " __ascendc_feature_ffts__" + std::to_string(nameCounter);
+        ++nameCounter;
+    }
+    std::string metaSection(" __attribute__ ((used, section (\".ascend.meta\"))) = {4, 4, ");
+    metaSection += std::to_string(static_cast<uint32_t>(flag)) + "};\n";
+    return varName + metaSection;
+}
+
 } // namespace AscPlugin

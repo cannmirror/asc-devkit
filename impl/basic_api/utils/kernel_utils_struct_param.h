@@ -220,70 +220,77 @@ struct BlockInfo {
 #endif
 };
 
-struct BlockPrintFiFoInfo {
+struct BlockRingBufInfo {
     uint32_t length = 0U;        // total size per block (include head and r/w info)
     uint32_t coreId = 0U;        // current core id
     uint32_t blockNum = 0U;      // total core num
-    uint32_t remainLen = 0U;     // fifo buff size (print tlv storage)
+    uint32_t ringBufLen = 0U;    // fifo buff size (print tlv storage)
     uint16_t magic = 0U;         // magic number
     uint16_t flag = 0U;          // 0: simd, 1: simt
     uint32_t rsv = 0U;           // reserve
-    uint64_t dumpAddr = 0U;      // start addr of fifo buff
+    uint64_t ringBufAddr = 0U;   // start addr of fifo buff
+    uint32_t resvMem[6];        // reserved
 };
 
-struct BlockWriteInfo {
-    uint32_t blockType = static_cast<uint32_t>(DumpType::DUMP_BUFI); // DumpType = DUMP_BUFI
-    uint32_t length = 0U;  // u64 + u64
-    uint64_t writeIdx = 0U;  // the offset of write addr relative to dumpAddr
-    uint64_t packIdx = 0U;   // print pack counter
+struct RingBufWriteInfo {
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_BUFI); // DumpType = DUMP_BUFI
+    uint32_t length = 0U;       // u64 + u64
+    uint64_t bufOffset = 0U;    // the offset of write addr relative to ringBufAddr
+    uint64_t packIdx = 0U;      // print pack counter
 };
 
-struct BlockReadInfo {
-    uint32_t blockType = static_cast<uint32_t>(DumpType::DUMP_BUFO); // DumpType = DUMP_BUFO
-    uint32_t length = 0U;  // u64 + u64
-    uint64_t readIdx = 0U;  // the offset of read addr relative to dumpAddr
+struct RingBufReadInfo {
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_BUFO); // DumpType = DUMP_BUFO
+    uint32_t length = 0U;       // u64 + u64
+    uint64_t bufOffset = 0U;    // the offset of read addr relative to ringBufAddr
     uint64_t resv = 0U;
 };
 
-struct BlockSkipInfo {
-    uint32_t blockType = static_cast<uint32_t>(DumpType::DUMP_SKIP); // DumpType = DUMP_SKIP
+struct SkipTlvInfo {
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_SKIP); // DumpType = DUMP_SKIP
     uint32_t length = 0U;
 };
 
 struct PrintTlvInfoHead {
-    uint32_t printfType = static_cast<uint32_t>(DumpType::DUMP_SCALAR);
-    uint32_t printfLength = 0U;
-    uint64_t fmtOffset = 0U;
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_SCALAR);
+    uint32_t length = 0U;
+    uint32_t resvMem[2];               // reserved
+    uint64_t fmtOffset = 0U;            // offset of fmt string from the start of fmtOffset addr
 };
 
 struct DumpTensorTlvInfoHead {
-    uint32_t dumpType = static_cast<uint32_t>(DumpType::DUMP_TENSOR); // DumpType = DUMP_TENSOR
-    uint32_t dumpLength = 0U;       // Length of (addr dataType desc bufferId position dumpSize dumpData align)
-    uint32_t addr= 0U;              // Address of Tensor
-    uint32_t dataType = 0U;         // Data type: int32_t/half/...
-    uint32_t desc = 0U;             // Usr id
-    uint32_t bufferId = 0U;         // 0
-    uint32_t position = 0U;         // Position GM,UB,L1,L0C
-    uint32_t dumpSize = 0U;         // Length of dumpData
-                                    // dumpData[dumpSize], Tensor data
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_TENSOR); // DumpType = DUMP_TENSOR
+    uint32_t length = 0U;            // Length of (addr dataType desc bufferId position dumpSize dumpData align)
+    uint32_t tensorAddr = 0U;        // Address of Tensor
+    uint32_t dataType = 0U;          // Data type: int32_t/half/...
+    uint32_t desc = 0U;              // Usr id
+    uint32_t bufferId = 0U;          // 0
+    uint16_t position = 0U;          // Position GM,UB,L1,L0C
+    uint16_t resv0 = 0U;             // reserved
+    uint32_t dim = 0U;               // shape dim
+    uint32_t shape[K_MAX_SHAPE_DIM]; // dim <= 8
+    uint32_t resv1 = 0U;             // reserved
+    uint32_t dumpSize = 0U;          // Length of dumpData
+                                     // dumpData[dumpSize], Tensor data
 };
 
 struct DumpShapeTlvInfo {
-    uint32_t dumpType = static_cast<uint32_t>(DumpType::DUMP_SHAPE); // DumpType = DUMP_SHAPE
-    uint32_t dumpLength = 0U;           // Length of (dim shape rsv)
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_SHAPE); // DumpType = DUMP_SHAPE
+    uint32_t length = 0U;           // Length of (dim shape rsv)
     uint32_t dim = 0U;                  // shapeInfo.dim
     uint32_t shape[K_MAX_SHAPE_DIM];    // dim <= 8
     uint32_t resv;
 };
 
 struct TimeStampTlvInfo {
-    uint32_t dumpType = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP); // DumpType = DUMP_TIME_STAMP
-    uint32_t dumpLength = 0U;      // Length of (descId resv cycle pc entry)
+    uint32_t type = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP); // DumpType = DUMP_TIME_STAMP
+    uint32_t length = 0U;      // Length of (descId resv cycle pc entry)
     uint32_t descId = 0U;          // Usr id
     uint32_t resv = 0U;            // reserved
     uint64_t cycle = 0U;           // system cycle
     uint64_t pc = 0U;              // get pc
     uint64_t entry = 0U;           // entry system cycle
+    uint32_t resvMem[2];          // reserved
 };
 
 struct DumpMeta {

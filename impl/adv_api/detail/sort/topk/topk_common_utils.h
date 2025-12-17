@@ -16,8 +16,9 @@
 #define IMPL_SORT_TOPK_TOPK_COMMON_UTILS_H
 
 #include "include/adv_api/sort/topk_utils.h"
+#include "include/adv_api/sort/topk_utils_constants.h"
 
-#if __CCE_AICORE__ >= 200
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201))
 namespace {
 constexpr uint16_t MIN_SORT32_SIZE = 32;
 constexpr uint16_t MIN_RPSORT16_SIZE = 16;
@@ -47,9 +48,6 @@ constexpr uint32_t TOPK_NORMAL_INNER_MAX_HALF_LEN = 2048;
 constexpr uint32_t TOPK_NSMALL_INNER_LEN = 32;
 constexpr uint32_t TOPK_NORMAL_INNER_MAX_LEN = 4096;
 }  // namespace
-
-namespace AscendC {
-}
 #endif
 
 #endif  // IMPL_SORT_TOPK_TOPK_COMMON_UTILS_H

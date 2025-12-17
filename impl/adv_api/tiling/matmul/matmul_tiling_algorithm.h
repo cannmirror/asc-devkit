@@ -208,12 +208,15 @@ struct MatmulRunParas {
     bool nonFactorK = false;
 };
 
+#ifndef ASCC_STRUCT_L1TILINGTYPE
+#define ASCC_STRUCT_L1TILINGTYPE
 enum class L1TilingType : uint8_t {
     KAL1_16,
     KBL1_16,
     M_AL1,
     N_BL1
 };
+#endif
 
 enum class MultiCoreScenario : uint8_t {
     K_FULL_LOAD,

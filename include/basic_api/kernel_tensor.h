@@ -152,6 +152,8 @@ public:
     __aicore__ inline void SetAddrWithOffset(LocalTensor<S> &src, uint32_t offset);
 #endif
     __aicore__ inline LocalTensor<T>(TPosition pos, uint32_t addr, uint32_t tileSize);
+    template <typename U>
+    __aicore__ inline LocalTensor<T>(uint32_t addr, const U& layout);
     __aicore__ inline LocalTensor<T>(uint32_t addr);
     __aicore__ inline int32_t GetPosition() const;
     __aicore__ inline void SetSize(const uint32_t size);
@@ -208,7 +210,7 @@ template <typename T> class GlobalTensor : public BaseGlobalTensor<T>, public Ba
 public:
     using PrimType = PrimT<T>;
     __aicore__ inline GlobalTensor<T>();
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     __aicore__ inline ~GlobalTensor<T>();
 #endif
     __aicore__ inline void SetGlobalBuffer(__gm__ PrimType* buffer, uint64_t bufferSize);
@@ -218,7 +220,7 @@ public:
 
     __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset) const;
     __aicore__ inline __inout_pipe__(S) __gm__ PrimType& operator()(const uint64_t offset) const;
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     __aicore__ inline __inout_pipe__(S) PrimType GetValue(const uint64_t offset);
     __aicore__ inline __inout_pipe__(S) __gm__ PrimType& operator()(const uint64_t offset);
 #endif
@@ -238,12 +240,12 @@ public:
     typename ShapeInfoParams<T, PrimType>::Params shapeInfo_;
 #endif
     CacheMode cacheMode_ = CacheMode::CACHE_MODE_NORMAL;
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     uintptr_t lastWriteCacheAddr;
     uintptr_t lastReadCacheAddr;
 #endif
 private:
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     template<typename U>
     __aicore__ inline uintptr_t AlignPtr(__gm__ U* buffer) const;
 #endif
@@ -259,6 +261,7 @@ public:
     template <class DataType, uint32_t tileSize> LocalTensor<DataType> __aicore__ inline Alloc();
     template <class DataType> LocalTensor<DataType> __aicore__ inline Alloc(uint32_t tileSize);
     template <class TensorTraitType> LocalTensor<TensorTraitType> __aicore__ inline Alloc();
+    template <class TensorTraitType, typename LayoutType> LocalTensor<TensorTraitType> __aicore__ inline Alloc(const LayoutType& layout);
 
 private:
     uint32_t head_ = 0;

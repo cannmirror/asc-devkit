@@ -9,6 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
+// #include "model/model_factory.h"
 #include "common.h"
 
 using namespace std;

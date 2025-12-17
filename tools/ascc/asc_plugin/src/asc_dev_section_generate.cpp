@@ -26,40 +26,6 @@
 #include "asc_dev_meta_generator.h"
 
 namespace AscPlugin {
-namespace {
-std::string GetAscFeatureMetaSection(const uint32_t &featureFlag)
-{
-    std::string counterMacroDef =
-        "#ifdef __ASC_FEATURE_META_INFO" + std::to_string(InfoManager::GetInstance().SetAndGetMetaFlagCounter());
-    std::string ascMetaSecDef = R"(
-namespace {
-struct AscendCBinaryVersion {
-	uint16_t type = 0;
-	uint16_t len = 4;
-	uint32_t version = 0;
-};
-
-struct AscendCFeatureFlag {
-	uint16_t type = 4;
-	uint16_t len = 8;
-	uint32_t flag = 0;
-	uint32_t resv = 0;
-};
-
-struct AscendCMetaInfo {
-	AscendCBinaryVersion version;
-	AscendCFeatureFlag feature;
-};
-}
-)";
-    std::string metaSection =
-        std::string("static const struct AscendCMetaInfo __ascendc_meta_info__ __attribute__ ((used, section "
-                    "(\".ascend.meta\"))) = {{0, 4, 0x01}, {4, 8, ") +
-        std::to_string(featureFlag) + ", 0}};\n";
-    return counterMacroDef + ascMetaSecDef + metaSection + "#endif\n";
-}
-}
-
 std::tuple<int32_t, std::string, std::string> GetDeviceCode(const KernelInfo& kernelInfo,
     const std::unordered_set<KernelMetaType>& kernelType, const KfcScene& kfcScene)
 {
@@ -71,7 +37,6 @@ std::tuple<int32_t, std::string, std::string> GetDeviceCode(const KernelInfo& ke
     std::string deviceStub = devStubGen.GenCode();
     AscDevMetaGenerator devMetaGen = AscDevMetaGenerator(kernelInfo, kernelType);
     std::string metaSection = devMetaGen.GenCode();
-    metaSection.append(GetAscFeatureMetaSection(InfoManager::GetInstance().GetAscendMetaFlag()));
 
     return {0, deviceStub, metaSection};
 }

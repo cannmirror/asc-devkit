@@ -17,7 +17,7 @@
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/log/log_common_impl.h"
 
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 namespace AscendC {
 

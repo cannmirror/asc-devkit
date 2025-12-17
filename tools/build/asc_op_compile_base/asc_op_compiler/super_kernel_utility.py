@@ -64,7 +64,7 @@ def check_exist_forbidden_symbols(dst_i_file, forbidden_symbols, allow_path):
 
 def check_exist_instrinsic_when_super_kernel(dst_i_file):
     forbbiden_instrinsis = ['get_block_idx', 'get_block_num', 'get_task_ration', 'block_idx']
-    allow_instrinsic_path_mark = ['ccec_compiler', 'tikcpp/tikcfw', 'asc/impl']
+    allow_instrinsic_path_mark = ['bisheng_compiler', 'ccec_compiler', 'tikcpp/tikcfw', 'asc/impl', 'impl/basic_api']
     result_symbol_list, path_list, line_result =\
         check_exist_forbidden_symbols(dst_i_file, forbbiden_instrinsis, allow_instrinsic_path_mark)
     result_str = ''

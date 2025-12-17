@@ -23,21 +23,17 @@ import re
 import shutil
 import sys
 import struct
-from typing import List
 from asc_op_compile_base.common.ccec import CCECInfo
 from asc_op_compile_base.asc_op_compiler.cce_runtime import tvm_callback_cce_postproc
 from asc_op_compile_base.common.buildcfg import get_current_build_config
-from asc_op_compile_base.common.buildcfg.buildcfg_mapping import enable_vector_core
 from asc_op_compile_base.common.platform.platform_info import get_soc_spec, set_soc_spec
 from asc_op_compile_base.common.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
 from asc_op_compile_base.common.context import get_context
-from .get_op_tiling import TilingInfo, is_static_shape, OpInfo
-from .template_tiling import extract_template_tiling_info, decode_tiling, extract_decl_param_options
+from .get_op_tiling import TilingInfo, OpInfo, get_tiling_info_by_tiling
 from asc_op_compile_base.common.utils.log_utils import LogUtil, AscendCLogLevel, CompileStage, COMPILE_STAGE_MSG_INFO
 from .global_storage import global_var_storage
 from .ascendc_constants import InferChannelParamsFromIFile, InferChannelParams, KernelMetaType, \
-    STR_TO_KERNEL_TYPE_V220, STR_TO_KERNEL_TYPE_V200, CompileOptionTuple, \
-    CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC, TILING_KEY_MACRO, \
+    CompileOptionTuple, CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC, TILING_KEY_MACRO, \
     ASCENDC_OOM, MIX_CORE_MACRO, CustomizedConfig
 from .ascendc_common_utility import CommonUtility, CompileInfo, \
     process_ascendc_api_version, gen_func_align_attribute, convert_customized_config_to_inferchannel, \
@@ -45,11 +41,14 @@ from .ascendc_common_utility import CommonUtility, CompileInfo, \
 from .ascendc_compile_dfx import DFXParamType, DFXPointType, DFXArgInfo, DFXSectionGenerator
 from .ascendc_compile_v220 import gen_compile_cmd_v220, get_v220_kernel_type_mix_flag, call_bisheng_v220, \
     get_ktype_section_variable, get_code_channel_v220_by_first_tiling_key, \
-    set_dynamic_sub_func_names_of_super_kernel_with_kernel_type, gen_compile_cmd_for_meta_info
+    set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group, gen_compile_cmd_for_meta_info
 from .ascendc_compile_v200 import call_bisheng_v200_static, call_bisheng_v200_dynamic
 from .ascendc_compile_gen_code import get_code_for_l2_cache, \
     gen_usr_origin_kernel_function_call, gen_template_tiling_params, add_time_stamp_codes, \
-    gen_init_dump_code, add_op_param_to_workspace
+    gen_init_dump_code, add_op_param_to_workspace, _gen_compile_cmd, get_tiling_key_struct_size_map, \
+    gen_tiling_struct_and_dfx_section_head, gen_tiling_struct_size_for_group_key, \
+    gen_dfx_section_for_one_tiling_key_dynamic, gen_dfx_section_for_one_tiling_key_static, \
+    gen_tiling_struct_size_for_group_key_no_size
 from .ascendc_compile_gen_json import _gen_mix_json_from_seperate_json, \
     _gen_mix_json_from_seperate_json_for_kernel_type, _dynamic_kernel_list_to_json, \
     _dynamic_regbase_kernel_list_to_json, _static_regbase_kernel_list_to_json, _gen_mix_sub_json, \
@@ -59,695 +58,15 @@ from .ascendc_compile_base import compile_multi_tilingkey, link_relocatable, fat
     SingleTilingKeyCompileParams, get_actual_kernel_type, compile_pre_process, link_relocatable_meta_file
 from .super_kernel_sub_op_compile import gen_sub_kernel_name, split_sub_kernel_objs, \
     gen_sub_super_kernel_compile_options, add_sub_super_kernel_info
-from .super_kernel_utility import check_exist_instrinsic_when_super_kernel
 from .super_kernel_constants import SuperKernelStreamFusionMode
 from .super_kernel_option_parse import parse_super_kernel_options
+from .kernel_info_infer import KernelInfoInfer
+from .ascendc_compile_utils import check_custom_dcci_end_false, check_if_gen_placehoder
 
 DEFAULT_TILING_KEY = '0'
 COMPILE_INFO_KEY = 'compileInfo'
 GEN_PLACE_HOLDER_STR = 'gen_placeholder'
 TILING_KEY_SEARCH_KEYWORD = 'Contents of section'            # used in new tiling to search tiling section lines
-
-
-class KernelInfoInfer:
-    """
-    This class is used for get tiling key list and some kernel info
-    i.g. code channel, kernel type for v200 and v220
-    """
-    @staticmethod
-    def get_hard_sync_instr_from_i_file(content):
-        """
-        find whether used SyncAll instr in kernel func
-        if so, return true
-        otherwise, return false
-        """
-        pattern = re.compile(r"SyncAll\s*<\w+>\s*\(\s*\)\s*;")
-        result = pattern.findall(content)
-        if len(result) != 0:
-            return True
-        pattern = r'SyncAll\s*\(\s*\)\s*\;'
-        match = re.findall(pattern, content)
-        if len(match) > 2:
-            return True
-        return False
-
-    @staticmethod
-    def get_sync_task_start_end_instr_from_i_file(content):
-        """
-        find whether used SetNextTaskStart WaitPreTaskEnd instr in kernel func
-        if so, return true
-        otherwise, return false
-        """
-        set_pattern = r'SetNextTaskStart\s*\(\s*\)\s*\;'
-        wait_pattern = r'WaitPreTaskEnd\s*\(\s*\)\s*\;'
-        set_match = re.findall(set_pattern, content)
-        wait_match = re.findall(wait_pattern, content)
-        return len(set_match) > 2, len(wait_match) > 2
-
-    @staticmethod
-    def get_enable_deterministic_var_from_i_file(content):
-        """
-        find whether enable_deterministic in kernel func
-        if so, return true
-        otherwise, return false
-        """
-        pattern = r"__enable_feature_for_compile_deterministic\s*=\s*(-?\d+)\s*;"
-        match = re.search(pattern, content)
-        if match and match.group(1) == "1":
-            return True
-        return False
-
-    @staticmethod
-    def find_kernel_type(s):
-        match = re.search(r"__enable_feature_for_compile_default\s*=\s*([0-9a-zA-Z_]{1,})\s*;", s)
-        if match:
-            return None, match.group(1)
-        else:
-            match = re.search(r"__enable_feature_for_compile_(-?\d+)([a-zA-Z]*)\s*=\s*([0-9a-zA-Z_]{1,})\s*;", s)
-            if match:
-                return match.group(1), match.group(3)
-            return None, None
-
-    @staticmethod
-    def find_tilingkey(s):
-        if re.search(r"g_tilingKey == \(", s):
-            matches = re.findall(r"g_tilingKey == \((-?\d+)", s)
-            if matches:
-                if "TILING_KEY_LIST" in s:
-                    return matches, True
-                else:
-                    return matches, False
-            else:
-                matches = re.findall(r"g_tilingKey == \((.*?)\)", s)
-                if matches:
-                    CommonUtility.print_compile_log("", f"Var: {matches[0]} in TILING_KEY_IS({matches[0]}) can not be \
-processed as numeric variables in the precompilation phase. please use numeric constants, macros.", \
-AscendCLogLevel.LOG_ERROR)
-                return None, False
-        return None, False
-
-    @staticmethod
-    def find_tiling_struct_and_expression(s):
-        # find tiling keywords used in REGISTER_TILING_DEFAULT and REGISTER_TILING_FOR_TILINGKEY from input string
-        # If find __enable_custom_tiling, return its tiling struct and expression
-        if "__enable_custom_tiling" not in s:
-            return None, None
-        match = re.search(r"__enable_custom_tiling\s*([0-9a-zA-Z_:<>]{1,})\s*=\s*default;", s)
-        if match:
-            return match.group(1), None
-        else:
-            match = re.search(r"__enable_custom_tiling\s*([0-9a-zA-Z_:<>]{1,})\s*=\s*\"(.*)\";", s)
-            if match:
-                return match.group(1), match.group(2)
-            else:
-                raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE,
-                    ("tiling struct match expression is wrong. lines: " + s))
-                return None, None
-
-    @staticmethod
-    def find_tiling_struct_no_register_flag(s: str) -> bool:
-        return "__enable_no_register_custom_tiling" in s
-
-    @staticmethod
-    def get_dump_info_from_i_file(content):
-        dump_info = {"dump_type": "", "dump_size": 1048576}
-        actual_dump_size = 1048576
-        if CommonUtility.is_c310() or CommonUtility.is_310r6():
-            actual_dump_size *= 108
-        else:
-            actual_dump_size *= 75
-
-        match_printf = re.search(r"__enable_feature_for_compile_printf = 1", content)
-        match_assert = re.search(r"__enable_feature_for_compile_assert = 1;", content)
-        # recognizes whether this is simt_vf, and enable once exists simt_vf + printf
-        match_simtvf = bool(re.search(r"cce_simt_entry", content) and match_printf)
-        global_var_storage.set_variable("ascendc_recognize_simtvf", match_simtvf)
-        if match_printf and match_assert:
-            dump_info["dump_type"] = "printf,assert"
-        elif match_printf:
-            dump_info["dump_type"] = "printf"
-        elif match_assert:
-            dump_info["dump_type"] = "assert"
-
-        if global_var_storage.get_variable("ascendc_time_stamp_compile_options"):
-            if dump_info["dump_type"] != "":
-                dump_info["dump_type"] = dump_info["dump_type"] + ",timestamp"
-            else:
-                dump_info["dump_type"] = "timestamp"
-        else:
-            match = re.search(r"__enable_feature_for_compile_printfBufSize = \s*([0-9]{1,})", content)
-            if match:
-                dump_info["dump_size"] = int(match.group(1))
-            else:
-                match = re.search(r"__enable_feature_for_compile_assertBufSize = \s*([0-9]{1,})", content)
-                if match:
-                    dump_info["dump_size"] = int(match.group(1))
-
-        if CommonUtility.is_c310() or CommonUtility.is_310r6():
-            actual_dump_size = 108 * dump_info["dump_size"]
-        else:
-            actual_dump_size = 75 * dump_info["dump_size"]
-        simt_in_c310 = match_simtvf and (CommonUtility.is_c310() or CommonUtility.is_310r6())
-        if dump_info["dump_type"] != "" and simt_in_c310:
-            actual_dump_size = 1048576 * 108 + 72 * 2048 * 2048 # david 72 vec + 36 cube + simt
-            dump_info["dump_size"] = 1048576 # reserved for ONE_CORE_DUMP_SIZE
-
-        global_var_storage.set_variable("ascendc_required_dump_workspace_size", actual_dump_size)
-
-        return dump_info
-
-    @staticmethod
-    def get_kernel_type_enum(kernel_type, compile_log_path):
-        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
-            if kernel_type in STR_TO_KERNEL_TYPE_V220.keys():
-                return STR_TO_KERNEL_TYPE_V220[kernel_type]
-            else:
-                if kernel_type not in STR_TO_KERNEL_TYPE_V200.keys():
-                    CommonUtility.print_compile_log("", \
-                        "current kernel type: {} is not support in current core version".\
-                        format(kernel_type), AscendCLogLevel.LOG_WARNING)
-                return None
-        elif CommonUtility.is_v200():
-            if kernel_type in STR_TO_KERNEL_TYPE_V200.keys():
-                return STR_TO_KERNEL_TYPE_V200[kernel_type]
-            else:
-                if kernel_type not in STR_TO_KERNEL_TYPE_V220.keys():
-                    CommonUtility.print_compile_log("", \
-                        "current kernel type: {} is not support in current core version".\
-                        format(kernel_type), AscendCLogLevel.LOG_WARNING)
-                return None
-        else:
-            raise Exception("current kernel type: {} is not support in current core version".format(kernel_type))
-        return None
-
-    @staticmethod
-    def gen_tiling_struct_macro_src_file(tiling_key_list, tiling_struct_expr_map, src_file):
-        file_contents = ""
-        for key, value in tiling_struct_expr_map.items():
-            for expression in value:
-                for tiling_key in tiling_key_list:
-                    new_expression = expression.replace(TILING_KEY_MACRO, TILING_KEY_MACRO + "_" + tiling_key)
-                    file_contents += f"#if defined({TILING_KEY_MACRO}_{tiling_key}) && {new_expression}\n"
-                    file_contents += f"    auto __ascendc_custom_tiling_struct = ({tiling_key}, {key});\n"
-                    file_contents += "#endif\n"
-        try:
-            with open(src_file, 'w') as f:
-                f.writelines(file_contents)
-        except Exception as err:
-            raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, \
-                                ("write tiling struct tmp file failed, reason is :", err))
-
-    @staticmethod
-    def get_tiling_key_corresponding_struct(tiling_key_list, default_tiling_struct, \
-        src_tiling_file, dst_tiling_file, compile_log_path):
-        tiling_key_struct_map = {}
-        tiling_compile_cmd = [global_var_storage.get_variable("ascendc_compiler_path"), \
-                              "-c", '-O3', '-std=c++17', '-E', src_tiling_file, '-o', dst_tiling_file]
-        for tiling_key in tiling_key_list:
-            tiling_compile_cmd.append(f"-D{TILING_KEY_MACRO}_{tiling_key}={tiling_key}UL")
-        CommonUtility.run_cmd_inner(tiling_compile_cmd, CompileStage.PRECOMPILE, compile_log_path)
-        match_tiling_struct = ""
-        try:
-            with open(dst_tiling_file, 'r') as f:
-                lines = f.readlines()
-                for line in lines:
-                    if line.startswith("#"):
-                        continue
-                    match = \
-re.search(r"auto __ascendc_custom_tiling_struct\s*=\s*\((-?\d+),\s([0-9a-zA-Z_:]{1,})\);", line)
-                    if match:
-                        if match.group(1) in tiling_key_struct_map and \
-                            tiling_key_struct_map[match.group(1)] != match.group(2):
-                            raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, \
-                                                 (f"tiling key {match.group(1)} should have 1 unique corresponding tiling struct, but \
-found following structs::{tiling_key_struct_map[match.group(1)]}, {match.group(2)}"))
-                        else:
-                            tiling_key_struct_map[match.group(1)] = match.group(2)
-        except Exception as err:
-            raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, \
-                ("read tiling struct dump file failed, reason is :", err))
-        for tiling_key in tiling_key_list:
-            if tiling_key not in tiling_key_struct_map:
-                tiling_key_struct_map[tiling_key] = default_tiling_struct
-        return tiling_key_struct_map
-
-    @staticmethod
-    def check_func_name_exist(pattern: str, text: str):
-        match = re.search(r"\b{}\b\s*\(".format(pattern), text)
-        if match:
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def dfx_for_func_name(cce_file: str, origin_func_name: str, func_name_exist: bool):
-        if not func_name_exist:
-            cce_file = cce_file.split("/")[-1]
-            CommonUtility.print_compile_log("", f"kernel entry `{origin_func_name}' not implement in `{cce_file}', \
-please check whether the function name is correct in the kernel file.",
-                AscendCLogLevel.LOG_ERROR)
-            raise Exception("An error occurred during stage of infer compile info")
-
-    @staticmethod
-    def search_any_in_line(line, keywords):
-        pattern = re.compile(r'\b(' + '|'.join(re.escape(keyword) for keyword in keywords) + r')\b')
-        matches = pattern.findall(line)
-        return matches
-
-    @staticmethod
-    def get_kernel_meta_type(value):
-        for member in KernelMetaType:
-            if member.value == value:
-                return member
-        return None
-
-    @staticmethod
-    def _gen_tiling_key_struct_map(default_tiling_struct, declare_param_str, select_param_str, decode_tiling_result, \
-                                   dst_i_file, tiling_key_list, tiling_struct_expr_map, compile_log_path, \
-                                   tiling_key_group_map):
-        tiling_key_struct_map = {}
-        if default_tiling_struct != "":
-            if declare_param_str and select_param_str:
-                for tiling_key, information in decode_tiling_result.items():
-                    tiling_key_struct_map[str(tiling_key)] = information.get('tilingStruct', default_tiling_struct)
-            else:
-                src_tiling_file = dst_i_file[:-2] + "_tiling_key_tiling_struct.cpp"
-                dis_tiling_i_file = dst_i_file[:-2] + "_tiling_key_tiling_struct" + dst_i_file[-2:]
-                entire_tiling_key_list = tiling_key_list.copy()
-                if tiling_key_group_map is not None:
-                    for tiling_key_slaves in tiling_key_group_map.values():
-                        entire_tiling_key_list.extend(tiling_key_slaves)
-                KernelInfoInfer.gen_tiling_struct_macro_src_file(entire_tiling_key_list, \
-                                                                tiling_struct_expr_map, src_tiling_file)
-                tiling_key_struct_map = KernelInfoInfer.get_tiling_key_corresponding_struct(entire_tiling_key_list, \
-                    default_tiling_struct, src_tiling_file, dis_tiling_i_file, compile_log_path)
-        else:
-            if len(tiling_struct_expr_map) != 0:
-                raise Exception(f'if use user-defined tiling structure, must provide default tiling struct, use macro \
-REGISTER_TILING_DEFAULT')
-            for _, information in decode_tiling_result.items():
-                if 'tilingStruct' in information:
-                    raise Exception(f'if use user-defined tiling structure, must provide default tiling struct,\
- use macro REGISTER_TILING_DEFAULT')
-        return tiling_key_struct_map
-
-    @staticmethod
-    def infer_info_from_ifile(
-        op_info: OpInfo,
-        dst_i_file: str,
-        compile_log_path,
-        cce_file: str,
-        origin_func_name: str,
-    ):
-        tiling_key_list = []
-        tiling_key_group_map = {}
-        declare_param_str = ""
-        select_param_str = ""
-        decode_tiling_result = {}
-        code_channel: int = -1
-        no_kfc_server_flag = False
-        find_kfc_server = False
-        default_tiling_struct = ""
-        tiling_struct_expr_map = {}
-        if not (CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6()):
-            code_channel = CORE_TYPE_MIX
-        if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
-            check_exist_instrinsic_when_super_kernel(dst_i_file)
-        try:
-            with open(dst_i_file, 'r') as fd:
-                content = fd.read()
-                fd.close()
-        except Exception as err:
-            raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("read dst_i_file failed, reason is:", err))
-        hard_sync = KernelInfoInfer.get_hard_sync_instr_from_i_file(content)
-        global_var_storage.set_variable("ascendc_op_with_syncall", hard_sync)
-        if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
-            set_task_bar, wait_task_bar = KernelInfoInfer.get_sync_task_start_end_instr_from_i_file(content)
-        else:
-            set_task_bar = False
-            wait_task_bar = False
-        enable_deterministic = KernelInfoInfer.get_enable_deterministic_var_from_i_file(content)
-        tiling_key_kernel_type = {}
-        tiling_key_deterministic = {}
-        default_kernel_type = KernelMetaType.KERNEL_TYPE_MAX
-        dump_info = KernelInfoInfer.get_dump_info_from_i_file(content)
-        func_name_exist = False
-
-        need_find_kernel_type = (not CommonUtility.is_m510())
-        tiling_no_register_flag = False
-        try:
-            with open(dst_i_file, 'r') as fd:
-                lines = fd.readlines()
-                fd.close()
-        except Exception as err:
-            raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("read dst_i_file failed, reason is:", err))
-        keywords = ['ccec_compiler', 'tikcpp/tikcfw', 'gnu/bits', 'include/c++', \
-            'include/kernel_tiling/kernel_tiling.h']
-        is_op_block: bool = True
-        for line in lines:
-            if line.startswith("#"):
-                found_built_in = KernelInfoInfer.search_any_in_line(line, keywords)
-                is_op_block = not found_built_in
-                continue
-            if not is_op_block:
-                continue
-            func_name_exist = (func_name_exist or \
-                KernelInfoInfer.check_func_name_exist(origin_func_name, line))
-            if declare_param_str == "" and '@@ASCENDC_TPL_ARGS_DECL' in line:
-                declare_param_str = line
-            if select_param_str == "" and '@@ASCENDC_TPL_LISTS' in line:
-                select_param_str = line
-            if (not find_kfc_server) and 'AscendC::KfcServer' in line:
-                code_channel = CORE_TYPE_MIX
-                find_kfc_server = True
-            # process register tiling strcut and expression
-            tiling_struct, tiling_expression = KernelInfoInfer.find_tiling_struct_and_expression(line)
-            if tiling_struct is not None:
-                if tiling_expression is None:
-                    if default_tiling_struct != "" and default_tiling_struct != tiling_struct:
-                        raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE,
-                            ("Only one default tiling structure can be configured."))
-                    else:
-                        default_tiling_struct = tiling_struct
-                else:
-                    if tiling_struct in tiling_struct_expr_map:
-                        tiling_struct_expr_map[tiling_struct].add("(" + tiling_expression + ")")
-                    else:
-                        tiling_struct_expr_map[tiling_struct] = set([str("(" + tiling_expression + ")")])
-            tiling_key, kernel_type = KernelInfoInfer.find_kernel_type(line)
-            if need_find_kernel_type:
-                if tiling_key is None and kernel_type is not None:
-                    cur_kernel_type = KernelInfoInfer.get_kernel_type_enum(kernel_type, compile_log_path)
-                    if cur_kernel_type is not None:
-                        default_kernel_type = cur_kernel_type
-                if tiling_key is not None and kernel_type is not None:
-                    cur_kernel_type = KernelInfoInfer.get_kernel_type_enum(kernel_type, compile_log_path)
-                    if cur_kernel_type is not None:
-                        tiling_key_kernel_type[str(int(tiling_key))] = cur_kernel_type
-            tiling_no_register_flag |= KernelInfoInfer.find_tiling_struct_no_register_flag(line)
-            default_kernel_type_for_group = default_kernel_type
-            numbers, is_tiling_key_list = KernelInfoInfer.find_tilingkey(line)
-            if numbers is None:
-                continue
-            if not is_tiling_key_list:
-                for number in numbers:
-                    if str(int(number)) not in tiling_key_list:
-                        tiling_key_list.append(str(int(number)))
-            else:
-                if str(int(numbers[0])) not in tiling_key_list:
-                    if len(numbers) != 2:
-                        raise Exception(f"number of tiling key is len{numbers}, just support two \
-                            tilingkeys")
-                    for number_slave in numbers[1:]:
-                        if str(int(number_slave)) in tiling_key_list:
-                            raise Exception(f"tiling_key {number_slave} is exists in tiling_key_list.")
-                    tiling_key_list.append(str(int(numbers[0])))
-                    tiling_key_group_map[str(int(numbers[0]))] = numbers[1:]
-                    for tiling_key_in_group in numbers:
-                        if tiling_key_in_group not in tiling_key_kernel_type.keys():
-                            tiling_key_kernel_type[tiling_key_in_group] = default_kernel_type_for_group
-
-        auto_adaption_mix_flag = False
-        if declare_param_str and select_param_str:
-            # TPL
-            extract_template_tiling_info(declare_param_str, select_param_str)
-            decode_tiling_result = decode_tiling()
-            tiling_key_list = [str(k) for k in decode_tiling_result.keys()]
-            tiling_key_list, decode_tiling_result = _tpl_tilingkey_kernel_type_check(
-                tiling_key_list, decode_tiling_result, tiling_key_kernel_type
-            )
-            tiling_key_list, decode_tiling_result = _tpl_tilingkey_deterministic_check(
-                tiling_key_list,
-                decode_tiling_result,
-                tiling_key_deterministic,
-            )
-            tiling_key_list, decode_tiling_result = _tpl_tilingkey_native_check(
-                tiling_key_list, decode_tiling_result, op_info
-            )
-
-            group_to_key = {}
-            group_id_to_all_keys = {}
-            for key, value in decode_tiling_result.items():
-                group_id = value.get("groupId", "")
-                if group_id != "":
-                    if group_id not in group_to_key:
-                        group_to_key[group_id] = key
-                    if group_id not in group_id_to_all_keys:
-                        group_id_to_all_keys[group_id] = []
-                    group_id_to_all_keys[group_id].append(key)
-
-            tiling_key_list_tmp = list(group_to_key.values())
-            tiling_key_list_tmp = [str(key) for key in tiling_key_list_tmp]
-
-            key_to_same_group_keys = {}
-            for key in tiling_key_list_tmp:
-                if int(key) in decode_tiling_result.keys():
-                    group_id = decode_tiling_result[int(key)].get('groupId')
-                    same_group = group_id_to_all_keys.get(group_id, [])
-                    others = [str(k) for k in same_group if str(k) != str(key)]
-                    if len(others) > 0:
-                        key_to_same_group_keys[key] = others
-            tiling_key_group_map = key_to_same_group_keys
-            if len(tiling_key_list_tmp) > 0:
-                tiling_key_list = tiling_key_list_tmp
-
-            for _, v in decode_tiling_result.items():
-                auto_adaption_mix_flag = "groupId" in v
-
-        KernelInfoInfer.dfx_for_func_name(cce_file, origin_func_name, func_name_exist)
-
-        if tiling_no_register_flag:
-            CommonUtility.dump_log("Found Using REGISTER_NONE_TILING", compile_log_path)
-            global_var_storage.set_variable("ascendc_tiling_no_register", True)
-
-        if len(tiling_key_list) == 0:
-            tiling_key_list = [DEFAULT_TILING_KEY]
-        if not find_kfc_server:
-            no_kfc_server_flag = True
-
-        no_set_kernel_type = False
-        if default_kernel_type == KernelMetaType.KERNEL_TYPE_MAX and not tiling_key_kernel_type:
-            # TPL ORIGIN
-            if get_current_build_config(enable_vector_core):
-                CommonUtility.dump_log("Information Library Configuration Takes Effect", compile_log_path)
-                for tiling_key in tiling_key_list:
-                    tiling_key_kernel_type[tiling_key] = KernelMetaType.KERNEL_TYPE_MIX_VECTOR_CORE
-            else:
-                no_set_kernel_type = True
-        else:
-            tiling_key_length_is_valid = len(tiling_key_kernel_type) > 0 and \
-                len(tiling_key_kernel_type) != len(tiling_key_list)
-            if tiling_key_length_is_valid \
-                and default_kernel_type == KernelMetaType.KERNEL_TYPE_MAX and not auto_adaption_mix_flag:
-                raise Exception(f'must provide default kernel type')
-            for tiling_key in tiling_key_list:
-                if tiling_key not in tiling_key_kernel_type:
-                    tiling_key_kernel_type[tiling_key] = default_kernel_type
-            if get_current_build_config(enable_vector_core):
-                CommonUtility.dump_log(\
-                    "Information Library Configuration Does Not Take Effect After the Macro Is Enabled", \
-                    compile_log_path, "[WARNING] : ")
-        if not global_var_storage.get_variable("ascendc_compile_debug_config"):
-            CommonUtility.remove_temp_file(dst_i_file)
-
-        tiling_key_struct_map = KernelInfoInfer._gen_tiling_key_struct_map(default_tiling_struct, declare_param_str, \
-                                                                           select_param_str, decode_tiling_result, \
-                                                                           dst_i_file, tiling_key_list, \
-                                                                           tiling_struct_expr_map, compile_log_path, \
-                                                                           tiling_key_group_map)
-
-        return InferChannelParamsFromIFile(tiling_key_list, code_channel, hard_sync, no_kfc_server_flag, \
-                                           enable_deterministic, tiling_key_kernel_type, no_set_kernel_type, \
-                                           default_kernel_type, dump_info, decode_tiling_result,
-                                           default_tiling_struct, tiling_struct_expr_map, tiling_key_struct_map, \
-                                           set_task_bar, wait_task_bar, tiling_key_deterministic, tiling_key_group_map)
-
-    @staticmethod
-    def get_tiling_key_list_and_simple_infer_code_channel(op_info: OpInfo, cce_file: str, dst_i_file: str, \
-        compile_option_tuple: CompileOptionTuple, compile_log_path, origin_func_name):
-        """
-        get tiling key list and simple infer code channel
-        :param cce_file:
-        :return:InferedInfo
-        """
-        compile_option_tuple_pre = copy.deepcopy(compile_option_tuple)
-        compile_option_tuple_pre.compile_options = compile_option_tuple_pre.compile_options\
-            + ['-E'] + ['-D__CHECK_FEATURE_AT_PRECOMPILE'] + ['-includestdio.h']
-        compile_option_tuple_pre.compile_options = compile_option_tuple_pre.compile_options + ['-DASCENDC_TPL_PRE']
-        chip_version = CommonUtility.get_chip_version()
-        # generate .i file
-        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
-            arch = f"dav-{chip_version}-cube"
-            dis_i_file_cube = dst_i_file[:-2] + "_cube" + dst_i_file[-2:]
-            pre_compile_cmd = gen_compile_cmd_v220(cce_file, dis_i_file_cube, \
-                                    compile_option_tuple_pre, arch, '', False)
-            CommonUtility.run_cmd_inner(pre_compile_cmd, CompileStage.PRECOMPILE, compile_log_path)
-            arch = f"dav-{chip_version}-vec"
-            dis_i_file_vec = dst_i_file[:-2] + "_vec" + dst_i_file[-2:]
-            pre_compile_cmd = gen_compile_cmd_v220(cce_file, dis_i_file_vec, \
-                                    compile_option_tuple_pre, arch, '', False)
-            CommonUtility.run_cmd_inner(pre_compile_cmd, CompileStage.PRECOMPILE, compile_log_path)
-            with open(dis_i_file_cube, 'r') as f_cube, open(dis_i_file_vec, 'r') as f_vec:
-                cube_content = f_cube.read()
-                vec_content = f_vec.read()
-            # merge sub core .i file in dst_i_file
-            with open(dst_i_file, 'w') as f:
-                f.write(cube_content + vec_content)
-            # chmod sub core .i file permission
-            os.chmod(dis_i_file_cube, stat.S_IRUSR + stat.S_IWUSR)
-            os.chmod(dis_i_file_vec, stat.S_IRUSR + stat.S_IWUSR)
-        elif CommonUtility.is_m510():
-            pre_compile_cmd = gen_compile_cmd_v220(cce_file, dst_i_file, compile_option_tuple_pre, None, '', False)
-            CommonUtility.run_cmd_inner(pre_compile_cmd, CompileStage.PRECOMPILE, compile_log_path)
-        else:
-            pre_compile_cmd = _gen_compile_cmd(cce_file, dst_i_file, compile_option_tuple_pre, '', False)
-            CommonUtility.run_cmd_inner(pre_compile_cmd, CompileStage.PRECOMPILE, compile_log_path)
-        if not os.path.exists(dst_i_file):
-            raise Exception(f"Geneate file {dst_i_file} failed, probably due to error in compile")
-        os.chmod(dst_i_file, stat.S_IRUSR + stat.S_IWUSR)
-        # get tiling key list and simpel infer code channel
-        return KernelInfoInfer.infer_info_from_ifile(op_info, dst_i_file, compile_log_path, cce_file, origin_func_name)
-
-
-def _tpl_tilingkey_kernel_type_check(
-    tiling_key_list, decode_tiling_result, tiling_key_kernel_type
-):
-    tpl_set_kernel_type_cnt = 0
-    for k in decode_tiling_result.keys():
-        internal_dict = decode_tiling_result[k]
-        if "kernelType" in internal_dict:
-            tpl_set_kernel_type_cnt += 1
-            tpl_kernel_type = KernelInfoInfer.get_kernel_meta_type(
-                internal_dict["kernelType"]
-            )
-            if tpl_kernel_type is not None:
-                tiling_key_kernel_type[str(k)] = tpl_kernel_type
-            else:
-                CommonUtility.print_compile_log(
-                    "",
-                    "get_kernel_meta_type return tpl_kernel_type is None, kernel_type value is {}".format(
-                        internal_dict["kernelType"]
-                    ),
-                    AscendCLogLevel.LOG_ERROR,
-                )
-    if tpl_set_kernel_type_cnt != 0 and tpl_set_kernel_type_cnt != len(tiling_key_list):
-        CommonUtility.print_compile_log(
-            "",
-            "All ASCENDC_TPL_ARGS_SEL must set ASCENDC_TPL_KERNEL_TYPE_SEL simultaneously!",
-            AscendCLogLevel.LOG_ERROR,
-        )
-
-    return tiling_key_list, decode_tiling_result
-
-
-def _tpl_tilingkey_deterministic_check(
-    tiling_key_list,
-    decode_tiling_result,
-    tiling_key_deterministic
-):
-    expect_tilingkey_set = set()
-    cur_deterministic_flag = get_current_build_config("enable_deterministic_mode") == 1
-    for k, v in decode_tiling_result.items():
-        if "deterministic" in v:
-            tiling_key_deterministic[str(k)] = v["deterministic"]
-            deterministic_flag = True if v["deterministic"].lower() == "true" else False
-            if deterministic_flag == cur_deterministic_flag:
-                expect_tilingkey_set.add(str(k))
-    if len(expect_tilingkey_set) > 0 and len(decode_tiling_result) > 0:
-        tiling_key_list = [x for x in tiling_key_list if x in expect_tilingkey_set]
-        decode_tiling_result = {
-            k: v
-            for k, v in decode_tiling_result.items()
-            if str(k) in expect_tilingkey_set
-        }
-    return tiling_key_list, decode_tiling_result
-
-
-def _tpl_tilingkey_native_check(tiling_key_list, decode_tiling_result, op_info):
-    decl_dtype_indexes, decl_dtype_select_indexes = extract_decl_param_options(
-        op_info, "dtype"
-    )
-    decl_format_indexes, decl_format_select_indexes = extract_decl_param_options(
-        op_info, "format"
-    )
-    post_filter_tilingkey_list = []
-    for x in tiling_key_list:
-        if _check_sel_match_by_verifyParams(
-            x,
-            decode_tiling_result,
-            decl_dtype_indexes,
-            verifyParams="dtypeParams",
-            verify_indexes=decl_dtype_select_indexes,
-        ) and _check_sel_match_by_verifyParams(
-            x,
-            decode_tiling_result,
-            decl_format_indexes,
-            verifyParams="formatParams",
-            verify_indexes=decl_format_select_indexes,
-        ):
-            post_filter_tilingkey_list.append(x)
-    tiling_key_list = post_filter_tilingkey_list
-    decode_tiling_result = {
-        k: v for k, v in decode_tiling_result.items() if str(k) in tiling_key_list
-    }
-    return tiling_key_list, decode_tiling_result
-
-
-def _check_sel_match_by_verifyParams(
-    tiling_key: str,
-    decode_tiling_map: dict,
-    value_list: List[str] = None,
-    verifyParams: str = "dtypeParams",
-    verify_indexes: List[bool] = None,
-) -> bool:
-    if value_list is None:
-        return True
-    if (
-        int(tiling_key) not in decode_tiling_map
-        or verifyParams not in decode_tiling_map[int(tiling_key)]
-        or not decode_tiling_map[int(tiling_key)][verifyParams]
-    ):
-        return True
-    target_params = value_list
-    verify_params = decode_tiling_map[int(tiling_key)][verifyParams]
-    if verify_indexes is not None:
-        verify_params = [
-            verify_params[i] for i, x in enumerate(verify_indexes) if x == True
-        ]
-    if "unknown" in verify_params:
-        CommonUtility.print_compile_log(
-            "",
-            f"Tiling key: '{tiling_key}' {verifyParams} exist 'unknown' Params, please check it. {verify_params}",
-            AscendCLogLevel.LOG_ERROR,
-        )
-    if len(target_params) != len(verify_params):
-        CommonUtility.print_compile_log(
-            "",
-            f"Tiling key: '{tiling_key}' {verifyParams} length do not match, "
-            f"expect is {len(target_params)}, but is {len(verify_params)}",
-            AscendCLogLevel.LOG_ERROR,
-        )
-    return target_params == verify_params
-
-
-def _check_if_gen_placehoder(op_info: OpInfo, is_input: bool) -> bool:
-    context = get_context()
-    input_output_info = op_info.inputs if is_input is True else op_info.outputs
-    if is_input:
-        option_mode = context.get_addition("optional_input_mode")
-    else:
-        option_mode = context.get_addition("optional_output_mode")
-    if option_mode != GEN_PLACE_HOLDER_STR:
-        return False
-    if len(input_output_info) == 0:
-        return False
-    for param in input_output_info:
-        if param is None:
-            err_msg = f"[ERROR] : context is {GEN_PLACE_HOLDER_STR}, but have null input, " \
-                            f"params are not full, inputs is: {input_output_info}"
-            CommonUtility.print_compile_log(op_info.kernel_name, err_msg, AscendCLogLevel.LOG_ERROR)
-            raise Exception(err_msg)
-    return True
 
 
 def _infer_name(key, sub_operater_infos, chip_version):
@@ -804,6 +123,10 @@ def _json_except_info(compile_info: CompileInfo):
             sub_operater_infos['sub_operator_early_start_set_flag']
             sub_dfx_info["sub_operator_early_start_wait_flag"] = \
                 sub_operater_infos['sub_operator_early_start_wait_flag']
+            sub_dfx_info["sub_operator_call_dcci_before_kernel_start"] = \
+                sub_operater_infos.get('sub_operator_call_dcci_before_kernel_start', False)
+            sub_dfx_info["sub_operator_call_dcci_after_kernel_end"] = \
+                sub_operater_infos.get('sub_operator_call_dcci_after_kernel_end', False)
             sub_dfx_info["streamid"] = sub_op.get('stream_id')
             sub_dfx_info["send_event_list"] = compile_info.super_kernel_info["send_event_list"][i]
             sub_dfx_info["recv_event_list"] = compile_info.super_kernel_info["recv_event_list"][i]
@@ -892,7 +215,7 @@ def _json_post_process(compile_info: CompileInfo, op_info: OpInfo, tiling_info: 
         js["runInfo"] = tiling_info.raw_run_info
 
     # gen sub operator infos for super kernel feature
-    js = add_sub_super_kernel_info(js, tiling_info.static_shape_flag, compile_info)
+    js = add_sub_super_kernel_info(js, tiling_info.static_shape_flag, compile_info)        
 
     if compile_info.super_kernel_info.get("timestamp_option") is not None and \
         compile_info.super_kernel_info.get("timestamp_option"):
@@ -1121,23 +444,6 @@ def _gen_set_mc2_ctx_param(opinfo: OpInfo):
     return source
 
 
-def _check_custom_dcci_end_false(compile_option_tuple):
-    has_dcci_end_false: bool = False
-    for option_list in [compile_option_tuple.mllvm_options, compile_option_tuple.compile_options]:
-        del_ids = []
-        for opt_id, option in enumerate(option_list):
-            if not option.startswith('-cce-aicore-dcci-before-kernel-end=false'):
-                continue
-            has_dcci_end_false = True
-            if opt_id != 0 and option_list[opt_id - 1] == '-mllvm':
-                del_ids.append(opt_id - 1)
-            del_ids.append(opt_id)
-        for i in reversed(del_ids):
-            del option_list[i]
-    if has_dcci_end_false:
-        compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
-
-
 def gen_meta_info_section(compile_info, op_info):
 
     meta_info = {}
@@ -1177,8 +483,8 @@ def gen_meta_info_section(compile_info, op_info):
     section_var += f" {{{{B_TYPE_DYNAMIC_PARAM, 2}}, {dynamic_param}}};\n"
 
     #optinalparam
-    optional_input_mode = 1 if _check_if_gen_placehoder(op_info, True) else 0
-    optional_output_mode = 1 if _check_if_gen_placehoder(op_info, False) else 0
+    optional_input_mode = 1 if check_if_gen_placehoder(op_info, True) else 0
+    optional_output_mode = 1 if check_if_gen_placehoder(op_info, False) else 0
     section_var += \
         f"static const struct BinaryMetaOptionalParam "
     section_var += f"{kernel_name}_kernel_metainfo_optionalparam_section __attribute__ "
@@ -1223,8 +529,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     source += "#endif\n\n"
 
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
-        for tiling_key in compile_info.tiling_key_list:
-            source += f"extern __gm__ uint64_t g_custom_tiling_size_meta_{tiling_key};\n"
+        source += gen_tiling_struct_size_for_group_key_no_size(compile_info)
 
     # add template_param
     source += gen_template_tiling_params(compile_info)
@@ -1372,7 +677,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
 
     if not global_var_storage.get_variable("ascendc_enable_super_kernel") and \
                     (CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510()):
-        _check_custom_dcci_end_false(compile_option_tuple)
+        check_custom_dcci_end_false(compile_option_tuple)
 
     source += "}\n\n"
     source += kernel_func_dec
@@ -1423,8 +728,11 @@ def gen_kernel_fun_with_tiling_key_slave(compile_info: CompileInfo, tiling_key: 
                             tiling_key_slave)
                         kernel_func_dec = f"extern \"C\" {gen_func_attributes} [aicore] void {kernel_name_of_tk}("
                         source += kernel_func_dec
-                        source += source_declare
-                        source += f"    {source_declare_pub_fun};\n"
+                        if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
+                            source += "uint64_t args_offset) {\n"
+                        else:
+                            source += source_declare
+                        source += f"    {source_declare_pub_fun}\n"
                         source += "}\n"
                         source += "#endif\n"
                         source += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({vec_core_type})\n"
@@ -1433,8 +741,11 @@ def gen_kernel_fun_with_tiling_key_slave(compile_info: CompileInfo, tiling_key: 
                         kernel_name_of_tk = kernel_name_of_tk[:-1] + "v"
                         kernel_func_dec = f"extern \"C\" {gen_func_attributes} [aicore] void {kernel_name_of_tk}("
                         source += kernel_func_dec
-                        source += source_declare
-                        source += f"    {source_declare_pub_fun};\n"
+                        if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
+                            source += "uint64_t args_offset) {\n"
+                        else:
+                            source += source_declare
+                        source += f"    {source_declare_pub_fun}\n"
                         source += "}\n"
                         source += "#endif\n"
                     else:
@@ -1445,102 +756,27 @@ def gen_kernel_fun_with_tiling_key_slave(compile_info: CompileInfo, tiling_key: 
 def gen_tiling_struct_size_and_dfx_section_file(compile_info: CompileInfo, tiling_info: TilingInfo, \
     tiling_key_struct_size_map: dict):
     out_file = compile_info.tiling_and_dfx_utils_file
-    source = f"#undef __global__\n"
-    source += f"#define __global__ inline\n"
-    source += "#include \"kernel_utils.h\"\n"
-    source += "#undef __global__\n"
-    source += "#if ASCENDC_CPU_DEBUG\n"
-    source += "#define __global__\n"
-    source += "#else\n"
-    source += "#define __global__ __attribute__((cce_kernel))\n"
-    source += "#endif\n\n"
-    for tiling_key in compile_info.tiling_key_list:
-        tiling_struct_info = tiling_key_struct_size_map.get(str(tiling_key), None)
-        if tiling_struct_info is not None:
-            _, tiling_struct_size = tiling_struct_info
-            source += f"__gm__ uint64_t g_custom_tiling_size_meta_{tiling_key} = {tiling_struct_size};\n"
-    if compile_info.no_set_kernel_type is False:
-        if tiling_info.static_shape_flag:
-            tiling_key = tiling_info.tiling_key
-            kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
-            if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
-                cube_marker = "_mix_aic"
-                kernel_name = compile_info.kernel_name + cube_marker
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-                vec_marker = "_mix_aiv"
-                kernel_name = compile_info.kernel_name + vec_marker
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-            else:
-                current_kernel_name = compile_info.get_kernel_func_name()
-                kernel_name = current_kernel_name
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-        else:
-            for tiling_key in compile_info.tiling_key_list:
-                kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
-                if kernel_type.value >= 6 and kernel_type.value <= 7:
-                    cube_marker = "_mix_aic"
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key + cube_marker
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
-                    vec_marker = "_mix_aiv"
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key + vec_marker
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
-                elif kernel_type.value >= 2 and kernel_type.value <= 5:
-                    if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC, \
-                        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
-                        sub_marker = "_mix_aic"
-                    else:
-                        sub_marker = "_mix_aiv"
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key + sub_marker
-                elif kernel_type.value >= 0 and kernel_type.value <= 1:
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
+    source = gen_tiling_struct_and_dfx_section_head()
+    source += gen_tiling_struct_size_for_group_key(compile_info, tiling_key_struct_size_map)
+
+    if tiling_info.static_shape_flag:
+        source += gen_dfx_section_for_one_tiling_key_static(compile_info, tiling_info.tiling_key, \
+            tiling_info, tiling_key_struct_size_map)
+        if compile_info.tiling_key_group_map is not None:
+            if tiling_info.tiling_key in compile_info.tiling_key_group_map.keys():
+                for tiling_key_slave in compile_info.tiling_key_group_map[tiling_info.tiling_key]:
+                    source += gen_dfx_section_for_one_tiling_key_static(compile_info, tiling_key_slave, \
+                                                            tiling_info, tiling_key_struct_size_map)
     else:
-        if tiling_info.static_shape_flag:
-            tiling_key = tiling_info.tiling_key
-            if compile_info.code_channel == CORE_TYPE_MIX:
-                cube_marker = "_mix_aic"
-                kernel_name = compile_info.kernel_name + cube_marker
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-                vec_marker = "_mix_aiv"
-                kernel_name = compile_info.kernel_name + vec_marker
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-            elif compile_info.hard_sync and compile_info.code_channel in [CORE_TYPE_VEC, CORE_TYPE_CUBE]:
-                core_type_marker = "_mix_aic" if compile_info.code_channel == CORE_TYPE_CUBE else "_mix_aiv"
-                kernel_name = compile_info.kernel_name + core_type_marker
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-            else:
-                kernel_name = compile_info.get_kernel_func_name()
-                source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                    tiling_info, tiling_key_struct_size_map, kernel_name)
-        else:
-            for tiling_key in compile_info.tiling_key_list:
-                if compile_info.code_channel == CORE_TYPE_MIX:
-                    cube_marker = "_mix_aic"
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key + cube_marker
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
-                    vec_marker = "_mix_aiv"
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key + vec_marker
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
-                elif compile_info.hard_sync and compile_info.code_channel in [CORE_TYPE_VEC, CORE_TYPE_CUBE]:
-                    core_type_marker = "_mix_aic" if compile_info.code_channel == CORE_TYPE_CUBE else "_mix_aiv"
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key + core_type_marker
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
-                else:
-                    kernel_name = compile_info.kernel_name + '_%s' % tiling_key
-                    source += DFXSectionGenerator().generate_dfx_section_without_tiling_register(tiling_key, \
-                        tiling_info, tiling_key_struct_size_map, kernel_name)
+        for tiling_key in compile_info.tiling_key_list:
+            source += gen_dfx_section_for_one_tiling_key_dynamic(compile_info, tiling_key, \
+                                                            tiling_info, tiling_key_struct_size_map)
+            if compile_info.tiling_key_group_map is not None:
+                if tiling_key in compile_info.tiling_key_group_map.keys():
+                    for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                        source += gen_dfx_section_for_one_tiling_key_dynamic(compile_info, tiling_key_slave, \
+                                                                tiling_info, tiling_key_struct_size_map)
+        
     try:
         with os.fdopen(\
             os.open(out_file, os.O_TRUNC | os.O_RDWR | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR), 'w') as ofd:
@@ -1635,11 +871,7 @@ def _get_tiling_struct_without_register_size(compile_info: CompileInfo):
             name_part = match.split('.ascendc_tiling.', 1)[1]
             name_part = name_part.rsplit('.', 1)[0]
 
-            if '_' in name_part:
-                tiling_struct, tiling_key_value = name_part.rsplit('_', 1)
-                if tiling_key_value.endswith('UL'):
-                    tiling_key_value = tiling_key_value[:-2]
-                tiling_key_struct_size_map[tiling_key_value] = (tiling_struct, 0)
+            get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compile_info, 0)
 
     for section_name in section_name_set:
         objdump_cmd = ['llvm-objdump', '-s', '-j', '{}'.format(section_name), '{}'.format(compile_info.dst_file)]
@@ -1654,11 +886,7 @@ def _get_tiling_struct_without_register_size(compile_info: CompileInfo):
             bytes_data = bytes.fromhex(hex_num_str)
             dec_data = struct.unpack('>Q', bytes_data)[0]
             name_part = section_name.split('.ascendc_tiling.', 1)[1].rsplit('.', 1)[0]
-            if '_' in name_part:
-                tiling_struct, tiling_key_value = name_part.rsplit('_', 1)
-                if tiling_key_value.endswith('UL'):
-                    tiling_key_value = tiling_key_value[:-2]
-                    tiling_key_struct_size_map[tiling_key_value] = (tiling_struct, dec_data)
+            get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compile_info, dec_data)
             max_tiling_size = max(max_tiling_size, dec_data)
     compile_info.max_tiling_size = max_tiling_size
     return tiling_key_struct_size_map
@@ -1684,13 +912,13 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     import platform
     archlinux = platform.machine()
     if ascend_home_path is None or ascend_home_path == '':
-        asc_opc_path = shutil.which("asc_opc")
-        if asc_opc_path is not None:
+        asc_opc_path = shutil.which("asc_opc")	
+        if asc_opc_path is not None:	
             asc_opc_path_link = os.path.dirname(asc_opc_path)
             asc_opc_real_path = os.path.realpath(asc_opc_path_link)
-            ascend_home_path = os.path.realpath(
+            ascend_home_path = os.path.realpath(	
                     os.path.join(asc_opc_real_path, "..", ".."))
-        else:
+        else:	
             ascend_home_path = "/usr/local/Ascend/latest"
 
     if 'x86' in archlinux:
@@ -1700,20 +928,14 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     if asc_path is None:
         asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
     cann_version_file_path = os.path.join(asc_path, "..", "..",
-                                          "include", "version", "cann_version.h")
+                                          "include", "ascendc", "asc_devkit_version.h")
     compile_options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
-    compile_options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
-    compile_options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
-    compile_options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "utils"))
     compile_options.append("-I" + os.path.join(asc_path, "include"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
-    compile_options.append("-I" + os.path.join(asc_path, "include", "c_api"))
-    compile_options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
-    compile_options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "utils"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include", "ascendc"))
@@ -1726,7 +948,7 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
         compile_options.append("-include" + cann_version_file_path)
     else:
         CommonUtility.print_compile_log(
-            kernel_name, "not found cann_version.h", AscendCLogLevel.LOG_WARNING)
+            kernel_name, "not found asc_devkit_version.h", AscendCLogLevel.LOG_WARNING)
 
     if extend_options.get('opp_kernel_hidden_dat_path', None) is not None:
         compile_options.append("-cce-vfs")
@@ -1742,16 +964,16 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     if global_var_storage.get_variable("ascendc_compile_debug_config"):
         compile_log_path = os.path.join(kernel_meta_dir, op_info.kernel_name + distinct_tag + '.log')
 
-    input_gen_placehoder = _check_if_gen_placehoder(op_info, True)
-    output_gen_placehoder = _check_if_gen_placehoder(op_info, False)
+    input_gen_placehoder = check_if_gen_placehoder(op_info, True)
+    output_gen_placehoder = check_if_gen_placehoder(op_info, False)
 
     LogUtil.detail_log_print(
         op_info.kernel_name,
         COMPILE_STAGE_MSG_INFO["generate_tiling_start"],
         AscendCLogLevel.LOG_INFO
     )
-    tiling_info: TilingInfo = CommonUtility.get_tiling_info_by_tiling(
-                                op_info, infered_info_from_ifile, value_depend_dict)
+    tiling_info: TilingInfo = get_tiling_info_by_tiling(
+        op_info, infered_info_from_ifile, value_depend_dict, origin_func_name)
 
     CommonUtility.print_compile_log(op_info.kernel_name, "get tiling info success", AscendCLogLevel.LOG_INFO)
 
@@ -1764,7 +986,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     tiling_key_group_map = infered_info_from_ifile.tiling_key_group_map
     context_tiling_key = get_context().get_addition("tiling_key")
     # override customized tiling key list if the input is passed from
-    customize_tiling_key = "customized_tiling_key_list"
+    customize_tiling_key = "customized_tiling_key_list" 
     if customize_tiling_key in extend_options and isinstance(extend_options[customize_tiling_key], list):
         context_tiling_key = extend_options[customize_tiling_key]
     if context_tiling_key:
@@ -2090,61 +1312,6 @@ def set_dump_assert_flag(compile_info):
         global_var_storage.set_variable("ascendc_dump_assert_only", True)
 
 
-def _gen_compile_cmd(src_file: str, dst_file: str, compile_option_tuple, tiling_file: str, \
-                            with_tiling_file: bool = True):
-    """
-    Generate the compile command for the v100/v200 compiler.
-    :param src_file: the source file
-    :param dst_file: the destination file
-    :param extra_options: the extra options
-    :param with_tiling_file: whether with the tiling file
-    :return: the compile command
-    """
-    jump_expand_flag = '-cce-aicore-jump-expand=true' in compile_option_tuple.compile_options
-    compile_cmd = CommonUtility.ascendc_build_aicore_compile_cmd(src_file, dst_file, "")
-    if global_var_storage.get_variable("ascendc_enable_ccache") == True:
-        compile_cmd = [os.environ.get("ASCENDC_CCACHE_EXECUTABLE")] + compile_cmd
-    to_del_idx = []
-    for cmd_idx, cmd in enumerate(compile_cmd):
-        if '-fcce-vf-vl=256' in cmd:
-            to_del_idx.append(cmd_idx - 1)
-            to_del_idx.append(cmd_idx)
-        if '-cce-aicore-fp-ceiling' in cmd:
-            to_del_idx.append(cmd_idx - 1)
-            to_del_idx.append(cmd_idx)
-        # whether auto sync or not, it should be ascendc`s charge
-        elif '--cce-auto-sync' in cmd:
-            to_del_idx.append(cmd_idx)
-        # if customize set op jump open, then change jump expand setting which was auto generated
-        elif (jump_expand_flag or global_var_storage.get_variable("ascendc_enable_sanitizer")) and \
-            '-cce-aicore-jump-expand=false' == cmd:
-            compile_cmd[cmd_idx] = '-cce-aicore-jump-expand=true'
-        elif cmd == 'ccec':
-            compile_cmd[cmd_idx] = global_var_storage.get_variable("ascendc_compiler_path")
-    for idx in reversed(to_del_idx):
-        del compile_cmd[idx]
-
-    # v100 / v200 add stack size compile_cmd = [cmd.replace('16000', '32000') for cmd in compile_cmd]
-    compile_cmd_front = compile_cmd[:3]
-    compile_cmd_backend = compile_cmd[3:]
-    for option in compile_option_tuple.compile_options:
-        compile_cmd_front += [option]
-    compile_cmd = compile_cmd_front + compile_cmd_backend
-    for opt in compile_option_tuple.mllvm_options:
-        compile_cmd += [opt]
-    if global_var_storage.get_variable("ascendc_enable_sanitizer"):
-        compile_cmd += ["--cce-enable-sanitizer", "-g"]
-        compile_cmd += ["-mllvm", "-cce-aicore-long-call", "-mllvm", "-cce-aicore-jump-expand=true"]
-    if with_tiling_file:
-        compile_cmd += ["-include", tiling_file]
-    compile_cmd += ["-std=c++17"]
-    compile_cmd += ["--cce-mask-opt"]
-    if "oom" in get_current_build_config("tir.op_debug_config"):
-        compile_cmd += [f"-D{ASCENDC_OOM}={1}"]
-    compile_cmd += ["--cce-long-call=true"]
-    return compile_cmd
-
-
 def _compile_single_tiling(tiling_key, compile_info, tiling_info, compile_option_tuple):
     dst_file = compile_info.dst_file[:-2] + '_%s.o' % tiling_key
     compile_cmd = _gen_compile_cmd(compile_info.gen_kernel_func_file, dst_file, compile_option_tuple, \
@@ -2267,13 +1434,13 @@ def _get_compile_cmd_and_section_content(compile_info: CompileInfo, arch: str, \
         if kernel_type.value >= 2:
             current_kernel_name = compile_info.kernel_name[:-7] + tiling_key + compile_info.kernel_name[-8:]
             compile_cmd += [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
-            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch, kernel_type.name, \
-                                                            current_kernel_name)
+            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, arch, kernel_type.name, \
+                                                            current_kernel_name, compile_info)
         else:
             current_kernel_name = compile_info.kernel_name + '_%s' % tiling_key
             compile_cmd += [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
-            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, "AiCore", kernel_type.name, \
-                                                            current_kernel_name)
+            set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, "AiCore", kernel_type.name, \
+                                                            current_kernel_name, compile_info)
     if kernel_type.value >= 6 and kernel_type.value <= 7:
         compile_cmd += [f"-D{MIX_CORE_MACRO}={1}"]
     if kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:
@@ -2651,9 +1818,6 @@ def _compile_ascendc_cce_v220(compile_info: CompileInfo, compile_option_tuple, t
         task_ration_str = f"1:{tiling_info.task_ration}"
         _gen_mix_json_from_seperate_json(compile_info.kernel_name, task_ration_str, CORE_TYPE_CUBE, True)
         set_soc_spec("AiCore")
-        if not tiling_info.static_shape_flag:
-            _dynamic_kernel_list_to_json(compile_info.kernel_name, tiling_key_list, \
-                compile_info.enable_deterministic, compile_info.tiling_key_deterministic)
     elif compile_info.hard_sync and compile_info.code_channel in [CORE_TYPE_VEC, CORE_TYPE_CUBE]:
         dst_file = compile_info.dst_file
         single_side_compile_info = _get_sub_compile_info(compile_info, compile_info.code_channel)
@@ -2667,27 +1831,31 @@ def _compile_ascendc_cce_v220(compile_info: CompileInfo, compile_option_tuple, t
         task_ration_str = f"1:0" if compile_info.code_channel == CORE_TYPE_CUBE else f"0:1"
         _gen_mix_json_from_seperate_json(compile_info.kernel_name, task_ration_str, compile_info.code_channel, True)
         set_soc_spec("AiCore")
-        if not tiling_info.static_shape_flag:
-            _dynamic_kernel_list_to_json(compile_info.kernel_name, tiling_key_list, \
-                compile_info.enable_deterministic, compile_info.tiling_key_deterministic)
     else:
-        if compile_info.code_channel == CORE_TYPE_CUBE:
-            arch = f"dav-{chip_version}-cube"
-            sub_core_type = "AIC"
-            optional_core = "AiCore"
-        elif compile_info.code_channel == CORE_TYPE_VEC:
-            arch = f"dav-{chip_version}-vec"
-            sub_core_type = "AIV"
-            optional_core = "VectorCore"  # do the same work with SetOptionalCoreType in cpp
-        else:
-            raise Exception(f"invalid code_channel = {compile_info.code_channel}")
+        arch, sub_core_type, optional_core = get_core_info(compile_info)
         set_soc_spec(optional_core)
         tiling_key_list = call_bisheng_v220(compile_info, compile_option_tuple, tiling_info, arch, \
             compile_info.code_channel)
         _gen_non_mix_sub_json(compile_info, tiling_info, sub_core_type)
-        if not tiling_info.static_shape_flag:
-            _dynamic_kernel_list_to_json(compile_info.kernel_name, tiling_key_list, \
-                compile_info.enable_deterministic, compile_info.tiling_key_deterministic)
+    if not tiling_info.static_shape_flag:
+        _dynamic_kernel_list_to_json(compile_info.kernel_name, tiling_key_list, \
+            compile_info.enable_deterministic, compile_info.tiling_key_deterministic)
+
+
+def get_core_info(compile_info: CompileInfo):
+    chip_version = CommonUtility.get_chip_version()
+    if compile_info.code_channel == CORE_TYPE_CUBE:
+        arch = f"dav-{chip_version}-cube"
+        sub_core_type = "AIC"
+        optional_core = "AiCore"
+        return arch, sub_core_type, optional_core
+    elif compile_info.code_channel == CORE_TYPE_VEC:
+        arch = f"dav-{chip_version}-vec"
+        sub_core_type = "AIV"
+        optional_core = "VectorCore"  # do the same work with SetOptionalCoreType in cpp
+        return arch, sub_core_type, optional_core
+    else:
+        raise Exception(f"invalid code_channel = {compile_info.code_channel}")
 
 
 def _compile_ascendc_cce_m510(compile_info: CompileInfo, compile_option_tuple, tiling_info: TilingInfo):

@@ -14,7 +14,7 @@ set -e
 top_dir=$1
 test_type=$2
 soc_info=$3
-base_path=$top_dir/tmp/llt_gccnative-prefix/src/llt_gccnative-build/
+base_path=$top_dir/build/
 
 #PYTHONPATH
 export PYTHONPATH=$top_dir/open_source/tvm/python:$top_dir/open_source/tvm/topi/python:$PYTHONPATH

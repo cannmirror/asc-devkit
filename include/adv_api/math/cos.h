@@ -36,13 +36,13 @@
 #ifndef LIB_MATH_COS_H
 #define LIB_MATH_COS_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
-
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/cos/cos_common_impl.h"
 
 namespace AscendC {
 #pragma begin_pipe(V)
+
 /*!
  * \ingroup Cos
  * \brief compute Cos elementwisely
@@ -122,6 +122,7 @@ __aicore__ inline void Cos(const LocalTensor<T>& dstTensor, const LocalTensor<T>
 {
     CosImpl<T, isReuseSource>(dstTensor, srcTensor, calCount);
 }
+
 #pragma end_pipe
 }  // namespace AscendC
 

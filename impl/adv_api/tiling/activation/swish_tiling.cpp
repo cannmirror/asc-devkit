@@ -14,7 +14,6 @@
  */
 #include "include/adv_api/activation/swish_tiling.h"
 #include <cstdint>
-#include <set>
 #include "graph/tensor.h"
 
 namespace AscendC {

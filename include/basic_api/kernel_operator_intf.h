@@ -14,6 +14,7 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_INTERFACE_H
+
 #include "kernel_prof_trace_intf.h"
 #include "kernel_operator_data_copy_intf.h"
 #include "kernel_operator_fixpipe_intf.h"
@@ -42,12 +43,14 @@
 #include "kernel_operator_vec_ternary_scalar_intf.h"
 #include "kernel_operator_vec_unary_intf.h"
 #include "kernel_operator_vec_vpadding_intf.h"
+#include "kernel_operator_limits_intf.h"
 #include "kernel_operator_sys_var_intf.h"
+#include "kernel_operator_atomic_intf.h"
 #include "kernel_operator_set_atomic_intf.h"
 
 #include "include/adv_api/kernel_api.h"
 
-#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
+#if __NPU_ARCH__ == 2201
 #include "core_mng/roc/kernel_operator_cube_group_intf.h"
 #include "core_mng/roc/kernel_operator_group_barrier_intf.h"
 #endif

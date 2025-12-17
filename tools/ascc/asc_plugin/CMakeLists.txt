@@ -20,7 +20,6 @@ if(BUILD_OPEN_PROJECT)
     target_include_directories(asc_plugin PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/include/external
             ${CMAKE_CURRENT_SOURCE_DIR}/include/internal
-            ${ASCEND_CANN_PACKAGE_PATH}/include/experiment
             ${LLVM_CLANG_INSTALL_PATH}/include/
             ${JSON_INCLUDE_DIR}
         )
@@ -80,8 +79,7 @@ target_compile_options(asc_plugin PRIVATE
     -Wformat
     -D_FORTIFY_SOURCE=2
     -Os
-    -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-    -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+    -UNDEBUG
 )
 
 target_link_options(asc_plugin PRIVATE
@@ -89,6 +87,7 @@ target_link_options(asc_plugin PRIVATE
     -Wl,-Bsymbolic
     -Wl,--exclude-libs=ALL
     -Wl,--gc-sections
+    $<$<CONFIG:Release>:-s>
 )
 
 install(TARGETS asc_plugin

@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <algorithm>
+
 #include "asc_utils.h"
 #include "asc_struct.h"
 
@@ -39,8 +41,9 @@ private:
     void StubFuncDumpAndHardSyncImpl(const bool& isMix, const bool& isHardSync);
     void StubFuncWorkSpaceImpl(const bool& isMix);
     void StubFuncCallImpl(const std::string& templateArgs);
-    void GenStubKernelFunc(const bool& isMix, const bool& isHardSync);
-    void GenStubKernelFunc(const bool& isMix, const bool& isHardSync, const TemplateInstance& tempInst);
+    void GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous);
+    void GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous, 
+        const TemplateInstance tempInst);
 
     std::pair<bool, bool> GetArchInfo(const ShortSocVersion& socVersion) const;
     std::string GetWorkspaceArgName() const;

@@ -230,6 +230,7 @@ private:                                                                        
     friend class AscendC::TQue;                                                              \
     template <AscendC::TPosition bufPos> friend class AscendC::TBuf
 
+
 class TPipe : public TPipeBase {
 public:
     __aicore__ inline TPipe();

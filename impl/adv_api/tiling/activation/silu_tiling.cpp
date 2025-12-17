@@ -13,7 +13,6 @@
  * \brief
  */
 #include <cstdint>
-#include <set>
 #include "graph/tensor.h"
 #include "include/adv_api/activation/silu_tiling.h"
 

@@ -106,9 +106,8 @@ public:
         }
 
 #if __NPU_ARCH__ == 5102
-        if constexpr (IsSameTypeV<SrcT, half> && (IsSameTypeV<DstT, half> || IsSameTypeV<DstT, bfloat16_t>)) {
-            constexpr float FIX_VAL_RECIPROCAL = 1.0f / (1 << 16);
-            const uint64_t quantScalar = static_cast<const uint64_t>(*reinterpret_cast<const int32_t *>(&FIX_VAL_RECIPROCAL));
+        if constexpr (IsSameTypeV<SrcT, half> && IsSameTypeV<TransBT, half> && IsTypeOneOfV<DstT, half, bfloat16_t>) {
+            constexpr uint64_t quantScalar = 1065353216;
             MATMUL_MODULE(MatmulQuantProcessor)->SetQuantScalar(quantScalar);
         } else if (IsSameTypeV<SrcT, int8_t> && IsTypeOneOfV<DstT, int8_t, uint8_t, half, bfloat16_t>) {
             MATMUL_MODULE(MatmulQuantProcessor)->Init(tiling.GetBaseN());

@@ -20,7 +20,7 @@
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_antiquant_common.h"
 #include "../../api_check/kernel_api_check.h"
-#if __CCE_AICORE__ >= 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 #include "ascend_antiquant_c220_impl.h"
 #else
 #include "ascend_antiquant_m200_impl.h"

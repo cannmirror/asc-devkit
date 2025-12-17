@@ -19,13 +19,12 @@
 #include "kernel_operator_intf.h"
 #include "broadcast_common_utils.h"
 #include "../../api_check/kernel_api_check.h"
-
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "broadcast_v220_impl.h"
 #else
 #include "broadcast_v200_impl.h"
 #endif
-#if __CCE_AICORE__ >= 200
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
 
 namespace AscendC {
 constexpr uint32_t TWO_DIM = 2;

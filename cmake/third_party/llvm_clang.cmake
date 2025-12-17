@@ -21,6 +21,7 @@ set(LLVM_CLANG_NAME "llvm-15")
 set(LLVM_CLANG_DOWNLOAD_PATH ${CANN_3RD_LIB_PATH}/pkg)
 set(LLVM_CLANG_INSTALL_PATH ${CANN_3RD_LIB_PATH}/llvm_clang)
 set(LLVM_CLANG_SOURCE_PATH ${CANN_3RD_LIB_PATH}/${LLVM_CLANG_NAME})
+set(LLVM_PATCH_SOURCE_PATH ${CANN_3RD_LIB_PATH}/patch_llvm)
 
 find_path(LLVM_CLANG_INCLUDE
         NAMES clang-c/Index.h
@@ -216,33 +217,26 @@ if(LLVM_CLANG_FOUND AND NOT FORCE_REBUILD_CANN_3RD)
     add_library(llvm_clang INTERFACE)
 else()
     if (NOT EXISTS "${LLVM_CLANG_SOURCE_PATH}")
-        # tmp for blue build
-        set(LLVM_BLUE_TEMP_PATH ${CANN_3RD_LIB_PATH}/llvm-15.0.4/llvm-project-llvmorg-15.0.4)
-        if (EXISTS "${LLVM_BLUE_TEMP_PATH}")
-           set(LLVM_CLANG_SOURCE_PATH ${LLVM_BLUE_TEMP_PATH})
-           message(info, "use llvm cache,do not need download llvm code in blue zoon,path: ${LLVM_CLANG_SOURCE_PATH}")
-        else ()
-            message(info, "download llvm code, don't use llvm cache.")
-            set(LLVM_FILE llvm-project-llvmorg-15.0.4.tar.gz)
-            set(LLVM_CLANG_URL "https://gitcode.com/cann-src-third-party/llvm/releases/download/15.0.4/${LLVM_FILE}")
-            message(STATUS "Downloading ${LLVM_CLANG_NAME} from ${LLVM_CLANG_URL}")
-            include(FetchContent)
-            FetchContent_Declare(
-                ${LLVM_CLANG_NAME}
-                URL ${LLVM_CLANG_URL}
-                TLS_VERIFY FALSE
-                URL_HASH SHA256=e24b4d3bf7821dcb1c901d1e09096c1f88fb00095c5a6ef893baab4836975e52
-                DOWNLOAD_DIR ${LLVM_CLANG_DOWNLOAD_PATH}
-                SOURCE_DIR ${LLVM_CLANG_SOURCE_PATH}
-            )
-            FetchContent_MakeAvailable(${LLVM_CLANG_NAME})
-        endif ()
+        message(info, "download llvm code, don't use llvm cache.")
+        set(LLVM_FILE llvm-project-llvmorg-15.0.4.tar.gz)
+        set(LLVM_CLANG_URL "https://gitcode.com/cann-src-third-party/llvm/releases/download/15.0.4/${LLVM_FILE}")
+        message(STATUS "Downloading ${LLVM_CLANG_NAME} from ${LLVM_CLANG_URL}")
+        include(FetchContent)
+        FetchContent_Declare(
+        ${LLVM_CLANG_NAME}
+        URL ${LLVM_CLANG_URL}
+        TLS_VERIFY FALSE
+        URL_HASH SHA256=e24b4d3bf7821dcb1c901d1e09096c1f88fb00095c5a6ef893baab4836975e52
+        DOWNLOAD_DIR ${LLVM_CLANG_DOWNLOAD_PATH}
+        SOURCE_DIR ${LLVM_CLANG_SOURCE_PATH}
+        )
+        FetchContent_MakeAvailable(${LLVM_CLANG_NAME})
     else ()
         message(info, "use llvm cache,do not need download llvm code.")
     endif()
 
     set(LLVM_C_COMPILE_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -D_FORTIFY_SOURCE=2 -fvisibility=hidden -fstack-protector-all -fPIE")
-    set(LLVM_CXX_COMPILE_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -std=c++11 -D_FORTIFY_SOURCE=2 -fvisibility=hidden -fstack-protector-all -fPIE")
+    set(LLVM_CXX_COMPILE_FLAGS "-D_GLIBCXX_USE_CXX11_ABI=0 -std=c++11 -D_FORTIFY_SOURCE=2 -fvisibility=hidden -fstack-protector-all -fPIE -DENABLE_ASC_PLUGIN")
     set(LLVM_EXE_SAFE_LINK_FLAGS "-Wl,-z,relro,-z,now,-z,noexecstack -pie")
     set(LLVM_SHARED_SAFE_LINK_FLAGS "-Wl,-z,relro,-z,now,-z,noexecstack")
 
@@ -252,7 +246,9 @@ else()
 
     include(ExternalProject)
     ExternalProject_Add(llvm_clang
-                        SOURCE_DIR ${LLVM_CLANG_SOURCE_PATH}
+                        SOURCE_DIR ${LLVM_PATCH_SOURCE_PATH}
+                        DOWNLOAD_COMMAND bash -c "cp -rf ${LLVM_CLANG_SOURCE_PATH}/* ${LLVM_PATCH_SOURCE_PATH}/"
+                        PATCH_COMMAND cd ${LLVM_PATCH_SOURCE_PATH} && patch -p1 < ${CMAKE_CURRENT_LIST_DIR}/parsedecl_change.patch
                         CONFIGURE_COMMAND ${CMAKE_COMMAND}
                             -G ${CMAKE_GENERATOR}
                             -DLLVM_ENABLE_PROJECTS=clang

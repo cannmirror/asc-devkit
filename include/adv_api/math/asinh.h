@@ -19,8 +19,6 @@
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/asinh/asinh_common_impl.h"
 
-#if __CCE_AICORE__ >= 200
-
 namespace AscendC {
 #pragma begin_pipe(V)
 /* !
@@ -90,6 +88,5 @@ __aicore__ inline void Asinh(const LocalTensor<T> &dstTensor, const LocalTensor<
 }
 #pragma end_pipe
 }
-#endif
 #endif
 #endif // LIB_MATH_ASINH_H

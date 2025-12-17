@@ -238,6 +238,7 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
     }
     AscendDequantScalarImpl<dstT, scaleT, mode>(dstTensor, srcTensor, deqScale, params);
 }
+
 #pragma end_pipe
 } // namespace AscendC
 #endif

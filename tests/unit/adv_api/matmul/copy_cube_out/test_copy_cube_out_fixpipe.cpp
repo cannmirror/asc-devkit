@@ -20,7 +20,7 @@
 #include "impl/adv_api/detail/matmul/policy/matmul_policy.h"
 #include "impl/adv_api/detail/matmul/policy/matmul_private_modules.h"
 #include "impl/adv_api/detail/matmul/utils/matmul_call_back.h"
-#include "impl/adv_api/detail/matmul/stage/copy_cube_out/copy_cube_out_fixpipe.h"
+#include "impl/adv_api/detail/matmul/stage/copy_cube_out/copy_cube_out.h"
 #include "impl/adv_api/detail/matmul/stage/copy_cube_out/quant/quant_processor_fixpipe.h"
 
 using namespace std;

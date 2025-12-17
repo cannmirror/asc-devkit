@@ -14,7 +14,7 @@
  */
 #ifndef LIB_SELECT_SELECT_WITH_BYTES_MASK_H
 #define LIB_SELECT_SELECT_WITH_BYTES_MASK_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
 #include "kernel_tensor.h"
 #include "kernel_utils.h"
 #include "../../../impl/adv_api/detail/select/selectwithbytesmask/selectwithbytesmask_impl.h"

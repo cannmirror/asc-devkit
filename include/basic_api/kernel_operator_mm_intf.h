@@ -18,7 +18,6 @@
 #include "kernel_struct_mm.h"
 
 #include "kernel_operator_mm_base_impl.h"
-#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -68,15 +67,6 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const LoadData2DParamsV2& loadDataParams);
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-template <typename T, typename U>
-__aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, const GlobalTensor<U>& src,
-    const LoadData2DParamsV2& loadDataParams, const Nd2NzParamsV2& nd2nzParams)
-{
-    LoadDataImpl(dst, src, loadDataParams, nd2nzParams);
-}
-#endif
 
 /* **************************************************************************************************
  * LoadData 3dv1                                             *
@@ -351,16 +341,6 @@ __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTens
 
 } // namespace AscendC
 
-/* **************************************************************************************************
- * LoadData(Layout) API Level2                                              *
- * ************************************************************************************************* */
-namespace AscendC {
-
-template <const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U>
-__aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type
-LoadData(const T& dst, const U& src);
-
-}  // namespace AscendC
 #include "../../impl/basic_api/kernel_operator_mm_intf_impl.h"
 
 #endif // ASCENDC_MODULE_OPERATOR_MM_INTERFACE_H

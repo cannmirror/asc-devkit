@@ -30,60 +30,49 @@ from .super_kernel_sub_op_compile import save_kernel_type
 def _get_kernel_type_dict(compile_info: CompileInfo, tiling_key: int):
     kernel_type = compile_info.tiling_key_kernel_type[tiling_key]
     tiling_key_dict = {}
+    tiling_key_dict["tilingKey"] = int(tiling_key)
     if kernel_type.value == 0:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["taskRation"] = "0:1"
         tiling_key_dict["crossCoreSync"] = 0
     elif kernel_type.value == 1:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["taskRation"] = "1:0"
         tiling_key_dict["crossCoreSync"] = 0
     elif kernel_type.value == 2:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["crossCoreSync"] = 1
         tiling_key_dict["taskRation"] = "0:1"
     elif kernel_type.value == 3:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["crossCoreSync"] = 1
         tiling_key_dict["taskRation"] = "1:0"
     elif kernel_type.value == 4:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["crossCoreSync"] = 1
         tiling_key_dict["taskRation"] = "0:1"
     elif kernel_type.value == 5:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["crossCoreSync"] = 1
         tiling_key_dict["taskRation"] = "1:0"
     elif kernel_type.value == 6:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["crossCoreSync"] = 1
         tiling_key_dict["taskRation"] = "1:1"
     elif kernel_type.value == 7:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AIC"
         tiling_key_dict["crossCoreSync"] = 1
         tiling_key_dict["taskRation"] = "1:2"
     elif kernel_type.value == 8:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "AiCore"
         tiling_key_dict["taskRation"] = "1:0"
     elif kernel_type.value == 9:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "VectorCore"
         tiling_key_dict["taskRation"] = "0:1"
     elif kernel_type.value == 10:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_AICORE"
         tiling_key_dict["taskRation"] = "1:1"
     elif kernel_type.value == 11:
-        tiling_key_dict["tilingKey"] = int(tiling_key)
         tiling_key_dict["kernelType"] = "MIX_VECTOR_CORE"
         tiling_key_dict["taskRation"] = "1:1"
     else:

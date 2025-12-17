@@ -80,4 +80,3 @@ TEST_F(ReduceAnyAPICheck, ReduceAnyAPICheckOverlap)
     CheckReduceOverlap<float, 
         HighLevelApiCheck::CheckFuncReduceAny<float, AscendC::Pattern::Reduce::RA>>("ReduceAny");
 }
-

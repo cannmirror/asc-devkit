@@ -22,7 +22,7 @@
  */
 #ifndef LIB_MATH_ERF_H
 #define LIB_MATH_ERF_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/erf/erf_common_impl.h"
 
@@ -101,7 +101,6 @@ __aicore__ inline void Erf(const LocalTensor<T> &dstTensor, const LocalTensor<T>
 {
     Erf<T, isReuseSource>(dstTensor, srcTensor, srcTensor.GetSize());
 }
-
 #pragma end_pipe
 }  // namespace AscendC
 #endif

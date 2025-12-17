@@ -72,6 +72,7 @@ uint32_t __attribute__((weak)) TilingDataStructBase::RecordTilingStruct(const ch
 }
 
 void TilingDef::GeLogError(const std::string &str) const {
+  (void)str;
 }
 
 void TilingDef::SetDataPtr(void *dataPtr) {

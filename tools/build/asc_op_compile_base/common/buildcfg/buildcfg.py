@@ -75,6 +75,9 @@ class BuildConfigWrapper(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         _build_cfg.reset(self.token)
 
+    def current(self):
+        return _build_cfg.get()
+        
 
 def build_config(**kwargs):
     """Configure the build behavior by setting config variables.
@@ -90,7 +93,7 @@ def build_config(**kwargs):
         The build configuration
     """
     _check_kwargs(kwargs)
-    config_dict = cce_default_static_build_config.copy()
+    config_dict = _build_cfg.get().copy()
     _update_config_dict(kwargs, config_dict)
     return BuildConfigWrapper(config_dict)
 

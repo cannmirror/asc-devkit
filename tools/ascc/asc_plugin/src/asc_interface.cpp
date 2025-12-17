@@ -31,18 +31,12 @@
 namespace AscPlugin {
 
 namespace {
-// pluginPath Example: /cann version/x86_64-linux/ascc/lib64/libasc_plugin.so
-//                     /cann version/compiler/ascc/lib64/libasc_plugin.so
-//                     /cann version/tools/ascc/lib64/libasc_plugin.so
-//                     /latest/x86_64-linux/ascc/lib64/libasc_plugin.so
-// cannPath: directory cann version or directory latest
+// pluginPath Example: /cann version/x86_64-linux/lib64/plugin/asc/libasc_plugin.so
 std::string ExtractCannPath(const std::string& pluginPath)
 {
     const std::vector<std::string> potentialPath = {
-        "/x86_64-linux/ascc/lib64/libasc_plugin.so",
-        "/aarch64-linux/ascc/lib64/libasc_plugin.so",
-        "/compiler/ascc/lib64/libasc_plugin.so",
-        "/tools/ascc/lib64/libasc_plugin.so",
+        "/x86_64-linux/lib64/plugin/asc/libasc_plugin.so",
+        "/aarch64-linux/lib64/plugin/asc/libasc_plugin.so",
     };
 
     for (const std::string& expectedPath : potentialPath) {
@@ -242,12 +236,6 @@ int32_t PluginPrologue(const char** result, const char* config)
         ASC_LOGE("AscAstAnalyzer run failed. Please check log.");
         return ASC_FAILURE;
     }
-    if (manager.IsL2CacheEnabled()) {
-        manager.SetAscendMetaFlag(ASC_L2CACHE_HINT_MASK);
-    }
-    if (manager.IsFifoDumpOn()) {
-        manager.SetAscendMetaFlag(ASC_PRINT_MASK);
-    }
 
     if (!manager.GetAclrtHeaderPath().empty()) {
         GenerateAclrtHeader(manager.GetAclrtHeaderPath());
@@ -267,35 +255,20 @@ int32_t PluginGenKernel(const char** result, const char* info)
     ASC_CHECK_NULLPTR(info, "PluginGenKernel");
 
     KernelInfo kernelInfo;
-    static bool firstKernel = true;
-    auto &manager = InfoManager::GetInstance();
     int32_t fromJsonRes = FromJson(kernelInfo, info);
     if (fromJsonRes != ASC_SUCCESS) {
         return fromJsonRes;
     }
-
-    if (firstKernel) {
-        manager.SetFirstKernel(true);
-        firstKernel = false;
-    }
-
+    static auto flag = InfoManager::GetInstance().SetKernelFuncFlag();
+    (void)flag;
     const auto& [kernelType, kfcScene] = GetKernelFuncScene(kernelInfo);
-    ShortSocVersion shortSoc = manager.GetShortSocVersion();
-    // 910_95 no ffts, don't set flag means close
-    if (shortSoc != ShortSocVersion::ASCEND910_95) {
-        for (const auto& ktype : kernelType) {
-            if (ktype == KernelMetaType::KERNEL_TYPE_AIC_ONLY || ktype == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {
-                continue;
-            }
-            manager.SetAscendMetaFlag(ASC_FFTS_MASK);
-        }
-    }
+
     const auto [deviceResult, deviceStub, metaInfo] = GetDeviceCode(kernelInfo, kernelType, kfcScene);
     if (deviceResult != 0) {
         return ASC_FAILURE;
     }
+
     std::string hostStub  = GetHostStubCode(kernelInfo, kernelType);
-    manager.SetFirstKernel(false);
 
     PluginKernelType pluginKtype = PluginKernelType::MIX; // if multi kernel type means core_ratio(x, y) => mix
     if (kernelType.size() == 1) {

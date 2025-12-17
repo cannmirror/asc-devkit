@@ -54,16 +54,21 @@ __aicore__ inline uint32_t GetGroupNormWholeReduceMask1(const GroupNormTiling& t
 
 __aicore__ inline void GetGroupNormOutputMean(const LocalTensor<float>& x_in,
     const LocalTensor<float>& tmp, const LocalTensor<float>& mean,
-    const GroupNormTiling& tiling)
+    const GroupNormTiling& tiling, const int32_t loopCount, const int32_t mvOffset)
 {
     for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
         uint32_t buffIndex = i * tiling.dhwAlignSize;
-        ReduceSum<float>(mean[i], x_in[buffIndex], tmp[buffIndex], tiling.dhwAlignSize);
+        ReduceSum<float>(mean[i + loopCount * tiling.bsCurLength + mvOffset], 
+            x_in[buffIndex], tmp[buffIndex], tiling.dhwAlignSize);
+        PipeBarrier<PIPE_V>();
+    }  
+
+    for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (i + loopCount * tiling.bsCurLength + mvOffset);
+        uint64_t mask[1] = {maskOffset};
+        Muls(mean, mean, tiling.factor, mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
     }
-    PipeBarrier<PIPE_V>();  
-
-    Muls(mean, mean, tiling.factor, tiling.bsCurLength);
-
+    
     // mean will be used to GetValue() to get scalar value
     auto eventIdVToS = GetTPipePtr()->FetchEventID(HardEvent::V_S);
     SetFlag<HardEvent::V_S>(eventIdVToS);
@@ -72,42 +77,59 @@ __aicore__ inline void GetGroupNormOutputMean(const LocalTensor<float>& x_in,
 
 __aicore__ inline void GetGroupNormOutputVar(const LocalTensor<float>& x_in,
     const LocalTensor<float>& tmp1, const LocalTensor<float>& tmp2,
-    const LocalTensor<float>& mean, const LocalTensor<float>& var, const GroupNormTiling& tiling)
+    const LocalTensor<float>& mean, const LocalTensor<float>& var, const GroupNormTiling& tiling, 
+    const int32_t loopCount, const int32_t mvOffset)
 {
     for (uint32_t i = 0; i < tiling.d * tiling.bsCurLength; ++i) {
         uint32_t buffIndex = i * tiling.hwAlignSize;
-        Adds(tmp1[buffIndex], x_in[buffIndex], -1.0f * mean.GetValue(i / tiling.d), tiling.hw);
+        Adds(tmp1[buffIndex], x_in[buffIndex], 
+            -1.0f * mean.GetValue((i + loopCount * tiling.d * tiling.bsCurLength + mvOffset * tiling.d) / tiling.d), tiling.hw);
+        PipeBarrier<PIPE_V>();
     }
-    PipeBarrier<PIPE_V>();
 
     Mul(tmp2, tmp1, tmp1, tiling.bshCurLength);
     PipeBarrier<PIPE_V>();
 
     for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
         uint32_t buffIndex = i * tiling.dhwAlignSize;
-        ReduceSum<float>(var[i], tmp2[buffIndex], tmp2[buffIndex], tiling.dhwAlignSize);
-    }
-    PipeBarrier<PIPE_V>();      
+        ReduceSum<float>(var[i + loopCount * tiling.bsCurLength + mvOffset], 
+            tmp2[buffIndex], tmp2[buffIndex], tiling.dhwAlignSize);
+        PipeBarrier<PIPE_V>();
+    }      
 
-    Muls(var, var, tiling.factor, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();      
+    for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (i + loopCount * tiling.bsCurLength + mvOffset);
+        uint64_t mask[1] = {maskOffset};
+        Muls(var, var, tiling.factor, mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+    }      
 }
 
 __aicore__ inline void GetGroupNormOutputPre(const LocalTensor<float>& inout,
     const LocalTensor<float>& tmp, const LocalTensor<float>& tempOnes, const LocalTensor<float>& variance,
-    const GroupNormTiling& tiling, const float epsilon)
+    const GroupNormTiling& tiling, const float epsilon, const int32_t loopCount, const int32_t mvOffset)
 {
-    Adds(tmp, variance, epsilon, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();
-    
-    Duplicate(tempOnes, 1.0f, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();
+    for (uint32_t i = 0; i < tiling.bsCurLength; i++) {
+        uint64_t maskMvOffset = i + loopCount * tiling.bsCurLength + mvOffset;
+        uint32_t maskMod = maskMvOffset / GROUPNORM_MASK_MAX_VAL;
+        uint32_t loopIndex = maskMod * GROUPNORM_MASK_MAX_VAL;
+        maskMvOffset = maskMvOffset - maskMod * GROUPNORM_MASK_MAX_VAL;
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (maskMvOffset);
+        uint64_t mask[1] = {maskOffset};
 
-    Sqrt(tmp, tmp, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();
+        Adds<float, true>(tmp, variance[loopIndex], epsilon, mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+        
+        Duplicate<float, true>(tempOnes, 1.0f, mask, 1, 1, 1);
+        PipeBarrier<PIPE_V>();
 
-    Div(tmp, tempOnes, tmp, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();
+        Sqrt<float, true>(tmp, tmp, mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+
+        Div<float, true>(tmp, tempOnes, tmp, mask, 1, 
+            {1, 1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+    }
 
     auto eventIdVToS = GetTPipePtr()->FetchEventID(HardEvent::V_S);
     SetFlag<HardEvent::V_S>(eventIdVToS);
@@ -116,7 +138,9 @@ __aicore__ inline void GetGroupNormOutputPre(const LocalTensor<float>& inout,
     // pre norm
     for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
         uint32_t buffIndex = i * tiling.dhwAlignSize;
-        Muls(inout[buffIndex], inout[buffIndex], tmp.GetValue(i), tiling.dhwAlignSize);
+        Muls<float, true>(inout[buffIndex], inout[buffIndex], 
+            tmp.GetValue((i + loopCount * tiling.bsCurLength + mvOffset) % GROUPNORM_MASK_MAX_VAL), tiling.dhwAlignSize);
+        PipeBarrier<PIPE_V>();
     }
 
     // tmp will be written later 
@@ -129,29 +153,30 @@ __aicore__ inline void GetGroupNormOutputPre(const LocalTensor<float>& inout,
 
 __aicore__ inline void GetGroupNormOutput(const LocalTensor<float>& inout,
     const LocalTensor<float>& gamma, const LocalTensor<float>& beta,
-    const GroupNormTiling& tiling, const int32_t loopCount)
+    const GroupNormTiling& tiling, const int32_t loopCount, const int32_t mvOffset)
 {
-    size_t channelIndex = loopCount * tiling.meanVarRoundSize * tiling.d;
+    size_t channelIndex = loopCount * tiling.bsCurLength * tiling.d + mvOffset * tiling.d;
     for (uint32_t channel_offset = 0; channel_offset < tiling.bsCurLength * tiling.d; ++channel_offset) {
         Muls(inout[channel_offset * tiling.hwAlignSize], inout[channel_offset * tiling.hwAlignSize],
         gamma.GetValue(channelIndex % tiling.c), tiling.hw);
         channelIndex += 1;
-    }    
-    PipeBarrier<PIPE_V>();      
+        PipeBarrier<PIPE_V>();
+    }       
 
-    channelIndex = loopCount * tiling.meanVarRoundSize * tiling.d;
+    channelIndex = loopCount * tiling.bsCurLength * tiling.d + mvOffset * tiling.d;
     for (uint32_t channel_offset = 0; channel_offset < tiling.bsCurLength * tiling.d; ++channel_offset) {
         Adds(inout[channel_offset * tiling.hwAlignSize], inout[channel_offset * tiling.hwAlignSize],
         beta.GetValue(channelIndex % tiling.c), tiling.hw);
         channelIndex += 1;
+        PipeBarrier<PIPE_V>();
     }    
-    PipeBarrier<PIPE_V>();
 }
 
 __aicore__ inline void GroupNormExe(const LocalTensor<half>& inputX,
     const LocalTensor<half>& gamma, const LocalTensor<half>& beta,
     const LocalTensor<half>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,
-    const half epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount)
+    const half epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount, 
+    const int32_t mvOffset)
 {
     LocalTensor<float> tempTensorA = params.tempTensorA;
     LocalTensor<float> tempTensorB = params.tempTensorB;
@@ -161,18 +186,19 @@ __aicore__ inline void GroupNormExe(const LocalTensor<half>& inputX,
     Cast<float, half>(tempTensorB, inputX, RoundMode::CAST_NONE, tiling.inputRoundSize);
     PipeBarrier<PIPE_V>();
 
-    GetGroupNormOutputMean(tempTensorB, tempTensorC, outputMean, tiling);
+    GetGroupNormOutputMean(tempTensorB, tempTensorC, outputMean, tiling, loopCount, mvOffset);
 
-    GetGroupNormOutputVar(tempTensorB, tempTensorB, tempTensorC, outputMean, outputVariance, tiling);
+    GetGroupNormOutputVar(tempTensorB, tempTensorB, tempTensorC, outputMean, outputVariance, tiling, loopCount, mvOffset);
 
-    GetGroupNormOutputPre(tempTensorB, tempTensorA, tempTensorC, outputVariance, tiling, static_cast<float>(epsilon));
+    GetGroupNormOutputPre(tempTensorB, tempTensorA, tempTensorC, outputVariance, tiling, 
+                            static_cast<float>(epsilon), loopCount, mvOffset);
 
     Cast<float, half>(tempTensorA, gamma, RoundMode::CAST_NONE, tiling.c);
     PipeBarrier<PIPE_V>();
     Cast<float, half>(tempTensorC, beta, RoundMode::CAST_NONE, tiling.c);
     PipeBarrier<PIPE_V>();
 
-    GetGroupNormOutput(tempTensorB, tempTensorA, tempTensorC, tiling, loopCount);
+    GetGroupNormOutput(tempTensorB, tempTensorA, tempTensorC, tiling, loopCount, mvOffset);
    
     Cast<half, float>(output, tempTensorB, RoundMode::CAST_NONE, tiling.inputRoundSize);
     PipeBarrier<PIPE_V>();
@@ -182,28 +208,30 @@ __aicore__ inline void GroupNormExe(const LocalTensor<half>& inputX,
 __aicore__ inline void GroupNormExe(const LocalTensor<float>& inputX,
     const LocalTensor<float>& gamma, const LocalTensor<float>& beta,
     const LocalTensor<float>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,
-    const float epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount)
+    const float epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount, 
+    const int32_t mvOffset)
 {
     LocalTensor<float> tempTensorA = params.tempTensorA;
     LocalTensor<float> tempTensorB = params.tempTensorB;
     LocalTensor<float> tempTensorC = params.tempTensorC;
 
-    GetGroupNormOutputMean(inputX, output, outputMean, tiling);
+    GetGroupNormOutputMean(inputX, output, outputMean, tiling, loopCount, mvOffset);
 
     Duplicate(output, 0.0f, tiling.bshCurLength);
     PipeBarrier<PIPE_V>();
 
-    GetGroupNormOutputVar(inputX, output, tempTensorC, outputMean, outputVariance, tiling);
+    GetGroupNormOutputVar(inputX, output, tempTensorC, outputMean, outputVariance, tiling, loopCount, mvOffset);
 
-    GetGroupNormOutputPre(output, tempTensorA, tempTensorB, outputVariance, tiling, epsilon);
+    GetGroupNormOutputPre(output, tempTensorA, tempTensorB, outputVariance, tiling, epsilon, loopCount, mvOffset);
 
-    GetGroupNormOutput(output, gamma, beta, tiling, loopCount);
+    GetGroupNormOutput(output, gamma, beta, tiling, loopCount, mvOffset);
 }
 
 __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<half>& inputX,
     const LocalTensor<half>& gamma, const LocalTensor<half>& beta,
     const LocalTensor<half>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,
-    const half epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount)
+    const half epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount, 
+    const int32_t mvOffset)
 {
     LocalTensor<float> tempTensorA = params.tempTensorA;
     LocalTensor<float> tempTensorB = params.tempTensorB;
@@ -221,44 +249,66 @@ __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<half>& inputX,
     uint32_t mask2 = tiling.dhwAlignSize / mask1 * GROUPNORM_MASK_SMALLEST_VAL;
     PipeBarrier<PIPE_V>();  
 
-    WholeReduceSum<float, true>(tempTensorC, tempTensorB, mask1, repeat1, GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(tempTensorC, tempTensorB, mask1, repeat1, 
+                                GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(outputMean, tempTensorC, mask2, tiling.bsCurLength, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(outputMean[loopCount * tiling.bsCurLength + mvOffset], tempTensorC, mask2, tiling.bsCurLength, 
+                                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    Muls(outputMean, outputMean, tiling.factor, tiling.bsCurLength);
+    for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+        uint64_t maskMvOffset = i + loopCount * tiling.bsCurLength + mvOffset;
+        uint32_t maskMod = maskMvOffset / GROUPNORM_MASK_MAX_VAL;
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (maskMvOffset - maskMod * GROUPNORM_MASK_MAX_VAL);
+        uint64_t mask[1] = {maskOffset};
+        Muls(outputMean[GROUPNORM_MASK_MAX_VAL * maskMod], outputMean[GROUPNORM_MASK_MAX_VAL * maskMod], tiling.factor, 
+            mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+    }
+    
     auto eventIdVToS = GetTPipePtr()->FetchEventID(HardEvent::V_S);
     SetFlag<HardEvent::V_S>(eventIdVToS);
     WaitFlag<HardEvent::V_S>(eventIdVToS);
 
     for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
         uint32_t buffIndex = i * tiling.dhwAlignSize;
-        Adds(tempTensorB[buffIndex], tempTensorB[buffIndex], -1.0f * outputMean.GetValue(i), tiling.hw, tiling.d,
-        {1, 1, static_cast<uint8_t>(tiling.hwAlignSize / GROUPNORM_ONE_BLK_SIZE), static_cast<uint8_t>(tiling.hwAlignSize / GROUPNORM_ONE_BLK_SIZE)});
-    }
-    PipeBarrier<PIPE_V>();  
+        Adds(tempTensorB[buffIndex], tempTensorB[buffIndex], -1.0f * outputMean.GetValue(i + loopCount * tiling.bsCurLength + mvOffset), 
+            tiling.hw, tiling.d, {1, 1, static_cast<uint8_t>(tiling.hwAlignSize / GROUPNORM_ONE_BLK_SIZE), 
+            static_cast<uint8_t>(tiling.hwAlignSize / GROUPNORM_ONE_BLK_SIZE)});
+        PipeBarrier<PIPE_V>();
+    }  
 
     Mul(tempTensorC, tempTensorB, tempTensorB, tiling.bshCurLength);
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(tempTensorA, tempTensorC, mask1, repeat1, GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(tempTensorA, tempTensorC, mask1, repeat1, 
+                                GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(outputVariance, tempTensorA, mask2, tiling.bsCurLength, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(outputVariance[loopCount * tiling.bsCurLength + mvOffset], tempTensorA, mask2, tiling.bsCurLength, 
+                                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    Muls(outputVariance, outputVariance, tiling.factor, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();
+    for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+        uint64_t maskMvOffset = i + loopCount * tiling.bsCurLength + mvOffset;
+        uint32_t maskMod = maskMvOffset / GROUPNORM_MASK_MAX_VAL;
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (maskMvOffset - maskMod * GROUPNORM_MASK_MAX_VAL);
+        uint64_t mask[1] = {maskOffset};
 
-    GetGroupNormOutputPre(tempTensorB, tempTensorA, tempTensorC, outputVariance, tiling, static_cast<float>(epsilon));
+        Muls(outputVariance[GROUPNORM_MASK_MAX_VAL * maskMod], outputVariance[GROUPNORM_MASK_MAX_VAL * maskMod], tiling.factor, 
+            mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+    }
+
+    GetGroupNormOutputPre(tempTensorB, tempTensorA, tempTensorC, outputVariance, tiling, static_cast<float>(epsilon), loopCount, mvOffset);
 
     Cast<float, half>(tempTensorA, gamma, RoundMode::CAST_NONE, tiling.c);
     PipeBarrier<PIPE_V>();
     Cast<float, half>(tempTensorC, beta, RoundMode::CAST_NONE, tiling.c);
     PipeBarrier<PIPE_V>();
 
-    GetGroupNormOutput(tempTensorB, tempTensorA, tempTensorC, tiling, loopCount);
+    GetGroupNormOutput(tempTensorB, tempTensorA, tempTensorC, tiling, loopCount, mvOffset);
    
     Cast<half, float>(output, tempTensorB, RoundMode::CAST_NONE, tiling.inputRoundSize);
     PipeBarrier<PIPE_V>();
@@ -267,13 +317,28 @@ __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<half>& inputX,
 __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<float>& inputX,
     const LocalTensor<float>& gamma, const LocalTensor<float>& beta,
     const LocalTensor<float>& output, const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance,
-    const float epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount)
+    const float epsilon, const GroupNormTiling& tiling, const GroupNormParams<float>& params, const int32_t loopCount, 
+    const int32_t mvOffset)
 {
     LocalTensor<float> tempTensorA = params.tempTensorA;
     LocalTensor<float> tempTensorB = params.tempTensorB;
     LocalTensor<float> tempTensorC = params.tempTensorC;
-    Duplicate(output, 0.0f, tiling.inputRoundSize);
-    PipeBarrier<PIPE_V>();
+
+    if (mvOffset) {
+        for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+            uint64_t maskMvOffset = i + loopCount * tiling.bsCurLength + mvOffset;
+            uint32_t maskMod = maskMvOffset / GROUPNORM_MASK_MAX_VAL;
+            uint64_t maskOffset = static_cast<uint64_t>(1) << (maskMvOffset - maskMod * GROUPNORM_MASK_MAX_VAL);
+            uint64_t mask[1] = {maskOffset};
+
+            Duplicate(output[GROUPNORM_MASK_MAX_VAL * maskMod], 0.0f, mask, 1, 1, GROUPNORM_MASK_SMALLEST_VAL);
+            PipeBarrier<PIPE_V>();
+        }
+    } else {
+        Duplicate(output, 0.0f, tiling.inputRoundSize);
+        PipeBarrier<PIPE_V>();
+    }
+    
     Duplicate(tempTensorC, 0.0f, tiling.inputRoundSize);
     PipeBarrier<PIPE_V>();
     uint32_t mask1 = GetGroupNormWholeReduceMask1(tiling);
@@ -283,13 +348,23 @@ __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<float>& inputX,
     uint32_t mask2 = tiling.dhwAlignSize / mask1 * GROUPNORM_MASK_SMALLEST_VAL;
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(tempTensorC, inputX, mask1, repeat1, GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(tempTensorC, inputX, mask1, repeat1, 
+                                GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(outputMean, tempTensorC, mask2, tiling.bsCurLength, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(outputMean[loopCount * tiling.bsCurLength + mvOffset], tempTensorC, mask2, tiling.bsCurLength, 
+                                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    Muls(outputMean, outputMean, tiling.factor, tiling.bsCurLength);
+    for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+        uint64_t maskMvOffset = i + loopCount * tiling.bsCurLength + mvOffset;
+        uint32_t maskMod = maskMvOffset / GROUPNORM_MASK_MAX_VAL;
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (maskMvOffset - maskMod * GROUPNORM_MASK_MAX_VAL);
+        uint64_t mask[1] = {maskOffset};
+        Muls(outputMean[GROUPNORM_MASK_MAX_VAL * maskMod], outputMean[GROUPNORM_MASK_MAX_VAL * maskMod], tiling.factor, 
+            mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+    }
+    
     auto eventIdVToS = GetTPipePtr()->FetchEventID(HardEvent::V_S);
     SetFlag<HardEvent::V_S>(eventIdVToS);
     WaitFlag<HardEvent::V_S>(eventIdVToS);
@@ -297,10 +372,11 @@ __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<float>& inputX,
     auto repeatStride = tiling.hwAlignSize / GROUPNORM_ONE_BLK_SIZE;
     for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
         uint32_t buffIndex = i * tiling.dhwAlignSize;
-        Adds(output[buffIndex], inputX[buffIndex], -1.0f * outputMean.GetValue(i), tiling.hw, tiling.d,
+        Adds(output[buffIndex], inputX[buffIndex], -1.0f * outputMean.GetValue(i + loopCount * tiling.bsCurLength + mvOffset), tiling.hw, tiling.d,
         {1, 1, static_cast<uint8_t>(repeatStride), static_cast<uint8_t>(repeatStride)});
+
+        PipeBarrier<PIPE_V>();
     }
-    PipeBarrier<PIPE_V>();
 
     Mul(tempTensorC, output, output, tiling.bshCurLength);
     PipeBarrier<PIPE_V>();
@@ -308,17 +384,27 @@ __aicore__ inline void GroupNormExeSmallShape(const LocalTensor<float>& inputX,
     Duplicate(tempTensorA, 0.0f, tiling.inputRoundSize);
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(tempTensorA, tempTensorC, mask1, repeat1, GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(tempTensorA, tempTensorC, mask1, repeat1, 
+                                GROUPNORM_MASK_SMALLEST_VAL, DEFAULT_BLK_STRIDE, mask1 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    WholeReduceSum<float, true>(outputVariance, tempTensorA, mask2, tiling.bsCurLength, DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
+    WholeReduceSum<float, true>(outputVariance[loopCount * tiling.bsCurLength + mvOffset], tempTensorA, mask2, tiling.bsCurLength, 
+                                DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, mask2 / GROUPNORM_MASK_SMALLEST_VAL);
     PipeBarrier<PIPE_V>();
 
-    Muls(outputVariance, outputVariance, tiling.factor, tiling.bsCurLength);
-    PipeBarrier<PIPE_V>();
-    GetGroupNormOutputPre(output, tempTensorA, tempTensorB, outputVariance, tiling, epsilon);
+    for (uint32_t i = 0; i < tiling.bsCurLength; ++i) {
+        uint64_t maskMvOffset = i + loopCount * tiling.bsCurLength + mvOffset;
+        uint32_t maskMod = maskMvOffset / GROUPNORM_MASK_MAX_VAL;
+        uint64_t maskOffset = static_cast<uint64_t>(1) << (maskMvOffset - maskMod * GROUPNORM_MASK_MAX_VAL);
+        uint64_t mask[1] = {maskOffset};
+        Muls(outputVariance[GROUPNORM_MASK_MAX_VAL * maskMod], outputVariance[GROUPNORM_MASK_MAX_VAL * maskMod], tiling.factor, 
+            mask, 1, {1, 1, GROUPNORM_MASK_SMALLEST_VAL, GROUPNORM_MASK_SMALLEST_VAL});
+        PipeBarrier<PIPE_V>();
+    }
+    
+    GetGroupNormOutputPre(output, tempTensorA, tempTensorB, outputVariance, tiling, epsilon, loopCount, mvOffset);
 
-    GetGroupNormOutput(output, gamma, beta, tiling, loopCount);
+    GetGroupNormOutput(output, gamma, beta, tiling, loopCount, mvOffset);
 }
 
 template <bool isReuseSource = false>
@@ -395,20 +481,18 @@ __aicore__ inline void GroupNormNDCommon(const LocalTensor<T>& inputX,
     if (tiling.smallShape) {
         for (uint32_t index = 0; index < tiling.loopRound; index++) {
             GroupNormExeSmallShape(inputX[inputOffset], gamma, beta, output[inputOffset],
-            params.meanTmpTensor[mvOffset],
-            params.varianceTmpTensor[mvOffset], epsilon, tiling, params, index);
+            params.meanTmpTensor,
+            params.varianceTmpTensor, epsilon, tiling, params, index, mvOffset);
 
             inputOffset += tiling.inputRoundSize;
-            mvOffset += tiling.meanVarRoundSize;
         }
     } else {
         for (uint32_t index = 0; index < tiling.loopRound; index++) {
             GroupNormExe(inputX[inputOffset], gamma, beta, output[inputOffset],
-            params.meanTmpTensor[mvOffset],
-            params.varianceTmpTensor[mvOffset], epsilon, tiling, params, index);
+            params.meanTmpTensor,
+            params.varianceTmpTensor, epsilon, tiling, params, index, mvOffset);
 
             inputOffset += tiling.inputRoundSize;
-            mvOffset += tiling.meanVarRoundSize;
         }
     }
 
@@ -421,12 +505,12 @@ __aicore__ inline void GroupNormNDCommon(const LocalTensor<T>& inputX,
 
         if (tiling.smallShape) {
             GroupNormExeSmallShape(inputX[inputOffset], gamma, beta, output[inputOffset],
-            params.meanTmpTensor[mvOffset],
-            params.varianceTmpTensor[mvOffset], epsilon, tiling, params, tiling.loopRound);
+            params.meanTmpTensor,
+            params.varianceTmpTensor, epsilon, tiling, params, 0, mvOffset);
         } else {
             GroupNormExe(inputX[inputOffset], gamma, beta, output[inputOffset],
-            params.meanTmpTensor[mvOffset],
-            params.varianceTmpTensor[mvOffset], epsilon, tiling, params, tiling.loopRound);
+            params.meanTmpTensor,
+            params.varianceTmpTensor, epsilon, tiling, params, 0, mvOffset);
         }
 
         // revert to normal round size from tail size, for the next iteration calculation

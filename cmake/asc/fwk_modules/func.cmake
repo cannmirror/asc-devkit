@@ -144,7 +144,7 @@ function(npu_op_device_tiling_library target_name target_type)
       -DOPTION=${_upper_target_type}
       -DSRC=${EP_SOURCES}
       <SOURCE_DIR>
-      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+      CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${ASCENDC_INSTALL_PREFIX}
       INSTALL_COMMAND ""
       BUILD_ALWAYS TRUE
   )
@@ -325,7 +325,7 @@ function(npu_op_package target_package_name)
 
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_SOURCE_PACKAGE ${ENABLE_SOURCE_PACKAGE})
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_BINARY_PACKAGE ${ENABLE_BINARY_PACKAGE})
-  set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_INSTALL_PATH ${CMAKE_INSTALL_PREFIX})
+  set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_INSTALL_PATH ${ASCENDC_INSTALL_PREFIX})
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_DEFAULT_PACKAGE_NAME_RULE True)
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_VENDOR_NAME ${target_package_name})
 

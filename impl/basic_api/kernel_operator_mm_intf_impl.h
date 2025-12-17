@@ -18,7 +18,6 @@
 #include "kernel_check.h"
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_mm.h"
-#include "tile_api/kernel_tensor_tile_load_data_impl.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -186,6 +185,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 #endif
     LoadDataImpl<T, defaultConfig>(dst, src, loadDataParams);
 }
+
 /* **************************************************************************************************
  * LoadData 3dv2Pro                                             *
  * enhanced from v1, suitable for aicore > 200                                             *

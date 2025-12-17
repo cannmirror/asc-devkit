@@ -18,7 +18,7 @@
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "../../../impl/adv_api/detail/math/clamp/clamp_common_impl.h"
 #include "kernel_pop_stack_buffer.h"
-
+ 
 namespace AscendC {
 /* !
  * \brief This function implements replaces numbers greater than scalar with scalar

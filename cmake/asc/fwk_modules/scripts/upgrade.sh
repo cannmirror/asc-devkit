@@ -17,7 +17,7 @@ sourcedir=$PWD/packages
 vendordir=vendors/$vendor_name
 
 log() {
-    cur_date=`date +"%Y-%m-%d %H:%M:%S"`
+    cur_date=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[ops_custom] [$cur_date] "$1
 }
 

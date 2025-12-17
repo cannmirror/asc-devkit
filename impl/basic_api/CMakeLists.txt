@@ -1,11 +1,11 @@
-# ----------------------------------------------------------------------------------------------------------
-# Copyright (c) 2025 Huawei Technologies Co., Ltd.
-# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
-# CANN Open Software License Agreement Version 2.0 (the "License").
-# Please refer to the License for details. You may not use this file except in compliance with the License.
-# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
-# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
-# See LICENSE in the root of the software repository for the full text of the License.
+# ----------------------------------------------------------------------------------------------------------	
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.	
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of	
+# CANN Open Software License Agreement Version 2.0 (the "License").	
+# Please refer to the License for details. You may not use this file except in compliance with the License.	
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,	
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.	
+# See LICENSE in the root of the software repository for the full text of the License.	
 # ----------------------------------------------------------------------------------------------------------
 
 add_custom_target(hostapi_headers
@@ -112,20 +112,17 @@ install(CODE "file(CREATE_LINK ../basic_api/kernel_type.h ${CMAKE_INSTALL_PREFIX
 
 # 2 ascendc/include/basic_api
 if(NOT BUILD_OPEN_PROJECT)
-  install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../asc/include/basic_api/op_frame ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/op_frame SYMBOLIC)")
 endif()
 install(CODE "file(CREATE_LINK ../../../asc/include/interface ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/interface SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../asc/include/kernel_operator.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/kernel_operator.h SYMBOLIC)")
 
-install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/tile_api ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/tile_api SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/common_types.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/common_types.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_c100 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_c100 SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_c220 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_c220 SYMBOLIC)")
-install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_c310 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_c310 SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_m200 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_m200 SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_m300 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_m300 SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_m310 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_m310 SYMBOLIC)")
-install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_m510 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_m510 SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_check.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_check.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_check_util.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_check_util.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_event.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_event.h SYMBOLIC)")
@@ -191,6 +188,7 @@ install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_tquebind_im
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_tquesync_impl.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_tquesync_impl.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_type_conversion_utils.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_type_conversion_utils.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_utils.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_utils.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_utils_base.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_utils_base.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/utils ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/utils SYMBOLIC)")
 
 # 3 tikcpp/tikcfw

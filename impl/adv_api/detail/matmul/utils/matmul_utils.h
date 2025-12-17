@@ -135,13 +135,13 @@ template <> struct GetMmDstType<int8_t> {
     using Type = int32_t;
 };
 
-#if __CCE_AICORE__ >= 220 && (__NPU_ARCH__ != 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3510) && (__NPU_ARCH__ != 5102)
 template <> struct GetMmDstType<bfloat16_t> {
     using Type = float;
 };
 #endif
 
-#if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <> struct GetMmDstType<int4b_t> {
     using Type = int32_t;
 };

@@ -16,16 +16,6 @@
 #define LIB_NORMALIZATION_WELFORDFINALIZE_UTILS_H
 
 namespace AscendC {
-struct WelfordFinalizeConfig {
-    __aicore__ constexpr WelfordFinalizeConfig(const bool isCorrectionIn)
-    {
-        isCorrection = isCorrectionIn;
-    }
-    bool isCorrection = false;
-};
-
-constexpr WelfordFinalizeConfig WFFINALIZE_DEFAULT_CFG = { false };
-
 struct WelfordFinalizePara
 {
     uint32_t rnLength;

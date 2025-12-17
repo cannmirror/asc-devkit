@@ -18,7 +18,7 @@ import stat
 import subprocess
 from asc_op_compile_base.common.buildcfg import get_current_build_config
 from .global_storage import global_var_storage
-from .ascendc_common_utility import CommonUtility, CompileInfo
+from .ascendc_common_utility import CommonUtility, CompileInfo, get_kernel_fun_name_with_tiling_key_and_kernel_type
 from .get_op_tiling import TilingInfo
 from asc_op_compile_base.common.utils.log_utils import CompileStage
 from .ascendc_constants import CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC, ASCENDC_OOM, KernelMetaType, \
@@ -240,6 +240,20 @@ def set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch
     return
 
 
+def set_dynamic_sub_func_names_of_super_kernel_with_kernel_type_group(tiling_key, arch, kernel_type, \
+                                                                      kernel_func_name, compile_info: CompileInfo):
+    set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key, arch, kernel_type, kernel_func_name)
+    if compile_info.tiling_key_group_map is not None and len(compile_info.tiling_key_group_map) > 0:
+        if tiling_key in compile_info.tiling_key_group_map.keys():
+            for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
+                kernel_type_slave = compile_info.tiling_key_kernel_type[str(tiling_key_slave)]
+                kernel_func_name = get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info, \
+                                                                                    str(tiling_key_slave))
+                set_dynamic_sub_func_names_of_super_kernel_with_kernel_type(tiling_key_slave, arch, \
+                                                                        kernel_type_slave.name, kernel_func_name)
+    return
+
+
 def set_dynamic_sub_func_names_of_super_kernel(tiling_key, compile_info, arch, kernel_func_name):
     if global_var_storage.get_variable("ascendc_enable_super_kernel") is False:
         return
@@ -301,7 +315,21 @@ def gen_current_kernel_name(compile_info: CompileInfo, sub_arch: str, code_chann
     return current_kernel_name
 
 
-def call_bisheng_v220(compile_info: CompileInfo, compile_option_tuple, tiling_info: TilingInfo, sub_arch: str, \
+def get_compile_cmd_for_kernel_name(compile_info: CompileInfo, current_kernel_name: str, code_channel: int, \
+                                    tiling_info: TilingInfo):    
+    compile_cmd = [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
+    if code_channel == CORE_TYPE_MIX:
+        compile_cmd += [f"-D{MIX_CORE_MACRO}={1}"]
+    if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
+        if code_channel == CORE_TYPE_MIX:
+            compile_cmd += [f"-D__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__"]
+        raw_kernel_type = compile_info.raw_tiling_key_kernel_type.get(str(tiling_info.tiling_key))
+        if raw_kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY:
+            compile_cmd += [f"-DRAW_AIC_ONLY_DUMP_TENSOR"]
+    return compile_cmd
+
+
+def call_bisheng_v220(compile_info: CompileInfo, compile_option_tuple, tiling_info: TilingInfo, sub_arch: str,\
     code_channel: int):
     """generate bisheng cmd instead of _build_aicore_compile_cmd, since tbe set davinci-c220-{sub_core} in build_cce.cc
 
@@ -318,18 +346,10 @@ def call_bisheng_v220(compile_info: CompileInfo, compile_option_tuple, tiling_in
             compile_option_tuple, sub_arch, tiling_info.tiling_data_file_path)
         # tbe-pass add "__kernel0" in tbe-codegen and json, we use -D to change function name
         current_kernel_name = gen_current_kernel_name(compile_info, sub_arch, code_channel)
-        compile_cmd += [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
-        if code_channel == CORE_TYPE_MIX:
-            compile_cmd += [f"-D{MIX_CORE_MACRO}={1}"]
-        if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
-            if code_channel == CORE_TYPE_MIX:
-                compile_cmd += [f"-D__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__"]
-            raw_kernel_type = compile_info.raw_tiling_key_kernel_type.get(str(tiling_info.tiling_key))
-            if raw_kernel_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY:
-                compile_cmd += [f"-DRAW_AIC_ONLY_DUMP_TENSOR"]
-        new_sources += DFXSectionGenerator().generate_dfx_section(str(tiling_info.tiling_key), \
+        compile_cmd += get_compile_cmd_for_kernel_name(compile_info, current_kernel_name, code_channel, tiling_info)
+        new_sources += DFXSectionGenerator().generate_dfx_section(str(tiling_info.tiling_key),\
                                             tiling_info, current_kernel_name, compile_info, True)
-        if compile_info.code_channel == CORE_TYPE_MIX:
+        if compile_info.code_channel == CORE_TYPE_MIX :
             if "vec" in sub_arch:
                 new_sources += global_var_storage.get_variable("ascendc_meta_info")
         else:
@@ -352,7 +372,7 @@ def call_bisheng_v220(compile_info: CompileInfo, compile_option_tuple, tiling_in
                 tiling_key, compile_info, sub_arch, tiling_info, code_channel, compile_option_tuple)
             compile_cmd, kernel_name = compile_single_tiling_v220(param)
             new_sources += DFXSectionGenerator().generate_dfx_section(tiling_key, \
-                                                tiling_info, kernel_name, compile_info, True)
+                                            tiling_info, kernel_name, compile_info, True)
             cmds_list.append(compile_cmd)
         if compile_info.code_channel == CORE_TYPE_MIX:
             if "vec" in sub_arch:
@@ -369,66 +389,62 @@ def call_bisheng_v220(compile_info: CompileInfo, compile_option_tuple, tiling_in
         return compile_info.tiling_key_list
 
 
-def get_ktype_section_variable(variable_name: str, section_func_name: str, kernel_meta_type: KernelMetaType):
+def get_ktype_section_head(variable_name: str):
     chip_version = CommonUtility.get_chip_version().upper()
+    section_var = f""
+    if "mix_aic" in variable_name:
+        section_var += f"#if defined(__DAV_{chip_version}_CUBE__)\n"
+    elif "mix_aiv" in variable_name:
+        section_var += f"#if defined(__DAV_{chip_version}_VEC__)\n"
+    return section_var
+
+
+def get_ktype_section_variable(variable_name: str, section_func_name: str, kernel_meta_type: KernelMetaType):
+    section_var = f""
     if kernel_meta_type == KernelMetaType.KERNEL_TYPE_AIV_ONLY:
-        section_var = f""
         section_var += f"static const struct FunLevelKType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_AIV}} }};\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_AIC_ONLY:
-        section_var = f""
         section_var += f"static const struct FunLevelKType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_AIC}} }};\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_HARD_SYNC:
-        section_var = f""
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIV_MAIN}},\
     {{{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}}, 0, 1}} }};\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_HARD_SYNC:
-        section_var = f""
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIC_MAIN}},\
     {{{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}}, 1, 0}} }};\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0:
-        section_var = f""
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIV_MAIN}},\
     {{{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}}, 0, 1}} }};\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0:
-        section_var = f""
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIC_MAIN}},\
     {{{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}}, 1, 0}} }};\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:
-        section_var = f""
-        if "mix_aic" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_CUBE__)\n"
-        elif "mix_aiv" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_VEC__)\n"
+        section_var += get_ktype_section_head(variable_name)
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIC_MAIN}},\
     {{{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}}, 1, 1}} }};\n"
         section_var += "#endif\n"
     elif kernel_meta_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2:
-        section_var = f""
-        if "mix_aic" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_CUBE__)\n"
-        elif "mix_aiv" in variable_name:
-            section_var += f"#if defined(__DAV_{chip_version}_VEC__)\n"
+        section_var += get_ktype_section_head(variable_name)
         section_var += f"static const struct FunLevelMixCoreType {variable_name} __attribute__ "
         section_var += f"((used, section (\".ascend.meta.{section_func_name}\"))) = "
         section_var += f"{{ {{{{F_TYPE_KTYPE, sizeof(unsigned int)}}, K_TYPE_MIX_AIC_MAIN}},\
     {{{{F_TYPE_MIX_TASK_RATION, sizeof(unsigned int)}}, 1, 2}} }};\n"
         section_var += "#endif\n"
     else:
-        raise Exception(f"invalid kernel meta type")
+        raise Exception(f"invalid kernel meta type: {kernel_meta_type}")
     return section_var
 
 

@@ -14,7 +14,7 @@
 #define private public
 #define protected public
 #define ENABLE_TILING_DEBUG
-#include "tiling/tiling_api.h"
+#include "tiling_api.h"
 #include "include/adv_api/conv_backprop/conv3d_bp_filter_tilingdata.h"
 #include "include/adv_api/conv_backprop/conv3d_bp_filter_tiling_base.h"
 #include "include/adv_api/conv_backprop/conv3d_bp_filter_tiling.h"

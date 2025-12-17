@@ -19,6 +19,7 @@
 #include "kernel_tensor.h"
 #include "include/adv_api/normalization/layernormgrad_utils.h"
 #include "../../../impl/adv_api/detail/normalization/layernormgrad/layernormgrad_common_impl.h"
+
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {

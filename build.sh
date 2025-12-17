@@ -13,7 +13,7 @@ set -e
 
 SUPPORTED_SHORT_OPTS=("h" "j" "t" "p")
 SUPPORTED_LONG_OPTS=(
-    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "basic_test_one" "basic_test_two" "basic_test_three"
+    "help" "cov" "cache" "pkg" "asan" "make_clean" "cann_3rd_lib_path" "test" "cann_path" "adv_test" "basic_test_one" "basic_test_two" "basic_test_three" "build-type"
 )
 
 CURRENT_DIR=$(dirname $(readlink -f ${BASH_SOURCE[0]}))
@@ -23,11 +23,12 @@ CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
 CPU_NUM=$(($(cat /proc/cpuinfo | grep "^processor" | wc -l)))
 THREAD_NUM=16
+BUILD_TYPE="Release"
 
 dotted_line="----------------------------------------------------------------"
 
 function log() {
-    local current_time=`date +"%Y-%m-%d %H:%M:%S"`
+    local current_time=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[$current_time] "$1
 }
 
@@ -99,6 +100,8 @@ usage() {
   echo "    --cov                Enable code coverage for unit tests"
   echo "    --asan               Enable ASAN (address Sanitizer)"
   echo "    --make_clean         Clean build artifacts"
+  echo "    --build-type=<TYPE>"
+  echo "                         Specify build type (TYPE options: Release/Debug), Default:Release"
 }
 
 check_option_validity() {
@@ -329,6 +332,14 @@ set_options() {
       check_param_j
       shift 2
       ;;
+    --build-type=*)
+      BUILD_TYPE="${1#*=}"
+      shift
+      ;;
+    --build-type)
+      BUILD_TYPE="$2"
+      shift 2
+      ;;
     *)
       log "[ERROR] Undefined option: $1"
       usage
@@ -362,7 +373,6 @@ set_env() {
     exit 1
   fi
 
-  source $ASCEND_CANN_PACKAGE_PATH/bin/setenv.bash || echo "0"
 }
 
 function clean()
@@ -393,6 +403,9 @@ function build()
 
 function build_package(){
   CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=OFF"
+  if [ -n "${BUILD_TYPE}" ]; then
+    CUSTOM_OPTION="${CUSTOM_OPTION} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
+  fi
   cmake_config
   build package
   cp ${BUILD_DIR}/_CPack_Packages/makeself_staging/*.run ${OUTPUT_DIR}

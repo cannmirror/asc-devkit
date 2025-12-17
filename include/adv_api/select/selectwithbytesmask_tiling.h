@@ -57,7 +57,7 @@ uint32_t GetSelectWithBytesMaskMaxTmpSize(
     const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape,
     const uint32_t maskTypeSize, const bool isReuseMask);
 
-uint32_t GetSelecMaxTmpSize(
+uint32_t GetSelectMaxTmpSize(
     const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape,
     const uint32_t maskTypeSize, const bool isReuseMask);
 

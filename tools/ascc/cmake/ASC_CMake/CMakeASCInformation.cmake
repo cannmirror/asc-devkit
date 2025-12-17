@@ -8,10 +8,6 @@ else()
 endif()
 
 set(CMAKE_INCLUDE_FLAG_ASC "-I")
-# common compile options used for bisheng plugin
-if(DEFINED SOC_VERSION)
-    set(CMAKE_COMPILE_AS_ASC_FLAG "--npu-arch=${CCE_AICORE_ARCH} --npu-soc=${SOC_VERSION}")
-endif()
 
 # CMAKE_ASC_COMPILE_OBJECT not support pass list as argument, need to convert to string
 # variable in CMAKE_ASC_COMPILE_OBJECT does not support generator expressions
@@ -49,7 +45,7 @@ endif()
 # rule variable to compile a single .o file
 # CMAKE_ASC_COMPILER: bisheng
 if(NOT CMAKE_ASC_COMPILE_OBJECT)
-    set(CMAKE_ASC_COMPILE_OBJECT "<CMAKE_ASC_COMPILER> ${CMAKE_COMPILE_AS_ASC_FLAG} <DEFINES> <INCLUDES> -Xaicore-start \
+    set(CMAKE_ASC_COMPILE_OBJECT "<CMAKE_ASC_COMPILER> <DEFINES> <INCLUDES> -Xaicore-start \
 ${KERNEL_OPTIONS_LIST} -Xaicore-end -Xhost-start ${HOST_OPTIONS_LIST} -Xhost-end <FLAGS> -o <OBJECT> -c -x asc <SOURCE>")
 endif()
 

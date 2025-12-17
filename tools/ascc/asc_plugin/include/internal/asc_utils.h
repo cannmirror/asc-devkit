@@ -89,6 +89,12 @@ enum class CoreType: uint32_t {
     VEC
 };
 
+enum class FeatureFlag: uint32_t {
+    ASC_PRINT_MASK = 1,
+    ASC_FFTS_MASK = 2,
+    ASC_L2CACHE_HINT_MASK = 3
+};
+
 inline const std::unordered_map<KernelMetaType, std::string> KTYPE_STR_MAP = {
     {KernelMetaType::KERNEL_TYPE_AIV_ONLY, "KERNEL_TYPE_AIV_ONLY"},
     {KernelMetaType::KERNEL_TYPE_AIC_ONLY, "KERNEL_TYPE_AIC_ONLY"},
@@ -154,6 +160,28 @@ const std::unordered_map<std::string, AscPlugin::ShortSocVersion> SOC_VERSION_MA
     {"Ascend910_9581", AscPlugin::ShortSocVersion::ASCEND910_95},
     {"Ascend910_9589", AscPlugin::ShortSocVersion::ASCEND910_95},
     {"Ascend910_957c", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_95A1", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_95A2", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9591", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9592", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9595", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9596", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9581", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9582", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9583", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9584", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9585", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9586", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9587", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9588", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9571", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9572", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9573", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9574", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9575", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9576", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9577", AscPlugin::ShortSocVersion::ASCEND910_95},
+    {"Ascend910_9578", AscPlugin::ShortSocVersion::ASCEND910_95},
 };
 
 const std::map<std::pair<AscPlugin::ShortSocVersion, AscPlugin::CoreType>, std::string> CCE_AICORE_MAP = {
@@ -229,13 +257,10 @@ constexpr int32_t ASC_CANNPATH_NOT_FOUND = 3;
 constexpr int32_t ASC_SOC_NOT_SUPPORT = 4;
 constexpr int32_t ASC_JSONSTR_ARG_MISSING = 5;
 
-constexpr uint32_t ASC_PRINT_MASK = 0x01;
-constexpr uint32_t ASC_FFTS_MASK = 0x02;
-constexpr uint32_t ASC_L2CACHE_HINT_MASK = 0x04;
-
 inline constexpr char ORIGIN_KERNEL_PREFIX[] = "__origin__";
 inline constexpr char DEVICE_STUB_PREFIX[] = "__device_stub__";
 inline constexpr size_t DEVICE_STUB_PREFIX_LEN = 15;
+inline constexpr char ANONYMOUS_NAME[] = "(Anonymous Namespace)";
 
 // key: kernel manglename
 // value: {kernel original name, variable1 type, variable1 name, variable2 type, variable2 name ....}
@@ -356,5 +381,11 @@ KernelMetaType ExtractKernelType(const std::unordered_set<KernelMetaType> kTypeS
  */
 std::string ToUpper(const std::string& str);
 
+/**
+ * @brief Get AscendC feature meta section string
+ * @param flag feature flag
+ * @return return string of feature meta section
+ */
+std::string GetAscFeatureMetaSection(FeatureFlag flag);
 } // namespace AscPlugin
 #endif // __INCLUDE_INTERNAL_ASC_UTILS_H__

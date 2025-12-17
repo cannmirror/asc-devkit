@@ -89,7 +89,7 @@ private:
         }
 
 #if __NPU_ARCH__ == 5102
-        if constexpr (IsSupportB4<B_T>()) {
+        if constexpr (IsSupportB4<B_T>() || IsSupportB8<B_T>()) {
             bL1K = CeilAlign(bL1K, c0Size_);
         }
 #endif

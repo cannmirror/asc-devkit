@@ -183,12 +183,12 @@ __aicore__ inline void WriteDumpShapeInfo(const ShapeInfo &shapeInfo)
     dcci((__gm__ uint64_t*)ptr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
-__aicore__ inline void WriteFifoShapeInfo(const ShapeInfo &shapeInfo);
+__aicore__ inline void WriteRingBufShapeInfo(const ShapeInfo &shapeInfo);
 
 __aicore__ inline void DumpShapeImpl(const ShapeInfo &shapeInfo)
 {
     if (g_sysPrintFifoSpace != nullptr) {
-        WriteFifoShapeInfo(shapeInfo);
+        WriteRingBufShapeInfo(shapeInfo);
     } else {
         WriteDumpShapeInfo(shapeInfo);
     }
@@ -263,7 +263,7 @@ __aicore__ inline void DumpTensorLocal2GMEntityImpl(const LocalTensor<T>& src, u
 
 
 template <template<typename> class Tensor, typename T>
-__aicore__ inline void DumpTensorFifoImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize);
+__aicore__ inline void DumpTensorRingBufImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize);
 
 template <typename T>
 __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_t desc, uint32_t dumpSize)
@@ -271,7 +271,7 @@ __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
     if (g_sysPrintFifoSpace != nullptr) {
-        DumpTensorFifoImpl(src, desc, dumpSize);
+        DumpTensorRingBufImpl(src, desc, dumpSize);
     } else {
         DumpTensorLocal2GMEntityImpl(src, desc, dumpSize);
     }
@@ -434,7 +434,7 @@ __aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t 
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
     if (g_sysPrintFifoSpace != nullptr) {
-        DumpTensorFifoImpl(src, desc, dumpSize);
+        DumpTensorRingBufImpl(src, desc, dumpSize);
     } else {
         DumpTensorGM2GMEntityImpl(src, desc, dumpSize);
     }
@@ -635,35 +635,35 @@ __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char* f
 #endif
 }
 
-__aicore__ inline uint32_t GetArgsFifoLen(uint32_t& argsNum)
+__aicore__ inline uint32_t GetPrintArgsLen(uint32_t& argsNum)
 {
     return 0;
 }
 
 template <typename... Args>
-__aicore__ inline uint32_t GetArgsFifoLen(uint32_t& argsNum, Args&&... args);
+__aicore__ inline uint32_t GetPrintArgsLen(uint32_t& argsNum, Args&&... args);
 
 template <typename... Args>
-__aicore__ inline uint32_t GetArgsFifoLenImpl(uint32_t& argsNum, __gm__ const char* s, Args&&... args)
+__aicore__ inline uint32_t GetPrintArgsLenImpl(uint32_t& argsNum, __gm__ const char* s, Args&&... args)
 {
     constexpr uint32_t paramSize = sizeof(uint64_t);
     const uint32_t& strLen = GetStringLength(s);
     argsNum += 1;
-    return paramSize + strLen + GetArgsFifoLen(argsNum, args...);
+    return paramSize + strLen + GetPrintArgsLen(argsNum, args...);
 }
 
 template <typename T, typename... Args>
-__aicore__ inline uint32_t GetArgsFifoLenImpl(uint32_t& argsNum, T scalar, Args&&... args)
+__aicore__ inline uint32_t GetPrintArgsLenImpl(uint32_t& argsNum, T scalar, Args&&... args)
 {
     constexpr uint32_t paramSize = sizeof(uint64_t);
     argsNum += 1;
-    return paramSize + GetArgsFifoLen(argsNum, args...);
+    return paramSize + GetPrintArgsLen(argsNum, args...);
 }
 
 template <typename... Args>
-__aicore__ inline uint32_t GetArgsFifoLen(uint32_t& argsNum, Args&&... args)
+__aicore__ inline uint32_t GetPrintArgsLen(uint32_t& argsNum, Args&&... args)
 {
-    return GetArgsFifoLenImpl(argsNum, args...);
+    return GetPrintArgsLenImpl(argsNum, args...);
 }
 
 __aicore__ constexpr uint32_t AlignTlvLen(const uint32_t& dataLen)
@@ -673,54 +673,51 @@ __aicore__ constexpr uint32_t AlignTlvLen(const uint32_t& dataLen)
 }
 
 template <typename... Args>
-__aicore__ inline uint32_t GetPrintFifoTlvLen(uint32_t& argsNum, __gm__ const char* fmt, Args&&... args)
+__aicore__ inline uint32_t GetPrintTlvLen(uint32_t& argsNum, __gm__ const char* fmt, Args&&... args)
 {
     constexpr uint32_t printInfoLen = sizeof(PrintTlvInfoHead);
     const uint32_t& fmtLen = GetStringLength(fmt);
-    const uint32_t& argsLen = GetArgsFifoLen(argsNum, args...);
+    const uint32_t& argsLen = GetPrintArgsLen(argsNum, args...);
     return AlignTlvLen(printInfoLen + argsLen + fmtLen); // gm need 8 byte align
 }
 
-__aicore__ __gm__ inline BlockPrintFiFoInfo* GetPrintFiFoHead()
+__aicore__ __gm__ inline BlockRingBufInfo* GetBlockRingBufInfo()
 {
-    uint32_t blockIdx = GetDumpBlockIdx();
-    if (blockIdx >= DUMP_CORE_COUNT) {
-        return nullptr;
-    }
-    uint32_t blockLength = reinterpret_cast<__gm__ BlockPrintFiFoInfo*>(g_sysPrintFifoSpace)->length;
-    __gm__ BlockPrintFiFoInfo* fifoHead =
-        reinterpret_cast<__gm__ BlockPrintFiFoInfo*>(g_sysPrintFifoSpace + blockLength * blockIdx);
-    return fifoHead->magic == 0xAE86 ? fifoHead : nullptr;
+    uint32_t blockIdx = (get_coreid() & 0x00FF) % DUMP_CORE_COUNT; // & 0x00FF to fix coreid in 910C
+    uint32_t blockLength = reinterpret_cast<__gm__ BlockRingBufInfo*>(g_sysPrintFifoSpace)->length;
+    __gm__ BlockRingBufInfo* ringBufInfo =
+        reinterpret_cast<__gm__ BlockRingBufInfo*>(g_sysPrintFifoSpace + blockLength * blockIdx);
+    return ringBufInfo->magic == 0xAE86 ? ringBufInfo : nullptr;
 }
 
-__aicore__ inline void SkipPrintFifoDirectly(__gm__ BlockWriteInfo* writeInfo)
+__aicore__ inline void SkipRingBufDirectly(__gm__ RingBufWriteInfo* writeInfo)
 {
-    writeInfo->writeIdx = 0;
+    writeInfo->bufOffset = 0;
     dcci(reinterpret_cast<__gm__ uint64_t*>(writeInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     return;
 }
 
-__aicore__ inline void SkipPrintFifoWithInfo(
-    __gm__ BlockWriteInfo* writeInfo, __gm__ uint8_t* fifoBuffHead, const uint32_t& fifoBuffLen)
+__aicore__ inline void SkipRingBufWithInfo(
+    __gm__ RingBufWriteInfo* writeInfo, __gm__ uint8_t* ringBufAddr, const uint32_t& ringBufLen)
 {
-    __gm__ BlockSkipInfo* skipInfo = reinterpret_cast<__gm__ BlockSkipInfo*>(fifoBuffHead + writeInfo->writeIdx);
-    skipInfo->blockType = static_cast<uint32_t>(DumpType::DUMP_SKIP);
-    skipInfo->length = fifoBuffLen - writeInfo->writeIdx - sizeof(BlockSkipInfo);
-    writeInfo->writeIdx = 0;
+    __gm__ SkipTlvInfo* skipInfo = reinterpret_cast<__gm__ SkipTlvInfo*>(ringBufAddr + writeInfo->bufOffset);
+    skipInfo->type = static_cast<uint32_t>(DumpType::DUMP_SKIP);
+    skipInfo->length = ringBufLen - writeInfo->bufOffset - sizeof(SkipTlvInfo);
+    writeInfo->bufOffset = 0;
     writeInfo->packIdx += 1;
     dcci(reinterpret_cast<__gm__ uint64_t*>(skipInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     dcci(reinterpret_cast<__gm__ uint64_t*>(writeInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     return;
 }
 
-__aicore__ inline bool WaitFifoReadIdx(
-    __gm__ BlockReadInfo* readInfo, uint64_t writeIdx, const uint32_t& fifoTlvLen)
+__aicore__ inline bool RingBufferWait(__gm__ RingBufReadInfo* readInfo, __gm__ RingBufWriteInfo* writeInfo,
+                                      const uint32_t& tlvLen)
 {
-    const uint64_t& firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
-    constexpr uint64_t TIMEOUT_CYCLE = 50 * 1000 * 1000 * 5; // 5s
-    while(writeIdx + fifoTlvLen > readInfo->readIdx) {
+    const uint64_t firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
+    constexpr uint64_t timeoutCycle = 50 * 1000 * 1000 * 5; // 5s
+    while (writeInfo->bufOffset < readInfo->bufOffset && writeInfo->bufOffset + tlvLen >= readInfo->bufOffset) {
         uint64_t spendTime = static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp;
-        if (spendTime > TIMEOUT_CYCLE) {
+        if (spendTime > timeoutCycle) {
             return false;
         }
         dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
@@ -728,13 +725,15 @@ __aicore__ inline bool WaitFifoReadIdx(
     return true;
 }
 
-__aicore__ inline void WriteFifoTlvHead(
-    DumpType printType, __gm__ PrintTlvInfoHead* fifoTlvAddr, const uint32_t& fifoTlvLen, const uint32_t& argsNum)
+__aicore__ inline void WriteRingBufTlvHead(
+    DumpType printType, __gm__ PrintTlvInfoHead* printTlv, const uint32_t& tlvLen, const uint32_t& argsNum)
 {
-    fifoTlvAddr->printfType = static_cast<uint32_t>(printType);
-    fifoTlvAddr->printfLength = fifoTlvLen - sizeof(uint32_t[2]);
-    fifoTlvAddr->fmtOffset = (argsNum + 1) * sizeof(uint64_t);
-    dcci(reinterpret_cast<__gm__ uint64_t*>(fifoTlvAddr), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    printTlv->type = static_cast<uint32_t>(printType);
+    printTlv->length = tlvLen - sizeof(uint32_t[2]);   // exclude type and length
+    printTlv->resvMem[0] = static_cast<uint32_t>(0U);
+    printTlv->resvMem[1] = static_cast<uint32_t>(0U);
+    printTlv->fmtOffset = (argsNum + 1) * sizeof(uint64_t);      // include fmt offset
+    dcci(reinterpret_cast<__gm__ uint64_t*>(printTlv), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline void MemCopyGm2Gm(__gm__ uint8_t* dst, __gm__ const uint8_t* src, const uint32_t& len)
@@ -750,93 +749,113 @@ __aicore__ inline void MemCopyGm2Gm(__gm__ uint8_t* dst, __gm__ const uint8_t* s
 }
 
 template <typename... Args>
-__aicore__ inline void WriteFifoTlvData(__gm__ PrintTlvInfoHead* fifoTlvAddr, __gm__ const char* fmt, Args&&... args)
+__aicore__ inline void WriteRingBufTlvData(__gm__ PrintTlvInfoHead* printTlv, __gm__ const char* fmt, Args&&... args)
 {
     const uint32_t& strLen = GetStringLength(fmt);
     __gm__ uint8_t* paramAddr =
-        reinterpret_cast<__gm__ uint8_t*>(fifoTlvAddr + 1);
-    __gm__ uint8_t* fmtAddr = paramAddr + fifoTlvAddr->fmtOffset - sizeof(uint64_t);
+        reinterpret_cast<__gm__ uint8_t*>(printTlv + 1);
+    __gm__ uint8_t* fmtAddr = paramAddr + printTlv->fmtOffset - sizeof(uint64_t);
     __gm__ uint8_t* strParamAddr = reinterpret_cast<__gm__ uint8_t*>(fmtAddr) + strLen;
     MemCopyGm2Gm(fmtAddr, reinterpret_cast<__gm__ const uint8_t*>(fmt), strLen);
-    uint32_t strParamOffset = fifoTlvAddr->fmtOffset + strLen;
+    uint32_t strParamOffset = printTlv->fmtOffset + strLen;
     SetParam(paramAddr, 0, strParamOffset, args...);
 }
 
-__aicore__ inline void UpdateWriteInfo(__gm__ BlockWriteInfo* writeInfo, const uint32_t& fifoTlvLen)
+__aicore__ inline void UpdateWriteInfo(__gm__ RingBufWriteInfo* writeInfo, const uint32_t& tlvLen)
 {
-    writeInfo->writeIdx += fifoTlvLen;
+    writeInfo->bufOffset += tlvLen;
     writeInfo->packIdx += 1;
     dcci(reinterpret_cast<__gm__ uint64_t*>(writeInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
-__aicore__ __gm__ inline BlockReadInfo* GetBlockFifoReadInfo(__gm__ BlockPrintFiFoInfo* blockFifoInfo)
+__aicore__ __gm__ inline RingBufReadInfo* GetRingBufReadInfo(__gm__ BlockRingBufInfo* blockRingBufInfo)
 {
-    __gm__ uint8_t* blockFifoHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo);
+    __gm__ uint8_t* blockHead = reinterpret_cast<__gm__ uint8_t*>(blockRingBufInfo);
 
-    return reinterpret_cast<__gm__ BlockReadInfo*>(blockFifoHead + sizeof(BlockPrintFiFoInfo));
+    return reinterpret_cast<__gm__ RingBufReadInfo*>(blockHead + sizeof(BlockRingBufInfo));
 }
 
-__aicore__ __gm__ inline BlockWriteInfo* GetBlockFifoWriteInfo(__gm__ BlockPrintFiFoInfo* blockFifoInfo)
+__aicore__ __gm__ inline RingBufWriteInfo* GetRingBufWriteInfo(__gm__ BlockRingBufInfo* blockRingBufInfo)
 {
-    __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
+    __gm__ uint8_t* ringBufAddr = reinterpret_cast<__gm__ uint8_t*>(blockRingBufInfo->ringBufAddr);
 
-    return reinterpret_cast<__gm__ BlockWriteInfo*>(fifoBuffHead + blockFifoInfo->remainLen);
+    return reinterpret_cast<__gm__ RingBufWriteInfo*>(ringBufAddr + blockRingBufInfo->ringBufLen);
 }
 
-__aicore__ inline bool CheckAndWaitPrintFifoSpace(__gm__ BlockPrintFiFoInfo* blockFifoInfo, const uint32_t& fifoTlvLen)
+__aicore__ inline bool WaitRingBufBeginRead(__gm__ RingBufReadInfo* readInfo)
 {
-    constexpr uint32_t minTlvLen = sizeof(BlockSkipInfo);
-
-    __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
-    uint32_t fifoBuffLen = blockFifoInfo->remainLen;
-
-    __gm__ BlockReadInfo* readInfo = GetBlockFifoReadInfo(blockFifoInfo);
-    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
-
-    if (minTlvLen >= fifoBuffLen || fifoTlvLen > fifoBuffLen) {
-        return false;
-    } else if (writeInfo->writeIdx + minTlvLen >= fifoBuffLen){
-        SkipPrintFifoDirectly(writeInfo);
-    } else if (writeInfo->writeIdx + fifoTlvLen > fifoBuffLen) {
-        SkipPrintFifoWithInfo(writeInfo, fifoBuffHead, fifoBuffLen);
-    }
-    if (writeInfo->packIdx > 0 &&
-        writeInfo->writeIdx <= readInfo->readIdx &&
-        writeInfo->writeIdx + fifoTlvLen > readInfo->readIdx) {
-        return WaitFifoReadIdx(readInfo, writeInfo->writeIdx, fifoTlvLen);
+    const uint64_t firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
+    constexpr uint64_t timeoutCycle = 50 * 1000 * 1000 * 5; // 5s
+    while (readInfo->bufOffset == 0) {
+        uint64_t spendTime = static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp;
+        if (spendTime > timeoutCycle) {
+            return false;
+        }
+        dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     }
     return true;
 }
 
-__aicore__ __gm__ inline uint8_t* GetFifoTlvAddr(__gm__ BlockPrintFiFoInfo* blockFifoInfo)
+__aicore__ inline bool CheckAndWaitRingBufSpace(__gm__ BlockRingBufInfo* blockRingBufInfo, const uint32_t& tlvLen)
 {
-    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
-    __gm__ uint8_t* fifoBuffHead = reinterpret_cast<__gm__ uint8_t*>(blockFifoInfo->dumpAddr);
-    return fifoBuffHead + writeInfo->writeIdx;
+    constexpr uint32_t minTlvLen = sizeof(SkipTlvInfo);
+
+    __gm__ uint8_t* ringBufAddr = reinterpret_cast<__gm__ uint8_t*>(blockRingBufInfo->ringBufAddr);
+    uint32_t ringBufLen = blockRingBufInfo->ringBufLen;
+
+    __gm__ RingBufReadInfo* readInfo = GetRingBufReadInfo(blockRingBufInfo);
+    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
+
+    if (minTlvLen >= ringBufLen || tlvLen > ringBufLen) {
+        return false;
+    } else if (writeInfo->bufOffset + minTlvLen >= ringBufLen) {
+        if (!WaitRingBufBeginRead(readInfo)) { // check read is begin
+            return false;
+        }
+        SkipRingBufDirectly(writeInfo);
+    } else if (writeInfo->bufOffset + tlvLen > ringBufLen) {
+        if (!WaitRingBufBeginRead(readInfo)) { // check read is begin
+            return false;
+        }
+        SkipRingBufWithInfo(writeInfo, ringBufAddr, ringBufLen);
+    }
+    if (writeInfo->packIdx > 0 &&
+        writeInfo->bufOffset < readInfo->bufOffset &&
+        writeInfo->bufOffset + tlvLen >= readInfo->bufOffset) {
+        return RingBufferWait(readInfo, writeInfo, tlvLen);
+    }
+    return true;
+}
+
+__aicore__ __gm__ inline uint8_t* GetRingBufTlv(__gm__ BlockRingBufInfo* blockRingBufInfo)
+{
+    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
+    __gm__ uint8_t* ringBufAddr = reinterpret_cast<__gm__ uint8_t*>(blockRingBufInfo->ringBufAddr);
+    return ringBufAddr + writeInfo->bufOffset;
 }
 
 template <class... Args>
-__aicore__ inline void PrintfFifoImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
+__aicore__ inline void PrintfRingBufImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
 #ifdef ASCENDC_DUMP
-    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
-    if (blockFifoInfo == nullptr) {
+    __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
+    if (blockRingBufInfo == nullptr) {
         return;
     }
     uint32_t argsNum = 0;
-    const uint32_t& fifoTlvLen = GetPrintFifoTlvLen(argsNum, fmt, args...);
-    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+    const uint32_t& tlvLen = GetPrintTlvLen(argsNum, fmt, args...);
+    if (!CheckAndWaitRingBufSpace(blockRingBufInfo, tlvLen)) {
         return;
     }
 
-    __gm__ PrintTlvInfoHead* fifoTlvAddr = reinterpret_cast<__gm__ PrintTlvInfoHead*>(GetFifoTlvAddr(blockFifoInfo));
+    __gm__ PrintTlvInfoHead* printTlv = reinterpret_cast<__gm__ PrintTlvInfoHead*>(GetRingBufTlv(blockRingBufInfo));
 
-    WriteFifoTlvHead(printType, fifoTlvAddr, fifoTlvLen, argsNum);
-    WriteFifoTlvData(fifoTlvAddr, fmt, args...);
+    WriteRingBufTlvHead(printType, printTlv, tlvLen, argsNum);
+    WriteRingBufTlvData(printTlv, fmt, args...);
 
-    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
 
-    UpdateWriteInfo(writeInfo, fifoTlvLen);
+    UpdateWriteInfo(writeInfo, tlvLen);
 #endif // ASCENDC_DUMP
 }
 
@@ -913,7 +932,7 @@ __aicore__ inline void SetDumpDataL0C2GM(__gm__ uint8_t* dst, const LocalTensor<
 }
 
 template <template<typename> class Tensor, typename T>
-__aicore__ inline void WriteFifoTlvHead(const Tensor<T>& src, __gm__ DumpTensorTlvInfoHead* fifoTlvAddr,
+__aicore__ inline void WriteRingBufTlvHead(const Tensor<T>& src, __gm__ DumpTensorTlvInfoHead* dumpTensorTlv,
     const uint32_t& alignDumpDataLen, const uint32_t& desc, const uint32_t& dumpSize)
 {
     Hardware position;
@@ -922,31 +941,37 @@ __aicore__ inline void WriteFifoTlvHead(const Tensor<T>& src, __gm__ DumpTensorT
     } else if (IsSameType<Tensor<T>, GlobalTensor<T>>::value) {
         position = Hardware::GM;
     }
-    fifoTlvAddr->dumpType = static_cast<uint32_t>(DumpType::DUMP_TENSOR);
-    fifoTlvAddr->dumpLength = sizeof(uint32_t[6]) + alignDumpDataLen;
-    fifoTlvAddr->addr = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr()));
-    fifoTlvAddr->dataType = static_cast<uint32_t>(GetTensorDataType<T>());
-    fifoTlvAddr->desc = desc;
-    fifoTlvAddr->bufferId = 0;
-    fifoTlvAddr->position = static_cast<uint32_t>(position);
-    fifoTlvAddr->dumpSize = dumpSize * sizeof(T);
-    dcci((__gm__ uint64_t*)(fifoTlvAddr), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    dumpTensorTlv->type = static_cast<uint32_t>(DumpType::DUMP_TENSOR);
+    dumpTensorTlv->length = sizeof(DumpTensorTlvInfoHead) - sizeof(uint32_t[2]) + alignDumpDataLen;
+    dumpTensorTlv->tensorAddr = static_cast<uint32_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr()));
+    dumpTensorTlv->dataType = static_cast<uint32_t>(GetTensorDataType<T>());
+    dumpTensorTlv->desc = desc;
+    dumpTensorTlv->bufferId = static_cast<uint32_t>(0U);
+    dumpTensorTlv->position = static_cast<uint16_t>(position);
+    dumpTensorTlv->resv0 = static_cast<uint16_t>(0U);
+    dumpTensorTlv->dim = static_cast<uint32_t>(0U);
+    for (uint32_t i = 0; i < K_MAX_SHAPE_DIM; ++i) {
+        dumpTensorTlv->shape[i] = static_cast<uint32_t>(0U);
+    }
+    dumpTensorTlv->resv1 = static_cast<uint32_t>(0U);
+    dumpTensorTlv->dumpSize = dumpSize * sizeof(T);
+    dcci((__gm__ uint64_t*)(dumpTensorTlv), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
 template <typename T>
-__aicore__ inline void WriteFifoTlvData(const LocalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* fifoTlvAddr,
+__aicore__ inline void WriteRingBufTlvData(const LocalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* dumpTensorTlv,
     const uint32_t& alignDumpDataLen, const uint32_t& dumpSize)
 {
-    __gm__ T* dumpDataAddr = reinterpret_cast<__gm__ T*>(fifoTlvAddr + 1);
+    __gm__ T* dumpDataAddr = reinterpret_cast<__gm__ T*>(dumpTensorTlv + 1);
     DataCopyParams copyParams = {1, static_cast<uint16_t>(alignDumpDataLen / ONE_BLK_SIZE), 0, 0};
 
     PipeBarrier<PIPE_ALL>();
 
-    if (fifoTlvAddr->position == static_cast<uint32_t>(Hardware::UB)) {
+    if (dumpTensorTlv->position == static_cast<uint16_t>(Hardware::UB)) {
         DataCopyUB2GMImpl(dumpDataAddr, reinterpret_cast<__ubuf__ T*>(src.GetPhyAddr()), copyParams); // UB to GM
-    } else if (fifoTlvAddr->position == static_cast<uint32_t>(Hardware::L1)) {
+    } else if (dumpTensorTlv->position == static_cast<uint16_t>(Hardware::L1)) {
         DataCopyL12GMImpl(dumpDataAddr, reinterpret_cast<__cbuf__ T*>(src.GetPhyAddr()), copyParams); // L1 to GM
-    } else if (fifoTlvAddr->position == static_cast<uint32_t>(Hardware::L0C)) {
+    } else if (dumpTensorTlv->position == static_cast<uint16_t>(Hardware::L0C)) {
         SetDumpDataL0C2GM(reinterpret_cast<__gm__ uint8_t*>(dumpDataAddr), src, dumpSize); // L0C to GM
     }
 
@@ -956,15 +981,15 @@ __aicore__ inline void WriteFifoTlvData(const LocalTensor<T>& src, __gm__ DumpTe
 }
 
 template <typename T>
-__aicore__ inline void WriteFifoTlvData(
-    const GlobalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* fifoTlvAddr, const uint32_t& dumpSize)
+__aicore__ inline void WriteRingBufTlvData(
+    const GlobalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* dumpTensorTlv, const uint32_t& dumpSize)
 {
-    __gm__ uint8_t* dst = reinterpret_cast<__gm__ uint8_t*>(fifoTlvAddr + 1);
+    __gm__ uint8_t* dst = reinterpret_cast<__gm__ uint8_t*>(dumpTensorTlv + 1);
     MemCopyGm2Gm(dst, reinterpret_cast<__gm__ const uint8_t*>(src.GetPhyAddr()), dumpSize * sizeof(T));
 }
 
 template <template<typename> class Tensor, typename T>
-__aicore__ inline void DumpTensorFifoImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpTensorRingBufImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize)
 {
     if constexpr (GetTensorDataType<T>() == Internal::DumpTensorDataType::ACL_MAX) {
         ASCENDC_ASSERT((false),
@@ -990,54 +1015,55 @@ __aicore__ inline void DumpTensorFifoImpl(const Tensor<T>& src, uint32_t desc, u
         }
     }
 
-    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
-    if (blockFifoInfo == nullptr) {
+    __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
+    if (blockRingBufInfo == nullptr) {
         return;
     }
     uint32_t alignDumpDataLen = AlignUp(dumpSize * sizeof(T), ONE_BLK_SIZE);
-    uint32_t fifoTlvLen = sizeof(DumpTensorTlvInfoHead) + alignDumpDataLen;
-    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+    uint32_t tlvLen = sizeof(DumpTensorTlvInfoHead) + alignDumpDataLen;
+    if (!CheckAndWaitRingBufSpace(blockRingBufInfo, tlvLen)) {
         return;
     }
 
-    __gm__ DumpTensorTlvInfoHead* fifoTlvAddr =
-        reinterpret_cast<__gm__ DumpTensorTlvInfoHead*>(GetFifoTlvAddr(blockFifoInfo));
+    __gm__ DumpTensorTlvInfoHead* dumpTensorTlv =
+        reinterpret_cast<__gm__ DumpTensorTlvInfoHead*>(GetRingBufTlv(blockRingBufInfo));
 
-    WriteFifoTlvHead(src, fifoTlvAddr, alignDumpDataLen, desc, dumpSize);
+    WriteRingBufTlvHead(src, dumpTensorTlv, alignDumpDataLen, desc, dumpSize);
     if constexpr (IsSameType<Tensor<T>, LocalTensor<T>>::value) {
-        WriteFifoTlvData(src, fifoTlvAddr, alignDumpDataLen, dumpSize);
+        WriteRingBufTlvData(src, dumpTensorTlv, alignDumpDataLen, dumpSize);
     } else if (IsSameType<Tensor<T>, GlobalTensor<T>>::value) {
-        WriteFifoTlvData(src, fifoTlvAddr, dumpSize);
+        WriteRingBufTlvData(src, dumpTensorTlv, dumpSize);
     }
 
-    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
 
-    UpdateWriteInfo(writeInfo, fifoTlvLen);
+    UpdateWriteInfo(writeInfo, tlvLen);
 }
 
-__aicore__ inline void WriteFifoShapeInfo(const ShapeInfo &shapeInfo)
+__aicore__ inline void WriteRingBufShapeInfo(const ShapeInfo &shapeInfo)
 {
-    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
-    if (blockFifoInfo == nullptr) {
+    __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
+    if (blockRingBufInfo == nullptr) {
         return;
     }
-    uint32_t fifoTlvLen = sizeof(DumpShapeTlvInfo);
-    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+    uint32_t tlvLen = sizeof(DumpShapeTlvInfo);
+    if (!CheckAndWaitRingBufSpace(blockRingBufInfo, tlvLen)) {
         return;
     }
-    __gm__ DumpShapeTlvInfo* fifoTlvAddr =
-        reinterpret_cast<__gm__ DumpShapeTlvInfo*>(GetFifoTlvAddr(blockFifoInfo));
-    fifoTlvAddr->dumpType = static_cast<uint32_t>(DumpType::DUMP_SHAPE);
-    fifoTlvAddr->dumpLength = sizeof(uint32_t[10]);
-    fifoTlvAddr->dim = shapeInfo.shapeDim;
+    __gm__ DumpShapeTlvInfo* shapeTlv =
+        reinterpret_cast<__gm__ DumpShapeTlvInfo*>(GetRingBufTlv(blockRingBufInfo));
+    shapeTlv->type = static_cast<uint32_t>(DumpType::DUMP_SHAPE);
+    shapeTlv->length = tlvLen - sizeof(uint32_t[2]);
+    shapeTlv->dim = shapeInfo.shapeDim;
     for (uint32_t i = 0; i < K_MAX_SHAPE_DIM; ++i) {
-        fifoTlvAddr->shape[i] = shapeInfo.shape[i];
+        shapeTlv->shape[i] = shapeInfo.shape[i];
     }
-    dcci((__gm__ uint64_t*)fifoTlvAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    shapeTlv->resv = static_cast<uint32_t>(0U);;
+    dcci((__gm__ uint64_t*)shapeTlv, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 
-    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
 
-    UpdateWriteInfo(writeInfo, fifoTlvLen);
+    UpdateWriteInfo(writeInfo, tlvLen);
 }
 
 template <class... Args>
@@ -1046,7 +1072,7 @@ __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Ar
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
     if (g_sysPrintFifoSpace != nullptr) {
-        PrintfFifoImpl(printType, fmt, args...);
+        PrintfRingBufImpl(printType, fmt, args...);
     } else {
         PrintfEntityImpl(printType, fmt, args...);
     }
@@ -1072,37 +1098,41 @@ __aicore__ inline void WriteTimeStampInfo(uint32_t descId)
 #endif
 }
 
-__aicore__ inline void WriteFifoTimeStampInfo(uint32_t descId)
+__aicore__ inline void WriteRingBufTimeStampInfo(uint32_t descId)
 {
-    __gm__ BlockPrintFiFoInfo* blockFifoInfo = GetPrintFiFoHead();
-    if (blockFifoInfo == nullptr) {
+#ifdef ASCENDC_TIME_STAMP_ON
+    __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
+    if (blockRingBufInfo == nullptr) {
         return;
     }
-    uint32_t fifoTlvLen = sizeof(TimeStampTlvInfo);
-    if (!CheckAndWaitPrintFifoSpace(blockFifoInfo, fifoTlvLen)) {
+    uint32_t tlvLen = sizeof(TimeStampTlvInfo);
+    if (!CheckAndWaitRingBufSpace(blockRingBufInfo, tlvLen)) {
         return;
     }
 
-    __gm__ TimeStampTlvInfo* fifoTlvAddr =
-        reinterpret_cast<__gm__ TimeStampTlvInfo*>(GetFifoTlvAddr(blockFifoInfo));
-    fifoTlvAddr->dumpType = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP);
-    fifoTlvAddr->dumpLength = fifoTlvLen - sizeof(uint32_t[2]);
-    fifoTlvAddr->descId = descId;
-    fifoTlvAddr->resv = static_cast<uint32_t>(0U);
-    fifoTlvAddr->cycle = static_cast<uint64_t>(GetSystemCycle());
-    fifoTlvAddr->pc = static_cast<uint64_t>(get_pc());
-    fifoTlvAddr->entry = static_cast<uint64_t>(0);
-    dcci((__gm__ uint64_t*)fifoTlvAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    __gm__ TimeStampTlvInfo* timeStampTlv =
+        reinterpret_cast<__gm__ TimeStampTlvInfo*>(GetRingBufTlv(blockRingBufInfo));
+    timeStampTlv->type = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP);
+    timeStampTlv->length = tlvLen - sizeof(uint32_t[2]);
+    timeStampTlv->descId = descId;
+    timeStampTlv->resv = static_cast<uint32_t>(0U);
+    timeStampTlv->cycle = static_cast<uint64_t>(GetSystemCycle());
+    timeStampTlv->pc = static_cast<uint64_t>(get_pc());
+    timeStampTlv->entry = static_cast<uint64_t>(0U);
+    timeStampTlv->resvMem[0] = static_cast<uint32_t>(0U);
+    timeStampTlv->resvMem[1] = static_cast<uint32_t>(0U);
+    dcci((__gm__ uint64_t*)timeStampTlv, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 
-    __gm__ BlockWriteInfo* writeInfo = GetBlockFifoWriteInfo(blockFifoInfo);
+    __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
 
-    UpdateWriteInfo(writeInfo, fifoTlvLen);
+    UpdateWriteInfo(writeInfo, tlvLen);
+#endif
 }
 
 __aicore__ inline void DumpTimeStampImpl(uint32_t descId)
 {
     if (g_sysPrintFifoSpace != nullptr) {
-        WriteFifoTimeStampInfo(descId);
+        WriteRingBufTimeStampInfo(descId);
     } else {
         WriteTimeStampInfo(descId);
     }

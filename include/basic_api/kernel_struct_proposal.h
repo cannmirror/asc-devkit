@@ -14,12 +14,13 @@
  */
 #ifndef ASCENDC_MODULE_STRUCT_PROPOSAL_H
 #define ASCENDC_MODULE_STRUCT_PROPOSAL_H
+#include "kernel_tensor.h"
 #include "utils/kernel_utils_constants.h"
 
 namespace AscendC {
 struct MrgSort4Info {
     __aicore__ MrgSort4Info() {}
-    
+
     __aicore__ MrgSort4Info(const uint16_t elementLengthsIn[MRG_SORT_ELEMENT_LEN], const bool ifExhaustedSuspensionIn,
         const uint16_t validBitIn, const uint16_t repeatTimesIn)
         : ifExhaustedSuspension(ifExhaustedSuspensionIn),

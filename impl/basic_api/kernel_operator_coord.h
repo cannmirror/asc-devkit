@@ -20,24 +20,8 @@
 namespace AscendC {
 
 namespace CoordImpl {
-template <size_t v>
-using Int = Std::integral_constant<size_t, v>;
-using IntZero = Int<0>;
+using IntZero = Std::Int<0>;
 }
-
-#define COORD_BINARY_OP(OP) \
-template <auto t, auto u> \
-__aicore__ inline constexpr CoordImpl::Int<(t OP u)> operator OP (CoordImpl::Int<t>, CoordImpl::Int<u>) { \
-    return {}; \
-}
-
-COORD_BINARY_OP(+);
-COORD_BINARY_OP(-);
-COORD_BINARY_OP(*);
-COORD_BINARY_OP(/);
-COORD_BINARY_OP(%);
-
-#undef COORD_BINARY_OP
 
 template <typename... Coords>
 using Coord = Std::tuple<Coords...>;
@@ -79,7 +63,7 @@ struct Product {
     {
         if constexpr (Std::is_tuple_v<T>) {
             if constexpr (Std::tuple_size_v<T> == 0) {
-                return CoordImpl::Int<1>{};
+                return Std::Int<1>{};
             } else {
                 return TransformApply(intT, Product{}, MultipliesUnaryLeftFold{});
             }
