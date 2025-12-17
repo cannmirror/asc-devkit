@@ -20,7 +20,7 @@ namespace AscendC {
 namespace Impl {
 namespace Detail {
 
-#if (__CCE_AICORE__ >= 220) || (__NPU_ARCH__ == 5102)
+#if ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3510)) || (__NPU_ARCH__ == 5102)
 const static uint8_t FIX_PIPE_UNIT_FLAG = 3;
 
 template <class A_TYPE, class C_TYPE, const auto& MM_CFG, FixpipeParamsType version>

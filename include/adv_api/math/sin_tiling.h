@@ -43,32 +43,5 @@ void GetSinMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, con
  * \param [out] extraBuffer, the size of the extra temporary space
  */
 void GetSinTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
-
-/*!
- * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
- * The developer selects a proper space size based on this range as the tiling parameter.
- *
- * \param [in] config, sin config
- * \param [in] srcShape, input shape information
- * \param [in] typeSize, size of the input data type, in bytes
- * \param [in] isReuseSource, whether to reuse the input space of the source operand
- * \param [out] maxValue, maximum temporary space required
- * \param [out] minValue, minimum temporary space required
- */
-void GetSinMaxMinTmpSize(const SinConfig& config, const ge::Shape& srcShape, const uint32_t typeSize,
-    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
-
-/*!
- * \brief The calculation of the Sin interface requires the developer to reserve or apply for temporary space. The
- * relationship between the maximum temporary space (maxTmpBuffer) and the space occupied by the input (inputSize x
- * typeSize) is as follows: maxTmpBuffer = maxLiveNodeCount * inputSize * typeSize + extraBuf
- * This interface is used to obtain maxLiveNodeCount and extraBuf.
- *
- * \param [in] config, sin config
- * \param [in] typeSize, size of the input data type, in bytes
- * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
- * \param [out] extraBuffer, the size of the extra temporary space
- */
-void GetSinTmpBufferFactorSize(const SinConfig& config, const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_MATH_SIN_TILING_H

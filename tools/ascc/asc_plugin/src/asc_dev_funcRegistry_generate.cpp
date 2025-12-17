@@ -20,7 +20,7 @@
 
 namespace AscPlugin {
 constexpr size_t FUNCREG_SIZE_CODE_BUFFER_LEN = 16 * 1024;
-static const char *FUNC_REGISTER_CODE = R"(#include <stdio.h>
+constexpr const char *FUNC_REGISTER_CODE = R"(#include <stdio.h>
 #include <cstdint>
 extern "C" {
 uint32_t AllocAscendMemDevice(void **devMem, uint64_t size);
@@ -48,10 +48,29 @@ uint32_t ascendc_set_exception_dump_info(uint32_t dumpSize);
         blockDim,                                                                           \
         ##__VA_ARGS__)
 
+namespace {
+struct AscendCBinaryVersion {
+    uint16_t type = 0;
+    uint16_t len = 4;
+    uint32_t version = 0;
+};
+
+struct AscendCFeatureFlag {
+    uint16_t type = 4;
+    uint16_t len = 4;
+    uint32_t flag = 0;
+};
+}
+)";
+
+constexpr const char *KERNEL_BINARY_VERSION_SECTION = R"(
+static const struct AscendCBinaryVersion __ascendc_binary_version__ __attribute__ ((used, section (".ascend.meta"))) =
+    {0, 4, 1};
 )";
 
 std::string FunctionRegistryImpl()
 {
+    auto& infoManager = InfoManager::GetInstance();
     std::stringstream codeSource;
     std::string buffer;
     buffer.reserve(FUNCREG_SIZE_CODE_BUFFER_LEN);
@@ -60,7 +79,7 @@ std::string FunctionRegistryImpl()
     codeSource << "static void AscFunctionRegister(void* g_kernel_handle)\n{\n";
     codeSource << "    int32_t retRegister = 0;\n";
     codeSource << "    const char *kernelFuncMangling = nullptr;\n";
-    for (const auto& GlobalSymbolInfo : AscPlugin::InfoManager::GetInstance().GetGlobalSymbolInfo()) {
+    for (const auto& GlobalSymbolInfo : infoManager.GetGlobalSymbolInfo()) {
         codeSource << "    kernelFuncMangling = \"";
         codeSource << GlobalSymbolInfo.first.substr(DEVICE_STUB_PREFIX_LEN);
         codeSource << "\";\n";
@@ -73,6 +92,15 @@ std::string FunctionRegistryImpl()
     codeSource << "}\n";
     codeSource << "static const int32_t g_regiter_regfunc_ret = "
                   "AscPluginGenerator::BindKernelRegisterFunc(AscFunctionRegister);";
+    if (infoManager.HasKernelFunc()) {
+        codeSource << KERNEL_BINARY_VERSION_SECTION;
+        if (infoManager.IsFifoDumpOn()) {
+            codeSource << GetAscFeatureMetaSection(FeatureFlag::ASC_PRINT_MASK);
+        }
+        if (infoManager.IsL2CacheEnabled()) {
+            codeSource << GetAscFeatureMetaSection(FeatureFlag::ASC_L2CACHE_HINT_MASK);
+        }
+    }
     ASC_LOGD("call device stub registry function is: %s", codeSource.str().c_str());
     return codeSource.str();
 }

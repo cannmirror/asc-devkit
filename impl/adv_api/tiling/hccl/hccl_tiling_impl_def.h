@@ -15,6 +15,9 @@
 #ifndef IMPL_HCCL_HCCL_TILING_IMPL_DEF_H
 #define IMPL_HCCL_HCCL_TILING_IMPL_DEF_H
 
+#include <string>
+#include <cstdint>
+
 namespace AscendC {
 class HcclTilingImpl {
 public:

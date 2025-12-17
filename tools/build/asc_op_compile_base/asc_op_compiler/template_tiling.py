@@ -255,12 +255,23 @@ class TilingTemplateParams:
                 raise RuntimeError("There is invalid number in ASCENDC_TPL_DETERMINISTIC_SEL!"
                     "Value should only be in [0, 1, true, false].")
         else:
-            if self.bit_width <= 0:
-                raise RuntimeError("Bit width in ASCENDC_TPL_{}_{} {}"
-                " cannot be less than zero!".format(self.get_param_type_str(), self.macro_type, self.name))
-            if 2 ** self.bit_width < len(self.values):
-                raise RuntimeError("Bit width:{} in ASCENDC_TPL_{}_{} {} is not enough to represent all values: {}!"\
-                    " Please make sure 2^bitWidth is greater than or equal to the number of values."
+            self.check_bit_width_valid()
+
+    def check_bit_width_valid(self):
+        bit_width_check_mode = "value" if self.param_type != TilingParamType.TPL_UINT else "index"
+        if self.bit_width <= 0:
+            raise RuntimeError("Bit width in ASCENDC_TPL_{}_{} {}"
+            " cannot be less than zero!".format(self.get_param_type_str(), self.macro_type, self.name))
+        max_encode_num = 2 ** self.bit_width
+        if bit_width_check_mode == "value":
+            if max_encode_num < max(list(filter(lambda x: x < ASCENDC_TPL_INPUT_BIAS, self.values))):
+                raise RuntimeError("Bit width:{} in ASCENDC_TPL_{}_{} {} is not enough to represent all values: {}!"
+                    " Please make sure 2^bitWidth is greater than or equal to the [max value of values]."
+                    .format(self.bit_width, self.get_param_type_str(), self.macro_type, self.name, self.values))
+        elif bit_width_check_mode == "index":
+            if max_encode_num < len(list(filter(lambda x: x < ASCENDC_TPL_INPUT_BIAS, self.values))):
+                raise RuntimeError("Bit width:{} in ASCENDC_TPL_{}_{} {} is not enough to represent all values: {}!"
+                    " Please make sure 2^bitWidth is greater than or equal to the [number of values]."
                     .format(self.bit_width, self.get_param_type_str(), self.macro_type, self.name, self.values))
 
     def get_encodes(self):
@@ -302,6 +313,7 @@ class TilingTemplateParams:
             TilingParamType.TPL_UINT: "UINT",
             TilingParamType.TPL_DETERMINISTIC: "DETERMINISTIC",
             TilingParamType.TPL_NONE: "",
+            TilingParamType.TPL_SHARED_KERNEL_TYPE: "SHARED_KERNEL_TYPE",
         }
         return name_dict.get(self.param_type, "")
 

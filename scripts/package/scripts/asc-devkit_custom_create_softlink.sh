@@ -60,13 +60,43 @@ create_stub_softlink() {
 }
 
 do_create_stub_softlink() {
-    local arch_name="$(get_arch_name $install_path/$version_dir/asc-devkit)"
+    local arch_name="$(get_arch_name $install_path/$version_dir/share/info/asc-devkit)"
     local arch_linux_path="$install_path/$latest_dir/$arch_name-linux"
     if [ ! -e "$arch_linux_path" ] || [ -L "$arch_linux_path" ]; then
         return
     fi
     create_stub_softlink "$arch_linux_path/devlib" "linux/$arch_name"
     create_stub_softlink "$arch_linux_path/lib64/stub" "linux/$arch_name"
+    if [ -d "$install_path/$version_dir/tools" ]; then
+        if [ ! -d "$install_path/$latest_dir/tools/ascendc_tools" ]; then
+            mkdir -p "$install_path/$latest_dir/tools/ascendc_tools"
+        fi
+        if [ ! -e "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" ] &&
+           [ -e "$install_path/$version_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" ]; then
+            ln -sr "$install_path/$version_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py" \
+                   "$install_path/$latest_dir/tools/ascendc_tools/ascendc_parse_dumpinfo.py"
+        fi
+    fi
+    if [ ! -d "$install_path/$version_dir/compiler/bin" ]; then
+        mkdir -p "$install_path/$version_dir/compiler/bin"
+    fi
+    if [ ! -d "$install_path/$latest_dir/compiler/bin" ]; then
+        mkdir -p "$install_path/$latest_dir/compiler/bin"
+    fi
+    if [ -e "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" ]; then
+        if [ ! -L "$install_path/$version_dir/compiler/bin/asc_opc" ]; then 
+            ln -sr "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" "$install_path/$version_dir/compiler/bin/asc_opc"
+        fi
+        if [ ! -L "$install_path/$latest_dir/compiler/bin/asc_opc" ]; then 
+            ln -sr "$install_path/$version_dir/${arch_name}-linux/bin/asc_opc" "$install_path/$latest_dir/compiler/bin/asc_opc"
+        fi
+    fi
+    
+    if [ -d "$arch_linux_path/pkg_inc/asc/hccl" ]; then
+        chmod 750 "$arch_linux_path/pkg_inc/asc/hccl"
+        ln -sr "$arch_linux_path/asc/include/adv_api/hccl/internal" "$arch_linux_path/pkg_inc/asc/hccl/internal"
+        chmod -R 550 "$arch_linux_path/pkg_inc/asc/hccl"
+    fi
 }
 
 do_create_stub_softlink

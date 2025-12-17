@@ -9,6 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
+// #include "api_check/kernel_cpu_check.h"
 #include "tikicpulib.h"
  
 using namespace std;

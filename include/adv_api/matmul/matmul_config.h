@@ -76,11 +76,14 @@ enum BatchOutMode {
  * @enum class IterateOrder
  * @brief The loop iteration order for Matmul matrix operations
  */
+#ifndef ASCC_STRUCT_ITERATEORDER
+#define ASCC_STRUCT_ITERATEORDER
 enum class IterateOrder {
     ORDER_M = 0, // Offset along the M-axis first, then along the N-axis
     ORDER_N,     // Offset along the N-axis first, then along the M-axis
     UNDEF,       // Currently invalid
 };
+#endif
  
  /**
  * @enum class ScheduleType

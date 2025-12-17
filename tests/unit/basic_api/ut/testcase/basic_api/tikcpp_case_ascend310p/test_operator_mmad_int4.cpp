@@ -239,7 +239,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load3dv2)
     AscendC::KernelMmadInt4 op;
     op.Init(a, b, c, false);
     op.Process();
-
+    
     for (int32_t i = 0; i < m * n * sizeof(int32_t) / 2; i++) {
         EXPECT_EQ(c[i], 0x00);
     }
@@ -260,7 +260,7 @@ TEST_F(TEST_MMAD_INT4, MMAD_Case_int4_load2d)
     AscendC::KernelMmadInt4 op;
     op.Init(a, b, c, true);
     op.Process();
-
+    
     for (int32_t i = 0; i < m * n * sizeof(int32_t) / 2; i++) {
         EXPECT_EQ(c[i], 0x00);
     }

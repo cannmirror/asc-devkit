@@ -21,7 +21,7 @@ else
 fi
 
 function log() {
-    local current_time=`date +"%Y-%m-%d %H:%M:%S"`
+    local current_time=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[$current_time] "$1
 }
 
@@ -370,7 +370,3 @@ else
     install_patches "install" "${SOURCE_DIR}" "${TARGET_DIR}" "${MANIFEST_FILE}" "${BACKUP_DIR}"
     log "[INFO] package install successfully!"
 fi
-
-
-
-

@@ -96,26 +96,6 @@ AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std
 
 std::string AscDevStubGenerator::GetWorkspaceArgName() const
 {
-    const auto& hasWorkspace = InfoManager::GetInstance().HasWorkspace();
-    const auto& hasTiling = InfoManager::GetInstance().HasTiling();
-    if (hasWorkspace && !hasTiling) {
-        const size_t idx = kernelInfo_.kernelParameters.size() - 1;
-        if (idx >= kernelInfo_.kernelParameters.size()) {
-            ASC_LOGW(
-                "Kernel [%s] : use workspace failure, must have GM_ADDR argument.", kernelInfo_.kernelName.c_str());
-            return "";
-        }
-        return kernelInfo_.kernelParameters[kernelInfo_.kernelParameters.size() - 1].name;
-    } else if (hasWorkspace && hasTiling) {
-        const size_t idx = kernelInfo_.kernelParameters.size() - 2;
-        if (idx >= kernelInfo_.kernelParameters.size()) {
-            ASC_LOGW("Kernel [%s] : use workspace failure, when both 'HAVE_TILING' and 'HAVE_WORKSPACE' macros are "
-                     "specified, the number of function arguments must exceed 2.",
-                kernelInfo_.kernelName.c_str());
-            return "";
-        }
-        return kernelInfo_.kernelParameters[kernelInfo_.kernelParameters.size() - 2].name;
-    }
     for (const auto& param : kernelInfo_.kernelParameters) {
         if (param.attribute.find(std::string("kfc_workspace")) != std::string::npos) {
             ASC_LOGI("Kernel [%s] : the kernel utilizes the workspace.", kernelInfo_.kernelName.c_str());
@@ -267,15 +247,29 @@ void AscDevStubGenerator::UpdateParams()
     }
 }
 
-void AscDevStubGenerator::GenStubKernelFunc(const bool& isMix, const bool& isHardSync)
+void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous)
 {
     KernelMetaType curKernelType = ExtractKernelType(kernelType_);
     if (!kernelInfo_.namespaces.empty()) {
-        codeStream_ << "namespace " << JoinStringWithDelimiter(kernelInfo_.namespaces, "::") << " {\n";
+        if (!hasAnonymous) {
+            codeStream_ << "namespace " << JoinStringWithDelimiter(kernelInfo_.namespaces, "::") << " {\n";
+        } else {
+            for (const auto& spaceName : kernelInfo_.namespaces) {
+                if (spaceName == std::string(ANONYMOUS_NAME)) {
+                    codeStream_ << "namespace {\n";
+                } else {
+                    codeStream_ << "namespace " << spaceName << " {\n";
+                }
+            }
+        }
     }
     GenStubFuncDecl(kernelInfo_.kernelMangledName, kernelInfo_.kernelParameters, curKernelType);
     GenStubFuncImpl(isMix, isHardSync, "");
-    if (!kernelInfo_.namespaces.empty()) {
+    if (kernelInfo_.namespaces.empty()) {
+        return;
+    }
+    size_t closeCount = hasAnonymous ? kernelInfo_.namespaces.size() : 1;
+    for (size_t i = 0; i < closeCount; ++i) {
         codeStream_ << "}\n";
     }
 }
@@ -293,26 +287,33 @@ std::string AscDevStubGenerator::GetTempArgsList(const TemplateInstance &tempIns
     return JoinStringWithDelimiter(templateArgList, ", ");
 }
 
-void AscDevStubGenerator::GenStubKernelFunc(const bool& isMix, const bool& isHardSync, const TemplateInstance& tempInst)
+void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous,
+    const TemplateInstance tempInst)
 {
     if (!kernelInfo_.namespaces.empty()) {
-        codeStream_ << "namespace " << JoinStringWithDelimiter(kernelInfo_.namespaces, "::") << " {\n";
+        if (!hasAnonymous) {
+            codeStream_ << "namespace " << JoinStringWithDelimiter(kernelInfo_.namespaces, "::") << " {\n";
+        } else {
+            for (const auto& spaceName : kernelInfo_.namespaces) {
+                if (spaceName == std::string(ANONYMOUS_NAME)) {
+                    codeStream_ << "namespace {\n";
+                } else {
+                    codeStream_ << "namespace " << spaceName << " {\n";
+                }
+            }
+        }
     }
     KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     GenStubFuncDecl(tempInst.instanceMangledName, tempInst.instanceKernelParameters,
         GetBishengKTypeByCoreRatio(tempInst.ratio, defaultKtype));
     const std::string& templateArgs = GetTempArgsList(tempInst);
     GenStubFuncImpl(isMix, isHardSync, templateArgs);
-    if (!kernelInfo_.namespaces.empty()) {
-        codeStream_ << "}\n";
+    if (kernelInfo_.namespaces.empty()) {
+        return;
     }
-}
-
-void AscDevStubGenerator::GenCodeForL2Cache()
-{
-    auto& infoManager = InfoManager::GetInstance();
-    if (infoManager.IsFirstKernel() && infoManager.IsL2CacheEnabled() && !infoManager.HasOpSystemCfg()) {
-        codeStream_ << "inline __gm__ struct OpSystemRunCfg g_opSystemRunCfg = {0};\n";
+    size_t closeCount = hasAnonymous ? kernelInfo_.namespaces.size() : 1;
+    for (size_t i = 0; i < closeCount; ++i) {
+        codeStream_ << "}\n";
     }
 }
 
@@ -321,14 +322,18 @@ std::string AscDevStubGenerator::GenCode()
     ASC_LOGI("Kernel [%s] : generate device stub function.", kernelInfo_.kernelName.c_str());
     const auto [isMix, isHardSync] = GetArchInfo(socVersion_);
     UpdateParams();
-    GenCodeForL2Cache();
+    bool hasAnonymous = false;
+    auto it = std::find(kernelInfo_.namespaces.begin(), kernelInfo_.namespaces.end(), std::string(ANONYMOUS_NAME));
+    if (it != kernelInfo_.namespaces.end()) {
+        hasAnonymous = true;
+    }
     if (kernelInfo_.isTemplate) {
         for (const auto& inst : kernelInfo_.templateInstances) {
             // isMixInst = inst.==mix
-            GenStubKernelFunc(isMix, isHardSync, inst);
+            GenStubKernelFunc(isMix, isHardSync, hasAnonymous, inst);
         }
     } else {
-        GenStubKernelFunc(isMix, isHardSync);
+        GenStubKernelFunc(isMix, isHardSync, hasAnonymous);
     }
 
     ASC_LOGD(

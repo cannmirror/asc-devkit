@@ -126,7 +126,7 @@ function(run_python_llt_test)
     if(DEFINED SKIP_EXECUTE)
         set(LLT_EXECUTE_COMMAND echo "skip execute ${PYTHON_TARGET}" )
     else()
-        set(LLT_EXECUTE_COMMAND bash ${ASCENDC_TOOLS_ROOT_DIR}/cmake/tools/python_llt_run_and_check.sh ${CMAKE_INSTALL_PREFIX} ${PYTHON_TARGET}
+        set(LLT_EXECUTE_COMMAND bash ${ASCENDC_DIR}/tests/unit/basic_api/cmake/tools/python_llt_run_and_check.sh ${CMAKE_INSTALL_PREFIX} ${PYTHON_TARGET}
         ${PY_SRC_FILES_DIR} ${PY_TEST_FILES_DIR} ${PY_ENV_FILE} ${PY_ENV_PARAMS}
         ${PY_EXPORT_PYTHONPATH} ${PY_COVERAGERC_DIR} ${PYTHON_PYVERSION} "${LLT_RUN_MOD}" "${PYTHON_TASK_NUM}")
     endif()

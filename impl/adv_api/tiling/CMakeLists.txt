@@ -42,9 +42,6 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/quantization/ascend_dequant_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/quantization/ascend_quant_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/quantization/ascend_antiquant_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/quantization/quantize_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/quantization/dequantize_tiling_impl.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/quantization/antiquantize_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/filter/dropout_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/gelu_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/matmul/bmm_tiling.cpp
@@ -150,8 +147,6 @@ target_compile_options(
           -Wfloat-equal
           -D_FORTIFY_SOURCE=2
           -O2
-          -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-          -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
           $<$<STREQUAL:${PRODUCT_SIDE},host>:-DLOG_CPP>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fPIC>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fstack-protector-strong>

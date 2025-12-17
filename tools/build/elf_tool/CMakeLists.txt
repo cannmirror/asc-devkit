@@ -9,10 +9,9 @@
 # ----------------------------------------------------------------------------------------------------------
 add_library(elf_tool_obj OBJECT ascendc_elf_tool.c)
 
-target_compile_options(elf_tool_obj PRIVATE 
-    -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-    -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-    -g
+target_compile_options(elf_tool_obj PRIVATE
+  -Wextra
+  -Wfloat-equal
   )
 
 if(BUILD_OPEN_PROJECT)

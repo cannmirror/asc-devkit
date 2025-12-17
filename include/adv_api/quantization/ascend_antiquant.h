@@ -147,7 +147,6 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType> &dst, c
     }
     AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, k, shapeInfo);
 }
-
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_ANTIQUANT_H

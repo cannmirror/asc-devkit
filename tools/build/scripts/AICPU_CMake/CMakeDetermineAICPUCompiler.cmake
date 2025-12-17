@@ -1,21 +1,30 @@
-set(DEFAULT_ASCEND_PATH "/usr/local/Ascend/ascend-toolkit/latest/")
-if(NOT DEFINED ASCEND_CANN_PACKAGE_PATH)
-    message(WARNING "ASCEND_CANN_PACKAGE_PATH is not set. Set to env variable ASCEND_HOME_PATH.")
-    if(NOT EXISTS $ENV{ASCEND_HOME_PATH})
-        message(WARNING "Env variable ASCEND_HOME_PATH is not set. Set to default value ${DEFAULT_ASCEND_PATH}.")
-        set(ASCEND_CANN_PACKAGE_PATH ${DEFAULT_ASCEND_PATH} CACHE PATH "Path for CANN package")
-    else()
-        set(ASCEND_CANN_PACKAGE_PATH $ENV{ASCEND_HOME_PATH} CACHE PATH "Path for CANN package")
-    endif()
+if(NOT DEFINED ENV{ASCEND_HOME_PATH})
+    set(POSSIBLE_PATHS "/usr/local/Ascend/cann" "${HOME}/Ascend/cann")
+    
+    message(FATAL_ERROR "
+    ================================================================================
+    ERROR: ASCEND_HOME_PATH environment variable is not set!
+    
+    This variable is required to find CANN package.
+    
+    Possible solutions:
+        Source the environment setup script: source <ascend_install_path>/set_env.sh
+    
+    Common installation locations:
+    ${POSSIBLE_PATHS}
+    ================================================================================
+    ")
 else()
-    set(ASCEND_CANN_PACKAGE_PATH ${ASCEND_CANN_PACKAGE_PATH} CACHE PATH "Path for CANN package")
+    if(NOT EXISTS "$ENV{ASCEND_HOME_PATH}")
+        message(FATAL_ERROR "ERROR: ASCEND_HOME_PATH directory does not exist!")
+    endif()
 endif()
 
 string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_LOWER_PROCESSOR)
-if(EXISTS $ENV{ASCEND_CANN_PACKAGE_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/bin)
-    set(AICPU_COMPILER_PATH $ENV{ASCEND_CANN_PACKAGE_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/bin)
+if(EXISTS $ENV{ASCEND_HOME_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/bin)
+    set(AICPU_COMPILER_PATH $ENV{ASCEND_HOME_PATH}/${SYSTEM_LOWER_PROCESSOR}-linux/ccec_compiler/bin)
 else()
-    set(AICPU_COMPILER_PATH "$ENV{ASCEND_CANN_PACKAGE_PATH}/compiler/ccec_compiler/bin")
+    set(AICPU_COMPILER_PATH "$ENV{ASCEND_HOME_PATH}/compiler/ccec_compiler/bin")
 endif()
 find_program(CMAKE_AICPU_COMPILER 
     NAMES "bisheng" 

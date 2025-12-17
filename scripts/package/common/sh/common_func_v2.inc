@@ -306,11 +306,15 @@ get_package_dir() {
     local _package="$2"
     local _is_under_tools _result
 
-    is_package_under_tools "_is_under_tools" "${_package}"
-    if [ "${_is_under_tools}" = "true" ]; then
-        _result="tools"
+    if [ "$USE_SHARE_INFO" = "y" ]; then
+        _result="share/info"
     else
-        _result=""
+        is_package_under_tools "_is_under_tools" "${_package}"
+        if [ "${_is_under_tools}" = "true" ]; then
+            _result="tools"
+        else
+            _result=""
+        fi
     fi
     eval "${_outvar}=\"${_result}\""
 }
@@ -321,11 +325,15 @@ get_package_dirpath() {
     local _package="$2"
     local _is_under_tools _result
 
-    is_package_under_tools "_is_under_tools" "${_package}"
-    if [ "${_is_under_tools}" = "true" ]; then
-        _result="tools/${_package}"
+    if [ "$USE_SHARE_INFO" = "y" ]; then
+        _result="share/info/$_package"
     else
-        _result="${_package}"
+        is_package_under_tools "_is_under_tools" "${_package}"
+        if [ "${_is_under_tools}" = "true" ]; then
+            _result="tools/${_package}"
+        else
+            _result="${_package}"
+        fi
     fi
     eval "${_outvar}=\"${_result}\""
 }
@@ -1249,7 +1257,7 @@ filter_feature_param() {
 # 读取fileist的第2行到最后行
 tail_filelist() {
     local filelist_path="$1"
-    tail -n +2 "$filelist_path"
+    tail -n +2 "$filelist_path" | grep -v '^#'
 }
 
 # 解析filelist.csv脚本

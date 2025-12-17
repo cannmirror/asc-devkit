@@ -132,10 +132,6 @@ void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>:
         if (prefix != "-D") { // when prefix is -U
             if (macroContent == "ASCENDC_DUMP") {
                 userDumpStatus_ = true;
-            } else if (macroContent == "HAVE_WORKSPACE") {
-                hasWorkspace_ = false;
-            } else if (macroContent == "HAVE_TILING") {
-                hasTiling_ = false;
             } else if (macroContent == "ASCENDC_TIME_STAMP_ON") {
                 hasTimeStamp_ = false;
             } else if (macroContent == "ASCENDC_DEBUG") {
@@ -146,10 +142,6 @@ void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>:
                 userDumpStatus_ = false;
             } else if (macroContent == "ASCENDC_DUMP=1") {
                 userDumpStatus_ = true;
-            } else if (macroContent == "HAVE_WORKSPACE") {
-                hasWorkspace_ = true;
-            } else if (macroContent == "HAVE_TILING") {
-                hasTiling_ = true;
             } else if (macroContent == "ASCENDC_TIME_STAMP_ON") {
                 hasTimeStamp_ = true;
             } else if (macroContent == "ASCENDC_DEBUG") {
@@ -163,7 +155,9 @@ void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>:
 
 void InfoManager::SetCompileArgs(const std::vector<std::string>& compileArgs)
 {
-    compileArgs_.includeFiles = {"-include", pathInfo_.cannVersionHeader};
+    if (!pathInfo_.cannVersionHeader.empty()) {
+        compileArgs_.includeFiles = {"-include", pathInfo_.cannVersionHeader};
+    }
     bool hasHostStart = false;   // for -Xhost-start
     for (auto it = compileArgs.begin(); it != compileArgs.end(); ++it) {
         std::string compileArg = *it;
@@ -199,6 +193,10 @@ void InfoManager::SetCompileArgs(const std::vector<std::string>& compileArgs)
         }
 
         if (StartsWith(compileArg, "--cce-aicore-input-parameter-size=")) {
+            compileArgs_.options.emplace_back(compileArg);
+        }
+
+        if (StartsWith(compileArg, "--cce-aicpu-launch-with-interface")) {
             compileArgs_.options.emplace_back(compileArg);
         }
     }
@@ -276,22 +274,16 @@ void InfoManager::SetOpSystemCfg(const bool hasOpSystemCfg)
     hasOpSystemCfg_ = hasOpSystemCfg;
 }
 
+uint32_t InfoManager::SetKernelFuncFlag()
+{
+    hasKernelFunc_ = true;
+    return 0;
+}
+
 void InfoManager::AddGlobalSymbolInfo(const std::string &mangling, const KernelMetaType &type,
     const std::string &fileName, const uint32_t lineNo, const uint32_t colNo, const KfcScene kfcScene)
 {
     kernelFuncSymbolToFuncInfo_.emplace(mangling, std::make_tuple(type, fileName, lineNo, colNo, kfcScene));
-}
-
-void InfoManager::SetAscendMetaFlag(const uint32_t& flag)
-{
-    ascendMetaFlag_ |= flag;
-    ASC_LOGI("Set meta section add flag 0x%02" PRIX32 ".", flag);
-}
-
-size_t InfoManager::SetAndGetMetaFlagCounter()
-{
-    metaFlagCounter_ += 1;
-    return metaFlagCounter_;
 }
 
 void InfoManager::UpdateOneCoreDumpSize()
@@ -362,11 +354,6 @@ const std::unordered_map<std::string, InfoManager::GlobalFuncInfo>& InfoManager:
     return kernelFuncSymbolToFuncInfo_;
 }
 
-uint32_t InfoManager::GetAscendMetaFlag() const
-{
-    return ascendMetaFlag_;
-}
-
 uint32_t InfoManager::GetMaxCoreNum(const ShortSocVersion& socVersion) const
 {
     return GetMaxCoreNumImpl(socVersion);
@@ -377,10 +364,6 @@ uint32_t InfoManager::GetMaxCoreNum() const
     return GetMaxCoreNumImpl(shortSocVersion_);
 }
 
-size_t InfoManager::GetMetaFlagCounter() const
-{
-    return metaFlagCounter_;
-}
 bool InfoManager::SaveTempRequested() const
 {
     return saveTempRequested_;
@@ -394,16 +377,6 @@ bool InfoManager::UserDumpRequested() const
 bool InfoManager::HasTimeStamp() const
 {
     return hasTimeStamp_;
-}
-
-bool InfoManager::HasWorkspace() const
-{
-    return hasWorkspace_;
-}
-
-bool InfoManager::HasTiling() const
-{
-    return hasTiling_;
 }
 
 bool InfoManager::HasPrintf() const
@@ -441,16 +414,6 @@ bool InfoManager::HasOpSystemCfg() const
     return hasOpSystemCfg_;
 }
 
-void InfoManager::SetFirstKernel(const bool isFirstKernel)
-{
-    isFirstKernel_ = isFirstKernel;
-}
-
-bool InfoManager::IsFirstKernel() const
-{
-    return isFirstKernel_;
-}
-
 bool InfoManager::IsAutoSyncOn() const
 {
     return isAutoSyncOn_;
@@ -459,6 +422,11 @@ bool InfoManager::IsAutoSyncOn() const
 bool InfoManager::IsSupportFifoDump() const
 {
     return shortSocVersion_ == ShortSocVersion::ASCEND910B;
+}
+
+bool InfoManager::HasKernelFunc() const
+{
+    return hasKernelFunc_;
 }
 
 } // namespace AscPlugin

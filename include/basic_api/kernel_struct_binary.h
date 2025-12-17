@@ -17,7 +17,6 @@
 #include "utils/kernel_utils_constants.h"
 
 namespace AscendC {
-
 struct BinaryRepeatParams {
     __aicore__ BinaryRepeatParams() {}
 

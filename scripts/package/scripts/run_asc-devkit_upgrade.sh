@@ -72,7 +72,7 @@ get_install_param() {
     echo "${_param}"
 }
 
-install_info="${common_parse_dir}/asc-devkit/ascend_install.info"
+install_info="${common_parse_dir}/share/info/asc-devkit/ascend_install.info"
 if [ -f "$install_info" ]; then
     chip_type=$(get_install_param "Asc-Devkit_Chip_Type" "${install_info}")
     feature_type=$(get_install_param "Asc-Devkit_Feature_Type" "${install_info}")
@@ -143,18 +143,22 @@ new_upgrade() {
     if [ "${setenv_flag}" = y ]; then
         setenv_option="--setenv"
     fi
-
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 755 "$common_parse_dir/tools/ascendc_tools"
+    fi
     # 执行安装
     custom_options="--custom-options=--common-parse-dir=$common_parse_dir,--logfile=$logfile,--stage=upgrade,--quiet=$is_quiet,--hetero-arch=$hetero_arch"
     sh "$curpath/install_common_parser.sh" --package="asc-devkit" --install --username="$username" --usergroup="$usergroup" --set-cann-uninstall --upgrade \
-        --version=$pkg_version --version-dir=$pkg_version_dir \
+        --version=$pkg_version --version-dir=$pkg_version_dir --use-share-info \
         $setenv_option $in_install_for_all --docker-root="$docker_root" --chip="$chip_type" --feature="$feature_type" \
         $custom_options "$common_parse_type" "$input_install_dir" "$curpath/filelist.csv"
     if [ $? -ne 0 ]; then
         log "ERROR" "ERR_NO:0x0085;ERR_DES:failed to install package."
         return 1
     fi
-
+    if [ -d "$common_parse_dir/tools/ascendc_tools" ];then
+        chmod 550 "$common_parse_dir/tools/ascendc_tools"
+    fi
     create_latest_linux_softlink
     return 0
 }

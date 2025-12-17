@@ -5,9 +5,13 @@ target_link_libraries(ascendc_pack_kernel PRIVATE
     c_sec_static
 )
 
-target_compile_options(ascendc_pack_kernel PRIVATE 
-    -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-    -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
+target_compile_options(ascendc_pack_kernel PRIVATE
+    -fpie
+    -fstack-protector-all
+)
+
+target_link_options(ascendc_pack_kernel PRIVATE
+    $<$<CONFIG:Release>:-s>
 )
 
 if(BUILD_OPEN_PROJECT)

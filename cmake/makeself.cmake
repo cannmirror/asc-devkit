@@ -40,7 +40,7 @@ endif()
 # 生成安装配置文件
 set(CSV_OUTPUT ${STAGING_DIR}/filelist.csv)
 execute_process(
-    COMMAND python3 ${CPACK_CMAKE_SOURCE_DIR}/scripts/package/package.py --pkg_name ${CPACK_PACKAGE_NAME} --os_arch linux-${CPACK_ARCH}
+    COMMAND python3 ${CPACK_CMAKE_SOURCE_DIR}/scripts/package/package.py --pkg_name ${CPACK_PACKAGE_NAME} --os_arch linux-${CPACK_ARCH} --version_dir ${CPACK_VERSION}
     WORKING_DIRECTORY ${CPACK_CMAKE_BINARY_DIR}
     OUTPUT_VARIABLE result
     ERROR_VARIABLE error
@@ -94,6 +94,10 @@ configure_file(
 # makeself打包
 file(STRINGS ${CPACK_CMAKE_BINARY_DIR}/makeself.txt script_output)
 string(REPLACE " " ";" makeself_param_string "${script_output}")
+
+list(LENGTH makeself_param_string LIST_LENGTH)
+math(EXPR INSERT_INDEX "${LIST_LENGTH} - 2")
+list(INSERT makeself_param_string ${INSERT_INDEX} "${STAGING_DIR}")
 
 message(STATUS "script output: ${script_output}")
 message(STATUS "makeself: ${makeself_param_string}")

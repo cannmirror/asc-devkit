@@ -19,10 +19,11 @@
 #include <iostream>
 #include <csignal>
 #include <vector>
-#include <map>
 #include <string>
-#include <set>
 #include <algorithm>
+#include <array>
+#include <unordered_set>
+#include <unordered_map>
 
 using namespace std;
 namespace {
@@ -38,44 +39,32 @@ std::string Vec2Str(const std::vector<uint64_t> &vec)
 }
 
 namespace AscendC {
-constexpr uint8_t MAX_BITS_NUM = 64;
-constexpr size_t VAL_PAIR = 2;
-constexpr uint64_t INVALID_TILING_KEY = 0XFFFFFFFFFFFFFFFF;
-const std::map<uint32_t, const char *> TPL_TYPE_2_STR = {
-    {0, "DTYPE"}, {1, "FORMAT"}, {2, "UINT"}, {3, "BOOL"}, {4, "KERNEL_TYPE"}, {5, "DETERMINISTIC"}, {6, "SHARED_KERNEL_TYPE"}};
+const std::array<const char*, 7> TPL_TYPE_STR_ARR = {
+    "DTYPE", "FORMAT", "UINT", "BOOL", "KERNEL_TYPE", "DETERMINISTIC", "SHARED_KERNEL_TYPE"
+};
 static bool CheckParamStructValid(ParamStruct &paramStruct)
 {
-    auto it = TPL_TYPE_2_STR.find(paramStruct.paramType);
-    if (it == TPL_TYPE_2_STR.cend()) {
-        printf("[ERROR] ASCENDC_TPL_*_%s: %s type value is invalid! Type value should be in [0, 1, 2, 3, 4, 5]\n",
+    if (paramStruct.paramType >= TPL_TYPE_STR_ARR.size()) {
+        printf("[ERROR] ASCENDC_TPL_*_%s: %s type value is invalid! Type value should be in [0, 1, 2, 3, 4, 5, 6]\n",
             paramStruct.macroType,
             paramStruct.name);
         return false;
     }
     if (paramStruct.vals.empty()) {
         printf("[ERROR] Values of ASCENDC_TPL_%s_%s: %s is empty!\n",
-            it->second, paramStruct.macroType, paramStruct.name);
+            TPL_TYPE_STR_ARR[paramStruct.paramType], paramStruct.macroType, paramStruct.name);
         return false;
     }
-    std::set<uint64_t> valueSet(paramStruct.vals.begin(), paramStruct.vals.end());
+    std::unordered_set<uint64_t> valueSet(paramStruct.vals.begin(), paramStruct.vals.end());
     if (paramStruct.vals.size() != valueSet.size()) {
-        printf("[ERROR] Existing duplicate values in ASCENDC_TPL_%s_%s: %s! Duplicate values: %s\n", it->second,
+        printf("[ERROR] Existing duplicate values in ASCENDC_TPL_%s_%s: %s! Duplicate values: %s\n", TPL_TYPE_STR_ARR[paramStruct.paramType],
             paramStruct.macroType, paramStruct.name, Vec2Str(paramStruct.vals).c_str());
-        return false;
-    }
-    auto maxValidNum = static_cast<uint64_t>(std::pow(2, paramStruct.bitWidth) - 1);
-    auto chkIter = std::find_if(paramStruct.vals.cbegin(), paramStruct.vals.cend(),
-        [maxValidNum](uint64_t paramVal) { return paramVal > maxValidNum && paramVal < ASCENDC_TPL_INPUT_BIAS; });
-    if (chkIter != paramStruct.vals.cend()) {
-        printf("[ERROR] Bit width:%u in ASCENDC_TPL_%s_%s: %s is not enough to represent all values! "
-            "Please make sure 2^bitWidth is greater than the number of values.\n",
-            paramStruct.bitWidth, it->second, paramStruct.macroType, paramStruct.name);
         return false;
     }
     return true;
 }
 
-static bool ParseTplUintValue(ParamStruct &paramStruct, uint8_t setBitWidth = 0)
+static bool ParseTplUintValue(ParamStruct &paramStruct)
 {
     if (paramStruct.paramType != ASCENDC_TPL_UINT) {
         return CheckParamStructValid(paramStruct);
@@ -85,10 +74,9 @@ static bool ParseTplUintValue(ParamStruct &paramStruct, uint8_t setBitWidth = 0)
             paramStruct.macroType, paramStruct.name);
         return false;
     }
-    paramStruct.bitWidth = setBitWidth != 0 ? setBitWidth : paramStruct.bitWidth;
     uint8_t uiFlag = static_cast<uint8_t>(paramStruct.vals[0]);
-    paramStruct.vals.erase(paramStruct.vals.begin(), paramStruct.vals.begin() + 1);
     if (uiFlag == ASCENDC_TPL_UI_LIST) {
+        paramStruct.vals.erase(paramStruct.vals.begin(), paramStruct.vals.begin() + 1);
         return CheckParamStructValid(paramStruct);
     }
     if (uiFlag != ASCENDC_TPL_UI_RANGE && uiFlag != ASCENDC_TPL_UI_MIX) {
@@ -98,47 +86,47 @@ static bool ParseTplUintValue(ParamStruct &paramStruct, uint8_t setBitWidth = 0)
         return false;
     }
     std::vector<uint64_t> extendVal;
-    size_t rangeNum = paramStruct.vals[0];
-    for (size_t i = 0; i < rangeNum; i++) {
-        if (1 + i * VAL_PAIR >= paramStruct.vals.size() - 1) {
-            printf("[ERROR] ASCENDC_TPL_UINT_%s: %s range declare exceed actual length!\n", paramStruct.macroType,
-                paramStruct.name);
-            return false;
-        }
-        for (size_t j = paramStruct.vals[1 + VAL_PAIR * i]; j <= paramStruct.vals[(i + 1) * VAL_PAIR]; j++) {
-            extendVal.push_back(j);
+    size_t rangeNum = paramStruct.vals[1];
+    if (rangeNum * VAL_PAIR > paramStruct.vals.size() - VAL_START) {
+        printf("[ERROR] ASCENDC_TPL_UINT_%s: %s range declare exceed actual length!\n", paramStruct.macroType,
+            paramStruct.name);
+        return false;
+    }
+    size_t elementNum = 0;
+    for (size_t i = 1; i <= rangeNum; i++) {
+        elementNum += paramStruct.vals[i * VAL_PAIR + 1] - paramStruct.vals[VAL_PAIR * i] + 1;
+    }
+    if (uiFlag == ASCENDC_TPL_UI_MIX) {
+        elementNum += paramStruct.vals.size() - (VAL_START + rangeNum * VAL_PAIR);
+    }
+    extendVal.reserve(elementNum);
+    for (size_t i = 1; i <= rangeNum; i++) {
+        for (size_t j = paramStruct.vals[VAL_PAIR * i]; j <= paramStruct.vals[i * VAL_PAIR + 1]; j++) {
+            extendVal.emplace_back(j);
         }
     }
     if (uiFlag == ASCENDC_TPL_UI_MIX) {
-        for (size_t i = 1 + rangeNum * VAL_PAIR; i < paramStruct.vals.size(); i++) {
-            extendVal.push_back(paramStruct.vals[i]);
-        }
+        size_t mixStart = VAL_START + rangeNum * VAL_PAIR;
+        std::copy(paramStruct.vals.begin() + mixStart, paramStruct.vals.end(), std::back_inserter(extendVal));
     }
-    paramStruct.vals = extendVal;
+    paramStruct.vals = std::move(extendVal);
     return CheckParamStructValid(paramStruct);
 }
 
 static bool CheckSelectParamValid(const TilingDeclareParams &declareParams, const ParamStruct &selectParam)
 {
-    auto it = TPL_TYPE_2_STR.find(selectParam.paramType);
     for (const auto &declareParam : declareParams) {
         if (declareParam.name == selectParam.name) {
             auto declareType = declareParam.paramType;
-            auto declareBitWidth = declareParam.bitWidth;
             auto declareVals = declareParam.vals;
-            if (declareBitWidth != selectParam.bitWidth) {
-                printf("[ERROR] ASCENDC_TPL_%s_SEL: %s has different bitwidth: %u!\n", it->second, selectParam.name,
-                    selectParam.bitWidth);
-                return false;
-            }
             if (declareType != selectParam.paramType) {
-                printf("[ERROR] ASCENDC_TPL_%s_SEL: %s has different macro type!\n", it->second, selectParam.name);
+                printf("[ERROR] ASCENDC_TPL_%s_SEL: %s has different macro type!\n", TPL_TYPE_STR_ARR[declareParam.paramType], selectParam.name);
                 return false;
             }
             for (auto val : selectParam.vals) {
                 if (std::find(declareVals.begin(), declareVals.end(), val) == declareVals.cend()) {
                     printf("[ERROR] ASCENDC_TPL_%s_SEL %s value %lu does not exist in ASCENDC_TPL_%s_DECL, "
-                        "please check it!\n", it->second, selectParam.name, val, it->second);
+                        "please check it!\n", TPL_TYPE_STR_ARR[declareParam.paramType], selectParam.name, val, TPL_TYPE_STR_ARR[declareParam.paramType]);
                     return false;
                 }
             }
@@ -170,7 +158,7 @@ static bool CheckInputTilingParamValid(const std::vector<uint64_t> &tilingParams
         printf("[ERROR] Number of arguments in GET_TPL_TILING_KEY is not the same as ASCENDC_TPL_ARGS_DECL.\n");
         return false;
     }
-    std::map<std::string, size_t> nameOrder;
+    std::unordered_map<std::string, size_t> nameOrder;
     for (size_t i = 0; i < declareParams.size(); ++i) {
         nameOrder[declareParams[i].name] = i;
     }
@@ -240,40 +228,37 @@ static uint64_t EncodeParam(uint64_t val, const ParamStruct &paramStruct)
 
 uint64_t EncodeTilingKey(TilingDeclareParams declareParams, TilingSelectParams selectParamsVec,
     std::vector<uint64_t> tilingParams)
-{
+{   
     // STEP 1: Copy static variable, and convert ASCENDC_TPL_UINT to readable vector value
     if (declareParams.empty() || selectParamsVec.empty()) {
         printf("[ERROR] ASCENDC_TPL params is empty!\n");
         return INVALID_TILING_KEY;
     }
+    std::unordered_set<std::string> declareParamNameSet;
     for (auto &declareParam : declareParams) {
-        if (!ParseTplUintValue(declareParam, 0)) {
+        declareParamNameSet.insert(declareParam.name);
+        if (!ParseTplUintValue(declareParam)) {
             printf("[ERROR] ASCENDC_TPL_DECL:%s parses value failed!\n", declareParam.name);
             return INVALID_TILING_KEY;
         }
     }
-    std::map<std::string, uint8_t> bitMap;
-    for (const auto &declareParam : declareParams) {
-        bitMap[declareParam.name] = declareParam.bitWidth;
-    }
     for (auto &selectParams : selectParamsVec) {
-        std::set<std::string> selectParamNameSet{};
+        std::unordered_set<std::string> selectParamNameSet{};
         for (auto &selectParam : selectParams) {
             if(selectParam.paramType == ASCENDC_TPL_KERNEL_TYPE || selectParam.paramType == ASCENDC_TPL_DETERMINISTIC) {
                 continue;
             }
             std::string name = selectParam.name;
             selectParamNameSet.insert(name);
-            auto iter = bitMap.find(name);
             // 保证selectParam在declareParams中存在
-            if (iter == bitMap.cend() || !ParseTplUintValue(selectParam, iter->second)) {
+            if (declareParamNameSet.count(name) == 0 || !ParseTplUintValue(selectParam)) {
                 printf("[ERROR] ASCENDC_TPL_SEL : %s parses value failed!"
-                    " Please chech macro define name or values.\n", name.c_str());
+                    " Please check macro define name or values.\n", name.c_str());
                 return INVALID_TILING_KEY;
             }
         }
         // 去重之后的selectParams和declareParams长度相同，则两者相等，否则select中有缺少的declareParams
-        if (bitMap.size() != selectParamNameSet.size()) {
+        if (declareParamNameSet.size() != selectParamNameSet.size()) {
             printf("[ERROR] ASCENDC_TPL_SEL : The parameters in ASCENDC_TPL_ARGS_SEL "
             "do not fully include those in ASCENDC_TPL_ARGS_DECL.\n");
             return INVALID_TILING_KEY;
@@ -293,11 +278,11 @@ uint64_t EncodeTilingKey(TilingDeclareParams declareParams, TilingSelectParams s
         }
         tilingKey |= (paramBit << totalBits);
         totalBits += bitWidth;
-        if (totalBits > MAX_BITS_NUM) {
-            printf("[ERROR] Tiling Key exceeds maximum 64 bit, please adjust ASCENDC_TPL_ARGS_DECL bitWidth"
-                "accordingly\n");
-            return INVALID_TILING_KEY;
-        }
+    }
+    if (totalBits > MAX_BITS_NUM) {
+        printf("[ERROR] Tiling Key exceeds maximum 64 bit, please adjust ASCENDC_TPL_ARGS_DECL bitWidth"
+            "accordingly\n");
+        return INVALID_TILING_KEY;
     }
     return tilingKey;
 }

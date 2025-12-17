@@ -24,17 +24,6 @@ echo "DST_PATH is ---- $DST_PATH"
 mkdir -p $DST_PATH
 
 # copy basic api
-mkdir -p $DST_PATH/basic_api
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/impl ${DST_PATH}/basic_api/impl
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include ${DST_PATH}/basic_api/include
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/kernel_operator.h ${DST_PATH}/basic_api/kernel_operator.h
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/basic_api/op_frame ${DST_PATH}/basic_api/op_frame
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/framework/include/utils/tiling/template_argument.h ${DST_PATH}/basic_api/template_argument.h
-
-#copy highlevel_api
-mkdir -p $DST_PATH/highlevel_api
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/lib ${DST_PATH}/highlevel_api/lib
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/impl ${DST_PATH}/highlevel_api/impl
-cp -rf ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/tiling ${DST_PATH}/highlevel_api/tiling
-ln -s ${DST_PATH}/highlevel_api/lib/matmul/matmul_intf.h  ${DST_PATH}/highlevel_api/lib/matmul_intf.h
-
+mkdir -p $DST_PATH/
+cp -rf ${TOP_DIR}/impl ${DST_PATH}/impl
+cp -rf ${TOP_DIR}/include ${DST_PATH}/include

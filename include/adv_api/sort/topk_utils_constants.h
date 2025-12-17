@@ -20,5 +20,6 @@ enum class TopKMode {
     TOPK_NORMAL,
     TOPK_NSMALL,
 };
+ 
 }; // namespace AscendC
 #endif // LIB_SORT_TOPK_UTILS_CONSTANTS_H

@@ -38,12 +38,15 @@ constexpr int32_t L1_SIZE = 512 * 1024;
 #endif
 }
 
+#ifndef ASCC_STRUCT_L1TILINGTYPE
+#define ASCC_STRUCT_L1TILINGTYPE
 enum class L1TilingType : uint8_t {
     KAL1_16,
     KBL1_16,
     M_AL1,
     N_BL1
 };
+#endif
 
 struct L1Status {
     int32_t kAL1;

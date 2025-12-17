@@ -14,6 +14,7 @@
 #include "kernel_tensor.h"
 #include "kernel_operator_intf.h"
 #include "kernel_pop_stack_buffer.h"
+
 #include "../../../impl/adv_api/detail/reduce/reduce_prod/reduce_prod_v220_impl.h"
 #include "../../../impl/adv_api/detail/reduce/reduce_max/reduce_max_v220_impl.h"
 #include "../../../impl/adv_api/detail/reduce/reduce_min/reduce_min_v220_impl.h"

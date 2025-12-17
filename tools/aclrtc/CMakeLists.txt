@@ -36,6 +36,7 @@ target_link_directories(acl_rtc PRIVATE
 target_link_libraries(acl_rtc PRIVATE
     $<BUILD_INTERFACE:intf_pub_cxx17>
     dl
+    c_sec_static
 )
 
 target_compile_options(acl_rtc PRIVATE
@@ -49,18 +50,21 @@ target_compile_options(acl_rtc PRIVATE
     -Wformat
     -D_FORTIFY_SOURCE=2
     -Os
-    -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-    -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
 )
 
 target_link_options(acl_rtc PRIVATE
     -Wl,-z,relro,-z,now,-z,noexecstack
     -Wl,-Bsymbolic
     -Wl,--gc-sections
+    $<$<CONFIG:Release>:-s>
 )
 
 install(TARGETS acl_rtc
     LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
     ARCHIVE DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
     RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR} OPTIONAL
+)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/include/acl_rt_compile.h
+    DESTINATION ${INSTALL_LIBRARY_DIR}/acl
 )

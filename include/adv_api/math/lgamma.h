@@ -16,6 +16,7 @@
 #define LIB_MATH_LGAMMA_H
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/lgamma/lgamma_common_impl.h"
+
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 namespace AscendC {

@@ -100,13 +100,6 @@ struct LoadData2dTransposeParams {
     uint8_t addrMode = 0;
 };
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-struct Nd2NzParamsV2 {
-    uint64_t lookupTable0 = 0;
-    uint64_t lookupTable1 = 0;
-};
-#endif
-
 template <typename T>
 struct LoadData3DParamsV1 {
     __aicore__ LoadData3DParamsV1()
@@ -395,7 +388,7 @@ enum class FmatrixMode : uint8_t {
     FMATRIX_RIGHT = 1,
 };
 
-#if __NPU_ARCH__ == 3102
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3102))
 struct LoadDataRepeatParam {
     __aicore__ LoadDataRepeatParam() {}
 
@@ -500,7 +493,7 @@ namespace AscendC {
 struct LoadDataTrait {
     __aicore__ constexpr LoadDataTrait() {}
 
-    __aicore__ constexpr LoadDataTrait(const bool transposed) : transposed(transposed) {}
+    __aicore__ constexpr LoadDataTrait(const bool transposedIn) : transposed(transposedIn) {}
 
     bool transposed = false;
 };

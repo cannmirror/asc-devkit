@@ -236,7 +236,7 @@ private:
 
     __aicore__ inline void DepthCheck()
     {
-#if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
         if constexpr (DoMatmulMDL(MM_CFG) || DoMatmulSpecialMDL(MM_CFG)) {
             ASCENDC_ASSERT((tiling_.GetDepthA1() % (tiling_.GetStepM() * tiling_.GetStepKa()) == 0), {
                 KERNEL_LOG(KERNEL_ERROR, "depthA1 is %d , which should be divided exactly by stepM * stepKa(%d * %d)",
@@ -333,7 +333,7 @@ private:
             });
         }
 #endif
-#if __CCE_AICORE__ != 220 && !defined(__DAV_C310__) && !defined(__DAV_310R6__) && (__NPU_ARCH__ != 5102)
+#if (__NPU_ARCH__ != 2201) && (__NPU_ARCH__ != 3101) && (__NPU_ARCH__ != 5102)
         if constexpr (ToMatmulConfig(MM_CFG).scheduleType == ScheduleType::OUTER_PRODUCT) {
             ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR,
                 "ScheduleType is OUTER_PRODUCT only supported on A2/A3/A5."); });
@@ -429,7 +429,7 @@ private:
     template <typename L0cT>
     __aicore__ inline void ConfigCommonStaticCheck()
     {
-#if __CCE_AICORE__ >= 220 || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
         if constexpr (ToMatmulConfig(MM_CFG).isEnableChannelSplit) {
             static_assert((PhyPosIsGM(IMPL::CType::pos) && (IMPL::CType::format == CubeFormat::NZ) &&
                 IsSameType<typename IMPL::CType::T, float>::value && IsSameType<L0cT, float>::value),

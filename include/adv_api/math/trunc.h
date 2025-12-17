@@ -15,7 +15,7 @@
  */
 #ifndef LIB_MATH_TRUNC_H
 #define LIB_MATH_TRUNC_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/trunc/trunc_common_impl.h"
 

@@ -827,7 +827,21 @@ __aicore__ inline LocalTensor<T>::LocalTensor(uint32_t addr)
     static_assert(is_tensorTrait_v<T>, "only support TensorTrait type Tensor!");
     static_assert((T::tPos != TPosition::GM) && (T::tPos != TPosition::MAX),
             "TensorTrait position should not be GM or MAX!");
-    uint32_t tensorSize = Prod(this->GetTensorTrait().GetLayout().GetShape());
+    using LayoutType = GetLayoutType<T>;
+    using type = typename T::LiteType;
+    constexpr uint32_t tensorSize = LayoutType::size;
+    static_assert((tensorSize * sizeof(type)) % ONE_BLK_SIZE == 0, "The size of localTensor must be align to 32Bytes");
+    CreateTensor<typename T::LiteType>(T::tPos, addr, tensorSize);
+}
+
+template <typename T>
+template <typename U>
+__aicore__ inline LocalTensor<T>::LocalTensor(uint32_t addr, const U& layout)
+{
+    static_assert(is_tensorTrait_v<T>, "only support TensorTrait type Tensor!");
+    static_assert((T::tPos != TPosition::GM) && (T::tPos != TPosition::MAX),
+            "TensorTrait position should not be GM or MAX!");
+    uint32_t tensorSize = layout.GetSize();
     CreateTensor<typename T::LiteType>(T::tPos, addr, tensorSize);
 }
 
@@ -1044,7 +1058,7 @@ template <typename T> __aicore__ inline
 #endif
 }
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T>
 template <typename U>
 __aicore__ inline uintptr_t GlobalTensor<T>::AlignPtr(__gm__ U* buffer) const
@@ -1054,7 +1068,7 @@ __aicore__ inline uintptr_t GlobalTensor<T>::AlignPtr(__gm__ U* buffer) const
 }
 #endif
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T> __aicore__ inline __inout_pipe__(S)
     typename GlobalTensor<T>::PrimType GlobalTensor<T>::GetValue(const uint64_t offset)
 {
@@ -1125,14 +1139,14 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
 #else
     if constexpr (IsHalfByteDataType<PrimType>()) {
         __gm__ uint8_t *addr = reinterpret_cast<__gm__ uint8_t *>(this->oriAddress_) + offset / INT4_TWO;
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         uintptr_t tmpAddr = AlignPtr<uint8_t>(addr);
         dcci(reinterpret_cast<__gm__ uint64_t *>(tmpAddr),
                 cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
 #endif
         return static_cast<PrimType>((*addr) >> (INT4_BIT_NUM * (offset % INT4_TWO)));
     } else {
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         uintptr_t tmpAddr = AlignPtr<PrimType>(this->oriAddress_ + offset);
         dcci(reinterpret_cast<__gm__ uint64_t *>(tmpAddr),
                 cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
@@ -1142,7 +1156,7 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
 #endif
 }
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T> __aicore__ inline __inout_pipe__(S)
     __gm__ typename GlobalTensor<T>::PrimType& GlobalTensor<T>::operator()(const uint64_t offset)
 {
@@ -1169,7 +1183,7 @@ template <typename T> __aicore__ inline __inout_pipe__(S)
     __gm__ PrimType* addr = ExtractL2CacheGmAddr(this->address_);
     return addr[offset];
 #else
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     uintptr_t tmpAddr = AlignPtr<PrimType>(this->oriAddress_ + offset);
     dcci(reinterpret_cast<__gm__ uint64_t *>(tmpAddr),
         cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
@@ -1209,7 +1223,7 @@ template <typename T> __aicore__ inline
         __gm__ uint8_t *addr = reinterpret_cast<__gm__ uint8_t *>(this->oriAddress_) + offset / INT4_TWO;
         uint8_t mask = (offset % INT4_TWO == 0)? 0xf0 : 0xf;
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         if (lastWriteCacheAddr == 0) {
             lastWriteCacheAddr = AlignPtr<uint8_t>(addr);
         } else {
@@ -1225,7 +1239,7 @@ template <typename T> __aicore__ inline
         uint8_t shift = (offset % INT4_TWO == 0)? 0 : INT4_BIT_NUM;
         *addr = val + (value.storage << shift);
     } else {
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
         if (lastWriteCacheAddr == 0) {
             lastWriteCacheAddr = AlignPtr<PrimType>(this->oriAddress_ + offset);
         } else {
@@ -1244,13 +1258,13 @@ template <typename T> __aicore__ inline
 
 template <typename T> __aicore__ inline GlobalTensor<T>::GlobalTensor()
 {
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
     this->lastWriteCacheAddr = 0;
     this->lastReadCacheAddr = 0;
 #endif
 }
 
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+#ifdef __ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__
 template <typename T> __aicore__ inline GlobalTensor<T>::~GlobalTensor()
 {
     if (lastWriteCacheAddr != 0) {
@@ -1394,16 +1408,30 @@ __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc(uint32_t 
     head_ += SizeOfBits<DataType>::value * tileSize / SizeOfBits<uint8_t>::value;
     return output;
 }
-
 template <Hardware hard>
 template <class TensorTraitType>
 __aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc()
 {
     static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
     static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
-    LocalTensor<TensorTraitType> output(head_);
-    head_ += SizeOfBits<typename TensorTraitType::LiteType>::value * output.GetSize() / SizeOfBits<uint8_t>::value;
-    return output;
+    using liteType = typename TensorTraitType::LiteType;
+    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
+    LocalTensor<TensorTraitType> tensorOut(head_);
+    head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
+    return tensorOut;
 }
+
+template <Hardware hard>
+template <class TensorTraitType, typename LayoutType>
+__aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc(const LayoutType& layout)
+{
+    static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
+    static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
+    using liteType = typename TensorTraitType::LiteType;
+    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
+    LocalTensor<TensorTraitType> tensorOut(head_, layout);
+    head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
+    return tensorOut;
+}   
 }
 #endif // KERNEL_TENSOR_H

@@ -648,8 +648,8 @@ prompt_set_env() {
         install_path="$install_path/$pkg_version_dir"
     fi
     echo "Please make sure that
-        - LD_LIBRARY_PATH includes ${install_path}/asc-devkit/lib64
-        - PYTHONPATH includes ${install_path}/asc-devkit/python/site-packages"
+        - LD_LIBRARY_PATH includes ${install_path}/share/info/asc-devkit/lib64
+        - PYTHONPATH includes ${install_path}/share/info/asc-devkit/python/site-packages"
 }
 
 check_docker_path() {
@@ -1166,9 +1166,9 @@ else
 fi
 
 if [ "$pkg_is_multi_version" = "true" ] && [ "$hetero_arch" != "y" ]; then
-    default_dir="${pkg_install_path}/$pkg_version_dir/asc-devkit"
+    default_dir="${pkg_install_path}/$pkg_version_dir/share/info/asc-devkit"
 else
-    default_dir="${pkg_install_path}/asc-devkit"
+    default_dir="${pkg_install_path}/share/info/asc-devkit"
 fi
 install_info="${default_dir}/ascend_install.info"
 
@@ -1248,7 +1248,7 @@ if [ "$(get_pkg_toolchain)" != "llvm" ] && [ "$input_install_for_all" = "n" ]; t
     fi
 fi
 
-uninstall_none_multi_version "$pkg_install_path/asc-devkit"
+uninstall_none_multi_version "$pkg_install_path/share/info/asc-devkit"
 check_install_for_all
 create_default_install_dir_for_common_user
 log_base_version
@@ -1272,20 +1272,6 @@ if [ "x$version_installed" != "x" -a "$version_installed" != "none" ] || [ -f "$
         exit_uninstall_log 0
     # 升级场景
     elif [ "$upgrade" = "y" ]; then
-        if [ -n "$pkg_version_dir" ]; then
-            if [ "$hetero_arch" = "y" ]; then
-                get_package_upgrade_install_info_hetero "upgrade_install_info"
-            else
-                get_package_upgrade_install_info "upgrade_install_info" "$pkg_install_path" "asc-devkit"
-            fi
-            if [ -z "$upgrade_install_info" ]; then
-                log "ERROR" "Can not find softlink for this package in latest directory, upgrade failed"
-                log_operation "Upgrade" "failed"
-                exit_install_log 1
-            elif [ "$(realpath $upgrade_install_info)" != "$(realpath $install_info)" ]; then
-                uninstall_run "uninstall" "n" "y" "$upgrade_install_info"
-            fi
-        fi
         unchattr_files
         uninstall_run "uninstall" "n" "n"
         save_user_files_to_log "$default_dir"
@@ -1340,22 +1326,9 @@ else
                 exit_install_log 1
             fi
         else
-            if [ "$hetero_arch" = "y" ]; then
-                get_package_upgrade_install_info_hetero "upgrade_install_info"
-            else
-                get_package_upgrade_install_info "upgrade_install_info" "$pkg_install_path" "asc-devkit"
-            fi
-            if [ -f "$upgrade_install_info" ]; then
-                create_default_dir && cp "$upgrade_install_info" "$install_info"
-                [ "$hetero_arch" = "y" ] && update_install_info_hetero "$install_info" "$pkg_version_dir"
-                uninstall_run "uninstall" "n" "y" "$upgrade_install_info"
-                upgrade_run "upgrade"
-                exit_install_log 0
-            else
-                log "ERROR" "ERR_NO:0x0080;ERR_DES:Runfile is not installed in ${pkg_install_path}, upgrade failed"
-                log_operation "Upgrade" "failed"
-                exit_install_log 1
-            fi
+            log "ERROR" "ERR_NO:0x0080;ERR_DES:Runfile is not installed in ${pkg_install_path}, upgrade failed"
+            log_operation "Upgrade" "failed"
+            exit_install_log 1
         fi
     # 安装场景
     elif [ "$is_install" = "y" ]; then

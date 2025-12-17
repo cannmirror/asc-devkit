@@ -30,6 +30,7 @@ static uint8_t g_testRes = 1;      // 全局变量记录运行结果, 如果进�
 #include "kernel_utils.h"
 #include "kernel_operator.h"
 #include "kernel_utils.h"
+// #include "model/model_factory.h"
 #include "common.h"
 
 #include "kernel_operator.h"

@@ -16,7 +16,6 @@
 #define ASCENDC_MODULE_OPERATOR_FIXPIPE_INTERFACE_H
 #include "kernel_tensor.h"
 #include "kernel_struct_fixpipe.h"
-#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -53,8 +52,7 @@ __aicore__ inline void SetFixPipeClipRelu(uint64_t config);
 template <typename T>
 __aicore__ inline void SetFixPipeAddr(const LocalTensor<T> &eleWiseData, uint16_t c0ChStride);
 
-#if defined(__NPU_ARCH__) &&                                                                            \
-    (__NPU_ARCH__ == 2201|| __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 // L0C->L1
 template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
 __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src,
@@ -123,18 +121,6 @@ template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR, t
 __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
     const LocalTensor<S>& cbufWorkspace, const FixpipeParamsM310& intriParams);
 #endif
-} // namespace AscendC
-
-namespace AscendC {
-
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U>
-__aicore__ inline typename Std::enable_if<VerifyingFixpipeTemplate<T, U>, void>::type 
-Fixpipe(const T& dst, const U& src);
-
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename V>
-__aicore__ inline typename Std::enable_if<VerifyingFixpipeQuantTemplate<T, U, V>, void>::type 
-Fixpipe(const T& dst, const U& src, const V& quant);
-
 } // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_fixpipe_intf_impl.h"

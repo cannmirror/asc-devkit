@@ -11,6 +11,7 @@
 #define private public
 #define protected public
 #include "kernel_operator.h"
+// #include "model/model_factory.h"
 #include "common.h"
 
 using namespace std;

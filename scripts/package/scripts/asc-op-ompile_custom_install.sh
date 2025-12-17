@@ -24,13 +24,13 @@ usergroup=$(groups | cut -d" " -f1)
 
 log() {
     local content=`echo "$@" | cut -d" " -f2-`
-    cur_date=`date +"%Y-%m-%d %H:%M:%S"`
+    cur_date=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[Toolkit] [${cur_date}] [$1]: $content" >> "${log_file}"
 }
 
 log_and_print() {
     local content=`echo "$@" | cut -d" " -f2-`
-    cur_date=`date +"%Y-%m-%d %H:%M:%S"`
+    cur_date=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[Toolkit] [${cur_date}] [$1]: $content"
     echo "[Toolkit] [${cur_date}] [$1]: $content" >> "${log_file}"
 }

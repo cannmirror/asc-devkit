@@ -33,7 +33,7 @@
 #include "runtime/stream.h"
 #include "rt_ffts.h"
 #include "kernel.h"
-#include "toolchain/prof_api.h"
+#include "aprof_pub.h"
 #include "mmpa/mmpa_api.h"
 #include "acl/acl_rt.h"
 #include "mem.h"
@@ -82,6 +82,28 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend910_957d", "ascend910_95"},
         {"ascend910_950z", "ascend910_95"},
         {"ascend910_958a", "ascend910_95"},
+        {"ascend910_95a1", "ascend910_95"},
+        {"ascend910_95a2", "ascend910_95"},
+        {"ascend910_9591", "ascend910_95"},
+        {"ascend910_9592", "ascend910_95"},
+        {"ascend910_9595", "ascend910_95"},
+        {"ascend910_9596", "ascend910_95"},
+        {"ascend910_9581", "ascend910_95"},
+        {"ascend910_9582", "ascend910_95"},
+        {"ascend910_9583", "ascend910_95"},
+        {"ascend910_9584", "ascend910_95"},
+        {"ascend910_9585", "ascend910_95"},
+        {"ascend910_9586", "ascend910_95"},
+        {"ascend910_9587", "ascend910_95"},
+        {"ascend910_9588", "ascend910_95"},
+        {"ascend910_9571", "ascend910_95"},
+        {"ascend910_9572", "ascend910_95"},
+        {"ascend910_9573", "ascend910_95"},
+        {"ascend910_9574", "ascend910_95"},
+        {"ascend910_9575", "ascend910_95"},
+        {"ascend910_9576", "ascend910_95"},
+        {"ascend910_9577", "ascend910_95"},
+        {"ascend910_9578", "ascend910_95"},
 
         {"ascend910a", "ascend910"},
         {"ascend910proa", "ascend910"},
@@ -126,6 +148,28 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend910_957d", "Ascend910_957d"},
         {"ascend910_950z", "Ascend910_950z"},
         {"ascend910_958a", "Ascend910_958a"},
+        {"ascend910_95a1", "ascend910_95A1"}, 
+        {"ascend910_95a2", "ascend910_95A2"},
+        {"ascend910_9591", "ascend910_9591"},
+        {"ascend910_9592", "ascend910_9592"},
+        {"ascend910_9595", "ascend910_9595"},
+        {"ascend910_9596", "ascend910_9596"},
+        {"ascend910_9581", "ascend910_9581"},
+        {"ascend910_9582", "ascend910_9582"},
+        {"ascend910_9583", "ascend910_9583"},
+        {"ascend910_9584", "ascend910_9584"},
+        {"ascend910_9585", "ascend910_9585"},
+        {"ascend910_9586", "ascend910_9586"},
+        {"ascend910_9587", "ascend910_9587"},
+        {"ascend910_9588", "ascend910_9588"},
+        {"ascend910_9571", "ascend910_9571"},
+        {"ascend910_9572", "ascend910_9572"},
+        {"ascend910_9573", "ascend910_9573"},
+        {"ascend910_9574", "ascend910_9574"},
+        {"ascend910_9575", "ascend910_9575"},
+        {"ascend910_9576", "ascend910_9576"},
+        {"ascend910_9577", "ascend910_9577"},
+        {"ascend910_9578", "ascend910_9578"}, 
 
         {"ascend910a", "Ascend910A"},
         {"ascend910proa", "Ascend910ProA"},
@@ -277,7 +321,7 @@ static void MsprofRc(const char *name, const uint64_t timeStamp)
     contextIdInfo->ctxIds[0] = 0U;
 
     const size_t typeLen = strlen(name);
-    const uint64_t typeHash = MsprofGetHashId(name, typeLen);
+    const uint64_t typeHash = MsprofStr2Id(name, typeLen);
     contextIdInfo->opName = typeHash;
     MsprofReportAdditionalInfo(static_cast<uint32_t>(true), &info, static_cast<uint32_t>(sizeof(MsprofAdditionalInfo)));
 }
@@ -298,7 +342,7 @@ static void AscendBuildNodeBasicInfo(uint32_t blockDim, const std::pair<uint64_t
 
 static void MsprofRn(const char *name, uint32_t blockDim, const uint64_t time, uint32_t taskType)
 {
-    const uint64_t typeHash = MsprofGetHashId(name, strlen(name));
+    const uint64_t typeHash = MsprofStr2Id(name, strlen(name));
     MsprofCompactInfo nodeBasicInfo{};
     AscendBuildNodeBasicInfo(blockDim, { typeHash, typeHash }, static_cast<uint32_t>(taskType), time, nodeBasicInfo);
     MsprofReportCompactInfo(static_cast<uint32_t>(true), &nodeBasicInfo,
@@ -324,7 +368,7 @@ static void AscendReportLaunchInfo(const uint64_t beginTime, const char *const o
     MsprofApi info{};
     info.type = MSPROF_REPORT_NODE_LAUNCH_TYPE;
     const size_t typeLen = strlen(opType);
-    info.itemId = MsprofGetHashId(opType, typeLen);
+    info.itemId = MsprofStr2Id(opType, typeLen);
     info.level = MSPROF_REPORT_NODE_LEVEL;
     AscendMsprofReportApi(beginTime, info);
 }
@@ -451,7 +495,7 @@ static inline uint32_t AscendCExecutorPreportProfiling(
     const char *const opType, uint32_t blockDim, const uint32_t taskType, const uint64_t launchBeginTime)
 {
     const size_t typeLen = strlen(opType);
-    const uint64_t itemId = MsprofGetHashId(opType, typeLen);
+    const uint64_t itemId = MsprofStr2Id(opType, typeLen);
     AscendCInnerReportLaunchInfo(launchBeginTime, itemId);
     ASCENDC_ASSERT_RTOK_RETVAL(AscendCReportAdditionInfo(opType, blockDim, taskType,
         launchBeginTime + 1U, itemId));

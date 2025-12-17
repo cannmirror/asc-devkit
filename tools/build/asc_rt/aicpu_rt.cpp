@@ -64,6 +64,10 @@ void AicpuDumpPrintBuffer(const void *dumpBuffer, const size_t bufSize)
         return;
     }
     void *bufHost = malloc(bufSize);
+    if (bufHost == nullptr) {
+        ASCENDLOGE("Failed to allocate host buffer of size %zu", bufSize);
+        return;
+    }
     memset_s(bufHost, bufSize, 0, bufSize);
     CHECK_ACL(aclrtMemcpy(bufHost, bufSize, dumpBuffer, bufSize, ACL_MEMCPY_DEVICE_TO_HOST));
     static thread_local size_t lastOffSet = 8;
@@ -133,6 +137,10 @@ size_t* AicpuSetDumpConfig(const unsigned long *aicpuFileBuf, size_t fileSize) {
     size_t dumpSize = 0;
     AicpuGetDumpConfig(&dumpAddr, &dumpSize);
     size_t *kernelBuf = reinterpret_cast<size_t*>(malloc(fileSize));
+    if (kernelBuf == nullptr) {
+        ASCENDLOGE("Failed to allocate memory for kernel buffer, size: %zu", fileSize);
+        return nullptr;
+    }
     memcpy_s(kernelBuf, fileSize, aicpuFileBuf, fileSize);
     size_t startIndex = 0, symbolSize = 0;
     int32_t ret = ElfGetSymbolOffset(reinterpret_cast<uint8_t*>(kernelBuf), fileSize, "g_aicpuDumpConfig", &startIndex,

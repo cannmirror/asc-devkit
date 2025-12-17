@@ -387,7 +387,7 @@ class DFXSectionGenerator:
         if not tiling_info.static_shape_flag and not global_var_storage.get_variable("ascendc_tiling_no_register"):
             self._generate_binary_for_tiling(tiling_key, tiling_info, compile_info)
 
-        section_content = f"// generate dfx section for tiling_key:{tiling_key}"
+        section_content = f"// generate dfx section for tiling_key:{tiling_key}\n"
         if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
             chip_version = CommonUtility.get_chip_version().upper()
             cube_core_type = f"__DAV_{chip_version}_CUBE__"
@@ -404,6 +404,9 @@ class DFXSectionGenerator:
         if self.gen_dfx_struct_flag == False:
             if not global_var_storage.get_variable("ascendc_tiling_no_register"):
                 section_content += self._generate_dfx_info_struct()
+
+        if section_content_body is None or section_content_body == "":
+            return section_content
 
         if compile_info.sub_core_type == CORE_TYPE_CUBE:
             section_content += f"\n#if {TILING_KEY_MACRO} == {tiling_key}UL && defined({cube_core_type})\n"

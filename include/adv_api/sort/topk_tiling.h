@@ -21,22 +21,6 @@
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
-enum class TopKAlgo {
-    RADIX_SELECT,
-    MERGE_SORT
-};
-
-enum class TopKOrder {
-    UNSET,
-    LARGEST,
-    SMALLEST
-};
-
-struct TopKConfig {
-    TopKAlgo algo = TopKAlgo::MERGE_SORT;
-    TopKOrder order = TopKOrder::UNSET;
-    bool sorted = true;
-};
 
 /*
  * @ingroup GetTopKMaxMinTmpSize
@@ -57,27 +41,6 @@ struct TopKConfig {
 bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner,
     const int32_t outter, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode,
     const bool isLargest, const uint32_t dataTypeSize, uint32_t &maxValue, uint32_t &minValue);
-
-/*
- * @ingroup GetTopKMaxMinTmpSize
- * @brief Get the max and min temporary local space size used for TopK api calculation.
- * @param [in] inner: Inner axis length of input data.
- * @param [in] outter: Outer axis length of input data.
- * @param [in] k: K of TopK.
- * @param [in] isReuseSource: Whether temporary variables can reuse the input memory.
- * @param [in] isInitIndex: Whether to transfer the index of the input data.
- * @param [in] mode: Normal mode or small mode.
- * @param [in] isLargest: Max or min k values.
- * @param [in] dataType: Input data dtype.
- * @param [in] config: Configurations of TopK.
- * @param [out] maxValue: TopK api calculate need max temporary local space size.
- * @param [out] minValue: TopK api calculate need min temporary local space size.
- * @return true: Succeeded in obtaining the maximum and minimum temporary space sizes.
- * @return false: Failed to obtain maximum and minimum temporary space sizes.
- */
-bool GetTopKMaxMinTmpSize(const int32_t inner, const int32_t outter, const int32_t k, const bool isReuseSource,
-    const bool isInitIndex, enum TopKMode mode, const bool isLargest, ge::DataType dataType,
-    const TopKConfig& config, uint32_t &maxValue, uint32_t &minValue);
 
 /*
  * @ingroup TopKTilingFunc

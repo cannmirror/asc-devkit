@@ -16,8 +16,11 @@
 #ifndef COMMON_DEBUG_STUB_UTIL_H
 #define COMMON_DEBUG_STUB_UTIL_H
 
+#include <memory>
+#include <utility>
 #include "common/debug/stub_log.h"
 #include "graph/ge_error_codes.h"
+
 namespace ge {
 
 template<typename T, typename... Args>

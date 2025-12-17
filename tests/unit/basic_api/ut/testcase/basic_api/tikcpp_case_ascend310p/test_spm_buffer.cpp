@@ -9,6 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "kernel_operator.h"
+// #include "api_check/kernel_cpu_check.h"
 
 using namespace std;
 using namespace AscendC;

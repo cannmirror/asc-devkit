@@ -39,7 +39,7 @@ __aicore__ inline void SoftmaxFlashCommonImpl(const LocalTensor<T1> &dstTensor, 
         srcNDinfo = { softmaxShapeInfo.srcM, softmaxShapeInfo.srcK };
         originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
     }
-    if constexpr (std::is_same_v<T1, half> && std::is_same_v<T2, float>) {
+    if constexpr (Std::is_same<T1, half>::value && Std::is_same<T2, float>::value) {
         if (srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM) {
             SoftMaxTiling newTiling = tiling;
             SoftMaxFlashTilingFunc(workLocalSize, srcNDinfo, newTiling, FLOAT_NUM_PER_BLK, isUpdate, isBasicBlock);
@@ -58,7 +58,7 @@ __aicore__ inline void SoftmaxFlashCommonImpl(const LocalTensor<T1> &dstTensor, 
                     inMaxTensor, workLocal, originalSrcShape, tiling);
             }
         }
-    } else if constexpr (std::is_same_v<T1, T2>){
+    } else if constexpr (Std::is_same<T1, T2>::value){
         const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T1);
         const uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T1);
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {
@@ -92,7 +92,7 @@ __aicore__ inline void SoftmaxFlashTmpBufCommonImpl(const LocalTensor<T1> &dstTe
         originalSrcShape = { softmaxShapeInfo.oriSrcM, softmaxShapeInfo.oriSrcK };
     }
 
-    if constexpr (std::is_same_v<T1, half> && std::is_same_v<T2, float>) { 
+    if constexpr (Std::is_same<T1, half>::value && Std::is_same<T2, float>::value) { 
         if (srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM) {
             SoftMaxTiling newTiling = tiling;
             SoftMaxFlashTilingFunc(workLocalSize, srcNDinfo, newTiling, FLOAT_NUM_PER_BLK, isUpdate, isBasicBlock);
@@ -112,7 +112,7 @@ __aicore__ inline void SoftmaxFlashTmpBufCommonImpl(const LocalTensor<T1> &dstTe
                     inMaxTensor, tempBuffer, originalSrcShape, tiling);
             }
         }
-    } else if constexpr (std::is_same_v<T1, T2>){
+    } else if constexpr (Std::is_same<T1, T2>::value){
         const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T1);
         const uint32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T1);
         if (unlikely(srcNDinfo.k != tiling.srcK || srcNDinfo.m != tiling.srcM)) {

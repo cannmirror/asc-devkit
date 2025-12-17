@@ -11,19 +11,15 @@ add_library(ascend_runtime_base OBJECT ascendc_runtime.cpp aicpu_rt.cpp)
 
 if(BUILD_OPEN_PROJECT)
   target_include_directories(ascend_runtime_base PRIVATE
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/runtime/runtime
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/metadef
     ${ASCEND_CANN_PACKAGE_PATH}/include/base
-    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/base
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/runtime/runtime
     ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc/profiling
+    ${ASCEND_CANN_PACKAGE_PATH}/pkg_inc
     ${ASCEND_CANN_PACKAGE_PATH}/include/ge
     ${ASCEND_CANN_PACKAGE_PATH}/include
     ${ASCEND_CANN_PACKAGE_PATH}/include/acl
-    ${ASCEND_CANN_PACKAGE_PATH}/include/experiment/msprof
     ${CMAKE_CURRENT_SOURCE_DIR}/../../../include
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
   )
@@ -35,6 +31,7 @@ else()
     ${TOP_DIR}/metadef/inc
     ${TOP_DIR}/metadef/inc/external/
     ${TOP_DIR}/abl/msprof/inc
+    ${TOP_DIR}/abl/msprof/inc/toolchain
     ${TOP_DIR}/abl/libc_sec/include
     ${TOP_DIR}/abl/mmpa/inc
     ${TOP_DIR}/abl/slog/inc/toolchain
@@ -46,10 +43,10 @@ else()
 endif()
 
 target_compile_options(ascend_runtime_base PRIVATE
+  -Wextra
+  -Wfloat-equal
   -fvisibility-inlines-hidden
   -fvisibility=hidden
-  -DCMAKE_C_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
-  -DCMAKE_Cxx_COMPILER_LAUNCHER=${CCACHE_PROGRAM}
 )
 
 target_link_libraries(ascend_runtime_base PRIVATE

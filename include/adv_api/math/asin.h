@@ -20,7 +20,7 @@
  */
 #ifndef LIB_MATH_ASIN_H
 #define LIB_MATH_ASIN_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002))
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/math/asin/asin_common_impl.h"
 

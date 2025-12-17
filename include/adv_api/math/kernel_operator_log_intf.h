@@ -16,7 +16,7 @@
 #define LIB_MATH_KERNEL_OPERATOR_LOG_INTF_H
 #include "log.h"
 
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 namespace AscendC {
 [[deprecated(__FILE__ " is deprecated, please use log.h instead!")]] typedef void LogDeprecatedHeader;

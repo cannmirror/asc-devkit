@@ -27,12 +27,7 @@ __aicore__ inline void SetFlag(int32_t eventID)
     if ASCEND_IS_AIC {
         if constexpr (event == HardEvent::MTE2_V || event == HardEvent::V_MTE2 || event == HardEvent::MTE3_V
                       || event == HardEvent::V_MTE3 || event == HardEvent::V_V || event == HardEvent::S_V ||
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-                      event == HardEvent::V_S || event == HardEvent::MTE2_MTE3 || event == HardEvent::MTE3_MTE2
-                      || event == HardEvent::MTE3_S || event == HardEvent::S_MTE3) {
-#else
                       event == HardEvent::V_S) {
-#endif
             return;
         }
     }
@@ -52,12 +47,7 @@ __aicore__ inline void WaitFlag(int32_t eventID)
     if ASCEND_IS_AIC {
         if constexpr (event == HardEvent::MTE2_V || event == HardEvent::V_MTE2 || event == HardEvent::MTE3_V
                       || event == HardEvent::V_MTE3 || event == HardEvent::V_V || event == HardEvent::S_V ||
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-                      event == HardEvent::V_S || event == HardEvent::MTE2_MTE3 || event == HardEvent::MTE3_MTE2
-                      || event == HardEvent::MTE3_S || event == HardEvent::S_MTE3) {
-#else
                       event == HardEvent::V_S) {
-#endif
             return;
         }
     }
@@ -78,7 +68,7 @@ __aicore__ inline void PipeBarrier()
 }
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||       \
-    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+    (__NPU_ARCH__ == 3102))
 template <MemDsbT arg0>
 __aicore__ inline void DataSyncBarrier()
 {

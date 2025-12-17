@@ -15,6 +15,10 @@
 #ifndef LIB_KERNEL_API_H
 #define LIB_KERNEL_API_H
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#include "hccl/hccl.h"
+#endif // __NPU_ARCH__ == 3101
+
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
     __NPU_ARCH__ == 3002)
 #include "filter/dropout.h"

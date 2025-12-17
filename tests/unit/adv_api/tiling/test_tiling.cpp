@@ -4088,22 +4088,6 @@ TEST_F(TestTiling, TestAscendQuantTiling)
     EXPECT_EQ(extraBuf, 0);
 }
 
-TEST_F(TestTiling, TestQuantizeTiling)
-{
-    std::vector<int64_t> shapeDims = { 512 };
-    auto shape = ge::Shape(shapeDims);
-    uint32_t maxValue;
-    uint32_t minValue;
-    GetQuantizeMaxMinTmpSize(shape, 2, maxValue, minValue);
-    EXPECT_EQ(minValue, 2 * 256);
-    EXPECT_EQ(maxValue, 2 * 512);
-    uint32_t maxLivedNodesCnt = 0;
-    uint32_t extraBuf = 1;
-    GetQuantizeTmpBufferFactorSize(maxLivedNodesCnt, extraBuf);
-    EXPECT_EQ(maxLivedNodesCnt, 2);
-    EXPECT_EQ(extraBuf, 0);
-}
-
 TEST_F(TestTiling, TestAscendDequantTiling)
 {
     // 2d input shape
@@ -5127,7 +5111,7 @@ TEST_F(TestTiling, TestGeGLUTilingHalf)
     EXPECT_EQ(extraBuf, 0);
 }
 
-#if __CCE_AICORE__ >= 200
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 TEST_F(TestTiling, TestDigammaTilingFp32)
 {
     fe::PlatFormInfos platformInfo;

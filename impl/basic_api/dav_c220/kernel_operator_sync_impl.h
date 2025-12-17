@@ -58,7 +58,11 @@ __aicore__ inline void SoftSyncAllImpl(__gm__ int32_t* gmWorkspaceAddr, __ubuf__
 
     int32_t totalBlocks = isAIVOnly ? GetBlockNum() : (GetTaskRationImpl() * GetBlockNum());
     totalBlocks = usedCores != 0 ? usedCores : totalBlocks;
+#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+    int32_t blockIdx = GetBlockIdxImpl();
+#else
     int32_t blockIdx = isAIVOnly ? get_block_idx() : GetBlockIdxImpl();
+#endif
 
     __gm__ int32_t* localSyncGM = gmWorkspaceAddr + (blockIdx * DEFAULT_BLK_NUM);
     __ubuf__ int32_t* localUbAddr = ubWorkspaceAddr + (blockIdx * DEFAULT_BLK_NUM);

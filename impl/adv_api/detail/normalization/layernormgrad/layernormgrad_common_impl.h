@@ -23,7 +23,6 @@ const uint32_t LAYERNORM_GRAD_B32_BYTE_SIZE = 4;
 const uint32_t LAYERNORM_GRAD_B16_BYTE_SIZE = 2;
 
 namespace AscendC {
-
 struct LayerNormGradParams {
     __aicore__ LayerNormGradParams(LayerNormGradTiling &tiling, LocalTensor<float> &stackBuffer)
         : bLength(tiling.bLength),
@@ -117,7 +116,7 @@ __aicore__ inline void DuplicateLastDimImpl(const LocalTensor<float>& dst, const
     }
 }
 
-#if __CCE_AICORE__ >= 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t bsLength, const uint32_t hLength)
 {
@@ -159,7 +158,7 @@ __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const Loca
 __aicore__ inline void BroadcastLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t dstSize, const uint32_t srcSize)
 {
-#if __CCE_AICORE__ >= 220
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
     BrcbLastDimImpl(dst, src, srcSize, dstSize / srcSize);
 #else
     DuplicateLastDimImpl(dst, src, srcSize, dstSize / srcSize);

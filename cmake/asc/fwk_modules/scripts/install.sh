@@ -19,6 +19,8 @@ vendordir=vendors/$vendor_name
 QUIET="y"
 INSTALL_FOR_ALL="n"
 
+CURR_OPERATE_USER="$(id -nu 2>/dev/null)"
+CURR_OPERATE_GROUP="$(id -ng 2>/dev/null)"
 
 while true
 do
@@ -46,8 +48,70 @@ do
 done
 
 log() {
-    cur_date=`date +"%Y-%m-%d %H:%M:%S"`
+    cur_date=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[ops_custom] [$cur_date] "$1
+}
+
+set_install_for_all_mod() {
+    local _outvar="$1"
+    local _mod="$2"
+    local _new_mod
+
+    local _new_mod="${_mod%?}"
+    local _new_mod="${_new_mod}${_new_mod#${_new_mod%?}}"
+
+    eval "${_outvar}=\"${_new_mod}\""
+}
+
+apply_chmod() {
+    local path="$1"
+    local mod="$2"
+    local install_for_all="$3"
+
+    local own="${CURR_OPERATE_USER}:${CURR_OPERATE_GROUP}"
+
+    if [ "$install_for_all" = "true" ] || [ "$install_for_all" = "y" ]; then
+        set_install_for_all_mod "mod" "$mod"
+    fi
+    chmod -R "$mod" "$path"
+    if [ $? -ne 0 ]; then
+        log "[ERROR] chmod $path $mod failed."
+        return 1
+    fi
+
+    chown -f "$own" "$path"
+    if [ $? -ne 0 ]; then
+        log "[ERROR] chown $path $own failed."
+        return 1
+    fi
+
+    return 0
+}
+
+create_dir() {
+    local path="$1"
+    local mod="$2"
+    local install_for_all="$3"
+
+    if [ "$path" = "" ]; then
+        log "[ERROR] dir path is empty"
+        return 1
+    fi
+
+    if [ ! -d "$path" ]; then
+        mkdir -p "$path"
+        if [ $? -ne 0 ]; then
+            log "[ERROR] create dir $path failed."
+            return 1
+        fi
+    fi
+
+    apply_chmod "$path" "$mod" "$install_for_all"
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+    return 0
 }
 
 if [ -n "${INSTALL_PATH}" ]; then
@@ -56,9 +120,8 @@ if [ -n "${INSTALL_PATH}" ]; then
         exit 1
     fi
     if [ ! -d ${INSTALL_PATH} ]; then
-        mkdir ${INSTALL_PATH} >> /dev/null 2>&1
+        create_dir "${INSTALL_PATH}" "750" "${INSTALL_FOR_ALL}"
         if [ $? -ne 0 ]; then
-            log "[ERROR] create ${INSTALL_PATH}  failed"
             exit 1
         fi
     fi
@@ -71,10 +134,7 @@ elif [ -n "${ASCEND_CUSTOM_OPP_PATH}" ]; then
         exit 1
     fi
     if [ ! -d ${ASCEND_CUSTOM_OPP_PATH} ]; then
-        mkdir -p ${ASCEND_CUSTOM_OPP_PATH} >> /dev/null 2>&1
-        if [ $? -ne 0 ]; then
-            log "[ERROR] create ${ASCEND_CUSTOM_OPP_PATH}  failed"
-        fi
+        create_dir "${INSASCEND_CUSTOM_OPP_PATHTALL_PATH}" "750" "${INSTALL_FOR_ALL}"
     fi
     targetdir=${ASCEND_CUSTOM_OPP_PATH}
 else
@@ -106,9 +166,8 @@ upgrade()
 
     if [ ! -d ${targetdir}/$vendordir/$1 ];then
         log "[INFO] create ${targetdir}/$vendordir/$1."
-        mkdir -p ${targetdir}/$vendordir/$1
+        create_dir "${targetdir}/$vendordir/$1" "750" "${INSTALL_FOR_ALL}"
         if [ $? -ne 0 ];then
-            log "[ERROR] create ${targetdir}/$vendordir/$1 failed"
             return 1
         fi
     else
@@ -164,6 +223,7 @@ upgrade()
         return 1
     fi
 
+    apply_chmod "$targetdir/$vendordir/$1/" "750" "${INSTALL_FOR_ALL}"
     return 0
 }
 upgrade_proto()
@@ -174,9 +234,8 @@ upgrade_proto()
     fi
     if [ ! -d ${targetdir}/$vendordir/framework/caffe ];then
         log "[INFO] create ${targetdir}/$vendordir/framework/caffe."
-        mkdir -p ${targetdir}/$vendordir/framework/caffe
+        create_dir "${targetdir}/$vendordir/framework/caffe" "750" "${INSTALL_FOR_ALL}"
         if [ $? -ne 0 ];then
-            log "[ERROR] create ${targetdir}/$vendordir/framework/caffe failed"
             return 1
         fi
     else
@@ -201,7 +260,7 @@ upgrade_proto()
         fi
         log "[INFO] replace old caffe.proto files ......"
     fi
-    chmod -R +w "$targetdir/$vendordir/framework/caffe/" >/dev/null 2>&1
+    apply_chmod "$targetdir/$vendordir/framework/caffe/" "750" "${INSTALL_FOR_ALL}"
     cp -rf ${sourcedir}/$vendordir/custom.proto ${targetdir}/$vendordir/framework/caffe/
     if [ $? -ne 0 ];then
         log "[ERROR] copy new custom.proto failed"
@@ -225,7 +284,7 @@ upgrade_file()
         log "[ERROR] copy new $1 file failed"
         return 1
     fi
-
+    apply_chmod "$targetdir/$vendordir/$1" "750" "${INSTALL_FOR_ALL}"
     return 0
 }
 
@@ -244,15 +303,25 @@ delete_optiling_file()
 
 log "[INFO] copy uninstall sh success"
 
-if [ ! -d ${targetdir}/vendors ];then
-        log "[INFO] create ${targetdir}/vendors."
-        mkdir -p ${targetdir}/vendors
-        if [ $? -ne 0 ];then
-            log "[ERROR] create ${targetdir}/vendors failed"
-            exit 1
-        fi
+if [ ! -d "${targetdir}/vendors" ];then
+    log "[INFO] create ${targetdir}/vendors."
+    create_dir "${targetdir}/vendors" "750" "${INSTALL_FOR_ALL}"
+    if [ $? -ne 0 ];then
+        exit 1
+    fi
+else
+    apply_chmod "${targetdir}/vendors" "750" "${INSTALL_FOR_ALL}"
 fi
-chmod u+w ${targetdir}/vendors
+
+if [ ! -d "${targetdir}/$vendordir" ];then
+    log "[INFO] create ${targetdir}/$vendordir."
+    create_dir "${targetdir}/$vendordir" "750" "${INSTALL_FOR_ALL}"
+    if [ $? -ne 0 ];then
+        exit 1
+    fi
+else
+    apply_chmod "${targetdir}/$vendordir" "750" "${INSTALL_FOR_ALL}"
+fi
 
 log "[INFO] upgrade framework"
 upgrade framework
@@ -296,9 +365,8 @@ if [ -n "${INSTALL_PATH}" ] && [ -d ${INSTALL_PATH} ]; then
     bin_path="${_ASCEND_CUSTOM_OPP_PATH}/bin"
     set_env_variable="#!/bin/bash\nexport ASCEND_CUSTOM_OPP_PATH=${_ASCEND_CUSTOM_OPP_PATH}:\${ASCEND_CUSTOM_OPP_PATH}\nexport LD_LIBRARY_PATH=${_ASCEND_CUSTOM_OPP_PATH}/op_api/lib/:\${LD_LIBRARY_PATH}"
     if [ ! -d ${bin_path} ]; then
-        mkdir -p ${bin_path} >> /dev/null 2>&1
+        create_dir "${bin_path}" "750" "${INSTALL_FOR_ALL}"
         if [ $? -ne 0 ]; then
-            log "[ERROR] create ${bin_path} failed"
             exit 1
         fi
     fi
@@ -315,7 +383,7 @@ else
     config_file=${targetdir}/vendors/config.ini
     if [ ! -f ${config_file} ]; then
         touch ${config_file}
-        chmod 640 ${config_file}
+        apply_chmod "${config_file}" "640" "${INSTALL_FOR_ALL}"
         echo "load_priority=$vendor_name" > ${config_file}
         if [ $? -ne 0 ];then
             log "[ERROR] echo load_priority failed"
@@ -329,15 +397,13 @@ else
             sed -i "/load_priority=$found_vendors/s@load_priority=$found_vendors@load_priority=$vendor_name,$vendor@g" "$config_file"
         fi
     fi
-    if test $INSTALL_FOR_ALL = "y"; then
-        chmod 755 ${config_file}
-    fi
+    apply_chmod "${config_file}" "750" "${INSTALL_FOR_ALL}"
     log "[INFO] using requirements: when custom module install finished or before you run the custom module, \
         execute the command [ export LD_LIBRARY_PATH=${_ASCEND_CUSTOM_OPP_PATH}/op_api/lib/:\${LD_LIBRARY_PATH} ] to set the environment path"
 fi
 
 if [ -d ${targetdir}/$vendordir/op_impl/cpu/aicpu_kernel/impl/ ]; then
-    chmod -R 440 ${targetdir}/$vendordir/op_impl/cpu/aicpu_kernel/impl/* >/dev/null 2>&1
+    chmod -R 444 ${targetdir}/$vendordir/op_impl/cpu/aicpu_kernel/impl/* >/dev/null 2>&1
 fi
 
 echo "SUCCESS"

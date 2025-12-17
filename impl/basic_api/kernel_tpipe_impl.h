@@ -907,7 +907,7 @@ __aicore__ inline void TPipe::ResetPool()
 template <class T> __aicore__ inline bool TPipe::TscmInitBuffer(T& que, uint8_t num, uint32_t len)
 {
     ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
-    ASCENDC_DEBUG_ASSERT(((num * len) < TOTAL_L1_SIZE),
+    ASCENDC_ASSERT(((num * len) < TOTAL_L1_SIZE),
         KERNEL_LOG(KERNEL_ERROR, "tscm buffer length is %u bytes, which is larger than total l1 size %u bytes",
             len * num, TOTAL_L1_SIZE));
 

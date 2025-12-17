@@ -184,7 +184,7 @@ TEST_F(TEST_MMAD_SP, MMAD_SP_Case)
     AscendC::KernelMatmulSp op;
     op.Init(a, b, idx, c, m, k, n);
     op.Process();
-
+    
     for (int32_t i = 0; i < m * n * sizeof(int32_t); i++) {
         EXPECT_EQ(c[i], 0x00);
     }

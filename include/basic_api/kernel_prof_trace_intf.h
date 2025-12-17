@@ -42,31 +42,6 @@ enum class TraceId : uint32_t {
     BroadCast = 0x8601,
 };
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-__aicore__ inline void TRACE_START(TraceId apid)
-{}
-__aicore__ inline void TRACE_STOP(TraceId apid)
-{}
-
-template<pipe_t pipe, uint16_t index>
-__aicore__ inline void MarkStamp();
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    #define TRACE_START(apid)                                          \
-    do {                                                           \
-        uint32_t v = (::AscendC::PROF_START_EVENT | static_cast<uint32_t>(apid));                               \
-        __asm__ __volatile__("");                                  \
-        asm volatile("MOV COND, %0\n" : "+l"(v));                  \
-        __asm__ __volatile__("");                                  \
-    } while (0)
-
-#define TRACE_STOP(apid)                                          \
-    do {                                                          \
-        uint32_t v = (::AscendC::PROF_STOP_EVENT | static_cast<uint32_t>(apid));                              \
-        __asm__ __volatile__("");                                 \
-        asm volatile("MOV COND, %0\n" : "+l"(v));                 \
-        __asm__ __volatile__("");                                 \
-    } while (0)
-#else
 #define TRACE_START(apid)                                          \
     do {                                                           \
         set_lpcnt(::AscendC::PROF_START_EVENT | static_cast<uint32_t>(apid)); \
@@ -78,7 +53,7 @@ __aicore__ inline void MarkStamp();
         set_lpcnt(::AscendC::PROF_STOP_EVENT | static_cast<uint32_t>(apid)); \
         ::AscendC::ProfMarkEvent();                                          \
     } while (0)
-#endif
+
 #else
 
 #define TRACE_START(apid)

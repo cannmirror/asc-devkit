@@ -680,7 +680,7 @@ TEST_F(TestTiling, GetTilingKeySuccess)
 }
 
 
-TEST_F(TestTiling, GetTilingKeyFailed)
+TEST_F(TestTiling, GetTilingKeyFailed1)
 {
     TilingDeclareParams tilingDeclareParams {
         ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
@@ -706,24 +706,51 @@ TEST_F(TestTiling, GetTilingKeyFailed)
                                                       tilingSelectParams,
                                                       { 10, 15, 7, 1});
     EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
-    tilingDeclareParams = {
+}
+
+
+TEST_F(TestTiling, GetTilingKeyFailed2)
+{
+    TilingDeclareParams tilingDeclareParams {
         ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
         ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "DECL"),
         ParamStruct("N", ASCENDC_TPL_UINT, 8, {2, 0, 2, 3, 5, 7, 6}, "DECL"),
         ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
     };
-    tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
+    TilingSelectParams tilingSelectParams {
+        {
+            ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL"),
+            ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15}, "SEL"),
+            ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
+            ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
+        },
+        {
+            ParamStruct("NKKK", ASCENDC_TPL_UINT, 8, {1, 4, 6, 100}, "SEL"),
+            ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
+            ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {20}, "SEL"),
+            ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "SEL")
+        },
+    };
+    auto tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
                                                 tilingSelectParams,
-                                                { 10, 15, 7, 1});
-    EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
-    tilingKey = AscendC::EncodeTilingKey({},
-                                                {},
                                                 { 10, 15, 7, 1});
     EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
 }
 
 
-TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed)
+TEST_F(TestTiling, GetTilingKeyFailed3)
+{
+    TilingDeclareParams tilingDeclareParams {};
+    TilingSelectParams tilingSelectParams {};
+    
+    auto tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
+                                                tilingSelectParams,
+                                                { 10, 15, 7, 1});
+    EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
+}
+
+
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed1)
 {
     TilingDeclareParams tilingDeclareParams {
         ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
@@ -743,34 +770,62 @@ TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed)
                                                       tilingSelectParams,
                                                       { 10, 15, 7, 1});
     EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
-    tilingDeclareParams = {
+}
+
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed2)
+{
+    TilingDeclareParams tilingDeclareParams {
         ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
         ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {}, "DECL"),
         ParamStruct("N", ASCENDC_TPL_UINT, 8, {8}, "DECL"),
         ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
     };
-    tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
+    TilingSelectParams tilingSelectParams {
+        {
+            ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL"),
+            ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15}, "SEL"),
+            ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
+            ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
+        },
+    };
+    auto tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
                                         tilingSelectParams,
                                         { 10, 15, 7, 1});
     EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
-    tilingDeclareParams = {
+}
+
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed3)
+{
+    TilingDeclareParams tilingDeclareParams {
         ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
         ParamStruct("Y", 123321, 8, {15, 25}, "DECL"),
         ParamStruct("N", ASCENDC_TPL_UINT, 8, {8}, "DECL"),
         ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
     };
-    tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
+    TilingSelectParams tilingSelectParams {
+        {
+            ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL"),
+            ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15}, "SEL"),
+            ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
+            ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
+        },
+    };
+    
+    auto tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
                                         tilingSelectParams,
                                         { 10, 15, 7, 1});
     EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
+}
 
-    tilingDeclareParams = {
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed4)
+{
+    TilingDeclareParams tilingDeclareParams {
             ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
             ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "DECL"),
             ParamStruct("N", ASCENDC_TPL_UINT, 8, {2, 0, 2, 3, 5, 7, 6}, "DECL"),
             ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
     };
-    tilingSelectParams = {
+    TilingSelectParams tilingSelectParams {
             {
                 ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL"),
                 ParamStruct("Y", ASCENDC_TPL_DTYPE, 8, {15}, "SEL"),
@@ -778,22 +833,65 @@ TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed)
                 ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
             },
     };
-    tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
+    auto tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
                                         tilingSelectParams,
                                         { 10, 15, 7, 1});
     EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
+}
+
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed5)
+{
+    TilingDeclareParams tilingDeclareParams {
+        ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
+        ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "DECL"),
+        ParamStruct("N", ASCENDC_TPL_UINT, 8, {2, 0, 2, 3, 5, 7, 6}, "DECL"),
+        ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
+    };
+    TilingSelectParams tilingSelectParams {
+            {
+                ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL"),
+                ParamStruct("Y", ASCENDC_TPL_DTYPE, 8, {15}, "SEL"),
+                ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
+                ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
+            },
+    };
     tilingSelectParams.at(0).pop_back();
     EXPECT_EQ(AscendC::EncodeTilingKey(tilingDeclareParams, tilingSelectParams,
                                         { 10, 15, 1}), 0xFFFFFFFFFFFFFFFF);
+}
+
+
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed6)
+{
+    TilingDeclareParams tilingDeclareParams {
+        ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
+        ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "DECL"),
+        ParamStruct("N", ASCENDC_TPL_UINT, 8, {2, 0, 2, 3, 5, 7, 6}, "DECL"),
+        ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
+    };
+    TilingSelectParams tilingSelectParams {
+            {
+                ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL"),
+                ParamStruct("Y", ASCENDC_TPL_DTYPE, 8, {15}, "SEL"),
+                ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
+                ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
+            },
+    };
+    tilingSelectParams.at(0).pop_back();
     tilingSelectParams.at(0).at(0).paramType = 234234;
     EXPECT_EQ(AscendC::EncodeTilingKey(tilingDeclareParams, tilingSelectParams,
                                         { 10, 15, 1}), 0xFFFFFFFFFFFFFFFF);
-    tilingDeclareParams = {
-            ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL")};
-    tilingSelectParams = {{ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL")}};
+}
+
+TEST_F(TestTiling, GetTilingKeyParamStructValParseFailed7)
+{
+    TilingDeclareParams tilingDeclareParams {
+        ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL")};
+    TilingSelectParams tilingSelectParams {{ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 30}, "SEL")}};
     EXPECT_EQ(AscendC::EncodeTilingKey(tilingDeclareParams, tilingSelectParams,
                                     { 10, 15, 1}), 0xFFFFFFFFFFFFFFFF);
 }
+
 
 TEST_F(TestTiling, GetTilingKeyParamStructValFailed)
 {
@@ -893,34 +991,6 @@ TEST_F(TestTiling, GetTilingKeyParamNoTplFailed)
             ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15}, "SEL"),
             ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
             ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 7}, "SEL")
-        },
-        {
-            ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 6}, "SEL"),
-            ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "SEL"),
-            ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {20}, "SEL"),
-            ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "SEL")
-        },
-    };
-    auto tilingKey = AscendC::EncodeTilingKey(tilingDeclareParams,
-                                                      tilingSelectParams,
-                                                      { 10, 15, 7, 1});
-    EXPECT_EQ(tilingKey, 0xFFFFFFFFFFFFFFFF);
-}
-
-TEST_F(TestTiling, GetTilingKeySelectFailed)
-{
-    TilingDeclareParams tilingDeclareParams {
-        ParamStruct("X", ASCENDC_TPL_DTYPE, 8, {10, 20, 30}, "DECL"),
-        ParamStruct("Y", ASCENDC_TPL_FORMAT, 8, {15, 25}, "DECL"),
-        ParamStruct("N", ASCENDC_TPL_UINT, 8, {2, 2, 0, 2, 3, 5, 7, 6}, "DECL"),
-        ParamStruct("S", ASCENDC_TPL_BOOL, 1, {0, 1}, "DECL")
-    };
-    TilingSelectParams tilingSelectParams {
-        {
-            ParamStruct("X", ASCENDC_TPL_DTYPE, 18, {10, 30}, "SEL"),
-            ParamStruct("Y", ASCENDC_TPL_FORMAT, 18, {15}, "SEL"),
-            ParamStruct("S", ASCENDC_TPL_BOOL, 11, {0, 1}, "SEL"),
-            ParamStruct("N", ASCENDC_TPL_UINT, 18, {1, 4, 7}, "SEL")
         },
         {
             ParamStruct("N", ASCENDC_TPL_UINT, 8, {1, 4, 6}, "SEL"),
