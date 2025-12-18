@@ -13,7 +13,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "../../outputs")
 set(INC_PATH $ENV{DDK_PATH})
 
 if (NOT DEFINED ENV{DDK_PATH})
-    set(INC_PATH "/usr/local/Ascend/latest")
+    set(INC_PATH "/usr/local/Ascend/cann")
     message(STATUS "set default INC_PATH: ${INC_PATH}")
 else ()
     message(STATUS "env INC_PATH: ${INC_PATH}")
@@ -23,8 +23,8 @@ set(LIB_PATH $ENV{NPU_HOST_LIB})
 
 # Dynamic libraries in the stub directory can only be used for compilation
 if (NOT DEFINED ENV{NPU_HOST_LIB})
-    set(LIB_PATH "/usr/local/Ascend/latest/acllib/lib64/stub/")
-    set(LIB_PATH1 "/usr/local/Ascend/latest/atc/lib64/stub/")
+    set(LIB_PATH "/usr/local/Ascend/cann/acllib/lib64/stub/")
+    set(LIB_PATH1 "/usr/local/Ascend/cann/atc/lib64/stub/")
     message(STATUS "set default LIB_PATH: ${LIB_PATH}")
 else ()
     message(STATUS "env LIB_PATH: ${LIB_PATH}")
@@ -32,8 +32,7 @@ endif()
 
 # Header path
 include_directories(
-    ${INC_PATH}/runtime/include
-    ${INC_PATH}/atc/include
+    ${INC_PATH}/include
     ../inc
 )
 

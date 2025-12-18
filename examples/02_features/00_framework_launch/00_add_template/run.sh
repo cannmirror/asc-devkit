@@ -50,7 +50,7 @@ done
 # 检查当前昇腾芯片的类型
 function check_soc_version() {
     SOC_VERSION_CONCAT=`(export ASCEND_SLOG_PRINT_TO_STDOUT=0 && python3 -c '''
-import ctypes, os
+import ctypes, os, platform
 def get_soc_version():
     max_len = 256
     rtsdll = ctypes.CDLL(f"libruntime.so")
@@ -61,9 +61,10 @@ def get_soc_version():
         print("rt_error:", rt_error)
         return ""
     soc_full_name = c_char_t.value.decode("utf-8")
+    arch = platform.machine()
     find_str = "Short_SoC_version="
     ASCEND_INSTALL_PATH = os.environ.get("ASCEND_INSTALL_PATH")
-    with open(f"{ASCEND_INSTALL_PATH}/compiler/data/platform_config/{soc_full_name}.ini", "r") as f:
+    with open(f"{ASCEND_INSTALL_PATH}/{arch}-linux/data/platform_config/{soc_full_name}.ini", "r") as f:
         for line in f:
             if find_str in line:
                 start_index = line.find(find_str)
@@ -89,7 +90,7 @@ function main() {
     # 增加自定义算子工程样例
     JSON_NAME=add_template_custom
 
-    sed -i "s#/usr/local/Ascend/latest#$ASCEND_INSTALL_PATH#g" $(grep "/usr/local/Ascend/latest" -rl custom_op/CMakePresets.json)
+    sed -i "s#/usr/local/Ascend/cann#$ASCEND_INSTALL_PATH#g" $(grep "/usr/local/Ascend/cann" -rl custom_op/CMakePresets.json)
 
     # 测试不同输入数据类型, 修改对应代码
     if [[ ${DTYPE} == "float16" ]]; then

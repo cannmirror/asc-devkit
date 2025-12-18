@@ -24,7 +24,7 @@ cd $CURRENT_DIR
 HEIGHT=$1
 WIDTH=$2
 if [ ! $ASCEND_INSTALL_PATH ]; then
-    ASCEND_INSTALL_PATH=/usr/local/Ascend/latest
+    ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
     source $ASCEND_INSTALL_PATH/bin/setenv.bash
 fi
 

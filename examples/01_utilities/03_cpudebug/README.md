@@ -90,7 +90,6 @@ CPU Debug介绍
     - SOC_VERSION：昇腾AI处理器型号，如果无法确定具体的SOC_VERSION，则在安装昇腾AI处理器的服务器执行npu-smi info命令进行查询，在查询到的“Name”前增加Ascend信息，例如“Name”对应取值为xxxyy，实际配置的SOC_VERSION值为Ascendxxxyy。
 
   - 样例执行
-    执行add.cpp样例的命令如下所示：
     ```bash
     set -e && rm -rf build out && mkdir -p build
     cmake -B build -DCMAKE_INSTALL_PREFIX=./ -DSOC_VERSION=${SOC_VERSION}
