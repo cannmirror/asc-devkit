@@ -57,7 +57,7 @@
 
 1. **安装社区尝鲜版CANN toolkit包**
 
-    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/Ascend-cann-toolkit_8.5.0.alpha001_linux-x86_64.run)、[toolkit aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/Ascend-cann-toolkit_8.5.0.alpha001_linux-aarch64.run)。
+    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/Ascend-cann-toolkit_8.5.0-beta.1_linux-x86_64.run)、[toolkit aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/Ascend-cann-toolkit_8.5.0-beta.1_linux-aarch64.run)。
 
     ```bash
     # 确保安装包具有可执行权限
@@ -77,8 +77,8 @@
 
     根据产品型号和环境架构，下载对应`cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run`包，下载链接如下：
 
-    - Ascend 910B：[legacy x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910b-ops-legacy_8.5.0.0.0_linux-x86_64.run)、[legacy aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910b-ops-legacy_8.5.0.0.0_linux-aarch64.run)。
-    - Ascend 910C：[legacy x86_64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910_93-ops-legacy_8.5.0.0.0_linux-x86_64.run)、[legacy aarch64包](https://ascend-cann.obs.cn-north-4.myhuaweicloud.com/CANN/community/ascendc/cann-910_93-ops-legacy_8.5.0.0.0_linux-aarch64.run)。
+    - Ascend 910B：[legacy x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/ops/cann-910b-ops-legacy_8.5.0-beta.1_linux-x86_64.run)、[legacy aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/ops/cann-910b-ops-legacy_8.5.0-beta.1_linux-aarch64.run)。
+    - Ascend 910C：[legacy x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/ops/cann-910_93-ops-legacy_8.5.0-beta.1_linux-x86_64.run)、[legacy aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/ops/cann-910_93-ops-legacy_8.5.0-beta.1_linux-aarch64.run)。
 
     ```bash
     # 确保安装包具有可执行权限
