@@ -106,9 +106,11 @@ def check_is_regbase_v2():
     from .platform.platform_info import BS9SX2A
     from .platform.platform_info import MC61AM21A
     from .platform.platform_info import ASCEND_910_95
+    from .platform.platform_info import KIRIN_X90
+    from .platform.platform_info import KIRIN_9030
 
     if get_soc_spec("SHORT_SOC_VERSION") in [ASCEND_031, ASCEND_310B, ASCEND_610LITE, BS9SX2A, 
-                                             MC61AM21A, AS31XM1, ASCEND_910_95]:
+                                             MC61AM21A, AS31XM1, ASCEND_910_95, KIRIN_X90, KIRIN_9030]:
         return True
     return False
 

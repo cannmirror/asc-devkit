@@ -20,7 +20,8 @@
 #include "kernel_tiling/kernel_tiling.h"
 #include "../../../impl/adv_api/detail/transpose/confusion_transpose/confusion_transpose_common_impl.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3003 || \
+    __NPU_ARCH__ == 3113)
 namespace AscendC {
 #pragma begin_pipe(V)
 

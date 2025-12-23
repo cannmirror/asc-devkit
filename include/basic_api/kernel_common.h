@@ -46,7 +46,7 @@ __BLOCK_LOCAL__ __inline__ AscendC::TPipe* g_tPipePtr;
 __BLOCK_LOCAL__ __inline__ AscendC::TPipe* g_tPipePtr;
 #endif
 
-#if __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 3102
+#if __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 3102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
 __BLOCK_LOCAL__ __inline__ uint64_t g_maskCount;
 __BLOCK_LOCAL__ __inline__ half g_deqValue;
 #endif

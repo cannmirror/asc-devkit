@@ -17,7 +17,19 @@
 #include "utils/kernel_utils_mode.h"
 
 namespace AscendC {
-
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+enum class eltwise_antiq_t {
+    S8ANTIQ_Scalar = 0,  // s8 antiquant scalar
+    S8ANTIQ_Vector,  // s8 antiquant vector
+    S4ANTIQ_Scalar,  // s4 antiquant scalar
+    S4ANTIQ_Vector,  // s4 antiquant vector
+    U8ANTIQ_Scalar,  // u8 antiquant scalar
+    U8ANTIQ_Vector,  // u8 antiquant vector
+    S16ANTIQ_Scalar,  // s16 antiquant scalar
+    S16ANTIQ_Vector,  // s16 antiquant vector
+    NO_ANTIQ
+};
+#endif
 struct QuantParams {
     __aicore__ QuantParams() {}
     __aicore__ QuantParams(const QuantMode_t quantPreIn) : quantPre(quantPreIn) {}

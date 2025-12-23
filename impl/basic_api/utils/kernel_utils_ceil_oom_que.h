@@ -50,7 +50,8 @@ __aicore__ inline uint32_t Ceil(uint32_t a, uint32_t b)
     return (a + b - 1) / b;
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || \
+    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
 __aicore__ constexpr inline int32_t CeilDivision(int32_t num1, int32_t num2)
 {
     if (num2 == 0) {
@@ -360,6 +361,25 @@ template <typename T, int U, int... Args> __aicore__ constexpr bool SupportBytes
     }
     return sizeof(T) == U;
 }
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) ||  (__NPU_ARCH__ == 3113))
+template <auto T, auto U, auto... Args> __aicore__ constexpr bool SupportEnum()
+{
+    if constexpr (sizeof...(Args) > 0) {
+        return T == U || SupportEnum<T, Args...>();
+    }
+    return T == U;
+}
+
+#if !defined(__DAV_L310_EFF__)
+template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&... args)
+{
+    __VEC_SCOPE__
+    {
+        funcPtr(args...);
+    }
+}
+#endif
+#endif
 } // namespace AscendC
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)

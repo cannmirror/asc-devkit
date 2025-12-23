@@ -58,11 +58,19 @@ template <const auto& MM_CFG, typename IMPL, typename A_TYPE, typename B_TYPE, t
 struct MatmulWithScalePolicy : public MatmulPolicy<MM_CFG, IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE>
 {
 public:
+#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+    // for scale
+    using CubeInBufferScaleA = AscendC::Impl::Detail::CubeInBuffer<IMPL, MatmulInputScaleAType<A_TYPE, A_TYPE>, MM_CFG>;
+    using CopyCubeInScaleA = AscendC::Impl::Detail::CopyCubeIn<IMPL, MatmulInputScaleAType<A_TYPE, A_TYPE>, MM_CFG>;
+    using CubeInBufferScaleB = AscendC::Impl::Detail::CubeInBuffer<IMPL, MatmulInputScaleBType<B_TYPE, B_TYPE>, MM_CFG>;
+    using CopyCubeInScaleB = AscendC::Impl::Detail::CopyCubeIn<IMPL, MatmulInputScaleBType<B_TYPE, B_TYPE>, MM_CFG>;
+#else
     // for scale
     using CubeInBufferScaleA = AscendC::Impl::Detail::CubeInBuffer<IMPL, MatmulInputScaleAType<A_TYPE, fp8_e8m0_t>, MM_CFG>;
     using CopyCubeInScaleA = AscendC::Impl::Detail::CopyCubeIn<IMPL, MatmulInputScaleAType<A_TYPE, fp8_e8m0_t>, MM_CFG>;
     using CubeInBufferScaleB = AscendC::Impl::Detail::CubeInBuffer<IMPL, MatmulInputScaleBType<B_TYPE, fp8_e8m0_t>, MM_CFG>;
     using CopyCubeInScaleB = AscendC::Impl::Detail::CopyCubeIn<IMPL, MatmulInputScaleBType<B_TYPE, fp8_e8m0_t>, MM_CFG>;
+#endif
 };
 
 /*

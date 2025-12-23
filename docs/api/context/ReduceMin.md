@@ -19,6 +19,16 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
 </tr>
+<tr id="row174192367212"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
+<tr id="row423773710210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -66,6 +76,8 @@
 <td class="cellrowborder" valign="top" width="86.41%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
 <p id="p1261794045615"><a name="p1261794045615"></a><a name="p1261794045615"></a><span id="ph361715406569"><a name="ph361715406569"></a><a name="ph361715406569"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：half/float</p>
 <p id="p5161942102612"><a name="p5161942102612"></a><a name="p5161942102612"></a><span id="ph151614424266"><a name="ph151614424266"></a><a name="ph151614424266"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
+<p id="p065555314"><a name="p065555314"></a><a name="p065555314"></a><span id="ph15441323310"><a name="ph15441323310"></a><a name="ph15441323310"></a>Kirin X90</term></span>，支持的数据类型为：half/float</p>
+<p id="p082420411739"><a name="p082420411739"></a><a name="p082420411739"></a><span id="ph25359910414"><a name="ph25359910414"></a><a name="ph25359910414"></a>Kirin 9030</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
 </tbody>
@@ -111,6 +123,8 @@
 <p id="p219462520"><a name="p219462520"></a><a name="p219462520"></a>数据类型需要与目的操作数保持一致。</p>
 <p id="p2045113147555"><a name="p2045113147555"></a><a name="p2045113147555"></a><span id="ph0451314155510"><a name="ph0451314155510"></a><a name="ph0451314155510"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，需要使用sharedTmpBuffer。</p>
 <p id="p5451214155517"><a name="p5451214155517"></a><a name="p5451214155517"></a><span id="ph16451121435516"><a name="ph16451121435516"></a><a name="ph16451121435516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，需要使用sharedTmpBuffer。</p>
+<p id="p622702317911"><a name="p622702317911"></a><a name="p06p6227023179115555314"></a><span id="ph10227122312915"><a name="ph10227122312915"></a><a name="ph10227122312915"></a>Kirin X90</term></span>，需要使用sharedTmpBuffer。</p>
+<p id="p132275232918"><a name="p132275232918"></a><a name="p132275232918"></a><span id="ph32275232918"><a name="ph32275232918"></a><a name="ph32275232918"></a>Kirin 9030</term></span>，需要使用sharedTmpBuffer。</p>
 </td>
 </tr>
 <tr id="row4855921113310"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p6399278339"><a name="p6399278339"></a><a name="p6399278339"></a>count</p>

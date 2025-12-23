@@ -71,7 +71,7 @@ enum class DataType : int32_t {
     DT_FLOAT4_E2M1 = 37,    // fp4_e2m1 type
     DT_FLOAT8_E8M0 = 38,    // fp8_e8m0 type
     DT_FLOAT4_E1M2 = 39,    // fp4_e1m2 type
-    DT_MAX = 40             // Mark the boundaries of data types
+    DT_MAX = 40            // Mark the boundaries of data types
 };
 
 #if !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
@@ -631,6 +631,13 @@ public:
     int32_t minSingleK = 0;
     DequantType deqType = DequantType::SCALAR;
     bool enableSplitK_ = false;
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003)
+    // micro slice, L1Lock params: isL1LockScenario_, isSingleCoreSplit
+    bool isL1LockScenario_ = false;  // try L1TilingAlgType::TILING_BFULL first
+    bool isUseSingleCore_ = false;   // restrict only use single-core
+    int32_t groupSize = 0;
+    bool hasFixSplit_ = false;
+#endif
     platform_ascendc::SocVersion socVersion = platform_ascendc::SocVersion::ASCEND910B;
     int32_t mmConfigType = 1; // 0: Norm; 1: MDL
     bool enableL1CacheUB = false;

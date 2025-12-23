@@ -43,6 +43,9 @@
 #include "dav_c220/core_mng/roc/kernel_operator_group_barrier_impl.h"
 #elif __NPU_ARCH__ == 3002
 #include "dav_m300/kernel_operator_set_atomic_impl.h"
+#elif __NPU_ARCH__ == 3003
+#include "dav_l300/kernel_operator_sync_impl.h"
+#include "dav_l300/kernel_operator_set_atomic_impl.h"
 #elif __NPU_ARCH__ == 3102
 #include "dav_m310/kernel_operator_set_atomic_impl.h"
 #elif __NPU_ARCH__ == 3101
@@ -64,6 +67,9 @@
 #include "dav_m510/kernel_operator_set_atomic_impl.h"
 #include "dav_m510/kernel_operator_common_impl.h"
 #include "dav_m510/kernel_operator_sync_impl.h"
+#elif (__NPU_ARCH__ == 3113)
+#include "dav_l311/kernel_operator_sync_impl.h"
+#include "dav_l311/kernel_operator_set_atomic_impl.h"
 #endif
 #include "kernel_pop_stack_buffer.h"
 

@@ -87,6 +87,8 @@
     <file_info copy_type="delivery" src_path="lib/host/asc/impl" dst_path="$(TARGET_ENV)/asc/impl" install_path="$(TARGET_ENV)/asc/impl" install_type="all">
         <file value="utils" install_mod="550" entity="true"/>
         <file value="basic_api" install_mod="550" entity="true"/>
+        <file value="micro_api" install_mod="550" entity="true"/>
+        <file value="micro_api_inc" install_mod="550" entity="true"/>
     </file_info>
     <file_info copy_type="delivery" src_path="lib/host/asc/impl/adv_api" dst_path="$(TARGET_ENV)/asc/impl/adv_api" install_path="$(TARGET_ENV)/asc/impl/adv_api" install_type="all">
         <file value="detail" install_softlink="$(TARGET_ENV)/ascendc/include/highlevel_api/impl" install_mod="550" entity="true"/>

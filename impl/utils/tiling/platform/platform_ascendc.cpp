@@ -24,6 +24,7 @@
 
 namespace platform_ascendc {
 const static uint64_t LOCAL_RESERV_SIZE = 256;
+const static uint64_t LOCAL_RESERV_SIZE_KIRIN = 10 * 1024;
 const static uint32_t WORK_SPACE_SIZE_910B = 16 * 1024 * 1024;
 const static uint32_t WORK_SPACE_SIZE_910_95 = 16 * 1024 * 1024;
 const static uint32_t WORK_SPACE_SIZE_910_55 = 16 * 1024 * 1024;
@@ -95,15 +96,17 @@ void PlatformAscendC::GetCoreMemSize(const CoreMemType &memType, uint64_t &size)
 {
     const fe::LocalMemType localType = static_cast<fe::LocalMemType>(memType);
     this->GetPlatFormInfo()->GetLocalMemSize(localType, size);
+    auto socVersion = GetSocVersion();
     // only ascend910B need UB/L1 local reserved buf for kfc
-    if ((memType == CoreMemType::UB || memType == CoreMemType::L1)
-         && GetSocVersion() == SocVersion::ASCEND910B) {
+    if ((memType == CoreMemType::UB || memType == CoreMemType::L1) && socVersion == SocVersion::ASCEND910B) {
         size -= LOCAL_RESERV_SIZE;
     }
     if (memType == CoreMemType::UB) {
         size -= reservedMemSize_;
     }
-
+    if (memType == CoreMemType::UB && (socVersion == SocVersion::KIRINX90 || socVersion == SocVersion::KIRIN9030)) {
+        size -= LOCAL_RESERV_SIZE_KIRIN;
+    }
     if (memType == CoreMemType::FB) {
         std::string sizeStr;
         bool ret = this->GetPlatFormInfo()->GetPlatformResWithLock("AICoreSpec", "fb0_size", sizeStr);

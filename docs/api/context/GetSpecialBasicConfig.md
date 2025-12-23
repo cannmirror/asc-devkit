@@ -96,6 +96,7 @@ __aicore__ constexpr MatmulConfig GetSpecialBasicConfig(const uint32_t basicM, c
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p1147594373717"><a name="p1147594373717"></a><a name="p1147594373717"></a>用于设置参数intrinsicsCheck。</p>
 <p id="p19428173891615"><a name="p19428173891615"></a><a name="p19428173891615"></a><span id="ph31274661320"><a name="ph31274661320"></a><a name="ph31274661320"></a>当左矩阵或右矩阵在单核上内轴（即尾轴）大于等于65535（元素个数）时，是否使能循环执行数据从<span id="zh-cn_topic_0000002013427316_ph610031519596"><a name="zh-cn_topic_0000002013427316_ph610031519596"></a><a name="zh-cn_topic_0000002013427316_ph610031519596"></a>Global Memory</span>到<span id="zh-cn_topic_0000002013427316_ph6551115913423"><a name="zh-cn_topic_0000002013427316_ph6551115913423"></a><a name="zh-cn_topic_0000002013427316_ph6551115913423"></a><span id="zh-cn_topic_0000002013427316_ph455120597421"><a name="zh-cn_topic_0000002013427316_ph455120597421"></a><a name="zh-cn_topic_0000002013427316_ph455120597421"></a>L1 Buffer</span></span>的搬入。例如，左矩阵A[M, K]，单核上的内轴数据singleCoreK大于65535，配置该参数为true后，API内部通过循环执行数据的搬入。参数取值如下：</span></p>
 <a name="ul143331631192217"></a><a name="ul143331631192217"></a><ul id="ul143331631192217"><li><span id="ph19135469139"><a name="ph19135469139"></a><a name="ph19135469139"></a>false：当左矩阵或右矩阵在单核上内轴大于等于65535时，不使能循环执行数据的搬入（默认值）。</span></li><li><span id="ph514346131313"><a name="ph514346131313"></a><a name="ph514346131313"></a>true：当左矩阵或右矩阵在单核上内轴大于等于65535时，使能循环执行数据的搬入。</span></li></ul>
+<p id="p254413141371162"><a name="p254413141371162"></a><span id="ph173281128262"><a name="ph173281128262"></a>Kirin X90</span>仅支持默认值</p>
 </td>
 </tr>
 <tr id="row1282014916166"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p14807165981614"><a name="p14807165981614"></a><a name="p14807165981614"></a>batchLoop</p>
@@ -105,6 +106,7 @@ __aicore__ constexpr MatmulConfig GetSpecialBasicConfig(const uint32_t basicM, c
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p154881241113711"><a name="p154881241113711"></a><a name="p154881241113711"></a>用于设置参数isNBatch。</p>
 <p id="p176131132121514"><a name="p176131132121514"></a><a name="p176131132121514"></a><span id="ph1391761111166"><a name="ph1391761111166"></a><a name="ph1391761111166"></a>是否多Batch输入多Batch输出。仅对BatchMatmul有效，使能该参数后，仅支持Norm模板，且需调用<a href="IterateNBatch.md">IterateNBatch</a>实现多Batch输入多Batch输出。参数取值如下：</span></p>
 <a name="ul261310324151"></a><a name="ul261310324151"></a><ul id="ul261310324151"><li><span id="ph7918911141611"><a name="ph7918911141611"></a><a name="ph7918911141611"></a>false：不使能多Batch（默认值）。</span></li><li><span id="ph3919141191616"><a name="ph3919141191616"></a><a name="ph3919141191616"></a>true：使能多Batch。</span></li></ul>
+<p id="p254413141371163"><a name="p254413141371163"></a><span id="ph173281128263"><a name="ph173281128263"></a>Kirin X90</span>仅支持默认值</p>
 </td>
 </tr>
 <tr id="row13809141083811"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p7810910113819"><a name="p7810910113819"></a><a name="p7810910113819"></a>bmmMode</p>

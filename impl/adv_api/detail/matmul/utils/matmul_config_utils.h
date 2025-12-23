@@ -18,8 +18,13 @@
 
 namespace AscendC {
 namespace Impl {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3113)
+#define L0AUF_SIZE 32768
+#define L0BUF_SIZE 32768
+#else
 #define L0AUF_SIZE 65536
 #define L0BUF_SIZE 65536
+#endif
 
 constexpr int32_t QUEUE_DEPTH = 1;
 constexpr int32_t NZ_MASK_VAlUE = 2;
@@ -52,6 +57,14 @@ constexpr static int UBSize_ = 256 * 1024;
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 constexpr static int L1Size_ = 1024 * 1024;
 constexpr static int L0CSize_ = 128 * 1024;
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3003
+constexpr static int L1Size_ = 1024 * 1024;
+constexpr static int UBSize_ = 118 * 1024;
+constexpr static int L0CSize_ = 128 * 1024;
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3113
+constexpr static int L1Size_ = 512 * 1024;
+constexpr static int UBSize_ = 120 * 1024;
+constexpr static int L0CSize_ = 64 * 1024;
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
 constexpr static int L1Size_ = 512 * 1024;
 constexpr static int L0CSize_ = 256 * 1024;
@@ -65,8 +78,13 @@ constexpr static int L0CSize_ = 256 * 1024;
 constexpr static int L1Size_ = 512 * 1024;
 constexpr static int L0CSize_ = 128 * 1024;
 #endif
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3113
+constexpr static int L0ASize_ = 32 * 1024;
+constexpr static int L0BSize_ = 32 * 1024;
+#else
 constexpr static int L0ASize_ = 64 * 1024;
 constexpr static int L0BSize_ = 64 * 1024;
+#endif
 
 constexpr int32_t MX_K_FACTOR = 32;
 constexpr int32_t MX_BASEK_FACTOR = 64;

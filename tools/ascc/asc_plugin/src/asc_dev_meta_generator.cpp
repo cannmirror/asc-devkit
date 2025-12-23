@@ -111,6 +111,14 @@ void AscDevMetaGenerator::GenMetaSection(const char* globalSymbol, const KernelM
             genKtypeWithArchMacro("__DAV_C310_CUBE__", "_mix_aic");
             genKtypeWithArchMacro("__DAV_C310_VEC__", "_mix_aiv");
         }
+    } else if (manager.GetShortSocVersion() == ShortSocVersion::KIRINX90) {
+        if (kernelType == KernelMetaType::KERNEL_TYPE_AICORE) {
+            genKtypeWithArchMacro("__DAV_L300__", "");
+        }
+    } else if (manager.GetShortSocVersion() == ShortSocVersion::KIRIN9030) {
+        if (kernelType == KernelMetaType::KERNEL_TYPE_AICORE) {
+            genKtypeWithArchMacro("__DAV_L311__", "");
+        }
     }
 }
 

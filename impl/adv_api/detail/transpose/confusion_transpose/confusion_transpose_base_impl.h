@@ -413,8 +413,8 @@ __aicore__ inline void ConfusionTranspose012Compute(const LocalTensor<T> &dstTen
 scene7：{ shape:[H, W], format:"ND"} -->{ shape:[W, H], format:"ND"}
 */
 template <typename T>
-__aicore__ inline void ConfusionTransposeOnlyCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    ConfusionTransposeOnlyTiling &tiling)
+__aicore__ inline void ConfusionTransposeOnlyCompute(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, ConfusionTransposeOnlyTiling& tiling)
 {
     uint64_t dstLocalList[NCHW_CONV_ADDR_LIST_SIZE];
     uint64_t srcLocalList[NCHW_CONV_ADDR_LIST_SIZE];

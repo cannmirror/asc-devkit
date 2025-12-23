@@ -34,6 +34,10 @@
 #include "dav_c310/kernel_operator_vec_vconv_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_vconv_impl.h"
+#elif __NPU_ARCH__ == 3003
+#include "dav_l300/kernel_operator_vec_vconv_impl.h"
+#elif __NPU_ARCH__ == 3113
+#include "dav_l311/kernel_operator_vec_vconv_impl.h"
 #endif
 
 namespace AscendC {
@@ -441,7 +445,7 @@ __aicore__ inline void SetCastOverflowMode()
     SetCastOverflowModeImpl<castMode>();
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 /*
  * @ingroup Truncate Level 2
  * @brief dst[i] = Precision conversion

@@ -22,11 +22,15 @@
 #include "include/adv_api/matmul/matmul.h"
 #endif
 
+#ifdef ASCENDC_MATMUL_AICORE	
+#include "../../impl/adv_api/detail/matmul/kfc/matmul_client_impl_aicore.h"
+#endif
+
 namespace AscendC {
 #define REGIST_MATMUL_OBJ_STATIC REGIST_CUBE_OBJ
 #define REGIST_MATMUL_OBJ REGIST_CUBE_OBJ
 #ifdef ASCENDC_CPU_DEBUG
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #ifdef ASCENDC_CUBE_ONLY
 template <
     class A_TYPE, 
@@ -115,6 +119,18 @@ template <
 >
 using Matmul = MatmulClient<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
 
+#elif defined(ASCENDC_MATMUL_AICORE) && !defined(ASCENDC_CUBE_ONLY)
+template<
+    class A_TYPE,
+    class B_TYPE,
+    class C_TYPE,
+    class BIAS_TYPE = C_TYPE,
+    const auto& MM_CFG = CFG_NORM,
+    class MM_CB = AscendC::MatmulCallBackFunc<nullptr, nullptr, nullptr>,
+    MATMUL_POLICY_DEFAULT_OF(MatmulPolicy)
+>
+using Matmul = MatmulClient<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
+
 #else
 // Default case: use MatmulImpl
 template <
@@ -129,7 +145,6 @@ template <
 using Matmul = MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>;
 
 #endif // SPLIT_CORE_CUBE || SPLIT_CORE_VEC
-
 #endif // ASCENDC_CPU_DEBUG
 } //namespace AscendC
 #endif

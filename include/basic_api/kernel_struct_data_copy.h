@@ -216,6 +216,65 @@ struct Nz2NdParamsFull {
     uint16_t dstNdMatrixStride = 1;
 };
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+struct Dn2NzParams {
+    __aicore__ Dn2NzParams() {}
+
+    __aicore__ Dn2NzParams(const uint16_t dnNumIn, const uint16_t nValueIn, const uint32_t dValueIn,
+        const uint64_t srcDnMatrixStrideIn, const uint64_t srcDValueIn, const uint16_t dstNzC0StrideIn,
+        const uint16_t dstNzNStrideIn, const uint32_t dstNzMatrixStrideIn)
+    {
+        dnNum = dnNumIn;
+        nValue = nValueIn;
+        dValue = dValueIn;
+        srcDnMatrixStride = srcDnMatrixStrideIn;
+        srcDValue = srcDValueIn;
+        dstNzC0Stride = dstNzC0StrideIn;
+        dstNzNStride = dstNzNStrideIn;
+        dstNzMatrixStride = dstNzMatrixStrideIn;
+    }
+
+    uint16_t dnNum = 0;
+    uint16_t nValue = 0;
+    uint32_t dValue = 0;
+    uint64_t srcDnMatrixStride = 0;
+    uint64_t srcDValue = 0;
+    uint16_t dstNzC0Stride = 0;
+    uint16_t dstNzNStride = 0;
+    uint32_t dstNzMatrixStride = 0;
+};
+
+struct LoopModeParams {
+    __aicore__ LoopModeParams()
+    {
+        loop1Size = 0;
+        loop2Size = 0;
+        loop1SrcStride = 0;
+        loop1DstStride = 0;
+        loop2SrcStride = 0;
+        loop2DstStride = 0;
+    }
+
+    __aicore__ LoopModeParams(const uint32_t loop1SizeIn, const uint32_t loop2SizeIn, const uint64_t loop1SrcStrideIn,
+    const uint64_t loop1DstStrideIn, const uint64_t loop2SrcStrideIn, const uint64_t loop2DstStrideIn)
+    {
+        loop1Size = loop1SizeIn;
+        loop2Size = loop2SizeIn;
+        loop1SrcStride = loop1SrcStrideIn;
+        loop1DstStride = loop1DstStrideIn;
+        loop2SrcStride = loop2SrcStrideIn;
+        loop2DstStride = loop2DstStrideIn;
+    }
+
+    uint32_t loop1Size = 0;
+    uint32_t loop2Size = 0;
+    uint64_t loop1SrcStride = 0;
+    uint64_t loop1DstStride = 0;
+    uint64_t loop2SrcStride = 0;
+    uint64_t loop2DstStride = 0;
+};
+#endif
+
 struct SliceInfo {
     __aicore__ SliceInfo() {}
 

@@ -185,7 +185,7 @@ __aicore__ inline U ScalarCastImpl(T valueIn)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                         \
     (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 5102) ||                         \
-    (__NPU_ARCH__ == 3101))
+    (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     if constexpr (std::is_same<U, half>::value) {
         return ScalarCastF322F16Impl<roundMode>(valueIn);
     } else if constexpr (std::is_same<U, int32_t>::value) {
