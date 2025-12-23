@@ -74,7 +74,6 @@
     </dir_info>
     <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="share/info/asc-devkit" install_type="all">
         <file value="script" install_mod="550" entity="true"/>
-        <file value="bin" install_mod="550" entity="true"/>
         <file value="version.info" install_mod="550" entity="true" install_softlink="compiler/version.info"/>
         <file value="scene.info" install_mod="550" entity="true"/>
     </file_info>

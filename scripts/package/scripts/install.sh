@@ -874,19 +874,6 @@ check_install_for_all() {
     fi
 }
 
-pre_check() {
-    local check_shell_path="${curpath}/prereq_check.bash"
-    if [ ! -f "${check_shell_path}" ]; then
-        log "WARNING" "${check_shell_path} not exist."
-        return 0
-    fi
-    if [ "x$is_quiet" = "xy" ]; then
-        sh "${check_shell_path}" --quiet
-    else
-        sh "${check_shell_path}" --no-quiet
-    fi
-}
-
 uninstall_none_multi_version() {
     if [ "$hetero_arch" = "y" ]; then
         return
@@ -1124,7 +1111,7 @@ fi
 is_multi_version_pkg "pkg_is_multi_version" "$pkg_version_path"
 get_version_dir "pkg_version_dir" "$pkg_version_path"
 
-if [ "$is_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ]; then
+if [ "$is_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ] || [ "$check" = "y" ]; then
     input_install_path=$(relative_path_to_absolute_path "${input_install_path}")
     get_install_path
 
@@ -1182,43 +1169,25 @@ if [ "$hetero_arch" = "y" ]; then
     log "INFO" "package is running in hetero arch mode!"
 fi
 
-# 执行预检查
-if [ "$input_pre_check" = "y" ]; then
-    log "INFO" "AscDevkit do pre check started."
-    pre_check
-    if [ $? -ne 0 ]; then
-        log "WARNING" "AscDevkit do pre check failed."
-    else
-        log "INFO" "AscDevkit do pre check finished."
-    fi
-    if [ "$is_install" = "n" ] && [ "$upgrade" = "n" ]; then
-        exit_install_log 0
-    fi
-fi
-
 # 版本兼容性检查
 if [ "$check" = "y" ]; then
     ver_check
-    if [ -z "$pkg_version_dir" ]; then
-        preinstall_check --install-path="$install_path_param" --script-dir="$curpath" --package="asc-devkit" --logfile="$logfile" --docker-root="$docker_root"
-        if [ $? -ne 0 ]; then
-            exit_install_log 1
-        else
-            log "INFO" "version compatibility check successfully!"
-        fi
+    preinstall_check --install-path="$pkg_install_path/$pkg_version_dir" --script-dir="$curpath" --package="asc-devkit" --logfile="$logfile" --docker-root="$docker_root"
+    if [ $? -ne 0 ]; then
+        exit_install_log 1
+    else
+        log "INFO" "version compatibility check successfully!"
     fi
     if [ "$is_install" = "n" ] && [ "$upgrade" = "n" ]; then
         exit_install_log 0
     fi
 elif [ "$is_install" = "y" ] || [ "$upgrade" = "y" ]; then
     ver_check
-    if [ -z "$pkg_version_dir" ]; then
-        preinstall_process --install-path="$install_path_param" --script-dir="$curpath" --package="asc-devkit" --logfile="$logfile" --docker-root="$docker_root"
-        if [ $? -ne 0 ]; then
-            exit_install_log 1
-        else
-            log "INFO" "version compatibility check successfully!"
-        fi
+    preinstall_process --install-path="$pkg_install_path/$pkg_version_dir" --script-dir="$curpath" --package="asc-devkit" --logfile="$logfile" --docker-root="$docker_root"
+    if [ $? -ne 0 ]; then
+        exit_install_log 1
+    else
+        log "INFO" "version compatibility check successfully!"
     fi
 fi
 
