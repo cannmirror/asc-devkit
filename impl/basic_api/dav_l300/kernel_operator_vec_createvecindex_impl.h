@@ -16,7 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_operator_common_impl.h"
-#if __CCE_KT_TEST__
+#if ASCENDC_CPU_DEBUG
 #include "kernel_check.h"
 #endif
 
