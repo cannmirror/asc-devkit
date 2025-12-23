@@ -47,7 +47,7 @@ template <RoundMode mode> __aicore__ inline constexpr ::ROUND GetRound()
 // To avoid naming conflicts of ROUND member variables in cpu debug,
 // the names of the returned member variables are changed to be different from those of
 // the ROUND enumeration class of the compiler.
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     if constexpr (mode == RoundMode::CAST_RINT) {
         return ::ROUND::CAST_RINT;
     } else if constexpr (mode == RoundMode::CAST_ROUND) {
@@ -85,7 +85,7 @@ template <RoundMode mode> __aicore__ inline constexpr ::ROUND GetRound()
 template <MaskMergeMode mode> __aicore__ inline constexpr auto GetMaskMergeMode()
 {
 // To avoid naming conflicts of mode struct in cpu debug.
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return std::integral_constant<::CpuMode, static_cast<::CpuMode>(mode)>();
 #else
     return std::integral_constant<::Mode, static_cast<::Mode>(mode)>();

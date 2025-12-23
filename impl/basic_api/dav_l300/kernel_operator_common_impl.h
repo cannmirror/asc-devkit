@@ -451,7 +451,7 @@ template <Mode mode>
 __aicore__ inline constexpr auto GetMaskMergeMode()
 {
 // To avoid naming conflicts of mode struct in cpu debug.
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return std::integral_constant<::CpuMode, static_cast<::CpuMode>(mode)>();
 #else
     return std::integral_constant<::Mode, static_cast<::Mode>(mode)>();

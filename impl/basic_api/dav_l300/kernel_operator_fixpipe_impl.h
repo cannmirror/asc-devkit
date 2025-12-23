@@ -231,13 +231,13 @@ template <typename DstT, typename SrcT>
 __aicore__ inline void Fixpipe(const GlobalTensor<DstT>& dstGlobal, const LocalTensor<SrcT>& srcLocal,
     const FixpipeParams<SrcT>& intriParams)
 {
-#ifdef __CCE_KT_TEST__
+#ifdef ASCENDC_CPU_DEBUG
     bool isUsedProcessLock = false;
     if (g_isAtomic == true) {
         ProcessLock::GetProcessLock()->Write();
         isUsedProcessLock = true;
     }
-#endif // __CCE_KT_TEST__
+#endif // ASCENDC_CPU_DEBUG
     if constexpr ((!IsSameType<SrcT, int32_t>::value)&&(!IsSameType<SrcT, half>::value)) {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Fixpipe src data type only support fp16/s32 on this version!"); });
     } else if constexpr ((!IsSameType<DstT, int32_t>::value)&&(!IsSameType<DstT, half>::value)&&
@@ -246,12 +246,12 @@ __aicore__ inline void Fixpipe(const GlobalTensor<DstT>& dstGlobal, const LocalT
     } else {
         FixpipeL0C2GMImpl((__gm__ DstT*)dstGlobal.GetPhyAddr(), (__cc__ SrcT*)srcLocal.GetPhyAddr(), intriParams);
     }
-#ifdef __CCE_KT_TEST__
+#ifdef ASCENDC_CPU_DEBUG
     if (isUsedProcessLock == true) {
         isUsedProcessLock = false;
         ProcessLock::GetProcessLock()->Unlock();
     }
-#endif // __CCE_KT_TEST__
+#endif // ASCENDC_CPU_DEBUG
 }
 
 template <typename SrcT>

@@ -22,7 +22,7 @@ template <typename T> __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0);
 #endif
     if constexpr (sizeof(T) == 1) {
@@ -38,7 +38,7 @@ __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, u
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0, index1, stride1);
 #endif
     if constexpr (sizeof(T) == 1) {
@@ -55,7 +55,7 @@ __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, u
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0, index1, stride1, index2, stride2);
 #endif
     if constexpr (sizeof(T) == 1) {
@@ -72,7 +72,7 @@ __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, u
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
-#if defined(__CCE_KT_TEST__) && __CCE_KT_TEST__ == 1
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return VagCpuSim(sizeof(T), index0, stride0, index1, stride1, index2, stride2, index3, stride3);
 #endif
     if constexpr (sizeof(T) == 1) {
