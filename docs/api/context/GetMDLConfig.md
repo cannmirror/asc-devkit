@@ -19,6 +19,16 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 </tr>
+<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
+<tr id="row15487816124216"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -54,6 +64,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p1147594373717"><a name="p1147594373717"></a><a name="p1147594373717"></a>用于设置参数intrinsicsCheck。</p>
 <p id="p19428173891615"><a name="p19428173891615"></a><a name="p19428173891615"></a><span id="ph31274661320"><a name="ph31274661320"></a><a name="ph31274661320"></a>当左矩阵或右矩阵在单核上内轴（即尾轴）大于等于65535（元素个数）时，是否使能循环执行数据从<span id="zh-cn_topic_0000002013427316_ph610031519596"><a name="zh-cn_topic_0000002013427316_ph610031519596"></a><a name="zh-cn_topic_0000002013427316_ph610031519596"></a>Global Memory</span>到<span id="zh-cn_topic_0000002013427316_ph6551115913423"><a name="zh-cn_topic_0000002013427316_ph6551115913423"></a><a name="zh-cn_topic_0000002013427316_ph6551115913423"></a><span id="zh-cn_topic_0000002013427316_ph455120597421"><a name="zh-cn_topic_0000002013427316_ph455120597421"></a><a name="zh-cn_topic_0000002013427316_ph455120597421"></a>L1 Buffer</span></span>的搬入。例如，左矩阵A[M, K]，单核上的内轴数据singleCoreK大于65535，配置该参数为true后，API内部通过循环执行数据的搬入。参数取值如下：</span></p>
 <a name="ul143331631192217"></a><a name="ul143331631192217"></a><ul id="ul143331631192217"><li><span id="ph19135469139"><a name="ph19135469139"></a><a name="ph19135469139"></a>false：当左矩阵或右矩阵在单核上内轴大于等于65535时，不使能循环执行数据的搬入（默认值）。</span></li><li><span id="ph514346131313"><a name="ph514346131313"></a><a name="ph514346131313"></a>true：当左矩阵或右矩阵在单核上内轴大于等于65535时，使能循环执行数据的搬入。</span></li></ul>
+<p id="p254413141371145"><a name="p254413141371145"></a><span id="ph173281128245"><a name="ph173281128245"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 <tr id="row1282014916166"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p14807165981614"><a name="p14807165981614"></a><a name="p14807165981614"></a>batchLoop</p>
@@ -63,6 +74,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p154881241113711"><a name="p154881241113711"></a><a name="p154881241113711"></a>用于设置参数isNBatch。</p>
 <p id="p176131132121514"><a name="p176131132121514"></a><a name="p176131132121514"></a><span id="ph1391761111166"><a name="ph1391761111166"></a><a name="ph1391761111166"></a>是否多Batch输入多Batch输出。仅对BatchMatmul有效，使能该参数后，仅支持Norm模板，且需调用<a href="IterateNBatch.md">IterateNBatch</a>实现多Batch输入多Batch输出。参数取值如下：</span></p>
 <a name="ul261310324151"></a><a name="ul261310324151"></a><ul id="ul261310324151"><li><span id="ph7918911141611"><a name="ph7918911141611"></a><a name="ph7918911141611"></a>false：不使能多Batch（默认值）。</span></li><li><span id="ph3919141191616"><a name="ph3919141191616"></a><a name="ph3919141191616"></a>true：使能多Batch。</span></li></ul>
+<p id="p254413141371146"><a name="p254413141371146"></a><span id="ph173281128246"><a name="ph173281128246"></a>Kirin X90</span>仅支持默认值。</p>
 </td>
 </tr>
 <tr id="row034818514267"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p7348155182618"><a name="p7348155182618"></a><a name="p7348155182618"></a>doMTE2Preload</p>
@@ -73,6 +85,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <p id="p13613432131512"><a name="p13613432131512"></a><a name="p13613432131512"></a><span id="ph1798274510297"><a name="ph1798274510297"></a><a name="ph1798274510297"></a>在MTE2流水间隙较大，且M/N数值较大时可通过该参数开启对应M/N方向的预加载功能，开启后能减小MTE2间隙，提升性能。预加载功能仅在MDL模板有效（不支持SpecialMDL模板）。参数取值如下：</span></p>
 <a name="ul20613193210152"></a><a name="ul20613193210152"></a><ul id="ul20613193210152"><li><span id="ph99831845122917"><a name="ph99831845122917"></a><a name="ph99831845122917"></a>0：不开启（默认值）。</span></li><li><span id="ph99851455294"><a name="ph99851455294"></a><a name="ph99851455294"></a>1：开启M方向preload。</span></li><li><span id="ph998511455299"><a name="ph998511455299"></a><a name="ph998511455299"></a>2：开启N方向preload。</span></li></ul>
 <p id="p126131532141513"><a name="p126131532141513"></a><a name="p126131532141513"></a><span id="ph13986545162913"><a name="ph13986545162913"></a><a name="ph13986545162913"></a>注意：开启M/N方向的预加载功能时需保证K全载且M/N方向开启DoubleBuffer；其中，M方向的K全载条件为：singleCoreK/baseK &lt;= stepKa；N方向的K全载条件为：singleCoreK/baseK &lt;= stepKb。</span></p>
+<p id="p254413141371147"><a name="p254413141371147"></a><span id="ph173281128247"><a name="ph173281128247"></a>Kirin X90</span>仅支持默认值。</p>
 </td>
 </tr>
 <tr id="row4822173173811"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p198234333811"><a name="p198234333811"></a><a name="p198234333811"></a>isVecND2NZ</p>
@@ -91,6 +104,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p149497882720"><a name="p149497882720"></a><a name="p149497882720"></a>用于设置参数isPerTensor。</p>
 <p id="p22601175383"><a name="p22601175383"></a><a name="p22601175383"></a><span id="ph346512199361"><a name="ph346512199361"></a><a name="ph346512199361"></a>A矩阵half类型输入且B矩阵int8_t类型输入场景，使能B矩阵量化时是否为per tensor。</span></p>
 <a name="ul19611220113813"></a><a name="ul19611220113813"></a><ul id="ul19611220113813"><li><span id="ph022382416360"><a name="ph022382416360"></a><a name="ph022382416360"></a>true：per tensor量化。</span></li><li><span id="ph174121537163315"><a name="ph174121537163315"></a><a name="ph174121537163315"></a>false：per channel量化。</span></li></ul>
+<p id="p254413141371148"><a name="p254413141371148"></a><span id="ph173281128248"><a name="ph173281128248"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 <tr id="row1449551110277"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p1949551112277"><a name="p1949551112277"></a><a name="p1949551112277"></a>hasAntiQuantOffset</p>
@@ -99,6 +113,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 </td>
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p1949591122712"><a name="p1949591122712"></a><a name="p1949591122712"></a>用于设置参数hasAntiQuantOffset。</p>
 <p id="p116141032121517"><a name="p116141032121517"></a><a name="p116141032121517"></a><span id="ph166961850950"><a name="ph166961850950"></a><a name="ph166961850950"></a>A矩阵half类型输入且B矩阵int8_t类型输入场景，使能B矩阵量化时是否使用offset系数。</span></p>
+<p id="p254413141371149"><a name="p254413141371149"></a><span id="ph173281128249"><a name="ph173281128249"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 <tr id="row13253132122812"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p13190022142812"><a name="p13190022142812"></a><a name="p13190022142812"></a>enUnitFlag</p>
@@ -117,6 +132,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p142601617380"><a name="p142601617380"></a><a name="p142601617380"></a>用于设置参数enableReuse。</p>
 <p id="p14238268272"><a name="p14238268272"></a><a name="p14238268272"></a><span id="ph14231826102716"><a name="ph14231826102716"></a><a name="ph14231826102716"></a><a href="SetSelfDefineData.md">SetSelfDefineData</a></span><span id="ph1642319261273"><a name="ph1642319261273"></a><a name="ph1642319261273"></a>函数设置的回调函数中的dataPtr是否直接传递计算数据。若未调用SetSelfDefineData设置dataPtr，该参数仅支持默认值true。参数取值如下：</span></p>
 <a name="ul14423192611275"></a><a name="ul14423192611275"></a><ul id="ul14423192611275"><li><span id="ph642318266274"><a name="ph642318266274"></a><a name="ph642318266274"></a>true：直接传递计算数据，仅限单个值。</span></li><li><span id="ph2423152612720"><a name="ph2423152612720"></a><a name="ph2423152612720"></a>false：传递GM上存储的数据地址信息。</span></li></ul>
+<p id="p254413141371150"><a name="p254413141371150"></a><span id="ph173281128250"><a name="ph173281128250"></a>Kirin X90</span>仅支持true。</p>
 </td>
 </tr>
 <tr id="row128916389284"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p828983815281"><a name="p828983815281"></a><a name="p828983815281"></a>enableUBReuse</p>
@@ -128,6 +144,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <a name="ul1638914579380"></a><a name="ul1638914579380"></a><ul id="ul1638914579380"><li><span id="ph10175417572"><a name="ph10175417572"></a><a name="ph10175417572"></a>true：使能<span id="zh-cn_topic_0000002013427316_ph11424182614272"><a name="zh-cn_topic_0000002013427316_ph11424182614272"></a><a name="zh-cn_topic_0000002013427316_ph11424182614272"></a>Unified Buffer</span>复用。</span></li><li><span id="ph121766179713"><a name="ph121766179713"></a><a name="ph121766179713"></a>false：不使能<span id="zh-cn_topic_0000002013427316_ph17424526112712"><a name="zh-cn_topic_0000002013427316_ph17424526112712"></a><a name="zh-cn_topic_0000002013427316_ph17424526112712"></a>Unified Buffer</span>复用。</span></li></ul>
 <p id="p24241526132718"><a name="p24241526132718"></a><a name="p24241526132718"></a><span id="ph34241626112714"><a name="ph34241626112714"></a><a name="ph34241626112714"></a><span id="zh-cn_topic_0000002013427316_ph1342416263275"><a name="zh-cn_topic_0000002013427316_ph1342416263275"></a><a name="zh-cn_topic_0000002013427316_ph1342416263275"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span>不支持该参数。</span></p>
 <p id="p142412266273"><a name="p142412266273"></a><a name="p142412266273"></a><span id="ph174241126192719"><a name="ph174241126192719"></a><a name="ph174241126192719"></a><span id="zh-cn_topic_0000002013427316_ph342417266273"><a name="zh-cn_topic_0000002013427316_ph342417266273"></a><a name="zh-cn_topic_0000002013427316_ph342417266273"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span>不支持该参数。</span></p>
+<p id="p254413141371151"><a name="p254413141371151"></a><span id="ph173281128251"><a name="ph173281128251"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 <tr id="row770164742811"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p27034714281"><a name="p27034714281"></a><a name="p27034714281"></a>enableL1CacheUB</p>
@@ -140,6 +157,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <p id="p18609101105210"><a name="p18609101105210"></a><a name="p18609101105210"></a><span id="ph194931481792"><a name="ph194931481792"></a><a name="ph194931481792"></a>若要使能<span id="zh-cn_topic_0000002013427316_ph74261826152710"><a name="zh-cn_topic_0000002013427316_ph74261826152710"></a><a name="zh-cn_topic_0000002013427316_ph74261826152710"></a>L1 Buffer</span>缓存<span id="zh-cn_topic_0000002013427316_ph20426192632719"><a name="zh-cn_topic_0000002013427316_ph20426192632719"></a><a name="zh-cn_topic_0000002013427316_ph20426192632719"></a>Unified Buffer</span>计算块，必须在Tiling实现中调用<a href="SetMatmulConfigParams.md">SetMatmulConfigParams</a>接口将参数enableL1CacheUBIn设置为true。</span></p>
 <p id="p142622616271"><a name="p142622616271"></a><a name="p142622616271"></a><span id="ph342611261276"><a name="ph342611261276"></a><a name="ph342611261276"></a><span id="zh-cn_topic_0000002013427316_ph104261926162710"><a name="zh-cn_topic_0000002013427316_ph104261926162710"></a><a name="zh-cn_topic_0000002013427316_ph104261926162710"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>不支持该参数。</span></p>
 <p id="p1426926172716"><a name="p1426926172716"></a><a name="p1426926172716"></a><span id="ph7426142615272"><a name="ph7426142615272"></a><a name="ph7426142615272"></a><span id="zh-cn_topic_0000002013427316_ph94261826182719"><a name="zh-cn_topic_0000002013427316_ph94261826182719"></a><a name="zh-cn_topic_0000002013427316_ph94261826182719"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>不支持该参数。</span></p>
+<p id="p254413141371152"><a name="p254413141371152"></a><span id="ph173281128252"><a name="ph173281128252"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 <tr id="row1868618161807"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p135611241124617"><a name="p135611241124617"></a><a name="p135611241124617"></a>enableMixDualMaster</p>
@@ -153,6 +171,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <a name="ul154831557184220"></a><a name="ul154831557184220"></a><ul id="ul154831557184220"><li><span id="ph205799517484"><a name="ph205799517484"></a><a name="ph205799517484"></a>同一算子中所有Matmul对象的该参数取值必须保持一致。</span></li><li><span id="ph164746210205"><a name="ph164746210205"></a><a name="ph164746210205"></a>A/B/Bias矩阵只支持从GM搬入。</span></li><li><span id="ph1458055114488"><a name="ph1458055114488"></a><a name="ph1458055114488"></a>获取矩阵计算结果只支持调用<a href="IterateAll.md">IterateAll</a>接口输出到GlobalTensor，即计算结果放置于Global Memory<span id="zh-cn_topic_0000002013427316_ph3219131053714"><a name="zh-cn_topic_0000002013427316_ph3219131053714"></a><a name="zh-cn_topic_0000002013427316_ph3219131053714"></a></span>的地址，不能调用<a href="GetTensorC.md">GetTensorC</a>等接口获取结果。</span></li></ul>
 <p id="p6219910193714"><a name="p6219910193714"></a><a name="p6219910193714"></a><span id="ph321931011374"><a name="ph321931011374"></a><a name="ph321931011374"></a><span id="zh-cn_topic_0000002013427316_ph32201010113711"><a name="zh-cn_topic_0000002013427316_ph32201010113711"></a><a name="zh-cn_topic_0000002013427316_ph32201010113711"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>支持该参数。</span></p>
 <p id="p17220410103711"><a name="p17220410103711"></a><a name="p17220410103711"></a><span id="ph1522071019377"><a name="ph1522071019377"></a><a name="ph1522071019377"></a><span id="zh-cn_topic_0000002013427316_ph1022081043717"><a name="zh-cn_topic_0000002013427316_ph1022081043717"></a><a name="zh-cn_topic_0000002013427316_ph1022081043717"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>支持该参数。</span></p>
+<p id="p254413141371153"><a name="p254413141371153"></a><span id="ph173281128253"><a name="ph173281128253"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 <tr id="row16491111317188"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p849215131188"><a name="p849215131188"></a><a name="p849215131188"></a>enableKdimReorderLoad</p>
@@ -164,6 +183,7 @@ __aicore__ constexpr MatmulConfig GetMDLConfig(const bool intrinsicsLimit = fals
 <a name="ul6537104018815"></a><a name="ul6537104018815"></a><ul id="ul6537104018815"><li><span id="ph053717401382"><a name="ph053717401382"></a><a name="ph053717401382"></a>false：默认值，关闭K轴错峰加载数据的功能。</span></li><li><span id="ph9537040489"><a name="ph9537040489"></a><a name="ph9537040489"></a>true：开启K轴错峰加载数据的功能。</span></li></ul>
 <p id="p634384373717"><a name="p634384373717"></a><a name="p634384373717"></a><span id="ph1434354353713"><a name="ph1434354353713"></a><a name="ph1434354353713"></a><span id="zh-cn_topic_0000002013427316_ph534316433377"><a name="zh-cn_topic_0000002013427316_ph534316433377"></a><a name="zh-cn_topic_0000002013427316_ph534316433377"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>支持该参数。</span></p>
 <p id="p434324393710"><a name="p434324393710"></a><a name="p434324393710"></a><span id="ph133432431374"><a name="ph133432431374"></a><a name="ph133432431374"></a><span id="zh-cn_topic_0000002013427316_ph183431043133713"><a name="zh-cn_topic_0000002013427316_ph183431043133713"></a><a name="zh-cn_topic_0000002013427316_ph183431043133713"></a><term id="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000002013427316_zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>支持该参数。</span></p>
+<p id="p254413141371154"><a name="p254413141371154"></a><span id="ph173281128254"><a name="ph173281128254"></a>Kirin X90</span>不支持该参数。</p>
 </td>
 </tr>
 </tbody>

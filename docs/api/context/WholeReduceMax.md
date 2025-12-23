@@ -19,6 +19,16 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
 </tr>
+<tr id="row149855319106"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
+<tr id="row586610538102"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -58,6 +68,8 @@
 <td class="cellrowborder" valign="top" width="86.03%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
 <p id="p11759459315"><a name="p11759459315"></a><a name="p11759459315"></a><span id="ph7759135915116"><a name="ph7759135915116"></a><a name="ph7759135915116"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：half/float</p>
 <p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
+<p id="p065555314"><a name="p065555314"></a><a name="p065555314"></a><span id="ph15441323310"><a name="ph15441323310"></a><a name="ph15441323310"></a>Kirin X90</term></span>，支持的数据类型为：half/float</p>
+<p id="p082420411739"><a name="p082420411739"></a><a name="p082420411739"></a><span id="ph25359910414"><a name="ph25359910414"></a><a name="ph25359910414"></a>Kirin 9030</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001429830437_row18835145716587"><td class="cellrowborder" valign="top" width="13.969999999999999%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p1383515717581"><a name="zh-cn_topic_0000001429830437_p1383515717581"></a><a name="zh-cn_topic_0000001429830437_p1383515717581"></a>isSetMask</p>
@@ -149,6 +161,8 @@
 <a name="ul19429814578"></a><a name="ul19429814578"></a><ul id="ul19429814578"><li>ORDER_VALUE_INDEX：表示value位于低半部，返回结果存储顺序为[value, index]。</li><li>ORDER_INDEX_VALUE：表示index位于低半部，返回结果存储顺序为[index, value]。</li><li>ORDER_ONLY_VALUE：表示只返回最值，返回结果存储顺序为[value]。</li><li>ORDER_ONLY_INDEX：表示只返回最值索引，返回结果存储顺序为[index]。</li></ul>
 <p id="p134246188318"><a name="p134246188318"></a><a name="p134246188318"></a><span id="ph191185131318"><a name="ph191185131318"></a><a name="ph191185131318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持ORDER_VALUE_INDEX、ORDER_INDEX_VALUE、ORDER_ONLY_VALUE、ORDER_ONLY_INDEX。</p>
 <p id="p141148133319"><a name="p141148133319"></a><a name="p141148133319"></a><span id="ph1513611133112"><a name="ph1513611133112"></a><a name="ph1513611133112"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持ORDER_VALUE_INDEX、ORDER_INDEX_VALUE、ORDER_ONLY_VALUE、ORDER_ONLY_INDEX。</p>
+<p id="p993718942312"><a name="p993718942312"></a><a name="p993718942312"></a><span id="ph17937992232"><a name="ph17937992232"></a><a name="ph17937992232"></a>Kirin X90</term></span>，支持ORDER_VALUE_INDEX、ORDER_INDEX_VALUE。</p>
+<p id="p189373913239"><a name="p189373913239"></a><a name="p189373913239"></a><span id="ph1993716918235"><a name="ph1993716918235"></a><a name="ph1993716918235"></a>Kirin 9030</term></span>，支持ORDER_VALUE_INDEX、ORDER_INDEX_VALUE。</p>
 </td>
 </tr>
 </tbody>

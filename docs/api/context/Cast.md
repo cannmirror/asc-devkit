@@ -19,6 +19,16 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
 </tr>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin X90</term></span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+</td>
+</tr>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin 9030</term></span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -331,6 +341,8 @@
 <td class="cellrowborder" valign="top" width="83.65%" headers="mcps1.2.3.1.2 "><p id="p593343122716"><a name="p593343122716"></a><a name="p593343122716"></a>目的操作数数据类型。</p>
 <p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
 <p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
+<p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Kirin X90</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
+<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Kirin 9030</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
 </td>
 </tr>
 <tr id="row1835857145817"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p5979215341"><a name="p5979215341"></a><a name="p5979215341"></a>U</p>
@@ -338,6 +350,8 @@
 <td class="cellrowborder" valign="top" width="83.65%" headers="mcps1.2.3.1.2 "><p id="p1526974512618"><a name="p1526974512618"></a><a name="p1526974512618"></a>源操作数数据类型。</p>
 <p id="p5994152433215"><a name="p5994152433215"></a><a name="p5994152433215"></a><span id="ph1399418245321"><a name="ph1399418245321"></a><a name="ph1399418245321"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
 <p id="p29948244324"><a name="p29948244324"></a><a name="p29948244324"></a><span id="ph169941241329"><a name="ph169941241329"></a><a name="ph169941241329"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
+<p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Kirin X90</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
+<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Kirin 9030</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
 </td>
 </tr>
 <tr id="row18835145716587"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p1383515717581"><a name="p1383515717581"></a><a name="p1383515717581"></a>isSetMask</p>
@@ -746,6 +760,62 @@
 <tr id="row14254202412355"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p325502415352"><a name="p325502415352"></a><a name="p325502415352"></a>float</p>
 </td>
 <td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p12255524153519"><a name="p12255524153519"></a><a name="p12255524153519"></a>CAST_RINT/CAST_FLOOR/CAST_CEIL/CAST_ROUND/CAST_TRUNC</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+**表 6** Kirin X90、Kirin 9030 Cast指令参数说明
+
+<a name="table52491124113519"></a>
+<table><thead align="left"><tr id="row2249152453512"><th class="cellrowborder" valign="top" width="14.27%" id="mcps1.2.4.1.1"><p id="p92491024103516"><a name="p92491024103516"></a><a name="p92491024103516"></a>src数据类型</p>
+</th>
+<th class="cellrowborder" valign="top" width="14.66%" id="mcps1.2.4.1.2"><p id="p1724932416350"><a name="p1724932416350"></a><a name="p1724932416350"></a>dst数据类型</p>
+</th>
+<th class="cellrowborder" valign="top" width="71.07%" id="mcps1.2.4.1.3"><p id="p7249142483518"><a name="p7249142483518"></a><a name="p7249142483518"></a>支持的roundMode</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row10249152418354"><td class="cellrowborder" rowspan="3" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p8249224173511"><a name="p8249224173511"></a><a name="p8249224173511"></a>half</p>
+<p id="p3249824163511"><a name="p3249824163511"></a><a name="p3249824163511"></a></p>
+</td>
+<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p92491624193518"><a name="p92491624193518"></a><a name="p92491624193518"></a>uint8_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p02491824113516"><a name="p02491824113516"></a><a name="p02491824113516"></a>CAST_CEIL</p>
+</td>
+</tr>
+<tr id="row20249162443516"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p52493249353"><a name="p52493249353"></a><a name="p52493249353"></a>int32_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p7250142483520"><a name="p7250142483520"></a><a name="p7250142483520"></a>CAST_FLOOR</p>
+</td>
+</tr>
+<tr id="row725092483512"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p14250192433511"><a name="p14250192433511"></a><a name="p14250192433511"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p325052416358"><a name="p325052416358"></a><a name="p325052416358"></a>CAST_NONE</p>
+</td>
+</tr>
+<tr id="row1250102411356"><td class="cellrowborder" rowspan="1" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p182501624163516"><a name="p182501624163516"></a><a name="p182501624163516"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p1425072493515"><a name="p1425072493515"></a><a name="p1425072493515"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p1225017248357"><a name="p1225017248357"></a><a name="p1225017248357"></a>CAST_ROUND</p>
+</td>
+</tr>
+
+<tr id="row132518246352"><td class="cellrowborder" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p6251224203520"><a name="p6251224203520"></a><a name="p6251224203520"></a>int32_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p13251112413354"><a name="p13251112413354"></a><a name="p13251112413354"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p2251824103512"><a name="p2251824103512"></a><a name="p2251824103512"></a>CAST_CEIL</p>
+</td>
+</tr>
+<tr id="row15251152473512"><td class="cellrowborder" rowspan="2" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p625172413350"><a name="p625172413350"></a><a name="p625172413350"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p4251524153516"><a name="p4251524153516"></a><a name="p4251524153516"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p1125113249354"><a name="p1125113249354"></a><a name="p1125113249354"></a>CAST_NONE</p>
+</td>
+</tr>
 </td>
 </tr>
 </tbody>

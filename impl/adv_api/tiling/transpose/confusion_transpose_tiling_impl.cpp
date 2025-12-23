@@ -310,8 +310,8 @@ inline void GetConfusionTranspose210TilingInfo(const ge::Shape &srcShape, const 
     tiling.set_param2(dim2);
 }
 
-inline void GetConfusionTranspose0213MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose0213MaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     uint32_t alignA2 = (shapeDims[2] + BLOCK_CUBE - 1) / BLOCK_CUBE * BLOCK_CUBE;
@@ -320,32 +320,32 @@ inline void GetConfusionTranspose0213MaxMinTmpSize(const ge::Shape &srcShape, co
     minValue = CUBE_MAX_SIZE * typeSize;
 }
 
-inline void GetConfusionTranspose2NZ012NMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose2NZ012NMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     maxValue = TWO_TIMES * CUBE_MAX_SIZE * typeSize;
     minValue = TWO_TIMES * CUBE_MAX_SIZE * typeSize;
 }
 
-inline void GetConfusionTranspose2ND012NMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose2ND012NMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     maxValue = TWO_TIMES * CUBE_MAX_SIZE * typeSize;
     minValue = TWO_TIMES * CUBE_MAX_SIZE * typeSize;
 }
 
-inline void GetConfusionTranspose012MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose012MaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     maxValue = TWO_TIMES * CUBE_MAX_SIZE * typeSize;
     minValue = TWO_TIMES * CUBE_MAX_SIZE * typeSize;
 }
 
-inline void GetConfusionTransposeOnlyMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTransposeOnlyMaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     (void)typeSize;
@@ -353,8 +353,8 @@ inline void GetConfusionTransposeOnlyMaxMinTmpSize(const ge::Shape &srcShape, co
     minValue = 0;
 }
 
-inline void GetConfusionTranspose021MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose021MaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     (void)typeSize;
@@ -362,8 +362,8 @@ inline void GetConfusionTranspose021MaxMinTmpSize(const ge::Shape &srcShape, con
     minValue = 0;
 }
 
-inline void GetConfusionTranspose102MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose102MaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     (void)typeSize;
@@ -371,8 +371,8 @@ inline void GetConfusionTranspose102MaxMinTmpSize(const ge::Shape &srcShape, con
     minValue = 0;
 }
 
-inline void GetConfusionTranspose210MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    uint32_t &maxValue, uint32_t &minValue)
+inline void GetConfusionTranspose210MaxMinTmpSize(
+    const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     (void)(srcShape);
     (void)typeSize;
@@ -424,8 +424,8 @@ void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t s
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tiling);
 }
 
-void GetTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue)
+void GetTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_0213 ||
         static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2NZ_0213) {

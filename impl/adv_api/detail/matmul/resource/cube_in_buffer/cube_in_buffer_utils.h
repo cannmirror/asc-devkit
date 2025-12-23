@@ -41,7 +41,7 @@ __aicore__ inline constexpr TPosition GetQuePhyPos()
 
 template <class INPUT_TYPE>
 struct CubeInQueType {
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     using QUE = TQueBind<TPosition::GM, INPUT_TYPE::TAG == InputTypeTag::A ? TPosition::A1 : TPosition::B1,
         QUEUE_DEPTH, GetNdNzMask(CubeFormat::NZ, INPUT_TYPE::format)>;
 #else

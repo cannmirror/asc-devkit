@@ -169,6 +169,18 @@ void StoreFuncKernelType(const AscPlugin::KernelFuncInfo& kernelKey, const std::
             g_kernelFuncType[kernelKey].first = {iter->second};
             kernelTypeValid = true;
         }
+    } else if (shortSoc == ShortSocVersion::KIRINX90) {
+        auto iter = KERNEL_TYPE_MAP_KIRINX90.find(kernelTypeStr);
+        if (iter != KERNEL_TYPE_MAP_KIRINX90.end() && kernelTypeStr == "KERNEL_TYPE_AICORE") {
+            g_kernelFuncType[kernelKey].first = {iter->second};
+            kernelTypeValid = true;
+        }
+    } else if (shortSoc == ShortSocVersion::KIRIN9030) {
+        auto iter = KERNEL_TYPE_MAP_KIRIN9030.find(kernelTypeStr);
+        if (iter != KERNEL_TYPE_MAP_KIRIN9030.end() && kernelTypeStr == "KERNEL_TYPE_AICORE") {
+            g_kernelFuncType[kernelKey].first = {iter->second};
+            kernelTypeValid = true;
+        }
     }
 
     if (kernelTypeValid) {

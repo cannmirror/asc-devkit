@@ -19,6 +19,11 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 </tr>
+<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -127,6 +132,7 @@
 <td class="cellrowborder" valign="top" width="73.13%" headers="mcps1.1.4.1.3 "><p id="p166011637153012"><a name="p166011637153012"></a><a name="p166011637153012"></a>C矩阵。<span id="ph15942199192220"><a name="ph15942199192220"></a><a name="ph15942199192220"></a><span id="ph1294215916225"><a name="ph1294215916225"></a><a name="ph1294215916225"></a><span id="ph894279182218"><a name="ph894279182218"></a><a name="ph894279182218"></a>类型为<a href="GlobalTensor.md">GlobalTensor</a>。</span></span></span></p>
 <p id="p14555829193812"><a name="p14555829193812"></a><a name="p14555829193812"></a><span id="ph13555329143813"><a name="ph13555329143813"></a><a name="ph13555329143813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：half/bfloat16_t/int32_t/float</p>
 <p id="p116811630632"><a name="p116811630632"></a><a name="p116811630632"></a><span id="ph96991313115913"><a name="ph96991313115913"></a><a name="ph96991313115913"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：half/bfloat16_t/int32_t/float</p>
+<p id="p116811630633"><a name="p116811630633"></a><span id="ph96991313115914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="18.92%" headers="mcps1.1.4.1.1 "><p id="p9339153015123"><a name="p9339153015123"></a><a name="p9339153015123"></a>ubCmatrix</p>
@@ -136,6 +142,7 @@
 <td class="cellrowborder" valign="top" width="73.13%" headers="mcps1.1.4.1.3 "><p id="p36131149143013"><a name="p36131149143013"></a><a name="p36131149143013"></a>C矩阵。<span id="ph173308471594"><a name="ph173308471594"></a><a name="ph173308471594"></a><span id="ph9902231466"><a name="ph9902231466"></a><a name="ph9902231466"></a><span id="ph1782115034816"><a name="ph1782115034816"></a><a name="ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>。</span></span></span></p>
 <p id="p1384120417"><a name="p1384120417"></a><a name="p1384120417"></a><span id="ph03871294110"><a name="ph03871294110"></a><a name="ph03871294110"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型为：half/bfloat16_t/int32_t/float</p>
 <p id="p168241183577"><a name="p168241183577"></a><a name="p168241183577"></a><span id="ph17461117135916"><a name="ph17461117135916"></a><a name="ph17461117135916"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型为：half/bfloat16_t/int32_t/float</p>
+<p id="p116811630636"><a name="p116811630636"></a><span id="ph96991313145914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
 </td>
 </tr>
 <tr id="row65521150131316"><td class="cellrowborder" valign="top" width="18.92%" headers="mcps1.1.4.1.1 "><p id="p1755219506135"><a name="p1755219506135"></a><a name="p1755219506135"></a>batchA</p>

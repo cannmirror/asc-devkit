@@ -23,7 +23,8 @@
 #ifndef LIB_ASCEND_QUANT_ASCEND_QUANT_H
 #define LIB_ASCEND_QUANT_ASCEND_QUANT_H
 #include "include/adv_api/quantization/ascend_quant_utils.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/quantization/quant/ascend_quant_common_impl.h"
 namespace AscendC {

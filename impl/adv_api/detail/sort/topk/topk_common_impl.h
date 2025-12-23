@@ -31,7 +31,7 @@
 #include "topk_v200_impl.h"
 #endif
 
-#if defined(__NPU_ARCH__) || (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 namespace AscendC {
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false>
 __aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,

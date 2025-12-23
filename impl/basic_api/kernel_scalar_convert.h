@@ -143,6 +143,20 @@ __aicore__ inline float ToFloat(const bfloat16_t& bVal)
     return floatUnion.fNum;
 }
 #endif
+#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+template <typename T>
+__aicore__ constexpr inline float ToFloat(const T& bVal)
+{
+    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "ToFloat is not supported on this device"); });
+    return 0.0f;
+}
+
+__aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
+{
+    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "ToBfloat16 is not supported on this device"); });
+    bfloat16_t bNum;
+    return bNum;
+}
 #endif
 } // namespace AscendC
 #endif // ASCENDC_SCALAR_CONVERT_H

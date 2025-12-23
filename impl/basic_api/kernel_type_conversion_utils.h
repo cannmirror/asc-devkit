@@ -26,7 +26,7 @@
 namespace AscendC {
 #if defined(__NPU_ARCH__) &&                                        \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||            \
-     (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+     (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003))
 constexpr uint32_t BF16_TO_FP32_MAN_LEN = 16;
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 constexpr uint32_t FP32_EXP_PART_MASK = 0x7F800000u;

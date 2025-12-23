@@ -19,6 +19,11 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 </tr>
+<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -75,6 +80,7 @@ template <bool sync = true> __aicore__ inline void IterateAll(const LocalTensor<
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p81172035142916"><a name="p81172035142916"></a><a name="p81172035142916"></a>C矩阵。<span id="ph15942199192220"><a name="ph15942199192220"></a><a name="ph15942199192220"></a><span id="ph1294215916225"><a name="ph1294215916225"></a><a name="ph1294215916225"></a><span id="ph894279182218"><a name="ph894279182218"></a><a name="ph894279182218"></a>类型为<a href="GlobalTensor.md">GlobalTensor</a>。</span></span></span></p>
 <p id="p14555829193812"><a name="p14555829193812"></a><a name="p14555829193812"></a><span id="ph13555329143813"><a name="ph13555329143813"></a><a name="ph13555329143813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：half/float/bfloat16_t/int32_t/int8_t</p>
 <p id="p116811630632"><a name="p116811630632"></a><a name="p116811630632"></a><span id="ph1292674871116"><a name="ph1292674871116"></a><a name="ph1292674871116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：half/float/bfloat16_t/int32_t/int8_t</p>
+<p id="p116811630636"><a name="p116811630636"></a><span id="ph96991313145914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p15545815312"><a name="p15545815312"></a><a name="p15545815312"></a>ubCmatrix</p>
@@ -84,6 +90,7 @@ template <bool sync = true> __aicore__ inline void IterateAll(const LocalTensor<
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p18126352102919"><a name="p18126352102919"></a><a name="p18126352102919"></a>C矩阵。<span id="ph173308471594"><a name="ph173308471594"></a><a name="ph173308471594"></a><span id="ph9902231466"><a name="ph9902231466"></a><a name="ph9902231466"></a><span id="ph1782115034816"><a name="ph1782115034816"></a><a name="ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为TSCM。</span></span></span></p>
 <p id="p83901813114015"><a name="p83901813114015"></a><a name="p83901813114015"></a><span id="ph23901413144014"><a name="ph23901413144014"></a><a name="ph23901413144014"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型为：half/float/bfloat16_t/int32_t/int8_t</p>
 <p id="p168241183577"><a name="p168241183577"></a><a name="p168241183577"></a><span id="ph3388121913237"><a name="ph3388121913237"></a><a name="ph3388121913237"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型为：half/float/bfloat16_t/int32_t/int8_t</p>
+<p id="p116811630633"><a name="p116811630633"></a><span id="ph96991313115914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
 </td>
 </tr>
 <tr id="row6652117123"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p1733933012128"><a name="p1733933012128"></a><a name="p1733933012128"></a>enAtomic</p>

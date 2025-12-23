@@ -28,6 +28,19 @@
 <td class="cellrowborder" valign="top" width="21.759999999999998%" headers="mcps1.1.4.1.3 "><p id="zh-cn_topic_0000002337763421_p108281523122417"><a name="zh-cn_topic_0000002337763421_p108281523122417"></a><a name="zh-cn_topic_0000002337763421_p108281523122417"></a>仅保证编译兼容，实际功能不生效。</p>
 </td>
 </tr>
+<tr id="row177153301877"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p871618304717"><a name="p871618304717"></a><a name="p871618304717"></a><span id="ph2010715480019"><a name="ph2010715480019"></a><a name="ph2010715480019"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="24.6%" headers="mcps1.1.4.1.2 "><p id="p107166301277"><a name="p107166301277"></a><a name="p107166301277"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="21.759999999999998%" headers="mcps1.1.4.1.3 "><p id="p107166301277"><a name="p107166301277"></a><a name="p107166301277"></a>仅保证编译兼容，实际功能不生效。</p>
+</td>
+</tr>
+<tr id="row63371527104112"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p14731298411"><a name="p14731298411"></a><a name="p14731298411"></a><span id="ph114731729174114"><a name="ph114731729174114"></a><a name="ph114731729174114"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="24.6%" headers="mcps1.1.4.1.2 "><p id="p14473329104113"><a name="p14473329104113"></a><a name="p14473329104113"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="21.759999999999998%" headers="mcps1.1.4.1.3 "><p id="p107166301277"><a name="p107166301277"></a><a name="p107166301277"></a>仅保证编译兼容，实际功能不生效。</p>
+</td>
 </tbody>
 </table>
 

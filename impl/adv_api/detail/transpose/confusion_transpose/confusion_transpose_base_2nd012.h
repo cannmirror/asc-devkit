@@ -52,8 +52,8 @@ template <typename T> struct ConfusionTranspose2ND012NParams {
 };
 
 template <typename T>
-__aicore__ inline void InitConfusionTranspose2ND012N(ConfusionTranspose2ND012NParams<T> &params,
-    ConfusionTranspose2ND012NTiling &tiling)
+__aicore__ inline void InitConfusionTranspose2ND012N(
+    ConfusionTranspose2ND012NParams<T>& params, ConfusionTranspose2ND012NTiling& tiling)
 {
     params.tmp1RemainRowCount = 0;        // records the number of lines stored in tmp1
     params.tmp2NeedRowCount = BLOCK_CUBE; // tmp2 need lines

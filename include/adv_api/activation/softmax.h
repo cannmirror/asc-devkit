@@ -18,7 +18,8 @@
 #include "kernel_tensor.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "softmax_utils.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3002 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_common.h"
 #include "../../../impl/adv_api/detail/activation/softmax/softmax_base_impl.h"
 #pragma begin_pipe(V)

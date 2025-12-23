@@ -19,6 +19,16 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 </tr>
+<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
+<tr id="row15487816124216"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -125,6 +135,8 @@ __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic =
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p35571838101917"><a name="p35571838101917"></a><a name="p35571838101917"></a>取出C矩阵到VECIN，数据格式仅支持NZ。</p>
 <p id="p14555829193812"><a name="p14555829193812"></a><a name="p14555829193812"></a>针对<span id="ph13555329143813"><a name="ph13555329143813"></a><a name="ph13555329143813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
 <p id="p596915528172"><a name="p596915528172"></a><a name="p596915528172"></a>针对<span id="ph64580125327"><a name="ph64580125327"></a><a name="ph64580125327"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
+<p id="p116811630633"><a name="p116811630633"></a>针对<span id="ph96991313115914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
+<p id="p116811631633"><a name="p116811631633"></a>针对<span id="ph96991313115414">Ascend 9030</span>，支持的数据类型为：half</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="17.41%" headers="mcps1.2.4.1.1 "><p id="p15571138171913"><a name="p15571138171913"></a><a name="p15571138171913"></a>gm</p>
@@ -134,6 +146,8 @@ __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic =
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p14557153819197"><a name="p14557153819197"></a><a name="p14557153819197"></a>取出C矩阵到GM，数据格式可以为ND或NZ。</p>
 <p id="p1338319673916"><a name="p1338319673916"></a><a name="p1338319673916"></a>针对<span id="ph73832653911"><a name="ph73832653911"></a><a name="ph73832653911"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
 <p id="p19121245143015"><a name="p19121245143015"></a><a name="p19121245143015"></a>针对<span id="ph691214513016"><a name="ph691214513016"></a><a name="ph691214513016"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
+<p id="p116811730633"><a name="p116811730633"></a>针对<span id="ph96991313115914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
+<p id="p116811631733"><a name="p116811631733"></a>针对<span id="ph96991313115414">Ascend 9030</span>，支持的数据类型为：half</p>
 </td>
 </tr>
 <tr id="row6652117123"><td class="cellrowborder" valign="top" width="17.41%" headers="mcps1.2.4.1.1 "><p id="p1543122095916"><a name="p1543122095916"></a><a name="p1543122095916"></a>enAtomic</p>

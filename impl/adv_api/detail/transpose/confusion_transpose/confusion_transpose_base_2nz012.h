@@ -50,8 +50,8 @@ template <typename T> struct ConfusionTranspose2NZ012NParams {
 };
 
 template <typename T>
-__aicore__ inline void InitConfusionTranspose2NZ012N(ConfusionTranspose2NZ012NParams<T> &params,
-    ConfusionTranspose2NZ012NTiling &tiling)
+__aicore__ inline void InitConfusionTranspose2NZ012N(
+    ConfusionTranspose2NZ012NParams<T>& params, ConfusionTranspose2NZ012NTiling& tiling)
 {
     // number of lines required for initializing tmp2
     if (tiling.hnDiv < BLOCK_CUBE) {

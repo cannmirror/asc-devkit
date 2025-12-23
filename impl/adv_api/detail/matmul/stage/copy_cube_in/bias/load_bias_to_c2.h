@@ -76,7 +76,18 @@ public:
             return;
         }
         uint16_t lenBurst = (dataLen * oneDataLen * 2 + 63) / 64;
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+        if constexpr (std::is_same_v<BiasT, half>) {
+            DataCopy(biasC2, bias, {1, lenBurst, 0, 0});
+        } else {
+            if ((dataLen * sizeof(BiasT) % ONE_BLOCK_SIZE) != 0) {
+                dataLen =  CeilAlign(dataLen, ONE_BLOCK_SIZE / sizeof(BiasT));
+            }
+            DataCopy(biasC2, bias, dataLen);
+        }
+#else
         DataCopy(biasC2, bias, {1, lenBurst, 0, 0});
+#endif
     }
 };
 

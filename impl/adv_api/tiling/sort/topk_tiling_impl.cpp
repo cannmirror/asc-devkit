@@ -10,6 +10,7 @@
  
 #include "include/adv_api/sort/topk_tilingdata.h"
 #include "include/adv_api/sort/topk_tiling.h"
+#include "../../detail/sort/topk/topk_common_utils.h"
 
 #include <set>
 #include <map>

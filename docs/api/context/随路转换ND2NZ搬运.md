@@ -27,6 +27,20 @@
 <td class="cellrowborder" align="center" valign="top" width="21.08%" headers="mcps1.1.4.1.3 "><p id="p3204445104118"><a name="p3204445104118"></a><a name="p3204445104118"></a>√</p>
 </td>
 </tr>
+<tr id="row1119680124218"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p5246134112342"><a name="p5246134112342"></a><a name="p5246134112342"></a>×</p>
+</td>
+</tr>
+<tr id="row1431315094217"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p15246174143415"><a name="p15246174143415"></a><a name="p15246174143415"></a>×</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -205,6 +219,20 @@ ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 <td class="cellrowborder" valign="top" width="24.05%" headers="mcps1.2.4.1.2 "><a name="ul175261353914"></a><a name="ul175261353914"></a><ul id="ul175261353914"><li>GM -&gt; VECIN（GM -&gt; UB）</li><li>GM -&gt; A1、B1（GM -&gt; L1 Buffer）</li></ul>
 </td>
 <td class="cellrowborder" valign="top" width="64.91%" headers="mcps1.2.4.1.3 "><p id="p5103141614550"><a name="p5103141614550"></a><a name="p5103141614550"></a>int8_t、uint8_t、int16_t、uint16_t、int32_t、uint32_t、half、bfloat16_t、float</p>
+</td>
+</tr>
+<tr id="row3261163716429"><td class="cellrowborder" valign="top" width="22.15%" headers="mcps1.2.4.1.1 "><p id="p8214614517"><a name="p8214614517"></a><a name="p8214614517"></a><span id="ph92146123517"><a name="ph92146123517"></a><a name="ph92146123517"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="27.02%" headers="mcps1.2.4.1.2 "><a name="ul1089985623515"></a><a name="ul1089985623515"></a><ul id="ul1089985623515"><li>GM -&gt; A1、B1（GM -&gt; L1 Buffer）</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="50.83%" headers="mcps1.2.4.1.3 "><p id="p2178651203519"><a name="p2178651203519"></a><a name="p2178651203519"></a>int8_t、uint8_t、int16_t、uint16_t、half</p>
+</td>
+</tr>
+<tr id="row14568183724211"><td class="cellrowborder" valign="top" width="22.15%" headers="mcps1.2.4.1.1 "><p id="p1231346193519"><a name="p1231346193519"></a><a name="p1231346193519"></a><span id="ph12313463358"><a name="ph12313463358"></a><a name="ph12313463358"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="27.02%" headers="mcps1.2.4.1.2 "><a name="ul39932306373"></a><a name="ul39932306373"></a><ul id="ul39932306373"><li>GM -&gt; A1、B1（GM -&gt; L1 Buffer）</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="50.83%" headers="mcps1.2.4.1.3 "><p id="p12752102923813"><a name="p12752102923813"></a><a name="p12752102923813"></a>int8_t、uint8_t、int16_t、uint16_t、half</p>
 </td>
 </tr>
 </tbody>

@@ -123,7 +123,9 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend310b1", "ascend310b"},
         {"ascend310b2", "ascend310b"},
         {"ascend310b3", "ascend310b"},
-        {"ascend310b4", "ascend310b"}
+        {"ascend310b4", "ascend310b"},
+        {"kirinx90", "kirinx90"},
+        {"kirin9030", "kirin9030"},
     };
 
     static const std::unordered_map<std::string, std::string> ascendcOriSocVersionMap {
@@ -189,7 +191,9 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend310b1", "Ascend310B1"},
         {"ascend310b2", "Ascend310B2"},
         {"ascend310b3", "Ascend310B3"},
-        {"ascend310b4", "Ascend310B4"}
+        {"ascend310b4", "Ascend310B4"},
+        {"kirinx90", "KirinX90"},
+        {"kirin9030", "Kirin9030"},
     };
 
     std::string compileSocVersion = std::string(socVersion);

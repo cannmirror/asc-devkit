@@ -388,7 +388,7 @@ enum class FmatrixMode : uint8_t {
     FMATRIX_RIGHT = 1,
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct LoadDataRepeatParam {
     __aicore__ LoadDataRepeatParam() {}
 

@@ -92,6 +92,43 @@ target_compile_options(c220_aic_intf_pub INTERFACE
 target_link_libraries(c220_aic_intf_pub INTERFACE
     $<BUILD_INTERFACE:device_intf_pub>
 )
+add_library(l300_intf_pub INTERFACE)
+
+target_compile_options(l300_intf_pub INTERFACE
+    --cce-aicore-arch=dav-l300
+    --cce-aicore-only
+    --cce-auto-sync
+    --cce-mask-opt
+    "SHELL:-mllvm -cce-aicore-function-stack-size=16000"
+    "SHELL:-mllvm -cce-aicore-addr-transform"
+    "SHELL:-mllvm -cce-aicore-or-combine=false"
+    "SHELL:-mllvm -instcombine-code-sinking=false"
+    "SHELL:-mllvm -cce-aicore-jump-expand=false"
+    "SHELL:-mllvm -cce-aicore-mask-opt=false"
+)
+
+target_link_libraries(l300_intf_pub INTERFACE
+    $<BUILD_INTERFACE:device_intf_pub>
+)
+
+add_library(l311_intf_pub INTERFACE)
+
+target_compile_options(l311_intf_pub INTERFACE
+    --cce-aicore-arch=dav-l311
+    --cce-aicore-only
+    --cce-auto-sync
+    --cce-mask-opt
+    "SHELL:-mllvm -cce-aicore-function-stack-size=16000"
+    "SHELL:-mllvm -cce-aicore-addr-transform"
+    "SHELL:-mllvm -cce-aicore-or-combine=false"
+    "SHELL:-mllvm -instcombine-code-sinking=false"
+    "SHELL:-mllvm -cce-aicore-jump-expand=false"
+    "SHELL:-mllvm -cce-aicore-mask-opt=false"
+)
+
+target_link_libraries(l311_intf_pub INTERFACE
+    $<BUILD_INTERFACE:device_intf_pub>
+)
 
 add_library(m200_intf_pub INTERFACE)
 

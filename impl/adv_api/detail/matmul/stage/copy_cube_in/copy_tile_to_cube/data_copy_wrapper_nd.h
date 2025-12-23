@@ -95,7 +95,7 @@ public:
         }
         nd2nzParams.dstNzNStride = 1;
         nd2nzParams.dstNzMatrixStride = dstNzMatrixStride;
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
         if constexpr (!ToMatmulConfig(MM_CFG).intrinsicsCheck) {
             DataCopy(dst, src[srcOffset], nd2nzParams);
         } else {

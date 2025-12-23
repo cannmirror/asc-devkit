@@ -19,6 +19,16 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>仅支持包含FixpipeParamsV220参数的接口。</p>
 </td>
 </tr>
+<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
+<tr id="row15487816124216"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -138,6 +148,8 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 <td class="cellrowborder" valign="top" width="75.52755275527552%" headers="mcps1.2.4.1.3 "><p id="p255711621817"><a name="p255711621817"></a><a name="p255711621817"></a>目的操作数，类型为<a href="GlobalTensor.md">GlobalTensor</a>。</p>
 <a name="ul16146134605518"></a><a name="ul16146134605518"></a><ul id="ul16146134605518"><li>针对GlobalTensor：<p id="p1415845205514"><a name="p1415845205514"></a><a name="p1415845205514"></a><span id="ph29201555165"><a name="ph29201555165"></a><a name="ph29201555165"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
 <p id="p51581952155513"><a name="p51581952155513"></a><a name="p51581952155513"></a><span id="ph1920105519169"><a name="ph1920105519169"></a><a name="ph1920105519169"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
+<p id="p254413141371166"><a name="p254413141371166"></a><span id="ph173281128266"><a name="ph173281128266"></a>Kirin X90</span>，支持数据类型为：int8_t/half/int32_t</p>
+<p id="p214413141371166"><a name="p214413141371166"></a><span id="ph173281128266"><a name="ph173281128266"></a>Kirin 9030</span>，支持数据类型为：half</p>
 <p id="p15158175275514"><a name="p15158175275514"></a><a name="p15158175275514"></a>数据格式为NZ或ND格式。经过Fixpipe处理，在量化操作之后，会将矩阵计算中多申请的数据删除。</p>
 </li></ul>
 </td>

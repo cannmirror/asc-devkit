@@ -297,7 +297,7 @@ struct ConfusionTranspose0213Tiling {
     uint32_t mainOffset = 0;
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct ConfusionTranspose021Tiling {
     __aicore__ ConfusionTranspose021Tiling()
     {
@@ -410,8 +410,9 @@ struct UnPadParams {
 
 #if defined(__NPU_ARCH__) &&                                                   \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) ||                       \
-     (__NPU_ARCH__ == 3002) ||                       \
-     (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) ||                       \
+     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101) ||                       \
+     (__NPU_ARCH__ == 5102))
 // aipp config offset
 constexpr int32_t AIPP_OFFSET_CSC_ENABLE = 63;
 constexpr int32_t AIPP_OFFSET_CH1 = 16;

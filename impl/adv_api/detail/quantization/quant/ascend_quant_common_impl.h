@@ -25,6 +25,9 @@
 #include "ascend_quant_v200_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 #include "ascend_quant_v100_impl.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "ascend_quant_l300_impl.h"
+#include "ascend_quant_per_group_l300_impl.h"
 #endif
 
 namespace AscendC {
@@ -63,6 +66,132 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
         scaleCount, offsetCount, calCount);
 }
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+template <typename dstT, typename srcT, bool isReuseSource = false>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+    const float scale, const float offset, const uint32_t calCount)
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans),
+                   { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, stackTensor, scale, offset, calCount);
+}
+template <typename dstT, typename srcT, bool isReuseSource = false>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+    const LocalTensor<srcT>& scaleTensor, const LocalTensor<srcT>& offsetTensor,
+    const uint32_t scaleCount, const uint32_t offsetCount, const uint32_t calCount)
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans),
+                   { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, stackTensor, scaleTensor, offsetTensor,
+        scaleCount, offsetCount, calCount);
+}
+
+template <typename dstT, typename srcT, bool isReuseSource = false>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+    const LocalTensor<srcT>& scaleTensor,
+    const srcT offset, const uint32_t scaleCount, const uint32_t calCount)
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans),
+                   { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendQuantImpl<dstT, srcT, isReuseSource>(dstTensor, srcTensor, stackTensor, scaleTensor, offset,
+        scaleCount, calCount);
+}
+
+#if ASCENDC_CPU_DEBUG
+template<typename T>
+__aicore__ inline void IsQuantParamValid(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor,
+    const LocalTensor<T>& offsetTensor, const uint32_t scaleCount, const uint32_t offsetCount,
+    const uint32_t calCount)
+{
+    ASCENDC_ASSERT((calCount <= srcTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not larger than srcTensor size %u.",
+            calCount, srcTensor.GetSize());
+    });
+    ASCENDC_ASSERT((scaleCount <= scaleTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "scaleCount is %u, which should not larger than scaleTensor size %u.",
+            scaleCount, scaleTensor.GetSize());
+    });
+    ASCENDC_ASSERT((offsetCount <= offsetTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "offsetCount is %u, which should not larger than offsetTensor size %u.",
+            offsetCount, offsetTensor.GetSize());
+    });
+    ASCENDC_ASSERT((scaleCount == offsetCount && scaleCount > 0), {
+        KERNEL_LOG(KERNEL_ERROR, "scaleCount is %u, which should be equal to offsetCount %u and not zero.",
+            calCount, srcTensor.GetSize());
+    });
+    ASCENDC_ASSERT((calCount % scaleCount == 0 && calCount > 0), {
+        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should be integral multiple of scaleCount %u and not zero.",
+            calCount, scaleCount);
+    });
+}
+template<typename T>
+__aicore__ inline void IsQuantParamValid(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor,
+    const T& offset, const uint32_t scaleCount, const uint32_t calCount)
+{
+    ASCENDC_ASSERT((calCount <= srcTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should not larger than srcTensor size %u.",
+            calCount, srcTensor.GetSize());
+    });
+    ASCENDC_ASSERT((scaleCount <= scaleTensor.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR, "scaleCount is %u, which should not larger than scaleTensor size %u.",
+            scaleCount, scaleTensor.GetSize());
+    });
+    ASCENDC_ASSERT((scaleCount > 0), {
+        KERNEL_LOG(KERNEL_ERROR, "scaleCount is %u, which should be not zero.",
+            calCount, srcTensor.GetSize());
+    });
+    ASCENDC_ASSERT((calCount % scaleCount == 0 && calCount > 0), {
+        KERNEL_LOG(KERNEL_ERROR, "calCount is %u, which should be integral multiple of scaleCount %u and not zero.",
+            calCount, scaleCount);
+    });
+}
+#endif
+template <typename dstT, typename srcT, typename scaleT, bool isReuseSource, const AscendQuantConfig& config, const AscendQuantPolicy& policy>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+                                       const LocalTensor<scaleT>& scaleTensor, const LocalTensor<scaleT>& offsetTensor,
+                                       const AscendQuantParam& para)
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendQuantImpl<dstT, srcT, scaleT, isReuseSource, config, policy>(dstTensor, srcTensor, stackTensor, scaleTensor, offsetTensor, para);
+}
+
+template <typename dstT, typename srcT, typename scaleT, bool isReuseSource, const AscendQuantConfig& config, const AscendQuantPolicy& policy>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+                                       const LocalTensor<scaleT>& scaleTensor, const scaleT offset,
+                                       const AscendQuantParam& para)
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendQuantImpl<dstT, srcT, scaleT, isReuseSource, config, policy>(dstTensor, srcTensor, stackTensor, scaleTensor, offset, para);
+}
+
+#else
 template <typename T>
 __aicore__ inline void IsQuantParamValid(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<T>& scaleTensor,
@@ -112,5 +241,6 @@ __aicore__ inline void IsQuantParamValid(const LocalTensor<int8_t>& dstTensor, c
             calCount, scaleCount);
     });
 }
+#endif
 }  // namespace AscendC
 #endif  // IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H

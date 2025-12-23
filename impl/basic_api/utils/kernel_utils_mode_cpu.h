@@ -180,7 +180,8 @@ public:
         {Hardware::L0C, "L0C"}, {Hardware::UB, "UB"},
 #if defined(__NPU_ARCH__) && \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||  \
-     (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+     (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||  \
+     (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113))
         {Hardware::BIAS, "BT"}, {Hardware::FIXBUF, "FB"},
 #endif
     };
@@ -247,7 +248,7 @@ public:
         { TPosition::C1, Hardware::L1 },      { TPosition::C2, Hardware::BIAS },  { TPosition::CO1, Hardware::L0C },
         { TPosition::CO2, Hardware::GM }, { TPosition::C2PIPE2GM, Hardware::FIXBUF },
     };
-#elif __NPU_ARCH__ == 3002
+#elif __NPU_ARCH__ == 3002 || __NPU_ARCH__ == 3003
     const std::map<TPosition, Hardware> positionHardMap = {
         { TPosition::GM, Hardware::GM },      { TPosition::A1, Hardware::L1 },    { TPosition::B1, Hardware::L1 },
         { TPosition::TSCM, Hardware::L1 },    { TPosition::VECIN, Hardware::UB }, { TPosition::VECOUT, Hardware::UB },
@@ -256,6 +257,14 @@ public:
         { TPosition::CO2, Hardware::GM }, { TPosition::C2PIPE2GM, Hardware::FIXBUF },
     };
 #elif __NPU_ARCH__ == 3102
+    const std::map<TPosition, Hardware> positionHardMap = {
+        { TPosition::GM, Hardware::GM },      { TPosition::A1, Hardware::L1 },    { TPosition::B1, Hardware::L1 },
+        { TPosition::TSCM, Hardware::L1 },    { TPosition::VECIN, Hardware::UB }, { TPosition::VECOUT, Hardware::UB },
+        { TPosition::VECCALC, Hardware::UB }, { TPosition::A2, Hardware::L0A },   { TPosition::B2, Hardware::L0B },
+        { TPosition::C1, Hardware::L1 },      { TPosition::C2, Hardware::BIAS },  { TPosition::CO1, Hardware::L0C },
+        { TPosition::CO2, Hardware::GM },
+    };
+#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113))
     const std::map<TPosition, Hardware> positionHardMap = {
         { TPosition::GM, Hardware::GM },      { TPosition::A1, Hardware::L1 },    { TPosition::B1, Hardware::L1 },
         { TPosition::TSCM, Hardware::L1 },    { TPosition::VECIN, Hardware::UB }, { TPosition::VECOUT, Hardware::UB },
@@ -285,7 +294,7 @@ public:
         { Hardware::L0A, 1024 * 64 },  { Hardware::L0B, 1024 * 64 },   { Hardware::L0C, 1024 * 128 },
         { Hardware::BIAS, 1024 * 1 },  { Hardware::FIXBUF, 1024 * 7 },
     };
-#elif (__NPU_ARCH__ == 3002)
+#elif (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003)
     const std::map<Hardware, uint32_t> bufferInitLen = {
         { Hardware::GM, 1024 * 1024 }, { Hardware::UB, 1024 * 256 },   { Hardware::L1, 1024 * 1024 },
         { Hardware::L0A, 1024 * 64 },  { Hardware::L0B, 1024 * 64 },   { Hardware::L0C, 1024 * 128 },
@@ -296,6 +305,12 @@ public:
         { Hardware::GM, 1024 * 1024 }, { Hardware::UB, 1024 * 256 },   { Hardware::L1, 1024 * 1024 },
         { Hardware::L0A, 1024 * 64 },  { Hardware::L0B, 1024 * 64 },   { Hardware::L0C, 1024 * 128 },
         { Hardware::BIAS, 1024 * 1 },  { Hardware::FIXBUF, 1024 * 7 },
+    };
+#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113))
+    const std::map<Hardware, uint32_t> bufferInitLen = {
+        { Hardware::GM, 1024 * 1024 }, { Hardware::UB, TOTAL_UB_SIZE },   { Hardware::L1, TOTAL_L1_SIZE },
+        { Hardware::L0A, 1024 * 32 },  { Hardware::L0B, 1024 * 32 },   { Hardware::L0C, 1024 * 64 },
+        { Hardware::BIAS, 1024 * 1 },  { Hardware::FIXBUF, 1024 * 6 },
     };
 #endif
     uint8_t* cpuGM;
@@ -314,7 +329,8 @@ public:
 private:
     std::set<Hardware> allocatorUsed;
 #if defined(__NPU_ARCH__) &&                                                                                    \
-    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
+    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||    \
+	 (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
 
     ConstDefiner()
     {
@@ -352,6 +368,9 @@ private:
         }
         cpuL0AMx = new uint8_t[4 * 1024]; // 4k
         cpuL0BMx = new uint8_t[4 * 1024]; // 4k
+#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+        cpuUB = new uint8_t[bufferInitLen.at(Hardware::UB)];
+        cpuL1 = new uint8_t[bufferInitLen.at(Hardware::L1)];
 #endif
         hardwareCpuBufferMap = {
             { Hardware::UB, cpuUB }, { Hardware::L1, cpuL1 }, { Hardware::L0A, cpuL0A },
@@ -447,5 +466,17 @@ private:
 };
 #endif
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+enum class AntiQuantMode {
+    DEFAULT,
+    INPUT_INTLV,
+};
+
+struct AntiQuantConfig {
+    AntiQuantMode mode = AntiQuantMode::DEFAULT;
+};
+
+constexpr AntiQuantConfig ANTIQUANT_DEFAULT_CFG = {AntiQuantMode::DEFAULT};
+#endif
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_MODE_H

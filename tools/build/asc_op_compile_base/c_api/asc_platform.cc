@@ -467,7 +467,7 @@ bool CceConfBase::SetOptionalCoreType(const std::string& key) {//COVER
         Ascend_910_9592,  Ascend_910_9595,  Ascend_910_9596,  Ascend_910_9581,  Ascend_910_9582,   Ascend_910_9583,
         Ascend_910_9584,  Ascend_910_9585,  Ascend_910_9586,  Ascend_910_9587,   Ascend_910_9588,  Ascend_910_9571,
         Ascend_910_9572,  Ascend_910_9573,  Ascend_910_9574,  Ascend_910_9575,   Ascend_910_9576,  Ascend_910_9577,
-        Ascend_910_9578,  Ascend_910_95A1, Ascend_910_95A2,   MC62CM12AA
+        Ascend_910_9578,  Ascend_910_95A1, Ascend_910_95A2,   MC62CM12AA,        KirinX90,         Kirin9030
     };
     if (soc_vector_core.find(this->target_opti_compilation_infos_.GetSocVersion()) ==
         soc_vector_core.end()) {

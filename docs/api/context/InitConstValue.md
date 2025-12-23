@@ -19,6 +19,11 @@
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
 </tr>
+<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -49,6 +54,7 @@ __aicore__ inline void InitConstValue(const LocalTensor<T> &dst, const InitConst
 <td class="cellrowborder" valign="top" width="82.57%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>dst的数据类型。</p>
 <p id="p990614114434"><a name="p990614114434"></a><a name="p990614114434"></a><span id="ph126684217571"><a name="ph126684217571"></a><a name="ph126684217571"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t</p>
+<p id="p254413141371162"><a name="p254413141371162"></a><span id="ph173281128262"><a name="ph173281128262"></a>Kirin X90</span>，支持的数据类型为：half</p>
 </td>
 </tr>
 <tr id="row118213273213"><td class="cellrowborder" valign="top" width="17.43%" headers="mcps1.2.3.1.1 "><p id="p161827233218"><a name="p161827233218"></a><a name="p161827233218"></a>U</p>
@@ -79,6 +85,7 @@ __aicore__ inline void InitConstValue(const LocalTensor<T> &dst, const InitConst
 <td class="cellrowborder" valign="top" width="73.66736673667367%" headers="mcps1.2.4.1.3 "><p id="p232011551739"><a name="p232011551739"></a><a name="p232011551739"></a>目的操作数，结果矩阵，类型为LocalTensor。</p>
 <p id="p17644116247"><a name="p17644116247"></a><a name="p17644116247"></a><span id="ph26443161442"><a name="ph26443161442"></a><a name="ph26443161442"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的TPosition为A1/A2/B1/B2。</p>
 <p id="p56447161944"><a name="p56447161944"></a><a name="p56447161944"></a><span id="ph3644016948"><a name="ph3644016948"></a><a name="ph3644016948"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的TPosition为A1/A2/B1/B2。</p>
+<p id="p254413141371163"><a name="p254413141371163"></a><span id="ph173281128263"><a name="ph173281128263"></a>Kirin X90</span>，支持的TPosition为A1/A2/B1/B2。</p>
 <p id="p16287121461618"><a name="p16287121461618"></a><a name="p16287121461618"></a>如果TPosition为A1/B1，起始地址需要满足32B对齐；如果TPosition为A2/B2，起始地址需要满足512B对齐。</p>
 </td>
 </tr>
@@ -91,6 +98,7 @@ __aicore__ inline void InitConstValue(const LocalTensor<T> &dst, const InitConst
 <p id="p12287014111614"><a name="p12287014111614"></a><a name="p12287014111614"></a>参数说明请参考<a href="#table15780447181917">表3</a>。</p>
 <p id="p179517269366"><a name="p179517269366"></a><a name="p179517269366"></a><span id="ph779572693610"><a name="ph779572693610"></a><a name="ph779572693610"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>，支持配置所有参数。</p>
 <p id="p6822956165313"><a name="p6822956165313"></a><a name="p6822956165313"></a><span id="ph6822456165317"><a name="ph6822456165317"></a><a name="ph6822456165317"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>，支持配置所有参数。</p>
+<p id="p254413141371164"><a name="p254413141371164"></a><span id="ph173281128264"><a name="ph173281128264"></a>Kirin X90</span>，支持配置所有参数。</p>
 <a name="ul1670213162021"></a><a name="ul1670213162021"></a><ul id="ul1670213162021"><li><span>仅支持配置迭代次数（repeatTimes）和初始化值（initValue）场景下，其他参数配置无效。每次迭代处理固定数据量（512字节），迭代间无间隔。</span></li><li>支持配置所有参数场景下，支持配置迭代次数（repeatTimes）、初始化值（initValue）、每个迭代处理的数据块个数（blockNum）和迭代间间隔（dstGap）。</li></ul>
 </td>
 </tr>

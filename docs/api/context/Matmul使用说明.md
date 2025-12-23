@@ -74,6 +74,12 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     <p id="p58814571371"><a name="p58814571371"></a><a name="p58814571371"></a>针对<span id="ph7881135712378"><a name="ph7881135712378"></a><a name="ph7881135712378"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span>：</p>
     <a name="ul0881205793717"></a><a name="ul0881205793717"></a><ul id="ul0881205793717"><li>A矩阵可设置为TPosition::GM，TPosition::VECOUT，TPosition::TSCM</li><li>B矩阵可设置为TPosition::GM，TPosition::VECOUT，TPosition::TSCM</li><li>Bias可设置为TPosition::GM，TPosition::VECOUT</li><li>C矩阵可设置为TPosition::GM，TPosition::VECIN, TPosition::CO1</li></ul>
     <p id="p24261319154111"><a name="p24261319154111"></a><a name="p24261319154111"></a>注意，C矩阵设置为TPosition::CO1时，C矩阵的数据排布格式仅支持CubeFormat::NZ，C矩阵的数据类型仅支持float、int32_t。</p>
+    <p id="p58814571471">针对<span id="ph7881135732378"><a name="ph7881135732378"></a><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></span>：
+    </p>
+    <a name="ul13881558133718"></a><a name="ul13881558133718"></a><ul id="ul13881558133718"><li>A矩阵可设置为TPosition::GM，TPosition::TSCM</li><li>B矩阵可设置为TPosition::GM，TPosition::TSCM</li><li>Bias可设置为TPosition::GM，TPosition::VECOUT</li><li>C矩阵可设置为TPosition::GM，TPosition::VECIN</li></ul>
+    <p id="p58814571471">针对<span id="ph7881135732388"><a name="ph7881135732388"></a><a name="p07746291307"></a><span id="ph880814542025"><a name="ph880814542025"></a><a name="ph880814542025"></a>Kirin 9030</span></span>：
+    </p>
+    <a name="ul13881558133719"></a><ul id="ul13881558133719"><li>A矩阵可设置为TPosition::TSCM</li><li>B矩阵可设置为TPosition::TSCM</li><li>Bias可设置为TPosition::GM</li><li>C矩阵可设置为TPosition::GM</li></ul>
     </td>
     </tr>
     <tr id="row1488214577379"><td class="cellrowborder" valign="top" width="17.09%" headers="mcps1.2.3.1.1 "><p id="p15886145020124"><a name="p15886145020124"></a><a name="p15886145020124"></a>FORMAT</p>
@@ -83,6 +89,12 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     <a name="ul38831357143718"></a><a name="ul38831357143718"></a><ul id="ul38831357143718"><li>A矩阵可设置为CubeFormat::ND，CubeFormat::NZ, CubeFormat::VECTOR</li><li>B矩阵可设置为CubeFormat::ND，CubeFormat::NZ</li><li>Bias可设置为CubeFormat::ND</li><li>C矩阵可设置为CubeFormat::ND，CubeFormat::NZ，CubeFormat::ND_ALIGN</li></ul>
     <p id="p1288365783712"><a name="p1288365783712"></a><a name="p1288365783712"></a>针对<span id="ph19883115713710"><a name="ph19883115713710"></a><a name="ph19883115713710"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>：</p>
     <a name="ul3883185773710"></a><a name="ul3883185773710"></a><ul id="ul3883185773710"><li>A矩阵可设置为CubeFormat::ND，CubeFormat::NZ, CubeFormat::VECTOR</li><li>B矩阵可设置为CubeFormat::ND，CubeFormat::NZ</li><li>Bias可设置为CubeFormat::ND</li><li>C矩阵可设置为CubeFormat::ND，CubeFormat::NZ，CubeFormat::ND_ALIGN</li></ul>
+    <p id="p58814571571">针对<span id="ph78811357323478"><a name="ph78811357323478"></a><a name="p07746291307"></a><span id="ph880814542120"><a name="ph880814542120"></a>Kirin X90</span></span>：
+    </p>
+    <a name="ul13881558143718"></a><ul id="ul38831457143718"><li>A矩阵可设置为CubeFormat::ND，CubeFormat::NZ, CubeFormat::VECTOR</li><li>B矩阵可设置为CubeFormat::ND，CubeFormat::NZ</li><li>Bias可设置为CubeFormat::ND</li><li>C矩阵可设置为CubeFormat::ND，CubeFormat::NZ，CubeFormat::ND_ALIGN</li></ul>
+    <p id="p58814541571">针对<span id="ph78911357323478"><a name="ph78911357323478"></a><a name="p07746291307"></a><span id="ph888814542120"><a name="ph888814542120"></a>Kirin 9030</span></span>：
+    </p>
+    <a name="ul13881558243718"></a><ul id="ul3883144143718"><li>A矩阵可设置为CubeFormat::NZ, CubeFormat::VECTOR</li><li>B矩阵可设置为CubeFormat::NZ</li><li>Bias可设置为CubeFormat::ND</li><li>C矩阵可设置为CubeFormat::ND</li></ul>
     <p id="p671644313140"><a name="p671644313140"></a><a name="p671644313140"></a>关于CubeFormat::NZ格式的A矩阵、B矩阵、C矩阵的对齐约束，请参考<a href="#table98851538118">表3</a>。</p>
     </td>
     </tr>
@@ -93,6 +105,10 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     </div>
     <div class="p" id="p138851257153713"><a name="p138851257153713"></a><a name="p138851257153713"></a>针对<span id="ph7885257133719"><a name="ph7885257133719"></a><a name="ph7885257133719"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>：<a name="ul198858571377"></a><a name="ul198858571377"></a><ul id="ul198858571377"><li>A矩阵可设置为half、float、bfloat16_t 、int8_t、int4b_t</li><li>B矩阵可设置为half、float、bfloat16_t 、int8_t、int4b_t</li><li>Bias可设置为half、float、int32_t</li><li>C矩阵可设置为half、float、bfloat16_t、int32_t、int8_t</li></ul>
     </div>
+    <div class="p" id="p138851157153713"><a name="p138851157153713"></a>针对<span id="ph7881217133719"><a name="ph7881217133719"></a>Kirin X90</span>：<a name="ul198158571377"></a><ul id="ul198158571377"><li>A矩阵可设置为half、int8_t</li><li>B矩阵可设置为half、int8_t</li><li>Bias可设置为half、int32_t</li><li>C矩阵可设置为half、int32_t、int8_t</li></ul>
+    </div>
+    <div class="p" id="p138811257153713"><a name="p138811257153713"></a>针对<span id="ph7881217133729"><a name="ph7881217133729"></a>Kirin 9030</span>：<a name="ul198158571277"></a><ul id="ul198158571277"><li>A矩阵可设置为half</li><li>B矩阵可设置为half</li><li>Bias可设置为half</li><li>C矩阵可设置为half</li></ul>
+    </div>
     <a name="ul4885757173710"></a><a name="ul4885757173710"></a>
     <p id="p6886457163710"><a name="p6886457163710"></a><a name="p6886457163710"></a><strong id="b7886175793718"><a name="b7886175793718"></a><a name="b7886175793718"></a>注意：除B矩阵为int8_t数据类型外，A矩阵和B矩阵数据类型需要一致，具体数据类型组合关系请参考</strong><a href="#table1996113269499">表2</a>。A矩阵和B矩阵为int4b_t数据类型时，矩阵内轴的数据个数必须为偶数。例如，A矩阵为int4b_t数据类型且不转置时，<a href="TCubeTiling结构体.md#p11899125875617">singleCoreK</a>必须是偶数。</p>
     </td>
@@ -102,6 +118,7 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     <td class="cellrowborder" valign="top" width="82.91%" headers="mcps1.2.3.1.2 "><p id="p4886185713714"><a name="p4886185713714"></a><a name="p4886185713714"></a>是否开启支持矩阵转置的功能。</p>
     <a name="ul1388645718375"></a><a name="ul1388645718375"></a><ul id="ul1388645718375"><li>true：开启支持矩阵转置的功能，运行时可以分别通过<a href="SetTensorA.md">SetTensorA</a>和<a href="SetTensorB.md">SetTensorB</a>中的isTransposeA、isTransposeB参数设置A、B矩阵是否转置。若设置A、B矩阵转置，Matmul会认为A矩阵形状为[K, M]，B矩阵形状为[N, K]。</li><li>false：默认值，不开启支持矩阵转置的功能，通过<a href="SetTensorA.md">SetTensorA</a>和<a href="SetTensorB.md">SetTensorB</a>不能设置A、B矩阵的转置情况。Matmul会认为A矩阵形状为[M, K]，B矩阵形状为[K, N]。</li></ul>
     <p id="p25351314131118"><a name="p25351314131118"></a><a name="p25351314131118"></a>注意，由于<span id="ph173181828090"><a name="ph173181828090"></a><a name="ph173181828090"></a><span id="ph14318162813918"><a name="ph14318162813918"></a><a name="ph14318162813918"></a>L1 Buffer</span></span>上的矩阵数据有分形对齐的约束，A、B矩阵转置和不转置时所需的L1空间可能不相同，在开启支持矩阵转置功能时，必须保证按照<a href="TCubeTiling结构体.md">Matmul Tiling参数</a>申请的L1空间不超过<span id="ph20110352101813"><a name="ph20110352101813"></a><a name="ph20110352101813"></a><span id="ph411015210181"><a name="ph411015210181"></a><a name="ph411015210181"></a>L1 Buffer</span></span>的规格，判断方式为(depthA1*Ceil(baseM/c0Size)*baseK + depthB1*Ceil(baseN/c0Size)*baseK) * db * sizeoof(dtype) &lt; L1Size，db表示L1是否开启double buffer，取值1（不开启double buffer）或2（开启double buffer），其余参数的含义请参考<a href="TCubeTiling结构体.md#table1563162142915">表1</a>。</p>
+    <p id="p25351314131111"><a name="p25351314131111"></a><span id="ph173181828091"><a name="ph173181828091"></a>Kirin 9030</span>不支持此参数。</p>
     </td>
     </tr>
     <tr id="row1488675713371"><td class="cellrowborder" valign="top" width="17.09%" headers="mcps1.2.3.1.1 "><p id="p127582139543"><a name="p127582139543"></a><a name="p127582139543"></a>LAYOUT</p>
@@ -112,6 +129,7 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     <p id="p1388775703719"><a name="p1388775703719"></a><a name="p1388775703719"></a>BSNGD：原始BSH shape做reshape后的数据排布，具体可参考<a href="IterateBatch.md#li298041002213">IterateBatch</a>中对该数据排布的介绍。</p>
     <p id="p148874573377"><a name="p148874573377"></a><a name="p148874573377"></a>SBNGD：原始SBH shape做reshape后的数据排布，具体可参考<a href="IterateBatch.md#li6785191319227">IterateBatch</a>中对该数据排布的介绍。</p>
     <p id="p888713577371"><a name="p888713577371"></a><a name="p888713577371"></a>BNGS1S2：一般为前两种数据排布进行矩阵乘的输出，S1S2数据连续存放，一个S1S2为一个batch的计算数据，具体可参考<a href="IterateBatch.md#li1922441712222">IterateBatch</a>中对该数据排布的介绍。</p>
+    <p id="p25341314131111"><a name="p25341314131111"></a><span id="ph173181828111"><a name="ph173181828111"></a>Kirin 9030</span>不支持此参数。</p>
     </td>
     </tr>
     <tr id="row88871857133714"><td class="cellrowborder" valign="top" width="17.09%" headers="mcps1.2.3.1.1 "><p id="p1613334125414"><a name="p1613334125414"></a><a name="p1613334125414"></a>IBSHARE</p>
@@ -121,6 +139,8 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     <a name="ul38871557143711"></a><a name="ul38871557143711"></a><ul id="ul38871557143711"><li>同一算子中其它Matmul对象的A矩阵和B矩阵也必须同时使能IBShare；</li><li><span id="ph68351959122717"><a name="ph68351959122717"></a><a name="ph68351959122717"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>，获取矩阵计算结果时，只支持调用<a href="IterateAll.md">IterateAll</a>接口，且只支持输出到GlobalTensor，即计算结果放置于Global Memory的地址。</li><li><span id="ph10607560287"><a name="ph10607560287"></a><a name="ph10607560287"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>，获取矩阵计算结果时，只支持调用<a href="IterateAll.md">IterateAll</a>接口，且只支持输出到GlobalTensor，即计算结果放置于Global Memory的地址。</li></ul>
     <p id="p10924173410583"><a name="p10924173410583"></a><a name="p10924173410583"></a><span id="ph10924103465815"><a name="ph10924103465815"></a><a name="ph10924103465815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_4"><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a>Ascend 910C</term></span>支持该参数。</p>
     <p id="p19924634105816"><a name="p19924634105816"></a><a name="p19924634105816"></a><span id="ph19248344581"><a name="ph19248344581"></a><a name="ph19248344581"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Ascend 910B</term></span>支持该参数。</p>
+    <p id="p25441314131111"><a name="p25441314131111"></a><span id="ph173181838191"><a name="ph173181838191"></a>Kirin X90</span>不支持此参数。</p>
+    <p id="p35341314131111"><a name="p35341314131111"></a><span id="ph173181828191"><a name="ph173181828191"></a>Kirin 9030</span>不支持此参数。</p>
     </td>
     </tr>
     </tbody>
@@ -182,7 +202,7 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     </td>
     <td class="cellrowborder" valign="top" width="14.430000000000001%" headers="mcps1.2.6.1.4 "><p id="p010934245319"><a name="p010934245319"></a><a name="p010934245319"></a>int32_t/half</p>
     </td>
-    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul18917166154810"></a><a name="ul18917166154810"></a><ul id="ul18917166154810"><li><span id="ph66293110575"><a name="ph66293110575"></a><a name="ph66293110575"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_8"><a name="zh-cn_topic_0000001312391781_term1253731311225_8"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_8"></a>Ascend 910C</term></span></li><li><span id="ph3487175413443"><a name="ph3487175413443"></a><a name="ph3487175413443"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_8"><a name="zh-cn_topic_0000001312391781_term11962195213215_8"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_8"></a>Ascend 910B</term></span></li></ul>
+    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul18917166154810"></a><a name="ul18917166154810"></a><ul id="ul18917166154810"><li><span id="ph66293110575"><a name="ph66293110575"></a><a name="ph66293110575"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_8"><a name="zh-cn_topic_0000001312391781_term1253731311225_8"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_8"></a>Ascend 910C</term></span></li><li><span id="ph3487175413443"><a name="ph3487175413443"></a><a name="ph3487175413443"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_8"><a name="zh-cn_topic_0000001312391781_term11962195213215_8"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_8"></a>Ascend 910B</term></span></li><li><span id="ph3487175413443"><a name="ph3487175413443"></a>Kirin X90</span></li></ul>
     </td>
     </tr>
     <tr id="row561656124819"><td class="cellrowborder" valign="top" width="17.88%" headers="mcps1.2.6.1.1 "><p id="p1471141017486"><a name="p1471141017486"></a><a name="p1471141017486"></a>int4b_t</p>
@@ -248,7 +268,7 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     </td>
     <td class="cellrowborder" valign="top" width="14.430000000000001%" headers="mcps1.2.6.1.4 "><p id="p18481123012185"><a name="p18481123012185"></a><a name="p18481123012185"></a>int8_t</p>
     </td>
-    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul194812030191811"></a><a name="ul194812030191811"></a><ul id="ul194812030191811"><li><span id="ph119018351105"><a name="ph119018351105"></a><a name="ph119018351105"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_14"><a name="zh-cn_topic_0000001312391781_term1253731311225_14"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_14"></a>Ascend 910C</term></span></li><li><span id="ph18481203081820"><a name="ph18481203081820"></a><a name="ph18481203081820"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_14"><a name="zh-cn_topic_0000001312391781_term11962195213215_14"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_14"></a>Ascend 910B</term></span></li></ul>
+    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul194812030191811"></a><a name="ul194812030191811"></a><ul id="ul194812030191811"><li><span id="ph119018351105"><a name="ph119018351105"></a><a name="ph119018351105"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_14"><a name="zh-cn_topic_0000001312391781_term1253731311225_14"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_14"></a>Ascend 910C</term></span></li><li><span id="ph18481203081820"><a name="ph18481203081820"></a><a name="ph18481203081820"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_14"><a name="zh-cn_topic_0000001312391781_term11962195213215_14"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_14"></a>Ascend 910B</term></span></li><li><span id="ph3287175413443"><a name="ph3287175413443"></a>Kirin X90</span></li></ul>
     </td>
     </tr>
     <tr id="row10732163714419"><td class="cellrowborder" valign="top" width="17.88%" headers="mcps1.2.6.1.1 "><p id="p121620444411"><a name="p121620444411"></a><a name="p121620444411"></a>half</p>
@@ -270,7 +290,7 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     </td>
     <td class="cellrowborder" valign="top" width="14.430000000000001%" headers="mcps1.2.6.1.4 "><p id="p15793122681812"><a name="p15793122681812"></a><a name="p15793122681812"></a>half</p>
     </td>
-    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul61575741916"></a><a name="ul61575741916"></a><ul id="ul61575741916"><li><span id="ph184551144704"><a name="ph184551144704"></a><a name="ph184551144704"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_16"><a name="zh-cn_topic_0000001312391781_term1253731311225_16"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_16"></a>Ascend 910C</term></span></li><li><span id="ph1415714731914"><a name="ph1415714731914"></a><a name="ph1415714731914"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_16"><a name="zh-cn_topic_0000001312391781_term11962195213215_16"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_16"></a>Ascend 910B</term></span></li></ul>
+    <td class="cellrowborder" valign="top" width="37.68%" headers="mcps1.2.6.1.5 "><a name="ul61575741916"></a><a name="ul61575741916"></a><ul id="ul61575741916"><li><span id="ph184551144704"><a name="ph184551144704"></a><a name="ph184551144704"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_16"><a name="zh-cn_topic_0000001312391781_term1253731311225_16"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_16"></a>Ascend 910C</term></span></li><li><span id="ph1415714731914"><a name="ph1415714731914"></a><a name="ph1415714731914"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_16"><a name="zh-cn_topic_0000001312391781_term11962195213215_16"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_16"></a>Ascend 910B</term></span></li><li><span id="ph3487975413443"><a name="ph3487975413443"></a>Kirin X90</span></li><li><span id="ph3487175473443"><a name="ph3487175473443"></a>Kirin 9030</span></li></ul>
     </td>
     </tr>
     <tr id="row842765934119"><td class="cellrowborder" valign="top" width="17.88%" headers="mcps1.2.6.1.1 "><p id="p1767833425"><a name="p1767833425"></a><a name="p1767833425"></a>bfloat16_t</p>
@@ -324,6 +344,8 @@ Kernel侧实现Matmul矩阵乘运算的步骤概括为：
     -   用户申请用于存放矩阵乘结果的逻辑位置CO1内存，调用一次或多次[Iterate](Iterate.md#li4843165185812)完成单次或多次迭代计算，在需要搬出计算结果时，调用[Fixpipe](Fixpipe.md)接口完成CO1上计算结果的搬运，然后释放申请的CO1内存。该方式下，用户可以灵活控制计算和搬运的节奏，根据实际需要，一次计算对应一次结果的搬出，或者将多次计算结果缓存在CO1内存中，再一次性搬出计算结果。
 
         在此种调用方式下，创建Matmul对象时，必须定义C矩阵的内存逻辑位置为TPosition::CO1、数据排布格式为CubeFormat::NZ、数据类型为float或int32\_t。
+        - Kirin X90暂不支持该方式。
+        - Kirin 9030暂不支持该方式。
 
         ```
         // 定义C矩阵的类型信息

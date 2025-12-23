@@ -20,9 +20,61 @@
 #include "confusion_transpose_v200_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "confusion_transpose_v220_impl.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "confusion_transpose_v220_impl.h"
+#include "confusion_transpose_l300_impl.h"
 #endif
 
 namespace AscendC {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+template <typename T>
+__aicore__ inline void CheckCompatibleTransposeTypeDataType() {
+    ASCENDC_ASSERT(
+        (std::is_same<T, int16_t>::value || std::is_same<T, uint16_t>::value || std::is_same<T, half>::value ||
+         std::is_same<T, int32_t>::value || std::is_same<T, uint32_t>::value || std::is_same<T, float>::value), {
+        KERNEL_LOG(KERNEL_ERROR, "Transpose current TransposeType only support "
+            "int16_t/uint16_t/half/int32_t/uint32_t/float data type on current device!");
+    });
+}
+
+template <typename T>
+__aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, TransposeType transposeType, ConfusionTransposeTiling& tiling)
+{
+    static_assert(SupportType<T, int8_t, uint8_t, int16_t, uint16_t, half, bfloat16_t, int32_t, uint32_t, float>(),
+        "Transpose only support int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float "
+        "data type on current device!");
+    CheckTensorPos<T>(dstTensor, Hardware::UB, "dstTensor", "VECIN / VECCALC / VECOUT", "Transpose");
+    CheckTensorPos<T>(srcTensor, Hardware::UB, "srcTensor", "VECIN / VECCALC / VECOUT", "Transpose");
+    CheckTensorPos<uint8_t>(sharedTmpBuffer, Hardware::UB, "sharedTmpBuffer", "VECIN / VECCALC / VECOUT",
+        "Transpose");
+
+    if (transposeType == TransposeType::TRANSPOSE_NZ2ND_0213 || transposeType == TransposeType::TRANSPOSE_NZ2NZ_0213) {
+        CheckCompatibleTransposeTypeDataType<T>();
+        ConfusionTranspose0213(dstTensor, srcTensor, sharedTmpBuffer, transposeType,
+            reinterpret_cast<ConfusionTranspose0213Tiling&>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_NZ2NZ_012_WITH_N) {
+        CheckCompatibleTransposeTypeDataType<T>();
+        ConfusionTranspose2NZ012N(dstTensor, srcTensor, sharedTmpBuffer,
+            reinterpret_cast<ConfusionTranspose2NZ012NTiling &>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_NZ2ND_012_WITH_N) {
+        CheckCompatibleTransposeTypeDataType<T>();
+        ConfusionTranspose2ND012N(dstTensor, srcTensor, sharedTmpBuffer,
+            reinterpret_cast<ConfusionTranspose2ND012NTiling &>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_NZ2ND_012_WITHOUT_N ||
+        transposeType == TransposeType::TRANSPOSE_NZ2NZ_012_WITHOUT_N) {
+        CheckCompatibleTransposeTypeDataType<T>();
+        ConfusionTranspose012(dstTensor, srcTensor, sharedTmpBuffer, transposeType,
+            reinterpret_cast<ConfusionTranspose012Tiling &>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_ND2ND_ONLY) {
+        CheckCompatibleTransposeTypeDataType<T>();
+        ConfusionTransposeOnly(dstTensor, srcTensor, reinterpret_cast<ConfusionTransposeOnlyTiling &>(tiling));
+    } else {
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR,
+            "Transpose do not support current TransposeType on current device!"); });
+    }
+}
+#else
 template <typename T>
 __aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeType, ConfusionTransposeTiling& tiling)
@@ -70,6 +122,7 @@ __aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, c
         ConfusionTransposeOnly(dstTensor, srcTensor, reinterpret_cast<ConfusionTransposeOnlyTiling &>(tiling));
     }
 }
+#endif
 
 template <typename T>
 __aicore__ inline void ConfusionTranspose(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,

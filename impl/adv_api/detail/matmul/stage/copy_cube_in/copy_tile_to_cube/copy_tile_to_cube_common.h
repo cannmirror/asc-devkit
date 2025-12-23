@@ -82,7 +82,7 @@ public:
                     }
                 }
             } else {
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
                 Barrier();
 #endif
                 if constexpr (IsCopyFromUB<INPUT_TYPE, MM_CFG>()) {
