@@ -57,6 +57,7 @@ TEST_F(TEST_ASC_UTILS, asc_PathCheck_read_permission)
     std::ofstream file(tempFile);
     file.close();
     chmod(tempFile.c_str(), 0444); // 设置只读权限
+    MOCKER(access).stubs().will(returnValue(-1)).then(returnValue(0));
     EXPECT_EQ(AscPlugin::PathCheck(tempFile.c_str(), true), AscPlugin::PathStatus::READ);
     // 清理临时文件
     remove(tempFile.c_str());
@@ -68,7 +69,7 @@ TEST_F(TEST_ASC_UTILS, asc_PathCheck_exist) {
     std::ofstream file(tempFile);
     file.close();
     chmod(tempFile.c_str(), 0000);
-
+    MOCKER(access).stubs().will(returnValue(-1)).then(returnValue(-1)).then(returnValue(0));
     EXPECT_EQ(AscPlugin::PathCheck(tempFile.c_str(), true), AscPlugin::PathStatus::EXIST);
 
     remove(tempFile.c_str());
