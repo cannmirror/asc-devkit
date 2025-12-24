@@ -226,7 +226,7 @@ struct ParamStruct {
     const char* macroType;
     ParamStruct(const char* inName, uint32_t inParamType, uint8_t inBitWidth, std::vector<uint64_t> inVals,
         const char* inMacroType): name(inName), paramType(inParamType), bitWidth(inBitWidth), vals(std::move(inVals)),macroType(inMacroType) {
-            #ifndef ASCENDC_TPL_DEBUG
+            #ifndef ASCENDC_DEBUG
             if (inParamType == ASCENDC_TPL_UINT) {
                 ParseTplUintValue();
             }
@@ -266,7 +266,7 @@ using TilingSelectParams = std::vector<std::vector<ParamStruct>>;
 #define ASCENDC_TPL_KERNEL_TYPE_DECL(x, ...) ParamStruct{#x, ASCENDC_TPL_SHARED_KERNEL_TYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "DECL"}
 #define ASCENDC_TPL_ARGS_DECL(x, ...) static TilingDeclareParams g_tilingDeclareParams{ __VA_ARGS__ }
 
-#ifdef ASCENDC_TPL_DEBUG
+#ifdef ASCENDC_DEBUG
 #define ASCENDC_TPL_DTYPE_SEL(x, ...) ParamStruct{#x, ASCENDC_TPL_DTYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
 #define ASCENDC_TPL_DATATYPE_SEL(x, ...) ParamStruct{#x, ASCENDC_TPL_DTYPE, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
 #define ASCENDC_TPL_FORMAT_SEL(x, ...) ParamStruct{#x, ASCENDC_TPL_FORMAT, ASCENDC_TPL_8_BW, {__VA_ARGS__}, "SEL"}
@@ -282,7 +282,7 @@ using TilingSelectParams = std::vector<std::vector<ParamStruct>>;
 #define ASCENDC_TPL_SEL(...)
 #endif
 
-#ifdef ASCENDC_TPL_DEBUG
+#ifdef ASCENDC_DEBUG
 namespace AscendC {
     uint64_t EncodeTilingKey(TilingDeclareParams declareParams,
                              TilingSelectParams selectParamsVec,

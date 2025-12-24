@@ -306,7 +306,7 @@ endforeach()
 
 ############################################tiling ut###################################
 file(GLOB ASCENDC_TILING_TEST_SRC_FILES
-    ${LOCAL_DIR}/testcase/tikcpp_tiling/*.cpp
+    ${LOCAL_DIR}/testcase/tikcpp_tiling/test_tiling.cpp
 )
 
 file(GLOB ASCENDC_TILING_SRC_FILES
@@ -408,8 +408,6 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         dl
         -Wl,--as-needed
     )
-
-    target_compile_definitions(tikcpp_tiling_utest_${product_type} PRIVATE ASCENDC_TPL_DEBUG)
 
     run_llt_test(
         TARGET tikcpp_tiling_utest_${product_type}
@@ -597,3 +595,48 @@ run_llt_test(
     TARGET ascendc_utest_aclrtc
     TASK_NUM 1
 )
+
+
+############################################tpl tiling tiling ut###################################
+set(TIKCPP_TPL_TILING_MODE debug release)
+
+file(GLOB ASCENDC_TPL_TILING_KEY_SRC_FILES
+    ${ASCENDC_IMPL_DIR}/utils/tiling/*.cpp
+)
+
+# tikcpp_tiling_utest
+foreach(impl_mode ${TIKCPP_TPL_TILING_MODE})
+    file(GLOB ASCENDC_TPL_TILING_KEY_TEST_SRC_FILES
+        ${LOCAL_DIR}/testcase/tikcpp_tiling/${impl_mode}.cpp
+    )
+
+    add_executable(tikcpp_tpl_tiling_key_utest_${impl_mode}
+        ${LOCAL_DIR}/main.cpp
+        ${ASCENDC_TPL_TILING_KEY_SRC_FILES}
+        ${ASCENDC_TPL_TILING_KEY_TEST_SRC_FILES}
+    )
+    if(${impl_mode} STREQUAL "debug")
+        target_compile_definitions(tikcpp_tpl_tiling_key_utest_${impl_mode} PRIVATE
+            ASCENDC_DEBUG
+        )
+    endif()
+
+    target_include_directories(tikcpp_tpl_tiling_key_utest_${impl_mode} PRIVATE
+        ${ASCENDC_INCLUDE_DIR}/
+    )
+
+    target_compile_options(tikcpp_tpl_tiling_key_utest_${impl_mode} PRIVATE
+        -g
+        -Werror
+    )
+
+    target_link_libraries(tikcpp_tpl_tiling_key_utest_${impl_mode} PRIVATE
+        $<BUILD_INTERFACE:intf_llt_pub_basic>
+        -Wl,--no-as-needed
+    )
+
+    run_llt_test(
+        TARGET tikcpp_tpl_tiling_key_utest_${impl_mode}
+        TASK_NUM 1
+    )
+endforeach()
