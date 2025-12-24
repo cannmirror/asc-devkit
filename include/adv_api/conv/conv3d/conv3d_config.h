@@ -13,29 +13,40 @@
  * \brief
  */
 
-#ifndef API_CONV3D_CONFIG_H
-#define API_CONV3D_CONFIG_H
+#ifndef ADV_API_CONV_CONV3D_CONV3D_CONFIG_H
+#define ADV_API_CONV_CONV3D_CONV3D_CONFIG_H
 
 #include "../../../../impl/adv_api/detail/conv/common/conv_forward_framework_util.h"
-#include "../common/conv_forward_config.h"
+#include "include/adv_api/conv/common/conv_forward_config.h"
 
 namespace Conv3dApi {
-
+/**
+* @enum class ConvL0PingPong
+* @brief L0 Buffer Ping-Pong State Control
+*/
 enum class ConvL0PingPong : uint32_t {
-    ALL_CLOSE = 0,
-    L0A_OPEN,
-    L0B_OPEN,
-    ALL_OPEN
+    ALL_CLOSE = 0, ///< Close both L0A and L0B Buffers
+    L0A_OPEN,      ///< Open only L0A Buffer
+    L0B_OPEN,      ///< Open only L0B Buffer
+    ALL_OPEN       ///< Open both L0A and L0B Buffers
 };
 
+/**
+* @enum class ConvBL1ByPass
+* @brief B Matrix L1 Buffer Bypass Control
+*/
 enum class ConvBL1ByPass : uint32_t {
-    BYPASS_OFF = 0,
-    BYPASS_ON = 1
+    BYPASS_OFF = 0, ///< Disable L1 Buffer bypass
+    BYPASS_ON = 1   ///< Enable L1 Buffer bypass
 };
 
+/**
+* @enum class GroupConvType
+* @brief Group Convolution Type Definition
+*/
 enum class GroupConvType : uint32_t {
-    NoGroup_Conv = 0,
-	GroupConv_Weight_Gfz
+    NoGroup_Conv = 0,      ///< Standard convolution, no grouping
+    GroupConv_Weight_Gfz   ///< Group convolution, weights organized in Gfz format
 };
 
 struct Conv3dParam : public ConvApi::ConvParam {
@@ -55,4 +66,4 @@ public:
 };
 }  // namespace Conv3dApi
 
-#endif
+#endif // ADV_API_CONV_CONV3D_CONV3D_CONFIG_H

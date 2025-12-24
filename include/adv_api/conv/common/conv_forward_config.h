@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef API_CONV_CONFIG_H
-#define API_CONV_CONFIG_H
+#ifndef ADV_API_CONV_COMMON_CONV_FORWARD_CONFIG_H
+#define ADV_API_CONV_COMMON_CONV_FORWARD_CONFIG_H
 
 #include <climits>
 #include "kernel_utils.h"
@@ -121,4 +121,4 @@ public:
 };
 
 }  // namespace conv
-#endif
+#endif // ADV_API_CONV_COMMON_CONV_FORWARD_CONFIG_H

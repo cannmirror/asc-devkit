@@ -13,8 +13,8 @@
  * \brief
  */
  
-#ifndef API_ASCENDC_TIKCFW_TILING_CONV3D_TILINGDATA_H
-#define API_ASCENDC_TIKCFW_TILING_CONV3D_TILINGDATA_H
+#ifndef ADV_API_CONV_CONV3D_CONV3D_TILINGDATA_H
+#define ADV_API_CONV_CONV3D_CONV3D_TILINGDATA_H
  
 #include "register/tilingdata_base.h"
  
@@ -91,4 +91,4 @@ namespace optiling {
     END_TILING_DATA_DEF;
     REGISTER_TILING_DATA_CLASS(TConv3DApiTilingOpApi, TConv3DApiTiling);
 }
-#endif // conv3d api tiling
+#endif // ADV_API_CONV_CONV3D_CONV3D_TILINGDATA_H
