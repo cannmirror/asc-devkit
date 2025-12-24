@@ -120,6 +120,9 @@ public:
                 }
             } else if (funID == KFC_Enum::SERVICE_QUIT) {
                 quitSize++;
+                if (msg->userCustomData == 1) {
+                    quitSize = MIX_NUM;
+                }
                 ptr->FreeMessage(msg);
                 if (quitSize == MIX_NUM) {
                     return;
@@ -191,12 +194,13 @@ public:
                     }
                     switchPoll = true;
                 } else if (funID == KFC_Enum::SERVICE_QUIT) {
+                    quitSize++;
+                    switchPoll = true;
                     if (msg->ubAddr == 1) {
+                        quitSize++;
                         TRACE_STOP(TraceId::KFC_SERVER_RUN);
                         return;
                     }
-                    quitSize++;
-                    switchPoll = true;
                 } else {
                     ASSERT("unsupported service id !");
                 }

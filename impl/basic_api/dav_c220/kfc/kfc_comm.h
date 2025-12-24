@@ -80,11 +80,7 @@ enum class MSG_STATE : uint8_t {
 // The message length is 128 bytes and must be 512 bytes aligned.
 // Therefore, MAX_MSG_COUNT must be an integer multiple of 8.
 #ifdef __MIX_CORE_AIC_RATION__
-#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
-constexpr int32_t MIX_NUM = 2;
-#else
 constexpr int32_t MIX_NUM = __MIX_CORE_AIC_RATION__;
-#endif
 #else
 constexpr int32_t MIX_NUM = 2;
 #endif
