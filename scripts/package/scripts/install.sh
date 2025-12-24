@@ -696,13 +696,12 @@ install_run() {
         new_echo "INFO" "install ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
         log "INFO" "install ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
         sh "${curpath}/run_asc-devkit_install.sh" "install" "${asc_devkit_input_install_path}" "${asc_devkit_install_type}" \
-            "${is_quiet}" "${input_setenv}" "${docker_root}" "${in_install_for_all}"
+            "${is_quiet}" "${input_setenv}" "${docker_root}" "${in_install_for_all}" "$pkg_version_dir"
         if [ $? -eq 0 ]; then
             update_version_info_version
             log "INFO" "AscDevkit package installed successfully! The new version takes effect immediately."
             log_operation "${operation}" "succeeded"
             chmod_end
-            prompt_set_env "${install_path_param}"
         else
             chmod_end
             log "ERROR" "AscDevkit package install failed, please retry after uninstall!"
@@ -738,13 +737,12 @@ upgrade_run() {
         new_echo "INFO" "upgrade ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
         log "INFO" "upgrade ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
         sh "${curpath}/run_asc-devkit_upgrade.sh" "upgrade" "${asc_devkit_input_install_path}" "${asc_devkit_install_type}" \
-            "${is_quiet}" "${input_setenv}" "${docker_root}" "${in_install_for_all}"
+            "${is_quiet}" "${input_setenv}" "${docker_root}" "${in_install_for_all}" "$pkg_version_dir"
         if [ $? -eq 0 ]; then
             update_version_info_version
             log "INFO" "AscDevkit package upgraded successfully! The new version takes effect immediately."
             log_operation "${operation}" "succeeded"
             chmod_end
-            prompt_set_env "${install_path_param}"
         else
             chmod_end
             log "ERROR" "AscDevkit package upgrade failed, please retry after uninstall!"
@@ -788,7 +786,7 @@ uninstall_run() {
         new_echo "INFO" "uninstall ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
         log "INFO" "uninstall ${asc_devkit_install_path_param} ${asc_devkit_install_type}"
         sh "$upgrade_default_dir/script/run_asc-devkit_uninstall.sh" "uninstall" "${asc_devkit_input_install_path}" "${asc_devkit_install_type}" "${is_quiet}" \
-            "${is_docker_install}" "${docker_root}" "${is_recreate_softlink}"
+            "${is_docker_install}" "${docker_root}" "${is_recreate_softlink}" "$pkg_version_dir"
         if [ $? -eq 0 ]; then
             if [ "$is_remove_info_files" = "y" ]; then
                 test -f "$upgrade_install_info" && rm -f "$upgrade_install_info"
@@ -1109,7 +1107,6 @@ fi
 
 #######################################################
 is_multi_version_pkg "pkg_is_multi_version" "$pkg_version_path"
-get_version_dir "pkg_version_dir" "$pkg_version_path"
 
 if [ "$is_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ] || [ "$check" = "y" ]; then
     input_install_path=$(relative_path_to_absolute_path "${input_install_path}")
@@ -1134,6 +1131,13 @@ if [ "$is_install" = "y" ] || [ "$upgrade" = "y" ] || [ "$uninstall" = "y" ] || 
         fi
     fi
     export hetero_arch
+
+    if is_version_dirpath "$input_install_path"; then
+        pkg_version_dir="$(basename "$input_install_path")"
+        input_install_path="$(dirname "$input_install_path")"
+    else
+        pkg_version_dir="cann"
+    fi
 
     install_top_path="$(dirname $input_install_path)"
     install_path_param="${input_install_path}"

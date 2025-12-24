@@ -72,11 +72,7 @@ log() {
     local cur_date="$(date +'%Y-%m-%d %H:%M:%S')"
     local log_type="$1"
     shift
-    if [ "$log_type" = "INFO" -o "$log_type" = "WARNING" -o "$log_type" = "ERROR" ]; then
-        echo -e "[AscDevkit] [$cur_date] [$log_type]: $*"
-    else
-        echo "[AscDevkit] [$cur_date] [$log_type]: $*" 1> /dev/null
-    fi
+    echo "[AscDevkit] [$cur_date] [$log_type]: $*" 1> /dev/null
     echo "[AscDevkit] [$cur_date] [$log_type]: $*" >> "$logfile"
 }
 
