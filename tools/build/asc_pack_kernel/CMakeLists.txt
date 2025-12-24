@@ -11,6 +11,7 @@ target_compile_options(ascendc_pack_kernel PRIVATE
 )
 
 target_link_options(ascendc_pack_kernel PRIVATE
+    -pie
     $<$<CONFIG:Release>:-s>
 )
 
