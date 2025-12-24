@@ -13,47 +13,29 @@ set -e
 
 vendor_name=customize
 
-sourcedir=$PWD/packages
-vendordir=vendors/$vendor_name
+curr_path=$(dirname "$0")
+vendordir=$(realpath ${curr_path}/../../)
+custom_delete=$vendordir/$vendor_name
 
 log() {
     cur_date=$(date +"%Y-%m-%d %H:%M:%S")
     echo "[ops_custom] [$cur_date] "$1
 }
 
-if [[ "x${ASCEND_CUSTOM_OPP_PATH}" != "x" ]]; then
-    targetdir=${ASCEND_CUSTOM_OPP_PATH}
-    if [[ ! -d ${targetdir} ]]; then
-        log "[ERROR] The directory specified by ASCEND_CUSTOM_OPP_PATH does not exist."
-        exit 1
-    fi
-elif [[ "x${ASCEND_OPP_PATH}" != "x" ]]; then
-    targetdir=${ASCEND_OPP_PATH}
-    if [[ ! -d ${targetdir} ]]; then
-        log "[ERROR] The directory specified by ASCEND_OPP_PATH does not exist."
-        exit 1
-    fi
-else
-    log "[ERROR] The environment variables ASCEND_CUSTOM_OPP_PATH and ASCEND_OPP_PATH are no set."
-    exit 1
-fi
-
-dir_to_delete=$targetdir/$vendordir
-
-if [[ ! -d $dir_to_delete ]]; then
-    log "[INFO] no need to delete ops $dir_to_delete files"
+if [[ ! -d $custom_delete ]]; then
+    log "[INFO] no need to delete ops $custom_delete files"
     exit 1
 else
     log "[INFO] Starting to delete $vendor_name ..."
-    chmod -R +w $dir_to_delete
-    [ -d "$dir_to_delete" ] && rm -rf $dir_to_delete
+    chmod -R +w $custom_delete
+    [ -d "$custom_delete" ] && rm -rf $custom_delete
     if [ $? -ne 0 ]; then
         log "[ERROR] Failed to delete $vendor_name."
         exit 1
     fi
 fi
 
-config_file=${targetdir}/vendors/config.ini
+config_file=${vendordir}/config.ini
 if [ ! -f "$config_file" ]; then
     log "[ERROR] File '$config_file' does not exist."
     exit 1
