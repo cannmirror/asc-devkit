@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef API_ASCENDC_TIKCFW_TILING_CONV3D_TILING_H
-#define API_ASCENDC_TIKCFW_TILING_CONV3D_TILING_H
+#ifndef ADV_API_CONV_CONV3D_CONV3D_TILING_H
+#define ADV_API_CONV_CONV3D_CONV3D_TILING_H
 
 #include "conv3d_tiling_base.h"
 #include "conv3d_tilingdata.h"
@@ -22,15 +22,37 @@
 namespace Conv3dTilingApi {
 class Conv3dTiling : public Conv3dTilingBase {
 public:
+    /**
+     * @brief Constructor with AscendC platform context
+     * @param ascendcPlatform Reference to AscendC platform instance
+     */
     explicit Conv3dTiling(const platform_ascendc::PlatformAscendC& ascendcPlatform)
         : Conv3dTilingBase(ascendcPlatform) {};
+
+    /**
+     * @brief Constructor with platform information
+     * @param platform Platform information structure
+     */
     explicit Conv3dTiling(const PlatformInfo& platform) : Conv3dTilingBase(platform) {};
     ~Conv3dTiling() override = default;
+
+    /**
+     * @brief Get tiling configuration for 3D convolution
+     * @param tiling Reference to tiling structure to be filled
+     * @return Status code indicating success or failure
+     */
     int64_t GetTiling(optiling::TConv3DApiTiling &tiling) override;
+
+    /**
+     * @brief Get tiling configuration for 3D convolution (AscendC version)
+     * @param tiling Reference to AscendC tiling structure to be filled
+     * @return Status code indicating success or failure
+     */
     int64_t GetTiling(AscendC::tiling::TConv3DApiTiling& tiling) override;
+
 protected:
     int64_t Compute() override;
 };
 } // namespace Conv3dTilingApi
 
-#endif
+#endif // ADV_API_CONV_CONV3D_CONV3D_TILING_H

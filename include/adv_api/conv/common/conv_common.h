@@ -13,8 +13,8 @@
  * \brief
  */
 
-#ifndef API_CONV_COMMON_LIB_H
-#define API_CONV_COMMON_LIB_H
+#ifndef ADV_API_CONV_COMMON_CONV_COMMON_H
+#define ADV_API_CONV_COMMON_CONV_COMMON_H
 #include <cstdint>
 
 namespace ConvCommonApi {
@@ -34,4 +34,4 @@ enum class ConvFormat : uint32_t {
     MAX
 };
 }  // namespace ConvCommonApi
-#endif
+#endif // ADV_API_CONV_COMMON_CONV_COMMON_H
