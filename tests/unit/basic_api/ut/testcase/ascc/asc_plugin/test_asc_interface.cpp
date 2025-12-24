@@ -343,7 +343,7 @@ TEST_F(TEST_ASC_INTERFACE, asc_plugin_gen_kernel_failure_with_nullptr)
 TEST_F(TEST_ASC_INTERFACE, asc_plugin_gen_kernel_success)
 {
     std::string golden = R"(namespace Foo1::Foo2 {
-extern "C" __global__ __aicore__ void __device_stub__mangling_add(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __global__ __aicore__ void __device_stub__mangling_add()
 {
     icache_preload(1);
     if (g_sysFftsAddr != nullptr) {

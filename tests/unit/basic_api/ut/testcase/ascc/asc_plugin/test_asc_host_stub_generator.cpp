@@ -36,14 +36,11 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace)
         alignas(((alignof(void*) + 3) >> 2) << 2) void* x;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* y;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* z;
-        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
     } __ascendc_args {x, y, z, };
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_overflow_status_size = 8;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "add_custom";
-    const char* __ascendc_manglingName = nullptr;
     uint32_t __ascendc_kType = 10;
+    const char* __ascendc_manglingName = nullptr;
     if constexpr (AscendC::Std::is_same<T, short>::value && AscendC::Std::is_same<U, short>::value) {
         __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
         __ascendc_kType = 10;
@@ -58,7 +55,6 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace)
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
     AscPlugin::KernelInfo kernelInfo;
@@ -110,14 +106,11 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aiv_1_0)
         alignas(((alignof(void*) + 3) >> 2) << 2) void* x;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* y;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* z;
-        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
     } __ascendc_args {x, y, z, };
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_overflow_status_size = 8;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "add_custom";
-    const char* __ascendc_manglingName = nullptr;
     uint32_t __ascendc_kType = 7;
+    const char* __ascendc_manglingName = nullptr;
     if constexpr (AscendC::Std::is_same<T, short>::value && AscendC::Std::is_same<U, short>::value) {
         __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
         __ascendc_kType = 7;
@@ -132,7 +125,6 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aiv_1_0)
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
     AscPlugin::KernelInfo kernelInfo;
@@ -184,14 +176,11 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aic_1_0)
         alignas(((alignof(void*) + 3) >> 2) << 2) void* x;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* y;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* z;
-        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
     } __ascendc_args {x, y, z, };
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_overflow_status_size = 8;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "add_custom";
-    const char* __ascendc_manglingName = nullptr;
     uint32_t __ascendc_kType = 8;
+    const char* __ascendc_manglingName = nullptr;
     if constexpr (AscendC::Std::is_same<T, short>::value && AscendC::Std::is_same<U, short>::value) {
         __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
         __ascendc_kType = 8;
@@ -206,7 +195,6 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_namespace_mix_aic_1_0)
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
     AscPlugin::KernelInfo kernelInfo;
@@ -257,14 +245,11 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_bisheng_core_ratio)
         alignas(((alignof(void*) + 3) >> 2) << 2) void* x;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* y;
         alignas(((alignof(void*) + 3) >> 2) << 2) void* z;
-        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
     } __ascendc_args {x, y, z, };
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_overflow_status_size = 8;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "add_custom";
-    const char* __ascendc_manglingName = nullptr;
     uint32_t __ascendc_kType = 8;
+    const char* __ascendc_manglingName = nullptr;
     if constexpr (AscendC::Std::is_same<cube, 1>::value && AscendC::Std::is_same<vec, 2>::value) {
         __ascendc_manglingName = "_ZN7AscendC3AOT6Kernel25__device_stub__add_customIssEEvPhS3_S3_";
         __ascendc_kType = 10;
@@ -283,7 +268,6 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_bisheng_core_ratio)
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
     AscPlugin::KernelInfo kernelInfo;
@@ -343,26 +327,17 @@ TEST_F(TEST_ASC_HOST_STUB_GENERATOR, asc_get_host_stub_printf)
     std::string golden = R"(void hello_world(uint32_t __ascendc_blockDim, void* __ascendc_hold, void* __ascendc_stream)
 {
     struct {
-        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
     } __ascendc_args {};
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_overflow_status_size = 8;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "hello_world";
-    const char* __ascendc_manglingName = nullptr;
     uint32_t __ascendc_kType = 10;
-    __ascendc_manglingName = "_Z26__device_stub__hello_worldv";
-    if (__ascendc_manglingName == nullptr) {
-        ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "call kernel function failure!");
-        return;
-    }
+    const char* __ascendc_manglingName = "_Z26__device_stub__hello_worldv";
     __ascendc_ret = AscPluginGenerator::LaunchAndProfiling(__ascendc_manglingName, __ascendc_blockDim, __ascendc_stream, (void **)&__ascendc_args, sizeof(__ascendc_args), __ascendc_kType);
     if(__ascendc_ret != 0) {
         ASC_PLUGIN_LAUNCH_LOGE(__ascendc_name, __ascendc_stream, __ascendc_blockDim, "kernel launch failure!");
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
     AscPlugin::KernelInfo kernelInfo;
@@ -401,14 +376,11 @@ template<typename T, int32_t Y, const auto& U, template<typename , typename > cl
     struct {
         alignas(((alignof(int) + 3) >> 2) << 2) int i;
         alignas(((alignof(uint8_t*) + 3) >> 2) << 2) uint8_t* workspace;
-        alignas(((alignof(void*) + 3) >> 2) << 2) void* __ascendc_overflow;
     } __ascendc_args {i, workspace, };
     uint32_t __ascendc_ret;
-    constexpr uint32_t __ascendc_overflow_status_size = 8;
-    AllocAscendMemDevice(&(__ascendc_args.__ascendc_overflow), __ascendc_overflow_status_size);
     const char* __ascendc_name = "hello_world";
-    const char* __ascendc_manglingName = nullptr;
     uint32_t __ascendc_kType = 10;
+    const char* __ascendc_manglingName = nullptr;
     if constexpr (AscendC::Std::is_same<T, float>::value && Y == static_cast<int32_t>(7) && &U == &MyPocStruct && __AsccIsMyType0<I>::value && __AsccIsMyType1<O>::value) {
         __ascendc_manglingName = "hello_world_mangling_int_float";
         __ascendc_kType = 10;
@@ -423,7 +395,6 @@ template<typename T, int32_t Y, const auto& U, template<typename , typename > cl
         return;
     }
     AscPluginGenerator::GetHandleUnregisterInst();
-    FreeAscendMemDevice(__ascendc_args.__ascendc_overflow);
 }
 )";
     AscPlugin::KernelInfo kernelInfo;

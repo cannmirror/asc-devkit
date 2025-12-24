@@ -41,14 +41,14 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_get_device_code_success_310P)
     auto& manager = AscPlugin::InfoManager::GetInstance();
     manager.SetShortSocVersion(AscPlugin::ShortSocVersion::ASCEND310P);
     std::string goldenAiv = R"(namespace Foo1::Foo2 {
-extern "C" __attribute__((aiv)) __global__ __aicore__ void __device_stub__mangling_add(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __attribute__((aiv)) __global__ __aicore__ void __device_stub__mangling_add()
 {
     __origin__add();
 }
 }
 )";
     std::string goldenAic = R"(namespace Foo1::Foo2 {
-extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__mangling_add(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__mangling_add()
 {
     __origin__add();
 }
@@ -74,14 +74,14 @@ extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__mangli
 TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_get_device_code_success)
 {
     std::string goldenAiv = R"(namespace Foo1::Foo2 {
-extern "C" __attribute__((aiv)) __global__ __aicore__ void __device_stub__mangling_add(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __attribute__((aiv)) __global__ __aicore__ void __device_stub__mangling_add()
 {
     __origin__add();
 }
 }
 )";
     std::string goldenAic = R"(namespace Foo1::Foo2 {
-extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__mangling_add(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__mangling_add()
 {
     __origin__add();
 }
@@ -104,12 +104,12 @@ extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__mangli
 
 TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_get_device_code_template_success)
 {
-    std::string goldenAiv = R"(extern "C" __attribute__((aiv)) __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+    std::string goldenAiv = R"(extern "C" __attribute__((aiv)) __global__ __aicore__ void __device_stub__add_mangling_int_float()
 {
     __origin__add<int, float>();
 }
 )";
-    std::string goldenAic = R"(extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+    std::string goldenAic = R"(extern "C" __attribute__((aic)) __global__ __aicore__ void __device_stub__add_mangling_int_float()
 {
     __origin__add<int, float>();
 }
@@ -146,7 +146,7 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_get_device_code_template_success)
 TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_generator)
 {
     std::string golden = R"(namespace Foo1::Foo2 {
-extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_dump_addr, int i, __attribute__((annotate("kfc_workspace"))) uint8_t* workspace, __attribute__((cce_global)) uint8_t * __ascendc_overflow_status)
+extern "C" __global__ __aicore__ void __device_stub__add_mangling_int_float(__attribute__((cce_global)) uint8_t * __ascendc_dump_addr, int i, __attribute__((annotate("kfc_workspace"))) uint8_t* workspace)
 {
     AscendC::InitDump(true, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);
     icache_preload(1);
@@ -227,6 +227,41 @@ TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_workspace_arg)
         info, {AscPlugin::KernelMetaType::KERNEL_TYPE_AIV_ONLY}, AscPlugin::KfcScene::Close);
     devStubGen.socVersion_ = AscPlugin::ShortSocVersion::ASCEND910B;
     EXPECT_EQ(devStubGen.GetWorkspaceArgName(), std::string("workspace"));
+}
+
+TEST_F(TEST_ASC_DEV_SECTION_GENERATE, asc_dev_stub_UpdateParams)
+{
+    using namespace AscPlugin;
+    AscPlugin::KernelInfo info;
+    info.kernelName = "add";
+    info.kernelMangledName = "add_mangling";
+    info.kernelParameters = {
+        {"int", "i", false, "", ""},
+        {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}
+    };
+    info.ratio = {false, 0, 0};
+    info.templateParameters = {
+        {"typename", "T", false, "", ""},
+        {"typename", "U", false, "", ""}
+    };
+    info.namespaces = {"Foo1", "Foo2"};
+    info.templateInstances = {
+        {
+            {"int", "float"},
+            {
+                {"int", "i", false, "", ""},
+                {"uint8_t*", "workspace", false, "", "__attribute__((annotate(\"kfc_workspace\")))"}
+            },
+            "add_mangling_int_float",
+            "prefix_add_mangling_int_float",
+            {true, 1, 1}
+        }
+    };
+    info.isTemplate = true;
+    AscDevStubGenerator devStubGen = AscDevStubGenerator(
+        info, {KernelMetaType::KERNEL_TYPE_AIV_ONLY}, KfcScene::Close);
+    devStubGen.dumpIsNeedInit_ = true;
+    EXPECT_NO_THROW(devStubGen.UpdateParams());
 }
 
 #define TEST_DEV_META_GEN(goldenContent, kernelType, isTemplateFunc)                                     \
