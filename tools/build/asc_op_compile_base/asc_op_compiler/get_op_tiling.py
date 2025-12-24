@@ -1411,10 +1411,9 @@ def get_isolate_tiling_info(op_type, json_file):
     return tiling_info
 
 
-def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
+def get_info_by_traverse_py_stack(op_info: OpInfo, input_tiling_info_dict: dict):
     # offline compile python file name, i.e. AddCustom.py
-    optype = op_info.op_type
-    offline_op_compile_file = optype + ".py"
+    offline_op_compile_file = op_info.op_type + ".py"
 
     # online compile python file name, i.e. add_custom.py
     origin_func_name = input_tiling_info_dict["origin_func_name"]
@@ -1436,7 +1435,7 @@ def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
                 custom_op_tiling_path = custom_opp_offline_path
                 is_offline_op = True
             else:
-                LogUtil.print_compile_log(optype, \
+                LogUtil.print_compile_log(op_info.op_type, \
                     f"[Main process] custom tiling so not existed: {custom_opp_offline_path}", \
                     AscendCLogLevel.LOG_WARNING)
             break
@@ -1454,10 +1453,16 @@ def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
             if os.path.exists(custom_opp_online_path):
                 custom_op_tiling_path = custom_opp_online_path
             else:
-                LogUtil.print_compile_log(optype, \
+                LogUtil.print_compile_log(op_info.op_type, \
                     f"[Main process] custom tiling so not existed: {custom_opp_online_path}", \
                     AscendCLogLevel.LOG_WARNING)
             break
+    return is_offline_op, is_build_in_op, custom_op_tiling_path
+
+
+def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
+    is_offline_op, is_build_in_op, custom_op_tiling_path = \
+                                        get_info_by_traverse_py_stack(op_info, input_tiling_info_dict)
 
     if is_offline_op:
         tiling_info = get_custom_tiling_info(op_info, input_tiling_info_dict, custom_op_tiling_path)
@@ -1490,7 +1495,7 @@ def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
             isolate_json["run_info"] = run_info
 
         isolate_json_str = json.dumps(isolate_json, ensure_ascii=False, indent=2)
-        isolate_json_path = os.path.join(kernel_meta_path, op_info.op_type + "_isolate_tiling.json")
+        isolate_json_path = os.path.join(kernel_meta_path, op_info.op_type + f"_isolate_tiling_{os.getpid()}.json")
         with open(isolate_json_path, 'w', encoding="utf-8") as f:
             f.write(isolate_json_str)
 
@@ -1515,12 +1520,11 @@ def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
 
     # get tiling through old version
     CommonUtility.print_compile_log(op_info.op_type, \
-                "isolate gen tiling file failed, retry gen tiling file through old version.", \
-                AscendCLogLevel.LOG_INFO)
+            "isolate gen tiling file failed, retry gen tiling file through old version.", \
+            AscendCLogLevel.LOG_INFO)
     return get_tiling_info(op_info, input_tiling_info_dict["tiling_key_list"], \
         input_tiling_info_dict["value_depends"], input_tiling_info_dict["enable_vd"], \
         input_tiling_info_dict["tiling_key_group_map"])
-
 
 
 def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends: dict = None, \
