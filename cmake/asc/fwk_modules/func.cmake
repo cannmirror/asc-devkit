@@ -124,7 +124,7 @@ function(npu_op_device_tiling_library target_name target_type)
     get_filename_component(absolute_source "${_source}" ABSOLUTE)
     list(APPEND SOURCES ${absolute_source})
   endforeach()
-  string(REPLACE ";" "::" EP_SOURCES "${SOURCES}")
+  string(REPLACE ";" " " EP_SOURCES "${SOURCES}")
 
   execute_process(
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/tiling_sink
