@@ -216,3 +216,46 @@ get_pkg_toolchain() {
     local scene_info="$curpath/../scene.info"
     grep -iw ^toolchain "$scene_info" 2> /dev/null | cut -d"=" -f2-
 }
+
+get_stub_libs_from_filelist() {
+    awk -v arch_name="$arch_name" 'BEGIN {
+        FS=","
+        prefix=sprintf("^%s-linux/devlib/", arch_name)
+        pat=sprintf("^%s-linux/devlib/(linux/%s/[^/]+\\.(so|a)$)", arch_name, arch_name)
+    }
+    {
+        if (match($4, pat)) {
+            sub(prefix, "", $4)
+            print($4)
+        }
+    }' $curpath/filelist.csv
+}
+
+create_stub_softlink() {
+    local install_path="$1"
+    if [ ! -d "$install_path" ]; then
+        return
+    fi
+    local arch_name="$pkg_arch_name"
+    ([ -d "$install_path/${arch_name}-linux/devlib" ] && cd "$install_path/${arch_name}-linux/devlib" && {
+        chmod u+w . && \
+        for lib in $(get_stub_libs_from_filelist); do
+            [ -f "$lib" ] && ln -sf "$lib" "$(basename $lib)"
+        done
+        chmod u-w .
+    })
+}
+
+remove_stub_softlink() {
+    local install_path="$1"
+    if [ ! -d "$install_path" ]; then
+        return
+    fi
+    local arch_name="$pkg_arch_name"
+    ([ -d "$install_path/${arch_name}-linux/devlib" ] && cd "$install_path/${arch_name}-linux/devlib" && {
+        chmod u+w . && basename --multiple $(get_stub_libs_from_filelist) | xargs --no-run-if-empty rm -rf
+        chmod u-w .
+    })
+}
+
+pkg_arch_name="$(get_pkg_arch_name)"

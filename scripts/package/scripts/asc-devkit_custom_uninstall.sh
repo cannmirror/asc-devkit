@@ -11,6 +11,9 @@
 # ----------------------------------------------------------------------------------------------------------
 
 curpath=$(dirname $(readlink -f "$0"))
+devkit_func_path="${curpath}/asc-devkit_func.sh"
+
+. "${devkit_func_path}"
 
 common_parse_dir=""
 logfile=""
@@ -143,6 +146,10 @@ custom_uninstall() {
         remove_empty_dir "${WHL_INSTALL_DIR_PATH}"
         remove_empty_dir "${common_parse_dir}/python"
     fi
+
+    # remove softlinks for stub libs in devlib/linux/${ARCH}
+    remove_stub_softlink "$common_parse_dir"
+
     return 0
 }
 
