@@ -186,18 +186,15 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
         ori_name = ori_name + "__kernel0"
     is_c220 = get_soc_spec("SHORT_SOC_VERSION") in [ASCEND_910B, ASCEND_910_93]
     is_enable_vector_core = current_build_config().get(enable_vector_core)
-    compile_disable_opt = current_build_config().get(tbe_debug_level) == 2 or \
-                "ccec_O0" in current_build_config().get(op_debug_config)
-    debug_enable = current_build_config().get(tbe_debug_level) == 2 or \
-                "ccec_g" in current_build_config().get(op_debug_config)
 
     def get_init_cmd():
-        opt_level_map = {"dav-l300": 3, "dav-l311", 3}
-        opt_level = opt_level_map.get(cce_arch, 2)
+        optimization_level = "-O2"
+        if cce_arch == "dav-l300" or cce_arch == "dav-l311":
+            optimization_level = "-O3"
         # 2 enable tbe debug : ccec compiler with "O0 - g"
-        if compile_disable_opt:
-            opt_level = 0
-        optimization_level = f"-O{opt_level}"
+        if current_build_config().get(tbe_debug_level) == 2 or \
+                "ccec_O0" in current_build_config().get(op_debug_config):
+            optimization_level = "-O0"
         arch = "cce-aicore-only"
         cce_arch_prefix = "cce-aicore-arch"
         cmd = [CCECInfo.get_exe("ccec"),
@@ -218,12 +215,13 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
             elif is_need_modify and aicore_type == "VectorCore":
                 cmd += ["-D", "%s=%s" % (ori_name, ori_name + cce_params.MIX_AIV_SUFFIX)]
         # 2 enable tbe debug : ccec compiler with "O0 - g"
-        if debug_enable:
+        if current_build_config().get(tbe_debug_level) == 2 or \
+                "ccec_g" in current_build_config().get(op_debug_config):
             cmd.append("-g")
         return cmd
 
     cmd = get_init_cmd()
-    if check_is_regbase_v2() and current_build_config().get(tbe_debug_level) == 2 and compile_disable_opt:
+    if check_is_regbase_v2() and current_build_config().get(tbe_debug_level) == 2 and "-O0" in cmd:
         cmd += ["--cce-ignore-always-inline=false"]
     is_vec_610B = get_soc_spec(
         "SHORT_SOC_VERSION") + get_soc_spec("AICORE_TYPE") in [VEC_BS9SX1A, VEC_610B]
