@@ -139,7 +139,8 @@ def gen_inter_ops_barrier(super_operator: SuperOperatorInfos, \
             inter_ops_bar += gen_early_start_config(pre_sub_operator, sub_operator)
         inter_ops_bar += sub_operator.early_start_complement_wait_flag_block
     else:
-        inter_ops_bar += f"AscendC::SyncAll<false>(); // reason2: inter op barrier when EarlyStartDisable \n\n"
+        inter_ops_bar += "// reason2: inter op barrier when EarlyStartDisable \n"
+        inter_ops_bar += get_sync_code_by_kernel_type(super_operator.kernel_type)
 
     return inter_ops_bar
 
