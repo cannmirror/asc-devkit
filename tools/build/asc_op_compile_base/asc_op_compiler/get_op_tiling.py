@@ -91,10 +91,19 @@ def get_custom_opp_pathlist():
 
 def load_op_host_tiling_lib():
     LogUtil.print_compile_log("", f"load op host tiling lib.", AscendCLogLevel.LOG_INFO)
-    builtin_op_host_tiling_pattern = os.environ.get(_ASCEND_OPP_PATH_ENV, _ASCEND_OPP_PATH_DEFAULT) + \
-        "/" + op_impl_path + f"/ai_core/tbe/op_host/**/*.so"
+    builtin_op_host_tiling_prefix = os.environ.get(_ASCEND_OPP_PATH_ENV, _ASCEND_OPP_PATH_DEFAULT) + \
+        "/" + op_impl_path + f"/ai_core/tbe/op_host/"
+    builtin_op_host_tiling_pattern = builtin_op_host_tiling_prefix + f"**/*.so"
     builtin_op_host_tiling_file_path = glob.glob(builtin_op_host_tiling_pattern, recursive=True)
+    import platform
+    archlinux = platform.machine()
+    if 'x86' in archlinux:
+        incompatiable_arch_name = "aarch64"
+    else:
+        incompatiable_arch_name = "x86_64"
     for tiling_path in builtin_op_host_tiling_file_path:
+        if incompatiable_arch_name in tiling_path[len(builtin_op_host_tiling_prefix):]:
+            continue
         try:
             if os.path.exists(tiling_path):
                 lib_tiling_builtin = ctypes.CDLL(tiling_path)
