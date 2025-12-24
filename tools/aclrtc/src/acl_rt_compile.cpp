@@ -185,12 +185,16 @@ asrtcGetProgramLogFuncPtr asrtcGetProgramLogPtr = nullptr;
 
 void __attribute__((constructor)) LoadExtraLib() {
     std::string cannPath = GetCannPath();
-    std::string libPath = cannPath + "/x86_64-linux/ccec_compiler/lib/libasrtc.so";
+    std::string libPathX86 = cannPath + "/x86_64-linux/ccec_compiler/lib/libasrtc.so";
+    std::string libPathArm = cannPath + "/aarch64-linux/ccec_compiler/lib/libasrtc.so";
     // 3. dlopen
-    if (!PathCheck(libPath.c_str())) {
+    if (PathCheck(libPathX86.c_str())) {
+        handle = dlopen(libPathX86.c_str(), RTLD_GLOBAL | RTLD_NOW);
+    } else if (PathCheck(libPathArm.c_str())) {
+        handle = dlopen(libPathArm.c_str(), RTLD_GLOBAL | RTLD_NOW);
+    } else {
         return;
     }
-    handle = dlopen(libPath.c_str(), RTLD_GLOBAL | RTLD_NOW);
     // 4. dlsym
     asrtcCreateProgramPtr = (asrtcCreateProgramFuncPtr)dlsym(handle, "asrtcCreateProgram");
     asrtcDestroyProgramPtr = (asrtcDestroyProgramFuncPtr)dlsym(handle, "asrtcDestroyProgram");
