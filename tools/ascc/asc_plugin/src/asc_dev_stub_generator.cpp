@@ -239,12 +239,6 @@ void AscDevStubGenerator::UpdateParams()
                 "__attribute__((cce_global))");
         }
     }
-    kernelInfo_.kernelParameters.emplace_back("uint8_t *", "__ascendc_overflow_status", false, "",
-        "__attribute__((cce_global))");
-    for (auto &inst : kernelInfo_.templateInstances) {
-        inst.instanceKernelParameters.emplace_back(
-            "uint8_t *", "__ascendc_overflow_status", false, "", "__attribute__((cce_global))");
-    }
 }
 
 void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous)
