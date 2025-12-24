@@ -9,6 +9,7 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
+set -e
 
 if [[ -z "${BASE_PATH}" ]]; then
   BASE_PATH="$(cd "$(dirname "$0")" && pwd)"

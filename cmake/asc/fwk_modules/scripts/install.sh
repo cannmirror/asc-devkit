@@ -9,6 +9,8 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
+set -e
+
 vendor_name=customize
 targetdir=/usr/local/Ascend/opp
 target_custom=0
@@ -178,7 +180,7 @@ upgrade()
                 log "[INFO] ${targetdir}/$vendordir/$1 is empty !!"
 		        return 1
 	          fi
-            grep -q $file_b <<<`ls ${targetdir}/$vendordir/$1`;
+            grep -q $file_b <<<"$(ls "${targetdir}/${vendordir}/${1}")";
             if [[ $? -eq 0 ]]; then
                 echo -n "${file_b} "
                 has_same_file=0
