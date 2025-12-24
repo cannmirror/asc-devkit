@@ -5,9 +5,9 @@
         <product_name>cann</product_name>
         <func_name>asc-devkit</func_name>
         <suffix>run</suffix>
-        <install_script>scripts/package/asc-devkit/scripts/install.sh</install_script>
-        <help>scripts/package/asc-devkit/scripts/help.info</help>
-        <version>scripts/package/asc-devkit/version.xml</version>
+        <install_script>asc-devkit/script/install.sh</install_script>
+        <help>asc-devkit/script/help.info</help>
+        <version>asc-devkit/version.xml</version>
         <check_features>true</check_features>
     </package_info>
 
@@ -20,6 +20,7 @@
     <block_info dependtree="false" dst_path="asc-devkit" block_conf_path="ascend">
         <block name="EngineeringCommon"/>
         <block name="EngineeringFiles"/>
+        <block name="DevlibCommon"/>
     </block_info>
 
     <dir_info value="asc-devkit" install_mod="550">
@@ -125,11 +126,11 @@
         <file value="libtiling_api.a" file_type="static" pkg_feature="filter_as31xm1_device"/>
     </file_info>
 
-    <file_info value="devlib_tiling_libs" copy_type="delivery" src_path="" dst_path="$(TARGET_ENV)/devlib/x86_64" install_path="$(TARGET_ENV)/devlib/linux/x86_64" install_type="all" install_mod="440" feature="ascendc">
+    <file_info value="devlib_tiling_libs_x86_64" copy_type="delivery" src_path="" dst_path="$(TARGET_ENV)/devlib/linux/x86_64" install_path="$(TARGET_ENV)/devlib/linux/x86_64" install_type="all" install_mod="440" feature="ascendc">
         <file value="libtiling_api.a" file_type="static" pkg_feature="filter_as31xm1_device" optional="true"/>
     </file_info>
 
-    <file_info value="devlib_tiling_libs" copy_type="delivery" src_path="" dst_path="$(TARGET_ENV)/devlib/aarch64" install_path="$(TARGET_ENV)/devlib/linux/aarch64" install_type="all" install_mod="440" feature="ascendc">
+    <file_info value="devlib_tiling_libs_aarch64" copy_type="delivery" src_path="" dst_path="$(TARGET_ENV)/devlib/linux/aarch64" install_path="$(TARGET_ENV)/devlib/linux/aarch64" install_type="all" install_mod="440" feature="ascendc">
         <file value="libtiling_api.a" file_type="static" pkg_feature="filter_as31xm1_device" optional="true"/>
     </file_info>
 

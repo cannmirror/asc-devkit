@@ -13,8 +13,10 @@
 sourcedir="$PWD/asc-devkit"
 curpath=$(dirname $(readlink -f "$0"))
 common_func_path="${curpath}/common_func.inc"
+devkit_func_path="${curpath}/asc-devkit_func.sh"
 
 . "${common_func_path}"
+. "${devkit_func_path}"
 
 common_parse_dir=""
 logfile=""
@@ -104,6 +106,10 @@ custom_install() {
         install_whl_package "${PYTHON_ASC_OP_COMPILE_BASE_WHL_PATH}" "${PYTHON_ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
         install_whl_package "${PYTHON_ASC_OPC_TOOL_WHL_PATH}" "${PYTHON_ASC_OPC_TOOL_NAME}" "${WHL_INSTALL_DIR_PATH}"
     fi
+
+    # create softlinks for stub libs in devlib/linux/${ARCH}
+    create_stub_softlink "$common_parse_dir"
+
     return 0
 }
 
