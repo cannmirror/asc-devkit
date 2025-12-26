@@ -28,7 +28,7 @@ from .ascendc_common_utility import CommonUtility, CompileInfo
 from .ascendc_compile_base import fatbin_objs, link_relocatable, compile_pre_process
 from .log_utils import CompileStage
 from .get_op_tiling import TilingInfo
-from .super_kernel_constants import SuperKernelLinkMode, CALL_INSTS
+from .super_kernel_constants import SuperKernelLinkMode, CALL_INSTS, ERR_CODE
 from .super_kernel_utility import run_local_cmd
 
 
@@ -107,7 +107,7 @@ link_mode: SuperKernelLinkMode, split_mode, compile_log_path=None):
             objs.append(sp_vec)
             objs += objs_vec
     else:
-        raise Exception(f"invalid link mode type")
+        CommonUtility().ascendc_raise_python_err(ERR_CODE, f"[Super Kernel] Invalid link mode type")
     # add dynamic bin at the end of objs
     objs += objs_dynamic
     unique_lst = list(dict.fromkeys(objs))

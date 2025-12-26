@@ -17,7 +17,7 @@ from abc import ABC, abstractmethod
 from .ascendc_compile_base import CommonUtility, AscendCLogLevel
 from .super_kernel_constants import SuperKernelPreLoadMode, SuperKernelEarlyStartMode, \
     SuperKernelDebugDcciAllMode, SuperKernelDebugSyncAllMode, SuperKernelStreamFusionMode, \
-    SuperKernelFeedSyncAllMode, SuperKernelProfilingMode
+    SuperKernelFeedSyncAllMode, SuperKernelProfilingMode, ERR_CODE
 
 
 class OptionParser(ABC):
@@ -45,10 +45,11 @@ class CodeTextAlignParser(OptionParser):
 
     def parse_option(self, value: str) -> bool:
         if not value.isdigit():
-            raise Exception(f"Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
         number = int(value)
         if number < 0 or number == 1 or (number & (number - 1)) != 0:
-            raise Exception(f"Invalid compile option: \
+            CommonUtility().ascendc_raise_python_err(ERR_CODE, f"[Super Kernel] Invalid compile option: \
 {self.key} option should be [0, 2, 4, 8, ...], {number} is invalid.")
         return number
 
@@ -60,8 +61,8 @@ class EnumParser(OptionParser):
 
     def parse_option(self, value: str):
         if value not in self.allowed:
-            raise Exception(f"Invalid compile option: {self.key} \
-option should be one of {self.allowed.keys()}, {value} is invalid.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should be one of {self.allowed.keys()}, {value} is invalid.")
         return self.allowed[value]
 
 
@@ -71,7 +72,8 @@ class BinaryParser(OptionParser):
 
     def parse_option(self, value: str):
         if value not in {'0', '1'}:
-            raise Exception(f"Invalid compile option: {self.key} option should be 0 or 1, {value} is invalid.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should be 0 or 1, {value} is invalid.")
         return value
 
 
@@ -81,10 +83,12 @@ class NumberParser(OptionParser):
 
     def parse_option(self, value: str):
         if not value.isdigit():
-            raise Exception(f"Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
         number = int(value)
         if number <= 0 or number > 64:
-            raise Exception(f"Invalid compile option: {self.key} option should between (0, 64], {number} is invalid.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should between (0, 64], {number} is invalid.")
         return number
 
 
@@ -94,7 +98,8 @@ class NonEmptyParser(OptionParser):
 
     def parse_option(self, value: str):
         if len(value.strip()) <= 0:
-            raise Exception(f"Invalid compile option: {self.key} option should not be empty.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should not be empty.")
         return value
 
 
@@ -104,11 +109,12 @@ class BlockDimParser(OptionParser):
 
     def parse_option(self, value: str):
         if not value.isdigit():
-            raise Exception(f"Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should be a digit, {value} is invalid.")
         number = int(value)
         if number <= 0:
-            raise Exception(
-                f"Invalid compile option: {self.key} option should be positive integer, {number} is invalid."
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+f"[Super Kernel] Invalid compile option: {self.key} option should be positive integer, {number} is invalid."
             )
         return number
 
@@ -174,11 +180,14 @@ def parse_super_kernel_options(option_string: str) -> bool:
             continue
         key, value = map(str.strip, pair.split('=', 1))
         if not key or not value:
-            raise Exception(f"Invalid compile option: The key-value pair is missing for the option {pair}.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+                f"[Super Kernel] Invalid compile option: The key-value pair is missing for the option {pair}.")
         if key in result_options:
-            raise Exception(f"Invalid compile option: {key} option has been set.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+                f"[Super Kernel] Invalid compile option: {key} option has been set.")
         parser = factory.get_parse_func(key)
         if not parser:
-            raise Exception(f"Invalid compile option: {key} option is not supported.")
+            CommonUtility().ascendc_raise_python_err(ERR_CODE,
+                f"[Super Kernel] Invalid compile option: {key} option is not supported.")
         result_options[key] = parser.parse_option(value)
     return result_options
