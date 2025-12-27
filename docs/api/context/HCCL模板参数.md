@@ -1,20 +1,20 @@
 # HCCL模板参数<a name="ZH-CN_TOPIC_0000001925070922"></a>
 
-## AI处理器支持情况<a name="section1586581915393"></a>
+## 产品支持情况<a name="section1586581915393"></a>
 
 <a name="table169596713360"></a>
-<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p89594763612"><a name="p89594763612"></a><a name="p89594763612"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
 </td>
@@ -49,8 +49,8 @@ class Hccl;
 <tbody><tr id="row484511235519"><td class="cellrowborder" valign="top" width="13.700000000000001%" headers="mcps1.2.3.1.1 "><p id="p205071947133410"><a name="p205071947133410"></a><a name="p205071947133410"></a>serverType</p>
 </td>
 <td class="cellrowborder" valign="top" width="86.3%" headers="mcps1.2.3.1.2 "><p id="p4885153562018"><a name="p4885153562018"></a><a name="p4885153562018"></a>支持的服务端类型。HcclServerType类型，定义如下。</p>
-<p id="p13941419111720"><a name="p13941419111720"></a><a name="p13941419111720"></a>对于<span id="ph10669162119173"><a name="ph10669162119173"></a><a name="ph10669162119173"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，当前仅支持HCCL_SERVER_TYPE_AICPU。</p>
-<p id="p19970202662712"><a name="p19970202662712"></a><a name="p19970202662712"></a>对于<span id="ph14970726132716"><a name="ph14970726132716"></a><a name="ph14970726132716"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，当前仅支持HCCL_SERVER_TYPE_AICPU。</p>
+<p id="p13941419111720"><a name="p13941419111720"></a><a name="p13941419111720"></a>对于<span id="ph10669162119173"><a name="ph10669162119173"></a><a name="ph10669162119173"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，当前仅支持HCCL_SERVER_TYPE_AICPU。</p>
+<p id="p19970202662712"><a name="p19970202662712"></a><a name="p19970202662712"></a>对于<span id="ph14970726132716"><a name="ph14970726132716"></a><a name="ph14970726132716"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，当前仅支持HCCL_SERVER_TYPE_AICPU。</p>
 <a name="screen519263825511"></a><a name="screen519263825511"></a><pre class="screen" codetype="Cpp" id="screen519263825511">enum HcclServerType {
 HCCL_SERVER_TYPE_AICPU = 0,
 HCCL_SERVER_TYPE_END  // 预留参数，不支持使用
@@ -66,9 +66,9 @@ HCCL_SERVER_TYPE_END  // 预留参数，不支持使用
 };</pre>
 <p id="p0241446123614"><a name="p0241446123614"></a><a name="p0241446123614"></a>CoreType的定义如下：</p>
 <a name="screen184661921124110"></a><a name="screen184661921124110"></a><pre class="screen" codetype="Cpp" id="screen184661921124110">enum class CoreType: uint8_t {
-    DEFAULT,  // 表示不指定AI Cube核或者AI Vector核
-    ON_AIV,     // 表示指定为AI Vector核
-    ON_AIC     // 表示指定为AI Cube核
+    DEFAULT,  // 表示不指定AIC核或者AIV核
+    ON_AIV,     // 表示指定为AIV核
+    ON_AIC     // 表示指定为AIC核
 };</pre>
 </td>
 </tr>
@@ -85,12 +85,11 @@ HCCL_SERVER_TYPE_END  // 预留参数，不支持使用
 
 ## 调用示例<a name="section11493459173619"></a>
 
-通过如下传入模板参数config的方式创建Hccl类对象，指定HCCL客户端仅在AI Vector的10号核上发送通信消息给服务端，替代通过调用[GetBlockIdx](GetBlockIdx.md)接口的方式指定运行的核。
+通过如下传入模板参数config的方式创建Hccl类对象，指定HCCL客户端仅在AIV的10号核上发送通信消息给服务端，替代通过调用[GetBlockIdx](GetBlockIdx.md)接口的方式指定运行的核。
 
 ```
 static constexpr HcclServerConfig HCCL_CFG = {CoreType::ON_AIV, 10};
 // 选择AICPU作为服务端
 Hccl<HcclServerType::HCCL_SERVER_TYPE_AICPU, HCCL_CFG> hccl; 
-
 ```
 

@@ -1,32 +1,32 @@
 # GetTensorC<a name="ZH-CN_TOPIC_0000001621512221"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
 </tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 </tr>
-<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+<tr id="row2024235811401"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4242155874012"><a name="p4242155874012"></a><a name="p4242155874012"></a><span id="ph14879133874118"><a name="ph14879133874118"></a><a name="ph14879133874118"></a>Kirin X90</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p824235884010"><a name="p824235884010"></a><a name="p824235884010"></a>√</p>
 </td>
 </tr>
-<tr id="row15487816124216"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+<tr id="row141206104332"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p142462448111"><a name="p142462448111"></a><a name="p142462448111"></a><span id="ph49484268126"><a name="ph49484268126"></a><a name="ph49484268126"></a>Kirin 9030</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p9246184415111"><a name="p9246184415111"></a><a name="p9246184415111"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -110,8 +110,9 @@ __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic =
 <tbody><tr id="row1574617127244"><td class="cellrowborder" valign="top" width="17.04%" headers="mcps1.2.3.1.1 "><p id="p2746171214244"><a name="p2746171214244"></a><a name="p2746171214244"></a>sync</p>
 </td>
 <td class="cellrowborder" valign="top" width="82.96%" headers="mcps1.2.3.1.2 "><p id="p12551641162414"><a name="p12551641162414"></a><a name="p12551641162414"></a>设置同步或者异步模式：同步模式设置为true；异步模式设置为false。</p>
-<p id="p17790185515333"><a name="p17790185515333"></a><a name="p17790185515333"></a><span id="ph137907556334"><a name="ph137907556334"></a><a name="ph137907556334"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>支持异步模式。</p>
-<p id="p1380206322"><a name="p1380206322"></a><a name="p1380206322"></a><span id="ph12801866217"><a name="ph12801866217"></a><a name="ph12801866217"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>支持异步模式。</p>
+<p id="p17790185515333"><a name="p17790185515333"></a><a name="p17790185515333"></a><span id="ph137907556334"><a name="ph137907556334"></a><a name="ph137907556334"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>支持异步模式。</p>
+<p id="p1380206322"><a name="p1380206322"></a><a name="p1380206322"></a><span id="ph12801866217"><a name="ph12801866217"></a><a name="ph12801866217"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>支持异步模式。</p>
+<p id="p8606483592"><a name="p8606483592"></a><a name="p8606483592"></a><span id="ph166061835918"><a name="ph166061835918"></a><a name="ph166061835918"></a>Kirin X90</span>支持异步模式。</p>
 </td>
 </tr>
 </tbody>
@@ -133,10 +134,9 @@ __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic =
 <td class="cellrowborder" valign="top" width="9.6%" headers="mcps1.2.4.1.2 "><p id="p1557143861914"><a name="p1557143861914"></a><a name="p1557143861914"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p35571838101917"><a name="p35571838101917"></a><a name="p35571838101917"></a>取出C矩阵到VECIN，数据格式仅支持NZ。</p>
-<p id="p14555829193812"><a name="p14555829193812"></a><a name="p14555829193812"></a>针对<span id="ph13555329143813"><a name="ph13555329143813"></a><a name="ph13555329143813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
-<p id="p596915528172"><a name="p596915528172"></a><a name="p596915528172"></a>针对<span id="ph64580125327"><a name="ph64580125327"></a><a name="ph64580125327"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
-<p id="p116811630633"><a name="p116811630633"></a>针对<span id="ph96991313115914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
-<p id="p116811631633"><a name="p116811631633"></a>针对<span id="ph96991313115414">Ascend 9030</span>，支持的数据类型为：half</p>
+<p id="p14555829193812"><a name="p14555829193812"></a><a name="p14555829193812"></a>针对<span id="ph13555329143813"><a name="ph13555329143813"></a><a name="ph13555329143813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
+<p id="p596915528172"><a name="p596915528172"></a><a name="p596915528172"></a>针对<span id="ph64580125327"><a name="ph64580125327"></a><a name="ph64580125327"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
+<p id="p1898214319561"><a name="p1898214319561"></a><a name="p1898214319561"></a><span id="ph10819182912570"><a name="ph10819182912570"></a><a name="ph10819182912570"></a>Kirin X90</span>支持的数据类型为half、int8_t、int32_t</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="17.41%" headers="mcps1.2.4.1.1 "><p id="p15571138171913"><a name="p15571138171913"></a><a name="p15571138171913"></a>gm</p>
@@ -144,10 +144,9 @@ __aicore__ inline void GetTensorC(const LocalTensor<DstT>& c, uint8_t enAtomic =
 <td class="cellrowborder" valign="top" width="9.6%" headers="mcps1.2.4.1.2 "><p id="p17557183815199"><a name="p17557183815199"></a><a name="p17557183815199"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p14557153819197"><a name="p14557153819197"></a><a name="p14557153819197"></a>取出C矩阵到GM，数据格式可以为ND或NZ。</p>
-<p id="p1338319673916"><a name="p1338319673916"></a><a name="p1338319673916"></a>针对<span id="ph73832653911"><a name="ph73832653911"></a><a name="ph73832653911"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
-<p id="p19121245143015"><a name="p19121245143015"></a><a name="p19121245143015"></a>针对<span id="ph691214513016"><a name="ph691214513016"></a><a name="ph691214513016"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
-<p id="p116811730633"><a name="p116811730633"></a>针对<span id="ph96991313115914">Ascend X90</span>，支持的数据类型为：half/int32_t</p>
-<p id="p116811631733"><a name="p116811631733"></a>针对<span id="ph96991313115414">Ascend 9030</span>，支持的数据类型为：half</p>
+<p id="p1338319673916"><a name="p1338319673916"></a><a name="p1338319673916"></a>针对<span id="ph73832653911"><a name="ph73832653911"></a><a name="ph73832653911"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
+<p id="p19121245143015"><a name="p19121245143015"></a><a name="p19121245143015"></a>针对<span id="ph691214513016"><a name="ph691214513016"></a><a name="ph691214513016"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>支持的数据类型为half、float、bfloat16_t、int32_t、int8_t</p>
+<p id="p1029023813579"><a name="p1029023813579"></a><a name="p1029023813579"></a><span id="ph9974133865712"><a name="ph9974133865712"></a><a name="ph9974133865712"></a>Kirin X90</span>支持的数据类型为half、int8_t、int32_t</p>
 </td>
 </tr>
 <tr id="row6652117123"><td class="cellrowborder" valign="top" width="17.41%" headers="mcps1.2.4.1.1 "><p id="p1543122095916"><a name="p1543122095916"></a><a name="p1543122095916"></a>enAtomic</p>

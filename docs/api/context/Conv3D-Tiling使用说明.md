@@ -31,7 +31,7 @@ if (biasFlag) {
    conv3dApiTiling.SetBiasType(TPosition::GM, biasFormat, biasDtype);
 }
 // 调用GetTiling接口获取核内切分策略，如果返回-1代表获取tiling失败
-if (conv3dApiTiling.GetTiling(tilingData.conv3ApiTilingData) == -1) {
+if (conv3dApiTiling.GetTiling(tilingData.conv3dApiTilingData) == -1) {
    return false;
 }
 ```

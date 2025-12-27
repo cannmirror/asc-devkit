@@ -1,22 +1,32 @@
 # Sort<a name="ZH-CN_TOPIC_0000001691898680"></a>
 
-## AI处理器支持情况<a name="section1586581915393"></a>
+## 产品支持情况<a name="section1586581915393"></a>
 
 <a name="table169596713360"></a>
-<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p89594763612"><a name="p89594763612"></a><a name="p89594763612"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
+</td>
+</tr>
+<tr id="row2064043572015"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p171071651104613"><a name="p171071651104613"></a><a name="p171071651104613"></a><span id="ph1181723016471"><a name="ph1181723016471"></a><a name="ph1181723016471"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p141071451154617"><a name="p141071451154617"></a><a name="p141071451154617"></a>√</p>
+</td>
+</tr>
+<tr id="row167601735152013"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p18587175114614"><a name="p18587175114614"></a><a name="p18587175114614"></a><span id="ph5776533104711"><a name="ph5776533104711"></a><a name="ph5776533104711"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p2058745154620"><a name="p2058745154620"></a><a name="p2058745154620"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -26,9 +36,13 @@
 
 排序函数，按照数值大小进行降序排序。排序后的数据按照如下排布方式进行保存：
 
-Ascend 910C采用方式一。
+Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式一。
 
-Ascend 910B采用方式一。
+Atlas A2 训练系列产品/Atlas A2 推理系列产品采用方式一。
+
+Kirin X90采用方式一。
+
+Kirin 9030采用方式一。
 
 -   排布方式一：
 
@@ -66,7 +80,7 @@ Ascend 910B采用方式一。
 
 ```
 template <typename T, bool isFullSort>
-__aicore__ inline void Sort(const LocalTensor<T> &dst, const LocalTensor<T> &concat, const LocalTensor<uint32_t> &index, LocalTensor<T> &tmp, const int32_t repeatTime)
+__aicore__ inline void Sort(const LocalTensor<T>& dst, const LocalTensor<T>& concat, const LocalTensor<uint32_t>& index, LocalTensor<T>& tmp, const int32_t repeatTime)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -83,8 +97,10 @@ __aicore__ inline void Sort(const LocalTensor<T> &dst, const LocalTensor<T> &con
 <tbody><tr id="row12299165018421"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p1329915004219"><a name="p1329915004219"></a><a name="p1329915004219"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.82000000000001%" headers="mcps1.2.3.1.2 "><p id="p8299155010420"><a name="p8299155010420"></a><a name="p8299155010420"></a>操作数的数据类型。</p>
-<p id="p120314548496"><a name="p120314548496"></a><a name="p120314548496"></a><span id="ph10203145494919"><a name="ph10203145494919"></a><a name="ph10203145494919"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型为：half、float。</p>
-<p id="p7265124521915"><a name="p7265124521915"></a><a name="p7265124521915"></a><span id="ph4684166535"><a name="ph4684166535"></a><a name="ph4684166535"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型为：half、float。</p>
+<p id="p120314548496"><a name="p120314548496"></a><a name="p120314548496"></a><span id="ph10203145494919"><a name="ph10203145494919"></a><a name="ph10203145494919"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
+<p id="p7265124521915"><a name="p7265124521915"></a><a name="p7265124521915"></a><span id="ph4684166535"><a name="ph4684166535"></a><a name="ph4684166535"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
+<p id="p184962505471"><a name="p184962505471"></a><a name="p184962505471"></a><span id="ph9713141120484"><a name="ph9713141120484"></a><a name="ph9713141120484"></a>Kirin X90</span>，支持的数据类型为：half。</p>
+<p id="p8588195884716"><a name="p8588195884716"></a><a name="p8588195884716"></a><span id="ph1601215144817"><a name="ph1601215144817"></a><a name="ph1601215144817"></a>Kirin 9030</span>，支持的数据类型为：half。</p>
 </td>
 </tr>
 <tr id="row1623812985111"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p152385297515"><a name="p152385297515"></a><a name="p152385297515"></a>isFullSort</p>
@@ -119,7 +135,7 @@ __aicore__ inline void Sort(const LocalTensor<T> &dst, const LocalTensor<T> &con
 </td>
 <td class="cellrowborder" valign="top" width="12.591259125912593%" headers="mcps1.2.4.1.2 "><p id="p7217031182818"><a name="p7217031182818"></a><a name="p7217031182818"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p185486379149"><a name="p185486379149"></a><a name="p185486379149"></a>源操作数，shape为[n]。</p>
+<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p185486379149"><a name="p185486379149"></a><a name="p185486379149"></a>源操作数，即接口功能说明中的score，shape为[n]。</p>
 <p id="p5449124113142"><a name="p5449124113142"></a><a name="p5449124113142"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_1"><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_1"><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_1"><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p3123599392"><a name="p3123599392"></a><a name="p3123599392"></a><span id="ph71345919395"><a name="ph71345919395"></a><a name="ph71345919395"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 <p id="p1521763119281"><a name="p1521763119281"></a><a name="p1521763119281"></a>此源操作数的数据类型需要与目的操作数保持一致。</p>
@@ -149,7 +165,7 @@ __aicore__ inline void Sort(const LocalTensor<T> &dst, const LocalTensor<T> &con
 <td class="cellrowborder" valign="top" width="12.591259125912593%" headers="mcps1.2.4.1.2 "><p id="p63676515516"><a name="p63676515516"></a><a name="p63676515516"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p636715110511"><a name="p636715110511"></a><a name="p636715110511"></a>重复迭代次数，int32_t类型。</p>
-<a name="ul1879420254213"></a><a name="ul1879420254213"></a><ul id="ul1879420254213"><li><span id="ph13349111912302"><a name="ph13349111912302"></a><a name="ph13349111912302"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>：每次迭代完成32个元素的排序，下次迭代concat和index各跳过32个elements，dst跳过32*8 Byte空间。取值范围：repeatTime∈[0,255]。</li><li><span id="ph128215620306"><a name="ph128215620306"></a><a name="ph128215620306"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>：每次迭代完成32个元素的排序，下次迭代concat和index各跳过32个elements，dst跳过32*8 Byte空间。取值范围：repeatTime∈[0,255]。</li></ul>
+<a name="ul1879420254213"></a><a name="ul1879420254213"></a><ul id="ul1879420254213"><li><span id="ph13349111912302"><a name="ph13349111912302"></a><a name="ph13349111912302"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>：每次迭代完成32个元素的排序，下次迭代concat和index各跳过32个elements，dst跳过32*8 Byte空间。取值范围：repeatTime∈[0,255]。</li><li><span id="ph128215620306"><a name="ph128215620306"></a><a name="ph128215620306"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>：每次迭代完成32个元素的排序，下次迭代concat和index各跳过32个elements，dst跳过32*8 Byte空间。取值范围：repeatTime∈[0,255]。</li><li><span id="ph79109544438"><a name="ph79109544438"></a><a name="ph79109544438"></a>Kirin X90</span>：每次迭代完成32个元素的排序，下次迭代concat和index各跳过32个elements，dst跳过32*8 Byte空间。取值范围：repeatTime∈[0,255]。</li><li><span id="ph8910155454315"><a name="ph8910155454315"></a><a name="ph8910155454315"></a>Kirin 9030</span>：每次迭代完成32个元素的排序，下次迭代concat和index各跳过32个elements，dst跳过32*8 Byte空间。取值范围：repeatTime∈[0,255]。</li></ul>
 </td>
 </tr>
 </tbody>
@@ -171,9 +187,13 @@ __aicore__ inline void Sort(const LocalTensor<T> &dst, const LocalTensor<T> &con
 
     该样例适用于：
 
-    Ascend 910B
+    Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
-    Ascend 910C
+    Atlas A3 训练系列产品/Atlas A3 推理系列产品
+
+    Kirin X90
+
+    Kirin 9030
 
     ```
     uint32_t elementCount = 128;

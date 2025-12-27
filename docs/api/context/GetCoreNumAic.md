@@ -16,9 +16,9 @@ uint32_t GetCoreNumAic(void) const
 
 ## 返回值说明<a name="zh-cn_topic_0000001675181281_zh-cn_topic_0000001442758437_section25791320141317"></a>
 
-Ascend 910B，分离模式，返回Cube Core的核数
+Atlas A2 训练系列产品/Atlas A2 推理系列产品，分离模式，返回Cube Core的核数
 
-Ascend 910C，分离模式，返回Cube Core的核数
+Atlas A3 训练系列产品/Atlas A3 推理系列产品，分离模式，返回Cube Core的核数
 
 ## 约束说明<a name="zh-cn_topic_0000001675181281_zh-cn_topic_0000001442758437_section19165124931511"></a>
 

@@ -40,8 +40,9 @@ void EnableMultiCoreSplitK(bool flag)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
--   如果在算子中使用该接口，获取C矩阵结果时仅支持输出到Global Memory。
--   如果在算子中使用该接口，需在Kernel侧代码中首次将C矩阵分片的结果写入Global Memory之前，先清零Global Memory，随后在获取C矩阵分片的结果时，再开启AtomicAdd累加。如果不预先清零Global Memory，可能会因为累加Global Memory中原始的无效数据而产生精度问题。
+-   在算子中使用该接口时，获取C矩阵结果时仅支持输出到Global Memory。
+-   在算子中使用该接口时，需在Kernel侧代码中首次将C矩阵分片的结果写入Global Memory之前，先清零Global Memory，随后在获取C矩阵分片的结果时，再开启AtomicAdd累加。如果不预先清零Global Memory，可能会因为累加Global Memory中原始的无效数据而产生精度问题。
+-   在算子中使用该接口时，不支持Bias参与矩阵乘计算。
 
 ## 调用示例<a name="section046661414719"></a>
 
@@ -55,7 +56,7 @@ tiling->SetCType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, ma
 tiling->SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
 tiling->SetShape(M, N, K);
 tiling->SetOrgShape(M, N, K);
-tiling->SetBias(true);
+tiling->SetBias(false);
 tiling->SetBufferSpace(-1, -1, -1);
 tiling->EnableMultiCoreSplitK(true);  // 使能切K轴
 

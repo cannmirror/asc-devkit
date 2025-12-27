@@ -53,15 +53,15 @@ LayerNormGrad Tiling的功能如下：
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-void GetLayerNormGradMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```
-void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, optiling::LayerNormGradTiling &tiling)
+void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, optiling::LayerNormGradTiling& tiling)
 ```
 
 ```
-void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::LayerNormGradTiling &tiling)
+void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::LayerNormGradTiling& tiling)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -212,7 +212,7 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
         uint32_t max;
         uint32_t min;
         AscendC::GetLayerNormGradMaxMinTmpSize(srcShape, sizeof(half), false, max, min);
-        // 获取LayernormGrad Tiling参数
+        // 获取LayerNormGrad Tiling参数
         AscendC::GetLayerNormGradNDTilingInfo(srcShape, min, sizeof(half), false, tiling.layernormGradTilingData); 
          ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());

@@ -1,9 +1,9 @@
 # Init<a name="ZH-CN_TOPIC_0000001571232054"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="53.64%" id="mcps1.1.4.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="53.64%" id="mcps1.1.4.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="22.59%" id="mcps1.1.4.1.2"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>Tiling参数传入栈地址的接口</p>
 </th>
@@ -11,18 +11,32 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="22.59%" headers="mcps1.1.4.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="23.77%" headers="mcps1.1.4.1.3 "><p id="p196562211801"><a name="p196562211801"></a><a name="p196562211801"></a>√</p>
 </td>
 </tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row33481333123"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="22.59%" headers="mcps1.1.4.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="23.77%" headers="mcps1.1.4.1.3 "><p id="p14656321401"><a name="p14656321401"></a><a name="p14656321401"></a>√</p>
+</td>
+</tr>
+<tr id="row1262541717133"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1062511711131"><a name="p1062511711131"></a><a name="p1062511711131"></a><span id="ph139041181415"><a name="ph139041181415"></a><a name="ph139041181415"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="22.59%" headers="mcps1.1.4.1.2 "><p id="p126252017181315"><a name="p126252017181315"></a><a name="p126252017181315"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="23.77%" headers="mcps1.1.4.1.3 "><p id="p562551711137"><a name="p562551711137"></a><a name="p562551711137"></a>√</p>
+</td>
+</tr>
+<tr id="row1219873863514"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p5223114153518"><a name="p5223114153518"></a><a name="p5223114153518"></a><span id="ph922304117356"><a name="ph922304117356"></a><a name="ph922304117356"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="22.59%" headers="mcps1.1.4.1.2 "><p id="p14223104112357"><a name="p14223104112357"></a><a name="p14223104112357"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="23.77%" headers="mcps1.1.4.1.3 "><p id="p14223194111355"><a name="p14223194111355"></a><a name="p14223194111355"></a>√</p>
 </td>
 </tr>
 </tbody>

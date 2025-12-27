@@ -1,32 +1,32 @@
 # Cast<a name="ZH-CN_TOPIC_0000001554785181"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin X90</term></span></p>
+<tr id="row647912164190"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13480131615199"><a name="p13480131615199"></a><a name="p13480131615199"></a><span id="ph759018526191"><a name="ph759018526191"></a><a name="ph759018526191"></a>Kirin X90</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p848051610196"><a name="p848051610196"></a><a name="p848051610196"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin 9030</term></span></p>
+<tr id="row464521820198"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p76451818111913"><a name="p76451818111913"></a><a name="p76451818111913"></a><span id="ph68175542197"><a name="ph68175542197"></a><a name="ph68175542197"></a>Kirin 9030</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p564513182198"><a name="p564513182198"></a><a name="p564513182198"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -339,19 +339,19 @@
 <tbody><tr id="row11492616168"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p19933113132715"><a name="p19933113132715"></a><a name="p19933113132715"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.65%" headers="mcps1.2.3.1.2 "><p id="p593343122716"><a name="p593343122716"></a><a name="p593343122716"></a>目的操作数数据类型。</p>
-<p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
-<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
-<p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Kirin X90</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
-<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Kirin 9030</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
+<p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
+<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
+<p id="p186928382273"><a name="p186928382273"></a><a name="p186928382273"></a><span id="ph532584192917"><a name="ph532584192917"></a><a name="ph532584192917"></a>Kirin X90</span>，支持的数据类型见<a href="#table19852101210223">表6</a></p>
+<p id="p88131911293"><a name="p88131911293"></a><a name="p88131911293"></a><span id="ph173921247182910"><a name="ph173921247182910"></a><a name="ph173921247182910"></a>Kirin 9030</span>，支持的数据类型见<a href="#table19852101210223">表6</a></p>
 </td>
 </tr>
 <tr id="row1835857145817"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p5979215341"><a name="p5979215341"></a><a name="p5979215341"></a>U</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.65%" headers="mcps1.2.3.1.2 "><p id="p1526974512618"><a name="p1526974512618"></a><a name="p1526974512618"></a>源操作数数据类型。</p>
-<p id="p5994152433215"><a name="p5994152433215"></a><a name="p5994152433215"></a><span id="ph1399418245321"><a name="ph1399418245321"></a><a name="ph1399418245321"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
-<p id="p29948244324"><a name="p29948244324"></a><a name="p29948244324"></a><span id="ph169941241329"><a name="ph169941241329"></a><a name="ph169941241329"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
-<p id="p16800185694616"><a name="p16800185694616"></a><a name="p16800185694616"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Kirin X90</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
-<p id="p10310225113513"><a name="p10310225113513"></a><a name="p10310225113513"></a><span id="ph16310192543516"><a name="ph16310192543516"></a><a name="ph16310192543516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Kirin 9030</term></span>，支持的数据类型见<a href="#table52491124113519">表6</a></p>
+<p id="p5994152433215"><a name="p5994152433215"></a><a name="p5994152433215"></a><span id="ph1399418245321"><a name="ph1399418245321"></a><a name="ph1399418245321"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型见<a href="#table52491124113511">表5</a></p>
+<p id="p29948244324"><a name="p29948244324"></a><a name="p29948244324"></a><span id="ph169941241329"><a name="ph169941241329"></a><a name="ph169941241329"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型见<a href="#table588610209212">表4</a></p>
+<p id="p1383085412918"><a name="p1383085412918"></a><a name="p1383085412918"></a><span id="ph68311254122917"><a name="ph68311254122917"></a><a name="ph68311254122917"></a>Kirin X90</span>，支持的数据类型见<a href="#table19852101210223">表6</a></p>
+<p id="p158311954202912"><a name="p158311954202912"></a><a name="p158311954202912"></a><span id="ph28311254102913"><a name="ph28311254102913"></a><a name="ph28311254102913"></a>Kirin 9030</span>，支持的数据类型见<a href="#table19852101210223">表6</a></p>
 </td>
 </tr>
 <tr id="row18835145716587"><td class="cellrowborder" valign="top" width="16.35%" headers="mcps1.2.3.1.1 "><p id="p1383515717581"><a name="p1383515717581"></a><a name="p1383515717581"></a>isSetMask</p>
@@ -445,7 +445,7 @@
 </tbody>
 </table>
 
-**表 4** Ascend 910BCast指令参数说明
+**表 4** Atlas A2 训练系列产品/Atlas A2 推理系列产品Cast指令参数说明
 
 <a name="table588610209212"></a>
 <table><thead align="left"><tr id="row12886132017214"><th class="cellrowborder" valign="top" width="14.27%" id="mcps1.2.4.1.1"><p id="p888682014218"><a name="p888682014218"></a><a name="p888682014218"></a>src数据类型</p>
@@ -605,7 +605,7 @@
 </tbody>
 </table>
 
-**表 5** Ascend 910CCast指令参数说明
+**表 5** Atlas A3 训练系列产品/Atlas A3 推理系列产品Cast指令参数说明
 
 <a name="table52491124113511"></a>
 <table><thead align="left"><tr id="row2249152453512"><th class="cellrowborder" valign="top" width="14.27%" id="mcps1.2.4.1.1"><p id="p92491024103516"><a name="p92491024103516"></a><a name="p92491024103516"></a>src数据类型</p>
@@ -765,57 +765,48 @@
 </tbody>
 </table>
 
-**表 6** Kirin X90、Kirin 9030 Cast指令参数说明
+**表 6**  Kirin X90、Kirin 9030 Cast指令参数说明
 
-<a name="table52491124113519"></a>
-<table><thead align="left"><tr id="row2249152453512"><th class="cellrowborder" valign="top" width="14.27%" id="mcps1.2.4.1.1"><p id="p92491024103516"><a name="p92491024103516"></a><a name="p92491024103516"></a>src数据类型</p>
+<a name="table19852101210223"></a>
+<table><thead align="left"><tr id="row1885219128229"><th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.1"><p id="p1588617582316"><a name="p1588617582316"></a><a name="p1588617582316"></a>src数据类型</p>
 </th>
-<th class="cellrowborder" valign="top" width="14.66%" id="mcps1.2.4.1.2"><p id="p1724932416350"><a name="p1724932416350"></a><a name="p1724932416350"></a>dst数据类型</p>
+<th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.2"><p id="p8886195142319"><a name="p8886195142319"></a><a name="p8886195142319"></a>dst数据类型</p>
 </th>
-<th class="cellrowborder" valign="top" width="71.07%" id="mcps1.2.4.1.3"><p id="p7249142483518"><a name="p7249142483518"></a><a name="p7249142483518"></a>支持的roundMode</p>
+<th class="cellrowborder" valign="top" width="33.33333333333333%" id="mcps1.2.4.1.3"><p id="p58867572320"><a name="p58867572320"></a><a name="p58867572320"></a>支持的roundMode</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row10249152418354"><td class="cellrowborder" rowspan="3" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p8249224173511"><a name="p8249224173511"></a><a name="p8249224173511"></a>half</p>
-<p id="p3249824163511"><a name="p3249824163511"></a><a name="p3249824163511"></a></p>
+<tbody><tr id="row11852712112218"><td class="cellrowborder" rowspan="2" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p885251292218"><a name="p885251292218"></a><a name="p885251292218"></a>half</p>
 </td>
-<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p92491624193518"><a name="p92491624193518"></a><a name="p92491624193518"></a>uint8_t</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p585371232219"><a name="p585371232219"></a><a name="p585371232219"></a>uint8_t</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p02491824113516"><a name="p02491824113516"></a><a name="p02491824113516"></a>CAST_CEIL</p>
-</td>
-</tr>
-<tr id="row20249162443516"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p52493249353"><a name="p52493249353"></a><a name="p52493249353"></a>int32_t</p>
-</td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p7250142483520"><a name="p7250142483520"></a><a name="p7250142483520"></a>CAST_FLOOR</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p1885351212227"><a name="p1885351212227"></a><a name="p1885351212227"></a>CAST_CEIL</p>
 </td>
 </tr>
-<tr id="row725092483512"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p14250192433511"><a name="p14250192433511"></a><a name="p14250192433511"></a>float</p>
+<tr id="row12910125372412"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><p id="p13910853122418"><a name="p13910853122418"></a><a name="p13910853122418"></a>int32_t</p>
 </td>
-<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p325052416358"><a name="p325052416358"></a><a name="p325052416358"></a>CAST_NONE</p>
-</td>
-</tr>
-<tr id="row1250102411356"><td class="cellrowborder" rowspan="1" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p182501624163516"><a name="p182501624163516"></a><a name="p182501624163516"></a>float</p>
-</td>
-<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p1425072493515"><a name="p1425072493515"></a><a name="p1425072493515"></a>bfloat16_t</p>
-</td>
-<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p1225017248357"><a name="p1225017248357"></a><a name="p1225017248357"></a>CAST_ROUND</p>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p791035320247"><a name="p791035320247"></a><a name="p791035320247"></a>CAST_FLOOR</p>
 </td>
 </tr>
-
-<tr id="row132518246352"><td class="cellrowborder" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p6251224203520"><a name="p6251224203520"></a><a name="p6251224203520"></a>int32_t</p>
+<tr id="row148531712132212"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p585331217225"><a name="p585331217225"></a><a name="p585331217225"></a>float</p>
 </td>
-<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p13251112413354"><a name="p13251112413354"></a><a name="p13251112413354"></a>float</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p2388173410249"><a name="p2388173410249"></a><a name="p2388173410249"></a>bfloat16_t</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p2251824103512"><a name="p2251824103512"></a><a name="p2251824103512"></a>CAST_CEIL</p>
-</td>
-</tr>
-<tr id="row15251152473512"><td class="cellrowborder" rowspan="2" valign="top" width="14.27%" headers="mcps1.2.4.1.1 "><p id="p625172413350"><a name="p625172413350"></a><a name="p625172413350"></a>bfloat16_t</p>
-</td>
-<td class="cellrowborder" valign="top" width="14.66%" headers="mcps1.2.4.1.2 "><p id="p4251524153516"><a name="p4251524153516"></a><a name="p4251524153516"></a>float</p>
-</td>
-<td class="cellrowborder" valign="top" width="71.07%" headers="mcps1.2.4.1.3 "><p id="p1125113249354"><a name="p1125113249354"></a><a name="p1125113249354"></a>CAST_NONE</p>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p1385381218221"><a name="p1385381218221"></a><a name="p1385381218221"></a>CAST_ROUND</p>
 </td>
 </tr>
+<tr id="row16853191262212"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p1285381220227"><a name="p1285381220227"></a><a name="p1285381220227"></a>int32_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p18853171218227"><a name="p18853171218227"></a><a name="p18853171218227"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p1383615446252"><a name="p1383615446252"></a><a name="p1383615446252"></a>CAST_CEIL</p>
+</td>
+</tr>
+<tr id="row364115572315"><td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.1 "><p id="p19641195542310"><a name="p19641195542310"></a><a name="p19641195542310"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.2 "><p id="p17641195572310"><a name="p17641195572310"></a><a name="p17641195572310"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="33.33333333333333%" headers="mcps1.2.4.1.3 "><p id="p1440135172512"><a name="p1440135172512"></a><a name="p1440135172512"></a>CAST_NONE</p>
 </td>
 </tr>
 </tbody>
@@ -975,8 +966,8 @@
     AscendC::LocalTensor<AscendC::int4b_t> dstLocalTmp = dstLocal.ReinterpretCast<AscendC::int4b_t>();
     // repeatTime = 1, 128 elements one repeat, 128 elements total
     // dstBlkStride, srcBlkStride = 1, no gap between blocks in one repeat
-    // dstRepStride = 4, srcRepStride = 8, no gap between repeats
-    AscendC::Cast<AscendC::int4b_t, half>(dstLocalTmp, srcLocal, AscendC::RoundMode::CAST_CEIL, mask, 1, {1, 1, 4, 8});
+    // dstRepStride = 2, srcRepStride = 8, no gap between repeats
+    AscendC::Cast<AscendC::int4b_t, half>(dstLocalTmp, srcLocal, AscendC::RoundMode::CAST_CEIL, mask, 1, {1, 1, 2, 8});
     ```
 
 ## 样例模板<a name="section12233154963115"></a>

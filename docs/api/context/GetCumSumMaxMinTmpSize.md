@@ -10,7 +10,7 @@ kernel侧CumSum接口的计算需要开发者预留/申请临时空间，本接�
 ## 函数原型<a name="section7471740471"></a>
 
 ```
-void GetCumSumMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isLastAxis, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetCumSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isLastAxis, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ## 参数说明<a name="section3614450358"></a>

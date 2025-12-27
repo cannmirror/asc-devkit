@@ -1,20 +1,20 @@
 # LoadImageToLocal<a name="ZH-CN_TOPIC_0000001945534165"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.879999999999995%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.879999999999995%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42.120000000000005%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.879999999999995%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.879999999999995%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42.120000000000005%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.879999999999995%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.879999999999995%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42.120000000000005%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
@@ -52,8 +52,8 @@ __aicore__ inline void LoadImageToLocal(const LocalTensor<T>& dst, const LoadIma
 </td>
 <td class="cellrowborder" valign="top" width="72.28722872287229%" headers="mcps1.2.4.1.3 "><p id="p13547261512"><a name="p13547261512"></a><a name="p13547261512"></a>目的操作数，类型为LocalTensor。</p>
 <p id="p13212054173014"><a name="p13212054173014"></a><a name="p13212054173014"></a><span id="ph14913134718242"><a name="ph14913134718242"></a><a name="ph14913134718242"></a>LocalTensor的起始地址</span>需要保证32字节对齐。</p>
-<p id="p7217123110145"><a name="p7217123110145"></a><a name="p7217123110145"></a><span id="ph162175318142"><a name="ph162175318142"></a><a name="ph162175318142"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持数据类型：int8_t、half；支持的TPosition为A1、B1。</p>
-<p id="p194660215334"><a name="p194660215334"></a><a name="p194660215334"></a><span id="ph13466102183316"><a name="ph13466102183316"></a><a name="ph13466102183316"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持数据类型：int8_t、half；支持的TPosition为A1、B1。</p>
+<p id="p7217123110145"><a name="p7217123110145"></a><a name="p7217123110145"></a><span id="ph162175318142"><a name="ph162175318142"></a><a name="ph162175318142"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持数据类型：int8_t、half；支持的TPosition为A1、B1。</p>
+<p id="p194660215334"><a name="p194660215334"></a><a name="p194660215334"></a><span id="ph13466102183316"><a name="ph13466102183316"></a><a name="ph13466102183316"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持数据类型：int8_t、half；支持的TPosition为A1、B1。</p>
 </td>
 </tr>
 <tr id="row1767431631917"><td class="cellrowborder" valign="top" width="16.371637163716375%" headers="mcps1.2.4.1.1 "><p id="p667418162198"><a name="p667418162198"></a><a name="p667418162198"></a>loadDataParams</p>

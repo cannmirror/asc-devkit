@@ -2,7 +2,7 @@
 
 ## 🔥Latest News
 
-- [2025/11] Ascend C项目基于Ascend 910C/Ascend 910B全面开源开放，包含以下新特性：
+- [2025/11] Ascend C项目基于Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品全面开源开放，包含以下新特性：
   - 实现分仓分包，支持分包独立安装部署，包括Ascend C算子开发所需的核心仓asc-devkit、调试工具仓[asc-tools](https://gitcode.com/cann/asc-tools)、Vector算子模板库仓[atvc](https://gitcode.com/cann/atvc)和[atvoss](https://gitcode.com/cann/atvoss)、Python前端仓[pyasc](https://gitcode.com/cann/pyasc)。
   - 编程API能力扩展
     - 新增语言扩展层C API，提供与业界相似的编程体验。

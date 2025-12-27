@@ -40,14 +40,14 @@ uint32_t SetStepSize(uint8_t stepSize)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-Ascend 910B暂不支持该接口。
+Atlas A2 训练系列产品/Atlas A2 推理系列产品暂不支持该接口。
 
 ## 调用示例<a name="section1665082013318"></a>
 
 ```
 static ge::graphStatus AllToAllVCustomTilingFunc(gert::TilingContext *context)
 {
-    AllReduceCustomV3TilingData *tiling = context->GetTilingData<AllToAllVCustomV3TilingData>();
+    AllToAllVCustomV3TilingData *tiling = context->GetTilingData<AllToAllVCustomV3TilingData>();
     const std::string groupName = "testGroup";
     const std::string algConfig = "AlltoAll=level0:fullmesh;level1:pairwise";
     AscendC::Mc2CcTilingConfig mc2CcTilingConfig(groupName, HCCL_CMD_ALLTOALLV, algConfig, 0);

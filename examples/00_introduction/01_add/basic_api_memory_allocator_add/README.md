@@ -2,9 +2,9 @@
 ## 概述
 本样例介绍基于静态Tensor方式编程的场景下Add算子的实现方法，支持main函数和kernel函数在同一个cpp文件中实现，并提供<<<>>>直调方法。
 
-## 支持的AI处理器
-- Ascend 910C
-- Ascend 910B
+## 支持的产品
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
 ## 目录结构介绍
 ```
 ├── basic_api_memory_allocator_add

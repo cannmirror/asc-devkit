@@ -2,16 +2,16 @@
 
 ## 功能说明<a name="section10757913172313"></a>
 
-用于获取Topk Tiling参数。
+用于获取TopK Tiling参数。
 
-Ascend C提供Topk Tiling API，方便用户获取Topk kernel计算时所需的Tiling参数。
+Ascend C提供TopK Tiling API，方便用户获取TopK kernel计算时所需的Tiling参数。
 
 获取Tiling参数主要分为如下两步：
 
-1.  获取Topk接口计算所需最小和最大临时空间大小，注意该步骤不是必须的，只是作为一个参考，供合理分配计算空间。
-2.  获取Topk kernel侧接口所需tiling参数。
+1.  获取TopK接口计算所需最小和最大临时空间大小，注意该步骤不是必须的，只是作为一个参考，供合理分配计算空间。
+2.  获取TopK kernel侧接口所需tiling参数。
 
-    Topk Tiling结构体的定义如下，开发者无需关注该tiling结构的具体信息，只需要传递到kernel侧，传入Topk高阶API接口，直接进行使用即可。
+    TopK Tiling结构体的定义如下，开发者无需关注该tiling结构的具体信息，只需要传递到kernel侧，传入TopK高阶API接口，直接进行使用即可。
 
     ```
     struct TopkTiling {
@@ -53,15 +53,15 @@ Ascend C提供Topk Tiling API，方便用户获取Topk kernel计算时所需的T
 ## 函数原型<a name="section11959319102316"></a>
 
 ```
-bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode, const bool isLargest, const uint32_t dataTypeSize, uint32_t &maxValue, uint32_t &minValue)
+bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode, const bool isLargest, const uint32_t dataTypeSize, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```
-bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, optiling::TopkTiling &topKTiling)
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, optiling::TopkTiling& topKTiling)
 ```
 
 ```
-bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, AscendC::tiling::TopkTiling &topKTiling)
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, AscendC::tiling::TopkTiling& topKTiling)
 ```
 
 ## 参数说明<a name="section7883162615235"></a>
@@ -137,7 +137,7 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, co
 </td>
 <td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p156059117476"><a name="p156059117476"></a><a name="p156059117476"></a>输出</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p147373925711"><a name="p147373925711"></a><a name="p147373925711"></a>Topk接口内部完成计算需要的最大临时空间大小，单位是Byte。</p>
+<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p147373925711"><a name="p147373925711"></a><a name="p147373925711"></a>TopK接口内部完成计算需要的最大临时空间大小，单位是Byte。</p>
 <div class="note" id="note1275197121212"><a name="note1275197121212"></a><a name="note1275197121212"></a><span class="notetitle"> 说明： </span><div class="notebody"><p id="p1040915016493"><a name="p1040915016493"></a><a name="p1040915016493"></a>maxValue仅作为参考值，有可能大于<span id="ph1088254310583"><a name="ph1088254310583"></a><a name="ph1088254310583"></a>Unified Buffer</span>剩余空间的大小，该场景下，开发者需要根据<span id="ph20796650203718"><a name="ph20796650203718"></a><a name="ph20796650203718"></a>Unified Buffer</span>剩余空间的大小来选取合适的临时空间大小。</p>
 </div></div>
 </td>
@@ -146,7 +146,7 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, co
 </td>
 <td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p4693142135214"><a name="p4693142135214"></a><a name="p4693142135214"></a>输出</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p9693112118529"><a name="p9693112118529"></a><a name="p9693112118529"></a>Topk接口内部完成计算需要的最小临时空间大小，单位是Byte。</p>
+<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p9693112118529"><a name="p9693112118529"></a><a name="p9693112118529"></a>TopK接口内部完成计算需要的最小临时空间大小，单位是Byte。</p>
 </td>
 </tr>
 </tbody>
@@ -223,7 +223,7 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, co
 </td>
 <td class="cellrowborder" valign="top" width="10.4%" headers="mcps1.2.4.1.2 "><p id="p187459509519"><a name="p187459509519"></a><a name="p187459509519"></a>输出</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.71%" headers="mcps1.2.4.1.3 "><p id="p174511507514"><a name="p174511507514"></a><a name="p174511507514"></a>输出Topk接口所需的tiling信息。</p>
+<td class="cellrowborder" valign="top" width="72.71%" headers="mcps1.2.4.1.3 "><p id="p174511507514"><a name="p174511507514"></a><a name="p174511507514"></a>输出TopK接口所需的tiling信息。</p>
 </td>
 </tr>
 </tbody>
@@ -231,9 +231,9 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, co
 
 ## 返回值说明<a name="section148125592413"></a>
 
-GetTopKMaxMinTmpSize返回值为true/false，true表示成功拿到Topk接口内部计算需要的最大和最小临时空间大小；false表示获取失败。
+GetTopKMaxMinTmpSize返回值为true/false，true表示成功拿到TopK接口内部计算需要的最大和最小临时空间大小；false表示获取失败。
 
-TopKTilingFunc返回值为true/false，true表示成功拿到Topk的Tiling各项参数值；false表示获取失败。
+TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项参数值；false表示获取失败。
 
 ## 约束说明<a name="section92611953111217"></a>
 
@@ -241,9 +241,9 @@ TopKTilingFunc返回值为true/false，true表示成功拿到Topk的Tiling各项
 
 ## 调用示例<a name="section9931244152418"></a>
 
-如下样例介绍了使用Topk高阶API时host侧获取Tiling参数的流程以及该参数如何在kernel侧使用。
+如下样例介绍了使用TopK高阶API时host侧获取Tiling参数的流程以及该参数如何在kernel侧使用。
 
-1.  将Topk Tiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
+1.  将TopK Tiling结构体参数增加至TilingData结构体，作为TilingData结构体的一个字段。
 
     ```
     namespace optiling {
@@ -266,7 +266,7 @@ TopKTilingFunc返回值为true/false，true表示成功拿到Topk的Tiling各项
     }
     ```
 
-2.  Tiling实现函数中，首先调用GetTopKMaxMinTmpSize接口获取Topk接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小；然后根据输入shape等信息获取Topk kernel侧接口所需tiling参数。
+2.  Tiling实现函数中，首先调用GetTopKMaxMinTmpSize接口获取TopK接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小；然后根据输入shape等信息获取TopK kernel侧接口所需tiling参数。
 
     ```
     namespace optiling {
@@ -312,7 +312,7 @@ TopKTilingFunc返回值为true/false，true表示成功拿到Topk的Tiling各项
     } // namespace optiling
     ```
 
-3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的Topk Tiling信息传入Topk接口参与计算。完整的kernel侧样例请参考[调用示例](TopK.md#section94691236101419)。
+3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的TopK Tiling信息传入TopK接口参与计算。完整的kernel侧样例请参考[调用示例](TopK.md#section94691236101419)。
 
     ```
     extern "C" __global__ __aicore__ void topk_custom(GM_ADDR srcVal, GM_ADDR srcIdx, GM_ADDR finishLocal, GM_ADDR dstVal, GM_ADDR dstIdx, GM_ADDR tiling)

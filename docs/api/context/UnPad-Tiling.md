@@ -7,7 +7,7 @@
 ## 函数原型<a name="section7471740471"></a>
 
 ```
-void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const ge::Shape &srcShape, const uint32_t typeSize, uint32_t &maxValue, uint32_t &minValue)
+void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```

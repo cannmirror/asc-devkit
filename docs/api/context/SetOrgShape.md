@@ -1,27 +1,27 @@
 # SetOrgShape<a name="ZH-CN_TOPIC_0000001819941185"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
 </tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
 </td>
 </tr>
-<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+<tr id="row123413293258"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1285114301617"><a name="p1285114301617"></a><a name="p1285114301617"></a><span id="ph6492183715160"><a name="ph6492183715160"></a><a name="ph6492183715160"></a>Kirin X90</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p685115391612"><a name="p685115391612"></a><a name="p685115391612"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -59,6 +59,7 @@ __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p7101195316815"><a name="p7101195316815"></a><a name="p7101195316815"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p210118531786"><a name="p210118531786"></a><a name="p210118531786"></a>设置原始完整的形状M大小，单位为元素。</p>
+<p id="p7616155510310"><a name="p7616155510310"></a><a name="p7616155510310"></a>设置原始完整的形状M大小，单位为元素。</p>
 </td>
 </tr>
 <tr id="row36481043185619"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p1510114531681"><a name="p1510114531681"></a><a name="p1510114531681"></a>orgN</p>
@@ -66,6 +67,7 @@ __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p9101145313811"><a name="p9101145313811"></a><a name="p9101145313811"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p1510219534819"><a name="p1510219534819"></a><a name="p1510219534819"></a>设置原始完整的形状N大小，单位为元素。</p>
+<p id="p652316717322"><a name="p652316717322"></a><a name="p652316717322"></a>设置原始完整的形状N大小，单位为元素。</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p121021353385"><a name="p121021353385"></a><a name="p121021353385"></a>orgK</p>
@@ -73,6 +75,7 @@ __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p121028531183"><a name="p121028531183"></a><a name="p121028531183"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p610210531811"><a name="p610210531811"></a><a name="p610210531811"></a>设置原始完整的形状K大小，单位为元素。原始完整形状Ka=Kb时可设置。</p>
+<p id="p127423227327"><a name="p127423227327"></a><a name="p127423227327"></a>设置原始完整的形状K大小，单位为元素。原始完整形状Ka=Kb时可设置。</p>
 </td>
 </tr>
 <tr id="row1825910356718"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p162591355715"><a name="p162591355715"></a><a name="p162591355715"></a>orgKa</p>
@@ -80,6 +83,7 @@ __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p026013356715"><a name="p026013356715"></a><a name="p026013356715"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p42608354713"><a name="p42608354713"></a><a name="p42608354713"></a>设置矩阵A原始完整的形状Ka大小，单位为元素。</p>
+<p id="p1382334123211"><a name="p1382334123211"></a><a name="p1382334123211"></a>设置矩阵A原始完整的形状Ka大小，单位为元素。</p>
 </td>
 </tr>
 <tr id="row1569446685"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p176941261588"><a name="p176941261588"></a><a name="p176941261588"></a>orgKb</p>
@@ -87,6 +91,7 @@ __aicore__ inline void SetOrgShape(int orgM, int orgN, int orgKa, int orgKb, int
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p15695461480"><a name="p15695461480"></a><a name="p15695461480"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p116952061384"><a name="p116952061384"></a><a name="p116952061384"></a>设置矩阵B原始完整的形状Kb大小，单位为元素。</p>
+<p id="p1019316429322"><a name="p1019316429322"></a><a name="p1019316429322"></a>设置矩阵B原始完整的形状Kb大小，单位为元素。</p>
 </td>
 </tr>
 <tr id="row1046745816362"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p1746875863613"><a name="p1746875863613"></a><a name="p1746875863613"></a>orgKc</p>

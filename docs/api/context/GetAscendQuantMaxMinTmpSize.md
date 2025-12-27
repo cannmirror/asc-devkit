@@ -10,7 +10,7 @@ kernel侧AscendQuant接口的计算需要开发者预留/申请临时空间，�
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-void GetAscendQuantMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t &minValue)
+void GetAscendQuantMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

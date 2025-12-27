@@ -7,7 +7,7 @@
 ## 函数原型<a name="zh-cn_topic_0000001935531088_zh-cn_topic_0000001339105488_section13230182415108"></a>
 
 ```
-template <TPosition pos, uint32_t bufIDSize = 4>
+template <TPosition pos, uint32_t bufIDSize = defaultBufIDSize>
 __aicore__ inline TBufPool();
 ```
 

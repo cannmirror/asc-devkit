@@ -1,32 +1,32 @@
 # GeGLU<a name="ZH-CN_TOPIC_0000001752424657"></a>
 
-## AI处理器支持情况<a name="section1586581915393"></a>
+## 产品支持情况<a name="section1586581915393"></a>
 
 <a name="table169596713360"></a>
-<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p89594763612"><a name="p89594763612"></a><a name="p89594763612"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin X90</term></span></p>
+<tr id="row11235160122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p96655662117"><a name="p96655662117"></a><a name="p96655662117"></a><span id="ph2093613571001"><a name="ph2093613571001"></a><a name="ph2093613571001"></a>Kirin X90</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19235136161216"><a name="p19235136161216"></a><a name="p19235136161216"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin 9030</term></span></p>
+<tr id="row121065834115"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p510798134113"><a name="p510798134113"></a><a name="p510798134113"></a><span id="ph847317296417"><a name="ph847317296417"></a><a name="ph847317296417"></a>Kirin 9030</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p161079810411"><a name="p161079810411"></a><a name="p161079810411"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -59,14 +59,14 @@ GeGLU是采用GELU作为激活函数的GLU变体。具体计算公式如下：
 
         ```
         template <typename T, bool isReuseSource = false>
-        __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0, const LocalTensor<T> &srcTensor1, const LocalTensor<uint8_t> &sharedTmpBuffer, uint32_t calCount)
+        __aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
         template <typename T, bool isReuseSource = false>
-        __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0, const LocalTensor<T> &srcTensor1, const LocalTensor<uint8_t> &sharedTmpBuffer)
+        __aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer)
         ```
 
 -   接口框架申请临时空间
@@ -74,14 +74,14 @@ GeGLU是采用GELU作为激活函数的GLU变体。具体计算公式如下：
 
         ```
         template <typename T, bool isReuseSource = false>
-        __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0, const LocalTensor<T> &srcTensor1, uint32_t calCount)
+        __aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1, uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
         template <typename T, bool isReuseSource = false>
-        __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0, const LocalTensor<T> &srcTensor1)
+        __aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1)
         ```
 
 由于该接口的内部实现中涉及复杂的数学计算，需要额外的临时空间来存储计算过程中的中间变量。临时空间支持开发者**通过sharedTmpBuffer入参传入**和**接口框架申请**两种方式。
@@ -105,10 +105,10 @@ GeGLU是采用GELU作为激活函数的GLU变体。具体计算公式如下：
 <tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
-<p id="zh-cn_topic_0000001538537601_p44574117347"><a name="zh-cn_topic_0000001538537601_p44574117347"></a><a name="zh-cn_topic_0000001538537601_p44574117347"></a><span id="ph991211132813"><a name="ph991211132813"></a><a name="ph991211132813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：half、float。</p>
-<p id="zh-cn_topic_0000001538537601_p10451541143416"><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><span id="ph7582151042819"><a name="ph7582151042819"></a><a name="ph7582151042819"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：half、float。</p>
-<p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Kirin X90</term></span>，支持的数据类型为：half、float。</p>
-<p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Kirin 9030</term></span>，支持的数据类型为：half、float。</p>
+<p id="zh-cn_topic_0000001538537601_p44574117347"><a name="zh-cn_topic_0000001538537601_p44574117347"></a><a name="zh-cn_topic_0000001538537601_p44574117347"></a><span id="ph991211132813"><a name="ph991211132813"></a><a name="ph991211132813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
+<p id="zh-cn_topic_0000001538537601_p10451541143416"><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><span id="ph7582151042819"><a name="ph7582151042819"></a><a name="ph7582151042819"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
+<p id="p9306214193017"><a name="p9306214193017"></a><a name="p9306214193017"></a><span id="ph1365810359219"><a name="ph1365810359219"></a><a name="ph1365810359219"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
+<p id="p99646578425"><a name="p99646578425"></a><a name="p99646578425"></a><span id="ph16584122431"><a name="ph16584122431"></a><a name="ph16584122431"></a>Kirin 9030</span>，支持的数据类型为：half、float。</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001538537601_row9756719122620"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p1682112447268"><a name="zh-cn_topic_0000001538537601_p1682112447268"></a><a name="zh-cn_topic_0000001538537601_p1682112447268"></a>isReuseSource</p>

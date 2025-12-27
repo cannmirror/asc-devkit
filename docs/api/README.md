@@ -33,7 +33,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tr>
 <tr id="row32691573557"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p8269195705514"><a name="p8269195705514"></a><a name="p8269195705514"></a><a href="context\Coordinate.md">Coordinate</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1825015488573"><a name="p1825015488573"></a><a name="p1825015488573"></a>Coordinate<span>本质上是一个元组（tuple），用于表示张量在不同维度的位置信息，即坐标值。</span></p>
+<td class="cellrowborder" valign="top" width="59.63%" headers="mcps1.2.3.1.2 "><p id="p1825015488573"><a name="p1825015488573"></a><a name="p1825015488573"></a>Coordinate本质上是一个元组（tuple），用于表示张量在不同维度的位置信息，即坐标值。</p>
 </td>
 </tr>
 <tr id="row926915745510"><td class="cellrowborder" valign="top" width="40.37%" headers="mcps1.2.3.1.1 "><p id="p192691757185519"><a name="p192691757185519"></a><a name="p192691757185519"></a><a href="context\Layout.md">Layout</a></p>
@@ -1821,37 +1821,37 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tr>
 <tr id="row139821454384"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1598219543820"><a name="p1598219543820"></a><a name="p1598219543820"></a><a href="context\tuple.md">tuple</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p88681259101020"><a name="p88681259101020"></a><a name="p88681259101020"></a><span>允许存储多个不同类型元素</span>的容器。</p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p88681259101020"><a name="p88681259101020"></a><a name="p88681259101020"></a>允许存储多个不同类型元素的容器。</p>
 </td>
 </tr>
 <tr id="row19821854887"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p1829135316100"><a name="p1829135316100"></a><a name="p1829135316100"></a><a href="context\get-1.md">get</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p42902537103"><a name="p42902537103"></a><a name="p42902537103"></a><span>从</span>tuple<span>容器中提取指定位置的元素</span>。</p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p42902537103"><a name="p42902537103"></a><a name="p42902537103"></a>从tuple容器中提取指定位置的元素。</p>
 </td>
 </tr>
 <tr id="row19821254681"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p9290175311107"><a name="p9290175311107"></a><a name="p9290175311107"></a><a href="context\make_tuple.md">make_tuple</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p028955381015"><a name="p028955381015"></a><a name="p028955381015"></a><span>用于便捷地创建</span>tuple<span>对象。</span></p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p028955381015"><a name="p028955381015"></a><a name="p028955381015"></a>用于便捷地创建tuple对象。</p>
 </td>
 </tr>
 <tr id="row169828546818"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p6289453151012"><a name="p6289453151012"></a><a name="p6289453151012"></a><a href="context\is_convertible.md">is_convertible</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1028845351011"><a name="p1028845351011"></a><a name="p1028845351011"></a>在程序编译时<span>判断两个类型之间是否可以进行隐式转换</span>。</p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1028845351011"><a name="p1028845351011"></a><a name="p1028845351011"></a>在程序编译时判断两个类型之间是否可以进行隐式转换。</p>
 </td>
 </tr>
 <tr id="row498311545815"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p42881453151010"><a name="p42881453151010"></a><a name="p42881453151010"></a><a href="context\is_base_of.md">is_base_of</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p11287105315108"><a name="p11287105315108"></a><a name="p11287105315108"></a>在程序编译时<span>判断</span><span>一个类型是否为另一个类型的基类</span>。</p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p11287105315108"><a name="p11287105315108"></a><a name="p11287105315108"></a>在程序编译时判断一个类型是否为另一个类型的基类。</p>
 </td>
 </tr>
 <tr id="row1598312541817"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p172878539107"><a name="p172878539107"></a><a name="p172878539107"></a><a href="context\is_same.md">is_same</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1128711539108"><a name="p1128711539108"></a><a name="p1128711539108"></a><span>在程序</span><span>编译时判断两个类型是否完全相同。</span></p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1128711539108"><a name="p1128711539108"></a><a name="p1128711539108"></a>在程序编译时判断两个类型是否完全相同。</p>
 </td>
 </tr>
 <tr id="row498311541816"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p4286105318107"><a name="p4286105318107"></a><a name="p4286105318107"></a><a href="context\enable_if.md">enable_if</a></p>
 </td>
-<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1328665317104"><a name="p1328665317104"></a><a name="p1328665317104"></a><span>在程序编译时根据某个条件启用或禁用特定的函数模板、类模板或模板特化</span>。</p>
+<td class="cellrowborder" valign="top" width="62.29%" headers="mcps1.2.3.1.2 "><p id="p1328665317104"><a name="p1328665317104"></a><a name="p1328665317104"></a>在程序编译时根据某个条件启用或禁用特定的函数模板、类模板或模板特化。</p>
 </td>
 </tr>
 <tr id="row49836541682"><td class="cellrowborder" valign="top" width="37.71%" headers="mcps1.2.3.1.1 "><p id="p18285105321019"><a name="p18285105321019"></a><a name="p18285105321019"></a><a href="context\conditional.md">conditional</a></p>

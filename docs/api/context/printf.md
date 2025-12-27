@@ -1,22 +1,32 @@
 # printf<a name="ZH-CN_TOPIC_0000001665961730"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+</td>
+</tr>
+<tr id="row1366313262011"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p96633267020"><a name="p96633267020"></a><a name="p96633267020"></a><span id="ph19776102013"><a name="ph19776102013"></a><a name="ph19776102013"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p126631426809"><a name="p126631426809"></a><a name="p126631426809"></a>√</p>
+</td>
+</tr>
+<tr id="row1384052317020"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p16841192315017"><a name="p16841192315017"></a><a name="p16841192315017"></a><span id="ph697516141113"><a name="ph697516141113"></a><a name="ph697516141113"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1984110231706"><a name="p1984110231706"></a><a name="p1984110231706"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -34,58 +44,16 @@ AscendC::printf("fmt string %d\n", 0x123);
 AscendC::PRINTF("fmt string %d\n", 0x123);
 ```
 
-> [!CAUTION]注意  
->printf（PRINTF）接口打印功能会对算子实际运行的性能带来一定影响，通常在调测阶段使用。开发者可以按需通过如下方式关闭打印功能。
->-   自定义算子工程
->    修改算子工程op\_kernel目录下的CMakeLists.txt文件，首行增加编译选项-DASCENDC\_DUMP=0，关闭ASCENDC\_DUMP开关，示例如下：
->    ```
->    // 关闭所有算子的打印功能
->    add_ops_compile_options(ALL OPTIONS -DASCENDC_DUMP=0)
->    ```
->-   Kernel直调工程
->    -   修改cmake目录下的npu\_lib.cmake文件，在ascendc\_compile\_definitions命令中增加ASCENDC\_DUMP=0宏定义来关闭NPU侧ASCENDC\_DUMP开关。示例如下：
->        ```
->        // 关闭所有算子的打印功能
->        ascendc_compile_definitions(ascendc_kernels_${RUN_MODE} PRIVATE
->            ASCENDC_DUMP=0
->        )
->        ```
->    -   修改cmake目录下的cpu\_lib.cmake文件，在target\_compile\_definitions命令中增加ASCENDC\_DUMP=0宏定义来关闭CPU侧ASCENDC\_DUMP开关。示例如下：
->        ```
->        target_compile_definitions(ascendc_kernels_${RUN_MODE} PRIVATE
->            ASCENDC_DUMP=0
->        )
->        ```
->        **需要注意的是，关闭CPU侧的打印开关时，只对PRINTF接口生效，对printf不生效。**
-
-NPU模式下，printf打印结果的最前面会自动打印CANN\_VERSION\_STR值与CANN\_TIMESTAMP值。其中，CANN\_VERSION\_STR与CANN\_TIMESTAMP为宏定义，CANN\_VERSION\_STR代表CANN软件包的版本号信息，形式为字符串，CANN\_TIMESTAMP为CANN软件包发布时的时间戳，形式为数值\(uint64\_t\)。开发者也可在代码中直接使用这两个宏。printf打印结果示例如下：
-
-```
-CANN Version: XXX.XX, TimeStamp: 20240807140556417
-fmt string 291
-fmt string 291
-```
-
-根据算子执行方式的不同，printf的打印结果输出方式不同。动态图或者单算子直调场景下，待输出内容会被解析并打印在屏幕上；静态图场景下，整图算子需要全下沉到NPU侧执行，无法直接调用接口打印出单个算子的信息，因此需要在模型执行完毕后，将待输出内容落盘在dump文件中，dump文件需要通过工具解析为可读内容。
-
--   dump文件落盘路径按照优先级排列如下：
-    -   如果开启了Data Dump功能，dump文件落盘到开发者配置的dump\_path路径下。如何开启Dump功能依赖于具体的网络运行方式。以TensorFlow在线推理为例，通过enable\_dump、dump\_path、dump\_mode等参数进行配置。配置方式可参考《TensorFlow 2.6.5模型迁移指南》中的API参考 \> TF Adapter 接口（2.x）\> npu.global\_options \> 配置参数说明章节。
-    -   如果未开启Data Dump功能，但配置了ASCEND\_WORK\_PATH环境变量，dump文件落盘到ASCEND\_WORK\_PATH下的printf目录下。
-    -   如果未开启Data Dump功能也没有配置ASCEND\_WORK\_PATH环境变量，dump文件落盘到当前程序执行目录下的printf路径下。
-
--   落盘dump文件需要使用工具解析为用户可读内容：
-
-    使用show\_kernel\_debug\_data工具将dump二进制文件解析为用户可读内容，命令格式如下。
-
-    ```
-    show_kernel_debug_data  bin_file  output_dir
-    ```
+> [!CAUTION]注意 
+>printf（PRINTF）接口打印功能会对算子实际运行的性能带来一定影响，通常在调测阶段使用。开发者可以按需通过设置ASCENDC\_DUMP=0的方式关闭打印功能。
 
 ## 函数原型<a name="section2067518173415"></a>
 
 ```
-void printf(__gm__ const char* fmt, Args&&... args)
-void PRINTF(__gm__ const char* fmt, Args&&... args)
+template <class... Args>
+__aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
+template <class... Args>
+__aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 ```
 
 ## 参数说明<a name="section158061867342"></a>
@@ -129,7 +97,21 @@ void PRINTF(__gm__ const char* fmt, Args&&... args)
 
 -   本接口不支持打印除换行符之外的其他转义字符。
 -   如果开发者需要包含标准库头文件stdio.h和cstdio，请在kernel\_operator.h头文件之前包含，避免printf符号冲突。
--   该接口使用Dump功能，所有使用Dump功能的接口在每个核上Dump的数据总量不可超过1M。请开发者自行控制待打印的内容数据量，超出则不会打印。
+-   单次调用本接口打印的数据总量不可超过1MB（还包括少量框架需要的头尾信息，通常可忽略）。使用时应注意，如果超出这个限制，则数据不会被打印。在使用自定义算子工程进行工程化算子开发时，一个算子所有使用Dump功能的接口在每个核上Dump的数据总量不可超过1MB。请开发者自行控制待打印的内容数据量，超出则不会打印。
+-   根据算子执行方式的不同，printf的打印结果输出方式不同。动态图或者单算子直调场景下，待输出内容会被解析并打印在屏幕上；静态图场景下，整图算子需要全下沉到NPU侧执行，无法直接调用接口打印出单个算子的信息，因此需要在模型执行完毕后，将待输出内容落盘在dump文件中，dump文件需要通过工具解析为可读内容。
+    -   dump文件落盘路径按照优先级排列如下：
+        -   如果开启了Data Dump功能，dump文件落盘到开发者配置的dump\_path路径下。如何开启Dump功能依赖于具体的网络运行方式。以TensorFlow在线推理为例，通过enable\_dump、dump\_path、dump\_mode等参数进行配置。配置方式可参考《TensorFlow 2.6.5模型迁移指南》中的API参考 \> TF Adapter 接口（2.x）\> npu.global\_options \> 配置参数说明章节。
+        -   如果未开启Data Dump功能，但配置了ASCEND\_WORK\_PATH环境变量，dump文件落盘到ASCEND\_WORK\_PATH下的printf目录下。
+        -   如果未开启Data Dump功能也没有配置ASCEND\_WORK\_PATH环境变量，dump文件落盘到当前程序执行目录下的printf路径下。
+
+    -   落盘dump文件需要使用工具解析为用户可读内容：
+
+        使用show\_kernel\_debug\_data工具将dump二进制文件解析为用户可读内容，命令格式如下。
+
+        ```
+        show_kernel_debug_data  bin_file  output_dir
+        ```
+
 -   算子入图场景，若一个动态Shape模型中有可下沉的部分，框架内部会将模型拆分为动态调度和下沉调度（静态子图）两部分，静态子图中的算子不支持该printf特性。
 
 ## 调用示例<a name="section82241477610"></a>
@@ -152,10 +134,10 @@ AscendC::printf("TEST %p\n", b);
 AscendC::PRINTF("TEST %p\n", b);
 ```
 
-NPU模式下，程序运行时打印效果如下：
+NPU模式下，程序运行时打印效果如下（CANN Version和TimeStamp仅在使用自定义算子工程时才会打印）：
 
 ```
-CANN Version: XXX.XX, TimeStamp: 20240807140556417
+CANN Version: XXX.XX, TimeStamp: 202408
 fmt string 291
 fmt string 291
 fmt string 3.140000

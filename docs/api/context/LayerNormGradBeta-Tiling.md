@@ -43,15 +43,15 @@ LayerNormGradBeta Tiling的功能如下：
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-void GetLayerNormGradBetaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetLayerNormGradBetaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```
-void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, optiling::LayerNormGradBetaTiling &tiling)
+void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, optiling::LayerNormGradBetaTiling& tiling)
 ```
 
 ```
-void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling &tiling)
+void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling& tiling)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

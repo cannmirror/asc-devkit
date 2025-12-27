@@ -20,9 +20,9 @@ uint32_t GetCoreNumVector(void) const
 
 ## 约束说明<a name="zh-cn_topic_0000001817714666_zh-cn_topic_0000001442758437_section19165124931511"></a>
 
-Ascend 910B不支持该接口，返回0
+Atlas A2 训练系列产品/Atlas A2 推理系列产品不支持该接口，返回0
 
-Ascend 910C不支持该接口，返回0
+Atlas A3 训练系列产品/Atlas A3 推理系列产品不支持该接口，返回0
 
 ## 调用示例<a name="zh-cn_topic_0000001817714666_zh-cn_topic_0000001442758437_section320753512363"></a>
 

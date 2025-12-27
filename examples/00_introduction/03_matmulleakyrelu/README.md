@@ -1,8 +1,8 @@
 # MatmulLeakyRelu算子直调样例
 本样例以MatmulLeakyRelu算子为样例，展示了一种更为简单的算子编译流程，支持main函数和kernel函数在同一个cpp文件中实现。MatmulLeakyRelu算子能够完成矩阵乘加与LeakyReLU激活的融合计算，该方式将关键计算步骤在硬件层面高效协同执行，显著降低内存访问开销与计算延时。
-## 支持的AI处理器
-- Ascend 910C
-- Ascend 910B
+## 支持的产品
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
 ## 目录结构介绍
 ```
 ├── 03_matmulleakyrelu

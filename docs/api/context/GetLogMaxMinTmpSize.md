@@ -7,15 +7,15 @@ Host侧接口，用于获取Log接口能完成计算所需最小的临时空间�
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-void GetLogMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetLogMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```
-void GetLog10MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetLog10MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```
-void GetLog2MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetLog2MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

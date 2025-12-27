@@ -1,32 +1,32 @@
 # Select<a name="ZH-CN_TOPIC_0000001550716925"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin X90</term></span></p>
+<tr id="row14675144065419"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1467514085412"><a name="p1467514085412"></a><a name="p1467514085412"></a><span id="ph790517129551"><a name="ph790517129551"></a><a name="ph790517129551"></a>Kirin X90</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p15675184013542"><a name="p15675184013542"></a><a name="p15675184013542"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Kirin 9030</term></span></p>
+<tr id="row1940518429541"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p840584285415"><a name="p840584285415"></a><a name="p840584285415"></a><span id="ph16452121625518"><a name="ph16452121625518"></a><a name="ph16452121625518"></a>Kirin 9030</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p15405154211548"><a name="p15405154211548"></a><a name="p15405154211548"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -44,9 +44,9 @@
 -   模式1：根据selMask在1个tensor和1个scalar标量中选取元素，selMask无有效数据限制。多轮迭代时，每轮迭代连续使用selMask的不同部分。
 -   模式2：根据selMask在两个tensor中选取元素，selMask无有效数据限制。多轮迭代时，每轮迭代连续使用selMask的不同部分。
 
-Ascend 910B，支持模式0、1、2。
+Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持模式0、1、2。
 
-Ascend 910C，支持模式0、1、2。
+Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持模式0、1、2。
 
 Kirin X90，支持模式0、1、2。
 
@@ -166,10 +166,10 @@ Kirin 9030，支持模式0、1、2。
 <td class="cellrowborder" valign="top" width="72.37723772377238%" headers="mcps1.2.4.1.3 "><p id="p785913161268"><a name="p785913161268"></a><a name="p785913161268"></a>目的操作数。</p>
 <p id="p5945720195112"><a name="p5945720195112"></a><a name="p5945720195112"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p775563112310"><a name="p775563112310"></a><a name="p775563112310"></a><span id="ph1479701815419"><a name="ph1479701815419"></a><a name="ph1479701815419"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
-<p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
-<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Ascend 910C</term></span>，支持的数据类型为：half/float</p>
-<p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Kirin X90</term></span>，支持的数据类型为：uint8_t</p>
-<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Kirin 9030</term></span>，支持的数据类型为：uint8_t</p>
+<p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p1076511246598"><a name="p1076511246598"></a><a name="p1076511246598"></a><span id="ph18765124125911"><a name="ph18765124125911"></a><a name="ph18765124125911"></a>Kirin X90</span>，支持的数据类型为：uint8_t。</p>
+<p id="p117652249599"><a name="p117652249599"></a><a name="p117652249599"></a><span id="ph6765924195918"><a name="ph6765924195918"></a><a name="ph6765924195918"></a>Kirin 9030</span>，支持的数据类型为：uint8_t。</p>
 </td>
 </tr>
 <tr id="row59491678111"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p29491174110"><a name="p29491174110"></a><a name="p29491174110"></a>selMask</p>
@@ -179,9 +179,9 @@ Kirin 9030，支持模式0、1、2。
 <td class="cellrowborder" valign="top" width="72.37723772377238%" headers="mcps1.2.4.1.3 "><p id="p933512419919"><a name="p933512419919"></a><a name="p933512419919"></a>选取mask。</p>
 <p id="p1634988196"><a name="p1634988196"></a><a name="p1634988196"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_1"><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_1"><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_1"><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p166343149920"><a name="p166343149920"></a><a name="p166343149920"></a>支持的数据类型为：uint8_t/uint16_t/uint32_t/uint64_t。</p>
-<p id="p448916309617"><a name="p448916309617"></a><a name="p448916309617"></a>每个bit表示1个元素的选取，当selMask的比特位是1时从src0中选取，比特位是0时从src1选取。</p>
+<p id="p448916309617"><a name="p448916309617"></a><a name="p448916309617"></a>每个比特位表示1个元素的选取，当selMask的比特位为1时，从src0中选取元素；比特位为0时，从src1中选取元素。</p>
 <p id="p1199617464116"><a name="p1199617464116"></a><a name="p1199617464116"></a>selMode为模式0时，在每一轮迭代中，根据selMask的有效位数据进行选择操作，每一轮迭代采用的selMask，均为相同数值，即selMask的有效数值。selMode为模式1/2时，多次迭代对selMask连续消耗。</p>
-<a name="ul126291640131014"></a><a name="ul126291640131014"></a><ul id="ul126291640131014"><li>模式0：根据selMask在两个tensor中选取元素，selMask有位数限制，不管迭代多少次，每次迭代都只根据截取后的固定位数的selMask进行选择。当源操作数的数据类型为8位时，selMask前256比特位有效；当源操作数的数据类型为16位时，selMask前128比特位有效；源操作数的数据类型为32位时，selMask前64比特位有效。</li><li>模式1：根据selMask在1个tensor和1个scalar标量中选取元素。支持多次迭代，选取方式为，根据selMask的设置值，如果selMask比特值为1，则选择src0内的同位置数值，如果selMask比特值为0，则选择标量值。selMask连续存放，当源操作数的数据类型为8位时，一次比较获取selMask256bit长度的数据；当源操作数的数据类型为16位时，一次比较获取selMask128bit长度的数据；源操作数的数据类型为32位时，一次比较获取selMask64bit长度的数据。</li><li>模式2：根据selMask在两个tensor中选取元素。支持多次迭代，选取方式为，根据selMask的设置值，如果selMask比特值为1，则选择src0内的同位置数值，如果selMask比特值为0，则选择src1内的同位置数值。selMask连续存放，当源操作数的数据类型为8位时，一次比较获取selMask256bit长度的数据；当源操作数的数据类型为16位时，一次比较获取selMask128bit长度的数据；源操作数的数据类型为32位时，一次比较获取selMask64bit长度的数据。</li></ul>
+<a name="ul126291640131014"></a><a name="ul126291640131014"></a><ul id="ul126291640131014"><li>模式0：根据selMask在两个tensor中选取元素，selMask有位数限制，不管迭代多少次，每次迭代都只根据截取后的固定位数的selMask进行选择。selMask的有效位数限制为256/sizeof(T)。</li><li>模式1：根据selMask在1个tensor和1个scalar标量中选取元素。selMask连续存放，每次迭代使用selMask的位数为256/sizeof(T)。</li><li>模式2：根据selMask在两个tensor中选取元素。selMask连续存放，每次迭代使用selMask的位数为256/sizeof(T)。</li></ul>
 </td>
 </tr>
 <tr id="row69959512410"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p165761231123417"><a name="p165761231123417"></a><a name="p165761231123417"></a>src0</p>
@@ -191,9 +191,9 @@ Kirin 9030，支持模式0、1、2。
 <td class="cellrowborder" valign="top" width="72.37723772377238%" headers="mcps1.2.4.1.3 "><p id="p196813815325"><a name="p196813815325"></a><a name="p196813815325"></a>源操作数。</p>
 <p id="p143305234322"><a name="p143305234322"></a><a name="p143305234322"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p5959172813321"><a name="p5959172813321"></a><a name="p5959172813321"></a><span id="ph1957118292320"><a name="ph1957118292320"></a><a name="ph1957118292320"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
-<p id="p2871051186"><a name="p2871051186"></a><a name="p2871051186"></a><span id="ph987358181"><a name="ph987358181"></a><a name="ph987358181"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
-<p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Kirin X90</term></span>，支持的数据类型为：half、float</p>
-<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Kirin 9030</term></span>，支持的数据类型为：half、float</p>
+<p id="p2871051186"><a name="p2871051186"></a><a name="p2871051186"></a><span id="ph987358181"><a name="ph987358181"></a><a name="ph987358181"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p854386131917"><a name="p854386131917"></a><a name="p854386131917"></a><span id="ph31931459192112"><a name="ph31931459192112"></a><a name="ph31931459192112"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
+<p id="p9991425121910"><a name="p9991425121910"></a><a name="p9991425121910"></a><span id="ph158218232210"><a name="ph158218232210"></a><a name="ph158218232210"></a>Kirin 9030</span>，支持的数据类型为：half、float。</p>
 </td>
 </tr>
 <tr id="row4956154125018"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p10576203116349"><a name="p10576203116349"></a><a name="p10576203116349"></a>src1</p>
@@ -205,8 +205,10 @@ Kirin 9030，支持模式0、1、2。
 <p id="p847110341322"><a name="p847110341322"></a><a name="p847110341322"></a><span id="ph18349535163213"><a name="ph18349535163213"></a><a name="ph18349535163213"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 </li></ul>
 <a name="ul19867850131915"></a><a name="ul19867850131915"></a><ul id="ul19867850131915"><li>当selMode为模式1时，类型为T，标量数据类型。</li></ul>
-<p id="p125121917151913"><a name="p125121917151913"></a><a name="p125121917151913"></a><span id="ph19386638131813"><a name="ph19386638131813"></a><a name="ph19386638131813"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Ascend 910B</term></span>，支持的数据类型为：half/float</p>
-<p id="p576254116240"><a name="p576254116240"></a><a name="p576254116240"></a><span id="ph876313416245"><a name="ph876313416245"></a><a name="ph876313416245"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Ascend 910C</term></span>，支持的数据类型为：half/float</p>
+<p id="p125121917151913"><a name="p125121917151913"></a><a name="p125121917151913"></a><span id="ph19386638131813"><a name="ph19386638131813"></a><a name="ph19386638131813"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_4"><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p576254116240"><a name="p576254116240"></a><a name="p576254116240"></a><span id="ph876313416245"><a name="ph876313416245"></a><a name="ph876313416245"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
+<p id="p1378416199595"><a name="p1378416199595"></a><a name="p1378416199595"></a><span id="ph978413196593"><a name="ph978413196593"></a><a name="ph978413196593"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
+<p id="p1678411911593"><a name="p1678411911593"></a><a name="p1678411911593"></a><span id="ph2784111915916"><a name="ph2784111915916"></a><a name="ph2784111915916"></a>Kirin 9030</span>，支持的数据类型为：half、float。</p>
 </td>
 </tr>
 <tr id="row1495634115010"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p10974181411356"><a name="p10974181411356"></a><a name="p10974181411356"></a>selMode</p>
@@ -266,8 +268,8 @@ Kirin 9030，支持模式0、1、2。
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 -   操作数地址重叠约束请参考[通用地址重叠约束](通用说明和约束.md#section668772811100)。
 
--   针对Ascend 910B，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
--   针对Ascend 910C，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
+-   针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
+-   针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，对于模式1和模式2，使用时需要预留8K的Unified Buffer空间，作为接口的临时数据存放区。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

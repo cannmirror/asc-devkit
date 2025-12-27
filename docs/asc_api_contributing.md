@@ -406,7 +406,7 @@ TEST_F(TestTiling, TestAxpyTiling)
 }
 ```
 ##### 修改cmake文件
-在执行UT用例前，需要修改[CMakeLists.txt](../tests/unit/adv_api/CMakeLists.txt)文件，由于Kernel侧和Tiling侧的UT执行对象不同，需要在不同的target下添加测试文件。以Kernel侧验证ascend910B1的UT为例，将UT测试文件路径添加到用例的源文件列表`ASCENDC_TEST_ASCEND910B1_AIV_CASE_SRC_PART_FILES`中，即新增文件路径`${ASCENDC_TESTS_DIR}/math/axpy/test_operator_axpy.cpp`。Tiling侧同理，需要将测试文件添加到`ASCENDC_TILING_TEST_SRC_FILES`列表。
+在执行UT用例前，需要修改[CMakeLists.txt](../tests/unit/adv_api/CMakeLists.txt)文件，由于Kernel侧和Tiling侧的UT执行对象不同，需要在不同的target下添加测试文件。以Kernel侧验证Atlas A2 训练系列产品/Atlas A2 推理系列产品的UT为例，将UT测试文件路径添加到用例的源文件列表`ASCENDC_TEST_ASCEND910B1_AIV_CASE_SRC_PART_FILES`中，即新增文件路径`${ASCENDC_TESTS_DIR}/math/axpy/test_operator_axpy.cpp`。Tiling侧同理，需要将测试文件添加到`ASCENDC_TILING_TEST_SRC_FILES`列表。
 ##### 执行UT
 - 执行全量UT用例
   
@@ -420,7 +420,7 @@ TEST_F(TestTiling, TestAxpyTiling)
     ```c++
     ::testing::GTEST_FLAG(filter) = "*Axpy*";
     ```
-  修改[build.sh](../build.sh)，将all修改为需要执行的UT target，以执行Kernel侧ascend910B1的UT为例，target即为ascendc_utest_ascend910B1_AIV。
+  修改[build.sh](../build.sh)，将all修改为需要执行的UT target，以执行Kernel侧Ascend 910B1的UT为例，target即为ascendc_utest_ascend910B1_AIV。
   ```
   function build_test() {
     cmake_config

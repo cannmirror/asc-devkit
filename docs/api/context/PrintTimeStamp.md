@@ -1,20 +1,20 @@
 # PrintTimeStamp<a name="ZH-CN_TOPIC_0000002122196581"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
 </td>
@@ -30,34 +30,22 @@
 -   rsv ：保留值，默认为0，无需关注；
 -   timeStamp ： 当前系统cycle数，用于计算时间差，时间换算规则可参考[GetSystemCycle\(ISASI\)](GetSystemCycle(ISASI).md)；
 -   pcPtr：pc指针数值，若无特殊需求，用户无需关注。
+-   entry：预留字段，用户无需关注。
 
 打印示例如下：
 
 ```
-descId is 65577, rsv is 0, timeStamp is 13806084506158, pcPtr is 20619064414544.
+descId is 65577, rsv is 0, timeStamp is 13806084506158, pcPtr is 20619064414544, entry is 0.
 ```
 
-> [!CAUTION]注意  
+> [!CAUTION]注意 
 >该功能主要用于**调试和性能分析**，开启后会对算子性能产生一定影响，**生产环境建议关闭**。
->默认情况下，该功能关闭，开发者可以按需通过如下方式开启打点功能。
->-   Kernel直调工程
->    修改cmake目录下的npu\_lib.cmake文件，在ascendc\_compile\_definitions命令中增加-DASCENDC\_TIME\_STAMP\_ON，打开时间戳打点功能，示例如下：
->    ```
->    ascendc_compile_definitions(ascendc_kernels_${RUN_MODE} PRIVATE
->        -DASCENDC_TIME_STAMP_ON
->    )
->    ```
->    CPU域调试时，不支持该功能。
->-   自定义算子工程
->    修改算子工程op\_kernel目录下的CMakeLists.txt文件，首行增加编译选项-DASCENDC\_TIME\_STAMP\_ON，打开时间戳打点功能，示例如下：
->    ```
->    add_ops_compile_options(ALL OPTIONS -DASCENDC_TIME_STAMP_ON)
->    ```
+>默认情况下，该功能关闭，开发者可以按需通过增加-DASCENDC\_TIME\_STAMP\_ON编译选项的方式，开启打点功能。
 
 ## 函数原型<a name="section2067518173415"></a>
 
 ```
-void PrintTimeStamp(uint32_t descId)
+__aicore__ inline void PrintTimeStamp(uint32_t descId)
 ```
 
 ## 参数说明<a name="section158061867342"></a>
@@ -89,14 +77,10 @@ void PrintTimeStamp(uint32_t descId)
 
 ## 约束说明<a name="section794123819592"></a>
 
--   **该功能仅用于NPU上板调试，且仅在如下场景支持：**
-    -   通过Kernel直调方式调用算子。
+-   该功能仅用于NPU上板调试。
+-   暂不支持算子入图场景的打印。
 
-    -   通过单算子API调用方式调用算子。
-
-    -   间接调用单算子API\(aclnnxxx\)接口：PyTorch框架单算子直调的场景。
-
--   该接口使用Dump功能，所有使用Dump功能的接口在每个核上Dump的数据总量不可超过1M。请开发者自行控制待打印的内容数据量，超出则不会打印。
+-   单次调用本接口打印的数据总量不可超过1MB（还包括少量框架需要的头尾信息，通常可忽略）。使用时应注意，如果超出这个限制，则数据不会被打印。在使用自定义算子工程进行工程化算子开发时，一个算子所有使用Dump功能的接口在每个核上Dump的数据总量不可超过1MB。请开发者自行控制待打印的内容数据量，超出则不会打印。
 
 ## 调用示例<a name="section82241477610"></a>
 
@@ -104,11 +88,11 @@ void PrintTimeStamp(uint32_t descId)
 AscendC::PrintTimeStamp(65577);
 ```
 
-打印结果如下：
+打印结果如下（Dump信息头等仅在使用自定义算子工程时才会打印）：
 
 ```
 opType=AddCustom, DumpHead: AIV-0, CoreType=AIV, block dim=8, total_block_num=8, block_remain_len=1047136, block_initial_space=1048576, rsv=0, magic=5aa5bccd
 ...// 一些框架内部的打点信息
-descId is 65577, rsv is 0, timeStamp is 13806084506158, pcPtr is 20619064414544.
+descId is 65577, rsv is 0, timeStamp is 13806084506158, pcPtr is 20619064414544, entry is 0.
 ```
 

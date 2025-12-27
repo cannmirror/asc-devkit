@@ -10,7 +10,7 @@ kernel侧Cos接口的计算需要开发者预留/申请临时空间，本接口�
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-void GetCosMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetCosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

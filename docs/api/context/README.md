@@ -420,6 +420,7 @@
         -   [COPY\_TILING\_WITH\_STRUCT](COPY_TILING_WITH_STRUCT.md)
         -   [COPY\_TILING\_WITH\_ARRAY](COPY_TILING_WITH_ARRAY.md)
         -   [TILING\_KEY\_IS](TILING_KEY_IS.md)
+        -   [TILING\_KEY\_LIST](TILING_KEY_LIST.md)
         -   [REGISTER\_TILING\_DEFAULT](REGISTER_TILING_DEFAULT.md)
         -   [REGISTER\_TILING\_FOR\_TILINGKEY](REGISTER_TILING_FOR_TILINGKEY.md)
         -   [REGISTER\_NONE\_TILING](REGISTER_NONE_TILING.md)
@@ -883,6 +884,7 @@
             -   [SetDebugMode](SetDebugMode.md)
             -   [SetCommBlockNum](SetCommBlockNum.md)
             -   [SetQueueNum](SetQueueNum.md)
+            -   [SetCommEngine](SetCommEngine.md)
             -   [v1版本TilingData（废弃）](v1版本TilingData（废弃）.md)
             -   [v2版本TilingData（废弃）](v2版本TilingData（废弃）.md)
 
@@ -1068,6 +1070,7 @@
 -   [AI CPU API](AI-CPU-API.md)
     -   [printf](printf-82.md)
     -   [assert](assert-83.md)
+    -   [DataStoreBarrier](DataStoreBarrier.md)
 
 -   [其他数据类型](其他数据类型.md)
     -   [ShapeInfo](ShapeInfo.md)

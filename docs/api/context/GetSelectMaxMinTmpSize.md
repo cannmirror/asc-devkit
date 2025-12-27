@@ -15,31 +15,31 @@ kernel侧Select接口的计算需要开发者申请临时空间，本接口用�
 -   获取最小临时空间大小
 
     ```
-    uint32_t GetSelectMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
+    uint32_t GetSelectMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
     ```
 
     ```
-    uint32_t GetSelectWithBytesMaskMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
+    uint32_t GetSelectWithBytesMaskMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
     ```
 
 -   获取最大临时空间大小
 
     ```
-    uint32_t GetSelectMaxTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
+    uint32_t GetSelectMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
     ```
 
     ```
-    uint32_t GetSelectWithBytesMaskMaxTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
+    uint32_t GetSelectWithBytesMaskMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
     ```
 
 -   获取最大和最小临时空间大小
 
     ```
-    void GetSelectMaxMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t &maxValue, uint32_t &minValue)
+    void GetSelectMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue, uint32_t& minValue)
     ```
 
     ```
-    void GetSelectWithBytesMaskMaxMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t &maxValue, uint32_t &minValue)
+    void GetSelectWithBytesMaskMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue, uint32_t& minValue)
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

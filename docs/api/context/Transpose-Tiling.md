@@ -7,34 +7,42 @@
 ## 函数原型<a name="section620mcpsimp"></a>
 
 > [!NOTE]说明 
->GetConfusionTransposeMaxMinTmpSize、GetConfusionTransposeTilingInfo接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetTransposeMaxMinTmpSize、GetTransposeTilingInfo接口。
+>GetConfusionTransposeMaxMinTmpSize、GetConfusionTransposeTilingInfo、GetConfusionTransposeOnlyTilingInfo接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetTransposeMaxMinTmpSize、GetTransposeTilingInfo接口。
 
 -   获取最小临时空间大小
 
     ```
-    void GetTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue)
+    void GetTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue, uint32_t& minValue)
     ```
 
     ```
-    void GetConfusionTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue)
+    void GetConfusionTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const uint32_t transposeTypeIn, uint32_t& maxValue, uint32_t& minValue)
     ```
 
 -   获取Transpose Tiling
 
     ```
-    void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling)
+    void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling)
     ```
 
     ```
-    void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling)
+    void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling)
     ```
 
     ```
-    void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling &tiling)
+    void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
     ```
 
     ```
-    void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling &tiling)
+    void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, AscendC::tiling::ConfusionTransposeTiling& tiling)
+    ```
+
+    ```
+    void GetConfusionTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling)
+    ```
+
+    ```
+    void GetConfusionTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize, const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling)
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

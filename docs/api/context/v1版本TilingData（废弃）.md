@@ -165,7 +165,7 @@ AI CPU启动下发通信任务前，需获取固定的通信配置[Mc2Msg](#tabl
 <tr id="row04198108203"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p1416221415206"><a name="p1416221415206"></a><a name="p1416221415206"></a>commAlg</p>
 </td>
 <td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.2 "><p id="p1571952423615"><a name="p1571952423615"></a><a name="p1571952423615"></a>设置具体通信算法，用户需要在Tiling中显式赋值，uint8_t类型，当前支持的取值如下：</p>
-<p id="p1033863881112"><a name="p1033863881112"></a><a name="p1033863881112"></a>1：FullMesh算法，即NPU之间的全连接，任意两个NPU之间可以直接进行数据收发。</p>
+<p id="p34441520123912"><a name="p34441520123912"></a><a name="p34441520123912"></a>1：FullMesh算法，即NPU之间的全连接，任意两个NPU之间可以直接进行数据收发。</p>
 </td>
 </tr>
 <tr id="row9902101682017"><td class="cellrowborder" valign="top" width="50%" headers="mcps1.2.3.1.1 "><p id="p1847792110209"><a name="p1847792110209"></a><a name="p1847792110209"></a>taskType</p>
@@ -221,7 +221,7 @@ AI CPU启动下发通信任务前，需获取固定的通信配置[Mc2Msg](#tabl
 
 -   算子的Tiling Data结构需要按顺序完整包含[Mc2Msg参数](#table4835205712588)。
 -   AI CPU需获取固定数据结构的通信配置，算子注册Tiling Data时保持该结构的一致性。
--   Ascend 910C暂不支持该版本TilingData。
+-   Atlas A3 训练系列产品/Atlas A3 推理系列产品暂不支持该版本TilingData。
 
 ## 调用示例<a name="section9414023616"></a>
 

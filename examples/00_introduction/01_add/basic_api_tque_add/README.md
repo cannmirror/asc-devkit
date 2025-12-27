@@ -2,9 +2,9 @@
 ## 概述
 本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程，支持main函数和kernel函数在同一个cpp文件中实现。
 
-## 支持的AI处理器
-- Ascend 910C
-- Ascend 910B
+## 支持的产品
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
 ## 目录结构介绍
 ```
 ├── basic_api_tque_add

@@ -23,7 +23,7 @@ conv3dBpDwTiling.SetWeightType(ConvCommonApi::TPosition::CO1,
 conv3dBpDwTiling.SetInputType(ConvCommonApi::TPosition::GM,
                                  ConvCommonApi::ConvFormat::NDC1HWC0,
                                  ConvCommonApi::ConvDtype::FLOAT16);
-conv3dBpDwTiling.SetGradOutptutType(ConvCommonApi::TPosition::GM,
+conv3dBpDwTiling.SetGradOutputType(ConvCommonApi::TPosition::GM,
                                    ConvCommonApi::ConvFormat::NDC1HWC0,
                                    ConvCommonApi::ConvDtype::FLOAT16);
 conv3dBpDwTiling.SetGradOutputShape(n, c, d, h, w);

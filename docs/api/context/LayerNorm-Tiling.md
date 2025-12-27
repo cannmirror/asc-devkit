@@ -386,7 +386,7 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
     extern "C" __global__ __aicore__ void func_custom(GM_ADDR x, GM_ADDR gamma, GM_ADDR beta, GM_ADDR mean, GM_ADDR rstd, GM_ADDR y, GM_ADDR workspace, GM_ADDR tiling)
     {
         GET_TILING_DATA(tilingData, tiling);
-        float epsion = tilingData.espilon;
+        float epsilon = tilingData.epsilon;
         AscendC::LayerNormPara para(tilingData.aLength, tilingData.rLengthWithPadding);
         KernelFunc op;
         op.Init(x, gamma, beta, mean, rstd, y, epsilon, para, tilingData.layernormTilingData);

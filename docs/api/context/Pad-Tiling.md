@@ -7,7 +7,7 @@
 ## 函数原型<a name="section1324615832716"></a>
 
 ```
-void GetPadMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, uint32_t &maxValue, uint32_t &minValue)
+void GetPadMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```

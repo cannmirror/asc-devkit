@@ -23,7 +23,7 @@
 ## 函数原型<a name="section175663209344"></a>
 
 ```
-void GetAscendDequantTmpBufferFactorSize(const ge::Shape &srcShape, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetAscendDequantTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 ```
 
 ## 参数说明<a name="section8566182019343"></a>

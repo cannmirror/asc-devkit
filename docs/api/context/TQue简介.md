@@ -48,7 +48,7 @@ que.FreeTensor(a2);</pre>
 </tr>
 <tr id="row3501135910920"><td class="cellrowborder" valign="top" width="14.099999999999998%" headers="mcps1.2.3.1.1 "><p id="p6501175912914"><a name="p6501175912914"></a><a name="p6501175912914"></a>mask</p>
 </td>
-<td class="cellrowborder" valign="top" width="85.9%" headers="mcps1.2.3.1.2 "><a name="ul4317543497"></a><a name="ul4317543497"></a><ul id="ul4317543497"><li>mask是const TQueConfig*类型时，TQueConfig结构定义和参数说明如下，调用示例见<a href="#section45805354920">调用示例</a>:<a name="screen13896155731115"></a><a name="screen13896155731115"></a><pre class="screen" codetype="Cpp" id="screen13896155731115">struct TQueConfig {
+<td class="cellrowborder" valign="top" width="85.9%" headers="mcps1.2.3.1.2 "><a name="ul4317543497"></a><a name="ul4317543497"></a><ul id="ul4317543497"><li>mask是const TQueConfig*类型时，TQueConfig结构定义和参数说明如下:<a name="screen13896155731115"></a><a name="screen13896155731115"></a><pre class="screen" codetype="Cpp" id="screen13896155731115">struct TQueConfig {
     bool scmBlockGroup = false;  // TSCM相关参数，预留参数，默认为false
     uint32_t bufferLen = 0;  // 与InitBuffer时输入的len参数保持一致，可以在编译期做性能优化，<strong id="b1084715241371"><a name="b1084715241371"></a><a name="b1084715241371"></a>传0表示在InitBuffer时做资源分配</strong>。
     uint32_t bufferNumber = 0;  // 与InitBuffer时输入的num参数保持一致，可以在编译期做性能优化，<strong id="b132591319977"><a name="b132591319977"></a><a name="b132591319977"></a>传0表示在InitBuffer时做资源分配</strong>。
@@ -67,9 +67,9 @@ que.FreeTensor(a2);</pre>
 
 由于TQue分配的Buffer存储着同步事件eventID，故同一个TPosition上TQue Buffer的数量与硬件的同步事件eventID有关。
 
-Ascend 910B，eventID的数量为8
+Atlas A2 训练系列产品/Atlas A2 推理系列产品，eventID的数量为8
 
-Ascend 910C，eventID的数量为8
+Atlas A3 训练系列产品/Atlas A3 推理系列产品，eventID的数量为8
 
 QUE的Buffer数量最大也分别为8个或4个，即能插入的同步事件的个数为8个或4个。当用TPipe的InitBuffer申请TQue时，会受到Buffer数量的限制，TQue能申请到的最大个数分别为8个或4个。
 
@@ -122,74 +122,5 @@ que0.FreeTensor<half>(tensor1);
 que0.FreeAllEvent(); // 释放que0的所有同步事件，之后可继续申请TQue
 AscendC::TQue<AscendC::TPosition::VECIN, 1> que1;
 pipe.InitBuffer(que1, 1, len);
-```
-
-## 调用示例<a name="section45805354920"></a>
-
-以下用例通过传入TQueConfig使能bufferNumber的编译期计算。vector算子不涉及数据格式的转换，所以nd2nz和nz2nd是false。
-
-```
-// 用户自定义的构造TQueConfig的元函数
-__aicore__ constexpr AscendC::TQueConfig GetMyTQueConfig(bool nd2nzIn, bool nz2ndIn, bool scmBlockGroupIn,
-    uint32_t bufferLenIn, uint32_t bufferNumberIn, uint32_t consumerSizeIn, const AscendC::TPosition consumerIn[])
-{
-    return {
-        .nd2nz = nd2nzIn,
-        .nz2nd = nz2ndIn,
-        .scmBlockGroup = scmBlockGroupIn,
-        .bufferLen = bufferLenIn,
-        .bufferNumber = bufferNumberIn,
-        .consumerSize = consumerSizeIn,
-        .consumer = {consumerIn[0], consumerIn[1], consumerIn[2], consumerIn[3],
-            consumerIn[4], consumerIn[5], consumerIn[6], consumerIn[7]}
-    };
-}
-static constexpr AscendC::TPosition tp[8] = {AscendC::TPosition::MAX, AscendC::TPosition::MAX, AscendC::TPosition::MAX, AscendC::TPosition::MAX,
-            AscendC::TPosition::MAX, AscendC::TPosition::MAX, AscendC::TPosition::MAX, AscendC::TPosition::MAX};
-static constexpr AscendC::TQueConfig conf = GetMyTQueConfig(false, false, false, 0, 1, 0, tp);
-template <typename srcType> class KernelAscendQuant {
-public:
-    __aicore__ inline KernelAscendQuant() {}
-    __aicore__ inline void Init(GM_ADDR src_gm, GM_ADDR dst_gm, uint32_t inputSize)
-    {
-        dataSize = inputSize;
-        src_global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType*>(src_gm), dataSize);
-        dst_global.SetGlobalBuffer(reinterpret_cast<__gm__ int8_t*>(dst_gm), dataSize);
-        pipe.InitBuffer(inQueueX, 1, dataSize * sizeof(srcType));
-        pipe.InitBuffer(outQueue, 1, dataSize * sizeof(int8_t));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-private:
-    __aicore__ inline void CopyIn()
-    {
-        ...
-    }
-    __aicore__ inline void Compute()
-    {
-        ...
-    }
-    __aicore__ inline void CopyOut()
-    {
-        ...
-    }
-private:
-    AscendC::GlobalTensor<srcType> src_global;
-    AscendC::GlobalTensor<int8_t> dst_global;
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1, &conf> inQueueX;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1, &conf> outQueue;
-    uint32_t dataSize = 0;
-};
-template <typename dataType> __aicore__ void kernel_ascend_quant_operator(GM_ADDR src_gm, GM_ADDR dst_gm, uint32_t dataSize)
-{
-    KernelAscendQuant<dataType> op;
-    op.Init(src_gm, dst_gm, dataSize);
-    op.Process();
-}
 ```
 

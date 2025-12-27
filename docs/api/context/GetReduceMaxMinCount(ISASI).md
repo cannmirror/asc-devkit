@@ -1,9 +1,9 @@
 # GetReduceMaxMinCount\(ISASI\)<a name="ZH-CN_TOPIC_0000001790206714"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="50.71000000000001%" id="mcps1.1.4.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="50.71000000000001%" id="mcps1.1.4.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="25.770000000000003%" id="mcps1.1.4.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持（仅获取最值的原型）</p>
 </th>
@@ -11,14 +11,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="50.71000000000001%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="50.71000000000001%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="25.770000000000003%" headers="mcps1.1.4.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="23.520000000000003%" headers="mcps1.1.4.1.3 "><p id="p1171034915"><a name="p1171034915"></a><a name="p1171034915"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="50.71000000000001%" headers="mcps1.1.4.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="50.71000000000001%" headers="mcps1.1.4.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="25.770000000000003%" headers="mcps1.1.4.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>x</p>
 </td>
@@ -101,8 +101,8 @@
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
--   针对Ascend 910B，由于ReduceMax/ReduceMin的内部实现原因，直接调用GetReduceMaxMinCount接口无法获取到准确的索引值，验证时需要使用[WholeReduceMax](WholeReduceMax.md)/[WholeReduceMin](WholeReduceMin.md)接口来获取准确的索引值。
--   针对Ascend 910C，由于ReduceMax/ReduceMin的内部实现原因，直接调用GetReduceMaxMinCount接口无法获取到准确的索引值，验证时需要使用[WholeReduceMax](WholeReduceMax.md)/[WholeReduceMin](WholeReduceMin.md)接口来获取准确的索引值。
+-   针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，由于ReduceMax/ReduceMin的内部实现原因，直接调用GetReduceMaxMinCount接口无法获取到准确的索引值，验证时需要使用[WholeReduceMax](WholeReduceMax.md)/[WholeReduceMin](WholeReduceMin.md)接口来获取准确的索引值。
+-   针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，由于ReduceMax/ReduceMin的内部实现原因，直接调用GetReduceMaxMinCount接口无法获取到准确的索引值，验证时需要使用[WholeReduceMax](WholeReduceMax.md)/[WholeReduceMin](WholeReduceMin.md)接口来获取准确的索引值。
 -   索引maxMinIndex数据\`是按照ReduceMax/ReduceMin的数据类型进行存储的，比如ReduceMax/ReduceMin使用half类型时，maxMinIndex是按照half类型进行存储的，如果按照half格式进行读取，maxMinIndex的值是不对的，因此maxMinIndex的读取需要使用reinterpret\_cast方法转换到整数类型，若输入数据类型是half，需要使用reinterpret\_cast<uint16\_t\*\>，若输入是float，需要使用reinterpret\_cast<uint32\_t\*\>。
 
 ## 调用示例<a name="section837496171220"></a>
@@ -119,7 +119,7 @@
 
 2.  获取上述ReduceMax指令的最值与索引值。
 
-    针对Ascend 910B，需要使用WholeReduceMax指令获取准确的索引值，然后再调用GetReduceMaxMinCount指令。
+    针对Atlas A2 训练系列产品/Atlas A2 推理系列产品，需要使用WholeReduceMax指令获取准确的索引值，然后再调用GetReduceMaxMinCount指令。
 
     ```
     AscendC::LocalTensor<float> src;
@@ -131,7 +131,7 @@
     AscendC::GetReduceMaxMinCount<float>(val, idx);
     ```
 
-    针对Ascend 910C，需要使用WholeReduceMax指令获取准确的索引值，然后再调用GetReduceMaxMinCount指令。
+    针对Atlas A3 训练系列产品/Atlas A3 推理系列产品，需要使用WholeReduceMax指令获取准确的索引值，然后再调用GetReduceMaxMinCount指令。
 
     ```
     AscendC::LocalTensor<float> src;

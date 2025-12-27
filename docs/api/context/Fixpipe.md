@@ -1,32 +1,32 @@
 # Fixpipe<a name="ZH-CN_TOPIC_0000001449528792"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>仅支持包含FixpipeParamsV220参数的接口。</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>仅支持包含FixpipeParamsV220参数的接口。</p>
 </td>
 </tr>
-<tr id="row436141614210"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p07746191307"><a name="p07746191307"></a><a name="p07746191307"></a><span id="ph880814542020"><a name="ph880814542020"></a><a name="ph880814542020"></a>Kirin X90</span></p>
+<tr id="row675818532589"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7743750164"><a name="p7743750164"></a><a name="p7743750164"></a><span id="ph171873262101"><a name="ph171873262101"></a><a name="ph171873262101"></a>Kirin X90</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p18774619608"><a name="p18774619608"></a><a name="p18774619608"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p35541780589"><a name="p35541780589"></a><a name="p35541780589"></a>√</p>
 </td>
 </tr>
-<tr id="row15487816124216"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p4336317115"><a name="p4336317115"></a><a name="p4336317115"></a><span id="ph115418716"><a name="ph115418716"></a><a name="ph115418716"></a>Kirin 9030</span></p>
+<tr id="row1516416569588"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p277014435153"><a name="p277014435153"></a><a name="p277014435153"></a><span id="ph081875221011"><a name="ph081875221011"></a><a name="ph081875221011"></a>Kirin  9030</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p73313312117"><a name="p73313312117"></a><a name="p73313312117"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1992311175812"><a name="p1992311175812"></a><a name="p1992311175812"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -43,14 +43,14 @@
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsV220& intriParams)
+        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsV220& intriParams)
         ```
 
     -   通路CO1-\>GM，使能tensor量化功能：
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR, typename S = uint64_t, typename Std::enable_if<Std::is_same<PrimT<S>, uint64_t>::value, bool>::type = true>
-        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<S>& cbufWorkspace, const FixpipeParamsV220& intriParams);
+        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const LocalTensor<S>& cbufWorkspace, const FixpipeParamsV220& intriParams)
         ```
 
 -   传入FixpipeParamsM300
@@ -58,7 +58,7 @@
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsM300& intriParams)
+        __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsM300& intriParams)
         ```
 
     -   通路CO1-\>UB，使能tensor量化功能：
@@ -72,7 +72,7 @@
 
         ```
         template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
-        void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsM300& intriParams)
+        __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsM300& intriParams)
         ```
 
     -   通路CO1-\>GM，使能tensor量化功能：
@@ -146,10 +146,10 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 <td class="cellrowborder" valign="top" width="10.291029102910292%" headers="mcps1.2.4.1.2 "><p id="p5590551181016"><a name="p5590551181016"></a><a name="p5590551181016"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="75.52755275527552%" headers="mcps1.2.4.1.3 "><p id="p255711621817"><a name="p255711621817"></a><a name="p255711621817"></a>目的操作数，类型为<a href="GlobalTensor.md">GlobalTensor</a>。</p>
-<a name="ul16146134605518"></a><a name="ul16146134605518"></a><ul id="ul16146134605518"><li>针对GlobalTensor：<p id="p1415845205514"><a name="p1415845205514"></a><a name="p1415845205514"></a><span id="ph29201555165"><a name="ph29201555165"></a><a name="ph29201555165"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Ascend 910C</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
-<p id="p51581952155513"><a name="p51581952155513"></a><a name="p51581952155513"></a><span id="ph1920105519169"><a name="ph1920105519169"></a><a name="ph1920105519169"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Ascend 910B</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
-<p id="p254413141371166"><a name="p254413141371166"></a><span id="ph173281128266"><a name="ph173281128266"></a>Kirin X90</span>，支持数据类型为：int8_t/half/int32_t</p>
-<p id="p214413141371166"><a name="p214413141371166"></a><span id="ph173281128266"><a name="ph173281128266"></a>Kirin 9030</span>，支持数据类型为：half</p>
+<a name="ul16146134605518"></a><a name="ul16146134605518"></a><ul id="ul16146134605518"><li>针对GlobalTensor：<p id="p1415845205514"><a name="p1415845205514"></a><a name="p1415845205514"></a><span id="ph29201555165"><a name="ph29201555165"></a><a name="ph29201555165"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
+<p id="p51581952155513"><a name="p51581952155513"></a><a name="p51581952155513"></a><span id="ph1920105519169"><a name="ph1920105519169"></a><a name="ph1920105519169"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：int8_t、uint8_t、half、bfloat16_t、int32_t、float。</p>
+<p id="p188631153135912"><a name="p188631153135912"></a><a name="p188631153135912"></a><span id="ph1646019361301"><a name="ph1646019361301"></a><a name="ph1646019361301"></a>Kirin X90</span>，支持的数据类型为：int8_t、half、int32_t。</p>
+<p id="p1913102516015"><a name="p1913102516015"></a><a name="p1913102516015"></a><span id="ph81320391800"><a name="ph81320391800"></a><a name="ph81320391800"></a>Kirin 9030</span>，支持的数据类型为：half。</p>
 <p id="p15158175275514"><a name="p15158175275514"></a><a name="p15158175275514"></a>数据格式为NZ或ND格式。经过Fixpipe处理，在量化操作之后，会将矩阵计算中多申请的数据删除。</p>
 </li></ul>
 </td>
@@ -296,15 +296,21 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 
 不使能NZ2ND的情况下，参数设置示例（通过Fixpipe接口搬运并去除dummy数据）和解释说明如下：
 
+当M方向上的数据元素个数不是16的倍数时，硬件会额外读取dummy数据，并在写入目标位置后丢弃这些dummy数据。矩阵块被定义为连续的16\*16的数据块，个数为M/16向上取整，矩阵块的长度为M\*16\*sizeof\(T\)，T是数据类型。
+
+单搬运模式：
+
 -   nSize = 48，表示源NZ矩阵中待搬运矩阵（图中蓝色区域）在N方向上的大小为48个元素。
 -   mSize = 24，表示源NZ矩阵中待搬运矩阵在M方向上的大小为24个元素。
 -   srcStride = 64，表示源NZ矩阵中待搬运矩阵相邻Z排布的起始地址偏移，即下图中第一个蓝色Z排布的起始地址与第二个蓝色Z排布的起始地址之间的间隔为64 \* C0\_Size。
 -   dstStride = 40，表示目的NZ矩阵中相邻Z排布的起始地址偏移，即下图中第一个蓝色Z排布的起始地址与第二个蓝色Z排布的起始地址之间的间隔为40 \* 32B。
 
-**图 1**  不使能NZ2ND参数设置示意图<a name="fig128961542184620"></a>  
-![](figures/不使能NZ2ND参数设置示意图.png "不使能NZ2ND参数设置示意图")
+**图 1**  不使能NZ2ND参数的单搬运模式设置示意图、<a name="fig128961542184620"></a>  
+![](figures/不使能NZ2ND参数的单搬运模式设置示意图.png "不使能NZ2ND参数的单搬运模式设置示意图")
 
 使能NZ2ND的情况下，参数设置示例和解释说明如下：
+
+单搬入模式
 
 -   ndNum = 2，表示源NZ矩阵的数目为2。图中蓝色区域为NZ矩阵1，紫色区域为NZ矩阵2。
 

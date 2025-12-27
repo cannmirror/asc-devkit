@@ -23,7 +23,7 @@
 ## 函数原型<a name="section175663209344"></a>
 
 ```
-void GetTruncTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetTruncTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 ```
 
 ## 参数说明<a name="section8566182019343"></a>

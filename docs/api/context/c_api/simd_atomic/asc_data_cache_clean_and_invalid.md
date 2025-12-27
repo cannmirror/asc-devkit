@@ -1,11 +1,11 @@
 # asc_data_cache_clean_and_invalid
 
-## 昇腾AI处理器支持情况
+## 昇腾产品支持情况
 
-|昇腾AI处理器类型   | 是否支持 |
+|昇腾产品   | 是否支持 |
 | ------------|:----:|
-| Ascend 910C | √    |
-| Ascend 910B | √    |
+| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √    |
+| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √    |
 
 ## 功能说明
 

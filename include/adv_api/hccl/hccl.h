@@ -34,7 +34,7 @@ static constexpr HcclServerConfig DEFAULT_CFG = {CoreType::DEFAULT, 0};
  *          4) Call the Wait interface (blocking) to wait for the server to complete the corresponding comm task.
  *          5) Call the Finalize interface to notify the server that there will be no comm tasks in the future.
  *             Once all comm tasks are executed, server can exit.
- *        On Ascend 910B/Ascend 910_93, users must specify whether the interface runs on the AICube core or the AIVector
+ *        On Atlas A2 训练系列产品/Atlas A2 推理系列产品/Ascend 910_93, users must specify whether the interface runs on the AICube core or the AIVector
  *        core when calling interfaces in class Hccl.
  * @tparam serverType: Only HcclServerType::HCCL_SERVER_TYPE_AICPU supported.
  *         config: The configuration for the HCCL instance.

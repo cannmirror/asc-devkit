@@ -7,7 +7,7 @@
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-int32_t GetBaseM()
+int32_t GetBaseM() const
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

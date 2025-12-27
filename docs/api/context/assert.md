@@ -1,22 +1,32 @@
 # assert<a name="ZH-CN_TOPIC_0000001920717221"></a>
 
-## AI处理器支持情况<a name="section1550532418810"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
 <a name="table38301303189"></a>
-<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>AI处理器类型</span></p>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
 <th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Ascend 910C</term></span></p>
+<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
 </tr>
-<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Ascend 910B</term></span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+</td>
+</tr>
+<tr id="row648964611192"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p10490114610191"><a name="p10490114610191"></a><a name="p10490114610191"></a><span id="ph313972632217"><a name="ph313972632217"></a><a name="ph313972632217"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1649024651913"><a name="p1649024651913"></a><a name="p1649024651913"></a>√</p>
+</td>
+</tr>
+<tr id="row284174811198"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17841124812194"><a name="p17841124812194"></a><a name="p17841124812194"></a><span id="ph8311430102211"><a name="ph8311430102211"></a><a name="ph8311430102211"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p984174841913"><a name="p984174841913"></a><a name="p984174841913"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -37,34 +47,14 @@ int assertFlag = 10;
 assert(assertFlag == 10);
 ```
 
-> [!CAUTION]注意  
->assert接口打印功能会对算子实际运行的性能带来一定影响（每一条assert，系统会额外增加一条逻辑判断，具体性能影响取决于代码中assert的使用数量），通常在调测阶段使用。开发者可以按需通过如下方式关闭打印功能。
->-   自定义算子工程
->    修改算子工程op\_kernel目录下的CMakeLists.txt文件，首行增加编译选项-DASCENDC\_DUMP=0，关闭ASCENDC\_DUMP开关，示例如下：
->    ```
->    // 关闭所有算子的打印功能
->    add_ops_compile_options(ALL OPTIONS -DASCENDC_DUMP=0)
->    ```
->-   Kernel直调工程
->    -   修改cmake目录下的npu\_lib.cmake文件，在ascendc\_compile\_definitions命令中增加ASCENDC\_DUMP=0宏定义来关闭NPU侧ASCENDC\_DUMP开关。示例如下：
->        ```
->        // 关闭所有算子的打印功能
->        ascendc_compile_definitions(ascendc_kernels_${RUN_MODE} PRIVATE
->            ASCENDC_DUMP=0
->        )
->        ```
->    -   修改cmake目录下的cpu\_lib.cmake文件，在target\_compile\_definitions命令中增加ASCENDC\_DUMP=0宏定义来关闭CPU侧ASCENDC\_DUMP开关。示例如下：
->        ```
->        target_compile_definitions(ascendc_kernels_${RUN_MODE} PRIVATE
->            ASCENDC_DUMP=0
->        )
->        ```
+> [!CAUTION]注意 
+>assert接口打印功能会对算子实际运行的性能带来一定影响（每一条assert，系统会额外增加一条逻辑判断，具体性能影响取决于代码中assert的使用数量），通常在调测阶段使用。开发者可以按需通过设置ASCENDC\_DUMP=0来关闭打印功能。
 
-NPU域，在assert条件被触发时，在断言信息前面会自动打印CANN\_VERSION\_STR值与CANN\_TIMESTAMP值。其中，CANN\_VERSION\_STR与CANN\_TIMESTAMP为宏定义，CANN\_VERSION\_STR代表CANN软件包的版本号信息，形式为字符串，CANN\_TIMESTAMP为CANN软件包发布时的时间戳，形式为数值\(uint64\_t\)。开发者也可在代码中直接使用这两个宏。NPU域assert打印信息示例如下：
+NPU域assert打印信息示例如下（DumpHead信息仅在使用自定义算子工程时才会打印）：
 
 ```
 DumpHead: AIV-0, CoreType=AIV, block dim=8, total_block_num=8, block_remain_len=696, block_initial_space=1024, rsv=0, magic=5aa5bccd
-[ASSERT][CANN_VERSION : XXX.XX][TimeStamp : 20240807140556417] /home/.../add_custom.cpp:44: Assertion `assertFlag != 10'
+[ASSERT] /home/.../add_custom.cpp:44: Assertion `assertFlag != 10'
 ```
 
 CPU域assert打印信息示例如下：
@@ -139,8 +129,10 @@ assert(expr, __gm__ const char *fmt, Args&&... args) // 该接口已废弃，请
 
 -   该接口不支持打印除换行符之外的其他转义字符。
 -   该接口不支持simulator仿真模式。
--   该接口使用Dump功能，所有使用Dump功能的接口在每个核上Dump的数据总量不可超过1M。请开发者自行控制待打印的内容数据量，超出则不会打印。
--   该接口使用空间每个核上不可超过1k。请开发者自行控制待打印的内容数据量，超出则不会打印。
+-   单次调用本接口打印的数据总量不可超过1MB（还包括少量框架需要的头尾信息，通常可忽略）。使用时应注意，如果超出这个限制，则数据不会被打印。
+-   使用自定义算子工程时，存在以下限制：
+    -   该接口使用Dump功能，一个算子所有使用Dump功能的接口在每个核上Dump的数据总量不可超过1M。请开发者自行控制待打印的内容数据量，超出则不会打印。
+    -   该接口使用空间每个核上不可超过1k。请开发者自行控制待打印的内容数据量，超出则不会打印。
 
 ## 调用示例<a name="section82241477610"></a>
 

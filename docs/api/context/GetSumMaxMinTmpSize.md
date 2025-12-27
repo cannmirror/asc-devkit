@@ -10,7 +10,7 @@ kernel侧Sum接口的计算需要开发者预留/申请临时空间，本接口�
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-inline void GetSumMaxMinTmpSize(const uint32_t n, const uint32_t typeSize, const bool isReuseSource, uint32_t &maxSize, uint32_t &minSize)
+inline void GetSumMaxMinTmpSize(const uint32_t n, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxSize, uint32_t& minSize)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>

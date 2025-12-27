@@ -1,9 +1,9 @@
 # VectorAdd算子直调样例
 ## 概述
 本样例介绍Add算子的核函数直调方法，算子支持单核运行。
-## 支持的AI处理器
-- Ascend 910C
-- Ascend 910B
+## 支持的产品
+- Atlas A3 训练系列产品/Atlas A3 推理系列产品
+- Atlas A2 训练系列产品/Atlas A2 推理系列产品
 ## 目录结构介绍
 ```
 ├── 11_vectoradd

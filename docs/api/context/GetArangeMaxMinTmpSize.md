@@ -12,11 +12,11 @@
 >GetArithProgressionMaxMinTmpSize接口废弃，并将在后续版本移除，请不要使用该接口。请使用GetArangeMaxMinTmpSize接口。
 
 ```
-void GetArangeMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue)
+void GetArangeMaxMinTmpSize(uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ```
-void GetArithProgressionMaxMinTmpSize(uint32_t &maxValue, uint32_t &minValue)
+void GetArithProgressionMaxMinTmpSize(uint32_t& maxValue, uint32_t& minValue)
 ```
 
 ## 参数说明<a name="section13792185019327"></a>

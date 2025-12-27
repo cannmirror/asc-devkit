@@ -14,6 +14,9 @@ HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语
 **图 1**  AI Core下发HCCL通信任务机制<a name="fig137781871132"></a>  
 ![](figures/AI-Core下发HCCL通信任务机制.png "AI-Core下发HCCL通信任务机制")
 
+> [!CAUTION]注意 
+>对于Atlas A3 训练系列产品/Atlas A3 推理系列产品，在AI CPU作为服务端的场景中，HCCL通信API的功能依赖开放AI CPU用户态下发调度任务，存在一定的安全风险，用户需要自行确保AI Core自定义算子的安全可靠，防止恶意攻击行为。
+
 实现AI Core下发一个通信任务的具体步骤如下：
 
 1.  创建HCCL对象，并调用初始化接口[InitV2](InitV2.md)。

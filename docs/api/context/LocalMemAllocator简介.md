@@ -22,7 +22,10 @@ public:
     template <TPosition pos, class DataType, uint32_t tileSize> __aicore__ inline LocalTensor<DataType> Alloc();
     template <class DataType> LocalTensor<DataType> __aicore__ inline Alloc(uint32_t tileSize);    
     template <TPosition pos, class DataType> LocalTensor<DataType> __aicore__ inline Alloc(uint32_t tileSize);
+    
     template <class TensorTraitType> LocalTensor<TensorTraitType> __aicore__ inline Alloc();
+    
+    
 };
 ```
 
