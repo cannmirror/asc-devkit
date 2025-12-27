@@ -1,0 +1,5 @@
+build
+build_out
+scripts/package/common/__pycache__/
+scripts/package/common/py/__pycache__/
+scripts/package/common/py/utils/__pycache__/
