@@ -10,6 +10,17 @@
 
    - cmake >= 3.16.0
 
+   - patch
+
+     Ubuntu系统执行以下命令安装：
+     ```
+     sudo apt install patch
+     ```
+     EulerOS操作系统执行以下命令安装：
+     ```
+     sudo yum install patch
+     ```
+
    - lcov >= 1.16（可选，仅执行UT时依赖）
    
      下载[lcov源码](https://gitcode.com/cann-src-third-party/lcov/releases/download/v1.16/lcov-1.16.tar.gz)后，执行以下命令安装：
