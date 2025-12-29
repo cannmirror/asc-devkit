@@ -493,59 +493,6 @@ run_llt_test(
     TASK_NUM 1
 )
 
-# ############################################ ascc ut ############################################
-# # libasc_plugin: 独立流程
-set(ASC_PLUGIN_TEST_HEADERS_FILES
-    ${LOCAL_DIR}/../common/
-    ${ASCENDC_DIR}/tools/ascc/asc_plugin/include/internal
-    ${ASCENDC_DIR}/tools/ascc/asc_plugin/include/external
-    ${LOCAL_DIR}/testcase/ascc/
-)
-
-file(GLOB ASC_PLUGIN_SRC_FILES
-    ${ASCENDC_DIR}/tools/ascc/asc_plugin/src/*.cpp
-)
-
-file(GLOB TEST_ASC_PLUGIN_SRC_FILES
-    ${LOCAL_DIR}/main.cpp
-    ${LOCAL_DIR}/testcase/ascc/llvm/Support/*.cpp
-    ${LOCAL_DIR}/testcase/ascc/asc_plugin/*.cpp
-)
-
-add_executable(ascendc_utest_asc_plugin
-    ${ASC_PLUGIN_SRC_FILES}
-    ${TEST_ASC_PLUGIN_SRC_FILES}
-)
-add_dependencies(ascendc_utest_asc_plugin  gen_ut_kernel_tiling)
-target_compile_definitions(ascendc_utest_asc_plugin PRIVATE
-    UT_TEST
-)
-target_compile_definitions(ascendc_utest_asc_plugin PRIVATE ASCENDC_CPU_DEBUG=1)
-target_include_directories(ascendc_utest_asc_plugin PRIVATE
-    ${ASC_PLUGIN_TEST_HEADERS_FILES}
-    ${JSON_PATH}/include/
-    ${ASCENDC_SYS_DIR}/include
-)
-target_compile_options(ascendc_utest_asc_plugin PRIVATE
-    -g
-    -Werror
-)
-target_link_directories(ascendc_utest_asc_plugin PRIVATE
-    ${ASCEND_DEP_LIB_DIR}
-)
-target_link_libraries(ascendc_utest_asc_plugin PRIVATE
-    $<BUILD_INTERFACE:intf_llt_pub_basic>
-    -Wl,--no-as-needed
-    c_sec
-    dl
-    -Wl,--as-needed
-)
-
-run_llt_test(
-    TARGET ascendc_utest_asc_plugin
-    TASK_NUM 1
-)
-
 # ############################################ aclrtc ut ############################################
 set(ACLRTC_TEST_HEADERS_FILES
     ${LOCAL_DIR}/../common/

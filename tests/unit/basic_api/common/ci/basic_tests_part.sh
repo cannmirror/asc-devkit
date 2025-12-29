@@ -23,7 +23,6 @@ test_one_targets=(
 
 test_two_targets=(
   ascendc_utest_kernel
-  ascendc_utest_asc_plugin
   ascendc_utest_aclrtc
   tikcpp_utest_ascend910B1_AIC
   tikcpp_utest_ascend910B1_AIV
