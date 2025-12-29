@@ -31,6 +31,7 @@
 #endif
 
 namespace AscendC {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #pragma begin_pipe(V)
 
  /*!
@@ -112,6 +113,7 @@ __aicore__ inline void Atan(const LocalTensor<T>& dstTensor, const LocalTensor<T
     AtanImpl<T, isReuseSource>(dstTensor, srcTensor, calCount);
 }
 #pragma end_pipe
+#endif
 }  // namespace AscendC
 
 #endif
