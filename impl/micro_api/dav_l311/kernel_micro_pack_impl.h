@@ -20,7 +20,7 @@ namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename RegT,
     typename RegU>
-__aicore__ inline void PackImpl(RegT &dstReg, RegU &srcReg)
+__simd_callee__ inline void PackImpl(RegT &dstReg, RegU &srcReg)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
@@ -51,7 +51,7 @@ __aicore__ inline void PackImpl(RegT &dstReg, RegU &srcReg)
 
 template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename RegT,
     typename RegU>
-__aicore__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
+__simd_callee__ inline void UnPackImpl(RegT &dstReg, RegU &srcReg)
 {
     using ActualT = typename RegT::ActualT;
     using ActualU = typename RegU::ActualT;
