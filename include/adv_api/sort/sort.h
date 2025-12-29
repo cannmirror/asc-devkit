@@ -17,6 +17,10 @@
 #define LIB_SORT_SORT_H
 
 #include "kernel_operator.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "kernel_tensor.h"
+#include "../../../impl/adv_api/detail/sort/sort/sort_impl.h"
+#endif
 
 /*
  * @ingroup Sort

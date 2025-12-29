@@ -52,4 +52,4 @@ void GetAtanTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCo
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? ATAN_FLOAT_CALC_FAC : ATAN_HALF_CALC_FAC;
 }
-} // AscendC
+} // namespace AscendC

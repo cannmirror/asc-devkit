@@ -44,6 +44,10 @@ Kirin X90采用方式一。
 
 Kirin 9030采用方式一。
 
+Kirin X90采用方式一。
+
+Kirin 9030采用方式一。
+
 -   排布方式一：
 
     一次迭代可以完成32个数的排序，排序好的score与其对应的index一起以（score, index）的结构存储在dst中。不论score为half还是float类型，dst中的（score, index）结构总是占据8Bytes空间。如下所示：
@@ -190,6 +194,10 @@ __aicore__ inline void Sort(const LocalTensor<T>& dst, const LocalTensor<T>& con
     Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
     Atlas A3 训练系列产品/Atlas A3 推理系列产品
+
+    Kirin X90
+
+    Kirin 9030
 
     Kirin X90
 

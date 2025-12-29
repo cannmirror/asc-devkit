@@ -46,7 +46,8 @@ uint32_t GetConcatTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatfo
     platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
     if (socVersion == platform_ascendc::SocVersion::ASCEND910B ||
         socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+        socVersion == platform_ascendc::SocVersion::KIRINX90) {
         return 0;
     } else {
         return elemCount * REGION_PROPOSAL_DATA_SIZE_V200 * dataTypeSize;
@@ -60,7 +61,8 @@ uint32_t GetSortTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform
     platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
     if (socVersion == platform_ascendc::SocVersion::ASCEND910B ||
         socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+        socVersion == platform_ascendc::SocVersion::KIRINX90) {
         if (dataTypeSize == sizeof(float)) {
             return elemCount * REGION_PROPOSAL_DATA_SIZE_FLOAT_V220 * dataTypeSize;
         } else {

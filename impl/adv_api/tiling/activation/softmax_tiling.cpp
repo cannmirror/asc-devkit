@@ -109,7 +109,8 @@ uint32_t GetSoftMaxMaxTmpSize(const ge::Shape& srcShape, const uint32_t dataType
 
     uint32_t needSize;
     if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55||
+        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+        socVersion == platform_ascendc::SocVersion::KIRINX90 ||
         socVersion == platform_ascendc::SocVersion::MC62CM12A) {
         uint32_t needSize1 = srcM * (BASIC_TILE_NUM + srcK) + SOFTMAX_BASICBLOCK_UNIT * SOFTMAX_TMPFLASHUPDATE_COUNT +
                 (srcM + BASIC_TILE_NUM - 1) / BASIC_TILE_NUM * BASIC_TILE_NUM;
@@ -144,6 +145,7 @@ uint32_t GetSoftMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t dataType
     uint32_t needSize;
     if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
         socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+        socVersion == platform_ascendc::SocVersion::KIRINX90 ||
         socVersion == platform_ascendc::SocVersion::MC62CM12A) {
         uint32_t needSize1 = srcM * (BASIC_TILE_NUM + srcK) + SOFTMAX_BASICBLOCK_UNIT * SOFTMAX_TMPFLASHUPDATE_COUNT +
                             (srcM + BASIC_TILE_NUM - 1) / BASIC_TILE_NUM * BASIC_TILE_NUM;
