@@ -27,6 +27,7 @@
 
 namespace AscendC {
 #pragma begin_pipe(V)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 3003 && __NPU_ARCH__ != 3113)
 /*!
  * \ingroup Tanh
  * \brief compute Tanh elementwisely
@@ -105,6 +106,7 @@ __aicore__ inline void Tanh(const LocalTensor<T>& dstTensor, const LocalTensor<T
 {
     TanhImpl<T, isReuseSource>(dstTensor, srcTensor, calCount);
 }
+#endif
 #pragma end_pipe
 }  // namespace AscendC
 #endif

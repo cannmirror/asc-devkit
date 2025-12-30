@@ -419,6 +419,7 @@ bool TopKTilingFunc(const int32_t inner, const int32_t outter, const int32_t k, 
         }
     } else if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
                socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+               socVersion == platform_ascendc::SocVersion::KIRINX90 ||
                socVersion == platform_ascendc::SocVersion::MC62CM12A) {
         topKTiling.set_allDataSize(inner * outter);
         if (mode == TopKMode::TOPK_NORMAL) {
@@ -483,6 +484,7 @@ bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatfo
         GetTopKMaxMinTmpSize200(inner, outter, mode, maxValue, minValue, dataTypeSize);
     } else if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
                socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
+               socVersion == platform_ascendc::SocVersion::KIRINX90 ||
                socVersion == platform_ascendc::SocVersion::MC62CM12A) {
         GetTopKMaxMinTmpSize310(inner, outter, isInitIndex, mode, maxValue, minValue);
     } else {

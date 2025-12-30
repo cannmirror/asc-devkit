@@ -19,6 +19,9 @@
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_dequant_common.h"
 #include "../../api_check/kernel_api_check.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "ascend_dequant_l300_impl.h"
+#endif
 
 namespace AscendC {
 constexpr uint32_t FLOAT_PER_BLOCK = 8;         // 32B  = FP32(4B) * 8

@@ -36,6 +36,7 @@
 
 namespace AscendC {
 #pragma begin_pipe(V)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 3003 && __NPU_ARCH__ != 3113)
 /*
  * @ingroup TopK
  * @brief Get the top k maximum or minimum values and their corresponding indices of the last dimension.
@@ -136,6 +137,7 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
             dstValueLocal, dstIndexLocal, srcLocal, srcIndexLocal, finishLocal, k, tilling, topKInfo, isLargest);
     }
 }
+#endif
 #pragma end_pipe
 }  // namespace AscendC
 
