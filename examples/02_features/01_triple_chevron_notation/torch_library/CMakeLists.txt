@@ -21,21 +21,15 @@ execute_process(
     OUTPUT_VARIABLE TORCH_CMAKE_PATH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-message("TORCH_CMAKE_PATH is ${TORCH_CMAKE_PATH}")
 find_package(Torch REQUIRED HINTS ${TORCH_CMAKE_PATH}/Torch)
-message("TORCH_INCLUDE_DIRS is ${TORCH_INCLUDE_DIRS}")
-message("TORCH_LIBRARIES is ${TORCH_LIBRARIES}")
 
 execute_process(
     COMMAND python3 -c "import os, torch_npu; print(os.path.dirname(torch_npu.__file__))"
     OUTPUT_VARIABLE TORCH_NPU_PATH
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
-message("TORCH_NPU_PATH is ${TORCH_NPU_PATH}")
 set(TORCH_NPU_INCLUDE_DIRS ${TORCH_NPU_PATH}/include)
 set(TORCH_NPU_LIBRARIES ${TORCH_NPU_PATH}/lib)
-message("TORCH_NPU_INCLUDE_DIRS is ${TORCH_NPU_INCLUDE_DIRS}")
-message("TORCH_NPU_LIBRARIES is ${TORCH_NPU_LIBRARIES}")
 
 add_library(custom_ops SHARED
     add_custom.asc
