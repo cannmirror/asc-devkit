@@ -82,7 +82,7 @@
         <file value="filelist.csv" install_mod="550" entity="true"/>
     </file_info>
     <file_info copy_type="delivery" src_path="asc-devkit" dst_path="asc-devkit" install_path="$(TARGET_ENV)/include/version" install_type="all">
-        <file value="asc_devkit_version.h" install_mod="550" entity="true" install_softlink="$(TARGET_ENV)/include/ascendc/asc_devkit_verison.h"/>
+        <file value="asc_devkit_version.h" install_mod="550" entity="true" install_softlink="$(TARGET_ENV)/include/ascendc/asc_devkit_version.h"/>
     </file_info>
     <file_info copy_type="delivery" src_path="lib/host/asc/impl" dst_path="$(TARGET_ENV)/asc/impl" install_path="$(TARGET_ENV)/asc/impl" install_type="all">
         <file value="utils" install_mod="550" entity="true"/>
