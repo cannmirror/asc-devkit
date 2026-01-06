@@ -265,11 +265,7 @@ private:
 template <typename IMPL, const auto &MM_CFG, class INPUT_TYPE>
 class MatmulTensorInfo<IMPL, MM_CFG, INPUT_TYPE, enable_if_t<HasScalePosition<INPUT_TYPE>::value &&
     (INPUT_TYPE::TAG == InputTypeTag::scaleA || INPUT_TYPE::TAG == InputTypeTag::scaleB)>> {
-#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
-    using SrcT = INPUT_TYPE;
-#else
     using SrcT = fp8_e8m0_t;
-#endif
 
     MATMUL_USE_MODULE(MatmulShapeInfo);
 public:

@@ -32,11 +32,8 @@ class CopyCubeInBase
     MATMUL_USE_MODULE(MatmulShapeInfo);
 
     using TransT = typename INPUT_TYPE::TRANS_T;
-#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
-    using SrcT = typename INPUT_TYPE::T;
-#else
     using SrcT = typename Conditional<IsSameType<TransT, fp8_e8m0_t>::value, fp8_e8m0_t, typename INPUT_TYPE::T>::type;
-#endif
+
 public:
 
     __aicore__ inline void Init()

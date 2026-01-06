@@ -61,21 +61,6 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, 
 
 /*
  * @ingroup DataCopy Level 0
- * @brief format transform(such as dn2nz) during data load from OUT to L1
- * @param [out] dst output LocalTensor
- * @param [in] src input GlobalTensor
- * @param [in] intriParams.dnNum dn number of data to be moved
- * @param [in] intriParams.nValue n value
- * @param [in] intriParams.dValue d value in unit of element
- * @param [in] intriParams.srcDnMatrixStride stride between DN matrixs at source DN matrix in unit of element
- * @param [in] intriParams.srcDValue SRC_D value in unit of element
- * @param [in] intriParams.dstNzC0Stride stride of nz between 2 C0 in L1 in unit of C0_size
- * @param [in] intriParams.dstNzNStride stride of n between 2 C0 in L1
- * @param [in] intriParams.dstNzMatrixStride DST_nz_matrix_stride in L1 in unit of element
- */
-
-/*
- * @ingroup DataCopy Level 0
  * @brief format transform(such as nd2nz) during data load from UB to L1(Only TSCM)
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor

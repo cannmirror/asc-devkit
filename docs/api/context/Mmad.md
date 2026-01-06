@@ -423,7 +423,7 @@
 </tbody>
 </table>
 
-**表 7**  dst、fm、filter、bias支持的精度类型组合 （Kirin x90）
+**表 7**  dst、fm、filter、bias支持的精度类型组合 （Kirin X90）
 
 <a name="table128881130185314"></a>
 <table><thead align="left"><tr id="row68884308538"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.5.1.1"><p id="p1888863016536"><a name="p1888863016536"></a><a name="p1888863016536"></a><strong id="b58886308539"><a name="b58886308539"></a><a name="b58886308539"></a>左矩阵fm type</strong></p>

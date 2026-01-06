@@ -501,7 +501,7 @@ __aicore__ inline void TPipe::Destroy()
         WaitFlag<HardEvent::M_MTE1>(2);
         ReleaseEventID<HardEvent::M_MTE1>(2);
     }
-#elif __NPU_ARCH__ == 3002 || (__NPU_ARCH__ == 5102)
+#elif __NPU_ARCH__ == 3002 || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
     WaitFlag<HardEvent::M_MTE1>(0);
     ReleaseEventID<HardEvent::M_MTE1>(0);
     WaitFlag<HardEvent::M_MTE1>(1);

@@ -105,11 +105,7 @@ __aicore__ inline constexpr auto GetAuxDataType()
         uint8_t auxData = 0;
         return auxData;
     } else if constexpr (HasScalePosition<INPUT_TYPE>::value) {
-#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
-        INPUT_TYPE mxType = 0;
-#else
         fp8_e8m0_t mxType = 0;
-#endif
         return mxType;
     } else {
         uint8_t defaultData = 0;

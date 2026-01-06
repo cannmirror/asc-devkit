@@ -1484,6 +1484,5 @@ __aicore__ inline void Barrier()
     __asm__ __volatile__("");
 #endif
 }
-
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H

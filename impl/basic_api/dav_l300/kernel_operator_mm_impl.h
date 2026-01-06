@@ -21,11 +21,21 @@ namespace AscendC {
  * ************************************************************************************************* */
 /****************************L1 To L0A******************************************/
 template <typename T>
-__aicore__ inline void LoadData2DL12L0ATransposeCal(__ca__ T *dst, __cbuf__ T *src,
+__aicore__ inline void LoadData2DL12L0ATransposeCal(__ca__ T* dst, __cbuf__ T* src,
     const LoadData2dTransposeParams &loadDataParam)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR,
-        "LoadDataWithTranspose from A1 to A2 is not supported on current device"); });
+    if constexpr (B8_BYTE_SIZE == sizeof(T)) {
+        load_cbuf_to_ca_transpose((__ca__ uint8_t*)dst, (__cbuf__ uint8_t*)src, loadDataParam.startIndex,
+            loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, inc, loadDataParam.dstFracGap);
+    } else if constexpr (B16_BYTE_SIZE == sizeof(T)) {
+        load_cbuf_to_ca_transpose((__ca__ half*)dst, (__cbuf__ half*)src, loadDataParam.startIndex,
+            loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, inc, loadDataParam.dstFracGap);
+    } else if constexpr (B32_BYTE_SIZE == sizeof(T)) {
+        load_cbuf_to_ca_transpose((__ca__ uint32_t*)dst, (__cbuf__ uint32_t*)src, loadDataParam.startIndex,
+            loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, inc, loadDataParam.dstFracGap);
+    } else {
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
+    }
 }
 
 template <typename T>
@@ -46,11 +56,22 @@ __aicore__ inline void LoadData2DL12L0ACal(__ca__ T* dst, __cbuf__ T* src, const
 }
 
 /****************************L1 To L0B******************************************/
-template <typename T>
-__aicore__ inline void LoadData2DL12L0BTransposeCal(__cb__ T *dst, __cbuf__ T *src,
-    const LoadData2dTransposeParams &loadDataParam)
+template <typename T>	
+__aicore__ inline void LoadData2DL12L0BTransposeCal(__cb__ T* dst, __cbuf__ T* src,
+    const LoadData2dTransposeParams& loadDataParam)
 {
-    ASCENDC_REPORT_NOT_SUPPORT(false, "LoadDataWithTranspose with LoadData2dTransposeParams is not supported on current device");
+    if constexpr (B8_BYTE_SIZE == sizeof(T)) {
+        load_cbuf_to_cb_transpose((__cb__ uint8_t*)dst, (__cbuf__ uint8_t*)src, loadDataParam.startIndex,
+            loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, inc, loadDataParam.dstFracGap);
+    } else if constexpr (B16_BYTE_SIZE == sizeof(T)) {
+        load_cbuf_to_cb_transpose((__cb__ half*)dst, (__cbuf__ half*)src, loadDataParam.startIndex,
+            loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, inc, loadDataParam.dstFracGap);
+    } else if constexpr (B32_BYTE_SIZE == sizeof(T)) {
+        load_cbuf_to_cb_transpose((__cb__ uint32_t*)dst, (__cbuf__ uint32_t*)src, loadDataParam.startIndex,
+            loadDataParam.repeatTimes, loadDataParam.srcStride, loadDataParam.dstGap, inc, loadDataParam.dstFracGap);
+    } else {
+        ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported!"); });
+    }
 }
 
 template <typename T>
@@ -482,15 +503,8 @@ __aicore__ inline void InitL0BNzMatrixCal(__cb__ T *dst, const InitConstValuePar
  * ************************************************************************************************* */
 __aicore__ inline void SetLoadDataRepeatCal(const LoadDataRepeatParam& repeatParams)
 {
-    uint64_t rptConfig = 0;
-    constexpr uint32_t repeatTimeShiftBit = 16;
-    rptConfig |= uint64_t(repeatParams.repeatStride);
-    rptConfig |= uint64_t(repeatParams.repeatTime) << repeatTimeShiftBit;
-    constexpr uint32_t repeatModeShiftBit = 24;
-    rptConfig |= uint64_t(repeatParams.repeatMode) << repeatModeShiftBit;
-
-    constexpr uint32_t dstStrideShiftBit = 32;
-    rptConfig |= uint64_t(repeatParams.dstStride) << dstStrideShiftBit;
+    uint64_t rptConfig = static_cast<uint64_t>(repeatParams.repeatStride) | (static_cast<uint64_t>(repeatParams.repeatTime) << 16) |
+        (static_cast<uint64_t>(repeatParams.repeatMode) << 24);
     set_l3d_rpt(rptConfig);
 }
 
