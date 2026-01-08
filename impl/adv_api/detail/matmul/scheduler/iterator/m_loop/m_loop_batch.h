@@ -143,7 +143,7 @@ private:
 
     __aicore__ inline void CalcParamsFromTiling(int32_t singleShape)
     {
-        mIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM());
+        mIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()));
         tailM_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
         if (tailM_ == 0) {
             tailM_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();

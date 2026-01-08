@@ -72,10 +72,10 @@ public:
             l1 = MATMUL_MODULE(CubeInBuffer)->GetBuffer(posL1, bufferPos);
         } else {
             l1 = MATMUL_MODULE(CubeInBuffer)->AllocTensor(bufferPos);
-            MATMUL_MODULE(DataCopyUtils)->CopyTileToCube(l1, curRow, curCol, tileHeight >> 1, tileWidth);
+            MATMUL_MODULE(DataCopyUtils)->CopyTileToCube(l1, curRow, curCol, Ceil(tileHeight, 2), tileWidth);
             auto gmIdx = MATMUL_MODULE(MatmulTensorInfo)->GetGlobalSparseIndex();
             auto l1Idx = MATMUL_MODULE(MatmulTensorInfo)->GetLocalSparseIndex();
-            MATMUL_MODULE(DataCopyUtils)->CopySparseIdxToCubeFromGM(l1Idx, gmIdx, curRow, curCol, tileHeight >> 1, tileWidth);
+            MATMUL_MODULE(DataCopyUtils)->CopySparseIdxToCubeFromGM(l1Idx, gmIdx, curRow, curCol, Ceil(tileHeight, 2), tileWidth);
             MATMUL_MODULE(CubeInBuffer)->EnQue(l1);
             MATMUL_MODULE(CubeInBuffer)->DeQue();
         }

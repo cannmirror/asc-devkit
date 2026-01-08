@@ -215,8 +215,8 @@ private:
     SetSingleShapeFromCFG(AscendC::Std::integral_constant<PolicyType, P>)
     {
         totalIter_ = GetMIter(MM_CFG);
-        outerIter_ = Ceil(ToMatmulConfig(MM_CFG).singleCoreM,
-                            ToMatmulConfig(MM_CFG).basicM * ToMatmulConfig(MM_CFG).stepM);
+        outerIter_ = Ceil(static_cast<uint32_t>(ToMatmulConfig(MM_CFG).singleCoreM),
+                            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).basicM * ToMatmulConfig(MM_CFG).stepM));
         tailBaseShape_ = ToMatmulConfig(MM_CFG).singleCoreM % ToMatmulConfig(MM_CFG).basicM;
         if (tailBaseShape_ == 0) {
             tailBaseShape_ = ToMatmulConfig(MM_CFG).basicM;
@@ -262,7 +262,7 @@ private:
             totalIter_ += 1;
         }
         mainTileShape_ = tilingBaseM * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepM();
-        outerIter_ = Ceil(singleShape, mainTileShape_);
+        outerIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(mainTileShape_));
         tailTileShape_ = singleShape % mainTileShape_;
         if (tailTileShape_ == 0) {
             tailTileShape_ = mainTileShape_;

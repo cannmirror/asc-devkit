@@ -175,8 +175,8 @@ private:
     __aicore__ inline void SetSingleShapeFromCFG()
     {
         totalIter_ = GetNIter(MM_CFG);
-        outerIter_ = Ceil(ToMatmulConfig(MM_CFG).singleCoreN,
-                            ToMatmulConfig(MM_CFG).basicN * ToMatmulConfig(MM_CFG).stepN);
+        outerIter_ = Ceil(static_cast<uint32_t>(ToMatmulConfig(MM_CFG).singleCoreN),
+                            static_cast<uint32_t>(ToMatmulConfig(MM_CFG).basicN * ToMatmulConfig(MM_CFG).stepN));
         tailBaseShape_ = ToMatmulConfig(MM_CFG).singleCoreN % ToMatmulConfig(MM_CFG).basicN;
         if (tailBaseShape_ == 0) {
             tailBaseShape_ = ToMatmulConfig(MM_CFG).basicN;
@@ -201,7 +201,7 @@ private:
             totalIter_ += 1;
         }
         mainTileShape_ = tilingBaseN * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetStepN();
-        outerIter_ = Ceil(singleShape, mainTileShape_);
+        outerIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(mainTileShape_));
         tailTileShape_ = singleShape % mainTileShape_;
         if (tailTileShape_ == 0) {
             tailTileShape_ = mainTileShape_;

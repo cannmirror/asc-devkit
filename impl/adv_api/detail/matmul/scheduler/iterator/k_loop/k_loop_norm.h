@@ -46,7 +46,7 @@ public:
         if constexpr (IsBasicK(MM_CFG)) {
             kIter_ = 1;
         } else {
-            kIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK());
+            kIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()));
         }
         ASCENDC_ASSERT((kIter_ > 0),
                    { KERNEL_LOG(KERNEL_ERROR, "kIter_ is %d , which should be larger than 0", kIter_); });

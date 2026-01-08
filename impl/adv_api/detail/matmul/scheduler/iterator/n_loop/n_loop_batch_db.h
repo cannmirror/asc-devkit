@@ -38,7 +38,7 @@ public:
 
     __aicore__ inline void SetSingleShape(int32_t singleShape)
     {
-        nIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
+        nIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()));
         tailN_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
         if (tailN_ == 0) {
             tailN_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();

@@ -163,7 +163,7 @@ protected:
 
     __aicore__ inline void SetSingleShapeFromTiling(int32_t singleShape)
     {
-        totalIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM());
+        totalIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()));
         tailBaseShape_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();
         if (tailBaseShape_ == 0) {
             tailBaseShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM();

@@ -43,7 +43,8 @@ public:
     __aicore__ inline void SetSingleShape(int32_t singleShape)
     {
         if (MATMUL_MODULE(MatmulSubBlockInfo)->GetSubBlockIdx() == 0) {
-            kIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK());
+            kIter_ = Ceil(static_cast<uint32_t>(singleShape),
+                static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()));
             tailK_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
             if (tailK_ == 0) {
                 tailK_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
@@ -51,7 +52,7 @@ public:
             ASCENDC_ASSERT((kIter_ > 0),
                     { KERNEL_LOG(KERNEL_ERROR, "kIter_ is %d , which should be larger than 0", kIter_); });
         } else {
-            intrablockKIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK());
+            intrablockKIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK()));
             intrablockTailK_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();
             if (intrablockTailK_ == 0) {
                 intrablockTailK_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK();

@@ -253,7 +253,7 @@ protected:
         int32_t stepKa = tiling.GetStepKa();
         int32_t stepKb = tiling.GetStepKb();
         int32_t baseK = tiling.GetBaseK();
-        kIter_ = IsBasicK(MM_CFG) ? 1 : Ceil(singleShape, baseK);
+        kIter_ = IsBasicK(MM_CFG) ? 1 : Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(baseK));
         ASCENDC_ASSERT((kIter_ > 0),
             { KERNEL_LOG(KERNEL_ERROR, "kIter_ is %d , which should be larger than 0", kIter_); });
         if (kIter_ > stepKa) {
@@ -280,8 +280,8 @@ protected:
         kbStepFactor_ = stepKb / minStepK_;
         ASCENDC_ASSERT((kaStepFactor_ >= 1 && kbStepFactor_ >= 1), { KERNEL_LOG(KERNEL_ERROR,
             "kaStepFactor_ %d and kbStepFactor_ %d should be no less than 1", kaStepFactor_, kbStepFactor_); });
-        outerKaIter_ = Ceil(singleShape, baseK * stepKa);
-        outerKbIter_ = Ceil(singleShape, baseK * stepKb);
+        outerKaIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(baseK * stepKa));
+        outerKbIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(baseK * stepKb));
         ASCENDC_ASSERT((outerKaIter_ % outerKbIter_ == 0 || outerKbIter_ % outerKaIter_ == 0), {
             KERNEL_LOG(KERNEL_ERROR, "outerKaIter_ %d ,  outerKbIter_ is %d, "
             "outerKaIter_ and outerKbIter_ should be in multiple relationship.", outerKaIter_, outerKbIter_);
@@ -306,7 +306,7 @@ protected:
         int32_t stepKa = tiling.GetStepKa();
         int32_t stepKb = tiling.GetStepKb();
         int32_t baseK = tiling.GetBaseK();
-        int32_t baseNum = Ceil(singleShape, baseK);
+        int32_t baseNum = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(baseK));
         ASCENDC_ASSERT((stepKa == baseNum && stepKa <= N_BUFFER_33_FACTOR),
             { KERNEL_LOG(KERNEL_ERROR, "stepKa is %d , which should be less than or equal to 3, "
             "and exactly equal to singleCoreK / baseK (currently is %d)", stepKa, baseNum); });

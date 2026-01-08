@@ -44,7 +44,7 @@ public:
     __aicore__ inline void SetSingleShape(int32_t singleShape)
     {
         if (MATMUL_MODULE(MatmulSubBlockInfo)->GetSubBlockIdx() == 0) {
-            totalIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
+            totalIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()));
             tailBaseShape_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
             if (tailBaseShape_ == 0) {
                 tailBaseShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
@@ -53,7 +53,7 @@ public:
                 "invalid singleCoreN, totalIter_ is %d , which should be larger than 0", totalIter_);
             });
         } else {
-            v1TotalIter_ = Ceil(singleShape, MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN());
+            v1TotalIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN()));
             v1TailBaseShape_ = singleShape % MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
             if (v1TailBaseShape_ == 0) {
                 v1TailBaseShape_ = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();

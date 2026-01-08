@@ -46,7 +46,7 @@ public:
     {
         BASE_MODULE::baseShape_ = ToMatmulConfig(MM_CFG).basicN;
         BASE_MODULE::baseBlockShape_ = Ceil(BASE_MODULE::baseShape_, BLOCK_CUBE);
-        BASE_MODULE::totalIter_ = Ceil(singleShape, BASE_MODULE::baseShape_);
+        BASE_MODULE::totalIter_ = Ceil(static_cast<uint32_t>(singleShape), static_cast<uint32_t>(BASE_MODULE::baseShape_));
         ASCENDC_ASSERT((BASE_MODULE::totalIter_ > 0), {
             KERNEL_LOG(KERNEL_ERROR, "invalid singleCoreN, totalIter_ is %d , which should be larger than 0",
                 BASE_MODULE::totalIter_);

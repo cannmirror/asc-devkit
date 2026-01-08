@@ -21,6 +21,7 @@
 namespace AscendC {
 namespace Impl {
 namespace Detail {
+constexpr uint8_t SPARSE_NUM_RATE = 2;
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG>
 class LoadToL0B<IMPL, INPUT_TYPE, MM_CFG,
     enable_if_t<!(DoMatmulBasicBlock(MM_CFG) || DoMatmulSpecialBasicBlock(MM_CFG)) &&
@@ -82,7 +83,7 @@ private:
     {
         // SET LOAD2D parameters , loop axis: K or M, or 1
         if constexpr (HasSparseIndex<INPUT_TYPE>()) {
-            madK = madK >> 1;
+            madK = Ceil(madK, SPARSE_NUM_RATE);
         }
         // k is c0Size_ aligned for f32
         uint16_t kC0 = Ceil(madK, c0Size_);
