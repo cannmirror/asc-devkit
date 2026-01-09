@@ -59,6 +59,12 @@ constexpr int32_t BT_SIZE = 1024;
 constexpr int32_t UB_SIZE = 192 * 1024 - 256;
 #endif
 
+#define CHECK_TILING_PARAMETER(val, debugInfo)                                                          \
+    TILING_LOG_DEBUG("%s: %d", debugInfo, val);                                                         \
+    if ((val) <= 0) {                                                                                   \
+        TILING_LOG_DEBUG("The input %s size should be greater than 0, currently, it is %d.", #val, val);\
+    }
+
 MatmulApiTilingBase::MatmulApiTilingBase()
 {
     this->aType_.isDB = true;
@@ -422,12 +428,17 @@ int32_t MatmulApiTilingBase::SetCLayout(int32_t b, int32_t s, int32_t n, int32_t
 
 int32_t MatmulApiTilingBase::SetBatchInfoForNormal(int32_t batchA, int32_t batchB, int32_t m, int32_t n, int32_t k)
 {
-    TILING_LOG_DEBUG(" Set Normal Layout BatchA: %d", batchA);
-    TILING_LOG_DEBUG(" Set Normal Layout BatchB: %d", batchB);
-    TILING_LOG_DEBUG(" Set Normal Layout M: %d", m);
-    TILING_LOG_DEBUG(" Set Normal Layout N: %d", n);
-    TILING_LOG_DEBUG(" Set Normal Layout K: %d", k);
-
+    CHECK_TILING_PARAMETER(batchA, " Set Normal Layout BatchA");
+    CHECK_TILING_PARAMETER(batchB, " Set Normal Layout BatchB");
+    CHECK_TILING_PARAMETER(m, " Set Normal Layout M");
+    CHECK_TILING_PARAMETER(n, " Set Normal Layout N");
+    CHECK_TILING_PARAMETER(k, " Set Normal Layout K");
+    if (this->batchNum > 0 && batchA > this->batchNum) {
+        TILING_LOG_DEBUG("The Input batchA size should be less than or equal to batchNum, currently, batchA is %d, batchNum is %d. ", batchA, this->batchNum);
+    }
+    if (this->batchNum > 0 && batchB > this->batchNum) {
+        TILING_LOG_DEBUG("The Input batchB size should be less than or equal to batchNum, currently, batchB is %d, batchNum is %d. ", batchB, this->batchNum);    
+    }
     this->aLayoutInfoB = batchA;
     this->aLayoutInfoS = m;
     this->aLayoutInfoN = 1;
@@ -451,8 +462,13 @@ int32_t MatmulApiTilingBase::SetBatchInfoForNormal(int32_t batchA, int32_t batch
 
 int32_t MatmulApiTilingBase::SetBatchNum(int32_t batch)
 {
-    TILING_LOG_DEBUG(" Set BatchNum: %d", batch);
-
+    CHECK_TILING_PARAMETER(batch, " Set BatchNum");
+    if (this->aLayoutInfoB > 0 && batch < this->aLayoutInfoB) {
+        TILING_LOG_DEBUG("The Input batchNum size should be greater than or equal to batchA, currently, batchA is %d, batch is %d.", this->aLayoutInfoB, batch);
+    }
+    if (this->bLayoutInfoB > 0 && batch < this->bLayoutInfoB) {
+        TILING_LOG_DEBUG("The Input batchNum size should be greater than or equal to batchB, currently, batchB is %d, batch is %d.", this->bLayoutInfoB, batch);
+    }
     this->batchNum = batch;
     return 0;
 }
