@@ -50,7 +50,7 @@ target_link_directories(custom_ops PRIVATE
 )
 
 target_compile_definitions(custom_ops PRIVATE
-    __GLIBCXX_USE_CXX11_ABI=0
+    _GLIBCXX_USE_CXX11_ABI=0
 )
 
 target_compile_options(custom_ops PRIVATE
