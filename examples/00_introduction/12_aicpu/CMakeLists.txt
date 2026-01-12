@@ -22,6 +22,11 @@ add_executable(demo
 
 set_target_properties(demo PROPERTIES LINKER_LANGUAGE ASC)
 
+target_link_libraries(demo PRIVATE
+    pthread
+    dl
+)
+
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
