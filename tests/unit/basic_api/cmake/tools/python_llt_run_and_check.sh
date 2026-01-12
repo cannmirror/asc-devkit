@@ -56,8 +56,8 @@ fi
 
 PYTEST_CACHE="${OUTDIR}"/.pytest_cache/"${LOCAL_MODULE}"
 COVERAGE_RESULT_PATH="${OUTDIR}"/coverage_result
-COVERAGE_FILE="${OUTDIR}"/coverage_result/.coverage."${LOCAL_MODULE}"
-SRC_PATH_FILE="${OUTDIR}"/coverage_result/.src_path."${LOCAL_MODULE}"
+COVERAGE_FILE="${OUTDIR}"/coverage_result/.coverage
+SRC_PATH_FILE="${OUTDIR}"/coverage_result/.src_path
 
 log_info ${PYTEST_CACHE}
 log_info ${COVERAGE_RESULT_PATH}

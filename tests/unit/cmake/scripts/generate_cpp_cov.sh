@@ -48,8 +48,8 @@ generate_coverage() {
   if [[ ! -d "${_path_to_gen}" ]]; then
     mk_dir "${_path_to_gen}"
   fi
-  lcov -c -d "${_source_dir}" -o "${_coverage_file}" --ignore-errors mismatch --exclude "${_pkg_path}"
-#  lcov -r "${_coverage_file}" "/home/jenkins/Ascend/ascend-toolkit/latest/*" -o "${_coverage_file}"
+  lcov -c -d "${_source_dir}" -o "${_coverage_file}"
+  lcov -r "${_coverage_file}" "${_pkg_path}" -o "${_coverage_file}"
   logging "generated coverage file ${_coverage_file}"
 }
 
