@@ -247,6 +247,17 @@ check_param_test_part() {
   fi
 }
 
+check_param_test_build_type() {
+  if [[ "$BUILD_TYPE" != "Release" && "$BUILD_TYPE" != "Debug" ]]; then
+    log "[ERROR] --build-type must be Release or Debug."
+    exit 1
+  fi
+  if [[ "$TEST" == "all" || -n "$TEST_PART" ]]; then
+    log "[ERROR] --build-type cannot be used with test(-t, --test) or --$TEST_PART."
+    exit 1
+  fi
+}
+
 check_param_cov() {
   if [[ "$COV" == "true" && "$TEST" != "all" ]]; then
     log "[ERROR] --cov must be used with test(-t, --test)."
@@ -343,10 +354,12 @@ set_options() {
       ;;
     --build-type=*)
       BUILD_TYPE="${1#*=}"
+      check_param_test_build_type
       shift
       ;;
     --build-type)
       BUILD_TYPE="$2"
+      check_param_test_build_type
       shift 2
       ;;
     *)
@@ -411,10 +424,7 @@ function build()
 }
 
 function build_package(){
-  CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=OFF"
-  if [ -n "${BUILD_TYPE}" ]; then
-    CUSTOM_OPTION="${CUSTOM_OPTION} -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
-  fi
+  CUSTOM_OPTION="${CUSTOM_OPTION} -DENABLE_TEST=OFF -DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
   cmake_config
   build package
   cp ${BUILD_DIR}/_CPack_Packages/makeself_staging/*.run ${OUTPUT_DIR}

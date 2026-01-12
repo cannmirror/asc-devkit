@@ -114,7 +114,7 @@ __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &
 {
     int64_t stAtomic = get_st_atomic_cfg();
     constexpr uint64_t typeMask = 0x7;
-    constexpr uint64_t opBit = 4;
+    constexpr uint64_t opBit = 3;
     constexpr uint64_t opMask = 0x3;
     atomicType = (static_cast<uint64_t>(stAtomic) & typeMask);
     atomicOp = ((static_cast<uint64_t>(stAtomic) >> opBit) & opMask);

@@ -22,6 +22,8 @@
 namespace AscendC {
 namespace Impl {
 namespace Detail {
+constexpr int32_t BIAS_B32_C0SIZE = 16;
+constexpr int32_t BIAS_B16_C0SIZE = 32;
 
 /**
  * BiasScheduler: responsible for copy bias data management.
@@ -118,7 +120,17 @@ public:
     }
 
 private:
-    constexpr static int32_t c0Size_ = AuxGetC0Size<BiasT>();
+    // copy bias from C1 to C2 is 64B aligned
+    template <typename SrcT>
+    __aicore__ inline constexpr static int32_t GetBiasC0Size()
+    {
+        if (sizeof(SrcT) == sizeof(float)) {
+            return BIAS_B32_C0SIZE;
+        }
+        return BIAS_B16_C0SIZE;
+    }
+
+    constexpr static int32_t c0Size_ = GetBiasC0Size<BiasT>();
 };
 
 }  // namespace Detail
