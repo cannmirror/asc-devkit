@@ -32,9 +32,9 @@ class CCECInfo:
             # using default path
             arch = os.popen('arch').read()
             if "x86" in arch:
-                exe_path = "/usr/local/Ascend/ascend-toolkit/latest/x86_64-linux/ccec_compiler/bin/%s" % exe
+                exe_path = "/usr/local/Ascend/cann/x86_64-linux/ccec_compiler/bin/%s" % exe
             else:
-                exe_path = "/usr/local/Ascend/ascend-toolkit/latest/aarch64-linux/ccec_compiler/bin/%s" % exe
+                exe_path = "/usr/local/Ascend/cann/aarch64-linux/ccec_compiler/bin/%s" % exe
         else:
             # exe is under current env
             exe_path = exe

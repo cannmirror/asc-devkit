@@ -16,11 +16,11 @@ CURRENT_DIR=$(dirname $(readlink -f $0))
 SOURCE_DIR=${CURRENT_DIR}/packages
 
 if [ "${USER_ID}" != "0" ]; then
-    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/ascend-toolkit/latest"
-    DEFAULT_INSTALL_DIR="${HOME}/Ascend/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/cann"
+    DEFAULT_INSTALL_DIR="${HOME}/Ascend/cann"
 else
-    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/ascend-toolkit/latest"
-    DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/cann"
+    DEFAULT_INSTALL_DIR="/usr/local/Ascend/cann"
 fi
 
 function log() {
@@ -280,7 +280,7 @@ if [ -n "${CUSTOM_INSTALL_DIR}" ]; then
         log "[ERROR] --install-path parameter requires an absolute path."
         exit 1
     else
-        INSTALL_DIR=${CUSTOM_INSTALL_DIR}/latest
+        INSTALL_DIR=${CUSTOM_INSTALL_DIR}/cann
     fi
     log "[INFO] The custom installation directory path is ${INSTALL_DIR} ."
 elif [ -n "${ASCEND_HOME_PATH}" ];then

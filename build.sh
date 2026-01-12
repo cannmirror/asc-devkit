@@ -22,7 +22,7 @@ OUTPUT_DIR=${CURRENT_DIR}/build_out
 CANN_3RD_LIB_PATH=${BUILD_DIR}
 USER_ID=$(id -u)
 CPU_NUM=$(($(cat /proc/cpuinfo | grep "^processor" | wc -l)))
-THREAD_NUM=16
+THREAD_NUM=32
 BUILD_TYPE="Release"
 
 dotted_line="----------------------------------------------------------------"
@@ -41,7 +41,7 @@ usage() {
         echo "Package Build Options:"
         echo $dotted_line
         echo "    --pkg                Compile run package"
-        echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+        echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
         echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
         echo "    --cann_3rd_lib_path  Set the path for third-party library dependencies, eg: ./build"
         echo "    --asan               Enable ASAN (address Sanitizer)"
@@ -55,7 +55,7 @@ usage() {
         echo "Test Options:"
         echo $dotted_line
         echo "    -t, --test           Build and run all unit tests"
-        echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+        echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
         echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
         echo "    --adv_test            Build and run the adv part of unit tests"
         echo "    --basic_test_one      Build and run the basic_one part of unit tests"
@@ -90,7 +90,7 @@ usage() {
   echo "    -h, --help           Display help information"
   echo "    -j                   Compile thread nums, default is 16, eg: -j 8"
   echo "    -t, --test           Build and run all unit tests"
-  echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/latest"
+  echo "    -p, --cann_path      Set the cann package installation directory, eg: /usr/local/Ascend/cann"
   echo "    --adv_test            Build and run the adv part of unit tests"
   echo "    --basic_test_one      Build and run the basic_one part of unit tests"
   echo "    --basic_test_two      Build and run the basic_two part of unit tests"
@@ -373,11 +373,11 @@ set_options() {
 
 set_env() {
   if [ "${USER_ID}" != "0" ]; then
-    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/latest"
-    DEFAULT_INSTALL_DIR="${HOME}/Ascend/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="${HOME}/Ascend/cann"
+    DEFAULT_INSTALL_DIR="${HOME}/Ascend/cann"
   else
-    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/latest"
-    DEFAULT_INSTALL_DIR="/usr/local/Ascend/latest"
+    DEFAULT_TOOLKIT_INSTALL_DIR="/usr/local/Ascend/cann"
+    DEFAULT_INSTALL_DIR="/usr/local/Ascend/cann"
   fi
 
   if [ -n "${cann_path}" ];then

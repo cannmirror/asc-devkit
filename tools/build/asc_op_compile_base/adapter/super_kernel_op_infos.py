@@ -789,7 +789,7 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
                 ascend_home_path = os.path.realpath(	
                         os.path.join(asc_opc_real_path, "..", ".."))
             else:	
-                ascend_home_path = "/usr/local/Ascend/latest"
+                ascend_home_path = "/usr/local/Ascend/cann"
 
         if 'x86' in archlinux:
             asc_path = os.path.realpath(os.path.join(ascend_home_path, "x86_64-linux", "asc"))

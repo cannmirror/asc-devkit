@@ -5,7 +5,7 @@ elseif(DEFINED ENV{ASCEND_HOME_PATH})
 elseif(DEFINED ENV{ASCEND_OPP_PATH})
     get_filename_component(ASCEND_CANN_PACKAGE_PATH "$ENV{ASCEND_OPP_PATH}/.." ABSOLUTE)
 else()
-    set(ASCEND_CANN_PACKAGE_PATH  "/usr/local/Ascend/ascend-toolkit/latest")
+    set(ASCEND_CANN_PACKAGE_PATH  "/usr/local/Ascend/cann")
 endif()
 
 if (NOT EXISTS "${ASCEND_CANN_PACKAGE_PATH}")

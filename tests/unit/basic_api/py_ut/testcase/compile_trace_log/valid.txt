@@ -1,7 +1,7 @@
-using ASCEND_HOME_PATH: /usr/local/Ascend/latest
+using ASCEND_HOME_PATH: /usr/local/Ascend/cann
 Preset CMake variables:
 
-  ASCEND_CANN_PACKAGE_PATH:PATH="/usr/local/Ascend/latest"
+  ASCEND_CANN_PACKAGE_PATH:PATH="/usr/local/Ascend/cann"
   ASCEND_COMPUTE_UNIT:STRING="ascend910b"
   ASCEND_PACK_SHARED_LIBRARY:BOOL="False"
   ASCEND_PYTHON_EXECUTABLE:STRING="python3"

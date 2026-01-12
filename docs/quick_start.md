@@ -80,7 +80,7 @@
     - \$\{arch\}：表示CPU架构，如aarch64、x86_64。
     - \$\{install\_path\}：表示指定安装路径。
     - 缺省--install-path时， 则使用默认路径安装。
-    若使用root用户安装，安装完成后相关软件存储在“/usr/local/Ascend/latest”路径下；若使用非root用户安装，安装完成后相关软件存储在“$HOME/Ascend/latest”路径下。
+    若使用root用户安装，安装完成后相关软件存储在“/usr/local/Ascend/cann”路径下；若使用非root用户安装，安装完成后相关软件存储在“$HOME/Ascend/cann”路径下。
 
 2. **安装社区版CANN legacy包（运行态依赖）**
 
@@ -105,17 +105,17 @@
 - 默认路径，root用户安装
 
     ```bash
-    source /usr/local/Ascend/latest/bin/setenv.bash
+    source /usr/local/Ascend/cann/set_env.sh
     ```
 
 - 默认路径，非root用户安装
     ```bash
-    source $HOME/Ascend/latest/bin/setenv.bash
+    source $HOME/Ascend/cann/set_env.sh
     ```
 
 - 指定路径安装
     ```bash
-    source ${install_path}/latest/bin/setenv.bash
+    source ${install_path}/cann/set_env.sh
     ```
 
 4. **下载源码**

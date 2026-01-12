@@ -43,7 +43,7 @@ _ATTR_DTYPE = "dtype"
 _ATTR_VALUE = "value"
 _ATTR_VALUE_NULL_DESC = "value_null_desc"
 _ASCEND_OPP_PATH_ENV = "ASCEND_OPP_PATH"
-_ASCEND_OPP_PATH_DEFAULT = os.path.abspath("/usr/local/Ascend/latest/opp")
+_ASCEND_OPP_PATH_DEFAULT = os.path.abspath("/usr/local/Ascend/cann/opp")
 _ASCEND_OPP_PATH_DEFAULT_MDC = os.path.abspath("/usr/local/Ascend/opp")
 _ASCEND_CUSTOM_OPP_PATH_ENV = "ASCEND_CUSTOM_OPP_PATH"
 

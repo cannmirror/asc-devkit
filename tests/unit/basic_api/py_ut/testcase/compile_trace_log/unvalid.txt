@@ -21,10 +21,10 @@
 [ascend910b] Generating AddCustomComment_6bea591dde724b0472400c35433aee8c Done
 [INFO] RUNTIME(56332,python3):2025-09-05-18:14:48.571.664 [task_fail_callback_data_manager.cc:58] 56332 TaskFailCallBackManager: Constructor.
 Opc tool start working now, please wait for a moment.
-using ASCEND_HOME_PATH: /usr/local/Ascend/latest
+using ASCEND_HOME_PATH: /usr/local/Ascend/cann
 Preset CMake variables:
 
-  ASCEND_CANN_PACKAGE_PATH:PATH="/usr/local/Ascend/latest"
+  ASCEND_CANN_PACKAGE_PATH:PATH="/usr/local/Ascend/cann"
   ASCEND_COMPUTE_UNIT:STRING="ascend910b"
   ASCEND_PACK_SHARED_LIBRARY:BOOL="False"
   ASCEND_PYTHON_EXECUTABLE:STRING="python3"
