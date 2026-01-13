@@ -360,12 +360,12 @@ function(npu_op_package target_package_name)
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_TYPE "${_upper_target_type}")
   get_property(target_vendor_name GLOBAL PROPERTY _ASC_PKG_${target_package_name}_VENDOR_NAME)
   if ("${_upper_target_type}" STREQUAL "RUN")
-    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/scripts/install.sh ${CMAKE_BINARY_DIR}/scripts/upgrade.sh
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/scripts/install.sh ${CMAKE_BINARY_DIR}/scripts/upgrade.sh ${CMAKE_BINARY_DIR}/scripts/uninstall.sh
       COMMAND mkdir -p ${CMAKE_BINARY_DIR}/scripts
       COMMAND cp -r ${ASCENDC_CMAKE_SCRIPTS_PATH}/scripts/* ${CMAKE_BINARY_DIR}/scripts/
       COMMAND sed -i "s/vendor_name=customize/vendor_name=${target_vendor_name}/g" ${CMAKE_BINARY_DIR}/scripts/*
     )
-    add_custom_target(modify_vendor ALL DEPENDS ${CMAKE_BINARY_DIR}/scripts/install.sh ${CMAKE_BINARY_DIR}/scripts/upgrade.sh)
+    add_custom_target(modify_vendor ALL DEPENDS ${CMAKE_BINARY_DIR}/scripts/install.sh ${CMAKE_BINARY_DIR}/scripts/upgrade.sh ${CMAKE_BINARY_DIR}/scripts/uninstall.sh)
 
     get_system_info(SYSTEM_INFO)
 
