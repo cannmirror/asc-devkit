@@ -148,7 +148,6 @@ __simd_vf__ inline void DequantPertensorVFImpl(__ubuf__ dstT* dstUb, __ubuf__ in
     MicroAPI::MaskReg preg;
     MicroAPI::RegTensor<int32_t> s32vreg;
     MicroAPI::RegTensor<float> f32vreg;
-    MicroAPI::RegTensor<bfloat16_t> b16vreg;
 
     uint32_t sregLower = ASCENDC_DEQUANT_B32_VF_LEN;
     uint16_t repeat = static_cast<uint16_t>(CeilDivision(calCount, sregLower));
@@ -159,20 +158,10 @@ __simd_vf__ inline void DequantPertensorVFImpl(__ubuf__ dstT* dstUb, __ubuf__ in
             preg = MicroAPI::UpdateMask<uint32_t>(sreg);
             MicroAPI::DataCopy<int32_t, MicroAPI::LoadDist::DIST_NORM>(s32vreg, srcUb + i * N + j * sregLower);
             MicroAPI::Cast<float, int32_t, MrgZRndA>(f32vreg, s32vreg, preg);
-            if constexpr (SupportType<scaleT, bfloat16_t>()) {
-                MicroAPI::Muls(f32vreg, f32vreg, ToFloat(deqScale), preg);
-            } else {
-                MicroAPI::Muls(f32vreg, f32vreg, deqScale, preg);
-            }
-
-            if constexpr (SupportType<dstT, bfloat16_t>()) {
-                MicroAPI::Cast<bfloat16_t, float, LayoutZMrgZRndRSatS>(b16vreg, f32vreg, preg);
-                MicroAPI::DataCopy<bfloat16_t, MicroAPI::StoreDist::DIST_PACK_B32>(dstUb + i * dstInner + j * sregLower,
-                    b16vreg, preg);
-            } else { // out is fp32
-                MicroAPI::DataCopy<float, MicroAPI::StoreDist::DIST_NORM_B32>(dstUb + i * dstInner + j * sregLower,
-                    f32vreg, preg);
-            }
+            MicroAPI::Muls(f32vreg, f32vreg, deqScale, preg);
+            // out is fp32
+            MicroAPI::DataCopy<float, MicroAPI::StoreDist::DIST_NORM_B32>(dstUb + i * dstInner + j * sregLower,
+                f32vreg, preg);
         }
     }
 }

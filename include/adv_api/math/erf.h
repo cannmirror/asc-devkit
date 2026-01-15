@@ -34,6 +34,7 @@
 
 namespace AscendC {
 #pragma begin_pipe(V)
+#if !(defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
 /*!
  * \ingroup Erf
  * \brief compute Erf elementwisely
@@ -107,6 +108,7 @@ __aicore__ inline void Erf(const LocalTensor<T> &dstTensor, const LocalTensor<T>
 {
     Erf<T, isReuseSource>(dstTensor, srcTensor, srcTensor.GetSize());
 }
+#endif
 #pragma end_pipe
 }  // namespace AscendC
 #endif

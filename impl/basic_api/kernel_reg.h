@@ -89,7 +89,7 @@ template <pipe_t pipe> __aicore__ inline void PipeBarrierImpl()
     if constexpr (pipe == PIPE_S || pipe == PIPE_V) {
         return;
     }
-#elif (__NPU_ARCH__ == 3003)
+#elif (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
     if constexpr (pipe == PIPE_V) {
         return;
     }

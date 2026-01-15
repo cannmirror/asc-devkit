@@ -305,7 +305,7 @@ template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto&
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetSparseIndex(const GlobalTensor<uint8_t>& indexGlobal)
 {
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     if constexpr (DoMatmulMDL(MM_CFG) && HasSparseIndex<B_TYPE>()) {
         MATMUL_MODULE(CopyCubeInB)->SetSparseIndex(indexGlobal);
     }

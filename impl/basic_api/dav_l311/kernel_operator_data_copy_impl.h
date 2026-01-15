@@ -173,8 +173,8 @@ __aicore__ inline void DataCopyL12BTImpl(const uint64_t dst, __cbuf__ T* src, co
         // the burst length, destination gap size must be even.
         uint16_t blockLenAlign = AlignUp(intriParams.blockLen, 2);
         uint16_t dstStrideAlign = AlignUp(intriParams.dstStride, 2);
-        copy_cbuf_to_bt(dst, src, (bool)isenableConv, intriParams.blockCount, blockLenAlign,
-            intriParams.srcStride, dstStrideAlign);
+        copy_cbuf_to_bt(dst, src, (bool)isenableConv, intriParams.blockCount, intriParams.blockLen,
+            intriParams.srcStride, intriParams.dstStride);
     } else {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from cbuf to bt on this version"); });
     }

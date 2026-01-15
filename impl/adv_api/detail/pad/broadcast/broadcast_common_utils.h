@@ -21,11 +21,24 @@
 namespace AscendC {
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+
+struct BroadcastTiling {
+    uint32_t oriRank;
+    uint32_t rank;
+    uint32_t dstSize;
+    uint32_t srcSize;
+    uint32_t loopNum = 0;
+    uint32_t oriSrcShape[9];
+    uint32_t oriDstShape[9];
+    uint32_t dstShape[9];
+    uint32_t dstStride[9];
+    uint32_t srcStride[10];
+};
 namespace BroadcastInternal {
 constexpr uint32_t U16_MAX = 65536;
 
 /*
-    ExtractSignedTypeBySize is to calculate gather 
+    ExtractSignedTypeBySize is to calculate gather
     index offset according to the type size.
     Because b64 would be converted into b32 and
     with b8's situation, the index should be calculated

@@ -141,12 +141,12 @@ template <typename T>
 __aicore__ inline void DataCopyL12BTImpl(const uint64_t dst, __cbuf__ T* src, const uint16_t isenableConv,
     const DataCopyParams &intriParams)
 {
-    // ISA: unit of 64B    API: unit of 32B
+    // BuiltIn: unit of 64B    API: unit of 32B
     uint16_t burstLength = DivCeil(intriParams.blockLen, 2);
     uint16_t dstStride = DivCeil(intriParams.dstStride, 2);
     if constexpr(std::is_same<T, float>::value || std::is_same<T, int32_t>::value || std::is_same<T, half>::value) {
-        copy_cbuf_to_bt(dst, src, (bool)isenableConv, intriParams.blockCount, burstLength,
-            intriParams.srcStride, dstStride);
+        copy_cbuf_to_bt(dst, src, (bool)isenableConv, intriParams.blockCount, intriParams.blockLen,
+            intriParams.srcStride, intriParams.dstStride);
     } else {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported data type of copy from cbuf to bt on this version"); });
     }

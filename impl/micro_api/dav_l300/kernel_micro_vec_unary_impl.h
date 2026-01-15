@@ -18,105 +18,7 @@
 
 namespace AscendC {
 namespace MicroAPI {
-namespace Internal {
-__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .precisionMode = false,
-        .algo = SqrtAlgo::INTRINSIC
-    };
-}
 
-__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(const SqrtSpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .precisionMode = sprMode->precisionMode,
-        .algo = sprMode->algo
-    };
-}
-
-__aicore__ inline constexpr ExpSpecificMode GetExpSpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .algo = ExpAlgo::INTRINSIC
-    };
-}
-
-__aicore__ inline constexpr ExpSpecificMode GetExpSpecificMode(const ExpSpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .algo = sprMode->algo
-    };
-}
-
-__aicore__ inline constexpr LnSpecificMode GetLnSpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .algo = LnAlgo::INTRINSIC
-    };
-}
-
-__aicore__ inline constexpr LnSpecificMode GetLnSpecificMode(const LnSpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .algo = sprMode->algo
-    };
-}
-
-__aicore__ inline constexpr LogSpecificMode GetLogSpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .algo = LogAlgo::INTRINSIC
-    };
-}
-
-__aicore__ inline constexpr LogSpecificMode GetLogSpecificMode(const LogSpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .algo = sprMode->algo
-    };
-}
-
-__aicore__ inline constexpr Log2SpecificMode GetLog2SpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .algo = Log2Algo::INTRINSIC
-    };
-}
-
-__aicore__ inline constexpr Log2SpecificMode GetLog2SpecificMode(const Log2SpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .algo = sprMode->algo
-    };
-}
-
-__aicore__ inline constexpr Log10SpecificMode GetLog10SpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .algo = Log10Algo::INTRINSIC
-    };
-}
-
-__aicore__ inline constexpr Log10SpecificMode GetLog10SpecificMode(const Log10SpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .algo = sprMode->algo
-    };
-}
-} // namespace Internal
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
 __simd_callee__ inline void AbsImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 {
@@ -140,20 +42,6 @@ __simd_callee__ inline void ReluImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 }
 
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
-__simd_callee__ inline void ExpPrecision(U& dstReg, U& srcReg, MaskReg& maskSubnormal)
-{
-    U regTwo;
-    U tmpReg0;
-    using ActualT = typename U::ActualT;
-    constexpr ExpSpecificMode sprMode = Internal::GetExpSpecificMode(mode);
-    constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
-    vdup(regTwo, 2, maskSubnormal, modeValue);
-    vdiv(tmpReg0, srcReg, regTwo, maskSubnormal, modeValue);
-    vexp(tmpReg0, tmpReg0, maskSubnormal, modeValue);
-    vmul(dstReg, tmpReg0, tmpReg0, maskSubnormal, modeValue);
-}
-
-template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
 __simd_callee__ inline void ExpImpl(U& dstReg, U& srcReg, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
@@ -162,13 +50,13 @@ __simd_callee__ inline void ExpImpl(U& dstReg, U& srcReg, MaskReg& mask)
     static_assert(IsSameType<decltype(mode), MaskMergeMode>::value ||
         IsSameType<decltype(mode), const ExpSpecificMode*>::value,
         "mode type must be either MaskMergeMode or const ExpSpecificMode* ");
-    constexpr ExpSpecificMode sprMode = Internal::GetExpSpecificMode(mode);
+    constexpr ExpSpecificMode sprMode = util::GetExpSpecificMode(mode);
     static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),
         "current Exp api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
 
-    static_assert(sprMode.algo != ExpAlgo::PRECISION_1ULP_FTZ_FALSE,
-        "ExpAlgo PRECISION_1ULP_FTZ_FALSE is not supported on current device!");
+    static_assert(sprMode.algo == ExpAlgo::INTRINSIC,
+        "ExpAlgo only support INTRINSIC on current device!");
     vexp(dstReg, srcReg, mask, modeValue);
 }
 
@@ -209,10 +97,10 @@ template <typename T = DefaultType, typename U, const LogSpecificMode* mode>
 __simd_callee__ inline void LnCompute(U& dstReg, U& srcReg, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    constexpr LogSpecificMode sprMode = Internal::GetLogSpecificMode(mode);
+    constexpr LogSpecificMode sprMode = util::GetLogSpecificMode(mode);
     constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
-    static_assert(sprMode.algo != LogAlgo::PRECISION_1ULP_FTZ_FALSE,
-        "LogAlgo PRECISION_1ULP_FTZ_FALSE is not supported on current device!");
+    static_assert(sprMode.algo == LogAlgo::INTRINSIC,
+        "LogAlgo only support INTRINSIC on current device!");
     vln(dstReg, srcReg, mask, modeValue);
 }
 
@@ -227,21 +115,16 @@ __simd_callee__ inline void LogImpl(U& dstReg, U& srcReg, MaskReg& mask)
                   IsSameType<decltype(mode), const LnSpecificMode*>::value,
                   "mode type must be MaskMergeMode or const LogSpecificMode* or const LnSpecificMode* ");
     if constexpr (IsSameType<decltype(mode), const LogSpecificMode*>::value) {
-        constexpr LogSpecificMode sprMode = Internal::GetLogSpecificMode(mode);
+        constexpr LogSpecificMode sprMode = util::GetLogSpecificMode(mode);
         static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),
                       "current Log api only supports Mode ZEROING on current device!");
         LnCompute<T, U, mode>(dstReg, srcReg, mask);
     } else if constexpr (IsSameType<decltype(mode), const LnSpecificMode*>::value) {
-        constexpr LnSpecificMode sprMode = Internal::GetLnSpecificMode(mode);
+        constexpr LnSpecificMode sprMode = util::GetLnSpecificMode(mode);
         static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),
                       "current Ln api only supports Mode ZEROING on current device!");
-        if constexpr (sprMode.algo == LnAlgo::PRECISION_1ULP_FTZ_FALSE) {
-            static constexpr AscendC::MicroAPI::LogSpecificMode logMode = {MaskMergeMode::ZEROING, LogAlgo::PRECISION_1ULP_FTZ_FALSE};
-            LnCompute<T, U, &logMode>(dstReg, srcReg, mask);
-        } else {
-            static constexpr AscendC::MicroAPI::LogSpecificMode logMode = {MaskMergeMode::ZEROING, LogAlgo::INTRINSIC};
-            LnCompute<T, U, &logMode>(dstReg, srcReg, mask);
-        }
+        static constexpr AscendC::MicroAPI::LogSpecificMode logMode = {MaskMergeMode::ZEROING, LogAlgo::INTRINSIC};
+        LnCompute<T, U, &logMode>(dstReg, srcReg, mask);
     } else {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
         vln(dstReg, srcReg, mask, modeValue);

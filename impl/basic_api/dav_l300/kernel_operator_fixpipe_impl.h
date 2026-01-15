@@ -298,12 +298,16 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ DstT* dst, __cc__ SrcT* src,
         AscendCUtils::CheckGmMemOverflow((__gm__ DstT*)(dst + dstOffset), isSrc, gmLen);
     }
     // LOC -> GM only n direction need fixpipeTiling, m no need fixpipeTiling
-    return copy_matrix_cc_to_gm((__gm__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),
-        0, calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride,
-        0, intriParams.unitFlag, static_cast<uint64_t>(intriParams.quantPre),
-        static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false,
-        static_cast<uint8_t>(intriParams.reluEn), intriParams.isChannelSplit, nz2ndEn,
-        false);
+    if constexpr (!(IsSameType<SrcT, float>::value || IsSameType<DstT, float>::value)) {
+        return copy_matrix_cc_to_gm((__gm__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),
+            0, calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride,
+            0, intriParams.unitFlag, static_cast<uint64_t>(intriParams.quantPre),
+            static_cast<uint8_t>(intriParams.reluEn), intriParams.isChannelSplit, nz2ndEn,
+            static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false,
+            false);
+    }
+    ASCENDC_DEBUG_ASSERT(!(IsSameType<SrcT, float>::value || IsSameType<DstT, float>::value), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
+        "unsupported float L0c 2 GM "));
 }
 
 template <typename DstT, typename SrcT, const FixpipeConfig& config>

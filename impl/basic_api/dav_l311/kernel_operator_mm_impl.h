@@ -277,7 +277,7 @@ __aicore__ inline void MmadCal(__cc__ T* c, __ca__ U* a, __cb__ S* b, const Mmad
         "Unsupported input data type for mad instruction!");
 
     uint64_t config = 0;
-    uint64_t gemvCtrl = 1;
+    uint64_t gemvCtrl = 0;
     config |= (((uint64_t)mmadParams.m & 0xfff) << 0);
     config |= (((uint64_t)mmadParams.k & 0xfff) << 12);
     config |= (((uint64_t)mmadParams.n & 0xfff) << 24);
@@ -297,7 +297,7 @@ __aicore__ inline void MmadCal(__cc__ T* c, __ca__ U* a, __cb__ S* b, uint64_t b
         KERNEL_LOG(KERNEL_ERROR, "Mmad cmatrixSource param config error");
     });
     uint64_t config = 0;
-    uint64_t gemvCtrl = 1;
+    uint64_t gemvCtrl = 0;
     config |= (((uint64_t)mmadParams.m & 0xfff) << 0);
     config |= (((uint64_t)mmadParams.k & 0xfff) << 12);
     config |= (((uint64_t)mmadParams.n & 0xfff) << 24);

@@ -162,7 +162,7 @@ enum class HistogramsBinType {
     BIN7
 #endif
 };
- 
+
 enum class HistogramsType {
     FREQUENCY = 0,
     ACCUMULATE
@@ -376,6 +376,86 @@ __aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(const SqrtSpeci
     return {
         .mrgMode = sprMode->mrgMode,
         .precisionMode = sprMode->precisionMode
+    };
+}
+
+__aicore__ inline constexpr ExpSpecificMode GetExpSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = ExpAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr ExpSpecificMode GetExpSpecificMode(const ExpSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr LnSpecificMode GetLnSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = LnAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr LnSpecificMode GetLnSpecificMode(const LnSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr LogSpecificMode GetLogSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = LogAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr LogSpecificMode GetLogSpecificMode(const LogSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr Log2SpecificMode GetLog2SpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = Log2Algo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr Log2SpecificMode GetLog2SpecificMode(const Log2SpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr Log10SpecificMode GetLog10SpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = Log10Algo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr Log10SpecificMode GetLog10SpecificMode(const Log10SpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
     };
 }
 #endif

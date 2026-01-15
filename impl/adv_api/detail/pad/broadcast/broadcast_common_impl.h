@@ -32,18 +32,6 @@ namespace AscendC {
 constexpr uint32_t TWO_DIM = 2;
 constexpr uint32_t HALF_ONE_BLK_SIZE = 16;
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-struct BroadcastTiling {
-    uint32_t oriRank;
-    uint32_t rank;
-    uint32_t dstSize;
-    uint32_t srcSize;
-    uint32_t loopNum = 0;
-    uint32_t oriSrcShape[9];
-    uint32_t oriDstShape[9];
-    uint32_t dstShape[9];
-    uint32_t dstStride[9];
-    uint32_t srcStride[10];
-};
 
 template <typename T, int constRank = -1, uint32_t* constDstShape = nullptr, uint32_t* constSrcShape = nullptr>
 __aicore__ inline void GetBroadcastTilingInfoImpl(
@@ -382,9 +370,9 @@ __aicore__ inline void BroadCastCommon(const LocalTensor<T> &dstLocal, const Loc
     const uint32_t dstShape[dim], const uint32_t srcShape[dim])
 {
     static_assert(SupportBytes<T, 1, 2, 4>(), "Broadcast only supports type b8/b16/b32 on current device");
-    ASCENDC_ASSERT((dim <= 2 && dim > 0), { KERNEL_LOG(KERNEL_ERROR, 
+    ASCENDC_ASSERT((dim <= 2 && dim > 0), { KERNEL_LOG(KERNEL_ERROR,
         "Now only support dim = 1 or dim = 2, but we get dim= %d", dim); });
-    ASCENDC_ASSERT((axis == 1 || axis == 0), { KERNEL_LOG(KERNEL_ERROR, 
+    ASCENDC_ASSERT((axis == 1 || axis == 0), { KERNEL_LOG(KERNEL_ERROR,
         "Now only support axis = 0 or axis = 1, but we get axis= %d", dim); });
 
     uint32_t srcSize = 1;
