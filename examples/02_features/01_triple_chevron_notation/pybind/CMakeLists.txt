@@ -10,64 +10,50 @@
 # ----------------------------------------------------------------------------------------------------------
 
 cmake_minimum_required(VERSION 3.16)
-
 find_package(ASC REQUIRED)
+project(kernel_samples LANGUAGES ASC CXX)
+find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
-execute_process(COMMAND python3 -c "import os; import torch; print(os.path.dirname(torch.__file__))"
+execute_process(
+    COMMAND ${Python3_EXECUTABLE} -c "import torch; print(torch.utils.cmake_prefix_path)"
     OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_VARIABLE TORCH_PATH
+    OUTPUT_VARIABLE TORCH_CMAKE_PREFIX_PATH
 )
-message("TORCH_PATH is ${TORCH_PATH}")
+find_package(Torch REQUIRED HINTS ${TORCH_CMAKE_PREFIX_PATH})
 
-execute_process(COMMAND python3 -c "import os; import torch_npu; print(os.path.dirname(torch_npu.__file__))"
+execute_process(
+    COMMAND ${Python3_EXECUTABLE} -c "import os, torch_npu; print(os.path.dirname(torch_npu.__file__))"
     OUTPUT_STRIP_TRAILING_WHITESPACE
     OUTPUT_VARIABLE TORCH_NPU_PATH
 )
-message("TORCH_NPU_PATH is ${TORCH_NPU_PATH}")
+set(TORCH_NPU_INCLUDE_DIRS ${TORCH_NPU_PATH}/include)
+set(TORCH_NPU_LIBRARIES ${TORCH_NPU_PATH}/lib)
 
-execute_process(COMMAND python3 -m pybind11 --includes
+execute_process(
+    COMMAND ${Python3_EXECUTABLE} -c "import pybind11; print(pybind11.get_cmake_dir())"
     OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_VARIABLE PYBIND11_INC
+    OUTPUT_VARIABLE PYBIND11_CMAKE_PREFIX_PATH
 )
-string(REPLACE " " ";" PYBIND11_INC ${PYBIND11_INC})
+find_package(pybind11 REQUIRED HINTS ${PYBIND11_CMAKE_PREFIX_PATH})
 
-execute_process(COMMAND python3-config --extension-suffix
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    OUTPUT_VARIABLE PYBIND11_SUFFIX
-)
-
-project(kernel_samples LANGUAGES ASC CXX)
-
-add_library(pybind11_lib SHARED
+pybind11_add_module(ascendc_ops SHARED
     add_custom.asc
 )
 
-target_link_libraries(pybind11_lib PRIVATE
+target_include_directories(ascendc_ops PRIVATE
+    ${TORCH_INCLUDE_DIRS}
+    ${TORCH_NPU_INCLUDE_DIRS}
+)
+
+target_link_libraries(ascendc_ops PRIVATE
     torch_npu
 )
 
-target_link_directories(pybind11_lib PRIVATE
-    ${TORCH_PATH}/lib
-    ${TORCH_NPU_PATH}/lib
+target_link_directories(ascendc_ops PRIVATE
+    ${TORCH_NPU_LIBRARIES}
 )
 
-target_include_directories(pybind11_lib PRIVATE
-    ${TORCH_NPU_PATH}/include
-    ${TORCH_PATH}/include
-    ${TORCH_PATH}/include/torch/csrc/api/include
-)
-
-target_compile_definitions(pybind11_lib PRIVATE
-    _GLIBCXX_USE_CXX11_ABI=0
-)
-
-target_compile_options(pybind11_lib PRIVATE
-    ${PYBIND11_INC}
+target_compile_options(ascendc_ops PRIVATE
+    ${TORCH_CXX_FLAGS}
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
-    -fPIC
-)
-
-set_target_properties(pybind11_lib PROPERTIES
-    OUTPUT_NAME add_custom${PYBIND11_SUFFIX}
-    PREFIX "" SUFFIX ""
 )

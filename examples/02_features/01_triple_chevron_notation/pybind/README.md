@@ -1,7 +1,7 @@
-# Pybind注册自定义算子直调样例
+# pybind11注册自定义算子直调样例
 
 ## 概述
-本样例展示了如何使用Pybind注册自定义算子，并通过<<<>>>内核调用符调用核函数，以简单的Add算子为例，实现两个向量的逐元素相加。
+本样例展示了如何使用pybind11注册自定义算子，并通过`<<<>>>`内核调用符调用核函数，以简单的Add算子为例，实现两个向量的逐元素相加。
 
 ## 支持的产品
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
@@ -11,8 +11,8 @@
 ```
 ├── pybind
 │   ├── CMakeLists.txt        // 编译工程文件
-│   ├── add_custom_test.py    // Python调用脚本
-│   └── add_custom.asc        // Ascend C算子实现 & Pybind封装
+│   ├── add_custom_test.py    // PyTorch调用脚本
+│   └── add_custom.asc        // Ascend C算子实现 & pybind11注册
 ```
 
 ## 算子描述
@@ -22,6 +22,7 @@
   ```
   z = x + y
   ```
+
 - 算子规格：
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">AddCustom</td></tr>
@@ -35,65 +36,68 @@
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
+
 - 算子实现：
 
-  计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
+  Ascend C提供的矢量计算接口`Add`的操作元素都为`LocalTensor`，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
 
-  Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
+  Add算子的实现流程分为3个基本任务：`CopyIn`，`Compute`，`CopyOut`。`CopyIn`任务负责将Global Memory上的输入Tensor `xGm`和`yGm`搬运到Local Memory，分别存储在`xLocal`、`yLocal`，`Compute`任务负责对`xLocal`、`yLocal`执行加法操作，计算结果存储在`zLocal`中，`CopyOut`任务负责将输出数据从`zLocal`搬运至Global Memory上的输出Tensor zGm中。
 
-- 调用实现：
+- 自定义算子注册：
 
-  通过PyTorch框架进行模型的训练、推理时，会调用很多算子进行计算。使用Pybind可以实现PyTorch框架调用算子Kernel程序，从而实现Ascend C算子在Pytorch框架的集成部署。
+  本样例在`add_custom.asc`中定义了一个名为`ascendc_ops`的命名空间，并在其中注册了`ascendc_add`函数。
 
-  add_custom.asc使用了pybind11库来将C++代码封装成Python模块。该代码实现中定义了一个名为m的pybind11模块，其中包含一个名为run_add_custom的函数。该函数与my_add::run_add_custom函数相同，用于将C++函数转成Python函数。在函数实现中，通过c10_npu::getCurrentNPUStream() 的函数获取当前NPU上的流，通过内核调用符<<<>>>调用自定义的Kernel函数add_custom，在NPU上执行算子。
+  pybind11可以实现PyTorch框架调用算子Kernel程序，从而实现Ascend C算子在Pytorch框架的集成部署。
 
-  在add_custom_test.py调用脚本中，通过导入自定义模块add_custom，调用自定义模块add_custom中的run_add_custom函数，在NPU上执行x和y的加法操作，并将结果保存在变量z中。
+  `add_custom.asc`使用了`pybind11`库来将c++代码封装成python模块。该代码实现中定义了一个名为`m`的pybind11模块，其中包含一个名为`ascendc_add`的函数。该函数与`ascendc_ops::ascendc_add`函数相同，用于将c++函数转成python函数，例如：
+  ```c++
+  PYBIND11_MODULE(ascendc_ops, m)
+  {
+      m.doc() = "add_custom pybind11 interfaces";
+      m.def("ascendc_add", &ascendc_ops::ascendc_add, "");
+  }
+  ```
+
+  在`ascendc_add`函数中通过`c10_npu::getCurrentNPUStream()`函数获取当前NPU上的流，并通过内核调用符<<<>>>调用自定义的Kernel函数`add_custom`，在NPU上执行算子。
+
+- Python测试脚本
+
+  在`add_custom_test.py`调用脚本中，导入自定义模块`import ascendc_ops`，调用注册的`ascendc_add`函数，并通过对比NPU输出与CPU标准加法结果来验证自定义算子的数值正确性。
 
 ## 编译运行
-- 安装PyTorch (这里以使用2.1.0版本为例)
+- 安装PyTorch以及Ascend Extension for PyTorch插件
 
-  aarch64:
-  ```bash
-  pip3 install torch==2.1.0
-  ```
+  请参考[pytorch: Ascend Extension for PyTorch](https://gitcode.com/Ascend/pytorch)开源代码仓或[Ascend Extension for PyTorch昇腾社区](https://hiascend.com/document/redirect/Pytorch-index)的安装说明，选取支持的`Python`版本配套发行版，完成`torch`和`torch-npu`的安装
 
-  x86:
-  ```bash
-  pip3 install torch==2.1.0+cpu  --index-url https://download.pytorch.org/whl/cpu
-  ```
-
-- 安装torch-npu （以Pytorch2.1.0、python3.9、CANN版本8.0.RC1.alpha002为例）
-  ```bash
-  git clone https://gitee.com/ascend/pytorch.git -b v6.0.rc1.alpha002-pytorch2.1.0
-  cd pytorch/
-  bash ci/build.sh --python=3.9
-  pip3 install dist/*.whl
-  ```
-
-  安装pybind11
+- 安装pybind11
   ```bash
   pip3 install pybind11
   ```
+
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    source /usr/local/Ascend/ascend-toolkit/set_env.sh
+    source /usr/local/Ascend/cann/set_env.sh
     ```
+
   - 默认路径，非root用户安装CANN软件包
     ```bash
-    source $HOME/Ascend/ascend-toolkit/set_env.sh
+    source $HOME/Ascend/cann/set_env.sh
     ```
+
   - 指定路径install_path，安装CANN软件包
     ```bash
-    source ${install_path}/ascend-toolkit/set_env.sh
+    source ${install_path}/cann/set_env.sh
     ```
+
 - 样例执行
   ```bash
-  mkdir -p build; cd build             # 创建并进入build目录
-  cmake ..; make -j                    # 编译算子so
-  python3 ../add_custom_test.py        # 执行样例
+  mkdir -p build; cd build
+  cmake ..; make -j
+  python3 ../add_custom_test.py
   ```
+
   执行结果如下，说明精度对比成功。
   ```bash
   Ran 1 test in **s.

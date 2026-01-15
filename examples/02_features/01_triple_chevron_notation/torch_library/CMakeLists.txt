@@ -12,47 +12,42 @@
 cmake_minimum_required(VERSION 3.16)
 find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
-
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-message("Python3_INCLUDE_DIRS is ${Python3_INCLUDE_DIRS}")
 
 execute_process(
     COMMAND ${Python3_EXECUTABLE} -c "import torch; print(torch.utils.cmake_prefix_path)"
-    OUTPUT_VARIABLE TORCH_CMAKE_PATH
     OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE TORCH_CMAKE_PREFIX_PATH
 )
-find_package(Torch REQUIRED HINTS ${TORCH_CMAKE_PATH}/Torch)
+find_package(Torch REQUIRED HINTS ${TORCH_CMAKE_PREFIX_PATH})
 
 execute_process(
-    COMMAND python3 -c "import os, torch_npu; print(os.path.dirname(torch_npu.__file__))"
-    OUTPUT_VARIABLE TORCH_NPU_PATH
+    COMMAND ${Python3_EXECUTABLE} -c "import os, torch_npu; print(os.path.dirname(torch_npu.__file__))"
     OUTPUT_STRIP_TRAILING_WHITESPACE
+    OUTPUT_VARIABLE TORCH_NPU_PATH
 )
 set(TORCH_NPU_INCLUDE_DIRS ${TORCH_NPU_PATH}/include)
 set(TORCH_NPU_LIBRARIES ${TORCH_NPU_PATH}/lib)
 
-add_library(custom_ops SHARED
+add_library(ascendc_ops SHARED
     add_custom.asc
 )
 
-target_include_directories(custom_ops PRIVATE
-    ${Python3_INCLUDE_DIRS}
+target_include_directories(ascendc_ops PRIVATE
     ${TORCH_INCLUDE_DIRS}
     ${TORCH_NPU_INCLUDE_DIRS}
 )
 
-target_link_libraries(custom_ops PRIVATE
+target_link_libraries(ascendc_ops PRIVATE
     torch_npu
+    Python3::Python
 )
 
-target_link_directories(custom_ops PRIVATE
+target_link_directories(ascendc_ops PRIVATE
     ${TORCH_NPU_LIBRARIES}
 )
 
-target_compile_definitions(custom_ops PRIVATE
-    _GLIBCXX_USE_CXX11_ABI=0
-)
-
-target_compile_options(custom_ops PRIVATE
+target_compile_options(ascendc_ops PRIVATE
+    ${TORCH_CXX_FLAGS}
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
 )
