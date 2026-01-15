@@ -721,6 +721,19 @@ __simd_callee__ inline void DataCopyImpl(MaskReg &mask, __ubuf__ T *&srcUbAddr, 
     plds(mask, (__ubuf__ uint32_t *&)srcUbAddr, offset, distValue, postValue);
 }
 
+template <typename T = DefaultType, typename U>
+__simd_callee__ inline void LoadImpl(U& dstReg, __ubuf__ T* srcAddr)
+{
+    using ActualT = typename U::ActualT;
+    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
+                  "Load only support type b8/b16/b32/b64 on current device");
+    static_assert(CheckRegTrait<U, RegTraitNumOne>(), "RegTensor only suppoort RegTraitNumOne on current device!");
+    UnalignRegForLoad ureg;
+    DataCopyUnAlignPreImpl<T>(ureg, srcAddr);
+    DataCopyUnAlignImpl<T, U>(dstReg, ureg, srcAddr);
+}
+
 // pst
 template <typename T, MaskDist dist = MaskDist::DIST_NORM>
 __simd_callee__ inline void DataCopyImpl(__ubuf__ T *dstUbAddr, MaskReg &mask, AddrReg offset)
@@ -756,6 +769,18 @@ __simd_callee__ inline void DataCopyImpl(__ubuf__ T *&dstUbAddr, MaskReg &mask, 
 
 template <typename T>
 __simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T *&dstUbAddr, MaskReg &mask, UnalignReg &ureg)
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "StoreUnAlign is not supported on current device!"); });
+}
+
+template <typename T = DefaultType, typename U>
+__simd_callee__ inline void StoreImpl(__ubuf__ T* dstAddr, U& srcReg)
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "StoreUnAlign is not supported on current device!"); });
+}
+
+template <typename T = DefaultType, typename U>
+__simd_callee__ inline void StoreImpl(__ubuf__ T* dstAddr, U& srcReg, uint32_t count)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "StoreUnAlign is not supported on current device!"); });
 }
