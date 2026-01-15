@@ -323,14 +323,14 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
         }                                                                                                               \
     } while (0)   
 #else
-#if defined(CANN_VERSION_STR) && defined(CANN_TIMESTAMP)
+#if defined(ASC_DEVKIT_VERSION_STR) && defined(ASC_DEVKIT_TIMESTAMP)
 #define ASSERT_MSG(expr, fmt, ...)  \
     do {                                                                                                   \
         ENABLE_ASSERT();                                                                                   \
         ENABLE_ASSERT_DUMP_SIZE();                                                                         \
         if (!(expr)) {                                                                                     \
             AscendC::AssertPrint("[ASSERT] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt,\
-            (__gm__ const char*)(CANN_VERSION_STR), static_cast<uint64_t>(CANN_TIMESTAMP),                 \
+            (__gm__ const char*)(ASC_DEVKIT_VERSION_STR), static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP),                 \
             __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                                     \
             trap();                                                                                        \
         }                                                                                                  \
@@ -341,7 +341,7 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
         ENABLE_ASSERT_DUMP_SIZE();                                                                         \
         if (!(expr)) {                                                                                     \
             AscendC::AssertPrint("%s[ASSERT] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt, prompt,\
-            (__gm__ const char*)(CANN_VERSION_STR), static_cast<uint64_t>(CANN_TIMESTAMP),                 \
+            (__gm__ const char*)(ASC_DEVKIT_VERSION_STR), static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP),                 \
             __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                                     \
             trap();                                                                                        \
         }                                                                                                  \
