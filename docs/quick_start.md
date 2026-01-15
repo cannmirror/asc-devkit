@@ -4,7 +4,7 @@
 
    以下所列仅为本开源仓源码编译用到的依赖，其中python、gcc、cmake的安装方法请参见配套版本的[用户手册](https://hiascend.com/document/redirect/CannCommunityInstDepend)，选择安装场景后，参见“安装CANN > 安装依赖”章节进行相关依赖的安装。
 
-   - python >= 3.7.0
+   - python >= 3.9.0
 
    - gcc >= 7.3.0
 
@@ -31,7 +31,7 @@
      # sudo make install                  # 非root用户安装
      ```
 
-   - pytest >= 5.4.2（可选，仅执行UT时依赖）
+   - pytest >= 8.0.0（可选，仅执行UT时依赖）
 
      执行以下命令安装：
      ```bash
