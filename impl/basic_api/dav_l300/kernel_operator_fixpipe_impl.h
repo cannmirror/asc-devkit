@@ -297,6 +297,7 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ DstT* dst, __cc__ SrcT* src,
         uint64_t gmLen = GetGMLen<config>(intriParams, calNSize, dstEleSize);
         AscendCUtils::CheckGmMemOverflow((__gm__ DstT*)(dst + dstOffset), isSrc, gmLen);
     }
+
     // LOC -> GM only n direction need fixpipeTiling, m no need fixpipeTiling
     if constexpr (!(IsSameType<SrcT, float>::value || IsSameType<DstT, float>::value)) {
         return copy_matrix_cc_to_gm((__gm__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),

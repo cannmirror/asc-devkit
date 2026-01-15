@@ -270,6 +270,13 @@ __aicore__ inline void LoadData3DV2L12L0BCal(__cb__ int8_t* dst, __cbuf__ int8_t
 /* **************************************************************************************************
  * Mmad                                             *
  * ************************************************************************************************* */
+__aicore__ inline void MmadCal(__cc__ float* c, __ca__ float* a, __cb__ float* b, const MmadParams& mmadParams)
+{
+    ASCENDC_ASSERT((false), {
+        KERNEL_LOG(KERNEL_ERROR, "unsupported float mmad");
+    });
+}
+
 template <typename T, typename U, typename S>
 __aicore__ inline void MmadCal(__cc__ T* c, __ca__ U* a, __cb__ S* b, const MmadParams& mmadParams)
 {
@@ -287,6 +294,14 @@ __aicore__ inline void MmadCal(__cc__ T* c, __ca__ U* a, __cb__ S* b, const Mmad
     config |= (((uint64_t)mmadParams.cmatrixSource & 0x1) << 62);
     config |= (((uint64_t)mmadParams.cmatrixInitVal & 0x1) << 63);
     mad(c, a, b, config);
+}
+
+__aicore__ inline void MmadCal(__cc__ float* c, __ca__ float* a, __cb__ float* b, uint64_t bias,
+    const MmadParams& mmadParams, bool cmatrixSource)
+{
+    ASCENDC_ASSERT((false), {
+        KERNEL_LOG(KERNEL_ERROR, "unsupported float mmad");
+    });
 }
 
 template <typename T, typename U, typename S>
