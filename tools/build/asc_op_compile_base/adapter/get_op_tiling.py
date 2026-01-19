@@ -254,7 +254,8 @@ def decode(tiling_data, fmt, offset=0):
             "int64": "l",
             "uint64": "L",
             "float": "f",
-            "double": "d"
+            "double": "d",
+            "bool": "?"
         }
         count = 1
         unpack_size = 0
@@ -285,6 +286,12 @@ def decode(tiling_data, fmt, offset=0):
                     str_res[i] = "float(-1.0 / 0.0)"
                 elif math.isnan(x):
                     str_res[i] = "float(0.0 / 0.0)"
+            res = tuple(str_res)
+        elif fmt_str.endswith("?"):
+            str_res = list(res)
+            for i, x in enumerate(res):
+                # python True/False -> c++ true/false
+                str_res[i] = "true" if x else "false"
             res = tuple(str_res)
 
         unpack_size += fmt_size
@@ -326,7 +333,7 @@ def get_bytes_by_type(dtype):
                 "int16_t": 2, "uint16_t": 2,
                 "int32_t": 4, "uint32_t": 4,
                 "int64_t": 8, "uint64_t": 8,
-                "float": 4}
+                "float": 4, "bool": 1}
     if dtype in type_bytes:
         return type_bytes[dtype]
     else:
@@ -357,7 +364,8 @@ def _decode_tiling_data(tiling_def, run_info_tiling_data, struct_tiling_def_base
         "int64_t": "int64",
         "uint64_t": "uint64",
         "float": "float",
-        "struct": "struct"
+        "struct": "struct",
+        "bool": "bool"
     }
     tiling_format = {}
     struct_binary_info_list = []

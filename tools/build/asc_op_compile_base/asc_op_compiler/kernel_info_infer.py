@@ -383,7 +383,8 @@ REGISTER_TILING_DEFAULT')
         dump_info = KernelInfoInfer.get_dump_info_from_i_file(content)
         func_name_exist = False
 
-        need_find_kernel_type = (not CommonUtility.is_m510())
+        need_find_kernel_type = (not CommonUtility.is_m510() and not CommonUtility.is_l300() and \
+            not CommonUtility.is_l311())
         tiling_no_register_flag = False
         try:
             with open(dst_i_file, 'r') as fd:

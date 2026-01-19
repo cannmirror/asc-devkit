@@ -1011,7 +1011,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __aicore__ inline void ShiftLefts(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vshls(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
@@ -1019,7 +1018,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __aicore__ inline void ShiftRights(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vshrs(dstReg, srcReg0, scalar, mask, modeValue);
 }
 

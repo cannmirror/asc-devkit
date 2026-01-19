@@ -18,6 +18,20 @@
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+enum class PowerAlgo {
+    INTRINSIC = 0,
+    DOUBLE_FLOAT_TECH, 
+};
+
+struct PowerConfig {
+    PowerAlgo algo = PowerAlgo::INTRINSIC;
+};
+
+constexpr PowerConfig defaultPowerConfig = { PowerAlgo::INTRINSIC };
+#endif
+
 // PowerF temp Tensor
 struct AscPowerFParams {
     __aicore__ AscPowerFParams() {};
