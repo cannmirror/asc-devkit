@@ -28,7 +28,7 @@
         <path value="compiler/bin" install_mod="750"/>
         <path value="tools" install_mod="750"/>
         <path value="tools/ascendc_tools" install_mod="750"/>
-        <path value="share"/>
+        <path value="share" install_mod="750"/>
         <path value="share/info" install_mod="750"/>
         <path value="$(TARGET_ENV)/tikcpp" install_softlink="compiler/tikcpp;tools/tikcpp"/>
         <path value="$(TARGET_ENV)/tikcpp/tikcfw"/>
