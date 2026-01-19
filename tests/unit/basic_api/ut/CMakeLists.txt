@@ -385,6 +385,7 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         ${ASCENDC_SYS_DIR}/pkg_inc/
         ${ASCENDC_SYS_DIR}/pkg_inc/base/
         ${ASCENDC_INCLUDE_DIR}/
+        ${ASCENDC_DIR}/include/utils/
         ${ASCENDC_INCLUDE_DIR}/utils/context/
         ${ASCENDC_INCLUDE_DIR}/utils/tiling/platform
         ${ASCENDC_INCLUDE_DIR}/utils/stub

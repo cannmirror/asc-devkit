@@ -20,6 +20,7 @@
 #include "platform/platform_info.h"
 #include "platform_ascendc_log.h"
 #include "platform/platform_infos_def.h"
+#include "platform/soc_spec.h"
 #include "platform_ascendc.h"
 
 namespace platform_ascendc {
@@ -40,6 +41,42 @@ const static std::string LABEL_SPLIT_VAL = "CubeCore,VectorCore";
 const static std::string LABEL_CORE_CNT_CUB = "cube_core_cnt";
 const static std::string LABEL_CORE_CNT_VEC = "vector_core_cnt";
 const static std::string LABEL_CORE_CNT_AICORE = "ai_core_cnt";
+const static std::string NPU_ARCH = "NpuArch";
+
+
+SocVersion SocVersionStrMap(const char *socVersionStr)
+{
+    static std::map<std::string, SocVersion> convertMap = {
+        {"Ascend310P", SocVersion::ASCEND310P},
+        {"Ascend910", SocVersion::ASCEND910},
+        {"Ascend910B", SocVersion::ASCEND910B},
+        {"Ascend910_93", SocVersion::ASCEND910B},
+        {"Ascend910_95", SocVersion::ASCEND910_95},
+        {"Ascend910_55", SocVersion::ASCEND910_55},
+        {"Ascend310B", SocVersion::ASCEND310B},
+        {"AS31XM1", SocVersion::AS31XM1},
+        {"Ascend031", SocVersion::ASCEND031},
+        {"Ascend035", SocVersion::ASCEND035},
+        {"Ascend310", SocVersion::ASCEND310},
+        {"Ascend610", SocVersion::ASCEND610},
+        {"Ascend610Lite", SocVersion::ASCEND610Lite},
+        {"BS9SX1A", SocVersion::BS9SX1A},
+        {"BS9SX2A", SocVersion::BS9SX2A},
+        {"Hi3796CV300CS", SocVersion::HI3796CV300CS},
+        {"Hi3796CV300ES", SocVersion::HI3796CV300ES},
+        {"MC61AM21A", SocVersion::MC61AM21A},
+        {"MC62CM12A", SocVersion::MC62CM12A},
+        {"SD3403", SocVersion::SD3403},
+        {"KirinX90", SocVersion::KIRINX90},
+        {"Kirin9030", SocVersion::KIRIN9030}
+    };
+    const auto &iter = convertMap.find(socVersionStr);
+    if (iter != convertMap.end()) {
+        return iter->second;
+    }
+    PF_LOGE("get platform failed, convertMap do not find soc %s version", socVersionStr);
+    return SocVersion::RESERVED_VERSION;
+}
 
 static inline uint32_t GetCoreNumByType(fe::PlatFormInfos *platformInfo, bool isAiv)
 {
@@ -145,43 +182,37 @@ void PlatformAscendC::ReserveLocalMemory(ReservedSize size)
 
 SocVersion PlatformAscendC::GetSocVersion(void) const
 {
-    std::string socVersionStr;
-    const auto ret = this->GetPlatFormInfo()->GetPlatformResWithLock(LABEL_VERSION, LABEL_SHORT_SOC_VERSION, socVersionStr);
+    std::string socVerStr;
+    bool ret = GetPlatFormInfo()->GetPlatformResWithLock(LABEL_VERSION, LABEL_SHORT_SOC_VERSION, socVerStr);
     if (!ret) {
-        PF_LOGE("get platform failed, socVersionStr is %s", socVersionStr.c_str());
+        PF_LOGE("platform do not support get socVersion!");
         return SocVersion::RESERVED_VERSION;
     }
-    static std::map<std::string, SocVersion> convertMap = {
-        {"Ascend310P", SocVersion::ASCEND310P},
-        {"Ascend910", SocVersion::ASCEND910},
-        {"Ascend910B", SocVersion::ASCEND910B},
-        {"Ascend910_93", SocVersion::ASCEND910B},
-        {"Ascend310B", SocVersion::ASCEND310B},
-        {"Ascend910_95", SocVersion::ASCEND910_95},
-        {"Ascend910_55", SocVersion::ASCEND910_55},
-        {"AS31XM1", SocVersion::AS31XM1},
-        {"Ascend031", SocVersion::ASCEND031},
-        {"Ascend035", SocVersion::ASCEND035},
-        {"Ascend310", SocVersion::ASCEND310},
-        {"Ascend610", SocVersion::ASCEND610},
-        {"Ascend610Lite", SocVersion::ASCEND610Lite},
-        {"BS9SX1A", SocVersion::BS9SX1A},
-        {"BS9SX2A", SocVersion::BS9SX2A},
-        {"Hi3796CV300CS", SocVersion::HI3796CV300CS},
-        {"Hi3796CV300ES", SocVersion::HI3796CV300ES},
-        {"MC61AM21A", SocVersion::MC61AM21A},
-        {"MC62CM12A", SocVersion::MC62CM12A},
-        {"SD3403", SocVersion::SD3403},
-        {"KirinX90", SocVersion::KIRINX90},
-        {"Kirin9030", SocVersion::KIRIN9030}
-    };
-    auto it = convertMap.find(socVersionStr);
-    if (it != convertMap.end()) {
-        return it->second;
-    }
-    PF_LOGE("get platform failed, convertMap do not find soc %s version", socVersionStr.c_str());
-    return SocVersion::RESERVED_VERSION;
+    return SocVersionStrMap(socVerStr.c_str());
 }
+
+NpuArch PlatformAscendC::GetCurNpuArch(void) const
+{
+    std::string npuArchStr;
+    bool ret = GetPlatFormInfo()->GetPlatformResWithLock(LABEL_VERSION, NPU_ARCH, npuArchStr);
+    if (!ret) {
+        PF_LOGE("platform do not support get npu arch!");
+        return NpuArch::DAV_RESV;
+    }
+    int32_t npuArchInt = 0;
+    try {
+        npuArchInt = std::atoi(npuArchStr.c_str());
+    } catch (...) {
+        PF_LOGE("npu str to int failed, NpuArch str is %s", npuArchStr.c_str());
+        return NpuArch::DAV_RESV;
+    }
+    if (npuArchInt <= 0) {
+        PF_LOGE("npu str to int failed, NpuArch str is %s", npuArchStr.c_str());
+        return NpuArch::DAV_RESV;
+    }
+    return static_cast<NpuArch>(npuArchInt);
+}
+
 void PlatformAscendC::GetCoreMemBw(const CoreMemType &memType, uint64_t &bwSize) const
 {
     const fe::LocalMemType localType = static_cast<fe::LocalMemType>(memType);
@@ -225,7 +256,6 @@ uint32_t PlatformAscendC::GetLibApiWorkSpaceSize(void) const
     }
     return WORK_SPACE_SIZE;
 }
-
 uint32_t PlatformAscendC::GetResCubeGroupWorkSpaceSize(void) const
 {
     auto socVersion = GetSocVersion();
@@ -252,24 +282,7 @@ PlatformAscendC* PlatformAscendCManager::platformInfo = nullptr;
 std::mutex PlatformAscendCManager::platformInitMtx;
 SocVersion PlatformAscendCManager::SocVersionMap(const char *socVersionStr)
 {
-    static std::map<std::string, SocVersion> convertMap = {
-        {"Ascend310P", SocVersion::ASCEND310P},
-        {"Ascend910", SocVersion::ASCEND910},
-        {"Ascend910B", SocVersion::ASCEND910B},
-        {"Ascend910_93", SocVersion::ASCEND910B},
-        {"Ascend310B", SocVersion::ASCEND310B},
-        {"Ascend910_95", SocVersion::ASCEND910_95},
-        {"Ascend910_55", SocVersion::ASCEND910_55},
-        {"MC62CM12A", SocVersion::MC62CM12A},
-        {"KirinX90", SocVersion::KIRINX90},
-        {"Kirin9030", SocVersion::KIRIN9030}
-    };
-    const auto &iter = convertMap.find(socVersionStr);
-    if (iter != convertMap.end()) {
-        return iter->second;
-    }
-    PF_LOGE("get platform failed, convertMap do not find soc %s version", socVersionStr);
-    return SocVersion::RESERVED_VERSION;
+    return SocVersionStrMap(socVersionStr);
 }
 
 namespace {
