@@ -64,32 +64,15 @@ struct MatrixL1Addr
 };
 
 struct DataCopyOutParams {
-    __aicore__ DataCopyOutParams()
-    {
-        quantMode = 0;
-        cBurstNum = 0;
-        burstLen = 0;
-        srcStride = 0;
-        dstStride = 0;
-        oriNSize = 0;
-        enUnitFlag = false;
-        quantScalar = 0;
-        curM = 0;
-        curN = 0;
-    }
+    __aicore__ DataCopyOutParams() = default;
+
     __aicore__ DataCopyOutParams(const uint16_t count, const uint16_t len,
-        const uint16_t srcStrideIn, const uint32_t dstStrideIn, const uint16_t nSize, const bool unitFlag,
-        const int curMPos, const int curNPos)
-    {
-        cBurstNum = count;
-        burstLen= len;
-        srcStride = srcStrideIn;
-        dstStride = dstStrideIn;
-        oriNSize = nSize;
-        enUnitFlag = unitFlag;
-        curM = curMPos;
-        curN = curNPos;
-    }
+    const uint16_t srcStrideIn, const uint32_t dstStrideIn, const uint16_t nSize, const bool unitFlag,
+    const int curMPos, const int curNPos)
+        : cBurstNum(count), burstLen(len), srcStride(srcStrideIn), dstStride(dstStrideIn),
+          oriNSize(nSize), enUnitFlag(unitFlag), curM(curMPos), curN(curNPos)
+    {}
+
     uint8_t quantMode = 0;
     uint16_t cBurstNum = 0;
     uint16_t burstLen = 0;
