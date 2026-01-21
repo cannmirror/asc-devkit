@@ -110,6 +110,50 @@
 
     矩阵C的排列顺序：0，1，4，5，8，9，12，13，2，3，6，7，10，11，14，15。
 
+下面表格总结了mmad所有输入数据类型下，左右矩阵的M、K、N方向的对齐要求。
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th></th>
+     <th></th>
+  </tr>
+  <tr>
+    <td></td>
+    <td>int8_t</td>
+    <td>half/bfloat16_t</td>
+    <td>float</td>
+     <td>int4b_t</td>
+  </tr>
+  <tr>
+    <td>M</td>
+    <td>16</td>
+    <td>16</td>
+    <td>16</td>
+     <td>16</td>
+  </tr>
+  <tr>
+    <td>K</td>
+    <td>32</td>
+    <td>16</td>
+    <td>8</td>
+     <td>64</td>
+  </tr>
+  <tr>
+    <td>N</td>
+    <td>16</td>
+    <td>16</td>
+    <td>16</td>
+     <td>16</td>
+  </tr>
+</table>
+
+下图中未对齐前的左、右矩阵的shape分别为[30,70]和[70,40],按照上表进行对齐后进行矩阵乘，矩阵乘的结果C矩阵，M方向和N方向都向16对齐，图中灰色代表对齐填充的无效数据，这些数据在执行矩阵乘法时会被忽略。
+<p align="center">
+  <img src="figures/f32_mmad_A不转置_B不转置.png" width="1000">
+</p>
+
 ## 函数原型<a name="section620mcpsimp"></a>
 
 -   不传入bias
@@ -267,16 +311,31 @@
 </tr>
 <tr id="row55001333313"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p115000313310"><a name="p115000313310"></a><a name="p115000313310"></a><span id="ph1287098193117"><a name="ph1287098193117"></a><a name="ph1287098193117"></a>unitFlag</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p103614380020"><a name="p103614380020"></a><a name="p103614380020"></a>unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。取值说明如下：</p>
+<td class="cellrowborder" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p103614380020"><a name="p103614380020"></a><a name="p103614380020"></a>unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。对于L0C中每一个512字节的内存都有一个单元标志位用于指示该内存块是否可读或者可写，对于Mmad指令和Fixpipe指令都有两位单元控制位，取值说明如下：</p>
 <p id="p1225131744220"><a name="p1225131744220"></a><a name="p1225131744220"></a>0：保留值；</p>
 <p id="p3836113514213"><a name="p3836113514213"></a><a name="p3836113514213"></a>2：使能unitFlag，硬件执行完指令之后，不会关闭unitFlag功能；</p>
 <p id="p173663815011"><a name="p173663815011"></a><a name="p173663815011"></a>3：使能unitFlag，硬件执行完指令之后，会将unitFlag功能关闭。</p>
-<p id="p14988589213"><a name="p14988589213"></a><a name="p14988589213"></a>使能该功能时，Mmad指令的unitFlag在最后1个分形设置为3、其余分形计算设置为2即可。</p>
+<p id="p14988589213"><a name="p14988589213"></a><a name="p14988589213"></a>使能该功能时，假设调用N次Mmad指令，需要将前N-1次Mmad指令的unitFlag设置为2，将最后一次Mmad指令的unitFlag设置为3。</p>
 <p id="p181158034917"><a name="p181158034917"></a><a name="p181158034917"></a>该参数仅支持如下型号</p>
 <p id="p15910825145415"><a name="p15910825145415"></a><a name="p15910825145415"></a><span id="ph1292674871116"><a name="ph1292674871116"></a><a name="ph1292674871116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span></p>
 <p id="p29873508148"><a name="p29873508148"></a><a name="p29873508148"></a><span id="ph13754548217"><a name="ph13754548217"></a><a name="ph13754548217"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 </tr>
+<tr>
+<td class="cellrowborder" valign="top" width="15.31%">
+<p>kDirectionAlign</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.69%">
+<p>kDirectionAlign仅当左、右矩阵输入数据类型为float时生效。该参数取值以及含义：
+
+(1)false，默认值，表示L0A/L0B上的矩阵在K方向上对齐到ceil(K/8)*8。
+
+(2)true，表示L0A/L0B上的矩阵在K方向上对齐到ceil(K/16)*16。
+
+当A矩阵转置时，该参数需要配置为true。如下图所示，当A矩阵转置后，K方向对齐到16，设置kDirectionAlign=true矩阵计算单元从L0A读取数据时就能够跳过最右侧一列两个全部为无效数据的分形。</p>
+</td>
+</tr>
+
 <tr id="row429212884719"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p92641454114714"><a name="p92641454114714"></a><a name="p92641454114714"></a>fmOffset</p>
 </td>
 <td class="cellrowborder" rowspan="5" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p6264205416479"><a name="p6264205416479"></a><a name="p6264205416479"></a>预留参数。为后续的功能做保留，开发者暂时无需关注，使用默认值即可。</p>
@@ -291,12 +350,13 @@
 <tr id="row2694932114712"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p152651254104718"><a name="p152651254104718"></a><a name="p152651254104718"></a>enWinogradB</p>
 </td>
 </tr>
-<tr id="row1916264744713"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p926555412477"><a name="p926555412477"></a><a name="p926555412477"></a>kDirectionAlign</p>
-</td>
-</tr>
+
 </tbody>
 </table>
 
+<p align="center">
+  <img src="figures/k参数示意图.png" width="400">
+</p>
 **表 4**  dst、fm、filter支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
 
 <a name="table311391475117"></a>
@@ -423,7 +483,7 @@
 </tbody>
 </table>
 
-**表 7**  dst、fm、filter、bias支持的精度类型组合 （Kirin X90）
+**表 7**  dst、fm、filter、bias支持的精度类型组合 （Kirin x90）
 
 <a name="table128881130185314"></a>
 <table><thead align="left"><tr id="row68884308538"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.5.1.1"><p id="p1888863016536"><a name="p1888863016536"></a><a name="p1888863016536"></a><strong id="b58886308539"><a name="b58886308539"></a><a name="b58886308539"></a>左矩阵fm type</strong></p>

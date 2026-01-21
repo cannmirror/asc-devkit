@@ -236,6 +236,16 @@ constexpr FixpipeConfig CFG_ROW_MAJOR = {CO2Layout::ROW_MAJOR};</pre>
 </td>
 <td class="cellrowborder" valign="top" width="76.49000000000001%" headers="mcps1.2.4.1.3 "><p id="p7427841113712"><a name="p7427841113712"></a><a name="p7427841113712"></a>QuantMode_t是一个枚举类型，用于控制量化模式，默认值为QuantMode_t::NoQuant，即不使能量化功能。QuantMode_t取值如下：</p>
 <a name="ul17664135412379"></a><a name="ul17664135412379"></a><ul id="ul17664135412379"><li>NoQuant，不使能量化功能</li><li>F322F16，float量化成half，量化结果支持INF_NAN模式</li><li>F322BF16，float量化成bfloat16_t，量化结果支持INF_NAN模式</li><li>DEQF16，int32_t量化成half, scalar量化，量化结果不支持INF_NAN模式</li><li>VDEQF16， int32_t量化成half，tensor量化，量化结果不支持INF_NAN模式</li><li>QF322B8_PRE，float量化成uint8_t/int8_t，scalar量化</li><li>VQF322B8_PRE，float量化成uint8_t/int8_t，tensor量化</li><li>REQ8，int32_t量化成uint8_t/int8_t，scalar量化</li><li>VREQ8，int32_t量化成uint8_t/int8_t，tensor量化</li></ul>
+
+quantPre取值需要参考以下三个因素：（1）与Fixpipe对应的Mmad指令的左、右矩阵的输入数据类型（2）Fixpipe搬出的数据类型 （3）scalar量化或者tensor量化。下面以几种场景举例，其余场景的取值可以参考Mmad指令中支持左矩阵、右矩阵和结果矩阵的精度组合相关的描述。
+
+（1）Mmad指令的左、右矩阵输入数据类型为half时，预期Fixpipe搬出的数据类型为half，此时quantPre取值为QuantMode_t::F322F16。
+
+（2）Mmad指令的左、右矩阵输入数据类型为float时，预期Fixpipe搬出的数据类型为float，此时quantPre取默认值。
+
+（3）Mmad指令的左、右矩阵输入数据类型为half时，预期Fixpipe搬出的数据类型为int8_t，采用scalar量化，此时quantPre取值为QuantMode_t::QF322B8_PRE。
+
+（4）Mmad指令的左、右矩阵输入数据类型为uint8_t时，预期Fixpipe搬出的数据类型为int8_t，采用tensor量化，此时quantPre取值为QuantMode_t::VREQ8。
 </td>
 </tr>
 <tr id="row129021142124519"><td class="cellrowborder" valign="top" width="13.459999999999999%" headers="mcps1.2.4.1.1 "><p id="p1902942144514"><a name="p1902942144514"></a><a name="p1902942144514"></a>deqScalar</p>
