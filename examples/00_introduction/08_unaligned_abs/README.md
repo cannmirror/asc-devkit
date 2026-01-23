@@ -38,7 +38,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center"></td><td align="center">half</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">abs_xxx_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">abs_gather_mask_custom</td></tr>
   </table>
 - 算子实现：  
   本样例中实现的是固定shape为128*18的非对齐Abs算子。  
