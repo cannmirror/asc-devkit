@@ -29,9 +29,9 @@
 #endif
 
 namespace AscendC {
-__aicore__ inline void AntiQuantInnerLoopF16(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-    const LocalTensor<half> &offset, const LocalTensor<half> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const BinaryRepeatParams &binaryParams, const uint32_t calCount)
+__aicore__ inline void AntiQuantInnerLoopF16(const LocalTensor<half>& dst, const LocalTensor<half>& src,
+    const LocalTensor<half>& offset, const LocalTensor<half>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const BinaryRepeatParams& binaryParams, const uint32_t calCount)
 {
     SetVectorMask<half, MaskMode::COUNTER>(0, calCount);
     Add<half, false>(dst, offset, src, MASK_PLACEHOLDER, 1, binaryParams);
@@ -41,9 +41,9 @@ __aicore__ inline void AntiQuantInnerLoopF16(const LocalTensor<half> &dst, const
 }
 
 template <typename SrcType, bool withOffset = true>
-__aicore__ inline void AntiQuantInnerLoop(const LocalTensor<half> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<half> &offset, const LocalTensor<half> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const UnaryRepeatParams &unaryParamsCastSrc, const BinaryRepeatParams &binaryParams, const uint32_t calCount)
+__aicore__ inline void AntiQuantInnerLoop(const LocalTensor<half>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<half>& offset, const LocalTensor<half>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const UnaryRepeatParams& unaryParamsCastSrc, const BinaryRepeatParams& binaryParams, const uint32_t calCount)
 {
     SetVectorMask<half, MaskMode::COUNTER>(0, calCount);
     Cast<half, SrcType, false>(dst, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParamsCastSrc);
@@ -57,9 +57,9 @@ __aicore__ inline void AntiQuantInnerLoop(const LocalTensor<half> &dst, const Lo
 }
 
 template <typename SrcType, bool withOffset = true>
-__aicore__ inline void AntiQuantInnerLoop(const LocalTensor<half> &dst, const LocalTensor<SrcType> &src,
-    const half offset, const half scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const UnaryRepeatParams &unaryParamsCastSrc, const UnaryRepeatParams &unaryParamsScalar, const uint32_t calCount)
+__aicore__ inline void AntiQuantInnerLoop(const LocalTensor<half>& dst, const LocalTensor<SrcType>& src,
+    const half offset, const half scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const UnaryRepeatParams& unaryParamsCastSrc, const UnaryRepeatParams& unaryParamsScalar, const uint32_t calCount)
 {
     SetVectorMask<half, MaskMode::COUNTER>(0, calCount);
     Cast<half, SrcType, false>(dst, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParamsCastSrc);
@@ -73,8 +73,8 @@ __aicore__ inline void AntiQuantInnerLoop(const LocalTensor<half> &dst, const Lo
 }
 
 template <typename SrcType, typename DstType, bool withOffset = true>
-__aicore__ inline void AntiQuantOuterLoop(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AntiQuantOuterLoop(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t calCount)
 {
     UnaryRepeatParams unaryParamsCastSrc;          // srcType -> FP16
@@ -109,8 +109,8 @@ __aicore__ inline void AntiQuantOuterLoop(const LocalTensor<DstType> &dst, const
 }
 
 template <typename SrcType, typename DstType, bool withOffset = true>
-__aicore__ inline void AntiQuantOuterLoop(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void AntiQuantOuterLoop(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const DstType offset, const DstType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     UnaryRepeatParams unaryParamsCastSrc;
     if constexpr(IsSameType<SrcType, int8_t>::value) {
@@ -145,9 +145,9 @@ __aicore__ inline void AntiQuantOuterLoop(const LocalTensor<DstType> &dst, const
 }
 
 template <typename SrcType>
-__aicore__ inline void AscendAntiQuantNoTransposePerformance(const LocalTensor<half> &dst,
-    const LocalTensor<SrcType> &src, const LocalTensor<half> &offset, const LocalTensor<half> &scale,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K, const uint32_t N)
+__aicore__ inline void AscendAntiQuantNoTransposePerformance(const LocalTensor<half>& dst,
+    const LocalTensor<SrcType>& src, const LocalTensor<half>& offset, const LocalTensor<half>& scale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K, const uint32_t N)
 {
     BinaryRepeatParams binaryParams;
     binaryParams.src0RepStride = N * sizeof(half) / ONE_BLK_SIZE;
@@ -173,9 +173,9 @@ __aicore__ inline void AscendAntiQuantNoTransposePerformance(const LocalTensor<h
 }
 
 template <typename SrcType>
-__aicore__ inline void AscendAntiQuantNoTransposePerformanceTail(const LocalTensor<half> &dst,
-    const LocalTensor<SrcType> &src, const LocalTensor<half> &offset, const LocalTensor<half> &scale,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K, const uint32_t N, const uint32_t mask)
+__aicore__ inline void AscendAntiQuantNoTransposePerformanceTail(const LocalTensor<half>& dst,
+    const LocalTensor<SrcType>& src, const LocalTensor<half>& offset, const LocalTensor<half>& scale,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K, const uint32_t N, const uint32_t mask)
 {
     BinaryRepeatParams binaryParams;
     binaryParams.src0RepStride = N * sizeof(half) / ONE_BLK_SIZE;
@@ -195,8 +195,8 @@ __aicore__ inline void AscendAntiQuantNoTransposePerformanceTail(const LocalTens
 }
 
 template <typename SrcType>
-__aicore__ inline void PreCast(const LocalTensor<half> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<half> &offset, const LocalTensor<half> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void PreCast(const LocalTensor<half>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<half>& offset, const LocalTensor<half>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t K)
 {
     UnaryRepeatParams s42f16unaryParams;
@@ -217,8 +217,8 @@ __aicore__ inline void PreCast(const LocalTensor<half> &dst, const LocalTensor<S
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AntiQuantNoTransposeImplScalar(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AntiQuantNoTransposeImplScalar(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t calCount, const uint32_t K, const uint32_t N, const AntiQuantShapeInfo& shapeInfo)
 {
     uint32_t groupCount = (shapeInfo.scaleHeight == 0 ? scale.GetShapeInfo().shape[0] : shapeInfo.scaleHeight);
@@ -243,8 +243,8 @@ __aicore__ inline void AntiQuantNoTransposeImplScalar(const LocalTensor<DstType>
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t calCount, const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     uint32_t N = src.GetSize() / K;
@@ -283,8 +283,8 @@ __aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType> &ds
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount,
+__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     uint32_t groupCount = (shapeInfo.scaleHeight == 0 ? scale.GetShapeInfo().shape[0] : shapeInfo.scaleHeight);
@@ -304,8 +304,8 @@ __aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType> &ds
 }
 
 template <typename SrcType, typename DstType, bool withOffset = true>
-__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount,
+__aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const DstType offset, const DstType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     SetMaskCount();
@@ -313,8 +313,8 @@ __aicore__ inline void AscendAntiQuantNoTranspose(const LocalTensor<DstType> &ds
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t calCount, const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     uint32_t N = src.GetSize() / K;
@@ -333,8 +333,8 @@ __aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType> &dst, cons
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount,
+__aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     uint32_t N = src.GetSize() / K;
@@ -353,8 +353,8 @@ __aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType> &dst, cons
 }
 
 template <typename SrcType, typename DstType, bool withOffset = true>
-__aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount,
+__aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const DstType offset, const DstType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     SetMaskCount();
@@ -362,8 +362,8 @@ __aicore__ inline void AntiQuantImplScalar(const LocalTensor<DstType> &dst, cons
 }
 
 template <bool withOffset = true>
-__aicore__ inline void AntiQuantFp16TransposeMainImpl(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-    const LocalTensor<half> &scale, const LocalTensor<half> &offset, const uint32_t srcN, const uint32_t K)
+__aicore__ inline void AntiQuantFp16TransposeMainImpl(const LocalTensor<half>& dst, const LocalTensor<half>& src,
+    const LocalTensor<half>& scale, const LocalTensor<half>& offset, const uint32_t srcN, const uint32_t K)
 {
     SetMaskCount();
     // blk is continuous in dst and src0, and is same with src1
@@ -385,8 +385,8 @@ __aicore__ inline void AntiQuantFp16TransposeMainImpl(const LocalTensor<half> &d
 }
 
 template <bool withOffset = true>
-__aicore__ inline void AntiQuantFp16TransposeTailImpl(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-    const LocalTensor<half> &scale, const LocalTensor<half> &offset, const uint32_t srcN, const uint32_t K)
+__aicore__ inline void AntiQuantFp16TransposeTailImpl(const LocalTensor<half>& dst, const LocalTensor<half>& src,
+    const LocalTensor<half>& scale, const LocalTensor<half>& offset, const uint32_t srcN, const uint32_t K)
 {
     SetMaskNorm();
     const uint32_t tailK = K % B16_DATA_NUM_PER_REPEAT;
@@ -427,8 +427,8 @@ __aicore__ inline void AntiQuantFp16TransposeTailImpl(const LocalTensor<half> &d
 // outType BF16 case: srcType -> FP32 (need lots of tmpSpace) -> do calculation -> BF16
 // outType FP16 case: srcType -> FP16 (no need for tmpSpace) -> do calculation              better performance
 template <typename SrcType, bool withOffset = true>
-__aicore__ inline void AscendAntiQuantFP16Transpose(const LocalTensor<half> &dst, const LocalTensor<SrcType> &src,
-    LocalTensor<half> offset, const LocalTensor<half> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AscendAntiQuantFP16Transpose(const LocalTensor<half>& dst, const LocalTensor<SrcType>& src,
+    LocalTensor<half> offset, const LocalTensor<half>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo)
 {
     uint32_t calCount = src.GetSize();
@@ -478,8 +478,8 @@ __aicore__ inline void AscendAntiQuantFP16Transpose(const LocalTensor<half> &dst
 
 // only tensor scale
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     CHECK_FUNC_HIGHLEVEL_API(AscendAntiQuant, (SrcType, DstType, isTranspose),
@@ -499,8 +499,8 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
 
 // only scalar scale
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const DstType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     CHECK_FUNC_HIGHLEVEL_API(AscendAntiQuant, (SrcType, DstType, isTranspose),
@@ -519,8 +519,8 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
 {
     if constexpr (!isTranspose) {
@@ -535,8 +535,8 @@ __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst
 }
 
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+__aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const DstType offset, const DstType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     if constexpr (!isTranspose) {
@@ -553,8 +553,8 @@ __aicore__ inline void AscendAntiQuantImplCommon(const LocalTensor<DstType> &dst
 
 // tensor offset + tensor scale
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
 {
     CHECK_FUNC_HIGHLEVEL_API(AscendAntiQuant, (SrcType, DstType, isTranspose),
@@ -564,8 +564,8 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
 }
 
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const uint32_t K,
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
@@ -576,8 +576,8 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
 
 // scalar offset + scalar scale
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const DstType offset, const DstType scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const DstType offset, const DstType scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     CHECK_FUNC_HIGHLEVEL_API(AscendAntiQuant, (SrcType, DstType, isTranspose),
@@ -587,7 +587,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, cons
 }
 
 template <typename SrcType, typename DstType, bool isTranspose>
-__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
     const DstType offset, const DstType scale, const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
 {
     LocalTensor<uint8_t> sharedTmpBuffer;

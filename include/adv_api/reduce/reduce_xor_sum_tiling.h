@@ -28,8 +28,8 @@ namespace AscendC {
  * @param [out] maxValue: ReduceXorSum api calculate need max temporary local space size.
  * @param [out] minValue: ReduceXorSum api calculate need min temporary local space size.
  */
-void GetReduceXorSumMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-                                  uint32_t &maxValue, uint32_t &minValue);
+void GetReduceXorSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 }  // namespace AscendC
 
 #endif  // LIB_REDUCE_REDUCE_XOR_SUM_TILING_H

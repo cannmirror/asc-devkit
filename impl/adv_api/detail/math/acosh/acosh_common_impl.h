@@ -29,8 +29,8 @@ constexpr float ACOSH_NEG_ONE = -1;
 constexpr uint32_t ACOSH_STRIDE_DIGITS = 2;
 
 template <typename T>
-__aicore__ inline void AcoshCompute(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const LocalTensor<float> &tmpBuffer, uint32_t calCount)
+__aicore__ inline void AcoshCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<float>& tmpBuffer, uint32_t calCount)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -64,8 +64,8 @@ __aicore__ inline void AcoshCompute(const LocalTensor<T> &dst, const LocalTensor
 }
 
 template <>
-__aicore__ inline void AcoshCompute(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-    const LocalTensor<float> &tmpBuffer, uint32_t calCount)
+__aicore__ inline void AcoshCompute(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<float>& tmpBuffer, uint32_t calCount)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -155,8 +155,8 @@ __aicore__ inline void AcoshImpl(const LocalTensor<T>& dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AcoshImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AcoshImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -170,9 +170,8 @@ __aicore__ inline void AcoshImpl(const LocalTensor<T> &dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AcoshImpl(const LocalTensor<T> &dstTensor,
-	const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t>& sharedTmpBuffer)
+__aicore__ inline void AcoshImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -183,7 +182,7 @@ __aicore__ inline void AcoshImpl(const LocalTensor<T> &dstTensor,
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AcoshImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor)
+__aicore__ inline void AcoshImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);

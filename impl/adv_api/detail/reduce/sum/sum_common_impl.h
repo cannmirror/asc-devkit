@@ -23,7 +23,7 @@ namespace AscendC {
 
 template <typename T>
 __aicore__ inline void SumForOneRepeatTime(
-    const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const SumParams &sumParams)
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const SumParams& sumParams)
 {
     SetVectorMask<T>(0, sumParams.n);
     for (uint32_t row = 0; row < sumParams.outter; ++row) {
@@ -35,8 +35,8 @@ __aicore__ inline void SumForOneRepeatTime(
 }
 
 template <typename T, int32_t reduceDim = -1, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SumCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const SumParams &sumParams)
+__aicore__ inline void SumCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const SumParams& sumParams)
 {
     if ASCEND_IS_AIC {
         return;

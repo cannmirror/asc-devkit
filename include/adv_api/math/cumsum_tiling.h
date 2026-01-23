@@ -28,7 +28,7 @@ namespace AscendC {
  * @return max temporary local space size
  * @return min temporary local space size
  */
-void GetCumSumMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isLastAxis,
-    const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue);
+void GetCumSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isLastAxis,
+    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 }  // namespace AscendC
 #endif

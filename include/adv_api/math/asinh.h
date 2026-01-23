@@ -60,7 +60,7 @@ __aicore__ inline void Asinh(const LocalTensor<T>& dstTensor, const LocalTensor<
  * \param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Asinh(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const uint32_t calCount)
+__aicore__ inline void Asinh(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -77,7 +77,7 @@ __aicore__ inline void Asinh(const LocalTensor<T> &dstTensor, const LocalTensor<
  * \param [in] srcTensor, input LocalTensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Asinh(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor)
+__aicore__ inline void Asinh(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

@@ -142,9 +142,8 @@ __aicore__ inline void DigammaGenNanMask(const LocalTensor<uint8_t> &mask, const
 }
 
 // Select the value of src at mask, and accumulate the result onto dst, used tmpScalar
-__aicore__ inline void DigammaSelect(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                     const LocalTensor<uint8_t> &mask, const LocalTensor<float> &tmp,
-                                     DigammaParams &params)
+__aicore__ inline void DigammaSelect(const LocalTensor<float>& dst, const LocalTensor<float>& src,
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& tmp, DigammaParams& params)
 {
     Duplicate<float, false>(params.tmpScalar, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     PipeBarrier<PIPE_V>();
@@ -159,8 +158,8 @@ __aicore__ inline void DigammaSelect(const LocalTensor<float> &dst, const LocalT
 }
 
 // compute -0.0001 <= x && x < 0.0, and put the result on result
-__aicore__ inline void DigammaNegativeRange(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                            DigammaParams &params)
+__aicore__ inline void DigammaNegativeRange(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // tmp(tmpCal3) = sin(pi * (x - floor(x)))
     DigammaCast(params.tmpScalar, src, RoundMode::CAST_FLOOR);

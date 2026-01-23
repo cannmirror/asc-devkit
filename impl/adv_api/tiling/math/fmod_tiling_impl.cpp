@@ -36,8 +36,8 @@ inline uint32_t GetFmodMinTmpSize(const uint32_t typeSize, const uint8_t truncCa
 }
 } // namespace
 
-void GetFmodMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetFmodMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -51,7 +51,7 @@ void GetFmodMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, co
     minValue = GetFmodMinTmpSize(typeSize, truncCalPro);
 }
 
-void GetFmodTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetFmodTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     GetTruncTmpBufferFactorSize(typeSize, maxLiveNodeCount, extraBuf);

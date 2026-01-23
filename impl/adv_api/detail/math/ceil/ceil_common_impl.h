@@ -31,8 +31,8 @@ namespace AscendC {
 
 constexpr uint32_t CEIL_HALF_CALC_PROCEDURE = 2;
 
-__aicore__ inline void CeilProcess(const LocalTensor<half> &dstTensor, const LocalTensor<half> &srcTensor,
-    const LocalTensor<uint8_t> &tmpTensor)
+__aicore__ inline void CeilProcess(
+    const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor, const LocalTensor<uint8_t>& tmpTensor)
 {
     const LocalTensor<float> floatTmpTensor = tmpTensor.ReinterpretCast<float>();
     // In the case of the half data type, there is no direct instruction for the round operation. Therefore, multiple
@@ -47,8 +47,8 @@ __aicore__ inline void CeilProcess(const LocalTensor<half> &dstTensor, const Loc
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CeilImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void CeilImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Ceil, (T, isReuseSource), (dstTensor, srcTensor, sharedTmpBuffer, calCount));
 
@@ -81,8 +81,8 @@ __aicore__ inline void CeilImpl(const LocalTensor<T> &dstTensor, const LocalTens
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void CeilImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void CeilImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // alloc tmp buffer using stack
     LocalTensor<uint8_t> sharedTmpBuffer;

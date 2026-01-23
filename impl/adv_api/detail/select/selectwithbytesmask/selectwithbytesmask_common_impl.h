@@ -46,8 +46,8 @@ __aicore__ inline void CastMaskToHalfImpl(const LocalTensor<half> &localMaskTmp,
 }
 
 template <typename T, typename U, bool reverse = false>
-__aicore__ inline void SelectWithBytesMaskPerAxisImpl(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
-    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t srcAxisLen,
+__aicore__ inline void SelectWithBytesMaskPerAxisImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src0, T src1,
+    const LocalTensor<U>& mask, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t srcAxisLen,
     const uint32_t bucketSize)
 {
     const auto paddingLen = AlignUp(bucketSize / ONE_BYTE_BIT_SIZE, ONE_BLK_SIZE);
@@ -77,8 +77,8 @@ __aicore__ inline void SelectWithBytesMaskPerAxisImpl(const LocalTensor<T> &dst,
 
 // When MaskLastAxis > SrcLastAxis, removes the redundant masks to make src and mask align.
 template <typename U>
-__aicore__ inline void RemoveRedundantMask(const LocalTensor<U> &dst, const LocalTensor<U> &mask,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+__aicore__ inline void RemoveRedundantMask(const LocalTensor<U>& dst, const LocalTensor<U>& mask,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const SelectWithBytesMaskShapeInfo& info)
 {
     LocalTensor<uint16_t> tmpDst = dst.template ReinterpretCast<uint16_t>();
     LocalTensor<uint16_t> tmpMask = mask.template ReinterpretCast<uint16_t>();
@@ -93,8 +93,8 @@ __aicore__ inline void RemoveRedundantMask(const LocalTensor<U> &dst, const Loca
 }
 
 template <typename T, typename U, bool reverse = false>
-__aicore__ inline void SelectWithBytesMaskLoopImpl(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
-    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t loopSize,
+__aicore__ inline void SelectWithBytesMaskLoopImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src0, T src1,
+    const LocalTensor<U>& mask, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t loopSize,
     const uint32_t totalLen, const uint32_t srcOriginOffset, const uint32_t maskOriginOffset)
 {
     for (uint32_t offset = 0; offset < totalLen; offset += loopSize) {

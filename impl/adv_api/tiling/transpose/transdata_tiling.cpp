@@ -86,8 +86,8 @@ bool GenerateNcdhwToFractalZ3DShapeInfo(const std::vector<int64_t>& dstDims, con
     return true;
 }
 
-bool GenerateShapeInfo(const TransDataConfig &config, const ge::Shape &srcShape, const ge::Shape &dstShape, ge::DataType type,
-    TmpTransDataParams &param)
+bool GenerateShapeInfo(const TransDataConfig& config, const ge::Shape& srcShape, const ge::Shape& dstShape,
+    ge::DataType type, TmpTransDataParams& param)
 {
     (void)type;
     constexpr int32_t c0 = 16, n0 = 16;
@@ -165,12 +165,9 @@ int32_t GetTmpBufferSize(const TransDataConfig &config, const TmpTransDataParams
 }
 } // namespace
 
-bool GetTransDataMaxMinTmpSize(const platform_ascendc::PlatformAscendC &platform,
-                                const ge::Shape &srcShape,
-                                const ge::Shape &dstShape,
-                                const ge::DataType dataType,
-                                const TransDataConfig &config,
-                                uint32_t &maxValue, uint32_t &minValue)
+bool GetTransDataMaxMinTmpSize(const platform_ascendc::PlatformAscendC& platform, const ge::Shape& srcShape,
+    const ge::Shape& dstShape, const ge::DataType dataType, const TransDataConfig& config, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(dataType == ge::DataType::DT_FLOAT16 || dataType == ge::DataType::DT_BF16 ||
         dataType == ge::DataType::DT_UINT16 || dataType == ge::DataType::DT_INT16, return false,

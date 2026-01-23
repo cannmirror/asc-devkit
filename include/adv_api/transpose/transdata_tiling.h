@@ -58,11 +58,8 @@ struct TransDataConfig {
  * \param [out] minValue, minimum temporary space required
  * \return whether get the max/min value successfully
  */
-bool GetTransDataMaxMinTmpSize(const platform_ascendc::PlatformAscendC &platform,
-                               const ge::Shape &srcShape,
-                               const ge::Shape &dstShape,
-                               const ge::DataType dataType,
-                               const TransDataConfig &config,
-                               uint32_t &maxValue, uint32_t &minValue);
+bool GetTransDataMaxMinTmpSize(const platform_ascendc::PlatformAscendC& platform, const ge::Shape& srcShape,
+    const ge::Shape& dstShape, const ge::DataType dataType, const TransDataConfig& config, uint32_t& maxValue,
+    uint32_t& minValue);
 } // AscendC
 #endif // LIB_TRANSPOSE_TRANSDATA_TILING_H

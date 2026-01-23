@@ -28,8 +28,8 @@ constexpr uint32_t GEGLU_STRIDE_DIGITS = 2;
 constexpr uint32_t GEGLU_ALGINED = 31;
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLUImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, uint32_t calCount)
+__aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, uint32_t calCount)
 {
     // Only for AI Vector Core.
     if (g_coreType == AIC) {
@@ -41,8 +41,8 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T> &dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLUImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, const LocalTensor<uint8_t> &sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(GeGLU, (T, isReuseSource), (dstTensor, srcTensor0, srcTensor1, sharedTmpBuffer, calCount));
     // Only for AI Vector Core
@@ -82,8 +82,8 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T> &dstTensor, const LocalTen
 }
 
 template <typename T>
-__aicore__ inline void GeGLUCompute(const LocalTensor<T> &dst, const LocalTensor<T> &src0, const LocalTensor<T> &src1,
-    const LocalTensor<float> &tmpBuffer, uint32_t calSize)
+__aicore__ inline void GeGLUCompute(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
+    const LocalTensor<float>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -123,8 +123,8 @@ __aicore__ inline void GeGLUCompute(const LocalTensor<T> &dst, const LocalTensor
 // Compute high precision GeGLU values for half type inputs by converting inputs to float types and save float GeGLU
 // result in tmpBuffer. Requires 4 times extra buffer for input data.
 template <>
-__aicore__ inline void GeGLUCompute(const LocalTensor<half> &dst, const LocalTensor<half> &src0,
-    const LocalTensor<half> &src1, const LocalTensor<float> &tmpBuffer, uint32_t calSize)
+__aicore__ inline void GeGLUCompute(const LocalTensor<half>& dst, const LocalTensor<half>& src0,
+    const LocalTensor<half>& src1, const LocalTensor<float>& tmpBuffer, uint32_t calSize)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;

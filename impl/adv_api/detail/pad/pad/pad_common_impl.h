@@ -24,16 +24,16 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void PadImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, PadParams &padParams,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, PadTiling &tiling)
+__aicore__ inline void PadImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, PadParams& padParams,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, PadTiling& tiling)
 {
     CHECK_FUNC_HIGHLEVEL_API(Pad, (T), (dstTensor, srcTensor, padParams, sharedTmpBuffer, tiling));
     PadCompute<T>(dstTensor, srcTensor, padParams, sharedTmpBuffer, tiling);
 }
 
 template <typename T>
-__aicore__ inline void UnPadImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    UnPadParams &unPadParams, LocalTensor<uint8_t> &sharedTmpBuffer, UnPadTiling &tiling)
+__aicore__ inline void UnPadImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    UnPadParams& unPadParams, LocalTensor<uint8_t>& sharedTmpBuffer, UnPadTiling& tiling)
 {
     CHECK_FUNC_HIGHLEVEL_API(UnPad, (T), (dstTensor, srcTensor, unPadParams, sharedTmpBuffer, tiling));
 

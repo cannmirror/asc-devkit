@@ -51,7 +51,7 @@ inline uint32_t GetExpMinTmpSize(const uint32_t typeSize, const bool isReuseSour
 
 // input: sizeof(dtype) * size      buffer needed: x * size
 // factor = x / sizeof(dtype)       if buffer needed is x * size + extra, then extra need to be updated
-void GetExpTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetExpTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     // FP16 input: 2 * size, buffer: 4 FP32 tensor = 16 * size, factor = 16 / 2 = 8
     // FP32 input: 4 * size, buffer: 3 FP32 tensor = 12 * size, factor = 12 / 4 = 3
@@ -59,8 +59,8 @@ void GetExpTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCou
     maxLiveNodeCount = (typeSize == sizeof(float)) ? EXP_FLOAT_CALC_PROC : EXP_HALF_CALC_PROC;
 }
 
-bool GetExpMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+bool GetExpMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
     minValue = GetExpMinTmpSize(typeSize, isReuseSource);

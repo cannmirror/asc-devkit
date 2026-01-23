@@ -66,9 +66,9 @@ namespace AscendC {
  */
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL>
-__aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const LocalTensor<uint8_t> &tmpLocal, const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo,
+__aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
+    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
+    const LocalTensor<uint8_t>& tmpLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo,
     const bool isLargest = true)
 {
     // Only for AI Vector Core.
@@ -116,9 +116,9 @@ __aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTens
  */
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false,
     enum TopKMode topkMode = TopKMode::TOPK_NORMAL>
-__aicore__ inline void TopK(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,
-    const LocalTensor<T> &srcLocal, const LocalTensor<int32_t> &srcIndexLocal, const LocalTensor<bool> &finishLocal,
-    const int32_t k, const TopkTiling &tilling, const TopKInfo &topKInfo, const bool isLargest = true)
+__aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal,
+    const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal,
+    const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

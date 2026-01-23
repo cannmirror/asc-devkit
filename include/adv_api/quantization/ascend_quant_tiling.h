@@ -38,6 +38,6 @@ void GetAscendQuantMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeS
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetAscendQuantTmpBufferFactorSize(uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetAscendQuantTmpBufferFactorSize(uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // TILING_ASCEND_QUANT_ASCEND_QUANT_TILING_H

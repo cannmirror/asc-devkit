@@ -38,8 +38,8 @@ __aicore__ inline bool AntiQuantCheckPerformanceMode(const LocalTensor<DstType> 
     return true;    // DstType can only be FP16, no need for cast
 }
 
-__aicore__ inline void AntiQuantFp16BrcbWithTransdata(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-    const uint32_t scaleN)
+__aicore__ inline void AntiQuantFp16BrcbWithTransdata(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const uint32_t scaleN)
 {
     __ubuf__ half* dstAddr = (__ubuf__  half*)dst.GetPhyAddr();
     uint64_t srcAddr = (uint64_t)(src.GetPhyAddr());
@@ -73,16 +73,16 @@ __aicore__ inline void AntiQuantFp16Brcb(const LocalTensor<half> &scale, const L
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AscendAntiQuantBF16Transpose(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &offset, const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer,
+__aicore__ inline void AscendAntiQuantBF16Transpose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& offset, const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer,
     const uint32_t K, const AntiQuantShapeInfo& shapeInfo = {})
 {
     return;    // BF16 is not supported in current platform
 }
 
 template <typename SrcType, typename DstType>
-__aicore__ inline void AscendAntiQuantBF16Transpose(const LocalTensor<DstType> &dst, const LocalTensor<SrcType> &src,
-    const LocalTensor<DstType> &scale, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t K,
+__aicore__ inline void AscendAntiQuantBF16Transpose(const LocalTensor<DstType>& dst, const LocalTensor<SrcType>& src,
+    const LocalTensor<DstType>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t K,
     const AntiQuantShapeInfo& shapeInfo = {})
 {
     return;    // BF16 is not supported in current platform

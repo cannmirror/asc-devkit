@@ -39,8 +39,8 @@ namespace AscendC {
  * \param [in] calCount: the number of elements to be processed.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Sign(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void Sign(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     SignCompute<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, calCount);
 }
@@ -71,7 +71,7 @@ __aicore__ inline void Sign(const LocalTensor<T>& dstTensor, const LocalTensor<T
  * \param [in] calCount: the number of elements to be processed.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Sign(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const uint32_t calCount)
+__aicore__ inline void Sign(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -94,7 +94,7 @@ __aicore__ inline void Sign(const LocalTensor<T> &dstTensor, const LocalTensor<T
  * \param [in] srcTensor: input LocalTensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Sign(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor)
+__aicore__ inline void Sign(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
 {
     Sign<T, isReuseSource>(dstTensor, srcTensor, srcTensor.GetSize());
 }

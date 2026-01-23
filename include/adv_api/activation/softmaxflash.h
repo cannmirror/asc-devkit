@@ -50,11 +50,11 @@ namespace AscendC {
  *                           you can set true to improve performance
  */
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-[[deprecated(__FILE__ " is deprecated, please use softmaxflashv2.h instead!")]]
-__aicore__ inline void SoftmaxFlash(const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor,
-    const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor,
-    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const SoftMaxTiling &tiling,
-    bool isUpdate = false, const SoftMaxShapeInfo &softmaxShapeInfo = {})
+[[deprecated(__FILE__ " is deprecated, please use softmaxflashv2.h instead!")]] __aicore__ inline void SoftmaxFlash(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& sumTensor, const LocalTensor<T>& maxTensor,
+    const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor, const LocalTensor<T>& inSumTensor,
+    const LocalTensor<T>& inMaxTensor, const SoftMaxTiling& tiling, bool isUpdate = false,
+    const SoftMaxShapeInfo& softmaxShapeInfo = {})
 {
     if ASCEND_IS_AIC {
         return;

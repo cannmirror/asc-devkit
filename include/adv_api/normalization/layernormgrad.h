@@ -53,10 +53,10 @@ namespace AscendC {
  * \param [in] shapeInfo, LayerNormGrad Shape Info
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGrad(const LocalTensor<T> &outputPdX, const LocalTensor<T> &resForGamma,
-    const LocalTensor<T> &inputDy, const LocalTensor<T> &inputX, const LocalTensor<T> &inputVariance,
-    const LocalTensor<T> &inputMean, const LocalTensor<T> &inputGamma, LocalTensor<uint8_t> &sharedTmpBuffer, T epsilon,
-    LayerNormGradTiling &tiling, const LayerNormGradShapeInfo &shapeInfo = {})
+__aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma,
+    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
+    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, LocalTensor<uint8_t>& sharedTmpBuffer, T epsilon,
+    LayerNormGradTiling& tiling, const LayerNormGradShapeInfo& shapeInfo = {})
 {
     LayerNormGradImpl<T, isReuseSource>(outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma,
         sharedTmpBuffer, epsilon, tiling, shapeInfo);
@@ -78,10 +78,10 @@ __aicore__ inline void LayerNormGrad(const LocalTensor<T> &outputPdX, const Loca
  * \param [in] shapeInfo, LayerNormGrad Shape Info
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGrad(const LocalTensor<T> &outputPdX, const LocalTensor<T> &resForGamma,
-    const LocalTensor<T> &inputDy, const LocalTensor<T> &inputX, const LocalTensor<T> &inputVariance,
-    const LocalTensor<T> &inputMean, const LocalTensor<T> &inputGamma, T epsilon, LayerNormGradTiling &tiling,
-    const LayerNormGradShapeInfo &shapeInfo = {})
+__aicore__ inline void LayerNormGrad(const LocalTensor<T>& outputPdX, const LocalTensor<T>& resForGamma,
+    const LocalTensor<T>& inputDy, const LocalTensor<T>& inputX, const LocalTensor<T>& inputVariance,
+    const LocalTensor<T>& inputMean, const LocalTensor<T>& inputGamma, T epsilon, LayerNormGradTiling& tiling,
+    const LayerNormGradShapeInfo& shapeInfo = {})
 {
     LayerNormGradImpl<T, isReuseSource>(outputPdX, resForGamma, inputDy, inputX, inputVariance, inputMean, inputGamma,
         epsilon, tiling, shapeInfo);

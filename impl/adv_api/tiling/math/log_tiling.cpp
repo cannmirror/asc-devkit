@@ -41,8 +41,8 @@ inline uint32_t GetLog2MaxTmpSize(const uint32_t inputSize, const uint32_t typeS
 }
 } // namespace
 
-void GetLogMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetLogMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)srcShape;
     (void)typeSize;
@@ -51,15 +51,15 @@ void GetLogMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, con
     minValue = 0;
 }
 
-void GetLogTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetLogTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     (void)typeSize;
     extraBuf = 0;
     maxLiveNodeCount = 0;
 }
 
-void GetLog10MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetLog10MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)srcShape;
     (void)typeSize;
@@ -68,15 +68,15 @@ void GetLog10MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
     minValue = 0;
 }
 
-void GetLog10TmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetLog10TmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     (void)typeSize;
     extraBuf = 0;
     maxLiveNodeCount = 0;
 }
 
-void GetLog2MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetLog2MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -86,7 +86,7 @@ void GetLog2MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, co
     maxValue = GetLog2MaxTmpSize(inputSize, typeSize);
 }
 
-void GetLog2TmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetLog2TmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     auto calcFactor = (typeSize == sizeof(float)) ? LOG2_FLOAT_CALC_FAC : LOG2_HALF_CALC_FAC;
     extraBuf = 0;

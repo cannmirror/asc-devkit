@@ -33,8 +33,8 @@ inline uint32_t GetFloorMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetFloorMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetFloorMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -44,7 +44,7 @@ void GetFloorMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
     maxValue = GetFloorMaxTmpSize(inputSize, typeSize);
 }
 
-void GetFloorTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetFloorTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? 0 : FLOOR_HALF_CALC_FAC;

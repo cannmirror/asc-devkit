@@ -37,14 +37,14 @@ inline uint32_t GetAsinMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetAsinTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetAsinTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     extraBuffer = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? ASIN_FLOAT_CALC_PROC : ASIN_HALF_CALC_PROC;
 }
 
-void GetAsinMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetAsinMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();

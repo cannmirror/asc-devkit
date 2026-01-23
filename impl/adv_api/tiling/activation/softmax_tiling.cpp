@@ -788,9 +788,9 @@ void SoftMaxFlashV2TilingFunc(const ge::Shape& srcShape, const uint32_t dataType
     tiling.SaveToBuffer(&softmaxFlashTiling, sizeof(SoftMaxTiling));
 }
 
-void GetSoftMaxFlashV3MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t dataTypeSize1,
-                                    const uint32_t dataTypeSize2, uint32_t &maxValue, uint32_t &minValue, const bool isUpdate,
-                                    UNUSED const bool isBasicBlock)
+void GetSoftMaxFlashV3MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t dataTypeSize1,
+    const uint32_t dataTypeSize2, uint32_t& maxValue, uint32_t& minValue, const bool isUpdate,
+    UNUSED const bool isBasicBlock)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_V3_GET_MAX_MIN>(srcShape.GetShapeSize(),
         dataTypeSize1);
@@ -831,9 +831,9 @@ void GetSoftMaxFlashV3MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t da
     }
 }
 
-void SoftMaxFlashV3TilingFunc(const ge::Shape &srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
-                              const uint32_t localWorkSpaceSize, optiling::SoftMaxTiling &softmaxFlashV3Tiling, UNUSED const bool isUpdate,
-                              UNUSED const bool isBasicBlock)
+void SoftMaxFlashV3TilingFunc(const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const uint32_t localWorkSpaceSize, optiling::SoftMaxTiling& softmaxFlashV3Tiling, UNUSED const bool isUpdate,
+    UNUSED const bool isBasicBlock)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<SOFTMAX_FLASH_V3_TILING>(srcShape.GetShapeSize(), dataTypeSize1);
     HighLevelApiCheck::ShapeLastAxisAlignVerifyingParameters<SOFTMAX_FLASH_V3_TILING>(srcShape, dataTypeSize1,
@@ -891,8 +891,8 @@ void SoftMaxFlashV3TilingFunc(const ge::Shape &srcShape, const uint32_t dataType
     }
 }
 
-void SoftMaxFlashV3TilingFunc(const ge::Shape &srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
-    const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling &softmaxFlashV3Tiling, UNUSED const bool isUpdate,
+void SoftMaxFlashV3TilingFunc(const ge::Shape& srcShape, const uint32_t dataTypeSize1, const uint32_t dataTypeSize2,
+    const uint32_t localWorkSpaceSize, AscendC::tiling::SoftMaxTiling& softmaxFlashV3Tiling, UNUSED const bool isUpdate,
     UNUSED const bool isBasicBlock)
 {
     optiling::SoftMaxTiling tiling;

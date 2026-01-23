@@ -41,9 +41,9 @@ namespace AscendC {
  * \param [in] meanParams, shape information of srcTensor
  */
 template <typename T, typename accType = T, bool isReuseSource = false, bool isBasicBlock = false,
-          int32_t reduceDim = -1>
-__aicore__ inline void Mean(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-                            const LocalTensor<uint8_t> &sharedTmpBuffer, const MeanParams &meanParams)
+    int32_t reduceDim = -1>
+__aicore__ inline void Mean(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const MeanParams& meanParams)
 {
     if ASCEND_IS_AIC
     {
@@ -64,9 +64,9 @@ __aicore__ inline void Mean(const LocalTensor<T> &dstTensor, const LocalTensor<T
  * \param [in] meanParams, shape information of srcTensor
  */
 template <typename T, typename accType = T, bool isReuseSource = false, bool isBasicBlock = false,
-          int32_t reduceDim = -1>
+    int32_t reduceDim = -1>
 __aicore__ inline void Mean(
-    const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const MeanParams &meanParams)
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const MeanParams& meanParams)
 {
     if ASCEND_IS_AIC
     {

@@ -28,8 +28,8 @@ namespace AscendC {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetAcoshMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetAcoshMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Acosh interface requires the developer to reserve or apply for temporary space. The
@@ -41,6 +41,6 @@ void GetAcoshMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetAcoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetAcoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AcsendC
 #endif // LIB_MATH_ACOSH_TILING

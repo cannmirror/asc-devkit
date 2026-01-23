@@ -33,8 +33,8 @@ namespace AscendC {
  * @param [in] sharedTmpBuffer input local temporary Tensor
  */
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
-__aicore__ inline void Broadcast(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
-    const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<uint8_t> &sharedTmpBuffer)
+__aicore__ inline void Broadcast(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
+    const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     BroadCast<T, dim, axis, isReuseSource>(dstLocal, srcLocal, dstShape, srcShape, sharedTmpBuffer);
 }
@@ -48,7 +48,7 @@ __aicore__ inline void Broadcast(const LocalTensor<T> &dstLocal, const LocalTens
  * @param [in] srcShape, the shape of src tensor
  */
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
-__aicore__ inline void Broadcast(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
+__aicore__ inline void Broadcast(const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim])
 {
     BroadCast<T, dim, axis, isReuseSource>(dstLocal, srcLocal, dstShape, srcShape);

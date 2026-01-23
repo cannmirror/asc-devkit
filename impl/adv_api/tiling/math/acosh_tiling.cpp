@@ -37,8 +37,8 @@ inline uint32_t GetAcoshMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetAcoshMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetAcoshMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -48,7 +48,7 @@ void GetAcoshMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
     maxValue = GetAcoshMaxTmpSize(inputSize, typeSize);
 }
 
-void GetAcoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetAcoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? ACOSH_FLOAT_CALC_PROC : ACOSH_HALF_CALC_PROC;

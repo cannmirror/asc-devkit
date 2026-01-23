@@ -21,8 +21,8 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void DuplicateLastDimImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t srcSize, const uint32_t brcbSize)
+__aicore__ inline void DuplicateLastDimImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t srcSize, const uint32_t brcbSize)
 {
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);

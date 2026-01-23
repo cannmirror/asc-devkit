@@ -29,7 +29,7 @@ namespace AscendC {
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetSignTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer);
+void GetSignTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.

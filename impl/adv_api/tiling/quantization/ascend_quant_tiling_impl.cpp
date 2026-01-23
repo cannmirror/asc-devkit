@@ -54,7 +54,7 @@ void CheckQuantHostCommon(const char *apiName, const char *hostFuncName, const g
 }
 } // namespace
 
-void GetAscendQuantTmpBufferFactorSize(uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetAscendQuantTmpBufferFactorSize(uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0u;
     maxLiveNodeCount = ASCEND_QUANT_TWO_TIMES;

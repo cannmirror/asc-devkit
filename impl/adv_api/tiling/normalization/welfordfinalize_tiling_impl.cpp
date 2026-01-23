@@ -16,8 +16,8 @@ namespace AscendC {
 constexpr uint32_t WELFORDFINALIZE_BASICBLOCK_UNIT = 64;
 constexpr uint32_t WELFORDFINALIZE_BASIC_SIZE = 32 / sizeof(float);
 
-void GetWelfordFinalizeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-        uint32_t &maxValue, uint32_t &minValue)
+void GetWelfordFinalizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     (void)typeSize;

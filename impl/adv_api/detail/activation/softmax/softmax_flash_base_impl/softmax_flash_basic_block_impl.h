@@ -18,10 +18,10 @@
 namespace AscendC {
 
 template <typename T>
-__aicore__ inline void SoftmaxFlashBasicBlock(const LocalTensor<T> &dst, const LocalTensor<T> &sumTensor,
-    const LocalTensor<T> &maxTensor, const LocalTensor<T> &src, const LocalTensor<T> &expMaxTensor,
-    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const SoftMaxTiling &tiling)
+__aicore__ inline void SoftmaxFlashBasicBlock(const LocalTensor<T>& dst, const LocalTensor<T>& sumTensor,
+    const LocalTensor<T>& maxTensor, const LocalTensor<T>& src, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling)
 {
     const LocalTensor<float> &tmpBuffer0 = workLocal[0];
     const LocalTensor<float> &tmpBuffer1 = workLocal[tiling.splitSize];
@@ -154,10 +154,10 @@ __aicore__ inline void SoftmaxFlashBasicBlock(const LocalTensor<T> &dst, const L
 }
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201) && ASCENDC_CPU_DEBUG == 0
-__aicore__ inline void SoftmaxFlashBasicBlockFloat(const LocalTensor<float> &dst, const LocalTensor<float> &sumTensor,
-    const LocalTensor<float> &maxTensor, const LocalTensor<float> &src, const LocalTensor<float> &expMaxTensor,
-    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const SoftMaxTiling &tiling)
+__aicore__ inline void SoftmaxFlashBasicBlockFloat(const LocalTensor<float>& dst, const LocalTensor<float>& sumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor,
+    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling)
 {
     const LocalTensor<float> &tmpBuffer1 = workLocal[0];
     const LocalTensor<float> &tmpBuffer2 = workLocal[tiling.splitSize];
@@ -293,10 +293,10 @@ __aicore__ inline void SoftmaxFlashBasicBlockFloat(const LocalTensor<float> &dst
 #endif
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201) && ASCENDC_CPU_DEBUG == 0
-__aicore__ inline void SoftmaxFlashBasicBlock(const LocalTensor<half> &dst, const LocalTensor<float> &sumTensor,
-    const LocalTensor<float> &maxTensor, const LocalTensor<half> &src, const LocalTensor<half> &expMaxTensor,
-    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const SoftMaxTiling &tiling)
+__aicore__ inline void SoftmaxFlashBasicBlock(const LocalTensor<half>& dst, const LocalTensor<float>& sumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling)
 {
     const LocalTensor<float> &tmpBuffer0 = workLocal[0];
     const LocalTensor<float> &tmpBuffer1 = workLocal[tiling.splitSize];

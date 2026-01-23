@@ -42,6 +42,6 @@ void GetSwiGLUMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, 
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetSwiGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer);
+void GetSwiGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 } // namespace AscendC
 #endif // LIB_ACTIVATION_SWIGLU_TILING_H

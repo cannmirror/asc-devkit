@@ -266,8 +266,8 @@ format:"ND"} scene2： { shape:[B, A1, A3 / 16, A2 / 16, 16, 16], format:"NZ"}--
 16], origin_shape:[B, A2, A1, A3], format:"NZ"}
 */
 template <typename T>
-__aicore__ inline void ConfusionTranspose0213Compute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeTypeIn, ConfusionTranspose0213Tiling &tiling)
+__aicore__ inline void ConfusionTranspose0213Compute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, TransposeType transposeTypeIn, ConfusionTranspose0213Tiling& tiling)
 {
     ConfusionTranspose0213Params<T> params;
     InitConfusionTranspose0213TransParams<T>(tiling, params, transposeTypeIn);
@@ -306,9 +306,9 @@ scene3：{ shape:[B, H / 16, S / 16, 16, 16], format:"NZ"}-->{ shape:[B, N, H/N/
 H/N], format:"NZ"}
 */
 template <typename T>
-__aicore__ inline void ConfusionTranspose2NZ012NCompute(const LocalTensor<T> &dstTensor,
-    const LocalTensor<T> &srcTensor, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    ConfusionTranspose2NZ012NTiling &tiling)
+__aicore__ inline void ConfusionTranspose2NZ012NCompute(const LocalTensor<T>& dstTensor,
+    const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    ConfusionTranspose2NZ012NTiling& tiling)
 {
     LocalTensor<T> tmp1 = sharedTmpBuffer.ReinterpretCast<T>();
     LocalTensor<T> tmp2 = tmp1[CUBE_MAX_SIZE];
@@ -340,9 +340,9 @@ scene4：{ shape:[B, H / 16, S / 16, 16, 16], format:"NZ"}-->{ shape:[B, N, S, H
 format:"ND"}
 */
 template <typename T>
-__aicore__ inline void ConfusionTranspose2ND012NCompute(const LocalTensor<T> &dstTensor,
-    const LocalTensor<T> &srcTensor, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    ConfusionTranspose2ND012NTiling &tiling)
+__aicore__ inline void ConfusionTranspose2ND012NCompute(const LocalTensor<T>& dstTensor,
+    const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    ConfusionTranspose2ND012NTiling& tiling)
 {
     LocalTensor<T> tmp1 = sharedTmpBuffer.ReinterpretCast<T>();
     LocalTensor<T> tmp2 = tmp1[CUBE_MAX_SIZE];
@@ -374,8 +374,8 @@ scene6：{ shape:[B, N, H/N/16, S/16, 16, 16], format:"NZ"}-->{ shape:[B, H/16, 
 format:"NZ"}
 */
 template <typename T>
-__aicore__ inline void ConfusionTranspose012Compute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeTypeIn, ConfusionTranspose012Tiling &tiling)
+__aicore__ inline void ConfusionTranspose012Compute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, TransposeType transposeTypeIn, ConfusionTranspose012Tiling& tiling)
 {
     ConfusionTranspose012Params<T> params;
     InitConfusionTranspose012TransParams<T>(tiling, params, transposeTypeIn);

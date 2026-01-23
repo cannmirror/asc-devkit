@@ -38,8 +38,8 @@ namespace AscendC {
  * \param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Floor(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void Floor(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     // Only for AI Vector Core.
@@ -60,7 +60,7 @@ __aicore__ inline void Floor(const LocalTensor<T> &dstTensor, const LocalTensor<
  * \param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Floor(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const uint32_t calCount)
+__aicore__ inline void Floor(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
     // Only for AI Vector Core.

@@ -24,8 +24,8 @@ namespace AscendC {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetAtanhMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetAtanhMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Atanh interface requires the developer to reserve or apply for temporary space. The
@@ -38,6 +38,6 @@ void GetAtanhMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetAtanhTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetAtanhTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_MATH_ATANH_TILING_H

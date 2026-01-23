@@ -46,8 +46,8 @@ namespace AscendC {
  * \param [in] info: shape information of input/mask tensors
  */
 template <typename T, typename U, bool isReuseMask = true>
-__aicore__ inline void Select(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
-    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+__aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<T>& src0, T src1, const LocalTensor<U>& mask,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const SelectWithBytesMaskShapeInfo& info)
 {
     SelectWithBytesMaskImpl<T, U, isReuseMask, false>(dst, src0, src1, mask, sharedTmpBuffer, info);
 }
@@ -73,8 +73,8 @@ __aicore__ inline void Select(const LocalTensor<T> &dst, const LocalTensor<T> &s
  * \param [in] info: shape information of input/mask tensors
  */
 template <typename T, typename U, bool isReuseMask = true>
-__aicore__ inline void Select(const LocalTensor<T> &dst, T src0, const LocalTensor<T> &src1,
-    const LocalTensor<U> &mask, const LocalTensor<uint8_t> &sharedTmpBuffer, const SelectWithBytesMaskShapeInfo &info)
+__aicore__ inline void Select(const LocalTensor<T>& dst, T src0, const LocalTensor<T>& src1, const LocalTensor<U>& mask,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const SelectWithBytesMaskShapeInfo& info)
 {
     SelectWithBytesMaskImpl<T, U, isReuseMask, true>(dst, src1, src0, mask, sharedTmpBuffer, info);
 }

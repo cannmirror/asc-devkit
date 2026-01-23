@@ -165,8 +165,8 @@ __aicore__ inline void BroadcastLastDimImpl(const LocalTensor<float>& dst, const
 #endif
 }
 
-__aicore__ inline void ReduceSumImpl(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-    const uint32_t calSize, const uint32_t hLength)
+__aicore__ inline void ReduceSumImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t calSize, const uint32_t hLength)
 {
     ASCENDC_ASSERT((hLength != 0), { KERNEL_LOG(KERNEL_ERROR, "error shape for layernormgrad."); });
     const uint32_t count = calSize / hLength;
@@ -222,8 +222,8 @@ __aicore__ inline void ReduceSumImpl(const LocalTensor<float> &dst, const LocalT
 }
 
 template <typename T>
-__aicore__ inline void DuplicateTensor(const LocalTensor<T> &dst, const LocalTensor<T> &src, const uint32_t count,
-    const uint32_t length)
+__aicore__ inline void DuplicateTensor(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint32_t count, const uint32_t length)
 {
     BroadcastLastDimImpl(dst, src, count * length, count);
     PipeBarrier<PIPE_V>();
@@ -251,8 +251,8 @@ __aicore__ inline void ComputePdX2(const LocalTensor<T> &inputX, const LocalTens
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void DoOneDiv(LocalTensor<float> &dstTensor, LocalTensor<float> &oneTensor,
-    LocalTensor<float> &src1Tensor, const uint32_t nohSize)
+__aicore__ inline void DoOneDiv(LocalTensor<float>& dstTensor, LocalTensor<float>& oneTensor,
+    LocalTensor<float>& src1Tensor, const uint32_t nohSize)
 {
     SetMaskCount();
     SetVectorMask<uint8_t, MaskMode::COUNTER>(0, B32_DATA_NUM_PER_BLOCK);

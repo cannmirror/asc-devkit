@@ -37,14 +37,14 @@ inline uint32_t GetErfMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetErfTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetErfTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     extraBuffer = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? ERF_FLOAT_CALC_PROC : ERF_HALF_CALC_PROC;
 }
 
-void GetErfMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetErfMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();

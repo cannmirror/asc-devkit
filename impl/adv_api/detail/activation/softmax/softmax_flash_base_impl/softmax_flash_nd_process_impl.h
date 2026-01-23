@@ -19,10 +19,10 @@
 namespace AscendC {
 
 template <typename T, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<T> &dst, const LocalTensor<T> &sumTensor,
-    const LocalTensor<T> &maxTensor, const LocalTensor<T> &src, const LocalTensor<T> &expMaxTensor,
-    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const LastAxisShapeND &originalSrcShape,
-    const SoftMaxTiling &tiling)
+__aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<T>& dst, const LocalTensor<T>& sumTensor,
+    const LocalTensor<T>& maxTensor, const LocalTensor<T>& src, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor, const LastAxisShapeND& originalSrcShape,
+    const SoftMaxTiling& tiling)
 {
     LocalTensor<float> workLocal;
     PopStackBuffer<float, TPosition::LCM>(workLocal);
@@ -156,11 +156,10 @@ __aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<T> &dst, const Local
     }
 }
 
-
-__aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<float> &dst, const LocalTensor<float> &sumTensor,
-    const LocalTensor<float> &maxTensor, const LocalTensor<float> &src, const LocalTensor<float> &expMaxTensor,
-    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const LastAxisShapeND &originalSrcShape, const SoftMaxTiling &tiling)
+__aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& sumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor,
+    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
     const LocalTensor<float> &tmpBuffer0 = workLocal[0];
     const LocalTensor<float> &tmpBuffer1 = workLocal[tiling.splitSize];
@@ -277,11 +276,11 @@ __aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<float> &dst, const L
 }
 
 template <typename T, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor,
-    const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor,
-    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const LastAxisShapeND &originalSrcShape, const SoftMaxTiling &tiling, bool isUpdate = false,
-    const SoftMaxShapeInfo &softmaxShapeInfo = {})
+__aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T>& dstTensor, const LocalTensor<T>& sumTensor,
+    const LocalTensor<T>& maxTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling, bool isUpdate = false,
+    const SoftMaxShapeInfo& softmaxShapeInfo = {})
 {
     const uint32_t elementNumPerBlk = ONE_BLK_SIZE / sizeof(T);
     uint32_t workLocalSize = workLocal.GetSize();
@@ -311,10 +310,10 @@ __aicore__ inline void SoftmaxFlashPostProcess(const LocalTensor<T> &dstTensor, 
 }
 
 template <bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<half> &dst, const LocalTensor<float> &sumTensor,
-    const LocalTensor<float> &maxTensor, const LocalTensor<half> &src, const LocalTensor<half> &expMaxTensor,
-    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor, const LocalTensor<float> &workLocal,
-    const LastAxisShapeND &originalSrcShape, const SoftMaxTiling &tiling)
+__aicore__ inline void SoftmaxFlashNDImpl(const LocalTensor<half>& dst, const LocalTensor<float>& sumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
     const LocalTensor<float> &tmpBuffer0 = workLocal[0];
     const LocalTensor<float> &tmpBuffer1 = workLocal[tiling.splitSize];

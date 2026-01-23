@@ -50,7 +50,7 @@ void GetSignMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, co
     maxValue = std::max(max, minValue);
 }
 
-void GetSignTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetSignTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     auto calcFactor = SIGN_CALC_PROC;
     extraBuffer = 0;

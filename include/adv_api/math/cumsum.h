@@ -48,9 +48,9 @@ constexpr CumSumConfig defaultCumSumConfig = {true, false, true};
  * \param [in] cumSumInfo, shape information of srcTensor
  */
 
-template <typename T, const CumSumConfig &config = defaultCumSumConfig>
-__aicore__ inline void CumSum(LocalTensor<T> &dstTensor, LocalTensor<T> &lastRowTensor, const LocalTensor<T> &srcTensor,
-    LocalTensor<uint8_t> &sharedTmpBuffer, const CumSumInfo &cumSumInfo)
+template <typename T, const CumSumConfig& config = defaultCumSumConfig>
+__aicore__ inline void CumSum(LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor, const LocalTensor<T>& srcTensor,
+    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     CumSumImpl<T, config>(dstTensor, lastRowTensor, srcTensor, sharedTmpBuffer, cumSumInfo);
 }
@@ -67,9 +67,9 @@ __aicore__ inline void CumSum(LocalTensor<T> &dstTensor, LocalTensor<T> &lastRow
  * \param [in] srcTensor, input LocalTensor
  * \param [in] cumSumInfo, shape information of srcTensor
  */
-template <typename T, const CumSumConfig &config = defaultCumSumConfig>
-__aicore__ inline void CumSum(LocalTensor<T> &dstTensor, LocalTensor<T> &lastRowTensor, const LocalTensor<T> &srcTensor,
-    const CumSumInfo &cumSumInfo)
+template <typename T, const CumSumConfig& config = defaultCumSumConfig>
+__aicore__ inline void CumSum(LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor, const LocalTensor<T>& srcTensor,
+    const CumSumInfo& cumSumInfo)
 {
     if ASCEND_IS_AIC {
         return;

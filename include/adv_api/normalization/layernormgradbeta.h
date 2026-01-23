@@ -37,9 +37,9 @@ namespace AscendC {
  * \param [in] tiling, layernormgradbeta tiling
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradBeta(const LocalTensor<T> &outputPdGamma, const LocalTensor<T> &outputPdBeta,
-    const LocalTensor<T> &resForGamma, const LocalTensor<T> &inputDy, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const LayerNormGradBetaTiling &tiling)
+__aicore__ inline void LayerNormGradBeta(const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta,
+    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const LayerNormGradBetaTiling& tiling)
 {
     LayerNormGradBetaImpl<T, isReuseSource>(outputPdGamma, outputPdBeta, resForGamma, inputDy, sharedTmpBuffer, tiling);
 }
@@ -56,8 +56,8 @@ __aicore__ inline void LayerNormGradBeta(const LocalTensor<T> &outputPdGamma, co
  * \param [in] tiling, layernormgradbeta tiling
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradBeta(const LocalTensor<T> &outputPdGamma, const LocalTensor<T> &outputPdBeta,
-    const LocalTensor<T> &resForGamma, const LocalTensor<T> &inputDy, LayerNormGradBetaTiling &tiling)
+__aicore__ inline void LayerNormGradBeta(const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta,
+    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, LayerNormGradBetaTiling& tiling)
 {
     LayerNormGradBetaImpl<T, isReuseSource>(outputPdGamma, outputPdBeta, resForGamma, inputDy, tiling);
 }

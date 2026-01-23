@@ -27,7 +27,7 @@ namespace AscendC {
  * \param [in] outputDataType, output data type
  * return: maximum temporary space required
  */
-uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape &srcShape, const ge::Shape &scaleShape, bool isTranspose,
+uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
     ge::DataType inputDataType, ge::DataType outputDataType);
 
 /*!
@@ -39,7 +39,7 @@ uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape &srcShape, const ge::Shape
  * \param [in] outputDataType, output data type
  * return: minimum temporary space required
  */
-uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape &srcShape, const ge::Shape &scaleShape, bool isTranspose,
+uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
     ge::DataType inputDataType, ge::DataType outputDataType);
 
 /*!
@@ -53,8 +53,8 @@ uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape &srcShape, const ge::Shape
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetAscendAntiQuantMaxMinTmpSize(const ge::Shape &srcShape, const ge::Shape &scaleShape, bool isTranspose,
-    ge::DataType inputDataType, ge::DataType outputDataType, uint32_t &maxValue, uint32_t &minValue);
+void GetAscendAntiQuantMaxMinTmpSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
+    ge::DataType inputDataType, ge::DataType outputDataType, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the AscendAntiQuant interface requires the developer to reserve or apply for temporary space.
@@ -69,7 +69,7 @@ void GetAscendAntiQuantMaxMinTmpSize(const ge::Shape &srcShape, const ge::Shape 
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetAscendAntiQuantTmpBufferFactorSize(const ge::Shape &srcShape, const ge::Shape &scaleShape, bool isTranspose,
-    ge::DataType inputDataType, ge::DataType outputDataType, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetAscendAntiQuantTmpBufferFactorSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
+    ge::DataType inputDataType, ge::DataType outputDataType, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_ANTIQUANT_TILING_H

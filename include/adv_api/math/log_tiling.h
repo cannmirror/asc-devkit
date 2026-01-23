@@ -28,8 +28,8 @@ namespace AscendC {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetLogMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetLogMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Log interface requires the developer to reserve or apply for temporary space. The
@@ -41,7 +41,7 @@ void GetLogMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, con
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetLogTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetLogTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -53,8 +53,8 @@ void GetLogTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCou
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetLog10MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetLog10MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Log10 interface requires the developer to reserve or apply for temporary space. The
@@ -66,7 +66,7 @@ void GetLog10MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetLog10TmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetLog10TmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -78,8 +78,8 @@ void GetLog10TmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeC
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetLog2MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetLog2MaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Log2 interface requires the developer to reserve or apply for temporary space. The
@@ -91,6 +91,6 @@ void GetLog2MaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, co
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetLog2TmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetLog2TmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_MATH_LOG_TILING

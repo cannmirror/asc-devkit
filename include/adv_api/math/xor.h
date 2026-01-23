@@ -82,8 +82,8 @@ __aicore__ inline void Xor(const LocalTensor<T>& dstTensor, const LocalTensor<T>
  * @param [in] calCount, amount of input data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Xor(const LocalTensor<T> &dstTensor, const LocalTensor<T> &src0Tensor,
-    const LocalTensor<T> &src1Tensor, const uint32_t calCount)
+__aicore__ inline void Xor(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
+    const LocalTensor<T>& src1Tensor, const uint32_t calCount)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
@@ -101,8 +101,8 @@ __aicore__ inline void Xor(const LocalTensor<T> &dstTensor, const LocalTensor<T>
  * @param [in] srcTensor1, input LocalTensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Xor(const LocalTensor<T> &dstTensor, const LocalTensor<T> &src0Tensor,
-    const LocalTensor<T> &src1Tensor)
+__aicore__ inline void Xor(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor)
 {
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     bool result = (src0Tensor.GetSize() == src1Tensor.GetSize());

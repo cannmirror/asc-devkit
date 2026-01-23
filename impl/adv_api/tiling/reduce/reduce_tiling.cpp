@@ -70,11 +70,9 @@ inline void CheckParams(std::vector<int64_t> shapeDims, bool isSrcInnerPad, Redu
 }
 } // namespace
 
-inline void GetReduceCommonMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue, bool isBinaryAdd,
-                                std::string apiName, std::string funcName)
+inline void GetReduceCommonMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, bool isBinaryAdd,
+    std::string apiName, std::string funcName)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
 
@@ -112,10 +110,8 @@ inline void GetReduceCommonMaxMinTmpSize(const ge::Shape &srcShape,
     maxValue = minValue = k * ((last * GetTypeSize(dataType) + ONE_BLK_SIZE - 1u) / ONE_BLK_SIZE * ONE_BLK_SIZE);
 }
 
-inline void GetReduceSumMeanCommonTmpSize(const ge::Shape &srcShape,
-                               ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                               uint32_t &maxValue, uint32_t &minValue,
-                               std::string apiName, std::string funcName)
+inline void GetReduceSumMeanCommonTmpSize(const ge::Shape& srcShape, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, std::string apiName, std::string funcName)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t first = static_cast<uint32_t>(shapeDims[0]);
@@ -147,9 +143,8 @@ inline void GetReduceSumMeanCommonTmpSize(const ge::Shape &srcShape,
     return;
 }
 
-inline void GetReduceAnyAllCommonTmpSize(const ge::Shape &srcShape,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue, std::string apiName, std::string funcName)
+inline void GetReduceAnyAllCommonTmpSize(const ge::Shape& srcShape, ReducePattern pattern, bool isSrcInnerPad,
+    bool isReuseSource, uint32_t& maxValue, uint32_t& minValue, std::string apiName, std::string funcName)
 {
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     const uint32_t first = static_cast<uint32_t>(shapeDims[0]);
@@ -173,10 +168,8 @@ inline void GetReduceAnyAllCommonTmpSize(const ge::Shape &srcShape,
     return;
 }
 
-void GetReduceProdMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue) 
+void GetReduceProdMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
         "[ReduceProd][GetReduceProdMaxMinTmpSize] it only supports float type on this platform.");
@@ -206,10 +199,8 @@ void GetReduceProdMaxMinTmpSize(const ge::Shape &srcShape,
     maxValue = minValue = k * ((last * GetTypeSize(dataType) + ONE_BLK_SIZE - 1u) / ONE_BLK_SIZE * ONE_BLK_SIZE);
 }
 
-void GetReduceMaxMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue) 
+void GetReduceMaxMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
@@ -232,10 +223,8 @@ void GetReduceMaxMaxMinTmpSize(const ge::Shape &srcShape,
         "ReduceMax", "GetReduceMaxMaxMinTmpSize");
 }
 
-void GetReduceMinMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue) 
+void GetReduceMinMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
@@ -258,10 +247,8 @@ void GetReduceMinMaxMinTmpSize(const ge::Shape &srcShape,
         "ReduceMin", "GetReduceMinMaxMinTmpSize");
 }
 
-void GetReduceAnyMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue) 
+void GetReduceAnyMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT || dataType == ge::DT_UINT8,
         return,
@@ -275,10 +262,8 @@ void GetReduceAnyMaxMinTmpSize(const ge::Shape &srcShape,
     }
 }
 
-void GetReduceAllMaxMinTmpSize(const ge::Shape &srcShape,
-                               const ge::DataType dataType,
-                               ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                               uint32_t &maxValue, uint32_t &minValue)
+void GetReduceAllMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT((dataType == ge::DT_FLOAT || dataType == ge::DT_UINT8), return,
         "[ReduceAll][GetReduceAllMaxMinTmpSize] it only supports float and uint8 type on this platform.");
@@ -291,10 +276,8 @@ void GetReduceAllMaxMinTmpSize(const ge::Shape &srcShape,
     }
 }
 
-void GetReduceSumMaxMinTmpSize(const ge::Shape &srcShape,
-                               const ge::DataType dataType,
-                               ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                               uint32_t &maxValue, uint32_t &minValue)
+void GetReduceSumMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
@@ -312,10 +295,8 @@ void GetReduceSumMaxMinTmpSize(const ge::Shape &srcShape,
         "ReduceSum", "GetReduceSumMaxMinTmpSize");
 }
 
-void GetReduceMeanMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue)
+void GetReduceMeanMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     ASCENDC_HOST_ASSERT(dataType == ge::DT_FLOAT, return,
         "[ReduceMean][GetReduceMeanMaxMinTmpSize] it only supports float type on this platform.");

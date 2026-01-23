@@ -284,9 +284,10 @@ __aicore__ inline void WelfordFinalizeExeVariance(const LocalTensor<float> &inpu
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-    const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance, WelfordFinalizeTmpTensors<float> &tempTensors, 
-    const WelfordFinalizePara &para, WelfordFinalizeTilingData &tiling)
+__aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
+    const LocalTensor<float>& outputVariance, WelfordFinalizeTmpTensors<float>& tempTensors,
+    const WelfordFinalizePara& para, WelfordFinalizeTilingData& tiling)
 {
     uint32_t offset = 0;
     uint32_t outOffset = 0;
@@ -349,9 +350,11 @@ __aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float> &inpu
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float> &inputMean, const LocalTensor<float> &inputVariance,
-    const LocalTensor<float> &outputMean, const LocalTensor<float> &outputVariance, const LocalTensor<int32_t> &counts, 
-    const WelfordFinalizeTmpTensors<float> &tempTensors, const WelfordFinalizePara &para, WelfordFinalizeTilingData &tiling)
+__aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float>& inputMean,
+    const LocalTensor<float>& inputVariance, const LocalTensor<float>& outputMean,
+    const LocalTensor<float>& outputVariance, const LocalTensor<int32_t>& counts,
+    const WelfordFinalizeTmpTensors<float>& tempTensors, const WelfordFinalizePara& para,
+    WelfordFinalizeTilingData& tiling)
 {
     uint32_t offset = 0;
     uint32_t outOffset = 0;
@@ -414,8 +417,8 @@ __aicore__ inline void WelfordFinalizeComputeImpl(const LocalTensor<float> &inpu
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void GetWelfordFinalizeTensorInfo(const LocalTensor<float> &stackBuffer, const WelfordFinalizePara &para,
-                                                    WelfordFinalizeTmpTensors<float> &tempTensors, WelfordFinalizeTilingData &tiling)
+__aicore__ inline void GetWelfordFinalizeTensorInfo(const LocalTensor<float>& stackBuffer,
+    const WelfordFinalizePara& para, WelfordFinalizeTmpTensors<float>& tempTensors, WelfordFinalizeTilingData& tiling)
 {
     // 0x2 indicates reserving twp buffers for the calculations of mean and variance
     uint32_t minTmpSize = B32_LEN * 0x2;

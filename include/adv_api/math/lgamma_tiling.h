@@ -29,7 +29,7 @@ namespace AscendC {
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetLgammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer);
+void GetLgammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -41,8 +41,8 @@ void GetLgammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNode
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetLgammaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetLgammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 }  // namespace AscendC
 
 #endif  // LIB_MATH_LGAMMA_TILING_H

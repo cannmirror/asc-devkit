@@ -21,8 +21,8 @@
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {
-__aicore__ inline void FloorProcess(const LocalTensor<half> &dstTensor, const LocalTensor<half> &srcTensor,
-    const LocalTensor<uint8_t> &tmpTensor, const uint32_t calCount)
+__aicore__ inline void FloorProcess(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
+    const LocalTensor<uint8_t>& tmpTensor, const uint32_t calCount)
 {
     const LocalTensor<float> floatTmpTensor = tmpTensor.ReinterpretCast<float>();
 

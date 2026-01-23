@@ -209,8 +209,8 @@ __aicore__ inline void LGammaGenRangeMask(
 }
 
 // Select the value of src at mask 1, and accumulate the result onto dst, used tmp1
-__aicore__ inline void LGammaSelect(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-    const LocalTensor<uint8_t> &mask, const LGammaParams &params)
+__aicore__ inline void LGammaSelect(const LocalTensor<float>& dst, const LocalTensor<float>& src,
+    const LocalTensor<uint8_t>& mask, const LGammaParams& params)
 {
     SetCmpMask<float>(params.tmpScalar);
     PipeBarrier<PIPE_V>();

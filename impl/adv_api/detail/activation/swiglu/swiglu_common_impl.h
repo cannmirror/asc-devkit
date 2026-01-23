@@ -29,8 +29,8 @@ constexpr uint32_t SWIGLU_FLOAT_TMP_BUFFER_SIZE = 0;
 constexpr uint32_t SWIGLU_STRIDE_DIGITS = 2;
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, const float &scalarValue, const uint32_t calCount)
+__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, const float& scalarValue, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -54,8 +54,8 @@ __aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, const float &scalarValue)
+__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, const float& scalarValue)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -69,8 +69,8 @@ __aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, const LocalTensor<T
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, LocalTensor<T> &srcTensor0, LocalTensor<T> &srcTensor1,
-                              const float &scalarValue)
+__aicore__ inline void SwiGLUImpl(
+    LocalTensor<T>& dstTensor, LocalTensor<T>& srcTensor0, LocalTensor<T>& srcTensor1, const float& scalarValue)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -84,9 +84,9 @@ __aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, LocalTensor<T> &src
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-                              const LocalTensor<T> &srcTensor1, const float &scalarValue,
-                              const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void SwiGLUImpl(LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, const float& scalarValue, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -143,7 +143,7 @@ __aicore__ inline void SwiGLUImpl(LocalTensor<T> &dstTensor, const LocalTensor<T
 
 template <typename T>
 __aicore__ inline void SwishCalcSimplified(
-   const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const float &scalarValue)
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const float& scalarValue)
 {
     // swish(x) = x / (1 + e^(-βx))
     // x1 = 1 + e^(-βx)
@@ -164,8 +164,8 @@ __aicore__ inline void SwishCalcSimplified(
 }
 
 template <typename T>
-__aicore__ inline void SwiGLUImpl(const LocalTensor<T> &dst, const LocalTensor<T> &src0, const LocalTensor<T> &src1,
-                                  const float &beta, const LocalTensor<float> &sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void SwiGLUImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
+    const float& beta, const LocalTensor<float>& sharedTmpBuffer, uint32_t calCount)
 {
     // Calculate dstTensor = Swish(srcTensor1)
     float scalar = static_cast<float>(static_cast<float>(-1.0) * static_cast<float>(beta));
@@ -178,9 +178,8 @@ __aicore__ inline void SwiGLUImpl(const LocalTensor<T> &dst, const LocalTensor<T
 }
 
 template <>
-__aicore__ inline void SwiGLUImpl<half>(const LocalTensor<half> &dst, const LocalTensor<half> &src0,
-                                        const LocalTensor<half> &src1, const float &beta,
-                                        const LocalTensor<float> &sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void SwiGLUImpl<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src0,
+    const LocalTensor<half>& src1, const float& beta, const LocalTensor<float>& sharedTmpBuffer, uint32_t calCount)
 {
     LocalTensor<float> tmpSrc1FloatBuffer1 = sharedTmpBuffer;
     LocalTensor<float> tmpSrc1FloatBuffer2 = sharedTmpBuffer[calCount];

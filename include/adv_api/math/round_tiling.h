@@ -29,8 +29,8 @@ namespace AscendC {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetRoundMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const ge::Shape &srcShape,
-    const uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue);
+void GetRoundMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
+    const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Round interface requires the developer to reserve or apply for temporary space. The
@@ -43,7 +43,7 @@ void GetRoundMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatf
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetRoundTmpBufferFactorSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const uint32_t typeSize,
-    uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetRoundTmpBufferFactorSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const uint32_t typeSize,
+    uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 }
 #endif // LIB_MATH_ROUND_TILING_INTF

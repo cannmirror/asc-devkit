@@ -18,7 +18,7 @@
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
-__aicore__ inline void DigammaCast(const LocalTensor<float> &dst, const LocalTensor<float> &src, RoundMode castType)
+__aicore__ inline void DigammaCast(const LocalTensor<float>& dst, const LocalTensor<float>& src, RoundMode castType)
 {
     Cast<float, float, false>(dst, src, castType, MASK_PLACEHOLDER, 1,
                               {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});

@@ -26,7 +26,7 @@ constexpr uint32_t CAST_DIM_TWO = 2;
 constexpr uint32_t CAST_TYPE_TWO = 2;
 constexpr uint32_t CAST_TYPE_FOUR = 4;
 
-uint32_t GetCastTempBuffer(const ge::Shape &srcShape, const ge::Shape &dstShape, uint32_t &typeSize)
+uint32_t GetCastTempBuffer(const ge::Shape& srcShape, const ge::Shape& dstShape, uint32_t& typeSize)
 {
     uint32_t castTempBuffer = 0;
     if (typeSize == sizeof(int8_t)) {
@@ -41,7 +41,7 @@ uint32_t GetCastTempBuffer(const ge::Shape &srcShape, const ge::Shape &dstShape,
 }
 
 void GetBroadCastMaxMinTmpSize220(
-    const ge::Shape &srcShape, const ge::Shape &dstShape, uint32_t typeSize, uint32_t &maxValue, uint32_t &minValue)
+    const ge::Shape& srcShape, const ge::Shape& dstShape, uint32_t typeSize, uint32_t& maxValue, uint32_t& minValue)
 {
     uint32_t castTempBuffer = GetCastTempBuffer(srcShape, dstShape, typeSize);
     const uint32_t oneBlockElementNum = ONE_BLK_SIZE / typeSize;
@@ -72,8 +72,8 @@ void GetBroadCastMaxMinTmpSize220(
     }
 }
 
-void CheckBroadCastParams(const platform_ascendc::PlatformAscendC &ascendcPlatform, const ge::Shape &srcShape,
-    const ge::Shape &dstShape, uint32_t typeSize, const bool isReuseSource, const char* funcName)
+void CheckBroadCastParams(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
+    const ge::Shape& dstShape, uint32_t typeSize, const bool isReuseSource, const char* funcName)
 {
     platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
     if (socVersion == platform_ascendc::SocVersion::ASCEND910B || socVersion ==
@@ -95,8 +95,8 @@ void CheckBroadCastParams(const platform_ascendc::PlatformAscendC &ascendcPlatfo
 }
 } // namespace
 
-void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const ge::Shape &srcShape,
-    const ge::Shape &dstShape, uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue, uint32_t &minValue)
+void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
+    const ge::Shape& dstShape, uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 {
     CheckBroadCastParams(ascendcPlatform, srcShape, dstShape, typeSize, isReuseSource, "GetBroadCastMaxMinTmpSize");
 

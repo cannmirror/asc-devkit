@@ -23,10 +23,10 @@
 
 namespace AscendC {
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor,
-    const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor,
-    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const SoftMaxTiling &tiling,
-    bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& sumTensor,
+    const LocalTensor<T>& maxTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor, const SoftMaxTiling& tiling, bool isUpdate,
+    const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftmaxFlash, (T, isReuseSource, isBasicBlock), (dstTensor, sumTensor, maxTensor, srcTensor,
         expMaxTensor, inSumTensor, inMaxTensor, tiling, isUpdate, softmaxShapeInfo));
@@ -35,10 +35,10 @@ __aicore__ inline void SoftmaxFlashImpl(const LocalTensor<T> &dstTensor, const L
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<half> &dstTensor, const LocalTensor<float> &sumTensor,
-    const LocalTensor<float> &maxTensor, const LocalTensor<half> &srcTensor, const LocalTensor<half> &expMaxTensor,
-    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor, const SoftMaxTiling &tiling,
-    bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<half>& dstTensor, const LocalTensor<float>& sumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& srcTensor, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor, const SoftMaxTiling& tiling,
+    bool isUpdate, const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftmaxFlash, (T, isReuseSource, isBasicBlock), (dstTensor, sumTensor, maxTensor,
         srcTensor, expMaxTensor, inSumTensor, inMaxTensor, tiling, isUpdate, softmaxShapeInfo));
@@ -47,10 +47,10 @@ __aicore__ inline void SoftmaxFlashImpl(const LocalTensor<half> &dstTensor, cons
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &sumTensor,
-    const LocalTensor<T> &maxTensor, const LocalTensor<T> &srcTensor, const LocalTensor<T> &expMaxTensor,
-    const LocalTensor<T> &inSumTensor, const LocalTensor<T> &inMaxTensor, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const SoftMaxTiling &tiling, bool isUpdate, const SoftMaxShapeInfo &softmaxShapeInfo)
+__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& sumTensor,
+    const LocalTensor<T>& maxTensor, const LocalTensor<T>& srcTensor, const LocalTensor<T>& expMaxTensor,
+    const LocalTensor<T>& inSumTensor, const LocalTensor<T>& inMaxTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const SoftMaxTiling& tiling, bool isUpdate, const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftmaxFlash, (T, isReuseSource, isBasicBlock), (dstTensor, sumTensor, maxTensor,
         srcTensor, expMaxTensor, inSumTensor, inMaxTensor, sharedTmpBuffer, tiling, isUpdate, softmaxShapeInfo));
@@ -59,11 +59,11 @@ __aicore__ inline void SoftmaxFlashImpl(const LocalTensor<T> &dstTensor, const L
 }
 
 template <typename T, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<half> &dstTensor, const LocalTensor<float> &sumTensor,
-    const LocalTensor<float> &maxTensor, const LocalTensor<half> &srcTensor, const LocalTensor<half> &expMaxTensor,
-    const LocalTensor<float> &inSumTensor, const LocalTensor<float> &inMaxTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const SoftMaxTiling &tiling, bool isUpdate,
-    const SoftMaxShapeInfo &softmaxShapeInfo)
+__aicore__ inline void SoftmaxFlashImpl(const LocalTensor<half>& dstTensor, const LocalTensor<float>& sumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<half>& srcTensor, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<float>& inSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const SoftMaxTiling& tiling, bool isUpdate,
+    const SoftMaxShapeInfo& softmaxShapeInfo)
 {
     CHECK_FUNC_HIGHLEVEL_API(SoftmaxFlash, (T, isReuseSource, isBasicBlock), (dstTensor, sumTensor, maxTensor,
         srcTensor, expMaxTensor, inSumTensor, inMaxTensor, sharedTmpBuffer, tiling, isUpdate, softmaxShapeInfo));

@@ -37,8 +37,8 @@ inline uint32_t GetAsinhMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetAsinhMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetAsinhMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -48,7 +48,7 @@ void GetAsinhMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
     maxValue = GetAsinhMaxTmpSize(inputSize, typeSize);
 }
 
-void GetAsinhTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetAsinhTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? ASINH_FLOAT_CALC_PROC : ASINH_HALF_CALC_PROC;

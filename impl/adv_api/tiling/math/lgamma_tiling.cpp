@@ -47,14 +47,14 @@ inline uint32_t GetMinTmpSize(const uint32_t typeSize, const bool isReuseSource)
 }
 }  // namespace
 
-void GetLgammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetLgammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     extraBuffer = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? FLOAT_NOREUSE_CALC_PROC : HALF_CALC_FAC;  // for half
 }
 
-void GetLgammaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetLgammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");

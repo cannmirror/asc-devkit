@@ -36,14 +36,14 @@ inline uint32_t GetAcosMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetAcosTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetAcosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     extraBuffer = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? ACOS_FLOAT_CALC_PROC : ACOS_HALF_CALC_PROC;
 }
 
-void GetAcosMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetAcosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();

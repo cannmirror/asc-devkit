@@ -32,7 +32,7 @@ constexpr float ASINH_FP32_MIN = 2.168404344971009e-19; // 2^-62
 constexpr uint32_t ASINH_STRIDE_DIGITS = 2;
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AsinhImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor)
+__aicore__ inline void AsinhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -46,8 +46,8 @@ __aicore__ inline void AsinhImpl(const LocalTensor<T> &dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AsinhImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AsinhImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -99,8 +99,9 @@ __aicore__ inline void AsinhImpl(const LocalTensor<T>& dstTensor, const LocalTen
     ResetMask();
 }
 
-template <typename T> __aicore__ inline void AsinhGetSign(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const LocalTensor<T> &denominator)
+template <typename T>
+__aicore__ inline void AsinhGetSign(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& denominator)
 {
     UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
@@ -117,8 +118,8 @@ template <typename T> __aicore__ inline void AsinhGetSign(const LocalTensor<T> &
 }
 
 template <typename T>
-__aicore__ inline void AsinhCompute(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const LocalTensor<float> &tmpBuffer, uint32_t calCount)
+__aicore__ inline void AsinhCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<float>& tmpBuffer, uint32_t calCount)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
@@ -164,8 +165,8 @@ __aicore__ inline void AsinhCompute(const LocalTensor<T> &dst, const LocalTensor
 }
 
 template <>
-__aicore__ inline void AsinhCompute(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-    const LocalTensor<float> &tmpBuffer, uint32_t calCount)
+__aicore__ inline void AsinhCompute(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, const LocalTensor<float>& tmpBuffer, uint32_t calCount)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;

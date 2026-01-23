@@ -22,13 +22,13 @@ namespace AscendC {
 constexpr uint32_t STRIDE_OF_DIFFERENT_DIGITS = 2;
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void RoundComputeCount(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void RoundComputeCount(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {}
 
 template <>
-__aicore__ inline void RoundComputeCount<float, false>(const LocalTensor<float> &dstTensor,
-    const LocalTensor<float> &srcTensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void RoundComputeCount<float, false>(const LocalTensor<float>& dstTensor,
+    const LocalTensor<float>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     SetVectorMask<float, MaskMode::COUNTER>(0, calCount);
     Cast<float, float, false>(dstTensor, srcTensor, RoundMode::CAST_RINT, MASK_PLACEHOLDER, (uint8_t)1,
@@ -36,8 +36,8 @@ __aicore__ inline void RoundComputeCount<float, false>(const LocalTensor<float> 
 }
 
 template <>
-__aicore__ inline void RoundComputeCount<half, false>(const LocalTensor<half> &dstTensor,
-    const LocalTensor<half> &srcTensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void RoundComputeCount<half, false>(const LocalTensor<half>& dstTensor,
+    const LocalTensor<half>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     // Calculate the amount of data that can be stored in the temporary space and split the data into the entire block
     // and tail block.

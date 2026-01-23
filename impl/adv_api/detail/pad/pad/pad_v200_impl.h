@@ -19,8 +19,8 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void PadCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    PadParams &padParams, const LocalTensor<uint8_t> &sharedTmpBuffer, PadTiling &tiling)
+__aicore__ inline void PadCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    PadParams& padParams, const LocalTensor<uint8_t>& sharedTmpBuffer, PadTiling& tiling)
 {
     uint32_t width = tiling.srcWidth;
     // 32B aligned
@@ -33,8 +33,8 @@ __aicore__ inline void PadCompute(const LocalTensor<T> &dstTensor, const LocalTe
 }
 
 template <typename T>
-__aicore__ inline void UnPadCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    UnPadParams &unPadParams, LocalTensor<uint8_t> &sharedTmpBuffer, UnPadTiling &tiling)
+__aicore__ inline void UnPadCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    UnPadParams& unPadParams, LocalTensor<uint8_t>& sharedTmpBuffer, UnPadTiling& tiling)
 {
     uint16_t rightPad = unPadParams.rightPad;
     uint16_t height = tiling.srcHeight;

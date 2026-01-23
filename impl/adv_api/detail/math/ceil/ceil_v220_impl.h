@@ -19,8 +19,8 @@
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 
 namespace AscendC {
-__aicore__ inline void CeilProcess(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    const LocalTensor<uint8_t> &tmpTensor)
+__aicore__ inline void CeilProcess(
+    const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor, const LocalTensor<uint8_t>& tmpTensor)
 {
     (void)tmpTensor;
     Cast<float, float, false>(dstTensor, srcTensor, RoundMode::CAST_CEIL, MASK_PLACEHOLDER, 1,

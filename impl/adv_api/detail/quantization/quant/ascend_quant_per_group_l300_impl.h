@@ -415,10 +415,10 @@ __aicore__ inline void AscendQuantPerGroupForKCol(const LocalTensor<dstT>& dstTe
     }
 }
 
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig &config>
-__aicore__ inline void AscendQuantPerGroupForKCol(const LocalTensor<dstT> &dstTensor,
-    const LocalTensor<srcT> &srcTensor, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const LocalTensor<scaleT> &scaleTensor, const scaleT offset, const AscendQuantParam &para)
+template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config>
+__aicore__ inline void AscendQuantPerGroupForKCol(const LocalTensor<dstT>& dstTensor,
+    const LocalTensor<srcT>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const LocalTensor<scaleT>& scaleTensor, const scaleT offset, const AscendQuantParam& para)
 {
     if constexpr (SupportType<dstT, int8_t>()) {
         QuantPerGroupForKColS8<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor, offset, para);
@@ -451,11 +451,11 @@ __aicore__ inline void AscendQuantPerGroupForKRow(const LocalTensor<dstT>& dstTe
     }
 }
 
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig &config,
-    const AscendQuantPolicy &policy>
-__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT> &dstTensor, const LocalTensor<srcT> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const LocalTensor<scaleT> &scaleTensor,
-    const LocalTensor<scaleT> &offsetTensor, const AscendQuantParam &para)
+template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config,
+    const AscendQuantPolicy& policy>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<scaleT>& scaleTensor,
+    const LocalTensor<scaleT>& offsetTensor, const AscendQuantParam& para)
 {
     if ASCEND_IS_AIC {
         return;
@@ -493,11 +493,11 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<dstT> &dstTensor, const
     }
 }
 
-template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig &config,
-    const AscendQuantPolicy &policy>
-__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT> &dstTensor, const LocalTensor<srcT> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const LocalTensor<scaleT> &scaleTensor, const scaleT offset,
-    const AscendQuantParam &para)
+template <typename dstT, typename srcT, typename scaleT, bool isReuseSource = false, const AscendQuantConfig& config,
+    const AscendQuantPolicy& policy>
+__aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const LocalTensor<scaleT>& scaleTensor, const scaleT offset,
+    const AscendQuantParam& para)
 {
     if ASCEND_IS_AIC {
         return;

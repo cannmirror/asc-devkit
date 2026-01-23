@@ -58,8 +58,8 @@ scene6：{ shape:[B, N, H/N/16, S/16, 16, 16], format:"NZ"}-->{ shape:[B, H/16, 
 format:"NZ"}
 */
 template <typename T>
-__aicore__ inline void ConfusionTranspose012(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, TransposeType transposeTypeIn, ConfusionTranspose012Tiling &tiling)
+__aicore__ inline void ConfusionTranspose012(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, TransposeType transposeTypeIn, ConfusionTranspose012Tiling& tiling)
 {
     ConfusionTranspose012Compute(dstTensor, srcTensor, sharedTmpBuffer, transposeTypeIn, tiling);
 }

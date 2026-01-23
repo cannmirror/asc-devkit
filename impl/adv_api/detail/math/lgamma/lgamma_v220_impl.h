@@ -19,7 +19,7 @@
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 namespace AscendC {
-__aicore__ inline void LGammaFloor(const LocalTensor<float> &dst, const LocalTensor<float> &src)
+__aicore__ inline void LGammaFloor(const LocalTensor<float>& dst, const LocalTensor<float>& src)
 {
     Cast<float, float, false>(
         dst, src, RoundMode::CAST_FLOOR, MASK_PLACEHOLDER, 1, {1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE});

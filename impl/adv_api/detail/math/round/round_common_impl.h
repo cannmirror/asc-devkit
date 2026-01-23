@@ -30,8 +30,8 @@
 namespace AscendC {
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void RoundImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void RoundImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Round, (T, isReuseSource), (dstTensor, srcTensor, sharedTmpBuffer, calCount));
 
@@ -46,8 +46,8 @@ __aicore__ inline void RoundImpl(const LocalTensor<T> &dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void RoundImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void RoundImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Using the stack space to allocate tmpbuf
     LocalTensor<uint8_t> sharedTmpBuffer;

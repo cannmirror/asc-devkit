@@ -38,8 +38,8 @@ __aicore__ inline TransDataTo5HDParams ExtractTransDataParam(uint8_t repeatTimes
 }
 
 template <typename T>
-__aicore__ inline void CumSumLastDim(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    LocalTensor<T> tempBuffer, const CumSumInfo &cumSumInfo)
+__aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    LocalTensor<T> tempBuffer, const CumSumInfo& cumSumInfo)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     uint16_t alignOutter =
@@ -156,8 +156,8 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<T> &dstTensor, const Loca
 }
 
 template <>
-__aicore__ inline void CumSumLastDim(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    LocalTensor<float> tempBuffer, const CumSumInfo &cumSumInfo)
+__aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
+    LocalTensor<float> tempBuffer, const CumSumInfo& cumSumInfo)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(float);
     uint8_t repeatTimes = 1;
@@ -298,8 +298,8 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float> &dstTensor, const 
 }
 
 template <typename T>
-__aicore__ inline void CumSumFirstDim(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    LocalTensor<uint8_t> &sharedTmpBuffer, const CumSumInfo &cumSumInfo)
+__aicore__ inline void CumSumFirstDim(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     if constexpr (sizeof(T) == sizeof(half)) {
         const uint32_t minTmpBufferSize = cumSumInfo.outter * cumSumInfo.inner * sizeof(float);
@@ -351,9 +351,9 @@ __aicore__ inline void CumSumFirstDim(const LocalTensor<T> &dstTensor, const Loc
     }
 }
 
-template <typename T, const CumSumConfig &config>
-__aicore__ inline void CumSumImpl(LocalTensor<T> &dstTensor, LocalTensor<T> &lastRowTensor,
-    const LocalTensor<T> &srcTensor, LocalTensor<uint8_t> &sharedTmpBuffer, const CumSumInfo &cumSumInfo)
+template <typename T, const CumSumConfig& config>
+__aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& lastRowTensor,
+    const LocalTensor<T>& srcTensor, LocalTensor<uint8_t>& sharedTmpBuffer, const CumSumInfo& cumSumInfo)
 {
     if ASCEND_IS_AIC {
         return;

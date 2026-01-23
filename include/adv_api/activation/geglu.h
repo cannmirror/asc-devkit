@@ -34,8 +34,8 @@ namespace AscendC {
  */
 // GeGLU(x1,x2) = x1*GeLU(x2), x1 is src0, x2 is src1
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, const LocalTensor<uint8_t> &sharedTmpBuffer, uint32_t calCount)
+__aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
 {
     GeGLUImpl<T, isReuseSource>(dstTensor, srcTensor0, srcTensor1, sharedTmpBuffer, calCount);
 }
@@ -49,8 +49,8 @@ __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<
  * \param [in] calCount, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, uint32_t calCount)
+__aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, uint32_t calCount)
 {
     // Only for AI Vector Core.
     if (g_coreType == AIC) {
@@ -69,8 +69,8 @@ __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<
  * \param [in] sharedTmpBuffer, input local temporary Tensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1, const LocalTensor<uint8_t> &sharedTmpBuffer)
+__aicore__ inline void GeGLU(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
+    const LocalTensor<T>& srcTensor1, const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     GeGLU<T, isReuseSource>(dstTensor, srcTensor0, srcTensor1, sharedTmpBuffer, srcTensor0.GetSize());
 }
@@ -82,8 +82,8 @@ __aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<
  * \param [in] srcTensor1, input1 LocalTensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void GeGLU(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor0,
-    const LocalTensor<T> &srcTensor1)
+__aicore__ inline void GeGLU(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0, const LocalTensor<T>& srcTensor1)
 {
     GeGLU<T, isReuseSource>(dstTensor, srcTensor0, srcTensor1, srcTensor0.GetSize());
 }

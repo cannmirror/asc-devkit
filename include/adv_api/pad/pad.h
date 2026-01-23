@@ -37,8 +37,8 @@ namespace AscendC {
  */
 #pragma begin_pipe(V)
 template <typename T>
-__aicore__ inline void Pad(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, PadParams &padParams,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, PadTiling &tiling)
+__aicore__ inline void Pad(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, PadParams& padParams,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, PadTiling& tiling)
 {
     TRACE_START(TraceId::Pad);
     PadImpl<T>(dstTensor, srcTensor, padParams, sharedTmpBuffer, tiling);
@@ -58,8 +58,8 @@ __aicore__ inline void Pad(const LocalTensor<T> &dstTensor, const LocalTensor<T>
  * @param [in] PadParams.padValue value of pad
  */
 template <typename T>
-__aicore__ inline void Pad(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, PadParams &padParams,
-    PadTiling &tiling)
+__aicore__ inline void Pad(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, PadParams& padParams, PadTiling& tiling)
 {
     LocalTensor<uint8_t> tmpBuffer;
     bool res = PopStackBuffer<uint8_t, TPosition::LCM>(tmpBuffer);
@@ -81,8 +81,8 @@ __aicore__ inline void Pad(const LocalTensor<T> &dstTensor, const LocalTensor<T>
  * @param [in] unPadParams.rightPad number of right unpad
  */
 template <typename T>
-__aicore__ inline void UnPad(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, UnPadParams &unPadParams,
-     LocalTensor<uint8_t> &sharedTmpBuffer, UnPadTiling &tiling)
+__aicore__ inline void UnPad(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, UnPadParams& unPadParams,
+    LocalTensor<uint8_t>& sharedTmpBuffer, UnPadTiling& tiling)
 {
     UnPadImpl<T>(dstTensor, srcTensor, unPadParams, sharedTmpBuffer, tiling);
 }
@@ -99,8 +99,8 @@ __aicore__ inline void UnPad(const LocalTensor<T> &dstTensor, const LocalTensor<
  * @param [in] unPadParams.rightPad number of right unpad
  */
 template <typename T>
-__aicore__ inline void UnPad(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, UnPadParams &unPadParams,
-    UnPadTiling &tiling)
+__aicore__ inline void UnPad(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, UnPadParams& unPadParams, UnPadTiling& tiling)
 {
     LocalTensor<uint8_t> tmpBuffer;
     bool res = PopStackBuffer<uint8_t, TPosition::LCM>(tmpBuffer);

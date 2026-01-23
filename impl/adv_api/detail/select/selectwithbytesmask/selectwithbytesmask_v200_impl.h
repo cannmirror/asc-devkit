@@ -23,9 +23,9 @@ __aicore__ inline uint32_t ComputeMaskExtraBufSize(const uint32_t srcSize, const
 }
 
 template <typename T, typename U, bool reverse = false>
-__aicore__ inline void SelectWithBytesMaskProcess(const LocalTensor<T> &dst, const LocalTensor<T> &src0, T src1,
-    const LocalTensor<U> &mask, const LocalTensor<U> &tmpMask, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const SelectWithBytesMaskShapeInfo &info, const uint32_t tmpBufferOffset, const uint32_t loopSize)
+__aicore__ inline void SelectWithBytesMaskProcess(const LocalTensor<T>& dst, const LocalTensor<T>& src0, T src1,
+    const LocalTensor<U>& mask, const LocalTensor<U>& tmpMask, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const SelectWithBytesMaskShapeInfo& info, const uint32_t tmpBufferOffset, const uint32_t loopSize)
 {
     if (info.srcLastAxis == info.maskLastAxis) {
         SelectWithBytesMaskLoopImpl<T, U, reverse>(dst, src0, src1, mask, sharedTmpBuffer[tmpBufferOffset], loopSize,

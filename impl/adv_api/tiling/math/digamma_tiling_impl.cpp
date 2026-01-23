@@ -54,7 +54,7 @@ inline uint32_t GetMinTmpSize(const uint32_t typeSize, const bool isReuseSource)
 }
 }  // namespace
 
-void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, 
         return, "PlatformAscendCManager gets instance failed!");
@@ -70,8 +70,8 @@ void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNod
     }
 }
 
-void GetDigammaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-                             uint32_t &maxValue, uint32_t &minValue)
+void GetDigammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");

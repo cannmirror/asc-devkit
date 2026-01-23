@@ -55,8 +55,8 @@ inline uint32_t GetCosMinTmpSize(const uint32_t typeSize, const bool isReuseSour
 }
 } // namespace
 
-void GetCosMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetCosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     const uint32_t inputSize = srcShape.GetShapeSize();
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");
@@ -65,7 +65,7 @@ void GetCosMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, con
     maxValue = GetCosMaxTmpSize(inputSize, typeSize, isReuseSource);
 }
 
-void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? COS_FLOAT_NOREUSE_CALC_FAC : COS_HALF_CALC_FAC;

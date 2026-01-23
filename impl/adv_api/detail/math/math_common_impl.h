@@ -22,8 +22,9 @@ namespace AscendC {
 namespace Internal {
 
 template <typename T>
-__aicore__ inline void CommonCheckInputsValidness(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-                        const uint32_t calCount) {
+__aicore__ inline void CommonCheckInputsValidness(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
+{
 #if ASCENDC_CPU_DEBUG
     ASCENDC_ASSERT(((TPosition)dstTensor.GetPosition() == TPosition::VECIN ||
                     (TPosition)dstTensor.GetPosition() == TPosition::VECOUT ||

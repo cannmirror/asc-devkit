@@ -32,7 +32,7 @@ namespace AscendC {
  */
 template <typename T, bool isReuseSource = false>
 __aicore__ inline __inout_pipe__(V) void Swish(
-    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, uint32_t dataSize, const T scalarValue)
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, uint32_t dataSize, const T scalarValue)
 {
     // Only for AI Vector Core
     if ASCEND_IS_AIC {

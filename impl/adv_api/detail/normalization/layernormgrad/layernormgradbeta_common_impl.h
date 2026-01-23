@@ -38,10 +38,9 @@ struct LayerNormGradBetaParams {
     LocalTensor<float> resForGammaTmpTensor;
 };
 
-
 template <bool isClearDst = false>
-__aicore__ inline void ReduceSumFirstN(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-    const uint32_t bsLength, const uint32_t hLength)
+__aicore__ inline void ReduceSumFirstN(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, const uint32_t bsLength, const uint32_t hLength)
 {
     SetVectorMask<float, MaskMode::COUNTER>(0, hLength);
     uint32_t startIndex = 0;
@@ -185,9 +184,9 @@ __aicore__ inline void GetLayerNormGradBetaTensorInfo(const LocalTensor<T> &resF
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T> &outputPdGamma, const LocalTensor<T> &outputPdBeta,
-    const LocalTensor<T> &resForGamma, const LocalTensor<T> &inputDy, const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const LayerNormGradBetaTiling &tiling)
+__aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta,
+    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, const LocalTensor<uint8_t>& sharedTmpBuffer,
+    const LayerNormGradBetaTiling& tiling)
 {
     TRACE_START(TraceId::LayerNormGradBeta);
     CHECK_FUNC_HIGHLEVEL_API(LayerNormGradBeta, (T, isReuseSource), (outputPdGamma, outputPdBeta, resForGamma, inputDy, sharedTmpBuffer,
@@ -212,8 +211,8 @@ __aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T> &outputPdGamma
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T> &outputPdGamma, const LocalTensor<T> &outputPdBeta,
-    const LocalTensor<T> &resForGamma, const LocalTensor<T> &inputDy, LayerNormGradBetaTiling &tiling)
+__aicore__ inline void LayerNormGradBetaImpl(const LocalTensor<T>& outputPdGamma, const LocalTensor<T>& outputPdBeta,
+    const LocalTensor<T>& resForGamma, const LocalTensor<T>& inputDy, LayerNormGradBetaTiling& tiling)
 {
     LocalTensor<uint8_t> sharedTmpBuffer; // partial derivation
     bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);

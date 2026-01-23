@@ -34,8 +34,8 @@ namespace AscendC {
  * \param [in] dataSize, amount of data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline __inout_pipe__(V) void Silu(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
-    uint32_t dataSize)
+__aicore__ inline __inout_pipe__(V) void Silu(
+    const LocalTensor<T>& dstLocal, const LocalTensor<T>& srcLocal, uint32_t dataSize)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

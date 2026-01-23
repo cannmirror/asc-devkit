@@ -371,12 +371,10 @@ __aicore__ inline void BlkReduceForLoop(const LocalTensor<T>& dst,
 }
 
 template <typename T, bool isReuseSource, ApiMode apiMode,
-            void (*func)(const LocalTensor<half> &, const LocalTensor<half> &,
-                       const LocalTensor<half> &, uint64_t, const uint8_t,
-                       const BinaryRepeatParams &)>
+    void (*func)(const LocalTensor<half>&, const LocalTensor<half>&, const LocalTensor<half>&, uint64_t, const uint8_t,
+        const BinaryRepeatParams&)>
 __aicore__ inline void BinaryReduceAnyAllCompute(
-    const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const LocalTensor<T> &tmp, const ReduceParams &params)
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& tmp, const ReduceParams& params)
 {
     half halfZero = 0.0;
     LocalTensor<half> tmpBuf = tmp.template ReinterpretCast<half>();

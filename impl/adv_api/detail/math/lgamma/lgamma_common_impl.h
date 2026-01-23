@@ -25,8 +25,8 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 namespace AscendC {
-__aicore__ inline void Lgamma1Compute(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    const LocalTensor<float> &tmpTensor, const uint32_t splitSize)
+__aicore__ inline void Lgamma1Compute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
+    const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -94,8 +94,8 @@ __aicore__ inline void Lgamma1Compute(const LocalTensor<float> &dstTensor, const
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void LgammaComputePosHalf(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    const LocalTensor<float> &tmpTensor, const uint32_t splitSize)
+__aicore__ inline void LgammaComputePosHalf(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
+    const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -147,8 +147,8 @@ __aicore__ inline void LgammaComputePosHalf(const LocalTensor<float> &dstTensor,
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void LgammaComputeNegHalf(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    const LocalTensor<float> &tmpTensor, const uint32_t splitSize)
+__aicore__ inline void LgammaComputeNegHalf(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
+    const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
 {
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binParams;
@@ -242,8 +242,8 @@ __aicore__ inline void LGammaGenGEMaskHalf(const LocalTensor<uint8_t> &mask, con
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void LGammaSelectHalf(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    const LocalTensor<uint8_t> &mask, const LocalTensor<float> &tmpTensor, const LocalTensor<float> &tmpScalar)
+__aicore__ inline void LGammaSelectHalf(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& tmpTensor, const LocalTensor<float>& tmpScalar)
 {
     const BinaryRepeatParams binParams;
     SetCmpMask<float>(tmpScalar);
@@ -254,8 +254,8 @@ __aicore__ inline void LGammaSelectHalf(const LocalTensor<float> &dstTensor, con
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void LGammaSelectINF(const LocalTensor<float> &dstTensor, const LocalTensor<float> &srcTensor,
-    const LocalTensor<uint8_t> &mask, const LocalTensor<float> &tmpTensor, const LocalTensor<float> &tmpScalar)
+__aicore__ inline void LGammaSelectINF(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
+    const LocalTensor<uint8_t>& mask, const LocalTensor<float>& tmpTensor, const LocalTensor<float>& tmpScalar)
 {
     const BinaryRepeatParams binParams;
     Duplicate<float, false>(tmpScalar, 655040.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
@@ -266,8 +266,8 @@ __aicore__ inline void LGammaSelectINF(const LocalTensor<float> &dstTensor, cons
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void LgammaComputeImpl(const LocalTensor<half> &dstTensor, const LocalTensor<half> &srcTensor, 
-    LGammaParams &params, const uint32_t splitSize)
+__aicore__ inline void LgammaComputeImpl(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
+    LGammaParams& params, const uint32_t splitSize)
 {
     // half-->float
     Duplicate<float, false>(params.tmp1, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
@@ -332,7 +332,7 @@ __aicore__ inline void LgammaComputeImpl(const LocalTensor<half> &dstTensor, con
 }
 
 __aicore__ inline void LgammaComputeImpl(
-    const LocalTensor<float> &dst, const LocalTensor<float> &src, LGammaParams &params)
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, LGammaParams& params)
 {
     // Gen masks with x >= 0 and < 0, which will not be overwritten in the future
     LGammaGenGEMask(params.tmpMask2, src, params, 0.0f);
@@ -380,8 +380,8 @@ __aicore__ inline void LgammaComputeImpl(
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void LgammaCompute(const LocalTensor<half> &dstTensor, const LocalTensor<half> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void LgammaCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Lgamma, (half, isReuseSource), (dstTensor, srcTensor, sharedTmpBuffer, calCount));
 
@@ -420,8 +420,8 @@ __aicore__ inline void LgammaCompute(const LocalTensor<half> &dstTensor, const L
 }
 
 template <bool isReuseSource = false>
-__aicore__ inline void LgammaCompute(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-    const LocalTensor<uint8_t> &tmp, const uint32_t calCount)
+__aicore__ inline void LgammaCompute(const LocalTensor<float>& dst, const LocalTensor<float>& src,
+    const LocalTensor<uint8_t>& tmp, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Lgamma, (float, isReuseSource), (dst, src, tmp, calCount));
 
@@ -456,8 +456,8 @@ __aicore__ inline void LgammaCompute(const LocalTensor<float> &dst, const LocalT
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void LgammaImpl(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-    const LocalTensor<uint8_t> &tmp, const uint32_t calCount)
+__aicore__ inline void LgammaImpl(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmp, const uint32_t calCount)
 {
     LgammaCompute<isReuseSource>(dst, src, tmp, calCount);
 }

@@ -52,7 +52,7 @@ void GetXorMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, con
     maxValue = std::max(max, minValue);
 }
 
-void GetXorTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetXorTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     auto calcFactor = XOR_CALC_FAC;
     extraBuffer = 0;

@@ -19,7 +19,7 @@
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void ReGluCast(const LocalTensor<T> &dstTensor, const LocalTensor<float> &srcTensor)
+__aicore__ inline void ReGluCast(const LocalTensor<T>& dstTensor, const LocalTensor<float>& srcTensor)
 {
     if constexpr (IsSameType<T, half>::value) {
         Cast<T, float, false>(dstTensor, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,

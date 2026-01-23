@@ -36,8 +36,8 @@ inline uint32_t GetTruncMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetTruncMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetTruncMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -47,7 +47,7 @@ void GetTruncMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
     maxValue = GetTruncMaxTmpSize(inputSize, typeSize);
 }
 
-void GetTruncTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetTruncTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? TRUNC_FLOAT_CALC_FAC : TRUNC_HALF_CALC_FAC;

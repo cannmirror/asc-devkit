@@ -58,10 +58,8 @@ enum class ReducePattern : uint32_t {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceProdMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue);
+void GetReduceProdMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -75,10 +73,8 @@ void GetReduceProdMaxMinTmpSize(const ge::Shape &srcShape,
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceSumMaxMinTmpSize(const ge::Shape &srcShape,
-                               const ge::DataType dataType,
-                               ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                               uint32_t &maxValue, uint32_t &minValue);
+void GetReduceSumMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -92,10 +88,8 @@ void GetReduceSumMaxMinTmpSize(const ge::Shape &srcShape,
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceMeanMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue);
+void GetReduceMeanMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -109,10 +103,8 @@ void GetReduceMeanMaxMinTmpSize(const ge::Shape &srcShape,
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceMaxMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue);
+void GetReduceMaxMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -126,10 +118,8 @@ void GetReduceMaxMaxMinTmpSize(const ge::Shape &srcShape,
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceMinMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue);
+void GetReduceMinMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -143,10 +133,8 @@ void GetReduceMinMaxMinTmpSize(const ge::Shape &srcShape,
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceAnyMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue);
+void GetReduceAnyMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief This interface is used to obtain the maximum and minimum temporary space reserved or applied.
@@ -160,9 +148,7 @@ void GetReduceAnyMaxMinTmpSize(const ge::Shape &srcShape,
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetReduceAllMaxMinTmpSize(const ge::Shape &srcShape,
-                                const ge::DataType dataType,
-                                ReducePattern pattern, bool isSrcInnerPad, bool isReuseSource,
-                                uint32_t &maxValue, uint32_t &minValue);
+void GetReduceAllMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dataType, ReducePattern pattern,
+    bool isSrcInnerPad, bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 }  // namespace AscendC
 #endif // LIB_REDUCE_REDUCE_TILING_H

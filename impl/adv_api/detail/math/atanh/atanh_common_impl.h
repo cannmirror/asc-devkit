@@ -105,10 +105,8 @@ __aicore__ inline void AtanhCompute(const LocalTensor<half>& dstTensor,
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AtanhImpl(const LocalTensor<T> &dstTensor,
-    const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer,
-    const uint32_t calCount)
+__aicore__ inline void AtanhImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {
@@ -161,16 +159,15 @@ __aicore__ inline void AtanhImpl(const LocalTensor<T>& dstTensor, const LocalTen
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AtanhImpl(const LocalTensor<T> &dstTensor,
-    const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer)
+__aicore__ inline void AtanhImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     AtanhImpl<T, isReuseSource>(dstTensor, srcTensor, sharedTmpBuffer, srcTensor.GetSize());
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void AtanhImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t calCount)
+__aicore__ inline void AtanhImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

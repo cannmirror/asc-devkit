@@ -31,8 +31,8 @@ namespace AscendC {
 #pragma begin_pipe(V)
 
 // input src is x, write the calculation result on the dst, used tmpCal1 and tmpCal2
-__aicore__ inline void DigammaPositiveHalf(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                           DigammaParams &params)
+__aicore__ inline void DigammaPositiveHalf(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // w = x + 3
     Adds<float, false>(params.tmpCal1, src, 3.0f, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -102,8 +102,8 @@ __aicore__ inline void DigammaPositiveHalf(const LocalTensor<float> &dst, const 
 }
 
 // compute x is less than -0.0001 and put the result on result
-__aicore__ inline void DigammaNegativeHalf(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                           DigammaParams &params)
+__aicore__ inline void DigammaNegativeHalf(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // tmpCal5 = 1 - x
     Duplicate<float, false>(params.tmpScalar, 1.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
@@ -123,8 +123,8 @@ __aicore__ inline void DigammaNegativeHalf(const LocalTensor<float> &dst, const 
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void DigammaComputeImpl(const LocalTensor<half> &dst, const LocalTensor<half> &src,
-                                          DigammaParams &params)
+__aicore__ inline void DigammaComputeImpl(
+    const LocalTensor<half>& dst, const LocalTensor<half>& src, DigammaParams& params)
 {
     // The half type needs to be converted to the float32 type for calculation.
     Cast<float, half, false>(params.tmpCal5, src, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
@@ -194,8 +194,8 @@ __aicore__ inline void DigammaComputeImpl(const LocalTensor<half> &dst, const Lo
 //         3.96825396825396825397e-3 - z * (4.16666666666666666667e-3 - z * (
 //         7.57575757575757575758e-3 - z * (2.10927960927960927961e-2 - z * 8.33333333333333333333e-2))))))
 // used tmpCal1 and tmpCal2
-__aicore__ inline void DigammaPositiveTmp0(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                           DigammaParams &params)
+__aicore__ inline void DigammaPositiveTmp0(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // w = x + 10
     Adds<float, false>(params.tmpCal1, src, 10.0f, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -258,8 +258,8 @@ __aicore__ inline void DigammaPositiveTmp0(const LocalTensor<float> &dst, const 
 // tmp1 = 1 / x + 1 / (x + 1) + 1 / (x + 2) + 1 / (x + 3) + 1 / (x + 4) + 1 / (x + 5) + 1 / (x + 6) + 1 /
 //        ( x + 7) + 1 / (x + 8) + 1 / (x + 9)
 // used tmpCal2
-__aicore__ inline void DigammaPositiveTmp1(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                           DigammaParams &params)
+__aicore__ inline void DigammaPositiveTmp1(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // dst = 1 / src
     Duplicate<float, false>(params.tmpScalar, 1.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
@@ -292,8 +292,8 @@ __aicore__ inline void DigammaPositiveTmp1(const LocalTensor<float> &dst, const 
 }
 
 // input src is x, write the calculation result on the dst, used tmpCal1 and tmpCal2
-__aicore__ inline void DigammaPositive(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                       DigammaParams &params)
+__aicore__ inline void DigammaPositive(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // calculate tmp0
     DigammaPositiveTmp0(dst, src, params);
@@ -306,8 +306,8 @@ __aicore__ inline void DigammaPositive(const LocalTensor<float> &dst, const Loca
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void DigammaNegPicotPix(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                          DigammaParams &params)
+__aicore__ inline void DigammaNegPicotPix(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // f7(tmpCal1) = (x + x)
     Add<float, false>(params.tmpCal1, src, src, MASK_PLACEHOLDER, 1, params.binaryParams);
@@ -385,8 +385,8 @@ __aicore__ inline void DigammaNegPicotPix(const LocalTensor<float> &dst, const L
 }
 
 // compute x is less than 0 and put the result on result
-__aicore__ inline void DigammaNegative(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                       DigammaParams &params)
+__aicore__ inline void DigammaNegative(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     // digamma_our_p(1 - x)
     Muls<float, false>(params.tmpCal3, src, -1.0f, MASK_PLACEHOLDER, 1, params.unaryParams);
@@ -403,8 +403,8 @@ __aicore__ inline void DigammaNegative(const LocalTensor<float> &dst, const Loca
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void DigammaComputeImpl(const LocalTensor<float> &dst, const LocalTensor<float> &src,
-                                          DigammaParams &params)
+__aicore__ inline void DigammaComputeImpl(
+    const LocalTensor<float>& dst, const LocalTensor<float>& src, DigammaParams& params)
 {
     Duplicate<float, false>(dst, 0.0f, MASK_PLACEHOLDER, 1, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
 
@@ -437,8 +437,8 @@ __aicore__ inline void DigammaComputeImpl(const LocalTensor<float> &dst, const L
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void DigammaCompute(const LocalTensor<T> &dst, const LocalTensor<T> &src,
-                                      const LocalTensor<uint8_t> &tmp, const uint32_t calCount)
+__aicore__ inline void DigammaCompute(
+    const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<uint8_t>& tmp, const uint32_t calCount)
 {
     CHECK_FUNC_HIGHLEVEL_API(Digamma, (T, isReuseSource), (dst, src, tmp, calCount));
 

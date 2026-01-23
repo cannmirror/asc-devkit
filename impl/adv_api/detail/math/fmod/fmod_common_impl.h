@@ -26,8 +26,8 @@ constexpr uint32_t SRC1_IDX = 2;
 constexpr uint32_t TRUNC_IDX = 3;
 }
 
-__aicore__ inline void FmodCompute(const LocalTensor<float> &dstTensor, const LocalTensor<float> &src0Tensor,
-    const LocalTensor<float> &src1Tensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t stackSize,
+__aicore__ inline void FmodCompute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& src0Tensor,
+    const LocalTensor<float>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t stackSize,
     const uint32_t calCount)
 {
     PipeBarrier<PIPE_V>();
@@ -45,8 +45,8 @@ __aicore__ inline void FmodCompute(const LocalTensor<float> &dstTensor, const Lo
     PipeBarrier<PIPE_V>();
 }
 
-__aicore__ inline void FmodCompute(const LocalTensor<half> &dstTensor, const LocalTensor<half> &src0Tensor,
-    const LocalTensor<half> &src1Tensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t stackSize,
+__aicore__ inline void FmodCompute(const LocalTensor<half>& dstTensor, const LocalTensor<half>& src0Tensor,
+    const LocalTensor<half>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t stackSize,
     const uint32_t calCount)
 {
     // floatTmpTensor<float>    = | dst | src0 | src1 |
@@ -69,8 +69,8 @@ __aicore__ inline void FmodCompute(const LocalTensor<half> &dstTensor, const Loc
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void FmodImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &src0Tensor,
-    const LocalTensor<T> &src1Tensor, const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void FmodImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
+    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     if ASCEND_IS_AIC {
         return;

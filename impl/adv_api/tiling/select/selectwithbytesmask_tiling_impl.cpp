@@ -40,7 +40,7 @@ inline bool IsScalar(const ge::Shape &shape)
     return shape.GetDimNum() == 0 || shape.GetShapeSize() == 1;
 }
 
-inline uint32_t ComputeBufferSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const ge::Shape &maskShape,
+inline uint32_t ComputeBufferSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const ge::Shape& maskShape,
     const uint32_t maskTypeSize, const bool isReuseMask, const bool isMinBuffer)
 {
     const int32_t src1Size = src1Shape.GetShapeSize();
@@ -61,8 +61,8 @@ inline uint32_t ComputeBufferSize(const ge::Shape &src0Shape, const ge::Shape &s
     return requiredBuffer;
 }
 
-void CheckSelectParams(const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize,
-    const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask, const char* funcName)
+void CheckSelectParams(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
+    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, const char* funcName)
 {
     (void)isReuseMask;
 
@@ -84,37 +84,35 @@ void CheckSelectParams(const ge::Shape &src0Shape, const ge::Shape &src1Shape, c
 }
 } // namespace
 
-uint32_t GetSelectMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
+uint32_t GetSelectMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
+    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
 {
     CheckSelectParams(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask, "GetSelectMinTmpSize");
     return ComputeBufferSize(src0Shape, src1Shape, maskShape, maskTypeSize, isReuseMask, true);
 }
 
-uint32_t GetSelectWithBytesMaskMinTmpSize(
-    const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask)
+uint32_t GetSelectWithBytesMaskMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape,
+    const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
 {
     return GetSelectMinTmpSize(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask);
 }
 
-uint32_t GetSelectMaxTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
+uint32_t GetSelectMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
+    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
 {
     CheckSelectParams(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask, "GetSelectMaxTmpSize");
     return ComputeBufferSize(src0Shape, src1Shape, maskShape, maskTypeSize, isReuseMask, false);
 }
 
-uint32_t GetSelectWithBytesMaskMaxTmpSize(
-    const ge::Shape &src0Shape, const ge::Shape &src1Shape, const uint32_t srcTypeSize, const ge::Shape &maskShape,
-    const uint32_t maskTypeSize, const bool isReuseMask)
+uint32_t GetSelectWithBytesMaskMaxTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape,
+    const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask)
 {
     return GetSelectMaxTmpSize(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask);
 }
 
-void GetSelectMaxMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetSelectMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape, const uint32_t srcTypeSize,
+    const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask, uint32_t& maxValue,
+    uint32_t& minValue)
 {
     CheckSelectParams(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask,
         "GetSelectMaxMinTmpSize");
@@ -122,9 +120,9 @@ void GetSelectMaxMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Sha
     minValue = GetSelectMinTmpSize(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask);
 }
 
-void GetSelectWithBytesMaskMaxMinTmpSize(const ge::Shape &src0Shape, const ge::Shape &src1Shape,
-    const uint32_t srcTypeSize, const ge::Shape &maskShape, const uint32_t maskTypeSize, const bool isReuseMask,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetSelectWithBytesMaskMaxMinTmpSize(const ge::Shape& src0Shape, const ge::Shape& src1Shape,
+    const uint32_t srcTypeSize, const ge::Shape& maskShape, const uint32_t maskTypeSize, const bool isReuseMask,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     GetSelectMaxMinTmpSize(src0Shape, src1Shape, srcTypeSize, maskShape, maskTypeSize, isReuseMask, maxValue, minValue);
 }

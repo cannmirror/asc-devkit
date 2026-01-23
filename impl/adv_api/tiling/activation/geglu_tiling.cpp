@@ -44,8 +44,8 @@ inline uint32_t GetGeGLUMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetGeGLUMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetGeGLUMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     HighLevelApiCheck::SrcShapeSizeVerifyingParameters<GE_GELU_GET_MAX_MIN>(srcShape.GetShapeSize(), typeSize);
     HighLevelApiCheck::TypeSizeVerifyingParameters<GE_GELU_GET_MAX_MIN>(typeSize, SUPPORT_TYPESIZE);
@@ -57,7 +57,7 @@ void GetGeGLUMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, c
     maxValue = GetGeGLUMaxTmpSize(inputSize, typeSize);
 }
 
-void GetGeGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetGeGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     HighLevelApiCheck::TypeSizeVerifyingParameters<GE_GELU_GET_TMP_BUFFER>(typeSize, SUPPORT_TYPESIZE);
     extraBuf = 0;

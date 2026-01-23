@@ -29,8 +29,7 @@ namespace AscendC {
  * @return max temporary local space size
  * @return min temporary local space size
  */
-void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const ge::Shape &srcShape,
-    const ge::Shape &dstShape, uint32_t typeSize, const bool isReuseSource, uint32_t &maxValue,
-    uint32_t &minValue);
+void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const ge::Shape& srcShape,
+    const ge::Shape& dstShape, uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue);
 }  // namespace AscendC
 #endif // LIB_PAD_BROADCAST_TILING_H

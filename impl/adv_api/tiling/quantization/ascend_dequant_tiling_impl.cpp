@@ -61,7 +61,7 @@ void CheckDequantHostCommon(const char *apiName, const char *hostFuncName, const
 }
 } // namespace
 
-void GetAscendDequantTmpBufferFactorSize(const ge::Shape &srcShape, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetAscendDequantTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = FLOAT_PER_BLOCK + FLOAT_PER_REPEAT;
     std::vector<int64_t> shapeDims = srcShape.GetDims();

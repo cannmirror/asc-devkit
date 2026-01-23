@@ -103,8 +103,8 @@ __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<
  * \param [in] src1Tensor: exponent LocalTensor
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const LocalTensor<T>& src1Tensor)
+__aicore__ inline void Power(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor)
 {
     Power<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, src0Tensor.GetSize());
 }
@@ -144,8 +144,8 @@ __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<
  * \param [in] calCount: amount of output data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const T& src1Scalar, uint32_t calCount)
+__aicore__ inline void Power(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar, uint32_t calCount)
 {
     PowerCommonImpl<T, isReuseSource>(dstTensor, src0Tensor, src1Scalar, calCount);
 }
@@ -166,8 +166,8 @@ __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<
  *             is not guaranteed that the shared space will be cleared after usage, the data could be anything.
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const T& src1Scalar, const LocalTensor<uint8_t>& sharedTmpBuffer)
+__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar,
+    const LocalTensor<uint8_t>& sharedTmpBuffer)
 {
     Power<T, isReuseSource>(dstTensor, src0Tensor, src1Scalar, sharedTmpBuffer, src0Tensor.GetSize());
 }
@@ -183,8 +183,7 @@ __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<
  * \param [in] src1Scalar: exponent Scalar
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
-    const T& src1Scalar)
+__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar)
 {
     Power<T, isReuseSource>(dstTensor, src0Tensor, src1Scalar, src0Tensor.GetSize());
 }
@@ -224,8 +223,8 @@ __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const T& src0Scala
  * \param [in] calCount: amount of output data to be calculated
  */
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void Power(const LocalTensor<T>& dstTensor, const T& src0Scalar,
-    const LocalTensor<T>& src1Tensor, uint32_t calCount)
+__aicore__ inline void Power(
+    const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor, uint32_t calCount)
 {
     PowerCommonImpl<T, isReuseSource>(dstTensor, src0Scalar, src1Tensor, calCount);
 }

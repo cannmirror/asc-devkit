@@ -41,8 +41,8 @@ namespace AscendC {
  */
 #pragma begin_pipe(V)
 template <typename T, int32_t reduceDim = -1, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void Sum(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const SumParams &sumParams)
+__aicore__ inline void Sum(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const SumParams& sumParams)
 {
     if ASCEND_IS_AIC {
         return;
@@ -61,7 +61,7 @@ __aicore__ inline void Sum(const LocalTensor<T> &dstTensor, const LocalTensor<T>
  * \param [in] sumParams, shape information of srcLocal
  */
 template <typename T, int32_t reduceDim = -1, bool isReuseSource = false, bool isBasicBlock = false>
-__aicore__ inline void Sum(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor, const SumParams &sumParams)
+__aicore__ inline void Sum(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const SumParams& sumParams)
 {
     if ASCEND_IS_AIC {
         return;

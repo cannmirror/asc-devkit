@@ -37,8 +37,8 @@ inline uint32_t GetTanMinTmpSize(const uint32_t typeSize)
 }
 } // namespace
 
-void GetTanMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue)
+void GetTanMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue)
 {
     (void)isReuseSource;
     const uint32_t inputSize = srcShape.GetShapeSize();
@@ -48,7 +48,7 @@ void GetTanMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, con
     maxValue = GetTanMaxTmpSize(inputSize, typeSize);
 }
 
-void GetTanTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuf)
+void GetTanTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? TAN_FLOAT_CALC_FAC : TAN_HALF_CALC_FAC;

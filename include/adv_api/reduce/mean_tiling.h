@@ -40,7 +40,7 @@ void GetMeanMaxMinTmpSize(const uint32_t n, const uint32_t srcTypeSize, const ui
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetMeanTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer);
+void GetMeanTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 
 }  // namespace AscendC
 #endif  // LIB_REDUCE_MEAN_TILING

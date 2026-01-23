@@ -38,6 +38,6 @@ void GetAscendDequantMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuf, the size of the extra temporary space
  */
-void GetAscendDequantTmpBufferFactorSize(const ge::Shape &srcShape, uint32_t &maxLiveNodeCount, uint32_t &extraBuf);
+void GetAscendDequantTmpBufferFactorSize(const ge::Shape& srcShape, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_DEQUANT_TILING_H

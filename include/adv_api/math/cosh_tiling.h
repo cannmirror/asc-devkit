@@ -28,8 +28,8 @@ namespace AscendC {
  * \param [out] maxValue, maximum temporary space required
  * \param [out] minValue, minimum temporary space required
  */
-void GetCoshMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetCoshMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*!
  * \brief The calculation of the Cosh interface requires the developer to reserve or apply for temporary space. The
@@ -41,6 +41,6 @@ void GetCoshMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, co
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space
  * \param [out] extraBuffer, the size of the extra temporary space
  */
-void GetCoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer);
+void GetCoshTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 } // namespace AscendC
 #endif // LIB_MATH_COSH_TILING_H

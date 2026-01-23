@@ -27,9 +27,9 @@ constexpr uint32_t SIGN_CALC_PROC = 3;
 constexpr uint32_t SIGN_BIT = 8;
 
 template <typename T>
-__aicore__ inline void SignComputeImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &tmpBuffer1, const LocalTensor<uint8_t> &tmpBuffer2, const LocalTensor<T> &tmpBuffer3,
-    const LocalTensor<T> &tmpBuffer4, uint32_t calCount, uint32_t repeatTimes)
+__aicore__ inline void SignComputeImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& tmpBuffer1, const LocalTensor<uint8_t>& tmpBuffer2, const LocalTensor<T>& tmpBuffer3,
+    const LocalTensor<T>& tmpBuffer4, uint32_t calCount, uint32_t repeatTimes)
 {
     BinaryRepeatParams binaryParams;
 
@@ -68,8 +68,8 @@ __aicore__ inline void SignComputeImpl(const LocalTensor<T> &dstTensor, const Lo
 }
 
 template <typename T, bool isReuseSource = false>
-__aicore__ inline void SignCompute(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const LocalTensor<uint8_t> &sharedTmpBuffer, const uint32_t calCount)
+__aicore__ inline void SignCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
+    const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
 {
     // Only for AI VectorCore.
     if ASCEND_IS_AIC {

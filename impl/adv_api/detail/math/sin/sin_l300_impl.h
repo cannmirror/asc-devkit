@@ -145,9 +145,9 @@ __aicore__ inline constexpr uint32_t GetSinTmpBufferLiveNode() {
     return tmpBufferLiveNode;
 }
 
-template <typename T, bool isReuseSource = false, const SinConfig &config = defaultSinConfig>
-__aicore__ inline void SinImpl(const LocalTensor<T> &dstTensor, const LocalTensor<T> &srcTensor,
-    const uint32_t calCount)
+template <typename T, bool isReuseSource = false, const SinConfig& config = defaultSinConfig>
+__aicore__ inline void SinImpl(
+    const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
 {
     // Only for AI Vector Core.
     if ASCEND_IS_AIC {

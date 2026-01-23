@@ -57,7 +57,7 @@ void GetSwiGLUMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, 
     maxValue = GetSwiGLUMaxTmpSize(inputSize, typeSize);
 }
 
-void GetSwiGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer)
+void GetSwiGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
     HighLevelApiCheck::TypeSizeVerifyingParameters<SWI_GELU_GET_TMP_BUFFER>(typeSize, SUPPORT_TYPESIZE);
     extraBuffer = 0;

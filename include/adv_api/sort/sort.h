@@ -32,7 +32,7 @@
  * @param [in] repeatTimes repeat times
  * 
  * template <typename T, bool isFullSort>
- * __aicore__ inline void Sort(const LocalTensor<T> &dstLocal, const LocalTensor<T> &concatLocal,
- *     const LocalTensor<uint32_t> &indexLocal, LocalTensor<T> &tmpLocal, const int32_t repeatTimes);
+ * __aicore__ inline void Sort(const LocalTensor<T>& dstLocal, const LocalTensor<T>& concatLocal,
+ *     const LocalTensor<uint32_t>& indexLocal, LocalTensor<T>& tmpLocal, const int32_t repeatTimes);
 */
 #endif // LIB_SORT_SORT_H

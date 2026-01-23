@@ -38,9 +38,9 @@ namespace AscendC {
  * @return true: Succeeded in obtaining the maximum and minimum temporary space sizes.
  * @return false: Failed to obtain maximum and minimum temporary space sizes.
  */
-bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner,
-    const int32_t outter, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode,
-    const bool isLargest, const uint32_t dataTypeSize, uint32_t &maxValue, uint32_t &minValue);
+bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner,
+    const int32_t outter, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
+    const uint32_t dataTypeSize, uint32_t& maxValue, uint32_t& minValue);
 
 /*
  * @ingroup TopKTilingFunc
@@ -57,12 +57,12 @@ bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC &ascendcPlatfo
  * @return true: The values of the TopK tiling parameters are obtained successfully.
  * @return false: Failed to obtain tiling data.
  */
-bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter,
     const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
-    optiling::TopkTiling &topKTiling);
-bool TopKTilingFunc(const platform_ascendc::PlatformAscendC &ascendcPlatform, const int32_t inner, const int32_t outter,
+    optiling::TopkTiling& topKTiling);
+bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter,
     const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest,
-    AscendC::tiling::TopkTiling &topKTiling);
+    AscendC::tiling::TopkTiling& topKTiling);
 
 }  // namespace AscendC
 #endif  // LIB_SORT_TOPK_TILING_H

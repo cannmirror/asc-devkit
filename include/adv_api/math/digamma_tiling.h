@@ -28,8 +28,8 @@ namespace AscendC {
  * @param [out] maxValue: Digamma api calculate need max temporary local space size.
  * @param [out] minValue: Digamma api calculate need min temporary local space size.
  */
-void GetDigammaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize, const bool isReuseSource,
-    uint32_t &maxValue, uint32_t &minValue);
+void GetDigammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
+    uint32_t& maxValue, uint32_t& minValue);
 
 /*
  * @ingroup GetDigammaTmpBufferFactorSize
@@ -40,7 +40,7 @@ void GetDigammaMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
                                   calculation is several times the input size.
  * @param [out] extraBuffer: The extra memory space used by the Digamma API for calculation.
  */
-void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t &maxLiveNodeCount, uint32_t &extraBuffer);
+void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer);
 } // namespace AscendC
 
 #endif // LIB_MATH_DIGAMMA_TILING_H

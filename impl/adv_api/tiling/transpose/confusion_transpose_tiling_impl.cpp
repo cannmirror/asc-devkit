@@ -254,8 +254,8 @@ void GetConfusionTransposeOnlyTilingInfo(const ge::Shape& srcShape, const uint32
 }
 
 // scene13
-inline void GetConfusionTranspose021TilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling)
+inline void GetConfusionTranspose021TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
@@ -277,8 +277,8 @@ inline void GetConfusionTranspose021TilingInfo(const ge::Shape &srcShape, const 
 }
 
 // scene14
-inline void GetConfusionTranspose102TilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling)
+inline void GetConfusionTranspose102TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
@@ -294,8 +294,8 @@ inline void GetConfusionTranspose102TilingInfo(const ge::Shape &srcShape, const 
 }
 
 // scene15
-inline void GetConfusionTranspose210TilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize,
-    const uint32_t typeSize, optiling::ConfusionTransposeTiling &tiling)
+inline void GetConfusionTranspose210TilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize,
+    const uint32_t typeSize, optiling::ConfusionTransposeTiling& tiling)
 {
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "typeSize must be greater than 0.");
     (void)stackBufferSize;
@@ -380,8 +380,8 @@ inline void GetConfusionTranspose210MaxMinTmpSize(
     minValue = 0;
 }
 
-void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling)
+void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling)
 {
     if (static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2ND_0213 ||
         static_cast<TransposeType>(transposeTypeIn) == TransposeType::TRANSPOSE_NZ2NZ_0213) {
@@ -404,22 +404,22 @@ void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBuffe
     }
 }
 
-void GetTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling &tiling)
+void GetTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling)
 {
     optiling::ConfusionTransposeTiling tilingData;
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tilingData);
     tilingData.SaveToBuffer(&tiling, sizeof(ConfusionTransposeTiling));
 }
 
-void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling &tiling)
+void GetConfusionTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, optiling::ConfusionTransposeTiling& tiling)
 {
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tiling);
 }
 
-void GetConfusionTransposeTilingInfo(const ge::Shape &srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling &tiling)
+void GetConfusionTransposeTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, AscendC::tiling::ConfusionTransposeTiling& tiling)
 {
     GetTransposeTilingInfo(srcShape, stackBufferSize, typeSize, transposeTypeIn, tiling);
 }
@@ -448,8 +448,8 @@ void GetTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
     }
 }
 
-void GetConfusionTransposeMaxMinTmpSize(const ge::Shape &srcShape, const uint32_t typeSize,
-    const uint32_t transposeTypeIn, uint32_t &maxValue, uint32_t &minValue)
+void GetConfusionTransposeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
+    const uint32_t transposeTypeIn, uint32_t& maxValue, uint32_t& minValue)
 {
     GetTransposeMaxMinTmpSize(srcShape, typeSize, transposeTypeIn, maxValue, minValue);
 }
