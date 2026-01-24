@@ -29,7 +29,7 @@ __aicore__ inline bool IsCounterMode()
 }
 
 template <bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
-__aicore__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const uint64_t maskCount,
+__simd_callee__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const uint64_t maskCount,
     __ubuf__ uint64_t *maskBuf)
 {
     if constexpr (isNormalMode && !isMaskBitMode && !isSetMask) { // no count, return 0
@@ -59,7 +59,7 @@ __aicore__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const ui
 }
 
 template <typename T, bool isNormalMode = true>
-__aicore__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t repeatTime)
+__simd_callee__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t repeatTime)
 {
     if constexpr (isNormalMode) {
         return repeatTime;
@@ -68,7 +68,7 @@ __aicore__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t 
 }
 
 template <typename T, bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
-__aicore__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
+__simd_callee__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
 {
     MicroAPI::MaskReg maskReg;
     if constexpr (isNormalMode && !isMaskBitMode && !isSetMask) {

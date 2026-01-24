@@ -662,14 +662,14 @@ __aicore__ inline void Duplicate(RegTensor<T> &dstReg, RegTensor<T> &srcReg, Mas
 }
 
 template <typename T>
-__aicore__ inline void Interleave(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, RegTensor<T> &srcReg0,
+__simd_callee__ inline void Interleave(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, RegTensor<T> &srcReg0,
     RegTensor<T> &srcReg1)
 {
     vintlv(dstReg0, dstReg1, srcReg0, srcReg1);
 }
 
 template <typename T>
-__aicore__ inline void DeInterleave(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, RegTensor<T> &srcReg0,
+__simd_callee__ inline void DeInterleave(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, RegTensor<T> &srcReg0,
     RegTensor<T> &srcReg1)
 {
     vdintlv(dstReg0, dstReg1, srcReg0, srcReg1);
@@ -977,7 +977,7 @@ __aicore__ inline void UnPack(RegTensor<T> &dstReg, RegTensor<U> &srcReg)
     vunpack(dstReg, srcReg, partValue);
 }
 
-template <typename T> __aicore__ inline MaskReg CreatePredicate(uint32_t &scalar)
+template <typename T> __simd_callee__ inline MaskReg CreatePredicate(uint32_t &scalar)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreatePredicate only support type b8/b16/b32");
 
@@ -992,7 +992,7 @@ template <typename T> __aicore__ inline MaskReg CreatePredicate(uint32_t &scalar
     return reg;
 }
 
-template <typename T, Pat mode = Pat::ALL> __aicore__ inline MaskReg CreatePredicate()
+template <typename T, Pat mode = Pat::ALL> __simd_callee__ inline MaskReg CreatePredicate()
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreatePredicate only support type b8/b16/b32");
 
@@ -1052,7 +1052,7 @@ __aicore__ inline void PredicateSlide(MaskReg &dstMask, MaskReg &srcMask0, MaskR
 }
 
 template <typename T>
-__aicore__ inline void PredicateInterleave(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
+__simd_callee__ inline void PredicateInterleave(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "PredicateInterleave only support type b8/b16/b32 ");
@@ -1066,7 +1066,7 @@ __aicore__ inline void PredicateInterleave(MaskReg &dstMask0, MaskReg &dstMask1,
 }
 
 template <typename T>
-__aicore__ inline void PredicateDeInterleave(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
+__simd_callee__ inline void PredicateDeInterleave(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "PredicateDeInterleave only support type b8/b16/b32 ");
@@ -1084,13 +1084,13 @@ __aicore__ inline void PredicateSel(MaskReg &dstMask, MaskReg &srcMask0, MaskReg
     psel(dstMask, srcMask0, srcMask1, mask);
 }
 
-template <HiloPart part = HiloPart::Lower> __aicore__ inline void PredicatePack(MaskReg &dstMask, MaskReg &srcMask)
+template <HiloPart part = HiloPart::Lower> __simd_callee__ inline void PredicatePack(MaskReg &dstMask, MaskReg &srcMask)
 {
     constexpr auto partValue = std::integral_constant<::HiloPart, static_cast<::HiloPart>(part)>();
     ppack(dstMask, srcMask, partValue);
 }
 
-template <HiloPart part = HiloPart::Lower> __aicore__ inline void PredicateUnPack(MaskReg &dstMask, MaskReg &srcMask)
+template <HiloPart part = HiloPart::Lower> __simd_callee__ inline void PredicateUnPack(MaskReg &dstMask, MaskReg &srcMask)
 {
     constexpr auto partValue = std::integral_constant<::HiloPart, static_cast<::HiloPart>(part)>();
     punpack(dstMask, srcMask, partValue);
@@ -1108,7 +1108,7 @@ __aicore__ inline MaskReg MovePredicate()
 }
 // vlds
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, int32_t offset)
 {
     if constexpr (sizeof(T) == 8) {
         vlds(dstReg, srcUbAddr, offset);  // use default Dist::DIST_DINTLV_B32
@@ -1119,7 +1119,7 @@ __aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, int
 }
 
 template <typename T, PostLiteral postMode, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *&srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *&srcUbAddr, int32_t offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
@@ -1127,14 +1127,14 @@ __aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *&srcUbAddr, in
 }
 
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *srcUbAddr, int32_t offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     vlds(dstReg0, dstReg1, srcUbAddr, offset, distValue);
 }
 
 template <typename T, PostLiteral postMode, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *&srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *&srcUbAddr, int32_t offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
@@ -1143,28 +1143,28 @@ __aicore__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, Lo
 
 // vld
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, AddrReg offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     vld(dstReg, srcUbAddr, offset, distValue);
 }
 
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     vld(dstReg, srcUbAddr, distValue);
 }
 
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *srcUbAddr, AddrReg offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     vld(dstReg0, dstReg1, srcUbAddr, offset, distValue);
 }
 
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *srcUbAddr)
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, LocalMem T *srcUbAddr)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     vld(dstReg0, dstReg1, srcUbAddr, distValue);
@@ -1172,7 +1172,7 @@ __aicore__ inline void DataCopy(RegTensor<T> &dstReg0, RegTensor<T> &dstReg1, Lo
 
 // vsts
 template <typename T, DistVST dist = DistVST::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, int32_t offset, MaskReg &mask)
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, int32_t offset, MaskReg &mask)
 {
     if constexpr (sizeof(T) == 8) {
         vsts(srcReg, dstUbAddr, offset, mask);  // use default Dist::DIST_INTLV_B32
@@ -1183,7 +1183,7 @@ __aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, int
 }
 
 template <typename T, PostLiteral postMode, DistVST dist = DistVST::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, int32_t offset, MaskReg &mask)
+__simd_callee__ inline void DataCopy(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, int32_t offset, MaskReg &mask)
 {
     constexpr auto distValue = std::integral_constant<::DistVST, static_cast<::DistVST>(GetDistVst<T, dist>())>();
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
@@ -1191,7 +1191,7 @@ __aicore__ inline void DataCopy(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, in
 }
 
 template <typename T, DistVST dist = DistVST::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, int32_t offset,
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, int32_t offset,
     MaskReg &mask)
 {
     constexpr auto distValue = std::integral_constant<::DistVST, static_cast<::DistVST>(GetDistVst<T, dist>())>();
@@ -1200,14 +1200,14 @@ __aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg0, Re
 
 // vst
 template <typename T, DistVST dist = DistVST::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, AddrReg offset, MaskReg &mask)
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, AddrReg offset, MaskReg &mask)
 {
     constexpr auto distValue = std::integral_constant<::DistVST, static_cast<::DistVST>(GetDistVst<T, dist>())>();
     vst(srcReg, dstUbAddr, offset, distValue, mask);
 }
 
 template <typename T, DistVST dist = DistVST::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, AddrReg offset,
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, AddrReg offset,
     MaskReg &mask)
 {
     constexpr auto distValue = std::integral_constant<::DistVST, static_cast<::DistVST>(GetDistVst<T, dist>())>();
@@ -1216,14 +1216,14 @@ __aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg0, Re
 
 // vsldb
 template <typename T>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, uint32_t blockStride,
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *srcUbAddr, uint32_t blockStride,
     uint32_t repeatStride, MaskReg &mask)
 {
     vsldb(dstReg, srcUbAddr, (blockStride << 16u) | (repeatStride & 0xFFFFU), mask);
 }
 
 template <typename T, PostLiteral postMode>
-__aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *&srcUbAddr, uint32_t blockStride,
+__simd_callee__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *&srcUbAddr, uint32_t blockStride,
     uint32_t repeatStride, MaskReg &mask)
 {
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
@@ -1232,14 +1232,14 @@ __aicore__ inline void DataCopy(RegTensor<T> &dstReg, LocalMem T *&srcUbAddr, ui
 
 // vsstb
 template <typename T>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, uint32_t blockStride,
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, RegTensor<T> &srcReg, uint32_t blockStride,
     uint32_t repeatStride, MaskReg &mask)
 {
     vsstb(srcReg, dstUbAddr, (blockStride << 16u) | (repeatStride & 0xFFFFU), mask);
 }
 
 template <typename T, PostLiteral postMode>
-__aicore__ inline void DataCopy(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, uint32_t blockStride,
+__simd_callee__ inline void DataCopy(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, uint32_t blockStride,
     uint32_t repeatStride, MaskReg &mask)
 {
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
@@ -1362,14 +1362,14 @@ __aicore__ inline void DataCopyScatter(LocalMem T *baseAddr, RegTensor<T> &srcRe
 
 // plds/psts
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(MaskReg &dstReg, LocalMem T *srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(MaskReg &dstReg, LocalMem T *srcUbAddr, int32_t offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     plds(dstReg, srcUbAddr, offset, distValue);
 }
 
 template <typename T, PostLiteral post, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(MaskReg &dstReg, LocalMem T *&srcUbAddr, int32_t offset)
+__simd_callee__ inline void DataCopy(MaskReg &dstReg, LocalMem T *&srcUbAddr, int32_t offset)
 {
     // post为plds/psts对应的入参，为0时（NO_POST_UPDATE），每次存在srcUbAddr+offset的地址；
     // 为1时，存在srcUbAddr的地址并对srcUbAddr进行+offset
@@ -1384,14 +1384,14 @@ __aicore__ inline void DataCopy(MaskReg &dstReg, LocalMem T *&srcUbAddr, int32_t
 }
 
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, MaskReg &dstReg, int32_t offset)
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, MaskReg &dstReg, int32_t offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     psts(dstReg, dstUbAddr, offset, distValue);
 }
 
 template <typename T, PostLiteral post, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *&dstUbAddr, MaskReg &dstReg, int32_t offset)
+__simd_callee__ inline void DataCopy(LocalMem T *&dstUbAddr, MaskReg &dstReg, int32_t offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(Post::POST_UPDATE_VALUE)>();
@@ -1404,14 +1404,14 @@ __aicore__ inline void DataCopy(LocalMem T *&dstUbAddr, MaskReg &dstReg, int32_t
 
 // pld/pst
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(MaskReg &dstReg, LocalMem T *srcUbAddr, AddrReg offset)
+__simd_callee__ inline void DataCopy(MaskReg &dstReg, LocalMem T *srcUbAddr, AddrReg offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     pld(dstReg, srcUbAddr, offset, distValue);
 }
 
 template <typename T, Dist dist = Dist::DIST_NORM>
-__aicore__ inline void DataCopy(LocalMem T *dstUbAddr, MaskReg &dstReg, AddrReg offset)
+__simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, MaskReg &dstReg, AddrReg offset)
 {
     constexpr auto distValue = std::integral_constant<::Dist, static_cast<::Dist>(dist)>();
     pst(dstReg, dstUbAddr, offset, distValue);

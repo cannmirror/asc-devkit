@@ -60,5 +60,10 @@ __aicore__ inline void SetSyncBaseAddrImpl(uint64_t config)
     ASCENDC_ASSERT((false), "SetSyncBaseAddr is not supported!");
 }
 
+__aicore__ inline void SetSyncBaseAddr(uint64_t config)
+{
+    SetSyncBaseAddrImpl(config);
+}
+
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_SYNC_IMPL_H

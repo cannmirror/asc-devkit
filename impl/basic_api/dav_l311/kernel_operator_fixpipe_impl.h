@@ -313,7 +313,7 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ DstT* dst, __cc__ SrcT* src,
             0, intriParams.unitFlag, static_cast<uint64_t>(intriParams.quantPre),
             static_cast<uint8_t>(intriParams.reluEn), intriParams.isChannelSplit, nz2ndEn,
             static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false,
-            false);
+            false, false, nz2dnEn);
     }
     ASCENDC_DEBUG_ASSERT(!(IsSameType<SrcT, float>::value || IsSameType<DstT, float>::value), KERNEL_LOG_INTERNAL(KERNEL_ERROR,
         "unsupported float L0c 2 GM "));

@@ -537,6 +537,22 @@ REGISTER_CAST_ROUND_GROUP1(TRUNCATE, float, float, 32, 32, SatMode::UNKNOWN, Mod
 REGISTER_CAST_ROUND_GROUP1(HALF2S4, half, int4b_t, 16, 4, SatMode::SAT, Mode::ZEROING);
 REGISTER_CAST_ROUND_GROUP1(S322HALF, int32_t, half, 32, 16, SatMode::SAT, Mode::ZEROING);
 
+#define REGISTER_DATA_TYPE_NOT_SUPPORT(rndStr)                         \
+    template <typename U, typename T>               \
+    __aicore__ inline void CastIntrinsicsImpl##rndStr(__ubuf__ U* dst, __ubuf__ T* src,     \
+        const uint32_t calCount)                                                                        \
+    {                                                                                                   \
+        ASCENDC_ASSERT((false), "current convert is not supported");                                    \
+    }
+
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastRint);
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastFloor);
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastTrunc);
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastCeil);
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastRound);
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastNone);
+REGISTER_DATA_TYPE_NOT_SUPPORT(CastOdd);
+
 // Cast::Level 2
 template <typename U, typename T>
 __aicore__ inline void CastImpl(__ubuf__ U* dst, __ubuf__ T* src, const RoundMode& roundMode,

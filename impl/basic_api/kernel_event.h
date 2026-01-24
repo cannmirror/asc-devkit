@@ -65,6 +65,9 @@ enum class HardEvent : uint8_t {
     MTE1_FIX,
     FIX_MTE1,
     FIX_FIX,
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003)
+    FIX_V,
+#endif
     MAX,
 };
 

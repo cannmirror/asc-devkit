@@ -146,12 +146,22 @@ __aicore__ inline void DcciGMImpl(__gm__ T* dst)
 
 __aicore__ inline void SetMaskCountImpl()
 {
+#if defined (__NPU_ARCH__) && (__NPU_ARCH__ == 3113)
+    constexpr uint32_t CTRL_COUNTER = 56;
+    set_ctrl(sbitset1(get_ctrl(), CTRL_COUNTER));
+#else
     set_mask_count();
+#endif
 }
 
 __aicore__ inline void SetMaskNormImpl()
 {
+#if defined (__NPU_ARCH__) && (__NPU_ARCH__ == 3113)
+    constexpr uint32_t CTRL_COUNTER = 56;
+    set_ctrl(sbitset0(get_ctrl(), CTRL_COUNTER));
+#else
     set_mask_norm();
+#endif
 }
 
 __aicore__ inline void SetLreluMode(bool lreluMode)
