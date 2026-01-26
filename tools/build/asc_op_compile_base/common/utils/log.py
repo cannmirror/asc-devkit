@@ -49,7 +49,9 @@ def info(log_msg, *log_paras):
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.basename(co_filename)
     log_str = '[%s:%d][%s] ' % (filename, line_no, funcname)
-    log_all_msg = log_str + log_msg % log_paras
+    if log_paras:
+        log_msg = log_msg % log_paras
+    log_all_msg = log_str + log_msg
 
     if IS_USE_SLOG:
         S_LOGGER.info(S_LOGGER.module.tbe, log_all_msg)
@@ -68,7 +70,9 @@ def debug(log_msg, *log_paras):
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.basename(co_filename)
     log_str = '[%s:%d][%s] ' % (filename, line_no, funcname)
-    log_all_msg = log_str + log_msg % log_paras
+    if log_paras:
+        log_msg = log_msg % log_paras
+    log_all_msg = log_str + log_msg
 
     if IS_USE_SLOG:
         S_LOGGER.debug(S_LOGGER.module.tbe, log_all_msg)
@@ -87,7 +91,9 @@ def warn(log_msg, *log_paras):
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.basename(co_filename)
     log_str = '[%s:%d][%s] ' % (filename, line_no, funcname)
-    log_all_msg = log_str + log_msg % log_paras
+    if log_paras:
+        log_msg = log_msg % log_paras
+    log_all_msg = log_str + log_msg
 
     if IS_USE_SLOG:
         S_LOGGER.warn(S_LOGGER.module.tbe, log_all_msg)
@@ -106,7 +112,9 @@ def error(log_msg, *log_paras):
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.basename(co_filename)
     log_str = '[%s:%d][%s] ' % (filename, line_no, funcname)
-    log_all_msg = log_str + log_msg % log_paras
+    if log_paras:
+        log_msg = log_msg % log_paras
+    log_all_msg = log_str + log_msg
 
     if IS_USE_SLOG:
         S_LOGGER.error(S_LOGGER.module.tbe, log_all_msg)
@@ -125,7 +133,9 @@ def event(log_msg, *log_paras):
     co_filename = inspect.currentframe().f_back.f_code.co_filename
     filename = os.path.basename(co_filename)
     log_str = '[%s:%d][%s] ' % (filename, line_no, funcname)
-    log_all_msg = log_str + log_msg % log_paras
+    if log_paras:
+        log_msg = log_msg % log_paras
+    log_all_msg = log_str + log_msg
 
     if IS_USE_SLOG:
         S_LOGGER.event(S_LOGGER.module.tbe, log_all_msg)
