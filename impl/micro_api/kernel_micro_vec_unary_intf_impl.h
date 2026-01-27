@@ -19,8 +19,10 @@
 #include "micro_api/dav_l300/kernel_micro_vec_unary_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "micro_api/dav_l311/kernel_micro_vec_unary_impl.h"
+#elif __NPU_ARCH__ == 5102
+#include "micro_api/dav_m510/kernel_micro_vec_unary_impl.h"
 #else
-#include "micro_api/dav_l311/kernel_micro_vec_unary_impl.h"
+#include "micro_api/dav_c310/kernel_micro_vec_unary_impl.h"
 #endif
 
 namespace AscendC {
@@ -55,7 +57,8 @@ __simd_callee__ inline void Sqrt(U& dstReg, U& srcReg, MaskReg& mask)
     SqrtImpl<T, mode, U>(dstReg, srcReg, mask);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || \
+    __NPU_ARCH__ == 3113)
 template <typename T, MaskMergeMode mode, typename RegT>
 __aicore__ inline void Rsqrt(RegT &dstReg, RegT &srcReg, MaskReg &mask)
 {

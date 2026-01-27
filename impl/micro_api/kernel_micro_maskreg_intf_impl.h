@@ -19,8 +19,10 @@
 #include "micro_api/dav_l300/kernel_micro_maskreg_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "micro_api/dav_l311/kernel_micro_maskreg_impl.h"
+#elif __NPU_ARCH__ == 5102
+#include "micro_api/dav_m510/kernel_micro_maskreg_impl.h"
 #else
-#include "micro_api/dav_l311/kernel_micro_maskreg_impl.h"
+#include "micro_api/dav_c310/kernel_micro_maskreg_impl.h"
 #endif
 
 namespace AscendC {
@@ -97,7 +99,8 @@ __simd_callee__ inline void Move(MaskReg& dst, MaskReg& src)
     MaskMovImpl(dst, src);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || \
+    __NPU_ARCH__ == 3113)
 template <typename T>
 __aicore__ inline void MaskSlide(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, const int16_t slideAmount)
 {

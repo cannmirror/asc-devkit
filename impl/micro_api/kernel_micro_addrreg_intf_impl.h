@@ -19,12 +19,17 @@
 #include "micro_api/dav_l300/kernel_micro_addrreg_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "micro_api/dav_l311/kernel_micro_addrreg_impl.h"
+#elif __NPU_ARCH__ == 5102
+#include "micro_api/dav_m510/kernel_micro_addrreg_impl.h"
+#else
+#include "micro_api/dav_c310/kernel_micro_addrreg_impl.h"
 #endif
 
 namespace AscendC {
 namespace MicroAPI {
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+           (__NPU_ARCH__ == 3113))
 template <typename T>
 __aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0)
 {
@@ -45,7 +50,7 @@ __aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint1
 }
 
 template <typename T>
-__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1, 
+__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1,
                                         uint16_t index2, uint16_t stride2, uint16_t index3, uint16_t stride3)
 {
     return CreateAddrRegImpl<T>(index0, stride0, index1, stride1, index2, stride2, index3, stride3);
