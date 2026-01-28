@@ -6,13 +6,6 @@
 * THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
-*
-* The code snippet comes from Huawei's open-source Mindspore project.
-* Copyright 2019 Huawei Technologies Co., Ltd.
-* Licensed under the Apache License, Version 2.0 (the "License");
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
 */
 #ifndef __CCE_AICORE_INTRINSICS_STUBS__
 #define __CCE_AICORE_INTRINSICS_STUBS__
@@ -589,6 +582,13 @@ namespace cce {
 float abs(float in);
 } // namespace cce
 } // namespace bisheng
+
+#if defined(__DAV_CUBE__)
+    inline uint32_t g_c_api_core_type = 1;
+#else
+    inline uint32_t g_c_api_core_type = 2;
+#endif
+
 
 int64_t bcnt0(uint64_t in);
 int64_t bcnt1(uint64_t in);
@@ -1591,6 +1591,8 @@ void load_cbuf_to_ca(__ca__ half* dst, __cbuf__ half* src, uint16_t mStartPositi
 void load_cbuf_to_ca(__ca__ uint8_t* dst, __cbuf__ uint8_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_ca(__ca__ int8_t* dst, __cbuf__ int8_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_ca(__ca__ int16_t* dst, __cbuf__ int16_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
+static void load_cbuf_to_ca(__ca__ int16_t* dst, __cbuf__ int16_t* src, uint16_t baseIdx, uint8_t repeat, uint16_t srcStride, uint16_t dstStride, uint8_t sid, bool transpose, addr_cal_mode_t addr_cal_mode) {}
+static void load_cbuf_to_ca(__ca__ uint16_t* dst, __cbuf__ uint16_t* src, uint16_t baseIdx, uint8_t repeat, uint16_t srcStride, uint16_t dstStride, uint8_t sid, bool transpose, addr_cal_mode_t addr_cal_mode) {}
 void load_cbuf_to_ca(__ca__ uint16_t* dst, __cbuf__ uint16_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_ca(__ca__ bfloat16_t* dst, __cbuf__ bfloat16_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_ca(__ca__ half* dst, __cbuf__ half* src, uint64_t config, bool transpose);
@@ -1714,9 +1716,11 @@ void load_cbuf_to_cb(__cb__ uint8_t* dst, __cbuf__ uint8_t* src, uint16_t baseId
 void load_cbuf_to_cb(__cb__ half* dst, __cbuf__ half* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_cb(__cb__ float* dst, __cbuf__ float* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_cb(__cb__ int16_t* dst, __cbuf__ int16_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
+static void load_cbuf_to_cb(__cb__ int16_t* dst, __cbuf__ int16_t* src, uint16_t baseIdx, uint8_t repeat, uint16_t srcStride, uint16_t dstStride, uint8_t sid, bool transpose, addr_cal_mode_t addr_cal_mode) {}
 void load_cbuf_to_cb(__cb__ int32_t* dst, __cbuf__ int32_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_cb(__cb__ int8_t* dst, __cbuf__ int8_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_cb(__cb__ uint16_t* dst, __cbuf__ uint16_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
+static void load_cbuf_to_cb(__cb__ uint16_t* dst, __cbuf__ uint16_t* src, uint16_t baseIdx, uint8_t repeat, uint16_t srcStride, uint16_t dstStride, uint8_t sid, bool transpose, addr_cal_mode_t addr_cal_mode) {}
 void load_cbuf_to_cb(__cb__ uint32_t* dst, __cbuf__ uint32_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_cb(__cb__ uint8_t* dst, __cbuf__ uint8_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
 void load_cbuf_to_cb(__cb__ fp8_e5m2_t* dst, __cbuf__ fp8_e5m2_t* src, uint16_t mStartPosition, uint16_t kStartPosition, uint8_t mStep, uint8_t kStep, int16_t srcStride, uint16_t dstStride, bool transpose);
@@ -4925,6 +4929,8 @@ void vmrgsort4(__ubuf__ half* const arg0, __ubuf__ half** const arg1, uint64_t a
 void vmrgsort4(__ubuf__ float* const arg0, __ubuf__ float** const arg1, uint64_t arg2);
 void vmrgsort4(__ubuf__ half* dst, __ubuf__ half** src0, uint64_t src1, uint64_t config);
 void vmrgsort4(__ubuf__ float* dst, __ubuf__ float** src0, uint64_t src1, uint64_t config);
+void vmrgsort4(__ubuf__ half* dst, __ubuf__ half** src, uint8_t repeat, uint16_t regionProposalLi0, uint16_t regionProposalLi1, uint16_t regionProposalLi2, uint16_t regionProposalLi3, bool isAllStored, uint8_t maskSignal);
+void vmrgsort4(__ubuf__ float* dst, __ubuf__ float** src, uint8_t repeat, uint16_t regionProposalLi0, uint16_t regionProposalLi1, uint16_t regionProposalLi2, uint16_t regionProposalLi3, bool isAllStored, uint8_t maskSignal);
 void vmul(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint64_t config);
 void vmul(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint8_t repeat, uint8_t dstBlockStride, uint8_t src0BlockStride, uint8_t src1BlockStride, uint8_t dstRepeatStride, uint8_t src0RepeatStride, uint8_t src1RepeatStride);
 void vmul(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint8_t repeat, uint8_t dstBlockStride, uint8_t src0BlockStride, uint8_t src1BlockStride, uint8_t dstRepeatStride, uint8_t src0RepeatStride, uint8_t src1RepeatStride, bool repeatStrideMode, bool strideSizeMode);

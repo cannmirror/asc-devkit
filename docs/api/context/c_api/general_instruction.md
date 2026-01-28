@@ -106,16 +106,9 @@ uint64_t mask[2] = {6148914691236517205, 6148914691236517205};
 // repeatTime = 1, 共128个元素，单次迭代能处理128个元素，故repeatTime = 1。
 // dst_block_stride, src0_block_stride, src1_block_stride = 1, 单次迭代内连续读取和写入数据。
 // dst_repeat_stride, src0_repeat_stride, src1_repeat_stride = 8, 迭代间的数据连续读取和写入。
-asc_binary_config config;
-config.dst_block_stride = 1;
-config.src0_block_stride = 1;
-config.src1_block_stride = 1;
-config.dst_repeat_stride = 8;
-config.src0_repeat_stride = 8;
-config.src1_repeat_stride = 8;
 
 asc_set_vector_mask(mask[1], mask[0]);
-asc_add(dstLocal, src0Local, src1Local, config);
+asc_add(dstLocal, src0Local, src1Local, 1, 1, 1, 1, 8, 8, 8);
 ~~~
 
 结果示例如下：
@@ -136,16 +129,9 @@ uint64_t mask[1] = {6148914691236517205};
 // repeatTime = 1, 共64个元素，单次迭代能处理64个元素，故repeatTime = 1。
 // dst_block_stride, src0_block_stride, src1_block_stride = 1, 单次迭代内连续读取和写入数据。
 // dst_repeat_stride, src0_repeat_stride, src1_repeat_stride = 8, 迭代间的数据连续读取和写入。
-asc_binary_config config;
-config.dst_block_stride = 1;
-config.src0_block_stride = 1;
-config.src1_block_stride = 1;
-config.dst_repeat_stride = 8;
-config.src0_repeat_stride = 8;
-config.src1_repeat_stride = 8;
 
 asc_set_vector_mask(0, mask[0]);
-asc_add(dst, src0, src1, config);
+asc_add(dst, src0, src1, 1, 1, 1, 1, 8, 8, 8);
 ~~~
 
 结果示例如下：

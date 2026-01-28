@@ -21,7 +21,7 @@ __aicore__ inline void asc_set_cmp_mask(__ubuf__ void* sel_mask)
 
 |参数名|输入/输出|描述|
 | ------------ | ------------ | ------------ |
-|sel_mask|输出|用于选择的Mask掩码的起始地址|
+|sel_mask|输出|用于选择的Mask掩码的起始地址。|
 
 ## 返回值说明
 
@@ -38,8 +38,13 @@ PIPE_V
 ## 调用示例
 
 ```cpp
-__ubuf__ void* sel_mask = (__ubuf__ void*)asc_get_phy_buf_addr(0);
-...     //计算sel_mask的值
+constexpr uint32_t total_length = 256;
+constexpr uint32_t sel_length = 8;
+__ubuf__ uint8_t sel_mask[sel_length];
+__ubuf__ float dst[total_length];
+__ubuf__ float src0[total_length];
+__ubuf__ float src1[total_length];
 asc_set_cmp_mask(sel_mask);
-...    // 进行Select操作
+asc_sync_pipe(PIPE_V);
+asc_select(dst, src0, src1, total_length);
 ```

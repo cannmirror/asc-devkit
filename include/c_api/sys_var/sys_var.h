@@ -8,10 +8,16 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+
+#if !defined(ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS)  
+#define ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
+#define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
+#endif     
+
 #ifndef INCLUDE_C_API_SYS_VAR_H
 #define INCLUDE_C_API_SYS_VAR_H
 
-#include "c_api_instr_impl/sys_var/sys_var_impl.h"
+#include "instr_impl/npu_arch_2201/sys_var_impl.h"
 
 __aicore__ inline void asc_set_ctrl(uint64_t config);
 
@@ -33,4 +39,14 @@ __aicore__ inline int64_t asc_get_sub_block_id();
 
 __aicore__ inline int64_t asc_get_system_cycle();
 
+__aicore__ inline void asc_get_arch_ver(uint32_t& core_version);
+
+__aicore__ inline int64_t asc_get_program_counter();
+
 #endif
+
+#if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
+#undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
+#undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
+#endif    
+

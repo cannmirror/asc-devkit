@@ -31,7 +31,7 @@ __aicore__ inline uint64_t asc_get_phy_buf_addr(uint64_t offset)
 
 ## 流水类型
 
-PIPE_TYPE_S
+PIPE_S
 
 ## 约束说明
 

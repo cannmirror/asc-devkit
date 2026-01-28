@@ -16,7 +16,7 @@ C API开放芯片完备编程能力，支持[以数组形式分配内存](genera
 
 - 前n个数据计算：该类型API在计算时采用“紧密排布”的数据读取方式，即从起始位置开始，按顺序连续获取所需数据。例如，若需处理N个数据，则从源操作数的第0个位置开始，依次取至第N-1个位置。
 - 高维切分计算：该类型API按照设定的规则“跳过部分数据”。适合处理需要间隔采样的场景，灵活度高，但需要额外配置相关参数。
-- 同步计算：该类型API内部自动插入同步操作。数据读取方式和连续计算API相同，易用性更强。
+- 同步计算：该类型API内部自动插入同步操作，易用性更强。
 
 ## 关键字
 
@@ -29,14 +29,14 @@ C API开放芯片完备编程能力，支持[以数组形式分配内存](genera
 ## 流水类型
 
 NPU内部有不同的计算单元，在计算时往往需要把计算数据搬运到计算单元上。不同计算单元上的计算过程、数据搬运过程可划分为不同的流水线。在AI Core上执行的操作会被分配到不同的流水线(PIPE)上执行，包括以下几种：
-- PIPE_TYPE_S：标量流水线，负责指令分发和标量计算。
-- PIPE_TYPE_V：矢量计算流水线。
-- PIPE_TYPE_M：矩阵计算流水线。
-- PIPE_TYPE_MTE1：搬运操作。包括从L1 Buffer到L0A Buffer或L0B Buffer，从L1 Buffer到UB的搬运操作和L0A Buffer或L0B Buffer的初始化操作。
-- PIPE_TYPE_MTE2：搬运操作。包括从GM到L1 Buffer、从GM到L0A Buffer或L0B Buffer、从GM到UB的搬运操作和L1 Buffer的初始化操作。
-- PIPE_TYPE_MTE3：搬运操作。包括从UB到GM，从UB到L1 Buffer的操作。
-- PIPE_TYPE_FIX：Fixpipe流水线。
-- PIPE_TYPE_ALL：所有流水线。
+- PIPE_S：标量流水线，负责指令分发和标量计算。
+- PIPE_V：矢量计算流水线。
+- PIPE_M：矩阵计算流水线。
+- PIPE_MTE1：搬运操作。包括从L1 Buffer到L0A Buffer或L0B Buffer，从L1 Buffer到UB的搬运操作和L0A Buffer或L0B Buffer的初始化操作。
+- PIPE_MTE2：搬运操作。包括从GM到L1 Buffer、从GM到L0A Buffer或L0B Buffer、从GM到UB的搬运操作和L1 Buffer的初始化操作。
+- PIPE_MTE3：搬运操作。包括从UB到GM，从UB到L1 Buffer的操作。
+- PIPE_FIX：Fixpipe流水线。
+- PIPE_ALL：所有流水线。
 
 可通过[同步控制](c_api_list.md#同步控制)类API控制同一流水线内的运行顺序和不同流水线建的执行顺序。
 

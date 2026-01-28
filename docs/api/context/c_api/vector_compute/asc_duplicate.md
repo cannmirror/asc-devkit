@@ -28,13 +28,13 @@
 - 高维切分计算
 
     ```cpp
-    __aicore__ inline void asc_duplicate(__ubuf__ half* dst, half src, const asc_duplicate_config& config)
-    __aicore__ inline void asc_duplicate(__ubuf__ int16_t* dst, int16_t src, const asc_duplicate_config& config)
-    __aicore__ inline void asc_duplicate(__ubuf__ uint16_t* dst, uint16_t src, const asc_duplicate_config& config)
-    __aicore__ inline void asc_duplicate(__ubuf__ bfloat16_t* dst, bfloat16_t src, const asc_duplicate_config& config)
-    __aicore__ inline void asc_duplicate(__ubuf__ float* dst, float src, const asc_duplicate_config& config)
-    __aicore__ inline void asc_duplicate(__ubuf__ int32_t* dst, int32_t src, const asc_duplicate_config& config)
-    __aicore__ inline void asc_duplicate(__ubuf__ uint32_t* dst, uint32_t src, const asc_duplicate_config& config)
+    __aicore__ inline void asc_duplicate(__ubuf__ half* dst, half src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_duplicate(__ubuf__ int16_t* dst, int16_t src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_duplicate(__ubuf__ uint16_t* dst, uint16_t src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_duplicate(__ubuf__ bfloat16_t* dst, bfloat16_t src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_duplicate(__ubuf__ float* dst, float src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_duplicate(__ubuf__ int32_t* dst, int32_t src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_duplicate(__ubuf__ uint32_t* dst, uint32_t src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
     ```
 
 - 同步计算
@@ -53,10 +53,14 @@
 
 | 参数名 | 输入/输出 | 描述 |
 | :--- | :--- | :--- |
-| dst | 输出 | 目的操作数地址 |
-| src | 输入 | 源标量值 |
-| count | 输入 | 参与连续复制的元素个数 |
-| config | 输入 | 在高维切分计算场景下使用的计算配置参数。详细说明请参考[asc_duplicate_config](../struct/asc_duplicate_config.md) |
+| dst | 输出 | 目的操作数（矢量）的起始地址。 |
+| src | 输入 | 源操作数（标量）。 |
+| count | 输入 | 参与连续复制的元素个数。 |
+| repeat | 输入  | 迭代次数。 |
+| dst_block_stride | 输入 | 目的操作数单次迭代内不同DataBlock间地址步长。 |
+| src_block_stride | 输入 | 源操作数单次迭代内不同DataBlock间地址步长，该参数固定填1。 |
+| dst_repeat_stride | 输入 | 目的操作数相邻迭代间相同DataBlock的地址步长。 |
+| src_repeat_stride | 输入 | 源操作数相邻迭代间相同DataBlock的地址步长，该参数固定填0。 |
 
 ## 返回值说明
 
@@ -73,7 +77,14 @@ PIPE_V
 ## 调用示例
 
 ```cpp
-__ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(0);
-half val(18.0);
-asc_duplicate(dst, val, 128);
+constexpr uint32_t dst_length = 128;
+__ubuf__ uint16_t dst[dst_length];
+uint16_t val = 18;
+asc_duplicate(dst, val, dst_length);
+```
+
+结果示例：
+
+```
+输出数据dst：[18 18 18 ... 18]
 ```

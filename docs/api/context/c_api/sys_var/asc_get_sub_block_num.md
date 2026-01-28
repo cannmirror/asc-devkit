@@ -1,4 +1,4 @@
-# asc_get_sub_block_dim
+# asc_get_sub_block_num
 
 ## 产品支持情况
 
@@ -35,7 +35,7 @@ __aicore__ inline int64_t asc_get_sub_block_num()
 
 ## 流水类型
 
-PIPE_TYPE_S
+PIPE_S
 
 ## 约束说明
 

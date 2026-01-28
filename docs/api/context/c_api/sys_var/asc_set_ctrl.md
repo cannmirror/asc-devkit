@@ -40,7 +40,7 @@ __aicore__ inline void asc_set_ctrl(uint64_t config)
 
 ## 流水类型
 
-PIPE_TYPE_S
+PIPE_S
 
 ## 约束说明
 

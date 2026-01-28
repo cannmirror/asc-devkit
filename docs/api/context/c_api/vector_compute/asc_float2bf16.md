@@ -1,4 +1,4 @@
-# asc_float2bf16
+# asc_float2bfloat16
 
 ## 产品支持情况
 
@@ -9,7 +9,7 @@
 
 ## 功能说明
 
-将Float类型数据转换为Bfloat16类型，并支持多种舍入模式：
+将float类型数据转换为bfloat16_t类型，并支持多种舍入模式：
 
 - RINT舍入模式：四舍六入五成双舍入
 - ROUND舍入模式：四舍五入舍入
@@ -22,56 +22,58 @@
 - 前n个数据连续计算
     ```cpp
     // RINT舍入模式
-    __aicore__ inline void asc_float2bf16_r(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rn(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // ROUND舍入模式
-    __aicore__ inline void asc_float2bf16_a(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rna(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // FLOOR舍入模式
-    __aicore__ inline void asc_float2bf16_f(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rd(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // CEIL舍入模式
-    __aicore__ inline void asc_float2bf16_c(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_ru(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // TRUNC舍入模式
-    __aicore__ inline void asc_float2bf16_z(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rz(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     ```
 
 - 高维切分计算
 
     ```cpp
     // RINT舍入模式
-    __aicore__ inline void asc_float2bf16_r(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
+    __aicore__ inline void asc_float2bfloat16_rn(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
     // ROUND舍入模式
-    __aicore__ inline void asc_float2bf16_a(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
+    __aicore__ inline void asc_float2bfloat16_rna(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
     // FLOOR舍入模式
-    __aicore__ inline void asc_float2bf16_f(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
+    __aicore__ inline void asc_float2bfloat16_rd(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
     // CEIL舍入模式
-    __aicore__ inline void asc_float2bf16_c(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
+    __aicore__ inline void asc_float2bfloat16_ru(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
     // TRUNC舍入模式
-    __aicore__ inline void asc_float2bf16_z(__ubuf__ half* dst, __ubuf__ float* src, const asc_unary_config& config)
+    __aicore__ inline void asc_float2bfloat16_rz(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
 
 - 同步计算
 
     ```cpp
     // RINT舍入模式
-    __aicore__ inline void asc_float2bf16_r_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rn_sync(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     //ROUND舍入模式
-    __aicore__ inline void asc_float2bf16_a_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rna_sync(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // FLOOR舍入模式
-    __aicore__ inline void asc_float2bf16_f_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rd_sync(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // CEIL舍入模式
-    __aicore__ inline void asc_float2bf16_c_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_ru_sync(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     // TRUNC舍入模式
-    __aicore__ inline void asc_float2bf16_z_sync(__ubuf__ half* dst, __ubuf__ float* src, uint32_t count)
+    __aicore__ inline void asc_float2bfloat16_rz_sync(__ubuf__ bfloat16_t* dst, __ubuf__ float* src, uint32_t count)
     ```
 
 ## 参数说明
 
-表1 参数说明
-
 | 参数名 | 输入/输出 | 描述 |
 |----|-----|-----|
-| dst | 输出 | 目的操作数。 |
-| src  | 输入 | 源操作数。|
+| dst | 输出 | 目的操作数（矢量）的起始地址。 |
+| src  | 输入 | 源操作数（矢量）的起始地址。|
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在非连续场景下使用的计算配置参数。<br/>详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。|
+| repeat |输入 | 迭代次数。 |
+| dst_block_stride |输入 | 目的操作数单次迭代内不同DataBlock间地址步长。 |
+| src_block_stride |输入 | 源操作数单次迭代内不同DataBlock间地址步长。 |
+| dst_repeat_stride |输入 | 目的操作数相邻迭代间相同DataBlock的地址步长。 |
+| src_repeat_stride |输入 | 源操作数相邻迭代间相同DataBlock的地址步长。 |
 
 ## 返回值说明
 
@@ -79,7 +81,7 @@
 
 ## 流水类型
 
-PIPE_TYPE_V
+PIPE_V
 
 ## 约束说明
 
@@ -89,10 +91,8 @@ PIPE_TYPE_V
 ## 调用示例
 
 ```cpp
-// total_length指参与计算的数据长度
-uint64_t offset = 0;
-__ubuf__ float* src = (__ubuf__ float*)asc_get_phy_buf_addr(0);
-offset += total_length * sizeof(float);
-__ubuf__ bfloat16_t* dst = (__ubuf__ bfloat16_t*)asc_get_phy_buf_addr(offset);
-asc_float2bf16_r(dst, src, total_length);
+constexpr uint32_t total_length = 256;
+__ubuf__ float src[total_length];
+__ubuf__ bfloat16_t dst[total_length];
+asc_float2bfloat16_rn(dst, src, total_length);
 ```

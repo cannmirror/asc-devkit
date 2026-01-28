@@ -12,7 +12,7 @@
 执行矢量和标量的减法运算。
 
 $$
-dst_i = src_i - a
+dst_i = src_i - value
 $$
 
 ## 函数原型
@@ -20,41 +20,47 @@ $$
 - 前n个数据连续计算
 
 ```c++
-__aicore__ inline void asc_sub_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
-__aicore__ inline void asc_sub_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count)
-__aicore__ inline void asc_sub_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
-__aicore__ inline void asc_sub_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
+__aicore__ inline void asc_sub_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t value, uint32_t count)
+__aicore__ inline void asc_sub_scalar(__ubuf__ half* dst, __ubuf__ half* src, half value, uint32_t count)
+__aicore__ inline void asc_sub_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t value, uint32_t count)
+__aicore__ inline void asc_sub_scalar(__ubuf__ float* dst, __ubuf__ float* src, float value, uint32_t count)
 ```
 
 - 非连续数据计算
 
 ```c++
-__aicore__ inline void asc_sub_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, const asc_unary_config& config)
-__aicore__ inline void asc_sub_scalar(__ubuf__ half* dst, __ubuf__ half* src, half a, const asc_unary_config& config)
-__aicore__ inline void asc_sub_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, const asc_unary_config& config)
-__aicore__ inline void asc_sub_scalar(__ubuf__ float* dst, __ubuf__ float* src, float a, const asc_unary_config& config)
+__aicore__ inline void asc_sub_scalar(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t value, uint8_t repeat, 
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+__aicore__ inline void asc_sub_scalar(__ubuf__ half* dst, __ubuf__ half* src, half value, uint8_t repeat, 
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+__aicore__ inline void asc_sub_scalar(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t value, uint8_t repeat, 
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+__aicore__ inline void asc_sub_scalar(__ubuf__ float* dst, __ubuf__ float* src, float value, uint8_t repeat, 
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
 ```
 
 - 数据同步计算
 
 ```c++
-__aicore__ inline void asc_sub_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t a, uint32_t count)
-__aicore__ inline void asc_sub_scalar_sync(__ubuf__ half* dst, __ubuf__ half* src, half a, uint32_t count)
-__aicore__ inline void asc_sub_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t a, uint32_t count)
-__aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float a, uint32_t count)
+__aicore__ inline void asc_sub_scalar_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, int16_t value, uint32_t count)
+__aicore__ inline void asc_sub_scalar_sync(__ubuf__ half* dst, __ubuf__ half* src, half value, uint32_t count)
+__aicore__ inline void asc_sub_scalar_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, int32_t value, uint32_t count)
+__aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* src, float value, uint32_t count)
 ```
 
 ## 参数说明
 
-表1 参数说明
-
 |参数名|输入/输出|描述|
 |------------|------------|-----------|
-| dst     | 输出     | 目的操作数。   |
-| src     | 输入     | 矢量源操作数。|
-| a     | 输入     | 标量源操作数。|
+| dst     | 输出     | 目的操作数（矢量）的起始地址。   |
+| src     | 输入     | 源操作数（矢量）的起始地址。|
+| value     | 输入     | 源操作数（标量）。|
+| repeat     | 输入    | 迭代次数。        |
+| dst_block_stride |输入| 目的操作数单次迭代内不同DataBlock间地址步长。 |
+| src_block_stride |输入| 源操作数单次迭代内不同DataBlock间地址步长。 |
+| dst_repeat_stride |输入| 目的操作数相邻迭代间相同DataBlock的地址步长。 |
+| src_repeat_stride |输入| 源操作数相邻迭代间相同DataBlock的地址步长。 |
 | count   | 输入     | 参与连续计算的元素个数。|
-| config  | 输入     | 在非连续场景下使用的计算配置参数。<br/>详细说明请参考[asc_unary_config](../struct/asc_unary_config.md)。|
 
 ## 返回值说明
 
@@ -62,7 +68,7 @@ __aicore__ inline void asc_sub_scalar_sync(__ubuf__ float* dst, __ubuf__ float* 
 
 ## 流水类型
 
-PIPE_TYPE_V
+PIPE_V
 
 ## 约束说明
 
@@ -73,10 +79,9 @@ PIPE_TYPE_V
 
 ```c++
 // total_length指参与计算的数据总长度
-uint64_t offset = 0;
-half scalar = 0.0f;
-__ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
-offset += total_length * sizeof(half);
-__ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);
-asc_sub_scalar_sync(dst, src, scalar, total_length);
+constexpr uint64_t total_length = 64;
+half scalar_val = 0.0f;
+__ubuf__ half dst[total_length];
+__ubuf__ half src[total_length];
+asc_sub_scalar_sync(dst, src, scalar_val, total_length);
 ```

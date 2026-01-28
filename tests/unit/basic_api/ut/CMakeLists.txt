@@ -96,20 +96,20 @@ file(GLOB ASCENDC_TEST_ascend310p_CASE_SRC_FILES
 
 # ascend910B1 aic c api test cases
 file(GLOB ASCENDC_TEST_ascend910B1_AIC_CAPI_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/cube_compute/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/cube_datamove/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/cube_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/cube_datamove/*.cpp
 )
 
 # ascend910B1 aiv c api test cases
 file(GLOB ASCENDC_TEST_ascend910B1_AIV_CAPI_CASE_SRC_FILES
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/atomic/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/cache_ctrl/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/sync/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/sys_var/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/vector_compute/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/vector_datamove/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/scalar_compute/*.cpp
-    ${LOCAL_DIR}/testcase/c_api/asc_2201/cache_ctrl/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/cache_ctrl/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/scalar_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/simd_atomic/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/sync/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/sys_var/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/utils/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/vector_compute/*.cpp
+    ${LOCAL_DIR}/testcase/c_api/npu_arch_2201/vector_datamove/*.cpp
 )
 
 # ascend910B1 aiv test cases

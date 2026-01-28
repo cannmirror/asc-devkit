@@ -1,4 +1,4 @@
-# asc_data_block_reduce_sum
+# asc_datablock_reduce_sum
 
 ## 产品支持情况
 
@@ -9,7 +9,9 @@
 
 ## 功能说明
 
-对每个DataBlock内所有元素求和。源操作数相加采用二叉树的方式，两两相加。以128个half类型数据求和为例，每个DataBlock可以计算16个half类型数据，分成8个DataBlock计算；每个DataBlock内，通过二叉树的方式，两两相加。
+对每个DataBlock内所有元素求和。
+
+源操作数相加采用二叉树的方式，两两相加。以128个half类型数据求和为例，每个DataBlock可以计算16个half类型数据，分成8个DataBlock计算；每个DataBlock内，通过二叉树的方式，两两相加。
 
 需要注意的是，两两相加计算过程中，计算结果大于65504时结果保存为65504。例如，源操作数为[60000,60000,-30000,100]，首先60000+60000溢出，结果为65504，然后计算-30000+100=-29900，最后计算65504-29900=35604。
 
@@ -17,27 +19,24 @@
 
 - 前n个数据计算
 
- ```cpp
- __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
-
- __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
- ```
+    ```cpp
+    __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
+    __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
+    ```
 
 - 高维切分计算
 
- ```cpp
- __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, const asc_block_reduce_config& config)
-
- __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, const asc_block_reduce_config& config)
- ```
+    ```cpp
+    __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat, uint16_t dst_repeat_stride, uint16_t src_block_stride, uint16_t src_repeat_stride)
+    __aicore__ inline void asc_datablock_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_repeat_stride, uint16_t src_block_stride, uint16_t src_repeat_stride)
+    ```
 
 - 同步计算
 
- ```cpp
- __aicore__ inline void asc_datablock_reduce_sum_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
-
- __aicore__ inline void asc_datablock_reduce_sum_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
- ```
+    ```cpp
+    __aicore__ inline void asc_datablock_reduce_sum_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count)
+    __aicore__ inline void asc_datablock_reduce_sum_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count)
+    ```
 
 ## 参数说明
 
@@ -45,10 +44,13 @@
 
 | 参数名 | 输入/输出 | 描述 |
 | :----| :-----| :-----|
-| dst | 输出 | 目的操作数。 |
-| src  | 输入 | 源操作数。|
+| dst | 输出 | 目的操作数（矢量）的起始地址。 |
+| src  | 输入 | 源操作数（矢量）的起始地址。 |
 | count | 输入 | 参与计算的元素个数。 |
-| config | 输入 | 在非连续场景下使用的计算配置参数。请参考[asc_block_reduce_config](../struct/asc_block_reduce_config.md)|
+| repeat | 输入 | 迭代次数。|
+| dst_repeat_stride | 输入 | 目的操作数相邻迭代间相同DataBlock的地址步长。<br>输入类型位宽为16bit时，单位为16Byte，输入类型位宽为32bit时，单位为32Byte。|
+| src_block_stride | 输入 | 源操作数单次迭代内不同DataBlock间地址步长。|
+| src_repeat_stride | 输入 | 源操作数相邻迭代间相同DataBlock的地址步长。|
 
 ## 返回值说明
 
@@ -56,7 +58,7 @@
 
 ## 流水类型
 
-PIPE_TYPE_V
+PIPE_V
 
 ## 约束说明
 
@@ -67,12 +69,17 @@ PIPE_TYPE_V
 ## 调用示例
 
 ```cpp
-// 假设src操作数包含128个half类型的数据，dst操作数均包含8个half类型的数据。
-uint64_t offset = 0;                                   // 首先为src申请内存，从0开始。
-__ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(offset);    // 获取src的地址，通过__ubuf__关键字指定该地址指向UB内存。
-offset += 128 * sizeof(half);                           // 通过offset将dst的起始地址设置在src之后。
-__ubuf__ half* dst = (__ubuf__ half*)asc_get_phy_buf_addr(offset);     // 获取dst的地址，通过__ubuf__关键字指定该地址指向UB内存。
-...... // 将源操作数搬运到src0、src1.
-asc_data_block_reduce_sum(dst, src, 128);
-...... // 使用dst中的数据进行后续计算或数据搬运操作。
+constexpr uint32_t src_length = 256;
+constexpr uint32_t dst_length = 16;
+__ubuf__ half src[src_length];
+__ubuf__ half dst[dst_length];
+// 每次repeat256B，2次repeat，无间隔
+asc_datablock_reduce_sum(dst, src, 2, 1, 1, 8);
+```
+
+结果示例：
+
+```
+输入数据src：[1 1 1 ... 1]
+输出数据dst：[16 16 16 ... 16]
 ```

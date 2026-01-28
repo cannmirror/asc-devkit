@@ -27,19 +27,19 @@ __aicore__ inline int64_t asc_get_system_cycle()
 
 ## 流水类型
 
-PIPE_TYPE_S
+PIPE_S
 
 ## 约束说明
 
-该接口是PIPE_TYPE_S流水，若需要测试其他流水的指令时间，需要在调用该接口前插入对应流水的同步。
+该接口是PIPE_S流水，若需要测试其他流水的指令时间，需要在调用该接口前插入对应流水的同步。
 
 ## 调用示例
 
 ```cpp
-asc_sync_notify(PIPE_TYPE_V, PIPE_TYPE_S, 0);
+asc_sync_notify(PIPE_V, PIPE_S, 0);
 int64_t system_cycle_before = asc_get_system_cycle(); // 计算操作指令前的cycle数
 ......// 进行PIPE_V流水的计算操作
-asc_sync_notify(PIPE_TYPE_V, PIPE_TYPE_S, 0);
+asc_sync_notify(PIPE_V, PIPE_S, 0);
 int64_t system_cycle_after = asc_get_system_cycle(); // 计算操作指令后的cycle数
 int64_t total_cycle = system_cycle_after - system_cycle_before; // 执行Add指令所用的cycle数
 ```

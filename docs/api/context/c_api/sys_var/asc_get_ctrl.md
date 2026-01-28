@@ -27,7 +27,7 @@ CTRL寄存器的值。具体含义请参考[asc_set_ctrl](asc_set_ctrl.md)中的
 
 ## 流水类型
 
-PIPE_TYPE_S
+PIPE_S
 
 ## 约束说明
 

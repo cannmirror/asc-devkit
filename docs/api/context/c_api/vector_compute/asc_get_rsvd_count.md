@@ -14,7 +14,7 @@
 ## 函数原型
 
 ```cpp
-__aicore__ inline int64_t asc_get_rsvd_count()
+  __aicore__ inline int64_t asc_get_rsvd_count()
 ```
 
 ## 参数说明
@@ -23,22 +23,24 @@ __aicore__ inline int64_t asc_get_rsvd_count()
 
 ## 返回值说明
 
-执行GatherMask操作后剩余的元素数量。
+执行[asc_reduce](./asc_reduce.md)操作后剩余的元素数量。
 
 ## 流水类型
 
-PIPE_TYPE_S
+PIPE_S
 
 ## 约束说明
 
-- 需和GatherMask操作配合使用。
-- 需通过同步操作确保GatherMask执行完成后再调用本接口获取结果。
+- 需和[asc_reduce](./asc_reduce.md)操作配合使用。
+- 需通过同步操作确保[asc_reduce](./asc_reduce.md)执行完成后再调用本接口获取结果。
 
 ## 调用示例
 
 ```cpp
-...                                       // 进行GatherMask计算
-asc_sync_notify(PIPE_TYPE_V, PIPE_TYPE_S, 0);       // 设置等待和同步信号
-asc_sync_wait(PIPE_TYPE_V, PIPE_TYPE_S, 0);
-int64_t result = asc_get_rsvd_count();    // 获取结果
+// 初始化dst、src0、src1和total_length(参与计算的数据长度)
+int total_length = 256;
+asc_reduce(dst, src0, src1, total_length)
+asc_sync_notify(PIPE_V, PIPE_S, 0); // 设置等待和同步信号
+asc_sync_wait(PIPE_V, PIPE_S, 0);
+int64_t result = asc_get_rsvd_count();  // 获取结果
 ```
