@@ -16,9 +16,9 @@
 #include "c_api/stub/cce_stub.h"
 #include "c_api/asc_simd.h"
 
-#define TEST_CUBE_COMPUTE_FIXPIPE_INSTR(class_name, c_api_name, mode, cce_name, dst_data_type, src_data_type)   \
+#define TEST_CUBE_COMPUTE_FIXPIPE_INSTR(class_name, c_api_name, cce_name, dst_data_type, src_data_type)         \
                                                                                                                 \
-class TestCubeDatamove##class_name##_##mode##dst_data_type##src_data_type : public testing::Test {              \
+class TestCubeDatamove##class_name##_##dst_data_type##src_data_type : public testing::Test {                    \
 protected:                                                                                                      \
     void SetUp() {                                                                                              \
         g_c_api_core_type = C_API_AIC_TYPE;                                                                     \
@@ -29,9 +29,9 @@ protected:                                                                      
 };                                                                                                              \
                                                                                                                 \
 namespace {                                                                                                     \
-void c_api_name_##dst_data_type##_##src_data_type##_Stub(__gm__ dst_data_type* dst_in, __cc__ src_data_type* src_in, \
+void c_api_name##_##dst_data_type##_##src_data_type##_Stub(__gm__ dst_data_type* dst_in, __cc__ src_data_type* src_in, \
     uint8_t sid_in, uint16_t n_size_in, uint16_t m_size_in, uint32_t dst_stride_dst_d_in,                       \
-    uint16_t src_stride_in, uint8_t unit_flag_mode_in, QuantMode_t quant_pre_in, uint8_t relu_pre_in,           \
+    uint16_t src_stride_in, uint8_t unit_flag_mode_in, QuantMode_t quant_pre_in, uint8_t relu_pre_in,              \
     bool channel_split_in, bool nz2nd_en_in)                                                                    \
 {                                                                                                               \
     __gm__ dst_data_type * dst = reinterpret_cast<__gm__ dst_data_type *>(1);                                   \
@@ -42,13 +42,12 @@ void c_api_name_##dst_data_type##_##src_data_type##_Stub(__gm__ dst_data_type* d
     uint32_t dst_stride_dst_d = 6;                                                                              \
     uint16_t src_stride = 7;                                                                                    \
     uint8_t unit_flag_mode = 8;                                                                                 \
-    uint8_t relu_pre = 9;                                                                                       \
+    uint8_t relu_pre = 10;                                                                                      \
     bool channel_split = true;                                                                                  \
     bool nz2nd_en = true;                                                                                       \
                                                                                                                 \
     EXPECT_EQ(dst, dst_in);                                                                                     \
     EXPECT_EQ(src, src_in);                                                                                     \
-    EXPECT_EQ(sid, sid_in);                                                                                     \
     EXPECT_EQ(n_size, n_size_in);                                                                               \
     EXPECT_EQ(m_size, m_size_in);                                                                               \
     EXPECT_EQ(dst_stride_dst_d, dst_stride_dst_d_in);                                                           \
@@ -60,7 +59,7 @@ void c_api_name_##dst_data_type##_##src_data_type##_Stub(__gm__ dst_data_type* d
 }                                                                                                               \
 }                                                                                                               \
                                                                                                                 \
-TEST_F(TestCubeDatamove##class_name##_##mode##dst_data_type##src_data_type, c_api_name_##dst_data_type##_##src_data_type##_Succ) \
+TEST_F(TestCubeDatamove##class_name##_##dst_data_type##src_data_type, c_api_name##_##dst_data_type##_##src_data_type##_Succ) \
 {                                                                                                               \
     __gm__ dst_data_type * dst = reinterpret_cast<__gm__ dst_data_type *>(1);                                   \
     __cc__ src_data_type * src = reinterpret_cast<__cc__ src_data_type *>(2);                                   \
@@ -70,17 +69,18 @@ TEST_F(TestCubeDatamove##class_name##_##mode##dst_data_type##src_data_type, c_ap
     uint32_t dst_stride_dst_d = 6;                                                                              \
     uint16_t src_stride = 7;                                                                                    \
     uint8_t unit_flag_mode = 8;                                                                                 \
-    uint8_t relu_pre = 9;                                                                                       \
+    uint64_t quant_pre = NoQuant;                                                                               \
+    uint8_t relu_pre = 10;                                                                                      \
     bool channel_split = true;                                                                                  \
     bool nz2nd_en = true;                                                                                       \
                                                                                                                 \
     MOCKER_CPP(cce_name, void(__gm__ dst_data_type *, __cc__ src_data_type *, uint8_t,uint16_t,                 \
                 uint16_t, uint32_t, uint16_t,uint8_t,QuantMode_t,uint8_t, bool,bool))                           \
             .times(1)                                                                                           \
-            .will(invoke(c_api_name_##dst_data_type##_##src_data_type##_Stub));                                 \
+            .will(invoke(c_api_name##_##dst_data_type##_##src_data_type##_Stub));                               \
                                                                                                                 \
-    c_api_name(dst, src, sid, n_size, m_size, dst_stride_dst_d, src_stride, unit_flag_mode,                     \
-                relu_pre, channel_split, nz2nd_en);                                                             \
+    c_api_name(dst, src, n_size, m_size, dst_stride_dst_d, src_stride, unit_flag_mode,                          \
+                quant_pre, relu_pre, channel_split, nz2nd_en);                                                  \
     GlobalMockObject::verify();                                                                                 \
 }
 

@@ -119,7 +119,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 
 |   API名称   |   说明   |
 |----------|-----------|
-| [asc_copy_l0c2gm](cube_datamove/asc_fixpipe_l0c2out.md) | 将L0C中的数据搬运到GM中。 |
+| [asc_copy_l0c2gm](cube_datamove/asc_copy_l0c2gm.md) | 将L0C中的数据搬运到GM中。 |
 | [asc_set_l13d_rpt](cube_datamove/asc_set_l13d_rpt.md) | 用于设置Load3Dv2接口的repeat参数。 |
 | [asc_fill_l0a](cube_datamove/asc_fill_l0a.md) | 将L0A Buffer的Local Memory初始化为某一具体数值。 |
 | [asc_fill_l0b](cube_datamove/asc_fill_l0b.md) | 将L0B Buffer的Local Memory初始化为某一具体数值。 |
