@@ -120,11 +120,11 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |   API名称   |   说明   |
 |----------|-----------|
 | [asc_copy_l0c2gm](cube_datamove/asc_fixpipe_l0c2out.md) | 将L0C中的数据搬运到GM中。 |
-| [asc_set_l1_3d_rpt](cube_datamove/asc_set_l1_3d_rpt.md) | 用于设置Load3Dv2接口的repeat参数。 |
-| [asc_fill_l0a_value](cube_datamove/asc_fill_l0a_value.md) | 将L0A Buffer的Local Memory初始化为某一具体数值。 |
-| [asc_fill_l0b_value](cube_datamove/asc_fill_l0b_value.md) | 将L0B Buffer的Local Memory初始化为某一具体数值。 |
-| [asc_fill_l1_value](cube_datamove/asc_fill_l1_value.md) | 将L1 Buffer的Local Memory初始化为某一具体数值。 |
-| [asc_set_l1_3d_size](cube_datamove/asc_set_l1_3d_size.md) | 设置[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)的3D格式搬运接口在L1 Buffer的边界值。 |
+| [asc_set_l13d_rpt](cube_datamove/asc_set_l13d_rpt.md) | 用于设置Load3Dv2接口的repeat参数。 |
+| [asc_fill_l0a](cube_datamove/asc_fill_l0a.md) | 将L0A Buffer的Local Memory初始化为某一具体数值。 |
+| [asc_fill_l0b](cube_datamove/asc_fill_l0b.md) | 将L0B Buffer的Local Memory初始化为某一具体数值。 |
+| [asc_fill_l1](cube_datamove/asc_fill_l1.md) | 将L1 Buffer的Local Memory初始化为某一具体数值。 |
+| [asc_set_l13d_size](cube_datamove/asc_set_l13d_size.md) | 设置[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)的3D格式搬运接口在L1 Buffer的边界值。 |
 | [asc_load_image_to_cbuf](cube_datamove/asc_load_image_to_cbuf.md) | 将图像数据从Global Memory搬运到L1 Buffer。 |
 | [asc_copy_l12bt](cube_datamove/asc_copy_l12bt.md) | 将数据从L1 Buffer搬运到BiasTable Buffer中，BiasTable Buffer用于存放矩阵计算中的Bias。 |
 | [asc_copy_l12fb](cube_datamove/asc_copy_l12fb.md) | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
@@ -137,6 +137,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_set_l0c_copy_prequant](cube_datamove/asc_set_l0c_copy_prequant.md) | 数据搬运过程中进行随路量化时，通过调用该接口设置量化流程中的标量量化参数。 |
 | [copy_gm2l1](cube_datamove/copy_gm2l1.md) | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)。 |
 | [copy_gm2l1_nd2nz](cube_datamove/copy_gm2l1_nd2nz.md) | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)，支持在数据搬运时进行ND格式到NZ格式的转换。 |
+| [asc_set_l13d_padding](cube_datamove/asc_set_l13d_padding.md)| 设置Pad属性描述，用于在调用asc_copy_l12l0a接口时配置填充数值。 |
 | [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md) | 将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)。 |
 | [asc_copy_gm2ub_align](vector_datamove/asc_copy_gm2ub_align.md) | 提供数据非对齐搬运的功能，将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)，并支持8位/16位/32位数据类型搬运。 |
 | [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm.md) | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)。 |
@@ -173,8 +174,6 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |----------|-----------|
 | [asc_set_mmad_direction_m](cube_compute/asc_set_mmad_direction_m.md)| 设置mmad计算时优先通过M/N中的N方向，然后通过M方向产生结果，M为矩阵的行，N为矩阵的列。 |
 | [asc_set_mmad_direction_n](cube_compute/asc_set_mmad_direction_n.md)| 设置mmad计算时优先通过M/N中的M方向，然后通过N方向产生结果，M为矩阵的行，N为矩阵的列。 |
-| [asc_set_l13d_padding](cube_compute/asc_set_l13d_padding.md)| 设置Pad属性描述，用于在调用asc_copy_l12l0a接口时配置填充数值。 |
-| [asc_set_l0c_copy_config](cube_compute/asc_set_l0c_copy_config.md)| 数据搬运过程中进行随路量化时，通过调用该接口设置量化流程中的矢量量化参数。 |
 | [asc_enable_hf32_trans](cube_compute/asc_enable_hf32_trans.md)| 设置HF32模式取整方式，需要先使用asc_enable_hf32开启HF32取整模式。 |
 | [asc_mmad](cube_compute/asc_mmad.md) | 完成矩阵乘加操作。 |
 | [asc_mmad_sparse](cube_compute/asc_mmad_sparse.md) | 完成矩阵乘加操作，传入的左矩阵A为稀疏矩阵，右矩阵B为稠密矩阵。 |
@@ -224,9 +223,9 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |   API名称   |   说明   |
 |----------|-----------|
 | [asc_datacache_preload](cache_ctrl/asc_datacache_preload.md)| 从源地址所在的特定GM地址预加载数据到Data Cache中。 |
-| [asc_dcci](asc_dcci.md) | 用于刷新Cache， 保证Cache的一致性。 |
-| [asc_get_icache_preload_status](asc_get_icache_preload_status.md) | 获取ICache的Preload的状态。 |
-| [asc_icache_preload](asc_icache_preload.md) | 从指令所在DDR地址预加载数据到对应的cacheline中。 |
+| [asc_dcci](cache_ctrl/asc_dcci.md) | 用于刷新Cache， 保证Cache的一致性。 |
+| [asc_get_icache_preload_status](cache_ctrl/asc_get_icache_preload_status.md) | 获取ICache的Preload的状态。 |
+| [asc_icache_preload](cache_ctrl/asc_icache_preload.md) | 从指令所在DDR地址预加载数据到对应的cacheline中。 |
 
 ## 原子操作
 
@@ -234,24 +233,24 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 
 |   API名称   |   说明   |
 |----------|-----------|
-| [asc_set_atomic_add_bfloat](simd_atomic/asc_set_atomic_add_bfloat.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为bfloat16_t。 |
-| [asc_set_atomic_add_float](simd_atomic/asc_set_atomic_add_float.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为float。 |
-| [asc_set_atomic_add_float16](simd_atomic/asc_set_atomic_add_float16.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为half。 |
-| [asc_set_atomic_add_int](simd_atomic/asc_set_atomic_add_int.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为int32_t。 |
-| [asc_set_atomic_add_int8](simd_atomic/asc_set_atomic_add_int8.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为int8_t。 |
-| [asc_set_atomic_add_int16](simd_atomic/asc_set_atomic_add_int16.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为int16_t。 |
-| [asc_set_atomic_max_bfloat](simd_atomic/asc_set_atomic_max_bfloat.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的bfloat16_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
-| [asc_set_atomic_max_float](simd_atomic/asc_set_atomic_max_float.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的float数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
-| [asc_set_atomic_max_float16](simd_atomic/asc_set_atomic_max_float16.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的half数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
-| [asc_set_atomic_max_int](simd_atomic/asc_set_atomic_max_int.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
-| [asc_set_atomic_max_int8](simd_atomic/asc_set_atomic_max_int8.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
-| [asc_set_atomic_max_int16](simd_atomic/asc_set_atomic_max_int16.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
-| [asc_set_atomic_min_bfloat](simd_atomic/asc_set_atomic_min_bfloat.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的bfloat16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_atomic_min_float](simd_atomic/asc_set_atomic_min_float.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的float数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_atomic_min_float16](simd_atomic/asc_set_atomic_min_float16.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的half数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_atomic_min_int](simd_atomic/asc_set_atomic_min_int.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_atomic_min_int8](simd_atomic/asc_set_atomic_min_int8.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_atomic_min_int16](simd_atomic/asc_set_atomic_min_int16.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
+| [asc_set_atomic_add_bfloat](simd_atomic/asc_set_atomic_add.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为bfloat16_t。 |
+| [asc_set_atomic_add_float](simd_atomic/asc_set_atomic_add.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为float。 |
+| [asc_set_atomic_add_float16](simd_atomic/asc_set_atomic_add.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为half。 |
+| [asc_set_atomic_add_int](simd_atomic/asc_set_atomic_add.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为int32_t。 |
+| [asc_set_atomic_add_int8](simd_atomic/asc_set_atomic_add.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为int8_t。 |
+| [asc_set_atomic_add_int16](simd_atomic/asc_set_atomic_add.md) | 设置对后续的从Unified Buffer/L0C Buffer/L1 Buffer到Global Memory的数据传输开启原子累加。累加的数据类型为int16_t。 |
+| [asc_set_atomic_max_bfloat](simd_atomic/asc_set_atomic_max.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的bfloat16_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
+| [asc_set_atomic_max_float](simd_atomic/asc_set_atomic_max.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的float数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
+| [asc_set_atomic_max_float16](simd_atomic/asc_set_atomic_max.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的half数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
+| [asc_set_atomic_max_int](simd_atomic/asc_set_atomic_max.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
+| [asc_set_atomic_max_int8](simd_atomic/asc_set_atomic_max.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
+| [asc_set_atomic_max_int16](simd_atomic/asc_set_atomic_max.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最大值写入GM。 |
+| [asc_set_atomic_min_bfloat](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的bfloat16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
+| [asc_set_atomic_min_float](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的float数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
+| [asc_set_atomic_min_float16](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的half数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
+| [asc_set_atomic_min_int](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
+| [asc_set_atomic_min_int8](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
+| [asc_set_atomic_min_int16](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_store_atomic_config](simd_atomic/asc_set_store_atomic_config.md)| 设置原子操作使能位与原子操作类型的值。 |
 | [asc_get_store_atomic_config](simd_atomic/asc_get_store_atomic_config.md)| 获取原子操作使能位与原子操作类型的值。 |
 | [asc_set_atomic_none](simd_atomic/asc_set_atomic_none.md) | 清空原子操作的状态。 |
