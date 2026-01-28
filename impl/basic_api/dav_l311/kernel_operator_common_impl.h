@@ -16,7 +16,8 @@
 #define ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_struct_mm.h"
-#include "micro_api_inc/kernel_micro_intf.h"
+#include "utils/kernel_utils_mode.h"
+
 #define GetLoopBoundB8(x) (((x) - 1) / VECTOR_REG_WIDTH)
 #define GetLoopBoundB16(x) (((x) - 1) / (VECTOR_REG_WIDTH / B16_BYTE_SIZE))
 #define GetLoopBoundB32(x) (((x) - 1) / (VECTOR_REG_WIDTH / B32_BYTE_SIZE))
@@ -689,7 +690,7 @@ __aicore__ inline void CreateVecIndexWithPattern(RegTensor<T> &dstReg, U scalar)
 
 
 template <typename T, CMPMODE mode = CMPMODE::EQ>
-__aicore__ inline void Compare(MaskReg &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Compare(MaskReg &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     if constexpr (mode == CMPMODE::EQ) {
         vcmp_eq(dstReg, srcReg0, srcReg1, mask);
@@ -707,7 +708,7 @@ __aicore__ inline void Compare(MaskReg &dstReg, RegTensor<T> &srcReg0, RegTensor
 }
 
 template <typename T, CMPMODE mode = CMPMODE::EQ>
-__aicore__ inline void CompareScalar(MaskReg &dstReg, RegTensor<T> &srcReg0, T scalar, MaskReg &mask)
+__simd_callee__ inline void CompareScalar(MaskReg &dstReg, RegTensor<T> &srcReg0, T scalar, MaskReg &mask)
 {
     if constexpr (mode == CMPMODE::EQ) {
         vcmps_eq(dstReg, srcReg0, scalar, mask);
@@ -1247,32 +1248,32 @@ __simd_callee__ inline void DataCopy(LocalMem T *&dstUbAddr, RegTensor<T> &srcRe
 }
 
 // vldas/vldus
-template <typename T> __aicore__ inline void DataCopyUnAlignPre(UnalignReg &ureg, LocalMem T *srcUbAddr)
+template <typename T> __simd_callee__ inline void DataCopyUnAlignPre(UnalignReg &ureg, LocalMem T *srcUbAddr)
 {
     vldas(ureg, srcUbAddr);
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, LocalMem T *&srcUbAddr, uint32_t stride)
+__simd_callee__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, LocalMem T *&srcUbAddr, uint32_t stride)
 {
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
     vldus(dstReg, ureg, srcUbAddr, stride, postValue);
 }
 
 template <typename T>
-__aicore__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, LocalMem T *srcUbAddr)
+__simd_callee__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, LocalMem T *srcUbAddr)
 {
     vldus(dstReg, ureg, srcUbAddr);
 }
 
 // vlda/vldu
-template <typename T> __aicore__ inline void DataCopyUnAlignPre(UnalignReg &ureg, LocalMem T *srcUbAddr, AddrReg &areg)
+template <typename T> __simd_callee__ inline void DataCopyUnAlignPre(UnalignReg &ureg, LocalMem T *srcUbAddr, AddrReg &areg)
 {
     vlda(ureg, srcUbAddr, areg);
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, LocalMem T *&srcUbAddr, AddrReg &areg,
+__simd_callee__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, LocalMem T *&srcUbAddr, AddrReg &areg,
     uint32_t inc)
 {
     vldu(dstReg, ureg, areg, srcUbAddr, inc);
@@ -1280,14 +1281,14 @@ __aicore__ inline void DataCopyUnAlign(RegTensor<T> &dstReg, UnalignReg &ureg, L
 
 // vstus/vstas
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlign(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, UnalignReg &ureg, uint32_t offset)
+__simd_callee__ inline void DataCopyUnAlign(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, UnalignReg &ureg, uint32_t offset)
 {
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
     vstus(ureg, offset, srcReg, dstUbAddr, postValue);
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &ureg, int32_t offset)
+__simd_callee__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &ureg, int32_t offset)
 {
     if constexpr (postMode == PostLiteral::POST_MODE_UPDATE) {
         vstas(ureg, dstUbAddr, offset, POST_UPDATE);
@@ -1298,35 +1299,35 @@ __aicore__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &u
 
 // vstu/vsta
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlign(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, UnalignReg &ureg, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlign(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, UnalignReg &ureg, AddrReg &areg)
 {
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
     vstu(ureg, areg, srcReg, dstUbAddr, postValue);
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &ureg, AddrReg &areg)
+__simd_callee__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &ureg, AddrReg &areg)
 {
     vsta(ureg, dstUbAddr, areg);
 }
 
 // vstur/vstar
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlign(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlign(LocalMem T *&dstUbAddr, RegTensor<T> &srcReg, UnalignReg &ureg)
 {
     constexpr auto postValue = std::integral_constant<::Post, static_cast<::Post>(postMode)>();
     vstur(ureg, srcReg, dstUbAddr, postValue);
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
-__aicore__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &ureg)
+__simd_callee__ inline void DataCopyUnAlignPost(LocalMem T *&dstUbAddr, UnalignReg &ureg)
 {
     vstar(ureg, dstUbAddr);
 }
 
 // vgather2
 template <typename T, typename U, typename S>
-__aicore__ inline void DataCopyGather(RegTensor<T> &dstReg, LocalMem U *baseAddr, RegTensor<S> &index,
+__simd_callee__ inline void DataCopyGather(RegTensor<T> &dstReg, LocalMem U *baseAddr, RegTensor<S> &index,
     MaskReg &mask)
 {
     static_assert((sizeof(U) == 1 && sizeof(T) == 2 && std::is_same_v<S, uint16_t>) ||
@@ -1346,7 +1347,7 @@ __aicore__ inline void DataCopyGather(RegTensor<T> &dstReg, LocalMem U *baseAddr
 // vgatherb
 // mask will be treated as PAT_ALL in this l311 api.
 template <typename T>
-__aicore__ inline void DataCopyGatherB(RegTensor<T> &dstReg, LocalMem T *baseAddr, RegTensor<uint32_t> &index,
+__simd_callee__ inline void DataCopyGatherB(RegTensor<T> &dstReg, LocalMem T *baseAddr, RegTensor<uint32_t> &index,
     MaskReg &mask)
 {
     vgatherb(dstReg, baseAddr, index);
@@ -1354,7 +1355,7 @@ __aicore__ inline void DataCopyGatherB(RegTensor<T> &dstReg, LocalMem T *baseAdd
 
 // vscatter
 template <typename T, typename U>
-__aicore__ inline void DataCopyScatter(LocalMem T *baseAddr, RegTensor<T> &srcReg, RegTensor<U> &index,
+__simd_callee__ inline void DataCopyScatter(LocalMem T *baseAddr, RegTensor<T> &srcReg, RegTensor<U> &index,
     MaskReg &mask)
 {
     vscatter(srcReg, baseAddr, index, mask);
@@ -1418,20 +1419,20 @@ __simd_callee__ inline void DataCopy(LocalMem T *dstUbAddr, MaskReg &dstReg, Add
 }
 
 template <typename T, Mode mode = Mode::MERGING>
-__aicore__ inline void Copy(RegTensor<T> &dstReg, RegTensor<T> srcReg, MaskReg mask)
+__simd_callee__ inline void Copy(RegTensor<T> &dstReg, RegTensor<T> srcReg, MaskReg mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vmov(dstReg, srcReg, mask, modeValue);
 }
 
 template <typename T>
-__aicore__ inline void Copy(RegTensor<T> &dstReg, RegTensor<T> srcReg)
+__simd_callee__ inline void Copy(RegTensor<T> &dstReg, RegTensor<T> srcReg)
 {
     vmov(dstReg, srcReg);
 }
 
 
-template <typename T> __aicore__ inline auto CreateAddrReg(uint16_t stride0)
+template <typename T> __simd_callee__ inline auto CreateAddrReg(uint16_t stride0)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -1442,7 +1443,7 @@ template <typename T> __aicore__ inline auto CreateAddrReg(uint16_t stride0)
     return vag_b32(stride0);
 }
 
-template <typename T> __aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1)
+template <typename T> __simd_callee__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -1453,7 +1454,7 @@ template <typename T> __aicore__ inline auto CreateAddrReg(uint16_t stride0, uin
     return vag_b32(stride0, stride1);
 }
 
-template <typename T> __aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2)
+template <typename T> __simd_callee__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -1465,7 +1466,7 @@ template <typename T> __aicore__ inline auto CreateAddrReg(uint16_t stride0, uin
 }
 
 template <typename T>
-__aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2, uint16_t stride3)
+__simd_callee__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2, uint16_t stride3)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -1483,6 +1484,85 @@ __aicore__ inline void Barrier()
 #else
     __asm__ __volatile__("");
 #endif
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline int64_t GetSprImpl()
+{
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current GetSpr api only support SpecialPurposeReg AR on current device!");
+    return get_ar();
+}
+
+__simd_vf__ inline void ClearARImpl()
+{
+    constexpr uint8_t SPR_AR_VALUE = 74;
+    constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
+    sprclr(sprValue);
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline void ClearSprImpl()
+{
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current ClearSpr api only support SpecialPurposeReg AR on current device!");
+
+    if constexpr (spr == SpecialPurposeReg::AR) {
+        ClearARImpl();
+    }
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline void SetCtrlSprImpl(int64_t value)
+{
+    static_assert((startBit <= endBit && startBit >= 0 && endBit < 64), "Invalid bit range on current device!");
+    static_assert((6 <= startBit && startBit <= 10 && 6 <= endBit && endBit <= 10) ||
+                      (startBit == endBit && (startBit == 45 || startBit == 48 || startBit == 50 || startBit == 53 ||
+                                              startBit == 59 || startBit == 60)),
+                  "Invalid startBit/endBit on current device!");
+    if (endBit - startBit == 63) {
+        set_ctrl(value);
+        return;
+    }
+    uint64_t mask = ((uint64_t(1) << (endBit - startBit + 1)) - 1) << startBit;
+    mask = ~mask;
+    int64_t setValue = get_ctrl() & mask;
+    setValue |= (value << startBit);
+    set_ctrl(setValue);
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline int64_t GetCtrlSprImpl()
+{
+    static_assert((startBit <= endBit && startBit >= 0 && endBit < 64), "Invalid bit range on current device!");
+    int64_t value = get_ctrl();
+    if (endBit - startBit == 63) {
+        return value;
+    }
+    value = value >> startBit;
+    value &= ((uint64_t(1) << (endBit - startBit + 1)) - 1);
+    return value;
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline void ResetCtrlSprImpl()
+{
+    static_assert((startBit <= endBit && startBit >= 0 && endBit < 64), "Invalid bit range on current device!");
+    static_assert((6 <= startBit && startBit <= 10 && 6 <= endBit && endBit <= 10) ||
+                      (startBit == endBit && (startBit == 45 || startBit == 48 || startBit == 50 || startBit == 53 ||
+                                              startBit == 59 || startBit == 60)),
+                  "Invalid startBit/endBit on current device!");
+    int64_t defaultCtrl = 0x1000000000000008; // default value of ctrl
+    if (endBit - startBit == 63) {
+        set_ctrl(defaultCtrl);
+        return;
+    }
+    uint64_t mask = ((uint64_t(1) << (endBit - startBit + 1)) - 1) << startBit;
+    defaultCtrl = defaultCtrl & mask;
+    mask = ~mask;
+    int64_t value = get_ctrl() & mask;
+    value = value | defaultCtrl;
+    set_ctrl(value);
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H

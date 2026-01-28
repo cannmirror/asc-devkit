@@ -10,7 +10,7 @@
 
 /*!
  * \file kernel_operator_vec_duplicate_impl.h
- * \brief AscendC l210 support vector duplicate api.
+ * \brief AscendC l300 support vector duplicate api.
  */
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_IMPL_H
@@ -304,7 +304,7 @@ template <typename T>
 __aicore__ inline void InterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
     __ubuf__ T *src1Local, const int32_t calCount)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
         uint64_t, int64_t>(),
         "current data type is not supported on current device!");
     ASCENDC_ASSERT((calCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "calCount % 2 = 0!"); });
@@ -485,7 +485,7 @@ template <typename T>
 __aicore__ inline void DeInterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *src0Local,
     __ubuf__ T *src1Local, const int32_t calCount)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
         uint64_t, int64_t>(),
         "current data type is not supported on current device!");
     ASCENDC_ASSERT((calCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "calCount % 2 = 0!"); });
@@ -508,7 +508,7 @@ template <typename T>
 __aicore__ inline void DeInterleaveImpl(__ubuf__ T *dst0Local, __ubuf__ T *dst1Local, __ubuf__ T *srcLocal,
     const int32_t srcCount)
 {
-    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float, bfloat16_t,
+    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float,
         uint64_t, int64_t>(),
         "current data type is not supported on current device!");
     ASCENDC_ASSERT((srcCount % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "srcCount % 2 = 0!"); });

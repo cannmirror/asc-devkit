@@ -40,6 +40,7 @@ std::is_same<T, half>::value
 __aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
+    int32_t dstBlkStride = repeatParams.dstBlkStride > 0 ? repeatParams.dstBlkStride : 1;
     __VEC_SCOPE__
     {
         int32_t dstRepOffset = 0;
@@ -53,7 +54,7 @@ __aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repe
             sreg0 = ((int32_t)repeatParams.dstRepStride * i * blockElm);
             sreg1 = (int32_t)BRCB_BROADCAST_NUMBER * i;
             for (uint16_t j = 0; j < (uint16_t)BRCB_BROADCAST_NUMBER; ++j) {
-                dstRepOffset = (sreg0 + (int32_t)repeatParams.dstBlkStride * j * blockElm);
+                dstRepOffset = (sreg0 + dstBlkStride * j * blockElm);
                 DataCopy<T, Dist::DIST_BRC_B16>(vDst, src0, sreg1 + j);
                 DataCopy<T, DistVST::DIST_NORM_B16>(dst, vDst, dstRepOffset, preg);
             }
@@ -69,6 +70,7 @@ std::is_same<T, float>::value
 __aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
+    int32_t dstBlkStride = repeatParams.dstBlkStride > 0 ? repeatParams.dstBlkStride : 1;
     __VEC_SCOPE__
     {
         int32_t dstRepOffset = 0;
@@ -82,7 +84,7 @@ __aicore__ inline BrcbImpl(__ubuf__ T* dst, __ubuf__ T* src0, const uint8_t repe
             sreg0 = ((int32_t)repeatParams.dstRepStride * i * blockElm);
             sreg1 = (int32_t)BRCB_BROADCAST_NUMBER * i;
             for (uint16_t j = 0; j < (uint16_t)BRCB_BROADCAST_NUMBER; ++j) {
-                dstRepOffset = (sreg0 + (int32_t)repeatParams.dstBlkStride * j * blockElm);
+                dstRepOffset = (sreg0 + dstBlkStride * j * blockElm);
                 DataCopy<T, Dist::DIST_BRC_B32>(vDst, src0, sreg1 + j);
                 DataCopy<T, DistVST::DIST_NORM_B32>(dst, vDst, dstRepOffset, preg);
             }

@@ -183,7 +183,8 @@ enum class DeQuantMode : uint8_t {
     DEQUANT_WITH_MULTI_ROW,         // {1, m * n, n} != {m, n, n}
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || \
+    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
 enum class SpecialPurposeReg {
     AR = 0,
 };

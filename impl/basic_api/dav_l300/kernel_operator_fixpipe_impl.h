@@ -113,16 +113,16 @@ struct FixpipeParamsL300 {
 
     uint16_t nSize = 0;
     uint16_t mSize = 0;  // M-DirectionSize
-    uint32_t dstStride = 0;
     uint16_t srcStride = 0;
+    uint32_t dstStride = 0;
     // Params: used for Quant
-    uint64_t deqScalar;
     QuantMode_t quantPre = QuantMode_t::NoQuant;
+    uint64_t deqScalar;
     bool reluEn = false;
     uint8_t unitFlag = 0;
     // extend param
-    bool subBlockId = false;
     uint8_t dualDstCtl = 0;
+    bool subBlockId = false;
     typename TransformParamsL300<format>::PARAMS params;
     bool isChannelSplit = false;
 };
@@ -201,16 +201,16 @@ __aicore__ inline void SetLoop3Para(const FixpipeParamsL300<config.format>& intr
         uint64_t loop3Para = static_cast<uint64_t>(intriParams.params.dstNdStride) << 32;  // LOOP3_PARA[63:32]
         // original src_nd_stride in uint of fractal_size(1024B = 16 * 16 * sizeof(SrcT))
         // src_nd_stride in unit of C0_SIZE, Loop3_src_stride
-        loop3Para |= static_cast<uint64_t>(intriParams.params.ndNum);              // LOOP3_PARA[15:0]
         loop3Para |= static_cast<uint64_t>(intriParams.params.srcNdStride) << 16;  // LOOP3_PARA[31:16]
+        loop3Para |= static_cast<uint64_t>(intriParams.params.ndNum);              // LOOP3_PARA[15:0]
         set_loop3_para(loop3Para);
     } else if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
         ASCENDC_ASSERT((intriParams.params.dnNum > 0), { KERNEL_LOG(KERNEL_ERROR, "dnNum must be larger than 0"); });
         // Loop3_dst_stride in uint of element
         uint64_t loop3Para = static_cast<uint64_t>(intriParams.params.dstDnMatrixStride) << 32;  // LOOP3_PARA[63:32]
         // src_nd_stride in unit of C0_SIZE, Loop3_src_stride
-        loop3Para |= static_cast<uint64_t>(intriParams.params.dnNum);                    // LOOP3_PARA[15:0]
         loop3Para |= static_cast<uint64_t>(intriParams.params.srcNzMatrixStride) << 16;  // LOOP3_PARA[31:16]
+        loop3Para |= static_cast<uint64_t>(intriParams.params.dnNum);                    // LOOP3_PARA[15:0]
         set_loop3_para(loop3Para);
     }
 }
@@ -251,19 +251,19 @@ template <const FixpipeConfig& config>
 __aicore__ inline uint64_t GetGMLen(const FixpipeParamsL300<config.format>& intriParams,
                                     const uint16_t calNSize, const uint16_t dstEleSize)
 {
-    constexpr uint16_t fractalSize = 16;
-    uint64_t cburstNum = calNSize / fractalSize;
+    constexpr uint16_t fractalNsize = 16;
+    uint64_t cburstNum = calNSize / fractalNsize;
     uint64_t gmLen = (cburstNum - 1) * intriParams.dstStride * dstEleSize +
-                     intriParams.mSize * fractalSize * dstEleSize;
+                     intriParams.mSize * fractalNsize * dstEleSize;
     if constexpr (config.format == CO2Layout::ROW_MAJOR) {
         // dstStride is dst_D Loop2_dst_stride
         gmLen = (static_cast<uint64_t>(intriParams.params.ndNum) - 1) * dstEleSize * intriParams.params.dstNdStride +
                 (intriParams.mSize - 1) * intriParams.dstStride * dstEleSize +
-                cburstNum * fractalSize * dstEleSize;
+                cburstNum * fractalNsize * dstEleSize;
     } else if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
         gmLen = (static_cast<uint64_t>(intriParams.params.dnNum) - 1) * dstEleSize * intriParams.params.dstDnMatrixStride +
                 (intriParams.nSize - 1) * intriParams.dstStride * dstEleSize +
-                intriParams.mSize / fractalSize * fractalSize * dstEleSize;
+                intriParams.mSize / fractalNsize * fractalNsize * dstEleSize;
     }
     return gmLen;
 }
@@ -281,19 +281,19 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ DstT* dst, __cc__ SrcT* src,
         ASCENDC_DEBUG_ASSERT((config.format == CO2Layout::NZ), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to check format value in Fixpipe, "
             "when isChannelSplit is set true, format must be set as NZ \n"));
     }
-    uint32_t dstOffset = 0;
     uint16_t cburstNum = fixpipeTiling.nSize / BLOCK_CUBE;
-    bool nz2ndEn = false;
     uint32_t srcOffset = cburstNum * nIterIndex * intriParams.srcStride * BLOCK_CUBE;
+    uint32_t dstOffset = 0;
+    bool nz2ndEn = false;
     if constexpr (config.format == CO2Layout::ROW_MAJOR) {
-        nz2ndEn = true;
         dstOffset = nIterIndex * fixpipeTiling.nSize;
+        nz2ndEn = true;
     } else {
         dstOffset = cburstNum * nIterIndex * intriParams.dstStride * DEFAULT_C0_SIZE / sizeof(DstT);
     }
     if constexpr (g_gm_overflow_check) {
-        uint16_t dstEleSize = sizeof(DstT);
         bool isSrc = false;
+        uint16_t dstEleSize = sizeof(DstT);
         uint64_t gmLen = GetGMLen<config>(intriParams, calNSize, dstEleSize);
         AscendCUtils::CheckGmMemOverflow((__gm__ DstT*)(dst + dstOffset), isSrc, gmLen);
     }
@@ -345,9 +345,9 @@ __aicore__ inline void FixpipeL0C2L1Impl(
     // nz2dn mode need set CHANNEL_PARA extra
     if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
         // Loop0_dst_stride in uint of CO_SIZE
-        uint64_t channelParam = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
+        uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                 << 48;  // CHANNEL_PARA[63:48]
-        set_channel_para(channelParam);
+        set_channel_para(channelPara);
     }
     /*
     make code for scalar quant mode:
@@ -359,9 +359,9 @@ __aicore__ inline void FixpipeL0C2L1Impl(
         set_quant_pre(intriParams.deqScalar);
     }
     PipeBarrier<PIPE_FIX>();
-    FixpipeTiling fixpipeTilingParams;
+    FixpipeTiling fixpipeTiling;
     // LOC -> L1
-    FixpipeL0cToL1<DstT, SrcT, config>(dst, src, intriParams, fixpipeTilingParams, intriParams.nSize);
+    FixpipeL0cToL1<DstT, SrcT, config>(dst, src, intriParams, fixpipeTiling, intriParams.nSize);
 }
 
 template <typename DstT, typename SrcT, const FixpipeConfig& config>
@@ -433,9 +433,9 @@ __aicore__ inline void FixpipeL0C2GMImpl(__gm__ DstT* dst, __cc__ SrcT* src, __c
     SetLoop3Para<config>(intriParams);
     // nz2dn mode need set CHANNEL_PARA extra
     if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
-        uint64_t channelParams = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
+        uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                 << 48;  // CHANNEL_PARA[63:48]
-        set_channel_para(channelParams);
+        set_channel_para(channelPara);
     }
     /*
     make code for vector quant mode:
@@ -443,16 +443,16 @@ __aicore__ inline void FixpipeL0C2GMImpl(__gm__ DstT* dst, __cc__ SrcT* src, __c
     2. copy deq tensor from l1 to fb1 (l1 -> fb1)
     3. code gen: move data from l0c to gm
     */
-    FixpipeTiling fixpTiling = GenFixpipeTiling(intriParams.nSize);
+    FixpipeTiling fixpipeTiling = GenFixpipeTiling(intriParams.nSize);
     if (IsVectorQuantMode(intriParams.quantPre)) {
-        for (uint16_t i = 0; i < fixpTiling.nIterNum; ++i) {
+        for (uint16_t i = 0; i < fixpipeTiling.nIterNum; ++i) {
             FixpipeL0C2GMImplN<DstT, SrcT, config>(
-                dst, src, cbufWorkspace, intriParams, fixpTiling, fixpTiling.nSize, i);
+                dst, src, cbufWorkspace, intriParams, fixpipeTiling, fixpipeTiling.nSize, i);
         }
         // deal with the tail, it also need copy deq/relu tensor from L1 to fb1
-        if (fixpTiling.tailNSize > 0) {
+        if (fixpipeTiling.tailNSize > 0) {
             FixpipeL0C2GMImplN<DstT, SrcT, config>(dst, src, cbufWorkspace, intriParams,
-                fixpTiling, fixpTiling.tailNSize, fixpTiling.nIterNum);
+                fixpipeTiling, fixpipeTiling.tailNSize, fixpipeTiling.nIterNum);
         }
         return;
     }
@@ -464,21 +464,21 @@ __aicore__ inline void TransFixpipeParamsV220ToFixpipeParamsL300(
 {
     dstParams.nSize = intriParams.nSize;
     dstParams.mSize = intriParams.mSize;
-    dstParams.dstStride = intriParams.dstStride;
     dstParams.srcStride = intriParams.srcStride;
+    dstParams.dstStride = intriParams.dstStride;
     dstParams.quantPre = intriParams.quantPre;
-    dstParams.reluEn = intriParams.reluEn;
     dstParams.deqScalar = intriParams.deqScalar;
-    dstParams.isChannelSplit = intriParams.isChannelSplit;
+    dstParams.reluEn = intriParams.reluEn;
     dstParams.unitFlag = intriParams.unitFlag;
+    dstParams.isChannelSplit = intriParams.isChannelSplit;
     if constexpr (format == CO2Layout::ROW_MAJOR) {
-        dstParams.params.srcNdStride =  intriParams.srcNdStride;
         dstParams.params.ndNum = intriParams.ndNum;
+        dstParams.params.srcNdStride =  intriParams.srcNdStride;
         dstParams.params.dstNdStride = intriParams.dstNdStride;
     } else if constexpr(format == CO2Layout::COLUMN_MAJOR) {
         dstParams.params.ndNum = intriParams.ndNum;
-        dstParams.params.dstNdStride = intriParams.srcNdStride;
         dstParams.params.srcNdStride = intriParams.srcNdStride;
+        dstParams.params.dstNdStride = intriParams.srcNdStride;
     }
 }
 
@@ -507,12 +507,6 @@ __aicore__ inline void FixpipeL0C2GMImpl(__gm__ DstT *dst, __cc__ SrcT *src, con
     FixpipeL0C2GMImpl<DstT, SrcT, config>(dst, src, params);
 }
 
-template <typename T, typename U, const FixpipeConfig &config>
-__aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ T *dst, __cc__ U *src, const FixpipeParamsV220 &intriParams)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"); });
-}
-
 template <typename DstT, typename SrcT, const FixpipeConfig &config>
 __aicore__ inline void FixpipeL0C2GMImpl(
     __gm__ DstT *dst, __cc__ SrcT *src, __cbuf__ uint64_t *cbufWorkspace, const FixpipeParamsV220 &intriParams)
@@ -520,6 +514,12 @@ __aicore__ inline void FixpipeL0C2GMImpl(
     FixpipeParamsL300<config.format> params;
     TransFixpipeParamsV220ToFixpipeParamsL300(intriParams, params);
     FixpipeL0C2GMImpl<DstT, SrcT, config>(dst, src, cbufWorkspace, params);
+}
+
+template <typename T, typename U, const FixpipeConfig &config>
+__aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ T *dst, __cc__ U *src, const FixpipeParamsV220 &intriParams)
+{
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "Fixpipe doesn't support L0C to UB on current device\n"); });
 }
 
 template <typename T, typename U, const FixpipeConfig &config>

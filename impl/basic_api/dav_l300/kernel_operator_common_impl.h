@@ -17,7 +17,7 @@
 #include "kernel_struct_mm.h"
 #include "kernel_common.h"
 #include "kernel_utils.h"
-#include "micro_api_inc/kernel_micro_intf.h"
+
 #define GetLoopBoundB8(x) (((x)-1) / VECTOR_REG_WIDTH)
 #define GetLoopBoundB16(x) (((x)-1) / (VECTOR_REG_WIDTH / B16_BYTE_SIZE))
 #define GetLoopBoundB32(x) (((x)-1) / (VECTOR_REG_WIDTH / B32_BYTE_SIZE))
@@ -267,7 +267,7 @@ __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam &che
 }
 
 template <typename T>
-__aicore__ inline auto CreateAddrReg(uint16_t stride0)
+__simd_callee__ inline auto CreateAddrReg(uint16_t stride0)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -279,7 +279,7 @@ __aicore__ inline auto CreateAddrReg(uint16_t stride0)
 }
 
 template <typename T>
-__aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1)
+__simd_callee__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -291,7 +291,7 @@ __aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1)
 }
 
 template <typename T>
-__aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2)
+__simd_callee__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -303,7 +303,7 @@ __aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_
 }
 
 template <typename T>
-__aicore__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2, uint16_t stride3)
+__simd_callee__ inline auto CreateAddrReg(uint16_t stride0, uint16_t stride1, uint16_t stride2, uint16_t stride3)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "CreateAddrReg only support type b8/b16/b32");
     if constexpr (sizeof(T) == 1) {
@@ -347,38 +347,38 @@ __simd_callee__ inline MaskReg CreatePredicate()
     return reg;
 }
 
-__aicore__ inline void PredicateNot(MaskReg &dstMask, MaskReg &srcMask, MaskReg &mask)
+__simd_callee__ inline void PredicateNot(MaskReg &dstMask, MaskReg &srcMask, MaskReg &mask)
 {
     pnot(dstMask, srcMask, mask);
 }
 
-__aicore__ inline void PredicateAnd(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void PredicateAnd(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
 {
     pand(dstMask, srcMask0, srcMask1, mask);
 }
 
-__aicore__ inline void PredicateOr(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void PredicateOr(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
 {
     por(dstMask, srcMask0, srcMask1, mask);
 }
 
-__aicore__ inline void PredicateXor(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void PredicateXor(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
 {
     pxor(dstMask, srcMask0, srcMask1, mask);
 }
 
-__aicore__ inline void PredicateMov(MaskReg &dstMask, MaskReg &srcMask, MaskReg &mask)
+__simd_callee__ inline void PredicateMov(MaskReg &dstMask, MaskReg &srcMask, MaskReg &mask)
 {
     pmov(dstMask, srcMask, mask);
 }
 
-__aicore__ inline void PredicateMov(MaskReg &dstMask, MaskReg &srcMask)
+__simd_callee__ inline void PredicateMov(MaskReg &dstMask, MaskReg &srcMask)
 {
     pmov(dstMask, srcMask);
 }
 
 template <typename T>
-__aicore__ inline void PredicateSlide(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, const int16_t slideAmount)
+__simd_callee__ inline void PredicateSlide(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, const int16_t slideAmount)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4, "PredicateSlide only support type b8/b16/b32 ");
     if constexpr (sizeof(T) == 1) {
@@ -418,7 +418,7 @@ __simd_callee__ inline void PredicateDeInterleave(MaskReg &dstMask0, MaskReg &ds
     }
 }
 
-__aicore__ inline void PredicateSel(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
+__simd_callee__ inline void PredicateSel(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, MaskReg &mask)
 {
     psel(dstMask, srcMask0, srcMask1, mask);
 }
@@ -438,7 +438,7 @@ __simd_callee__ inline void PredicateUnPack(MaskReg &dstMask, MaskReg &srcMask)
 }
 
 template <typename T>
-__aicore__ inline MaskReg MovePredicate()
+__simd_callee__ inline MaskReg MovePredicate()
 {
     static_assert(SupportBytes<T, 2, 4>(), "MovePredicate only support type b16/b32");
     if constexpr (sizeof(T) == 2) {
@@ -448,7 +448,7 @@ __aicore__ inline MaskReg MovePredicate()
     }
 }
 template <Mode mode>
-__aicore__ inline constexpr auto GetMaskMergeMode()
+__simd_callee__ inline constexpr auto GetMaskMergeMode()
 {
 // To avoid naming conflicts of mode struct in cpu debug.
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -459,16 +459,15 @@ __aicore__ inline constexpr auto GetMaskMergeMode()
 }
 
 template <typename T, typename U, HiloPart part = HiloPart::Lower>
-__aicore__ inline void Pack(RegTensor<T> &dstReg, RegTensor<U> &srcReg)
+__simd_callee__ inline void Pack(RegTensor<T> &dstReg, RegTensor<U> &srcReg)
 {
     constexpr auto partValue = std::integral_constant<::HiloPart, static_cast<::HiloPart>(part)>();
     constexpr auto modeValue = GetMaskMergeMode<Mode::ZEROING>();
-    ;
     vpack(dstReg, srcReg, partValue, modeValue);
 }
 
 template <typename T, typename U, HiloPart part = HiloPart::Lower>
-__aicore__ inline void UnPack(RegTensor<T> &dstReg, RegTensor<U> &srcReg)
+__simd_callee__ inline void UnPack(RegTensor<T> &dstReg, RegTensor<U> &srcReg)
 {
     constexpr auto partValue = std::integral_constant<::HiloPart, static_cast<::HiloPart>(part)>();
     vunpack(dstReg, srcReg, partValue);
@@ -790,7 +789,6 @@ template <typename T, Mode mode = Mode::MERGING>
 __aicore__ inline void Copy(RegTensor<T> &dstReg, RegTensor<T> srcReg, MaskReg mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmov(dstReg, srcReg, mask, modeValue);
 }
 
@@ -804,7 +802,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Add(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vadd(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -812,7 +809,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Sub(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vsub(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -820,7 +816,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Mul(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmul(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -828,7 +823,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Div(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vdiv(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -836,7 +830,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Max(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmax(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -844,7 +837,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Min(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmin(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -853,7 +845,6 @@ __aicore__ inline void ShiftLeft(
     RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<SHIFT_T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vshl(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -862,7 +853,6 @@ __aicore__ inline void ShiftRight(
     RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<SHIFT_T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vshr(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -870,7 +860,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void And(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vand(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -878,7 +867,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __simd_callee__ inline void Or(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vor(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -886,7 +874,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Xor(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vxor(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -894,7 +881,6 @@ template <typename T, typename IndexT, Mode mode = Mode::ZEROING>
 __aicore__ inline void Round(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<IndexT> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vrnd(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -902,7 +888,6 @@ template <typename T>
 __aicore__ inline void Mod(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<Mode::ZEROING>();
-    ;
     vdiv(dstReg, srcReg0, srcReg1, mask, modeValue);
     vmul(dstReg, srcReg1, dstReg, mask, modeValue);
     vsub(dstReg, srcReg0, dstReg, mask, modeValue);
@@ -919,7 +904,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Mula(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmula(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -941,7 +925,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void SaturationAdd(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vsadd(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -949,7 +932,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void SaturationSub(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vssub(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
@@ -957,7 +939,6 @@ template <typename T, Rnd rnd, Mode mode = Mode::ZEROING>
 __aicore__ inline void Average(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vavg(dstReg, srcReg0, srcReg1, rnd, mask, modeValue);
 }
 
@@ -979,7 +960,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __aicore__ inline void Adds(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vadds(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
@@ -987,7 +967,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __simd_callee__ inline void Muls(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmuls(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
@@ -995,7 +974,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __aicore__ inline void Maxs(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmaxs(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
@@ -1003,7 +981,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __aicore__ inline void Mins(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vmins(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
@@ -1025,7 +1002,6 @@ template <typename T, typename ScalarT, Mode mode = Mode::ZEROING>
 __aicore__ inline void Rounds(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, ScalarT scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vrnds(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
@@ -1033,12 +1009,11 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void LeakyRelu(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, T scalar, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vlrelu(dstReg, srcReg0, scalar, mask, modeValue);
 }
 
 template <typename T, CMPMODE mode = CMPMODE::EQ>
-__aicore__ inline void Compare(MaskReg &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
+__simd_callee__ inline void Compare(MaskReg &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
 {
     if constexpr (mode == CMPMODE::EQ) {
         vcmp_eq(dstReg, srcReg0, srcReg1, mask);
@@ -1056,7 +1031,7 @@ __aicore__ inline void Compare(MaskReg &dstReg, RegTensor<T> &srcReg0, RegTensor
 }
 
 template <typename T, CMPMODE mode = CMPMODE::EQ>
-__aicore__ inline void CompareScalar(MaskReg &dstReg, RegTensor<T> &srcReg0, T scalar, MaskReg &mask)
+__simd_callee__ inline void CompareScalar(MaskReg &dstReg, RegTensor<T> &srcReg0, T scalar, MaskReg &mask)
 {
     if constexpr (mode == CMPMODE::EQ) {
         vcmps_eq(dstReg, srcReg0, scalar, mask);
@@ -1143,7 +1118,6 @@ template <typename T, typename U, Mode mode = Mode::ZEROING>
 __aicore__ inline void ReduceSum(RegTensor<T> &dstReg, RegTensor<U> srcReg0, MaskReg mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcadd(dstReg, srcReg0, mask, modeValue);
 }
 
@@ -1151,7 +1125,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void ReduceMax(RegTensor<T> &dstReg, RegTensor<T> srcReg0, MaskReg mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcmax(dstReg, srcReg0, mask, modeValue);
 }
 
@@ -1159,7 +1132,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void ReduceMin(RegTensor<T> &dstReg, RegTensor<T> srcReg0, MaskReg mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcmin(dstReg, srcReg0, mask, modeValue);
 }
 
@@ -1167,7 +1139,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void ReduceMax(RegTensor<T> &dstReg, MaskReg &dstReg1, RegTensor<T> srcReg0, MaskReg pReg)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcbmax(dstReg, dstReg1, srcReg0, pReg, modeValue);
 }
 
@@ -1175,7 +1146,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void ReduceMin(RegTensor<T> &dstReg, MaskReg &dstReg1, RegTensor<T> srcReg0, MaskReg pReg)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcbmin(dstReg, dstReg1, srcReg0, pReg, modeValue);
 }
 
@@ -1183,7 +1153,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void BlockReduceSum(RegTensor<T> &dstReg, RegTensor<T> srcReg0, MaskReg pReg)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcgadd(dstReg, srcReg0, pReg, modeValue);
 }
 
@@ -1191,7 +1160,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void BlockReduceMax(RegTensor<T> &dstReg, RegTensor<T> srcReg0, MaskReg pReg)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcgmax(dstReg, srcReg0, pReg, modeValue);
 }
 
@@ -1199,7 +1167,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void BlockReduceMin(RegTensor<T> &dstReg, RegTensor<T> srcReg0, MaskReg pReg)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcgmin(dstReg, srcReg0, pReg, modeValue);
 }
 
@@ -1207,7 +1174,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void PairReduceSum(RegTensor<T> &dstReg, RegTensor<T> srcReg0, MaskReg pReg)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vcpadd(dstReg, srcReg0, pReg, modeValue);
 }
 
@@ -1215,7 +1181,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Axpy(RegTensor<T> &dstReg, RegTensor<T> srcReg, const T scalar, const MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vaxpy(dstReg, srcReg, scalar, mask, modeValue);
 }
 
@@ -1223,7 +1188,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Abs(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vabs(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1231,7 +1195,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Relu(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vrelu(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1239,7 +1202,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Exp(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vexp(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1247,7 +1209,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Sqrt(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vsqrt(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1255,7 +1216,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Rsqrt(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vrsqrt(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1263,7 +1223,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Rec(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vrec(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1271,7 +1230,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Ln(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vln(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1279,7 +1237,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Neg(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vneg(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1287,7 +1244,6 @@ template <typename T, Mode mode = Mode::ZEROING>
 __aicore__ inline void Not(RegTensor<T> &dstReg, RegTensor<T> &srcReg, MaskReg &mask)
 {
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    ;
     vnot(dstReg, srcReg, mask, modeValue);
 }
 
@@ -1473,5 +1429,83 @@ __aicore__ inline void Barrier()
 #endif
 }
 
+template <SpecialPurposeReg spr>
+__aicore__ inline int64_t GetSprImpl()
+{
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current GetSpr api only support SpecialPurposeReg AR on current device!");
+    return get_ar();
+}
+
+__simd_vf__ inline void ClearARImpl()
+{
+    constexpr uint8_t SPR_AR_VALUE = 74;
+    constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
+    sprclr(sprValue);
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline void ClearSprImpl()
+{
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current ClearSpr api only support SpecialPurposeReg AR on current device!");
+
+    if constexpr (spr == SpecialPurposeReg::AR) {
+        ClearARImpl();
+    }
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline void SetCtrlSprImpl(int64_t value)
+{
+    static_assert((startBit <= endBit && startBit >= 0 && endBit < 64), "Invalid bit range on current device!");
+    static_assert((6 <= startBit && startBit <= 10 && 6 <= endBit && endBit <= 10) ||
+                      (startBit == endBit && (startBit == 45 || startBit == 48 || startBit == 50 || startBit == 53 ||
+                                              startBit == 59 || startBit == 60)),
+                  "Invalid startBit/endBit on current device!");
+    if (endBit - startBit == 63) {
+        set_ctrl(value);
+        return;
+    }
+    uint64_t mask = ((uint64_t(1) << (endBit - startBit + 1)) - 1) << startBit;
+    mask = ~mask;
+    int64_t setValue = get_ctrl() & mask;
+    setValue |= (value << startBit);
+    set_ctrl(setValue);
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline int64_t GetCtrlSprImpl()
+{
+    static_assert((startBit <= endBit && startBit >= 0 && endBit < 64), "Invalid bit range on current device!");
+    int64_t value = get_ctrl();
+    if (endBit - startBit == 63) {
+        return value;
+    }
+    value = value >> startBit;
+    value &= ((uint64_t(1) << (endBit - startBit + 1)) - 1);
+    return value;
+}
+
+template <int8_t startBit, int8_t endBit>
+__aicore__ static inline void ResetCtrlSprImpl()
+{
+    static_assert((startBit <= endBit && startBit >= 0 && endBit < 64), "Invalid bit range on current device!");
+    static_assert((6 <= startBit && startBit <= 10 && 6 <= endBit && endBit <= 10) ||
+                      (startBit == endBit && (startBit == 45 || startBit == 48 || startBit == 50 || startBit == 53 ||
+                                              startBit == 59 || startBit == 60)),
+                  "Invalid startBit/endBit on current device!");
+    int64_t defaultCtrl = 0x1000000000000008; // default value of ctrl
+    if (endBit - startBit == 63) {
+        set_ctrl(defaultCtrl);
+        return;
+    }
+    uint64_t mask = ((uint64_t(1) << (endBit - startBit + 1)) - 1) << startBit;
+    defaultCtrl = defaultCtrl & mask;
+    mask = ~mask;
+    int64_t value = get_ctrl() & mask;
+    value = value | defaultCtrl;
+    set_ctrl(value);
+}
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H

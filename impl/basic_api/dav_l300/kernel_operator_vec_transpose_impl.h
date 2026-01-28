@@ -152,10 +152,10 @@ __aicore__ inline void SetVaReg(uint64_t dst[NCHW_CONV_ADDR_LIST_SIZE],
 
 __aicore__ inline void VldVaReg(__ubuf__ uint64_t* dst, __ubuf__ uint64_t* src)
 {
-    vld_va_reg(VA0, dst, L128);
-    vld_va_reg(VA1, dst, H128);
-    vld_va_reg(VA2, src, L128);
-    vld_va_reg(VA3, src, H128);
+    ldva(VA0, (uint64_t)dst, false); // false refers to low 128 bit;
+    ldva(VA1, (uint64_t)dst, true); // true refers to high 128 bit;
+    ldva(VA2, (uint64_t)src, false);
+    ldva(VA3, (uint64_t)src, true);
 }
 
 template <typename T>

@@ -107,19 +107,6 @@ __simd_callee__ inline void MaskMovImpl(MaskReg &dstMask, MaskReg &srcMask)
 }
 
 template <typename T>
-__simd_callee__ inline void MaskSlideImpl(MaskReg &dstMask, MaskReg &srcMask0, MaskReg &srcMask1, const int16_t slideAmount)
-{
-    static_assert(SupportBytes<T, 1, 2, 4>(), "MaskSlide only support type b8/b16/b32 on current device");
-    if constexpr (sizeof(T) == 1) {
-        pslide_b8(dstMask, srcMask0, srcMask1, slideAmount);
-    } else if constexpr (sizeof(T) == 2) {
-        pslide_b16(dstMask, srcMask0, srcMask1, slideAmount);
-    } else if constexpr (sizeof(T) == 4) {
-        pslide_b32(dstMask, srcMask0, srcMask1, slideAmount);
-    }
-}
-
-template <typename T>
 __simd_callee__ inline void MaskInterleaveImpl(MaskReg &dstMask0, MaskReg &dstMask1, MaskReg &srcMask0, MaskReg &srcMask1)
 {
     static_assert(SupportBytes<T, 1, 2, 4>(), "MaskInterleave only support type b8/b16/b32 on current device");

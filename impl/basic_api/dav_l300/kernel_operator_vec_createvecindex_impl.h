@@ -59,7 +59,7 @@ __simd_vf__ inline void VecCreateVecIndexLevel0VFImpl(__ubuf__ T *dst, const T f
         MicroAPI::Adds(dstVreg, dstVreg, static_cast<int32_t>(sreg), maskReg);
     }
 }
- 
+
 template <bool isMaskBitMode, typename T>
 __aicore__ inline void VecCreateVecIndexLevel0Template(__ubuf__ T *dst, const T firstValue, const uint64_t maskArray[],
     const uint64_t maskCount, const uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride)

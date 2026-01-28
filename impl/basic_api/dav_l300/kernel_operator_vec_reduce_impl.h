@@ -15,7 +15,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
 
-#include "impl/micro_api_inc/kernel_micro_intf.h"
+#include "micro_api/kernel_micro_intf.h"
 #include "kernel_operator_vec_template_impl.h"
 
 namespace AscendC {

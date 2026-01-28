@@ -96,51 +96,6 @@ __simd_callee__ inline void Xor(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask
     XorImpl<T, mode, U>(dstReg, srcReg0, srcReg1, mask);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3113)
-template <typename T, typename IndexT, MaskMergeMode mode, typename RegT, typename RegIndexT>
-__aicore__ inline void Round(RegT &dstReg, RegT &srcReg0, RegIndexT &srcReg1, MaskReg &mask)
-{
-    RoundImpl<T, IndexT, mode, RegT, RegIndexT>(dstReg, srcReg0, srcReg1, mask);
-}
-
-template <typename T, typename RegT>
-__aicore__ inline void Mod(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    ModImpl<T, RegT>(dstReg, srcReg0, srcReg1, mask);
-}
-
-template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void SaturationAdd(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    SaturationAddImpl<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
-}
-
-template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void SaturationSub(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    SaturationSubImpl<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
-}
-
-template <typename T, typename RegT>
-__aicore__ inline void Slide(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, int16_t slideAmount)
-{
-    SlideImpl<T, RegT>(dstReg, srcReg0, srcReg1, slideAmount);
-}
-
-template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void Add3(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    Add3Impl<T, mode, RegT>(dstReg, srcReg0, srcReg1, mask);
-}
-
-template <typename T, RoundControl rnd, typename RegT>
-__aicore__ inline void Mean(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    MeanImpl<T, rnd, RegT>(dstReg, srcReg0, srcReg1, mask);
-}
-#endif
-
 template <typename T, MaskMergeMode mode, typename U>
 __simd_callee__ inline void Prelu(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& mask)
 {

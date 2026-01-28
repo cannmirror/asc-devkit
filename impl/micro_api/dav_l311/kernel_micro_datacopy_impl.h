@@ -132,13 +132,13 @@ __simd_callee__ inline void DataCopyImpl(RegT &dstReg, __ubuf__ T *&srcUbAddr, i
             vlds((RegTensor<uint32_t> &)dstReg, (__local_mem__ uint32_t *&)srcUbAddr, postUpdateStride * 2, distValue,
                 postValue);
         } else if constexpr (CheckRegTrait<RegT, RegTraitNumTwo>()) {
-            constexpr auto dintlvDist = 
+            constexpr auto dintlvDist =
                 std::integral_constant<::Dist, static_cast<::Dist>(LoadDist::DIST_DINTLV_B32)>();
             vlds((RegTensor<uint32_t> &)dstReg.reg[0], (RegTensor<uint32_t> &)dstReg.reg[1],
                 (__local_mem__ uint32_t *&)srcUbAddr, postUpdateStride * 2, dintlvDist, postValue);
         }
     } else {
-        static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(), 
+        static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
             "LoadAlign only support type b8/b16/b32/b64 on current device");
         if constexpr (std::is_same_v<T, bool>) {
             vlds((RegTensor<int8_t> &)dstReg, (__ubuf__ int8_t *&)srcUbAddr, postUpdateStride, distValue, postValue);
@@ -516,7 +516,7 @@ __simd_callee__ inline void DataCopyUnAlignImpl(
         } else {
             vstus(ureg, postUpdateStride, srcReg, dstUbAddr, postValue);
         }
-    } 
+    }
 }
 
 template <typename T, PostLiteral postMode = PostLiteral::POST_MODE_UPDATE>
@@ -778,15 +778,22 @@ __simd_callee__ inline void DataCopyUnAlignImpl(__ubuf__ T *&dstUbAddr, MaskReg 
 }
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void StoreImpl(__ubuf__ T* dstAddr, U& srcReg)
+__simd_callee__ inline void StoreImpl(__ubuf__ T* dstAddr, U& srcReg, uint32_t count)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "StoreUnAlign is not supported on current device!"); });
+    using ActualT = typename U::ActualT;
+    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
+                  "Store only support type b8/b16/b32/b64 on current device");
+    UnalignRegForStore ureg;
+    DataCopyUnAlignImpl<T, PostLiteral::POST_MODE_UPDATE, U>(dstAddr, srcReg, ureg, count);
+    DataCopyUnAlignPostImpl<T, PostLiteral::POST_MODE_UPDATE>(dstAddr, ureg, 0);
 }
 
 template <typename T = DefaultType, typename U>
-__simd_callee__ inline void StoreImpl(__ubuf__ T* dstAddr, U& srcReg, uint32_t count)
+__simd_callee__ inline void StoreImpl(__ubuf__ T* dstAddr, U& srcReg)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "StoreUnAlign is not supported on current device!"); });
+    constexpr uint32_t count = GetVecLen() / sizeof(T);
+    StoreImpl(dstAddr, srcReg, count);
 }
 }  // namespace MicroAPI
 }  // namespace AscendC

@@ -16,8 +16,8 @@
 #define ASCENDC_MODULE_MICRO_COMMON_IMPL_H
 
 #include "kernel_tensor.h"
-#include "impl/micro_api_inc/kernel_micro_utils.h"
-#include "impl/micro_api_inc/kernel_micro_common_intf.h"
+#include "micro_api/kernel_micro_utils.h"
+#include "micro_api/kernel_micro_common_intf.h"
 
 namespace AscendC {
 namespace MicroAPI {

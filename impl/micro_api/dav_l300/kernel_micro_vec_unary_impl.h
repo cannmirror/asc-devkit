@@ -18,11 +18,109 @@
 
 namespace AscendC {
 namespace MicroAPI {
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void AbsImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+namespace Internal {
+__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(MaskMergeMode mrgMode)
 {
-    using ActualT = typename RegT::ActualT;
+    return {
+        .mrgMode = mrgMode,
+        .precisionMode = false,
+        .algo = SqrtAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(const SqrtSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .precisionMode = sprMode->precisionMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr ExpSpecificMode GetExpSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = ExpAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr ExpSpecificMode GetExpSpecificMode(const ExpSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr LnSpecificMode GetLnSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = LnAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr LnSpecificMode GetLnSpecificMode(const LnSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr LogSpecificMode GetLogSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = LogAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr LogSpecificMode GetLogSpecificMode(const LogSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr Log2SpecificMode GetLog2SpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = Log2Algo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr Log2SpecificMode GetLog2SpecificMode(const Log2SpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+
+__aicore__ inline constexpr Log10SpecificMode GetLog10SpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .algo = Log10Algo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr Log10SpecificMode GetLog10SpecificMode(const Log10SpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .algo = sprMode->algo
+    };
+}
+} // namespace Internal
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void AbsImpl(U& dstReg, U& srcReg, MaskReg& mask)
+{
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, int16_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
@@ -30,15 +128,29 @@ __simd_callee__ inline void AbsImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
     vabs(dstReg, srcReg, mask, modeValue);
 }
 
-template <typename T, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void ReluImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void ReluImpl(U& dstReg, U& srcReg, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int32_t, half, float>(),
         "current data type is not supported on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vrelu(dstReg, srcReg, mask, modeValue);
+}
+
+template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void ExpPrecision(U& dstReg, U& srcReg, MaskReg& maskSubnormal)
+{
+    U regTwo;
+    U tmpReg0;
+    using ActualT = typename U::ActualT;
+    constexpr ExpSpecificMode sprMode = Internal::GetExpSpecificMode(mode);
+    constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
+    vdup(regTwo, 2, maskSubnormal, modeValue);
+    vdiv(tmpReg0, srcReg, regTwo, maskSubnormal, modeValue);
+    vexp(tmpReg0, tmpReg0, maskSubnormal, modeValue);
+    vmul(dstReg, tmpReg0, tmpReg0, maskSubnormal, modeValue);
 }
 
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
@@ -50,57 +162,35 @@ __simd_callee__ inline void ExpImpl(U& dstReg, U& srcReg, MaskReg& mask)
     static_assert(IsSameType<decltype(mode), MaskMergeMode>::value ||
         IsSameType<decltype(mode), const ExpSpecificMode*>::value,
         "mode type must be either MaskMergeMode or const ExpSpecificMode* ");
-    constexpr ExpSpecificMode sprMode = util::GetExpSpecificMode(mode);
+    constexpr ExpSpecificMode sprMode = Internal::GetExpSpecificMode(mode);
     static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),
         "current Exp api only supported Mode ZEROING on current device!");
+    static_assert(sprMode.algo == ExpAlgo::INTRINSIC, "only ExpAlgo::INTRINSIC is supported on current device!");
     constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
-
-    static_assert(sprMode.algo == ExpAlgo::INTRINSIC,
-        "ExpAlgo only support INTRINSIC on current device!");
     vexp(dstReg, srcReg, mask, modeValue);
 }
 
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void SqrtImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void SqrtImpl(U& dstReg, U& srcReg, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
+    using ActualT = typename U::ActualT;
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
+    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
+                  const SqrtSpecificMode *>::value, "mode type must be either MaskMergeMode or const SqrtSpecificMode* ");
+    static_assert(Std::is_same_v<T, DefaultType> || Std::is_same_v<T, ActualT>, "T type is not correct!");
+    constexpr SqrtSpecificMode sprMode = Internal::GetSqrtSpecificMode(mode);
+    static_assert(sprMode.algo == SqrtAlgo::INTRINSIC, "only SqrtAlgo::INTRINSIC is supported on current device!");
+    constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
     vsqrt(dstReg, srcReg, mask, modeValue);
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void RsqrtImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vrsqrt(dstReg, srcReg, mask, modeValue);
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void RecImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vrec(dstReg, srcReg, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename U, const LogSpecificMode* mode>
 __simd_callee__ inline void LnCompute(U& dstReg, U& srcReg, MaskReg& mask)
 {
     using ActualT = typename U::ActualT;
-    constexpr LogSpecificMode sprMode = util::GetLogSpecificMode(mode);
+    constexpr LogSpecificMode sprMode = Internal::GetLogSpecificMode(mode);
     constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
-    static_assert(sprMode.algo == LogAlgo::INTRINSIC,
-        "LogAlgo only support INTRINSIC on current device!");
+    static_assert(sprMode.algo == LogAlgo::INTRINSIC, "only LogAlgo::INTRINSIC is supported on current device!");
     vln(dstReg, srcReg, mask, modeValue);
 }
 
@@ -115,16 +205,21 @@ __simd_callee__ inline void LogImpl(U& dstReg, U& srcReg, MaskReg& mask)
                   IsSameType<decltype(mode), const LnSpecificMode*>::value,
                   "mode type must be MaskMergeMode or const LogSpecificMode* or const LnSpecificMode* ");
     if constexpr (IsSameType<decltype(mode), const LogSpecificMode*>::value) {
-        constexpr LogSpecificMode sprMode = util::GetLogSpecificMode(mode);
+        constexpr LogSpecificMode sprMode = Internal::GetLogSpecificMode(mode);
         static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),
                       "current Log api only supports Mode ZEROING on current device!");
         LnCompute<T, U, mode>(dstReg, srcReg, mask);
     } else if constexpr (IsSameType<decltype(mode), const LnSpecificMode*>::value) {
-        constexpr LnSpecificMode sprMode = util::GetLnSpecificMode(mode);
+        constexpr LnSpecificMode sprMode = Internal::GetLnSpecificMode(mode);
         static_assert(SupportEnum<sprMode.mrgMode, MaskMergeMode::ZEROING>(),
                       "current Ln api only supports Mode ZEROING on current device!");
-        static constexpr AscendC::MicroAPI::LogSpecificMode logMode = {MaskMergeMode::ZEROING, LogAlgo::INTRINSIC};
-        LnCompute<T, U, &logMode>(dstReg, srcReg, mask);
+        if constexpr (sprMode.algo == LnAlgo::PRECISION_1ULP_FTZ_FALSE) {
+            static constexpr AscendC::MicroAPI::LogSpecificMode logMode = {MaskMergeMode::ZEROING, LogAlgo::PRECISION_1ULP_FTZ_FALSE};
+            LnCompute<T, U, &logMode>(dstReg, srcReg, mask);
+        } else {
+            static constexpr AscendC::MicroAPI::LogSpecificMode logMode = {MaskMergeMode::ZEROING, LogAlgo::INTRINSIC};
+            LnCompute<T, U, &logMode>(dstReg, srcReg, mask);
+        }
     } else {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
         vln(dstReg, srcReg, mask, modeValue);
@@ -174,44 +269,52 @@ __simd_callee__ inline void LogXImpl(RegTensor<half> &dstReg, RegTensor<half> &s
 }
 
 
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void Log2Impl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void Log2Impl(U& dstReg, U& srcReg, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-
+    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
+                  const Log2SpecificMode*>::value,
+                  "mode type must be either MaskMergeMode or const Log2SpecificMode* ");
+    constexpr Log2SpecificMode sprMode = Internal::GetLog2SpecificMode(mode);
+    static_assert(sprMode.algo == Log2Algo::INTRINSIC, "only Log2Algo::INTRINSIC is supported on current device!");
+    constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
     constexpr float ln2Reciprocal = 1.4426950408889634; // 1.0/Ln2;
     if constexpr (SupportType<ActualT, half>()) {
         LogXImpl<mode>(dstReg, srcReg, mask, ln2Reciprocal);
     } else {
-        constexpr auto modeValue = GetMaskMergeMode<mode>();
         vln(dstReg, srcReg, mask, modeValue);
         vmuls(dstReg, dstReg, ln2Reciprocal, mask, modeValue);
     }
 }
 
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void Log10Impl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void Log10Impl(U &dstReg, U &srcReg, MaskReg &mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-
+    static_assert(IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode),
+                  const Log10SpecificMode *>::value,
+                  "mode type must be either MaskMergeMode or const Log10SpecificMode* ");
+    constexpr Log10SpecificMode sprMode = Internal::GetLog10SpecificMode(mode);
+    static_assert(sprMode.algo == Log10Algo::INTRINSIC, "only Log10Algo::INTRINSIC is supported on current device!");
+    constexpr auto modeValue = GetMaskMergeMode<sprMode.mrgMode>();
     constexpr float ln10Reciprocal = 0.43429448190325176; // 1.0/Ln10;
     if constexpr (SupportType<ActualT, half>()) {
         LogXImpl<mode>(dstReg, srcReg, mask, ln10Reciprocal);
     } else {
-        constexpr auto modeValue = GetMaskMergeMode<mode>();
         vln(dstReg, srcReg, mask, modeValue);
         vmuls(dstReg, dstReg, ln10Reciprocal, mask, modeValue);
     }
 }
 
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void NegImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void NegImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, int8_t, int16_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
@@ -220,44 +323,16 @@ __simd_callee__ inline void NegImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
     vneg(dstReg, srcReg, mask, modeValue);
 }
 
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void NotImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
+template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void NotImpl(U &dstReg, U &srcReg, MaskReg &mask)
 {
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename U::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!");
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vnot(dstReg, srcReg, mask, modeValue);
-}
-
-template <typename T = DefaultType, typename SrcT = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
-    typename RegT, typename RegSrcT>
-__simd_callee__ inline void CountBitImpl(RegT &dstReg, RegSrcT &srcReg, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    using ActualSrcT = typename RegSrcT::ActualT;
-    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current dst data type is not supported on current device!");
-    static_assert(SupportType<ActualSrcT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current src data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vbcnt(dstReg, srcReg, mask, modeValue);
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void CountLeadingSignBitsImpl(RegT &dstReg, RegT &srcReg, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<T, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vcls(dstReg, srcReg, mask, modeValue);
 }
 } // namespace MicroAPI
 } // namespace AscendC

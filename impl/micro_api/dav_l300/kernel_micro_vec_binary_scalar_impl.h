@@ -98,7 +98,7 @@ __simd_callee__ inline void ShiftRightsImpl(RegT &dstReg, RegT &srcReg, ScalarT 
     static_assert(SupportType<ScalarT, int16_t>(), "current scalar data type is not supported on current device!");
     static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
         "current ShiftRights api only supported Mode ZEROING on current device!");
-    
+
     if constexpr (sizeof(ActualT) < 8) {
         constexpr auto modeValue = GetMaskMergeMode<mode>();
         vshrs(dstReg, srcReg, scalar, mask, modeValue);
@@ -146,27 +146,18 @@ __simd_callee__ inline void ShiftRightsB64Impl(RegT &dstReg, RegT &srcReg, Scala
     }
 }
 
-template <typename T = DefaultType, typename ScalarT, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void RoundsImpl(RegT &dstReg, RegT &srcReg0, ScalarT scalarValue, MaskReg &mask)
+template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
+__simd_callee__ inline void LeakyReluImpl(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, int16_t, int32_t>(), "current data type is not supported on current device!");
-    static_assert(SupportType<ScalarT, uint16_t>(), "current scalarValue data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vrnds(dstReg, srcReg0, scalarValue, mask, modeValue);
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void LeakyReluImpl(RegT &dstReg, RegT &srcReg0, T scalarValue, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
+    using ActualT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(SupportType<ActualT, half, float>(), "current data type is not supported on current device!");
-
+    static_assert(SupportType<U, half, float>(), "current scalarValue data type is not supported on current device!");
+    static_assert(Std::is_convertible<U, ActualT>(), "scalarValue data type could be converted to RegTensor data type");
+    static_assert(SupportEnum<mode, MaskMergeMode::ZEROING>(),
+                  "current LeakyRelu api only supported Mode ZEROING on current device!");
     constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vlrelu(dstReg, srcReg0, scalarValue, mask, modeValue);
+    vlrelu(dstReg, srcReg, scalarValue, mask, modeValue);
 }
 } // namespace MicroAPI
 } // namespace AscendC

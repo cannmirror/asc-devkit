@@ -65,15 +65,6 @@ __simd_callee__ inline void ShiftRights(S& dstReg, S& srcReg, U scalarValue, Mas
     ShiftRightsImpl<T, U, mode, S>(dstReg, srcReg, scalarValue, mask);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3113)
-template <typename T, typename U, MaskMergeMode mode, typename S>
-__aicore__ inline void Rounds(S &dstReg, S &srcReg0, U scalarValue, MaskReg &mask)
-{
-    RoundsImpl<T, U, mode, S>(dstReg, srcReg0, scalarValue, mask);
-}
-#endif
-
 template <typename T, typename U, MaskMergeMode mode, typename S>
 __simd_callee__ inline void LeakyRelu(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask)
 {

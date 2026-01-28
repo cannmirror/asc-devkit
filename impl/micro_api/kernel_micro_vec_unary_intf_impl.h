@@ -57,33 +57,6 @@ __simd_callee__ inline void Sqrt(U& dstReg, U& srcReg, MaskReg& mask)
     SqrtImpl<T, mode, U>(dstReg, srcReg, mask);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3113)
-template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void Rsqrt(RegT &dstReg, RegT &srcReg, MaskReg &mask)
-{
-    RsqrtImpl<T, mode, RegT>(dstReg, srcReg, mask);
-}
-
-template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void Rec(RegT &dstReg, RegT &srcReg, MaskReg &mask)
-{
-    RecImpl<T, mode, RegT>(dstReg, srcReg, mask);
-}
-
-template <typename T, typename SrcT, MaskMergeMode mode, typename RegT, typename RegSrcT>
-__aicore__ inline void CountBit(RegT &dstReg, RegSrcT &srcReg, MaskReg &mask)
-{
-    CountBitImpl<T, SrcT, mode, RegT, RegSrcT>(dstReg, srcReg, mask);
-}
-
-template <typename T, MaskMergeMode mode, typename RegT>
-__aicore__ inline void CountLeadingSignBits(RegT &dstReg, RegT &srcReg, MaskReg &mask)
-{
-    CountLeadingSignBitsImpl<T, mode, RegT>(dstReg, srcReg, mask);
-}
-#endif
-
 template <typename T, auto mode, typename U>
 __simd_callee__ inline void Ln(U& dstReg, U& srcReg, MaskReg& mask)
 {

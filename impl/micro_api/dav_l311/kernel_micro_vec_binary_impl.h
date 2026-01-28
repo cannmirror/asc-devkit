@@ -19,6 +19,25 @@
 
 namespace AscendC {
 namespace MicroAPI {
+namespace Internal {
+__aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(MaskMergeMode mrgMode)
+{
+    return {
+        .mrgMode = mrgMode,
+        .precisionMode = false,
+        .algo = DivAlgo::INTRINSIC
+    };
+}
+
+__aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(const DivSpecificMode* sprMode)
+{
+    return {
+        .mrgMode = sprMode->mrgMode,
+        .precisionMode = sprMode->precisionMode,
+        .algo = sprMode->algo
+    };
+}
+} // namespace Internal
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
 __simd_callee__ inline void AddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
@@ -63,7 +82,7 @@ __simd_callee__ inline void DivImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, 
         IsSameType<decltype(mode), MaskMergeMode>::value || IsSameType<decltype(mode), const DivSpecificMode *>::value,
         "mode type must be either MaskMergeMode or const DivSpecificMode* ");
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    constexpr DivSpecificMode sprMode = util::GetDivSpecificMode(mode);
+    constexpr DivSpecificMode sprMode = Internal::GetDivSpecificMode(mode);
     static_assert(!sprMode.precisionMode, "precision mode for MicroAPI Div is not supported on the current device!");
     static_assert(SupportType<ActualT, uint16_t, int16_t, uint32_t, int32_t, half, float>(),
         "current data type is not supported on current device!!");
@@ -167,23 +186,6 @@ __simd_callee__ inline void XorImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, 
     vxor(dstReg, srcReg0, srcReg1, mask, modeValue);
 }
 
-template <typename T = DefaultType, typename IndexT = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
-    typename RegT, typename RegIndexT>
-__simd_callee__ inline void RoundImpl(RegT &dstReg, RegT &srcReg0, RegIndexT &srcReg1, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    using ActualIndexT = typename RegIndexT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(std::is_same_v<IndexT, DefaultType> || std::is_same_v<IndexT, ActualIndexT>,
-        "IndexT type is not correct!");
-    static_assert(SupportType<ActualT, int16_t, int32_t>(), "current data type is not supported on current device!");
-    static_assert(SupportType<ActualIndexT, uint16_t, uint32_t>(),
-        "current src1 data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vrnd(dstReg, srcReg0, srcReg1, mask, modeValue);
-}
-
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
 __simd_callee__ inline void PreluImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
 {
@@ -193,18 +195,6 @@ __simd_callee__ inline void PreluImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1
 
     constexpr auto modeValue = GetMaskMergeMode<mode>();
     vprelu(dstReg, srcReg0, srcReg1, mask, modeValue);
-}
-
-template <typename T = DefaultType, typename RegT>
-__simd_callee__ inline void ModImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, uint16_t, uint32_t>(), "current data type is not supported on current device!");
-    constexpr auto modeValue = GetMaskMergeMode<MaskMergeMode::ZEROING>();
-    vdiv(dstReg, srcReg0, srcReg1, mask, modeValue);
-    vmul(dstReg, srcReg1, dstReg, mask, modeValue);
-    vsub(dstReg, srcReg0, dstReg, mask, modeValue);
 }
 
 template <typename T = DefaultType, typename RegT>
@@ -250,62 +240,6 @@ __simd_callee__ inline void SubCarryOutsImpl(MaskReg &carryp, RegT &dstReg, RegT
     MaskReg &mask)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "SubCarryOuts api is not supported on current device!"); });
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void SaturationAddImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, int16_t>(), "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vsadd(dstReg, srcReg0, srcReg1, mask, modeValue);
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void SaturationSubImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, int16_t>(), "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vssub(dstReg, srcReg0, srcReg1, mask, modeValue);
-}
-
-template <typename T = DefaultType, typename RegT>
-__simd_callee__ inline void SlideImpl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, int16_t slideAmount)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, int8_t, uint8_t, int16_t, uint16_t, half, int32_t, uint32_t, float>(),
-        "current data type is not supported on current device!");
-    vslide(dstReg, srcReg0, srcReg1, slideAmount);
-}
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__simd_callee__ inline void Add3Impl(RegT &dstReg, RegT &srcReg0, RegT &srcReg1, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t, uint32_t, int32_t>(),
-        "current data type is not supported on current device!");
-
-    constexpr auto modeValue = GetMaskMergeMode<mode>();
-    vadd3(dstReg, srcReg0, srcReg1, mask, modeValue);
-}
-
-template <typename T = DefaultType, RoundControl rnd = RoundControl::NO_ROUND, typename RegT>
-__simd_callee__ inline void MeanImpl(RegTensor<T> &dstReg, RegTensor<T> &srcReg0, RegTensor<T> &srcReg1, MaskReg &mask)
-{
-    using ActualT = typename RegT::ActualT;
-    static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
-    static_assert(SupportType<ActualT, uint8_t, int8_t, uint16_t, int16_t>(),
-        "current data type is not supported on current device!");
-    constexpr auto rndValue = std::integral_constant<::Rnd, static_cast<::Rnd>(rnd)>();
-    constexpr auto modeValue = GetMaskMergeMode<MaskMergeMode::ZEROING>();
-    vavg(dstReg, srcReg0, srcReg1, rndValue, mask, modeValue);
 }
 
 } // namespace MicroAPI
