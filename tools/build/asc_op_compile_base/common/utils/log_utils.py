@@ -122,13 +122,7 @@ class LogUtil:
     @staticmethod
     def log_print(kernel_name: str, msg_info: str, log_level: AscendCLogLevel, option: Option = Option.DEFAULT):
         short_soc_version = get_soc_spec("SHORT_SOC_VERSION")
-        current_time = datetime.now()
-        tim_head = "[{}-{}-{} {}:{}:{}]".format(current_time.year,
-                                                current_time.month,
-                                                current_time.day,
-                                                current_time.hour,
-                                                current_time.minute,
-                                                current_time.second)
+        tim_head = datetime.now().strftime("[%Y-%m-%d %H:%M:%S]")
         level_info = " [{}]".format(LOG_LEVEL_TO_STR[log_level])
         log_msg = tim_head + level_info
         if option is not LogUtil.Option.NON_SOC:

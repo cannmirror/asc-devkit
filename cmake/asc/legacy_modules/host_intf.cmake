@@ -11,7 +11,6 @@ add_library(host_intf_pub INTERFACE)
 
 target_compile_options(host_intf_pub INTERFACE
     -fPIC
-    #-fvisibility=hidden
     $<$<CONFIG:Release>:-O2>
     $<$<CONFIG:Debug>:-O0>
     $<$<COMPILE_LANGUAGE:CXX>:-std=c++17 -fvisibility-inlines-hidden>

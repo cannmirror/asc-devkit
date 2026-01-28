@@ -59,6 +59,9 @@ struct PathInfo {
 
             cannPath + "/asc/impl/adv_api",
             cannPath + "/asc/impl/basic_api",
+            cannPath + "/asc/impl/c_api",
+            cannPath + "/asc/impl/micro_api",
+            cannPath + "/asc/impl/simt_api",
             cannPath + "/asc/impl/utils",
 
             cannPath + "/asc/include",
@@ -66,7 +69,10 @@ struct PathInfo {
             cannPath + "/asc/include/adv_api/matmul",
             cannPath + "/asc/include/aicpu_api",
             cannPath + "/asc/include/basic_api",
+            cannPath + "/asc/include/c_api",
             cannPath + "/asc/include/interface",
+            cannPath + "/asc/include/micro_api",
+            cannPath + "/asc/include/simt_api",
             cannPath + "/asc/include/tiling",
             cannPath + "/asc/include/utils"
         };
@@ -109,6 +115,7 @@ public:
     void SetSaveTempRequested(const bool saveTemp);
     void SetUserDumpStatus(const bool dumpStatus);
     void SetHasPrintf(const bool hasPrintf);
+    void SetHasSimtPrintf(const bool hasSimtPrintf);
     void SetHasAssert(const bool hasAssert);
     void SetOpSystemCfg(const bool hasOpSystemCfg);
     void AddGlobalSymbolInfo(const std::string &mangling, const KernelMetaType &type, const std::string &fileName,
@@ -134,7 +141,9 @@ public:
     bool UserDumpRequested() const;
     bool HasTimeStamp() const;
     bool HasPrintf() const;
+    bool HasSimtPrintf() const;
     bool HasAssert() const;
+    bool HasUbufDynamicSize() const;                    // simt: <<<blockDim, nullptr, stream, ubufDynamicSize>>>
     bool IsDumpOn() const;   // when user not pass -DASCENDC_DUMP=0, and uses printf/ assert
     uint32_t GetOneCoreDumpSize() const;                // for -DONE_CORE_DUMP_SIZE=xxx
     bool IsL2CacheEnabled() const;
@@ -166,7 +175,9 @@ private:
     bool userDumpStatus_ = true;                // if user passed -DASCENDC_DUMP, then update. True means = 1
     bool hasTimeStamp_ = false;                 // for -DASCENDC_TIME_STAMP_ON
     bool hasPrintf_ = false;
+    bool hasSimtPrintf_ = false;                // only for 910_95 simt
     bool hasAssert_ = false;
+    bool hasUbufDynamicSize_ = true;
     bool enableL2Cache_ = true;                 // default enable
     bool hasOpSystemCfg_ =false;
     uint32_t oneCoreDumpSize_ = 1048576;        // 1024 K

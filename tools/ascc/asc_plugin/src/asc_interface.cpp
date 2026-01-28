@@ -14,7 +14,7 @@
  */
 #include "asc_interface.h"
 #include "asc_dev_section_generate.h"
-#include "asc_dev_funcRegistry_generate.h"
+#include "asc_dev_func_registry_generate.h"
 #include "asc_info_manager.h"
 #include "asc_ast_utils.h"
 #include "asc_ast_device_analyzer.h"
@@ -32,6 +32,7 @@ namespace AscPlugin {
 
 namespace {
 // pluginPath Example: /cann version/x86_64-linux/lib64/plugin/asc/libasc_plugin.so
+// cannPath: directory cann version or directory latest
 std::string ExtractCannPath(const std::string& pluginPath)
 {
     const std::vector<std::string> potentialPath = {
@@ -72,49 +73,6 @@ uint32_t InitCannPath()
         return ASC_CANNPATH_NOT_FOUND;
     }();
     return cannPathInit;
-}
-
-const std::string& GetCceAicoreArch(const CoreType coreType)
-{
-    auto& manager = InfoManager::GetInstance();
-    ShortSocVersion soc = manager.GetShortSocVersion();
-    return CCE_AICORE_MAP.at({soc, coreType});
-}
-
-inline bool IsMixKernelType(const KernelMetaType kType)
-{
-    return (kType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0 || kType == KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0 ||
-        kType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1 || kType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2);
-}
-
-// Assume mangling name is A. If AIC_ONLY / AIV_ONLY => do not need update
-// If MIX_AIC_1_0, MIX_AIV_1_0, MIX_AIC_1_1, MIX_AIC_1_2,
-// then update -D<manglingName>=<manglingName>_mix_aic, -D<manglingName>=<manglingName>_mix_aiv
-void UpdateManglingNameSuffix(std::vector<std::string>& compileOptions, const CoreType coreType)
-{
-    auto& manager = InfoManager::GetInstance();
-    ShortSocVersion shortSoc = manager.GetShortSocVersion();
-    if (shortSoc == ShortSocVersion::ASCEND910B || shortSoc == ShortSocVersion::ASCEND910_95) {
-        for (const auto& funcInfo : InfoManager::GetInstance().GetGlobalSymbolInfo()) {
-            std::string manglingName = funcInfo.first;
-            KernelMetaType kType = std::get<0>(funcInfo.second);
-            bool isMixKernelType = IsMixKernelType(kType);
-            if (coreType == CoreType::CUBE && isMixKernelType) {
-                compileOptions.emplace_back(
-                    "-D" + manglingName + "=" + manglingName.substr(DEVICE_STUB_PREFIX_LEN) + "_mix_aic");
-            } else if (coreType == CoreType::VEC && isMixKernelType) {
-                compileOptions.emplace_back(
-                    "-D" + manglingName + "=" + manglingName.substr(DEVICE_STUB_PREFIX_LEN) + "_mix_aiv");
-            } else {
-                compileOptions.emplace_back("-D" + manglingName + "=" + manglingName.substr(DEVICE_STUB_PREFIX_LEN));
-            }
-        }
-    } else {
-        for (const auto& funcInfo : InfoManager::GetInstance().GetGlobalSymbolInfo()) {
-            std::string manglingName = funcInfo.first;
-            compileOptions.emplace_back("-D" + manglingName + "=" + manglingName.substr(DEVICE_STUB_PREFIX_LEN));
-        }
-    }
 }
 
 void GenerateAclrtHeader(const std::string& headerPath)
@@ -230,11 +188,13 @@ int32_t PluginPrologue(const char** result, const char* config)
     manager.SetCompileArgs(configInfo.compileArgs);
     manager.SetSourceFile(configInfo.source);
 
-    // do AST analyze to extract kernel type and printf/assert
-    AscPlugin::AscAstDeviceAnalyzer deviceAnalyzer(configInfo.source);
-    if (deviceAnalyzer.Process() != ASC_SUCCESS) {
-        ASC_LOGE("AscAstAnalyzer run failed. Please check log.");
-        return ASC_FAILURE;
+    if (manager.GetShortSocVersion() != ShortSocVersion::ASCEND910B) {
+        // do AST analyze to extract kernel type and printf/assert
+        AscPlugin::AscAstDeviceAnalyzer deviceAnalyzer(configInfo.source);
+        if (deviceAnalyzer.Process() != ASC_SUCCESS) {
+            ASC_LOGE("AscAstAnalyzer run failed. Please check log.");
+            return ASC_FAILURE;
+        }
     }
 
     if (!manager.GetAclrtHeaderPath().empty()) {
@@ -259,13 +219,35 @@ int32_t PluginGenKernel(const char** result, const char* info)
     if (fromJsonRes != ASC_SUCCESS) {
         return fromJsonRes;
     }
-    static auto flag = InfoManager::GetInstance().SetKernelFuncFlag();
+    auto &manager = InfoManager::GetInstance();
+    static auto flag = manager.SetKernelFuncFlag();
     (void)flag;
-    const auto& [kernelType, kfcScene] = GetKernelFuncScene(kernelInfo);
 
-    const auto [deviceResult, deviceStub, metaInfo] = GetDeviceCode(kernelInfo, kernelType, kfcScene);
-    if (deviceResult != 0) {
-        return ASC_FAILURE;
+    std::string deviceStub;
+    std::string metaInfo;
+    std::unordered_set<KernelMetaType> kernelType;
+    if (manager.GetShortSocVersion() != ShortSocVersion::ASCEND910B) { // deviceStub generate by bisheng in 71
+        auto &&[kType, kfcScene] = GetKernelFuncScene(kernelInfo);
+        auto &&[deviceResult, devStub, meta] = GetDeviceCode(kernelInfo, kType, kfcScene);
+        if (deviceResult != 0) {
+            return ASC_FAILURE;
+        }
+        deviceStub = std::move(devStub);
+        metaInfo = std::move(meta);
+        kernelType = std::move(kType);
+    } else {
+        if (kernelInfo.isTemplate) {
+            for (const auto& tmpInst : kernelInfo.templateInstances) {
+                manager.AddGlobalSymbolInfo(std::string(DEVICE_STUB_PREFIX) + tmpInst.instanceMangledName,
+                    KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2, kernelInfo.fileName, kernelInfo.lineNum, kernelInfo.colNum,
+                    KfcScene::Close);
+            }
+        } else {
+            manager.AddGlobalSymbolInfo(std::string(DEVICE_STUB_PREFIX) + kernelInfo.kernelMangledName,
+                KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2, kernelInfo.fileName, kernelInfo.lineNum, kernelInfo.colNum,
+                KfcScene::Close);
+        }
+        kernelType = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
     }
 
     std::string hostStub  = GetHostStubCode(kernelInfo, kernelType);
@@ -283,28 +265,14 @@ int32_t PluginEpilogue(const char** result)
 {
     ASC_CHECK_NULLPTR(result, "PluginEpilogue");
 
-    KernelTypeResult kernelTypeRes = CheckHasMixKernelFunc();
-    // MIX_1_1 and MIX_1_2 with either one having KFC at same time is not supported
-    if ((kernelTypeRes.hasMixOneToOneWithKfc && kernelTypeRes.hasMixOneToTwo) ||
-        (kernelTypeRes.hasMixOneToTwoWithKfc && kernelTypeRes.hasMixOneToOne)) {
+    CompileOptionManager mng = CompileOptionManager();
+    auto deviceCubeExtraCompileOptions = mng.GetDeviceCompileOptions(CoreType::CUBE);
+    auto deviceVecExtraCompileOptions = mng.GetDeviceCompileOptions(CoreType::VEC);
+    auto hostExtraCompileOptions = mng.GetHostCompileOptions();
+    auto functionRegisterCode = FunctionRegistryImpl();
+    if (deviceCubeExtraCompileOptions.empty() && deviceVecExtraCompileOptions.empty()) {
         return ASC_FAILURE;
     }
-
-    std::vector<std::string> hostExtraCompileOptions = GetHostCompileOptions();
-    std::vector<std::string> deviceCommonOptions = GetDeviceCommonCompileOptions(kernelTypeRes);
-
-    std::vector<std::string> deviceCubeExtraCompileOptions = deviceCommonOptions;
-    deviceCubeExtraCompileOptions.emplace_back("--cce-aicore-arch=" + GetCceAicoreArch(CoreType::CUBE));
-    UpdateManglingNameSuffix(deviceCubeExtraCompileOptions, CoreType::CUBE);
-
-    std::vector<std::string> deviceVecExtraCompileOptions = deviceCommonOptions;
-    deviceVecExtraCompileOptions.emplace_back("--cce-aicore-arch=" + GetCceAicoreArch(CoreType::VEC));
-    UpdateManglingNameSuffix(deviceVecExtraCompileOptions, CoreType::VEC);
-    if (InfoManager::GetInstance().GetShortSocVersion() == ShortSocVersion::ASCEND310P) {
-        deviceVecExtraCompileOptions.emplace_back("-D__ENABLE_VECTOR_CORE__");
-    }
-
-    std::string functionRegisterCode = FunctionRegistryImpl();
     EpilogueResult res = {functionRegisterCode, hostExtraCompileOptions, deviceCubeExtraCompileOptions,
         deviceVecExtraCompileOptions};
     return DumpResultInfo(res, result);
@@ -324,7 +292,7 @@ int32_t PluginFatbinLink(const char** result)
     }
     std::vector<std::string> linkOptions = {
         // link libraies
-        "-lascendc_runtime", "-lascendcl", "-lruntime", "-lerror_manager", "-lprofapi", "-lascendalog", "-lmmpa",
+        "-lascendc_runtime", "-lascendcl", "-lruntime", "-lerror_manager", "-lprofapi", "-lunified_dlog", "-lmmpa",
         "-lascend_dump", "-lc_sec", "-lstdc++",
         // link path
         "-L" + cannPath + "/lib64"

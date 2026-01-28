@@ -9,14 +9,14 @@
 */
 
 /*!
- * \file asc_dev_funcRegistry_generate.h
+ * \file asc_dev_func_registry_generate.h
  * \brief
  */
 
 #ifndef __INCLUDE_INTERNAL_ASC_DEV_FUNCREGISTRY_GENERATE_H__
 #define __INCLUDE_INTERNAL_ASC_DEV_FUNCREGISTRY_GENERATE_H__
 
-#include "asc_utils.h"
+#include <string>
 
 namespace AscPlugin {
 

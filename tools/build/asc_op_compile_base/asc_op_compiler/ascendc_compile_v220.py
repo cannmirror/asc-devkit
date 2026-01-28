@@ -390,13 +390,18 @@ def call_bisheng_v220(compile_info: CompileInfo, compile_option_tuple, tiling_in
 
 
 def get_ktype_section_head(variable_name: str):
-    chip_version = CommonUtility.get_chip_version().upper()
-    section_var = f""
+    section_var_head = ""
     if "mix_aic" in variable_name:
-        section_var += f"#if defined(__DAV_{chip_version}_CUBE__)\n"
+        if CommonUtility.is_v220():
+            section_var_head += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
+        elif CommonUtility.is_c310():
+            section_var_head += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)\n"
     elif "mix_aiv" in variable_name:
-        section_var += f"#if defined(__DAV_{chip_version}_VEC__)\n"
-    return section_var
+        if CommonUtility.is_v220():
+            section_var_head += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
+        elif CommonUtility.is_c310():
+            section_var_head += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)\n"
+    return section_var_head
 
 
 def get_ktype_section_variable(variable_name: str, section_func_name: str, kernel_meta_type: KernelMetaType):
@@ -561,7 +566,6 @@ def v310_mode_cube_ofile(little_endian, binary_32) -> int:
         '0110101000', # MOV_OUT _TO_L1 _MULTI_DN2NZ
         '0110101100', # MOV_OUT _TO_L1 _MULTI_ND2NZ
         '0110111010', # MOV_OUT_TO_L1_V2
-        '0111010000', # MOV_OUT_TO_L1_ALIGN_V2
         '0111011000', # LOAD_L1_TO_L0A_MX_2Dv2和LOAD_L1_TO_L0B_MX_2Dv2
         '0110011100', # LOAD_L1_TO_L0A_3Dv2和LOAD_L1_TO_L0B_3Dv2
         '0110011101',
@@ -581,7 +585,7 @@ def v310_mode_cube_ofile(little_endian, binary_32) -> int:
         (little_endian[0] == 'f' and little_endian[1] in '2345abcd' and binary_32[30] == '0'),
 
         # DMA
-        (binary_32[:9] == '011100100' and binary_32[25:29] in ('0001', '0101')),
+        (binary_32[:9] == '011100100' and binary_32[25:29] in ('0001', '0101')), # DMA move inst, include MOV L1 TO UB
         (high_10 in cube_high_low_map and binary_32[30:] == cube_high_low_map[high_10]),
         (high_10 in cube_high_low2_map and binary_32[31] == cube_high_low2_map[high_10]),
         (high_10 in cube_high_map),

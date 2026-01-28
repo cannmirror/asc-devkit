@@ -43,6 +43,7 @@ if(CCACHE_PROGRAM)
 endif()
 
 add_subdirectory(impl)
+add_subdirectory(cmake)
 
 if(BUILD_OPEN_PROJECT)
   include(cmake/intf_pub_linux.cmake)

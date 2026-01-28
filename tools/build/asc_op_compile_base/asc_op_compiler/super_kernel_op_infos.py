@@ -58,7 +58,7 @@ def split_dynamic_o_in_super_kernel(orign_bin_path, rename_file_path, i, compile
     if os.path.exists(new_bin_path):
         str_lst = f'WARNING: ALLREADY EXISTS split .o path: {new_bin_path}'
         CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, compile_log_path)
-    cmds = ['cp'] + ['-rf'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
+    cmds = ['cp'] + ['-rfL'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
     try:
         CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, compile_log_path)
         subprocess.run(cmds)
@@ -501,11 +501,9 @@ class SuperOperatorInfos:
                 recv_info: {sub_op.recv_info}", AscendCLogLevel.LOG_DEBUG)
 
     def creat_compile_log(self):
-        op_debug_config_val = get_op_debug_config()
-        if "dump_cce" in op_debug_config_val:
-            kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
-            distinct_tag = CommonUtility.get_distinct_filename_tag()
-            self.compile_log_path = os.path.join(kernel_meta_dir, self.kernel_name + distinct_tag + '.log')
+        kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
+        distinct_tag = CommonUtility.get_distinct_filename_tag()
+        self.compile_log_path = os.path.join(kernel_meta_dir, self.kernel_name + distinct_tag + '.log')
 
 
     def sub_op_connect_set(self, former_op, op):
@@ -546,7 +544,7 @@ f"ERROR: super kernel do not support self send/receive pair within 1 real stream
                     CommonUtility().ascendc_raise_python_err(ERR_CODE, (\
 f"ERROR: super kernel do not support self send/receive pair within 1 real stream: oplist: {self.op_list} "))
                 elif former_op.stream_index != op.stream_index and not connect_set:
-                    if self.stream_fusin_mode == SuperKernelStreamFusionMode.StreamFusionEnable:
+                    if self.stream_fusin_mode.value == SuperKernelStreamFusionMode.StreamFusionEnable.value:
                         CommonUtility.print_compile_log("", \
                             f"enter into 2 real stream mode, oplist: {self.op_list} ", AscendCLogLevel.LOG_DEBUG)
                         self.enable_double_stream = True
@@ -703,7 +701,7 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
         if os.path.exists(new_bin_path):
             str_lst = f'WARNING: ALLREADY EXISTS split .o path: {new_bin_path}'
             CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
-        cmds = ['cp'] + ['-rf'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
+        cmds = ['cp'] + ['-rfL'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
         try:
             CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
             subprocess.run(cmds)
@@ -722,9 +720,9 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
     def gen_super_kernel_params(self):
         for sub_operator in self.info_base:
             self.super_kernel_params += sub_operator.kernel_params
-            if sub_operator.sub_op_task_type is SubOperatorType.DYNAMIC_OP:
+            if sub_operator.sub_op_task_type.value == SubOperatorType.DYNAMIC_OP.value:
                 self.super_kernel_params += sub_operator.extra_kernel_params
-            elif sub_operator.sub_op_task_type is SubOperatorType.STATIC_OP:
+            elif sub_operator.sub_op_task_type.value == SubOperatorType.STATIC_OP.value:
                 self.super_kernel_params += sub_operator.extra_kernel_params
         CommonUtility.dump_compile_log(['### SK Arg: FFTS', ','.join(self.super_kernel_params)], \
             CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
@@ -739,7 +737,7 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
 
 
     def calc_workspace_size(self):
-        if self.feed_sync_all_mode == SuperKernelFeedSyncAllMode.FeedSyncAllDisable:
+        if self.feed_sync_all_mode.value == SuperKernelFeedSyncAllMode.FeedSyncAllDisable.value:
             self.workspace_size = 0
             return
         if self.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0, \
@@ -751,18 +749,21 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
 
 
     def add_define_options(self, exist_dynamic_sub_ops, options: list):
+        if self.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1 and \
+                                (CommonUtility.is_c310() or CommonUtility.is_310r6()):
+            options.append("-D__ASCENDC_DAVID_SPLIT_CORE__")
         if exist_dynamic_sub_ops:
             options.append("-D__SUPER_KERNEL_DYNAMIC_BLOCK_NUM__")
 
-        if self.early_start_mode != SuperKernelEarlyStartMode.EarlyStartDisable:
+        if self.early_start_mode.value != SuperKernelEarlyStartMode.EarlyStartDisable.value:
             options.append("-D__ASCENDC_ENABLE_SET_NEXT_TASK_START")
             options.append("-D__ASCENDC_ENABLE_WAIT_PRE_TASK_END")
-            if self.early_start_mode == SuperKernelEarlyStartMode.EarlyStartEnableV1:
+            if self.early_start_mode.value == SuperKernelEarlyStartMode.EarlyStartEnableV1.value:
                 options.append("-D__ASCENDC_SUPERKERNEL_EARLY_START_V1")
             else:
                 options.append("-D__ASCENDC_SUPERKERNEL_EARLY_START_V2")
 
-        if self.feed_sync_all_mode == SuperKernelFeedSyncAllMode.FeedSyncAllEnable:
+        if self.feed_sync_all_mode.value == SuperKernelFeedSyncAllMode.FeedSyncAllEnable.value:
             options.append("-D__ASCENDC_SUPERKERNEL_AUTO_SYNC_ALL__")
 
         if self.timestamp_option:
@@ -800,11 +801,17 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
         
         options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "utils"))
         options.append("-I" + os.path.join(asc_path, "include"))
         options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
         options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "c_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
         options.append("-I" + os.path.join(asc_path, "include", "utils"))
         options.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
         options.append("-I" + os.path.join(asc_path, "impl"))

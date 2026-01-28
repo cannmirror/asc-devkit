@@ -105,5 +105,3 @@ set_target_properties(gtest PROPERTIES
 set_target_properties(gtest_main PROPERTIES
         IMPORTED_LOCATION ${GTEST_INSTALL_PATH}/lib/libgtest_main.a
         INTERFACE_INCLUDE_DIRECTORIES ${GTEST_INSTALL_PATH}/include)
-
-

@@ -63,15 +63,15 @@ def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info
 def gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info):
     early_start_mode = compile_info.super_kernel_info["sp_options"].get('early-start', \
         SuperKernelEarlyStartMode.EarlyStartEnableV2)
-    if early_start_mode == SuperKernelEarlyStartMode.EarlyStartDisable or \
-        early_start_mode == SuperKernelEarlyStartMode.EarlyStartV2DisableSubKernel:
+    if early_start_mode.value == SuperKernelEarlyStartMode.EarlyStartDisable.value or \
+        early_start_mode.value == SuperKernelEarlyStartMode.EarlyStartV2DisableSubKernel.value:
         return
     sp_info = get_context().get_addition("super_kernel_sub_info")
     if len(sp_info) != 0 and "super_kernel_sub_loc" in sp_info:
         super_kernel_sub_loc = sp_info["super_kernel_sub_loc"]
-        if early_start_mode == SuperKernelEarlyStartMode.EarlyStartEnableV1:
+        if early_start_mode.value == SuperKernelEarlyStartMode.EarlyStartEnableV1.value:
             compile_option_tuple.compile_options.append("-D__ASCENDC_SUPERKERNEL_EARLY_START_V1")
-        elif early_start_mode == SuperKernelEarlyStartMode.EarlyStartEnableV2:
+        elif early_start_mode.value == SuperKernelEarlyStartMode.EarlyStartEnableV2.value:
             compile_option_tuple.compile_options.append("-D__ASCENDC_SUPERKERNEL_EARLY_START_V2")
 
         if compile_info.super_kernel_early_start_set_flag and (super_kernel_sub_loc != "end"):
@@ -97,7 +97,7 @@ def sp_add_sub_op_block_dim_macro(compile_option_tuple, tiling_info):
 def sp_add_sub_op_feed_sync_all_macro(compile_info, compile_option_tuple):
     feed_sync_all_mode = compile_info.super_kernel_info["sp_options"].get('feed-sync-all', \
         SuperKernelFeedSyncAllMode.FeedSyncAllDisable)
-    if feed_sync_all_mode == SuperKernelFeedSyncAllMode.FeedSyncAllEnable:
+    if feed_sync_all_mode.value == SuperKernelFeedSyncAllMode.FeedSyncAllEnable.value:
         compile_option_tuple.compile_options.append(f"-D__ASCENDC_SUPERKERNEL_AUTO_SYNC_ALL__")
 
 
@@ -107,7 +107,7 @@ def gen_sub_super_kernel_compile_options(compile_option_tuple, tiling_info, comp
     sp_add_sub_op_feed_sync_all_macro(compile_info, compile_option_tuple)
     stream_fusion_mode = compile_info.super_kernel_info["sp_options"].get('stream-fusion', \
         SuperKernelStreamFusionMode.StreamFusionDisable)
-    if stream_fusion_mode == SuperKernelStreamFusionMode.StreamFusionEnable:
+    if stream_fusion_mode.value == SuperKernelStreamFusionMode.StreamFusionEnable.value:
         return
     # dynamic can not open early start, because do not now id in graph
     if tiling_info.static_shape_flag:
@@ -125,7 +125,7 @@ def split_kernel(sub_kernels_dict, func_name, obj_path, split_mode, compile_log_
         if os.path.exists(new_bin_path):
             str_lst = f'ERROR: ALLREADY EXISTS split .o path: {new_bin_path}'
             CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, compile_log_path)
-        cmds = ['cp'] + ['-rf'] + [f'{obj_path}'] + [f'{new_bin_path}']
+        cmds = ['cp'] + ['-rfL'] + [f'{obj_path}'] + [f'{new_bin_path}']
         run_local_cmd(cmds, compile_log_path)
         new_kernel_name = f"{func_name}_split{i}"
         cmds = ['llvm-objcopy', f'--redefine-sym={func_name}={new_kernel_name}', f'{new_bin_path}']

@@ -118,9 +118,9 @@ def gen_system_run_cfg(kernel_type):
     file_header = ''
     if kernel_type == KernelMetaType.KERNEL_TYPE_AIV_ONLY or \
         kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0:
-        file_header += "#if defined(__DAV_C220_VEC__)\n"
+        file_header += "#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
     else:
-        file_header += "#if defined(__DAV_C220_CUBE__)\n"
+        file_header += "#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
  
     file_header += f"    __gm__ struct OpSystemRunCfg g_opSystemRunCfg = {{{0}}};\n"
     file_header += f"#else\n"
@@ -212,11 +212,17 @@ def gen_spk_kernel_call(super_split_info : SuperSplitInfo, split_mode, kernel_ty
            
         cmds.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         cmds.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+        cmds.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
         cmds.append("-I" + os.path.join(asc_path, "impl", "utils"))
         cmds.append("-I" + os.path.join(asc_path, "include"))
         cmds.append("-I" + os.path.join(asc_path, "include", "adv_api"))
         cmds.append("-I" + os.path.join(asc_path, "include", "basic_api"))
         cmds.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "c_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+        cmds.append("-I" + os.path.join(asc_path, "include", "simt_api"))
         cmds.append("-I" + os.path.join(asc_path, "include", "utils"))
         cmds.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
         cmds.append("-I" + os.path.join(asc_path, "impl"))
@@ -310,7 +316,7 @@ def localize_symbol_of_sk(split_mode, sks, spk_dst_file, compile_log_path):
             run_local_cmd(local_synbol_cmds, compile_log_path)
 
 
-def super_kernel_compile(kernel_info, compile_log_path):
+def compile_super_kernel(kernel_info, compile_log_path, enable_features: dict = None):
     global_var_storage.set_variable("super_kenel_save_sub_op_files", True)
     op_info = OpInfo()
     compile_options = kernel_info["compile_option"]
@@ -332,7 +338,8 @@ def super_kernel_compile(kernel_info, compile_log_path):
     if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
         compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
     if kernel_info["timestamp_option"]:
-        compile_options.append('-DONE_CORE_DUMP_SIZE=' + str(compile_info.super_kernel_info["debug_size"] / 75))
+        compile_options.append('-DONE_CORE_DUMP_SIZE=' + str(compile_info.super_kernel_info["debug_size"] \
+                               / CommonUtility.get_dump_core_num()))
     _compile_ascendc_cce_v220_with_kernel_type_for_static(compile_info, compile_option_tuple, tiling_info) 
     sub_objs = gen_super_kernel_link_obj_sequence(compile_info, kernel_info["sub_operator"], kernel_info["link_mode"],
         kernel_info["split_mode"], compile_info.compile_log_path)
@@ -345,3 +352,7 @@ def super_kernel_compile(kernel_info, compile_log_path):
     localization_sub_op_func_sym(compile_info.dst_file, kernel_info["sub_operator"])
     _json_post_process(compile_info, op_info, tiling_info, True, True, compile_info.compile_log_path)
     localize_symbol_of_sk(kernel_info["split_mode"], _sk_new, compile_info.dst_file, compile_info.compile_log_path)
+
+
+def super_kernel_compile(kernel_info, compile_log_path):
+    compile_super_kernel(kernel_info, compile_log_path)

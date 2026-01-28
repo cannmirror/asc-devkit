@@ -58,7 +58,7 @@ def split_dynamic_o_in_super_kernel(orign_bin_path, rename_file_path, i, compile
     if os.path.exists(new_bin_path):
         str_lst = f'WARNING: ALLREADY EXISTS split .o path: {new_bin_path}'
         CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, compile_log_path)
-    cmds = ['cp'] + ['-rf'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
+    cmds = ['cp'] + ['-rfL'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
     try:
         CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, compile_log_path)
         subprocess.run(cmds)
@@ -89,7 +89,7 @@ class SuperOperatorInfos:
         self.creat_compile_log()
         self.info_base = []
         self.super_kernel_params = []
-        self.enable_double_stream:bool = False
+        self.enable_double_stream: bool = False
         self.op_options = parse_super_kernel_options(kernel_infos.get("super_kernel_options", ""))
         self.split_mode = self.op_options.get('split-mode', 4)
         self.profiling_mode = self.op_options.get('profiling', SuperKernelProfilingMode.ProfilingDisable)
@@ -501,11 +501,9 @@ class SuperOperatorInfos:
                 recv_info: {sub_op.recv_info}", AscendCLogLevel.LOG_DEBUG)
 
     def creat_compile_log(self):
-        op_debug_config_val = get_op_debug_config()
-        if "dump_cce" in op_debug_config_val:
-            kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
-            distinct_tag = CommonUtility.get_distinct_filename_tag()
-            self.compile_log_path = os.path.join(kernel_meta_dir, self.kernel_name + distinct_tag + '.log')
+        kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
+        distinct_tag = CommonUtility.get_distinct_filename_tag()
+        self.compile_log_path = os.path.join(kernel_meta_dir, self.kernel_name + distinct_tag + '.log')
 
 
     def sub_op_connect_set(self, former_op, op):
@@ -703,7 +701,7 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
         if os.path.exists(new_bin_path):
             str_lst = f'WARNING: ALLREADY EXISTS split .o path: {new_bin_path}'
             CommonUtility.dump_compile_log([str_lst], CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
-        cmds = ['cp'] + ['-rf'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
+        cmds = ['cp'] + ['-rfL'] + [f'{orign_bin_path}'] + [f'{new_bin_path}']
         try:
             CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, self.compile_log_path)
             subprocess.run(cmds)
@@ -751,6 +749,9 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
 
 
     def add_define_options(self, exist_dynamic_sub_ops, options: list):
+        if self.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1 and \
+                                (CommonUtility.is_c310() or CommonUtility.is_310r6()):
+            options.append("-D__ASCENDC_DAVID_SPLIT_CORE__")
         if exist_dynamic_sub_ops:
             options.append("-D__SUPER_KERNEL_DYNAMIC_BLOCK_NUM__")
 
@@ -800,11 +801,17 @@ f"ERROR: ratio of super kernel debug-aic-num {debug_aic_num} to debug-aiv-num {d
         
         options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+        options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
         options.append("-I" + os.path.join(asc_path, "impl", "utils"))
         options.append("-I" + os.path.join(asc_path, "include"))
         options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
         options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
         options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "c_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+        options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
         options.append("-I" + os.path.join(asc_path, "include", "utils"))
         options.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
         options.append("-I" + os.path.join(asc_path, "impl"))
@@ -902,20 +909,20 @@ split_dynamic_o_in_super_kernel(orign_bin_path, rename_file_path_list[i-1], i, s
             "sub_operator": sub_operator_info,
             "kernel_file": self.kernel_file,
             "compile_option": options,
-            "kernel_name":self.kernel_name,
+            "kernel_name": self.kernel_name,
             "link_mode": self.link_mode,
             "timestamp_option": self.timestamp_option,
-            "debug_option":self.debug_option,
-            "debug_size":self.debug_size,
+            "debug_option": self.debug_option,
+            "debug_size": self.debug_size,
             "split_mode": self.split_mode,
-            "op_list" : self.op_list,
+            "op_list": self.op_list,
             "sp_options": self.op_options,
             "workspace_size": self.workspace_size,
             "param_offset": param_offset,
             "notify_param_offset": notify_param_offset,
             "wait_param_offset": wait_param_offset,
-            "send_event_list":send_event_list,
-            "recv_event_list":recv_event_list
+            "send_event_list": send_event_list,
+            "recv_event_list": recv_event_list
         }
 
 

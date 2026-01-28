@@ -15,11 +15,12 @@ import json
 from pathlib import Path
 import inspect
 import sys
+import os
 
 
 def extract_info_lines(filename):
     matching_lines = []
-    
+
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             for line in file:
@@ -53,7 +54,7 @@ def extract_info_lines(filename):
         raise RuntimeError(f"INFO: {frame.f_code.co_filename}:line {frame.f_lineno}: No log starting with [INFO] "
                     "ASC was found.Please check if the log file is empty or if the ASCEND_GLOBAL_EVENT_ENABLE"
                     " environment variable for controlling the compilation time stamp is not set to 1. ")
-    
+
     return matching_lines
 
 
@@ -103,7 +104,7 @@ def build_traceEvents(len_pid, optype, trace_events, timestamp, pid, tid, tiling
     for i in range(len_pid):
         num = int(i / 12) * 7# 除12是因为，打12个时间点，只有7个tiling信息
         idx = i % 12
-        if idx == 11: 
+        if idx == 11:
             continue
         if idx == 0:
             name = optype[num] + "   compile op"
@@ -115,11 +116,11 @@ def build_traceEvents(len_pid, optype, trace_events, timestamp, pid, tid, tiling
                 "ts": timestamp[i],
                 "pid": pid[i],
                 "tid": tid[i],
-                "args": { 
-                    "tiling_key": tilingtype[num]  
-                } 
+                "args": {
+                    "tiling_key": tilingtype[num]
+                }
                 })
-            last_i = i + 11 
+            last_i = i + 11
             trace_events.append({
                 "optype": optype[num],
                 "name": name,
@@ -146,7 +147,7 @@ def build_traceEvents(len_pid, optype, trace_events, timestamp, pid, tid, tiling
 def common_trace_event(trace_events, compile_stage, optype, timestamp, pid, tid, tilingtype):
     name, stage = compile_stage.rsplit(' ', 1)
     if (stage == "start"):
-        trace_events.append({ 
+        trace_events.append({
             "optype": optype,
             "name": name,
             "cat": "compile_op",
@@ -154,12 +155,12 @@ def common_trace_event(trace_events, compile_stage, optype, timestamp, pid, tid,
             "ts": timestamp,
             "pid": pid,
             "tid": tid,
-            "args": { 
+            "args": {
                 "tiling_key": tilingtype
             }
             })
     if (stage == "end"):
-        trace_events.append({ 
+        trace_events.append({
             "optype": optype,
             "name": name,
             "cat": "compile_op",
@@ -168,12 +169,81 @@ def common_trace_event(trace_events, compile_stage, optype, timestamp, pid, tid,
             "pid": pid,
             "tid": tid
             })
-            
+
     return trace_events
 
 
+def group_lines_by_first_number_flat(lines):
+    grouped = {}
+    pattern = re.compile(r'\bASC\(\s*(\d+)\s*,', re.IGNORECASE)
+
+    for line in lines:
+        match = pattern.search(line)
+        if match:
+            first_num = int(match.group(1))
+        else:
+            first_num = None  # 无法提取时用 None 表示
+
+        if first_num not in grouped:
+            grouped[first_num] = []
+        grouped[first_num].append(line)
+
+    # 按 first_number 从小到大排序（None 放最后）
+    sorted_groups = sorted(grouped.items(), key=lambda x: x[0] if x[0] is not None else float('inf'))
+
+    # 将所有分组的行按顺序拼接成一个 flat 列表
+    result = []
+    for _, group_lines in sorted_groups:
+        result.extend(group_lines)  # 按顺序添加组内所有行
+
+    with open('datalog.txt', 'w', encoding='utf-8') as f:
+        for item in result:
+            f.write(f"{item}\n")
+
+    # 调用函数
+    txtlist = []
+    extract_lines_with_condition(txtlist, result)
+
+    return txtlist
+
+
+def extract_lines_with_condition(txtlist, result):
+    if os.path.exists("check_info.txt"):
+        with open("check_info.txt", 'w', encoding='utf-8') as f:
+            f.write("")
+
+    listline = []
+    for line_num, line in enumerate(result):
+        if 'compile op start ,' in line:
+            listline.append(line_num)
+
+    #遍历相邻行号对，检查差值是否为12
+    for i in range(len(listline) - 1):
+        a = listline[i]
+        b = listline[i + 1]
+
+        if b - a == 12:
+            txtlist.extend(line.strip() for line in result[a:b])
+        else:
+            with open("check_info.txt", 'a', encoding='utf-8') as out_f:
+                for content in result[a:b]:
+                    out_f.write(content + '\n')
+                out_f.write('=======================================================================\n')
+    if os.path.exists("check_info.txt") and os.path.getsize("check_info.txt") > 0:
+        print(
+            "[WARNING]: Some operator log reads failed.\n"
+            "Failed operator details are in 'check_info.txt'.\n"
+            "Please check if the operators are compiled correctly "
+            "by referring to the operator names and original log files."
+        )
+
+
+    return txtlist
+
+
 def compile_trace(input_file, output_file):
-    matching_lines = extract_info_lines(input_file)
+    matching_lines_old = extract_info_lines(input_file)
+    matching_lines = group_lines_by_first_number_flat(matching_lines_old)
     pid = []
     tid = []
     timestamp = []
@@ -186,7 +256,7 @@ def compile_trace(input_file, output_file):
         pid.append(p)
         #timestamp
         match = re.search(r'timestamp:\s*(\d+)ns', line)
-        ts = int(match.group(1))
+        ts = float(match.group(1)) / 1000000
         timestamp.append(ts)
         #tid
         match = re.search(r'\[tid:\s*(\d+)\]', line)
@@ -259,4 +329,3 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"{e}")
         exit(1)
-    

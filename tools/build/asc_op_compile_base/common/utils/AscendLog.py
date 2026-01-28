@@ -84,20 +84,20 @@ class AscendLog:
         self.level.event_enable = 1
         self.level.event_disable = 0
         try:
-            self.log = ctypes.cdll.LoadLibrary('libascendalog.so')
+            self.log = ctypes.cdll.LoadLibrary('libunified_dlog.so')
         except OSError:
             ld_path = os.getenv('LD_LIBRARY_PATH')
             if ld_path is None:
-                print('[Warning]Can not find libascendalog.so')
+                print('[Warning]Can not find libunified_dlog.so')
                 return
             path_list = ld_path.split(':')
             for path in path_list:
-                target_path = os.path.join(path, 'libascendalog.so')
+                target_path = os.path.join(path, 'libunified_dlog.so')
                 if os.path.isfile(target_path):
                     self.log = ctypes.cdll.LoadLibrary(target_path)
                     break
             if self.log is None:
-                print('[Warning]Can not find libascendalog.so')
+                print('[Warning]Can not find libunified_dlog.so')
             else:
                 print("success to load log")
         finally:
@@ -112,7 +112,7 @@ class AscendLog:
         """
         if self.log is None:
             return
-        self.log.DlogRecordForC(ctypes.c_int(module), self.level.debug,
+        self.log.DlogRecord(ctypes.c_int(module), self.level.debug,
                                ctypes.c_char_p(fmt.encode("utf-8")))
 
     def info(self: any, module: any, fmt: str) -> None:
@@ -124,7 +124,7 @@ class AscendLog:
         """
         if self.log is None:
             return
-        self.log.DlogRecordForC(ctypes.c_int(module), self.level.info,
+        self.log.DlogRecord(ctypes.c_int(module), self.level.info,
                                ctypes.c_char_p(fmt.encode("utf-8")))
 
     def warn(self: any, module: any, fmt: str) -> None:
@@ -136,7 +136,7 @@ class AscendLog:
         """
         if self.log is None:
             return
-        self.log.DlogRecordForC(ctypes.c_int(module), self.level.warning,
+        self.log.DlogRecord(ctypes.c_int(module), self.level.warning,
                                ctypes.c_char_p(fmt.encode("utf-8")))
 
     def error(self: any, module: any, fmt: str) -> None:
@@ -148,7 +148,7 @@ class AscendLog:
         """
         if self.log is None:
             return
-        self.log.DlogRecordForC(ctypes.c_int(module), self.level.error,
+        self.log.DlogRecord(ctypes.c_int(module), self.level.error,
                                ctypes.c_char_p(fmt.encode("utf-8")))
 
     def event(self: any, module: any, fmt: str) -> None:
@@ -160,7 +160,7 @@ class AscendLog:
         """
         if self.log is None:
             return
-        self.log.DlogRecordForC(ctypes.c_int(module), self.level.event,
+        self.log.DlogRecord(ctypes.c_int(module), self.level.event,
                                ctypes.c_char_p(fmt.encode("utf-8")))
 
     def set_level(self: any, module: any, level: any, event: any) -> None:
@@ -173,7 +173,7 @@ class AscendLog:
         """
         if self.log is None:
             return
-        self.log.DlogSetlevelForC(ctypes.c_int(module), ctypes.c_int(level),
+        self.log.dlog_setlevel(ctypes.c_int(module), ctypes.c_int(level),
                                   ctypes.c_int(event))
 
 

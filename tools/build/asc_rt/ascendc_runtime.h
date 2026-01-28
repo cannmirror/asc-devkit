@@ -49,6 +49,7 @@ extern "C" {
 #endif
 
 using rtStream_t = void*;
+using rtFuncHandle = void*;
 extern "C" void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
 extern "C" uint32_t AllocAscendMemDevice(void **devMem, uint64_t size);
 extern "C" uint32_t FreeAscendMemDevice(void *devMem);
@@ -61,6 +62,15 @@ extern "C" bool AscendCheckSoCVersion(const char *socVersion, char *errMsg);
 extern "C" uint32_t GetCoreNumForMixVectorCore(uint32_t *aiCoreNum, uint32_t *vectorCoreNum);
 extern "C" int32_t AscendDevBinaryRegister(const void *fileBuf, size_t fileSize, void **handle);
 extern "C" int32_t AscendFunctionRegister(void *handle, const char *stubFunc);
-extern "C" int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockDim, void **args, uint32_t size,
-    const rtStream_t stream);
+extern "C" int32_t AscendKernelLaunchWithFlagV2(const char *stubFunc, const uint32_t blockDim, void **args,
+                                                uint32_t size, const rtStream_t stream, const uint32_t ubufDynamicSize);
+extern "C" int32_t AscendDevBinaryLazyRegister(const char* binBuf, size_t binSize, void** handle);
+extern "C" int32_t AscendGetFuncFromBinary(void* const binHandle, const char* kernelName, void** funcHandle);
+extern "C" int32_t AscendLaunchKernelWithHostArgs(void* funcHandle,
+    uint32_t blockDim, void* stream, void* hostArgs, size_t argsSize, uint32_t ubufDynamicSize);
+extern "C" uint32_t AscendCFunctionGetMetaInfoKtype(const rtFuncHandle funcHandle, unsigned int *kernelType);
+extern "C" uint32_t AscendCFunctionGetMetaInfoCoreRation(const rtFuncHandle funcHandle, unsigned short *aicRation,
+    unsigned short *aivRation);
+extern "C" uint32_t AscendCGetProfkTypeImpl(const rtFuncHandle funcHandle);
+
 #endif // __ASCENDC_RUNTIME_H__

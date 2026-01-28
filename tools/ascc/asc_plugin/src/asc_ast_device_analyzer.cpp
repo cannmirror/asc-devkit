@@ -67,15 +67,13 @@ int32_t AscAstDeviceAnalyzer::Process()
 
 void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
 {
-    auto npuArch = InfoManager::GetInstance().GetShortSocVersion();
+    auto shortSoc = InfoManager::GetInstance().GetShortSocVersion();
     static const std::unordered_map<ShortSocVersion, std::vector<const char*>> DAV_VERSION_MAP = {
-        {ShortSocVersion::ASCEND910B, {"-D__DAV_C220_CUBE__", "-D__CCE_AICORE__=220", "-D__NPU_ARCH__=2201"}},
+        {ShortSocVersion::ASCEND910B, {"-D__DAV_C220_CUBE__", "-D__CCE_AICORE__=220", "-D__NPU_ARCH__=2201", "-D__DAV_CUBE__"}},
         {ShortSocVersion::ASCEND310P, {"-D__DAV_M200__", "-D__CCE_AICORE__=200", "-D__NPU_ARCH__=2002"}},
         {ShortSocVersion::ASCEND910, {"-D__DAV_C100__", "-D__CCE_AICORE__=100", "-D__NPU_ARCH__=1001"}},
         {ShortSocVersion::ASCEND310B, {"-D__DAV_M300__", "-D__CCE_AICORE__=300", "-D__NPU_ARCH__=3002"}},
-        {ShortSocVersion::ASCEND910_95, {"-D__DAV_C310__", "-D__CCE_AICORE__=310", "-D__NPU_ARCH__=3101"}},
-        {ShortSocVersion::KIRINX90, {"-D__DAV_L300__", "-D__CCE_AICORE__=300", "-D__NPU_ARCH__=3003"}},
-        {ShortSocVersion::KIRIN9030, {"-D__DAV_L311__", "-D__CCE_AICORE__=311", "-D__NPU_ARCH__=3113"}},
+        {ShortSocVersion::ASCEND910_95, {"-D__DAV_C310_CUBE__", "-D__CCE_AICORE__=310", "-D__NPU_ARCH__=3101", "-D__DAV_CUBE__"}},
     };
 
     static const std::vector<std::string> innerOpts = {
@@ -87,12 +85,21 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
         "-D__CCE__",
         "-DGM_ADDR= __gm__ uint8_t*",
         "-D__gm__= __attribute__((annotate(\"cce_global\")))",
+        "-D__forceinline__=",
         "-D__host_aicore__=",
+        "-D__kfc_workspace__=",
+        "-D__disable_kernel_type_autoinfer__=",
         "-DASCENDC_DUMP=1",
         "-D__CHECK_FEATURE_AT_PRECOMPILE",
         "-Dhalf=__fp16",
         "-Dbfloat16_t=__bf16",
         "-D__NPU_DEVICE__",
+        // simt and simd attribute
+        "-D__simt_callee__=",
+        "-D__simt_vf__=",
+        "-D__simd_callee__=",
+        "-D__simd_vf__=",
+        "-D__no_simd_vf_fusion__=",
         // bisheng kernel type attribute
         "-D__mix__(cube, vec)=",
         "-D__cube__=",
@@ -113,7 +120,7 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
     std::vector<std::string> removeOpts = {"-DL2_CACHE_HINT"};
     astDeviceArgs_.RemoveOptions(removeOpts);
     astDeviceArgs_.definitions.insert(astDeviceArgs_.definitions.end(), innerDefinitions.begin(), innerDefinitions.end());
-    const auto& archOptionList = DAV_VERSION_MAP.at(npuArch);
+    const auto& archOptionList = DAV_VERSION_MAP.at(shortSoc);
     for (const auto& option : archOptionList) {
         astDeviceArgs_.definitions.emplace_back(option);
     }

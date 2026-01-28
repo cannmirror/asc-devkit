@@ -29,15 +29,81 @@ target_compile_definitions(device_intf_pub INTERFACE
 target_include_directories(device_intf_pub INTERFACE
     ${ASCENDC_DEVKIT_PATH}/asc/impl/adv_api
     ${ASCENDC_DEVKIT_PATH}/asc/impl/basic_api
+    ${ASCENDC_DEVKIT_PATH}/asc/impl/c_api
+    ${ASCENDC_DEVKIT_PATH}/asc/impl/micro_api
+    ${ASCENDC_DEVKIT_PATH}/asc/impl/simt_api
     ${ASCENDC_DEVKIT_PATH}/asc/impl/utils
     ${ASCENDC_DEVKIT_PATH}/asc/include
     ${ASCENDC_DEVKIT_PATH}/asc/include/adv_api
     ${ASCENDC_DEVKIT_PATH}/asc/include/basic_api
     ${ASCENDC_DEVKIT_PATH}/asc/include/aicpu_api
+    ${ASCENDC_DEVKIT_PATH}/asc/include/c_api
+    ${ASCENDC_DEVKIT_PATH}/asc/include/micro_api
+    ${ASCENDC_DEVKIT_PATH}/asc/include/simt_api 
     ${ASCENDC_DEVKIT_PATH}/asc/include/utils  
     ${ASCENDC_DEVKIT_PATH}/tikcpp/tikcfw
     ${ASCENDC_DEVKIT_PATH}/tikcpp/tikcfw/interface
     ${ASCENDC_DEVKIT_PATH}/tikcpp/tikcfw/impl
+)
+
+add_library(c310_aiv_intf_pub INTERFACE)
+
+target_compile_options(c310_aiv_intf_pub INTERFACE
+    -D__DAV_C310__
+    --cce-aicore-arch=dav-c310-vec
+    --cce-aicore-only
+    --cce-auto-sync
+    --cce-mask-opt
+    "SHELL:-mllvm -cce-aicore-stack-size=0x8000"
+    "SHELL:-mllvm -cce-aicore-function-stack-size=0x8000"
+    "SHELL:-mllvm -cce-aicore-record-overflow=true"
+    "SHELL:-mllvm -cce-aicore-addr-transform"
+    "SHELL:-mllvm -cce-aicore-jump-expand=true"
+    "SHELL:-mllvm -cce-aicore-dcci-insert-for-scalar=false"
+)
+
+target_link_libraries(c310_aiv_intf_pub INTERFACE
+    $<BUILD_INTERFACE:device_intf_pub>
+)
+
+add_library(c310_aic_intf_pub INTERFACE)
+
+target_compile_options(c310_aic_intf_pub INTERFACE
+    -D__DAV_C310__
+    --cce-aicore-arch=dav-c310-cube
+    --cce-aicore-only
+    --cce-auto-sync
+    --cce-mask-opt
+    "SHELL:-mllvm -cce-aicore-stack-size=0x8000"
+    "SHELL:-mllvm -cce-aicore-function-stack-size=0x8000"
+    "SHELL:-mllvm -cce-aicore-record-overflow=true"
+    "SHELL:-mllvm -cce-aicore-addr-transform"
+    "SHELL:-mllvm -cce-aicore-jump-expand=true"
+    "SHELL:-mllvm -cce-aicore-dcci-insert-for-scalar=false"
+    "SHELL:-mllvm -cce-aicore-dcci-before-kernel-end=false"
+)
+
+target_link_libraries(c310_aic_intf_pub INTERFACE
+    $<BUILD_INTERFACE:device_intf_pub>
+)
+
+add_library(310r6_intf_pub INTERFACE)
+
+target_compile_options(310r6_intf_pub INTERFACE
+    --cce-aicore-arch=dav-310r6
+    --cce-aicore-only
+    --cce-auto-sync
+    --cce-mask-opt
+    "SHELL:-mllvm -cce-aicore-stack-size=0x8000"
+    "SHELL:-mllvm -cce-aicore-function-stack-size=0x8000"
+    "SHELL:-mllvm -cce-aicore-record-overflow=true"
+    "SHELL:-mllvm -cce-aicore-addr-transform"
+    "SHELL:-mllvm -cce-aicore-dcci-insert-for-scalar=false"
+    "SHELL:-mllvm -cce-aicore-dcci-before-kernel-end=false"
+)
+
+target_link_libraries(310r6_intf_pub INTERFACE
+    $<BUILD_INTERFACE:device_intf_pub>
 )
 
 add_library(m300_intf_pub INTERFACE)
@@ -92,6 +158,7 @@ target_compile_options(c220_aic_intf_pub INTERFACE
 target_link_libraries(c220_aic_intf_pub INTERFACE
     $<BUILD_INTERFACE:device_intf_pub>
 )
+
 add_library(l300_intf_pub INTERFACE)
 
 target_compile_options(l300_intf_pub INTERFACE

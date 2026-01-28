@@ -25,7 +25,6 @@
 #include "asc_info_manager.h"
 
 namespace AscPlugin {
-constexpr size_t CODE_BUFFER_LEN = 16 * 1024;
 namespace {
 enum class ParamJoinType : uint8_t {
     ONLY_NAME = 0,
@@ -80,7 +79,8 @@ AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std
 {
     // init stringstream
     std::string buffer;
-    buffer.reserve(CODE_BUFFER_LEN);
+    constexpr size_t codeBuffLen = 16 * 1024;
+    buffer.reserve(codeBuffLen);
     codeStream_.str(std::move(buffer));
 
     // init dump flag
@@ -97,7 +97,7 @@ AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std
 std::string AscDevStubGenerator::GetWorkspaceArgName() const
 {
     for (const auto& param : kernelInfo_.kernelParameters) {
-        if (param.attribute.find(std::string("kfc_workspace")) != std::string::npos) {
+        if (param.attribute.find(std::string("cce_kfc_workspace")) != std::string::npos) {
             ASC_LOGI("Kernel [%s] : the kernel utilizes the workspace.", kernelInfo_.kernelName.c_str());
             return param.name;
         }
@@ -135,6 +135,11 @@ void AscDevStubGenerator::StubFuncDumpAndHardSyncImpl(const bool& isMix, const b
             codeStream_ << "    AscendC::InitDump(false, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);\n";
         }
     }
+    const auto& infoManager = InfoManager::GetInstance();
+    if (infoManager.IsDumpOn() && infoManager.HasSimtPrintf()) {
+        codeStream_ << "    AscendC::Simt::SetSimtDumpWorkspace(__ascendc_dump_addr + "
+                    << "(ONE_CORE_DUMP_SIZE * 108 + 72 * 2048 * 2048));\n";
+    }
     if (isHardSync) {
         codeStream_ << "    icache_preload(1);\n";
         codeStream_ << "    if (g_sysFftsAddr != nullptr) {\n";
@@ -171,7 +176,8 @@ void AscDevStubGenerator::StubFuncWorkSpaceImpl(const bool& isMix)
     }
     codeStream_ << "    AscendC::SetSysWorkspaceForce(ascendc_workspace_param);\n";
     codeStream_ << "    ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);\n";
-    if (isMix && kfcScene_ == KfcScene::Open) {
+    ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
+    if (isMix && kfcScene_ == KfcScene::Open && shortSoc != ShortSocVersion::ASCEND910_95) {
         codeStream_ << "    if constexpr (g_coreType == AscendC::AIC) {\n";
         codeStream_ << "        matmul::clearWorkspace(ascendc_workspace_param);\n";
         codeStream_ << "    }\n";

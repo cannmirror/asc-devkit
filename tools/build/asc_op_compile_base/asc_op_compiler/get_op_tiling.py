@@ -606,7 +606,9 @@ def gen_static_shape(tiling_def, tilingdata, struct_tiling_def_base, all_dynamic
     class_body += f"#ifdef ASCENDC_CPU_DEBUG\n"
     class_body += f"#include \"kernel_log.h\"\n"
     class_body += "#else\n"
+    class_body += "#ifndef __aicore__\n"
     class_body += "#define __aicore__ [aicore]\n"
+    class_body += "#endif\n"
     class_body += "#endif\n"
     if not global_var_storage.get_variable("ascendc_tiling_no_register"):
         class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n\n"
@@ -759,7 +761,9 @@ def gen_dynamic_shape(tiling_def, struct_tiling_def_base):
     class_body += f"#ifdef ASCENDC_CPU_DEBUG\n"
     class_body += f"#include \"kernel_log.h\"\n"
     class_body += "#else\n"
+    class_body += "#ifndef __aicore__\n"
     class_body += "#define __aicore__ [aicore]\n"
+    class_body += "#endif\n"
     class_body += "#endif\n"
     if not global_var_storage.get_variable("ascendc_tiling_no_register"):
         class_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n\n"
@@ -975,7 +979,9 @@ def get_header_and_sub_struct_def(tiling_def, struct_tiling_def_base):
     start_body += f"#ifdef ASCENDC_CPU_DEBUG\n"
     start_body += f"#include \"kernel_log.h\"\n"
     start_body += "#else\n"
+    start_body += "#ifndef __aicore__\n"
     start_body += "#define __aicore__ [aicore]\n"
+    start_body += "#endif\n"
     start_body += "#endif\n"
     if not global_var_storage.get_variable("ascendc_tiling_no_register"):
         start_body += "#define REGISTER_TILINGDATA_SIZE(tiling_struct, counter) \n\n"
@@ -1118,8 +1124,8 @@ def get_tiling_data_func_head():
 def get_tiling_data_func():
     class_body = "{\n"
     class_body += "    constexpr uint64_t all_bytes = sizeof(T);\n"
-    class_body += "#if defined(ASCENDC_CPU_DEBUG) || defined(__DAV_C220_CUBE__) || defined(__DAV_C310_CUBE__) || \
-defined(__DAV_310R6_CUBE__) || defined(__GET_CODE_CHANNEL__)\n"
+    class_body += "#if defined(ASCENDC_CPU_DEBUG) || (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201) || (defined \
+    (__DAV_CUBE__) && __NPU_ARCH__ == 3101) || defined(__DAV_310R6_CUBE__) || defined(__GET_CODE_CHANNEL__)\n"
     class_body += "#if defined(__DAV_C100__) || defined(ASCENDC_CPU_DEBUG)\n"
     class_body += get_dynamic_assign_tiling_data_by_size("all_bytes", "const __gm__", "(const __gm__ uint8_t *)\
 p_tilingdata")
@@ -1127,24 +1133,21 @@ p_tilingdata")
     class_body += "    copy_data_align64((uint8_t*)tilingdata, (__gm__ uint8_t *)p_tilingdata, all_bytes);\n"
     class_body += "#endif\n"
     class_body += "#else\n"
-    class_body += "#if defined(__DAV_C310__) && defined(__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__) \n"
+    class_body += "#if __NPU_ARCH__ == 3101 && defined(__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__) \n"
     class_body += _gen_tiling_copy_through_reserved_ub()
     class_body += "#else \n"
     class_body += "    __ubuf__ uint8_t *tilingdata_in_ub = (__ubuf__ uint8_t *)get_imm(0);\n"
     class_body += "    constexpr uint32_t len_burst = (all_bytes + 31) / 32;\n"
-    class_body += "#if defined(__DAV_C310__) || defined(__DAV_310R6__) || __NPU_ARCH__ == 5102\n"
+    class_body += "#if __NPU_ARCH__ == 3101 || defined(__DAV_310R6__) || __NPU_ARCH__ == 5102\n"
     class_body += "    copy_gm_to_ubuf_align_v2((__ubuf__ uint8_t *)tilingdata_in_ub, \
 (__gm__ uint8_t *)p_tilingdata, 0, 1, len_burst * 32, 0, 0, false, 0, 0, 0);\n"
     class_body += get_tilingdata_preload()
-    class_body += "#elif __NPU_ARCH__ != 3102\n"
-    class_body += "    copy_gm_to_ubuf(((__ubuf__ uint8_t *)tilingdata_in_ub), p_tilingdata, 0, 1,\
-len_burst, 0, 0);\n"
-    class_body += "#elif __NPU_ARCH__ == 3003\n"
-    class_body += "    copy_gm_to_ubuf(((__ubuf__ void *)tilingdata_in_ub), (__gm__ void *)p_tilingdata, 0, 1, \
-len_burst, 0, 0);\n"
     class_body += "#elif __NPU_ARCH__ == 3113\n"
     class_body += "    copy_gm_to_ubuf_align_v2((__ubuf__ uint8_t *)tilingdata_in_ub, \
 (__gm__ uint8_t *)p_tilingdata, 0, 1, len_burst * 32, 0, 0, false, 0, 0);\n"
+    class_body += "#elif __NPU_ARCH__ != 3102\n"
+    class_body += "    copy_gm_to_ubuf(((__ubuf__ uint8_t *)tilingdata_in_ub), p_tilingdata, 0, 1,\
+len_burst, 0, 0);\n"
     class_body += "#else\n"
     class_body += "    copy_gm_to_ubuf_align(((__ubuf__ uint8_t *)tilingdata_in_ub), (__gm__ uint8_t *)p_tilingdata,\
 0, 1, all_bytes, 0, 0, 0, 0);\n"
@@ -1271,7 +1274,9 @@ def gen_static_shape_v2(optype: str, tiling_struct: str, tiling_raw_data: str):
     class_body += f"#ifdef ASCENDC_CPU_DEBUG\n"
     class_body += f"#include \"kernel_log.h\"\n"
     class_body += "#else\n"
+    class_body += "#ifndef __aicore__\n"
     class_body += "#define __aicore__ [aicore]\n"
+    class_body += "#endif\n"
     class_body += "#endif\n"
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
         class_body += "#define ASCENDC_INTERNAL_STR(x) #x \n"
@@ -1307,7 +1312,9 @@ def gen_dynamic_shape_v2(optype: str, tiling_struct: str):
     class_body += f"#ifdef ASCENDC_CPU_DEBUG\n"
     class_body += f"#include \"kernel_log.h\"\n"
     class_body += "#else\n"
+    class_body += "#ifndef __aicore__\n"
     class_body += "#define __aicore__ [aicore]\n"
+    class_body += "#endif\n"
     class_body += "#endif\n"
     if global_var_storage.get_variable("ascendc_tiling_no_register"):
         class_body += "#define ASCENDC_INTERNAL_STR(x) #x \n"
@@ -1539,11 +1546,12 @@ def get_tiling_info_isolate(op_info: OpInfo, input_tiling_info_dict: dict):
 
     # get tiling through old version
     CommonUtility.print_compile_log(op_info.op_type, \
-            "isolate gen tiling file failed, retry gen tiling file through old version.", \
-            AscendCLogLevel.LOG_INFO)
+                "isolate gen tiling file failed, retry gen tiling file through old version.", \
+                AscendCLogLevel.LOG_INFO)
     return get_tiling_info(op_info, input_tiling_info_dict["tiling_key_list"], \
         input_tiling_info_dict["value_depends"], input_tiling_info_dict["enable_vd"], \
         input_tiling_info_dict["tiling_key_group_map"])
+
 
 
 def get_tiling_info(op_info: OpInfo, tiling_key_list: list = None, value_depends: dict = None, \

@@ -79,6 +79,7 @@ const std::unordered_map<std::string, std::vector<platformconf::DPLATFORM>> soc_
       {Ascend_035, {platformconf::DPLATFORM::ASCEND_035}},
       {Ascend_035A, {platformconf::DPLATFORM::ASCEND_035A}},
       {Ascend_035B, {platformconf::DPLATFORM::ASCEND_035B}},
+      {Ascend_910_950x, {platformconf::DPLATFORM::ASCEND_910_95}},
       {Ascend_910_950y, {platformconf::DPLATFORM::ASCEND_910_95}},
       {Ascend_910_950z, {platformconf::DPLATFORM::ASCEND_910_95}},
       {Ascend_910_957b, {platformconf::DPLATFORM::ASCEND_910_95}},
@@ -114,8 +115,8 @@ const std::unordered_map<std::string, std::vector<platformconf::DPLATFORM>> soc_
       {Ascend_910_5591, {platformconf::DPLATFORM::ASCEND_910_55}},
       {MC62CM12AA, {platformconf::DPLATFORM::ASCEND_910_95}},
       {KirinX90, {platformconf::DPLATFORM::KIRINX90}},
-      {Kirin9030, {platformconf::DPLATFORM::KIRIN9030}}
-  };
+      {Kirin9030, {platformconf::DPLATFORM::KIRIN9030}},
+      };
 }
 }
 

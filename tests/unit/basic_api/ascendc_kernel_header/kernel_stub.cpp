@@ -77,3 +77,9 @@ rtError_t rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t blockDim, rtAr
 {
     return 0;
 }
+
+rtError_t rtFunctionGetMetaInfo(const rtFuncHandle funcHandle, const rtFunctionMetaType type, void *data,
+    const uint32_t length)
+{
+    return 0;
+}

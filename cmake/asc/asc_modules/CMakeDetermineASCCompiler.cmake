@@ -1,30 +1,16 @@
+# ----------------------------------------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+# ----------------------------------------------------------------------------------------------------------
+
 # CMakeDetermineASCCompiler.cmake is used to initialize ASC-related variables.
 # And this file will not be triggered again during incremental compilation.
-# This file is used to locate the compiler.
-# Update SOC_VERSION, CMAKE_BUILD_TYPE, CMAKE_INSTALL_PREFIX
-# 1. Setup env variable ASCEND_HOME_PATH
-if(NOT DEFINED ENV{ASCEND_HOME_PATH})
-    set(POSSIBLE_PATHS "/usr/local/Ascend/cann" "${HOME}/Ascend/cann")
-
-    message(FATAL_ERROR "
-    ================================================================================
-    ERROR: ASCEND_HOME_PATH environment variable is not set!
-
-    This variable is required to find CANN package.
-
-    Possible solutions:
-        Source the environment setup script: source <ascend_install_path>/set_env.sh
-
-    Common installation locations:
-    ${POSSIBLE_PATHS}
-    ================================================================================
-    ")
-else()
-    if(NOT EXISTS "$ENV{ASCEND_HOME_PATH}")
-        message(FATAL_ERROR "ERROR: ASCEND_HOME_PATH directory does not exist!")
-    endif()
-endif()
-
+# 1. Find compiler for ASC extension
 message(STATUS "System processer: ${CMAKE_SYSTEM_PROCESSOR}")
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
     set(ASCEND_CANN_PACKAGE_LINUX_PATH $ENV{ASCEND_HOME_PATH}/x86_64-linux)

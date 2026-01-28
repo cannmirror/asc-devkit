@@ -8,3 +8,16 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 add_subdirectory(asc_plugin)
+
+if(NOT BUILD_OPEN_PROJECT)
+    set(ASC_CMAKE_MODULE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/ascendc_kernel_cmake)
+    add_custom_target(ascendc_kernel_cmake_legacy ALL
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${ASC_CMAKE_MODULE_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" "${ASC_CMAKE_MODULE_BINARY_DIR}"
+    )
+
+    install(DIRECTORY ${ASC_CMAKE_MODULE_BINARY_DIR}
+        DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL
+        PATTERN "test_*" EXCLUDE
+    )
+endif()

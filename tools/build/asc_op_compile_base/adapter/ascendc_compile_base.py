@@ -162,7 +162,7 @@ TILINGKEY_PAR_COMPILE is {}".format(parallel_compile_check), AscendCLogLevel.LOG
             ascendc_self_par_job_num = int(ascendc_self_par_job)
 
     if ci_big_makefile_par_switch or ascendc_self_par_job_num > 0:
-        dstfile_with_pid = dstfile_name + str(os.getpid())
+        dstfile_with_pid = os.path.join(CommonUtility.get_kernel_meta_dir(), dstfile_name + "_" + str(os.getpid()))
         write_mk(tiling_key_list, cmds_list, dstfile_with_pid, compile_log_path)
         # when TILINGKEY_PARALLEL_COMPILATION_SWITCH and ASCENDC_PAR_COMPILE_JOB conflicts
         # TILINGKEY_PARALLEL_COMPILATION_SWITCH first

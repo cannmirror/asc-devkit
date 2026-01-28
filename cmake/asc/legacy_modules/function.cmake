@@ -124,8 +124,6 @@ function(ascendc_library target_name target_type)
                         )
     add_dependencies(${device_target}_preprocess ${device_target}_precompile)
 
-    #  echo 
-    #  MESSAGE
     # Merge the device-side obj files to generate device.o
     if(DYNAMIC_MODE)
         set(${device_target}_aic_device_dir ${CMAKE_CURRENT_BINARY_DIR}/${device_target}_aic_device_dir)
@@ -322,6 +320,7 @@ function(ascendc_library target_name target_type)
                                 -DBUILD_CFG=${${device_target}_auto_gen_dir}/host_config.cmake
                                 -DCMAKE_C_COMPILER_LAUNCHER=${CMAKE_C_COMPILER_LAUNCHER}
                                 -DCMAKE_CXX_COMPILER_LAUNCHER=${CMAKE_CXX_COMPILER_LAUNCHER}
+                                -DBUILD_MODE=${BUILD_MODE}
                                 <SOURCE_DIR>
                             LIST_SEPARATOR ::
                             BUILD_ALWAYS TRUE
@@ -399,7 +398,7 @@ function(ascendc_library target_name target_type)
                 tiling_api
                 register
                 platform
-                ascendalog
+                unified_dlog
                 mmpa
                 c_sec
                 dl
@@ -422,7 +421,7 @@ function(ascendc_library target_name target_type)
                 error_manager
                 profapi
                 ge_common_base
-                ascendalog
+                unified_dlog
                 mmpa
                 dl
             PUBLIC

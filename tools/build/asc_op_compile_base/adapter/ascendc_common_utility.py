@@ -46,6 +46,7 @@ class CompileInfo:
         self.is_debug: bool = False
         self.compile_log_path = None
         self.hard_sync: bool = False
+        self.hard_kfc_server: bool = False
         self.enable_deterministic: bool = False
         self.tiling_key_kernel_type: dict = {}
         self.tiling_key_deterministic: dict = {}
@@ -56,6 +57,8 @@ class CompileInfo:
         self.sub_core_type: int = -1
         self.template_tiling_info: dict = {}
         self.tiling_key_struct_map: dict = {}
+        self.register_tiling_struct: set = set()    # tiling struct found in REGISTER_TILING_XXX
+        self.tpl_tiling_struct: set = set()         # tiling struct found in TPL
         self.enable_final_super_kernel_compile: bool = False
         # if enable_final_super_kernel_compile is True and super_kernel_objs is empty
         # means no fatbin, dst_file is the final file
@@ -347,7 +350,7 @@ class CommonUtility:
 
     @staticmethod
     def ascendc_raise_python_err(err_code, msg):
-        CommonUtility.print_compile_log("", f"err_msg: {msg}.",
+        CommonUtility.print_compile_log("", f"{msg}",
                 AscendCLogLevel.LOG_ERROR)
         raise_tbe_python_err(err_code, msg)
 
@@ -381,32 +384,6 @@ class CommonUtility:
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
         if short_soc_version in ["Ascend910B", "Ascend910_93"]:
-            return True
-        return False
-
-
-    @staticmethod
-    def is_l300():
-        """return if current soc version is l300
-
-        Returns:
-            res: True means l300
-        """
-        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["KirinX90"]:
-            return True
-        return False
-
-
-    @staticmethod
-    def is_l311():
-        """return if current soc version is l311
-
-        Returns:
-            res: True means l311
-        """
-        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["Kirin9030"]:
             return True
         return False
 
@@ -539,7 +516,6 @@ class CommonUtility:
             return True
         return False
 
-
     @staticmethod
     def is_l300():
         """return if current soc version is l300
@@ -551,7 +527,6 @@ class CommonUtility:
         if short_soc_version in ["KirinX90"]:
             return True
         return False
-
 
     @staticmethod
     def is_l311():
@@ -705,6 +680,12 @@ format(str(stage), output))
         hex_num_str_list = list(map(reverser_hex_str, hex_num[::-1]))
         hex_num_str = ''.join(hex_num_str_list)
         return hex_num_str
+    
+    @staticmethod
+    def get_dump_core_num():
+        if CommonUtility.is_c310() or CommonUtility.is_310r6():	 
+            return 108 
+        return 75
 
 
 def is_enable_sanitizer(compile_options):
@@ -923,6 +904,8 @@ def convert_customized_config_to_inferchannel(config: CustomizedConfig):
     tiling_struct_expr_map = {}
     tiling_key_struct_map = \
         {k: str(v.tiling_struct_name) for k, v in tiling_key_infos.items() if str(v.tiling_struct_name) != ''}
+    register_tiling_struct = set()
+    tpl_tiling_struct = set()
     set_task_bar = False
     wait_task_bar = False
     tiling_key_deterministic = {k: str(v.enable_deterministic).lower() for k, v in tiling_key_infos.items()}
@@ -931,7 +914,8 @@ def convert_customized_config_to_inferchannel(config: CustomizedConfig):
                                            enable_deterministic, tiling_key_kernel_type, no_set_kernel_type,\
                                            default_kernel_type, dump_info, template_tiling_info,
                                            default_tiling_struct, tiling_struct_expr_map, tiling_key_struct_map,\
-                                           set_task_bar, wait_task_bar, tiling_key_deterministic, None)
+                                           register_tiling_struct, tpl_tiling_struct, set_task_bar, wait_task_bar, \
+                                           tiling_key_deterministic, None)
 
 
 def get_kernel_fun_name_with_tiling_key_and_kernel_type(compile_info: CompileInfo, tiling_key: int):

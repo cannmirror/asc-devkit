@@ -86,13 +86,14 @@ TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeDevBinaryRegisterTest) {
     void **args = nullptr;
     uint32_t size;
     rtStream_t stream = nullptr;
-    ret = AscendKernelLaunchWithFlagV2(stubFunc, blockDim, args, size, stream);
+    ret = AscendKernelLaunchWithFlagV2(stubFunc, blockDim, args, size, stream, 0);
     EXPECT_EQ(ret, 0);
 }
 
 TEST_F(TEST_ASCENDC_RUNTIME, ascendcRuntimeMemoryFailedTest){
     size_t bufsize = 16;
     uint32_t ret;
+    MOCKER(aclrtMalloc).expects(once()).will(returnValue(1));
     ret = AllocAscendMemDevice(nullptr, bufsize);
     EXPECT_NE(ret, 0);
     ret = FreeAscendMemDevice(nullptr);

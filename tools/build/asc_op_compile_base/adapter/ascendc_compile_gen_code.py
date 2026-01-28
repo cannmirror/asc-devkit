@@ -119,20 +119,35 @@ def gen_global_isolation_macro(compile_info: CompileInfo, tiling_info: TilingInf
         tiling_key = tiling_info.tiling_key
 
     if CommonUtility.is_v220():
-        macro_branch_statment = f"#if {TILING_KEY_MACRO} == {tiling_key}UL && defined(__DAV_C220_VEC__)\n"
+        macro_branch_statment = \
+            f"#if {TILING_KEY_MACRO} == {tiling_key}UL && (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
         # judge operator is aic only
         if compile_info.no_set_kernel_type is False:
             kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
             if kernel_type.value in [1, 3, 5, 6, 7]:
-                macro_branch_statment = f"#if {TILING_KEY_MACRO} == {tiling_key}UL && defined(__DAV_C220_CUBE__)\n"
+                macro_branch_statment = \
+                    f"#if {TILING_KEY_MACRO} == {tiling_key}UL && (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
         elif compile_info.code_channel == CORE_TYPE_CUBE:
-            macro_branch_statment = f"#if {TILING_KEY_MACRO} == {tiling_key}UL && defined(__DAV_C220_CUBE__)\n"
+            macro_branch_statment = \
+                f"#if {TILING_KEY_MACRO} == {tiling_key}UL && (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
     elif CommonUtility.is_v200():
         macro_branch_statment = f"#if {TILING_KEY_MACRO} == {tiling_key}UL && defined(__DAV_M200__)\n"
         if compile_info.no_set_kernel_type is False:
             kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
             if kernel_type.value in [9]:
                 macro_branch_statment = f"#if {TILING_KEY_MACRO} == {tiling_key}UL && defined(__DAV_M200_VEC__)\n"
+    elif (CommonUtility.is_c310() or CommonUtility.is_310r6()):
+        macro_branch_statment = \
+            f"#if {TILING_KEY_MACRO} == {tiling_key}UL && (defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)\n"
+        # judge operator is aic only
+        if compile_info.no_set_kernel_type is False:
+            kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
+            if kernel_type.value in [1, 3, 5, 6, 7]:
+                macro_branch_statment = \
+                    f"#if {TILING_KEY_MACRO} == {tiling_key}UL && (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)\n"
+        elif compile_info.code_channel == CORE_TYPE_CUBE:
+            macro_branch_statment = \
+                f"#if {TILING_KEY_MACRO} == {tiling_key}UL && (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)\n"
     else:
         macro_branch_statment = f"#if {TILING_KEY_MACRO} == {tiling_key}UL\n"
     return macro_branch_statment
@@ -396,10 +411,11 @@ def get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compil
             tiling_key_value = tiling_key_value[:-2]
         tiling_key_struct_size_map[tiling_key_value] = (tiling_struct, dec_data)
         if compile_info.tiling_key_group_map is None:
-            return
+            return tiling_key_struct_size_map
         if tiling_key_value in compile_info.tiling_key_group_map.keys():
             for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key_value]:
                 tiling_key_struct_size_map[tiling_key_slave] = (tiling_struct, dec_data)
+    return tiling_key_struct_size_map
 
 
 def gen_tiling_struct_and_dfx_section_head():
@@ -489,7 +505,7 @@ def gen_dfx_section_for_one_tiling_key_dynamic(compile_info: CompileInfo, tiling
                                                tiling_info: TilingInfo, tiling_key_struct_size_map: dict):
     source = ""
     if compile_info.no_set_kernel_type is False:
-        kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]  
+        kernel_type = compile_info.tiling_key_kernel_type[str(tiling_key)]
         if kernel_type.value >= 6 and kernel_type.value <= 7:
             cube_marker = "_mix_aic"
             kernel_name = compile_info.kernel_name + '_%s' % tiling_key + cube_marker

@@ -135,13 +135,16 @@ class TensorFormat(Enum):
     ND_RNN_BIAS = "ND_RNN_BIAS"
     FRACTAL_NZ_C0_16 = "FRACTAL_NZ_C0_16"
     FRACTAL_NZ_C0_32 = "FRACTAL_NZ_C0_32"
+    FRACTAL_NZ_C0_2 = "FRACTAL_NZ_C0_2"
+    FRACTAL_NZ_C0_4 = "FRACTAL_NZ_C0_4"
+    FRACTAL_NZ_C0_8 = "FRACTAL_NZ_C0_8"
 
 
 ALL_FORMAT_LIST = [entry.value for entry in TensorFormat]
 ALL_DTYPE_LIST = ("int4", "int8", "uint8", "int16", "uint16", "int32", "uint32", "bfloat16",
                   "int64", "uint64", "float16", "float32", "float64", "bool", "uint1", "double",
                   "complex32", "complex64", "complex128", "hifloat8", "float8_e4m3fn", "float8_e5m2", "float8_e8m0",
-                  "float4_e2m1", "float4_e1m2")
+                  "float4_e2m1", "float4_e1m2", "int2")
 OP_NAME = ""
 PARAM_NAME = ""
 

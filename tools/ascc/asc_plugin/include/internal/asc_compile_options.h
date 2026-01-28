@@ -18,15 +18,42 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <functional>
 
 #include "asc_struct.h"
 #include "asc_utils.h"
 
 namespace AscPlugin {
-
 KernelTypeResult CheckHasMixKernelFunc();
-std::vector<std::string> GetHostCompileOptions();
-std::vector<std::string> GetDeviceCommonCompileOptions(const KernelTypeResult& kernelTypeRes);
+class CompileOptionManager {
+public:
+    CompileOptionManager();
+    std::vector<std::string> GetHostCompileOptions() const;
+    std::vector<std::string> GetDeviceCompileOptions(CoreType type) const;
 
+private:
+    template<ShortSocVersion soc>
+    std::vector<std::string> GetDeviceCompileOptionsWithSoc(CoreType coreType) const;
+    void SetOldPrintOptions(std::vector<std::string>& devSocOpts) const;
+    void InitDispatchTable();
+    template<ShortSocVersion soc>
+    void RegisterOptHandler();
+
+private:
+    using SocOptHandler = std::function<std::vector<std::string>(CoreType)>;
+
+    ShortSocVersion socVersion_ = ShortSocVersion::ASCEND910B;
+    bool isAutoSyncOn_ = true;
+    bool userDumpStatus_ = true;
+    bool isDumpOn_ = true;
+    bool l2CacheOn_ = true;
+    uint32_t oneCoreDumpSize_ = 0;
+
+    std::string optiLevel_;
+    std::string cannVersionHeader_;
+    std::vector<std::string> deviceCompileOpt_;
+    std::unordered_map<ShortSocVersion, SocOptHandler> dispatchTable_;
+};
 } // namespace AscPlugin
 #endif // __INCLUDE_INTERNAL_ASC_COMPILE_OPTIONS_H__

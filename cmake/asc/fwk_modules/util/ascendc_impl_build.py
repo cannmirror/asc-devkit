@@ -213,12 +213,6 @@ def {}({}, kernel_name="{}"{}):
         options.append("-DDETERMINISTIC_MODE=1")
     else:
         options.append("-DDETERMINISTIC_MODE=0")
-    ascendc_api_version_header_path = os.path.join(asc_path, "include/adv_api/ascendc_api_version.h")
-    if os.path.exists(ascendc_api_version_header_path):
-        with open(ascendc_api_version_header_path, "r") as ascendc_api_version_file:
-            ascendc_api_version = re.findall(r"#define ASCENDC_API_VERSION (\d+)", ascendc_api_version_file.read())
-            if ascendc_api_version:
-                options.append(f"-DASCENDC_API_VERSION={{ascendc_api_version[0]}}")
     custom_compile_options = {},
     custom_all_compile_options = {},
     soc_version = get_soc_spec("SOC_VERSION")

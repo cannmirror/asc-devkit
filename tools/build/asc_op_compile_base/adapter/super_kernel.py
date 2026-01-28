@@ -17,16 +17,16 @@ import stat
 from .global_storage import global_var_storage
 from .super_kernel_utility import KernelMetaType, \
     CommonUtility, gen_func_align_attribute
-from .super_kernel_op_compile import super_kernel_compile, gen_file_header
+from .super_kernel_op_compile import compile_super_kernel, gen_file_header
 from .super_kernel_constants import SuperKernelPreLoadMode, SuperKernelDataCacheMode, \
     SuperKernelEarlyStartMode, SubOperatorType, SuperKernelDebugDcciAllMode, SuperKernelDebugSyncAllMode, \
-    SuperKernelFeedSyncAllMode, SuperKernelProfilingMode, ERR_CODE
+    SuperKernelFeedSyncAllMode, SuperKernelProfilingMode, ERR_CODE, SuperKernelDeviceType
 from .super_kernel_compile_base import gen_super_dump_code
 from .super_kernel_sub_op_infos import indent_code_func, SubOperatorInfos
 from .super_kernel_op_infos import SuperOperatorInfos
 
 
-def gen_early_start_config(pre_sub_operator: SubOperatorInfos, sub_operator: SubOperatorInfos):
+def kernel_meta_type_to_device_type(kernelMetaType: KernelMetaType):
     aiv_configs = [
         KernelMetaType.KERNEL_TYPE_AIV_ONLY,
         KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0,
@@ -39,25 +39,41 @@ def gen_early_start_config(pre_sub_operator: SubOperatorInfos, sub_operator: Sub
         KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1,
         KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2,
     ]
-    if pre_sub_operator.kernel_type in aic_configs:
+
+    if kernelMetaType in aiv_configs:
+        return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIV.value
+    if kernelMetaType in aic_configs:
+        return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value
+    if kernelMetaType in mix_configs:
+        return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MIX.value
+    return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MAX.value
+
+
+def gen_early_start_config(pre_sub_operator: SubOperatorInfos, sub_operator: SubOperatorInfos):
+    pre_sub_operator_device_type = kernel_meta_type_to_device_type(pre_sub_operator.kernel_type)
+    sub_operator_device_type = kernel_meta_type_to_device_type(sub_operator.kernel_type)
+
+    if pre_sub_operator_device_type == SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value:
         prev_sub_kernel_config = 0
-    elif pre_sub_operator.kernel_type in aiv_configs:
+    elif pre_sub_operator_device_type == SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIV.value:
         prev_sub_kernel_config = 1
-    elif pre_sub_operator.kernel_type in mix_configs:
+    elif pre_sub_operator_device_type == SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MIX.value:
         prev_sub_kernel_config = 2
     else:
         CommonUtility().ascendc_raise_python_err(ERR_CODE, \
-            f"previous sub kernel type {pre_sub_operator.kernel_type} do not support!")
+            f"Do not support previous sub kernel device type: {pre_sub_operator_device_type}. \
+                Should be AIC, AIV or MIX.")
 
-    if sub_operator.kernel_type in aic_configs:
+    if sub_operator_device_type == SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value:
         cur_sub_kernel_config = 0
-    elif sub_operator.kernel_type in aiv_configs:
+    elif sub_operator_device_type == SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIV.value:
         cur_sub_kernel_config = 1
-    elif sub_operator.kernel_type in mix_configs:
+    elif sub_operator_device_type == SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MIX.value:
         cur_sub_kernel_config = 2
     else:
         CommonUtility().ascendc_raise_python_err(ERR_CODE, \
-            f"current sub kernel type {sub_operator.kernel_type} do not support!")
+            f"Do not support current sub kernel device type: {sub_operator_device_type}. \
+                Should be AIC, AIV or MIX.")
 
     super_kernel_early_start_config = (prev_sub_kernel_config << 2) | cur_sub_kernel_config
     # sub_operator.elf.early_start_complement_wait_flag_block
@@ -811,16 +827,31 @@ if ASCEND_IS_AIC {{
 
 
 def gen_wait_block_extra_sync(super_operator, pre_sub_operator, sub_operator):
+    pre_sub_operator_device_type = kernel_meta_type_to_device_type(pre_sub_operator.kernel_type)
+    sub_operator_device_type = kernel_meta_type_to_device_type(sub_operator.kernel_type)
+
     extra_sync = ""
-    # some inter op barrier do not contain aiv only syncall, so extra sync will be needed
-    extra_sync_pairs = {(KernelMetaType.KERNEL_TYPE_AIC_ONLY, KernelMetaType.KERNEL_TYPE_AIV_ONLY)}
+    # When wait block runs on aiv block 0 and inter op barrier does not contain aiv only syncall,
+    # extra aiv syncall will be needed to ensure next op runs after wait block finishes.
+    extra_aiv_sync_pairs = \
+        {(SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value, SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIV.value),
+         (SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value, SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MIX.value)}
 
-    if (pre_sub_operator.kernel_type, sub_operator.kernel_type) not in extra_sync_pairs:
-        return extra_sync
 
-    # in sk aic only cases, inter op barrier contains aic only sync all, no extra sync will be needed
-    extra_sync += "// extra sync for wait event\n"
-    extra_sync += "AscendC::SyncAll<true>();\n\n"
+    # When wait block runs on aic block 0 and inter op barrier does not contain aic only syncall,
+    # extra aic syncall will be needed to ensure next op runs after wait block finishes.
+    extra_aic_sync_pairs = \
+        {(SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIV.value, SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value)}
+
+    if (pre_sub_operator_device_type, sub_operator_device_type) in extra_aiv_sync_pairs:
+        extra_sync += "// extra sync for wait event\n"
+        extra_sync += "AscendC::SyncAll<true>();\n\n"
+    elif (pre_sub_operator_device_type, sub_operator_device_type) in extra_aic_sync_pairs:
+        extra_sync += """
+// extra sync for wait event
+ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));
+wait_flag_dev(AscendC::SYNC_AIC_FLAG);
+"""
 
     return extra_sync
 
@@ -1016,5 +1047,5 @@ def compile(kernel_infos, called_kernel_name="ascendc_super_kernel_plus", impl_m
         CommonUtility().ascendc_raise_python_err(ERR_CODE, ("super kernel compile must provide op lists"))
     super_operator = SuperOperatorInfos(kernel_infos, called_kernel_name)
     gen_super_kernel_file(super_operator)
-    super_kernel_compile(super_operator.compile_info, super_operator.compile_log_path)
+    compile_super_kernel(super_operator.compile_info, super_operator.compile_log_path)
     return

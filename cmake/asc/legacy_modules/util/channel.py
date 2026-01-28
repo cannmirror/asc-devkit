@@ -125,7 +125,6 @@ def v310_mode_cube_ofile(little_endian, binary_32) -> int:
         '0110101000', # MOV_OUT _TO_L1 _MULTI_DN2NZ
         '0110101100', # MOV_OUT _TO_L1 _MULTI_ND2NZ
         '0110111010', # MOV_OUT_TO_L1_V2
-        '0111010000', # MOV_OUT_TO_L1_ALIGN_V2
         '0111011000', # LOAD_L1_TO_L0A_MX_2Dv2和LOAD_L1_TO_L0B_MX_2Dv2
         '0110011100', # LOAD_L1_TO_L0A_3Dv2和LOAD_L1_TO_L0B_3Dv2
         '0110011101',
@@ -147,7 +146,7 @@ def v310_mode_cube_ofile(little_endian, binary_32) -> int:
         (little_endian[0] == 'f' and little_endian[1] in '2345abcd' and binary_32[30] == '0'),
 
         # DMA
-        (high_9 == '011100100' and mid_36 in ('0001', '0101')),
+        (high_9 == '011100100' and mid_36 in ('0001', '0101')), # DMA move inst, include MOV L1 TO UB
         (high_10 in cube_high_low_map and binary_32[30:] == cube_high_low_map[high_10]),
         (high_10 in cube_high_low2_map and binary_32[31] == cube_high_low2_map[high_10]),
         (high_10 in cube_high_map),

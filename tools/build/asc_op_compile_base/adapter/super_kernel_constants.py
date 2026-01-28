@@ -22,6 +22,14 @@ AI_CORE_STR = "AiCore"
 ERR_CODE = "EB0500"
 
 
+class SuperKernelDeviceType(enum.Enum):
+    """super kernel device type"""
+    KERNEL_DEVICE_TYPE_AIV = 0
+    KERNEL_DEVICE_TYPE_AIC = 1
+    KERNEL_DEVICE_TYPE_MIX = 2
+    KERNEL_DEVICE_TYPE_MAX = 3
+
+
 class SuperKernelEarlyStartMode(enum.Enum):
     """early start mode"""
     EarlyStartDisable = 0

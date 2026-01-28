@@ -56,3 +56,15 @@ int aclrtGetFunctionName(aclrtFuncHandle funcHandle, uint32_t maxLen, char *name
 {
     return 0;
 }
+
+aclError aclrtBinaryGetFunction(const aclrtBinHandle binHandle, const char *kernelName, aclrtFuncHandle *funcHandle)
+{
+    return 0;
+}
+
+aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle funcHandle, uint32_t numBlocks, aclrtStream stream,
+    aclrtLaunchKernelCfg *cfg, void *hostArgs, size_t argsSize, aclrtPlaceHolderInfo *placeHolderArray,
+    size_t placeHolderNum)
+{
+    return 0;
+}

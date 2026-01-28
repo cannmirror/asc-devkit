@@ -1,7 +1,14 @@
+# ----------------------------------------------------------------------------------------------------------
+# Copyright (c) 2025 Huawei Technologies Co., Ltd.
+# This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+# CANN Open Software License Agreement Version 2.0 (the "License").
+# Please refer to the License for details. You may not use this file except in compliance with the License.
+# THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+# INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+# See LICENSE in the root of the software repository for the full text of the License.
+# ----------------------------------------------------------------------------------------------------------
+
 include(CMakeCommonLanguageInclude)
-
-
-set(CMAKE_INCLUDE_FLAG_AICPU "-I")
 
 # extension for the output of a compile for a single file
 if(UNIX)
@@ -9,6 +16,8 @@ if(UNIX)
 else()
     set(CMAKE_AICPU_OUTPUT_EXTENSION .obj)
 endif()
+
+set(CMAKE_INCLUDE_FLAG_AICPU "-I")
 
 set(CMAKE_DEPFILE_FLAGS_AICPU "-MD -MT <DEP_TARGET> -MF <DEP_FILE>")
 if((NOT DEFINED CMAKE_DEPENDS_USE_COMPILER OR CMAKE_DEPENDS_USE_COMPILER) AND CMAKE_GENERATOR MATCHES "Makefiles|WMake")

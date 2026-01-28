@@ -33,12 +33,16 @@ public:
     std::string GenCode();
 
 private:
-    std::string GenStubFuncDecl(bool hasNameSpace, bool hasAnonymousSpace) const;
+    std::string GenStubFuncDecl() const;
     std::string ManglingNameJudgeCode();
     void GenStubFuncImpl();
+    void ParseKernelName();
 
 private:
     KernelInfo kernelInfo_;
+    bool hasAnonymousSpace_ = false;
+    bool hasNameSpace_ = true;
+    std::string kernelNameWithNameSpace_ = "";
     std::ostringstream typeJudgePreCode_;
     std::ostringstream kernelCallStub_;
     std::unordered_set<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};

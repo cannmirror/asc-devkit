@@ -73,6 +73,8 @@ SOC_TO_SHORT_SOC_MAP = {
     "ascend910_957b": "ascend910_95",
     "ascend910_957c": "ascend910_95",
     "ascend910_957d": "ascend910_95",
+    "ascend910_950x": "ascend910_95",
+    "ascend910_950y": "ascend910_95",
     "ascend910_950z": "ascend910_95",
     "ascend910_958a": "ascend910_95",
     "ascend910_9599": "ascend910_95",

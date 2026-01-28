@@ -49,7 +49,7 @@ from .ascendc_compile_gen_code import get_code_for_l2_cache, \
     gen_init_dump_code, add_op_param_to_workspace, _gen_compile_cmd, get_tiling_key_struct_size_map, \
     gen_tiling_struct_and_dfx_section_head, gen_tiling_struct_size_for_group_key, \
     gen_dfx_section_for_one_tiling_key_dynamic, gen_dfx_section_for_one_tiling_key_static, \
-    gen_tiling_struct_size_for_group_key_no_size
+    gen_tiling_struct_size_for_group_key_no_size, gen_global_isolation_macro
 from .ascendc_compile_gen_json import _gen_mix_json_from_seperate_json, \
     _gen_mix_json_from_seperate_json_for_kernel_type, _dynamic_kernel_list_to_json, \
     _dynamic_regbase_kernel_list_to_json, _static_regbase_kernel_list_to_json, _gen_mix_sub_json, \
@@ -431,8 +431,8 @@ def _gen_set_workspace_codes(is_mix: bool, is_single_and_using_hard_sync: bool, 
         source += "do {\n"
 
     # is_single_and_using_hard_sync scene not need clear workspace
-    if is_mix and (not CommonUtility.is_c310()):  # c310 doesn't need clearWorkspace
-        source += f"#ifdef {MIX_CORE_MACRO} \n"
+    if is_mix and compile_info.hard_kfc_server:
+        source += f"#if defined({MIX_CORE_MACRO}) && !defined(ENABLE_CV_COMM_VIA_SSBUF) \n"
         source += "    if constexpr (g_coreType == AscendC::AIC) {\n"
         source += "        matmul::clearWorkspace(workspace);\n"
         source += add_time_stamp_codes('TIME_STAMP_WRAP_CLEAR_WK_SPAC', 2)
@@ -463,6 +463,25 @@ def _gen_set_mc2_ctx_param(opinfo: OpInfo):
     for ctx_name in opinfo.mc2_ctx:
         source += f"    AscendC::SetHcclContext<{index}>({ctx_name});\n"
         index += 1
+    return source
+
+
+# When TPL struct is not registered through macro REGISTER_TILING, need to insert section code
+def _gen_tpl_tiling_struct_section(compile_info: CompileInfo, tiling_info: TilingInfo):
+    source = gen_global_isolation_macro(compile_info, tiling_info)
+    tiling_struct_set = set()
+    counter = 0
+    for tiling_key in compile_info.tiling_key_list:
+        original_tiling_struct = compile_info.tiling_key_struct_map[tiling_key]
+        if original_tiling_struct in compile_info.tpl_tiling_struct and \
+            original_tiling_struct not in compile_info.register_tiling_struct and \
+            original_tiling_struct not in tiling_struct_set:
+            source += f"static const uint64_t __ascendc_TPL_tiling_struct_{counter} __attribute__"
+            source += \
+                f"((used, section(\".ascendc_tiling.{original_tiling_struct}\"))) = sizeof({original_tiling_struct});\n"
+            counter += 1
+        tiling_struct_set.add(original_tiling_struct)
+    source += f"#endif\n\n"
     return source
 
 
@@ -634,6 +653,9 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
         func_name, opinfo, tiling_info, has_template=False)
     source += "#endif\n"
 
+    if len(compile_info.tiling_key_struct_map) > 0:
+        source += _gen_tpl_tiling_struct_section(compile_info, tiling_info)
+
     # aicore exception restart main block
     if global_var_storage.get_variable("ascendc_enable_aicore_exception_restart"):
         for key in tiling_info.tiling_key_list:
@@ -798,7 +820,7 @@ def gen_tiling_struct_size_and_dfx_section_file(compile_info: CompileInfo, tilin
                     for tiling_key_slave in compile_info.tiling_key_group_map[tiling_key]:
                         source += gen_dfx_section_for_one_tiling_key_dynamic(compile_info, tiling_key_slave, \
                                                                 tiling_info, tiling_key_struct_size_map)
-        
+
     try:
         with os.fdopen(\
             os.open(out_file, os.O_TRUNC | os.O_RDWR | os.O_CREAT, stat.S_IWUSR | stat.S_IRUSR), 'w') as ofd:
@@ -893,7 +915,8 @@ def _get_tiling_struct_without_register_size(compile_info: CompileInfo):
             name_part = match.split('.ascendc_tiling.', 1)[1]
             name_part = name_part.rsplit('.', 1)[0]
 
-            get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compile_info, 0)
+            tiling_key_struct_size_map = get_tiling_key_struct_size_map(tiling_key_struct_size_map, \
+                                                                        name_part, compile_info, 0)
 
     for section_name in section_name_set:
         objdump_cmd = ['llvm-objdump', '-s', '-j', '{}'.format(section_name), '{}'.format(compile_info.dst_file)]
@@ -908,7 +931,8 @@ def _get_tiling_struct_without_register_size(compile_info: CompileInfo):
             bytes_data = bytes.fromhex(hex_num_str)
             dec_data = struct.unpack('>Q', bytes_data)[0]
             name_part = section_name.split('.ascendc_tiling.', 1)[1].rsplit('.', 1)[0]
-            get_tiling_key_struct_size_map(tiling_key_struct_size_map, name_part, compile_info, dec_data)
+            tiling_key_struct_size_map = get_tiling_key_struct_size_map(tiling_key_struct_size_map, \
+                                                                        name_part, compile_info, dec_data)
             max_tiling_size = max(max_tiling_size, dec_data)
     compile_info.max_tiling_size = max_tiling_size
     return tiling_key_struct_size_map
@@ -953,11 +977,17 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
                                           "include", "ascendc", "asc_devkit_version.h")
     compile_options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "utils"))
     compile_options.append("-I" + os.path.join(asc_path, "include"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "aicpu_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "c_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "micro_api"))
+    compile_options.append("-I" + os.path.join(asc_path, "include", "simt_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "utils"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include"))
     compile_options.append("-I" + os.path.join(asc_path, "..", "..", "include", "ascendc"))
@@ -1051,6 +1081,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     compile_info.tiling_key_group_map = tiling_key_group_map
     compile_info.compile_log_path = compile_log_path
     compile_info.hard_sync = infered_info_from_ifile.hard_sync or hardware_sync_in_asm
+    compile_info.has_kfc_server = not infered_info_from_ifile.no_kfc_server_flag
     compile_info.enable_deterministic = infered_info_from_ifile.enable_deterministic
     compile_info.tiling_key_deterministic = infered_info_from_ifile.tiling_key_deterministic
     compile_info.tiling_key_kernel_type = infered_info_from_ifile.tiling_key_kernel_type
@@ -1062,6 +1093,8 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
         else default_dump_info
     compile_info.template_tiling_info = infered_info_from_ifile.template_tiling_info
     compile_info.tiling_key_struct_map = infered_info_from_ifile.tiling_key_struct_map
+    compile_info.register_tiling_struct = infered_info_from_ifile.register_tiling_struct
+    compile_info.tpl_tiling_struct = infered_info_from_ifile.tpl_tiling_struct
 
     set_dump_assert_flag(compile_info)
 
@@ -1223,7 +1256,6 @@ def compile_op(cce_file: str, origin_func_name: str, op_info: OpInfo, compile_op
     """
     LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["compile_op_start"], AscendCLogLevel.LOG_INFO)
     LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_start"], AscendCLogLevel.LOG_INFO)
-    process_ascendc_api_version(cce_file, compile_options, extend_options)
     # online compile reuses thread, dfx infos need to be reset.
     global_var_storage.global_storage_reset()
     if extend_options.get('opp_kernel_hidden_dat_path', None) is None and not os.path.exists(cce_file):
@@ -1282,7 +1314,6 @@ def compile_op_with_customized_config(cce_file: str, origin_func_name: str, op_i
     """
     LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["compile_op_start"], AscendCLogLevel.LOG_INFO)
     LogUtil.detail_log_print(op_info.kernel_name, COMPILE_STAGE_MSG_INFO["preprocess_start"], AscendCLogLevel.LOG_INFO)
-    process_ascendc_api_version(cce_file, compile_options, extend_options)
     # online compile reuses thread, dfx infos need to be reset.
     global_var_storage.global_storage_reset()
     if extend_options.get('opp_kernel_hidden_dat_path', None) is None and not os.path.exists(cce_file):

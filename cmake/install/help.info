@@ -1,3 +1,0 @@
-  --full                            Install full mode
-  --install-path=<path>             Install product to specific dir path
-  --rollback                        Rollback spc cold patch

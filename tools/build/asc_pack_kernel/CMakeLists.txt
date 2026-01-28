@@ -8,6 +8,7 @@ target_link_libraries(ascendc_pack_kernel PRIVATE
 target_compile_options(ascendc_pack_kernel PRIVATE
     -fpie
     -fstack-protector-all
+    -Werror
 )
 
 target_link_options(ascendc_pack_kernel PRIVATE

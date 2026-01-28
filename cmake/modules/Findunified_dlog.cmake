@@ -8,15 +8,15 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-if (alog_FOUND)
-    message(STATUS "Package alog has been found.")
+if (unified_dlog_FOUND)
+    message(STATUS "Package unified_dlog has been found.")
     return()
 endif()
 
 set(_cmake_targets_defined "")
 set(_cmake_targets_not_defined "")
 set(_cmake_expected_targets "")
-foreach(_cmake_expected_target IN ITEMS slog alog alog_headers)
+foreach(_cmake_expected_target IN ITEMS unified_dlog unified_dlog_headers)
     list(APPEND _cmake_expected_targets "${_cmake_expected_target}")
     if(TARGET "${_cmake_expected_target}")
         list(APPEND _cmake_targets_defined "${_cmake_expected_target}")
@@ -44,72 +44,54 @@ unset(_cmake_targets_defined)
 unset(_cmake_targets_not_defined)
 unset(_cmake_expected_targets)
 
-find_path(alog_INCLUDE_DIR
-    NAMES base/alog_pub.h
+find_path(unified_dlog_INCLUDE_DIR
+    NAMES base/dlog_pub.h
     PATH_SUFFIXES pkg_inc
     NO_CMAKE_SYSTEM_PATH
     NO_CMAKE_FIND_ROOT_PATH)
 
-find_library(slog_a_SHARED_LIBRARY
-    NAMES libascendalog.so
-    PATH_SUFFIXES lib64
-    NO_CMAKE_SYSTEM_PATH
-    NO_CMAKE_FIND_ROOT_PATH)
-
-find_library(alog_a_SHARED_LIBRARY
-    NAMES libascendalog.so
+find_library(unified_dlog_SHARED_LIBRARY
+    NAMES libunified_dlog.so
     PATH_SUFFIXES lib64
     NO_CMAKE_SYSTEM_PATH
     NO_CMAKE_FIND_ROOT_PATH)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(alog
+find_package_handle_standard_args(unified_dlog
     FOUND_VAR
-        alog_FOUND
+        unified_dlog_FOUND
     REQUIRED_VARS
-        alog_INCLUDE_DIR
-        slog_a_SHARED_LIBRARY
-        alog_a_SHARED_LIBRARY
+        unified_dlog_INCLUDE_DIR
+        unified_dlog_SHARED_LIBRARY
 )
 
-if(alog_FOUND)
-    set(alog_a_INCLUDE_DIR "${alog_INCLUDE_DIR}")
+if(unified_dlog_FOUND)
+    set(unified_dlog_INCLUDE_DIR "${unified_dlog_INCLUDE_DIR}")
     include(CMakePrintHelpers)
-    message(STATUS "Variables in alog module:")
-    cmake_print_variables(alog_a_INCLUDE_DIR)
-    cmake_print_variables(slog_a_SHARED_LIBRARY)
-    cmake_print_variables(alog_a_SHARED_LIBRARY)
+    message(STATUS "Variables in unified_dlog module:")
+    cmake_print_variables(unified_dlog_INCLUDE_DIR)
+    cmake_print_variables(unified_dlog_SHARED_LIBRARY)
 
-    add_library(slog SHARED IMPORTED)
-    set_target_properties(slog PROPERTIES
-        INTERFACE_COMPILE_DEFINITIONS "LOG_CPP;PROCESS_LOG"
-        INTERFACE_LINK_LIBRARIES "alog_headers"
-        IMPORTED_LOCATION "${slog_a_SHARED_LIBRARY}"
+    add_library(unified_dlog SHARED IMPORTED)
+    set_target_properties(unified_dlog PROPERTIES
+        INTERFACE_COMPILE_DEFINITIONS "PROCESS_LOG"
+        INTERFACE_LINK_LIBRARIES "unified_dlog_headers"
+        IMPORTED_LOCATION "${unified_dlog_SHARED_LIBRARY}"
     )
 
-    add_library(alog SHARED IMPORTED)
-    set_target_properties(alog PROPERTIES
-        INTERFACE_COMPILE_DEFINITIONS "LOG_CPP;PROCESS_LOG"
-        INTERFACE_LINK_LIBRARIES "alog_headers"
-        IMPORTED_LOCATION "${alog_a_SHARED_LIBRARY}"
-    )
-
-    add_library(alog_headers INTERFACE IMPORTED)
-    set_target_properties(alog_headers PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${alog_a_INCLUDE_DIR};${alog_a_INCLUDE_DIR}/base"
+    add_library(unified_dlog_headers INTERFACE IMPORTED)
+    set_target_properties(unified_dlog_headers PROPERTIES
+        INTERFACE_INCLUDE_DIRECTORIES "${unified_dlog_INCLUDE_DIR};${unified_dlog_INCLUDE_DIR}/base"
     )
 
     include(CMakePrintHelpers)
-    cmake_print_properties(TARGETS slog
+    cmake_print_properties(TARGETS unified_dlog
         PROPERTIES INTERFACE_COMPILE_DEFINITIONS INTERFACE_LINK_LIBRARIES IMPORTED_LOCATION
     )
-    cmake_print_properties(TARGETS alog
-        PROPERTIES INTERFACE_COMPILE_DEFINITIONS INTERFACE_LINK_LIBRARIES IMPORTED_LOCATION
-    )
-    cmake_print_properties(TARGETS alog_headers
+    cmake_print_properties(TARGETS unified_dlog_headers
         PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
     )
 endif()
 
 # Cleanup temporary variables.
-set(alog_INCLUDE_DIR)
+set(unified_dlog_INCLUDE_DIR)

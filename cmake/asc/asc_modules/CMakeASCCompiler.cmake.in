@@ -7,15 +7,9 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-if(_ASC_MODULE_LOADED)
-    return()
-endif()
-set(_ASC_MODULE_LOADED FALSE)
-include($ENV{ASCEND_HOME_PATH}/compiler/tikcpp/ascendc_kernel_cmake/fwk_modules/config.cmake)
-include($ENV{ASCEND_HOME_PATH}/compiler/tikcpp/ascendc_kernel_cmake/fwk_modules/func.cmake)
-include($ENV{ASCEND_HOME_PATH}/compiler/tikcpp/ascendc_kernel_cmake/fwk_modules/intf.cmake)
 
-# plugin support ASC language
-list(APPEND CMAKE_MODULE_PATH "$ENV{ASCEND_HOME_PATH}/compiler/tikcpp/ascendc_kernel_cmake/ASC_CMake")
-include($ENV{ASCEND_HOME_PATH}/compiler/tikcpp/ascendc_kernel_cmake/ASC_CMake/FindASC.cmake)
-set(_ASC_MODULE_LOADED TRUE)
+set(CMAKE_ASC_COMPILER "@CMAKE_ASC_COMPILER@")
+set(CMAKE_ASC_COMPILER_LOADED 1)
+set(CMAKE_ASC_SOURCE_FILE_EXTENSIONS @CMAKE_ASC_SOURCE_FILE_EXTENSIONS@)
+set(CMAKE_ASC_OUTPUT_EXTENSION @CMAKE_ASC_OUTPUT_EXTENSION@)
+set(CMAKE_ASC_COMPILER_ENV_VAR "@CMAKE_ASC_COMPILER_ENV_VAR@")

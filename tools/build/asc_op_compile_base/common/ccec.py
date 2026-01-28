@@ -273,6 +273,9 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
     if get_soc_spec("SHORT_SOC_VERSION") != ASCEND_610LITE and get_soc_spec("SHORT_SOC_VERSION") != BS9SX2A:
         if get_soc_spec("SHORT_SOC_VERSION") != MC61AM21A and get_soc_spec("SHORT_SOC_VERSION") != ASCEND_910_95:
             cmd += ["--cce-auto-sync=off"]
+    if get_soc_spec("SHORT_SOC_VERSION") == ASCEND_910_95:
+        cmd += ["--cce-long-scbz=true"]
+        cmd += ["--cce-simd-vf-fusion=false"]
     if current_build_config().get(enable_cce_licm_safe_hoist):
         cmd += ["-mllvm", "-licm-safe-hoist=true"]
     cmd += ["-mllvm", "-cce-aicore-jump-expand=false"]

@@ -14,8 +14,6 @@ message(STATUS "CMAKE_BINARY_DIR=" ${CMAKE_BINARY_DIR})
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR=" ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(ASC_OP_COMPILE_BASE_WHL_NAME "asc_op_compile_base-0.1.0-py3-none-any.whl")
-# set(ASC_OP_COMPILE_CHECK_WHL "checkwhl")
-# set(ASC_OP_COMPILE_MOVE_WHL "movewhl")
 set(ASC_OP_COMPILE_BASE_DIR "./asc_op_compile_base_python")
 set(ASC_OP_COMPILE_BASE_SRC "${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -41,7 +39,7 @@ endif()
 target_link_libraries(asc_platform PRIVATE 
   platform
   mmpa
-  alog
+  unified_dlog
   error_manager
 )
 target_compile_options(asc_platform PRIVATE 
@@ -50,6 +48,7 @@ target_compile_options(asc_platform PRIVATE
   -D_FORTIFY_SOURCE=2
   -Os
   -D_GLIBCXX_USE_CXX11_ABI=0
+  -Werror
 )
 
 target_link_options(asc_platform PRIVATE
@@ -61,8 +60,6 @@ add_custom_command(
   TARGET asc_platform POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E echo "Source file: $<TARGET_FILE:asc_platform>"
   COMMAND ${CMAKE_COMMAND} -E echo "Destination file: ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/libasc_platform.so"
-  # COMMAND ${CMAKE_COMMAND} -E make_directory ${ASC_OP_COMPILE_BASE_DIR}
-  # COMMAND rm -r ${ASC_OP_COMPILE_BASE_DIR}/*
   COMMAND ${CMAKE_COMMAND} -E make_directory ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:asc_platform> ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/libasc_platform.so
   COMMAND ${CMAKE_STRIP} -s ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/c_api/libasc_platform.so
@@ -76,7 +73,7 @@ add_custom_target(asc_platform_test
   COMMAND ${CMAKE_COMMAND} -E echo "Copied libasc_platform.so to ${ASC_OP_COMPILE_BASE_SRC}/c_api/libasc_platform.so"
 )
 
-# 生成 Python 轮子包
+# 生成 Python whl pkg
 add_custom_target(${ASC_OP_COMPILE_BASE_WHL_NAME} ALL
   COMMAND echo "[ASC_OP_COMPILE_BASE] Build target ${ASC_OP_COMPILE_BASE_WHL_NAME}" && pwd && 
     mkdir -p ${ASC_OP_COMPILE_BASE_DIR}/asc_op_compile_base/asc_op_compiler && 

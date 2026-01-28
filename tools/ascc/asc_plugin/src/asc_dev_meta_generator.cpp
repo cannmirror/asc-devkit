@@ -111,14 +111,6 @@ void AscDevMetaGenerator::GenMetaSection(const char* globalSymbol, const KernelM
             genKtypeWithArchMacro("__DAV_C310_CUBE__", "_mix_aic");
             genKtypeWithArchMacro("__DAV_C310_VEC__", "_mix_aiv");
         }
-    } else if (manager.GetShortSocVersion() == ShortSocVersion::KIRINX90) {
-        if (kernelType == KernelMetaType::KERNEL_TYPE_AICORE) {
-            genKtypeWithArchMacro("__DAV_L300__", "");
-        }
-    } else if (manager.GetShortSocVersion() == ShortSocVersion::KIRIN9030) {
-        if (kernelType == KernelMetaType::KERNEL_TYPE_AICORE) {
-            genKtypeWithArchMacro("__DAV_L311__", "");
-        }
     }
 }
 
@@ -135,7 +127,7 @@ std::string AscDevMetaGenerator::GenCode()
         GenMetaSection(kernelInfo_.kernelMangledName.c_str(), defaultKtype);
     }
 
-    if (InfoManager::GetInstance().GetShortSocVersion() == ShortSocVersion::ASCEND910B && 
+    if (InfoManager::GetInstance().GetShortSocVersion() == ShortSocVersion::ASCEND910B &&
         defaultKtype != KernelMetaType::KERNEL_TYPE_AIV_ONLY &&
         defaultKtype != KernelMetaType::KERNEL_TYPE_AIC_ONLY) {
         codeStream_ << GetAscFeatureMetaSection(FeatureFlag::ASC_FFTS_MASK);

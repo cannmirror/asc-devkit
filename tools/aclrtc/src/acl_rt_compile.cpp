@@ -20,7 +20,6 @@
 #include <string>
 #include <iostream>
 #include <string_view>
-#include <unistd.h>
 
 #include "acl_base.h"
 #include "securec.h"
@@ -183,7 +182,7 @@ asrtcGetLoweredNameFuncPtr asrtcGetLoweredNamePtr = nullptr;
 asrtcGetProgramLogSizeFuncPtr asrtcGetProgramLogSizePtr = nullptr;
 asrtcGetProgramLogFuncPtr asrtcGetProgramLogPtr = nullptr;
 
-void __attribute__((constructor)) LoadExtraLib() {
+aclError LoadExtraLib() {
     std::string cannPath = GetCannPath();
     std::string libPathX86 = cannPath + "/x86_64-linux/ccec_compiler/lib/libasrtc.so";
     std::string libPathArm = cannPath + "/aarch64-linux/ccec_compiler/lib/libasrtc.so";
@@ -192,8 +191,10 @@ void __attribute__((constructor)) LoadExtraLib() {
         handle = dlopen(libPathX86.c_str(), RTLD_GLOBAL | RTLD_NOW);
     } else if (PathCheck(libPathArm.c_str())) {
         handle = dlopen(libPathArm.c_str(), RTLD_GLOBAL | RTLD_NOW);
-    } else {
-        return;
+    }
+    if (!handle) {
+        fprintf(stderr, "[ERROR] Failed to load inner rtc library, please check it!\n");
+        return ACL_ERROR_RTC_FAILURE;
     }
     // 4. dlsym
     asrtcCreateProgramPtr = (asrtcCreateProgramFuncPtr)dlsym(handle, "asrtcCreateProgram");
@@ -205,6 +206,7 @@ void __attribute__((constructor)) LoadExtraLib() {
     asrtcGetLoweredNamePtr = (asrtcGetLoweredNameFuncPtr)dlsym(handle, "asrtcGetLoweredName");
     asrtcGetProgramLogSizePtr = (asrtcGetProgramLogSizeFuncPtr)dlsym(handle, "asrtcGetProgramLogSize");
     asrtcGetProgramLogPtr = (asrtcGetProgramLogFuncPtr)dlsym(handle, "asrtcGetProgramLog");
+    return ACL_SUCCESS;
 }
 
 void __attribute__((destructor)) UnloadExtraLib() {
@@ -255,6 +257,10 @@ aclError aclrtcCreateProg(aclrtcProg *prog, const char *src, const char *name, i
     const char **includeNames) {
     if (prog == nullptr || src == nullptr || name == nullptr) {
         return ACL_ERROR_RTC_INVALID_INPUT;
+    }
+    aclError retLoad = LoadExtraLib();
+    if (retLoad != ACL_SUCCESS) {
+        return retLoad;
     }
     AclrtcProgram* ascProg = CreatAclrtcProgram(name);
     aclrtcProg program = nullptr;

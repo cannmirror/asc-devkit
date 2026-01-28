@@ -99,7 +99,7 @@ class NonEmptyParser(OptionParser):
     def parse_option(self, value: str):
         if len(value.strip()) <= 0:
             CommonUtility().ascendc_raise_python_err(ERR_CODE,
-f"[Super Kernel] Invalid compile option: {self.key} option should not be empty.")
+                f"[Super Kernel] Invalid compile option: {self.key} option should not be empty.")
         return value
 
 

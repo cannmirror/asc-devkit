@@ -180,14 +180,14 @@
     <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake">
         <file value="fwk_modules"/>
         <file value="legacy_modules"/>
-        <file value="ASC_CMake"/>
-        <file value="AICPU_CMake"/>
+        <file value="asc_modules"/>
+        <file value="aicpu_modules"/>
         <file value="ascendc.cmake"/>
     </file_info>
 
     <file_info copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/ascendc_kernel_cmake" install_path="$(TARGET_ENV)/lib64/cmake">
-        <file value="AICPUConfig.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/AICPUConfig.cmake"/>
-        <file value="ASCConfig.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/ASCConfig.cmake"/>
+        <file value="aicpu-config.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/aicpu-config.cmake"/>
+        <file value="asc-config.cmake" install_softlink="$(TARGET_ENV)/tikcpp/ascendc_kernel_cmake/asc-config.cmake"/>
     </file_info>
     <file_info value="acl_rt"  copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)/acl" install_path="$(TARGET_ENV)/include/acl" install_mod="440">
         <file value="acl_rt_compile.h"/>

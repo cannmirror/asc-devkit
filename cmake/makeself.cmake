@@ -7,6 +7,7 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
+
 # makeself.cmake - 自定义 makeself 打包脚本
 message(STATUS "CPACK_CMAKE_SOURCE_DIR = ${CPACK_CMAKE_SOURCE_DIR}")
 message(STATUS "CPACK_CMAKE_CURRENT_SOURCE_DIR = ${CPACK_CMAKE_CURRENT_SOURCE_DIR}")
@@ -114,4 +115,3 @@ execute_process(COMMAND bash ${MAKESELF_EXE}
 if(NOT EXEC_RESULT EQUAL 0)
     message(FATAL_ERROR "makeself packaging failed: ${EXEC_ERROR}")
 endif()
-

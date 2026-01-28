@@ -124,6 +124,11 @@ bool ASTDeviceVisitor::VisitCallExpr(clang::CallExpr *exprCall)
                    qualifiedName.find("AscendC::AssertPrint") != std::string::npos) {
             manager.SetHasAssert(true);
             ASC_LOGD("Found %s call at line: %u, file: %s", qualifiedName.c_str(), pLoc.getLine(), fname);
+        } else if (manager.GetShortSocVersion() == ShortSocVersion::ASCEND910_95 &&
+                    (qualifiedName.find("AscendC::Simt::printf") != std::string::npos ||
+                     qualifiedName == "printf")) {
+            manager.SetHasSimtPrintf(true);
+            ASC_LOGD("Found %s call at line: %u, file: %s", qualifiedName.c_str(), pLoc.getLine(), fname);
         }
     } else if (ule) {
         std::string funcName = ule->getName().getAsString();
@@ -166,18 +171,6 @@ void StoreFuncKernelType(const AscPlugin::KernelFuncInfo& kernelKey, const std::
     } else if (shortSoc == ShortSocVersion::ASCEND910_95) {
         auto iter = KERNEL_TYPE_MAP_C310.find(kernelTypeStr);
         if (iter != KERNEL_TYPE_MAP_C310.end()) {
-            g_kernelFuncType[kernelKey].first = {iter->second};
-            kernelTypeValid = true;
-        }
-    } else if (shortSoc == ShortSocVersion::KIRINX90) {
-        auto iter = KERNEL_TYPE_MAP_KIRINX90.find(kernelTypeStr);
-        if (iter != KERNEL_TYPE_MAP_KIRINX90.end() && kernelTypeStr == "KERNEL_TYPE_AICORE") {
-            g_kernelFuncType[kernelKey].first = {iter->second};
-            kernelTypeValid = true;
-        }
-    } else if (shortSoc == ShortSocVersion::KIRIN9030) {
-        auto iter = KERNEL_TYPE_MAP_KIRIN9030.find(kernelTypeStr);
-        if (iter != KERNEL_TYPE_MAP_KIRIN9030.end() && kernelTypeStr == "KERNEL_TYPE_AICORE") {
             g_kernelFuncType[kernelKey].first = {iter->second};
             kernelTypeValid = true;
         }
@@ -280,6 +273,13 @@ std::pair<std::unordered_set<KernelMetaType>, KfcScene> GetKernelFuncScene(const
                 return {{socDefaultKtype}, kfcFlag};   // Kfc using mix 1:2
             }
             if (g_kernelFuncType.size() == 1) {
+                // 910_95 dont support auto type deduction, use default type "mix 1:2"
+                if (shortSoc == ShortSocVersion::ASCEND910_95) {
+                    ASC_LOGD("Can not find Kernel type, kernel func mangled name: %s at %s:%u, col:%u, using default "
+                        "KERNEL_TYPE_MIX_AIC_1_2", kernelKey.mangledName.c_str(), kernelKey.fileName.c_str(),
+                        kernelKey.lineNum, kernelKey.colNum);
+                    return {{socDefaultKtype}, KfcScene::Close};
+                }
                 ASC_LOGD("Can not find Kernel type, kernel func mangled name: %s at %s:%u, col:%u, automatic kernel type "
                     "identification is now enabled", kernelKey.mangledName.c_str(), kernelKey.fileName.c_str(),
                     kernelKey.lineNum, kernelKey.colNum);
