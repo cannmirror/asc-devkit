@@ -34,21 +34,6 @@ __simd_callee__ inline void Exp(U& dstReg, U& srcReg, MaskReg& mask);
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
 __simd_callee__ inline void Sqrt(U& dstReg, U& srcReg, MaskReg& mask);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void Rec(RegT& dstReg, RegT& srcReg, MaskReg& mask);
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void Rsqrt(RegT& dstReg, RegT& srcReg, MaskReg& mask);
-
-template <typename T = DefaultType, typename SrcT = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING,
-    typename RegT, typename RegSrcT>
-__aicore__ inline void CountBit(RegT& dstReg, RegSrcT& srcReg, MaskReg& mask);
-
-template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename RegT>
-__aicore__ inline void CountLeadingSignBits(RegT& dstReg, RegT& srcReg, MaskReg& mask);
-#endif
-
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
 __simd_callee__ inline void Ln(U& dstReg, U& srcReg, MaskReg& mask);
 

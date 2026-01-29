@@ -19,7 +19,6 @@ target_include_directories(tikcfw_headers INTERFACE
   $<BUILD_INTERFACE:${ASCENDC_DIR}/impl>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/basic_api/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/micro_api/>
-  $<BUILD_INTERFACE:${ASCENDC_DIR}/impl/micro_api_inc/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/>
   $<BUILD_INTERFACE:${ASCENDC_DIR}/include/basic_api/>
   $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
@@ -32,7 +31,6 @@ target_include_directories(tikcfw_headers INTERFACE
   $<INSTALL_INTERFACE:include/asc/impl>
   $<INSTALL_INTERFACE:include/asc/impl/basic_api>
   $<INSTALL_INTERFACE:include/asc/impl/micro_api>
-  $<INSTALL_INTERFACE:include/asc/impl/micro_api_incf>
 )
 
 install(FILES ${ASCENDC_INCLUDE_DIR}/kernel_operator.h
@@ -52,9 +50,6 @@ install(DIRECTORY ${ASCENDC_IMPL_DIR}/basic_api
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl OPTIONAL
 )
 install(DIRECTORY ${ASCENDC_IMPL_DIR}/micro_api
-  DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl OPTIONAL
-)
-install(DIRECTORY ${ASCENDC_IMPL_DIR}/micro_api_inc
   DESTINATION ${INSTALL_LIBRARY_DIR}/asc/impl OPTIONAL
 )
 
@@ -128,7 +123,6 @@ install(CODE "file(CREATE_LINK ../../../asc/include/interface ${CMAKE_INSTALL_PR
 install(CODE "file(CREATE_LINK ../../../asc/include/kernel_operator.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/kernel_operator.h SYMBOLIC)")
 
 install(CODE "file(CREATE_LINK ../../../../asc/impl/micro_api ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/micro_api SYMBOLIC)")
-install(CODE "file(CREATE_LINK ../../../../asc/impl/micro_api_inc ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/micro_api_inc SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/common_types.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/common_types.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_c100 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_c100 SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/dav_c220 ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/dav_c220 SYMBOLIC)")
@@ -218,8 +212,6 @@ if(NOT BUILD_OPEN_PROJECT)
         DIRECTORY ${ASCENDC_DIR}/impl/basic_api
         DESTINATION ${INSTALL_INCLUDE_DIR}/asc/impl
         DIRECTORY ${ASCENDC_DIR}/impl/micro_api
-        DESTINATION ${INSTALL_INCLUDE_DIR}/asc/impl
-        DIRECTORY ${ASCENDC_DIR}/impl/micro_api_inc
         DESTINATION ${INSTALL_INCLUDE_DIR}/asc/impl
 
         DIRECTORY ${ASCENDC_DIR}/include/basic_api

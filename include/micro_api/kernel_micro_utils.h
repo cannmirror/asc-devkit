@@ -154,15 +154,12 @@ enum class MaskMergeMode {
 enum class HistogramsBinType {
     BIN0 = 0,
     BIN1,
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
-    (__NPU_ARCH__ == 3113))
     BIN2,
     BIN3,
     BIN4,
     BIN5,
     BIN6,
     BIN7
-#endif
 };
 
 enum class HistogramsType {
@@ -347,53 +344,11 @@ struct SqrtSpecificMode {
 #endif
 
 constexpr CastTrait castTrait = {RegLayout::UNKNOWN, SatMode::UNKNOWN, MaskMergeMode::UNKNOWN, RoundMode::UNKNOWN};
-namespace util {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
-    (__NPU_ARCH__ == 3113))
-__aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .precisionMode = false
-    };
-}
-
-__aicore__ inline constexpr DivSpecificMode GetDivSpecificMode(const DivSpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .precisionMode = sprMode->precisionMode
-    };
-}
-
-__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(MaskMergeMode mrgMode)
-{
-    return {
-        .mrgMode = mrgMode,
-        .precisionMode = false
-    };
-}
-
-__aicore__ inline constexpr SqrtSpecificMode GetSqrtSpecificMode(const SqrtSpecificMode* sprMode)
-{
-    return {
-        .mrgMode = sprMode->mrgMode,
-        .precisionMode = sprMode->precisionMode
-    };
-}
-#endif
-} // namespace util
 
 enum class GatherMaskMode {
     NO_STORE_REG,
     STORE_REG
 };
-
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
-enum class SpecialPurposeReg {
-    AR = 0,
-};
-#endif
 
 enum class StoreMode {
     NOSTORED = 0,

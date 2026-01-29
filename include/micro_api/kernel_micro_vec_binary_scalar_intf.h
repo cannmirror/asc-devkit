@@ -37,12 +37,6 @@ __simd_callee__ inline void ShiftLefts(S& dstReg, S& srcReg, U scalarValue, Mask
 template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
 __simd_callee__ inline void ShiftRights(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || \
-    __NPU_ARCH__ == 3113)
-template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
-__aicore__ inline void Rounds(S& dstReg, S& srcReg0, U scalarValue, MaskReg& mask);
-#endif
-
 template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>
 __simd_callee__ inline void LeakyRelu(S& dstReg, S& srcReg, U scalarValue, MaskReg& mask);
 } // namespace MicroAPI

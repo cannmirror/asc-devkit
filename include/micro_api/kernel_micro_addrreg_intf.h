@@ -18,21 +18,6 @@
 #include "kernel_micro_common_intf.h"
 namespace AscendC {
 namespace MicroAPI {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
-           (__NPU_ARCH__ == 3113))
-template <typename T> __aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0);
-
-template <typename T>
-__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1);
-
-template <typename T>
-__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1,
-                                        uint16_t index2, uint16_t stride2);
-
-template <typename T>
-__aicore__ inline AddrReg CreateAddrReg(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1,
-                                        uint16_t index2, uint16_t stride2, uint16_t index3, uint16_t stride3);
-#else
 template <typename T> __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0);
 
 template <typename T>
@@ -45,7 +30,6 @@ __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, 
 template <typename T>
 __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
                                              uint16_t index2, uint32_t stride2, uint16_t index3, uint32_t stride3);
-#endif
 } // namespace MicroAPI
 } // namespace AscendC
 
