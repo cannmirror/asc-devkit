@@ -87,7 +87,7 @@ PIPE_V
 ```cpp
 // 输入固定为128个元素
 constexpr uint32_t total_length = 128;
-__ubuf__ uint8_t dst[total_length];
+__ubuf__ half dst[total_length / 8];
 __ubuf__ half src0[total_length];
 __ubuf__ half src1[total_length];
 uint8_t repeat = 1;

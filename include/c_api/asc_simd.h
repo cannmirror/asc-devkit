@@ -17,6 +17,11 @@
 #ifndef INCLUDE_C_API_ASC_SIMD_H
 #define INCLUDE_C_API_ASC_SIMD_H
 
+#include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+#include "instr_impl/npu_arch_2201/utils_impl/debug_utils.h"
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
 #include "atomic/atomic.h"
 #include "cache_ctrl/cache_ctrl.h"
 #include "cube_compute/cube_compute.h"
@@ -31,10 +36,18 @@
 #include "utils/debug/asc_printf.h"
 #include "utils/debug/asc_assert.h"
 
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#include "vector_compute/vector_compute.h"
+#include "include/c_api/reg_compute/reg_convert.h"
+#include "include/c_api/reg_compute/reg_load.h"
+#include "include/c_api/reg_compute/reg_store.h"
+#include "include/c_api/reg_compute/reg_vector.h"
+
+#endif
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
 #undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
 #undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
 #endif    
-

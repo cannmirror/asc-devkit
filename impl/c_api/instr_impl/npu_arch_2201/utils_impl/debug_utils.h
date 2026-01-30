@@ -77,7 +77,7 @@ enum FuncMetaType { // 函数级TLV类型
     F_TYPE_L0_EXCEPTION_DFX_IS_TIK = 6, // DFX tlv mark for TIK
     F_TYPE_DETERMINISTIC_INFO = 13,
     F_TYPE_FUNCTION_ENTRY_INFO= 14,
-    F_TYPE_BLOCK_DIM_INFO = 15,
+    F_TYPE_BLOCK_NUM_INFO = 15,
     F_TYPE_MAX
 };
 

@@ -17,7 +17,7 @@
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_set_vector_mask(uint64_t mask1, uint16_t mask0)
+__aicore__ inline void asc_set_vector_mask(uint64_t mask1, uint64_t mask0)
 ```
 
 ## 参数说明

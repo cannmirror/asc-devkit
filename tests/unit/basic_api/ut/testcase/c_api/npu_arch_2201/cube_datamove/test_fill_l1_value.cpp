@@ -38,7 +38,7 @@ void cce_name##_##data_type##_int64_t_##val_type##_Stub(__cbuf__ data_type *dst,
 void cce_name##_##data_type##_##val_type##_InitFillL1ValueConfig(asc_fill_value_config &config) \
 {                                                                                               \
     config.repeat = static_cast<uint64_t>(0);                                                   \
-    config.block_num = static_cast<uint64_t>(0);                                                \
+    config.blk_num = static_cast<uint64_t>(0);                                                  \
     config.dst_gap = static_cast<uint64_t>(0);                                                  \
 }                                                                                               \
                                                                                                 \

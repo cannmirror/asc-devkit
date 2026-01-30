@@ -728,4 +728,3 @@ __aicore__ inline void asc_copy_l0c2l1_sync(__cbuf__ int8_t* dst, __cc__ int32_t
 #undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
 #undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
 #endif    
-

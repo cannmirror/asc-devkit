@@ -24,7 +24,7 @@ union asc_fill_value_config {
     struct {
         uint64_t repeat : 15;
         uint64_t reserved1 : 1;
-        uint64_t block_num : 15;
+        uint64_t blk_num : 15;
         uint64_t reserved2 : 1;
         uint64_t dst_gap : 15;
         uint64_t reserved3 : 17;

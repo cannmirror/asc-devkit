@@ -85,9 +85,8 @@ private:
     __aicore__ static inline auto get_g_sys_print_fifo_space() {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ != 2201
         g_sysPrintFifoSpace = nullptr;
-#else   
+#endif  
         return g_sysPrintFifoSpace;
-#endif
     }
 public:
     __aicore__ static inline void call_sync()
