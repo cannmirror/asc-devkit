@@ -147,6 +147,10 @@ custom_uninstall() {
         remove_empty_dir "${common_parse_dir}/python"
     fi
 
+    if [ -d "$common_parse_dir/$arch_linux_path/tikcpp/ascendc_kernel_cmake/legacy_modules/util/__pycache__" ];then
+        rm -rf "$common_parse_dir/$arch_linux_path/tikcpp/ascendc_kernel_cmake/legacy_modules/util/__pycache__"
+    fi
+
     # remove softlinks for stub libs in devlib/linux/${ARCH}
     remove_stub_softlink "$common_parse_dir"
 
