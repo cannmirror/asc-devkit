@@ -1,18 +1,24 @@
 # Add算子直调样例
+
 ## 概述
-本样例以Add算子为样例，使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程，支持main函数和kernel函数在同一个cpp文件中实现。
+
+本样例演示基于静态Tensor编程模型的Add算子实现，该实现采用TQue内存管理机制实现数据搬运与计算任务的协同调度，特别适用于需要精细控制内存流水线的场景。
 
 ## 支持的产品
+
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+
 ## 目录结构介绍
+
 ```
 ├── basic_api_tque_add
 │   ├── CMakeLists.txt          // 编译工程文件
-│   └── add.asc                 // AscendC算子实现,tque管理内存 & 调用样例
+│   └── add.asc                 // Ascend C算子实现,tque管理内存 & 调用样例
 ```
 
 ## 算子描述
+
 - 算子功能：  
 
   Add算子实现了两个数据相加，返回相加结果的功能。对应的数学表达式为：  
@@ -34,7 +40,7 @@
   </table>
 
 - 算子实现：
-  - kernel实现  
+  - Kernel实现  
     Add算子的数学表达式为：
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
 
@@ -44,7 +50,7 @@
       使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程。
     - basic_api_memory_allocator_add  
       使用LocalMemAllocator进行线性内存分配并简化代码，使用double buffer进行流水排布优化性能。
-  - tiling实现  
+  - Tiling实现  
     TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，其中basic_api_tque_add算子使用了2个tiling参数，basic_api_memory_allocator_add算子使用了1个tiling参数.
     - basic_api_tque_add  
       使用的tiling参数为totalLength、tileNum。totalLength是指需要计算的数据量大小，tileNum是指每个核上总计算数据分块个数。比如，totalLength这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。
@@ -55,31 +61,24 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
-  以命令行方式下载样例代码，master分支为例。
-  ```bash
-  cd ${git_clone_path}/examples/00_introduction/01_add/basic_api_tque_add
-  ```
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
+    source /usr/local/Ascend/cann/set_env.sh
     ```
+
   - 默认路径，非root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=$HOME/Ascend/cann
+    source $HOME/Ascend/cann/set_env.sh
     ```
+    
   - 指定路径install_path，安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/cann
+    source ${install_path}/cann/set_env.sh
     ```
-  配置安装路径后，执行以下命令统一配置环境变量。
-  ```bash
-  # 配置CANN环境变量
-  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  ```
-
 - 样例执行
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
@@ -89,11 +88,5 @@
   ```
   执行结果如下，说明精度对比成功。
   ```bash
-  [Success] Case accurary is verification passed.
+  [Success] Case accuracy is verification passed.
   ```
-
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/06 | 样例目录调整，新增本readme |

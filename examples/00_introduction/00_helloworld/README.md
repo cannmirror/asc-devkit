@@ -1,63 +1,12 @@
-# HelloWorld算子直调样例
+# HelloWorld样例介绍
+
 ## 概述
-本样例通过使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，核函数内通过printf打印输出结果。
 
-## 支持的产品
-- Atlas A3 训练系列产品/Atlas A3 推理系列产品
-- Atlas A2 训练系列产品/Atlas A2 推理系列产品
-## 目录结构介绍
-```
-├── 00_helloworld
-│   ├── CMakeLists.txt      // 编译工程文件
-│   └── hello_world.asc     // AscendC算子实现 & 调用样例
-```
+样例介绍了基于Ascend C的HelloWorld算子的核函数直调方法，分别从NPU、AICPU测运行核验证算子核函数，展示核函数从调用到执行的整体流程。
 
-## 编译运行
-在本样例根目录下执行如下步骤，编译并执行算子。
-- 配置环境变量
-  以命令行方式下载样例代码，master分支为例。
-  ```bash
-  cd ${git_clone_path}/examples/00_introduction/00_helloworld
-  ```
+## 算子开发样例
 
-  请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
-  - 默认路径，root用户安装CANN软件包
-    ```bash
-    export ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
-    ```
-  - 默认路径，非root用户安装CANN软件包
-    ```bash
-    export ASCEND_INSTALL_PATH=$HOME/Ascend/cann
-    ```
-  - 指定路径install_path，安装CANN软件包
-    ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/cann
-    ```
-  配置安装路径后，执行以下命令统一配置环境变量。
-  ```bash
-  # 配置CANN环境变量
-  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  ```
-- 样例执行
-  ```bash
-  mkdir -p build && cd build;   # 创建并进入build目录
-  cmake ..;make -j;             # 编译工程
-  ./demo                        # 执行样例
-  ```
-  执行结果如下，说明执行成功。
-  ```bash
-  [Block (0/8)]: Hello World!!!
-  [Block (1/8)]: Hello World!!!
-  [Block (2/8)]: Hello World!!!
-  [Block (3/8)]: Hello World!!!
-  [Block (4/8)]: Hello World!!!
-  [Block (5/8)]: Hello World!!!
-  [Block (6/8)]: Hello World!!!
-  [Block (7/8)]: Hello World!!!
-  ```
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/12/15 | 更新手动打印block idx的hello world样例 |
-| 2025/11/06 | 样例目录调整，新增本readme |
+|  目录名称                                                   |  功能描述                                              |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| [hello_world_aicpu](./hello_world_aicpu) | 本样例介绍了基于Ascend C的AI CPU算子的核函数直调方法 |
+| [hello_world_npu](./hello_world_npu) | 本样例通过使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，核函数内通过printf打印输出结果 |

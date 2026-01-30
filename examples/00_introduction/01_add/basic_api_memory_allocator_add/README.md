@@ -1,11 +1,16 @@
 # Add算子直调样例
+
 ## 概述
-本样例介绍基于静态Tensor方式编程的场景下Add算子的实现方法，支持main函数和kernel函数在同一个cpp文件中实现，并提供<<<>>>直调方法。
+
+本样例演示基于静态Tensor编程模型的Add算子实现，该实现采用LocalMemAllocator内存分配器简化代码逻辑，特别适用于Bank冲突不敏感场景。
 
 ## 支持的产品
+
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+
 ## 目录结构介绍
+
 ```
 ├── basic_api_memory_allocator_add
 │   └── scripts
@@ -13,10 +18,11 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── add.asc                 // AscendC算子实现，使用LocalMemAllocator简化代码 & 调用样例
+│   └── add.asc                 // Ascend C算子实现，使用LocalMemAllocator简化代码 & 调用样例
 ```
 
 ## 算子描述
+
 - 算子功能：  
 
   算子实现的是固定shape为72×4096的Add算子。
@@ -45,10 +51,10 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom_v1 / add_custom_v2 / add_custom_v3 / add_custom_v4</td></tr>
   </table>
 
-- 算子实现：
+- 算子实现：  
   本样例中实现的是固定shape为72*4096的Add算子。
   
-  - kernel实现
+  - Kernel实现
   
     Add算子的数学表达式为：
   
@@ -60,36 +66,30 @@
   
     Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
   
-    优化add_custom_v2中反向同步，替换为MTE2等待MTE3执行结束。减少分支判断的同时，算子性能因为double buffer的原因不受影响。另外使用LocalMemAllocator进行线性内存分配，Bank冲突不敏感场景可以使用这种方式简化分配。
+    优化add_custom中反向同步，替换为MTE2等待MTE3执行结束。减少分支判断的同时，算子性能因为double buffer的原因不受影响。另外使用LocalMemAllocator进行线性内存分配，Bank冲突不敏感场景可以使用这种方式简化分配。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 
+在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
-  以命令行方式下载样例代码，master分支为例。
-  ```bash
-  cd ${git_clone_path}/examples/00_introduction/01_add/basic_api_memory_allocator_add
-  ```
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
+    source /usr/local/Ascend/cann/set_env.sh
     ```
+
   - 默认路径，非root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=$HOME/Ascend/cann
+    source $HOME/Ascend/cann/set_env.sh
     ```
+
   - 指定路径install_path，安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/cann
+    source ${install_path}/cann/set_env.sh
     ```
-  配置安装路径后，执行以下命令统一配置环境变量。
-  ```bash
-  # 配置CANN环境变量
-  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  ```
 
 - 样例执行
   ```bash 
@@ -102,11 +102,5 @@
   ```
   执行结果如下，说明精度对比成功。
   ```bash
-  test pass
+  test pass!
   ```
-
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/06 | 样例目录调整，新增本readme |

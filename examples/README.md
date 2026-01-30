@@ -1,12 +1,15 @@
-# 样例运行验证
+# Introduction样例介绍
 
-开发者调用Ascend C API实现自定义算子后，可通过单算子调用的方式验证算子功能。本代码仓提供部分算子实现及其调用样例，具体如下。
+## 概述
+
+基于Ascend C的简单的示例，通过Ascend C编程语言实现了自定义算子，分别给出对应的<<<>>>直调实现，适合初学者。
 
 ## 算子开发样例
+
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [00_introduction](./00_introduction) | 基于Ascend C的简单的示例，通过Ascend C编程语言实现了自定义算子，分别给出对应的<<<>>>直调实现，适合初学者 |
-| [01_utilities](./01_utilities) | 基于Ascend C的简单样例，通过printf、assert、debug等API介绍上板打印、异常检测、CPU孪生调试等系统工具使用方法，适用于调试阶段 |
-| [02_features](./02_features) | 基于Ascend C特性样例，介绍了Aclnn（ge入图）工程、LocalMemoryAllocator、Barrier单独内存申请分配等特性 |
-| [03_libraries](./03_libraries) | 基于Ascend C API类库的使用样例，通过<<<>>>直调的实现方式，介绍了数学库，激活函数等API类库 |
-| [04_best_practices](./04_best_practices) | 基于Ascend C的性能优化实践，聚焦于关键算子与内存访问的调优，旨在提升在Ascend平台上的运行效率 |
+| [00_helloworld](./00_helloworld) | 样例介绍了基于Ascend C的HelloWorld算子的核函数直调方法，分别从NPU、AICPU测运行核验证算子核函数，展示核函数从调用到执行的整体流程 |
+| [01_add](./01_add) | 本样例介绍了基于Ascend C的Add自定义Vector算子的核函数直调方法，实现两个输入张量的逐元素相加，支持main函数和kernel函数在同一个cpp文件中实现 |
+| [02_matmul](./02_matmul) | 本样例介绍了基于Ascend C的Matmul算子的核函数直调方法，可最大化利用AI处理器的并行计算能力，显著提升算子的执行效率，使用与高性能推理与训练场景 |
+| [03_matmulleakyrelu](./03_matmulleakyrelu) | 本样例介绍了基于Ascend C的MatmulLeakyRelu自定义算子的核函数直调方法，能够完成矩阵乘加与LeakyReLU激活的融合计算，该方式将关键计算步骤在硬件层面高效协同执行，显著降低内存访问开销与计算延时 |
+| [04_simple_operator](./04_addn) | 样例介绍了5个基于Ascend C的算子的核函数直调样例，可最大化利用AI处理器的并行计算能力，显著提升算子的执行效率，使用与高性能推理与训练场景 |

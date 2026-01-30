@@ -1,10 +1,16 @@
 # Matmul算子直调样例
+
 ## 概述
-本样例介绍Matmul算子的核函数直调方法，支持<<<>>>直调方式，可最大化利用AI处理器的并行计算能力，显著提升算子的执行效率，适用于高性能推理与训练场景。
+
+本样例介绍Matmul算子的核函数直调实现，通过最大化利用昇腾AI处理器的并行计算能力，显著提升算子执行效率。该实现方式适用于高性能推理与训练场景。
+
 ## 支持的产品
+
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+
 ## 目录结构介绍
+
 ```
 ├── normal_matmul
 │   └── scripts
@@ -12,9 +18,11 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul.asc              // AscendC算子实现 & 调用样例
+│   └── matmul.asc              // Ascend C算子实现 & 调用样例
 ```
+
 ## 算子描述
+
 - 算子功能：  
 
   本样例中实现的是[M, K, N]固定为[512, 512, 1024]的Matmul算子。 
@@ -43,30 +51,26 @@
 
   使用内核调用符<<<>>>调用核函数。
 
-## 编译运行 
+## 编译运行
+
+在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
-  以命令行方式下载样例代码，master分支为例。
-  ```bash
-  cd ${git_clone_path}/examples/00_introduction/02_matmul/normal_matmul
-  ```
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
-      ```
-      - 默认路径，非root用户安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=$HOME/Ascend/cann
-      ```
-      - 指定路径install_path，安装CANN软件包
-      ```bash
-      export ASCEND_INSTALL_PATH=${install_path}/cann
-      ```
-  配置安装路径后，执行以下命令统一配置环境变量。
-  ```bash
-  # 配置CANN环境变量
-  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  ```
+    ```bash
+    source /usr/local/Ascend/cann/set_env.sh
+    ```
+
+  - 默认路径，非root用户安装CANN软件包
+    ```bash
+    source $HOME/Ascend/cann/set_env.sh
+    ```
+
+  - 指定路径install_path，安装CANN软件包
+    ```bash
+    source ${install_path}/cann/set_env.sh
+    ```
+
 - 样例执行  
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
@@ -77,10 +81,5 @@
   ```
   执行结果如下，说明精度对比成功。
   ```bash
-  test pass
+  test pass!
   ```
-  
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/06 | 样例目录调整，新增本readme |
