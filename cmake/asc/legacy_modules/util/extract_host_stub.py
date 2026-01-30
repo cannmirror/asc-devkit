@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
-# ----------------------------------------------------------------------------------------------------------	
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.	
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of	
 # CANN Open Software License Agreement Version 2.0 (the "License").	
@@ -8,7 +7,6 @@
 # THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,	
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.	
 # See LICENSE in the root of the software repository for the full text of the License.	
-# ----------------------------------------------------------------------------------------------------------
 
 """Extract and generate host_stub.cpp and headers."""
 
@@ -444,22 +442,22 @@ def convert_func_param_cce_param_type(func_param: FuncParam) -> FuncParam:
     return func_param._replace(parts=parts)
 
 
-def add_block_dim_and_stream_func_params(func_params: Tuple[FuncParam, ...]
+def add_block_num_and_stream_func_params(func_params: Tuple[FuncParam, ...]
                                          ) -> Tuple[FuncParam, ...]:
     """Add blockDim and stream to function parameters."""
     param_names = set(get_param_names_by_func_params(func_params))
 
     if 'blockDim' in param_names:
-        block_dim_param = FuncParam(('uint32_t', '_blockDim'))
+        block_num_param = FuncParam(('uint32_t', '_blockDim'))
     else:
-        block_dim_param = FuncParam(('uint32_t', 'blockDim'))
+        block_num_param = FuncParam(('uint32_t', 'blockDim'))
 
     if 'stream' in param_names:
         stream_param = FuncParam(('aclrtStream', '_stream'))
     else:
         stream_param = FuncParam(('aclrtStream', 'stream'))
 
-    added_func_params = (block_dim_param, stream_param)
+    added_func_params = (block_num_param, stream_param)
     return added_func_params + func_params
 
 
@@ -592,7 +590,7 @@ def trans_func_sign(func_sign: FuncSign) -> FuncSign:
 
     new_func_params = tiling_add_ref_or_ptr_func_params(
         func_sign,
-        add_block_dim_and_stream_func_params(func_params)
+        add_block_num_and_stream_func_params(func_params)
     )
     new_func_name = add_aclrt_prefix_snake(func_sign.func_name)
     return func_sign._replace(
@@ -832,7 +830,7 @@ def generate_args_assign_code(mode: CodeMode, func_sign: FuncSign) -> str:
 
 def generate_launch_kernel_code(mode: CodeMode,
                                 func_key: int,
-                                block_dim: str,
+                                block_num: str,
                                 stream: str) -> str:
     """Generate LaunchAscendKernel code."""
     buff = io.StringIO()
@@ -870,7 +868,7 @@ def generate_launch_kernel_code(mode: CodeMode,
         raise(f"[ERROR]: mode do not support!")
 
     buff.write('    uint32_t ret = LaunchAscendKernel(')
-    buff.write(f'{kernel_handle}, func_key, {block_dim}, args, size, {stream});\n')
+    buff.write(f'{kernel_handle}, func_key, {block_num}, args, size, {stream});\n')
 
     buff.write(r'''    if (ret != 0) {
         printf("LaunchAscendKernel ret %u\n", ret);
@@ -884,11 +882,11 @@ def generate_aclrtlaunch_for_normal(func_sign: FuncSign,
                             mode: CodeMode,
                             dump_info: dict) -> str:
     param_names = tuple(get_param_names_by_func_sign(func_sign))
-    block_dim_name = param_names[0]
+    block_num_name = param_names[0]
     stream_name = param_names[1]
     name = func_sign.func_name.replace("aclrtlaunch_", "")
     launch_code = f'''
-uint32_t launch_and_profiling_{name}(uint64_t func_key, uint32_t {block_dim_name}, void* {stream_name}, void **args, uint32_t size)
+uint32_t launch_and_profiling_{name}(uint64_t func_key, uint32_t {block_num_name}, void* {stream_name}, void **args, uint32_t size)
 {{
     uint64_t startTime;
     const char *name = "{name}";
@@ -898,9 +896,9 @@ uint32_t launch_and_profiling_{name}(uint64_t func_key, uint32_t {block_dim_name
     }}
     '''
 
-    launch_code += generate_launch_kernel_code(mode, func_key, block_dim_name, stream_name)
+    launch_code += generate_launch_kernel_code(mode, func_key, block_num_name, stream_name)
     launch_code += '    if (profStatus) {\n'
-    launch_code += f'        ReportAscendProf(name, {block_dim_name}, {mode.value}, startTime);\n'
+    launch_code += f'        ReportAscendProf(name, {block_num_name}, {mode.value}, startTime);\n'
     launch_code += '    }\n'
     launch_code += '    return ret;\n'
     launch_code += "}\n\n"
@@ -943,7 +941,7 @@ def generate_func_impl_code(func_sign: FuncSign,
                             dump_info: dict) -> str:
     """Generate func impl code."""
     param_names = tuple(get_param_names_by_func_sign(func_sign))
-    block_dim_name = param_names[0]
+    block_num_name = param_names[0]
     stream_name = param_names[1]
     name = func_sign.func_name.replace("aclrtlaunch_", "")
     buff = io.StringIO()
@@ -1018,15 +1016,15 @@ template<>
     uint32_t __ascendc_aicBlockDim;
     uint32_t __ascendc_aivBlockDim;
     __ascendc_ret = GetCoreNumForMixVectorCore(&__ascendc_aicBlockDim, &__ascendc_aivBlockDim);
-    if ({block_dim_name} <= __ascendc_aicBlockDim) {{
-        __ascendc_ret = launch_and_profiling_{name}({func_key}, {block_dim_name}, {stream_name}, (void **)&__ascendc_args, sizeof(__ascendc_args));
+    if ({block_num_name} <= __ascendc_aicBlockDim) {{
+        __ascendc_ret = launch_and_profiling_{name}({func_key}, {block_num_name}, {stream_name}, (void **)&__ascendc_args, sizeof(__ascendc_args));
     }} else {{
         uint32_t __ascendc_totalCoreNum = __ascendc_aicBlockDim + __ascendc_aivBlockDim;
-        if ({block_dim_name} > __ascendc_totalCoreNum) {{
-            __ascendc_aicBlockDim = ({block_dim_name} * __ascendc_aicBlockDim + \\
+        if ({block_num_name} > __ascendc_totalCoreNum) {{
+            __ascendc_aicBlockDim = ({block_num_name} * __ascendc_aicBlockDim + \\
                                     __ascendc_totalCoreNum - 1U) / __ascendc_totalCoreNum;
         }}
-        __ascendc_aivBlockDim = {block_dim_name} - __ascendc_aicBlockDim;
+        __ascendc_aivBlockDim = {block_num_name} - __ascendc_aicBlockDim;
         bool __ascendc_profStatus = GetAscendProfStatus();
         uint32_t __ascendc_aivBlockDimOffset = __ascendc_aicBlockDim;
         __ascendc_ret = LaunchAscendKernelForVectorCore(__ascendc_name, g_kernel_handle, {func_key}, \\
@@ -1036,7 +1034,7 @@ template<>
 '''
         buff.write(mix_vector_core_launch_code)
     else:
-        buff.write(f"    __ascendc_ret = launch_and_profiling_{name}({func_key}, {block_dim_name}, \
+        buff.write(f"    __ascendc_ret = launch_and_profiling_{name}({func_key}, {block_num_name}, \
 {stream_name}, (void **)&__ascendc_args, sizeof(__ascendc_args));\n")
 
     buff.write('''    KernelHandleGradUnregister::GetInstance();
@@ -1144,7 +1142,7 @@ def generate_func_impl_code_cpu(func_sign: FuncSign,
         raise ValueError(f"[ERROR]: KernelMode does not support!")
 
     param_names = tuple(get_param_names_by_func_sign(func_sign))
-    block_dim_name = param_names[0]
+    block_num_name = param_names[0]
     stream_name = param_names[1]
     new_func_sign = replace_func_sign_stream_param(func_sign, stream_name)
     buff = io.StringIO()
@@ -1162,7 +1160,7 @@ template<>
     printf("[%s:%s]\n", __FILE__, __FUNCTION__);
     AscendC::SetKernelMode(KernelMode::''')
     buff.write(f'{kernelType});\n')
-    buff.write(f"    ICPU_RUN_KF({kernel_name}, {block_dim_name}, {', '.join(format_params(new_func_sign)[2:])});\n")
+    buff.write(f"    ICPU_RUN_KF({kernel_name}, {block_num_name}, {', '.join(format_params(new_func_sign)[2:])});\n")
     buff.write("    return 1;\n")
     buff.write("}")
     return buff.getvalue()
@@ -1247,7 +1245,7 @@ def generate_host_stub_code(func_groups: List[FuncSignGroupWithModeBase],
             buff.write(normal_launch_code)
 
             param_names = tuple(get_param_names_by_func_sign(func_sign))
-            block_dim_name = param_names[0]
+            block_num_name = param_names[0]
             stream_name = param_names[1]
             new_func_sign = replace_func_sign_stream_param(func_sign, stream_name)
 
@@ -2012,7 +2010,7 @@ def generate_kernel_auto_gen_func_impl(func_group: FuncSignGroupWithModeBase,
     if not RUN_MODE == "cpu":
         source += ("#if defined(ASCENDC_DUMP) && defined(ASCENDC_DEBUG)\n"
                 "    AscendC::WriteBackOverflow(overflow_status);\n#endif\n")
-    source += '#if defined(__DAV_C310__) || defined(__DAV_310R6__)\n'
+    source += '#if defined(__DAV_C310__)\n'
     source += '    pipe_barrier(PIPE_ALL);\n'
     source += '    dsb(mem_dsb_t::DSB_ALL);\n'
     source += '    dci();\n'

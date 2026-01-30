@@ -82,16 +82,7 @@ AscDevStubGenerator::AscDevStubGenerator(const KernelInfo &kernelInfo, const std
     constexpr size_t codeBuffLen = 16 * 1024;
     buffer.reserve(codeBuffLen);
     codeStream_.str(std::move(buffer));
-
-    // init dump flag
-    const auto& infoManager = InfoManager::GetInstance();
-    bool isSupportFifoDump = infoManager.IsSupportFifoDump();
-    dumpIsNeedInit_ = !isSupportFifoDump && infoManager.IsDumpOn();
-    dumpIsNeedPrintVersion_ = !isSupportFifoDump && infoManager.UserDumpRequested() && infoManager.HasPrintf();
-
-    // save origin params name
-    originParamsCallList_ = JoinParamWithComma(kernelInfo_.kernelParameters, ParamJoinType::ONLY_NAME);
-    workspaceArgName_ = GetWorkspaceArgName();
+    socVersion_ = InfoManager::GetInstance().GetShortSocVersion();
 }
 
 std::string AscDevStubGenerator::GetWorkspaceArgName() const
@@ -126,63 +117,22 @@ void AscDevStubGenerator::GenStubFuncDecl(const std::string& globalSymbol, const
         kernelInfo_.colNum, kfcScene_);
 }
 
-void AscDevStubGenerator::StubFuncDumpAndHardSyncImpl(const bool& isMix, const bool& isHardSync)
+void AscDevStubGenerator::StubFuncWorkSpaceImpl()
 {
-    if (dumpIsNeedInit_) {
-        if (isMix) {
-            codeStream_ << "    AscendC::InitDump(true, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);\n";
-        } else {
-            codeStream_ << "    AscendC::InitDump(false, __ascendc_dump_addr, ONE_CORE_DUMP_SIZE);\n";
-        }
-    }
-    const auto& infoManager = InfoManager::GetInstance();
-    if (infoManager.IsDumpOn() && infoManager.HasSimtPrintf()) {
-        codeStream_ << "    AscendC::Simt::SetSimtDumpWorkspace(__ascendc_dump_addr + "
-                    << "(ONE_CORE_DUMP_SIZE * 108 + 72 * 2048 * 2048));\n";
-    }
-    if (isHardSync) {
-        codeStream_ << "    icache_preload(1);\n";
-        codeStream_ << "    if (g_sysFftsAddr != nullptr) {\n";
-        codeStream_ << "        set_ffts_base_addr((uint64_t)g_sysFftsAddr);\n";
-        codeStream_ << "    }\n";
-    }
-    if (dumpIsNeedPrintVersion_) {
-        codeStream_ << "    uint64_t __ascendc_timestamp = 0;\n";
-        codeStream_ << "    uint64_t __ascendc_version = 0;\n";
-        codeStream_ << "     __gm__ char* __ascendc_version_str = nullptr;\n";
-        codeStream_ << "    GetCannVersion(__ascendc_version_str, __ascendc_version, __ascendc_timestamp);\n";
-        codeStream_ << "    if (__ascendc_timestamp == 0) {\n";
-        codeStream_ << "        AscendC::printf(\"[WARNING]: CANN TimeStamp is invalid, ";
-        codeStream_ << "CANN TimeStamp is %u\\n\", __ascendc_timestamp);\n    } else {\n";
-        codeStream_ << "        AscendC::printf(\"CANN Version: %s, TimeStamp: %u\\n\", ";
-        codeStream_ << "(__gm__ const char*)(__ascendc_version_str), __ascendc_timestamp);\n";
-        codeStream_ << "    }\n";
-    }
-}
-
-void AscDevStubGenerator::StubFuncWorkSpaceImpl(const bool& isMix)
-{
-    if (workspaceArgName_.empty() || kfcScene_ == KfcScene::Close) {
+    std::string workspaceArgName = GetWorkspaceArgName();
+    if (workspaceArgName.empty() || kfcScene_ == KfcScene::Close) {
         ASC_LOGI("Kernel [%s] : the kernel no need to implement workspace.", kernelInfo_.kernelName.c_str());
         return;
     }
-    codeStream_ << "    GM_ADDR ascendc_workspace_param;\n";
-    codeStream_ << "    GM_ADDR ascendc_workspace_usr;\n";
-    codeStream_ << "    ascendc_workspace_param = " << workspaceArgName_ << ";\n";
-    if (isMix) {
-        codeStream_ << "    if (ascendc_workspace_param == nullptr) {\n";
-        codeStream_ << "        return;\n";
-        codeStream_ << "    }\n";
-    }
+    codeStream_ << "    GM_ADDR ascendc_workspace_param = " << workspaceArgName << ";\n";
     codeStream_ << "    AscendC::SetSysWorkspaceForce(ascendc_workspace_param);\n";
-    codeStream_ << "    ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);\n";
-    ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
-    if (isMix && kfcScene_ == KfcScene::Open && shortSoc != ShortSocVersion::ASCEND910_95) {
+    codeStream_ << "    GM_ADDR ascendc_workspace_usr = AscendC::GetUserWorkspace(ascendc_workspace_param);\n";
+    if (socVersion_ != ShortSocVersion::ASCEND950) {
         codeStream_ << "    if constexpr (g_coreType == AscendC::AIC) {\n";
         codeStream_ << "        matmul::clearWorkspace(ascendc_workspace_param);\n";
         codeStream_ << "    }\n";
     }
-    codeStream_ << "    " << workspaceArgName_ << " = ascendc_workspace_usr;\n";
+    codeStream_ << "    " << workspaceArgName << " = ascendc_workspace_usr;\n";
 }
 
 void AscDevStubGenerator::StubFuncCallImpl(const std::string& templateArgs)
@@ -191,63 +141,23 @@ void AscDevStubGenerator::StubFuncCallImpl(const std::string& templateArgs)
     if (!templateArgs.empty()) {
         codeStream_ << "<" << templateArgs << ">";
     }
-    codeStream_ << "(" << originParamsCallList_ << ");\n";
-    ShortSocVersion shortSoc = InfoManager::GetInstance().GetShortSocVersion();
-    if (shortSoc == ShortSocVersion::ASCEND910_95) {
+    codeStream_ << "(" << JoinParamWithComma(kernelInfo_.kernelParameters, ParamJoinType::ONLY_NAME) << ");\n";
+    if (socVersion_ == ShortSocVersion::ASCEND950) {
         codeStream_ << "    pipe_barrier(PIPE_ALL);\n";
         codeStream_ << "    dsb(mem_dsb_t::DSB_ALL);\n";
         codeStream_ << "    dci();\n";
     }
 }
 
-std::pair<bool, bool> AscDevStubGenerator::GetArchInfo(const ShortSocVersion& socVersion) const
-{
-    bool isMix = false;
-    bool isHardSync = false;
-    KernelMetaType curKernelType = ExtractKernelType(kernelType_);
-    if (socVersion == ShortSocVersion::ASCEND910B) {
-        if (kernelType_.size() > 1) { // core_ratio(x, y) is always mix
-            isMix = true;
-        } else {
-            KernelMetaType kernelType = curKernelType;
-            isMix = kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIV_1_0 ||
-                kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_0 ||
-                kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_1 ||
-                kernelType == KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2;
-        }
-        isHardSync = isMix;
-    }
-    ASC_LOGI("Kernel [%s] : is mix [%s], is hard sync [%s].", kernelInfo_.kernelName.c_str(), isMix ? "true" : "false",
-        isHardSync ? "true" : "false");
-    return {isMix, isHardSync};
-}
-
-void AscDevStubGenerator::GenStubFuncImpl(const bool& isMix, const bool& isHardSync, const std::string& templateArgs)
+void AscDevStubGenerator::GenStubFuncImpl(const std::string& templateArgs)
 {
     codeStream_ << "{\n";
-    StubFuncDumpAndHardSyncImpl(isMix, isHardSync);
-    StubFuncWorkSpaceImpl(isMix);
+    StubFuncWorkSpaceImpl();
     StubFuncCallImpl(templateArgs);
     codeStream_ << "}\n";
 }
 
-void AscDevStubGenerator::UpdateParams()
-{
-    if (dumpIsNeedInit_) {
-        kernelInfo_.kernelParameters.emplace(kernelInfo_.kernelParameters.begin(), "uint8_t *", "__ascendc_dump_addr",
-            false, "", "__attribute__((cce_global))");
-        for (auto &inst : kernelInfo_.templateInstances) {
-            inst.instanceKernelParameters.emplace(inst.instanceKernelParameters.begin(),
-                "uint8_t *",
-                "__ascendc_dump_addr",
-                false,
-                "",
-                "__attribute__((cce_global))");
-        }
-    }
-}
-
-void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous)
+void AscDevStubGenerator::GenStubKernelFunc(const bool hasAnonymous)
 {
     KernelMetaType curKernelType = ExtractKernelType(kernelType_);
     if (!kernelInfo_.namespaces.empty()) {
@@ -264,7 +174,7 @@ void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardS
         }
     }
     GenStubFuncDecl(kernelInfo_.kernelMangledName, kernelInfo_.kernelParameters, curKernelType);
-    GenStubFuncImpl(isMix, isHardSync, "");
+    GenStubFuncImpl();
     if (kernelInfo_.namespaces.empty()) {
         return;
     }
@@ -287,8 +197,7 @@ std::string AscDevStubGenerator::GetTempArgsList(const TemplateInstance &tempIns
     return JoinStringWithDelimiter(templateArgList, ", ");
 }
 
-void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous,
-    const TemplateInstance tempInst)
+void AscDevStubGenerator::GenStubKernelFunc(const bool hasAnonymous, const TemplateInstance tempInst)
 {
     if (!kernelInfo_.namespaces.empty()) {
         if (!hasAnonymous) {
@@ -306,8 +215,7 @@ void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardS
     KernelMetaType defaultKtype = ExtractKernelType(kernelType_);
     GenStubFuncDecl(tempInst.instanceMangledName, tempInst.instanceKernelParameters,
         GetBishengKTypeByCoreRatio(tempInst.ratio, defaultKtype));
-    const std::string& templateArgs = GetTempArgsList(tempInst);
-    GenStubFuncImpl(isMix, isHardSync, templateArgs);
+    GenStubFuncImpl(GetTempArgsList(tempInst));
     if (kernelInfo_.namespaces.empty()) {
         return;
     }
@@ -320,8 +228,6 @@ void AscDevStubGenerator::GenStubKernelFunc(const bool isMix, const bool isHardS
 std::string AscDevStubGenerator::GenCode()
 {
     ASC_LOGI("Kernel [%s] : generate device stub function.", kernelInfo_.kernelName.c_str());
-    const auto [isMix, isHardSync] = GetArchInfo(socVersion_);
-    UpdateParams();
     bool hasAnonymous = false;
     auto it = std::find(kernelInfo_.namespaces.begin(), kernelInfo_.namespaces.end(), std::string(ANONYMOUS_NAME));
     if (it != kernelInfo_.namespaces.end()) {
@@ -330,10 +236,10 @@ std::string AscDevStubGenerator::GenCode()
     if (kernelInfo_.isTemplate) {
         for (const auto& inst : kernelInfo_.templateInstances) {
             // isMixInst = inst.==mix
-            GenStubKernelFunc(isMix, isHardSync, hasAnonymous, inst);
+            GenStubKernelFunc(hasAnonymous, inst);
         }
     } else {
-        GenStubKernelFunc(isMix, isHardSync, hasAnonymous);
+        GenStubKernelFunc(hasAnonymous);
     }
 
     ASC_LOGD(

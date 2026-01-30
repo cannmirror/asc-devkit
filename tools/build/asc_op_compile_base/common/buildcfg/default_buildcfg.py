@@ -116,6 +116,7 @@ cce_default_static_build_config = {
     enable_cce_remat_higher_weight: False,
     enable_super_kernel: False,
     workspace_tensor_size: [],
+    compile_feature_list: [],
 }
 
 # dynamic build config dict

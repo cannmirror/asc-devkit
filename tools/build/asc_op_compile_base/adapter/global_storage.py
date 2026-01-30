@@ -48,6 +48,7 @@ class GlobalStorageSingleton:
         self.ascendc_sub_super_kernel_early_start_wait_flag = False
         self.ascendc_sub_super_kernel_call_dcci_before_kernel_start = False
         self.ascendc_sub_super_kernel_call_dcci_after_kernel_end = False
+        self.ascendc_sub_super_kernel_call_dcci_disable_on_kernel = False
         self.super_kenel_save_sub_op_files = False
         self.ascendc_is_static_op = None
         self.ascendc_enable_aicore_exception_restart = False
@@ -82,6 +83,7 @@ class GlobalStorageSingleton:
         self.ascendc_sub_super_kernel_early_start_wait_flag = False
         self.ascendc_sub_super_kernel_call_dcci_before_kernel_start = False
         self.ascendc_sub_super_kernel_call_dcci_after_kernel_end = False
+        self.ascendc_sub_super_kernel_call_dcci_disable_on_kernel = False
         self.super_kenel_save_sub_op_files = False
         self.ascendc_is_static_op = None
         self.ascendc_enable_aicore_exception_restart = False

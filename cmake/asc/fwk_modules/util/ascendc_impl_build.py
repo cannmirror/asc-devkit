@@ -77,10 +77,10 @@ DTYPE_MAP = {{"float32": ["DT_FLOAT", "float"],
     "string_ref": ["DT_STRING_REF", "unknown"],
     "int4": ["DT_INT4", "int4b_t"],
     "bfloat16": ["DT_BF16", "bfloat16_t"],
-    "float8_e5m2": ["DT_FLOAT8_E5M2", "float8_e5m2_t"],
-    "float8_e4m3fn": ["DT_FLOAT8_E4M3FN", "float8_e4m3_t"],
+    "float8_e5m2": ["DT_FLOAT8_E5M2", "fp8_e5m2_t"],
+    "float8_e4m3fn": ["DT_FLOAT8_E4M3FN", "fp8_e4m3_t"],
     "hifloat8":["DT_HIFLOAT8", "hifloat8_t"],
-    "float8_e8m0":["DT_FLOAT8_E8M0", "float8_e8m0_t"],
+    "float8_e8m0":["DT_FLOAT8_E8M0", "fp8_e8m0_t"],
     "float4_e2m1":["DT_FLOAT4_E2M1", "fp4x2_e2m1_t"],
     "float4_e1m2":["DT_FLOAT4_E1M2", "fp4x2_e1m2_t"],
     "int2":["DT_INT2","int2b_t"]}}
@@ -237,7 +237,7 @@ def {}({}, kernel_name="{}"{}):
 
 
 COMPILE_OP_API = '''
-    msg = "start compile Acend C Operator {}, kernel name is " + kernel_name
+    msg = "start compile Ascend C Operator {}, kernel name is " + kernel_name
     CommonUtility.print_compile_log("", msg, AscendCLogLevel.LOG_INFO)
     op_type = "{}"
     code_channel = get_code_channel(src, kernel_name, op_type, options)
@@ -248,7 +248,7 @@ COMPILE_OP_API = '''
     compile_op(src, origin_func_name, op_info, options, code_channel, '{}', {})
 '''
 COMPILE_OP_API_BUILT_IN = '''
-    msg = "start compile Acend C Operator {}, kernel name is " + kernel_name
+    msg = "start compile Ascend C Operator {}, kernel name is " + kernel_name
     CommonUtility.print_compile_log("", msg, AscendCLogLevel.LOG_INFO)
     op_type = "{}"
     code_channel = get_code_channel(src, kernel_name, op_type, options)

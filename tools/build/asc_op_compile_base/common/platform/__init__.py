@@ -34,7 +34,7 @@ from .platform_info import VEC_BS9SX1A
 from .platform_info import ASCEND_610B
 from .platform_info import ASCEND_910B
 from .platform_info import ASCEND_910_93
-from .platform_info import ASCEND_910_95
+from .platform_info import ASCEND_950
 from .platform_info import ASCEND_SD
 from .platform_info import _AIC_ENGINE
 from .platform_info import _VEC_ENGINE

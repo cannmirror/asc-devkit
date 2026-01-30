@@ -84,3 +84,22 @@ if(NOT CMAKE_ASC_CREATE_SHARED_LIBRARY)
 endif()
 
 set(CMAKE_ASC_INFORMATION_LOADED 1)   # 标记Cmake已经加载初始化ASC编程语言
+
+if(CMAKE_ASC_RUN_MODE STREQUAL "sim")
+    set(_ARCH_TO_DIR_MAP
+        "dav-2201" "dav_2201"
+        "dav-3101" "dav_3510"
+        "dav-3510" "dav_3510"
+    )
+    list(FIND _ARCH_TO_DIR_MAP "${CMAKE_ASC_ARCHITECTURES}" _index)
+    if(_index GREATER -1)
+        math(EXPR _val_index "${_index} + 1")
+        list(GET _ARCH_TO_DIR_MAP ${_val_index} _ASC_INTERNAL_DIR)
+        set(_ASC_SIM_PATH "$ENV{ASCEND_HOME_PATH}/tools/simulator/${_ASC_INTERNAL_DIR}/lib")
+        string(APPEND CMAKE_ASC_LINK_FLAGS " -Wl,-rpath,${_ASC_SIM_PATH} -Wl,-L${_ASC_SIM_PATH} -Wl,--disable-new-dtags")
+        link_libraries(runtime_camodel npu_drv)
+        message(STATUS "ASC Simulator enabled: ${_ASC_SIM_PATH}")
+    else()
+        message(FATAL_ERROR "Unsupported ASC architecture for simulator: ${CMAKE_ASC_ARCHITECTURES}")
+    endif()
+endif()

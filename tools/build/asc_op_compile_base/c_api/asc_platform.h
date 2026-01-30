@@ -60,8 +60,7 @@ enum class DPLATFORM {
   ASCEND_610LITE,  // V310
   BS9SX2A,
   MC61AM21A,
-  ASCEND_910_95,     // C310
-  ASCEND_910_55,     // 310R6
+  ASCEND_950,     // C310
   KIRINX90,
   KIRIN9030,
   DEFAULT_CURRENT
@@ -111,43 +110,41 @@ constexpr const char* Ascend_910_9381 = "Ascend910_9381";
 constexpr const char* Ascend_910_9382 = "Ascend910_9382";
 constexpr const char* Ascend_910_9372 = "Ascend910_9372";
 constexpr const char* Ascend_910_9362 = "Ascend910_9362";
-constexpr const char* Ascend_910_95 = "Ascend910_95";
+constexpr const char* Ascend_950 = "Ascend950";
 constexpr const char* MC62CM12AA = "MC62CM12AA";
-constexpr const char* Ascend_910_950x = "Ascend910_950x";
-constexpr const char* Ascend_910_950y = "Ascend910_950y";
-constexpr const char* Ascend_910_950z = "Ascend910_950z";
-constexpr const char* Ascend_910_957b = "Ascend910_957b";
-constexpr const char* Ascend_910_957d = "Ascend910_957d";
-constexpr const char* Ascend_910_957c = "Ascend910_957c";
-constexpr const char* Ascend_910_9589 = "Ascend910_9589";
-constexpr const char* Ascend_910_958a = "Ascend910_958a";
-constexpr const char* Ascend_910_958b = "Ascend910_958b";
-constexpr const char* Ascend_910_9599 = "Ascend910_9599";
-constexpr const char* Ascend_910_9579 = "Ascend910_9579";
-constexpr const char* Ascend_910_9591 = "Ascend910_9591";
-constexpr const char* Ascend_910_9592 = "Ascend910_9592";
-constexpr const char* Ascend_910_9595 = "Ascend910_9595";
-constexpr const char* Ascend_910_9596 = "Ascend910_9596";
-constexpr const char* Ascend_910_9581 = "Ascend910_9581";
-constexpr const char* Ascend_910_9582 = "Ascend910_9582";
-constexpr const char* Ascend_910_9583 = "Ascend910_9583";
-constexpr const char* Ascend_910_9584 = "Ascend910_9584";
-constexpr const char* Ascend_910_9585 = "Ascend910_9585";
-constexpr const char* Ascend_910_9586 = "Ascend910_9586";
-constexpr const char* Ascend_910_9587 = "Ascend910_9587";
-constexpr const char* Ascend_910_9588 = "Ascend910_9588";
-constexpr const char* Ascend_910_9571 = "Ascend910_9571";
-constexpr const char* Ascend_910_9572 = "Ascend910_9572";
-constexpr const char* Ascend_910_9573 = "Ascend910_9573";
-constexpr const char* Ascend_910_9574 = "Ascend910_9574";
-constexpr const char* Ascend_910_9575 = "Ascend910_9575";
-constexpr const char* Ascend_910_9576 = "Ascend910_9576";
-constexpr const char* Ascend_910_9577 = "Ascend910_9577";
-constexpr const char* Ascend_910_9578 = "Ascend910_9578";
-constexpr const char* Ascend_910_95A1 = "Ascend910_95A1";
-constexpr const char* Ascend_910_95A2 = "Ascend910_95A2";
-constexpr const char* Ascend_910_55 = "Ascend910_55";
-constexpr const char* Ascend_910_5591 = "Ascend910_5591";
+constexpr const char* Ascend950PR_9599 = "Ascend950PR_9599";
+constexpr const char* Ascend950PR_958a = "Ascend950PR_958a";
+constexpr const char* Ascend950PR_9589 = "Ascend950PR_9589";
+constexpr const char* Ascend950PR_958b = "Ascend950PR_958b";
+constexpr const char* Ascend950PR_9579 = "Ascend950PR_9579";
+constexpr const char* Ascend950PR_957b = "Ascend950PR_957b";
+constexpr const char* Ascend950PR_957c = "Ascend950PR_957c";
+constexpr const char* Ascend950PR_957d = "Ascend950PR_957d";
+constexpr const char* Ascend950PR_950z = "Ascend950PR_950z";
+constexpr const char* Ascend950DT_950x = "Ascend950DT_950x";
+constexpr const char* Ascend950DT_950y = "Ascend950DT_950y";
+constexpr const char* Ascend950DT_95A1 = "Ascend950DT_95A1";
+constexpr const char* Ascend950DT_95A2 = "Ascend950DT_95A2";
+constexpr const char* Ascend950DT_9591 = "Ascend950DT_9591";
+constexpr const char* Ascend950DT_9592 = "Ascend950DT_9592";
+constexpr const char* Ascend950DT_9595 = "Ascend950DT_9595";
+constexpr const char* Ascend950DT_9596 = "Ascend950DT_9596";
+constexpr const char* Ascend950DT_9581 = "Ascend950DT_9581";
+constexpr const char* Ascend950DT_9582 = "Ascend950DT_9582";
+constexpr const char* Ascend950DT_9583 = "Ascend950DT_9583";
+constexpr const char* Ascend950DT_9584 = "Ascend950DT_9584";
+constexpr const char* Ascend950DT_9585 = "Ascend950DT_9585";
+constexpr const char* Ascend950DT_9586 = "Ascend950DT_9586";
+constexpr const char* Ascend950DT_9587 = "Ascend950DT_9587";
+constexpr const char* Ascend950DT_9588 = "Ascend950DT_9588";
+constexpr const char* Ascend950DT_9571 = "Ascend950DT_9571";
+constexpr const char* Ascend950DT_9572 = "Ascend950DT_9572";
+constexpr const char* Ascend950DT_9573 = "Ascend950DT_9573";
+constexpr const char* Ascend950DT_9574 = "Ascend950DT_9574";
+constexpr const char* Ascend950DT_9575 = "Ascend950DT_9575";
+constexpr const char* Ascend950DT_9576 = "Ascend950DT_9576";
+constexpr const char* Ascend950DT_9577 = "Ascend950DT_9577";
+constexpr const char* Ascend950DT_9578 = "Ascend950DT_9578";
 constexpr const char* Ascend_910ProA = "Ascend910ProA";
 constexpr const char* Ascend_910ProB = "Ascend910ProB";
 constexpr const char* Ascend_910PremiumA = "Ascend910PremiumA";
@@ -281,7 +278,7 @@ enum class PIPE {
   // aiv mte2/mte3 for ASCEND_910_93
   PIPE_AIV_MTE2 = 18,
   PIPE_AIC_MTE3 = 19,
-  // aic mte1 for ASCEND_910_95
+  // aic mte1 for ASCEND_950
   PIPE_AIC_MTE1 = 20,
   PIPE_NUM = 21,
 };
@@ -610,14 +607,14 @@ class CceConfBase {
       Ascend_910_93,    Ascend_910_9391,    Ascend_910_9392,    Ascend_910_9381,  Ascend_910_9382,
       Ascend_910_9372,  Ascend_910_9362,    kAscend610Lite,     BS9SX2AA,         BS9SX2AB,
       MC61AM21AA,     MC61AM21AB,           Ascend_035,         Ascend_035A,      Ascend_035B,   
-      AS31XM1,       AS31XM1X,              Ascend_910_950z,    Ascend_910_957b,  Ascend_910_957c,
-      Ascend_910_957d, Ascend_910_9589,    Ascend_910_958a,    Ascend_910_958b,  Ascend_910_9599,
-      Ascend_910_5591, Ascend_910_950y,    Ascend_910_9579,  Ascend_910_9591,    Ascend_910_9592,
-      Ascend_910_9595, Ascend_910_9596,    Ascend_910_9581, Ascend_910_9582,     Ascend_910_9583,
-      Ascend_910_9584, Ascend_910_9585,    Ascend_910_9586, Ascend_910_9587,     Ascend_910_9588,
-      Ascend_910_9571, Ascend_910_9572,    Ascend_910_9573, Ascend_910_9574,     Ascend_910_9575,
-      Ascend_910_9576, Ascend_910_9577,    Ascend_910_9578, Ascend_910_95A1,     Ascend_910_95A2,
-      MC62CM12AA,      KirinX90,           Kirin9030,       Ascend_910_950x};
+      AS31XM1,       AS31XM1X,        MC62CM12AA,      KirinX90,           Kirin9030,
+      Ascend950PR_9599, Ascend950PR_958a, Ascend950PR_9589, Ascend950PR_958b, Ascend950PR_9579, Ascend950PR_957b,
+      Ascend950PR_957c, Ascend950PR_957d, Ascend950PR_950z, Ascend950DT_950x, Ascend950DT_950y, Ascend950DT_95A1,
+      Ascend950DT_95A2, Ascend950DT_9591, Ascend950DT_9592, Ascend950DT_9595, Ascend950DT_9596, Ascend950DT_9581,
+      Ascend950DT_9582, Ascend950DT_9583, Ascend950DT_9584, Ascend950DT_9585, Ascend950DT_9586, Ascend950DT_9587,
+      Ascend950DT_9588, Ascend950DT_9571, Ascend950DT_9572, Ascend950DT_9573, Ascend950DT_9574, Ascend950DT_9575,
+      Ascend950DT_9576, Ascend950DT_9577, Ascend950DT_9578
+    };
   enum platformconf::TIK_VERSION current_tik_version_ = platformconf::TIK_VERSION::TIK_1_0;
   const std::map<const std::string, platformconf::TIK_VERSION> kStringToTikVersion = {
       {"TIK1.0", platformconf::TIK_VERSION::TIK_1_0},

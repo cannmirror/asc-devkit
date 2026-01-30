@@ -166,7 +166,7 @@ def _gen_compile_cmd_m510(src_file: str, dst_file: str, compile_option_tuple, ti
 def gen_compile_cmd_v220(src_file: str, dst_file: str, compile_option_tuple, sub_arch: str, tiling_file: str,\
     with_tiling_file: bool = True):
     """
-    Generate the compile command for the V220/C310/310R6 compiler.
+    Generate the compile command for the V220/C310 compiler.
     :param src_file: the source file
     :param dst_file: the destination file
     :param extra_options: the extra options
@@ -198,7 +198,7 @@ def gen_compile_cmd_for_meta_info(src_file: str, dst_file: str, compile_option_t
 
 
 def get_v220_kernel_type_mix_flag(compile_info: CompileInfo, tiling_info: TilingInfo):
-    is_v220_flag = CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6()
+    is_v220_flag = CommonUtility.is_v220() or CommonUtility.is_c310()
     kernel_type_res = 0
     is_single_and_using_hard_sync = is_v220_flag and compile_info.hard_sync and \
             compile_info.code_channel in [CORE_TYPE_VEC, CORE_TYPE_CUBE]
@@ -286,7 +286,7 @@ def compile_single_tiling_v220(param : SingleTilingKeyCompileParams):
         kernel_func_name = param.compile_info.kernel_name + '_%s' % param.tiling_key
     if param.code_channel == CORE_TYPE_MIX:
         compile_cmd += [f"-D{MIX_CORE_MACRO}={1}"]
-    if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
+    if CommonUtility.is_c310() or CommonUtility.is_m510():
         if param.code_channel == CORE_TYPE_MIX:
             compile_cmd += [f"-D__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__"]
         raw_kernel_type = param.compile_info.raw_tiling_key_kernel_type.get(str(param.tiling_info.tiling_key))
@@ -320,7 +320,7 @@ def get_compile_cmd_for_kernel_name(compile_info: CompileInfo, current_kernel_na
     compile_cmd = [f"-Dauto_gen_{compile_info.origin_func_name}_kernel={current_kernel_name}"]
     if code_channel == CORE_TYPE_MIX:
         compile_cmd += [f"-D{MIX_CORE_MACRO}={1}"]
-    if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
+    if CommonUtility.is_c310() or CommonUtility.is_m510():
         if code_channel == CORE_TYPE_MIX:
             compile_cmd += [f"-D__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__"]
         raw_kernel_type = compile_info.raw_tiling_key_kernel_type.get(str(tiling_info.tiling_key))
@@ -664,7 +664,7 @@ def get_code_channel_v220_by_first_tiling_key(params: InferChannelParams):
                 continue
             for inst in insts[1: 5]:
                 hardware_sync_in_asm = hardware_sync_in_asm or _is_hard_sync_instr(inst)
-                if CommonUtility.is_c310() or CommonUtility.is_310r6():
+                if CommonUtility.is_c310():
                     mode |= v310_mode(inst, arch == f"dav-{chip_version}-cube")
                 else:
                     mode |= v220_mode(inst)

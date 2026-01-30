@@ -69,7 +69,6 @@ public:
     ASTDeviceVisitor(clang::ASTContext &context, clang::CompilerInstance &compiler);
     bool VisitFunctionDecl(const clang::FunctionDecl *funcDecl);
     bool VisitVarDecl(clang::VarDecl *varDecl);
-    bool VisitCallExpr(clang::CallExpr *exprCall);
 private:
     clang::ASTContext &context_;
     clang::CompilerInstance &compiler_;

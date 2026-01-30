@@ -38,6 +38,7 @@ def gen_compile_options(compile_options_file: str, op_type: str, \
     opc_debug_config = []
     opc_kernel_config = []
     opc_tiling_keys = ""
+    input_param_file = ""
     for opts in compile_options:
         if "oom" in opts:
             if opts == "--oom":
@@ -46,6 +47,8 @@ def gen_compile_options(compile_options_file: str, op_type: str, \
                 raise RuntimeError(f"Unknown oom option format {opts}")
         elif "--save-temp-files" in opts:
             opc_debug_config.append("dump_cce")
+        elif "--input-param-file" in opts:
+            input_param_file = "--input-param-file=" + opts.strip().split('=')[1]
         elif opts.startswith("--op_relocatable_kernel_binary"):
             opc_debug_config.append(opts)
         elif opts.startswith("--op_super_kernel_options"):
@@ -74,6 +77,10 @@ def gen_compile_options(compile_options_file: str, op_type: str, \
         opc_config_str += ' '.join(opc_kernel_config)
     if opc_config_str != "":
         write_options_to_file(opc_config_file, opc_config_str, op_type, compute_unit, "@")
+    if input_param_file != "":
+        if op_type == "ALL" or compute_unit == "":
+            raise RuntimeError('--input-param-file must be used with a COMPUTE_UNIT, and OP_TYPE cannot be ALL.')
+        write_options_to_file(opc_config_file, input_param_file, op_type, compute_unit, "@")
 
 
 if __name__ == '__main__':

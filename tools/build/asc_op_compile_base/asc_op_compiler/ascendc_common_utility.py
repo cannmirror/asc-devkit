@@ -46,7 +46,6 @@ class CompileInfo:
         self.is_debug: bool = False
         self.compile_log_path = None
         self.hard_sync: bool = False
-        self.hard_kfc_server: bool = False
         self.enable_deterministic: bool = False
         self.tiling_key_kernel_type: dict = {}
         self.tiling_key_deterministic: dict = {}
@@ -307,7 +306,7 @@ class CommonUtility:
                 _trans_compile_cmds_to_precompile(cmds_i)
                 CommonUtility.dump_compile_log(cmds_i, CompileStage.DEBUG_PRECOMPILE, compile_log_path)
                 CommonUtility.run_cmd_ascendc(cmds_i, "compile")
-                if CommonUtility.is_c310() or CommonUtility.is_310r6():
+                if CommonUtility.is_c310():
                     # common compile .o cmds -> .s cmds
                     cmds_s = copy.deepcopy(cmds)
                     _trans_compile_cmds_to_assemble(cmds_s)
@@ -396,7 +395,7 @@ class CommonUtility:
             res: True means current soc support super kernel
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["Ascend910B", "Ascend910_93", "Ascend910_95"]:
+        if short_soc_version in ["Ascend910B", "Ascend910_93", "Ascend950"]:
             return True
         return False
 
@@ -409,7 +408,7 @@ class CommonUtility:
             res: True means soc version support workspace offset way
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["Ascend910_95", "mc62cm12a"]:
+        if short_soc_version in ["Ascend950", "mc62cm12a"]:
             return True
         return False
 
@@ -472,7 +471,7 @@ class CommonUtility:
             res: True means c310
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["Ascend910_95"]:
+        if short_soc_version in ["Ascend950"]:
             return True
         return False
 
@@ -487,22 +486,10 @@ class CommonUtility:
             res: True means has ffts addr
         """
         short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version not in ["Ascend910_95"]:
+        if short_soc_version not in ["Ascend950"]:
             return True
         return False
 
-
-    @staticmethod
-    def is_310r6():
-        """return if current soc version is 310r6
-
-        Returns:
-            res: True means 310r6
-        """
-        short_soc_version = global_var_storage.get_variable("ascendc_short_soc_version")
-        if short_soc_version in ["Ascend910_55"]:
-            return True
-        return False
 
     @staticmethod
     def is_m510():
@@ -542,7 +529,7 @@ class CommonUtility:
 
     @staticmethod
     def get_chip_version():
-        """get chip version for (c220/c310/310r6/510r2)
+        """get chip version for (c220/c310/510r2)
 
         Returns:
             chip_version: chip version
@@ -550,8 +537,6 @@ class CommonUtility:
         chip_version = "c220"
         if CommonUtility.is_c310():
             chip_version = "c310"
-        elif CommonUtility.is_310r6():
-            chip_version = "310r6"
         elif CommonUtility.is_m510():
             chip_version = "510r2"
         return chip_version
@@ -683,7 +668,7 @@ format(str(stage), output))
     
     @staticmethod
     def get_dump_core_num():
-        if CommonUtility.is_c310() or CommonUtility.is_310r6():	 
+        if CommonUtility.is_c310():	 
             return 108 
         return 75
 

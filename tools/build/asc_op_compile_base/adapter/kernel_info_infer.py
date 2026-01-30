@@ -169,7 +169,7 @@ AscendCLogLevel.LOG_ERROR)
 
         actual_dump_size = CommonUtility.get_dump_core_num() * dump_info["dump_size"]
 
-        simt_in_c310 = match_simtvf and (CommonUtility.is_c310() or CommonUtility.is_310r6())
+        simt_in_c310 = match_simtvf and (CommonUtility.is_c310())
         if dump_info["dump_type"] != "" and simt_in_c310:
             # david 72 vec + 36 cube + simt
             actual_dump_size = 1048576 * CommonUtility.get_dump_core_num() + 72 * 2048 * 2048 
@@ -181,7 +181,7 @@ AscendCLogLevel.LOG_ERROR)
 
     @staticmethod
     def get_kernel_type_enum(kernel_type, compile_log_path):
-        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+        if CommonUtility.is_v220() or CommonUtility.is_c310():
             if kernel_type in STR_TO_KERNEL_TYPE_V220.keys():
                 return STR_TO_KERNEL_TYPE_V220[kernel_type]
             else:
@@ -205,7 +205,7 @@ AscendCLogLevel.LOG_ERROR)
 
     @staticmethod
     def get_kernel_type_enum_for_group(kernel_type):
-        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+        if CommonUtility.is_v220() or CommonUtility.is_c310():
             if kernel_type in STR_TO_KERNEL_TYPE_V220.keys():
                 return STR_TO_KERNEL_TYPE_V220[kernel_type]
             elif kernel_type in STR_TO_KERNEL_TYPE_V200.keys():
@@ -354,7 +354,7 @@ REGISTER_TILING_DEFAULT')
         tiling_struct_expr_map = {}
         register_tiling_struct = set()
         tpl_tiling_struct = set()
-        if not (CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6()):
+        if not (CommonUtility.is_v220() or CommonUtility.is_c310()):
             code_channel = CORE_TYPE_MIX
         if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
             check_exist_instrinsic_when_super_kernel(dst_i_file)
@@ -610,7 +610,7 @@ REGISTER_TILING_DEFAULT')
         compile_option_tuple_pre.compile_options = compile_option_tuple_pre.compile_options + ['-DASCENDC_TPL_PRE']
         chip_version = CommonUtility.get_chip_version()
         # generate .i file
-        if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+        if CommonUtility.is_v220() or CommonUtility.is_c310():
             arch = f"dav-{chip_version}-cube"
             dis_i_file_cube = dst_i_file[:-2] + "_cube" + dst_i_file[-2:]
             pre_compile_cmd = gen_compile_cmd_v220(cce_file, dis_i_file_cube, \

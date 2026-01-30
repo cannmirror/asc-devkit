@@ -37,29 +37,20 @@ public:
 private:
     void GenStubFuncDecl(const std::string& globalSymbol, const std::vector<Param>& args,
         const KernelMetaType& kernelType);
-    void GenStubFuncImpl(const bool& isMix, const bool& isHardSync, const std::string& templateArgs);
-    void StubFuncDumpAndHardSyncImpl(const bool& isMix, const bool& isHardSync);
-    void StubFuncWorkSpaceImpl(const bool& isMix);
+    void GenStubFuncImpl(const std::string& templateArgs = "");
+    void StubFuncWorkSpaceImpl();
     void StubFuncCallImpl(const std::string& templateArgs);
-    void GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous);
-    void GenStubKernelFunc(const bool isMix, const bool isHardSync, const bool hasAnonymous, 
-        const TemplateInstance tempInst);
+    void GenStubKernelFunc(const bool hasAnonymous);
+    void GenStubKernelFunc(const bool hasAnonymous, const TemplateInstance tempInst);
 
-    std::pair<bool, bool> GetArchInfo(const ShortSocVersion& socVersion) const;
     std::string GetWorkspaceArgName() const;
     std::string GetTempArgsList(const TemplateInstance &tempInst);
-    void UpdateParams();
-    void GenCodeForL2Cache();
 
     KernelInfo kernelInfo_;
     std::unordered_set<KernelMetaType> kernelType_ = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
     ShortSocVersion socVersion_ = ShortSocVersion::ASCEND910B;
-    bool dumpIsNeedInit_ = false;
-    bool dumpIsNeedPrintVersion_ = false;
     KfcScene kfcScene_ = KfcScene::Close;
     std::stringstream codeStream_;
-    std::string originParamsCallList_;
-    std::string workspaceArgName_;
 };
 
 

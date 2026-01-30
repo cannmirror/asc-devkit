@@ -35,6 +35,12 @@ def run_local_cmd(cmds, compile_log_path=None):
     CommonUtility.dump_compile_log(cmds, CompileStage.SPLIT_SUB_OBJS, compile_log_path)
 
 
+def get_wait_flag_for_chip(flag_id):
+    if CommonUtility.is_c310():
+        return f"wait_flag_dev(PIPE_S, {flag_id});"
+    return f"wait_flag_dev({flag_id});"
+
+
 def check_exist_forbidden_symbols(dst_i_file, forbidden_symbols, allow_path):
     need_check: bool = True
     block_file_path = ''

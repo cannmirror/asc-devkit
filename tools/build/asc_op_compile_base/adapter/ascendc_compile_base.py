@@ -30,6 +30,7 @@ from .global_storage import global_var_storage
 from .log_utils import AscendCLogLevel, CompileStage
 from .get_op_tiling import OpInfo
 from .ascendc_constants import KernelMetaType, CORE_TYPE_MIX, CORE_TYPE_CUBE, CORE_TYPE_VEC
+from .ascendc_kernel_feature_manager import global_ascendc_kernel_feature_manager
 
 
 def compile_pre_process(op_info: OpInfo, compile_options: list):
@@ -61,6 +62,7 @@ def compile_pre_process(op_info: OpInfo, compile_options: list):
         "ascendc_enable_aicore_exception_restart", "-DAICORE_EXCEPTION_RESTART" in compile_options)
     if global_var_storage.get_variable("ascendc_enable_coverage"):
         compile_options.append("-g")
+    global_ascendc_kernel_feature_manager.init_available_and_enable_features()
     return compile_options
 
 
@@ -146,60 +148,90 @@ def link_relocatable_meta_file(bin_file_path, meta_file_path, compile_log_path=N
     CommonUtility.run_cmd_inner(link_cmd, CompileStage.LINKRELOCATE, compile_log_path)
 
 
+def _get_max_parallel_num():
+    cpu_db_num = max(1, 2 * multiprocessing.cpu_count() - 2)
+    cpu_sched_num = max(1, 2 * len(os.sched_getaffinity(0)) - 2)
+    return min(cpu_db_num, cpu_sched_num)
+
+
+def _ignore_parallel_job_self_set():
+    ascend_self_par_job = os.getenv('TILINGKEY_PARALLEL_JOB')
+    ascend_self_par_job_compatible = os.getenv('ASCENDC_PAR_COMPILE_JOB')
+    if ascend_self_par_job is not None:
+        CommonUtility.print_compile_log("", "Detected that the TILINGKEY_PAR_COMPILE enviroment variable has been set, \
+ignoring TILINGKEY_PARALLEL_JOB.", AscendCLogLevel.LOG_WARNING)
+    elif ascend_self_par_job_compatible is not None:
+        CommonUtility.print_compile_log("", "Detected that the TILINGKEY_PAR_COMPILE enviroment variable has been set, \
+ignoring ASCENDC_PAR_COMPILE_JOB.", AscendCLogLevel.LOG_WARNING)
+
+
+def _get_parallel_job_without_op_project(tilingkey_num: int = 1):
+    ascend_self_par_job_compatible = os.getenv('ASCENDC_PAR_COMPILE_JOB')
+    if ascend_self_par_job_compatible is not None:
+        CommonUtility.print_compile_log("", "ASCENDC_PAR_COMPILE_JOB enviroment variable is deprecated, \
+please use TILINGKEY_PARALLEL_JOB instead!", AscendCLogLevel.LOG_WARNING)
+    # formally
+    ascend_self_par_job = os.getenv('TILINGKEY_PARALLEL_JOB')
+    max_job_num = _get_max_parallel_num()
+    ascendc_self_par_job_num = 1
+    if ascend_self_par_job_compatible is not None:
+        ascendc_self_par_job_num = int(ascend_self_par_job_compatible)
+        if ascendc_self_par_job_num == 1:
+            ascendc_self_par_job_num = max_job_num
+        else:
+            ascendc_self_par_job_num = min(max(1, ascendc_self_par_job_num), max_job_num)
+    elif ascend_self_par_job is not None:
+        ascendc_self_par_job_num = min(max(1, int(ascend_self_par_job)), max_job_num)
+    else:
+        # default is 64 or max job, which may cause host memory exaust
+        default_job = 8 if (CommonUtility.is_v100() or CommonUtility.is_v200()) else 64
+        ascendc_self_par_job_num = max(1, min(default_job, max_job_num, tilingkey_num))
+        CommonUtility.print_compile_log("", f"tiling key num is {tilingkey_num}, \
+tilingkey parallel compile num is {ascendc_self_par_job_num}", AscendCLogLevel.LOG_INFO)
+    return ascendc_self_par_job_num
+
+
 def compile_multi_tilingkey(tiling_key_list, cmds_list, dstfile_name, compile_log_path):
     parallel_compile_check = os.getenv('TILINGKEY_PAR_COMPILE')
     if parallel_compile_check not in [None, '1', '0']:
         CommonUtility.print_compile_log("", "TILINGKEY_PAR_COMPILE ONLY SUPPORT 0 OR 1, current \
 TILINGKEY_PAR_COMPILE is {}".format(parallel_compile_check), AscendCLogLevel.LOG_WARNING)
-    ci_big_makefile_par_switch = os.getenv('TILINGKEY_PAR_COMPILE') == '1'
-    ascendc_self_par_job = os.getenv('ASCENDC_PAR_COMPILE_JOB')
-    ascendc_self_par_job_num = 0
-    if ascendc_self_par_job is not None:
-        if ascendc_self_par_job == '1':
-            cpu_db_num = 2 * multiprocessing.cpu_count() - 2
-            ascendc_self_par_job_num = cpu_db_num if cpu_db_num > 0 else 1
-        else:
-            ascendc_self_par_job_num = int(ascendc_self_par_job)
 
-    if ci_big_makefile_par_switch or ascendc_self_par_job_num > 0:
-        dstfile_with_pid = os.path.join(CommonUtility.get_kernel_meta_dir(), dstfile_name + "_" + str(os.getpid()))
-        write_mk(tiling_key_list, cmds_list, dstfile_with_pid, compile_log_path)
-        # when TILINGKEY_PARALLEL_COMPILATION_SWITCH and ASCENDC_PAR_COMPILE_JOB conflicts
-        # TILINGKEY_PARALLEL_COMPILATION_SWITCH first
-        mk_file = f'{dstfile_with_pid}.mk'
-        if ci_big_makefile_par_switch:
-            cmd = ['make', '-f', mk_file]
-        else:
-            cmd = ['make', '-f', mk_file, '-j', f'{ascendc_self_par_job_num}']
-        cmd_str = ' '.join(cmd)
-        file_name = ""
-        if global_var_storage.get_variable("ascendc_enable_build_log") is True:
-            file_name, kernel_name, hash_name = CommonUtility.get_build_file_name(cmds_list[0], CompileStage.COMPILE)
-            try:
-                with open(file_name, mode="at") as f:
-                    os.chmod(file_name, stat.S_IRUSR + stat.S_IWUSR)
-                    f.write("%s\n" % (cmd_str))
-                    cmd.append('2>&1')
-                    cmd.append('|')
-                    cmd.append('tee -a')
-                    cmd.append(file_name)
-                    cmd_str = ' '.join(cmd)
-            except Exception as err:
-                raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("write log failed, reason is:", err))
-        ret = os.system(f'{cmd_str} > /dev/null')
-        if ret != 0 and global_var_storage.get_variable("ascendc_enable_build_log") is True:
-            file_name_parts = file_name.split('.')
-            new_file_name = file_name_parts[0] + "_error." + file_name_parts[-1]
-            os.rename(file_name, new_file_name)
-            CommonUtility.print_compile_log("", "Operator {}_{}: errors occurred during compile phase \
+    dstfile_with_pid = os.path.join(CommonUtility.get_kernel_meta_dir(), dstfile_name + "_" + str(os.getpid()))
+    write_mk(tiling_key_list, cmds_list, dstfile_with_pid, compile_log_path)
+    mk_file = f'{dstfile_with_pid}.mk'
+    if parallel_compile_check == '1':
+        _ignore_parallel_job_self_set()
+        cmd = ['make', '-f', mk_file]
+    else:
+        ascendc_self_par_job_num = _get_parallel_job_without_op_project(len(tiling_key_list))
+        cmd = ['make', '-f', mk_file, '-j', f'{ascendc_self_par_job_num}']
+    cmd_str = ' '.join(cmd)
+    file_name = ""
+    if global_var_storage.get_variable("ascendc_enable_build_log") is True:
+        file_name, kernel_name, hash_name = CommonUtility.get_build_file_name(cmds_list[0], CompileStage.COMPILE)
+        try:
+            with open(file_name, mode="at") as f:
+                os.chmod(file_name, stat.S_IRUSR + stat.S_IWUSR)
+                f.write("%s\n" % (cmd_str))
+                cmd.append('2>&1')
+                cmd.append('|')
+                cmd.append('tee -a')
+                cmd.append(file_name)
+                cmd_str = ' '.join(cmd)
+        except Exception as err:
+            raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, ("write log failed, reason is:", err))
+    ret = os.system(f'{cmd_str} > /dev/null')
+    if ret != 0 and global_var_storage.get_variable("ascendc_enable_build_log") is True:
+        file_name_parts = file_name.split('.')
+        new_file_name = file_name_parts[0] + "_error." + file_name_parts[-1]
+        os.rename(file_name, new_file_name)
+        CommonUtility.print_compile_log("", "Operator {}_{}: errors occurred during compile phase \
 of {}, See also {}".format(kernel_name, hash_name, \
 str(CompileStage.COMPILE), new_file_name), AscendCLogLevel.LOG_ERROR)
-            raise Exception("An error occurred during compile phases of {}".format(str(CompileStage.COMPILE)))
-        if not global_var_storage.get_variable("ascendc_compile_debug_config"):
-            CommonUtility.remove_temp_file(mk_file)
-    else:
-        for cmds in cmds_list:
-            CommonUtility.run_cmd_inner(cmds, CompileStage.COMPILE, compile_log_path)
+        raise Exception("An error occurred during compile phases of {}".format(str(CompileStage.COMPILE)))
+    if not global_var_storage.get_variable("ascendc_compile_debug_config"):
+        CommonUtility.remove_temp_file(mk_file)
 
 
 def search_in_line(line, keywords):

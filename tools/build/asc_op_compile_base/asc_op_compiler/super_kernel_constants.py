@@ -94,6 +94,33 @@ class SuperKernelProfilingMode(enum.Enum):
     ProfilingEnable = 1
 
 
+class SuperKernelKernelType(enum.Enum):
+    """super kernel kernel type."""
+    KERNEL_TYPE_AIV_ONLY = 0
+    KERNEL_TYPE_AIC_ONLY = 1
+    KERNEL_TYPE_MIX_AIV_HARD_SYNC = 2 # same as KERNEL_TYPE_MIX_AIV_1_0
+    KERNEL_TYPE_MIX_AIC_HARD_SYNC = 3 # same as KERNEL_TYPE_MIX_AIC_1_0
+    KERNEL_TYPE_MIX_AIV_1_0 = 4
+    KERNEL_TYPE_MIX_AIC_1_0 = 5
+    KERNEL_TYPE_MIX_AIC_1_1 = 6
+    KERNEL_TYPE_MIX_AIC_1_2 = 7
+    KERNEL_TYPE_AICORE = 8
+    KERNEL_TYPE_VECTORCORE = 9 # donot use in sk
+    KERNEL_TYPE_MIX_AICORE = 10 # donot use in sk
+    KERNEL_TYPE_MIX_VECTOR_CORE = 11 # donot use in sk
+    KERNEL_TYPE_MAX = 12
+
+
+STR_TO_SK_KERNEL_TYPE = {
+    "KERNEL_TYPE_AIV_ONLY": SuperKernelKernelType.KERNEL_TYPE_AIV_ONLY,
+    "KERNEL_TYPE_AIC_ONLY": SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY,
+    "KERNEL_TYPE_MIX_AIV_1_0": SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0,
+    "KERNEL_TYPE_MIX_AIC_1_0": SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0,
+    "KERNEL_TYPE_MIX_AIC_1_1": SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1,
+    "KERNEL_TYPE_MIX_AIC_1_2": SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2,
+}
+
+
 STR_TO_SUPER_TASK_TYPE = {
     "normal": SubOperatorType.STATIC_OP,
     "dynamic": SubOperatorType.DYNAMIC_OP,

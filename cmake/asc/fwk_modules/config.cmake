@@ -54,7 +54,7 @@ if (NOT DEFINED ASCEND_COMPUTE_UNIT)
     set(ASCEND_COMPUTE_UNIT ascend910b CACHE STRING "")
 endif()
 
-set(ASC_VALID_SOC_LIST ascend310b ascend310p ascend610 ascend910 ascend910b ascend910_93 ascend910_95 bs9sx1a bs9sx2a ascend610lite ascend910_55 mc61am21a mc62cm12a ascend910_96 kirinx90 kirin9030)
+set(ASC_VALID_SOC_LIST ascend310b ascend310p ascend610 ascend910 ascend910b ascend910_93 ascend950 bs9sx1a bs9sx2a ascend610lite mc61am21a mc62cm12a ascend910_96 kirinx90 kirin9030)
 
 foreach(soc_version ${ASCEND_COMPUTE_UNIT})
     if(NOT soc_version IN_LIST ASC_VALID_SOC_LIST)
@@ -83,7 +83,7 @@ endif()
 
 set(ASCEND_AUTOGEN_PATH ${CMAKE_BINARY_DIR}/autogen)
 set(ASCEND_AUTOGEN_GROUPPROTO_PATH ${ASCEND_AUTOGEN_PATH}/group_proto)
-set(ASCEND_FRAMEWORK_TYPE plugin)
+set(ASCEND_FRAMEWORK_TYPE tensorflow)
 file(MAKE_DIRECTORY ${ASCEND_AUTOGEN_PATH} ${ASCEND_AUTOGEN_GROUPPROTO_PATH})
 set(CUSTOM_COMPILE_OPTIONS "custom_compile_options.ini")
 set(CUSTOM_OPC_OPTIONS "custom_opc_options.ini")

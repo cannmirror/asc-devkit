@@ -73,7 +73,7 @@ void AscAstDeviceAnalyzer::InitCompileDeviceArgs(const std::string &source)
         {ShortSocVersion::ASCEND310P, {"-D__DAV_M200__", "-D__CCE_AICORE__=200", "-D__NPU_ARCH__=2002"}},
         {ShortSocVersion::ASCEND910, {"-D__DAV_C100__", "-D__CCE_AICORE__=100", "-D__NPU_ARCH__=1001"}},
         {ShortSocVersion::ASCEND310B, {"-D__DAV_M300__", "-D__CCE_AICORE__=300", "-D__NPU_ARCH__=3002"}},
-        {ShortSocVersion::ASCEND910_95, {"-D__DAV_C310_CUBE__", "-D__CCE_AICORE__=310", "-D__NPU_ARCH__=3101", "-D__DAV_CUBE__"}},
+        {ShortSocVersion::ASCEND950, {"-D__DAV_C310_CUBE__", "-D__CCE_AICORE__=310", "-D__NPU_ARCH__=3101", "-D__DAV_CUBE__"}},
     };
 
     static const std::vector<std::string> innerOpts = {

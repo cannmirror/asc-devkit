@@ -15,36 +15,35 @@ super kernel
 import os
 import stat
 from .global_storage import global_var_storage
-from .super_kernel_utility import KernelMetaType, \
-    CommonUtility, gen_func_align_attribute
+from .super_kernel_utility import CommonUtility, gen_func_align_attribute, get_wait_flag_for_chip
 from .super_kernel_op_compile import compile_super_kernel, gen_file_header
 from .super_kernel_constants import SuperKernelPreLoadMode, SuperKernelDataCacheMode, \
     SuperKernelEarlyStartMode, SubOperatorType, SuperKernelDebugDcciAllMode, SuperKernelDebugSyncAllMode, \
-    SuperKernelFeedSyncAllMode, SuperKernelProfilingMode, ERR_CODE, SuperKernelDeviceType
+    SuperKernelFeedSyncAllMode, SuperKernelProfilingMode, ERR_CODE, SuperKernelDeviceType, SuperKernelKernelType
 from .super_kernel_compile_base import gen_super_dump_code
 from .super_kernel_sub_op_infos import indent_code_func, SubOperatorInfos
 from .super_kernel_op_infos import SuperOperatorInfos
 
 
-def kernel_meta_type_to_device_type(kernelMetaType: KernelMetaType):
+def kernel_meta_type_to_device_type(kernel_type: SuperKernelKernelType):
     aiv_configs = [
-        KernelMetaType.KERNEL_TYPE_AIV_ONLY,
-        KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0,
+        SuperKernelKernelType.KERNEL_TYPE_AIV_ONLY,
+        SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0,
     ]
     aic_configs = [
-        KernelMetaType.KERNEL_TYPE_AIC_ONLY,
-        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0,
+        SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY,
+        SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0,
     ]
     mix_configs = [
-        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1,
-        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2,
+        SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1,
+        SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2,
     ]
 
-    if kernelMetaType in aiv_configs:
+    if kernel_type in aiv_configs:
         return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIV.value
-    if kernelMetaType in aic_configs:
+    if kernel_type in aic_configs:
         return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_AIC.value
-    if kernelMetaType in mix_configs:
+    if kernel_type in mix_configs:
         return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MIX.value
     return SuperKernelDeviceType.KERNEL_DEVICE_TYPE_MAX.value
 
@@ -129,19 +128,19 @@ __aicore__ inline void WaitFunc(GM_ADDR wait_lock_addr)
 
 
 def get_sync_code_by_kernel_type(kernel_type):
-    if kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, \
-                KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
+    if kernel_type in [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, \
+                SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2]:
         return "AscendC::SyncAll<false>();\n\n"
-    elif kernel_type in [KernelMetaType.KERNEL_TYPE_AIC_ONLY, \
-                KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+    elif kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
+                SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]:
         return """
 ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));
-wait_flag_dev(AscendC::SYNC_AIC_FLAG);
+{get_wait_flag_for_chip("AscendC::SYNC_AIC_FLAG")}
 """
     else:
-        return """
+        return f"""
 ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
-wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
+{get_wait_flag_for_chip("AscendC::SYNC_AIV_ONLY_ALL")}
 """
 
 
@@ -185,17 +184,18 @@ def gen_2_real_stream_op_end_debug_sync_all_by_arch(super_operator: SuperOperato
         if arch == "aiv":
             op_end_debug_sync_all += f"pipe_barrier(PIPE_ALL);\n\
 ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));\n\
-wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);\n\n"
+{get_wait_flag_for_chip('AscendC::SYNC_AIV_ONLY_ALL')}\n\n"
         elif arch == "aic":
             op_end_debug_sync_all += f"pipe_barrier(PIPE_ALL);\n\
 ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n\
-wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n"
+{get_wait_flag_for_chip('AscendC::SYNC_AIC_FLAG')}\n\n"
 
     return op_end_debug_sync_all
 
 
 def tpl_of_gen_switch_case_call(block_idx, dynamic_operator, super_operator):
-    if super_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_AIC_ONLY, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+    if super_operator.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
+            SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]:
         condition_code = "get_block_idx"
         core_type = "ASCEND_IS_AIC"
     else:
@@ -204,7 +204,8 @@ def tpl_of_gen_switch_case_call(block_idx, dynamic_operator, super_operator):
     aiv_func_list = dynamic_operator._gen_preload_list_with_num('aiv_func_addr', 8)
     aic_func_list = dynamic_operator._gen_preload_list_with_num('aic_func_addr', 16)
     # need judge kernel type by tiling key
-    if super_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_AIV_ONLY, KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0]:
+    if super_operator.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIV_ONLY, \
+            SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0]:
         aiv_codes = \
             indent_code_func(dynamic_operator.gen_call_func(aiv_func_list, "ASCEND_IS_AIV", f"AscendC::GetBlockIdx"))
         call_dynamic_switch_func = f"""
@@ -223,8 +224,8 @@ def tpl_of_gen_switch_case_call(block_idx, dynamic_operator, super_operator):
 def gen_switch_case_call_block_of_dynamic_op(super_operator, next_sub_operator, sub_operator, pre_sub_operator):
     switch_case_call_block = ""
 
-    # if can not find free core before dynamic, wait for get tilingkey and block dim
-    if sub_operator.sub_op_task_type.value is SubOperatorType.DYNAMIC_OP.value \
+    # if can not find free core before dynamic, wait for get tilingkey and block num
+    if sub_operator.sub_op_task_type.value == SubOperatorType.DYNAMIC_OP.value \
                         and sub_operator.switch_func_called_flag is False:
         switch_case_call_block += \
             tpl_of_gen_switch_case_call(sub_operator.start_block_idx, sub_operator, super_operator)
@@ -254,7 +255,8 @@ def gen_clear_wait_sync_addr_code(super_operator):
         index = 0
         for recv_index in op.recv_event_list:
             if recv_index not in super_operator.inner_event_id_set:
-                if op.kernel_type in [KernelMetaType.KERNEL_TYPE_AIC_ONLY, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+                if op.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
+                        SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]:
                     result += indent_code_func("if ASCEND_IS_AIC {\n")
                     result += indent_code_func(f"    if (get_block_idx() == 0) {{\n")
                 else:
@@ -300,7 +302,7 @@ def gen_2_real_stream_send_code(super_operator, op, arch):
         code = f'// Rule 1 : sync all {arch} must be insert behind each {arch} sub operator, when has real send info\n'
         code += f'// sync all C->C kernel_name:{op.kernel_name}, send_info:{op.send_info}\n'
         code += 'ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n'
-        code += 'wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n'
+        code += f"{get_wait_flag_for_chip('AscendC::SYNC_AIC_FLAG')}\n\n"
 
         for single in op.send_info:
             info_pairs = op.send_info[single].split(';')
@@ -319,7 +321,7 @@ kernel_name:{op.kernel_name}, send_info:{op.send_info}\n'
         code = f'// Rule 1 : sync all {arch} must be insert behind each {arch} sub operator, when has real send info\n'
         code += f'// sync all V->V kernel_name:{op.kernel_name}, send_info:{op.send_info}\n'
         code += 'ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));\n'
-        code += 'wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);\n\n'
+        code += f"{get_wait_flag_for_chip('AscendC::SYNC_AIV_ONLY_ALL')}\n\n"
 
         for single in op.send_info:
             info_pairs = op.send_info[single].split(';')
@@ -345,14 +347,14 @@ def gen_2_real_stream_recv_code(op, arch):
                 super_kernel_file += f'// Rule 3.2 : sync all v2c must be insert when recvinfo has v2c, \
 kernel_name:{op.kernel_name}, send_info:{op.recv_info}\n'
                 super_kernel_file += '// receive sync of V->C;\n'
-                super_kernel_file += 'wait_flag_dev(AscendC::SYNC_AIV_FLAG);\n'
+                super_kernel_file += f"{get_wait_flag_for_chip('AscendC::SYNC_AIV_FLAG')}\n"
     else:
         for single in op.recv_info:
             if 'cub:vec' in op.recv_info[single].split(';'):
                 super_kernel_file += f'// Rule 3.2 : sync all c2v must be insert when recvinfo has c2v, \
 kernel_name:{op.kernel_name}, send_info:{op.recv_info}\n'
                 super_kernel_file += '// receive sync of C->V;\n'
-                super_kernel_file += 'wait_flag_dev(AscendC::SYNC_AIC_AIV_FLAG);\n'
+                super_kernel_file += f"{get_wait_flag_for_chip('AscendC::SYNC_AIC_AIV_FLAG')}\n"
     return super_kernel_file
 
 
@@ -383,22 +385,22 @@ def gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub
 
                 # add sync after notify/wait event
                 sync_and_event_code += f'// two stream when has wait event, add sync by current operator kernel type\n'
-                if sub_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, \
-                        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
+                if sub_operator.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, \
+                        SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2]:
                     # add sync with sub_operator and sub_operator
                     sync_and_event_code += \
                         indent_code_func(f"AscendC::SyncAll<false>(); // reason3: for continues notify/wait event \n\n")
-                elif sub_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_AIC_ONLY, \
-                        KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0]:
+                elif sub_operator.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY, \
+                        SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0]:
                     sync_and_event_code += '// reason3: for continues notify/wait event\n'
                     sync_and_event_code += \
                         "ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));\n"
-                    sync_and_event_code += "wait_flag_dev(AscendC::SYNC_AIC_FLAG);\n\n"
+                    sync_and_event_code += f"{get_wait_flag_for_chip('AscendC::SYNC_AIC_FLAG')}\n\n"
                 else:
                     sync_and_event_code += '// reason3: for continues notify/wait event\n'
                     sync_and_event_code += \
                         'ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));\n'
-                    sync_and_event_code += 'wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);\n\n'
+                    sync_and_event_code += f"{get_wait_flag_for_chip('AscendC::SYNC_AIV_ONLY_ALL')}\n\n"
     else:
         # pre op send inter-core sync, cur op recv inter-core sync
         sync_and_event_code += \
@@ -419,7 +421,7 @@ auto_gen_{super_operator.kernel_name}_kernel_{arch}(void) {{\n"
     if exits_dynamic_op is True:
         super_kernel_file += "    uint64_t aiv_func_addr = 0;\n"
         super_kernel_file += "    uint64_t aic_func_addr = 0;\n"
-        super_kernel_file += "    uint64_t dy_blockDim = 0;\n"
+        super_kernel_file += "    uint64_t dy_blockNum = 0;\n"
         if super_operator.split_mode > 1:
             for i in range(1, super_operator.split_mode):
                 super_kernel_file += f"    uint64_t aiv_func_addr_split{i} = 0;\n"
@@ -640,7 +642,7 @@ auto_gen_{super_operator.kernel_name}_kernel(void) {{\n"
         super_kernel_file += f"    AscendC::g_superKernelAutoSyncAllConfigGmBaseAddr = workspace;\n"
     if super_operator.timestamp_option:
         is_mix = super_operator.kernel_type in \
-            [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]
+            [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2]
         super_kernel_file += gen_super_dump_code(is_mix, 1048576, super_operator.workspace_size)
         if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
             profiling_offset = ws_offset + 1
@@ -685,19 +687,21 @@ indent_code_func(f'    auto_gen_{super_operator.kernel_name}_kernel_{arch}();\n'
 def judge_need_feed_sync_all(super_operator, sub_op):
     if sub_op.with_sync_all is False:
         return False
-    if super_operator.block_dim == sub_op.block_dim and super_operator.kernel_type == sub_op.kernel_type:
+    if super_operator.block_num == sub_op.block_num and super_operator.kernel_type == sub_op.kernel_type:
         return False
-    if super_operator.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0, \
-        KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1]:
-        if sub_op.block_dim < super_operator.block_dim:
+    if super_operator.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0, \
+        SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0, SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1]:
+        if sub_op.block_num < super_operator.block_num:
             return True
     else:
-        if sub_op.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, \
-            KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0, KernelMetaType.KERNEL_TYPE_AIC_ONLY]:
-            if sub_op.block_dim < super_operator.block_dim:
+        if sub_op.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2, \
+            SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0, \
+            SuperKernelKernelType.KERNEL_TYPE_AIC_ONLY]:
+            if sub_op.block_num < super_operator.block_num:
                 return True
-        elif sub_op.kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0, KernelMetaType.KERNEL_TYPE_AIV_ONLY]:
-            if sub_op.block_dim < super_operator.block_dim * 2:
+        elif sub_op.kernel_type in [SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0, \
+            SuperKernelKernelType.KERNEL_TYPE_AIV_ONLY]:
+            if sub_op.block_num < super_operator.block_num * 2:
                 return True
     return False
 
@@ -732,7 +736,7 @@ def gen_clear_syncall_worskspace(super_operator):
     gen_code = ""
     if super_operator.feed_sync_all_mode.value == SuperKernelFeedSyncAllMode.FeedSyncAllDisable.value:
         return gen_code
-    if super_operator.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_0:
+    if super_operator.kernel_type == SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_0:
         gen_code += \
 f"""
 if ASCEND_IS_AIC {{
@@ -748,10 +752,10 @@ if ASCEND_IS_AIC {{
     }}
     AscendC::PipeBarrier<PIPE_ALL>();
     ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));
-    wait_flag_dev(AscendC::SYNC_AIC_FLAG);
+    {get_wait_flag_for_chip("AscendC::SYNC_AIC_FLAG")}
 }}
 """
-    elif super_operator.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIV_1_0:
+    elif super_operator.kernel_type == SuperKernelKernelType.KERNEL_TYPE_MIX_AIV_1_0:
         gen_code += \
 f"""
 if ASCEND_IS_AIV {{
@@ -767,11 +771,11 @@ if ASCEND_IS_AIV {{
     }}
     AscendC::PipeBarrier<PIPE_ALL>();
     ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
-    wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
+    {get_wait_flag_for_chip("AscendC::SYNC_AIV_ONLY_ALL")}
 }}
 """
     else:
-        if super_operator.kernel_type == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1:
+        if super_operator.kernel_type == SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1:
             workspace_size = int(super_operator.workspace_size)
         else:
             workspace_size = int(super_operator.workspace_size / 2)
@@ -791,12 +795,12 @@ if ASCEND_IS_AIV {{
     }}
     AscendC::PipeBarrier<PIPE_ALL>();
     ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
-    wait_flag_dev(PIPE_S, AscendC::SYNC_AIV_ONLY_ALL);
+    {get_wait_flag_for_chip("AscendC::SYNC_AIV_ONLY_ALL")}
     ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
 }}
 
 if ASCEND_IS_AIC {{
-    wait_flag_dev(PIPE_S, AscendC::SYNC_AIV_FLAG);
+    {get_wait_flag_for_chip("AscendC::SYNC_AIV_FLAG")}
 }}
 """
         else:
@@ -815,12 +819,12 @@ if ASCEND_IS_AIV {{
     }}
     AscendC::PipeBarrier<PIPE_ALL>();
     ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIV_ONLY_ALL));
-    wait_flag_dev(AscendC::SYNC_AIV_ONLY_ALL);
+    {get_wait_flag_for_chip("AscendC::SYNC_AIV_ONLY_ALL")}
     ffts_cross_core_sync(PIPE_MTE3, AscendC::GetffstMsg(0x02, AscendC::SYNC_AIV_FLAG));
 }}
 
 if ASCEND_IS_AIC {{
-   wait_flag_dev(AscendC::SYNC_AIV_FLAG);
+   {get_wait_flag_for_chip("AscendC::SYNC_AIV_FLAG")}
 }}
 """
     return gen_code
@@ -847,10 +851,10 @@ def gen_wait_block_extra_sync(super_operator, pre_sub_operator, sub_operator):
         extra_sync += "// extra sync for wait event\n"
         extra_sync += "AscendC::SyncAll<true>();\n\n"
     elif (pre_sub_operator_device_type, sub_operator_device_type) in extra_aic_sync_pairs:
-        extra_sync += """
+        extra_sync += f"""
 // extra sync for wait event
 ffts_cross_core_sync(PIPE_FIX, AscendC::GetffstMsg(0x0, AscendC::SYNC_AIC_FLAG));
-wait_flag_dev(AscendC::SYNC_AIC_FLAG);
+{get_wait_flag_for_chip("AscendC::SYNC_AIC_FLAG")}
 """
 
     return extra_sync
@@ -917,7 +921,7 @@ auto_gen_{super_operator.kernel_name}_kernel(void) {{\n"
         super_kernel_file += f"    AscendC::g_superKernelAutoSyncAllConfigGmBaseAddr = workspace;\n"
     if super_operator.timestamp_option:
         is_mix = super_operator.kernel_type in \
-            [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]
+            [SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_1, SuperKernelKernelType.KERNEL_TYPE_MIX_AIC_1_2]
         super_kernel_file += gen_super_dump_code(is_mix, 1048576, super_operator.workspace_size)
         if super_operator.profiling_mode.value == SuperKernelProfilingMode.ProfilingEnable.value:
             profiling_offset = ws_offset + 1
@@ -942,7 +946,7 @@ auto_gen_{super_operator.kernel_name}_kernel(void) {{\n"
     if exits_dynamic_op is True:
         super_kernel_file += "    uint64_t aiv_func_addr = 0;\n"
         super_kernel_file += "    uint64_t aic_func_addr = 0;\n"
-        super_kernel_file += "    uint64_t dy_blockDim = 0;\n"
+        super_kernel_file += "    uint64_t dy_blockNum = 0;\n"
         if super_operator.split_mode > 1:
             for i in range(1, super_operator.split_mode):
                 super_kernel_file += f"    uint64_t aiv_func_addr_split{i} = 0;\n"

@@ -228,21 +228,21 @@ def _gen_mix_sub_json(compile_info: CompileInfo, tiling_info: TilingInfo, core_t
     kernel_list_deterministic = None
     # AscendC mix-channel need ffts sync, tbe use MultiCoreSync visit stmt to find if exists op->call_name == "st_dev"
     is_ffts_id_needed = True
-    subblockdim: int = tiling_info.task_ration
+    subblocknum: int = tiling_info.task_ration
     # AscendC only support cube:vector = 1:1 or 1:2, so mix_type should be kAicMix
     mix: str = "MIX"
     mix_type_info: str = "aic_mix" if core_type == CORE_TYPE_CUBE else "aiv_mix"
-    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim,
+    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num,
                               0,
                               atomic_args,
                               json_info, json_info_tuple,
                               core_type_info, kernel_list, kernel_list_deterministic, is_ffts_id_needed,
-                              subblockdim, mix, mix_type_info)
+                              subblocknum, mix, mix_type_info)
 
 
 def _gen_static_json_for_no_mix_v200(compile_info: CompileInfo, tiling_info: TilingInfo, kernel_type):
     target = "cce_core"
-    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim)
+    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num)
     # if enable_vector_core, json has _mix_aic suffix
     if get_current_build_config(enable_vector_core):
         kernel_meta_path = CommonUtility.get_kernel_meta_dir()
@@ -273,20 +273,20 @@ def _gen_non_mix_sub_json(compile_info: CompileInfo, tiling_info: TilingInfo, su
     kernel_list = None
     kernel_list_deterministic = None
     is_ffts_id_needed = False
-    subblockdim: int = tiling_info.task_ration
+    subblocknum: int = tiling_info.task_ration
     # AscendC only support cube:vector = 1:1 or 1:2, so mix_type should be kAicMix
     mix: str = ""
     mix_type_info: str = ""
-    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim, 0,
+    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num, 0,
                               atomic_args, json_info, json_info_tuple,
                               core_type_info, kernel_list, kernel_list_deterministic, is_ffts_id_needed,
-                              subblockdim, mix, mix_type_info)
+                              subblocknum, mix, mix_type_info)
 
 
 def _gen_static_json_for_mix_v200(compile_info: CompileInfo, tiling_info: TilingInfo, kernel_type):
     set_soc_spec("AiCore")
     target = "cce_core"
-    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim)
+    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num)
 
     kernel_meta_path = CommonUtility.get_kernel_meta_dir()
     kernel_name = compile_info.kernel_name
@@ -381,7 +381,7 @@ def _gen_dynamic_json_for_v200(compile_info: CompileInfo, tiling_info: TilingInf
     else:
         set_soc_spec("AiCore")
     target = "cce_core"
-    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim)
+    tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num)
     kernel_meta_path = CommonUtility.get_kernel_meta_dir()
     kernel_name = compile_info.kernel_name
     kernel_json_path = os.path.join(kernel_meta_path, kernel_name + '.json')

@@ -25,19 +25,6 @@
 namespace AscPlugin {
 
 namespace {
-inline uint32_t GetMaxCoreNumImpl(const ShortSocVersion& socVersion)
-{
-    constexpr uint32_t coreNumNormal = 75;
-    constexpr uint32_t coreNum91095 = 108;
-    if (socVersion == ShortSocVersion::ASCEND910_95) {
-        return coreNum91095;
-    }
-    if (socVersion == ShortSocVersion::ASCEND910B || socVersion == ShortSocVersion::ASCEND310P ||
-        socVersion == ShortSocVersion::ASCEND910 || socVersion == ShortSocVersion::ASCEND310B) {
-        return coreNumNormal;
-    }
-    return coreNumNormal;
-}
 // return index of first char that does not fit c++ variable naming rule.  return -1 means all chars are valid
 // Example: string: AA-XXX return 2, means "-" is invalid.
 int32_t GetFirstInvalidChar(const std::string& str, bool isUndef) {
@@ -129,24 +116,10 @@ void InfoManager::UpdateDefinitions(bool hasHostStart, std::vector<std::string>:
 
     if (!hasHostStart) {
         compileArgs_.definitions.emplace_back(prefix + content);
-        if (prefix != "-D") { // when prefix is -U
-            if (macroContent == "ASCENDC_DUMP") {
-                userDumpStatus_ = true;
-            } else if (macroContent == "ASCENDC_TIME_STAMP_ON") {
-                hasTimeStamp_ = false;
-            } else if (macroContent == "ASCENDC_DEBUG") {
+        if (prefix != "-D" && macroContent == "ASCENDC_DEBUG") { // when prefix is -U
                 enableL2Cache_ = true;
-            }
-        } else {
-            if (macroContent == "ASCENDC_DUMP=0") {
-                userDumpStatus_ = false;
-            } else if (macroContent == "ASCENDC_DUMP=1") {
-                userDumpStatus_ = true;
-            } else if (macroContent == "ASCENDC_TIME_STAMP_ON") {
-                hasTimeStamp_ = true;
-            } else if (macroContent == "ASCENDC_DEBUG") {
+        } else if (macroContent == "ASCENDC_DEBUG") {
                 enableL2Cache_ = false;
-            }
         }
     } else {
         compileArgs_.hostDefinitions.emplace_back(prefix + content);
@@ -254,26 +227,6 @@ void InfoManager::SetSaveTempRequested(const bool saveTemp)
     saveTempRequested_ = saveTemp;
 }
 
-void InfoManager::SetUserDumpStatus(const bool dumpStatus)
-{
-    userDumpStatus_ = dumpStatus;
-}
-
-void InfoManager::SetHasPrintf(const bool hasPrintf)
-{
-    hasPrintf_ = hasPrintf;
-}
-
-void InfoManager::SetHasSimtPrintf(const bool hasSimtPrintf)
-{
-    hasSimtPrintf_ = hasSimtPrintf;
-}
-
-void InfoManager::SetHasAssert(const bool hasAssert)
-{
-    hasAssert_ = hasAssert;
-}
-
 void InfoManager::SetOpSystemCfg(const bool hasOpSystemCfg)
 {
     hasOpSystemCfg_ = hasOpSystemCfg;
@@ -289,19 +242,6 @@ void InfoManager::AddGlobalSymbolInfo(const std::string &mangling, const KernelM
     const std::string &fileName, const uint32_t lineNo, const uint32_t colNo, const KfcScene kfcScene)
 {
     kernelFuncSymbolToFuncInfo_.emplace(mangling, std::make_tuple(type, fileName, lineNo, colNo, kfcScene));
-}
-
-void InfoManager::UpdateOneCoreDumpSize()
-{
-    constexpr uint32_t PRINTF_SIZE = 1048576;   // 1024M
-    constexpr uint32_t ASSERT_SIZE = 1024;
-    if (hasPrintf_) {
-        oneCoreDumpSize_ = PRINTF_SIZE;
-        return;
-    }
-    if (hasAssert_) {
-        oneCoreDumpSize_ = ASSERT_SIZE;
-    }
 }
 
 const PathInfo& InfoManager::GetPathInfo() const
@@ -359,64 +299,9 @@ const std::unordered_map<std::string, InfoManager::GlobalFuncInfo>& InfoManager:
     return kernelFuncSymbolToFuncInfo_;
 }
 
-uint32_t InfoManager::GetMaxCoreNum(const ShortSocVersion& socVersion) const
-{
-    return GetMaxCoreNumImpl(socVersion);
-}
-
-uint32_t InfoManager::GetMaxCoreNum() const
-{
-    return GetMaxCoreNumImpl(shortSocVersion_);
-}
-
 bool InfoManager::SaveTempRequested() const
 {
     return saveTempRequested_;
-}
-
-bool InfoManager::UserDumpRequested() const
-{
-    return userDumpStatus_;
-}
-
-bool InfoManager::HasTimeStamp() const
-{
-    return hasTimeStamp_;
-}
-
-bool InfoManager::HasPrintf() const
-{
-    return hasPrintf_;
-}
-
-bool InfoManager::HasSimtPrintf() const
-{
-    return hasSimtPrintf_;
-}
-
-bool InfoManager::HasAssert() const
-{
-    return hasAssert_;
-}
-
-bool InfoManager::HasUbufDynamicSize() const
-{
-    return hasUbufDynamicSize_;
-}
-
-bool InfoManager::IsDumpOn() const
-{
-    return userDumpStatus_ && (hasPrintf_ || hasAssert_ || hasSimtPrintf_);
-}
-
-bool InfoManager::IsFifoDumpOn() const
-{
-    return IsSupportFifoDump() && (IsDumpOn() || hasTimeStamp_);
-}
-
-uint32_t InfoManager::GetOneCoreDumpSize() const
-{
-    return oneCoreDumpSize_;
 }
 
 bool InfoManager::IsL2CacheEnabled() const
@@ -432,11 +317,6 @@ bool InfoManager::HasOpSystemCfg() const
 bool InfoManager::IsAutoSyncOn() const
 {
     return isAutoSyncOn_;
-}
-
-bool InfoManager::IsSupportFifoDump() const
-{
-    return shortSocVersion_ == ShortSocVersion::ASCEND910B || shortSocVersion_ == ShortSocVersion::ASCEND310P;
 }
 
 bool InfoManager::HasKernelFunc() const

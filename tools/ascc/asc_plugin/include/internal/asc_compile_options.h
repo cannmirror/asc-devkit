@@ -35,7 +35,6 @@ public:
 private:
     template<ShortSocVersion soc>
     std::vector<std::string> GetDeviceCompileOptionsWithSoc(CoreType coreType) const;
-    void SetOldPrintOptions(std::vector<std::string>& devSocOpts) const;
     void InitDispatchTable();
     template<ShortSocVersion soc>
     void RegisterOptHandler();
@@ -45,13 +44,9 @@ private:
 
     ShortSocVersion socVersion_ = ShortSocVersion::ASCEND910B;
     bool isAutoSyncOn_ = true;
-    bool userDumpStatus_ = true;
-    bool isDumpOn_ = true;
     bool l2CacheOn_ = true;
-    uint32_t oneCoreDumpSize_ = 0;
 
     std::string optiLevel_;
-    std::string cannVersionHeader_;
     std::vector<std::string> deviceCompileOpt_;
     std::unordered_map<ShortSocVersion, SocOptHandler> dispatchTable_;
 };

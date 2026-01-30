@@ -98,7 +98,7 @@ void AscDevMetaGenerator::GenMetaSection(const char* globalSymbol, const KernelM
         if (kernelType == KernelMetaType::KERNEL_TYPE_AICORE) {
             genKtypeWithArchMacro("__DAV_M200__", "");
         }
-    } else if (manager.GetShortSocVersion() == ShortSocVersion::ASCEND910_95) {
+    } else if (manager.GetShortSocVersion() == ShortSocVersion::ASCEND950) {
         if (kernelType == KernelMetaType::KERNEL_TYPE_AIC_ONLY) {
             genKtypeWithArchMacro("__DAV_C310_CUBE__", "");
         } else if (kernelType == KernelMetaType::KERNEL_TYPE_AIV_ONLY) {

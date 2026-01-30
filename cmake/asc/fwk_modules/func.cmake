@@ -56,6 +56,17 @@ function(npu_op_kernel_options target_name OP_TYPE)
   endif()
 endfunction()
 
+function(adapt_install_path)
+  cmake_parse_arguments(ADAPT "" "INPUT_PATH;INPUT_TARGET;OUTPUT_PATH" "" ${ARGN})
+  get_property(enable_cpack GLOBAL PROPERTY _ASC_PKG_${ADAPT_INPUT_TARGET}_ENABLE_CPACK)
+  if(enable_cpack)
+    set(${ADAPT_OUTPUT_PATH} "${ADAPT_INPUT_PATH}" PARENT_SCOPE)
+  else()
+    get_property(pkg_install_path GLOBAL PROPERTY _ASC_PKG_${ADAPT_INPUT_TARGET}_INSTALL_PATH)
+    set(${ADAPT_OUTPUT_PATH} "${pkg_install_path}/${ADAPT_INPUT_PATH}" PARENT_SCOPE)
+  endif()
+endfunction()
+
 function(add_npu_support_target)
   cmake_parse_arguments(NPUSUP "" "TARGET;OPS_INFO_DIR;OUT_DIR;INSTALL_DIR;PACKAGE_NAME" "" ${ARGN})
   get_filename_component(npu_sup_file_path "${NPUSUP_OUT_DIR}" DIRECTORY)
@@ -71,8 +82,13 @@ function(add_npu_support_target)
 
   get_property(output_pkg_type GLOBAL PROPERTY _ASC_PKG_${NPUSUP_PACKAGE_NAME}_TYPE)
   if("${output_pkg_type}" STREQUAL "RUN")
+    adapt_install_path(
+      INPUT_PATH ${NPUSUP_INSTALL_DIR}
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
     install(FILES ${NPUSUP_OUT_DIR}/npu_supported_ops.json
-      DESTINATION ${NPUSUP_INSTALL_DIR}
+      DESTINATION ${install_path}
     )
   endif()
 endfunction()
@@ -329,7 +345,10 @@ function(npu_op_package target_package_name)
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_DEFAULT_PACKAGE_NAME_RULE True)
   set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_VENDOR_NAME ${target_package_name})
 
+  set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_CPACK True)
   if(DEFINED PACKAGE_CONFIG)
+    set(set_install_path False)
+    set(enable_pkg True)
     list(LENGTH PACKAGE_CONFIG kv_count)
     math(EXPR max_index "${kv_count} - 1")
     foreach(i RANGE 0 ${max_index} 2)
@@ -342,16 +361,23 @@ function(npu_op_package target_package_name)
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_BINARY_PACKAGE ${value})
       elseif("${key}" STREQUAL "INSTALL_PATH")
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_INSTALL_PATH ${value})
-        set(CMAKE_INSTALL_PREFIX ${value} PARENT_SCOPE)
-        set(CMAKE_INSTALL_PREFIX ${value})
+        set(set_install_path True)
       elseif("${key}" STREQUAL "ENABLE_DEFAULT_PACKAGE_NAME_RULE")
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_DEFAULT_PACKAGE_NAME_RULE ${value})
       elseif("${key}" STREQUAL "VENDOR_NAME")
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_VENDOR_NAME ${value})
+      elseif("${key}" STREQUAL "ENABLE_CPACK")
+        set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_CPACK ${value})
+        set(enable_pkg ${value})
       else()
         message(WARNING "${key} is not supported now")
       endif()
     endforeach()
+    if(${set_install_path} AND ${enable_pkg})
+      get_property(pkg_install_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_INSTALL_PATH)
+      set(CMAKE_INSTALL_PREFIX ${pkg_install_path} PARENT_SCOPE)
+      set(CMAKE_INSTALL_PREFIX ${pkg_install_path})
+    endif()
   endif()
 
   get_property(pkg_install_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_INSTALL_PATH)
@@ -373,29 +399,47 @@ function(npu_op_package target_package_name)
     add_custom_target(gen_version_info ALL
           COMMAND bash ${ASCENDC_CMAKE_SCRIPTS_PATH}/util/gen_version_info.sh ${ASCEND_CANN_PACKAGE_PATH} ${CMAKE_CURRENT_BINARY_DIR}
     )
-    install(DIRECTORY ${CMAKE_BINARY_DIR}/scripts/ DESTINATION . FILE_PERMISSIONS OWNER_EXECUTE OWNER_READ GROUP_READ)
-    install(FILES ${CMAKE_SOURCE_DIR}/custom.proto DESTINATION packages OPTIONAL)
+    adapt_install_path(
+      INPUT_PATH .
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/scripts/ DESTINATION ${install_path} FILE_PERMISSIONS OWNER_EXECUTE OWNER_READ GROUP_READ)
+    adapt_install_path(
+      INPUT_PATH packages
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
+    install(FILES ${CMAKE_SOURCE_DIR}/custom.proto DESTINATION ${install_path} OPTIONAL)
+    adapt_install_path(
+      INPUT_PATH packages/vendors/${target_vendor_name}/
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/version.info
-            DESTINATION packages/vendors/${target_vendor_name}/)
+            DESTINATION ${install_path})
 
-    # CPack config
-    set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-    set(CPACK_PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
-    set(CPACK_PACKAGE_DESCRIPTION "CPack opp project")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CPack opp project")
-    set(CPACK_PACKAGE_DIRECTORY ${pkg_install_path})
-    get_property(enable_default_package_name GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_DEFAULT_PACKAGE_NAME_RULE)
-    if(NOT enable_default_package_name)
-      set(CPACK_PACKAGE_FILE_NAME "${target_package_name}.run")
-    else()
-      set(CPACK_PACKAGE_FILE_NAME "custom_opp_${SYSTEM_INFO}.run")
+    get_property(enable_cpack GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_CPACK)
+    if (${enable_cpack})
+      # CPack config
+      set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+      set(CPACK_PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
+      set(CPACK_PACKAGE_DESCRIPTION "CPack opp project")
+      set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "CPack opp project")
+      set(CPACK_PACKAGE_DIRECTORY ${pkg_install_path})
+      get_property(enable_default_package_name GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ENABLE_DEFAULT_PACKAGE_NAME_RULE)
+      if(NOT enable_default_package_name)
+        set(CPACK_PACKAGE_FILE_NAME "${target_package_name}.run")
+      else()
+        set(CPACK_PACKAGE_FILE_NAME "custom_opp_${SYSTEM_INFO}.run")
+      endif()
+      set(CPACK_GENERATOR External)
+      set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
+      set(CPACK_EXTERNAL_ENABLE_STAGING TRUE)
+      set(CPACK_EXTERNAL_PACKAGE_SCRIPT ${ASCENDC_CMAKE_SCRIPTS_PATH}/makeself.cmake)
+      set(CPACK_EXTERNAL_BUILT_PACKAGES ${CPACK_PACKAGE_DIRECTORY}/_CPack_Packages/Linux/External/${CPACK_PACKAGE_FILE_NAME}/${CPACK_PACKAGE_FILE_NAME})
+      include(CPack)
     endif()
-    set(CPACK_GENERATOR External)
-    set(CPACK_CMAKE_GENERATOR "Unix Makefiles")
-    set(CPACK_EXTERNAL_ENABLE_STAGING TRUE)
-    set(CPACK_EXTERNAL_PACKAGE_SCRIPT ${ASCENDC_CMAKE_SCRIPTS_PATH}/makeself.cmake)
-    set(CPACK_EXTERNAL_BUILT_PACKAGES ${CPACK_PACKAGE_DIRECTORY}/_CPack_Packages/Linux/External/${CPACK_PACKAGE_FILE_NAME}/${CPACK_PACKAGE_FILE_NAME})
-    include(CPack)
   elseif("${_upper_target_type}" STREQUAL "STATIC")
     add_library(${target_package_name} STATIC)
     set_target_properties(
@@ -407,15 +451,24 @@ function(npu_op_package target_package_name)
     target_sources(${target_package_name} PRIVATE ${ascendc_static_file})
     add_dependencies(${target_package_name} ${target_package_name}_ascendc_static_file_target)
     target_link_libraries(${target_package_name} PUBLIC
+      nnopbase
       $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
       $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
-      nnopbase
       exe_graph
       register
+      graph
+      graph_base
       tiling_api
+      -Wl,--no-as-needed
+      metadef
+      unified_dlog
+      mmpa
+      c_sec
+      -Wl,--as-needed
       -Wl,--whole-archive
       rt2_registry
       -Wl,--no-whole-archive
+      dl
     )
     if(ENABLE_CROSS_COMPILE)
       target_link_directories(${target_package_name} PRIVATE
@@ -423,8 +476,18 @@ function(npu_op_package target_package_name)
         ${ASCENDC_CMAKE_COMPILE_RUNTIME_LIBRARY}
       )
     endif()
-    install(TARGETS ${target_package_name} EXPORT ${target_package_name}-targets INCLUDES DESTINATION include)
-    install(EXPORT ${target_package_name}-targets FILE ${target_package_name}-targets.cmake NAMESPACE ${target_package_name}:: DESTINATION lib/cmake/${target_package_name})
+    adapt_install_path(
+      INPUT_PATH include
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
+    install(TARGETS ${target_package_name} EXPORT ${target_package_name}-targets INCLUDES DESTINATION ${install_path})
+    adapt_install_path(
+      INPUT_PATH lib/cmake/${target_package_name}
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
+    install(EXPORT ${target_package_name}-targets FILE ${target_package_name}-targets.cmake NAMESPACE ${target_package_name}:: DESTINATION ${install_path})
 
     set(STATIC_TARGET_NAME ${target_package_name})
     configure_file(
@@ -432,9 +495,13 @@ function(npu_op_package target_package_name)
       ${CMAKE_CURRENT_BINARY_DIR}/${target_package_name}-config.cmake
       @ONLY
     )
-
+    adapt_install_path(
+      INPUT_PATH lib/cmake/${target_package_name}/
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_package_name}-config.cmake
-      DESTINATION lib/cmake/${target_package_name}/)
+      DESTINATION ${install_path})
 
   elseif("${_upper_target_type}" STREQUAL "SHARED")
     add_library(${target_package_name} SHARED)
@@ -445,9 +512,9 @@ function(npu_op_package target_package_name)
     target_link_libraries(${target_package_name} PRIVATE
       intf_pub
       $<IF:$<TARGET_EXISTS:cust_intf_pub>,cust_intf_pub,>
+      nnopbase
       $<$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>:acl_rt>
       $<$<NOT:$<BOOL:${BUILD_WITH_INSTALLED_DEPENDENCY_CANN_PKG}>>:ascendcl>
-      nnopbase
       exe_graph
       register
       tiling_api
@@ -459,14 +526,18 @@ function(npu_op_package target_package_name)
       )
     endif()
     set_target_properties(${target_package_name} PROPERTIES OUTPUT_NAME cust_opapi)
-    if(ENABLE_CROSS_COMPILE)
-      target_link_directories(${target_package_name} PRIVATE
-        ${ASCENDC_CMAKE_COMPILE_COMPILER_LIBRARY}
-        ${ASCENDC_CMAKE_COMPILE_RUNTIME_LIBRARY}
-      )
-    endif()
-    install(TARGETS ${target_package_name} EXPORT ${target_package_name}-targets INCLUDES DESTINATION include)
-    install(EXPORT ${target_package_name}-targets FILE ${target_package_name}-targets.cmake NAMESPACE ${target_package_name}:: DESTINATION lib/cmake/${target_package_name})
+    adapt_install_path(
+      INPUT_PATH include
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
+    install(TARGETS ${target_package_name} EXPORT ${target_package_name}-targets INCLUDES DESTINATION ${install_path})
+    adapt_install_path(
+      INPUT_PATH lib/cmake/${target_package_name}
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
+    install(EXPORT ${target_package_name}-targets FILE ${target_package_name}-targets.cmake NAMESPACE ${target_package_name}:: DESTINATION ${install_path})
 
     set(STATIC_TARGET_NAME ${target_package_name})
     configure_file(
@@ -474,9 +545,13 @@ function(npu_op_package target_package_name)
       ${CMAKE_CURRENT_BINARY_DIR}/${target_package_name}-config.cmake
       @ONLY
     )
-
+    adapt_install_path(
+      INPUT_PATH lib/cmake/${target_package_name}/
+      INPUT_TARGET ${target_package_name}
+      OUTPUT_PATH install_path
+    )
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${target_package_name}-config.cmake
-      DESTINATION lib/cmake/${target_package_name}/)
+      DESTINATION ${install_path})
 
   endif()
 endfunction()
@@ -598,7 +673,7 @@ endfunction()
 
 function(npu_op_library target_name target_type)
   string(TOUPPER ${target_type} _upper_target_type)
-  set(support_types ACLNN TILING GRAPH TF_PLUGIN)
+  set(support_types ACLNN TILING GRAPH TF_PLUGIN ONNX_PLUGIN)
   if(NOT _upper_target_type IN_LIST support_types)
       message(FATAL_ERROR "target_type ${target_type} does not support, the support list is ${support_types}")
   endif()
@@ -696,15 +771,38 @@ function(npu_op_library target_name target_type)
     endif()
     target_compile_definitions(${target_name} PRIVATE google=ascend_private)
     target_link_libraries(${target_name} PRIVATE
-        intf_pub
-        $<IF:$<TARGET_EXISTS:cust_intf_pub>,cust_intf_pub,>
-        graph)
+      intf_pub
+      $<IF:$<TARGET_EXISTS:cust_intf_pub>,cust_intf_pub,>
+      graph
+    )
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME cust_tf_parsers)
 
     get_property(tmp_tf_plugin_target GLOBAL PROPERTY ASCENDC_TF_PLUGIN_TARGET)
     list(APPEND tmp_tf_plugin_target ${target_name})
     set_property(GLOBAL PROPERTY ASCENDC_TF_PLUGIN_TARGET ${tmp_tf_plugin_target})
     set_property(GLOBAL PROPERTY _ASC_TGT_${target_name}_TYPE "TF_PLUGIN")
+  elseif("${target_type}x" STREQUAL "ONNX_PLUGINx")
+    add_library(${target_name} SHARED
+      ${SOURCES}
+    )
+    if(ENABLE_CROSS_COMPILE)
+      target_link_directories(${target_name} PUBLIC
+                              ${ASCENDC_CMAKE_COMPILE_COMPILER_LIBRARY}
+                              ${ASCENDC_CMAKE_COMPILE_RUNTIME_LIBRARY}
+      )
+    endif()
+    target_compile_definitions(${target_name} PRIVATE google=ascend_private)
+    target_link_libraries(${target_name} PRIVATE
+      intf_pub
+      $<IF:$<TARGET_EXISTS:cust_intf_pub>,cust_intf_pub,>
+      graph
+    )
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME cust_onnx_parsers)
+
+    get_property(tmp_onnx_plugin_target GLOBAL PROPERTY ASCENDC_ONNX_PLUGIN_TARGET)
+    list(APPEND tmp_onnx_plugin_target ${target_name})
+    set_property(GLOBAL PROPERTY ASCENDC_ONNX_PLUGIN_TARGET ${tmp_onnx_plugin_target})
+    set_property(GLOBAL PROPERTY _ASC_TGT_${target_name}_TYPE "ONNX_PLUGIN")
   endif()
 endfunction()
 
@@ -714,6 +812,7 @@ function(get_current_pack_target sub_target output_var)
   get_property(package_graph_target GLOBAL PROPERTY ASCENDC_GRAPH_TARGET)
   get_property(package_kernel_target GLOBAL PROPERTY ASCENDC_KERNEL_TARGET)
   get_property(package_tf_plugin_target GLOBAL PROPERTY ASCENDC_TF_PLUGIN_TARGET)
+  get_property(package_onnx_plugin_target GLOBAL PROPERTY ASCENDC_ONNX_PLUGIN_TARGET)
   get_property(package_device_sink_target GLOBAL PROPERTY ASCENDC_DEVICE_SINK_TARGET)
   if(sub_target IN_LIST package_aclnn_target)
     set(${output_var} "ACLNN" PARENT_SCOPE)
@@ -725,6 +824,8 @@ function(get_current_pack_target sub_target output_var)
     set(${output_var} "KERNEL" PARENT_SCOPE)
   elseif(sub_target IN_LIST package_tf_plugin_target)
     set(${output_var} "TF_PLUGIN" PARENT_SCOPE)
+  elseif(sub_target IN_LIST package_onnx_plugin_target)
+    set(${output_var} "ONNX_PLUGIN" PARENT_SCOPE)
   elseif(sub_target IN_LIST package_device_sink_target)
     set(${output_var} "DEVICE_SINK" PARENT_SCOPE)
   else()
@@ -757,16 +858,31 @@ function(npu_op_package_add target_package_name)
       message(FATAL_ERROR "PACKAGE_PATH and LIBRARY can not defined at the same time when install files")
     endif()
     if(DEFINED ADD_TARGET_PACKAGE_PATH)
+      adapt_install_path(
+        INPUT_PATH "packages/vendors/${current_target_vendor_name}/${ADD_TARGET_PACKAGE_PATH}"
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(FILES ${ADD_TARGET_FILES}
-          DESTINATION "packages/vendors/${current_target_vendor_name}/${ADD_TARGET_PACKAGE_PATH}" OPTIONAL)
+          DESTINATION ${install_path} OPTIONAL)
     endif()
     if(DEFINED ADD_TARGET_TYPE)
       if("${ADD_TARGET_TYPE}x" STREQUAL "ACLNNx")
-          install(FILES ${ADD_TARGET_FILES}
-            DESTINATION "packages/vendors/${current_target_vendor_name}/op_api/include/" OPTIONAL)
-      elseif("${ADD_TARGET_TYPE}x" STREQUAL "GRAPHx")
+        adapt_install_path(
+          INPUT_PATH "packages/vendors/${current_target_vendor_name}/op_api/include/"
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(FILES ${ADD_TARGET_FILES}
-            DESTINATION "packages/vendors/${current_target_vendor_name}/op_proto/inc/" OPTIONAL)
+          DESTINATION ${install_path} OPTIONAL)
+      elseif("${ADD_TARGET_TYPE}x" STREQUAL "GRAPHx")
+        adapt_install_path(
+          INPUT_PATH "packages/vendors/${current_target_vendor_name}/op_proto/inc/"
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
+        install(FILES ${ADD_TARGET_FILES}
+            DESTINATION ${install_path} OPTIONAL)
       else()
         message(WARNING "${ADD_TARGET_TYPE} is not in support list [ACLNN, GRAPH]")
       endif()
@@ -781,6 +897,7 @@ function(npu_op_package_add target_package_name)
   set(_ascendc_graph_target "")
   set(_ascendc_kernel_target "")
   set(_ascendc_tf_plugin_target "")
+  set(_ascendc_onnx_plugin_target "")
   set(_ascendc_device_sink_target "")
   foreach(_ascendc_sub_target ${ADD_TARGET_LIBRARY})
     set(_ascendc_enable_target)
@@ -800,6 +917,9 @@ function(npu_op_package_add target_package_name)
     elseif("${_ascendc_enable_target}" STREQUAL "TF_PLUGIN")
       set(_ascendc_tf_plugin_target ${_ascendc_sub_target})
       message(INFO " target name: ${_ascendc_tf_plugin_target}")
+    elseif("${_ascendc_enable_target}" STREQUAL "ONNX_PLUGIN")
+      set(_ascendc_onnx_plugin_target ${_ascendc_sub_target})
+      message(INFO " target name: ${_ascendc_onnx_plugin_target}")
     elseif("${_ascendc_enable_target}" STREQUAL "DEVICE_SINK")
       set(_ascendc_device_sink_target ${_ascendc_sub_target})
       message(INFO " target name: ${_ascendc_device_sink_target}")
@@ -896,10 +1016,20 @@ function(npu_op_package_add target_package_name)
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_TILING_PATH "packages/vendors/${current_target_vendor_name}/op_impl/ai_core/tbe/op_tiling/")
       endif()
       get_property(tiling_package_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_TILING_PATH)
+      adapt_install_path(
+        INPUT_PATH ${tiling_package_path}/lib/linux/${CMAKE_SYSTEM_PROCESSOR}
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(TARGETS ${target_package_name}_ascendc_${_ascendc_tiling_target}
-        LIBRARY DESTINATION ${tiling_package_path}/lib/linux/${CMAKE_SYSTEM_PROCESSOR})
+        LIBRARY DESTINATION ${install_path})
+      adapt_install_path(
+        INPUT_PATH ${tiling_package_path}
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(FILES ${CMAKE_CURRENT_BINARY_DIR}/liboptiling.so
-        DESTINATION ${tiling_package_path})
+        DESTINATION ${install_path})
     endif()
 
     if(_ascendc_graph_target)
@@ -923,18 +1053,32 @@ function(npu_op_package_add target_package_name)
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_GRAPH_PATH "packages/vendors/${current_target_vendor_name}/op_proto/")
       endif()
       get_property(graph_package_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_GRAPH_PATH)
-
+      adapt_install_path(
+        INPUT_PATH ${graph_package_path}/lib/linux/${CMAKE_SYSTEM_PROCESSOR}
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(TARGETS ${target_package_name}_ascendc_cust_op_proto
-        LIBRARY DESTINATION ${graph_package_path}/lib/linux/${CMAKE_SYSTEM_PROCESSOR})
+        LIBRARY DESTINATION ${install_path})
       if(auto_gen_path)
         if(EXISTS "${auto_gen_path}/op_proto.h")
+          adapt_install_path(
+            INPUT_PATH ${graph_package_path}/inc
+            INPUT_TARGET ${target_package_name}
+            OUTPUT_PATH install_path
+          )
           install(FILES ${auto_gen_path}/op_proto.h
-              DESTINATION ${graph_package_path}/inc)
+              DESTINATION ${install_path})
         endif()
         file(GLOB GROUP_PROTO_HEADERS ${auto_gen_path}/group_proto/*.h)
         if(GROUP_PROTO_HEADERS)
+          adapt_install_path(
+            INPUT_PATH ${graph_package_path}/inc
+            INPUT_TARGET ${target_package_name}
+            OUTPUT_PATH install_path
+          )
           install(FILES ${GROUP_PROTO_HEADERS}
-              DESTINATION ${graph_package_path}/inc)
+              DESTINATION ${install_path})
         endif()
       endif()
     endif()
@@ -963,13 +1107,22 @@ function(npu_op_package_add target_package_name)
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ACLNN_PATH "packages/vendors/${current_target_vendor_name}/op_api/")
       endif()
       get_property(aclnn_package_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ACLNN_PATH)
-
+      adapt_install_path(
+        INPUT_PATH ${aclnn_package_path}/lib
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(TARGETS ${target_package_name}_ascendc_cust_opapi
-        LIBRARY DESTINATION ${aclnn_package_path}/lib)
+        LIBRARY DESTINATION ${install_path})
       if(auto_gen_path)
         file(GLOB aclnn_inc ${auto_gen_path}/aclnn_*.h)
+        adapt_install_path(
+          INPUT_PATH ${aclnn_package_path}/include
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(FILES ${aclnn_inc}
-                DESTINATION ${aclnn_package_path}/include)
+                DESTINATION ${install_path})
       endif()
     endif()
 
@@ -980,17 +1133,39 @@ function(npu_op_package_add target_package_name)
         set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_TF_PLUGIN_PATH "packages/vendors/${current_target_vendor_name}/framework/tensorflow")
       endif()
       get_property(tf_plugin_package_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_TF_PLUGIN_PATH)
-
+      adapt_install_path(
+        INPUT_PATH ${tf_plugin_package_path}
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(TARGETS ${_ascendc_tf_plugin_target}
-        LIBRARY DESTINATION ${tf_plugin_package_path}
+        LIBRARY DESTINATION ${install_path}
+      )
+    endif()
+
+    if(_ascendc_onnx_plugin_target)
+      if(DEFINED ADD_TARGET_PACKAGE_PATH)
+        set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ONNX_PLUGIN_PATH ${ADD_TARGET_PACKAGE_PATH})
+      else()
+        set_property(GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ONNX_PLUGIN_PATH "packages/vendors/${current_target_vendor_name}/framework/onnx")
+      endif()
+      get_property(onnx_plugin_package_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_ONNX_PLUGIN_PATH)
+
+      install(TARGETS ${_ascendc_onnx_plugin_target}
+        LIBRARY DESTINATION ${onnx_plugin_package_path}
       )
     endif()
 
     if(_ascendc_device_sink_target)
       get_property(device_sink_target_output GLOBAL PROPERTY ASCENDC_DEVICE_SINK_TARGET_OUTPUT)
       if(NOT "${device_sink_target_output}" STREQUAL "")
+        adapt_install_path(
+          INPUT_PATH packages/vendors/${current_target_vendor_name}/op_impl/ai_core/tbe/op_master_device/lib
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(FILES ${device_sink_target_output}
-          DESTINATION packages/vendors/${current_target_vendor_name}/op_impl/ai_core/tbe/op_master_device/lib
+          DESTINATION ${install_path}
         )
       endif()
     endif()
@@ -1125,14 +1300,24 @@ function(npu_op_package_add target_package_name)
       get_property(kernel_package_path GLOBAL PROPERTY _ASC_PKG_${target_package_name}_KERNEL_PATH)
 
       if (${kernel_enable_source_package})
+        adapt_install_path(
+          INPUT_PATH ${kernel_package_path}
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(DIRECTORY ${kernel_binary_dir}/binary/dynamic/
-                DESTINATION ${kernel_package_path}
+                DESTINATION ${install_path}
         )
       endif()
 
       if(ENBALE_COPY_KERNEL_SRC_TO_ASCENDC)
+        adapt_install_path(
+          INPUT_PATH ${kernel_package_path}/../ascendc
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(DIRECTORY ${kernel_binary_dir}/binary/dynamic/
-        DESTINATION ${kernel_package_path}/../ascendc
+        DESTINATION ${install_path}
         PATTERN "*.py" EXCLUDE
       )
       endif()
@@ -1141,19 +1326,34 @@ function(npu_op_package_add target_package_name)
       if (${kernel_enable_binary_package})
         set(INSTALL_DIR packages/vendors/${current_target_vendor_name}/op_impl/ai_core/tbe/)
         foreach(compute_unit ${ASCEND_COMPUTE_UNIT})
+          adapt_install_path(
+            INPUT_PATH ${INSTALL_DIR}/kernel/${compute_unit}/
+            INPUT_TARGET ${target_package_name}
+            OUTPUT_PATH install_path
+          )
           install(DIRECTORY ${kernel_binary_dir}/binary/${compute_unit}/
-                  DESTINATION ${INSTALL_DIR}/kernel/${compute_unit}/
+                  DESTINATION ${install_path}
           )
         endforeach()
+        adapt_install_path(
+          INPUT_PATH ${INSTALL_DIR}/kernel/config/
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(DIRECTORY ${kernel_binary_dir}/binary/config/
-                DESTINATION ${INSTALL_DIR}/kernel/config/
+                DESTINATION ${install_path}
         )
       endif()
 
       # install aci-xxx-ops-info.json
       foreach(compute_unit ${ASCEND_COMPUTE_UNIT})
+        adapt_install_path(
+          INPUT_PATH packages/vendors/${current_target_vendor_name}/op_impl/ai_core/tbe/config/${compute_unit}
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(FILES ${kernel_binary_dir}/tbe/op_info_cfg/ai_core/${compute_unit}/aic-${compute_unit}-ops-info.json
-                DESTINATION packages/vendors/${current_target_vendor_name}/op_impl/ai_core/tbe/config/${compute_unit}
+                DESTINATION ${install_path}
         )
       endforeach()
     endif()
@@ -1206,6 +1406,9 @@ function(npu_op_package_add target_package_name)
         if(_ascendc_tf_plugin_target)
           add_dependencies(${_ascendc_kernel_target}_op_registry_pack ${_ascendc_tf_plugin_target})
         endif()
+        if(_ascendc_onnx_plugin_target)
+          add_dependencies(${_ascendc_kernel_target}_op_registry_pack ${_ascendc_onnx_plugin_target})
+        endif()
       endif()
 
       get_property(package_aclnn_target GLOBAL PROPERTY ASCENDC_ACLNN_TARGET)
@@ -1220,16 +1423,31 @@ function(npu_op_package_add target_package_name)
   if(NOT "${output_type}" STREQUAL "RUN")
     if(auto_gen_path)
       file(GLOB aclnn_inc ${auto_gen_path}/aclnn_*.h)
+      adapt_install_path(
+        INPUT_PATH include
+        INPUT_TARGET ${target_package_name}
+        OUTPUT_PATH install_path
+      )
       install(FILES ${aclnn_inc}
-              DESTINATION include)
+              DESTINATION ${install_path})
       if(EXISTS "${auto_gen_path}/op_proto.h")
+        adapt_install_path(
+          INPUT_PATH include
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(FILES ${auto_gen_path}/op_proto.h
-            DESTINATION include)
+            DESTINATION ${install_path})
       endif()
       file(GLOB GROUP_PROTO_HEADERS ${auto_gen_path}/group_proto/*.h)
       if(GROUP_PROTO_HEADERS)
+        adapt_install_path(
+          INPUT_PATH include
+          INPUT_TARGET ${target_package_name}
+          OUTPUT_PATH install_path
+        )
         install(FILES ${GROUP_PROTO_HEADERS}
-            DESTINATION include)
+            DESTINATION ${install_path})
       endif()
     endif()
   endif()

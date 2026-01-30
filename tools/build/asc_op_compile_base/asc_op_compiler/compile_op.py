@@ -62,6 +62,7 @@ from .super_kernel_constants import SuperKernelStreamFusionMode
 from .super_kernel_option_parse import parse_super_kernel_options
 from .kernel_info_infer import KernelInfoInfer
 from .ascendc_compile_utils import check_custom_dcci_end_false, check_if_gen_placehoder
+from .ascendc_kernel_feature_manager import global_ascendc_kernel_feature_manager
 
 DEFAULT_TILING_KEY = '0'
 COMPILE_INFO_KEY = 'compileInfo'
@@ -117,7 +118,7 @@ def _json_except_info(compile_info: CompileInfo):
             sub_operater_infos = json.load(fd)
             sub_dfx_info["func_name"] = sub_operater_infos["kernelName"]
             sub_dfx_info["split_mode"] = sub_operater_infos.get("split_mode")
-            sub_dfx_info["blockDim"] = sub_operater_infos["blockDim"]
+            sub_dfx_info["blockNum"] = sub_operater_infos["blockDim"]
             sub_dfx_info["sub_operator_kernel_type"] = sub_operater_infos["sub_operator_kernel_type"]
             sub_dfx_info["sub_operator_early_start_set_flag"] = \
             sub_operater_infos['sub_operator_early_start_set_flag']
@@ -127,6 +128,8 @@ def _json_except_info(compile_info: CompileInfo):
                 sub_operater_infos.get('sub_operator_call_dcci_before_kernel_start', False)
             sub_dfx_info["sub_operator_call_dcci_after_kernel_end"] = \
                 sub_operater_infos.get('sub_operator_call_dcci_after_kernel_end', False)
+            sub_dfx_info["sub_operator_call_dcci_disable_on_kernel"] = \
+                sub_operater_infos.get('sub_operator_call_dcci_disable_on_kernel', False)
             sub_dfx_info["streamid"] = sub_op.get('stream_id')
             sub_dfx_info["send_event_list"] = compile_info.super_kernel_info["send_event_list"][i]
             sub_dfx_info["recv_event_list"] = compile_info.super_kernel_info["recv_event_list"][i]
@@ -269,6 +272,8 @@ def _json_post_process(compile_info: CompileInfo, op_info: OpInfo, tiling_info: 
 
     if compile_info.super_kernel_info.get("kernel_name") is not None:
         js["SuperkernelInfo"] = _json_except_info(compile_info)
+    if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
+        js["feature_list"] = global_ascendc_kernel_feature_manager.get_available_feature_versions()
 
     try:
         with open(obj_path, 'rb') as obj_file:
@@ -315,8 +320,8 @@ def _gen_kernel_func_declare_head(is_mix: bool, is_single_and_using_hard_sync: b
     dfx_generator = DFXSectionGenerator()
     func_params = []
     super_kernel_params = []
-    needs_ffts = (is_mix or is_single_and_using_hard_sync) and not (CommonUtility.is_c310() or
-        CommonUtility.is_310r6() or CommonUtility.is_m510())
+    needs_ffts = (is_mix or is_single_and_using_hard_sync) and not (CommonUtility.is_c310() or 
+                                                                    CommonUtility.is_m510())
     workspace_idx = 0
     if needs_ffts:
         func_params.append("GM_ADDR ffts_addr")
@@ -394,8 +399,7 @@ def _gen_set_workspace_codes(is_mix: bool, is_single_and_using_hard_sync: bool, 
     if "oom" in get_current_build_config("tir.op_debug_config"):
         source = add_op_param_to_workspace(opinfo, tiling_info, source, dump_size, compile_options, compile_info)
 
-    needs_ffts = (is_mix or is_single_and_using_hard_sync) and not (CommonUtility.is_c310() or
-        CommonUtility.is_310r6())
+    needs_ffts = (is_mix or is_single_and_using_hard_sync) and not CommonUtility.is_c310()
     # set ffts_addr for ascend910b mix op or is_single_and_using_hard_sync scene
     if needs_ffts:
         source += "    icache_preload(1);\n"
@@ -409,8 +413,8 @@ def _gen_set_workspace_codes(is_mix: bool, is_single_and_using_hard_sync: bool, 
         source += "do {\n"
 
     # is_single_and_using_hard_sync scene not need clear workspace
-    if is_mix and compile_info.hard_kfc_server:
-        source += f"#if defined({MIX_CORE_MACRO}) && !defined(ENABLE_CV_COMM_VIA_SSBUF) \n"
+    if is_mix and (not CommonUtility.is_c310()):  # c310 doesn't need clearWorkspace
+        source += f"#ifdef {MIX_CORE_MACRO} \n"
         source += "    if constexpr (g_coreType == AscendC::AIC) {\n"
         source += "        matmul::clearWorkspace(workspace);\n"
         source += add_time_stamp_codes('TIME_STAMP_WRAP_CLEAR_WK_SPAC', 2)
@@ -535,7 +539,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     ascendc_dump_on = "-DASCENDC_DUMP=0" not in compile_options
     dump_info = compile_info.dump_info["dump_type"] != "" and ascendc_dump_on
 
-    if (CommonUtility.is_c310() or CommonUtility.is_310r6()) and dump_info:
+    if (CommonUtility.is_c310()) and dump_info:
         source += "#if defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"  # dump L1
         source += "#include \"include/adv_api/matmul/matmul_intf.h\"\n"  # maybe cube only no matmul::clearWorkspace
         source += "#endif\n"
@@ -583,7 +587,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     source_declare_pub_fun = f"ascendc_{auto_gen_kernel_func}(" + called_func_params + ");"
 
 
-    if (CommonUtility.is_c310() or CommonUtility.is_310r6()) and dump_info:
+    if (CommonUtility.is_c310()) and dump_info:
         source += "#if defined(ASCENDC_DUMP) && defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"
         source += "    if ASCEND_IS_AIV {\n"
         source += "        AscendC::EnableL1Dump();\n"
@@ -689,7 +693,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
     if get_current_build_config(status_check) and (CommonUtility.is_v200() or CommonUtility.is_v100()):
         source += "    AscendC::WriteBackOverflow(overflowStatus);\n"
 
-    if (CommonUtility.is_c310() or CommonUtility.is_310r6()) and dump_info:
+    if (CommonUtility.is_c310()) and dump_info:
         source += "#if defined(ASCENDC_DUMP) && defined(RAW_AIC_ONLY_DUMP_TENSOR)\n"
         source += "    if ASCEND_IS_AIC {\n"
         source += "        pipe_barrier(PIPE_ALL);\n"
@@ -698,7 +702,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
         source += "#endif\n"
 
     if not global_var_storage.get_variable("ascendc_enable_super_kernel") and \
-                    (CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510()):
+                    (CommonUtility.is_c310() or CommonUtility.is_m510()):
         check_custom_dcci_end_false(compile_option_tuple)
 
     source += "}\n\n"
@@ -726,7 +730,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
 def gen_kernel_fun_with_tiling_key_slave(compile_info: CompileInfo, tiling_key: int, source_declare_pub_fun: str, \
     gen_func_attributes: str, source_declare: str):
     source = ""
-    if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+    if CommonUtility.is_v220() or CommonUtility.is_c310():
         chip_version = CommonUtility.get_chip_version().upper()
         cube_core_type = f"__DAV_{chip_version}_CUBE__"
         vec_core_type = f"__DAV_{chip_version}_VEC__"
@@ -952,13 +956,14 @@ def _update_compile_option(kernel_name: str, compile_options: list, extend_optio
     if asc_path is None:
         asc_path = os.path.realpath(os.path.join(ascend_home_path, "compiler", "asc"))
     cann_version_file_path = os.path.join(asc_path, "..", "..",
-                                          "include", "ascendc", "asc_devkit_version.h")
+                                          "include", "version", "asc_devkit_version.h")
     compile_options.append("-I" + os.path.join(asc_path, "impl", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "basic_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "c_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "micro_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "simt_api"))
     compile_options.append("-I" + os.path.join(asc_path, "impl", "utils"))
+    compile_options.append("-I" + asc_path)
     compile_options.append("-I" + os.path.join(asc_path, "include"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "adv_api"))
     compile_options.append("-I" + os.path.join(asc_path, "include", "basic_api"))
@@ -1059,7 +1064,6 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
     compile_info.tiling_key_group_map = tiling_key_group_map
     compile_info.compile_log_path = compile_log_path
     compile_info.hard_sync = infered_info_from_ifile.hard_sync or hardware_sync_in_asm
-    compile_info.has_kfc_server = not infered_info_from_ifile.no_kfc_server_flag
     compile_info.enable_deterministic = infered_info_from_ifile.enable_deterministic
     compile_info.tiling_key_deterministic = infered_info_from_ifile.tiling_key_deterministic
     compile_info.tiling_key_kernel_type = infered_info_from_ifile.tiling_key_kernel_type
@@ -1126,7 +1130,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
         (global_var_storage.get_variable("ascendc_recognize_simtvf") is True)
     global_var_storage.set_variable("ascendc_enable_dump_workspace", ascendc_enable_dump_workspace)
 
-    if CommonUtility.is_c310() or CommonUtility.is_310r6():
+    if CommonUtility.is_c310():
         gen_meta_info_section(compile_info, op_info)
     workspace_idx = gen_kernel_fun(compile_info, origin_func_name, op_info, tiling_info, compile_option_tuple)
     # no dump and no superkernel
@@ -1160,7 +1164,7 @@ def compile_op_common_part(cce_file: str, origin_func_name: str, op_info: OpInfo
 
     DFXSectionGenerator().generate_dfx_binary(compile_info, op_info, tiling_info)
 
-    if CommonUtility.is_v220() or CommonUtility.is_c310() or CommonUtility.is_310r6():
+    if CommonUtility.is_v220() or CommonUtility.is_c310():
         if compile_info.no_set_kernel_type is True:
             _compile_ascendc_cce_v220(compile_info, compile_option_tuple, tiling_info)
         else:
@@ -1381,7 +1385,7 @@ def _compile_ascendc_cce(compile_info: CompileInfo, compile_option_tuple, tiling
 
         CommonUtility.run_cmd_inner(compile_cmd, CompileStage.COMPILE, compile_info.compile_log_path)
         target = "cce_core"
-        tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim)
+        tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num)
     else:
         obj_files = []
         for tiling_key in compile_info.tiling_key_list:
@@ -1401,7 +1405,7 @@ def _compile_ascendc_cce(compile_info: CompileInfo, compile_option_tuple, tiling
             os.path.basename(compile_info.dst_file)[:-2], compile_info.compile_log_path)
         fatbin_objs(obj_files, compile_info.dst_file, compile_info.is_debug, compile_info.compile_log_path)
         target = "cce_core"
-        tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim)
+        tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num)
         _dynamic_kernel_list_to_json(compile_info.kernel_name, compile_info.tiling_key_list, \
             compile_info.enable_deterministic, compile_info.tiling_key_deterministic)
 
@@ -1442,7 +1446,7 @@ def _get_compile_cmd_and_section_content(compile_info: CompileInfo, arch: str, \
     compile_cmd = gen_compile_cmd_v220(compile_info.gen_kernel_func_file, compile_info.dst_file, \
         compile_option_tuple, arch, tiling_info.tiling_data_file_path)
 
-    if CommonUtility.is_c310() or CommonUtility.is_310r6():
+    if CommonUtility.is_c310():
         if compile_info.raw_tiling_key_kernel_type.get(str(tiling_key)) == KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2:
             compile_cmd += [f"-D__ASCENDC_ENABLE_VEC_TAIL_TILING_COPY__"]
         if compile_info.raw_tiling_key_kernel_type.get(str(tiling_key)) == KernelMetaType.KERNEL_TYPE_AIC_ONLY:
@@ -2060,7 +2064,7 @@ def _call_bisheng_regbase(compile_info: CompileInfo, compile_option_tuple, tilin
         target = "cce_core"
         core_type_info = {"core_type": ""}
 
-        tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_dim, \
+        tvm_callback_cce_postproc(target, compile_info.kernel_name, tiling_info.block_num, \
                                     0, "", None, None, core_type_info, None, None, False, 1, None, None)
     else:
         obj_files = []

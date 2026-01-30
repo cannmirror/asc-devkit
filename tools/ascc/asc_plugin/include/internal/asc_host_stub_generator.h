@@ -41,7 +41,6 @@ private:
 private:
     KernelInfo kernelInfo_;
     bool hasAnonymousSpace_ = false;
-    bool hasNameSpace_ = true;
     std::string kernelNameWithNameSpace_ = "";
     std::ostringstream typeJudgePreCode_;
     std::ostringstream kernelCallStub_;

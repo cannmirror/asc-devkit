@@ -29,50 +29,6 @@ AscHostBinaryGenerator::AscHostBinaryGenerator()
 
 static const char *BINARY_REGISTER_CODE = R"(#include <stdio.h>
 #include <stdint.h>
-
-namespace AscPluginGenerator {
-constexpr unsigned int ascendcExceptionDumpHead = 2U;
-typedef struct rtArgsSizeInfoAsc {
-    void *infoAddr;
-    uint32_t atomicIndex;
-} rtArgsSizeInfoAsc_t;
-} // namespace AscPluginGenerator
-
-extern "C" {
-int32_t rtSetExceptionExtInfo(const AscPluginGenerator::rtArgsSizeInfoAsc_t * const sizeInfo);
-namespace Adx {
-void *AdumpGetSizeInfoAddr(uint32_t space, uint32_t &atomicIndex);
-} // namespace Adx
-}
-
-namespace AscPluginGenerator {
-__attribute__ ((visibility("hidden"))) uint32_t ascendc_set_exception_dump_info(uint32_t dumpSize)
-{
-    uint32_t atomicIndex = 0U;
-    constexpr uint32_t addrNum = 1U;
-    void *exceptionDumpAddr = Adx::AdumpGetSizeInfoAddr(addrNum + ascendcExceptionDumpHead, atomicIndex);
-    if (exceptionDumpAddr == nullptr) {
-        ::printf("[ERROR] [AscPlugin] Get exceptionDumpAddr is nullptr.\n");
-        return 1;
-    }
-    uint64_t *sizeInfoAddr = reinterpret_cast<uint64_t *>(exceptionDumpAddr);
-    *sizeInfoAddr = static_cast<uint64_t>(atomicIndex);
-    sizeInfoAddr++;
-    *sizeInfoAddr = static_cast<uint64_t>(1);
-    sizeInfoAddr++;
-    *sizeInfoAddr = dumpSize * 75;
-    constexpr uint64_t workspaceOffset = (4ULL << 56ULL);
-    *sizeInfoAddr |= workspaceOffset;
-    const rtArgsSizeInfoAsc sizeInfo = {exceptionDumpAddr, atomicIndex};
-    int32_t ret = rtSetExceptionExtInfo(&sizeInfo);
-    if (ret != 0) {
-        ::printf("[ERROR] [AscPlugin] rtSetExceptionExtInfo failed, ret = %d.\n", ret);
-        return 1;
-    }
-    return 0;
-}
-} // namespace AscPluginGenerator
-
 extern "C" {
 int32_t AscendDevBinaryLazyRegister(const char* binBuf, size_t binSize, void** handle);
 int32_t AscendGetFuncFromBinary(void* const binHandle, const char* kernelName, void** funcHandle);
@@ -87,37 +43,36 @@ uint32_t AscendCGetProfkTypeImpl(const rtFuncHandle funcHandle);
 }
 
 namespace {
-class AscProfRegister {
+class AscRegister {
 public:
-static AscProfRegister& GetInstance() {
-    static AscProfRegister instance;
+static AscRegister& GetInstance() {
+    static AscRegister instance;
     return instance;
 }
+void* binHandle = nullptr;
 private:
-AscProfRegister() {
+AscRegister() {
+    uint32_t ret = AscendDevBinaryLazyRegister(fatbinDataPtr, fatbinDataLength, &binHandle);
+    if (ret != 0) {
+        ::printf("[ERROR] [AscPlugin] Kernel binary register failure! ret %d \n", ret);
+    }
     AscendProfRegister();
 }
-~AscProfRegister() = default;
-AscProfRegister(const AscProfRegister&) = delete;
-AscProfRegister& operator=(const AscProfRegister&) = delete;
+~AscRegister() = default;
+AscRegister(const AscRegister&) = delete;
+AscRegister& operator=(const AscRegister&) = delete;
 };
 
 } // namespace
 
 namespace AscPluginGenerator {
 __attribute__ ((visibility("hidden"))) int32_t BindKernelRegisterFunc(void (*)(void*)) { return 0; }
-
 __attribute__ ((visibility("hidden"))) uint32_t LaunchAndProfiling(const char *kernelName, uint32_t blockDim,
     void *stream, void **args, uint32_t size, uint32_t ktype, const uint32_t ubufDynamicSize)
 {
-    static auto& reg = AscProfRegister::GetInstance();
-    void* binHandle = nullptr;
-    int32_t ret = AscendDevBinaryLazyRegister(fatbinDataPtr, fatbinDataLength, &binHandle);
-    if (ret != 0) {
-        ::printf("[ERROR] [AscPlugin] Kernel binary register failure! ret %d \n", ret);
-    }
+    static auto& reg = AscRegister::GetInstance();
     void* funcHandle = nullptr;
-    ret = AscendGetFuncFromBinary(binHandle, kernelName, &funcHandle);
+    uint32_t ret = AscendGetFuncFromBinary(reg.binHandle, kernelName, &funcHandle);
     if (ret != 0) {
         ::printf("[ERROR] [AscPlugin] Get kernel function failure! ret %d \n", ret);
         return 1;
@@ -137,9 +92,7 @@ __attribute__ ((visibility("hidden"))) uint32_t LaunchAndProfiling(const char *k
     }
     return ret;
 }
-
 } // namespace AscPluginGenerator
-
 )";
 
 std::string AscHostBinaryGenerator::GenCode()

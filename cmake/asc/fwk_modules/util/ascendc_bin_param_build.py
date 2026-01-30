@@ -249,6 +249,23 @@ class BinParamBuilder(opdesc_parser.OpDesc):
             json.dump(data, f, indent='  ')
         return new_file_path
 
+    def gen_input_json_based_on_input_json(self: any, ori_json: str, output_dir: str):
+        generated_files = split_json_files(ori_json, output_dir)
+        index_value = -1
+        if generated_files:
+            for param_file in generated_files:
+                index_value += 1
+                file_name_with_ext = os.path.basename(param_file)
+                bin_file, _ = os.path.splitext(file_name_with_ext)
+                self._write_build_cmd(param_file, bin_file, index_value, output_dir)
+                if self.op_super_config:
+                    index_value += 1
+                    new_param_file = self.gen_input_json_with_super_config(param_file)
+                    bin_file += "_relocatable"
+                    self._write_build_cmd(new_param_file, bin_file, index_value, output_dir, True)
+        else:
+            print("[ERROR]the generation of input_json based on specified json is failed")
+    
     def gen_input_json_based_on_specified_json(self: any, ori_json: str, output_dir: str):
         generated_files = split_json_files(ori_json, output_dir)
         index_value = -1
@@ -337,13 +354,16 @@ class BinParamBuilder(opdesc_parser.OpDesc):
 
     def gen_input_json(self: any, auto_gen_path: str):
         key_map = {}
-        self.for_bin_list_match()
-        if len(self.input_dtype) == 0:
-            count = len(self.output_dtype[0].split(','))
+        if len(self.input_dtype) == 0 and len(self.output_dtype) == 0:
+            count = 1
         else:
-            count = len(self.input_dtype[0].split(','))
-        if count == 0:
-            raise RuntimeError(f'Op {self.op_type} must have at least one input or output')
+            self.for_bin_list_match()
+            if len(self.input_dtype) == 0:
+                count = len(self.output_dtype[0].split(','))
+            else:
+                count = len(self.input_dtype[0].split(','))
+            if count == 0:
+                raise RuntimeError(f'Op {self.op_type} must have at least one input or output')
         required_parameters = set()
         index_value = -1
 
@@ -503,11 +523,12 @@ def parse_op_debug_confg(opc_config_file: str, soc: str) -> Dict:
     tiling_key_info = defaultdict(set)
     op_debug_config = defaultdict(set)
     kernel_json_file = defaultdict(dict)
+    input_param_file = defaultdict(dict)
     if not opc_config_file:
-        return tiling_key_info, op_debug_config, kernel_json_file
+        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file
 
     if not os.path.exists(opc_config_file):
-        return tiling_key_info, op_debug_config, kernel_json_file
+        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file
 
     with open(opc_config_file, 'r') as file:
         contents = file.readlines()
@@ -554,7 +575,27 @@ def parse_op_debug_confg(opc_config_file: str, soc: str) -> Dict:
                 else:
                     json_file = ""
                 kernel_json_file[op_type] = json_file
-    return tiling_key_info, op_debug_config, kernel_json_file
+            if "--input-param-file" in options:
+                first_index = options.find('=')
+                if first_index != -1:
+                    json_file = options[first_index + 1:]
+                else:
+                    json_file = ""
+                input_param_file[op_type] = json_file
+    return tiling_key_info, op_debug_config, kernel_json_file, input_param_file
+
+
+def gen_option_config(debug_config, super_config, op_debug_config):
+    for _op_type, _op_option in op_debug_config.items():
+        for _option in _op_option:
+            if (_option.startswith("--op_relocatable_kernel_binary") 
+                and ("false" in _option or "False" in _option)):
+                continue
+            elif (_option.startswith("--op_relocatable_kernel_binary")
+                or _option.startswith("--op_super_kernel_options")):
+                super_config[_op_type].add(_option)
+            else:
+                debug_config[_op_type].add(_option)
 
 
 def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
@@ -566,14 +607,8 @@ def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
     debug_config = defaultdict(set)
     super_config = defaultdict(set)
     op_descs = opdesc_parser.get_op_desc(cfgfile, [], [], BinParamBuilder, ops)
-    tiling_key_info, op_debug_config, kernel_json_file = parse_op_debug_confg(opc_config_file, soc)
-    for _op_type, _op_option in op_debug_config.items():
-        for _option in _op_option:
-            if (_option.startswith("--op_relocatable_kernel_binary")
-                or _option.startswith("--op_super_kernel_options")):
-                super_config[_op_type].add(_option)
-            else:
-                debug_config[_op_type].add(_option)
+    tiling_key_info, op_debug_config, kernel_json_file, input_param_file = parse_op_debug_confg(opc_config_file, soc)
+    gen_option_config(debug_config, super_config, op_debug_config)
 
     auto_gen_path_dir = os.path.dirname(cfgfile)
     all_soc_key = "ALL"
@@ -586,6 +621,8 @@ def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
             op_desc.set_op_debug_config(debug_config[all_soc_key])
         if op_desc.op_type in super_config:
             op_desc.set_op_super_config(super_config[op_desc.op_type])
+        if all_soc_key in super_config:
+            op_desc.set_op_super_config(super_config[all_soc_key])
         if op_desc.op_type in tiling_key_info:
             op_desc.set_tiling_key(tiling_key_info[op_desc.op_type])
         if all_soc_key in tiling_key_info:
@@ -594,7 +631,14 @@ def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
             op_desc.json_file = kernel_json_file[op_desc.op_type]
         if all_soc_key in kernel_json_file:
             op_desc.json_file = kernel_json_file[all_soc_key]
-        if op_desc.json_file == '':
+
+        key_params = ""
+        if op_desc.op_type in input_param_file:
+            key_params = input_param_file[op_desc.op_type]
+
+        if key_params:
+            op_desc.gen_input_json_based_on_input_json(key_params, out_dir)
+        elif op_desc.json_file == '':
             op_desc.gen_input_json(auto_gen_path_dir)
         else:
             op_desc.gen_input_json_based_on_specified_json(op_desc.json_file, out_dir)

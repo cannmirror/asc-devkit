@@ -62,7 +62,7 @@ def gen_super_kernel_compile_info(kernel_info, compile_log_path):
     tiling_info.static_shape_flag = True
     tiling_info.tiling_key = 0
     tiling_info.tiling_data_file_path = ""
-    tiling_info.block_dim = kernel_info["block_dim"]
+    tiling_info.block_num = kernel_info["block_num"]
     return compile_info, tiling_info
 
 
@@ -81,15 +81,15 @@ link_mode: SuperKernelLinkMode, split_mode, compile_log_path=None):
             objs_cube.append(sub_op["aic_bin"])
         if "dynamic_bin" in sub_op:
             objs_dynamic.append(sub_op["dynamic_bin"])
-    if link_mode == SuperKernelLinkMode.PerVecHerCube:
+    if link_mode.value == SuperKernelLinkMode.PerVecHerCube.value:
         objs += super_kernl_files
         objs += objs_vec
         objs += objs_cube
-    elif link_mode == SuperKernelLinkMode.PerCubeHerVec:
+    elif link_mode.value == SuperKernelLinkMode.PerCubeHerVec.value:
         objs += super_kernl_files
         objs += objs_cube
         objs += objs_vec
-    elif link_mode == SuperKernelLinkMode.PerCubeHerVecWithSuper:
+    elif link_mode.value == SuperKernelLinkMode.PerCubeHerVecWithSuper.value:
         if len(super_kernl_files) == 1:
             objs += super_kernl_files
             objs += objs_cube
@@ -226,6 +226,7 @@ def gen_spk_kernel_call(super_split_info : SuperSplitInfo, split_mode, kernel_ty
         cmds.append("-I" + os.path.join(asc_path, "include", "utils"))
         cmds.append("-I" + os.path.join(asc_path, "..", "ascendc", "act"))
         cmds.append("-I" + os.path.join(asc_path, "impl"))
+        cmds.append("-I" + asc_path)
         cmds.append("-I" + os.path.join(asc_path, "..", "tikcpp"))
         cmds.append("-I" + os.path.join(asc_path, "..", "..", "include"))
         cmds.append("-I" + os.path.join(asc_path, "..", "..", "include", "ascendc"))
@@ -318,6 +319,7 @@ def localize_symbol_of_sk(split_mode, sks, spk_dst_file, compile_log_path):
 
 def compile_super_kernel(kernel_info, compile_log_path, enable_features: dict = None):
     global_var_storage.set_variable("super_kenel_save_sub_op_files", True)
+    kernel_info["kernel_type"] = KernelMetaType(kernel_info["kernel_type"])
     op_info = OpInfo()
     compile_options = kernel_info["compile_option"]
     DFXSectionGenerator().is_support = False
@@ -335,7 +337,7 @@ def compile_super_kernel(kernel_info, compile_log_path, enable_features: dict = 
         compile_option_tuple.mllvm_options.append('--cce-long-call=true')
         compile_option_tuple.mllvm_options.append('-mllvm')
         compile_option_tuple.mllvm_options.append('-cce-aicore-long-call')
-    if CommonUtility.is_c310() or CommonUtility.is_310r6() or CommonUtility.is_m510():
+    if CommonUtility.is_c310() or CommonUtility.is_m510():
         compile_option_tuple.compile_options.append('--cce-no-dcache-flush')
     if kernel_info["timestamp_option"]:
         compile_options.append('-DONE_CORE_DUMP_SIZE=' + str(compile_info.super_kernel_info["debug_size"] \
@@ -355,4 +357,5 @@ def compile_super_kernel(kernel_info, compile_log_path, enable_features: dict = 
 
 
 def super_kernel_compile(kernel_info, compile_log_path):
+    kernel_info["kernel_type"] = kernel_info["kernel_type"].value
     compile_super_kernel(kernel_info, compile_log_path)

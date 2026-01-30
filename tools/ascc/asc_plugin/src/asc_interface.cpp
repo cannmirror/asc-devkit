@@ -200,11 +200,6 @@ int32_t PluginPrologue(const char** result, const char* config)
     if (!manager.GetAclrtHeaderPath().empty()) {
         GenerateAclrtHeader(manager.GetAclrtHeaderPath());
     }
-
-    manager.UpdateOneCoreDumpSize();
-    ASC_LOGD("After AST analysis, hasPrintf_ is %d, hasAssert_ is %d, oneCoreDumpSize_ is %u.", manager.HasPrintf(),
-        manager.HasAssert(), manager.GetOneCoreDumpSize());
-
     PrologueResult res = {ORIGIN_KERNEL_PREFIX, DEVICE_STUB_PREFIX};
     return DumpResultInfo(res, result);
 }
@@ -236,18 +231,7 @@ int32_t PluginGenKernel(const char** result, const char* info)
         metaInfo = std::move(meta);
         kernelType = std::move(kType);
     } else {
-        if (kernelInfo.isTemplate) {
-            for (const auto& tmpInst : kernelInfo.templateInstances) {
-                manager.AddGlobalSymbolInfo(std::string(DEVICE_STUB_PREFIX) + tmpInst.instanceMangledName,
-                    KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2, kernelInfo.fileName, kernelInfo.lineNum, kernelInfo.colNum,
-                    KfcScene::Close);
-            }
-        } else {
-            manager.AddGlobalSymbolInfo(std::string(DEVICE_STUB_PREFIX) + kernelInfo.kernelMangledName,
-                KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2, kernelInfo.fileName, kernelInfo.lineNum, kernelInfo.colNum,
-                KfcScene::Close);
-        }
-        kernelType = {KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2};
+        kernelType.insert(KernelMetaType::KERNEL_TYPE_MIX_AIC_1_2);
     }
 
     std::string hostStub  = GetHostStubCode(kernelInfo, kernelType);

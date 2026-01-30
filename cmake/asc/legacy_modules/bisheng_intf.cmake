@@ -15,7 +15,7 @@ target_compile_options(device_intf_pub INTERFACE
     "SHELL:--cce-aicore-lang"
 )
 
-set(CANN_VERSION_HEADER ${ASCENDC_DEVKIT_PATH}/../include/ascendc/asc_devkit_version.h)
+set(CANN_VERSION_HEADER ${ASCENDC_DEVKIT_PATH}/../include/version/asc_devkit_version.h)
 if(EXISTS ${CANN_VERSION_HEADER})
     target_compile_options(device_intf_pub INTERFACE
         "SHELL:-include ${CANN_VERSION_HEADER}"
@@ -33,6 +33,7 @@ target_include_directories(device_intf_pub INTERFACE
     ${ASCENDC_DEVKIT_PATH}/asc/impl/micro_api
     ${ASCENDC_DEVKIT_PATH}/asc/impl/simt_api
     ${ASCENDC_DEVKIT_PATH}/asc/impl/utils
+    ${ASCENDC_DEVKIT_PATH}/asc
     ${ASCENDC_DEVKIT_PATH}/asc/include
     ${ASCENDC_DEVKIT_PATH}/asc/include/adv_api
     ${ASCENDC_DEVKIT_PATH}/asc/include/basic_api
@@ -84,25 +85,6 @@ target_compile_options(c310_aic_intf_pub INTERFACE
 )
 
 target_link_libraries(c310_aic_intf_pub INTERFACE
-    $<BUILD_INTERFACE:device_intf_pub>
-)
-
-add_library(310r6_intf_pub INTERFACE)
-
-target_compile_options(310r6_intf_pub INTERFACE
-    --cce-aicore-arch=dav-310r6
-    --cce-aicore-only
-    --cce-auto-sync
-    --cce-mask-opt
-    "SHELL:-mllvm -cce-aicore-stack-size=0x8000"
-    "SHELL:-mllvm -cce-aicore-function-stack-size=0x8000"
-    "SHELL:-mllvm -cce-aicore-record-overflow=true"
-    "SHELL:-mllvm -cce-aicore-addr-transform"
-    "SHELL:-mllvm -cce-aicore-dcci-insert-for-scalar=false"
-    "SHELL:-mllvm -cce-aicore-dcci-before-kernel-end=false"
-)
-
-target_link_libraries(310r6_intf_pub INTERFACE
     $<BUILD_INTERFACE:device_intf_pub>
 )
 

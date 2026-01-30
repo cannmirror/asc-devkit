@@ -105,12 +105,12 @@ def check_is_regbase_v2():
     from .platform.platform_info import ASCEND_610LITE
     from .platform.platform_info import BS9SX2A
     from .platform.platform_info import MC61AM21A
-    from .platform.platform_info import ASCEND_910_95
+    from .platform.platform_info import ASCEND_950
     from .platform.platform_info import KIRIN_X90
     from .platform.platform_info import KIRIN_9030
 
     if get_soc_spec("SHORT_SOC_VERSION") in [ASCEND_031, ASCEND_310B, ASCEND_610LITE, BS9SX2A, 
-                                             MC61AM21A, AS31XM1, ASCEND_910_95, KIRIN_X90, KIRIN_9030]:
+                                             MC61AM21A, AS31XM1, ASCEND_950, KIRIN_X90, KIRIN_9030]:
         return True
     return False
 
@@ -165,7 +165,7 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
     from .platform.platform_info import ASCEND_610LITE
     from .platform.platform_info import BS9SX2A
     from .platform.platform_info import MC61AM21A
-    from .platform.platform_info import ASCEND_910_95
+    from .platform.platform_info import ASCEND_950
     from .platform.platform_info import COMPILER_ARCH
     from .buildcfg.buildcfg_mapping import tbe_debug_level, op_debug_config
     from .buildcfg.buildcfg_mapping import enable_cce_licm_safe_hoist
@@ -205,7 +205,7 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
                "--%s" % arch,
                "-o",
                dst_file]
-        if is_c220 or is_enable_vector_core or get_soc_spec("SHORT_SOC_VERSION") == ASCEND_910_95:
+        if is_c220 or is_enable_vector_core or get_soc_spec("SHORT_SOC_VERSION") == ASCEND_950:
             aicore_type = get_soc_spec("AICORE_TYPE")
             from asc_op_compile_base.common.buildcfg.buildcfg_mapping import enforce_mix_mode
             is_need_modify = (is_ffts_needed or is_mix) or \
@@ -271,9 +271,9 @@ def _build_aicore_compile_cmd(src_file, dst_file, name="", is_ffts_needed=False,
             cmd += ["-mllvm", "-cce-aicore-sk-transform"]
             cce_runtime.CceFlag.BatchBindOnly = False
     if get_soc_spec("SHORT_SOC_VERSION") != ASCEND_610LITE and get_soc_spec("SHORT_SOC_VERSION") != BS9SX2A:
-        if get_soc_spec("SHORT_SOC_VERSION") != MC61AM21A and get_soc_spec("SHORT_SOC_VERSION") != ASCEND_910_95:
+        if get_soc_spec("SHORT_SOC_VERSION") != MC61AM21A and get_soc_spec("SHORT_SOC_VERSION") != ASCEND_950:
             cmd += ["--cce-auto-sync=off"]
-    if get_soc_spec("SHORT_SOC_VERSION") == ASCEND_910_95:
+    if get_soc_spec("SHORT_SOC_VERSION") == ASCEND_950:
         cmd += ["--cce-long-scbz=true"]
         cmd += ["--cce-simd-vf-fusion=false"]
     if current_build_config().get(enable_cce_licm_safe_hoist):

@@ -16,7 +16,7 @@ endif()
 set(_cmake_targets_defined "")
 set(_cmake_targets_not_defined "")
 set(_cmake_expected_targets "")
-foreach(_cmake_expected_target IN ITEMS pvmodel_ascend910 pvmodel_ascend310p pvmodel_ascend610 pem_davinci_ascend910B1 pem_davinci_ascend310B pem_davinci_ascend910_9599 pem_davinci_ascend610Lite)
+foreach(_cmake_expected_target IN ITEMS pvmodel_ascend910 pvmodel_ascend310p pvmodel_ascend610 pem_davinci_ascend910B1 pem_davinci_ascend310B pem_davinci_ascend950pr_9599 pem_davinci_ascend610Lite)
     list(APPEND _cmake_expected_targets "${_cmake_expected_target}")
     if(TARGET "${_cmake_expected_target}")
         list(APPEND _cmake_targets_defined "${_cmake_expected_target}")
@@ -74,9 +74,9 @@ find_library(ascend310B1_LIBRARY
     NO_CMAKE_SYSTEM_PATH
     NO_CMAKE_FIND_ROOT_PATH)
 
-find_library(ascend910_9599_LIBRARY
+find_library(ascend950pr_9599_LIBRARY
     NAMES libpem_davinci.so
-    PATHS ${ASCEND_DIR}/*/simulator/Ascend910_9599/lib
+    PATHS ${ASCEND_DIR}/*/simulator/dav_3510/lib
     NO_CMAKE_SYSTEM_PATH
     NO_CMAKE_FIND_ROOT_PATH)
 
@@ -108,7 +108,7 @@ if(pvmodel_ascend910_FOUND)
     cmake_print_variables(ascend610_LIBRARY)
     cmake_print_variables(ascend910B1_LIBRARY)
     cmake_print_variables(ascend310B1_LIBRARY)
-    cmake_print_variables(ascend910_9599_LIBRARY)
+    cmake_print_variables(ascend950pr_9599_LIBRARY)
     cmake_print_variables(ascend610Lite_LIBRARY)
     cmake_print_variables(mc62cm12aa_LIBRARY)
 
@@ -137,9 +137,9 @@ if(pvmodel_ascend910_FOUND)
         IMPORTED_LOCATION "${ascend310B1_LIBRARY}"
     )
 
-    add_library(pem_davinci_ascend910_9599 SHARED IMPORTED)
-    set_target_properties(pem_davinci_ascend910_9599 PROPERTIES
-        IMPORTED_LOCATION "${ascend910_9599_LIBRARY}"
+    add_library(pem_davinci_ascend950pr_9599 SHARED IMPORTED)
+    set_target_properties(pem_davinci_ascend950pr_9599 PROPERTIES
+        IMPORTED_LOCATION "${ascend950pr_9599_LIBRARY}"
     )
 
     add_library(pem_davinci_ascend610Lite SHARED IMPORTED)
@@ -159,6 +159,6 @@ set(ascend310p_LIBRARY)
 set(ascend610_LIBRARY)
 set(ascend910B1_LIBRARY)
 set(ascend310B1_LIBRARY)
-set(ascend910_9599_LIBRARY)
+set(ascend950pr_9599_LIBRARY)
 set(ascend610Lite_LIBRARY)
 set(mc62cm12aa_LIBRARY)
