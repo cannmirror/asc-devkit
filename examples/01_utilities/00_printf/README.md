@@ -1,12 +1,16 @@
 # Printf直调样例说明
+
 ## 概述
+
 本样例通过Ascend C编程语言实现了Matmul算子，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，同时在算子中添加printf调测，给出了对应的端到端实现。
 
 ## 支持的产品
+
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 目录结构介绍
+
 ```
 ├── 00_printf
 │   ├── scripts
@@ -14,10 +18,11 @@
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── printf.asc              // AscendC算子实现 & 调用样例
+│   └── printf.asc              // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
+
 - 算子功能：  
 
   Matmul实现了快速的Matmul矩阵乘法的运算操作。 
@@ -68,28 +73,23 @@
 
 ## 编译运行
 - 配置环境变量  
-  以命令行方式下载样例代码，master分支为例。
-  ```bash
-  cd ${git_clone_path}/examples/01_utilities/00_printf
-  ```
+在本样例根目录下执行如下步骤，编译并执行算子。
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=/usr/local/Ascend/cann
+    source /usr/local/Ascend/cann/set_env.sh
     ```
+    
   - 默认路径，非root用户安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=$HOME/Ascend/cann
+    source $HOME/Ascend/cann/set_env.sh
     ```
+
   - 指定路径install_path，安装CANN软件包
     ```bash
-    export ASCEND_INSTALL_PATH=${install_path}/cann
+    source ${install_path}/cann/set_env.sh
     ```
-  配置安装路径后，执行以下命令统一配置环境变量。
-  ```bash
-  # 配置CANN环境变量
-  source ${ASCEND_INSTALL_PATH}/bin/setenv.bash
-  ```
+
 - 样例执行
   ```bash
   mkdir -p build && cd build;   # 创建并进入build目录
@@ -100,10 +100,5 @@
   ```
   最终执行结果如下，说明精度对比成功。
   ```bash
-  test pass
+  test pass!
   ```
-
-## 更新说明
-| 时间       | 更新事项     |
-| ---------- | ------------ |
-| 2025/11/18 | 样例目录调整，新增本readme |
