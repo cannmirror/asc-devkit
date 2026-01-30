@@ -22,12 +22,12 @@
 
 namespace AscendC {
 template <typename T>
-bool CheckFuncVecBinary(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
-    const LocalTensor<T>& src1, const uint64_t mask[], const uint8_t repeatTime,
-    const BinaryRepeatParams& repeatParams, const char* intriName)
+check::VecBinaryApiParams BuildVecBinaryApiParams(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
     using PrimType = PrimT<T>;
-    check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+
+    return check::VecBinaryApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
         repeatTime,
@@ -46,6 +46,14 @@ bool CheckFuncVecBinary(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src0.GetPosition()),
         static_cast<uint8_t>(src1.GetPosition()) };
+}
+
+template <typename T>
+bool CheckFuncVecBinary(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, const uint64_t mask[], const uint8_t repeatTime,
+    const BinaryRepeatParams& repeatParams, const char* intriName)
+{
+    auto chkParams = BuildVecBinaryApiParams(dst, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecBinaryImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -54,26 +62,7 @@ bool CheckFuncVecBinary(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<T>& src1, const uint64_t mask, const uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams, const char* intriName)
 {
-    using PrimType = PrimT<T>;
-    check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        repeatTime,
-        static_cast<uint16_t>(repeatParams.dstBlkStride),
-        static_cast<uint16_t>(repeatParams.src0BlkStride),
-        static_cast<uint16_t>(repeatParams.src1BlkStride),
-        static_cast<uint16_t>(repeatParams.dstRepStride),
-        static_cast<uint16_t>(repeatParams.src0RepStride),
-        static_cast<uint16_t>(repeatParams.src1RepStride),
-        static_cast<uint32_t>(sizeof(PrimType)),
-        static_cast<uint32_t>(sizeof(PrimType)),
-        static_cast<uint32_t>(sizeof(PrimType)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimType)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimType)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimType)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecBinaryApiParams(dst, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecBinaryImpl(chkParams, mask, intriName);
 }
 
@@ -82,6 +71,7 @@ bool CheckFuncVecBinary(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<T>& src1, const int32_t& count, const char* intriName)
 {
     using PrimType = PrimT<T>;
+
     check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
@@ -99,13 +89,14 @@ bool CheckFuncVecBinary(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
 }
 
 template <typename T, typename U>
-bool CheckFuncSelectVec(const LocalTensor<T>& dst, const LocalTensor<U>& selMask, const LocalTensor<T>& src0,
-    const LocalTensor<T>& src1, uint64_t mask[], uint8_t repeatTime, const BinaryRepeatParams& repeatParams,
-    const char* intriName)
+check::VecSelectApiParams BuildVecSelectApiParams(const LocalTensor<T>& dst,
+    const LocalTensor<U>& selMask, const LocalTensor<T>& src0, const LocalTensor<T>& src1,
+    uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
     using PrimDstSrcType = PrimT<T>;
     using PrimSelMaskType = PrimT<U>;
-    check::VecSelectApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+
+    return check::VecSelectApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(selMask.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
@@ -128,6 +119,14 @@ bool CheckFuncSelectVec(const LocalTensor<T>& dst, const LocalTensor<U>& selMask
         static_cast<uint8_t>(selMask.GetPosition()),
         static_cast<uint8_t>(src0.GetPosition()),
         static_cast<uint8_t>(src1.GetPosition()) };
+}
+
+template <typename T, typename U>
+bool CheckFuncSelectVec(const LocalTensor<T>& dst, const LocalTensor<U>& selMask, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, uint64_t mask[], uint8_t repeatTime, const BinaryRepeatParams& repeatParams,
+    const char* intriName)
+{
+    auto chkParams = BuildVecSelectApiParams(dst, selMask, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecSelectImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -136,31 +135,7 @@ bool CheckFuncSelectVec(const LocalTensor<T>& dst, const LocalTensor<U>& selMask
     const LocalTensor<T>& src1, uint64_t mask, uint8_t repeatTime, const BinaryRepeatParams& repeatParams,
     const char* intriName)
 {
-    using PrimDstSrcType = PrimT<T>;
-    using PrimSelMaskType = PrimT<U>;
-    check::VecSelectApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(selMask.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        repeatTime,
-        static_cast<uint16_t>(repeatParams.dstBlkStride),
-        static_cast<uint16_t>(repeatParams.src0BlkStride),
-        static_cast<uint16_t>(repeatParams.src1BlkStride),
-        static_cast<uint16_t>(repeatParams.dstRepStride),
-        static_cast<uint16_t>(repeatParams.src0RepStride),
-        static_cast<uint16_t>(repeatParams.src1RepStride),
-        static_cast<uint32_t>(sizeof(PrimDstSrcType)),
-        static_cast<uint32_t>(sizeof(PrimSelMaskType)),
-        static_cast<uint32_t>(sizeof(PrimDstSrcType)),
-        static_cast<uint32_t>(sizeof(PrimDstSrcType)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimDstSrcType)),
-        static_cast<uint64_t>(selMask.GetSize() * sizeof(PrimSelMaskType)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimDstSrcType)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimDstSrcType)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(selMask.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecSelectApiParams(dst, selMask, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecSelectImpl(chkParams, mask, intriName);
 }
 
@@ -170,6 +145,7 @@ bool CheckFuncSelectVec(const LocalTensor<T>& dst, const LocalTensor<U>& selMask
 {
     using PrimDstSrcType = PrimT<T>;
     using PrimSelMaskType = PrimT<U>;
+
     check::VecSelectApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(selMask.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
@@ -191,13 +167,13 @@ bool CheckFuncSelectVec(const LocalTensor<T>& dst, const LocalTensor<U>& selMask
 }
 
 template <typename T, typename U>
-bool CheckFuncVecBinaryDiffType(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
-    const LocalTensor<U>& src1, const uint64_t mask[], const uint8_t repeatTime,
-    const BinaryRepeatParams& repeatParams, const char* intriName)
+check::VecBinaryApiParams BuildVecBinaryApiParamsDiffType(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
+    const LocalTensor<U>& src1, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
     using PrimDstType = PrimT<T>;
     using PrimSrcType = PrimT<U>;
-    check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+
+    return check::VecBinaryApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
         repeatTime,
@@ -216,6 +192,14 @@ bool CheckFuncVecBinaryDiffType(const LocalTensor<T>& dst, const LocalTensor<U>&
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src0.GetPosition()),
         static_cast<uint8_t>(src1.GetPosition()) };
+}
+
+template <typename T, typename U>
+bool CheckFuncVecBinaryDiffType(const LocalTensor<T>& dst, const LocalTensor<U>& src0,
+    const LocalTensor<U>& src1, const uint64_t mask[], const uint8_t repeatTime,
+    const BinaryRepeatParams& repeatParams, const char* intriName)
+{
+    auto chkParams = BuildVecBinaryApiParamsDiffType(dst, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecBinaryImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -224,27 +208,7 @@ bool CheckFuncVecBinaryDiffType(const LocalTensor<T>& dst, const LocalTensor<U>&
     const LocalTensor<U>& src1, const uint64_t mask, const uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams, const char* intriName)
 {
-    using PrimDstType = PrimT<T>;
-    using PrimSrcType = PrimT<U>;
-    check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        repeatTime,
-        static_cast<uint16_t>(repeatParams.dstBlkStride),
-        static_cast<uint16_t>(repeatParams.src0BlkStride),
-        static_cast<uint16_t>(repeatParams.src1BlkStride),
-        static_cast<uint16_t>(repeatParams.dstRepStride),
-        static_cast<uint16_t>(repeatParams.src0RepStride),
-        static_cast<uint16_t>(repeatParams.src1RepStride),
-        static_cast<uint32_t>(sizeof(PrimDstType)),
-        static_cast<uint32_t>(sizeof(PrimSrcType)),
-        static_cast<uint32_t>(sizeof(PrimSrcType)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimDstType)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimSrcType)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimSrcType)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecBinaryApiParamsDiffType(dst, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecBinaryImpl(chkParams, mask, intriName);
 }
 
@@ -254,6 +218,7 @@ bool CheckFuncVecBinaryDiffType(const LocalTensor<T>& dst, const LocalTensor<U>&
 {
     using PrimDstType = PrimT<T>;
     using PrimSrcType = PrimT<U>;
+
     check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
@@ -271,11 +236,10 @@ bool CheckFuncVecBinaryDiffType(const LocalTensor<T>& dst, const LocalTensor<U>&
 }
 
 template <typename T, typename U>
-bool CheckFuncVecBinaryCmp(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
-    const LocalTensor<T>& src1, const uint64_t mask[], const uint8_t repeatTime,
-    const BinaryRepeatParams& repeatParams, const char* intriName)
+check::VecBinaryApiParams BuildVecBinaryApiParamsCmp(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
-    check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::VecBinaryApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
         repeatTime,
@@ -294,6 +258,14 @@ bool CheckFuncVecBinaryCmp(const LocalTensor<U>& dst, const LocalTensor<T>& src0
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src0.GetPosition()),
         static_cast<uint8_t>(src1.GetPosition()) };
+}
+
+template <typename T, typename U>
+bool CheckFuncVecBinaryCmp(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, const uint64_t mask[], const uint8_t repeatTime,
+    const BinaryRepeatParams& repeatParams, const char* intriName)
+{
+    auto chkParams = BuildVecBinaryApiParamsCmp(dst, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecBinaryCmpImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -302,25 +274,7 @@ bool CheckFuncVecBinaryCmp(const LocalTensor<U>& dst, const LocalTensor<T>& src0
     const LocalTensor<T>& src1, const uint64_t mask, const uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams, const char* intriName)
 {
-    check::VecBinaryApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        repeatTime,
-        static_cast<uint16_t>(repeatParams.dstBlkStride),
-        static_cast<uint16_t>(repeatParams.src0BlkStride),
-        static_cast<uint16_t>(repeatParams.src1BlkStride),
-        static_cast<uint16_t>(repeatParams.dstRepStride),
-        static_cast<uint16_t>(repeatParams.src0RepStride),
-        static_cast<uint16_t>(repeatParams.src1RepStride),
-        static_cast<uint32_t>(sizeof(PrimT<U>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<U>)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecBinaryApiParamsCmp(dst, src0, src1, repeatTime, repeatParams);
     return CheckFuncVecBinaryCmpImpl(chkParams, mask, intriName);
 }
 
@@ -345,10 +299,10 @@ bool CheckFuncVecBinaryCmp(const LocalTensor<U>& dst, const LocalTensor<T>& src0
 }
 
 template <typename T>
-bool CheckFuncVecBinaryCmpRgt(const LocalTensor<T>& src0, const LocalTensor<T>& src1, const uint64_t mask[],
-    const BinaryRepeatParams& repeatParams, const char* intriName)
+check::VecCmpRgtApiParams BuildVecCmpRgtApiParams(const LocalTensor<T>& src0, const LocalTensor<T>& src1,
+    const BinaryRepeatParams& repeatParams)
 {
-    check::VecCmpRgtApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
+    return check::VecCmpRgtApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
         static_cast<uint16_t>(repeatParams.src0BlkStride),
         static_cast<uint16_t>(repeatParams.src1BlkStride),
@@ -360,6 +314,13 @@ bool CheckFuncVecBinaryCmpRgt(const LocalTensor<T>& src0, const LocalTensor<T>& 
         static_cast<uint64_t>(src1.GetSize() * sizeof(PrimT<T>)),
         static_cast<uint8_t>(src0.GetPosition()),
         static_cast<uint8_t>(src1.GetPosition()) };
+}
+
+template <typename T>
+bool CheckFuncVecBinaryCmpRgt(const LocalTensor<T>& src0, const LocalTensor<T>& src1, const uint64_t mask[],
+    const BinaryRepeatParams& repeatParams, const char* intriName)
+{
+    auto chkParams = BuildVecCmpRgtApiParams(src0, src1, repeatParams);
     return CheckFuncVecCmpRgtImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -367,18 +328,7 @@ template <typename T>
 bool CheckFuncVecBinaryCmpRgt(const LocalTensor<T>& src0, const LocalTensor<T>& src1, const uint64_t mask,
     const BinaryRepeatParams& repeatParams, const char* intriName)
 {
-    check::VecCmpRgtApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        static_cast<uint16_t>(repeatParams.src0BlkStride),
-        static_cast<uint16_t>(repeatParams.src1BlkStride),
-        static_cast<uint16_t>(repeatParams.src0RepStride),
-        static_cast<uint16_t>(repeatParams.src1RepStride),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecCmpRgtApiParams(src0, src1, repeatParams);
     return CheckFuncVecCmpRgtImpl(chkParams, mask, intriName);
 }
 

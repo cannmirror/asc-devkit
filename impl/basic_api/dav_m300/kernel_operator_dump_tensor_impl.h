@@ -84,8 +84,8 @@ __aicore__ inline void InitDumpImpl(bool mixFlag, uint32_t gmLen)
     totalBlockNum = get_block_num();
     uint32_t blockDumpSize = DUMP_UINTSIZE; // DUMP_UINTSIZE is 1M
 
-    uint32_t blockDim = GetDumpBlockIdx();
-    if (blockDim >= DUMP_CORE_COUNT) {
+    uint32_t numBlocks = GetDumpBlockIdx();
+    if (numBlocks >= DUMP_CORE_COUNT) {
         return;
     }
 #ifdef ASCENDC_TIME_STAMP_ON
@@ -93,9 +93,9 @@ __aicore__ inline void InitDumpImpl(bool mixFlag, uint32_t gmLen)
 #else
     uint32_t blkInfoLen = sizeof(BlockInfo) + sizeof(DumpMeta);
 #endif
-    uint64_t blockInfoStart = dumpWorkspaceStart + blockDim * DUMP_UINTSIZE;
+    uint64_t blockInfoStart = dumpWorkspaceStart + numBlocks * DUMP_UINTSIZE;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_LEN_POS) = blockDumpSize;
-    *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_CORE_POS) = blockDim;
+    *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_CORE_POS) = numBlocks;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_BLOCKNUM_POS) = totalBlockNum;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_DUMPOFFSET_POS) = blockDumpSize - blkInfoLen;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_MAGIC_POS) = 0x5aa5bccd;

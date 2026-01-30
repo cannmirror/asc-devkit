@@ -388,7 +388,7 @@ __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src,
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 /*
- * @ingroup Abs Level 2 for complex32/complex64, only support ascend910_95
+ * @ingroup Abs Level 2 for complex32/complex64, only support ascend950
  * @brief dst[i] = abs(src[i])
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor

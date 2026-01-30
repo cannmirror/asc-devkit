@@ -31,8 +31,6 @@
 #include "dav_c310/kernel_operator_vec_bilinearinterpolation_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_bilinearinterpolation_impl.h"
-#elif __NPU_ARCH__ == 3003
-#include "dav_l311/kernel_operator_vec_bilinearinterpolation_impl.h"
 #elif __NPU_ARCH__ == 3113
 #include "dav_l311/kernel_operator_vec_bilinearinterpolation_impl.h"
 #endif
@@ -40,17 +38,10 @@
 #pragma begin_pipe(V)
 namespace AscendC {
 template <typename T>
-__aicore__ inline void BilinearInterpolation(const LocalTensor<T> &dst, const LocalTensor<T> &src0,
-    const LocalTensor<uint32_t> &src0Offset, const LocalTensor<T> &src1, uint64_t mask, uint8_t hRepeat,
-    bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
-    const LocalTensor<uint8_t> &sharedTmpBuffer)
+__aicore__ inline void BilinearInterpolationCheck(const LocalTensor<T> &src0, const LocalTensor<uint32_t> &src0Offset,
+    const LocalTensor<T> &src1, uint16_t vROffset, const LocalTensor<uint8_t> &sharedTmpBuffer)
 {
 #if ASCENDC_CPU_DEBUG
-    if (!CheckFuncBilinearInterpolation(dst, src0, src0Offset, src1, mask, hRepeat, repeatMode,
-        dstBlkStride, vROffset, vRepeat, "BilinearInterpolation")) {
-        ASCENDC_REPORT_CHECK_ERROR("BilinearInterpolation", KernelFuncType::MASK_COUNT_MODE);
-    }
-
     uint32_t sharedTmpBufferSize = sharedTmpBuffer.GetSize();
 #if __NPU_ARCH__ == 2201
     uint32_t expectedTmpBufferSize = (src0.GetSize() + src1.GetSize()) * 32;
@@ -63,13 +54,29 @@ __aicore__ inline void BilinearInterpolation(const LocalTensor<T> &dst, const Lo
         "sharedTmpBuffer size in BilinearInterpolation, its expected size is at least %u, current size is %u",
         expectedTmpBufferSize, sharedTmpBufferSize);});
 #endif
-    ASCENDC_ASSERT((SupportType<PrimT<T>, half>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in BilinearInterpolation,"
+    ASCENDC_ASSERT((SupportType<PrimT<T>, half>()), {KERNEL_LOG(KERNEL_ERROR,
+        "Failed to check dtype in BilinearInterpolation,"
         " current api support dtype combination is src: half, dst: half");});
     ASCENDC_CHECK_VALUE_RANGE(vROffset, 128, UINT16_MAX, "vROffset", "BilinearInterpolation");
-    ASCENDC_ASSERT((vROffset % AscendCUtils::GetC0Count(sizeof(PrimT<T>)) == 0), { KERNEL_LOG(KERNEL_ERROR, "Failed to "
-            "check vROffset value in BilinearInterpolation, vROffset * sizeof(T) must be 32B aligned, "
+    ASCENDC_ASSERT((vROffset % AscendCUtils::GetC0Count(sizeof(PrimT<T>)) == 0), { KERNEL_LOG(KERNEL_ERROR,
+            "Failed to check vROffset value in BilinearInterpolation, vROffset * sizeof(T) must be 32B aligned, "
             "current vROffset value is %u. In NPU mode, no error is reported. The value is rounded down by 32B.",
             vROffset); });
+}
+
+template <typename T>
+__aicore__ inline void BilinearInterpolation(const LocalTensor<T> &dst, const LocalTensor<T> &src0,
+    const LocalTensor<uint32_t> &src0Offset, const LocalTensor<T> &src1, uint64_t mask, uint8_t hRepeat,
+    bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
+    const LocalTensor<uint8_t> &sharedTmpBuffer)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncBilinearInterpolation(dst, src0, src0Offset, src1, mask, hRepeat, repeatMode,
+        dstBlkStride, vROffset, vRepeat, "BilinearInterpolation")) {
+        ASCENDC_REPORT_CHECK_ERROR("BilinearInterpolation", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    BilinearInterpolationCheck(src0, src0Offset, src1, vROffset, sharedTmpBuffer);
     BilinearInterpolationCalc(dst, src0, src0Offset, src1, mask, hRepeat,
         repeatMode, dstBlkStride, vROffset, vRepeat, sharedTmpBuffer);
 }
@@ -85,26 +92,8 @@ __aicore__ inline void BilinearInterpolation(const LocalTensor<T> &dst, const Lo
         dstBlkStride, vROffset, vRepeat, "BilinearInterpolation")) {
         ASCENDC_REPORT_CHECK_ERROR("BilinearInterpolation", KernelFuncType::MASK_BIT_MODE);
     }
-
-    uint32_t sharedTmpBufferSize = sharedTmpBuffer.GetSize();
-#if __NPU_ARCH__ == 2201
-    uint32_t expectedTmpBufferSize = (src0.GetSize() + src1.GetSize()) * 32;
-#elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-    uint32_t expectedTmpBufferSize = 0;
-#else
-    uint32_t expectedTmpBufferSize = src0Offset.GetSize() * sizeof(uint32_t);
 #endif
-    ASCENDC_ASSERT((sharedTmpBufferSize >= expectedTmpBufferSize), { KERNEL_LOG(KERNEL_ERROR, "Failed to check "
-        "sharedTmpBuffer size in BilinearInterpolation, its expected size is at least %u, current size is %u",
-        expectedTmpBufferSize, sharedTmpBufferSize);});
-#endif
-    ASCENDC_ASSERT((SupportType<PrimT<T>, half>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in BilinearInterpolation,"
-        " current api support dtype combination is src: half, dst: half");});
-    ASCENDC_CHECK_VALUE_RANGE(vROffset, 128, UINT16_MAX, "vROffset", "BilinearInterpolation");
-    ASCENDC_ASSERT((vROffset % AscendCUtils::GetC0Count(sizeof(PrimT<T>)) == 0), { KERNEL_LOG(KERNEL_ERROR, "Failed to "
-            "check vROffset value in BilinearInterpolation, vROffset * sizeof(T) must be 32B aligned, "
-            "current vROffset value is %u. In NPU mode, no error is reported. The value is rounded down by 32B.",
-            vROffset); });
+    BilinearInterpolationCheck(src0, src0Offset, src1, vROffset, sharedTmpBuffer);
     BilinearInterpolationCalc(dst, src0, src0Offset, src1, mask, hRepeat,
         repeatMode, dstBlkStride, vROffset, vRepeat, sharedTmpBuffer);
 }

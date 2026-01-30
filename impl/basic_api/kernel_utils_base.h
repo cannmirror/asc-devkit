@@ -27,6 +27,11 @@
 #include "kernel_scalar_convert.h"
 
 namespace AscendC {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+namespace Internal {
+__BLOCK_LOCAL__ extern __inline__ half g_deqValue;
+}
+#endif
 class AscendCUtils {
 public:
     __aicore__ static inline int32_t GetBitSize(int32_t byteSize)
@@ -41,10 +46,11 @@ public:
 
     __aicore__ static inline void InitSocStateImpl()
     {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ != 3113)
+    #if defined(__NPU_ARCH__) && (((__NPU_ARCH__ == 3113)))
+    #else
         set_atomic_none();
-#endif
-#if __NPU_ARCH__ == 2201
+    #endif
+    #if __NPU_ARCH__ == 2201
         set_mask_norm();
         if ASCEND_IS_AIC {
             set_l1_3d_size(static_cast<uint64_t>(0));
@@ -52,8 +58,9 @@ public:
         } else {
             set_vector_mask(static_cast<uint64_t>(-1), static_cast<uint64_t>(-1));
         }
-#elif __NPU_ARCH__ == 3101
+    #elif __NPU_ARCH__ == 3101
         set_mask_norm();
+        Internal::g_deqValue = static_cast<half>(1);
         uint64_t prevCtrl = get_ctrl() & 0x1000000000000;
         uint64_t val = 0x1000000000000008 | prevCtrl;
         set_ctrl(val);
@@ -66,11 +73,11 @@ public:
             set_loop_size_outtoub(loopSizePara);
         }
         set_st_atomic_cfg(0b00100100);
-#elif __NPU_ARCH__ == 3002
+    #elif __NPU_ARCH__ == 3002
         set_padding(static_cast<uint64_t>(0));
-#elif (__NPU_ARCH__ == 5102)
+    #elif (__NPU_ARCH__ == 5102)
         set_vector_mask(static_cast<uint64_t>(-1), static_cast<uint64_t>(-1));
-#endif
+    #endif
     }
 
     __aicore__ static inline int32_t GetC0Count(const int32_t dtypeSize)
@@ -123,6 +130,8 @@ public:
 #if (__NPU_ARCH__ == 5102)
         } else if constexpr (IsSameType<T, int2b_t>::value) {
             typeLen = DEFAULT_BLOCK_SIZE * INT2_FOUR;
+        } else if constexpr (IsSameType<T, uint1b_t>::value) {
+            typeLen = DEFAULT_BLOCK_SIZE * INT1_EIGHT;
 #endif
         } else {
             typeLen = DEFAULT_BLOCK_SIZE / sizeof(T);
@@ -153,8 +162,7 @@ public:
     }
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||       \
-    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) ||       \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || (__NPU_ARCH__ == 3003) || __NPU_ARCH__ == 3113
     __aicore__ static inline void SetOverflow(uint64_t ctrlValue)
     {
         // set CTRL[48] is 1 --- inf/nan mode
@@ -238,8 +246,8 @@ public:
 
 #if defined(__NPU_ARCH__) &&                                                                    \
      ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||             \
-      (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||       \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+      (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||             \
+      (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     template <typename T>
     __aicore__ static inline __fbuf__ T* GetTemporaryFbBufferAddr(const int32_t bufferOffset, const int32_t bufferSize)
     {
@@ -396,7 +404,8 @@ public:
         if (status) {
 #if defined(__NPU_ARCH__) &&                                                                                    \
     ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 5102) ||    \
-     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) ||    \
+     (__NPU_ARCH__ == 3101))
             trap();
 #else
             trap(errCode);

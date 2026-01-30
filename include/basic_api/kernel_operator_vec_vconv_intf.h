@@ -61,7 +61,7 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
     const RoundMode& roundMode, const uint32_t count);
 
 /*
- * @ingroup CastDeq Level 0
+ * @ingroup CastDequant Level 0
  * @brief Dequant from int16_t to uint8_t/int8_t
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor
@@ -72,22 +72,22 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
  * @param [in] repeatParams.srcRepStride src repeat stride
  */
 template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
-__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+__aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
-__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+__aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 
 /*
- * @ingroup CastDeq Level 2
+ * @ingroup CastDequant Level 2
  * @brief Dequant from int16_t to uint8_t/int8_t
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
 template <typename T, typename U, bool isVecDeq = true, bool halfBlock = true>
-__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+__aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint32_t count);
 
 /* **************************************************************************************************
@@ -179,6 +179,19 @@ __aicore__ inline void SetDeqScale(float scale, int16_t offset, bool signMode);
 
 template <typename T>
 __aicore__ inline void SetDeqScale(const LocalTensor<T>& vdeq, const VdeqInfo& vdeqInfo);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+/*
+ * @ingroup Truncate Level 2
+ * @brief dst[i] = Precision conversion
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T, RoundMode roundMode>
+__aicore__ inline void Truncate(const LocalTensor<T> &dst, const LocalTensor<T> &src,
+    const uint32_t count);
+#endif
 } // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_vec_vconv_intf_impl.h"

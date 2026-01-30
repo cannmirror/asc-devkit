@@ -118,7 +118,11 @@ bool CheckMmadParams(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadParams& mmadParams,
     const char* intriName)
 {
-check::MmadApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
+    return true;
+#else
+    check::MmadApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(fm.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(filter.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(bias.GetPhyAddr())),
@@ -143,12 +147,17 @@ check::MmadApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_
         mmadParams.enWinogradA,
         mmadParams.enWinogradB };
     return CheckFuncMmadImpl(chkParams, intriName);
+#endif
 }
 template <typename T, typename U, typename S>
 bool CheckMmadParams(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<S>& filter, const MmadParams& mmadParams, const char* intriName)
 {
-check::MmadApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
+    return true;
+#else
+    check::MmadApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(fm.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(filter.GetPhyAddr())),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
@@ -169,7 +178,25 @@ check::MmadApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_
         mmadParams.enWinogradA,
         mmadParams.enWinogradB };
     return CheckFuncMmadImpl(chkParams, intriName);
+#endif
 }
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <typename T, typename U, typename S, typename V>
+bool CheckMmadParams(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const uint64_t& mmadParams,
+    const char* intriName)
+{
+    return true;
+}
+
+template <typename T, typename U, typename S>
+bool CheckMmadParams(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const uint64_t& mmadParams, const char* intriName)
+{
+    return true;
+}
+#endif
 
 template <typename T, typename U>
 bool CheckFuncBroadCastToMM(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t blockCount,

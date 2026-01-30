@@ -17,7 +17,7 @@
 
 namespace AscendC {
 template <int countValue>
-__aicore__ inline int64_t ScalarGetCountOfValueImpl(uint64_t valueIn)
+__aicore__ inline int64_t GetBitCountImpl(uint64_t valueIn)
 {
     if constexpr (countValue == 1) {
         return bcnt1(valueIn);
@@ -29,7 +29,7 @@ __aicore__ inline int64_t ScalarGetCountOfValueImpl(uint64_t valueIn)
     }
 }
 
-__aicore__ inline int64_t ScalarCountLeadingZeroImpl(uint64_t valueIn)
+__aicore__ inline int64_t CountLeadingZeroImpl(uint64_t valueIn)
 {
     return clz(valueIn);
 }
@@ -64,8 +64,8 @@ __aicore__ inline void GetUintDivMagicAndShiftImpl(T& magic, T& shift, T divisor
 {
     static_assert(SupportType<T, uint32_t, uint64_t>(), "Input type T only supports uint32_t, uint64_t.");
 
-    int64_t pos = ConstantsInternal::BIT_64_LEN - ScalarCountLeadingZeroImpl(divisor);
-    int64_t cnt1 = ScalarGetCountOfValueImpl<1>(divisor);
+    int64_t pos = ConstantsInternal::BIT_64_LEN - CountLeadingZeroImpl(divisor);
+    int64_t cnt1 = GetBitCountImpl<1>(divisor);
     shift = cnt1 == 1 ? pos - 1 : pos;
 
     if constexpr (std::is_same<T, uint32_t>::value) {
@@ -98,7 +98,7 @@ __aicore__ inline int64_t CountBitsCntSameAsSignBitImpl(int64_t valueIn)
 }
 
 template <int countValue>
-__aicore__ inline int64_t ScalarGetSFFValueImpl(uint64_t valueIn)
+__aicore__ inline int64_t GetSFFValueImpl(uint64_t valueIn)
 {
     if constexpr (countValue == 1) {
         return sff1(valueIn);
@@ -149,7 +149,7 @@ __aicore__ inline T ReadGmByPassDCacheImpl(__gm__ T* addr)
 #endif
 
 template <RoundMode roundMode>
-__aicore__ inline half ScalarCastF322F16Impl(float valueIn)
+__aicore__ inline half CastF322F16Impl(float valueIn)
 {
     switch (roundMode) {
         case RoundMode::CAST_ODD:
@@ -162,7 +162,7 @@ __aicore__ inline half ScalarCastF322F16Impl(float valueIn)
 }
 
 template <RoundMode roundMode>
-__aicore__ inline int32_t ScalarCastF322S32Impl(float valueIn)
+__aicore__ inline int32_t CastF322S32Impl(float valueIn)
 {
     switch (roundMode) {
         case RoundMode::CAST_ROUND:
@@ -181,20 +181,36 @@ __aicore__ inline int32_t ScalarCastF322S32Impl(float valueIn)
 }
 
 template <typename T, typename U, RoundMode roundMode>
-__aicore__ inline U ScalarCastImpl(T valueIn)
+__aicore__ inline U CastImpl(T valueIn)
 {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                         \
     (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 5102) ||                         \
-    (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+    (__NPU_ARCH__ == 3113) ||                         \
+    (__NPU_ARCH__ == 3101))
     if constexpr (std::is_same<U, half>::value) {
-        return ScalarCastF322F16Impl<roundMode>(valueIn);
+        return CastF322F16Impl<roundMode>(valueIn);
     } else if constexpr (std::is_same<U, int32_t>::value) {
-        return ScalarCastF322S32Impl<roundMode>(valueIn);
+        return CastF322S32Impl<roundMode>(valueIn);
     } else {
         static_assert(((sizeof(U) == sizeof(half)) || (sizeof(U) == sizeof(int32_t))),
             "U only support half or int32_t");
         return 0;
     }
+#else
+    ASCENDC_ASSERT((false), "Cast is not supported on current device");
+    return 0;
+#endif
+}
+
+template <typename T, typename U, RoundMode roundMode>
+__aicore__ inline U ScalarCastImpl(T valueIn)
+{
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                         \
+    (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 5102) ||                         \
+    (__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3103) ||                         \
+    (__NPU_ARCH__ == 3113) ||                         \
+    (__NPU_ARCH__ == 3101))
+    return CastImpl<T, U, roundMode>(valueIn);
 #else
     ASCENDC_ASSERT((false), "ScalarCast is not supported on current device");
     return 0;

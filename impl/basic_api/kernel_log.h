@@ -22,7 +22,6 @@
 #include <unistd.h>
 #include "stub_def.h"
 
-
 namespace AscendC {
 #if !defined(__NPU_DEVICE__) && !defined(__ASCC_DEVICE__)
 
@@ -267,7 +266,21 @@ inline std::string GenBlockStr()
 namespace AscendC {
 template <class... Args>
 __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args);
+}
 
+#if defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
+namespace __asc_aicore {
+__host_aicore__ static __attribute__ ((noinline)) void __assert_fail(const __gm__ char* __assertion,
+    const __gm__ char* __file, unsigned int __line, const __gm__ char* __function)
+{
+    (void)__function;
+    AscendC::AssertImpl("[ASSERT] %s:%u: Assertion `%s' " "\n", __file, __line, __assertion);
+    trap();
+}
+}
+#endif
+
+namespace AscendC {
 template <class... Args>
 __aicore__ static __attribute__ ((noinline)) void AssertPrint(__gm__ const char* fmt, Args&&... args)
 {
@@ -296,10 +309,8 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 #if defined(__NPU_DEVICE__) || defined(__ASCC_DEVICE__)
 #define NPU_ASSERT_MSG(expr)                                                                                      \
     do {                                                                                                          \
-        ENABLE_ASSERT();                                                                                          \
-        ENABLE_ASSERT_DUMP_SIZE();                                                                                \
         if (!(expr)) {                                                                                            \
-            AscendC::AssertFail(#expr, __FILE__, __LINE__);                                                       \
+            __assert_fail(#expr, __FILE__, __LINE__, "");                                                         \
         }                                                                                                         \
     } while (0)
 #endif
@@ -321,16 +332,16 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
             fprintf(stderr, "%s[ASSERT] %s:%u: Assertion `%s' " fmt, prompt, __FILE__, __LINE__, #expr, ##__VA_ARGS__); \
             abort();                                                                                                    \
         }                                                                                                               \
-    } while (0)   
+    } while (0)
 #else
-#if defined(CANN_VERSION_STR) && defined(CANN_TIMESTAMP)
+#if defined(ASC_DEVKIT_VERSION_STR) && defined(ASC_DEVKIT_TIMESTAMP)
 #define ASSERT_MSG(expr, fmt, ...)  \
     do {                                                                                                   \
         ENABLE_ASSERT();                                                                                   \
         ENABLE_ASSERT_DUMP_SIZE();                                                                         \
         if (!(expr)) {                                                                                     \
             AscendC::AssertPrint("[ASSERT] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt,\
-            (__gm__ const char*)(CANN_VERSION_STR), static_cast<uint64_t>(CANN_TIMESTAMP),                 \
+            (__gm__ const char*)(ASC_DEVKIT_VERSION_STR), static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP),                 \
             __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                                     \
             trap();                                                                                        \
         }                                                                                                  \
@@ -341,7 +352,7 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
         ENABLE_ASSERT_DUMP_SIZE();                                                                         \
         if (!(expr)) {                                                                                     \
             AscendC::AssertPrint("%s[ASSERT] [CANN_VERSION : %s][TimeStamp : %u] %s:%u: Assertion `%s' " fmt, prompt,\
-            (__gm__ const char*)(CANN_VERSION_STR), static_cast<uint64_t>(CANN_TIMESTAMP),                 \
+            (__gm__ const char*)(ASC_DEVKIT_VERSION_STR), static_cast<uint64_t>(ASC_DEVKIT_TIMESTAMP),                 \
             __FILE__, __LINE__, #expr, ##__VA_ARGS__);                                                     \
             trap();                                                                                        \
         }                                                                                                  \
@@ -424,15 +435,17 @@ __host_aicore__ static __attribute__ ((noinline)) void AssertFail(const __gm__ c
 }
 
 namespace AscendC{
-#ifdef ASCENDC_DEBUG
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
+#define KERNEL_LOG_INTERNAL(level, format, ...) KERNEL_LOG_##level(format, ##__VA_ARGS__)
 #define ASCENDC_DEBUG_ASSERT(...) ASCENDC_ASSERT(__VA_ARGS__)
 #else
-#define KERNEL_LOG(level, format, ...) format, ##__VA_ARGS__
+#ifdef ASCENDC_DEBUG
+#define KERNEL_LOG_INTERNAL(level, format, ...) format, ##__VA_ARGS__
 #define ASCENDC_DEBUG_ASSERT(...) ASCENDC_DEBUG_ASSERT_IMPL(__VA_ARGS__)
-#endif
 #else
+#define KERNEL_LOG_INTERNAL(level, format, ...)
 #define ASCENDC_DEBUG_ASSERT(...)
+#endif
 #endif
 }
 

@@ -136,8 +136,7 @@ __simd_vf__ inline void GatherMaskSqueezeNormalTmpBuffer(
 }
 
 template <typename T, uint8_t solidPattern>
-__aicore__ inline void GatherMaskSqueezeNormal(
-    __ubuf__ T *dst, __ubuf__ T *src0, const GatherMaskParams &reducev2Params, uint64_t &rsvdCnt)
+__aicore__ inline void SetVectorMaskForGatherMaskSqueeze()
 {
     if constexpr (sizeof(T) != 1) {
         if constexpr (sizeof(T) == 2) {
@@ -170,6 +169,13 @@ __aicore__ inline void GatherMaskSqueezeNormal(
             }
         }
     }
+}
+
+template <typename T, uint8_t solidPattern>
+__aicore__ inline void GatherMaskSqueezeNormal(
+    __ubuf__ T *dst, __ubuf__ T *src0, const GatherMaskParams &reducev2Params, uint64_t &rsvdCnt)
+{
+    SetVectorMaskForGatherMaskSqueeze<T, solidPattern>();
     __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 32);
     GatherMaskSqueezeNormalTmpBuffer<T, solidPattern>(dst, src0, tempBuf, reducev2Params);
     rsvdCnt = GetSpr<SpecialPurposeReg::AR>() / sizeof(T);
@@ -236,37 +242,7 @@ template <typename T, uint8_t solidPattern>
 __aicore__ inline void GatherMaskSqueezeReduce(
     __ubuf__ T *dst, __ubuf__ T *src0, const uint32_t mask, const GatherMaskParams &reducev2Params, uint64_t &rsvdCnt)
 {
-    if constexpr (sizeof(T) != 1) {
-        if constexpr (sizeof(T) == 2) {
-            if constexpr (solidPattern == 1) {
-                SetVectorMask<T>(0x5555555555555555, 0x5555555555555555);
-            } else if constexpr (solidPattern == 2) {
-                SetVectorMask<T>(0xaaaaaaaaaaaaaaaa, 0xaaaaaaaaaaaaaaaa);
-            } else if constexpr (solidPattern == 3) {
-                SetVectorMask<T>(0x1111111111111111, 0x1111111111111111);
-            } else if constexpr (solidPattern == 4) {
-                SetVectorMask<T>(0x2222222222222222, 0x2222222222222222);
-            } else if constexpr (solidPattern == 5) {
-                SetVectorMask<T>(0x4444444444444444, 0x4444444444444444);
-            } else if constexpr (solidPattern == 6) {
-                SetVectorMask<T>(0x8888888888888888, 0x8888888888888888);
-            }
-        } else {
-            if constexpr (solidPattern == 1) {
-                SetVectorMask<T>(0, 0x5555555555555555);
-            } else if constexpr (solidPattern == 2) {
-                SetVectorMask<T>(0, 0xaaaaaaaaaaaaaaaa);
-            } else if constexpr (solidPattern == 3) {
-                SetVectorMask<T>(0, 0x1111111111111111);
-            } else if constexpr (solidPattern == 4) {
-                SetVectorMask<T>(0, 0x2222222222222222);
-            } else if constexpr (solidPattern == 5) {
-                SetVectorMask<T>(0, 0x4444444444444444);
-            } else if constexpr (solidPattern == 6) {
-                SetVectorMask<T>(0, 0x8888888888888888);
-            }
-        }
-    }
+    SetVectorMaskForGatherMaskSqueeze<T, solidPattern>();
     __ubuf__ uint8_t *tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 32);
     constexpr uint8_t ElePerBlkT = GetDataBlockSizeInBytes() / sizeof(T);
     constexpr uint32_t ElePerVec = GetVecLen() / sizeof(T);
@@ -474,7 +450,7 @@ __simd_vf__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* 
         for (uint16_t i = 0; i < loopTimes; ++i) {
             MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
                 vreg0, vreg1, (__ubuf__ float *)sortedLocal + i * repeatElm * 2);
-            vsqz(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg, MODE_NO_STORED);
+            MicroAPI::Squeeze<half, MicroAPI::GatherMaskMode::NO_STORE_REG>(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg);
             MicroAPI::StoreAlign(dstValueLocal + i * repeatElm, vreg2, preg1);
             MicroAPI::StoreAlign(dstIndexLocal + i * repeatElm, (MicroAPI::RegTensor<uint32_t> &)vreg1, indexPreg);
         }
@@ -482,7 +458,7 @@ __simd_vf__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* 
             MicroAPI::LoadAlign(vreg0, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
             MicroAPI::LoadAlign(vreg1, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
             MicroAPI::DeInterleave(vreg0, vreg1, vreg0, vreg1);
-            vsqz(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg, MODE_NO_STORED);
+            MicroAPI::Squeeze<half, MicroAPI::GatherMaskMode::NO_STORE_REG>(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg);
             MicroAPI::MaskReg preg2 = MicroAPI::CreateMask<half, MicroAPI::MaskPattern::Q>();
             MicroAPI::StoreAlign(dstValueLocal + repeatTime / 2 * repeatElm, vreg2, preg2);
             preg2 = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();

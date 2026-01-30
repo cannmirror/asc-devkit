@@ -17,6 +17,7 @@
 #include "kernel_tensor.h"
 #include "kernel_check.h"
 #include "kernel_struct_fixpipe.h"
+#include "tile_api/kernel_tensor_tile_fixpipe_impl.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_fixpipe_impl.h"

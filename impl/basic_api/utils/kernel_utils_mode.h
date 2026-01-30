@@ -43,6 +43,19 @@ FRACTAL_Z    -> NCHW            CHNT  -> NCH   [0,1*2,3*4,5]      -> [0,1,2*3]
 FRACTAL_Z_3D -> NCDHW           DCHNT -> NCDH  [0,1,2*3,4*5,6]    -> [0,1,2,3*4]
 FRACTAL_Z    -> ND              HCNT  -> HCN   [0:-4,-4,-3*-2,-1] -> [0:-2,-2,-1]
 */
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+enum class ClipReluMode{
+    NOCLIP_RELU = 0,
+    CLIP_RELU = 1
+};
+
+enum class ReluMode{
+    NO_RELU = 0,
+    NORMAL_RELU = 1,
+    SCALAR_RELU = 2,
+    VECTOR_RELU = 3
+};
+#endif
 
 union NotNumUnion {
     __simd_callee__ NotNumUnion() {}
@@ -92,15 +105,12 @@ enum class RoundMode : uint8_t {
     CAST_ROUND, // away-zero
     CAST_TRUNC, // to-zero
     CAST_ODD,   // Von Neumann rounding
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113))
-    UNKNOWN = 0xFF,
-#elif (defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003))) || \
-    defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003))|| defined(__ASC_NPU_HOST__)
     CAST_HYBRID,  // hybrid round
     CAST_EVEN,
     CAST_ZERO,
-    UNKNOWN = 0xFF,
 #endif
+    UNKNOWN = 0xFF,
 };
 
 enum class CMPMODE : uint8_t {
@@ -128,7 +138,7 @@ enum class DeqScale : uint8_t {
     VDEQ16,
 };
 
-#if (defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003))) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003)) || defined(__ASC_NPU_HOST__)
 enum class BinaryScalarOp : uint8_t {
     ADDS = 0,
     MULS,

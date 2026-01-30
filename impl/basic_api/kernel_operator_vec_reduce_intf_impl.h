@@ -363,8 +363,10 @@ __aicore__ inline void WholeReduceMax(const LocalTensor<T>& dst, const LocalTens
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceMax");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) ||                        \
+    (__NPU_ARCH__ == 3003) ||                        \
+    (__NPU_ARCH__ == 3113) ||                        \
+    (__NPU_ARCH__ == 3101))
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 3, "order", "WholeReduceMax");
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 1, "order", "WholeReduceMax");
@@ -411,8 +413,10 @@ __aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTens
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceMin");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) ||                        \
+    (__NPU_ARCH__ == 3003) ||                        \
+    (__NPU_ARCH__ == 3113) ||                        \
+    (__NPU_ARCH__ == 3101))
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 3, "order", "WholeReduceMin");
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 1, "order", "WholeReduceMin");
@@ -522,8 +526,10 @@ __aicore__ inline void WholeReduceMin(const LocalTensor<T>& dst, const LocalTens
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceMin");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) ||                        \
+    (__NPU_ARCH__ == 3003) ||                        \
+    (__NPU_ARCH__ == 3113) ||                        \
+    (__NPU_ARCH__ == 3101))
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 3, "order", "WholeReduceMin");
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
     ASCENDC_CHECK_VALUE_RANGE(static_cast<int>(order), 0, 1, "order", "WholeReduceMin");
@@ -948,6 +954,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
 #endif
 }
 #pragma end_pipe
+
 template <typename T>
 __aicore__ inline void GetReduceMaxMinCount(uint32_t &maxMinValue, uint32_t &maxMinIndex)
 {
@@ -967,7 +974,27 @@ __aicore__ inline void GetReduceMaxMinCount(uint32_t &maxMinValue)
     GetReduceMaxMinCountImpl<PrimType>(maxMinValue);
 }
 
-__aicore__ inline int64_t GetAccVal()
+
+template <typename T>
+__aicore__ inline void GetReduceRepeatMaxMinSpr(uint32_t &maxMinValue, uint32_t &maxMinIndex)
+{
+    using PrimType = PrimT<T>;
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+    GetReduceMaxMinCountImpl<PrimType>(maxMinValue, maxMinIndex);
+}
+
+template <typename T>
+__aicore__ inline void GetReduceRepeatMaxMinSpr(uint32_t &maxMinValue)
+{
+    using PrimType = PrimT<T>;
+    GetReduceMaxMinCountImpl<PrimType>(maxMinValue);
+}
+
+__aicore__ inline int64_t GetReduceRepeatSumSpr()
 {
 #if __NPU_ARCH__ == 2201
     if (g_coreType == AIC) {
@@ -979,6 +1006,11 @@ __aicore__ inline int64_t GetAccVal()
 #else
     return get_acc_val();
 #endif
+}
+
+__aicore__ inline int64_t GetAccVal()
+{
+    return GetReduceRepeatSumSpr();
 }
 
 template <typename T>
@@ -1004,9 +1036,31 @@ __aicore__ inline __inout_pipe__(S) void GetReduceMaxMinCount(T &maxMinValue)
 }
 
 template <typename T>
-__aicore__ inline __inout_pipe__(S) T GetAccVal()
+__aicore__ inline __inout_pipe__(S) void GetReduceRepeatMaxMinSpr(T &maxMinValue, T &maxMinIndex)
 {
-    ASCENDC_ASSERT((SupportType<T, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in GetAccVal, "
+    ASCENDC_ASSERT((SupportType<T, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
+        "GetReduceRepeatMaxMinSpr, current api support dtype combination is maxMinValue and maxMinIndex both: half / "
+        "float");});
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+    GetReduceMaxMinCountImpl<T>(maxMinValue, maxMinIndex);
+}
+
+template <typename T>
+__aicore__ inline __inout_pipe__(S) void GetReduceRepeatMaxMinSpr(T &maxMinValue)
+{
+    ASCENDC_ASSERT((SupportType<T, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in "
+        "GetReduceRepeatMaxMinSpr, current api support dtype combination is maxMinValue: half / float");});
+    GetReduceMaxMinCountImpl<T>(maxMinValue);
+}
+
+template <typename T>
+__aicore__ inline __inout_pipe__(S) T GetReduceRepeatSumSpr()
+{
+    ASCENDC_ASSERT((SupportType<T, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in GetReduceRepeatSumSpr, "
         "current api support dtype combination is half / float");});
 #if __NPU_ARCH__ == 2201
     if (g_coreType == AIC) {
@@ -1014,6 +1068,14 @@ __aicore__ inline __inout_pipe__(S) T GetAccVal()
     }
 #endif
     return GetAccValImpl<T>();
+}
+
+template <typename T>
+__aicore__ inline __inout_pipe__(S) T GetAccVal()
+{
+    ASCENDC_ASSERT((SupportType<T, half, float>()), { KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in GetAccVal, "
+        "current api support dtype combination is half / float");});
+    return GetReduceRepeatSumSpr<T>();
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_VEC_REDUCE_INTERFACE_IMPL_H

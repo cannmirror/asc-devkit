@@ -16,7 +16,6 @@
 #define ASCENDC_MODULE_UTILS_MACROS_H
 #define USE_ISA_INS 1
 #define GM_ADDR __gm__ uint8_t*
-#define __kfc_workspace__ __attribute__((annotate("kfc_workspace")))
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 #define UB_ADDR __ubuf__ uint8_t*
 #define SSBUF_ADDR __ssbuf__ uint32_t*
@@ -49,6 +48,40 @@
         __VA_ARGS__                  \
     }
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#define SetBitOn(flag, bit) ((flag) = ((flag) | ((uint64_t)(1) << (bit))))
+
+#define GetBit(flag, bit) (((flag) >> (bit)) & (1))
+
+// define macro for deterministic compile options
+enum QuantCfgBit {
+    QUANTPRE_SCALE_VECTOR_CFGBIT = 0,
+    QUANTPOST_SCALE_VECTOR_CFGBIT = 1,
+    PRERELU_SCALE_VECTOR_CFGBIT = 2,
+    POSTREELU_SCALE_VECTOR_CFGBIT,
+    ELTWISEANTIQ_SCALE_VECTOR_CFGBIT,
+    DUMMY_MATMUL_QUANTPRE_SCALE_VECTOR_CFGBIT, // 5
+    QUANTPRE_SCALE_SCALAR_CFGBIT = 16,
+    QUANTPOST_SCALE_SCALAR_CFGBIT,
+    PRERELU_SCALE_SCALAR_CFGBIT,
+    POSTREELU_SCALE_SCALAR_CFGBIT,
+    ELTWISEANTIQ_SCALE_SCALAR_CFGBIT,
+    SCALE_PERGROUP_CFGBIT = 32, // pergroup指示
+};
+
+enum SidOutSMMU {
+    SID_OUT_L1 = 0,
+    SID_OUT_L1_FILTER = 1,
+    SID_OUT_L1_SCALE = 2,
+    SID_OUT_L1_BIAS = 3,
+    SID_OUT_L1_IMAGE = 4,
+    SID_L1_TO_OUT = 5,
+    SID_WEIGHT_LLM_DECODER = 9,
+};
+#endif
+
+#ifndef __PLUGIN__KERNEL_META_TYPE_ENUME_DEFINED__
+#define __PLUGIN__KERNEL_META_TYPE_ENUME_DEFINED__
 // define macro for deterministic compile options
 enum KernelMetaType : uint8_t {
     KERNEL_TYPE_AIV_ONLY,
@@ -63,6 +96,7 @@ enum KernelMetaType : uint8_t {
     KERNEL_TYPE_MIX_VECTOR_CORE,
     KERNEL_TYPE_MAX,
 };
+#endif
 
 enum KernelType {
     K_TYPE_AICORE = 1,              // c100/m200
@@ -109,6 +143,11 @@ struct BinaryMetaOptionalParam {
     uint16_t optionalOutputMode; // 对于可选输入需要占位发布
 };
 
+struct BinaryMetaAscFeature {
+    BaseTlv head;
+    uint32_t feature; // PRINT = 1, FFTS = 2, L2CACHE = 3
+};
+
 enum FuncMetaType { // 函数级TLV类型
     F_TYPE_KTYPE = 1, // kernel type tlv
     F_TYPE_CROSS_CORE_SYNC = 2, // cross core sync
@@ -118,7 +157,7 @@ enum FuncMetaType { // 函数级TLV类型
     F_TYPE_L0_EXCEPTION_DFX_IS_TIK = 6, // DFX tlv mark for TIK
     F_TYPE_DETERMINISTIC_INFO = 13,
     F_TYPE_FUNCTION_ENTRY_INFO= 14,
-    F_TYPE_BLOCK_DIM_INFO = 15,
+    F_TYPE_BLOCK_NUM_INFO = 15,
     F_TYPE_MAX
 };
 
@@ -149,6 +188,8 @@ struct OpSystemRunCfg {
 #ifdef L2_CACHE_HINT
 #ifdef __NPU_DEVICE__
 inline __gm__ struct OpSystemRunCfg g_opL2CacheHintCfg = {0};
+static const struct BinaryMetaAscFeature __asc_feature_l2cache__ __attribute__ ((used, section (".ascend.meta"))) =
+    {4, 4, 3};
 #else // ifndef __NPU_DEVICE__
 extern __gm__ struct OpSystemRunCfg g_opSystemRunCfg;
 #endif // __NPU_DEVICE__
@@ -309,7 +350,10 @@ struct FunLevelMixCoreType {
 #define KERNEL_TASK_TYPE_DEFAULT(value)
 #else
 #define KERNEL_TASK_TYPE(key, value)  ENABLE_FEATURE_FOR_COMPILE(key, value)
+#ifndef __PLUGIN__KERNEL_TASK_TYPE_DEFAULT_DEFINED__
+#define __PLUGIN__KERNEL_TASK_TYPE_DEFAULT_DEFINED__
 #define KERNEL_TASK_TYPE_DEFAULT(value)  ENABLE_FEATURE_FOR_COMPILE(default, value)
+#endif
 #endif
 
 #define REGISTER_TILING_DEFAULT(tiling_struct)  ENABLE_FEATURE_FOR_TILING(default, tiling_struct)
@@ -346,14 +390,20 @@ struct int4x2_t {
 #endif
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101)) || defined(__ASC_NPU_HOST__)
-
 #if !defined(ASCENDC_CPU_DEBUG)
-using fp4x2_e2m1_t = float4_e2m1x2_t;
-using fp4x2_e1m2_t = float4_e1m2x2_t;
-using fp8_e5m2_t = float8_e5m2_t;
-using fp8_e4m3fn_t = float8_e4m3_t;
-#endif
+    #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101)) || defined(__ASC_NPU_HOST__)
+        using fp4x2_e2m1_t = float4_e2m1x2_t;
+        using fp4x2_e1m2_t = float4_e1m2x2_t;
+        using fp8_e5m2_t = float8_e5m2_t;
+        using fp8_e4m3fn_t = float8_e4m3_t;
+        using fp8_e8m0_t = float8_e8m0_t;
+    #else
+        using fp4x2_e2m1_t = uint8_t;
+        using fp4x2_e1m2_t = uint8_t;
+        using fp8_e5m2_t = uint8_t;
+        using fp8_e4m3fn_t = uint8_t;
+        using fp8_e8m0_t = uint8_t;
+    #endif
 #endif
 
 namespace AscendC {

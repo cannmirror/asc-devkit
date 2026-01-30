@@ -18,6 +18,7 @@
 #include "kernel_check.h"
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_mm.h"
+#include "tile_api/kernel_tensor_tile_load_data_impl.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -51,6 +52,15 @@ __aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, 
     LoadDataImpl(dst, src, loadDataParams);
 }
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <TPosition Dst, TPosition Src, typename T>
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load2DBitModeParam& loadDataParams)
+{
+    CheckLoadData2dDatatype<T>();
+    LoadDataImpl<Dst, Src, T>(dst, src, loadDataParams);
+}
+#endif
 /* **************************************************************************************************
  * LoadData 2dV2                                             *
  * ************************************************************************************************* */
@@ -186,6 +196,14 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
     LoadDataImpl<T, defaultConfig>(dst, src, loadDataParams);
 }
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <TPosition Dst, TPosition Src, typename T>
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load3DBitModeParam& loadDataParams)
+{
+    LoadDataImpl<Dst, Src, T>(dst, src, loadDataParams);
+}
+#endif
 /* **************************************************************************************************
  * LoadData 3dv2Pro                                             *
  * enhanced from v1, suitable for aicore > 200                                             *
@@ -219,6 +237,16 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 {
     LoadDataImpl<T>(dst, src, loadDataParams);
 }
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003))
+// cce compiler process laod3d bfloat16_t using B8, so use the half dtype instead
+template <>
+__aicore__ inline void LoadData(const LocalTensor<bfloat16_t>& dst, const LocalTensor<bfloat16_t>& src,
+    const LoadData3DParamsV2Pro& loadDataParams)
+{
+    LoadDataImpl(dst, src, loadDataParams);
+}
+#endif
 
 /* **************************************************************************************************
  * LoadDataWithTranspose                                             *
@@ -296,6 +324,22 @@ __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     MmadImpl(dst, fm, filter, bias, mmadParams);
 }
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+template <typename T, typename U, typename S>
+__aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const MmadBitModeParams& mmadParams)
+{
+    MmadImpl(dst, fm, filter, mmadParams);
+}
+
+template <typename T, typename U, typename S, typename V>
+__aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadBitModeParams& mmadParams)
+{
+    MmadImpl(dst, fm, filter, bias, mmadParams);
+}
+#endif
+
 #if __NPU_ARCH__ == 2201
 template <typename T, typename U,
     typename Std::enable_if<Std::is_same<PrimT<T>, int32_t>::value, bool>::type,
@@ -335,6 +379,48 @@ __aicore__ inline __inout_pipe__(V) void BroadCastVecToMM(const LocalTensor<T> &
     BroadCastVecToMMImpl(dst, src, blockCount, blockLen, srcGap, dstGap);
 }
 
+ /* ************************************************************************************************** 
+  * Fill                                             * 
+  * ************************************************************************************************* */ 
+ /* 
+  * @ingroup Fill 
+  * @brief L0A/L0B/L1 value initializing 
+  * @param [out] dst output LocalTensor 
+  * @param [in] initConstValueParams.repeatTimes repeat times 
+  * @param [in] initConstValueParams.repeatTimes blockNum block number 
+  * @param [in] initConstValueParams.dstGap interval between the previous tail and the next block head 
+  * @param [in] initConstValueParams.initValue initialize Value 
+  */ 
+  template <typename T, typename U> 
+ __aicore__ inline void CheckInitParams(const LocalTensor<T> &dst, 
+     const InitConstValueParams<U>& initConstValueParams, const char* intriName) 
+ { 
+ #if ASCENDC_CPU_DEBUG 
+     uint16_t repeatTime = initConstValueParams.repeatTimes; 
+ #if __NPU_ARCH__ == 2201 
+     uint16_t blockNum = initConstValueParams.blockNum; 
+     uint16_t dstGap = initConstValueParams.dstGap; 
+ #else 
+     uint16_t blockNum = 1; 
+     uint16_t dstGap = 0; 
+ #endif 
+     if (!CheckFuncInitConstValue(dst, repeatTime, blockNum, dstGap, intriName)) { 
+         ASCENDC_REPORT_CHECK_ERROR(intriName, KernelFuncType::NONE_MODE); 
+     } 
+ #endif 
+ }
+
+constexpr const char* fillIntriName = "Fill";
+constexpr const char* initConstValueIntriName = "InitConstValue";
+
+template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type> 
+__aicore__ inline void Fill(const LocalTensor<T> &dst, 
+    const InitConstValueParams<U>& initConstValueParams) 
+{ 
+    CheckInitParams(dst, initConstValueParams, fillIntriName); 
+    FillImpl(dst, initConstValueParams); 
+}
+ 
 /* **************************************************************************************************
  * InitConstValue                                             *
  * ************************************************************************************************* */
@@ -347,24 +433,13 @@ __aicore__ inline __inout_pipe__(V) void BroadCastVecToMM(const LocalTensor<T> &
  * @param [in] initConstValueParams.dstGap interval between the previous tail and the next block head
  * @param [in] initConstValueParams.initValue initialize Value
  */
-template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type>
-__aicore__ inline void InitConstValue(const LocalTensor<T> &dst,
-    const InitConstValueParams<U>& initConstValueParams)
-{
-#if ASCENDC_CPU_DEBUG
-    uint16_t repeatTime = initConstValueParams.repeatTimes;
-#if __NPU_ARCH__ == 2201
-    uint16_t blockNum = initConstValueParams.blockNum;
-    uint16_t dstGap = initConstValueParams.dstGap;
-#else
-    uint16_t blockNum = 1;
-    uint16_t dstGap = 0;
-#endif
-    if (!CheckFuncInitConstValue(dst, repeatTime, blockNum, dstGap, "InitConstValue")) {
-        ASCENDC_REPORT_CHECK_ERROR("InitConstValue", KernelFuncType::NONE_MODE);
-    }
-#endif
-    InitConstValueImpl(dst, initConstValueParams);
+template <typename T, typename U = PrimT<T>,	 
+     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__aicore__ inline void InitConstValue(const LocalTensor<T> &dst, 
+    const InitConstValueParams<U>& initConstValueParams) 
+{ 
+    CheckInitParams(dst, initConstValueParams, initConstValueIntriName); 
+    InitConstValueImpl(dst, initConstValueParams); 
 }
 
 /* **************************************************************************************************
@@ -398,6 +473,13 @@ __aicore__ inline void SetFmatrix(uint16_t l1H, uint16_t l1W, const uint8_t padL
     SetFmatrixImpl(l1H, l1W, padList, fmatrixMode);
 }
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+__aicore__ inline void SetFmatrix(const SetFMatrixBitModeParams& param, const FmatrixMode& fmatrixMode)
+{
+    SetFmatrixImpl(param, fmatrixMode);
+}
+#endif
+
 /* **************************************************************************************************
  * SetLoadDataBoundary                                             *
  * ************************************************************************************************* */
@@ -411,6 +493,9 @@ __aicore__ inline void SetLoadDataBoundary(uint32_t boundaryValue)
     SetLoadDataBoundaryImpl(boundaryValue);
 }
 
+/* **************************************************************************************************
+ * SetLoadDataRepeat                                             *
+ * ************************************************************************************************* */
 __aicore__ inline void SetLoadDataRepeat(const LoadDataRepeatParam& repeatParams)
 {
     ASCENDC_CHECK_VALUE_RANGE(repeatParams.repeatMode, 0, 1, "repeatMode", "SetLoadDataRepeat");
@@ -484,5 +569,45 @@ __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTens
 {
     LoadDataUnzipImpl(dst, src);
 }
+
+/* **************************************************************************************************
+ * SetMMLayoutTransform                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup SetMMLayoutTransform
+ * @brief set mmad computation to prioritize M/N direction
+ * @param [in] mmLayoutMode mm layout mode
+ */
+__aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode)
+{
+    SetMMLayoutTransformImpl(mmLayoutMode);
+}
+
+ /* **************************************************************************************************
+ * SetHF32Mode                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup SetHF32Mode
+ * @brief set mmad hf32 mode
+ * @param [in] hf32Mode mm layout mode
+ */
+__aicore__ inline void SetHF32Mode(bool hf32Mode)
+{
+    SetHF32ModeImpl(hf32Mode);
+}
+
+ /* **************************************************************************************************
+ * SetHF32TransMode                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup SetHF32TransMode
+ * @brief specify rounding mode for hf32 mode
+ * @param [in] hf32TransMode rounding mode for hf32 mode
+ */
+__aicore__ inline void SetHF32TransMode(bool hf32TransMode)
+{
+    SetHF32TransModeImpl(hf32TransMode);
+}
+
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_MM_INTERFACE_IMPL_H

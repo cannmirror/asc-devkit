@@ -361,7 +361,7 @@ template <typename T, int U, int... Args> __aicore__ constexpr bool SupportBytes
     }
     return sizeof(T) == U;
 }
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) ||  (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <auto T, auto U, auto... Args> __aicore__ constexpr bool SupportEnum()
 {
     if constexpr (sizeof...(Args) > 0) {
@@ -370,7 +370,6 @@ template <auto T, auto U, auto... Args> __aicore__ constexpr bool SupportEnum()
     return T == U;
 }
 
-#if !defined(__DAV_L310_EFF__)
 template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&... args)
 {
     __VEC_SCOPE__
@@ -379,13 +378,18 @@ template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&
     }
 }
 #endif
-#endif
 } // namespace AscendC
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 using complex32 = AscendC::Complex<half>;
 using complex64 = AscendC::Complex<float>;
 
+template <auto funcPtr, typename... Args> __aicore__ inline void asc_vf_call(Args &&... args)
+{
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) 
+        funcPtr(args...);
+#endif
+}
 namespace AscendC {
 template <typename T> class LocalTensor;
 
@@ -393,7 +397,7 @@ namespace TypeUtils {
 template <typename T> __aicore__ constexpr bool IsInnerDefaultType()
 {
     return SupportType<T, bool, uint8_t, int8_t, half, bfloat16_t, int16_t, uint16_t, float, int32_t, uint32_t,
-        int64_t, uint64_t, complex32, complex64, double>();
+        fp8_e5m2_t, fp8_e4m3fn_t, fp8_e8m0_t, int64_t, uint64_t, complex32, complex64, double>();
 }
 
 template <typename T, typename U>
@@ -410,7 +414,7 @@ template <typename T> __aicore__ constexpr bool IsLocalTensorType()
 {
     if constexpr (IsLocalTensor<T>::value) {
         return SupportType<typename T::PrimType, bool, int8_t, uint8_t, int16_t, uint16_t, half, bfloat16_t, float, 
-            int32_t, uint32_t, int64_t, uint64_t, complex32, complex64, double>();
+            fp8_e5m2_t, fp8_e4m3fn_t, fp8_e8m0_t, int32_t, uint32_t, int64_t, uint64_t, complex32, complex64, double>();
     } else {
         return false;
     }

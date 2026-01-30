@@ -39,6 +39,27 @@
 
 #pragma begin_pipe(V)
 namespace AscendC {
+template <typename T>
+__aicore__ inline void ScatterCheck()
+{
+    using PrimType = PrimT<T>;
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t,
+        int32_t, uint64_t, int64_t>()), {KERNEL_LOG(KERNEL_ERROR,
+        "Failed to check dtype in Scatter, current api support dtype combination is src and dst both: "
+        "uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t, uint64_t, int64_t");});
+#elif ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101))
+    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t,
+        int32_t>()), {KERNEL_LOG(KERNEL_ERROR,
+        "Failed to check dtype in Scatter, current api support dtype combination is src and "
+        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});
+#else
+    ASCENDC_ASSERT((SupportType<PrimType, half, uint16_t, int16_t, float, uint32_t, int32_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
+        "dst both: half / uint16_t / int16_t / float / uint32_t / int32_t");});
+#endif
+}
+
 /*
  * @ingroup scatter Level 0
  * @brief scatter element from dst according to dstOffset
@@ -55,25 +76,13 @@ __aicore__ inline void Scatter(const LocalTensor<T>& dst, const LocalTensor<T>& 
     const LocalTensor<uint32_t>& dstOffset, const uint32_t dstBaseAddr, const uint64_t mask,
     const uint8_t repeatTime, const uint8_t srcRepStride)
 {
-    using PrimType = PrimT<T>;
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t, uint64_t, int64_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t, uint64_t, int64_t");});
-#elif ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101))
-    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});
-#else
-    ASCENDC_ASSERT((SupportType<PrimType, half, uint16_t, int16_t, float, uint32_t, int32_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: half / uint16_t / int16_t / float / uint32_t / int32_t");});
-#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunScatter(dst, src, dstOffset, dstBaseAddr, mask, repeatTime, srcRepStride, "Scatter")) {
         ASCENDC_REPORT_CHECK_ERROR("Scatter", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
+    using PrimType = PrimT<T>;
+    ScatterCheck<T>();
     const uint32_t dstLength = dst.GetSize();
     ScatterImpl((__ubuf__ PrimType *)dst.GetPhyAddr(), (__ubuf__ PrimType *)src.GetPhyAddr(),
         (__ubuf__ uint32_t *)dstOffset.GetPhyAddr(), dstLength, dstBaseAddr, mask, repeatTime, srcRepStride);
@@ -95,25 +104,13 @@ __aicore__ inline void Scatter(const LocalTensor<T>& dst, const LocalTensor<T>& 
     const LocalTensor<uint32_t>& dstOffset, const uint32_t dstBaseAddr, const uint64_t mask[],
     const uint8_t repeatTime, const uint8_t srcRepStride)
 {
-    using PrimType = PrimT<T>;
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t, uint64_t, int64_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t, uint64_t, int64_t");});
-#elif ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101))
-    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});
-#else
-    ASCENDC_ASSERT((SupportType<PrimType, half, uint16_t, int16_t, float, uint32_t, int32_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: half / uint16_t / int16_t / float / uint32_t / int32_t");});
-#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunScatter(dst, src, dstOffset, dstBaseAddr, mask, repeatTime, srcRepStride, "Scatter")) {
         ASCENDC_REPORT_CHECK_ERROR("Scatter", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+    using PrimType = PrimT<T>;
+    ScatterCheck<T>();
     const uint32_t dstLength = dst.GetSize();
     ScatterImpl((__ubuf__ PrimType *)dst.GetPhyAddr(), (__ubuf__ PrimType *)src.GetPhyAddr(),
         (__ubuf__ uint32_t *)dstOffset.GetPhyAddr(), dstLength, dstBaseAddr, mask, repeatTime, srcRepStride);
@@ -132,25 +129,13 @@ template <typename T>
 __aicore__ inline void Scatter(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LocalTensor<uint32_t>& dstOffset, const uint32_t dstBaseAddr, const uint32_t count)
 {
-    using PrimType = PrimT<T>;
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t, uint64_t, int64_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t, uint64_t, int64_t");});
-#elif ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101))
-    ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});
-#else
-    ASCENDC_ASSERT((SupportType<PrimType, half, uint16_t, int16_t, float, uint32_t, int32_t>()),
-        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Scatter, current api support dtype combination is src and "
-        "dst both: half / uint16_t / int16_t / float / uint32_t / int32_t");});
-#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunScatter(dst, src, dstOffset, dstBaseAddr, count, "Scatter")) {
         ASCENDC_REPORT_CHECK_ERROR("Scatter", KernelFuncType::NONE_MODE);
     }
 #endif
+    using PrimType = PrimT<T>;
+    ScatterCheck<T>();
     uint32_t vectorRegWidth = 256;
 #if (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
     ScatterImpl((__ubuf__ PrimType *)dst.GetPhyAddr(), (__ubuf__ PrimType *)src.GetPhyAddr(),
@@ -162,14 +147,18 @@ __aicore__ inline void Scatter(const LocalTensor<T>& dst, const LocalTensor<T>& 
     } else {
         elementCountSingleRepeat = 64;
     }
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     vectorRegWidth = VECTOR_REG_WIDTH;
+#endif
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     elementCountSingleRepeat = vectorRegWidth / sizeof(T);
     uint32_t repeatStride = vectorRegWidth / ONE_BLK_SIZE;
 #endif
     const uint32_t elementCountTail = count % elementCountSingleRepeat;
     const uint8_t repeatTime = count / elementCountSingleRepeat;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || ((__NPU_ARCH__ == 3103) && (defined(__DAV_L310__))) || \
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
     (__NPU_ARCH__ == 3113))
     if (repeatTime > 0) {
         Scatter(dst, src, dstOffset, dstBaseAddr, (uint64_t)elementCountSingleRepeat, repeatTime,
@@ -181,7 +170,7 @@ __aicore__ inline void Scatter(const LocalTensor<T>& dst, const LocalTensor<T>& 
         repeatStride);
     }
 #else
-if (repeatTime > 0) {
+    if (repeatTime > 0) {
         Scatter(dst, src, dstOffset, dstBaseAddr, static_cast<uint64_t>(elementCountSingleRepeat), repeatTime,
             DEFAULT_REPEAT_STRIDE);
     }

@@ -21,7 +21,7 @@ namespace AscendC {
         ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||    \
          (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
-__aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
+__aicore__ inline bfloat16_t Cast(const float& fVal)
 {
     constexpr uint32_t fp32SignIdx = 31;
     constexpr uint32_t fp32ManLen = 23;
@@ -72,8 +72,13 @@ __aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
     return GetScalarBitcodeValue<uint16_t, bfloat16_t>(u16Num);
 }
 
+__aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
+{
+    return Cast(fVal);
+}
+
 template <typename T>
-__aicore__ constexpr inline float ToFloat(const T& bVal)
+__aicore__ constexpr inline float Cast(const T& bVal)
 {
     static_assert(SupportType<T, bfloat16_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, fp4x2_e1m2_t, fp4x2_e2m1_t>(),
         "ToFloat only support bfloat16_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/fp4x2_e1m2_t/fp4x2_e2m1_t data type on current device!");
@@ -106,8 +111,16 @@ __aicore__ constexpr inline float ToFloat(const T& bVal)
     }
     return fNum;
 }
+
+template <typename T>
+__aicore__ constexpr inline float ToFloat(const T& bVal)
+{
+    static_assert(SupportType<T, bfloat16_t, hifloat8_t, fp8_e5m2_t, fp8_e4m3fn_t, fp4x2_e1m2_t, fp4x2_e2m1_t>(),
+        "Cast to float only support bfloat16_t/hifloat8_t/fp8_e5m2_t/fp8_e4m3fn_t/fp4x2_e1m2_t/fp4x2_e2m1_t data type on current device!");
+    return Cast<T>(bVal);
+}
 #else
-__aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
+__aicore__ inline bfloat16_t Cast(const float& fVal)
 {
     float fNum = fVal;
     union ToBfloat16Union {
@@ -125,7 +138,12 @@ __aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
     return bf16Union.bNum;
 }
 
-__aicore__ inline float ToFloat(const bfloat16_t& bVal)
+__aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
+{
+    return Cast(fVal);
+}
+
+__aicore__ inline float Cast(const bfloat16_t& bVal)
 {
     bfloat16_t bNum = bVal;
     union ToFloatUnion {
@@ -142,21 +160,40 @@ __aicore__ inline float ToFloat(const bfloat16_t& bVal)
     floatUnion.val = u16Union.num << BF16_TO_FP32_MAN_LEN;
     return floatUnion.fNum;
 }
+
+__aicore__ inline float ToFloat(const bfloat16_t& bVal)
+{
+    return Cast(bVal);
+}
 #endif
 #elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T>
+__aicore__ constexpr inline float Cast(const T& bVal)
+{
+    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupport Cast to float"); });
+    return 0.0f;
+}
+
 __aicore__ constexpr inline float ToFloat(const T& bVal)
 {
-    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "ToFloat is not supported on this device"); });
+    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupport ToFloat"); });
     return 0.0f;
+}
+
+__aicore__ inline bfloat16_t Cast(const float& fVal)
+{
+    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupport Cast to bfloat16"); });
+    bfloat16_t bNum;
+    return bNum;
 }
 
 __aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
 {
-    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "ToBfloat16 is not supported on this device"); });
+    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupport ToBfloat"); });
     bfloat16_t bNum;
     return bNum;
 }
+
 #endif
 } // namespace AscendC
 #endif // ASCENDC_SCALAR_CONVERT_H

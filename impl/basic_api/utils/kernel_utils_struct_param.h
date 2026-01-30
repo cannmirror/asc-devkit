@@ -33,8 +33,7 @@ struct ReduceRepeatParams {
     {
 #if defined(__NPU_ARCH__) &&                                                        \
     ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                            \
-     (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3113) ||  \
-     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3101))
+     (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3101))
         normalMask = mask;
         maskMode = 1;
 #else
@@ -63,8 +62,7 @@ struct ReduceRepeatParams {
     {
 #if defined(__NPU_ARCH__) &&                                                        \
     ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                            \
-     (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3113) ||  \
-     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3101))
+     (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3101))
         bitMask[0] = mask[0];
         bitMask[1] = mask[1];
 #else
@@ -256,7 +254,8 @@ struct SkipTlvInfo {
 struct PrintTlvInfoHead {
     uint32_t type = static_cast<uint32_t>(DumpType::DUMP_SCALAR);
     uint32_t length = 0U;
-    uint32_t resvMem[2];               // reserved
+    uint32_t blockIdx = 0U;             // blockIdx
+    uint32_t resv = 0U;                 // reserved
     uint64_t fmtOffset = 0U;            // offset of fmt string from the start of fmtOffset addr
 };
 
@@ -268,7 +267,7 @@ struct DumpTensorTlvInfoHead {
     uint32_t desc = 0U;              // Usr id
     uint32_t bufferId = 0U;          // 0
     uint16_t position = 0U;          // Position GM,UB,L1,L0C
-    uint16_t resv0 = 0U;             // reserved
+    uint16_t blockIdx = 0U;          // blockIdx
     uint32_t dim = 0U;               // shape dim
     uint32_t shape[K_MAX_SHAPE_DIM]; // dim <= 8
     uint32_t resv1 = 0U;             // reserved
@@ -288,7 +287,8 @@ struct TimeStampTlvInfo {
     uint32_t type = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP); // DumpType = DUMP_TIME_STAMP
     uint32_t length = 0U;      // Length of (descId resv cycle pc entry)
     uint32_t descId = 0U;          // Usr id
-    uint32_t resv = 0U;            // reserved
+    uint16_t blockIdx = 0U;        // blockIdx
+    uint16_t resv = 0U;            // reserved
     uint64_t cycle = 0U;           // system cycle
     uint64_t pc = 0U;              // get pc
     uint64_t entry = 0U;           // entry system cycle

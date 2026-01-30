@@ -23,7 +23,7 @@ __aicore__ inline void TQueSync<src, dst>::SetFlag(TEventID id)
     static_assert(IsSupportedPipe(src), "src pipe not supported");
     static_assert(IsSupportedPipe(dst), "dst pipe not supported");
     ASCENDC_DEBUG_ASSERT((id < QUE_MAX_EVENT),
-        KERNEL_LOG(KERNEL_ERROR, "event id input is %d, which should be less than %d", id, QUE_MAX_EVENT));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "event id input is %d, which should be less than %d", id, QUE_MAX_EVENT));
     set_flag(src, dst, id);
 }
 
@@ -34,7 +34,7 @@ __aicore__ inline void TQueSync<src, dst>::WaitFlag(TEventID id)
     static_assert(IsSupportedPipe(src), "src pipe not supported");
     static_assert(IsSupportedPipe(dst), "dst pipe not supported");
     ASCENDC_DEBUG_ASSERT((id < QUE_MAX_EVENT),
-        KERNEL_LOG(KERNEL_ERROR, "event id input is %d, which should be less than %d", id, QUE_MAX_EVENT));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "event id input is %d, which should be less than %d", id, QUE_MAX_EVENT));
     wait_flag(src, dst, id);
 }
 }

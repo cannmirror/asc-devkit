@@ -142,9 +142,80 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
         ASCENDC_DEBUG_ASSERT(CheckCastOverlappingHigh(
             static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
             static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())), sizeof(DstPrimType), sizeof(SrcPrimType),
-            count), KERNEL_LOG(KERNEL_ERROR, "Failed to pass Cast count mode check."));
+            count), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Failed to pass Cast count mode check."));
     }
     CastImpl((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src.GetPhyAddr(), roundMode, count);
+}
+
+/*
+ * @ingroup CastDequant Level 0
+ * @brief Dequant from int16_t to uint8_t/int8_t
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] intriParams.dstBlkStride dst block stride
+ * @param [in] intriParams.srcBlkStride src block stride
+ * @param [in] intriParams.dstRepStride dst repeat stride
+ * @param [in] intriParams.srcRepStride src repeat stride
+ */
+template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
+__aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0), mask,
+        repeatTime, repeatParams, "CastDequant")) {
+        ASCENDC_REPORT_CHECK_ERROR("CastDequant", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
+        (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
+}
+template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
+__aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0), mask,
+        repeatTime, repeatParams, "CastDequant")) {
+        ASCENDC_REPORT_CHECK_ERROR("CastDequant", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
+        (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
+}
+
+/*
+ * @ingroup CastDequant Level 2
+ * @brief Dequant from int16_t to uint8_t/int8_t
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] repeatTime repeat times
+ * @param [in] intriParams.dstBlkStride dst block stride
+ * @param [in] intriParams.srcBlkStride src block stride
+ * @param [in] intriParams.dstRepStride dst repeat stride
+ * @param [in] intriParams.srcRepStride src repeat stride
+ */
+template <typename T, typename U, bool isVecDeq, bool halfBlock>
+__aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const uint32_t count)
+{
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0),
+        count, "CastDequant")) {
+        ASCENDC_REPORT_CHECK_ERROR("CastDequant", KernelFuncType::CALCOUNT_MODE);
+    }
+#endif
+    CastDeqImpl<DstPrimType, SrcPrimType, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src.GetPhyAddr(),
+        count);
 }
 
 /*
@@ -158,7 +229,7 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.srcRepStride src repeat stride
  */
-template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
+template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
@@ -174,7 +245,7 @@ __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& 
     CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
         (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
-template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
+template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
@@ -202,7 +273,7 @@ __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& 
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.srcRepStride src repeat stride
  */
-template <typename T, typename U, bool isVecDeq, bool halfBlock>
+template <typename T, typename U, bool isVecDeq = true, bool halfBlock = true>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint32_t count)
 {

@@ -765,7 +765,7 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
 #endif
 }
 
-// Ascend910_95 MTE3 UB->L1, but it requires the srcDValue must be 32B aligned
+// Ascend950 MTE3 UB->L1, but it requires the srcDValue must be 32B aligned
 template <typename T>
 __aicore__ inline void DataCopyUB2L1ND2NZImplV2(__cbuf__ T* dst, __ubuf__ T* src, const Nd2NzParams& intriParams)
 {

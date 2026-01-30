@@ -7,12 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
- 
+
 /**
  * \file kernel_operator_swap_mem_intf.h
  * \brief Interface for memory swap and workspace management
  */
- 
+
 #ifndef ASCENDC_MODULE_SWAP_MEM_INTF_H
 #define ASCENDC_MODULE_SWAP_MEM_INTF_H
 
@@ -31,10 +31,20 @@ __aicore__ __gm__ uint8_t* __gm__ GetSysWorkSpacePtr();
 #else
 __aicore__ inline __gm__ uint8_t* __gm__ GetSysWorkSpacePtr()
 {
+    // kernel launch
+#if defined(__NPU_DEVICE__) && defined(__NPU_ARCH__)
+    if constexpr (__NPU_ARCH__ ==  2201) {
+        return __get_kfc_workspace_addr();
+    } else {
+        return g_sysWorkspaceReserved;
+    }
+#else
+    // framework launch
 #if (WORKSPACE_PARAM_OFFSET != 0xffffffff)
     return ((GM_ADDR *)get_para_base())[WORKSPACE_PARAM_OFFSET];
 #else
     return g_sysWorkspaceReserved;
+#endif
 #endif
 }
 #endif

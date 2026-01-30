@@ -9,28 +9,18 @@
 */
 
 /*!
- * \file kernel_operator_set_atomic_intf.h
+ * \file kernel_basic_intf.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_OPERATOR_SET_ATOMIC_INTERFACE_H
-#define ASCENDC_MODULE_OPERATOR_SET_ATOMIC_INTERFACE_H
-#include "kernel_tensor.h"
+#ifndef ASCENDC_MODULE_BASIC_INTERFACE_H
+#define ASCENDC_MODULE_BASIC_INTERFACE_H
 
-namespace AscendC {
-template <typename T>
-__aicore__ inline void SetAtomicType();
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif // ASCENDC_CPU_DEBUG
 
-template <typename T>
-__aicore__ inline void SetAtomicAdd();
+#include "kernel_cube_intf.h"
+#include "kernel_vec_intf.h"
 
-__aicore__ inline void DisableDmaAtomic();
-
-template <typename T>
-__aicore__ inline void SetAtomicMax();
-
-template <typename T>
-__aicore__ inline void SetAtomicMin();
-} // namespace AscendC
-
-#include "../../impl/basic_api/kernel_operator_set_atomic_intf_impl.h"
-#endif // ASCENDC_MODULE_OPERATOR_SET_ATOMIC_INTERFACE_H
+#endif

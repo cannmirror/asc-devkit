@@ -22,6 +22,7 @@
 #endif
 
 #include "kernel_struct_data_copy.h"
+#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -55,9 +56,15 @@ __aicore__ inline void __inout_pipe__(MTE2)
  * @param [in] intriParams.dstNzNStride stride of n between 2 C0 in L1
  * @param [in] intriParams.dstNzMatrixStride DST_nz_matrix_stride in L1 in unit of element
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool enableSmallC0 = false>
+__aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
+                                                     const Nd2NzParams& intriParams);
+#else
 template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
                                                      const Nd2NzParams& intriParams);
+#endif
 
 /*
  * @ingroup DataCopy Level 0
@@ -76,6 +83,26 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, 
 template <typename T>
 __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
                                      const Nd2NzParams& intriParams);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+/*
+ * @ingroup DataCopy Level 0
+ * @brief format transform(such as dn2nz) during data load from OUT to L1
+ * @param [out] dst output LocalTensor
+ * @param [in] src input GlobalTensor
+ * @param [in] intriParams.dnNum dn number of data to be moved
+ * @param [in] intriParams.nValue n value
+ * @param [in] intriParams.dValue d value in unit of element
+ * @param [in] intriParams.srcDnMatrixStride stride between DN matrixs at source DN matrix in unit of element
+ * @param [in] intriParams.srcDValue SRC_D value in unit of element
+ * @param [in] intriParams.dstNzC0Stride stride of nz between 2 C0 in L1 in unit of C0_size
+ * @param [in] intriParams.dstNzNStride stride of n between 2 C0 in L1
+ * @param [in] intriParams.dstNzMatrixStride DST_nz_matrix_stride in L1 in unit of element
+ */
+template <typename T, bool enableSmallC0 = false>
+__aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
+    const Dn2NzParams& intriParams);
+#endif
 
 /*
  * @ingroup DataCopy Level 0
@@ -142,6 +169,13 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
                                               const uint64_t mask, const uint8_t repeatTime,
                                               const CopyRepeatParams& repeatParams);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+// Copy::Level 2 - count mode
+template <typename T, bool isSetMask = true>
+__aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
+    const uint32_t count);
+#endif
 
 /*
  * @ingroup DataCopy Level 1
@@ -254,6 +288,7 @@ template <typename T, typename U>
 __aicore__ inline void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
                                 const DataCopyCO12DstParams& intriParams);
 
+
 #if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201))
 // float to bfloat16_t
 template <typename T, typename U,
@@ -310,6 +345,18 @@ __aicore__ inline __inout_pipe__(V) void DataCopy(const LocalTensor<T>& dst, con
                                                   const DataCopyParams& intriParams,
                                                   const DataCopyEnhancedParams& enhancedParams);
 
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, PaddingMode mode = PaddingMode::Normal>
+__aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T>& dst,
+                                                        const GlobalTensor<T>& src,
+                                                        const DataCopyParams& dataCopyParams,
+                                                        const DataCopyPadParams& padParams);
+
+template <typename T, PaddingMode mode = PaddingMode::Normal>
+__aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T>& dst,
+                                                        const LocalTensor<T>& src,
+                                                        const DataCopyParams& dataCopyParams);
+#else
 template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T>& dst,
                                                         const GlobalTensor<T>& src,
@@ -320,17 +367,26 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T>& dst,
                                                         const LocalTensor<T>& src,
                                                         const DataCopyParams& dataCopyParams);
+#endif
 
 template <typename T>
 __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const LocalTensor<T>& src,
                                         const DataCopyParams& dataCopyParams, const Nd2NzParams& nd2nzParams);
 
 // override DataCopyPad, use new param DataCopyExtParams
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, PaddingMode mode = PaddingMode::Normal>
+__aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T>& dst,
+                                                        const GlobalTensor<T>& src,
+                                                        const DataCopyExtParams& dataCopyParams,
+                                                        const DataCopyPadExtParams<T>& padParams);
+#else
 template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T>& dst,
                                                         const GlobalTensor<T>& src,
                                                         const DataCopyExtParams& dataCopyParams,
                                                         const DataCopyPadExtParams<T>& padParams);
+#endif
 
 // override DataCopyPad, use new param DataCopyExtParams
 // T use TensorTrait while U is primitive type
@@ -341,10 +397,17 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T>& ds
                                                         const DataCopyExtParams& dataCopyParams,
                                                         const DataCopyPadExtParams<U>& padParams);
 
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, PaddingMode mode = PaddingMode::Normal>
+__aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T>& dst,
+                                                        const LocalTensor<T>& src,
+                                                        const DataCopyExtParams& dataCopyParams);
+#else
 template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T>& dst,
                                                         const LocalTensor<T>& src,
                                                         const DataCopyExtParams& dataCopyParams);
+#endif
 
 template <typename T>
 __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const LocalTensor<T>& src,
@@ -352,6 +415,52 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const LocalTensor<
 
 template <typename T, TPosition pos = TPosition::MAX>
 __aicore__ inline void SetPadValue(T paddingValue);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, uint8_t dim, const NdDmaConfig &config = kDefaultNdDmaConfig>
+__aicore__ inline void DataCopy(const LocalTensor<T> &dst, const GlobalTensor<T> &src,
+    const MultiCopyParams<T, dim> &params);
+
+__aicore__ inline void NdDmaDci();
+
+__aicore__ inline void SetLoopModePara(const LoopModeParams& loopParams, DataCopyMVType type);
+
+__aicore__ inline void ResetLoopModePara(DataCopyMVType type);
+#endif
+}  // namespace AscendC
+
+/* **************************************************************************************************
+ * DataCopy(Layout) API Level2                                              *
+ * ************************************************************************************************* */
+namespace AscendC {
+template <typename T, size_t row, size_t column>
+using NZLayout = typename NZLayoutFormat<T, row, column>::type;
+
+template <typename T, size_t row, size_t column>
+using RowMajorLayout = NDLayoutFormat<T, row, column>;
+
+template <typename T, size_t row, size_t column>
+using ColumnMajorLayout = DNLayoutFormat<T, row, column>;
+
+template <typename T, size_t row, size_t column>
+using ZNLayout = ZNLayoutFormat<T, row, column>;
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeColumnMajorLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column);
+
+template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
+__aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
+DataCopy(const T& dst, const U& src);
+
 }  // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_data_copy_intf_impl.h"

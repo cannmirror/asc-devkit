@@ -46,6 +46,7 @@
 #elif __NPU_ARCH__ == 3003
 #include "dav_l300/kernel_operator_sync_impl.h"
 #include "dav_l300/kernel_operator_set_atomic_impl.h"
+#include "dav_c310/kernel_operator_common_impl.h"
 #elif __NPU_ARCH__ == 3102
 #include "dav_m310/kernel_operator_set_atomic_impl.h"
 #elif __NPU_ARCH__ == 3101
@@ -70,6 +71,7 @@
 #elif (__NPU_ARCH__ == 3113)
 #include "dav_l311/kernel_operator_sync_impl.h"
 #include "dav_l311/kernel_operator_set_atomic_impl.h"
+#include "dav_c310/kernel_operator_common_impl.h"
 #endif
 #include "kernel_pop_stack_buffer.h"
 
@@ -410,7 +412,7 @@ template <HardEvent event, MemoryT memT, bool isVirtual> __aicore__ inline void 
 }
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 template <SpecialPurposeReg spr>
 __aicore__ inline int64_t GetSpr(){
  

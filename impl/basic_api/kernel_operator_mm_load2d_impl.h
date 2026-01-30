@@ -88,6 +88,32 @@ __aicore__ inline __inout_pipe__(MTE2) void LoadDataImpl(const LocalTensor<T>& d
     }
 }
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <TPosition Dst, TPosition Src, typename T>
+__aicore__ inline void LoadDataImpl(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load2DBitModeParam& loadDataParams)
+{
+    CheckTensorAlign<T>(src, ONE_BLK_SIZE, "src", "LoadData with LoadData2DParams");
+    CheckTensorAlign<T>(dst, VALUE_512, "dst", "LoadData with LoadData2DParams");
+
+    if constexpr (Src != TPosition::A1 && Src != TPosition::A2) {
+        ASCENDC_CHECK_TPOSITION(false, "src", "A1 / B1",
+            "LoadData with LoadDataBitModeParams",
+            ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(src.GetPosition())));
+    };
+    if constexpr (Dst == TPosition::A2) {
+        LoadData2DL12L0ACal((__ca__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else if constexpr (Dst == TPosition::B2) {
+        LoadData2DL12L0BCal((__cb__ PrimT<T>*)dst.GetPhyAddr(),
+                            (__cbuf__ PrimT<T>*)src.GetPhyAddr(), loadDataParams);
+    } else {
+        ASCENDC_CHECK_TPOSITION(false, "dst", "A2 / B2",
+            "LoadData with LoadData2DParams",
+            ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(dst.GetPosition())));
+    }
+}
+#endif
 /* **************************************************************************************************
  * LoadData 2d with transpose                                             *
  * ************************************************************************************************* */

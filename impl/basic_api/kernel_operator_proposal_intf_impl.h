@@ -16,9 +16,6 @@
 #define ASCENDC_MODULE_OPERATOR_PROPOSAL_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_struct_proposal.h"
-#if ASCENDC_CPU_DEBUG && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-#include "include/adv_api/sort/topk.h"
-#endif
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_proposal_impl.h"
@@ -294,16 +291,12 @@ __aicore__ inline void Concat(LocalTensor<T>& concat, const LocalTensor<T>& src,
     const LocalTensor<T>& tmp, const int32_t repeatTime)
 {
     using PrimType = PrimT<T>;
-#if ASCENDC_CPU_DEBUG && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-    CHECK_FUNC_HIGHLEVEL_API(Concat, (T), (concat, src, tmp, repeatTime));
-#endif
     ASCENDC_ASSERT((SupportType<PrimType, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Concat, "
         "current api support dtype combination is src and dst both: half / float");});
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "Concat");
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     concat = src;
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
     ProposalConcat(tmp, src, repeatTime, REGION_PROPOSAL_SCORE_POSITION);
@@ -330,9 +323,6 @@ __aicore__ inline void Extract(const LocalTensor<T>& dstValue, const LocalTensor
     const LocalTensor<T>& sorted, const int32_t repeatTime)
 {
     using PrimType = PrimT<T>;
-#if ASCENDC_CPU_DEBUG && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-    CHECK_FUNC_HIGHLEVEL_API(Extract, (T), (dstValue, dstIndex, sorted, repeatTime));
-#endif
     ASCENDC_ASSERT((SupportType<PrimType, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Extract, "
         "current api support dtype combination is src and dst both: half / float");});
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "Extract");
@@ -344,8 +334,7 @@ __aicore__ inline void Extract(const LocalTensor<T>& dstValue, const LocalTensor
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
     ExtractImpl((__ubuf__ PrimType *)dstValue.GetPhyAddr(), (__ubuf__ uint32_t *)dstIndex.GetPhyAddr(),
         (__ubuf__ PrimType *)sorted.GetPhyAddr(), repeatTime);
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || \
-    (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     uint64_t rsvdCnt;
     if constexpr (Std::is_same<PrimType, half>::value) {
         constexpr uint8_t gatherMaskPattern3 = 3;
@@ -403,25 +392,19 @@ __aicore__ inline void MrgSort(const LocalTensor<T>& dst, const MrgSortSrcList<T
         return;
     }
 #endif
-#if ASCENDC_CPU_DEBUG && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-    CHECK_FUNC_HIGHLEVEL_API(
-        MrgSort, (T, isExhaustedSuspension), (dst, sortList, elementCountList, sortedNum, validBit, repeatTime));
-#endif
     ASCENDC_ASSERT((SupportType<PrimType, half, float>()),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in MrgSort, current api support dtype combination is "
         "src and dst both: half / float");});
     MrgSort4Info mrgSortInfo(elementCountList, isExhaustedSuspension, validBit, (uint16_t)repeatTime);
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     MrgSort(dst, sortList, mrgSortInfo);
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
     MrgSort4(dst, sortList, mrgSortInfo);
 #endif
     if (isExhaustedSuspension) {
-#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
+#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
         constexpr uint32_t validBitMask = 0xFFFF;
         constexpr uint32_t shiftBase = 16;     // register is 16 bit per num
 #elif __NPU_ARCH__ == 2002
@@ -454,9 +437,6 @@ __aicore__ inline void Sort(const LocalTensor<T>& dst, const LocalTensor<T>& con
     const LocalTensor<uint32_t>& index, LocalTensor<T>& tmp, const int32_t repeatTime)
 {
     using PrimType = PrimT<T>;
-#if ASCENDC_CPU_DEBUG && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
-    CHECK_FUNC_HIGHLEVEL_API(Sort, (T, isFullSort), (dst, concat, index, tmp, repeatTime));
-#endif
     ASCENDC_ASSERT((SupportType<PrimType, half, float>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Sort, current "
         "api support dtype combination is src and dst both: half / float");});
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "Sort");
@@ -467,8 +447,7 @@ __aicore__ inline void Sort(const LocalTensor<T>& dst, const LocalTensor<T>& con
 #endif
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     Sort32(dst, concat, index, repeatTime);
 #elif (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
     if (index.GetSize() != 0) {
@@ -523,8 +502,7 @@ __aicore__ inline uint32_t GetSortOffset(const uint32_t elemOffset)
         "half / float");});
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     if constexpr (Std::is_same<PrimType, half>::value) {
         return elemOffset * halfSortedDataSize;
     } else {
@@ -550,8 +528,7 @@ __aicore__ inline uint32_t GetSortLen(const uint32_t elemCount)
         "half / float");});
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) ||                        \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                        \
-    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101) ||                        \
-    (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+    (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
     if constexpr (Std::is_same<PrimType, half>::value) {
         return elemCount * halfSortedDataSize;
     } else {

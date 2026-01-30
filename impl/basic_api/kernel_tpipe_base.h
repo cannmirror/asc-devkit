@@ -195,14 +195,14 @@ __aicore__ inline void TPipeBase::InitShareBufStart(uint32_t mode, uint32_t* sha
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     ASCENDC_DEBUG_ASSERT((lens == static_cast<uint32_t>(TShareBuf::ShareHard::MAX)),
-        KERNEL_LOG(KERNEL_ERROR, "lens is %u, which should be %u", lens,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "lens is %u, which should be %u", lens,
                    static_cast<uint32_t>(TShareBuf::ShareHard::MAX)));
 #else
     (void)(lens);
 #endif
 
     ASCENDC_DEBUG_ASSERT((subBlockIdx == 0 || subBlockIdx == 1),
-                   KERNEL_LOG(KERNEL_ERROR, "subBlockIdx is %d, which should only be 0/1", subBlockIdx));
+                   KERNEL_LOG_INTERNAL(KERNEL_ERROR, "subBlockIdx is %d, which should only be 0/1", subBlockIdx));
     AuxShareBufStart(mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::L1), Hardware::L1, subBlockIdx);
     AuxShareBufStart(mode, shareLens, static_cast<uint8_t>(TShareBuf::ShareHard::L0C), Hardware::L0C, subBlockIdx);
 #if (__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002)
@@ -262,7 +262,7 @@ __aicore__ inline void TPipeBase::AuxShareBufStart(uint32_t mode, uint32_t* shar
 
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     ASCENDC_DEBUG_ASSERT((g_tpipeImpl.shareBufPool_.length[pos] >= shareLens[pos]),
-        KERNEL_LOG(KERNEL_ERROR, "share buf addr is %u, exceed limits %u", shareLens[pos],
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "share buf addr is %u, exceed limits %u", shareLens[pos],
                    g_tpipeImpl.shareBufPool_.length[pos]));
 #endif
 }

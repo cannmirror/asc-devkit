@@ -43,7 +43,6 @@ struct LoadData2DParams {
     uint8_t addrMode = 0;
 };
 
-// Turing versions
 struct LoadData2DParamsV2 {
     __aicore__ LoadData2DParamsV2() {}
 
@@ -100,8 +99,45 @@ struct LoadData2dTransposeParams {
     uint8_t addrMode = 0;
 };
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+struct Nd2NzParamsV2 {
+    uint64_t lookupTable0 = 0;
+    uint64_t lookupTable1 = 0;
+};
+#endif
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+struct LoadData2DMxParams {
+    __aicore__ LoadData2DMxParams() {}
+
+    __aicore__ LoadData2DMxParams(const uint16_t xStartPositionIn, const uint16_t yStartPositionIn,
+        const uint8_t xStepIn, const uint8_t yStepIn, const uint16_t srcStrideIn, const uint16_t dstStrideIn)
+    {
+        xStartPosition = xStartPositionIn;
+        yStartPosition = yStartPositionIn;
+        xStep = xStepIn;
+        yStep = yStepIn;
+        srcStride = srcStrideIn;
+        dstStride = dstStrideIn;
+    }
+
+    uint16_t xStartPosition = 0;
+    uint16_t yStartPosition = 0;
+    uint8_t xStep = 0;
+    uint8_t yStep = 0;
+    uint16_t srcStride = 0;
+    uint16_t dstStride = 0;
+};
+#endif
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <typename TYPE>
+struct LoadData3DParamsV1 {
+    using T = typename GetPadValueType<TYPE>::Type;
+#else
 template <typename T>
 struct LoadData3DParamsV1 {
+#endif
     __aicore__ LoadData3DParamsV1()
     {
         for (int32_t i = 0; i < PAD_SIZE; ++i) {
@@ -160,14 +196,21 @@ struct LoadData3DParamsV1 {
     int16_t leftTopH = 0;
 };
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <typename TYPE>
+struct LoadData3DParamsV2 {
+    using T = typename GetPadValueType<TYPE>::Type;
+#else
 template <typename T>
 struct LoadData3DParamsV2 {
+#endif
     __aicore__ LoadData3DParamsV2()
     {
         for (int32_t i = 0; i < PAD_SIZE; ++i) {
             padList[i] = 0;
         }
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3003))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
         enDualSrc = BM_DISABLE;
 #endif
     }
@@ -251,14 +294,16 @@ struct LoadData3DParamsV2 {
     bool filterSizeW = false;
     bool filterSizeH = false;
     bool fMatrixCtrl = false;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3003))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     bm_t enDualSrc = BM_DISABLE;
 #endif
 };
 struct LoadData3DParamsV2Pro {
     __aicore__ LoadData3DParamsV2Pro()
     {
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3003))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
         enDualSrc = BM_DISABLE;
 #endif
     }
@@ -284,7 +329,8 @@ struct LoadData3DParamsV2Pro {
     bool fMatrixCtrl = false;
     uint64_t extConfig = 0;
     uint64_t filterConfig = 0X10101010101;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3003))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     bm_t enDualSrc = BM_DISABLE;
 #endif
 };
@@ -370,6 +416,9 @@ struct MmadParams {
     bool cmatrixSource = false;
     // Indicates the initial matrix, 1: the number in C matrix is 0, 0：use the real number in C matrix
     bool cmatrixInitVal = true;
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+    bool disableGemv = false;
+#endif
 };
 
 template <typename T>
@@ -400,7 +449,7 @@ enum class FmatrixMode : uint8_t {
     FMATRIX_RIGHT = 1,
 };
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3102)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
 struct LoadDataRepeatParam {
     __aicore__ LoadDataRepeatParam() {}
 

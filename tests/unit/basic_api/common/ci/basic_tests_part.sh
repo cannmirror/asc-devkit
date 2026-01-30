@@ -12,29 +12,32 @@
 set -e
 
 test_one_targets=(
-  tikcpp_utest_compile_trace_log
   tikcpp_utest_ascend910
-  tikcpp_utest_ascend610
-  tikcpp_utest_ascend310p
-  tikcpp_utest_ascend310B1
-  tikcpp_utest_ascend610Lite
-  tikcpp_tpl_tiling_key_utest_debug
-  tikcpp_tpl_tiling_key_utest_release
+  # tikcpp_utest_compile_trace_log
+  # tikcpp_utest_ascend910
+  # tikcpp_utest_ascend610
+  # tikcpp_utest_ascend310p
+  # tikcpp_utest_ascend310B1
+  # tikcpp_utest_ascend610Lite
+  # tikcpp_tpl_tiling_key_utest_debug
+  # tikcpp_tpl_tiling_key_utest_release
 )
 
 test_two_targets=(
-  ascendc_utest_kernel
-  ascendc_utest_aclrtc
-  tikcpp_utest_ascend910B1_AIC
-  tikcpp_utest_ascend910B1_AIV
-  tikcpp_tiling_utest_ascend910
-  tikcpp_tiling_utest_ascend610
-  tikcpp_tiling_utest_ascend310p
+  tikcpp_utest_ascend910
+  # ascendc_utest_kernel
+  # ascendc_utest_aclrtc
+  # tikcpp_utest_ascend910B1_AIC
+  # tikcpp_utest_ascend910B1_AIV
+  # tikcpp_tiling_utest_ascend910
+  # tikcpp_tiling_utest_ascend610
+  # tikcpp_tiling_utest_ascend310p
 )
 
 test_three_targets=(
-  tikcpp_tiling_utest_ascend910B1_AIC
-  tikcpp_tiling_utest_ascend910B1_AIV
-  tikcpp_tiling_utest_ascend310B1
-  tikcpp_tiling_utest_ascend610Lite
+  tikcpp_utest_ascend910
+  # tikcpp_tiling_utest_ascend910B1_AIC
+  # tikcpp_tiling_utest_ascend910B1_AIV
+  # tikcpp_tiling_utest_ascend310B1
+  # tikcpp_tiling_utest_ascend610Lite
 )

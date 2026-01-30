@@ -161,6 +161,17 @@ __aicore__ inline void Mul(const LocalTensor<T>& dst, const LocalTensor<T>& src0
  * @param [in] repeatParams.src0RepStride src0 repeat stride
  * @param [in] repeatParams.src1RepStride src1 repeat stride
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool isSetMask = true, const DivConfig& config = DEFAULT_DIV_CONFIG>
+__aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+                           const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
+                           const BinaryRepeatParams& repeatParams);
+
+template <typename T, bool isSetMask = true, const DivConfig& config = DEFAULT_DIV_CONFIG>
+__aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+                           const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime,
+                           const BinaryRepeatParams& repeatParams);
+#else
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                            const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
@@ -170,6 +181,7 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                            const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime,
                            const BinaryRepeatParams& repeatParams);
+#endif
 
 /*
  * @ingroup Div Level 2
@@ -179,9 +191,15 @@ __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0
  * @param [in] src1 input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, const DivConfig& config = DEFAULT_DIV_CONFIG>
+__aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+                           const LocalTensor<T>& src1, const int32_t& count);
+#else
 template <typename T>
 __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                            const LocalTensor<T>& src1, const int32_t& count);
+#endif
 
 
 /* **************************************************************************************************
@@ -384,6 +402,38 @@ template <typename T>
 __aicore__ inline void Or(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                           const LocalTensor<T>& src1, const int32_t& count);
 
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+/* **************************************************************************************************
+ * ShiftLeft                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup ShiftLeft Level 2
+ * @brief dst = src0 << src1
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T, typename U>
+__aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<U>& src1, const int32_t& count);
+
+/* **************************************************************************************************
+ * ShiftRight                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup ShiftRight Level 2
+ * @brief dst = src0 >> src1
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T, typename U>
+__aicore__ inline void ShiftRight(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<U>& src1, const int32_t& count);
+#endif
+
 /* **************************************************************************************************
  * AddRelu                                             *
  * ************************************************************************************************* */
@@ -517,10 +567,10 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
                                    const LocalTensor<T>& src1, const int32_t& count);
 
 /* **************************************************************************************************
- * FusedMulAddRelu                                             *
+ * MulAddRelu                                             *
  * ************************************************************************************************* */
 /*
- * @ingroup FusedMulAddRelu Level 0
+ * @ingroup MulAddRelu Level 0
  * @brief dst = relu(src0 * dst + src1)
  * @param [out] dst output LocalTensor
  * @param [in] src0 input LocalTensor
@@ -535,17 +585,17 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
  * @param [in] repeatParams.src1RepStride src1 repeat stride
  */
 template <typename T, bool isSetMask = true>
-__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+__aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                                        const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
                                        const BinaryRepeatParams& repeatParams);
 
 template <typename T, bool isSetMask = true>
-__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+__aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                                        const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime,
                                        const BinaryRepeatParams& repeatParams);
 
 /*
- * @ingroup FusedMulAddRelu Level 2
+ * @ingroup MulAddRelu Level 2
  * @brief dst = relu(src0 * dst + src1)
  * @param [out] dst output LocalTensor
  * @param [in] src0 input LocalTensor
@@ -553,7 +603,7 @@ __aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTen
  * @param [in] count number Number of data involved in calculation
  */
 template <typename T>
-__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+__aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                                        const LocalTensor<T>& src1, const int32_t& count);
 
 /* **************************************************************************************************
@@ -587,6 +637,70 @@ __aicore__ inline void SubRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
 template <typename T>
 __aicore__ inline void SubRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
                                const LocalTensor<T>& src1, const int32_t& count);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+/* **************************************************************************************************
+ * Prelu                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup Prelu Level 2
+ * @brief dst = (src0 >= 0) ? src0 : src0 * src1
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T>
+__aicore__ inline void Prelu(const LocalTensor<T>& dst, const LocalTensor<T> &src0, 
+    const LocalTensor<T> &src1, const uint32_t count);
+
+/* **************************************************************************************************
+ * Mull                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup Mull Level 2
+ * @brief Multiply input data src0 and src1 by element based on the mask, write the result to
+        dst0, and write the overflow part to dst1.
+ * @param [out] dst0 output LocalTensor
+ * @param [out] dst1 output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T>
+__aicore__ inline void Mull(const LocalTensor<T>& dst0, const LocalTensor<T>& dst1,
+    const LocalTensor<T>& src0, const LocalTensor<T>& src1, const uint32_t count);
+
+/* **************************************************************************************************
+ * AbsSub                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup AbsSub Level 2
+ * @brief dst = abs(src0 - src1)
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T>
+__aicore__ inline void AbsSub(const LocalTensor<T> &dst, const LocalTensor<T> &src0, 
+    const LocalTensor<T> &src1, const uint32_t count);
+
+/* **************************************************************************************************
+ * FusedExpSub                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup FusedExpSub Level 2
+ * @brief when T is float : dst = e^(src0 - src1); when T is half : dst = e^(cast_f16_to_f32(src0) - cast_f16_to_f32(src1))
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T, typename U>
+__aicore__ inline void FusedExpSub(const LocalTensor<T> &dst, const LocalTensor<U> &src0, 
+    const LocalTensor<U> &src1, const uint32_t count);
+#endif
 }  // namespace AscendC
 #pragma end_pipe
 #include "../../impl/basic_api/kernel_operator_vec_binary_intf_impl.h"

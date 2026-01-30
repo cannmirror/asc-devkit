@@ -1088,6 +1088,94 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
 }
 
 /* **************************************************************************************************
+ * MulAddRelu                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup MulAddRelu Level 0
+ * @brief dst = src0 * dst + src1
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] mask[]/mask mask array/count
+ * @param [in] repeatTime repeat times
+ * @param [in] intriParams.dstBlkStride dst block stride
+ * @param [in] intriParams.src0BlkStride src0 block stride
+ * @param [in] intriParams.src1BlkStride src1 block stride
+ * @param [in] intriParams.dstRepStride dst repeat stride
+ * @param [in] intriParams.src0RepStride src0 repeat stride
+ * @param [in] intriParams.src1RepStride src1 repeat stride
+ */
+template <typename T, bool isSetMask>
+__aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
+    const BinaryRepeatParams& repeatParams)
+{
+    using PrimType = PrimT<T>;
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "MulAddRelu")) {
+        ASCENDC_REPORT_CHECK_ERROR("MulAddRelu", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    FusedMulAddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
+        (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
+        repeatParams);
+}
+
+template <typename T, bool isSetMask>
+__aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
+{
+    using PrimType = PrimT<T>;
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "MulAddRelu")) {
+        ASCENDC_REPORT_CHECK_ERROR("MulAddRelu", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    FusedMulAddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
+        (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
+        repeatParams);
+}
+
+/*
+ * @ingroup MulAddRelu Level 2
+ * @brief dst = src0 * dst + src1
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T>
+__aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, const int32_t& count)
+{
+    using PrimType = PrimT<T>;
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinary(dst, src0, src1, count, "MulAddRelu")) {
+        ASCENDC_REPORT_CHECK_ERROR("MulAddRelu", KernelFuncType::CALCOUNT_MODE);
+    }
+#endif
+    FusedMulAddReluImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
+        (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
+}
+
+/* **************************************************************************************************
  * FusedMulAddRelu                                             *
  * ************************************************************************************************* */
 /*
@@ -1105,7 +1193,7 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
  * @param [in] intriParams.src0RepStride src0 repeat stride
  * @param [in] intriParams.src1RepStride src1 repeat stride
  */
-template <typename T, bool isSetMask>
+template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams)
@@ -1127,7 +1215,7 @@ __aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTen
         repeatParams);
 }
 
-template <typename T, bool isSetMask>
+template <typename T, bool isSetMask = true>
 __aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
 {
@@ -1313,6 +1401,33 @@ __aicore__ inline void Mull(const LocalTensor<T>& dst0, const LocalTensor<T> &ds
     });
     MullImpl((__ubuf__ PrimType *)dst0.GetPhyAddr(), (__ubuf__ PrimType *)dst1.GetPhyAddr(), 
         (__ubuf__ PrimType *)src0.GetPhyAddr(), (__ubuf__ PrimType *)src1.GetPhyAddr(), count);
+}
+
+/* **************************************************************************************************
+ * AbsSub                                             *
+ * ************************************************************************************************* */
+/*
+ * @ingroup AbsSub Level 2
+ * @brief dst = abs(src0 - src1)
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1 input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T>
+__aicore__ inline void AbsSub(const LocalTensor<T> &dst, const LocalTensor<T> &src0, 
+    const LocalTensor<T> &src1, const uint32_t count)
+{
+    using PrimType = PrimT<T>;
+    CheckTensorPos<T>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "AbsSub");
+    CheckTensorPos<T>(src0, Hardware::UB, "src0", "VECIN / VECCALC / VECOUT", "AbsSub");
+    CheckTensorPos<T>(src1, Hardware::UB, "src1", "VECIN / VECCALC / VECOUT", "AbsSub");
+    ASCENDC_ASSERT((count <= src0.GetSize() && count <= src1.GetSize() && count <= dst.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR,
+                   "count is %u, which should not larger than tensor size of dst / src0 / src1", count);
+    });
+    FusedAbsSubImpl((__ubuf__ PrimType *)dst.GetPhyAddr(), (__ubuf__ PrimType *)src0.GetPhyAddr(), 
+        (__ubuf__ PrimType *)src1.GetPhyAddr(), count);
 }
 
 /* **************************************************************************************************

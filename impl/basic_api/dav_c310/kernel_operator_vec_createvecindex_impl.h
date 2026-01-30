@@ -117,7 +117,7 @@ __simd_vf__ inline void CreateVecIndexCalcVci2(__ubuf__ T* dstLocalAddr, const T
     for (uint16_t i = 0; i < (uint16_t)repeatTime; ++i) {
         preg = MicroAPI::UpdateMask<T>(sreg);
         MicroAPI::StoreAlign(dstLocalAddr + i * sregLower, vreg0, preg);
-        vadds(vreg0, vreg0, sregLower, preg, MODE_ZEROING);
+        MicroAPI::Adds(vreg0, vreg0, sregLower, preg);
     }
 }
 

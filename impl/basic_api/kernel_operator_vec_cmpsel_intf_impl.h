@@ -240,7 +240,7 @@ __aicore__ inline void SetCmpMask(const LocalTensor<T>& src)
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.srcRepStride src0 repeat stride
  */
-template <typename T, typename U, bool isSetMask>
+template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
     const T src1Scalar, CMPMODE cmpMode, const uint64_t mask[], uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
@@ -264,7 +264,7 @@ __aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTenso
         cmpMode, mask, repeatTime, repeatParams);
 }
 
-template <typename T, typename U, bool isSetMask>
+template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
     const T src1Scalar, CMPMODE cmpMode, const uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
@@ -322,6 +322,103 @@ __aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTenso
 }
 
 /* **************************************************************************************************
+ * Compares                                           *
+ * ************************************************************************************************* */
+/*
+ * @ingroup Compare Level 0
+ * @brief Compare the size of a tensor and a scalar one by one. If true, the corresponding bit is 1, otherwise it is 0
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1Scalar input Scalar
+ * @param [in] cmpMode compare mode
+ * @param [in] mask[]/mask mask array/count
+ * @param [in] repeatTime repeat times
+ * @param [in] intriParams.dstBlkStride dst block stride
+ * @param [in] intriParams.srcBlkStride src0 block stride
+ * @param [in] intriParams.dstRepStride dst repeat stride
+ * @param [in] intriParams.srcRepStride src0 repeat stride
+ */
+template <typename T, typename U, bool isSetMask>
+__aicore__ inline void Compares(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const T src1Scalar, CMPMODE cmpMode, const uint64_t mask[], uint8_t repeatTime,
+    const UnaryRepeatParams& repeatParams)
+{
+#if __NPU_ARCH__ == 2002
+    ASCENDC_ASSERT((SupportType<T, half, float>() && SupportType<U, uint8_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Compares, current api support dtype combination is "
+        "src0: half / float, dst: uint8_t.");});
+#elif __NPU_ARCH__ == 2201
+    ASCENDC_ASSERT((SupportType<T, half, float, int32_t>() && SupportType<U, uint8_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Compares, current api support dtype combination is "
+        "src0: half / float / int32_t, dst: uint8_t.");});
+#endif
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp(dst, src0, src1Scalar, ONE_REPEAT_BYTE_SIZE / sizeof(T), repeatTime,
+        repeatParams, "Compares")) {
+        ASCENDC_REPORT_CHECK_ERROR("Compares", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    VcmpvsImpl<T, U, isSetMask>((__ubuf__ U*)dst.GetPhyAddr(), (__ubuf__ T*)src0.GetPhyAddr(), src1Scalar,
+        cmpMode, mask, repeatTime, repeatParams);
+}
+
+template <typename T, typename U, bool isSetMask>
+__aicore__ inline void Compares(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const T src1Scalar, CMPMODE cmpMode, const uint64_t mask, uint8_t repeatTime,
+    const UnaryRepeatParams& repeatParams)
+{
+#if __NPU_ARCH__ == 2002
+    ASCENDC_ASSERT((SupportType<T, half, float>() && SupportType<U, uint8_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Compares, current api support dtype combination is "
+        "src0: half / float, dst: uint8_t.");});
+#elif __NPU_ARCH__ == 2201
+    ASCENDC_ASSERT((SupportType<T, half, float, int32_t>() && SupportType<U, uint8_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Compares, current api support dtype combination is "
+        "src0: half / float / int32_t, dst: uint8_t.");});
+#endif
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp(dst, src0, src1Scalar, ONE_REPEAT_BYTE_SIZE / sizeof(T), repeatTime,
+        repeatParams, "Compares")) {
+        ASCENDC_REPORT_CHECK_ERROR("Compares", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    VcmpvsImpl<T, U, isSetMask>((__ubuf__ U*)dst.GetPhyAddr(), (__ubuf__ T*)src0.GetPhyAddr(), src1Scalar,
+        cmpMode, mask, repeatTime, repeatParams);
+}
+
+/*
+ * @ingroup Compares Level 2
+ * @brief Compares the size of two tensors one by one. If true, the corresponding bit is 1, otherwise it is 0
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1Scalar input Scalar
+ * @param [in] cmpMode compare mode
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T, typename U>
+__aicore__ inline void Compares(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const T src1Scalar, CMPMODE cmpMode, uint32_t count)
+{
+#if __NPU_ARCH__ == 2002
+    ASCENDC_ASSERT((SupportType<T, half, float>() && SupportType<U, uint8_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Compares, current api support dtype combination is "
+        "src0: half / float, dst: uint8_t.");});
+#elif __NPU_ARCH__ == 2201
+    ASCENDC_ASSERT((SupportType<T, half, float, int32_t>() && SupportType<U, uint8_t>()),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Compares, current api support dtype combination is "
+        "src0: half / float / int32_t, dst: uint8_t.");});
+#endif
+    ASCENDC_ASSERT(((count * sizeof(T)) % ONE_REPEAT_BYTE_SIZE == 0),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check count elements size in Compares, current size "
+        "is %u, should be an integer multiple of 256.", count * sizeof(T));});
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp(dst, src0, src1Scalar, count, "Compares")) {
+        ASCENDC_REPORT_CHECK_ERROR("Compares", KernelFuncType::CALCOUNT_MODE);
+    }
+#endif
+    VcmpvsImpl((__ubuf__ U*)dst.GetPhyAddr(), (__ubuf__ T*)src0.GetPhyAddr(), src1Scalar, cmpMode, count);
+}
+/* **************************************************************************************************
  * Select                                            *
  * ************************************************************************************************* */
 // T must be half or Float
@@ -359,7 +456,7 @@ __aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<U>& s
         ASCENDC_REPORT_CHECK_ERROR("Select", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
-    VselImpl((__ubuf__ DataPrimType*)dst.GetPhyAddr(), (__ubuf__ MaskPrimType*)selMask.GetPhyAddr(), 
+    VselImpl((__ubuf__ DataPrimType*)dst.GetPhyAddr(), (__ubuf__ MaskPrimType*)selMask.GetPhyAddr(),
         (__ubuf__ DataPrimType*)src0.GetPhyAddr(), (__ubuf__ DataPrimType*)src1.GetPhyAddr(), selMode, mask, repeatTime,
         repeatParams);
 }
@@ -425,7 +522,7 @@ __aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<U>& s
         ASCENDC_REPORT_CHECK_ERROR("Select", KernelFuncType::CALCOUNT_MODE);
     }
 #endif
-    VselImpl((__ubuf__ DataPrimType*)dst.GetPhyAddr(), (__ubuf__ MaskPrimType*)selMask.GetPhyAddr(), 
+    VselImpl((__ubuf__ DataPrimType*)dst.GetPhyAddr(), (__ubuf__ MaskPrimType*)selMask.GetPhyAddr(),
         (__ubuf__ DataPrimType*)src0.GetPhyAddr(), (__ubuf__ DataPrimType*)src1.GetPhyAddr(), selMode, count);
 }
 
@@ -526,16 +623,10 @@ __aicore__ inline void Select(const LocalTensor<T>& dst, const LocalTensor<U>& s
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.srcRepStride src0 repeat stride
  */
-template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
-__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
-    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+template <bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4, typename MaskType>
+__aicore__ inline void CompareScalarCommon(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    MaskType mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-#if ASCENDC_CPU_DEBUG
-    if (!CheckFuncVecBinaryScalarCmp<config>(dst, src0, src1, ONE_REPEAT_BYTE_SIZE / sizeof(T0), repeatTime,
-        repeatParams, "CompareScalar")) {
-        ASCENDC_REPORT_CHECK_ERROR("CompareScalar", KernelFuncType::MASK_BIT_MODE);
-    }
-#endif
     static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
     static_assert(SupportType<T2, LocalTensor<uint8_t>>());
 
@@ -557,7 +648,22 @@ __aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& sr
     }
 }
 
-template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
+template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
+          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
+__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp<config>(dst, src0, src1, ONE_REPEAT_BYTE_SIZE / sizeof(T0), repeatTime,
+        repeatParams, "CompareScalar")) {
+        ASCENDC_REPORT_CHECK_ERROR("CompareScalar", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    CompareScalarCommon<isSetMask, config>(dst, src0, src1, cmpMode, mask, repeatTime, repeatParams);
+}
+
+template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
+          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
 __aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
     const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
@@ -567,25 +673,7 @@ __aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& sr
         ASCENDC_REPORT_CHECK_ERROR("CompareScalar", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
-    static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
-    static_assert(SupportType<T2, LocalTensor<uint8_t>>());
-
-    using ActualU = typename T2::PrimType;
-    if constexpr(TypeUtils::IsLocalTensorType<T3, T4>()) {
-        static_assert(Std::is_same<T3, T4>::value);
-        using ActualT = typename T3::PrimType;
-        static_assert((config.scalarTensorIndex == 0 || config.scalarTensorIndex == 1), "scalarTensorIndex out of range");
-        VcmpvsImpl<ActualT, ActualU, isSetMask, config.scalarTensorIndex>((__ubuf__ ActualU*)dst.GetPhyAddr(),
-            (__ubuf__ ActualT*)src0.GetPhyAddr(), (__ubuf__ ActualT*)src1.GetPhyAddr(), cmpMode, mask, repeatTime, repeatParams);
-    } else if constexpr(TypeUtils::IsLocalTensorType<T4>() && TypeUtils::IsInnerDefaultType<T3>()) {
-        using ActualT = typename T4::PrimType;
-        VcmpvsImpl<ActualT, ActualU, isSetMask>((__ubuf__ ActualU*)dst.GetPhyAddr(), src0,
-            (__ubuf__ ActualT*)src1.GetPhyAddr(), cmpMode, mask, repeatTime, repeatParams);
-    } else if constexpr(TypeUtils::IsLocalTensorType<T3>() && TypeUtils::IsInnerDefaultType<T4>()) {
-        using ActualT = typename T3::PrimType;
-        VcmpvsImpl<ActualT, ActualU, isSetMask>((__ubuf__ ActualU*)dst.GetPhyAddr(), (__ubuf__ ActualT*)src0.GetPhyAddr(),
-            src1, cmpMode, mask, repeatTime, repeatParams);
-    }
+    CompareScalarCommon<isSetMask, config>(dst, src0, src1, cmpMode, mask, repeatTime, repeatParams);
 }
 
 /*
@@ -597,7 +685,8 @@ __aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& sr
  * @param [in] cmpMode compare mode
  * @param [in] count number Number of data involved in calculation
  */
-template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
+template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
+          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
 __aicore__ inline void CompareScalar(const T2& dst, const T3& src0,
     const T4& src1, CMPMODE cmpMode, uint32_t count)
 {
@@ -632,6 +721,93 @@ __aicore__ inline void CompareScalar(const T2& dst, const T3& src0,
     }
 }
 
+/* **************************************************************************************************
+ * Compares                                           *
+ * ************************************************************************************************* */
+/*
+ * @ingroup Compare Level 0
+ * @brief Compare the size of a tensor and a scalar one by one. If true, the corresponding bit is 1, otherwise it is 0
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1Scalar input Scalar
+ * @param [in] cmpMode compare mode
+ * @param [in] mask[]/mask mask array/count
+ * @param [in] repeatTime repeat times
+ * @param [in] intriParams.dstBlkStride dst block stride
+ * @param [in] intriParams.srcBlkStride src0 block stride
+ * @param [in] intriParams.dstRepStride dst repeat stride
+ * @param [in] intriParams.srcRepStride src0 repeat stride
+ */
+
+template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
+__aicore__ inline void Compares(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp<config>(dst, src0, src1, ONE_REPEAT_BYTE_SIZE / sizeof(T0), repeatTime,
+        repeatParams, "Compares")) {
+        ASCENDC_REPORT_CHECK_ERROR("Compares", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    CompareScalarCommon<isSetMask, config>(dst, src0, src1, cmpMode, mask, repeatTime, repeatParams);
+}
+
+template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
+__aicore__ inline void Compares(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp<config>(dst, src0, src1, ONE_REPEAT_BYTE_SIZE / sizeof(T0), repeatTime,
+        repeatParams, "Compares")) {
+        ASCENDC_REPORT_CHECK_ERROR("Compares", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    CompareScalarCommon<isSetMask, config>(dst, src0, src1, cmpMode, mask, repeatTime, repeatParams);
+}
+
+/*
+ * @ingroup Compares Level 2
+ * @brief Compares the size of two tensors one by one. If true, the corresponding bit is 1, otherwise it is 0
+ * @param [out] dst output LocalTensor
+ * @param [in] src0 input LocalTensor
+ * @param [in] src1Scalar input Scalar
+ * @param [in] cmpMode compare mode
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
+__aicore__ inline void Compares(const T2& dst, const T3& src0,
+    const T4& src1, CMPMODE cmpMode, uint32_t count)
+{
+#if ASCENDC_CPU_DEBUG
+    if (!CheckFuncVecBinaryScalarCmp<config>(dst, src0, src1, count, "Compares")) {
+        ASCENDC_REPORT_CHECK_ERROR("Compares", KernelFuncType::CALCOUNT_MODE);
+    }
+#endif
+    static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
+    static_assert(SupportType<T2, LocalTensor<uint8_t>>());
+
+    using ActualU = typename T2::PrimType;
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+    ASCENDC_ASSERT(((count * sizeof(T3)) % ONE_REPEAT_BYTE_SIZE == 0),
+        {KERNEL_LOG(KERNEL_ERROR, "Failed to check count elements size in Compares, current size "
+        "is %u, should be an integer multiple of 256.", count * sizeof(T3));});
+#endif
+    if constexpr(TypeUtils::IsLocalTensorType<T3, T4>()) {
+        static_assert(Std::is_same<T3, T4>::value);
+        using ActualT = typename T3::PrimType;
+        static_assert((config.scalarTensorIndex == 0 || config.scalarTensorIndex == 1), "scalarTensorIndex out of range");
+        VcmpvsImpl<ActualT, ActualU, isSetMask, config.scalarTensorIndex>((__ubuf__ ActualU*)dst.GetPhyAddr(),
+            (__ubuf__ ActualT*)src0.GetPhyAddr(), (__ubuf__ ActualT*)src1.GetPhyAddr(), cmpMode, count);
+    } else if constexpr(TypeUtils::IsLocalTensorType<T4>() && TypeUtils::IsInnerDefaultType<T3>()) {
+        using ActualT = typename T4::PrimType;
+        VcmpvsImpl<ActualT, ActualU, isSetMask>((__ubuf__ ActualU*)dst.GetPhyAddr(), src0,
+            (__ubuf__ ActualT*)src1.GetPhyAddr(), cmpMode, count);
+    } else if constexpr(TypeUtils::IsLocalTensorType<T3>() && TypeUtils::IsInnerDefaultType<T4>()) {
+        using ActualT = typename T3::PrimType;
+        VcmpvsImpl<ActualT, ActualU, isSetMask>((__ubuf__ ActualU*)dst.GetPhyAddr(), (__ubuf__ ActualT*)src0.GetPhyAddr(),
+            src1, cmpMode, count);
+    }
+}
 // ================================
 /*
  * @ingroup Select Level 0
@@ -651,17 +827,12 @@ __aicore__ inline void CompareScalar(const T2& dst, const T3& src0,
  * @param [in] intriParams.src1RepStride src1 repeat stride
  */
 // select mode: 1
-template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
-__aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask,
-    const T3& src0, const T4& src1, SELMODE selMode, uint64_t mask[], uint8_t repeatTime,
+template <typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3,
+    typename T4, typename MaskType>
+__aicore__ inline void SelectCommon(const T2& dst, const LocalTensor<T1>& selMask,
+    const T3& src0, const T4& src1, SELMODE selMode, MaskType mask, uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams)
 {
-#if ASCENDC_CPU_DEBUG
-    MaskSetter::Instance().SetMask(isSetMask);
-    if (!CheckFunVecBinaryScalar<config>(dst, src0, src1, mask, repeatTime, repeatParams, "Select")) {
-        ASCENDC_REPORT_CHECK_ERROR("Select", KernelFuncType::MASK_BIT_MODE);
-    }
-#endif
     CheckTensorPos<T1>(selMask, Hardware::UB, "selMask", "VECIN / VECCALC / VECOUT", "Select");
     static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<T2>(), "dst should be Tensor");
@@ -687,35 +858,31 @@ __aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask,
 // select mode: 1
 template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
 __aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask,
+    const T3& src0, const T4& src1, SELMODE selMode, uint64_t mask[], uint8_t repeatTime,
+    const BinaryRepeatParams& repeatParams)
+{
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFunVecBinaryScalar<config>(dst, src0, src1, mask, repeatTime, repeatParams, "Select")) {
+        ASCENDC_REPORT_CHECK_ERROR("Select", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    SelectCommon<T1, isSetMask, config>(dst, selMask, src0, src1, selMode, mask, repeatTime, repeatParams);
+}
+
+// select mode: 1
+template <typename T0, typename T1, bool isSetMask, const BinaryConfig &config, typename T2, typename T3, typename T4>
+__aicore__ inline void Select(const T2& dst, const LocalTensor<T1>& selMask,
     const T3& src0, const T4& src1, SELMODE selMode, uint64_t mask, uint8_t repeatTime,
     const BinaryRepeatParams& repeatParams)
 {
-    CheckTensorPos<T1>(selMask, Hardware::UB, "selMask", "VECIN / VECCALC / VECOUT", "Select");
 #if ASCENDC_CPU_DEBUG
     MaskSetter::Instance().SetMask(isSetMask);
     if (!CheckFunVecBinaryScalar<config>(dst, src0, src1, mask, repeatTime, repeatParams, "Select")) {
         ASCENDC_REPORT_CHECK_ERROR("Select", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
-    static_assert(!TypeUtils::IsInnerDefaultType<T3, T4>(), "One of src0 and src1 should be Tensor");
-    static_assert(TypeUtils::IsLocalTensorType<T2>(), "dst should be Tensor");
-
-    using ActualT = typename T2::PrimType;
-    if constexpr(TypeUtils::IsLocalTensorType<T3, T4>()) {
-        static_assert(Std::is_same<T3, T4>::value);
-        static_assert(Std::is_same<ActualT, typename T3::PrimType>::value);
-        static_assert((config.scalarTensorIndex == 0 || config.scalarTensorIndex == 1), "scalarTensorIndex out of range");
-        VselImpl<ActualT, T1, config.scalarTensorIndex>((__ubuf__ ActualT*)dst.GetPhyAddr(), (__ubuf__ T1*)selMask.GetPhyAddr(),
-            (__ubuf__ ActualT*)src0.GetPhyAddr(), (__ubuf__ ActualT*)src1.GetPhyAddr(), selMode, mask, repeatTime, repeatParams);
-    } else if constexpr(TypeUtils::IsLocalTensorType<T4>() && TypeUtils::IsInnerDefaultType<T3>()) {
-        static_assert(Std::is_same<ActualT, typename T4::PrimType>::value);
-        VselImpl((__ubuf__ ActualT*)dst.GetPhyAddr(), (__ubuf__ T1*)selMask.GetPhyAddr(), src0,
-            (__ubuf__ ActualT*)src1.GetPhyAddr(), selMode, mask, repeatTime, repeatParams);
-    } else if constexpr(TypeUtils::IsLocalTensorType<T3>() && TypeUtils::IsInnerDefaultType<T4>()) {
-        static_assert(Std::is_same<ActualT, typename T3::PrimType>::value);
-        VselImpl((__ubuf__ ActualT*)dst.GetPhyAddr(), (__ubuf__ T1*)selMask.GetPhyAddr(), (__ubuf__ ActualT*)src0.GetPhyAddr(),
-            src1, selMode, mask, repeatTime, repeatParams);
-    }
+    SelectCommon<T1, isSetMask, config>(dst, selMask, src0, src1, selMode, mask, repeatTime, repeatParams);
 }
 
 // select mode: 1

@@ -102,11 +102,10 @@ bool CheckFuncGatherb(const LocalTensor<T>& dst, const LocalTensor<T>& src0, con
 }
 
 template <typename T, typename U>
-bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<U>& offset,
-    const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime, const uint16_t dstRepStride,
-    const char* intriName)
+check::VecGatherApiParams BuildVecGatherApiParams(const LocalTensor<T>& dst, const LocalTensor<T>& src0, 
+    const LocalTensor<U>& offset, const uint32_t srcBaseAddr, const uint8_t repeatTime, const uint16_t dstRepStride)
 {
-    check::VecGatherApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::VecGatherApiParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(offset.GetPhyAddr())),
         srcBaseAddr,
@@ -122,6 +121,14 @@ bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, cons
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src0.GetPosition()),
         static_cast<uint8_t>(offset.GetPosition()) };
+}
+
+template <typename T, typename U>
+bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<U>& offset,
+    const uint32_t srcBaseAddr, const uint64_t mask, const uint8_t repeatTime, const uint16_t dstRepStride,
+    const char* intriName)
+{
+    auto chkParams = BuildVecGatherApiParams(dst, src0, offset, srcBaseAddr, repeatTime, dstRepStride);
     return CheckFuncGatherImpl(chkParams, mask, intriName);
 }
 
@@ -130,22 +137,7 @@ bool CheckFuncGather(const LocalTensor<T>& dst, const LocalTensor<T>& src0, cons
     const uint32_t srcBaseAddr, const uint64_t mask[], const uint8_t repeatTime, const uint16_t dstRepStride,
     const char* intriName)
 {
-    check::VecGatherApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(offset.GetPhyAddr())),
-        srcBaseAddr,
-        repeatTime,
-        static_cast<uint16_t>(1),
-        dstRepStride,
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<U>)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(offset.GetSize() * sizeof(PrimT<U>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(offset.GetPosition()) };
+    auto chkParams = BuildVecGatherApiParams(dst, src0, offset, srcBaseAddr, repeatTime, dstRepStride);
     return CheckFuncGatherImpl(chkParams, mask, intriName);
 }
 
@@ -233,64 +225,54 @@ bool CheckFuncInitConstValue(const LocalTensor<T>& dst, const uint16_t repeatTim
 }
 
 template <typename T, typename U>
+check::VecBilinearInterpolationApiParams BuildVecBilinearInterpolationApiParams(const LocalTensor<T>& dst,
+    const LocalTensor<T>& src0, const LocalTensor<U>& src0Offset, const LocalTensor<T>& src1,
+    const uint8_t hRepeat, const bool repeatMode, const uint16_t dstBlkStride, const uint16_t vROffset,
+    const uint8_t vRepeat)
+{
+    return check::VecBilinearInterpolationApiParams{
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0Offset.GetPhyAddr())),
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
+        hRepeat,
+        repeatMode,
+        dstBlkStride,
+        vROffset,
+        vRepeat,
+        static_cast<uint32_t>(sizeof(PrimT<T>)),
+        static_cast<uint32_t>(sizeof(PrimT<T>)),
+        static_cast<uint32_t>(sizeof(PrimT<U>)),
+        static_cast<uint32_t>(sizeof(PrimT<T>)),
+        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
+        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimT<T>)),
+        static_cast<uint64_t>(src0Offset.GetSize() * sizeof(PrimT<U>)),
+        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimT<T>)),
+        static_cast<uint8_t>(dst.GetPosition()),
+        static_cast<uint8_t>(src0.GetPosition()),
+        static_cast<uint8_t>(src0Offset.GetPosition()),
+        static_cast<uint8_t>(src1.GetPosition()) };
+}
+
+template <typename T, typename U>
 bool CheckFuncBilinearInterpolation(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<U>& src0Offset, const LocalTensor<T>& src1, const uint64_t mask[],
     const uint8_t hRepeat, const bool repeatMode, const uint16_t dstBlkStride, const uint16_t vROffset,
     const uint8_t vRepeat, const char* intriName)
 {
-    check::VecBilinearInterpolationApiParams chkParams {
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0Offset.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        hRepeat,
-        repeatMode,
-        dstBlkStride,
-        vROffset,
-        vRepeat,
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<U>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src0Offset.GetSize() * sizeof(PrimT<U>)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src0Offset.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecBilinearInterpolationApiParams(dst, src0, src0Offset, src1, hRepeat, repeatMode, 
+        dstBlkStride, vROffset, vRepeat);
     return CheckFuncBilinearInterpolationImpl(chkParams, mask, intriName);
 }
 
 template <typename T, typename U>
 bool CheckFuncBilinearInterpolation(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
-    const LocalTensor<U>& src0Offset, const LocalTensor<T>& src1, const uint64_t mask, const uint8_t hRepeat,
-    const bool repeatMode, const uint16_t dstBlkStride, const uint16_t vROffset, const uint8_t vRepeat,
-    const char* intriName)
+    const LocalTensor<U>& src0Offset, const LocalTensor<T>& src1, const uint64_t mask,
+    const uint8_t hRepeat, const bool repeatMode, const uint16_t dstBlkStride, const uint16_t vROffset,
+    const uint8_t vRepeat, const char* intriName)
 {
-    check::VecBilinearInterpolationApiParams chkParams {
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0Offset.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src1.GetPhyAddr())),
-        hRepeat,
-        repeatMode,
-        dstBlkStride,
-        vROffset,
-        vRepeat,
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<U>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src0.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src0Offset.GetSize() * sizeof(PrimT<U>)),
-        static_cast<uint64_t>(src1.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src0.GetPosition()),
-        static_cast<uint8_t>(src0Offset.GetPosition()),
-        static_cast<uint8_t>(src1.GetPosition()) };
+    auto chkParams = BuildVecBilinearInterpolationApiParams(dst, src0, src0Offset, src1, hRepeat, repeatMode, 
+        dstBlkStride, vROffset, vRepeat);
     return CheckFuncBilinearInterpolationImpl(chkParams, mask, intriName);
 }
 

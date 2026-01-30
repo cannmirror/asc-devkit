@@ -41,6 +41,49 @@ __aicore__ inline int64_t GetProgramCounter();
 __aicore__ inline void Trap();
 
 __aicore__ inline int64_t GetSystemCycle();
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <SpecialPurposeReg spr>
+__aicore__ inline int64_t GetSpr();
+
+template <SpecialPurposeReg spr>
+__aicore__ inline void ClearSpr();
+#endif
+
+#if defined(__NPU_ARCH__) &&                                                                                    \
+    ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||    \
+     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+__aicore__ inline constexpr uint32_t GetUBSizeInBytes()
+{
+    return TOTAL_UB_SIZE;
+}
+
+__aicore__ inline constexpr uint32_t GetVecLen()
+{
+    return VECTOR_REG_WIDTH;
+}
+
+__aicore__ inline uint32_t GetRuntimeUBSize()
+{
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    return TOTAL_UB_SIZE;
+#else
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(SPLIT_CORE_VEC)
+    constexpr uint32_t RESERVED_UB_SIZE = 8 * 1024;
+    return get_shmem_sz() - RESERVED_UB_SIZE;
+#else
+    return TOTAL_UB_SIZE;  // cube core not support get_shmem_sz
+#endif
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+    constexpr uint32_t RESERVED_UB_SIZE = 8 * 1024;
+    return get_shmem_sz() - RESERVED_UB_SIZE;  // m510 aicore reserve 8KB
+#else
+    return TOTAL_UB_SIZE;
+#endif
+#endif
+}
+#endif
 } // namespace AscendC
 #include "../../impl/basic_api/kernel_operator_sys_var_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_SYS_VAR_INTERFACE_H

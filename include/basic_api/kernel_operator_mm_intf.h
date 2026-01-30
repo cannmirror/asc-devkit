@@ -17,7 +17,12 @@
 #include "kernel_tensor.h"
 #include "kernel_struct_mm.h"
 
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#include "kernel_operator_mm_bitmode_intf.h"
+#endif
+
 #include "kernel_operator_mm_base_impl.h"
+#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -67,6 +72,22 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const LoadData2DParamsV2& loadDataParams);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, typename U = T>
+__aicore__ inline void LoadData(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+    const LocalTensor<fp8_e8m0_t>& srcMx, const LoadData2DParamsV2& loadDataParams,
+    const LoadData2DMxParams& loadMxDataParams);
+#endif
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+template <typename T, typename U>
+__aicore__ inline __inout_pipe__(MTE2) void LoadData(const LocalTensor<T>& dst, const GlobalTensor<U>& src,
+    const LoadData2DParamsV2& loadDataParams, const Nd2NzParamsV2& nd2nzParams)
+{
+    LoadDataImpl(dst, src, loadDataParams, nd2nzParams);
+}
+#endif
 
 /* **************************************************************************************************
  * LoadData 3dv1                                             *
@@ -133,6 +154,11 @@ template <typename T, const IsResetLoad3dConfig &defaultConfig = IS_RESER_LOAD3D
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LoadData3DParamsV2<U>& loadDataParams);
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <TPosition DstPos, TPosition SrcPos, typename T>
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load3DBitModeParam& loadDataParams);
+#endif
 /* **************************************************************************************************
  * LoadData 3dv2Pro                                             *
  * enhanced from v1, suitable for aicore > 200                                             *
@@ -164,6 +190,11 @@ template <typename T>
 __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LoadData3DParamsV2Pro& loadDataParams);
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+template <TPosition DstPos, TPosition SrcPos, typename T>
+__aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const Load2DBitModeParam& loadDataParams);
+#endif
 /* **************************************************************************************************
  * LoadDataWithTranspose                                             *
  * ************************************************************************************************* */
@@ -228,6 +259,16 @@ template <typename T, typename U, typename S, typename V>
 __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadParams& mmadParams);
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+template <typename T, typename U, typename S>
+__aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const MmadBitModeParams& mmadParams);
+
+template <typename T, typename U, typename S, typename V>
+__aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
+    const LocalTensor<S>& filter, const LocalTensor<V>& bias, MmadBitModeParams& mmadParams);
+#endif
+
 #if __NPU_ARCH__ == 2201
 template <typename T = int32_t, typename U = int8_t,
     typename Std::enable_if<Std::is_same<PrimT<T>, int32_t>::value, bool>::type = true,
@@ -256,10 +297,10 @@ __aicore__ inline __inout_pipe__(V) void BroadCastVecToMM(const LocalTensor<T> &
     const uint8_t dstGap);
 
 /* **************************************************************************************************
- * InitConstValue                                             *
+ * Fill                                             *
  * ************************************************************************************************* */
 /*
- * @ingroup InitConstValue
+ * @ingroup Fill
  * @brief L0A/L0B/L1 value initializing
  * @param [out] dst output LocalTensor
  * @param [in] InitConstValueParams.repeatTimes repeat times
@@ -269,8 +310,9 @@ __aicore__ inline __inout_pipe__(V) void BroadCastVecToMM(const LocalTensor<T> &
  */
 template <typename T, typename U = PrimT<T>,
     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
-__aicore__ inline void InitConstValue(const LocalTensor<T> &dst,
+__aicore__ inline void Fill(const LocalTensor<T> &dst,
     const InitConstValueParams<U> &initConstValueParams);
+    
 /* **************************************************************************************************
  * SetLoadDataPaddingValue                                             *
  * ************************************************************************************************* */
@@ -295,6 +337,10 @@ __aicore__ inline void SetLoadDataPaddingValue(const T padValue);
 __aicore__ inline void SetFmatrix(uint16_t l1H, uint16_t l1W,
     const uint8_t padList[4], const FmatrixMode &fmatrixMode);
 
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+__aicore__ inline void SetFmatrix(const SetFMatrixBitModeParams& param,
+    const FmatrixMode &fmatrixMode);
+#endif
 /* **************************************************************************************************
  * SetLoadDataBoundary                                             *
  * ************************************************************************************************* */
@@ -341,6 +387,16 @@ __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTens
 
 } // namespace AscendC
 
+/* **************************************************************************************************
+ * LoadData(Layout) API Level2                                              *
+ * ************************************************************************************************* */
+namespace AscendC {
+
+template <const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U>
+__aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type
+LoadData(const T& dst, const U& src);
+
+}  // namespace AscendC
 #include "../../impl/basic_api/kernel_operator_mm_intf_impl.h"
 
 #endif // ASCENDC_MODULE_OPERATOR_MM_INTERFACE_H

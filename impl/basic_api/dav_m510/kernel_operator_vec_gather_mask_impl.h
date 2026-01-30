@@ -450,7 +450,7 @@ __aicore__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* d
         for (uint16_t i = 0; i < loopTimes; ++i) {
             MicroAPI::LoadAlign<float, MicroAPI::LoadDist::DIST_DINTLV_B32>(
                 vreg0, vreg1, (__ubuf__ float *)sortedLocal + i * repeatElm * 2);
-            vsqz(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg, MODE_NO_STORED);
+            MicroAPI::Squeeze<half, MicroAPI::GatherMaskMode::NO_STORE_REG>(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg);
             MicroAPI::StoreAlign(dstValueLocal + i * repeatElm, vreg2, preg1);
             MicroAPI::StoreAlign(dstIndexLocal + i * repeatElm, (MicroAPI::RegTensor<uint32_t> &)vreg1, indexPreg);
         }
@@ -458,7 +458,7 @@ __aicore__ inline void ExtractVf(__ubuf__ T* dstValueLocal, __ubuf__ uint32_t* d
             MicroAPI::LoadAlign(vreg0, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
             MicroAPI::LoadAlign(vreg1, (__ubuf__ float *)sortedLocal + repeatTime / 2 * repeatElm * 2);
             MicroAPI::DeInterleave(vreg0, vreg1, vreg0, vreg1);
-            vsqz(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg, MODE_NO_STORED);
+            MicroAPI::Squeeze<half, MicroAPI::GatherMaskMode::NO_STORE_REG>(vreg2, (MicroAPI::RegTensor<half> &)vreg0, indexPreg);
             MicroAPI::MaskReg preg2 = MicroAPI::CreateMask<half, MicroAPI::MaskPattern::Q>();
             MicroAPI::StoreAlign(dstValueLocal + repeatTime / 2 * repeatElm, vreg2, preg2);
             preg2 = MicroAPI::CreateMask<uint32_t, MicroAPI::MaskPattern::H>();

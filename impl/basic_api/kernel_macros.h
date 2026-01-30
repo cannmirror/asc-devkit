@@ -41,6 +41,11 @@
 #ifndef __host_aicore__
 #define __host_aicore__ [host, aicore]
 #endif // __host_aicore__
+
+#ifndef __disable_kernel_type_autoinfer__
+#define __disable_kernel_type_autoinfer__
+#endif // __disable_kernel_type_autoinfer__
+
 #endif
 
 #if (__CCE__)
@@ -103,11 +108,11 @@
 #define TPIPE_MAX_TYPE 4
 #endif
 
-#if defined(__DAV_C220_CUBE__)  || defined(__DAV_C310_CUBE__) || defined(__DAV_310R6_CUBE__)
+#if (defined(__DAV_CUBE__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
 #define SPLIT_CORE_CUBE
 #endif
 
-#if defined(__DAV_C220_VEC__) || defined(__DAV_C310_VEC__) || defined(__DAV_310R6_VEC__)
+#if (defined(__DAV_VEC__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
 #define SPLIT_CORE_VEC
 #endif
 

@@ -20,6 +20,7 @@
 #include "kernel_check.h"
 
 #include "kernel_operator_data_copy_base_impl.h"
+#include "tile_api/kernel_tensor_tile_data_copy_impl.h"
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -667,6 +668,11 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, 
             { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
                     In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
         repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_B2_NUM;
+    } else if constexpr(Std::is_same<PrimType, uint1b_t>::value) {
+        ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_B1_NUM == 0),
+            { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
+                    In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
+        repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_B1_NUM;
     } else if constexpr (Std::is_same<PrimType, fp4x2_e2m1_t>::value || Std::is_same<PrimType, fp4x2_e1m2_t>::value || Std::is_same<PrimType, int4b_t>::value) {
         ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_FP4_NUM == 0),
             { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
@@ -711,6 +717,11 @@ __aicore__ inline __inout_pipe__(MTE3) void DataCopy(const GlobalTensor<T>& dst,
             { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
                     In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
         repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_B2_NUM;
+    } else if constexpr(Std::is_same<PrimType, uint1b_t>::value) {
+        ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_B1_NUM == 0),
+            { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
+                    In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
+        repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_B1_NUM;
     } else if constexpr (Std::is_same<PrimType, fp4x2_e2m1_t>::value || Std::is_same<PrimType, fp4x2_e1m2_t>::value || Std::is_same<PrimType, int4b_t>::value) {
         ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_FP4_NUM == 0),
             { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
@@ -755,7 +766,8 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<T> 
 
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
     const Hardware srcHWPos = GetPhyType((TPosition)src.GetPosition());
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     repeatParams.blockLen = count / AscendCUtils::GetC0Count(sizeof(T));
 #else
     if (srcHWPos != Hardware::L1) {  // UB -> UB, UB -> L1
@@ -808,12 +820,14 @@ __aicore__ inline __inout_pipe__(MTE3) void DataCopy(const GlobalTensor<T>& dst,
 #if __NPU_ARCH__ == 2002
         ASCENDC_CHECK_TPOSITION(false, "src", "VECOUT / CO2", "DataCopy with Nz2NdParamsFull",
             ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(src.GetPosition())));
-#elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#else
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
         if (srcHWPos == Hardware::L1) {
             DataCopyL12GMNZ2NDImpl((__gm__ T*)dst.GetPhyAddr(), (__cbuf__ T*)src.GetPhyAddr(), intriParams);
             return;
         }
-#else
+#endif
         ASCENDC_CHECK_TPOSITION(false, "src", "VECOUT", "DataCopy with Nz2NdParamsFull",
             ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(src.GetPosition())));
 #endif
@@ -1216,7 +1230,8 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &ds
     if (dstHWPos == Hardware::UB) {
         DataCopyPadGm2UBImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__gm__ PrimType*)src.GetPhyAddr(),
             dataCopyParams, padParams);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     } else {
         DataCopyPadGm2L1Impl((__cbuf__ T*)dst.GetPhyAddr(), (__gm__ T*)src.GetPhyAddr(), dataCopyParams,
             padParams);
@@ -1251,7 +1266,8 @@ __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &d
     if (srcHWPos == Hardware::UB) {
         DataCopyPadUB2GMImpl((__gm__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
             dataCopyParams);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     } else {
         DataCopyPadL12GMImpl((__gm__ T*)dst.GetPhyAddr(), (__cbuf__ T*)src.GetPhyAddr(), dataCopyParams);
 #else
@@ -1330,7 +1346,8 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &ds
     if (dstHWPos == Hardware::UB) {
         DataCopyPadGm2UBImpl((__ubuf__ T*)dst.GetPhyAddr(), (__gm__ T*)src.GetPhyAddr(),
             dataCopyParams, padParams);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     } else {
         DataCopyPadGm2L1Impl((__cbuf__ T*)dst.GetPhyAddr(), (__gm__ T*)src.GetPhyAddr(), dataCopyParams,
             padParams);
@@ -1412,7 +1429,8 @@ __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &d
     if (srcHWPos == Hardware::UB) {
         DataCopyPadUB2GMImpl((__gm__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
             dataCopyParams);
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || \
+    (__NPU_ARCH__ == 3113))
     } else {
         DataCopyPadL12GMImpl((__gm__ T*)dst.GetPhyAddr(), (__cbuf__ T*)src.GetPhyAddr(), dataCopyParams);
 #else
@@ -1450,7 +1468,7 @@ __aicore__ inline void DataCopyPad(const LocalTensor<T> &dst, const LocalTensor<
 template <typename T, TPosition pos>
 __aicore__ inline void SetPadValue(T paddingValue)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201|| __NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
     if (g_coreType == AIC) {
         return;
     }

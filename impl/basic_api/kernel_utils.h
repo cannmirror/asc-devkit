@@ -27,6 +27,16 @@
 #include "kernel_scalar_convert.h"
 #include "kernel_utils_base.h"
 
+enum class HF32Mode {
+    Enable,
+    Disable
+};
+
+enum class HF32TransMode {
+    Enable,
+    Disable
+};
+
 #if ENABLE_CV_COMM_VIA_SSBUF != 0 && __MIX_CORE_AIC_RATION__ != 1
 #define KFC_C310_SSBUF 1
 #else
@@ -35,7 +45,11 @@
 
 inline __gm__ void* g_sysFftsAddr = nullptr;
 namespace AscendC {
-
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+namespace Internal {
+__BLOCK_LOCAL__ __inline__ half g_deqValue;
+}
+#endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 namespace Internal {
 // global varaibles g_cmpMaskLow and g_cmpMaskHigh are used to simulate the registr CMPMASK in 1971

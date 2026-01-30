@@ -205,6 +205,13 @@ enum Format {
     FORMAT_NYUV,
     FORMAT_NYUV_A,
     FORMAT_NCL,
+    FORMAT_FRACTAL_Z_WINO,
+    FORMAT_C1HWC0,
+    FORMAT_FRACTAL_NZ_C0_16,    // NZ for cube
+    FORMAT_FRACTAL_NZ_C0_32,    // NZ for cube
+    FORMAT_FRACTAL_NZ_C0_2,     // NZ for cube
+    FORMAT_FRACTAL_NZ_C0_4,     // NZ for cube
+    FORMAT_FRACTAL_NZ_C0_8,     // NZ for cube
     FORMAT_MAX,
 };
 }

@@ -458,7 +458,7 @@ __aicore__ inline void CheckFixpipeL0C2UBParam(
     CheckFixpipeParams<DstT, SrcT, config>(src, params);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     uint64_t dstAbsAddr = dst - (DstT*)(GetTPipePtr()->GetBaseAddr(int8_t(TPosition::VECCALC)));
-    ASCENDC_ASSERT((dstAbsAddr % ONE_BLK_SIZE == 0), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dst start "\
+    ASCENDC_ASSERT((dstAbsAddr * sizeof(DstT) % ONE_BLK_SIZE == 0), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dst start "\
         "address alignment in Fixpipe");});
 #endif
 }
@@ -470,7 +470,7 @@ __aicore__ inline void CheckFixpipeL0C2L1Param(
     CheckFixpipeParams<DstT, SrcT, config>(src, params);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     uint64_t dstAbsAddr = dst - (DstT*)(GetTPipePtr()->GetBaseAddr(int8_t(TPosition::C1)));
-    ASCENDC_ASSERT((dstAbsAddr % ONE_BLK_SIZE == 0), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dst start "\
+    ASCENDC_ASSERT((dstAbsAddr * sizeof(DstT) % ONE_BLK_SIZE == 0), {KERNEL_LOG(KERNEL_ERROR, "Failed to check dst start "\
         "address alignment in Fixpipe");});
 #endif
 }

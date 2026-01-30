@@ -83,7 +83,11 @@ __aicore__ inline void SetSysWorkspaceForce(GM_ADDR workspace)
     ASCENDC_ASSERT((workspace != nullptr),
         { KERNEL_LOG(KERNEL_ERROR, "workspace can not be nullptr"); });
 #else
+#if defined(__NPU_DEVICE__)
+    __set_kfc_workspace_addr(workspace);
+#else
     g_sysWorkspaceReserved = workspace;
+#endif
 #endif
 }
 
@@ -95,7 +99,11 @@ __aicore__ inline GM_ADDR GetUserWorkspace(GM_ADDR workspace)
     return workspace;
 #else
     (void)(workspace);
+#if defined(__NPU_DEVICE__)
+    return __get_kfc_workspace_addr() + RESERVED_WORKSPACE;
+#else
     return g_sysWorkspaceReserved + RESERVED_WORKSPACE;
+#endif
 #endif
 }
 

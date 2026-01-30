@@ -9,28 +9,14 @@
 */
 
 /*!
- * \file kernel_operator_set_atomic_intf.h
+ * \file kernel_operator_mm_bitmode_struct.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_OPERATOR_SET_ATOMIC_INTERFACE_H
-#define ASCENDC_MODULE_OPERATOR_SET_ATOMIC_INTERFACE_H
-#include "kernel_tensor.h"
-
-namespace AscendC {
-template <typename T>
-__aicore__ inline void SetAtomicType();
-
-template <typename T>
-__aicore__ inline void SetAtomicAdd();
-
-__aicore__ inline void DisableDmaAtomic();
-
-template <typename T>
-__aicore__ inline void SetAtomicMax();
-
-template <typename T>
-__aicore__ inline void SetAtomicMin();
-} // namespace AscendC
-
-#include "../../impl/basic_api/kernel_operator_set_atomic_intf_impl.h"
-#endif // ASCENDC_MODULE_OPERATOR_SET_ATOMIC_INTERFACE_H
+#ifndef ASCENDC_MODULE_OPERATOR_MM_BIT_MODE_STRUCT_H
+#define ASCENDC_MODULE_OPERATOR_MM_BIT_MODE_STRUCT_H
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#include "dav_c310/kernel_operator_mm_bitmode_impl.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
+#include "dav_m510/kernel_operator_mm_bitmode_impl.h"
+#endif
+#endif  // ASCENDC_MODULE_OPERATOR_MM_BIT_MODE_STRUCT_H

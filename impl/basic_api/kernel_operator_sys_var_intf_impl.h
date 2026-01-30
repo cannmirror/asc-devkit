@@ -64,16 +64,5 @@ __aicore__ inline int64_t GetSystemCycle()
 {
     return GetSystemCycleImpl();
 }
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
-__aicore__ inline constexpr uint32_t GetUBSizeInBytes()
-{
-    return TOTAL_UB_SIZE;
-}
-
-__aicore__ inline constexpr uint32_t GetVecLen()
-{
-    return VECTOR_REG_WIDTH;
-}
-#endif
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_OPERATOR_SYS_VAR_INTERFACE_IMPL_H

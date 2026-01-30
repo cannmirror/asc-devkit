@@ -70,12 +70,21 @@ __aicore__ inline void Relu(const LocalTensor<T>& dst, const LocalTensor<T>& src
  * @param [in] repeatParams.dstRepStride dst repeat stride
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool isSetMask = true, const ExpConfig& config = DEFAULT_EXP_CONFIG>
+__aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+template <typename T, bool isSetMask = true, const ExpConfig& config = DEFAULT_EXP_CONFIG>
+__aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#else
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#endif
 
 /*
  * @ingroup Exp Level 2
@@ -84,8 +93,13 @@ __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, const ExpConfig& config = DEFAULT_EXP_CONFIG>
+__aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#else
 template <typename T>
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#endif
 
 /* **************************************** Ln ****************************************** */
 /*
@@ -100,12 +114,21 @@ __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  * @param [in] repeatParams.dstRepStride dst repeat stride
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool isSetMask = true, const LnConfig& config = DEFAULT_LN_CONFIG>
+__aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+template <typename T, bool isSetMask = true, const LnConfig& config = DEFAULT_LN_CONFIG>
+__aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#else
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#endif
 
 /*
  * @ingroup Ln Level 2
@@ -114,8 +137,13 @@ __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, 
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, const LnConfig& config = DEFAULT_LN_CONFIG>
+__aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#else
 template <typename T>
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#endif
 
 /* **************************************** Abs ****************************************** */
 /*
@@ -147,6 +175,18 @@ __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src,
 template <typename T>
 __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
 
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+/*
+ * @ingroup Abs Level 2 for complex32/complex64
+ * @brief dst[i] = abs(src[i])
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T, typename U>
+__aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<U>& src, const int32_t& count);
+#endif
+
 /* **************************************** Reciprocal ****************************************** */
 /*
  * @ingroup Rec Level 0
@@ -160,12 +200,21 @@ __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  * @param [in] repeatParams.dstRepStride dst repeat stride
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool isSetMask = true, const ReciprocalConfig& config = DEFAULT_RECIPROCAL_CONFIG>
+__aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+template <typename T, bool isSetMask = true, const ReciprocalConfig& config = DEFAULT_RECIPROCAL_CONFIG>
+__aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#else
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#endif
 
 /*
  * @ingroup Rec Level 2
@@ -174,9 +223,15 @@ __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, const ReciprocalConfig& config = DEFAULT_RECIPROCAL_CONFIG>
+__aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const int32_t& count);
+#else
 template <typename T>
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const int32_t& count);
+#endif
 
 /* **************************************** Rsqrt ****************************************** */
 /*
@@ -191,12 +246,21 @@ __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T
  * @param [in] repeatParams.dstRepStride dst repeat stride
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool isSetMask = true, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+template <typename T, bool isSetMask = true, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#else
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#endif
 
 /*
  * @ingroup Rsqrt Level 2
@@ -205,8 +269,13 @@ __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& sr
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, const RsqrtConfig& config = DEFAULT_RSQRT_CONFIG>
+__aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#else
 template <typename T>
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#endif
 
 /* **************************************** Sqrt ****************************************** */
 /*
@@ -221,12 +290,21 @@ __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& sr
  * @param [in] repeatParams.dstRepStride dst repeat stride
  * @param [in] repeatParams.src0RepStride src repeat stride
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, bool isSetMask = true, const SqrtConfig& config = DEFAULT_SQRT_CONFIG>
+__aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+template <typename T, bool isSetMask = true, const SqrtConfig& config = DEFAULT_SQRT_CONFIG>
+__aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
+    const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#else
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
 template <typename T, bool isSetMask = true>
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+#endif
 
 /*
  * @ingroup Sqrt Level 2
@@ -235,8 +313,13 @@ __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+template <typename T, const SqrtConfig& config = DEFAULT_SQRT_CONFIG>
+__aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#else
 template <typename T>
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+#endif
 
 /* **************************************** Not ****************************************** */
 /*
@@ -267,6 +350,20 @@ __aicore__ inline void Not(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  */
 template <typename T>
 __aicore__ inline void Not(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count);
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+/* **************************************** Neg ****************************************** */
+/*
+ * @ingroup Neg Level 2
+ * @brief dst[i] = -src[i]
+ * @param [out] dst output LocalTensor
+ * @param [in] src input LocalTensor
+ * @param [in] count number Number of data involved in calculation
+ */
+template <typename T>
+__aicore__ inline void Neg(const LocalTensor<T> &dst, const LocalTensor<T> &src,
+    const uint32_t count);
+#endif
 } // namespace AscendC
 #pragma end_pipe
 

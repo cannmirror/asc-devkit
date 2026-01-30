@@ -28,16 +28,18 @@ __aicore__ inline __sync_alias__ LocalTensor<T> TBuf<pos>::Get(uint32_t len)
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<T, int2b_t>::value) {
         dataLen = len / INT2_FOUR;
+    } else if constexpr (IsSameType<T, uint1b_t>::value) {
+        dataLen = len / INT1_EIGHT;
 #endif
     } else {
         dataLen = len * sizeof(PrimType);
     }
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
-    ASCENDC_DEBUG_ASSERT((dataLen % ONE_BLK_SIZE == 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be times of 32 Bytes \n",
+    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
+    ASCENDC_DEBUG_ASSERT((dataLen % ONE_BLK_SIZE == 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be times of 32 Bytes \n",
         len));
     ASCENDC_DEBUG_ASSERT((dataLen <= bufLen),
-                   KERNEL_LOG(KERNEL_ERROR, "len is %u, max buffer len is %u", dataLen, bufLen));
+                   KERNEL_LOG_INTERNAL(KERNEL_ERROR, "len is %u, max buffer len is %u", dataLen, bufLen));
 #endif
     auto ptr = this->bufStart;
     ptr->dataLen = dataLen;
@@ -71,6 +73,8 @@ template <TPosition pos> template <typename T> __aicore__ inline __sync_alias__ 
 #if (__NPU_ARCH__ == 5102)
     } else if constexpr (IsSameType<T, int2b_t>::value) {
         return Get<T>(bufLen * INT2_FOUR);
+    } else if constexpr (IsSameType<T, uint1b_t>::value) {
+        return Get<T>(bufLen * INT1_EIGHT);
 #endif
     } else {
         return Get<T>(bufLen / sizeof(PrimType));
@@ -177,7 +181,7 @@ template <TPosition pos> __aicore__ inline void TBuf<pos>::InitStartBufHandle(
     TBufHandle startBufhandle, uint8_t num, uint32_t len)
 {
     static_assert(!isTQue, "InitTBufAddr only support TBuf class");
-    ASCENDC_DEBUG_ASSERT((num == 1), KERNEL_LOG(KERNEL_ERROR, "param num must be one for TBuf, current num is %d", num));
+    ASCENDC_DEBUG_ASSERT((num == 1), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "param num must be one for TBuf, current num is %d", num));
     auto ptr = reinterpret_cast<TBufType*>(startBufhandle);
     this->bufStart = ptr;
     this->bufLen = len;
@@ -188,7 +192,7 @@ template <TPosition pos> __aicore__ inline void TBuf<pos>::InitStartBufHandle(
 template <TPosition pos> __aicore__ inline TBufHandle TBuf<pos>::Get(uint32_t len)
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    ASCENDC_DEBUG_ASSERT((len <= bufLen), KERNEL_LOG(KERNEL_ERROR, "len is %u, max buffer len is %u", len, bufLen));
+    ASCENDC_DEBUG_ASSERT((len <= bufLen), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "len is %u, max buffer len is %u", len, bufLen));
 #endif
     this->bufStart->dataLen = len;
     return reinterpret_cast<TBufHandle>(this->bufStart);

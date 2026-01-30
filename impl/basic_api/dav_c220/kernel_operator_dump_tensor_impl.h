@@ -23,9 +23,19 @@
 #include "kernel_struct_data_copy.h"
 #include "kernel_struct_fixpipe.h"
 
-
 namespace AscendC {
 __BLOCK_LOCAL__ __inline__ __gm__ uint8_t* g_dumpWorkspaceReserved;
+
+__aicore__ inline void EnablePrintf()
+{
+#if defined(__ENABLE_ASCENDC_PRINTF__)
+#if defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+    static const struct BinaryMetaAscFeature __asc_feature_print__ __attribute__ ((used, section (".ascend.meta"))) =
+    {4, 4, 1};
+#endif // defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
+#endif // __ENABLE_ASCENDC_PRINTF__
+}
+
 
 template <typename T>
 __aicore__ constexpr inline Internal::DumpTensorDataType GetTensorDataType();
@@ -65,8 +75,8 @@ __aicore__ inline void InitDumpImpl(bool mixFlag, uint32_t gmLen)
     }
     uint32_t blockDumpSize = DUMP_UINTSIZE; // DUMP_UINTSIZE is 1M
 
-    uint32_t blockDim = GetDumpBlockIdx();
-    if (blockDim >= DUMP_CORE_COUNT) {
+    uint32_t numBlocks = GetDumpBlockIdx();
+    if (numBlocks >= DUMP_CORE_COUNT) {
         return;
     }
 #ifdef ASCENDC_TIME_STAMP_ON
@@ -74,9 +84,9 @@ __aicore__ inline void InitDumpImpl(bool mixFlag, uint32_t gmLen)
 #else
     uint32_t blkInfoLen = sizeof(BlockInfo) + sizeof(DumpMeta);
 #endif
-    uint64_t blockInfoStart = dumpWorkspaceStart + blockDim * DUMP_UINTSIZE;
+    uint64_t blockInfoStart = dumpWorkspaceStart + numBlocks * DUMP_UINTSIZE;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_LEN_POS) = blockDumpSize;
-    *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_CORE_POS) = blockDim;
+    *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_CORE_POS) = numBlocks;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_BLOCKNUM_POS) = totalBlockNum;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_DUMPOFFSET_POS) = blockDumpSize - blkInfoLen;
     *((__gm__ uint32_t*)blockInfoStart + BLOCK_INFO_MAGIC_POS) = 0x5aa5bccd;
@@ -187,6 +197,7 @@ __aicore__ inline void WriteRingBufShapeInfo(const ShapeInfo &shapeInfo);
 
 __aicore__ inline void DumpShapeImpl(const ShapeInfo &shapeInfo)
 {
+    dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         WriteRingBufShapeInfo(shapeInfo);
     } else {
@@ -261,15 +272,16 @@ __aicore__ inline void DumpTensorLocal2GMEntityImpl(const LocalTensor<T>& src, u
     dcci((__gm__ uint64_t*)ptr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
-
-template <template<typename> class Tensor, typename T>
+template <template <typename> class Tensor, typename T>
 __aicore__ inline void DumpTensorRingBufImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize);
 
 template <typename T>
-__aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_t desc, uint32_t dumpSize)
+__aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_t desc,
+                                                                uint32_t dumpSize)
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
+    dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         DumpTensorRingBufImpl(src, desc, dumpSize);
     } else {
@@ -433,6 +445,7 @@ __aicore__ inline void DumpTensorGM2GMImpl(const GlobalTensor<T>& src, uint32_t 
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
+    dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         DumpTensorRingBufImpl(src, desc, dumpSize);
     } else {
@@ -710,16 +723,26 @@ __aicore__ inline void SkipRingBufWithInfo(
     return;
 }
 
+template <uint64_t timeoutCycle = 1000 * 1000> // 20ms
+__aicore__ inline void RingBufferWaitRtsSync()
+{
+    const uint64_t firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
+    while (static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp < timeoutCycle) {
+        // Wait for RTS sync
+    }
+}
+
 __aicore__ inline bool RingBufferWait(__gm__ RingBufReadInfo* readInfo, __gm__ RingBufWriteInfo* writeInfo,
                                       const uint32_t& tlvLen)
 {
-    const uint64_t firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
-    constexpr uint64_t timeoutCycle = 50 * 1000 * 1000 * 5; // 5s
+    constexpr uint32_t maxCounter = 15;
+    volatile uint32_t counter = 0;
     while (writeInfo->bufOffset < readInfo->bufOffset && writeInfo->bufOffset + tlvLen >= readInfo->bufOffset) {
-        uint64_t spendTime = static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp;
-        if (spendTime > timeoutCycle) {
+        if (counter >= maxCounter) { // max wait 300ms, rts read gm per 200ms
             return false;
         }
+        RingBufferWaitRtsSync(); // wait 20 ms
+        ++counter;
         dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     }
     return true;
@@ -730,8 +753,8 @@ __aicore__ inline void WriteRingBufTlvHead(
 {
     printTlv->type = static_cast<uint32_t>(printType);
     printTlv->length = tlvLen - sizeof(uint32_t[2]);   // exclude type and length
-    printTlv->resvMem[0] = static_cast<uint32_t>(0U);
-    printTlv->resvMem[1] = static_cast<uint32_t>(0U);
+    printTlv->blockIdx = static_cast<uint32_t>(GetBlockIdxImpl());
+    printTlv->resv = static_cast<uint32_t>(0U);
     printTlv->fmtOffset = (argsNum + 1) * sizeof(uint64_t);      // include fmt offset
     dcci(reinterpret_cast<__gm__ uint64_t*>(printTlv), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
@@ -784,13 +807,14 @@ __aicore__ __gm__ inline RingBufWriteInfo* GetRingBufWriteInfo(__gm__ BlockRingB
 
 __aicore__ inline bool WaitRingBufBeginRead(__gm__ RingBufReadInfo* readInfo)
 {
-    const uint64_t firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
-    constexpr uint64_t timeoutCycle = 50 * 1000 * 1000 * 5; // 5s
+    constexpr uint32_t maxCounter = 15;
+    volatile uint32_t counter = 0;
     while (readInfo->bufOffset == 0) {
-        uint64_t spendTime = static_cast<uint64_t>(GetSystemCycle()) - firstTimeStamp;
-        if (spendTime > timeoutCycle) {
+        if (counter >= maxCounter) { // max wait 300ms, rts read gm per 200ms
             return false;
         }
+        RingBufferWaitRtsSync(); // wait 20 ms
+        ++counter;
         dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     }
     return true;
@@ -838,6 +862,7 @@ template <class... Args>
 __aicore__ inline void PrintfRingBufImpl(DumpType printType, __gm__ const char* fmt, Args&&... args)
 {
 #ifdef ASCENDC_DUMP
+    EnablePrintf();
     __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
     if (blockRingBufInfo == nullptr) {
         return;
@@ -948,7 +973,7 @@ __aicore__ inline void WriteRingBufTlvHead(const Tensor<T>& src, __gm__ DumpTens
     dumpTensorTlv->desc = desc;
     dumpTensorTlv->bufferId = static_cast<uint32_t>(0U);
     dumpTensorTlv->position = static_cast<uint16_t>(position);
-    dumpTensorTlv->resv0 = static_cast<uint16_t>(0U);
+    dumpTensorTlv->blockIdx = static_cast<uint16_t>(GetBlockIdxImpl());
     dumpTensorTlv->dim = static_cast<uint32_t>(0U);
     for (uint32_t i = 0; i < K_MAX_SHAPE_DIM; ++i) {
         dumpTensorTlv->shape[i] = static_cast<uint32_t>(0U);
@@ -984,13 +1009,16 @@ template <typename T>
 __aicore__ inline void WriteRingBufTlvData(
     const GlobalTensor<T>& src, __gm__ DumpTensorTlvInfoHead* dumpTensorTlv, const uint32_t& dumpSize)
 {
+    PipeBarrier<PIPE_ALL>();
     __gm__ uint8_t* dst = reinterpret_cast<__gm__ uint8_t*>(dumpTensorTlv + 1);
     MemCopyGm2Gm(dst, reinterpret_cast<__gm__ const uint8_t*>(src.GetPhyAddr()), dumpSize * sizeof(T));
 }
 
-template <template<typename> class Tensor, typename T>
+template <template <typename> class Tensor, typename T>
 __aicore__ inline void DumpTensorRingBufImpl(const Tensor<T>& src, uint32_t desc, uint32_t dumpSize)
 {
+#ifdef ASCENDC_DUMP
+    EnablePrintf();
     if constexpr (GetTensorDataType<T>() == Internal::DumpTensorDataType::ACL_MAX) {
         ASCENDC_ASSERT((false),
                    { KERNEL_LOG(KERNEL_ERROR, "dump tensor not support this data type"); });
@@ -1038,6 +1066,7 @@ __aicore__ inline void DumpTensorRingBufImpl(const Tensor<T>& src, uint32_t desc
     __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
 
     UpdateWriteInfo(writeInfo, tlvLen);
+#endif // ASCENDC_DUMP
 }
 
 __aicore__ inline void WriteRingBufShapeInfo(const ShapeInfo &shapeInfo)
@@ -1058,7 +1087,7 @@ __aicore__ inline void WriteRingBufShapeInfo(const ShapeInfo &shapeInfo)
     for (uint32_t i = 0; i < K_MAX_SHAPE_DIM; ++i) {
         shapeTlv->shape[i] = shapeInfo.shape[i];
     }
-    shapeTlv->resv = static_cast<uint32_t>(0U);;
+    shapeTlv->resv = static_cast<uint32_t>(0U);
     dcci((__gm__ uint64_t*)shapeTlv, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 
     __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
@@ -1071,6 +1100,7 @@ __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Ar
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
+    dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         PrintfRingBufImpl(printType, fmt, args...);
     } else {
@@ -1098,9 +1128,11 @@ __aicore__ inline void WriteTimeStampInfo(uint32_t descId)
 #endif
 }
 
+
 __aicore__ inline void WriteRingBufTimeStampInfo(uint32_t descId)
 {
-#ifdef ASCENDC_TIME_STAMP_ON
+#if defined(ASCENDC_TIME_STAMP_ON) && !defined(ASCENDC_CPU_DEBUG)
+    EnablePrintf();
     __gm__ BlockRingBufInfo* blockRingBufInfo = GetBlockRingBufInfo();
     if (blockRingBufInfo == nullptr) {
         return;
@@ -1115,10 +1147,11 @@ __aicore__ inline void WriteRingBufTimeStampInfo(uint32_t descId)
     timeStampTlv->type = static_cast<uint32_t>(DumpType::DUMP_TIME_STAMP);
     timeStampTlv->length = tlvLen - sizeof(uint32_t[2]);
     timeStampTlv->descId = descId;
-    timeStampTlv->resv = static_cast<uint32_t>(0U);
+    timeStampTlv->blockIdx = static_cast<uint16_t>(GetBlockIdxImpl());
+    timeStampTlv->resv = static_cast<uint16_t>(0U);
     timeStampTlv->cycle = static_cast<uint64_t>(GetSystemCycle());
     timeStampTlv->pc = static_cast<uint64_t>(get_pc());
-    timeStampTlv->entry = static_cast<uint64_t>(0U);
+    timeStampTlv->entry = static_cast<uint64_t>(__get_entry_sys_cnt());
     timeStampTlv->resvMem[0] = static_cast<uint32_t>(0U);
     timeStampTlv->resvMem[1] = static_cast<uint32_t>(0U);
     dcci((__gm__ uint64_t*)timeStampTlv, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
@@ -1126,11 +1159,12 @@ __aicore__ inline void WriteRingBufTimeStampInfo(uint32_t descId)
     __gm__ RingBufWriteInfo* writeInfo = GetRingBufWriteInfo(blockRingBufInfo);
 
     UpdateWriteInfo(writeInfo, tlvLen);
-#endif
+#endif // ASCENDC_TIME_STAMP_ON
 }
 
 __aicore__ inline void DumpTimeStampImpl(uint32_t descId)
 {
+    dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         WriteRingBufTimeStampInfo(descId);
     } else {

@@ -23,14 +23,14 @@ __aicore__ inline GroupBarrier<pipeMode>::GroupBarrier(
 {
     if ASCEND_IS_AIV {
         ASCENDC_DEBUG_ASSERT(
-            (pipeMode == PipeMode::MTE3_MODE), KERNEL_LOG(KERNEL_ERROR, "Currently GroupBarrier only support PipeMode::MTE3_MODE"));
-        ASCENDC_DEBUG_ASSERT((arriveSizeIn > 0), KERNEL_LOG(KERNEL_ERROR, "arriveSizeIn is %u, which should be larger than 0", arriveSizeIn));
-        ASCENDC_DEBUG_ASSERT((waitSizeIn > 0), KERNEL_LOG(KERNEL_ERROR, "waitSizeIn is %u, which should be larger than 0", waitSizeIn));
-        ASCENDC_DEBUG_ASSERT((waitSizeIn <= GetBlockNum()), KERNEL_LOG(KERNEL_ERROR,
+            (pipeMode == PipeMode::MTE3_MODE), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "Currently GroupBarrier only support PipeMode::MTE3_MODE"));
+        ASCENDC_DEBUG_ASSERT((arriveSizeIn > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "arriveSizeIn is %u, which should be larger than 0", arriveSizeIn));
+        ASCENDC_DEBUG_ASSERT((waitSizeIn > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "waitSizeIn is %u, which should be larger than 0", waitSizeIn));
+        ASCENDC_DEBUG_ASSERT((waitSizeIn <= GetBlockNum()), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "waitSizeIn %u is larger than max waitSize is %lld \n",
             waitSizeIn,
             GetBlockNum()));
-        ASCENDC_DEBUG_ASSERT((arriveSizeIn <= GetBlockNum()), KERNEL_LOG(KERNEL_ERROR,
+        ASCENDC_DEBUG_ASSERT((arriveSizeIn <= GetBlockNum()), KERNEL_LOG_INTERNAL(KERNEL_ERROR, 
             "waitSize is %u is larger than max arriveSize is %lld \n", arriveSizeIn,
             GetBlockNum()));
         this->barrierInfoArrive = reinterpret_cast<__gm__ BarrierInfo *>(groupWorkspace);
@@ -99,12 +99,12 @@ template <PipeMode pipeMode>
 __aicore__ inline uint64_t GroupBarrier<pipeMode>::GetWorkspaceLen()
 {
     if ASCEND_IS_AIV {
-        ASCENDC_DEBUG_ASSERT((arriveSize > 0), KERNEL_LOG(KERNEL_ERROR, "arriveSize is %u, it must be larger than 0", arriveSize));
-        ASCENDC_DEBUG_ASSERT((waitSize > 0), KERNEL_LOG(KERNEL_ERROR, "waitSize is %u, it must be larger than 0", waitSize));
+        ASCENDC_DEBUG_ASSERT((arriveSize > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "arriveSize is %u, it must be larger than 0", arriveSize));
+        ASCENDC_DEBUG_ASSERT((waitSize > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "waitSize is %u, it must be larger than 0", waitSize));
         ASCENDC_DEBUG_ASSERT(
-            (waitSize <= GetBlockNum()), KERNEL_LOG(KERNEL_ERROR, "waitSize is %u, max waitSize is %lld \n", waitSize, GetBlockNum()));
+            (waitSize <= GetBlockNum()), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "waitSize is %u, max waitSize is %lld \n", waitSize, GetBlockNum()));
         ASCENDC_DEBUG_ASSERT(
-            (arriveSize <= GetBlockNum()), KERNEL_LOG(KERNEL_ERROR, "waitSize is %u, max waitSize is %lld \n", arriveSize, GetBlockNum()));
+            (arriveSize <= GetBlockNum()), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "waitSize is %u, max waitSize is %lld \n", arriveSize, GetBlockNum()));
         return (arriveSize > waitSize) ? arriveSize * CACHE_LINE_LEN : waitSize * CACHE_LINE_LEN;
     }
 }

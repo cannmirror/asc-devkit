@@ -120,27 +120,27 @@ public:
     void InitBuffer(const uint32_t bufferOffset, const uint32_t bufferSize)
     {
 #if (__NPU_ARCH__ == 5102)
-        if constexpr (IsSameType<PrimType, int4b_t>::value || IsSameType<PrimType, int2b_t>::value) {
+        if constexpr (IsSameType<PrimType, int4b_t>::value || IsSameType<PrimType, int2b_t>::value || IsSameType<PrimType, uint1b_t>::value) {
 #else
         if constexpr (IsSameType<PrimType, int4b_t>::value) {
 #endif
             ASCENDC_DEBUG_ASSERT((bufferSize != 0),
-                    KERNEL_LOG(KERNEL_ERROR, "InitBuffer bufferSize must be larger than 0."));
+                    KERNEL_LOG_INTERNAL(KERNEL_ERROR, "InitBuffer bufferSize must be larger than 0."));
 
             ASCENDC_DEBUG_ASSERT((bufferOffset % ONE_BLK_SIZE == 0),
-                KERNEL_LOG(KERNEL_ERROR, "bufferOffset is %u, which should be 32Bytes aligned", bufferOffset));
+                KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %u, which should be 32Bytes aligned", bufferOffset));
         }
 
         ASCENDC_DEBUG_ASSERT((TPosition(this->address_.logicPos) != TPosition::GM),
-                    KERNEL_LOG(KERNEL_ERROR, "logicPos can not be gm when init buffer"));
+                    KERNEL_LOG_INTERNAL(KERNEL_ERROR, "logicPos can not be gm when init buffer"));
         auto positionHardMap = ConstDefiner::Instance().positionHardMap;
         ASCENDC_DEBUG_ASSERT((positionHardMap.count(AscendC::TPosition(this->address_.logicPos)) != 0),
-                    KERNEL_LOG(KERNEL_ERROR, "illegal logis pos %d", this->address_.logicPos));
+                    KERNEL_LOG_INTERNAL(KERNEL_ERROR, "illegal logis pos %d", this->address_.logicPos));
         if constexpr (IsSameType<PrimType, int4b_t>::value) {
             ASCENDC_DEBUG_ASSERT((bufferOffset + bufferSize * INT4_BIT_NUM / ONE_BYTE_BIT_SIZE <=
             ConstDefiner::Instance().bufferInitLen.at(positionHardMap.at(
                 AscendC::TPosition(this->address_.logicPos)))),
-                            KERNEL_LOG(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
+                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
                                 bufferOffset, bufferSize));
 
             this->address_.absAddr = ConstDefiner::Instance().hardwareCpuBufferMap.at(
@@ -152,25 +152,36 @@ public:
             ASCENDC_DEBUG_ASSERT((bufferOffset + bufferSize * INT2_BIT_NUM / ONE_BYTE_BIT_SIZE <=
             ConstDefiner::Instance().bufferInitLen.at(positionHardMap.at(
                 AscendC::TPosition(this->address_.logicPos)))),
-                            KERNEL_LOG(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
+                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
                                 bufferOffset, bufferSize));
 
             this->address_.absAddr = ConstDefiner::Instance().hardwareCpuBufferMap.at(
                 positionHardMap.at(AscendC::TPosition(this->address_.logicPos))) +
                 bufferOffset;
             this->address_.dataLen = bufferSize * INT2_BIT_NUM / ONE_BYTE_BIT_SIZE;
+        } else if constexpr (IsSameType<PrimType, uint1b_t>::value) {
+            ASCENDC_DEBUG_ASSERT((bufferOffset + bufferSize * INT1_BIT_NUM / ONE_BYTE_BIT_SIZE <=
+            ConstDefiner::Instance().bufferInitLen.at(positionHardMap.at(
+                AscendC::TPosition(this->address_.logicPos)))),
+                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %d, bufferSize is %d, buffer overflow",
+                                bufferOffset, bufferSize));
+
+            this->address_.absAddr = ConstDefiner::Instance().hardwareCpuBufferMap.at(
+                positionHardMap.at(AscendC::TPosition(this->address_.logicPos))) +
+                bufferOffset;
+            this->address_.dataLen = bufferSize * INT1_BIT_NUM / ONE_BYTE_BIT_SIZE;
 #endif
         } else {
             ASCENDC_DEBUG_ASSERT((bufferOffset % ONE_BLK_SIZE == 0),
-            KERNEL_LOG(KERNEL_ERROR, "bufferOffset is %u, which should be 32Bytes aligned", bufferOffset));
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufferOffset is %u, which should be 32Bytes aligned", bufferOffset));
             ASCENDC_DEBUG_ASSERT((bufferOffset + bufferSize * sizeof(PrimType) <=
                 ConstDefiner::Instance().bufferInitLen.at(positionHardMap.at(
                     AscendC::TPosition(this->address_.logicPos)))),
-                                KERNEL_LOG(KERNEL_ERROR,
+                                KERNEL_LOG_INTERNAL(KERNEL_ERROR,
                                     "bufferOffset is %d, bufferSize is %d, buffer overflow",
                                     bufferOffset, bufferSize));
             ASCENDC_DEBUG_ASSERT((bufferSize != 0),
-                        KERNEL_LOG(KERNEL_ERROR, "InitBuffer bufferSize must be larger than 0."));
+                        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "InitBuffer bufferSize must be larger than 0."));
             this->address_.absAddr = ConstDefiner::Instance().hardwareCpuBufferMap.at(
                 positionHardMap.at(AscendC::TPosition(this->address_.logicPos))) +
                 bufferOffset;
@@ -192,6 +203,8 @@ public:
 #if (__NPU_ARCH__ == 5102)
         } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
             this->address_.dataLen = bufferSize * INT2_BIT_NUM / ONE_BYTE_BIT_SIZE;
+        } else if constexpr (IsSameType<PrimType, uint1b_t>::value) {
+            this->address_.dataLen = bufferSize * INT1_BIT_NUM / ONE_BYTE_BIT_SIZE;
 #endif
         } else {
             this->address_.dataLen = bufferSize * sizeof(PrimType);
@@ -218,6 +231,9 @@ public:
         } else if constexpr (IsSameType<PrimType, int2b_t>::value) {
             address_ = address_ + offset / INT2_FOUR;
             oriAddress_ = oriAddress_ + offset / INT2_FOUR;
+        } else if constexpr (IsSameType<PrimType, uint1b_t>::value) {
+            address_ = address_ + offset / INT1_EIGHT;
+            oriAddress_ = oriAddress_ + offset / INT1_EIGHT;
 #endif
         } else {
             address_ = address_ + offset;

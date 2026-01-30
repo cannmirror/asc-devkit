@@ -58,7 +58,7 @@ __aicore__ inline void TQueBind<src, dst, depth, mask>::InitBufHandle(T* bufPool
 {
     (void)(bufPool);
     (void)(index);
-    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
+    ASCENDC_DEBUG_ASSERT((len > 0), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer length is %u, which should be larger than 0", len));
     len = (len + ONE_BLK_SIZE - MIN_BLOCK_LEN) / ONE_BLK_SIZE * ONE_BLK_SIZE;
     auto ptr = reinterpret_cast<TBufType*>(bufhandle);
     ptr->state = TBufState::FREE;
@@ -158,7 +158,7 @@ __aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(TBu
     constexpr HardEvent enQueUserEvt = GetQueEvt(srcUserHardType, dstUserHardType, true, false, false);
 
     ASCENDC_DEBUG_ASSERT((this->usedCount < depth),
-        KERNEL_LOG(KERNEL_ERROR, "usedCount is %d, which exceed depth limits %d",
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "usedCount is %d, which exceed depth limits %d",
             static_cast<int32_t>(usedCount), depth));
     auto ptr = reinterpret_cast<TBufType*>(buf);
     if constexpr (depth == 1) {
@@ -169,10 +169,10 @@ __aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(TBu
     this->usedCount++;
 
     ASCENDC_DEBUG_ASSERT((this->bufStart <= ptr && ptr < this->bufStart + this->bufNum),
-        KERNEL_LOG(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)",
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)",
             ptr, this->bufStart, this->bufStart + this->bufNum));
     ASCENDC_DEBUG_ASSERT((ptr->state == TBufState::OCCUPIED) || (ptr->state == TBufState::DEQUE),
-        KERNEL_LOG(KERNEL_ERROR, "ptr state is %d, which should be OCCUPIED / DEQUE",
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr state is %d, which should be OCCUPIED / DEQUE",
             static_cast<int32_t>(ptr->state)));
     DEBUG_CODE(ptr->userEnQueEvt = enQueUserEvt);
     DEBUG_CODE(ptr->state = TBufState::ENQUE);
@@ -206,7 +206,7 @@ __aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(TBu
     auto ptr = reinterpret_cast<TBufType*>(buf);
     if constexpr (depth != 0) {
         ASCENDC_DEBUG_ASSERT((this->usedCount < depth),
-            KERNEL_LOG(KERNEL_ERROR, "usedCount is %d, which exceed depth limits %d", static_cast<int32_t>(usedCount),
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "usedCount is %d, which exceed depth limits %d", static_cast<int32_t>(usedCount),
                 depth));
 
         if constexpr (depth == 1) {
@@ -217,10 +217,10 @@ __aicore__ inline __sync_alias__ bool TQueBind<src, dst, depth, mask>::EnQue(TBu
         this->usedCount++;
     }
     ASCENDC_DEBUG_ASSERT((this->bufStart <= ptr && ptr < this->bufStart + this->bufNum),
-        KERNEL_LOG(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
             this->bufStart + this->bufNum));
     ASCENDC_DEBUG_ASSERT((ptr->state == TBufState::OCCUPIED) || (ptr->state == TBufState::DEQUE),
-        KERNEL_LOG(KERNEL_ERROR, "ptr state is %d, which should be OCCUPIED / DEQUE", static_cast<int32_t>(ptr->state)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr state is %d, which should be OCCUPIED / DEQUE", static_cast<int32_t>(ptr->state)));
     DEBUG_CODE(ptr->state = TBufState::ENQUE);
     if constexpr (depth == 0) {
         // If the AIC is not entered, the AIV does not process any event ID.
@@ -295,15 +295,15 @@ __aicore__ inline __sync_alias__ TBufHandle TQueBind<src, dst, depth, mask>::DeQ
     } else {
         buf = this->que_[this->head];
     }
-    ASCENDC_DEBUG_ASSERT((buf != nullptr), KERNEL_LOG(KERNEL_ERROR, "buf can not be nullptr"));
+    ASCENDC_DEBUG_ASSERT((buf != nullptr), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buf can not be nullptr"));
     auto ptr = reinterpret_cast<TBufType*>(buf);
 
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     ASCENDC_DEBUG_ASSERT((ptr->state == TBufState::ENQUE),
-        KERNEL_LOG(KERNEL_ERROR, "ptr state is %d, which can only be ENQUE", static_cast<int32_t>(ptr->state)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr state is %d, which can only be ENQUE", static_cast<int32_t>(ptr->state)));
 #endif
     ASCENDC_DEBUG_ASSERT((this->usedCount > 0),
-        KERNEL_LOG(KERNEL_ERROR, "usedCount is %d, which can only larger than 0",
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "usedCount is %d, which can only larger than 0",
             static_cast<int32_t>(this->usedCount)));
     this->usedCount--;
     /* Add for TSCM
@@ -362,19 +362,19 @@ __aicore__ inline __sync_alias__ TBufHandle TQueBind<src, dst, depth, mask>::DeQ
         buf = this->que_[this->head];
     }
     ASCENDC_DEBUG_ASSERT((buf != nullptr),
-        KERNEL_LOG(KERNEL_ERROR, "buf can not be nullptr"));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buf can not be nullptr"));
     auto ptr = reinterpret_cast<TBufType*>(buf);
 
     ASCENDC_DEBUG_ASSERT((ptr->state == TBufState::ENQUE),
-        KERNEL_LOG(KERNEL_ERROR, "ptr state is %d, which can only be ENQUE",
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr state is %d, which can only be ENQUE",
             static_cast<int32_t>(ptr->state)));
     ASCENDC_DEBUG_ASSERT((this->usedCount > 0),
-        KERNEL_LOG(KERNEL_ERROR, "usedCount is %d, which can only larger than 0",
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "usedCount is %d, which can only larger than 0",
             static_cast<int32_t>(this->usedCount)));
     this->usedCount--;
     #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     ASCENDC_DEBUG_ASSERT((ptr->userEnQueEvt == deQueUserEvt),
-        KERNEL_LOG(KERNEL_ERROR, "EnQue and DeQue Event should be same."));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "EnQue and DeQue Event should be same."));
     #endif
     DEBUG_CODE(ptr->state = TBufState::DEQUE);
     // when src and dst both ub, should insert pipe v barrier
@@ -408,10 +408,10 @@ __aicore__ inline void TQueBind<src, dst, depth, mask>::FreeBuffer(TBufHandle bu
 {
     auto ptr = reinterpret_cast<TBufType*>(buf);
     ASCENDC_DEBUG_ASSERT((this->bufStart <= ptr && ptr < this->bufStart + this->bufNum),
-        KERNEL_LOG(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
             this->bufStart + this->bufNum));
     ASCENDC_DEBUG_ASSERT((ptr->state != TBufState::FREE),
-        KERNEL_LOG(KERNEL_ERROR, "ptr state is %d, which can not be FREE", static_cast<int32_t>(ptr->state)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr state is %d, which can not be FREE", static_cast<int32_t>(ptr->state)));
     if constexpr (depth == 0) {
         if constexpr (!IsAivTscm(src, dst)) {
             // in 220 version, event changed from v to M_MTE1 on condition C1 -> C2
@@ -430,7 +430,7 @@ __aicore__ inline void TQueBind<src, dst, depth, mask>::FreeBuffer(TBufHandle bu
              if constexpr (src == TPosition::C1 || (src == TPosition::CO2 && dst == TPosition::VECIN)) {
                 SetFlag<freeBufEvt>(0); // insert pipe_v without eventID
                 ASCENDC_DEBUG_ASSERT((ptr->freeBufEvtID == INVALID_TEVENTID),
-                            KERNEL_LOG(KERNEL_ERROR, "freebuf event id can not be -1"));
+                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "freebuf event id can not be -1"));
             } else {
                 ptr->freeBufEvtID = GetTPipePtr()->AllocEventID<freeBufEvt>();
                 SetFlag<freeBufEvt>(ptr->freeBufEvtID);
@@ -464,7 +464,7 @@ __aicore__ inline TBufHandle TQueBind<src, dst, depth, mask>::AllocBuffer()
 {
     DEBUG_CODE(int32_t size = 0);
     ASCENDC_DEBUG_ASSERT((bufNum > 0),
-        KERNEL_LOG(KERNEL_ERROR, "bufNum is %d, which must be larger than 0", static_cast<int32_t>(bufNum)));
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "bufNum is %d, which must be larger than 0", static_cast<int32_t>(bufNum)));
     TBufType* ret;
     do {
         ret = this->bufStart + this->bufCursor;
@@ -505,7 +505,7 @@ __aicore__ inline TBufHandle TQueBind<src, dst, depth, mask>::AllocBuffer()
                         ret->freeBufEvtID = INVALID_TEVENTID;
                     } else {
                         ASCENDC_DEBUG_ASSERT(false,
-                            KERNEL_LOG(KERNEL_ERROR, "there is something wrong with free buf event"));
+                            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "there is something wrong with free buf event"));
                     }
                 } else {
                     WaitFlag<freeBufEvt>(ret->freeBufEvtID);
@@ -517,7 +517,7 @@ __aicore__ inline TBufHandle TQueBind<src, dst, depth, mask>::AllocBuffer()
         }
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
         ASCENDC_DEBUG_ASSERT((++size <= this->bufNum),
-            KERNEL_LOG(KERNEL_ERROR, "size is %d, which exceed limits %d", size, static_cast<int32_t>(this->bufNum)));
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "size is %d, which exceed limits %d", size, static_cast<int32_t>(this->bufNum)));
 #endif
     } while (true);
     this->bufUsedCount++;
@@ -545,7 +545,7 @@ __aicore__ inline void TQueBind<src, dst, depth, mask>::FreeAllEvent()
     for (int i = 0; i < this->bufNum; i++, ptr++) {
         // should be in deque status
         ASCENDC_DEBUG_ASSERT((ptr->enQueEvtID == INVALID_TEVENTID),
-                       KERNEL_LOG(KERNEL_ERROR, "enque event id can not be -1"));
+                       KERNEL_LOG_INTERNAL(KERNEL_ERROR, "enque event id can not be -1"));
         if (ptr->freeBufEvtID != INVALID_TEVENTID) {
             WaitFlag<freeBufEvt>(ptr->freeBufEvtID);
             GetTPipePtr()->ReleaseEventID<freeBufEvt>(ptr->freeBufEvtID);
@@ -574,10 +574,10 @@ __aicore__ inline int32_t TQueBind<src, dst, depth, mask>::GetTensorCountInQue()
 template <TPosition src, TPosition dst, int32_t depth, auto mask>
 __aicore__ inline TBuffAddr TQueBind<src, dst, depth, mask>::GetBufferAddr(TBufHandle buf)
 {
-    ASCENDC_DEBUG_ASSERT((GetPosition(src, dst) != TPosition::GM), KERNEL_LOG(KERNEL_ERROR, "buffer pos can not be GM"));
+    ASCENDC_DEBUG_ASSERT((GetPosition(src, dst) != TPosition::GM), KERNEL_LOG_INTERNAL(KERNEL_ERROR, "buffer pos can not be GM"));
     auto ptr = reinterpret_cast<TBufType*>(buf);
     ASCENDC_DEBUG_ASSERT((this->bufStart <= ptr && ptr < this->bufStart + this->bufNum),
-        KERNEL_LOG(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
             this->bufStart + this->bufNum));
 
     TBuffAddr addr;
@@ -608,7 +608,7 @@ __aicore__ inline TBufState TQueBind<src, dst, depth, mask>::GetState(const TBuf
     }
     auto ptr = reinterpret_cast<TBufType*>(handle);
     ASCENDC_DEBUG_ASSERT((this->bufStart <= ptr && ptr < this->bufStart + this->bufNum),
-        KERNEL_LOG(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "ptr is %p, which should be in range [%p, %p)", ptr, this->bufStart,
             this->bufStart + this->bufNum));
     return ptr->state;
 }
