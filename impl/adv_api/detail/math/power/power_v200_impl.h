@@ -14,6 +14,7 @@
  */
 #ifndef IMPL_MATH_POWER_POWER_V200_IMPL_H
 #define IMPL_MATH_POWER_POWER_V200_IMPL_H
+#include "kernel_basic_intf.h"
 #include "power_common_utils.h"
 
 namespace AscendC {

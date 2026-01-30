@@ -15,6 +15,8 @@
 #ifndef LIB_MATH_CUMSUM_UTILS_H
 #define LIB_MATH_CUMSUM_UTILS_H
 
+#include <cstdint>
+
 namespace AscendC {
 enum class CumSumAlgorithm {
     CUMSUM_ALGORITHM_LINEBYLINE = 0,

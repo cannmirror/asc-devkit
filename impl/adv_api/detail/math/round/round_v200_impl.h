@@ -14,8 +14,10 @@
  */
 #ifndef IMPL_MATH_ROUND_ROUND_V200_IMPL_H
 #define IMPL_MATH_ROUND_ROUND_V200_IMPL_H
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_tiling/kernel_tiling.h"
+#include "../../common/check.h"
 
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 namespace AscendC {

@@ -16,7 +16,7 @@
 #define LIB_MATH_XOR_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "../../../impl/adv_api/detail/math/xor/xor_common_impl.h"
 #if ASCENDC_CPU_DEBUG
@@ -24,7 +24,8 @@
 #include <type_traits>
 #endif
 
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3002))
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3002 || \
+    __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102))
 namespace AscendC {
 #pragma begin_pipe(V)
 /*

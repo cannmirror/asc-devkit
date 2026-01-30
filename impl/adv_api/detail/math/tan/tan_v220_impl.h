@@ -14,6 +14,7 @@
  */
 #ifndef IMPL_MATH_TAN_TAN_V220_IMPL_H
 #define IMPL_MATH_TAN_TAN_V220_IMPL_H
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 
 namespace AscendC {

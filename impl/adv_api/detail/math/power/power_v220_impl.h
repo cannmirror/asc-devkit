@@ -14,6 +14,7 @@
 #ifndef IMPL_MATH_POWER_POWER_V220_IMPL_H
 #define IMPL_MATH_POWER_POWER_V220_IMPL_H
 #include "power_common_utils.h"
+#include "kernel_basic_intf.h"
 
 namespace AscendC {
 // Power api tmpTensor calc Factor for V220

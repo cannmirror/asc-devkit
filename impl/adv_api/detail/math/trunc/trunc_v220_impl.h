@@ -9,6 +9,7 @@
 */
 #ifndef IMPL_MATH_TRUNC_TRUNC_V220_IMPL_H
 #define IMPL_MATH_TRUNC_TRUNC_V220_IMPL_H
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 
 namespace AscendC {

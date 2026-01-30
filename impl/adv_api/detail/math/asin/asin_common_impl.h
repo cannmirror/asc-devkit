@@ -10,8 +10,12 @@
 #ifndef IMPL_MATH_ASIN_ASIN_COMMON_IMPL_H
 #define IMPL_MATH_ASIN_ASIN_COMMON_IMPL_H
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
 #include "../math_constant_util.h"
 #include "../../common/check.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/math/asin/asin_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

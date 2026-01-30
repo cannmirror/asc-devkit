@@ -9,8 +9,12 @@
 */
 #ifndef IMPL_MATH_TRUNC_TRUNC_COMMON_IMPL_H
 #define IMPL_MATH_TRUNC_TRUNC_COMMON_IMPL_H
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "../../common/check.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/math/trunc/trunc_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "trunc_v200_impl.h"

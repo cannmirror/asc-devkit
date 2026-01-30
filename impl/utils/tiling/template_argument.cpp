@@ -76,7 +76,7 @@ static bool ParseTplUintValue(ParamStruct &paramStruct)
     }
     uint8_t uiFlag = static_cast<uint8_t>(paramStruct.vals[0]);
     if (uiFlag == ASCENDC_TPL_UI_LIST) {
-        paramStruct.vals.erase(paramStruct.vals.begin(), paramStruct.vals.begin() + 1);
+        paramStruct.vals.erase(paramStruct.vals.begin());
         return CheckParamStructValid(paramStruct);
     }
     if (uiFlag != ASCENDC_TPL_UI_RANGE && uiFlag != ASCENDC_TPL_UI_MIX) {

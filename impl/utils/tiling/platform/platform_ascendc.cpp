@@ -20,15 +20,12 @@
 #include "platform/platform_info.h"
 #include "platform_ascendc_log.h"
 #include "platform/platform_infos_def.h"
-#include "platform/soc_spec.h"
 #include "platform_ascendc.h"
 
 namespace platform_ascendc {
 const static uint64_t LOCAL_RESERV_SIZE = 256;
-const static uint64_t LOCAL_RESERV_SIZE_KIRIN = 10 * 1024;
 const static uint32_t WORK_SPACE_SIZE_910B = 16 * 1024 * 1024;
 const static uint32_t WORK_SPACE_SIZE_910_95 = 16 * 1024 * 1024;
-const static uint32_t WORK_SPACE_SIZE_910_55 = 16 * 1024 * 1024;
 const static uint32_t WORK_SPACE_SIZE = 2 * 1024 * 1024;
 const static uint32_t MIX_AIC_AIV_RATION_910B1 = 2;
 const static uint32_t CUBE_GROUP_WORK_SPACE_SIZE_910B = 1 * 1024 * 1024;
@@ -44,16 +41,15 @@ const static std::string LABEL_CORE_CNT_AICORE = "ai_core_cnt";
 const static std::string NPU_ARCH = "NpuArch";
 
 
-SocVersion SocVersionStrMap(const char *socVersionStr)
+static inline SocVersion SocVersionStrMap(const char *socVersionStr)
 {
     static std::map<std::string, SocVersion> convertMap = {
         {"Ascend310P", SocVersion::ASCEND310P},
         {"Ascend910", SocVersion::ASCEND910},
         {"Ascend910B", SocVersion::ASCEND910B},
         {"Ascend910_93", SocVersion::ASCEND910B},
-        {"Ascend910_95", SocVersion::ASCEND910_95},
-        {"Ascend910_55", SocVersion::ASCEND910_55},
         {"Ascend310B", SocVersion::ASCEND310B},
+        {"Ascend910_95", SocVersion::ASCEND910_95},
         {"AS31XM1", SocVersion::AS31XM1},
         {"Ascend031", SocVersion::ASCEND031},
         {"Ascend035", SocVersion::ASCEND035},
@@ -133,17 +129,15 @@ void PlatformAscendC::GetCoreMemSize(const CoreMemType &memType, uint64_t &size)
 {
     const fe::LocalMemType localType = static_cast<fe::LocalMemType>(memType);
     this->GetPlatFormInfo()->GetLocalMemSize(localType, size);
-    auto socVersion = GetSocVersion();
     // only ascend910B need UB/L1 local reserved buf for kfc
-    if ((memType == CoreMemType::UB || memType == CoreMemType::L1) && socVersion == SocVersion::ASCEND910B) {
+    if ((memType == CoreMemType::UB || memType == CoreMemType::L1)
+         && GetSocVersion() == SocVersion::ASCEND910B) {
         size -= LOCAL_RESERV_SIZE;
     }
     if (memType == CoreMemType::UB) {
         size -= reservedMemSize_;
     }
-    if (memType == CoreMemType::UB && (socVersion == SocVersion::KIRINX90 || socVersion == SocVersion::KIRIN9030)) {
-        size -= LOCAL_RESERV_SIZE_KIRIN;
-    }
+
     if (memType == CoreMemType::FB) {
         std::string sizeStr;
         bool ret = this->GetPlatFormInfo()->GetPlatformResWithLock("AICoreSpec", "fb0_size", sizeStr);
@@ -231,31 +225,30 @@ uint32_t PlatformAscendC::CalcTschBlockDim(uint32_t sliceNum, uint32_t aicCoreNu
         return sliceNum;
     }
     uint32_t ration = aivCoreNum / aicCoreNum;
-    uint32_t blockDim = (sliceNum + (ration - 1)) / ration;
-    // in mix case: 910B1(ration = 2), blockDim should not be greater than physical aic core num
-    if ((ration == MIX_AIC_AIV_RATION_910B1) && (blockDim > aicCoreNum)) {
-        PF_LOGE("CalcTschBlockDim failed, calc blockDim %u should not be greater than aicCoreNum %u", blockDim,
+    uint32_t numBlocks = (sliceNum + (ration - 1)) / ration;
+    // in mix case: 910B1(ration = 2), numBlocks should not be greater than physical aic core num
+    if ((ration == MIX_AIC_AIV_RATION_910B1) && (numBlocks > aicCoreNum)) {
+        PF_LOGE("CalcTschBlockDim failed, calc numBlocks %u should not be greater than aicCoreNum %u", numBlocks,
             aicCoreNum);
         return 0;
     }
-    return blockDim;
+    return numBlocks;
 }
 
 uint32_t PlatformAscendC::GetLibApiWorkSpaceSize(void) const
 {
-    auto socVersion = GetSocVersion();
-    if (socVersion == SocVersion::RESERVED_VERSION) {
-        PF_LOGE("get platform failed, socVersionStr is %d", socVersion);
+    auto npuArch = GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_RESV) {
+        PF_LOGE("get platform failed, CurNpuArch is NpuArch::DAV_RESV");
         return -1;
-    } else if (socVersion == SocVersion::ASCEND910B) {
+    } else if (npuArch == NpuArch::DAV_2201) {
         return WORK_SPACE_SIZE_910B;
-    } else if (socVersion == SocVersion::ASCEND910_95) {
+    } else if (npuArch == NpuArch::DAV_3510) {
         return WORK_SPACE_SIZE_910_95;
-    } else if (socVersion == SocVersion::ASCEND910_55) {
-        return WORK_SPACE_SIZE_910_55;
     }
     return WORK_SPACE_SIZE;
 }
+
 uint32_t PlatformAscendC::GetResCubeGroupWorkSpaceSize(void) const
 {
     auto socVersion = GetSocVersion();
@@ -334,6 +327,8 @@ const static std::map<std::string, std::string> convertMapInAicpu = {
     {"Ascend910_9577", "Ascend910_95"},
     {"Ascend910_9578", "Ascend910_95"},
     {"Ascend910_957b", "Ascend910_95"},
+    {"Ascend910_950x", "Ascend910_95"},
+    {"Ascend910_950y", "Ascend910_95"},
     {"Ascend910_950z", "Ascend910_95"},
     {"Ascend910_958b", "Ascend910_95"},
     {"Ascend910_958a", "Ascend910_95"},
@@ -345,6 +340,17 @@ const static std::map<std::string, std::string> convertMapInAicpu = {
     {"KirinX90", "KirinX90"},
     {"Kirin9030", "Kirin9030"}
 };
+
+const static std::map<std::string, std::string> AICPUshortVersionToNpuArchMap = {
+    {"Ascend910B", "2201"}, // ascend910b_list
+    {"Ascend910", "1001"},
+    {"Ascend310B", "3002"},
+    {"Ascend910_95", "3510"}, // ascend910_95_list
+    {"MC62CM12A", "5102"},
+    {"KirinX90", "3003"},
+    {"Kirin9030", "3113"}
+};
+
 bool SwitchIntoShortSocVersion(const char *socVersionStr, std::string &shortSocVersion)
 {
     const auto &iter = convertMapInAicpu.find(socVersionStr);
@@ -434,9 +440,17 @@ fe::PlatFormInfos* PlatformAscendCManager::PlatformAscendCInit(const char *custo
             return nullptr;
         }
     }
-
+    auto iter = AICPUshortVersionToNpuArchMap.find(shortSocVersion);
+    std::string curNpuArch;
+    if (iter == AICPUshortVersionToNpuArchMap.end()) {
+        PF_LOGE("Failed to PlatformAscendCInit in aicpu, "
+                "cannot switch into NPUARCH, shortSocVersion = [%s]", shortSocVersion.c_str());
+        return nullptr;
+    }
+    curNpuArch = iter->second;
     std::map<std::string, std::string> shortSocVersionMap;
     shortSocVersionMap[LABEL_SHORT_SOC_VERSION] = shortSocVersion;
+    shortSocVersionMap[NPU_ARCH] = curNpuArch;
     static fe::PlatFormInfos gPlatformInfo;
     gPlatformInfo.Init();
     gPlatformInfo.SetPlatformResWithLock(LABEL_VERSION, shortSocVersionMap);

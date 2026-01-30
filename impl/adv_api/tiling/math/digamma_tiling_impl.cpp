@@ -58,10 +58,9 @@ void GetDigammaTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNod
 {
     ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, 
         return, "PlatformAscendCManager gets instance failed!");
-    platform_ascendc::SocVersion socVersion = platform_ascendc::PlatformAscendCManager::GetInstance()->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
-        socVersion == platform_ascendc::SocVersion::MC62CM12A) {
+    const auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102) {
             extraBuffer = uint32_t(0);
         maxLiveNodeCount = (typeSize == sizeof(float)) ? 0 : DIGAMMA_HALF_CALC_FAC_C310;
     } else {
@@ -78,10 +77,9 @@ void GetDigammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize,
     ASCENDC_HOST_ASSERT(platform_ascendc::PlatformAscendCManager::GetInstance() != nullptr, 
         return, "PlatformAscendCManager gets instance failed!");
 
-    platform_ascendc::SocVersion SocVersion = platform_ascendc::PlatformAscendCManager::GetInstance()->GetSocVersion();
-    if (SocVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        SocVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
-        SocVersion == platform_ascendc::SocVersion::MC62CM12A) {
+    const auto npuArch = platform_ascendc::PlatformAscendCManager::GetInstance()->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102) {
         maxValue = GetMaxTmpSizeC310(inputSize, typeSize);
         minValue = maxValue;
         return;

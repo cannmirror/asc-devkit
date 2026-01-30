@@ -70,4 +70,57 @@ void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
     extraBuf = 0;
     maxLiveNodeCount = (typeSize == sizeof(float)) ? COS_FLOAT_NOREUSE_CALC_FAC : COS_HALF_CALC_FAC;
 }
+
+void GetCosMaxMinTmpSize(const CosConfig& config, const ge::Shape& srcShape, const uint32_t typeSize,
+    const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+{
+    (void)typeSize;
+    (void)isReuseSource;
+    constexpr uint32_t alignSize = 32; 
+    platform_ascendc::PlatformAscendC *platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC");
+
+    auto npuArch = platform->GetCurNpuArch();
+    ASCENDC_HOST_ASSERT((npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102),
+        return, "Unsupported NpuArch of Cos API.");
+
+    if (config.algo == CosAlgo::POLYNOMIAL_APPROXIMATION) {
+        maxValue = 0;
+        minValue = 0;
+    } else if (config.algo == CosAlgo::RADIAN_REDUCTION) {
+        std::vector<int64_t> shapeDims = srcShape.GetDims();
+        uint32_t inputSize = 1;
+        for (const auto dim : shapeDims) {
+            inputSize *= dim;
+        }
+        inputSize = (inputSize + alignSize - 1u) / alignSize * alignSize;
+        maxValue = sizeof(float) * inputSize * COS_DOUBLE + COS_EXTRA_BUF;
+        minValue = sizeof(float) * inputSize * COS_DOUBLE + COS_EXTRA_BUF;
+    }
+}
+
+void GetCosTmpBufferFactorSize(
+    const CosConfig& config, const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
+{
+    platform_ascendc::PlatformAscendC *platform = platform_ascendc::PlatformAscendCManager::GetInstance();
+    ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC");
+
+    auto npuArch = platform->GetCurNpuArch();
+    ASCENDC_HOST_ASSERT((npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102),
+        return, "Unsupported NpuArch of Cos API.");
+    if (config.algo == CosAlgo::POLYNOMIAL_APPROXIMATION) {
+        extraBuf = 0;
+        maxLiveNodeCount = 0;
+    } else if (config.algo == CosAlgo::RADIAN_REDUCTION) {
+        if (typeSize == sizeof(float)) {
+            extraBuf = COS_EXTRA_BUF;
+            maxLiveNodeCount = COS_DOUBLE;
+        } else {
+            extraBuf = 0;
+            maxLiveNodeCount = COS_DOUBLE * COS_DOUBLE;
+        }
+    }
+}
 } // namespace AscendC

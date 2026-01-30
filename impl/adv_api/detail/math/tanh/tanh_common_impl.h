@@ -14,12 +14,15 @@
  */
 #ifndef IMPL_MATH_TANH_TANH_COMMON_IMPL_H
 #define IMPL_MATH_TANH_TANH_COMMON_IMPL_H
-
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_pop_stack_buffer.h"
 #include "../../common/check.h"
 
 #include "../math_common_impl.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/math/tanh/tanh_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

@@ -16,10 +16,15 @@
 #define IMPL_MATH_COS_COS_COMMON_IMPL_H
 
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "../../common/check.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/math/cos/cos_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "cos_v220_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
 #include "cos_v200_impl.h"
@@ -117,7 +122,8 @@ __aicore__ inline void CosRound(const LocalTensor<float>& inputX, const LocalTen
     Adds<float, false>(roundTensor, roundTensor, COS_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // tie to even
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     CosCastFullMask(roundTensor, roundTensor, RoundMode::CAST_RINT);
 #else
     CosCast(roundTensor, roundTensor, RoundMode::CAST_RINT);
@@ -137,7 +143,8 @@ __aicore__ inline void SignCompute(const LocalTensor<float>& dstTensor, const Lo
     Muls<float, false>(dstTensor, roundTensor, COS_POINT_FIVE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     CosCastFullMask(dstTensor, dstTensor, RoundMode::CAST_FLOOR);
 #else
     CosCast(dstTensor, dstTensor, RoundMode::CAST_FLOOR);

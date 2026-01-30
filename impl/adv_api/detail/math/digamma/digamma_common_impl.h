@@ -14,8 +14,11 @@
  */
 #ifndef IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_IMPL_H
 #define IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_IMPL_H
-
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#include "digamma_c310_impl.h"
+#else
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "include/adv_api/math/tan.h"
@@ -23,8 +26,11 @@
 #include "include/adv_api/math/cos.h"
 #include "digamma_common_basic_impl.h"
 #include "../../common/check.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/math/digamma/digamma_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
-
+#endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
 
 namespace AscendC {

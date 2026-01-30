@@ -19,15 +19,12 @@
 #include <cstdint>
 // relative to CANN_PACKAGE_PATH/include
 #include "../pkg_inc/base/dlog_pub.h"
-#include "base/alog_pub.h"
 #include "aicpu/cust_cpu_utils.h"
 
 #define ASCENDC_MODULE_NAME static_cast<int32_t>(ASCENDCKERNEL)
 
 // 0 debug, 1 info, 2 warning, 3 error
-#if defined(DEVICE_OP_TILING_LIB)
-// [aicpu]
-#if defined(DEVICE_OP_LOG_BY_DUMP)
+#if defined(DEVICE_OP_TILING_LIB) && defined(DEVICE_OP_LOG_BY_DUMP)
 // [aicpu] log by dump
 #define ASC_CPU_LOG_ERROR(format, ...)                                         \
   do {                                                                         \
@@ -75,42 +72,6 @@
   do {                                                                         \
     dlog_debug(ASCENDC_MODULE_NAME, "[%s:%d][%s] " format "\n",                \
       __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__);                        \
-  } while (0)
-
-#endif
-#else
-// [host] log by alog
-#define ASC_CPU_LOG_ERROR(format, ...)                                         \
-  do {                                                                         \
-    if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_ERROR) == 1) {           \
-      AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_ERROR,             \
-                  "[%s:%d][%s] " format "\n", __FILE__, __LINE__,              \
-                  __FUNCTION__, ##__VA_ARGS__);                                \
-    }                                                                          \
-  } while (0)
-#define ASC_CPU_LOG_INFO(format, ...)                                          \
-  do {                                                                         \
-    if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_INFO) == 1) {            \
-      AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_INFO,              \
-                  "[%s:%d][%s] " format "\n", __FILE__, __LINE__,              \
-                  __FUNCTION__, ##__VA_ARGS__);                                \
-    }                                                                          \
-  } while (0)
-#define ASC_CPU_LOG_WARNING(format, ...)                                       \
-  do {                                                                         \
-    if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_WARN) == 1) {            \
-      AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_WARN,              \
-                  "[%s:%d][%s] " format "\n", __FILE__, __LINE__,              \
-                  __FUNCTION__, ##__VA_ARGS__);                                \
-    }                                                                          \
-  } while (0)
-#define ASC_CPU_LOG_DEBUG(format, ...)                                         \
-  do {                                                                         \
-    if (AlogCheckDebugLevel(ASCENDC_MODULE_NAME, DLOG_DEBUG) == 1) {           \
-      AlogRecord(ASCENDC_MODULE_NAME, DLOG_TYPE_DEBUG, DLOG_DEBUG,             \
-                  "[%s:%d][%s] " format "\n", __FILE__, __LINE__,              \
-                  __FUNCTION__, ##__VA_ARGS__);                                \
-    }                                                                          \
   } while (0)
 
 #endif

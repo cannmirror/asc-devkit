@@ -66,7 +66,8 @@ private:
     KernelRunContextHolder(gert::ContextHolder<gert::KernelContext> &&ctxHolder, gert::KernelContext *kernelContextPtr,
         KernelRunContext *contextPtr);
     KernelRunContextHolder(gert::ContextHolder<gert::TilingContext> &&ctxHolder,
-        std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, gert::KernelContext *kernelContextPtr);
+        std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, std::vector<std::unique_ptr<uint8_t[]>> &&outputTensorHolder,
+        gert::KernelContext *kernelContextPtr);
 };
 
 class ContextBuilder {

@@ -14,6 +14,7 @@
  */
 #ifndef LIB_XOR_XOR_COMMON_IMPL_H
 #define LIB_XOR_XOR_COMMON_IMPL_H
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "../../common/check.h"
 
@@ -21,6 +22,8 @@
 #include "xor_membase_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3002
 #include "xor_v300_impl.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#include "xor_c310_impl.h"
 #endif
 
 namespace AscendC {

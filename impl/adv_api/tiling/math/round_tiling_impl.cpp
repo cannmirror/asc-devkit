@@ -26,8 +26,8 @@ void GetRoundMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatf
     const uint32_t inputSize = srcShape.GetShapeSize();
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");
 
-    const platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910B) {
+    const auto npuArch = ascendcPlatform.GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_2201) {
         if (typeSize == sizeof(float)) {
             minValue = 0;
             maxValue = 0;
@@ -35,7 +35,7 @@ void GetRoundMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatf
             minValue = ROUND_ONE_REPEAT_BYTE_SIZE * ROUND_HALF_CALC_FAC_220;
             maxValue = ROUND_HALF_CALC_FAC_220 * std::max(inputSize * typeSize, ROUND_ONE_REPEAT_BYTE_SIZE);
         }
-    } else if (socVersion == platform_ascendc::SocVersion::ASCEND310P) {
+    } else if (npuArch == NpuArch::DAV_2002) {
         if (typeSize == sizeof(float)) {
             minValue = ROUND_ONE_REPEAT_BYTE_SIZE * ROUND_FLOAT_CALC_FAC;
             maxValue = ROUND_FLOAT_CALC_FAC * std::max(inputSize * typeSize, ROUND_ONE_REPEAT_BYTE_SIZE);
@@ -50,15 +50,15 @@ void GetRoundTmpBufferFactorSize(const platform_ascendc::PlatformAscendC& ascend
     uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 {
     extraBuf = 0;
-    platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
+    auto npuArch = ascendcPlatform.GetCurNpuArch();
     constexpr uint32_t liveNodeTwo = 2;
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910B) {
+    if (npuArch == NpuArch::DAV_2201) {
         if (typeSize == sizeof(float)) {
             maxLiveNodeCount = 0;
         } else {
             maxLiveNodeCount = 1;
         }
-    } else if (socVersion == platform_ascendc::SocVersion::ASCEND310P) {
+    } else if (npuArch == NpuArch::DAV_2002) {
         if (typeSize == sizeof(float)) {
             maxLiveNodeCount = 1;
         } else {

@@ -15,6 +15,7 @@
 #ifndef IMPL_MATH_MATH_COMMON_UTIL_H
 #define IMPL_MATH_MATH_COMMON_UTIL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_pop_stack_buffer.h"
 

@@ -127,14 +127,6 @@ constexpr uint64_t INVALID_TILING_KEY = 0XFFFFFFFFFFFFFFFF;
     #define ASC_INNER_DATATYPE_ENABLE_FLOAT4_E2M1
     #define ASC_INNER_DATATYPE_ENABLE_FLOAT4_E1M2
 #endif
-#if defined(__DAV_310R6__)
-    #define ASC_INNER_DATATYPE_ENABLE_BF16
-    #define ASC_INNER_DATATYPE_ENABLE_HIFLOAT8
-    #define ASC_INNER_DATATYPE_ENABLE_FLOAT4_E2M1
-    #define ASC_INNER_DATATYPE_ENABLE_FLOAT4_E1M2
-    #define ASC_INNER_DATATYPE_ENABLE_FLOAT8_E5M2
-    #define ASC_INNER_DATATYPE_ENABLE_FLOAT8_E4M3FN
-#endif
 // check feature for native data type
 #if defined(ASCENDC_CPU_DEBUG)
     #undef ASC_INNER_DATATYPE_ENABLE_FLOAT4_E2M1
@@ -191,10 +183,10 @@ ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT8_E5M2, float8_e5m2_t);   // fp8_e5m2 type
 ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT8_E4M3FN, float8_e4m3_t); // fp8_e4m3 type
 #endif
 #if defined(ASC_INNER_DATATYPE_ENABLE_FLOAT4_E2M1)
-ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E2M1, fp4x2_e2m1_t);    // fp4_e2m1 type
+ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E2M1, float4_e2m1x2_t); // fp4_e2m1 type
 #endif
 #if defined(ASC_INNER_DATATYPE_ENABLE_FLOAT4_E1M2)
-ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E1M2, fp4x2_e1m2_t);    // fp4_e1m2 type
+ASCENDC_TPL_TYPE_TRANS_DEFINE(DT_FLOAT4_E1M2, float4_e1m2x2_t); // fp4_e1m2 type
 #endif
  
 #define ASCENDC_TPL_DTYPE_DECL(...)
@@ -237,7 +229,7 @@ struct ParamStruct {
     {
         uint8_t uiFlag = static_cast<uint8_t>(this->vals[0]);
         if (uiFlag == ASCENDC_TPL_UI_LIST) {
-            this->vals.erase(this->vals.begin(), this->vals.begin() + 1);
+            this->vals.erase(this->vals.begin());
             return;
         }
         std::vector<uint64_t> extendVal;

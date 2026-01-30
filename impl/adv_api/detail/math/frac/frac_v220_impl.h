@@ -10,6 +10,7 @@
 #ifndef IMPL_MATH_FRAC_FRAC_V220_IMPL_H
 #define IMPL_MATH_FRAC_FRAC_V220_IMPL_H
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
 
 namespace AscendC {
 __aicore__ inline void TruncCastForFrac(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,

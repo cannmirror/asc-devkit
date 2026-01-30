@@ -15,14 +15,102 @@
 
 #ifndef LIB_MATH_FMOD_H
 #define LIB_MATH_FMOD_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 
 #include "kernel_tensor.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#include "include/adv_api/math/fmod_utils.h"
+#include "../../../impl/adv_api/detail/math/fmod/fmod_c310_impl.h"
+#else
 #include "../../../impl/adv_api/detail/math/fmod/fmod_common_impl.h"
+#endif
 #include "kernel_pop_stack_buffer.h"
 
 namespace AscendC {
 #pragma begin_pipe(V)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+/*!
+ * \ingroup Fmod
+ * \brief compute Fmod elementwisely
+ * \tparam T: half/float
+ * \param [out] dstTensor: output LocalTensor
+ * \param [in] src0Tensor: input LocalTensor
+ * \param [in] src1Tensor: input LocalTensor, dst = src0 % src1
+ * \param [in] sharedTmpBuffer: extra temporary shared space used for intermediate values among calculation process,
+ *             whose required space size should refer to corresponding tiling API, which is defined at fmod_tiling.h.
+ *             Generally, the more space you allocate, the better performance you will achieve, and the performance
+ *             reaches peak when buffer size is maximum(calculated by tiling function). Moreover, it is not guaranteed
+ *             that the shared space will be cleared after usage, the data could be anything.
+ * \param [in] calCount: the number of elements to be processed.
+ * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
+ */
+template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
+__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
+    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
+{
+    FmodImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
+}
+
+/*!
+ * \ingroup Fmod
+ * \brief compute Fmod elementwisely
+ * \tparam T: half/float
+ * \param [out] dstTensor: output LocalTensor
+ * \param [in] src0Tensor: input LocalTensor
+ * \param [in] src1Tensor: input LocalTensor, dst = src0 % src1
+ * \param [in] calCount: the number of elements to be processed.
+ * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
+ */
+template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
+__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
+    const LocalTensor<T>& src1Tensor, const uint32_t calCount)
+{
+    LocalTensor<uint8_t> sharedTmpBuffer;
+    bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
+    ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    FmodImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, calCount);
+}
+
+/*!
+ * \ingroup Fmod
+ * \brief compute Fmod elementwisely for whole source tensor
+ * \tparam T: half/float
+ * \param [out] dstTensor: output LocalTensor
+ * \param [in] src0Tensor: input LocalTensor
+ * \param [in] src1Tensor: input LocalTensor, dst = src0 % src1
+ * \param [in] sharedTmpBuffer: extra temporary shared space used for intermediate values among calculation process,
+ *             whose required space size should refer to corresponding tiling API, which is defined at fmod_tiling.h.
+ *             Generally, the more space you allocate, the better performance you will achieve, and the performance
+ *             reaches peak when buffer size is maximum(calculated by tiling function). Moreover, it is not guaranteed
+ *             that the shared space will be cleared after usage, the data could be anything.
+ * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
+ */
+template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
+__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
+    const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
+{
+    FmodImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, src0Tensor.GetSize());
+}
+
+/*!
+ * \ingroup Fmod
+ * \brief compute Fmod elementwisely for whole source tensor
+ * \tparam T: half/float
+ * \param [out] dstTensor: output LocalTensor
+ * \param [in] src0Tensor: input LocalTensor
+ * \param [in] src1Tensor: input LocalTensor, dst = src0 % src1
+ * \note src/dst Tensor must be 32B aligned, and it doesn't allow src/dst/sharedTmpBuffer tensor address overlap.
+ */
+template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
+__aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor,
+    const LocalTensor<T>& src1Tensor)
+{
+    LocalTensor<uint8_t> sharedTmpBuffer;
+    bool ret = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
+    ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    FmodImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, src0Tensor.GetSize());
+}
+#else
 /*!
  * \ingroup Fmod
  * \brief compute Fmod elementwisely
@@ -104,6 +192,7 @@ __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T
     ASCENDC_ASSERT((ret), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     FmodImpl<T, isReuseSource>(dstTensor, src0Tensor, src1Tensor, sharedTmpBuffer, src0Tensor.GetSize());
 }
+#endif
 #pragma end_pipe
 } // namespace AscendC
 #endif

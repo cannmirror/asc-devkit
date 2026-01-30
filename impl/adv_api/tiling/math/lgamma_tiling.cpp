@@ -60,10 +60,9 @@ void GetLgammaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, 
     ASCENDC_HOST_ASSERT(inputSize > 0, return, "Input Shape size must be greater than 0.");
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
-        socVersion == platform_ascendc::SocVersion::MC62CM12A) {
+    const auto npuArch = platform->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102) {
         minValue = inputSize * LGAMMA_FLOAT_SIZE;
         maxValue = minValue;
     } else {

@@ -38,8 +38,9 @@ class InputHolder;
 class ValueHolderImpl {
 public:
     ValueHolderImpl(gert::ContextHolder<gert::TilingContext> &&ctxHolder,
-        std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder)
-        : type_(HolderType::TILING_CTX), inputTensorHolder_(std::move(inputTensorHolder)),
+        std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder,
+        std::vector<std::unique_ptr<uint8_t[]>> &&outputTensorHolder)
+        : type_(HolderType::TILING_CTX), inputTensorHolder_(std::move(inputTensorHolder)), outputTensorHolder_(std::move(outputTensorHolder)),
           ctxTilingHolder_(std::move(ctxHolder)), ctxRunHolder_(gert::ContextHolder<gert::KernelContext>())
     {}
     ValueHolderImpl(gert::ContextHolder<gert::KernelContext> &&ctxHolder)
@@ -63,6 +64,7 @@ public:
 private:
     HolderType type_;
     std::vector<std::unique_ptr<uint8_t[]>> inputTensorHolder_;
+    std::vector<std::unique_ptr<uint8_t[]>> outputTensorHolder_;
     gert::ContextHolder<gert::TilingContext> ctxTilingHolder_;
     gert::ContextHolder<gert::KernelContext> ctxRunHolder_;    
 };

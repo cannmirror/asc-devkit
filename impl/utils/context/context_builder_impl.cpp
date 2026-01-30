@@ -7,12 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
- 
+
 /*!
  * \file context_builder_impl.cpp
  * \brief
  */
- 
+
 #include "context_builder_impl.h"
 #include <fstream>
 #include <limits.h>
@@ -30,8 +30,9 @@ KernelRunContextHolder::KernelRunContextHolder(
 {}
 
 KernelRunContextHolder::KernelRunContextHolder(gert::ContextHolder<gert::TilingContext> &&ctxHolder,
-    std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, gert::KernelContext *kernelContextPtr)
-    : valueHolder(std::make_unique<ValueHolderImpl>(std::move(ctxHolder), std::move(inputTensorHolder))),
+    std::vector<std::unique_ptr<uint8_t[]>> &&inputTensorHolder, std::vector<std::unique_ptr<uint8_t[]>> &&outputTensorHolder,
+    gert::KernelContext *kernelContextPtr)
+    : valueHolder(std::make_unique<ValueHolderImpl>(std::move(ctxHolder), std::move(inputTensorHolder), std::move(outputTensorHolder))),
       kernelContext(kernelContextPtr)
 {}
 namespace {
@@ -66,7 +67,7 @@ void ContextBuilderImpl::NodeIoNum(size_t inputNum, size_t outputNum)
     inputNum_ = inputNum;
     outputNum_ = outputNum;
 }
- 
+
 void ContextBuilderImpl::IrInstanceNum(std::vector<uint32_t> instanceNum)
 {
     ASCENDC_ASSERT(tilingCtxBuilder_ != nullptr, return , CXT_ASCENDC_LOGE("tilingCtxBuilder_ is nullptr!"));
@@ -104,6 +105,7 @@ std::shared_ptr<KernelRunContextHolder> ContextBuilderImpl::BuildTilingContext()
         return nullptr;
     }
     std::vector<std::unique_ptr<uint8_t[]>> tensorValueVec(inputNum_ + outputNum_);
+    std::vector<std::unique_ptr<uint8_t[]>> tensorValueVecOut(outputNum_);
     std::vector<gert::Tensor *> tensorVec(inputNum_ + outputNum_, nullptr);
     for (size_t i = 0; i < inputNum_; ++i) {
         auto iter = dependTensorsData_.find(static_cast<int32_t>(i));
@@ -120,6 +122,12 @@ std::shared_ptr<KernelRunContextHolder> ContextBuilderImpl::BuildTilingContext()
             tensorVec[inputNum_ + key] = reinterpret_cast<gert::Tensor *>(tensorValueVec[inputNum_ + key].get());
         }
     }
+    for (size_t i = 0; i < outputNum_; ++i) {
+        auto iter = dependOutputTensorsData_.find(static_cast<int32_t>(i));
+        if (iter != dependOutputTensorsData_.end()) {
+            tensorValueVecOut[i] = std::move(iter->second);
+        }
+    }
     tilingCtxBuilder_->InputTensors(tensorVec);
     gert::ContextHolder<gert::TilingContext> ctxHolder = tilingCtxBuilder_->Build();
     if (ctxHolder.GetContext() == nullptr) {
@@ -129,7 +137,7 @@ std::shared_ptr<KernelRunContextHolder> ContextBuilderImpl::BuildTilingContext()
     KernelRunContext *kernelRunCtx = reinterpret_cast<gert::KernelContext *>(tilingCtx)->GetContext();
     gert::KernelContext *kernelCtx = reinterpret_cast<gert::KernelContext *>(kernelRunCtx);
     return std::shared_ptr<KernelRunContextHolder>(
-        new KernelRunContextHolder(std::move(ctxHolder), std::move(tensorValueVec), kernelCtx));
+        new KernelRunContextHolder(std::move(ctxHolder), std::move(tensorValueVec), std::move(tensorValueVecOut), kernelCtx));
 }
 
 void ContextBuilderImpl::AddInputTd(int32_t index, ge::DataType dtype, ge::Format originFormat,
@@ -331,6 +339,8 @@ void ContextBuilderImpl::AddOutputTd(int32_t index, ge::DataType dtype, ge::Form
     tensor->SetStorageFormat(storageFormat);
     tensor->SetOriginFormat(originFormat);
     dependOutputTensorsData_.insert({index, std::move(dataPtr)});
+    std::vector<gert::Tensor*> tensorVector = {tensor};
+    tilingCtxBuilder_->OutputTensors(tensorVector);
 }
 
 void ContextBuilderImpl::CompileInfo(void *compileInfo)
@@ -359,7 +369,7 @@ void ContextBuilderImpl::PlatformInfo(void *platformInfo)
 
 namespace DataUtils{
 constexpr int64_t OFFSET = 2;
- 
+
 uint16_t FloatToBF16(const ge::float32_t value)
 {
     union Fp32 {
@@ -371,7 +381,7 @@ uint16_t FloatToBF16(const ge::float32_t value)
     constexpr uint32_t kInt16BitsNum = 16U;
     return uint16_t(temp.u >> kInt16BitsNum);
 }
- 
+
 uint16_t FloatToUint16(const float value)
 {
     union Fp32 {
@@ -386,7 +396,7 @@ uint16_t FloatToUint16(const float value)
     temp.f = value;
     const uint32_t sign = temp.u & signMask;
     temp.u ^= sign;
- 
+
     if (temp.u >= f32Infty.u) {
         constexpr uint32_t roundMax = 0x7FFFU;
         constexpr uint32_t dstAddr = 0x7C00U;
@@ -396,7 +406,7 @@ uint16_t FloatToUint16(const float value)
         constexpr Fp32 f16Infty = { static_cast<uint32_t>(31) << static_cast<uint32_t>(23) };
         constexpr Fp32 magic = { static_cast<uint32_t>(15) << static_cast<uint32_t>(23) };
         constexpr uint32_t roundMask = static_cast<uint32_t>(~0xFFFU);
- 
+
         temp.u &= roundMask;
         temp.f *= magic.f;
         temp.u -= roundMask;
@@ -408,7 +418,7 @@ uint16_t FloatToUint16(const float value)
     out = uint16_t(out | (sign >> rightShift16));
     return out;
 }
- 
+
 bool ReadBinFile(const std::string& fileName, void *buf, std::size_t bufferLen)
 {
     try {
@@ -440,7 +450,7 @@ bool ReadBinFile(const std::string& fileName, void *buf, std::size_t bufferLen)
     }
     return true;
 }
- 
+
 int64_t GetTensorSizeByStorageShape(const gert::StorageShape& storageShape, const ge::DataType &dtype)
 {
     int64_t dataSize = storageShape.GetStorageShape().GetShapeSize();
@@ -455,7 +465,7 @@ int64_t GetTensorSizeByStorageShape(const gert::StorageShape& storageShape, cons
     }
     return tensorSize;
 }
- 
+
 bool SetConstDataWithFloat16(void *rawData, int64_t bufferLen, int64_t holderSize,
     std::unique_ptr<uint8_t[]> &dstData)
 {
@@ -479,7 +489,7 @@ bool SetConstDataWithFloat16(void *rawData, int64_t bufferLen, int64_t holderSiz
     }
     return true;
 }
- 
+
 bool SetConstDataWithBF16(void *rawData, int64_t bufferLen, int64_t holderSize,
     std::unique_ptr<uint8_t[]> &dstData)
 {

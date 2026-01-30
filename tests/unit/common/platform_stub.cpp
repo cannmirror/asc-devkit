@@ -398,6 +398,15 @@ SocVersion PlatformAscendC::GetSocVersion(void) const {
     }
     return SocVersion::RESERVED_VERSION;
 }
+
+NpuArch PlatformAscendC::GetCurNpuArch(void) const
+{
+    std::string npuArchStr;
+    bool ret = this->platformInfo_->GetPlatformResWithLock("version", "NpuArch", npuArchStr);
+    int32_t npuArchInt = std::atoi(npuArchStr.c_str());
+    return static_cast<NpuArch>(npuArchInt);
+}
+
 void PlatformAscendC::GetCoreMemSize(const CoreMemType &memType, uint64_t &size) const {
     const fe::LocalMemType localType = static_cast<fe::LocalMemType>(memType);
     this->platformInfo_->GetLocalMemSize(localType, size);
