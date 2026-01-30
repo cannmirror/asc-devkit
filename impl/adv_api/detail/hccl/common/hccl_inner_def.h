@@ -53,6 +53,22 @@ struct CommonPrepareParam {
     AlltoAllvWriteParamExt wParamExt; // only used by AlltoAllvWrite
 };
 
+struct CommonPrepareParamCcu {
+    HcclCommType commType;
+    GM_ADDR sendBuf;
+    GM_ADDR recvBuf;
+    uint64_t count;
+    HcclDataType dataType;
+    HcclDataType dstDataType;
+    HcclReduceOp op;
+    uint64_t strideCount;
+    uint8_t repeat = 1U;
+    uint8_t reservedPartA[7];
+    AlltoAllVParamExt paramExt; // only used by AlltoAllV
+    AlltoAllvWriteParamExt wParamExt; // only used by AlltoAllvWrite
+    uint8_t reservedPartB[8];
+};
+
 struct MemDetails {
     uint64_t size;
     uint64_t addr;
@@ -68,6 +84,7 @@ struct IbVerbsData {
 };
 
 constexpr uint32_t HCCL_MAX_RANK_NUM = 32U;
+constexpr uint32_t HCCL_MAX_RANK_NUM_V310 = 64U;
 struct HcclCombineOpParam {
     uint64_t workSpace;                         // Address for communication between client and server,
                                                 // hccl requests and clears
@@ -75,17 +92,15 @@ struct HcclCombineOpParam {
     uint32_t rankId;                            // id of this rank
     uint32_t rankNum;                           // num of ranks in this comm group
     uint64_t winSize;                           // size of each windows memory
-    uint64_t windowsIn[HCCL_MAX_RANK_NUM];      // windows address for input, windowsIn[rankId] corresponds
-                                                // to the local card address,
-                                                // and others are cross-card mapping addresses.
-    uint64_t windowsOut[HCCL_MAX_RANK_NUM];     // windows address for output, windowsOut[rankId] corresponds
-                                                // to the local card address,
-                                                // and others are cross-card mapping addresses.
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+    uint64_t windowsIn[HCCL_MAX_RANK_NUM_V310];
+    uint64_t windowsOut[HCCL_MAX_RANK_NUM_V310];
     GM_ADDR xnOffset;
     GM_ADDR ckeOffset;
-    uint8_t res[8312];
+    uint8_t res[7800];
 #else
+    uint64_t windowsIn[HCCL_MAX_RANK_NUM];
+    uint64_t windowsOut[HCCL_MAX_RANK_NUM];
     uint8_t res[8328];
 #endif
     uint8_t multiFlag;
@@ -123,7 +138,7 @@ struct HcclOpResParam {
 constexpr uint16_t CCU_CKE_SIZE = 8;
 constexpr uint64_t CCU_XN_DATA_SIZE = 8; // Number of bytes per xn
 constexpr uint16_t CCU_USED_XN_NUM = 9;  // Currently only the first 9 xn are used
-constexpr uint16_t CCU_MAX_MSG_NUM = 8;  // The message queue length sent to CCU is 8
+constexpr uint16_t CCU_MAX_MSG_NUM = 64;  // The message queue length sent to CCU 
 constexpr uint16_t CCU_MSG_XN_NUM = 64;  // Maximum xn number, each CCU message body occupies 8 registers
                                          // the message body length is 64*8B=512B
 constexpr uint64_t CCU_LOOP_COUNT = 64;  // CCU cycle number, MC2 is not aware of it
@@ -155,67 +170,6 @@ struct ReduceDataTypeAbility {
     HcclDataType srcDataType;
 };
 
-template <typename T, int Size>
-class CircularFifo {
-public:
-    __aicore__ CircularFifo() : mHead(0), mTail(0), mSize(0)
-    {}
-
-    __aicore__ inline bool push(const T &value)
-    {
-        if (mSize == Size) {
-            return false;
-        }
-
-        m_buffer[mTail] = value;
-        mTail = (mTail + 1) % Size;
-        ++mSize;
-
-        return true;
-    }
-
-    __aicore__ inline bool pop(T &value)
-    {
-        if (mSize == 0) {
-            return false;
-        }
-
-        value = m_buffer[mHead];
-        mHead = (mHead + 1) % Size;
-        --mSize;
-
-        return true;
-    }
-
-    __aicore__ inline bool isFull() const
-    {
-        return mSize == Size;
-    }
-
-    __aicore__ inline bool isEmpty() const
-    {
-        return mSize == 0;
-    }
-
-    __aicore__ inline T Head() const
-    {
-        return m_buffer[mHead];
-    }
-
-    __aicore__ inline T Tail() const
-    {
-        return m_buffer[mTail];
-    }
-
-public:
-    int mHead;
-    int mTail;
-
-private:
-    T m_buffer[Size];
-    int mSize;
-};
-
 struct CCUMsgExt { // AllToAllv HcclMsgExt trans for ccu
     uint64_t sendSize;
     uint64_t sendOffset;
@@ -223,29 +177,19 @@ struct CCUMsgExt { // AllToAllv HcclMsgExt trans for ccu
     uint64_t recvOffset;
 };
 
-struct CCUMsgCommOp {
-    int8_t resourceId;
-    int8_t isFinish;
-    uint8_t reserved[6];
-    uint64_t xnData[CCU_USED_XN_NUM];
-};
-
-struct HandleCommOp {
-    uint8_t reqId;
-    uint8_t repeatCnt;
-    uint8_t commitCnt;
-    uint8_t waitCnt;
-    uint8_t finishCnt;
-    uint8_t reserved[3];
-};
-
-struct CCUParam {
+struct CcuPrepareParam {
     uint32_t rankNum;
     uint32_t rankId;
-    CommonPrepareParam commParam;
     uint32_t repeatIndex;
     uint8_t alltoallvCnt = 0;
     __gm__ CCUMsgExt *ccuMsgExt;
+};
+
+struct AlltoAllVParamCcu {
+    uint64_t sendCounts[HCCL_MAX_RANK_NUM];
+    uint64_t sdispls[HCCL_MAX_RANK_NUM];
+    uint64_t recvCounts[HCCL_MAX_RANK_NUM];
+    uint64_t rdispls[HCCL_MAX_RANK_NUM];
 };
 
 constexpr uint64_t CCU_MSG_EXT_RANK_OFFSET = sizeof(CCUMsgExt) * HCCL_MAX_RANK_NUM_V2;

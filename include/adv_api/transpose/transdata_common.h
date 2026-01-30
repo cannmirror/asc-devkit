@@ -10,6 +10,8 @@
 #ifndef LIB_TRANSPOSE_TRANSDATA_COMMON_H
 #define LIB_TRANSPOSE_TRANSDATA_COMMON_H
 
+#include "kernel_basic_intf.h"
+
 namespace AscendC {
 template <typename T, typename U>
 struct TransDataParams {

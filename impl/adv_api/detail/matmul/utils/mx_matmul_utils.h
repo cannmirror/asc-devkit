@@ -91,7 +91,7 @@ __aicore__ inline constexpr static int32_t AuxGetC0Size()
         return Impl::B32_C0SIZE;
     }
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
-    else if (IsTypeOneOfV<SrcT, int8_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t, fp8_e8m0_t>)
+    else if (IsTypeOneOfV<SrcT, uint8_t, int8_t, hifloat8_t, fp8_e4m3fn_t, fp8_e5m2_t, fp8_e8m0_t>)
     {
         return Impl::B8_C0SIZE;
     } else if (IsTypeOneOfV<SrcT, int4b_t, fp4x2_e1m2_t, fp4x2_e2m1_t>) {

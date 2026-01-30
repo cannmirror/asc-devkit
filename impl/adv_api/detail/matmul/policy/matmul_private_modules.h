@@ -71,7 +71,7 @@ struct MatmulPrivateModules {
     using BatchCopyCubeInB = BatchCopyCubeIn<IMPL, MM_CFG, MatmulInputBType<B_TYPE, typename TRANS_B_TYPE::T>>;
     using QtableProcessor = AscendC::Impl::Detail::QtableProcessor<IMPL, MM_CFG>;
 
-#if __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     using CopyCubeInParamsScaleA = CopyCubeInParams<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, A_TYPE>>;
     using CopyCubeInParamsScaleB = CopyCubeInParams<IMPL, MM_CFG, MatmulInputScaleBType<B_TYPE, B_TYPE>>;
     using MatmulTensorInfoScaleA = MatmulTensorInfo<IMPL, MM_CFG, MatmulInputScaleAType<A_TYPE, A_TYPE>>;

@@ -68,11 +68,55 @@ __aicore__ inline void SoftmaxGradFrontGenericNDImpl(const LocalTensor<float>& d
     ReduceSumImpl(dstTensor[offset2], srcBuffer, reduceBuffer, reduceSumParam);
 }
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+__aicore__ inline void SoftmaxGradFrontGenericNDImpl(const LocalTensor<float>& dstTensor,
+    const LocalTensor<float>& gradTensor, const LocalTensor<float>& srcTensor, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling, const LastAxisShapeND& originalSrcShape)
+{
+    uint16_t srcK = tiling.srcK;
+    uint16_t reduceK = FLOAT_NUM_PER_BLK;
+    uint16_t srcM = tiling.srcM;
+    uint16_t originK = (uint16_t)originalSrcShape.k;
+    for (uint16_t i = 0; i < (uint16_t)srcM; i++) {
+        Mul(workLocal, srcTensor[i * srcK], gradTensor[i * srcK], originK);
+        ReduceSum(dstTensor[i * reduceK], workLocal, workLocal, originK);
+        Duplicate(dstTensor[i * reduceK], dstTensor[i * reduceK], reduceK);
+    }
+}
+
+__aicore__ inline void SoftmaxGradFrontGenericNDImpl(const LocalTensor<half>& dstTensor,
+    const LocalTensor<half>& gradTensor, const LocalTensor<half>& srcTensor, const LocalTensor<float>& workLocal,
+    const SoftMaxTiling& tiling, const LastAxisShapeND& originalSrcShape)
+{
+    uint16_t srcK = tiling.srcK;
+    uint16_t reduceK = HALF_NUM_PER_BLK;
+    uint16_t srcM = tiling.srcM;
+    uint16_t originK = (uint16_t)originalSrcShape.k;
+
+    LocalTensor<float> srcBuffer = workLocal;
+    LocalTensor<float> gradBuffer = workLocal[tiling.splitSize];
+    LocalTensor<float> dstBuffer = workLocal[tiling.splitSize + tiling.splitSize];
+    LocalTensor<float> reduceBuffer = workLocal[tiling.splitSize + tiling.splitSize + tiling.splitSize];
+    auto halfWorkLocal = gradBuffer.ReinterpretCast<half>();
+
+    for (uint16_t i = 0; i < (uint16_t)srcM; i++) {
+        Cast(srcBuffer, srcTensor[i * srcK], RoundMode::CAST_NONE, originK);
+        Cast(gradBuffer, gradTensor[i * srcK], RoundMode::CAST_NONE, originK);
+        Mul(dstBuffer, srcBuffer, gradBuffer, originK);
+        ReduceSum(reduceBuffer, dstBuffer, dstBuffer, originK);
+        Cast(halfWorkLocal, reduceBuffer, RoundMode::CAST_ROUND, reduceK);
+        Duplicate(dstTensor[i * reduceK], halfWorkLocal, reduceK);
+    }
+}
+#endif
 template <typename T, bool isBasicBlock = false>
 __aicore__ inline void SoftmaxGradFrontNDImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& gradTensor,
     const LocalTensor<T>& srcTensor, const LocalTensor<float>& workLocal, const SoftMaxTiling& tiling,
     const LastAxisShapeND& originalSrcShape)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+    SoftmaxGradFrontGenericNDImpl(dstTensor, gradTensor, srcTensor, workLocal, tiling, originalSrcShape);
+#else
     ReduceLastND reduceSumParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.reduceM,     tiling.reduceK };
 
@@ -98,6 +142,7 @@ __aicore__ inline void SoftmaxGradFrontNDImpl(const LocalTensor<T>& dstTensor, c
             reduceSumParam.dstM = tiling.tailM;
         }
     }
+#endif
 }
 
 __aicore__ inline void SoftMaxGradGenericNDImpl(const LocalTensor<half>& dst, const LocalTensor<half>& gradTensor,

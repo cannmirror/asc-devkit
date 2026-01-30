@@ -15,7 +15,11 @@
 
 #ifndef IMPL_ACTIVATION_GEGLU_GEGLU_COMMON_IMPL_H
 #define IMPL_ACTIVATION_GEGLU_GEGLU_COMMON_IMPL_H
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/activation/geglu/geglu_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 

@@ -19,7 +19,10 @@
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "kernel_tensor.h"
 #include "../../../impl/adv_api/detail/normalization/deepnorm/deepnorm_common_impl.h"
-
+#elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#include "../../../impl/adv_api/detail/normalization/deepnorm/deepnorm_c310_impl.h"
+#endif
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101)
 namespace AscendC {
 #pragma begin_pipe(V)
 

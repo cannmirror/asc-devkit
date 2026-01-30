@@ -183,11 +183,10 @@ void GetUnPadMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatf
     uint32_t srcHeight = shapeDims[0];
     uint32_t srcWidth = shapeDims[1];
 
-    platform_ascendc::SocVersion socVersion = ascendcPlatform.GetSocVersion();
-    if ((socVersion == platform_ascendc::SocVersion::ASCEND910B) ||
-        (socVersion == platform_ascendc::SocVersion::ASCEND910_95) ||
-        (socVersion == platform_ascendc::SocVersion::ASCEND910_55) ||
-        (socVersion == platform_ascendc::SocVersion::MC62CM12A)) {
+    auto npuArch = ascendcPlatform.GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_2201 ||
+        npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102) {
         maxValue = 0;
         minValue = 0;
     } else {

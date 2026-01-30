@@ -15,8 +15,13 @@
 #ifndef IMPL_ACTIVATION_GELU_GELU_IMPL_H
 #define IMPL_ACTIVATION_GELU_GELU_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/activation/gelu/faster_gelu_check.h"
+#include "../../api_check/kernel_check/activation/gelu/faster_geluv2_check.h"
+#include "../../api_check/kernel_check/activation/gelu/gelu_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

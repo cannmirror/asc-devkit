@@ -16,11 +16,16 @@
 #define IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_IMPL_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_antiquant_common.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/quantization/antiquant/antiquant_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#include "ascend_antiquant_c310_impl.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 #include "ascend_antiquant_c220_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "ascend_antiquant_l300_impl.h"
@@ -595,5 +600,38 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, cons
     ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "AntiQuant PopStackBuffer Error!"); });
     AscendAntiQuantImpl<SrcType, DstType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, K, shapeInfo);
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& dst,
+    const LocalTensor<InputDataType>& src, const LocalTensor<fp8_e8m0_t>& scale, const uint32_t K,
+    const AntiQuantShapeInfo& shapeInfo = {})
+{
+    LocalTensor<uint8_t> sharedTmpBuffer;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(sharedTmpBuffer);
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "AntiQuant PopStackBuffer Error!"); });
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, K, shapeInfo);
+}
+template <typename dstT, typename srcT,  typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+                                           const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
+                                           const AscendAntiQuantParam& para)
+{
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendAntiQuantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, stackTensor, scaleTensor, offsetTensor, para);
+}
+
+template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>
+__aicore__ inline void AscendAntiQuantImpl(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+                                           const scaleT scale, const scaleT offset, const AscendAntiQuantParam& para)
+{
+    LocalTensor<uint8_t> stackTensor;
+    bool ans = PopStackBuffer<uint8_t, TPosition::LCM>(stackTensor);
+    ASCENDC_ASSERT((ans), { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
+    AscendAntiQuantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, stackTensor, scale, offset, para);
+}
+#endif
 } // namespace AscendC
 #endif // IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_IMPL_H

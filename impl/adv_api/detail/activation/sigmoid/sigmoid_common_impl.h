@@ -15,9 +15,13 @@
 #ifndef IMPL_ACTIVATION_SIGMOID_SIGMOID_COMMON_IMPL_H
 #define IMPL_ACTIVATION_SIGMOID_SIGMOID_COMMON_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/activation/sigmoid/sigmoid_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 // V100 does not support counter mode. Thus different implementation is needed.
@@ -25,8 +29,8 @@
 #include "sigmoid_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 1001
 #include "sigmoid_v100_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-#include "sigmoid_l300_impl.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "sigmoid_c310_impl.h"
 #endif
 
 namespace AscendC {

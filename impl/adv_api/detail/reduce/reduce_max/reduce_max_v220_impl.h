@@ -11,10 +11,13 @@
 #define IMPL_REDUCE_REDUCE_MAX_REDUCE_MAX_V220_IMPL_H_
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "../reduce_common_util_v220_impl.h"
 #include "../../common/check.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/reduce/reduce_max/reduce_max_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

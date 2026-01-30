@@ -15,6 +15,8 @@
 #ifndef IMPL_MATMUL_KFC_MATMUL_SERVER_H
 #define IMPL_MATMUL_KFC_MATMUL_SERVER_H
 
+#include "kernel_operator_common_intf_impl.h"
+#include "kernel_operator_cache_intf.h"
 #include "matmul_server_utils.h"
 #include "../utils/matmul_config_utils.h"
 #include "../utils/matmul_utils.h"
@@ -130,6 +132,10 @@ public:
             GlobalTensor<uint64_t> quantGlobal;
             quantGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ uint64_t*>(body->quantAddr), size);
             mul.SetQuantVector(quantGlobal);
+        } else if (quantMode == 3) {
+            const uint64_t size = static_cast<uint64_t>(body->quantSize);
+            LocalTensor<uint64_t> quantL1 = GetLocalTensor<uint64_t, TPosition::TSCM>(body->quantAddr, size);
+            mul.SetQuantVector(quantL1);
         }
     }
     __aicore__ inline void SetBatchNum(MsgTmpPos MatmulConfigParams* body)
@@ -281,12 +287,9 @@ public:
     __aicore__ inline bool Iterate(MSG_POS KfcMsg* msg, KFC_Enum funID);
     __aicore__ inline void QuantCacheRefresh(__gm__ KfcMsg* msg)
     {
-        if constexpr (((IsSameType<SrcT, int4b_t>::value || IsSameType<SrcT, int8_t>::value) &&
-            IsSameType<DstT, half>::value) ||
-            ((IsSameType<SrcT, half>::value || IsSameType<SrcT, bfloat16_t>::value) &&
-            IsSameType<DstT, int8_t>::value) ||
-            (IsSameType<SrcT, int8_t>::value && (IsSameType<DstT, uint8_t>::value ||
-            IsSameType<DstT, int8_t>::value))) {
+        if constexpr (((IsSameType<SrcT, int4b_t>::value || IsSameType<SrcT, int8_t>::value) && IsSameType<DstT, half>::value) ||
+            ((IsSameType<SrcT, half>::value || IsSameType<SrcT, bfloat16_t>::value) && IsSameType<DstT, int8_t>::value) ||
+            (IsSameType<SrcT, int8_t>::value && (IsSameType<DstT, uint8_t>::value || IsSameType<DstT, int8_t>::value))) {
             GlobalTensor<int64_t> msgGlobal;
             msgGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ int64_t*>(msg) + sizeof(int64_t));
             DataCacheCleanAndInvalid<int64_t, CacheLine::SINGLE_CACHE_LINE, DcciDst::CACHELINE_OUT>(msgGlobal);

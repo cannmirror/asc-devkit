@@ -101,11 +101,15 @@ public:
     __aicore__ inline enable_if_t<IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG_ALIAS>(), int32_t>
     GetBatchNumBySplitIdx(int32_t splitIdx) const
     {
-        if constexpr (tag == InputTypeTag::A) {
-            return batchA_ > splitBatchNum_ ? splitBatchNum_ : batchA_;
-        } else {
-            return batchB_ > splitBatchNum_ ? splitBatchNum_ : batchB_;
+        auto batchNum = tag == InputTypeTag::A ? batchA_ : batchB_;
+        if (batchNum > splitBatchNum_) {
+            if (splitIdx == 0) {
+                return splitBatchNum_;
+            } else {
+                return batchNum - splitBatchNum_;
+            } 
         }
+        return batchNum;
     }
 
     __aicore__ inline int32_t GetBatchA() const
@@ -154,7 +158,11 @@ public:
 
     __aicore__ inline bool SplitEnd()
     {
-        return splitOuterIdx_ >= splitSize_;
+        if constexpr (IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>()) { 
+            return splitOuterIdx_ >= splitSize_ || (splitOuterIdx_ == 1 && batchNum_ < splitBatchNum_);
+        } else {
+            return splitOuterIdx_ >= splitSize_;
+        } 
     }
 
     template <InputTypeTag tag>

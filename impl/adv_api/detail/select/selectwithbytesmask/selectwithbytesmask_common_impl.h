@@ -11,6 +11,7 @@
 #define IMPL_SELECT_SELECT_WITH_BYTES_MASK_COMMON_IMPL_H
 
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
 #include "kernel_utils.h"
 #include "kernel_operator_vec_cmpsel_intf.h"
 #include "kernel_operator_vec_vconv_intf.h"

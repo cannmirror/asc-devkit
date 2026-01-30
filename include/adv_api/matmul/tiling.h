@@ -14,6 +14,7 @@
  */
 #ifndef LIB_MATMUL_TILING_H
 #define LIB_MATMUL_TILING_H
+#include "kernel_basic_intf.h"
 #include "../../../impl/adv_api/detail/matmul/utils/matmul_config_impl.h"
 
 /**
@@ -285,85 +286,6 @@ __aicore__ constexpr MatmulConfig GetBasicConfig(const uint32_t basicM, const ui
         .stepN = 0,
         .baseMN = 0,
         .singleCoreMN = 0,
-        .enUnitFlag = false,
-        .isPerTensor = false,
-        .hasAntiQuantOffset = false,
-        .doIBShareNorm = false,
-        .doSpecialMDL = false,
-        .enableInit = true,
-        .batchMode = bmmMode,
-        .enableEnd = true,
-        .enableGetTensorC = true,
-        .enableSetOrgShape = true,
-        .enableSetBias = true,
-        .enableSetTail = true,
-        .enableQuantVector = true,
-        .enableSetDefineData = true,
-        .iterateMode = IterateMode::ITERATE_MODE_DEFAULT,
-        .enableReuse = true,
-        .enableUBReuse = true,
-        .enableL1CacheUB = false,
-        .intraBlockPartSum = false,
-        .iterateOrder = IterateOrder::UNDEF,
-        .scheduleType = ScheduleType::INNER_PRODUCT,
-        .enableDoubleCache = false,
-        .isBiasBatch = true,
-        .enableStaticPadZeros = false,
-        .isPartialOutput = false,
-        .enableMixDualMaster = false,
-        .isA2B2Shared = false,
-        .isEnableChannelSplit = false,
-        .enableKdimReorderLoad = false,
-        .isCO1Shared = false,
-        .sharedCO1BufferSize = SHARED_CO1_BUFFER_SIZE,
-        .bmmOutMode = BatchOutMode::SINGLE_BATCH,
-        .enableL1BankConflictOptimise = false,
-        .enableRelu = false,
-        .decompMode = DecompressionMode::DECOMP_NONE
-    };
-}
-
-/**
- * @brief Get special basic config with custom configuration
- * @param [in] basicM: size of M-axis shape involved in once mmad instruction
- * @param [in] basicN: size of N-axis shape involved in once mmad instruction
- * @param [in] basicK: size of K-axis shape involved in once mmad instruction
- * @param [in] singleCoreM: size of M-axis shape within a single core
- * @param [in] singleCoreN: size of N-axis shape within a single core
- * @param [in] singleCoreK: size of K-axis shape within a single core
- * @param [in] stepM: multiple of baseM for A matrix in M-direction of A1
- * @param [in] stepN: multiple of baseN for B matrix in N-direction of B1
- * @param [in] intrinsicsLimit: whether to enable looping data transfer from Global Memory to L1 Buffer
- *                              when the inner axis of input matrix on a single core is greater than or equal to 65535
- * @param [in] batchLoop: whether multi-batch input and multi-batch output are enabled, only for BatchMatmul
- * @param [in] bmmMode: set the relationship between multi-batch data in A/B matrix and the size of L1 Buffer
- *                      when BatchMatmul Layout is NORMAL
- * @return MatmulConfig with special basic setting
- */
-__aicore__ constexpr MatmulConfig GetSpecialBasicConfig(const uint32_t basicM, const uint32_t basicN,
-    const uint32_t basicK, const uint32_t singleCoreM, const uint32_t singleCoreN, const uint32_t singleCoreK,
-    const uint32_t stepM, const uint32_t stepN, const bool intrinsicsLimit = false, const bool batchLoop = false,
-    const BatchMode bmmMode = BatchMode::BATCH_LESS_THAN_L1)
-{
-    return {
-        .doNorm = false,
-        .doBasicBlock = false,
-        .doMultiDataLoad = false,
-        .basicM = basicM,
-        .basicN = basicN,
-        .basicK = basicK,
-        .intrinsicsCheck = intrinsicsLimit,
-        .isNBatch = batchLoop,
-        .enVecND2NZ = false,
-        .doSpecialBasicBlock = true,
-        .doMTE2Preload = 0,
-        .singleCoreM = singleCoreM,
-        .singleCoreN = singleCoreN,
-        .singleCoreK = singleCoreK,
-        .stepM = stepM,
-        .stepN = stepN,
-        .baseMN = basicM * basicN,
-        .singleCoreMN = singleCoreM * singleCoreN,
         .enUnitFlag = false,
         .isPerTensor = false,
         .hasAntiQuantOffset = false,

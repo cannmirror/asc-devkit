@@ -15,6 +15,9 @@
 #ifndef LIB_ACTIVATION_SOFTMAX_UTILS_H
 #define LIB_ACTIVATION_SOFTMAX_UTILS_H
 
+#include <cstdint>
+#include "kernel_basic_intf.h"
+
 namespace AscendC {
 
 enum class SoftmaxMode {

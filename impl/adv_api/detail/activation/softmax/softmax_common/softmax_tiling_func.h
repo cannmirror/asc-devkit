@@ -15,6 +15,7 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_SOFTMAX_TILING_FUNC_H
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_TILING_FUNC_H
 #include "softmax_common_utils.h"
+#include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
 

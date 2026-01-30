@@ -44,11 +44,18 @@ public:
     __aicore__ inline void SetQuantScalar(const uint64_t scalar) {}
 
     /**
-     * @description: Set quant VectorMode and vector tensor params
+     * @description: Set gm quant VectorMode and vector tensor params
      * @param: vector tensor params
      * @return: void
      */
     __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& tensor) {}
+
+    /**
+     * @description: Set local quant VectorMode and vector tensor params
+     * @param: vector tensor params
+     * @return: void
+     */
+    __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& tensor) {}
 
     /**
      * @description: if is quant senario

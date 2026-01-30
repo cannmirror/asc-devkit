@@ -23,5 +23,8 @@
 #include "n_loop_basic.h"
 #include "n_loop_intrablock.h"
 #include "n_loop_norm_outer_product.h"
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#include "n_loop_mdl_mx.h"
+#endif
 
 #endif // IMPL_MATMUL_SCHEDULER_ITERATOR_N_LOOP_N_LOOP_H

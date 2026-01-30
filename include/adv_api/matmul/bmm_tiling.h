@@ -136,7 +136,7 @@ public:
      */
     int32_t GetSingleShape(int32_t &shapeM, int32_t &shapeN, int32_t &shapeK);
     /**
-     * @brief Get the BlockDim used after multi core tiling. It is carried by users to the kernel to control
+     * @brief Get the NumBlocks used after multi core tiling. It is carried by users to the kernel to control
         the service logic in the kernel.
      * @param dim : Get the number of cores required fro computation, dim = mDim * nDim.
      * @param mDim : Determine the number of core required for the M direction during computation.
@@ -195,10 +195,10 @@ public:
     explicit BatchMatmulTiling(const platform_ascendc::PlatformAscendC &ascendcPlatform)
         : MatmulApiTilingBase(ascendcPlatform){};
     /**
-     * @brief Retrieves the BlockDim used after multi-core splitting
+     * @brief Retrieves the NumBlocks used after multi-core splitting
      *
      * This interface is used to obtain the number of cores distributed in different directions
-     * after multi-core splitting, which constitutes the BlockDim for computation.
+     * after multi-core splitting, which constitutes the NumBlocks for computation.
      *
      * @param[out] dim Total number of cores required for computation, where dim = mDim * nDim
      * @param[out] mDim Number of cores required in the M direction for computation

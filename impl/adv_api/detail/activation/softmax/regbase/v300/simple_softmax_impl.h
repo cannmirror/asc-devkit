@@ -79,12 +79,54 @@ __aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst,
     Exp(dst[offset1], dst[offset1], splitSize);
     DivNDImpl(dst[offset1], dst[offset1], inSumTensor[offset2], curSplitM, tiling.srcK, tiling.reduceK);
 }
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+__aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& inSumTensor,
+    const LocalTensor<float>& inMaxTensor, const LocalTensor<float>& src, const LocalTensor<float> workLocal,
+    const SoftMaxTiling& tiling)
+{
+    uint16_t srcK = tiling.srcK;
+    uint16_t reduceK = FLOAT_NUM_PER_BLK;
+    uint16_t srcM = tiling.srcM;
 
+    for (uint16_t i = 0; i < (uint16_t)srcM; i++) {
+        Subs(dst[i * srcK], src[i * srcK], inMaxTensor[i * reduceK], srcK);
+        Exp(dst[i * srcK], dst[i * srcK], srcK);
+    }
+    for (uint16_t i = 0; i < (uint16_t)srcM; i++) {
+        Divs(dst[i * srcK], dst[i * srcK], inSumTensor[i * reduceK], srcK);
+    }
+}
+
+__aicore__ inline void SimpleSoftMaxGenericNDImpl(const LocalTensor<half>& dst, const LocalTensor<half>& inSumTensor,
+    const LocalTensor<half>& inMaxTensor, const LocalTensor<half>& src, const LocalTensor<float> workLocal,
+    const SoftMaxTiling& tiling)
+{
+    uint16_t srcK = tiling.srcK;
+    uint16_t reduceK = HALF_NUM_PER_BLK;
+    uint16_t srcM = tiling.srcM;
+
+    const LocalTensor<float>& tmpBuffer0 = workLocal[0];
+    const LocalTensor<float>& tmpBuffer2 = workLocal[srcK];
+    for (uint16_t i = 0; i < (uint16_t)srcM; i++) {
+        Cast(tmpBuffer0, src[i * srcK], RoundMode::CAST_NONE, srcK);
+        Cast(tmpBuffer2, inMaxTensor[i * reduceK], RoundMode::CAST_NONE, reduceK);
+        Subs(tmpBuffer0, tmpBuffer0, tmpBuffer2[0], srcK);
+        Exp(tmpBuffer0, tmpBuffer0, srcK);
+        Cast(tmpBuffer2, inSumTensor[i * reduceK], RoundMode::CAST_NONE, reduceK);
+        Divs(tmpBuffer0, tmpBuffer0, tmpBuffer2[0], srcK);
+        Cast(dst[i * srcK], tmpBuffer0, RoundMode::CAST_ROUND, srcK);
+    }
+}
+#endif
 template <typename T, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
 __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T>& dst, const LocalTensor<T>& inSumTensor,
     const LocalTensor<T>& inMaxTensor, const LocalTensor<T>& src, const LocalTensor<float> workLocal,
     const SoftMaxTiling& tiling)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+    SimpleSoftMaxGenericNDImpl(dst, inSumTensor, inMaxTensor, src, workLocal, tiling);
+#else
+
     if constexpr (sizeof(T) == sizeof(float)) {
         SimpleSoftMaxGenericNDImpl(dst, inSumTensor, inMaxTensor, src, workLocal, tiling, 0, 0, tiling.srcM);
     } else {
@@ -106,6 +148,7 @@ __aicore__ inline void SimpleSoftMaxNDImpl(const LocalTensor<T>& dst, const Loca
             }
         }
     }
+#endif
 }
 
 template <typename T, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>

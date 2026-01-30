@@ -16,7 +16,7 @@
 #define IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_C220_IMPL_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_antiquant_common.h"
 

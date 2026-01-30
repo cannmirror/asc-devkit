@@ -31,6 +31,13 @@ __aicore__ inline void SoftmaxFlashV2NoUpdate(const LocalTensor<T1>& dst, const 
     const LocalTensor<T1>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+    if (originalSrcShape.k % FLOAT_REPEAT_SIZE) {
+        SoftMaxGenericNDWithTailImpl<T1, T1, isBasicBlock, true>(dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
+    } else {
+        SoftMaxGenericNDImpl<T1, T1, isBasicBlock, true>(dst, expSumTensor, maxTensor, src, workLocal, originalSrcShape, tiling);
+    }
+#else
     uint32_t offset1 = 0;
     uint32_t offset2 = 0;
     uint32_t splitSize = tiling.splitSize;
@@ -55,6 +62,7 @@ __aicore__ inline void SoftmaxFlashV2NoUpdate(const LocalTensor<T1>& dst, const 
             reduceParam.dstM = tiling.tailM;
         }
     }
+#endif
 }
 
 __aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<half>& dst, const LocalTensor<half>& sumTensor,
@@ -116,12 +124,95 @@ __aicore__ inline void SoftmaxFlashV2UpdateImpl(const LocalTensor<float>& dst, c
     Add(expSumTensor[offset2], expSumTensor[offset2], tmpBuffer0, reduceSize);
 }
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+__aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<half>& dst, const LocalTensor<half>& expSumTensor,
+    const LocalTensor<half>& maxTensor, const LocalTensor<half>& src, const LocalTensor<half>& expMaxTensor,
+    const LocalTensor<half>& inExpSumTensor, const LocalTensor<half>& inMaxTensor, const LocalTensor<float>& workLocal,
+    const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+{
+    uint16_t srcK = tiling.srcK;
+    uint16_t reduceK = HALF_NUM_PER_BLK;
+    uint16_t srcM = tiling.srcM;
+    uint16_t reduceSize = tiling.reduceSize;
+    uint16_t originK = (uint16_t)originalSrcShape.k;
+
+    const LocalTensor<float>& tmpBuffer0 = workLocal;                   // for src cast
+    const LocalTensor<float>& tmpBuffer1 = workLocal[tiling.splitSize]; // need splitM * 64
+    const LocalTensor<float>& tmpBuffer2 = workLocal[tiling.splitSize + tiling.splitM * FLOAT_REPEAT_SIZE];
+    const LocalTensor<float>& tmpBuffer3 =
+        workLocal[tiling.splitSize + tiling.splitM * FLOAT_REPEAT_SIZE + tiling.reduceSize];
+    auto halfMaxLocal = tmpBuffer2.ReinterpretCast<half>();
+
+    for (uint16_t k = 0; k < (uint16_t)srcM; k++) {
+        ReduceMax(halfMaxLocal[k * reduceK], src[k * srcK], halfMaxLocal, originK);
+        Duplicate(halfMaxLocal[k * reduceK], halfMaxLocal[k * reduceK], reduceK);
+    }
+
+    Cast(tmpBuffer3, inMaxTensor, RoundMode::CAST_NONE, tiling.reduceSize);
+    Max(maxTensor, halfMaxLocal, inMaxTensor, tiling.reduceSize);
+    Cast(tmpBuffer2, maxTensor, RoundMode::CAST_NONE, tiling.reduceSize);
+
+    for (uint16_t k = 0; k < (uint16_t)srcM; k++) {
+        Cast(tmpBuffer0, src[k * srcK], RoundMode::CAST_NONE, originK);
+        Subs(tmpBuffer0, tmpBuffer0, tmpBuffer2[k * reduceK], originK);
+        Exp(tmpBuffer0, tmpBuffer0, originK);
+        ReduceSum(tmpBuffer1[k * reduceK], tmpBuffer0, tmpBuffer1, originK);
+        Duplicate(tmpBuffer1[k * reduceK], tmpBuffer1[k * reduceK], reduceK);
+        Cast(dst[k * srcK], tmpBuffer0, RoundMode::CAST_ROUND, originK);
+    }
+
+    Cast(tmpBuffer0, inExpSumTensor, RoundMode::CAST_NONE, tiling.reduceSize);
+    Sub(tmpBuffer3, tmpBuffer3, tmpBuffer2, tiling.reduceSize);
+    Exp(tmpBuffer3, tmpBuffer3, tiling.reduceSize);
+    Cast(expMaxTensor, tmpBuffer3, RoundMode::CAST_ROUND, tiling.reduceSize);
+    Mul(tmpBuffer0, tmpBuffer3, tmpBuffer0, tiling.reduceSize);
+    Add(tmpBuffer0, tmpBuffer1, tmpBuffer0, tiling.reduceSize);
+    Cast(expSumTensor, tmpBuffer0, RoundMode::CAST_ROUND, tiling.reduceSize);
+}
+
+__aicore__ inline void SoftmaxFlashV2UpdateNDImpl(const LocalTensor<float>& dst, const LocalTensor<float>& expSumTensor,
+    const LocalTensor<float>& maxTensor, const LocalTensor<float>& src, const LocalTensor<float>& expMaxTensor,
+    const LocalTensor<float>& inExpSumTensor, const LocalTensor<float>& inMaxTensor,
+    const LocalTensor<float>& workLocal, const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
+{
+    uint16_t srcK = tiling.srcK;
+    uint16_t reduceK = FLOAT_NUM_PER_BLK;
+    uint16_t srcM = tiling.srcM;
+    uint16_t reduceSize = tiling.reduceSize;
+    uint16_t originK = (uint16_t)originalSrcShape.k;
+
+    const LocalTensor<float>& tmpBuffer0 = workLocal;
+    const LocalTensor<float>& tmpBuffer1 = workLocal[reduceSize]; // tiling.splitM * FLOAT_REPEAT_SIZE
+    Copy(tmpBuffer0, inMaxTensor, reduceSize);
+    Copy(tmpBuffer1, inExpSumTensor, reduceSize);
+    for (uint16_t k = 0; k < (uint16_t)srcM; k++) {
+        ReduceMax(maxTensor[k * reduceK], src[k * srcK], tmpBuffer0, originK);
+        Duplicate(maxTensor[k * reduceK], maxTensor[k * reduceK], reduceK);
+    }
+    Max(maxTensor, maxTensor, tmpBuffer0, reduceSize);
+    for (uint16_t k = 0; k < (uint16_t)srcM; k++) {
+        Subs(dst[k * srcK], src[k * srcK], maxTensor[k * reduceK], originK);
+        Exp(dst[k * srcK], dst[k * srcK], originK);
+        ReduceSum(expSumTensor[k * reduceK], dst[k * srcK], tmpBuffer0, originK);
+        Duplicate(expSumTensor[k * reduceK], expSumTensor[k * reduceK], reduceK);
+    }
+
+    Sub(expMaxTensor, tmpBuffer0, maxTensor, reduceSize);
+    Exp(expMaxTensor, expMaxTensor, reduceSize);
+    Mul(tmpBuffer1, expMaxTensor, tmpBuffer1, reduceSize);
+    Add(expSumTensor, tmpBuffer1, expSumTensor, reduceSize);
+}
+#endif
 template <typename T1, typename T2, bool isBasicBlock = false, const SoftmaxConfig& config = SOFTMAX_DEFAULT_CFG>
 __aicore__ inline void SoftmaxFlashV2Update(const LocalTensor<T1>& dst, const LocalTensor<T2>& expSumTensor,
     const LocalTensor<T2>& maxTensor, const LocalTensor<T1>& src, const LocalTensor<T1>& expMaxTensor,
     const LocalTensor<T2>& inExpSumTensor, const LocalTensor<T2>& inMaxTensor, const LocalTensor<float>& workLocal,
     const LastAxisShapeND& originalSrcShape, const SoftMaxTiling& tiling)
 {
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+    SoftmaxFlashV2UpdateNDImpl(dst, expSumTensor, maxTensor, src, expMaxTensor, inExpSumTensor, inMaxTensor,
+                workLocal, originalSrcShape, tiling);
+#else
     ReduceLastND reduceParam = { tiling.splitM, originalSrcShape.k, tiling.splitM,
         tiling.splitK, tiling.reduceM,     tiling.reduceK };
     uint32_t offset1 = 0;
@@ -146,6 +237,7 @@ __aicore__ inline void SoftmaxFlashV2Update(const LocalTensor<T1>& dst, const Lo
             reduceParam.dstM = tiling.tailM;
         }
     }
+#endif
 }
 
 template <typename T1, typename T2, bool isUpdate = false, bool isBasicBlock = false,

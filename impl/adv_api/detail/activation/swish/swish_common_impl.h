@@ -20,7 +20,10 @@
 #include "kernel_log.h"
 #endif
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/activation/swish/swish_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {
@@ -55,7 +58,7 @@ __aicore__ inline __inout_pipe__(V) void SwishCompute(
     }
     CHECK_FUNC_HIGHLEVEL_API(Swish, (T, isReuseSource), (dstLocal, srcLocal, dataSize, scalarValue));
     T scalar = static_cast<T>(static_cast<float>(-1) * static_cast<float>(scalarValue));
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 5102)
     SetMaskCount();
     SetVectorMask<T, MaskMode::COUNTER>(0, dataSize);
     SwishCalcSimplified(dstLocal, srcLocal, scalar, 1);

@@ -15,10 +15,11 @@
 #ifndef IMPL_ACTIVATION_SILU_SILU_COMMON_IMPL_H
 #define IMPL_ACTIVATION_SILU_SILU_COMMON_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
 #include "../../api_check/kernel_api_check.h"
-#if ASCENDC_CPU_DEBUG
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/activation/silu/silu_check.h"
 #include "kernel_log.h"
 #include <type_traits>
 #endif
@@ -56,7 +57,7 @@ __aicore__ inline __inout_pipe__(V) void SiluCompute(const LocalTensor<T> &dstLo
     ans = (std::is_same<T, half>::value) || (std::is_same<T, float>::value);
     ASCENDC_ASSERT(ans, { KERNEL_LOG(KERNEL_ERROR, "type must be half or float"); });
 #endif
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 5102)
     SetMaskCount();
     SetVectorMask<T>(0, dataSize);
     SiluCalcSimplified<T>(dstLocal, srcLocal, 1);

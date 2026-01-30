@@ -37,11 +37,47 @@ target_include_directories(
 target_link_libraries(tiling_api_headers
                       INTERFACE $<BUILD_INTERFACE:tikcfw_headers>)
 
+if(PRODUCT_SIDE STREQUAL "device" AND BUILD_OPEN_PROJECT)
+  find_library(METADEF_TILINGDATA_BASE_STATIC_LIB_DIR
+    NAME libtilingdata_base.a
+    PATHS ${ASCEND_CANN_PACKAGE_PATH}
+    PATH_SUFFIXES lib64/device/lib64
+    NO_CMAKE_SYSTEM_PATH
+    NO_CMAKE_FIND_ROOT_PATH
+  )
+  if(METADEF_TILINGDATA_BASE_STATIC_LIB_DIR)
+    get_filename_component(METADEF_TILINGDATA_BASE_STATIC_LIB_DIR ${METADEF_TILINGDATA_BASE_STATIC_LIB_DIR} REALPATH)
+    message(STATUS "Found tilingdata_base library:${METADEF_TILINGDATA_BASE_STATIC_LIB_DIR}")
+  else()
+    message(FATAL_ERROR "Cannot find library tilingdata_base")
+  endif()
+
+  execute_process(COMMAND mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/metadef_tilingdata_base_objs)
+  execute_process(COMMAND rm -rf ${CMAKE_CURRENT_BINARY_DIR}/metadef_tilingdata_base_objs/*)
+  execute_process(COMMAND ${CMAKE_AR} -x ${METADEF_TILINGDATA_BASE_STATIC_LIB_DIR} --output=${CMAKE_CURRENT_BINARY_DIR}/metadef_tilingdata_base_objs
+    RESULT_VARIABLE ar_result)
+
+  if(ar_result EQUAL 0)
+    file(GLOB METADEF_TILINGDATA_BASE_OBJ_FILES
+      ${CMAKE_CURRENT_BINARY_DIR}/metadef_tilingdata_base_objs/*.o
+    )
+    add_library(metadef_tilingdata_base_obj_lib OBJECT IMPORTED)
+    set_target_properties(metadef_tilingdata_base_obj_lib PROPERTIES
+      IMPORTED_OBJECTS "${METADEF_TILINGDATA_BASE_OBJ_FILES}"
+    )
+  else()
+    message(FATAL_ERROR "ar -x libtilingdata_base.a failed")
+  endif()
+endif()
+
 add_library(
   tiling_api STATIC
   ${CMAKE_CURRENT_SOURCE_DIR}/quantization/ascend_dequant_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/quantization/ascend_quant_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/quantization/ascend_antiquant_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/quantization/quantize_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/quantization/dequantize_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/quantization/antiquantize_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/filter/dropout_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/gelu_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/matmul/bmm_tiling.cpp
@@ -50,6 +86,15 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/matmul/matmul_tiling_algorithm.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/matmul/math_util.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/hccl/hccl_tiling.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_and_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_and_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_ands_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_not_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_or_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_ors_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/fma_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/sincos_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/rint_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/clamp_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/acos_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/acosh_tiling.cpp
@@ -57,6 +102,8 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/math/asinh_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/atan_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/atanh_tiling.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/is_inf_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/is_nan_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/cos_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/cosh_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/erf_tiling_impl.cpp
@@ -76,6 +123,11 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/math/tanh_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/trunc_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/axpy_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/hypot_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_not_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_or_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/bitwise_xor_tiling_impl.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/logical_xor_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/swiglu_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/ceil_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/floor_tiling_impl.cpp
@@ -99,6 +151,7 @@ add_library(
   ${CMAKE_CURRENT_SOURCE_DIR}/pad/broadcast_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/xor_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/cumsum_tiling.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/math/where_tiling_impl.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/reduce/mean_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/math/sign_tiling.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/activation/reglu_tiling_impl.cpp
@@ -124,7 +177,8 @@ add_library(
   $<$<STREQUAL:${PRODUCT_SIDE},host>:${ASCENDC_DIR}/impl/utils/context/context_builder.cpp>
   $<$<STREQUAL:${PRODUCT_SIDE},host>:${ASCENDC_DIR}/impl/utils/context/context_builder_impl.cpp>
   $<$<STREQUAL:${PRODUCT_SIDE},device>:${ASCENDC_DIR}/impl/utils/stub/shape.cpp>
-  $<$<STREQUAL:${PRODUCT_SIDE},device>:${ASCENDC_DIR}/impl/utils/stub/tilingdata_base.cc>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<BOOL:${BUILD_OPEN_PROJECT}>>:$<TARGET_OBJECTS:metadef_tilingdata_base_obj_lib>>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:${TOP_DIR}/metadef/base/asc/tilingdata_base_impl.cc>
   )
 
 target_include_directories(tiling_api PRIVATE
@@ -139,6 +193,7 @@ target_include_directories(tiling_api PRIVATE
   $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:$<BUILD_INTERFACE:${TOP_DIR}/metadef/inc>>
   $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:$<BUILD_INTERFACE:${TOP_DIR}/ace/npuruntime/runtime/platform/inc>>
   $<$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>:$<BUILD_INTERFACE:${TOP_DIR}/ace/npuruntime/runtime/dfx/include/log/toolchain>>
+  $<$<AND:$<STREQUAL:${PRODUCT_SIDE},device>,$<NOT:$<BOOL:${BUILD_OPEN_PROJECT}>>>:$<BUILD_INTERFACE:${TOP_DIR}/metadef/pkg_inc>>
 )
 
 target_compile_options(
@@ -148,7 +203,6 @@ target_compile_options(
           -Wfloat-equal
           -D_FORTIFY_SOURCE=2
           -O2
-          $<$<STREQUAL:${PRODUCT_SIDE},host>:-DLOG_CPP>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fPIC>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fstack-protector-strong>
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fstack-protector-all>
@@ -158,7 +212,10 @@ target_compile_options(
           $<$<STREQUAL:${PRODUCT_SIDE},device>:-fvisibility=hidden>)
 
 target_compile_definitions(
-  tiling_api PRIVATE $<$<STREQUAL:${PRODUCT_SIDE},device>:_FORTIFY_SOURCE=2>)
+  tiling_api PRIVATE 
+  $<$<STREQUAL:${PRODUCT_SIDE},device>:_FORTIFY_SOURCE=2>
+  $<$<STREQUAL:${PRODUCT_SIDE},device>:ASCENDC_DEVICE_REG_STATIC>
+)
 
 target_link_libraries(
   tiling_api

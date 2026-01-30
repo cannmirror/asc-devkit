@@ -15,6 +15,7 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_ND_PROCESS_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_SOFTMAX_FLASH_ND_PROCESS_IMPL_H
 #include "softmax_flash_basic_block_impl.h"
+#include "../softmax_base_impl.h"
 
 namespace AscendC {
 

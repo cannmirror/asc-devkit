@@ -14,7 +14,7 @@
  */
 #ifndef LIB_KFC_REGISTER_OBJ_H
 #define LIB_KFC_REGISTER_OBJ_H
-#include "kernel_operator.h"
+#include "kernel_basic_intf.h"
 
 namespace AscendC {
 __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
@@ -49,18 +49,20 @@ __aicore__ inline void ClearWorkspace(__gm__  uint8_t *workspace)
         SetMaskNorm();
     }
 #elif (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF == 0
-#ifdef SPLIT_CORE_CUBE
-    SetAtomicNone();
-    SetMaskNorm();
-    SetLoadDataBoundary((uint64_t)0);
-    SetLoadDataPaddingValue((uint64_t)0);
-    // AIC wait the single from AIV
-    AscendC::WaitEvent(KFC_SYNC_ID);
-#else
-    // AIV clear gm memory
-    ClearWorkspaceImpl(workspace);
-    NotifyEvent<PIPE_MTE3>(KFC_SYNC_ID);
+    if ASCEND_IS_AIC {
+        SetAtomicNone();
+        SetMaskNorm();
+#ifndef ASCENDC_CPU_DEBUG
+        SetLoadDataBoundary((uint64_t)0);
 #endif
+        SetLoadDataPaddingValue((uint64_t)0);
+        // AIC wait the single from AIV
+        AscendC::WaitEvent(KFC_SYNC_ID);
+    } else { 
+        // AIV clear gm memory
+        ClearWorkspaceImpl(workspace);
+        NotifyEvent<PIPE_MTE3>(KFC_SYNC_ID);
+    }
 #endif
 }
 

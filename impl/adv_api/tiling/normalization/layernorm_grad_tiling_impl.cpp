@@ -109,9 +109,8 @@ void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
     uint32_t hLength = shapeDims[2];
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95
-        || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+    const auto npuArch = platform->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510) {
         // all tmp data stored as float
         if (isReuseSource && typeSize == LAYERNORM_GRAD_B32_BYTE_SIZE) {
             // no tmp buffer required
@@ -158,11 +157,10 @@ void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stack
                                    (isReuseSource ? LAYERNORM_GRAD_REUSE_FLOAT_BUF_NUM : LAYERNORM_GRAD_FLOAT_BUF_NUM);
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    const auto npuArch = platform->GetCurNpuArch();
     uint32_t oneCalSize = 0;
     uint32_t nohCalSize = 0;
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95
-        || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+    if (npuArch == NpuArch::DAV_3510) {
         // needless to calculate oneCalSize and nohCalSize
         oneCalSize = static_cast<uint32_t>(1);
         nohCalSize = static_cast<uint32_t>(1);

@@ -16,7 +16,7 @@
 #define API_CONV3D_API_IMPL_H
 
 
-#include "kernel_operator.h"
+#include "kernel_basic_intf.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "kernel_utils.h"
 #include "conv3d_util.h"

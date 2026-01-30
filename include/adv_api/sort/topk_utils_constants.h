@@ -20,6 +20,23 @@ enum class TopKMode {
     TOPK_NORMAL,
     TOPK_NSMALL,
 };
- 
+
+enum class TopKAlgo {
+    RADIX_SELECT,
+    MERGE_SORT
+};
+
+enum class TopKOrder {
+    UNSET,
+    LARGEST,
+    SMALLEST
+};
+
+struct TopKConfig {
+    TopKAlgo algo = TopKAlgo::MERGE_SORT;
+    TopKOrder order = TopKOrder::UNSET;
+    bool sorted = true;
+};
+
 }; // namespace AscendC
 #endif // LIB_SORT_TOPK_UTILS_CONSTANTS_H

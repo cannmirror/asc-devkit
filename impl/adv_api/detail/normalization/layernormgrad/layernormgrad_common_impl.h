@@ -15,9 +15,13 @@
 #ifndef IMPL_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRAD_COMMON_IMPL_H
 #define IMPL_NORMALIZATION_LAYERNORMGRAD_LAYERNORMGRAD_COMMON_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "include/adv_api/normalization/layernormgrad_utils.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/normalization/layernormgrad/layernormgrad_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 const uint32_t LAYERNORM_GRAD_B32_BYTE_SIZE = 4;
 const uint32_t LAYERNORM_GRAD_B16_BYTE_SIZE = 2;
@@ -116,7 +120,7 @@ __aicore__ inline void DuplicateLastDimImpl(const LocalTensor<float>& dst, const
     }
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t bsLength, const uint32_t hLength)
 {
@@ -158,7 +162,7 @@ __aicore__ inline void BrcbLastDimImpl(const LocalTensor<float>& dst, const Loca
 __aicore__ inline void BroadcastLastDimImpl(const LocalTensor<float>& dst, const LocalTensor<float>& src,
     const uint32_t dstSize, const uint32_t srcSize)
 {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
     BrcbLastDimImpl(dst, src, srcSize, dstSize / srcSize);
 #else
     DuplicateLastDimImpl(dst, src, srcSize, dstSize / srcSize);

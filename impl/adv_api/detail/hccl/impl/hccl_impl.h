@@ -15,10 +15,10 @@
 #ifndef IMPL_HCCL_HCCL_IMPL_H
 #define IMPL_HCCL_HCCL_IMPL_H
 
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if __NPU_ARCH__ == 2201
 #include "platform_v220/hccl_aicpu.h"
-#endif  // IMPL_HCCL_HCCL_V220_IMPL_H
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3101
+#include "platform_v220/hccl_aicpu.h"
 #include "platform_v310/hccl_ccu_v0.h"
 #endif
 #include "../common/hccl_impl_dfx.h"

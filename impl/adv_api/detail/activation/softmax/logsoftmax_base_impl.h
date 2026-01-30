@@ -15,11 +15,14 @@
 #ifndef IMPL_ACTIVATION_SOFTMAX_LOGSOFTMAX_BASE_IMPL_H
 #define IMPL_ACTIVATION_SOFTMAX_LOGSOFTMAX_BASE_IMPL_H
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-#include "regbase/l300/logsoftmax_impl.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "regbase/c310/logsoftmax_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "membase/common/logsoftmax_common_impl.h"
 #endif
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/activation/softmax/log_softmax/log_softmax_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

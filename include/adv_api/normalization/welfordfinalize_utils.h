@@ -15,7 +15,20 @@
 #ifndef LIB_NORMALIZATION_WELFORDFINALIZE_UTILS_H
 #define LIB_NORMALIZATION_WELFORDFINALIZE_UTILS_H
 
+#include <cstdint>
+#include "kernel_basic_intf.h"
+
 namespace AscendC {
+struct WelfordFinalizeConfig {
+    __aicore__ constexpr WelfordFinalizeConfig(const bool isCorrectionIn)
+    {
+        isCorrection = isCorrectionIn;
+    }
+    bool isCorrection = false;
+};
+
+constexpr WelfordFinalizeConfig WFFINALIZE_DEFAULT_CFG = { false };
+
 struct WelfordFinalizePara
 {
     uint32_t rnLength;
@@ -26,6 +39,9 @@ struct WelfordFinalizePara
     uint32_t tailCountLength;
     float abRec;
     float rRec;
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+    float rRecWithCorrection;
+#endif
 };
 
 }; // namespace AscendC

@@ -152,18 +152,6 @@ public:
         mul.SetQuantVector(quantTensor);
     }
 
-    __aicore__ inline void SetTensorAWithCopy(const GlobalTensor<SrcAT>& gm, const LocalTensor<SrcAT>& leftMatrix,
-        bool isTransposeA = false)
-    {
-        mul.SetTensorAWithCopy(gm, leftMatrix, isTransposeA);
-    }
-
-    __aicore__ inline void SetTensorBWithCopy(const GlobalTensor<SrcBT>& gm, const LocalTensor<SrcBT>& rightMatrix,
-        bool isTransposeB = false)
-    {
-        mul.SetTensorBWithCopy(gm, rightMatrix, isTransposeB);
-    }
-
     __aicore__ inline void DisableBias()
     {
         mul.DisableBias();

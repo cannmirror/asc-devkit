@@ -14,11 +14,13 @@
  */
 #ifndef LIB_REGLU_REGLU_H
 #define LIB_REGLU_REGLU_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || \
+    __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 
 #include "kernel_tensor.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-#include "../../../impl/adv_api/detail/activation/reglu/reglu_l300_impl.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "../../../impl/adv_api/detail/activation/reglu/reglu_c310_impl.h"
 #else
 #include "../../../impl/adv_api/detail/activation/reglu/reglu_common_impl.h"
 #endif

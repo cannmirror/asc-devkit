@@ -15,6 +15,10 @@
 #ifndef IMPL_MATMUL_MATMUL_IMPL_BASE_H
 #define IMPL_MATMUL_MATMUL_IMPL_BASE_H
 
+#include "kernel_tensor.h"
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
+#include "../../../../include/adv_api/quantization/ascend_antiquant.h"
+#endif
 #include "policy/matmul_policy.h"
 #include "policy/matmul_private_modules.h"
 #include "utils/matmul_module.h"
@@ -99,14 +103,11 @@ public:
     __aicore__ inline void SetUserDefInfo(const uint64_t tilingPtr);
     __aicore__ inline void SetQuantScalar(const uint64_t quantScalar);
     __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor);
+    __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& quantTensor);
     __aicore__ inline void SetTensorA(const LocalTensor<SrcAT>& leftMatrix, bool isTransposeA = false);
-    __aicore__ inline void SetTensorAWithCopy(const GlobalTensor<SrcAT>& gm, const LocalTensor<SrcAT>& leftMatrix,
-        bool isTransposeA = false);
     __aicore__ inline void SetTensorB(const LocalTensor<SrcBT>& rightMatrix, bool isTransposeB = false);
     __aicore__ inline void SetTensorA(SrcAT aScalar);
     __aicore__ inline void SetTensorB(SrcBT bScalar);
-    __aicore__ inline void SetTensorBWithCopy(const GlobalTensor<SrcBT>& gm, const LocalTensor<SrcBT>& rightMatrix,
-        bool isTransposeB = false);
     __aicore__ inline void SetBias(const LocalTensor<BiasT>& inputBias);
     __aicore__ inline void DisableBias();
     __aicore__ inline void ClearBias();
@@ -336,6 +337,15 @@ __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG,
     MatmulQuantProcessor::SetQuantVector(quantTensor);
 }
 
+template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
+__aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetQuantVector(
+    const LocalTensor<uint64_t>& quantTensor)
+{
+    static_assert((!Impl::Detail::MatmulFeatureTrait<MM_CFG>::IsNeedUB()), "Quant from L1 doesn't support current platform.");
+    MatmulQuantProcessor::SetQuantVector(quantTensor);
+}
+
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto &MM_CFG, class MM_CB,
     MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetIntraAId(uint8_t intraId)
@@ -520,42 +530,6 @@ template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto&
 __aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetTensorB(SrcBT bScalar)
 {
     ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix B with scalar."); });
-}
-
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
-    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetTensorAWithCopy(
-    const GlobalTensor<SrcAT>& gm, const LocalTensor<SrcAT>& leftMatrix, bool isTransposeA)
-{
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
-    event_t eventIDVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
-    SetFlag<HardEvent::V_MTE3>(eventIDVToMte3);
-    WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
-    struct DataCopyParams param;
-    param.blockLen = leftMatrix.GetSize() / AscendCUtils::GetC0Count(sizeof(SrcT));
-    DataCopy(gm, leftMatrix, param);
-    SetTensorA(gm, isTransposeA);
-#else
-    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "not supported on Ascend910B1."); });
-#endif
-}
-
-template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
-    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
-__aicore__ inline void MatmulImplBase<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SetTensorBWithCopy(
-    const GlobalTensor<SrcBT>& gm, const LocalTensor<SrcBT>& rightMatrix, bool isTransposeB)
-{
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
-    event_t eventIDVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
-    SetFlag<HardEvent::V_MTE3>(eventIDVToMte3);
-    WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
-    struct DataCopyParams param;
-    param.blockLen = rightMatrix.GetSize() / AscendCUtils::GetC0Count(sizeof(SrcBT));
-    DataCopy(gm, rightMatrix, param);
-    SetTensorB(gm, isTransposeB);
-#else
-    ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "not supported on Ascend910B1."); });
-#endif
 }
 
 template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,

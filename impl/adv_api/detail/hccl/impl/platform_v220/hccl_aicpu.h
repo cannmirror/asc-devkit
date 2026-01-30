@@ -148,6 +148,9 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::InterHcclGroupSync(int
 template<const auto &config>
 __aicore__ inline GM_ADDR HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::GetWindowsInAddr(uint32_t rankId)
 {
+    if (curVersion_ == HcclTilingVersion::CONTEXT_DECOUPLE_VERSION) {
+        return 0UL;
+    }
     ASCENDC_HCCL_API_ASSERT(rankId < GetRankDim(), { return nullptr; },
                             "GetWindowsInAddr failed, rankId[%u], expected less than[%u]", rankId, GetRankDim());
     if (devType_ != HCCL_ASCEND910B) {
@@ -174,6 +177,9 @@ __aicore__ inline GM_ADDR HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, confi
 template<const auto &config>
 __aicore__ inline GM_ADDR HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::GetWindowsOutAddr(uint32_t rankId)
 {
+    if (curVersion_ == HcclTilingVersion::CONTEXT_DECOUPLE_VERSION) {
+        return 0UL;
+    }
     ASCENDC_HCCL_API_ASSERT(rankId < GetRankDim(), { return nullptr; },
                             "GetWindowsOutAddr failed, rankId[%u], expected less than[%u]", rankId, GetRankDim());
     if (devType_ != HCCL_ASCEND910B) {
@@ -195,6 +201,22 @@ __aicore__ inline GM_ADDR HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, confi
             }
         }
     }
+}
+
+template<const auto &config>
+__aicore__ inline uint32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::GetRankId() {
+    if (curVersion_ == HcclTilingVersion::CONTEXT_DECOUPLE_VERSION) {
+        return (reinterpret_cast<__gm__ CommKfcContext *>(hcclContext_))->apiCtx.rankId;
+    }
+    return hcclContext_->rankId;
+}
+
+template<const auto &config>
+__aicore__ inline uint32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::GetRankDim() {
+    if (curVersion_ == HcclTilingVersion::CONTEXT_DECOUPLE_VERSION) {
+        return (reinterpret_cast<__gm__ CommKfcContext *>(hcclContext_))->apiCtx.rankNum;
+    }
+    return hcclContext_->rankNum;
 }
 
 template <const auto &config>
@@ -219,7 +241,10 @@ template <const auto &config>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::InitV2(GM_ADDR context, const void *initTiling)
 {
-    ASCENDC_HCCL_API_ASSERT(initTiling != nullptr, { return; }, "Tiling ptr is null.");
+    if (initTiling == nullptr) {
+        InitInner(context, HcclTilingVersion::CONTEXT_DECOUPLE_VERSION);
+        return;
+    }
     const Mc2InitTilingInner *initTilingPtr = static_cast<const Mc2InitTilingInner *>(initTiling);
     debugMode_ = initTilingPtr->debugMode;
     queueNum_ = initTilingPtr->queueNum;
@@ -241,7 +266,6 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::SetCcTiling(__gm__ voi
                             { return HCCL_FAILED; }, "Call SetCcTiling failed, ensure cmdType is valid");
     KERNEL_LOG(KERNEL_INFO, "CmdType = %d, ccOpTilingData = %lu ", opType, reinterpret_cast<uint64_t>(ccOpTilingData));
     ccOpTilingDataTable_[opType] = reinterpret_cast<uint64_t>(ccOpTilingData);
-    InitContext(ccOpTilingDataTable_[opType]);
     return HCCL_SUCCESS;
 }
 
@@ -255,7 +279,6 @@ __aicore__ inline int32_t HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, confi
     ASCENDC_HCCL_API_ASSERT(opType >= 0 && opType < static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL),
                             { return HCCL_FAILED; }, "Call SetCcTiling failed, ensure cmdType is valid");
     ccOpTilingDataTable_[opType] = offset;
-    InitContext(tilingBaseAddr_ + offset);
     return HCCL_SUCCESS;
 }
 

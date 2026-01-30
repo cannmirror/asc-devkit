@@ -1,0 +1,155 @@
+/**
+* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+ 
+/*!
+ * \file hccl_ccu_v0_prepare.h
+ * \brief
+ */
+#ifndef IMPL_HCCL_CCU_V0_PREEPARE_H
+#define IMPL_HCCL_CCU_V0_PREEPARE_H
+ 
+#include "hccl_ccu_xn_utils.h"
+#include "../impl/platform_v310/hccl_ccu_v0_def.h"
+ 
+namespace AscendC {
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllToAllV(__gm__ CommonPrepareParamCcu *commParam, __gm__ AlltoAllVParamCcu *allToAllVParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * DATA_TYPE_MAP[commParam->dataType];
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+    xnData_[3] = 0; // 3 is index of xnData
+    xnData_[4] = 0; // 4 is index of xnData
+    // 按照卡分组，sendSize 、sendOffset、recvSize、recvOffset  以字节为单位 * DataSzie(DataType)
+    // ccu xn5
+    AssembleHcclMsgExtForCCU(ccuParam_, commParam, allToAllVParam);
+ 
+    xnData_[5] = reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt) + CCU_MSG_EXT_RANK_OFFSET * ccuParam_.alltoallvCnt++;
+    return;
+}
+ 
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllToAll(__gm__ CommonPrepareParamCcu *commParam)
+{
+    uint64_t dataSize = DATA_TYPE_MAP[commParam->dataType];
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * dataSize;
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+    uint64_t sliceSizeAlltoall = commParam->count * dataSize;
+    uint64_t strideSize = commParam->strideCount == 0 ? sliceSizeAlltoall : commParam->strideCount * dataSize;
+    xnData_[3] = sliceSizeAlltoall;
+    xnData_[4] = strideSize;
+    xnData_[5] = 0;
+    xnData_[6] = strideSize * ccuParam_.rankId;
+    return;
+}
+ 
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllToAllVWrite(__gm__ CommonPrepareParamCcu *commParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * DATA_TYPE_MAP[commParam->dataType];
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+ 
+    uint64_t tmpCount = commParam->count / ccuParam_.rankNum;
+    uint64_t loopCount = CCU_LOOP_COUNT;
+ 
+    xnData_[1] = reinterpret_cast<uint64_t>(commParam->sendBuf); // 1 is index of xnData
+    xnData_[2] = commParam->wParamExt.sendSizes; // 2 is index of xnData
+    xnData_[8] = commParam->wParamExt.remoteWinOffset; // 8 is index of xnData
+    uint64_t sliceSize = commParam->count;
+    loopCount = CCU_LOOP_COUNT_ATAVW;
+ 
+ 
+    uint64_t loopSize = loopCount * CCU_MEMSLICE_SIZE;
+    uint64_t m = sliceSize / loopSize;
+    uint64_t n = (sliceSize - m * loopSize) / CCU_MEMSLICE_SIZE;
+    uint64_t p = sliceSize - m * loopSize - n * CCU_MEMSLICE_SIZE;
+ 
+    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
+ 
+    xnData_[3] = commParam->wParamExt.sendOffsets;// 3 is index of xnData
+    xnData_[4] = loopSize * m; // 4 is index of xnData
+    xnData_[5] = m; // 5 is index of xnData
+    CalcLoopGroupParam(xnData_, m, n, p);
+}
+ 
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllReduce(__gm__ CommonPrepareParamCcu *commParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * DATA_TYPE_MAP[commParam->dataType];
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+ 
+    uint64_t tmpCount = commParam->count / ccuParam_.rankNum;
+    uint64_t loopCount = CCU_LOOP_COUNT;
+    uint64_t sliceCount = (ccuParam_.rankId == ccuParam_.rankNum - 1) ?
+                     (commParam->count - (ccuParam_.rankNum - 1) * tmpCount) : tmpCount;
+    uint64_t sliceSize = sliceCount * DATA_TYPE_MAP[commParam->dataType];
+ 
+    uint64_t loopSize = loopCount * CCU_MEMSLICE_SIZE;
+    uint64_t m = sliceSize / loopSize;
+    uint64_t n = (sliceSize - m * loopSize) / CCU_MEMSLICE_SIZE;
+    uint64_t p = sliceSize - m * loopSize - n * CCU_MEMSLICE_SIZE;
+ 
+    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
+    xnData_[3] = (commParam->strideCount == 0) ? tmpCount * dataSize * ccuParam_.rankId : 
+                (commParam->strideCount * dataSize * ccuParam_.rankId); // 3 is index of xnData
+    xnData_[4] = loopSize * m; // 4 is index of xnData
+    xnData_[5] = m; // 5 is index of xnData
+    CalcLoopGroupParam(xnData_, m, n, p);
+}
+ 
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllGather(__gm__ CommonPrepareParamCcu *commParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * dataSize;
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+ 
+    uint64_t tmpCount = commParam->count / ccuParam_.rankNum;
+    uint64_t loopCount = CCU_LOOP_COUNT;
+    uint64_t sliceCount = commParam->count;
+ 
+    uint64_t sliceSize = sliceCount * dataSize;
+ 
+    uint64_t loopSize = loopCount * CCU_MEMSLICE_SIZE;
+    uint64_t m = sliceSize / loopSize;
+    uint64_t n = (sliceSize - m * loopSize) / CCU_MEMSLICE_SIZE;
+    uint64_t p = sliceSize - m * loopSize - n * CCU_MEMSLICE_SIZE;
+ 
+    xnData_[3] = (commParam->strideCount == 0) ? sliceSize * ccuParam_.rankId : 
+                (commParam->strideCount * dataSize * ccuParam_.rankId);// 3 is index of xnData
+    xnData_[4] = loopSize * m; // 4 is index of xnData
+    xnData_[5] = m; // 5 is index of xnData
+    CalcLoopGroupParam(xnData_, m, n, p);
+}
+ 
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForReduceScatter(__gm__ CommonPrepareParamCcu *commParam)
+{
+    CcuPrepareForAllGather(commParam);
+}
+ 
+}
+ 
+#endif

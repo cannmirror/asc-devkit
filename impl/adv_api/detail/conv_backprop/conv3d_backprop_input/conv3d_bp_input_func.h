@@ -20,7 +20,8 @@
 #include "include/adv_api/conv_backprop/common/conv3d_bp_config_base.h"
 #include "../common/conv3d_bp_util.h"
 #include "conv3d_bp_input_init_func.h"
-#include "kernel_operator.h"
+#include "kernel_basic_intf.h"
+#include "kernel_tiling/kernel_tiling.h"
 
 DECLARE_CHECK_IMPL(ConvBackpropInputFunc, Init);
 DECLARE_CHECK_IMPL(ConvBackpropInputFunc, SetOutBackprop);
@@ -372,5 +373,6 @@ struct End {
         }
     }
 };
+
 }  // namespace ConvBackpropInputFunc
 #endif

@@ -11,6 +11,8 @@
 set(ASCENDC_ADV_API_IMPL_DIR ${ASCENDC_IMPL_DIR}/adv_api)
 set(ASCENDC_ADV_API_CMAKE_DIR ${ASCENDC_ADV_API_IMPL_DIR}/cmake)
 
+add_compile_options(-Wno-error)
+
 # generate tiling_api.h softlink
 if(NOT BUILD_OPEN_PROJECT)
   add_custom_command(

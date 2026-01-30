@@ -15,23 +15,42 @@
 #ifndef IMPL_PAD_BROADCAST_BROADCAST_COMMON_IMPL_H
 #define IMPL_PAD_BROADCAST_BROADCAST_COMMON_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
 #include "broadcast_common_utils.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/pad/broadcast/broadcast_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-#include "broadcast_l300_impl.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#include "broadcast_c310_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "broadcast_v220_impl.h"
 #else
 #include "broadcast_v200_impl.h"
 #endif
-#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
+#if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 ||  __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
 
 namespace AscendC {
 constexpr uint32_t TWO_DIM = 2;
 constexpr uint32_t HALF_ONE_BLK_SIZE = 16;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+struct BroadcastTiling {
+    uint32_t oriRank;
+    uint32_t rank;
+    uint32_t dstSize;
+    uint32_t srcSize;
+    uint32_t loopNum = 0;
+    uint32_t oriSrcShape[9];
+    uint32_t oriDstShape[9];
+    uint32_t dstShape[9];
+    uint32_t dstStride[9];
+    uint32_t srcStride[10];
+};
 
 template <typename T, int constRank = -1, uint32_t* constDstShape = nullptr, uint32_t* constSrcShape = nullptr>
 __aicore__ inline void GetBroadcastTilingInfoImpl(
@@ -299,9 +318,9 @@ __aicore__ inline void TwoDimBroadCastFirstDim(const LocalTensor<T> &dstLocal, c
     const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<T> &tmpBuffer)
 {
     const uint32_t firstDim = dstShape[0];
-    const uint32_t blockDim = dstShape[1];
+    const uint32_t numBlocks = dstShape[1];
     ASCENDC_ASSERT(
-        (blockDim * sizeof(T) % ONE_BLK_SIZE == 0), { KERNEL_LOG(KERNEL_ERROR, "Non-alignment is not supported!"); });
+        (numBlocks * sizeof(T) % ONE_BLK_SIZE == 0), { KERNEL_LOG(KERNEL_ERROR, "Non-alignment is not supported!"); });
 
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t FIRST_DIM_LOOP_LIMITE = MAX_REPEAT_NUM * oneBlockElementNum;
@@ -310,12 +329,12 @@ __aicore__ inline void TwoDimBroadCastFirstDim(const LocalTensor<T> &dstLocal, c
     Duplicate(zeroTemp.template ReinterpretCast<uint16_t>(), (uint16_t)0, ONE_BLK_SIZE / sizeof(uint16_t));
     PipeBarrier<PIPE_V>();
 
-    if (blockDim >= FIRST_DIM_LOOP_LIMITE) {
-        LoopBroadCast<T>(dstLocal, srcLocal, zeroTemp, blockDim, firstDim);
+    if (numBlocks >= FIRST_DIM_LOOP_LIMITE) {
+        LoopBroadCast<T>(dstLocal, srcLocal, zeroTemp, numBlocks, firstDim);
         return;
     }
 
-    TwoDimBroadCastDimAlign<T, isReuseSource>(dstLocal, srcLocal, zeroTemp, firstDim, blockDim);
+    TwoDimBroadCastDimAlign<T, isReuseSource>(dstLocal, srcLocal, zeroTemp, firstDim, numBlocks);
 }
 
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
@@ -364,15 +383,16 @@ template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCast(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<uint8_t> &sharedTmpBuffer);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCastCommon(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
     const uint32_t dstShape[dim], const uint32_t srcShape[dim])
 {
     static_assert(SupportBytes<T, 1, 2, 4>(), "Broadcast only supports type b8/b16/b32 on current device");
-    ASCENDC_ASSERT((dim <= 2 && dim > 0), { KERNEL_LOG(KERNEL_ERROR,
+    ASCENDC_ASSERT((dim <= 2 && dim > 0), { KERNEL_LOG(KERNEL_ERROR, 
         "Now only support dim = 1 or dim = 2, but we get dim= %d", dim); });
-    ASCENDC_ASSERT((axis == 1 || axis == 0), { KERNEL_LOG(KERNEL_ERROR,
+    ASCENDC_ASSERT((axis == 1 || axis == 0), { KERNEL_LOG(KERNEL_ERROR, 
         "Now only support axis = 0 or axis = 1, but we get axis= %d", dim); });
 
     uint32_t srcSize = 1;
@@ -406,6 +426,7 @@ __aicore__ inline void BroadCastCommon(const LocalTensor<T> &dstLocal, const Loc
 {
     BroadCast<T, dim, axis, isReuseSource>(dstLocal, srcLocal, dstShape, srcShape);
 }
+
 #else
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
 __aicore__ inline void BroadCastCommon(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,

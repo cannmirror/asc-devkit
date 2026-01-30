@@ -9,10 +9,10 @@
 */
 #ifndef LIB_TRANSPOSE_TRANSDATA_H
 #define LIB_TRANSPOSE_TRANSDATA_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
 #include "transdata_common.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "../../../impl/adv_api/detail/transpose/transdata/transdata_impl.h"
 #if ASCENDC_CPU_DEBUG

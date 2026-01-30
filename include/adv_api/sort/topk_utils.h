@@ -14,6 +14,7 @@
  */
 #ifndef LIB_SORT_TOPK_UTILS_H
 #define LIB_SORT_TOPK_UTILS_H
+#include <cstdint>
 #include "topk_utils_constants.h"
 
 namespace AscendC {

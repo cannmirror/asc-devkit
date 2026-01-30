@@ -15,6 +15,7 @@
 #ifndef LIB_QUANTIZATION_ASCEND_DEQUANT_UTILS_H
 #define LIB_QUANTIZATION_ASCEND_DEQUANT_UTILS_H
 
+#include <cstdint>
 namespace AscendC {
 struct DequantParams {
     uint32_t m;             // outer axis length (do not need to be 32B aligned)              in unit of element num

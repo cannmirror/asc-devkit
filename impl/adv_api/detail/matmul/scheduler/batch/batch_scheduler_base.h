@@ -31,10 +31,8 @@ class BatchSchedulerBase
 {
     using TransAT = typename A_TYPE::T;
     using TransBT = typename decltype(GetTransBDataType<A_TYPE, B_TYPE, MM_CFG>())::T;
-    using SrcT = typename A_TYPE::T;
     using DstT = typename C_TYPE::T;
-    using BiasT = typename BIAS_TYPE::T;
-    using L0cT = typename GetMmDstType<typename A_TYPE::T>::Type;
+    using L0cT = typename GetMmDstType<TransAT>::Type;
 
     MATMUL_USE_MODULE(MLoop);
     MATMUL_USE_MODULE(NLoop);
@@ -62,7 +60,7 @@ public:
     __aicore__ inline void Init(const TCubeTiling *__restrict cubeTiling, TPipe *tpipe)
     {
         MATMUL_MODULE(MatmulShapeTiling)->SetTiling(cubeTiling);
-        MATMUL_MODULE(MatmulShapeTiling)->template CheckTiling<SrcT, L0cT>();
+        MATMUL_MODULE(MatmulShapeTiling)->template CheckTiling<TransAT, L0cT>();
         auto& var = MATMUL_PARAM_VAR;
         var.tpipe_ = tpipe;
 
@@ -82,10 +80,8 @@ public:
         const auto& tiling = MATMUL_MODULE(MatmulShapeTiling)->GetTiling();
         uint32_t shareUbSize = static_cast<uint32_t>(tiling.GetShareUbSize());
         // shareL1Size, shareL0CSize, shareUbSize
-        uint32_t shareLens[SHARE_LEN_SIZE] = {static_cast<uint32_t>(tiling.GetShareL1Size()),
-            static_cast<uint32_t>(tiling.GetShareL0CSize()), shareUbSize};
-        InitShareBufStart(var.tpipe_, tiling.GetShareMode(), shareLens, SHARE_LEN_SIZE,
-            MATMUL_MODULE(MatmulSubBlockInfo)->GetSubBlockIdx());
+        uint32_t shareLens[SHARE_LEN_SIZE] = {static_cast<uint32_t>(tiling.GetShareL1Size()), static_cast<uint32_t>(tiling.GetShareL0CSize()), shareUbSize};
+        InitShareBufStart(var.tpipe_, tiling.GetShareMode(), shareLens, SHARE_LEN_SIZE, MATMUL_MODULE(MatmulSubBlockInfo)->GetSubBlockIdx());
 
         MATMUL_MODULE(BatchCopyCubeInA)->Init();
         MATMUL_MODULE(BatchCopyCubeInB)->Init();
@@ -106,10 +102,11 @@ public:
         }
 
 #if __NPU_ARCH__ == 5102
-        if constexpr (IsSameTypeV<SrcT, half> && IsSameTypeV<TransBT, half> && IsTypeOneOfV<DstT, half, bfloat16_t>) {
-            constexpr uint64_t quantScalar = 1065353216;
+        if constexpr (IsSameTypeV<TransAT, half> && IsSameTypeV<TransBT, half> && IsTypeOneOfV<DstT, half, bfloat16_t>) {
+            constexpr float FIX_VAL_RECIPROCAL = 1.0f / (1 << 16);	
+            const uint64_t quantScalar = static_cast<const uint64_t>(*reinterpret_cast<const int32_t *>(&FIX_VAL_RECIPROCAL));
             MATMUL_MODULE(MatmulQuantProcessor)->SetQuantScalar(quantScalar);
-        } else if (IsSameTypeV<SrcT, int8_t> && IsTypeOneOfV<DstT, int8_t, uint8_t, half, bfloat16_t>) {
+        } else if (IsTypeOneOfV<TransAT, half, int8_t> && IsTypeOneOfV<DstT, int8_t, uint8_t, half, bfloat16_t>) {
             MATMUL_MODULE(MatmulQuantProcessor)->Init(tiling.GetBaseN());
         }
 #endif
@@ -134,14 +131,12 @@ public:
             batchOffsetInfo.divisorA = MATMUL_MODULE(BatchLoop)->GetBatchNum() / MATMUL_MODULE(BatchLoop)->GetBatchA();
         } else {
             if (tiling.GetALayoutInfoG() == 1 && tiling.GetBLayoutInfoG() != 1) { // BRC for Gaxis
-                ASSERT((tiling.GetBLayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
-                    (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
+                ASSERT((tiling.GetBLayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
                 batchOffsetInfo.modA = 1;
                 batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG();
             } else if (tiling.GetALayoutInfoN() == 1 && tiling.GetBLayoutInfoN() != 1) {
                 // BRC for N axis = idx % BLayoutInfoG + idx / (BLayoutInfoG * BLayoutInfoN)
-                ASSERT((tiling.GetBLayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) &&
-                    (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
+                ASSERT((tiling.GetBLayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) && (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
                 batchOffsetInfo.modA = tiling.GetBLayoutInfoG();
                 batchOffsetInfo.divisorA = tiling.GetBLayoutInfoG() * tiling.GetBLayoutInfoN();
             } else if (tiling.GetALayoutInfoB() == 1 && tiling.GetBLayoutInfoB() != 1) { // BRC for B axis
@@ -157,7 +152,7 @@ public:
         const auto matmulShapeInfo = MATMUL_MODULE(MatmulShapeInfo);
         if (MATMUL_MODULE(MatmulShapeInfo)->IsTransposeA()) {
             int32_t alignMa = CeilAlign(matmulShapeInfo->template GetSingleCoreM<false, IsBasic(MM_CFG)>(), c0Size_);
-            constexpr int32_t alignSize = IsSameTypeV<SrcT, int8_t> ? c0Size_ : BLOCK_CUBE;
+            constexpr int32_t alignSize = IsSameTypeV<TransAT, int8_t> ? c0Size_ : BLOCK_CUBE;
             int32_t alignKa = CeilAlign(matmulShapeInfo->template GetSingleCoreK<false, IsBasic(MM_CFG)>(), alignSize);
             batchOffsetInfo.alignA = alignMa * alignKa;
         } else {
@@ -175,19 +170,16 @@ public:
             batchOffsetInfo.divisorB = MATMUL_MODULE(BatchLoop)->GetBatchNum() / MATMUL_MODULE(BatchLoop)->GetBatchB();
         } else {
             if (tiling.GetBLayoutInfoG() == 1 && tiling.GetALayoutInfoG() != 1) { // BRC for Gaxis
-                ASSERT((tiling.GetALayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
-                    (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
+                ASSERT((tiling.GetALayoutInfoG() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()));
                 batchOffsetInfo.modB = 1;
                 batchOffsetInfo.divisorB = tiling.GetALayoutInfoG();
             } else if (tiling.GetBLayoutInfoN() == 1 && tiling.GetALayoutInfoN() != 1) {
                 // BRC for GN axis = idx % BLayoutInfoG + idx / (BLayoutInfoG * BLayoutInfoN)
-                ASSERT((tiling.GetALayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) &&
-                    (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
+                ASSERT((tiling.GetALayoutInfoN() > 0) && (tiling.GetALayoutInfoB() == tiling.GetBLayoutInfoB()) && (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG()));
                 batchOffsetInfo.modB = tiling.GetALayoutInfoG();
                 batchOffsetInfo.divisorB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN();
             } else if (tiling.GetBLayoutInfoB() == 1 && tiling.GetALayoutInfoB() != 1) { // BRC for B axis
-                ASSERT((tiling.GetALayoutInfoB() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) &&
-                    (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG())); // multi axis BRC is not supported.
+                ASSERT((tiling.GetALayoutInfoB() > 0) && (tiling.GetALayoutInfoN() == tiling.GetBLayoutInfoN()) && (tiling.GetALayoutInfoG() == tiling.GetBLayoutInfoG())); // multi axis BRC is not supported.
                 batchOffsetInfo.modB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN();
                 batchOffsetInfo.divisorB = tiling.GetALayoutInfoG() * tiling.GetALayoutInfoN() * tiling.GetALayoutInfoB();
             } else {
@@ -199,11 +191,11 @@ public:
         const auto matmulShapeInfo = MATMUL_MODULE(MatmulShapeInfo);
         if (MATMUL_MODULE(MatmulShapeInfo)->IsTransposeB()) {
             int32_t alignNb = CeilAlign(matmulShapeInfo->template GetSingleCoreN<false, IsBasic(MM_CFG)>(), BLOCK_CUBE);
-            int32_t alignKb = CeilAlign(matmulShapeInfo->template GetSingleCoreK<false, IsBasic(MM_CFG)>(), c0Size_);
+            int32_t alignKb = CeilAlign(matmulShapeInfo->template GetSingleCoreK<false, IsBasic(MM_CFG)>(), c0SizeB_);
             batchOffsetInfo.alignB = alignNb * alignKb;
         } else {
-            constexpr int32_t alignSize = IsSameTypeV<SrcT, int8_t> ? c0Size_ : BLOCK_CUBE;
-            int32_t alignNb = CeilAlign(matmulShapeInfo->template GetSingleCoreN<false, IsBasic(MM_CFG)>(), c0Size_);
+            constexpr int32_t alignSize = IsSameTypeV<TransBT, int8_t> ? c0SizeB_ : BLOCK_CUBE;
+            int32_t alignNb = CeilAlign(matmulShapeInfo->template GetSingleCoreN<false, IsBasic(MM_CFG)>(), c0SizeB_);
             int32_t alignKb = CeilAlign(matmulShapeInfo->template GetSingleCoreK<false, IsBasic(MM_CFG)>(), alignSize);
             batchOffsetInfo.alignB = alignNb * alignKb;
         }
@@ -400,7 +392,7 @@ public:
         MATMUL_MODULE(BiasScheduler)->End();
         MATMUL_MODULE(CubeOutBuffer)->Destroy();
 #if __NPU_ARCH__ == 5102
-        if constexpr (IsSameTypeV<SrcT, int8_t> && IsTypeOneOfV<DstT, int8_t, uint8_t, half, bfloat16_t>) {
+        if constexpr (IsTypeOneOfV<TransAT, half, int8_t> && IsTypeOneOfV<DstT, int8_t, uint8_t, half, bfloat16_t>) {
             MATMUL_MODULE(MatmulQuantProcessor)->Destroy();
         }
 #endif
@@ -419,7 +411,7 @@ private:
             matmulShapeInfo->GetSingleCoreK(), BLOCK_CUBE) : CeilAlign(matmulShapeInfo->GetSingleCoreK(), c0Size_);
         ctx.bL0Params.axisL1Len = CeilAlign(matmulShapeInfo->GetSingleCoreN(), BLOCK_CUBE);
         ctx.bL0Params.kAxisL1Len = (matmulShapeInfo->IsTransposeB() || IsSupportB8<TransBT>()) ? CeilAlign(
-            matmulShapeInfo->GetSingleCoreK(), c0Size_) : CeilAlign(matmulShapeInfo->GetSingleCoreK(), BLOCK_CUBE);
+            matmulShapeInfo->GetSingleCoreK(), c0SizeB_) : CeilAlign(matmulShapeInfo->GetSingleCoreK(), BLOCK_CUBE);   
     }
 
     __aicore__ inline void CalcReduceGInfo(BatchSchedulerContext& ctx)
@@ -570,7 +562,12 @@ public:
     bool isFirstIter_;
 
 private:
-    constexpr static int32_t c0Size_ = AuxGetC0Size<typename A_TYPE::T>();
+    constexpr static int32_t c0Size_ = AuxGetC0Size<TransAT>();
+#if __NPU_ARCH__ == 5102
+    constexpr static int32_t c0SizeB_ = AuxGetC0Size<TransBT>();
+#else
+    constexpr static int32_t c0SizeB_ = c0Size_;
+#endif
     int32_t nBatchOutNum_;
 };
 }  // namespace Detail

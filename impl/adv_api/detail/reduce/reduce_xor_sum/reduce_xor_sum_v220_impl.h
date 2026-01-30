@@ -15,6 +15,7 @@
 #ifndef IMPL_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V220_IMPL_H
 #define IMPL_REDUCE_REDUCE_XOR_SUM_REDUCE_XOR_SUM_V220_IMPL_H
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
 #include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {

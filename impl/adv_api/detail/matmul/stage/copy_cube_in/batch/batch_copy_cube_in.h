@@ -53,9 +53,14 @@ public:
 
     __aicore__ inline void Init()
     {
+#if  __NPU_ARCH__ == 5102
+        constexpr bool IS_KROW = INPUT_TYPE::isTrans ? INPUT_TYPE::TAG == InputTypeTag::A : INPUT_TYPE::TAG == InputTypeTag::B;
+#else
+        constexpr bool IS_KROW = false;
+#endif
         MATMUL_MODULE(CubeInBuffer)->Init(
             MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchNum() *
-            MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleSizeAlign<INPUT_TYPE::isTrans>(),
+            MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleSizeAlign<INPUT_TYPE::isTrans, IS_KROW>(),
             IsBmmDoubleBuffer<INPUT_TYPE, MM_CFG>() ? MATMUL_MODULE(BatchLoop)->GetSplitSize() : 1);
     }
 
@@ -100,8 +105,7 @@ private:
     {
         // Calculate batch outer loop offset
         // the parameter false means don't need to use constant parameters
-        int64_t batchOffset = outerIdx * GetSingleSize<IS_TRANS, false>() *
-                              MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchMainBlock();
+        int64_t batchOffset = outerIdx * GetSingleSize<IS_TRANS, false>() * MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchMainBlock();
 
         // Calculate iter numbers by line of BSNGD layout
         int32_t batchNum = MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchNum(); // batchA_ or batchB_
@@ -115,7 +119,11 @@ private:
         // Calculate src and dst stride of one step
         // if user input matrixStride, use matrixStride as srcStride
         auto srcStride = matrixStride != 0 ? matrixStride : GetSrcStride<IS_TRANS, false>();
+#if  __NPU_ARCH__ == 5102
+        auto dstStride =  MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleSizeAlign<IS_TRANS, IS_KROW>();
+#else
         auto dstStride =  MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleSizeAlign<IS_TRANS>();
+#endif
         int64_t srcOffset = batchNumIdx * splitIdx * srcStride;
         int64_t dstOffset = batchNumIdx * splitIdx * dstStride;
         // if odd ground, the first block is unequal with the second block
@@ -124,12 +132,17 @@ private:
         // Calculate src and dst stride of one line
         auto iterSrcStride = batchBlock * GetSingleSize<IS_TRANS, false>();
         auto iterDstStride = batchBlock * GetSingleSize<IS_TRANS>();
-
         // Complete datacopy by line
         GlobalTensor<SrcT> srcGlobal;
         srcGlobal.SetGlobalBuffer(MATMUL_MODULE(MatmulTensorInfo)->GetGlobalTensor().address_);
         srcGlobal.SetAddr(batchOffset);
         for (int32_t idx = 0; idx < iterNum; ++idx) {
+#if  __NPU_ARCH__ == 5102
+            constexpr bool iskRowDirec = IS_KROW && IsSupportB8<TransT>(); 
+            MATMUL_MODULE(DataCopyWrapper)->CopyND2NZ(dstTensor[dstOffset], srcGlobal[srcOffset], 0, 0,
+                MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleHeight<IS_TRANS>(),
+                MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleWidth<IS_TRANS>(), srcDValue, batchBlock, srcStride, dstStride, iskRowDirec);
+#else
             if (srcStride >= UINT16_MAX) {
                 for (int i = 0; i < batchBlock; ++i) {
                     MATMUL_MODULE(DataCopyWrapper)->CopyND2NZ(
@@ -146,6 +159,7 @@ private:
                     MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleWidth<IS_TRANS>(),
                     srcDValue, batchBlock, srcStride, dstStride);
             }
+#endif
             dstOffset += iterDstStride;
             srcOffset += iterSrcStride;
         }
@@ -158,8 +172,7 @@ private:
     {
         // Calculate batch outer loop offset
         // the parameter false means don't need to use constant parameters
-        int64_t batchOffset = outerIdx * GetSingleSize<IS_TRANS, false>() *
-                              MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchNum();
+        int64_t batchOffset = outerIdx * GetSingleSize<IS_TRANS, false>() * MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchNum();
 
         // Calculate iter numbers by line of BSNGD layout
         auto batchNum = MATMUL_MODULE(BatchLoop)->template GetBatchNumBySplitIdx<INPUT_TYPE::TAG>(splitIdx);
@@ -172,7 +185,11 @@ private:
         // Calculate src and dst stride of one step
         // if user input matrixStride, use matrixStride as srcStride
         auto srcStride = matrixStride != 0 ? matrixStride : GetSrcStride<IS_TRANS, false>();
+#if  __NPU_ARCH__ == 5102
+        auto dstStride = MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleSizeAlign<IS_TRANS, IS_KROW>();
+#else
         auto dstStride = MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleSizeAlign<IS_TRANS>();
+#endif
         int64_t srcOffset = 0;
         if (MATMUL_MODULE(BatchCopyCubeInParams)->GetBatchNum() > MATMUL_MODULE(BatchLoop)->GetSplitBatchNum()) {
             if (splitIdx == 1) {
@@ -190,6 +207,11 @@ private:
         srcGlobal.SetGlobalBuffer(MATMUL_MODULE(MatmulTensorInfo)->GetGlobalTensor().address_);
         srcGlobal.SetAddr(batchOffset);
         for (auto idx = 0; idx < iterNum; ++idx) {
+#if  __NPU_ARCH__ == 5102
+            constexpr bool iskRowDirec = IS_KROW && IsSupportB8<TransT>(); 
+            MATMUL_MODULE(DataCopyWrapper)->CopyND2NZ(dstTensor[dstOffset], srcGlobal[srcOffset], 0, 0, MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleHeight<IS_TRANS>(), 
+                MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleWidth<IS_TRANS>(), srcDValue, batchNum, srcStride, dstStride, iskRowDirec);
+#else
             if (srcStride >= UINT16_MAX) {
                 for (auto i = 0; i < batchNum; ++i) {
                     MATMUL_MODULE(DataCopyWrapper)->CopyND2NZ(dstTensor[dstOffset], srcGlobal[srcOffset], 0, 0,
@@ -204,6 +226,7 @@ private:
                     MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleWidth<IS_TRANS>(),
                     srcDValue, batchNum, srcStride, dstStride);
             }
+#endif
             dstOffset += iterDstStride;
             srcOffset += iterSrcStride;
         }

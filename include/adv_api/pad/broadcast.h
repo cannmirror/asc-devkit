@@ -15,11 +15,12 @@
 #ifndef LIB_PAD_BROADCAST_H
 #define LIB_PAD_BROADCAST_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
 #include "../../../impl/adv_api/detail/pad/broadcast/broadcast_common_impl.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 
 namespace AscendC {
 #pragma begin_pipe(V)
@@ -53,8 +54,45 @@ __aicore__ inline void Broadcast(const LocalTensor<T>& dstLocal, const LocalTens
 {
     BroadCast<T, dim, axis, isReuseSource>(dstLocal, srcLocal, dstShape, srcShape);
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+/*
+ * @ingroup GetBroadcastTilingInfo
+ * @brief get broadcast tiling information
+ * @param [in] rank, the dimension of src and dst
+ * @param [in] dstShape, the shape of dst tensor
+ * @param [in] srcShape, the shape of src tensor
+ * @param [in] srcInnerPad, if srcShape[rank-1] is aligned
+ * @param [out] tiling, BroadcastTiling
+ */
+template <typename T, int constRank = -1, uint32_t* constDstShape = nullptr, uint32_t* constSrcShape = nullptr>
+__aicore__ inline void GetBroadcastTilingInfo(
+    uint32_t rank, const uint32_t* dstShape, const uint32_t* srcShape, bool srcInnerPad, BroadcastTiling& tiling)
+{
+    GetBroadcastTilingInfoImpl<T, constRank, constDstShape, constSrcShape>(rank, dstShape, srcShape, srcInnerPad, tiling);
+}
+
+/*
+ * @ingroup Broadcast
+ * @brief https://numpy.org.cn/user/basics/broadcasting.html
+ * @param [out] dst, output LocalTensor
+ * @param [in] src, input LocalTensor
+ * @param [in] dstShape, the shape of dst tensor
+ * @param [in] srcShape, the shape of src tensor
+ * @param [in] tiling, broadcasttiling ptr
+ */
+template <typename T, int constRank = -1, uint32_t* constDstShape = nullptr, uint32_t* constSrcShape = nullptr,
+    bool constSrcInnerPad = false>
+__aicore__ inline void Broadcast(const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint32_t* dstShape,
+    const uint32_t* srcShape, BroadcastTiling* tiling)
+{
+    BroadcastImpl<T, constRank, constDstShape, constSrcShape, constSrcInnerPad>(dst, src, dstShape, srcShape, tiling);
+}
+#endif
 #pragma end_pipe
 }  // namespace AscendC
+
 #endif
 
 #endif  // LIB_PAD_BROADCAST_H

@@ -16,6 +16,7 @@
 #ifndef CONV3D_BP_CONFIG_BASE_H
 #define CONV3D_BP_CONFIG_BASE_H
 
+#include "kernel_basic_intf.h"
 #include "include/adv_api/conv/common/conv_common.h"
 
 namespace ConvBackpropApi {

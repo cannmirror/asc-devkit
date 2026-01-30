@@ -15,7 +15,7 @@
 #ifndef LIB_HCCL_HCCL_H
 #define LIB_HCCL_HCCL_H
 
-#include "kernel_operator.h"
+#include "kernel_basic_intf.h"
 #include "hccl_common.h"
 #include "../../../impl/adv_api/detail/hccl/impl/hccl_impl_def.h"
 
@@ -401,6 +401,7 @@ public:
     * @param [in] srcDataType: The type of input data for the communication.
     * @return The setting returns true if successful, otherwise it returns false.
     */
+    [[deprecated("It is obsoleted and use Tiling Api instead.")]]
     __aicore__ inline bool SetReduceDataTypeAbility(HcclReduceOp op,
         HcclDataType dstDataType, HcclDataType srcDataType);
 

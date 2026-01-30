@@ -24,10 +24,9 @@ void GetWelfordFinalizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t t
     std::vector<int64_t> shapeDims = srcShape.GetDims();
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 ||
-        socVersion == platform_ascendc::SocVersion::ASCEND910_55 ||
-        socVersion == platform_ascendc::SocVersion::MC62CM12A) {
+    const auto npuArch = platform->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510 ||
+        npuArch == NpuArch::DAV_5102) {
         const uint32_t srcK = shapeDims.back();
         // next is to get the max 2^k
         uint32_t reduceK = srcK;

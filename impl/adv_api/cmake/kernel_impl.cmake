@@ -22,3 +22,7 @@ file(
     CREATE_LINK ../../utils/std
     ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/std
     SYMBOLIC)
+file(
+    CREATE_LINK ../../utils/debug
+    ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/debug
+    SYMBOLIC)

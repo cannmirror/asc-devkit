@@ -73,41 +73,22 @@ public:
     {
         isPerChannel_ = true;
         quantTensor_ = quantTensor;
+        SetQuantVectorMode();
+    }
 
-        if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, half>) {
-            quantMode_ = QuantMode_t::VDEQF16;
-        } else if constexpr (IsSameTypeV<L0cT, int32_t> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
-            quantMode_ = QuantMode_t::VREQ8;
-        } else if constexpr (IsSameTypeV<L0cT, float> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
-            quantMode_ = QuantMode_t::VQF322B8_PRE;
-        }
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
-        else if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, bfloat16_t>) {
-            quantMode_ = QuantMode_t::VQS322BF16_PRE;
-        } else if constexpr (IsSameTypeV<L0cT, float> && IsTypeOneOfV<DstT, fp8_e4m3fn_t, fp8_e5m2_t>) {
-            quantMode_ = QuantMode_t::VQF322FP8_PRE;
-        } else if constexpr (IsSameTypeV<L0cT, float> && IsSameTypeV<DstT, hifloat8_t>) {
-            quantMode_ = QuantMode_t::VQF322HIF8_PRE;
-        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, half>) {
-            quantMode_ = QuantMode_t::VQF322F16_PRE;
-        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, bfloat16_t>) {
-            quantMode_ = QuantMode_t::VQF322BF16_PRE;
-        } else if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
-            IsSameTypeV<DstT, float>) {
-            quantMode_ = QuantMode_t::VQF322F32_PRE;
-        }
-#endif
+    __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& quantTensor)
+    {
+        isPerChannel_ = true;
+        quantTensorL1_ = quantTensor;
+        isQuantL1_ = true;
+        SetQuantVectorMode();
     }
 
     __aicore__ inline void SetQuantScalar(const uint64_t quantScalar)
     {
         isPerTensor_ = true;
         quantScalar_ = quantScalar;
-#if (__NPU_ARCH__ == 5102)
-        quantScalar_ = ScaleQuantScalar<SrcT, DstT>(quantScalar);
-#endif
+
         if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, half>) {
             quantMode_ = QuantMode_t::DEQF16; 
         } else if constexpr (IsSameTypeV<L0cT, int32_t> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
@@ -140,20 +121,27 @@ public:
         const int32_t curN, const int32_t baseUseN)
     {
         if (isPerChannel_) {
-            quantTensor = qidFixPipe_.template AllocTensor<uint64_t>();
             int64_t quantTensorGMOffset;
             if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportL0CToUB() && ToMatmulConfig(MM_CFG).isPartialOutput) {
                 quantTensorGMOffset = (curN * MATMUL_MODULE(KLoop)->GetInnerIter() + MATMUL_MODULE(KLoop)->GetInnerIdx()) * baseN_;
             } else {
                 quantTensorGMOffset = curN * baseN_;
             }
+            int32_t quantLen;
             if constexpr (C_TYPE::format == CubeFormat::ND || C_TYPE::format == CubeFormat::ND_ALIGN) {
-                CopyDeqTensorToL1(quantTensor, quantTensor_[quantTensorGMOffset], baseUseN);
+                quantLen = baseUseN;
             } else {
-                CopyDeqTensorToL1(quantTensor, quantTensor_[quantTensorGMOffset], DivCeil(baseUseN, BLOCK_CUBE) * BLOCK_CUBE);
+                quantLen = DivCeil(baseUseN, BLOCK_CUBE) * BLOCK_CUBE;
             }
-            qidFixPipe_.EnQue(quantTensor);
-            qidFixPipe_.DeQue();
+            if (isQuantL1_) {
+                quantTensor = quantTensorL1_[quantTensorGMOffset];
+                quantTensor.SetSize(quantLen);
+            } else {
+                quantTensor = qidFixPipe_.template AllocTensor<uint64_t>();
+                CopyDeqTensorToL1(quantTensor, quantTensor_[quantTensorGMOffset], quantLen);
+                qidFixPipe_.EnQue(quantTensor);
+                qidFixPipe_.DeQue();
+            }
         }
     }
 
@@ -174,7 +162,7 @@ public:
 
     __aicore__ inline void FreeQuantTensor(LocalTensor<uint64_t>& quantTensor)
     {
-        if (isPerChannel_) {
+        if (isPerChannel_ && !isQuantL1_) {
             qidFixPipe_.FreeTensor(quantTensor);
         }
     }
@@ -215,12 +203,43 @@ private:
         WaitFlag<HardEvent::MTE2_FIX>(eventIDMte2ToFix);
     }
 
+    __aicore__ inline void SetQuantVectorMode()
+    {
+        if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, half>) {
+            quantMode_ = QuantMode_t::VDEQF16;
+        } else if constexpr (IsSameTypeV<L0cT, int32_t> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
+            quantMode_ = QuantMode_t::VREQ8;
+        } else if constexpr (IsSameTypeV<L0cT, float> && IsTypeOneOfV<DstT, int8_t, uint8_t>) {
+            quantMode_ = QuantMode_t::VQF322B8_PRE;
+        }
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+        else if constexpr (IsSameTypeV<L0cT, int32_t> && IsSameTypeV<DstT, bfloat16_t>) {
+            quantMode_ = QuantMode_t::VQS322BF16_PRE;
+        } else if constexpr (IsSameTypeV<L0cT, float> && IsTypeOneOfV<DstT, fp8_e4m3fn_t, fp8_e5m2_t>) {
+            quantMode_ = QuantMode_t::VQF322FP8_PRE;
+        } else if constexpr (IsSameTypeV<L0cT, float> && IsSameTypeV<DstT, hifloat8_t>) {
+            quantMode_ = QuantMode_t::VQF322HIF8_PRE;
+        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
+            IsSameTypeV<DstT, half>) {
+            quantMode_ = QuantMode_t::VQF322F16_PRE;
+        } else if constexpr (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
+            IsSameTypeV<DstT, bfloat16_t>) {
+            quantMode_ = QuantMode_t::VQF322BF16_PRE;
+        } else if (IsTypeOneOfV<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t> &&
+            IsSameTypeV<DstT, float>) {
+            quantMode_ = QuantMode_t::VQF322F32_PRE;
+        }
+#endif
+    }
+
 private:
     bool isPerTensor_ = false;
     bool isPerChannel_ = false;
+    bool isQuantL1_ = false;
     QuantMode_t quantMode_ = QuantMode_t::NoQuant;
     TQue<TPosition::C1, QUEUE_DEPTH> qidFixPipe_;
     GlobalTensor<uint64_t> quantTensor_;
+    LocalTensor<uint64_t> quantTensorL1_;
     uint64_t quantScalar_ = 0;
     int32_t baseN_ = 0;
 };

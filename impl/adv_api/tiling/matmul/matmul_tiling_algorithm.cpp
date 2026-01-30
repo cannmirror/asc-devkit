@@ -1917,22 +1917,22 @@ int32_t MatmulTilingAlgorithm::GetIteratorOrder(const SingleCoreStatus& singleCo
     }
 }
 
-void MatmulTilingAlgorithm::UpdateBlockDimCalculator(BlockDimCalculator& blockDimRes) const
+void MatmulTilingAlgorithm::UpdateDimCalculator(DimCalculator& dimCalRes) const
 {
-    if (blockDimRes.totalLoadSize > blockDimRes.tmpLoadSize) {
-        blockDimRes.bmatSize = blockDimRes.tmpBmatSize;
-        blockDimRes.amatSize = blockDimRes.tmpAmatSize;
-        blockDimRes.totalLoadSize = blockDimRes.tmpLoadSize;
-        blockDimRes.tmpValue = 0;
+    if (dimCalRes.totalLoadSize > dimCalRes.tmpLoadSize) {
+        dimCalRes.bmatSize = dimCalRes.tmpBmatSize;
+        dimCalRes.amatSize = dimCalRes.tmpAmatSize;
+        dimCalRes.totalLoadSize = dimCalRes.tmpLoadSize;
+        dimCalRes.tmpValue = 0;
     }
 }
 
-void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& blockDims, const CoreStatusPack& coreStatus,
-    BlockDimCalculator& blockDimRes, const MatmulRunParas& params) const
+void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& dimFactor, const CoreStatusPack& coreStatus,
+    DimCalculator& dimCalRes, const MatmulRunParas& params) const
 {
-    blockDimRes.totalLoadSize = INT_MAX;
+    dimCalRes.totalLoadSize = INT_MAX;
     // A/B fullLoad or A fullLoad + B Kdim fullLoad or B fullLoad + A Kdim fullLoad(1/2/4)
-    const int32_t totalSize = blockDimRes.amatSize + blockDimRes.bmatSize; // batch==1
+    const int32_t totalSize = dimCalRes.amatSize + dimCalRes.bmatSize; // batch==1
     constexpr int32_t minMNSize = 16;
     constexpr int32_t minKSize = 64;
     constexpr int32_t minTotalSize = 128;
@@ -1944,93 +1944,93 @@ void MatmulTilingAlgorithm::CalcLoadSize(const DimFactor& blockDims, const CoreS
 
     // A/B fullLoad or A fullLoad + B Kdim fullLoad or B fullLoad + A Kdim fullLoad(1/2/4)
     // loadsize = K*(N*mdim+M*ndim)
-    const bool bothFullLoad = static_cast<int64_t>(totalSize) * static_cast<int64_t>(blockDimRes.kBytes) <=
+    const bool bothFullLoad = static_cast<int64_t>(totalSize) * static_cast<int64_t>(dimCalRes.kBytes) <=
         static_cast<int64_t>(tilingIns_->bufferPool_.l1Size);
     const bool afullLoadPlsBKFullLoad =
-        static_cast<int64_t>(blockDimRes.amatSize + n0 * dbBuffer) * static_cast<int64_t>(blockDimRes.kBytes) <=
+        static_cast<int64_t>(dimCalRes.amatSize + n0 * dbBuffer) * static_cast<int64_t>(dimCalRes.kBytes) <=
         static_cast<int64_t>(tilingIns_->bufferPool_.l1Size);
     const bool bfullLoadPlsaKFullLoad =
-        static_cast<int64_t>(blockDimRes.bmatSize + m0 * dbBuffer) * static_cast<int64_t>(blockDimRes.kBytes) <=
+        static_cast<int64_t>(dimCalRes.bmatSize + m0 * dbBuffer) * static_cast<int64_t>(dimCalRes.kBytes) <=
         static_cast<int64_t>(tilingIns_->bufferPool_.l1Size);
     if (afullLoadPlsBKFullLoad || bfullLoadPlsaKFullLoad || bothFullLoad) {
-        blockDimRes.tmpAmatSize = blockDimRes.oriAmatSize * blockDims.n;
-        blockDimRes.tmpBmatSize = blockDimRes.oriBmatSize * blockDims.m;
-        blockDimRes.tmpLoadSize = blockDimRes.tmpAmatSize + blockDimRes.tmpBmatSize;
-        UpdateBlockDimCalculator(blockDimRes);
+        dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * dimFactor.n;
+        dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * dimFactor.m;
+        dimCalRes.tmpLoadSize = dimCalRes.tmpAmatSize + dimCalRes.tmpBmatSize;
+        UpdateDimCalculator(dimCalRes);
         return;
     }
 
     // A kdim not fullLoad + B kdim not fullLoad(9)
     // loadsize = M*K*N*(1/m0+1/n0)
     const bool aKNotfullLoadPlsbKNotFullLoad =
-        (n0 * blockDimRes.kBytes + m0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer >
+        (n0 * dimCalRes.kBytes + m0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer >
         tilingIns_->bufferPool_.l1Size &&
-        (m0 * blockDimRes.kBytes + n0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer >
+        (m0 * dimCalRes.kBytes + n0 * k0 * C0_SIZE * C0_BYTE_SIZE) * dbBuffer >
         tilingIns_->bufferPool_.l1Size;
     if (aKNotfullLoadPlsbKNotFullLoad) {
-        blockDimRes.tmpAmatSize = blockDimRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n0);
-        blockDimRes.tmpBmatSize = blockDimRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m0);
-        blockDimRes.tmpLoadSize = blockDimRes.tmpAmatSize + blockDimRes.tmpBmatSize;
-        UpdateBlockDimCalculator(blockDimRes);
+        dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n0);
+        dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m0);
+        dimCalRes.tmpLoadSize = dimCalRes.tmpAmatSize + dimCalRes.tmpBmatSize;
+        UpdateDimCalculator(dimCalRes);
         return;
     }
 
     // A kdim fullLoad + B kdim fullLoad(5)
     // M*K*(ndim+N/m1) or N*K*(mdim+M/n1)
-    const bool aKfullLoadPlsbKFullLoad = (m0 + n0) * blockDimRes.kBytes * dbBuffer <= tilingIns_->bufferPool_.l1Size;
+    const bool aKfullLoadPlsbKFullLoad = (m0 + n0) * dimCalRes.kBytes * dbBuffer <= tilingIns_->bufferPool_.l1Size;
     if (aKfullLoadPlsbKFullLoad) {
         const int32_t m1 = MathUtil::CeilDivision((tilingIns_->bufferPool_.l1Size - n0 *
-            blockDimRes.kBytes * dbBuffer), (blockDimRes.kBytes * dbBuffer * m0)) * m0;
+            dimCalRes.kBytes * dbBuffer), (dimCalRes.kBytes * dbBuffer * m0)) * m0;
         const int32_t n1 = MathUtil::CeilDivision((tilingIns_->bufferPool_.l1Size - m0 *
-            blockDimRes.kBytes * dbBuffer), (blockDimRes.kBytes * dbBuffer * n0)) * n0;
+            dimCalRes.kBytes * dbBuffer), (dimCalRes.kBytes * dbBuffer * n0)) * n0;
         const int32_t mfirstLoad =
-            blockDimRes.oriAmatSize * blockDims.n + blockDimRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m1);
+            dimCalRes.oriAmatSize * dimFactor.n + dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m1);
         int32_t nfirstLoad =
-            blockDimRes.oriBmatSize * blockDims.m + blockDimRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n1);
+            dimCalRes.oriBmatSize * dimFactor.m + dimCalRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n1);
         if (mfirstLoad < nfirstLoad) {
-            blockDimRes.tmpAmatSize = blockDimRes.oriAmatSize * blockDims.n;
-            blockDimRes.tmpBmatSize = blockDimRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m1);
+            dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * dimFactor.n;
+            dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m1);
         } else {
-            blockDimRes.tmpAmatSize = blockDimRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n1);
-            blockDimRes.tmpBmatSize = blockDimRes.oriBmatSize * blockDims.m;
+            dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n1);
+            dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * dimFactor.m;
         }
-        blockDimRes.tmpLoadSize = blockDimRes.tmpAmatSize + blockDimRes.tmpBmatSize;
-        UpdateBlockDimCalculator(blockDimRes);
+        dimCalRes.tmpLoadSize = dimCalRes.tmpAmatSize + dimCalRes.tmpBmatSize;
+        UpdateDimCalculator(dimCalRes);
         return;
     }
 
     //  A fullLoad + B Kdim not fullLoad or A K fullLoad + B Kdim not fullLoad(3/6)
     // mdim = coreNum; ndim = 1；
     // loadsize = M*K*(ndim+N/m0)
-    const bool afullLoadPlsbKNotFullLoad = (blockDimRes.amatSize * blockDimRes.kBytes +
+    const bool afullLoadPlsbKNotFullLoad = (dimCalRes.amatSize * dimCalRes.kBytes +
         n0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
-    const bool aKfullLoadPlsbKNotFullLoad = (m0 * blockDimRes.kBytes * dbBuffer +
+    const bool aKfullLoadPlsbKNotFullLoad = (m0 * dimCalRes.kBytes * dbBuffer +
         n0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
     if (afullLoadPlsbKNotFullLoad || aKfullLoadPlsbKNotFullLoad) {
-        blockDimRes.tmpAmatSize = blockDimRes.oriAmatSize * blockDims.n;
-        blockDimRes.tmpBmatSize = blockDimRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m0);
-        blockDimRes.tmpLoadSize = blockDimRes.tmpAmatSize + blockDimRes.tmpBmatSize;
-        UpdateBlockDimCalculator(blockDimRes);
+        dimCalRes.tmpAmatSize = dimCalRes.oriAmatSize * dimFactor.n;
+        dimCalRes.tmpBmatSize = dimCalRes.oriBmatSize * MathUtil::CeilDivision(params.m32, m0);
+        dimCalRes.tmpLoadSize = dimCalRes.tmpAmatSize + dimCalRes.tmpBmatSize;
+        UpdateDimCalculator(dimCalRes);
     }
 
     // A kdim not fullLoad + B fullLoad or A kdim not fullLoad + B kdim fullLoad(7/8)
     // loadsize = N*K*(mdim+M/n0)
-    const bool aKNotfullLoadPlsbFullLoad = (blockDimRes.bmatSize * blockDimRes.kBytes +
+    const bool aKNotfullLoadPlsbFullLoad = (dimCalRes.bmatSize * dimCalRes.kBytes +
         m0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
-    const bool aKNotfullLoadPlsbKFullLoad = (n0 * blockDimRes.kBytes * dbBuffer +
+    const bool aKNotfullLoadPlsbKFullLoad = (n0 * dimCalRes.kBytes * dbBuffer +
         m0 * k0 * C0_SIZE * C0_BYTE_SIZE * dbBuffer) <= tilingIns_->bufferPool_.l1Size;
     if (aKNotfullLoadPlsbFullLoad || aKNotfullLoadPlsbKFullLoad) {
-        blockDimRes.tmpAmatSize = blockDimRes.oriBmatSize * blockDims.m;
-        blockDimRes.tmpBmatSize = blockDimRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n0);
-        blockDimRes.tmpLoadSize = blockDimRes.tmpAmatSize + blockDimRes.tmpBmatSize;
-        UpdateBlockDimCalculator(blockDimRes);
+        dimCalRes.tmpAmatSize = dimCalRes.oriBmatSize * dimFactor.m;
+        dimCalRes.tmpBmatSize = dimCalRes.oriAmatSize * MathUtil::CeilDivision(params.n32, n0);
+        dimCalRes.tmpLoadSize = dimCalRes.tmpAmatSize + dimCalRes.tmpBmatSize;
+        UpdateDimCalculator(dimCalRes);
     }
 }
 
 int32_t MatmulTilingAlgorithm::LoopNumFromSingleCoreToL0(const CoreStatusPack& coreStatus,
-    const DimFactor& blockDimsFactor) const
+    const DimFactor& dimFactor) const
 {
-    if (!blockDimsFactor.IsValid()) {
+    if (!dimFactor.IsValid()) {
         return 0;
     }
     constexpr int32_t minTotalSize = 128;
@@ -2048,7 +2048,7 @@ int32_t MatmulTilingAlgorithm::LoopNumFromSingleCoreToL0(const CoreStatusPack& c
 }
 
 int32_t MatmulTilingAlgorithm::GetBigPackageCondition(const CoreStatusPack &coreStatus,
-    const BlockDimCalculator &blockDimRes, const MatmulRunParas &params) const
+    const DimCalculator &dimCalRes, const MatmulRunParas &params) const
 {
     if (tilingIns_->bType_.isTrans == true && tilingIns_->aType_.isTrans == false) {
         return ATTACH_FLAG_ZERO;
@@ -2066,87 +2066,87 @@ int32_t MatmulTilingAlgorithm::GetBigPackageCondition(const CoreStatusPack &core
         }
     }
 
-    if (!blockDimRes.bigPackage && !flag) {
+    if (!dimCalRes.bigPackage && !flag) {
         return ATTACH_FLAG_ZERO;
-    } else if (!blockDimRes.bigPackage && flag) {
+    } else if (!dimCalRes.bigPackage && flag) {
         return ATTACH_FLAG_TWO;
-    } else if (blockDimRes.bigPackage && !flag) {
+    } else if (dimCalRes.bigPackage && !flag) {
         return ATTACH_FLAG_ONE;
     } else {
         return ATTACH_FLAG_ZERO;
     }
 }
 
-void MatmulTilingAlgorithm::GetBlockDimHelper(const DimFactor& blockDim, CoreStatusPack& coreStatus,
-    BlockDimCalculator& blockDimRes, const MatmulRunParas& params)
+void MatmulTilingAlgorithm::GetDimsHelper(const DimFactor& dimFactor, CoreStatusPack& coreStatus,
+    DimCalculator& dimCalRes, const MatmulRunParas& params)
 {
-    blockDimRes.kNum = (blockDim.k == 0) ? 0 : (params.k32 / blockDim.k * C0_SIZE * REDUCE_BLOCK_SIZE); // contain k * 16
-    blockDimRes.kBytes = blockDimRes.kNum * INPUTDTYPE_BYTES;                 // contain k * 16 * 2
-    coreStatus.batch = MathUtil::CeilDivision(params.batch32, blockDim.batch);
-    coreStatus.m = MathUtil::CeilDivision(params.m32, blockDim.m);
-    coreStatus.n = MathUtil::CeilDivision(params.n32, blockDim.n);
-    coreStatus.k = (blockDim.k == 0) ? 0 : (params.k32 / blockDim.k);
+    dimCalRes.kNum = (dimFactor.k == 0) ? 0 : (params.k32 / dimFactor.k * C0_SIZE * REDUCE_BLOCK_SIZE); // contain k * 16
+    dimCalRes.kBytes = dimCalRes.kNum * INPUTDTYPE_BYTES;                 // contain k * 16 * 2
+    coreStatus.batch = MathUtil::CeilDivision(params.batch32, dimFactor.batch);
+    coreStatus.m = MathUtil::CeilDivision(params.m32, dimFactor.m);
+    coreStatus.n = MathUtil::CeilDivision(params.n32, dimFactor.n);
+    coreStatus.k = (dimFactor.k == 0) ? 0 : (params.k32 / dimFactor.k);
     if (tilingIns_->enableSplitK_) {
         if (params.kMapped != params.k32) { // need check--splitK
-            blockDimRes.kNum = params.kMapped / blockDim.k * NUM_TWO * C0_SIZE * REDUCE_BLOCK_SIZE;
-            coreStatus.k = params.kMapped / blockDim.k * NUM_TWO;
+            dimCalRes.kNum = params.kMapped / dimFactor.k * NUM_TWO * C0_SIZE * REDUCE_BLOCK_SIZE;
+            coreStatus.k = params.kMapped / dimFactor.k * NUM_TWO;
         }
     }
 
     // load size of A matrix is batch * m
     // load size of B matrix is n
-    blockDimRes.oriAmatSize = params.batch32 * params.m32;
-    blockDimRes.oriBmatSize = params.oriShapeBbatch > 1 ? params.batch32 * params.n32 : params.n32;
-    blockDimRes.amatSize = coreStatus.batch * coreStatus.m;
-    blockDimRes.bmatSize = params.oriShapeBbatch > 1 ? coreStatus.batch * coreStatus.n : coreStatus.n;
-    blockDimRes.tmpValue = 0;
-    CalcLoadSize(blockDim, coreStatus, blockDimRes, params);
+    dimCalRes.oriAmatSize = params.batch32 * params.m32;
+    dimCalRes.oriBmatSize = params.oriShapeBbatch > 1 ? params.batch32 * params.n32 : params.n32;
+    dimCalRes.amatSize = coreStatus.batch * coreStatus.m;
+    dimCalRes.bmatSize = params.oriShapeBbatch > 1 ? coreStatus.batch * coreStatus.n : coreStatus.n;
+    dimCalRes.tmpValue = 0;
+    CalcLoadSize(dimFactor, coreStatus, dimCalRes, params);
     if (tilingIns_->enableSplitK_) {
-        blockDimRes.totalLoadSize *= coreStatus.k;
+        dimCalRes.totalLoadSize *= coreStatus.k;
     }
 
     // updateSolution: bool whether update to a new block factor solution
     // has smaller LoadSize or the same LoadSize but batch
-    const int bigpackageFlag = GetBigPackageCondition(coreStatus, blockDimRes, params);
+    const int bigpackageFlag = GetBigPackageCondition(coreStatus, dimCalRes, params);
     const bool updateConditionBp = bigpackageFlag == 0 ? false : true;
     bool updateConditionBp2 = bigpackageFlag == 2 ? true : false;
     bool updateConditionBp3 = bigpackageFlag == 1 ? false : true;
 
-    const int32_t loopNum = LoopNumFromSingleCoreToL0(coreStatus, blockDim);
-    const bool updateConditionCoreUsed = (!updateConditionBp) && ((loopNum < blockDimRes.loopNumToL0) ||
-        (blockDim.ReduceMul() > blockDimRes.coreUse && loopNum == blockDimRes.loopNumToL0));
-    const bool updateConditionLoadsize = (!updateConditionCoreUsed && blockDim.ReduceMul() == blockDimRes.coreUse) &&
-        blockDimRes.totalLoadSize < blockDimRes.minLoadSize;
-    const int32_t orgBatchM = params.oriShapeAbatch > 1 ? blockDimRes.batchDimFactor : blockDimRes.mDimFactor;
-    const int32_t curBatchM = params.oriShapeAbatch > 1 ? blockDim.batch : blockDim.m;
-    const bool updateConditionBatchNDim = (!updateConditionCoreUsed && blockDim.ReduceMul() == blockDimRes.coreUse &&
-        blockDimRes.totalLoadSize == blockDimRes.minLoadSize) &&
-        ((blockDimRes.nDimFactor * orgBatchM < curBatchM * blockDim.n) ||
-        (blockDimRes.nDimFactor * orgBatchM == curBatchM * blockDim.n &&
-        blockDimRes.batchDimFactor < blockDim.batch));
+    const int32_t loopNum = LoopNumFromSingleCoreToL0(coreStatus, dimFactor);
+    const bool updateConditionCoreUsed = (!updateConditionBp) && ((loopNum < dimCalRes.loopNumToL0) ||
+        (dimFactor.ReduceMul() > dimCalRes.coreUse && loopNum == dimCalRes.loopNumToL0));
+    const bool updateConditionLoadsize = (!updateConditionCoreUsed && dimFactor.ReduceMul() == dimCalRes.coreUse) &&
+        dimCalRes.totalLoadSize < dimCalRes.minLoadSize;
+    const int32_t orgBatchM = params.oriShapeAbatch > 1 ? dimCalRes.batchDimFactor : dimCalRes.mDimFactor;
+    const int32_t curBatchM = params.oriShapeAbatch > 1 ? dimFactor.batch : dimFactor.m;
+    const bool updateConditionBatchNDim = (!updateConditionCoreUsed && dimFactor.ReduceMul() == dimCalRes.coreUse &&
+        dimCalRes.totalLoadSize == dimCalRes.minLoadSize) &&
+        ((dimCalRes.nDimFactor * orgBatchM < curBatchM * dimFactor.n) ||
+        (dimCalRes.nDimFactor * orgBatchM == curBatchM * dimFactor.n &&
+        dimCalRes.batchDimFactor < dimFactor.batch));
 
     const bool policyCondition =
         UserPolicy(tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY,
-        coreStatus, blockDimRes);
+        coreStatus, dimCalRes);
     if ((updateConditionBp2 || updateConditionCoreUsed || updateConditionLoadsize || updateConditionBatchNDim) &&
         policyCondition && updateConditionBp3) {
-        blockDimRes.minLoadSize = blockDimRes.totalLoadSize;
-        blockDimRes.nDimFactor = blockDim.n;
-        blockDimRes.batchDimFactor = blockDim.batch;
-        blockDimRes.mDimFactor = blockDim.m;
-        blockDimRes.kDimFactor = blockDim.k;
-        blockDimRes.coreUse = blockDim.ReduceMul();
-        blockDimRes.loopNumToL0 = loopNum;
-        blockDimRes.finalValue = blockDimRes.tmpValue;
+        dimCalRes.minLoadSize = dimCalRes.totalLoadSize;
+        dimCalRes.nDimFactor = dimFactor.n;
+        dimCalRes.batchDimFactor = dimFactor.batch;
+        dimCalRes.mDimFactor = dimFactor.m;
+        dimCalRes.kDimFactor = dimFactor.k;
+        dimCalRes.coreUse = dimFactor.ReduceMul();
+        dimCalRes.loopNumToL0 = loopNum;
+        dimCalRes.finalValue = dimCalRes.tmpValue;
         const int32_t minSize = 16;
-        blockDimRes.bigPackage = (!tilingIns_->bType_.isTrans ? coreStatus.n >= minSize : true) &&
-            (tilingIns_->aType_.isTrans ? coreStatus.m >= minSize : true) && (blockDim.n * blockDim.m * blockDim.k > 1);
+        dimCalRes.bigPackage = (!tilingIns_->bType_.isTrans ? coreStatus.n >= minSize : true) &&
+            (tilingIns_->aType_.isTrans ? coreStatus.m >= minSize : true) && (dimFactor.n * dimFactor.m * dimFactor.k > 1);
         splitCoreFlag_ = true;
     }
 }
 
 bool MatmulTilingAlgorithm::UserPolicy(const TilingPolicy policy, const CoreStatusPack& coreStatus,
-    const BlockDimCalculator& blockDimRes) const
+    const DimCalculator& dimCalRes) const
 {
     constexpr int32_t minMNSize = 16;
     constexpr int32_t minKSize = 64;
@@ -2161,7 +2161,7 @@ bool MatmulTilingAlgorithm::UserPolicy(const TilingPolicy policy, const CoreStat
             return false;
         }
         const int32_t alignNLength = MathUtil::Align(coreStatus.n, alignFactor);
-        const int32_t bMatrixSize = alignNLength * blockDimRes.kBytes * 2;
+        const int32_t bMatrixSize = alignNLength * dimCalRes.kBytes * 2;
         int32_t aMatrixSize = m0 * k0 * C0_SIZE * C0_BYTE_SIZE;
         int32_t biasSize = 0;
         if (tilingIns_->isSupportL0c2Out && tilingIns_->isBias) {
@@ -2447,7 +2447,7 @@ ComputeIntensitySmallShape MatmulTilingAlgorithm::CalcComputeIntensitySmallShape
 MultiCoreScenario MatmulTilingAlgorithm::GetMultiCoreScenario(const MatmulRunParas& params) const
 {
     if (tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND910B &&
-        tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND910_95) {
+        tilingIns_->socVersion != platform_ascendc::SocVersion::ASCEND950) {
         return MultiCoreScenario::OTHERS;
     }
     if (tilingIns_->enableSplitK_ || tilingIns_->singleM != -1 || tilingIns_->singleN != -1) {
@@ -2675,7 +2675,7 @@ void MatmulTilingAlgorithm::SetBaseMNK(const SingleCoreStatus& singleCoreStatus)
 
 int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const CoreStatusPack &coreStatus, SingleCoreStatus& singleCoreStatus) const
 {
-    int32_t coreUse = singleBlockDim_ ? tilingIns_->blockDim : coreStatus.batchDim * coreStatus.mDim * coreStatus.kDim * coreStatus.nDim;
+    int32_t coreUse = enableSingleShape_ ? tilingIns_->blockDim : coreStatus.batchDim * coreStatus.mDim * coreStatus.kDim * coreStatus.nDim;
     int32_t singleCoreM;
     int32_t singleCoreN;
     int32_t singleCoreK;
@@ -2727,7 +2727,7 @@ int64_t MatmulTilingAlgorithm::UpdateTiling(const MatmulRunParas& param, const C
 }
 
 bool MatmulTilingAlgorithm::DoMultiCoreSplitMNTiling(const MatmulRunParas& params, CoreStatusPack& coreStatus,
-    BlockDimCalculator& blockDimRes)
+    DimCalculator& dimCalRes)
 {
     auto multiCoreScenario = GetMultiCoreScenario(params);
     if (multiCoreScenario != MultiCoreScenario::SPLIT_MN && multiCoreScenario != MultiCoreScenario::SPLIT_SMALL_MN &&
@@ -2736,15 +2736,15 @@ bool MatmulTilingAlgorithm::DoMultiCoreSplitMNTiling(const MatmulRunParas& param
     }
     ComputeBaseBlock baseBlock = GetMultiCoreBasicBlock(params); // calc basic block
     if (tilingIns_->scheduleType == ScheduleType::N_BUFFER_33) {
-        if (!CalcNBuffer33BlockDims(params, baseBlock, coreStatus)) {
+        if (!CalcNBuffer33Dims(params, baseBlock, coreStatus)) {
             return false;
         }
     } else if (multiCoreScenario == MultiCoreScenario::SPLIT_MN) {
         TILING_LOG_DEBUG("Multi-core scenario is SPLIT_MN.");
-        CalcMultiCoreBlockDims(params, baseBlock, coreStatus, blockDimRes);
+        CalcMultiCoreDims(params, baseBlock, coreStatus, dimCalRes);
     } else {
         TILING_LOG_DEBUG("Multi-core scenario is SPLIT_SMALL_MN.");
-        CalcMultiCoreBlockDimsSmallShape(params, baseBlock, coreStatus, blockDimRes);
+        CalcMultiCoreDimsSmallShape(params, baseBlock, coreStatus, dimCalRes);
     }
 
     SingleCoreStatus singleCoreStatus;
@@ -2774,7 +2774,7 @@ bool MatmulTilingAlgorithm::NeedOutputAlign(int32_t m, int32_t n, int32_t k) con
     return needAlign;
 }
 
-bool MatmulTilingAlgorithm::CalcNBuffer33BlockDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
+bool MatmulTilingAlgorithm::CalcNBuffer33Dims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
     CoreStatusPack& coreStatus) const
 {
     coreStatus.batchDim = 1;
@@ -2816,8 +2816,8 @@ bool MatmulTilingAlgorithm::CalcNBuffer33BlockDims(const MatmulRunParas& params,
     return true;
 }
 
-void MatmulTilingAlgorithm::CalcMultiCoreBlockDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
-    CoreStatusPack& coreStatus, BlockDimCalculator& blockDimRes)
+void MatmulTilingAlgorithm::CalcMultiCoreDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
+    CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
 {
     auto factors = MathUtil::GetFactorPairs(numOfBlock_);
     std::vector<ComputeIntensity> results;
@@ -2831,34 +2831,34 @@ void MatmulTilingAlgorithm::CalcMultiCoreBlockDims(const MatmulRunParas& params,
             v.avgIntensity, v.computeCycle, v.bandRatio, v.dimFactor.first, v.dimFactor.second);
     }
     coreStatus.batchDim = 1;
-    blockDimRes.nDimFactor = results[0].dimFactor.second;
-    blockDimRes.mDimFactor = results[0].dimFactor.first;
-    blockDimRes.kDimFactor = 1;
+    dimCalRes.nDimFactor = results[0].dimFactor.second;
+    dimCalRes.mDimFactor = results[0].dimFactor.first;
+    dimCalRes.kDimFactor = 1;
     coreStatus.mDim = results[0].dimFactor.first;
     coreStatus.nDim = results[0].dimFactor.second;
     coreStatus.kDim = 1;
-    (void)CalcMultiCoreBlockDimsPost(params, coreStatus, blockDimRes);
+    (void)CalcMultiCoreDimsPost(params, coreStatus, dimCalRes);
     return;
 }
 
-void MatmulTilingAlgorithm::CalcMultiCoreBlockDimsSmallShape(const MatmulRunParas& params, ComputeBaseBlock &baseBlock,
-    CoreStatusPack& coreStatus, BlockDimCalculator& blockDimRes)
+void MatmulTilingAlgorithm::CalcMultiCoreDimsSmallShape(const MatmulRunParas& params, ComputeBaseBlock &baseBlock,
+    CoreStatusPack& coreStatus, DimCalculator& dimCalRes)
 {
     int32_t basicSize128 =128;
     int32_t basicSize256 =256;
     //if a certain axis can be fully divided, divided it fully
     if (params.oriShapeM <= static_cast<int64_t>(basicSize128) && 
         params.oriShapeN >= static_cast<int64_t>(basicSize128 * numOfBlock_)) {
-        blockDimRes.mDimFactor = 1;
-        blockDimRes.nDimFactor = numOfBlock_;
+        dimCalRes.mDimFactor = 1;
+        dimCalRes.nDimFactor = numOfBlock_;
         coreStatus.mDim = 1;
         coreStatus.nDim = numOfBlock_;
         (void)UpdateBaseBlock(params, static_cast<int32_t>(params.oriShapeM),
             static_cast<int32_t>(params.oriShapeN) / numOfBlock_, baseBlock);
     } else if (params.oriShapeN <= static_cast<int64_t>(basicSize256) &&
                 params.oriShapeM >= static_cast<int64_t>(basicSize128 * numOfBlock_)) {
-        blockDimRes.mDimFactor = numOfBlock_;
-        blockDimRes.nDimFactor = 1;
+        dimCalRes.mDimFactor = numOfBlock_;
+        dimCalRes.nDimFactor = 1;
         coreStatus.mDim = numOfBlock_;
         coreStatus.nDim = 1;
         (void)UpdateBaseBlock(params, static_cast<int32_t>(params.oriShapeM) / numOfBlock_,
@@ -2877,9 +2877,9 @@ void MatmulTilingAlgorithm::CalcMultiCoreBlockDimsSmallShape(const MatmulRunPara
                 v.memoryTraffic, v.avgIntensity, v.computeCycle, v.bandRatio, v.dimFactor.first, v.dimFactor.second);
         }
         coreStatus.batchDim = 1;
-        blockDimRes.nDimFactor = results[0].dimFactor.second;
-        blockDimRes.mDimFactor = results[0].dimFactor.first;
-        blockDimRes.kDimFactor = 1;
+        dimCalRes.nDimFactor = results[0].dimFactor.second;
+        dimCalRes.mDimFactor = results[0].dimFactor.first;
+        dimCalRes.kDimFactor = 1;
         coreStatus.mDim = results[0].dimFactor.first;
         coreStatus.nDim = results[0].dimFactor.second;
         coreStatus.kDim = 1;
@@ -2893,34 +2893,34 @@ void MatmulTilingAlgorithm::CalcMultiCoreBlockDimsSmallShape(const MatmulRunPara
     baseBlock.baseK = min(tmpSize / baseBlock.baseM, tmpSize / baseBlock.baseN);
     baseBlock.baseK = min(MathUtil::AlignDown(baseBlock.baseK, GetC0Size()),
         static_cast<int32_t>(MathUtil::Align(params.oriShapeKa, static_cast<int64_t>(GetC0Size()))));
-    (void)CalcMultiCoreBlockDimsPost(params, coreStatus, blockDimRes);
+    (void)CalcMultiCoreDimsPost(params, coreStatus, dimCalRes);
     return;
 }
 
-void MatmulTilingAlgorithm::CalcMultiCoreBlockDimsPost(const MatmulRunParas& params, CoreStatusPack& coreStatus,
-    BlockDimCalculator& blockDimRes)
+void MatmulTilingAlgorithm::CalcMultiCoreDimsPost(const MatmulRunParas& params, CoreStatusPack& coreStatus,
+    DimCalculator& dimCalRes)
 {
-    const int32_t n = MathUtil::FindBestSingleCore(params.n32, params.nMapped, blockDimRes.nDimFactor, false);
-    const int32_t m = MathUtil::FindBestSingleCore(params.m32, params.mMapped, blockDimRes.mDimFactor, false);
+    const int32_t n = MathUtil::FindBestSingleCore(params.n32, params.nMapped, dimCalRes.nDimFactor, false);
+    const int32_t m = MathUtil::FindBestSingleCore(params.m32, params.mMapped, dimCalRes.mDimFactor, false);
     int32_t aAlignSize = DATA_COPY_ALIGN_SIZE / DTYPE_BIT_TAB.at(tilingIns_->aType_.dataType) * BITS_PER_BYTE;
     int32_t bAlignSize = DATA_COPY_ALIGN_SIZE / DTYPE_BIT_TAB.at(tilingIns_->bType_.dataType) * BITS_PER_BYTE;
     bool needOutputAlign = NeedOutputAlign(m, n, GetSingleK());
     (void)AlignSingleShape((!tilingIns_->bType_.isTrans || needOutputAlign), n, coreStatus.nDim, bAlignSize, coreStatus.n);
     (void)AlignSingleShape(tilingIns_->aType_.isTrans, m, coreStatus.mDim, aAlignSize, coreStatus.m);
-    blockDimRes.kNum = params.k32 / coreStatus.kDim * C0_SIZE * REDUCE_BLOCK_SIZE; // contain k * 16
-    blockDimRes.kBytes = blockDimRes.kNum * INPUTDTYPE_BYTES;                 // contain k * 16 * 2
+    dimCalRes.kNum = params.k32 / coreStatus.kDim * C0_SIZE * REDUCE_BLOCK_SIZE; // contain k * 16
+    dimCalRes.kBytes = dimCalRes.kNum * INPUTDTYPE_BYTES;                 // contain k * 16 * 2
     coreStatus.batch = params.batch32;
     coreStatus.k = params.k32 / coreStatus.kDim;
-    TILING_LOG_DEBUG("CalcMultiCoreBlockDims, coreStatus m: %d n: %d k: %d.", coreStatus.m, coreStatus.n, coreStatus.k);
+    TILING_LOG_DEBUG("CalcMultiCoreDims, coreStatus m: %d n: %d k: %d.", coreStatus.m, coreStatus.n, coreStatus.k);
     // load size of A matrix is batch * m
     // load size of B matrix is n
-    DimFactor blockDim(1, blockDimRes.mDimFactor, blockDimRes.kDimFactor, blockDimRes.nDimFactor);
-    GetBlockDimHelper(blockDim, coreStatus, blockDimRes, params);
+    DimFactor dimFactor(1, dimCalRes.mDimFactor, dimCalRes.kDimFactor, dimCalRes.nDimFactor);
+    GetDimsHelper(dimFactor, coreStatus, dimCalRes, params);
     return;
 }
 
 void MatmulTilingAlgorithm::UpdateMultiCore(const std::string& opType, const MatmulRunParas& params,
-    CoreStatusPack& coreStatus, const BlockDimCalculator& blockDimRes) const
+    CoreStatusPack& coreStatus, const DimCalculator& dimCalRes) const
 {
     (void)(opType);
     // Due to the modification of data amount in single-core, the number of multi-core needs to be updated.
@@ -2931,7 +2931,7 @@ void MatmulTilingAlgorithm::UpdateMultiCore(const std::string& opType, const Mat
     if (tilingIns_->enableSplitK_) {
         coreStatus.kDim = min(MathUtil::CeilDivision(params.k32, coreStatus.k), numOfBlock_);
     } else {
-        coreStatus.kDim = blockDimRes.kDimFactor;
+        coreStatus.kDim = dimCalRes.kDimFactor;
     }
     UpdateBufferSize(tilingIns_->bType_.pos == TPosition::TSCM ? TilingPolicy::FIXED_B_TSCM : TilingPolicy::NO_POLICY,
         coreStatus);
@@ -2960,7 +2960,7 @@ bool MatmulTilingAlgorithm::IsInvalidFactor(int32_t factor) const
 }
 
 void MatmulTilingAlgorithm::AddOptimalFactors(const std::string& opType, const MatmulRunParas& params,
-    BlockDimCalculator& blockDimRes) const
+    DimCalculator& dimCalRes) const
 {
     (void)(opType);
     const int32_t coreNum = numOfBlock_;
@@ -2970,37 +2970,37 @@ void MatmulTilingAlgorithm::AddOptimalFactors(const std::string& opType, const M
         const float optPoint = static_cast<float>(sqrt((params.m32 + 0.0f) / params.n32 * mnCore));
         const int32_t mdim = static_cast<int32_t>(ceil(optPoint));
         const int32_t ndim = static_cast<int32_t>(ceil(mnCore / optPoint));
-        MathUtil::AddFactor(blockDimRes.mDimFactors, mdim);
-        MathUtil::AddFactor(blockDimRes.mDimFactors, ndim == 0 ? 1 : mnCore / ndim);
-        MathUtil::AddFactor(blockDimRes.nDimFactors, ndim);
-        MathUtil::AddFactor(blockDimRes.nDimFactors, mdim == 0 ? 1 : mnCore / mdim);
+        MathUtil::AddFactor(dimCalRes.mDimFactors, mdim);
+        MathUtil::AddFactor(dimCalRes.mDimFactors, ndim == 0 ? 1 : mnCore / ndim);
+        MathUtil::AddFactor(dimCalRes.nDimFactors, ndim);
+        MathUtil::AddFactor(dimCalRes.nDimFactors, mdim == 0 ? 1 : mnCore / mdim);
     }
 }
 
-void MatmulTilingAlgorithm::GenBlockDimsMapFactors(const std::string& opType, MatmulRunParas& params,
-    BlockDimCalculator& blockDimRes) const
+void MatmulTilingAlgorithm::GenDimsMapFactors(const std::string& opType, MatmulRunParas& params,
+    DimCalculator& dimCalRes) const
 {
     const int32_t coreNum = numOfBlock_;
-    blockDimRes.batchDimFactors.reserve(coreNum);
-    blockDimRes.mDimFactors.reserve(coreNum);
-    blockDimRes.nDimFactors.reserve(coreNum);
-    blockDimRes.kDimFactors.reserve(coreNum);
-    MathUtil::GetBlockFactors(blockDimRes.batchDimFactors, params.batch32, params.batchMapped, coreNum,
+    dimCalRes.batchDimFactors.reserve(coreNum);
+    dimCalRes.mDimFactors.reserve(coreNum);
+    dimCalRes.nDimFactors.reserve(coreNum);
+    dimCalRes.kDimFactors.reserve(coreNum);
+    MathUtil::GetBlockFactors(dimCalRes.batchDimFactors, params.batch32, params.batchMapped, coreNum,
         min(coreNum, params.batch32));
-    MathUtil::GetBlockFactors(blockDimRes.mDimFactors, params.m32, params.mMapped, coreNum, min(coreNum, params.m32));
-    MathUtil::GetBlockFactors(blockDimRes.nDimFactors, params.n32, params.nMapped, coreNum, min(coreNum, params.n32));
+    MathUtil::GetBlockFactors(dimCalRes.mDimFactors, params.m32, params.mMapped, coreNum, min(coreNum, params.m32));
+    MathUtil::GetBlockFactors(dimCalRes.nDimFactors, params.n32, params.nMapped, coreNum, min(coreNum, params.n32));
     // first get kDim candidate
     if (!tilingIns_->enableSplitK_) {
-        blockDimRes.kDimFactors.push_back(1);
+        dimCalRes.kDimFactors.push_back(1);
         params.kMapped = params.k32;
     } else {
-        MathUtil::GetBlockFactors(blockDimRes.kDimFactors, params.k32, params.kMapped, coreNum, coreNum);
+        MathUtil::GetBlockFactors(dimCalRes.kDimFactors, params.k32, params.kMapped, coreNum, coreNum);
     }
-    AddOptimalFactors(opType, params, blockDimRes);
+    AddOptimalFactors(opType, params, dimCalRes);
 }
 
-void MatmulTilingAlgorithm::GetBlockDim(const std::string& opType, MatmulRunParas& params, CoreStatusPack& coreStatus,
-    BlockDimCalculator& blockDimRes)
+void MatmulTilingAlgorithm::GetDims(const std::string& opType, MatmulRunParas& params, CoreStatusPack& coreStatus,
+    DimCalculator& dimCalRes)
 {
     // get batchDim, kDim, mDim and nDim for single core
     // support multi cores slicing along kDim
@@ -3018,35 +3018,35 @@ void MatmulTilingAlgorithm::GetBlockDim(const std::string& opType, MatmulRunPara
         splitCoreFlag_ = true;
         return;
     }
-    GenBlockDimsMapFactors(opType, params, blockDimRes);
-    for (const int32_t bFactor : blockDimRes.batchDimFactors) {
-        for (const int32_t nFactor : blockDimRes.nDimFactors) {
+    GenDimsMapFactors(opType, params, dimCalRes);
+    for (const int32_t bFactor : dimCalRes.batchDimFactors) {
+        for (const int32_t nFactor : dimCalRes.nDimFactors) {
             if (IsInvalidFactor(bFactor * nFactor)) {
                 continue;
             }
-            for (const int32_t mFactor : blockDimRes.mDimFactors) {
+            for (const int32_t mFactor : dimCalRes.mDimFactors) {
                 if (IsInvalidFactor(bFactor * nFactor * mFactor)) {
                     continue;
                 }
-                for (const int32_t kFactor : blockDimRes.kDimFactors) {
+                for (const int32_t kFactor : dimCalRes.kDimFactors) {
                     if (IsInvalidFactor(bFactor * nFactor * mFactor * kFactor)) {
                         continue;
                     }
-                    DimFactor blockDim(bFactor, mFactor, kFactor, nFactor);
-                    GetBlockDimHelper(blockDim, coreStatus, blockDimRes, params);
+                    DimFactor dimFactor(bFactor, mFactor, kFactor, nFactor);
+                    GetDimsHelper(dimFactor, coreStatus, dimCalRes, params);
                 }
             }
         }
     }
 
-    coreStatus.batch = MathUtil::CeilDivision(params.batch32, blockDimRes.batchDimFactor);
-    coreStatus.n = MathUtil::CeilDivision(params.n32, blockDimRes.nDimFactor);
-    coreStatus.m = MathUtil::CeilDivision(params.m32, blockDimRes.mDimFactor);
-    coreStatus.k = MathUtil::CeilDivision(params.k32, blockDimRes.kDimFactor);
+    coreStatus.batch = MathUtil::CeilDivision(params.batch32, dimCalRes.batchDimFactor);
+    coreStatus.n = MathUtil::CeilDivision(params.n32, dimCalRes.nDimFactor);
+    coreStatus.m = MathUtil::CeilDivision(params.m32, dimCalRes.mDimFactor);
+    coreStatus.k = MathUtil::CeilDivision(params.k32, dimCalRes.kDimFactor);
     if (g_tempCfg.factorSplit) {
-        const int32_t n = MathUtil::FindBestSingleCore(params.n32, params.nMapped, blockDimRes.nDimFactor, false);
-        const int32_t m = MathUtil::FindBestSingleCore(params.m32, params.mMapped, blockDimRes.mDimFactor, false);
-        const int32_t k = MathUtil::FindBestSingleCore(params.k32, params.kMapped, blockDimRes.kDimFactor, true);
+        const int32_t n = MathUtil::FindBestSingleCore(params.n32, params.nMapped, dimCalRes.nDimFactor, false);
+        const int32_t m = MathUtil::FindBestSingleCore(params.m32, params.mMapped, dimCalRes.mDimFactor, false);
+        const int32_t k = MathUtil::FindBestSingleCore(params.k32, params.kMapped, dimCalRes.kDimFactor, true);
         const int32_t needCoreNum = static_cast<int32_t>(MathUtil::CeilDivision(params.batch32, coreStatus.batch) *
                             MathUtil::CeilDivision(params.n32, n) *
                             MathUtil::CeilDivision(params.m32, m) *
@@ -3059,11 +3059,11 @@ void MatmulTilingAlgorithm::GetBlockDim(const std::string& opType, MatmulRunPara
     }
 
     params.nonFactorK = params.k32 == params.kMapped ? false : true;
-    UpdateMultiCore(opType, params, coreStatus, blockDimRes);
+    UpdateMultiCore(opType, params, coreStatus, dimCalRes);
 }
 
 void MatmulTilingAlgorithm::NonFactorMap(const std::string& opType, MatmulRunParas& param,
-    BlockDimCalculator& blockDimRes) const
+    DimCalculator& dimCalRes) const
 {
     (void)(opType);
     param.batchMapped = param.batch32;
@@ -3084,8 +3084,8 @@ void MatmulTilingAlgorithm::NonFactorMap(const std::string& opType, MatmulRunPar
             param.kMapped = MathUtil::MapShape(param.k32, false);
         }
     } else {
-        MathUtil::GetFactorCnt(param.batch32, blockDimRes.batchFactorCnt, 1, numOfBlock_);
-        if (param.batch32 > 1 && blockDimRes.batchFactorCnt <= L0_FACTOR_NUM_LIMIT) {
+        MathUtil::GetFactorCnt(param.batch32, dimCalRes.batchFactorCnt, 1, numOfBlock_);
+        if (param.batch32 > 1 && dimCalRes.batchFactorCnt <= L0_FACTOR_NUM_LIMIT) {
             param.batchMapped = MathUtil::MapShape(param.batch32);
         }
         param.mMapped = MathUtil::MapShape(param.m32);
@@ -3107,13 +3107,13 @@ void MatmulTilingAlgorithm::FillParam(MatmulRunParas& param)
         realM = tilingIns_->singleCoreM != -1 ? tilingIns_->singleCoreM : tilingIns_->singleM;
         realK = tilingIns_->singleCoreK != -1 ? tilingIns_->singleCoreK : tilingIns_->singleK;
         realN = tilingIns_->singleCoreN != -1 ? tilingIns_->singleCoreN : tilingIns_->singleN;
-        singleBlockDim_ = true;
+        enableSingleShape_ = true;
         numOfBlock_ = 1;
     } else {
         realM = GetSingleM();
         realK = GetSingleK();
         realN = GetSingleN();
-        singleBlockDim_ = false;
+        enableSingleShape_ = false;
         numOfBlock_ = tilingIns_->blockDim;
     }
 
@@ -3615,7 +3615,7 @@ void MatmulTilingAlgorithm::GetSingleShape(const CoreStatusPack &coreStatus, con
     singleCoreN = MathUtil::CeilDivision(singleCoreN, coreStatus.nDim);
     singleCoreK = GetSingleK();
     singleCoreK = MathUtil::CeilDivision(singleCoreK, coreStatus.kDim);
-    if (singleBlockDim_) {
+    if (enableSingleShape_) {
         singleCoreM = tilingIns_->singleCoreM != -1 ? tilingIns_->singleCoreM : tilingIns_->singleM;
         singleCoreN = tilingIns_->singleCoreN != -1 ? tilingIns_->singleCoreN : tilingIns_->singleN;
         singleCoreK = tilingIns_->singleCoreK != -1 ? tilingIns_->singleCoreK : tilingIns_->singleK;
@@ -3979,24 +3979,24 @@ int64_t MatmulTilingAlgorithm::Process()
         TILING_LOG_WARNING("MatmulApi Tiling : check baseM/baseN not success.");
         return -1;
     }
-    singleBlockDim_ = false;
+    enableSingleShape_ = false;
     splitCoreFlag_ = false;
     CoreStatusPack coreStatus;
     SingleCoreStatus singleCoreStatus;
     MatmulRunParas param;
-    BlockDimCalculator blockDimRes;
+    DimCalculator dimCalRes;
     FillParam(param);
 
     std::string opType = "MatMul";
     if (numOfBlock_ != 1) {
-        NonFactorMap(opType, param, blockDimRes);
-        if (DoMultiCoreSplitMNTiling(param, coreStatus, blockDimRes)) {
+        NonFactorMap(opType, param, dimCalRes);
+        if (DoMultiCoreSplitMNTiling(param, coreStatus, dimCalRes)) {
             return 0;
         }
         if (tilingIns_->scheduleType == ScheduleType::N_BUFFER_33) {
             return -1;
         }
-        GetBlockDim(opType, param, coreStatus, blockDimRes);
+        GetDims(opType, param, coreStatus, dimCalRes);
     } else {
         if (!g_tempCfg.factorSplit) {
             coreStatus.m = param.m32;

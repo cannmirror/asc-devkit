@@ -19,7 +19,7 @@
 #include "include/adv_api/conv_backprop/common/conv3d_bp_config_base.h"
 #include "conv3d_bp_input_func.h"
 #include "../common/conv3d_bp_util.h"
-#include "kernel_operator.h"
+#include "kernel_basic_intf.h"
 #include "kernel_utils.h"
 
 namespace ConvBackpropApi {

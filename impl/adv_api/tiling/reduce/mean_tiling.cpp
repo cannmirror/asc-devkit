@@ -59,6 +59,7 @@ void GetMeanMaxMinTmpSize(const uint32_t n, const uint32_t srcTypeSize,
 
 void GetMeanTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuffer)
 {
+    (void)typeSize;
     auto calcFactor = MEAN_CALC_PROC;
     extraBuffer = 0;
     maxLiveNodeCount = calcFactor;

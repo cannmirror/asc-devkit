@@ -15,9 +15,13 @@
 #ifndef IMPL_INDEX_ARITHPROGRESSION_ARITHPROGRESSION_COMMON_IMPL_H
 #define IMPL_INDEX_ARITHPROGRESSION_ARITHPROGRESSION_COMMON_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_utils.h"
 #include "kernel_log.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/index/arithprogression/arithprogression_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 namespace AscendC {
 // Generating an underlying arithmetic sequence through scalar operations.

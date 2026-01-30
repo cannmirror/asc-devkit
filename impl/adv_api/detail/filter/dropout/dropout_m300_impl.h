@@ -16,7 +16,7 @@
 #define IMPL_FILTER_DROPOUT_DROPOUT_M300_IMPL_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 
 namespace AscendC {

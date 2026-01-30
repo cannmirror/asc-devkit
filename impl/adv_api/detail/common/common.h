@@ -11,6 +11,8 @@
 #ifndef IMPL_COMMON_COMMON_H
 #define IMPL_COMMON_COMMON_H
 
+#include "kernel_basic_intf.h"
+
 namespace AscendC {
 namespace Internal {
 constexpr MicroAPI::CastTrait castTraitB16ToB32 = {

@@ -18,12 +18,25 @@
 #include "include/adv_api/normalization/layernorm_utils.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)
 #include "welfordupdate_check_common.h"
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#include "welfordupdate_check_c310.h"
 #else
 #include "welfordupdate_check_aicore.h"
 #endif
 
 namespace AscendC {
 namespace HighLevelApiCheck {
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+template <typename T, typename U, bool isReuseSource = false, const WelfordUpdateConfig &config = WFUPDATE_DEFAULT_CFG>
+__aicore__ inline void CheckFuncWelfordUpdate(__gm__ const char *apiName, const LocalTensor<U>& outputMean,
+    const LocalTensor<U>& outputVariance, const LocalTensor<U>& inputMean, const LocalTensor<U>& inputVariance,
+    const LocalTensor<T>& inputX, const WelfordUpdateParam& para)
+{
+    CheckFuncClassWelfordUpdate<T, U, isReuseSource, config> checkFun(apiName);
+    checkFun.VerifyingParameters(outputMean, outputVariance, inputMean, inputVariance, inputX, para);
+}
+#else
 template <typename T, typename U, bool isReuseSource = false, const WelfordUpdateConfig &config = WFUPDATE_DEFAULT_CFG>
 __aicore__ inline void CheckFuncWelfordUpdate(__gm__ const char *apiName, const LocalTensor<U>& outputMean,
     const LocalTensor<U>& outputVariance, const LocalTensor<U>& inputMean, const LocalTensor<U>& inputVariance,
@@ -33,6 +46,7 @@ __aicore__ inline void CheckFuncWelfordUpdate(__gm__ const char *apiName, const 
     checkFun.VerifyingParameters(outputMean, outputVariance, inputMean, inputVariance, inputX,
         sharedTmpBuffer, para);
 }
+#endif
 
 }
 }

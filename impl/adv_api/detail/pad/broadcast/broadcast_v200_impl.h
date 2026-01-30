@@ -14,20 +14,20 @@
 #ifndef IMPL_PAD_BROADCAST_BROADCAST_V200_IMPL_H
 #define IMPL_PAD_BROADCAST_BROADCAST_V200_IMPL_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
 #include "broadcast_common_utils.h"
 
 namespace AscendC {
 template <typename T>
-__aicore__ inline void GetAlignLoopNumbers200(const uint32_t firstDim, const uint32_t blockDim, uint32_t tmpBufferSize,
+__aicore__ inline void GetAlignLoopNumbers200(const uint32_t firstDim, const uint32_t numBlocks, uint32_t tmpBufferSize,
     uint32_t &oneRepeateSize, uint32_t &rangeM, uint32_t &tailM)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     tmpBufferSize -= oneBlockElementNum;
     ASCENDC_ASSERT(
         (tmpBufferSize > 0), { KERNEL_LOG(KERNEL_ERROR, "tmpBufferSize should bigger than oneBlockElementNum!"); });
-    const uint32_t minTmpBufferSize = oneBlockElementNum * ((blockDim + ONE_VOR_BLOCK_DIM - 1) / ONE_VOR_BLOCK_DIM);
+    const uint32_t minTmpBufferSize = oneBlockElementNum * ((numBlocks + ONE_VOR_BLOCK_DIM - 1) / ONE_VOR_BLOCK_DIM);
     ASCENDC_ASSERT((tmpBufferSize > minTmpBufferSize), {
         KERNEL_LOG(
             KERNEL_ERROR, "tmpBufferSize %u should bigger than minTmpBufferSize %u!", tmpBufferSize, minTmpBufferSize);
@@ -39,19 +39,19 @@ __aicore__ inline void GetAlignLoopNumbers200(const uint32_t firstDim, const uin
 
 template <typename T>
 __aicore__ inline void BroadCastTranse(
-    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const uint32_t firstDim, const uint32_t blockDim)
+    const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal, const uint32_t firstDim, const uint32_t numBlocks)
 {
     LocalTensor<uint8_t> sharedTmpBuffer;
-    TransposeParamsExt param = {1, (uint16_t)blockDim, 1, (uint16_t)firstDim, TransposeType::TRANSPOSE_NCHW2NHWC};
+    TransposeParamsExt param = {1, (uint16_t)numBlocks, 1, (uint16_t)firstDim, TransposeType::TRANSPOSE_NCHW2NHWC};
     Transpose(dstLocal, srcLocal, sharedTmpBuffer, param);
 }
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void TwoDimBroadCastLastDimAlign200(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
-    const LocalTensor<T> &zeroTemp, const LocalTensor<T> &tmpBuffer, const uint32_t firstDim, const uint32_t blockDim)
+    const LocalTensor<T> &zeroTemp, const LocalTensor<T> &tmpBuffer, const uint32_t firstDim, const uint32_t numBlocks)
 {
-    TwoDimBroadCastDimAlign<T, isReuseSource>(tmpBuffer, srcLocal, zeroTemp, blockDim, firstDim);
-    BroadCastTranse<T>(dstLocal, tmpBuffer, firstDim, blockDim);
+    TwoDimBroadCastDimAlign<T, isReuseSource>(tmpBuffer, srcLocal, zeroTemp, numBlocks, firstDim);
+    BroadCastTranse<T>(dstLocal, tmpBuffer, firstDim, numBlocks);
     PipeBarrier<PIPE_V>();
 }
 
@@ -60,7 +60,7 @@ __aicore__ inline void TwoDimBroadCastLastDim(const LocalTensor<T> &dstLocal, co
     const uint32_t dstShape[dim], const uint32_t srcShape[dim], LocalTensor<T> &tmpBuffer)
 {
     const auto firstDim = dstShape[0];
-    const auto blockDim = dstShape[axis];
+    const auto numBlocks = dstShape[axis];
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t FIRST_DIM_LOOP_LIMITE = MAX_REPEAT_NUM * oneBlockElementNum;
 
@@ -70,8 +70,8 @@ __aicore__ inline void TwoDimBroadCastLastDim(const LocalTensor<T> &dstLocal, co
     PipeBarrier<PIPE_V>();
 
     if (firstDim >= FIRST_DIM_LOOP_LIMITE) {
-        LoopBroadCast<T>(tmpBuffer[blockSize], srcLocal, zeroTemp, firstDim, blockDim);
-        BroadCastTranse<T>(dstLocal, tmpBuffer[blockSize], firstDim, blockDim);
+        LoopBroadCast<T>(tmpBuffer[blockSize], srcLocal, zeroTemp, firstDim, numBlocks);
+        BroadCastTranse<T>(dstLocal, tmpBuffer[blockSize], firstDim, numBlocks);
         PipeBarrier<PIPE_V>();
         return;
     }
@@ -82,21 +82,21 @@ __aicore__ inline void TwoDimBroadCastLastDim(const LocalTensor<T> &dstLocal, co
         uint32_t tailM = 0;
         uint32_t dstLocalOffset = 0;
         uint32_t srcLocalOffset = 0;
-        GetAlignLoopNumbers200<T>(firstDim, blockDim, tmpBuffer.GetSize(), oneRepeateSize, rangeM, tailM);
+        GetAlignLoopNumbers200<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeateSize, rangeM, tailM);
         for (uint32_t i = 0; i < rangeM; i++) {
             TwoDimBroadCastLastDimAlign200<T, isReuseSource>(dstLocal[dstLocalOffset],
                 srcLocal[srcLocalOffset],
                 zeroTemp,
                 tmpBuffer[blockSize],
                 oneRepeateSize,
-                blockDim);
-            dstLocalOffset += oneRepeateSize * blockDim;
+                numBlocks);
+            dstLocalOffset += oneRepeateSize * numBlocks;
             srcLocalOffset += oneRepeateSize;
         }
 
         if (tailM != 0) {
             TwoDimBroadCastLastDimAlign200<T, isReuseSource>(
-                dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], zeroTemp, tmpBuffer[blockSize], tailM, blockDim);
+                dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], zeroTemp, tmpBuffer[blockSize], tailM, numBlocks);
         }
     } else {
         KERNEL_LOG(KERNEL_ERROR, "Non-alignment is not supported.");

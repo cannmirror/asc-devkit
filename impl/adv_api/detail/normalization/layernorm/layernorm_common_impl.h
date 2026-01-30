@@ -20,6 +20,10 @@
 #include "kernel_tiling/kernel_tiling.h"
 #include "include/adv_api/normalization/normalize.h"
 #include "layernorm_common_basic_impl.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/normalization/layernorm/layernorm_check.h"
+#include "../../api_check/kernel_check/normalization/welforupdate/welfordupdate_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

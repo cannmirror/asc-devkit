@@ -81,8 +81,8 @@ public:
             KERNEL_LOG(KERNEL_ERROR, "The BasicBlock template only supports conditions without tail basic blocks."); 
         });
         static_assert(SupportType<typename A_TYPE::T, half, bfloat16_t, float>() && SupportType<typename B_TYPE::T, half, bfloat16_t, float>(),
-            "The BasicBlock template supports only matrices A and B whose input is of the half, bfloat16_t, or float type \
-            rather than the int8_t or int4_t type.");
+            "The BasicBlock template supports only matrices A and B whose input is of the half, bfloat16_t, or float type, "
+            "rather than the int8_t or int4_t type.");
         static_assert(A_TYPE::format != CubeFormat::VECTOR && A_TYPE::format != CubeFormat::SCALAR,
             "The BasicBlock template does not support matrix A in scalar or vector format.");
         static_assert(MM_CFG.scheduleType != ScheduleType::OUTER_PRODUCT,

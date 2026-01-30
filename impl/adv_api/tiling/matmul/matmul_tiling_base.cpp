@@ -508,8 +508,11 @@ int32_t MatmulApiTilingBase::SetFixSplit(int32_t baseMIn, int32_t baseNIn, int32
     TILING_LOG_DEBUG(" Set fixed split baseM: %d", baseMIn);
     TILING_LOG_DEBUG(" Set fixed split baseN: %d", baseNIn);
     TILING_LOG_DEBUG(" Set fixed split baseK: %d", baseKIn);
+    if (baseMIn == 0 || baseNIn == 0 || baseKIn == 0) {
+        return -1;
+    }
     if (baseMIn != -1) {
-        if (baseMIn % C0_SIZE > 0) {
+        if (baseMIn % C0_SIZE != 0) {
             return -1;
         }
         this->baseM = baseMIn;
@@ -517,7 +520,7 @@ int32_t MatmulApiTilingBase::SetFixSplit(int32_t baseMIn, int32_t baseNIn, int32
         this->adjust_.minBaseM = baseMIn;
     }
     if (baseNIn != -1) {
-        if (baseNIn % C0_SIZE > 0) {
+        if (baseNIn % C0_SIZE != 0) {
             return -1;
         }
         this->baseN = baseNIn;
@@ -526,7 +529,7 @@ int32_t MatmulApiTilingBase::SetFixSplit(int32_t baseMIn, int32_t baseNIn, int32
     }
     const int32_t k0 = C0_BYTE_SIZE / DTYPE_BIT_TAB.at(this->aType_.dataType) * BITS_PER_BYTE;
     if (baseKIn != -1) {
-        if (baseKIn % k0 > 0) {
+        if (k0 == 0 || baseKIn % k0 != 0) {
             return -1;
         }
         this->baseK = baseKIn;
@@ -539,12 +542,7 @@ int32_t MatmulApiTilingBase::SetFixSplit(int32_t baseMIn, int32_t baseNIn, int32
 
 int32_t MatmulApiTilingBase::SetDoubleBuffer(bool a, bool b, bool c, bool bias, bool transND2NZ, bool transNZ2ND)
 {
-    this->aType_.isDB = a;
-    this->bType_.isDB = b;
-    this->cType_.isDB = c;
-    this->biasType_.isDB = bias;
-    this->transND2NZ_ = transND2NZ;
-    this->transNZ2ND_ = transNZ2ND;
+    TILING_LOG_INFO("This is a reserved API.");
     return 0;
 }
 

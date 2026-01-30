@@ -16,6 +16,8 @@
 #define IMPL_NORMALIZATION_DEEPNORM_DEEPNORM_V200_IMPL_H
 
 #include "kernel_tensor.h"
+#include "kernel_basic_intf.h"
+#include "kernel_tiling/kernel_tiling.h"
 
 namespace AscendC {
 namespace DeepNormAPI {

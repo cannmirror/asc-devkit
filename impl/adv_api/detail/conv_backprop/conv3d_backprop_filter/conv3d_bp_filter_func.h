@@ -18,7 +18,8 @@
 
 #include "include/adv_api/conv_backprop/common/conv3d_bp_config_base.h"
 #include "../common/conv3d_bp_util.h"
-#include "kernel_operator.h"
+#include "kernel_tiling/kernel_tiling.h"
+#include "kernel_basic_intf.h"
 
 struct Out2L1ScalarParams {
     // to L1A
@@ -678,5 +679,6 @@ struct End {
         }
     }
 };
+
 }  // namespace ConvBackpropFilterFunc
 #endif // CONV3D_BP_FILTER_FUNC_H

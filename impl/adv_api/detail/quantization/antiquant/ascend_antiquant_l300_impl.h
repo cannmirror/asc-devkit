@@ -16,9 +16,10 @@
 #define IMPL_QUANTIZATION_ANTIQUANT_ASCEND_ANTIQUANT_L300_IMPL_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "ascend_antiquant_common.h"
+#include "../../common/check.h"
 
 namespace AscendC {
 constexpr uint32_t ANTIQUANT_B16_VF_LEN = GetVecLen() / sizeof(uint16_t);
@@ -350,8 +351,13 @@ __aicore__ inline void AntiQuantPerchannelImpl(const LocalTensor<OutputDataType>
     } else { // src [k,n] offset [1,n]
         uint32_t n = (shapeInfo.offsetWidth == 0 ? offset.GetShapeInfo().shape[1] : shapeInfo.offsetWidth);
         if (n < 32) { // b8 input single line is not 32B aligned such as input n == 16
-            ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "not support n < 32"); });
-            // AntiQuantUnlignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
+            if constexpr (SupportType<SrcType, int8_t>()) {
+                ASCENDC_ASSERT((k % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "input calculate size must be 32B aligned"); });
+                AntiQuantUnlignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
+            } else {
+                ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "not support int4b_t for AntiQuant when n < 32"); });
+            }
+            
         } else {
             AntiQuantPerchannelNoTranspose<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
         }

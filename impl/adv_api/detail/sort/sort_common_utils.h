@@ -15,6 +15,9 @@
 #ifndef IMPL_SORT_SORT_COMMON_UTILS_H
 #define IMPL_SORT_SORT_COMMON_UTILS_H
 
+#include <cstdint>
+#include "kernel_basic_intf.h"
+
 namespace AscendC {
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || \
     __NPU_ARCH__ == 3113)
@@ -39,38 +42,81 @@ template <> struct ExtractTypeBySize<sizeof(uint64_t)> {
 
 namespace MicroAPI {
 namespace Internal {
-template <typename T, typename U>
-__simd_callee__ inline void TwiddleIn(RegTensor<U>& dst, RegTensor<U>& src, MaskReg& maskReg)
+
+template <typename T>
+__aicore__ constexpr bool IsNeedTwiddleType()
 {
-    RegTensor<U> highBit;
-    Duplicate(highBit, 1ul << (sizeof(T) * 8 - 1), maskReg);
-    if constexpr (SupportType<T, float, bfloat16_t, half>()) {
-        RegTensor<U> retAnd;
-        RegTensor<U> selSrc;
-        Duplicate(selSrc, -1ul, maskReg);
-        And(retAnd, src, highBit, maskReg);
-        MaskReg cmpMask;
-        CompareScalar<U, CMPMODE::NE>(cmpMask, retAnd, 0, maskReg);
-        Select(highBit, selSrc, highBit, cmpMask);
-    }
-    Xor(dst, src, highBit, maskReg);
+    return SupportType<T, int8_t, int16_t, int32_t, int64_t, float, half, bfloat16_t>();
 }
 
-template <typename T, typename U>
-__simd_callee__ inline void TwiddleOut(RegTensor<U>& dst, RegTensor<U>& src, MaskReg& maskReg)
+template <typename T>
+__aicore__ constexpr bool IsNeedTwiddleFpType()
 {
-    RegTensor<U> highBit;
-    Duplicate(highBit, 1ul << (sizeof(T) * 8 - 1), maskReg);
-    if constexpr (SupportType<T, float, bfloat16_t, half>()) {
-        RegTensor<U> retAnd;
-        RegTensor<U> selSrc;
-        Duplicate(selSrc, -1ul, maskReg);
-        And(retAnd, src, highBit, maskReg);
-        MaskReg cmpMask;
-        CompareScalar<U, CMPMODE::EQ>(cmpMask, retAnd, 0, maskReg);
-        Select(highBit, selSrc, highBit, cmpMask);
+    return SupportType<T, half, bfloat16_t, float>();
+}
+
+template <typename T, typename U, bool isDescend>
+__simd_vf__ inline void TwiddleInData(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
+// Twiddle add data in ascending order.
+// float and signed int data bit should be reorder into ascending.
+// The following sort will be in ascending level, reverse decending data.
+{
+    uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
+    constexpr uint32_t stride = GetVecLen() / sizeof(U);
+    RegTensor<U> tmpReg, signBitReg, allFReg, dstReg;
+    MaskReg cmpMask = CreateMask<U>();
+    Duplicate(signBitReg, 1ul << (sizeof(T) * 8 - 1), cmpMask);
+    Duplicate(allFReg, -1ul, cmpMask);
+    for (uint16_t i = 0; i < repeatTime; i++) {
+        MaskReg maskReg = UpdateMask<U>(count);
+        DataCopy(dstReg, src + stride * i);
+        if constexpr (IsNeedTwiddleType<T>()) {
+            if constexpr (IsNeedTwiddleFpType<T>()) {
+                And(tmpReg, dstReg, signBitReg, maskReg);
+                CompareScalar<U, CMPMODE::NE>(cmpMask, tmpReg, 0, maskReg);
+                Select(tmpReg, allFReg, signBitReg, cmpMask);
+                Xor(dstReg, dstReg, tmpReg, maskReg);
+            } else {
+                // process signed int data.
+                Xor(dstReg, dstReg, signBitReg, maskReg);
+            }
+        }
+        if constexpr (isDescend) {
+            Not(dstReg, dstReg, maskReg);
+        }
+        DataCopy(dst + stride * i, dstReg, maskReg);
     }
-    Xor(dst, src, highBit, maskReg);
+}
+
+template <typename T, typename U, bool isDescend>
+__simd_vf__ inline void TwiddleOutData(__ubuf__ U *src, __ubuf__ U *dst, uint32_t count)
+// Revert twiddled data back.
+{
+    uint16_t repeatTime = DivCeil(count, GetVecLen() / sizeof(T));
+    constexpr uint32_t stride = GetVecLen() / sizeof(U);
+    RegTensor<U> tmpReg, signBitReg, allFReg, dstReg;
+    MaskReg cmpMask = CreateMask<U>();
+    Duplicate(signBitReg, 1ul << (sizeof(T) * 8 - 1), cmpMask);
+    Duplicate(allFReg, -1ul, cmpMask);
+    for (uint16_t i = 0; i < repeatTime; i++) {
+        MaskReg maskReg = UpdateMask<U>(count);
+        DataCopy<U>(dstReg, (__ubuf__ U *)src + stride * i);
+        if constexpr (isDescend) {
+            Not(dstReg, dstReg, maskReg);
+        }
+        if constexpr (IsNeedTwiddleType<T>()) {
+            if constexpr (IsNeedTwiddleFpType<T>()) {
+                And(tmpReg, dstReg, signBitReg, maskReg);
+                CompareScalar<U, CMPMODE::EQ>(cmpMask, tmpReg, 0, maskReg);
+                Select(tmpReg, allFReg, signBitReg, cmpMask);
+                Xor(dstReg, dstReg, tmpReg, maskReg);
+            } else {
+                // process signed int data.
+                Xor(dstReg, dstReg, signBitReg, maskReg);
+            }
+        }
+        DataCopy(dst + stride * i, dstReg, maskReg);
+    }
 }
 
 } // namespace Internal

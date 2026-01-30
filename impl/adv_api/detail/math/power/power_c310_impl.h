@@ -336,7 +336,7 @@ __simd_callee__ inline void GetExpCore(MicroAPI::RegTensor<float>& dstReg, Micro
     MicroAPI::CompareScalar<float, CMPMODE::GE>(cmpMask1, tmPHIReg, 0.0f, mask);
     // mode zeroing dup inf/zero reg.
     MicroAPI::Duplicate((MicroAPI::RegTensor<int32_t>&)tmpFloatReg, INF, cmpMask1);
-    MicroAPI::CompareScalar<float, CMPMODE::GT>(cmpMask2, tmPHIReg, EXP_MIN_F, mask);
+    MicroAPI::CompareScalar<float, CMPMODE::GE>(cmpMask2, tmPHIReg, EXP_MIN_F, mask);
     MicroAPI::CompareScalar<float, CMPMODE::LT>(cmpMask1, tmPHIReg, EXP_OVFL_UNFL_F, mask);
     MicroAPI::MaskOr(cmpMask2, cmpMask1, cmpMask2, mask);
     MicroAPI::Select(dstReg, tmpFloatReg, tmpRReg, cmpMask2);

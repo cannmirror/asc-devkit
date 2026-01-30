@@ -15,6 +15,7 @@
 #ifndef LIB_HCCL_HCCL_COMMON_H
 #define LIB_HCCL_HCCL_COMMON_H
 
+#include <cstdint>
 namespace AscendC {
 constexpr uint32_t HCCL_GROUP_ID_0 = 0;  // communication group id, 0 for only one communication group
 using HcclHandle = int8_t;

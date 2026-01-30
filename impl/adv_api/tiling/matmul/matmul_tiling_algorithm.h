@@ -225,7 +225,7 @@ enum class MultiCoreScenario : uint8_t {
     OTHERS
 };
 
-struct BlockDimCalculator {
+struct DimCalculator {
     int32_t batch = 1;
     int32_t m = 1;
     int32_t k = 1;
@@ -264,7 +264,7 @@ struct BlockDimCalculator {
     std::vector<int32_t> kDimFactors;
     bool initFlag = false;
     bool bigPackage = false;
-    BlockDimCalculator()
+    DimCalculator()
     {
         batchDimFactors.clear();
         mDimFactors.clear();
@@ -453,12 +453,12 @@ private:
     void SetDepthL1CacheUBParams(int32_t &a1LengthCache, int32_t &b1LengthCache) const;
     void GetABL1KAlignValue(int32_t& kaAlignValue, int32_t& kbAlignValue) const;
     bool CheckBaseMNKL1Size(SingleCoreStatus& singleCoreStatus) const;
-    void NonFactorMap(const std::string& opType, MatmulRunParas& param, BlockDimCalculator& blockDimRes) const;
-    void UpdateBlockDimCalculator(BlockDimCalculator& blockDimRes) const;
-    void GetBlockDimHelper(const DimFactor& blockDim, CoreStatusPack& coreStatus, BlockDimCalculator& blockDimRes,
+    void NonFactorMap(const std::string& opType, MatmulRunParas& param, DimCalculator& dimCalRes) const;
+    void UpdateDimCalculator(DimCalculator& dimCalRes) const;
+    void GetDimsHelper(const DimFactor& dimFactor, CoreStatusPack& coreStatus, DimCalculator& dimCalRes,
         const MatmulRunParas& params);
-    void GetBlockDim(const std::string& opType, MatmulRunParas& params, CoreStatusPack& coreStatus,
-        BlockDimCalculator& blockDimRes);
+    void GetDims(const std::string& opType, MatmulRunParas& params, CoreStatusPack& coreStatus,
+        DimCalculator& dimCalRes);
     bool PreProcessMiniShape(const std::string& opType, CoreStatusPack& coreStatus, MatmulRunParas& params,
         const int32_t& coreNum, bool splitKFlag) const;
     float CalculateBlockCycles(int32_t baseM, int32_t baseN, int32_t baseK) const;
@@ -469,32 +469,32 @@ private:
         const std::pair<int32_t, int32_t> &factor) const;
     ComputeIntensitySmallShape CalcComputeIntensitySmallShape(const MatmulRunParas& params,
         const std::pair<int32_t, int32_t> &factor, ComputeBaseBlock &baseBlock) const;
-    void CalcMultiCoreBlockDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock, CoreStatusPack& coreStatus,
-        BlockDimCalculator& blockDimRes);
-    void CalcMultiCoreBlockDimsPost(const MatmulRunParas& params, CoreStatusPack& coreStatus,
-        BlockDimCalculator& blockDimRes);
-    void CalcMultiCoreBlockDimsSmallShape(const MatmulRunParas& params, ComputeBaseBlock &baseBlock,
-        CoreStatusPack& coreStatus, BlockDimCalculator& blockDimRes);
-    bool CalcNBuffer33BlockDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
+    void CalcMultiCoreDims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock, CoreStatusPack& coreStatus,
+        DimCalculator& dimCalRes);
+    void CalcMultiCoreDimsPost(const MatmulRunParas& params, CoreStatusPack& coreStatus,
+        DimCalculator& dimCalRes);
+    void CalcMultiCoreDimsSmallShape(const MatmulRunParas& params, ComputeBaseBlock &baseBlock,
+        CoreStatusPack& coreStatus, DimCalculator& dimCalRes);
+    bool CalcNBuffer33Dims(const MatmulRunParas& params, const ComputeBaseBlock &baseBlock,
         CoreStatusPack& coreStatus) const;
     void UpdateBaseBlock(const MatmulRunParas& params, const int32_t sm, const int32_t sn, ComputeBaseBlock &baseBlock) const;
     std::vector<BaseBlockIntensity> CalcTotalCycleMemory(const std::pair<int32_t, int32_t>& shapeM,
         const std::pair<int32_t, int32_t>& shapeN, const ComputeBaseBlock &baseBlock, const float memoryRatio,
         const MemoryRatios memoryRatios = MemoryRatios()) const;
     void UpdateMultiCore(const std::string& opType, const MatmulRunParas& params, CoreStatusPack& coreStatus,
-        const BlockDimCalculator& blockDimRes) const;
-    void CalcLoadSize(const DimFactor& blockDims, const CoreStatusPack& coreStatus, BlockDimCalculator& blockDimRes,
+        const DimCalculator& dimCalRes) const;
+    void CalcLoadSize(const DimFactor& dimFactor, const CoreStatusPack& coreStatus, DimCalculator& dimCalRes,
         const MatmulRunParas& params) const;
     void FillParam(MatmulRunParas& param);
     bool IsInvalidFactor(int32_t factor) const;
-    void AddOptimalFactors(const std::string& opType, const MatmulRunParas& params, BlockDimCalculator& blockDimRes) const;
-    int32_t LoopNumFromSingleCoreToL0(const CoreStatusPack& coreStatus, const DimFactor& blockDimsFactor) const;
-    void GenBlockDimsMapFactors(const std::string& opType, MatmulRunParas& params, BlockDimCalculator& blockDimRes) const;
+    void AddOptimalFactors(const std::string& opType, const MatmulRunParas& params, DimCalculator& dimCalRes) const;
+    int32_t LoopNumFromSingleCoreToL0(const CoreStatusPack& coreStatus, const DimFactor& dimFactor) const;
+    void GenDimsMapFactors(const std::string& opType, MatmulRunParas& params, DimCalculator& dimCalRes) const;
     void UpdateBufferSize(const TilingPolicy policy, const CoreStatusPack& coreStatus) const;
-    bool UserPolicy(const TilingPolicy policy, const CoreStatusPack& coreStatus, const BlockDimCalculator& blockDimRes) const;
+    bool UserPolicy(const TilingPolicy policy, const CoreStatusPack& coreStatus, const DimCalculator& dimCalRes) const;
     void PreprocessL0DB();
     void GetL0bAlign(std::vector<int32_t>& factors) const;
-    int32_t GetBigPackageCondition(const CoreStatusPack &coreStatus, const BlockDimCalculator &blockDimRes, const MatmulRunParas &params) const;
+    int32_t GetBigPackageCondition(const CoreStatusPack &coreStatus, const DimCalculator &dimCalRes, const MatmulRunParas &params) const;
     int UpdateDepthB1(const SingleCoreStatus& singleCoreStatus) const;
     void GetSingleShape(const CoreStatusPack &coreStatus, const MatmulRunParas &param, int32_t &singleCoreM,
         int32_t &singleCoreN, int32_t &singleCoreK) const;
@@ -506,7 +506,7 @@ private:
     int32_t GetSingleK() const;
     float CalcBaseBlockBandRatio(int32_t mDim, int32_t nDim, const ComputeBaseBlock &baseBlock) const;
     bool DoMultiCoreSplitMNTiling(const MatmulRunParas& params, CoreStatusPack& coreStatus,
-        BlockDimCalculator& blockDimRes);
+        DimCalculator& dimCalRes);
     void CalcL1Tiling(const ComputeBaseBlock &baseBlock, int32_t &depthA1, int32_t &depthB1,
         int32_t &stepKa, int32_t &stepKb) const;
     void UpdateStepK(const ComputeBaseBlock &baseBlock, int32_t &stepK) const;
@@ -539,7 +539,7 @@ private:
     void SetBaseMNK(const SingleCoreStatus& singleCoreStatus) const;
 private:
     MatmulApiTilingBase* tilingIns_ = nullptr;
-    bool singleBlockDim_ = false;
+    bool enableSingleShape_ = false;
     bool splitCoreFlag_ = false;
     int32_t dbL0A_ = DB_ON;
     int32_t dbL0B_ = DB_ON;

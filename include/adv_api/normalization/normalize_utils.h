@@ -15,6 +15,7 @@
 #ifndef LIB_NORMALIZATION_NORMALIZE_UTILS_H
 #define LIB_NORMALIZATION_NORMALIZE_UTILS_H
 
+#include <cstdint>
 namespace AscendC {
 
 #ifndef ASCC_ENUM_REDUCEPATTERN

@@ -16,8 +16,11 @@
 #define LIB_REDUCE_MEAN_MEAN_COMMON_IMPL_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "include/adv_api/reduce/mean_utils.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/reduce/mean/mean_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 
 namespace AscendC {

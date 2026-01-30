@@ -18,7 +18,7 @@
 #include "include/adv_api/quantization/ascend_dequant_utils.h"
 
 namespace AscendC {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 struct AscendDeQuantConfig {
     bool hasOffset;
     int32_t kDim = 1;
@@ -38,5 +38,6 @@ struct AscendDeQuantParam {
     uint32_t groupSize = 0;
 };
 #endif
+
 } // namespace AscendC
 #endif // LIB_ASCEND_ANTIQUANT_IMPL_ASCEND_ANTIQUANT_COMMON_H

@@ -266,7 +266,6 @@ template <typename IMPL, const auto &MM_CFG, class INPUT_TYPE>
 class MatmulTensorInfo<IMPL, MM_CFG, INPUT_TYPE, enable_if_t<HasScalePosition<INPUT_TYPE>::value &&
     (INPUT_TYPE::TAG == InputTypeTag::scaleA || INPUT_TYPE::TAG == InputTypeTag::scaleB)>> {
     using SrcT = fp8_e8m0_t;
-
     MATMUL_USE_MODULE(MatmulShapeInfo);
 public:
     __aicore__ inline MatmulTensorInfo() = default;

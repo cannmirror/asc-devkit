@@ -64,6 +64,7 @@ public:
             ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "Unsupported matmul version."); });
             return;
         }
+        static_assert(!(ToMatmulConfig(MM_CFG).doNorm && ToMatmulConfig(MM_CFG).doIBShareNorm), "Neither Norm nor IBShareNorm can be enabled simultaneously!");
         MATMUL_MODULE(MatmulShapeTiling)->SetTiling(cubeTiling);
         MATMUL_MODULE(MatmulShapeTiling)->template CheckTiling<SrcAT, L0cT>();
         auto& var = MATMUL_PARAM_VAR;
@@ -117,7 +118,8 @@ public:
         MATMUL_MODULE(MatmulQuantProcessor)->Init(tiling.GetBaseN());
 #if __NPU_ARCH__ == 5102
         if constexpr (IsSameTypeV<SrcAT, half> && IsSameTypeV<SrcBT, half> && IsTypeOneOfV<DstT, half, bfloat16_t>) {
-            constexpr uint64_t quantScalar = 1065353216;
+            constexpr float FIX_VAL_RECIPROCAL = 1.0f / (1 << 16);	
+            const uint64_t quantScalar = static_cast<const uint64_t>(*reinterpret_cast<const int32_t *>(&FIX_VAL_RECIPROCAL));
             MATMUL_MODULE(MatmulQuantProcessor)->SetQuantScalar(quantScalar);
         }
 

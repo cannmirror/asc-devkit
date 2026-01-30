@@ -128,12 +128,6 @@ public:
         }
     }
 
-    __aicore__ inline void SetTensorAWithCopy(const GlobalTensor<SrcAT>& gm, const LocalTensor<SrcAT>& leftMatrix,
-        bool isTransposeA = false)
-    {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster &&
-            "SetTensorAWithCopy not support when enableMixDualMaster is enabled");
-    }
     __aicore__ inline void SetTensorB(const GlobalTensor<SrcBT>& gm, bool isTransposeB = false)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
@@ -141,12 +135,6 @@ public:
         }
     }
 
-    __aicore__ inline void SetTensorBWithCopy(const GlobalTensor<SrcBT>& gm, const LocalTensor<SrcBT>& rightMatrix,
-        bool isTransposeB = false)
-    {
-        ASSERT(!ToMatmulConfig(MM_CFG).enableMixDualMaster && 
-            "SetTensorBWithCopy not support when enableMixDualMaster is enabled");
-    }
     __aicore__ inline void SetBias(const GlobalTensor<BiasT>& biasGlobal)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
@@ -229,6 +217,12 @@ public:
         }
     }
     __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor)
+    {
+        if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
+            cubeObj.cubeObj[0].mul.SetQuantVector(quantTensor);
+        }
+    }
+    __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& quantTensor)
     {
         if constexpr (ToMatmulConfig(MM_CFG).enableMixDualMaster) {
             cubeObj.cubeObj[0].mul.SetQuantVector(quantTensor);

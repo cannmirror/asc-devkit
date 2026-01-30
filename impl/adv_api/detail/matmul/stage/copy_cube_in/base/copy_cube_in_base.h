@@ -33,7 +33,6 @@ class CopyCubeInBase
 
     using TransT = typename INPUT_TYPE::TRANS_T;
     using SrcT = typename Conditional<IsSameType<TransT, fp8_e8m0_t>::value, fp8_e8m0_t, typename INPUT_TYPE::T>::type;
-
 public:
 
     __aicore__ inline void Init()

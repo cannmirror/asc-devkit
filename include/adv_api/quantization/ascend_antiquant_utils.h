@@ -15,6 +15,8 @@
 #ifndef LIB_QUANTIZATION_ASCEND_ANTIQUANT_UTILS_H
 #define LIB_QUANTIZATION_ASCEND_ANTIQUANT_UTILS_H
 
+#include <cstdint>
+
 namespace AscendC {
 struct AntiQuantShapeInfo {
     uint32_t offsetHeight{0};

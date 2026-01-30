@@ -15,6 +15,8 @@
 #ifndef LIB_REDUCE_SUM_UTILS_H
 #define LIB_REDUCE_SUM_UTILS_H
 
+#include <cstdint>
+
 namespace AscendC {
 struct SumParams {
     uint32_t outter = 1;

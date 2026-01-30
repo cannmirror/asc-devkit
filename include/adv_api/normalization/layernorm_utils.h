@@ -15,6 +15,8 @@
 #ifndef LIB_NORMALIZATION_LAYERNORM_UTILS_H
 #define LIB_NORMALIZATION_LAYERNORM_UTILS_H
 
+#include <cstdint>
+#include "kernel_basic_intf.h"
 namespace AscendC {
 
 struct LayerNormConfig {

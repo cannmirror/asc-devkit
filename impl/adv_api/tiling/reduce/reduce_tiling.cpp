@@ -53,20 +53,22 @@ inline void CheckParams(std::vector<int64_t> shapeDims, bool isSrcInnerPad, Redu
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
+    const auto npuArch = platform->GetCurNpuArch();
 
     ASCENDC_HOST_ASSERT(shapeDims.size() == ALLOWED_SHAPE_DIM, return,
         "[%s][%s] srcShape dims must be 2.", apiName.c_str(), funcName.c_str());
     if (!((apiName == "ReduceMin" || apiName == "ReduceMax" || apiName == "ReduceSum") && 
-        (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55))) {
+        (npuArch == NpuArch::DAV_3510))) {
         ASCENDC_HOST_ASSERT(isSrcInnerPad, return,
             "[%s][%s] isSrcInnerPad must be true on this platform.", apiName.c_str(), funcName.c_str());
     }
     ASCENDC_HOST_ASSERT(pattern == ReducePattern::AR || pattern == ReducePattern::RA,
         return,
         "[%s][%s] Currently only support AR and RA pattern.", apiName.c_str(), funcName.c_str());
-    ASCENDC_HOST_ASSERT(first > 0 && last > 0, return,
+    if (!(npuArch == NpuArch::DAV_3510)) {
+        ASCENDC_HOST_ASSERT(first > 0 && last > 0, return,
         "[%s][%s] both first and last axis must be greater than 0.", apiName.c_str(), funcName.c_str());
+    }
 }
 } // namespace
 
@@ -204,8 +206,8 @@ void GetReduceMaxMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dat
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+    const auto npuArch = platform->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510) {
         ASCENDC_HOST_ASSERT(dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
                             dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
                             dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
@@ -228,8 +230,8 @@ void GetReduceMinMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dat
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+    const auto npuArch = platform->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510) {
         ASCENDC_HOST_ASSERT(dataType == ge::DT_INT8 || dataType == ge::DT_UINT8 || dataType == ge::DT_INT16 ||
                             dataType == ge::DT_UINT16 || dataType == ge::DT_FLOAT16 || dataType == ge::DT_BF16 ||
                             dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
@@ -281,8 +283,8 @@ void GetReduceSumMaxMinTmpSize(const ge::Shape& srcShape, const ge::DataType dat
 {
     platform_ascendc::PlatformAscendC* platform = platform_ascendc::PlatformAscendCManager::GetInstance();
     ASCENDC_HOST_ASSERT((platform != nullptr), return, "Failed to get PlatformAscendC.");
-    const platform_ascendc::SocVersion socVersion = platform->GetSocVersion();
-    if (socVersion == platform_ascendc::SocVersion::ASCEND910_95 || socVersion == platform_ascendc::SocVersion::ASCEND910_55) {
+    const auto npuArch = platform->GetCurNpuArch();
+    if (npuArch == NpuArch::DAV_3510) {
         ASCENDC_HOST_ASSERT(dataType == ge::DT_INT32 || dataType == ge::DT_UINT32 || dataType == ge::DT_FLOAT ||
                             dataType == ge::DT_INT64 || dataType == ge::DT_UINT64,
             return,

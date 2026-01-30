@@ -18,7 +18,7 @@
 #include "../common/conv_forward_framework_util.h"
 #include "conv3d_common_sub_api.h"
 #include "include/adv_api/conv/conv3d/conv3d_config.h"
-#include "kernel_operator.h"
+#include "kernel_basic_intf.h"
 #include "kernel_tiling/kernel_tiling.h"
 #include "kernel_utils.h"
 

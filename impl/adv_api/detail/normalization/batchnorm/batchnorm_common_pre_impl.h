@@ -15,7 +15,7 @@
 #ifndef IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H
 #define IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_COMMON_PRE_IMPL_H
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_basic_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_tiling/kernel_tiling.h"
 

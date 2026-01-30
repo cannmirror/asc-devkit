@@ -15,30 +15,17 @@
 #ifndef IMPL_PAD_BROADCAST_BROADCAST_COMMON_UTILS_H
 #define IMPL_PAD_BROADCAST_BROADCAST_COMMON_UTILS_H
 
+#include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
 
 namespace AscendC {
-
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
-
-struct BroadcastTiling {
-    uint32_t oriRank;
-    uint32_t rank;
-    uint32_t dstSize;
-    uint32_t srcSize;
-    uint32_t loopNum = 0;
-    uint32_t oriSrcShape[9];
-    uint32_t oriDstShape[9];
-    uint32_t dstShape[9];
-    uint32_t dstStride[9];
-    uint32_t srcStride[10];
-};
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || \
+    __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 namespace BroadcastInternal {
 constexpr uint32_t U16_MAX = 65536;
 
 /*
-    ExtractSignedTypeBySize is to calculate gather
+    ExtractSignedTypeBySize is to calculate gather 
     index offset according to the type size.
     Because b64 would be converted into b32 and
     with b8's situation, the index should be calculated
@@ -129,7 +116,7 @@ constexpr uint32_t MAX_REPEAT_NUM = 255;
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
-    const LocalTensor<T> &zeroTemp, const uint32_t firstDim, const uint32_t blockDim)
+    const LocalTensor<T> &zeroTemp, const uint32_t firstDim, const uint32_t numBlocks)
 {
     int32_t dtypeCount = 1;
     if constexpr (sizeof(T) == sizeof(float)) {
@@ -137,10 +124,10 @@ __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, c
     }
     uint32_t orCounts = firstDim / ONE_VOR_BLOCK_DIM;
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
-    uint8_t repeateTimes = blockDim / oneBlockElementNum;
+    uint8_t repeateTimes = numBlocks / oneBlockElementNum;
     SetMaskNorm();
     SetVectorMask<uint16_t, MaskMode::NORMAL>(ONE_VOR_BLOCK_DIM * ELEMENT_NUM_FOR_UINT16);
-    uint8_t dstBlkStride = blockDim * dtypeCount / ELEMENT_NUM_FOR_UINT16;
+    uint8_t dstBlkStride = numBlocks * dtypeCount / ELEMENT_NUM_FOR_UINT16;
     BinaryRepeatParams binaryParams(dstBlkStride, 0, 0, 1, 1, 0);
     uint32_t transTmpBufferOffset = 0;
     for (uint32_t i = 0; i < orCounts; i++) {
@@ -150,7 +137,7 @@ __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, c
             MASK_PLACEHOLDER,
             repeateTimes,
             binaryParams);
-        transTmpBufferOffset += ONE_VOR_BLOCK_DIM * blockDim;
+        transTmpBufferOffset += ONE_VOR_BLOCK_DIM * numBlocks;
     }
     uint32_t orCountsTail = firstDim - orCounts * ONE_VOR_BLOCK_DIM;
     if (orCountsTail > 0) {
@@ -168,7 +155,7 @@ __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, c
 
 template <typename T>
 __aicore__ inline void LoopBroadCast(const LocalTensor<T> &dstLocal, const LocalTensor<T> &srcLocal,
-    const LocalTensor<T> &zeroTemp, const uint32_t firstDim, const uint32_t blockDim)
+    const LocalTensor<T> &zeroTemp, const uint32_t firstDim, const uint32_t numBlocks)
 {
     int32_t dtypeCount = 1;
     if constexpr (sizeof(T) == sizeof(float)) {
@@ -178,7 +165,7 @@ __aicore__ inline void LoopBroadCast(const LocalTensor<T> &dstLocal, const Local
     SetVectorMask<T, MaskMode::COUNTER>(firstDim * dtypeCount);
     BinaryRepeatParams binaryParams(1, 1, 0, REPEAT_STRIDE_NUM, REPEAT_STRIDE_NUM, 0);
     uint32_t temBufferOffset = 0;
-    for (uint32_t i = 0; i < blockDim; i++) {
+    for (uint32_t i = 0; i < numBlocks; i++) {
         Or<uint16_t, false>(dstLocal[temBufferOffset].template ReinterpretCast<uint16_t>(),
             srcLocal.template ReinterpretCast<uint16_t>(),
             zeroTemp.template ReinterpretCast<uint16_t>(),

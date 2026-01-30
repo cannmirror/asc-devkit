@@ -16,7 +16,7 @@
 #define IMPL_FILTER_DROPOUT_DROPOUT_MEMBASE_IMPL_H
 
 #include "kernel_tensor.h"
-#include "kernel_operator_intf.h"
+#include "kernel_vec_intf.h"
 #include "kernel_pop_stack_buffer.h"
 #include "../../common/check.h"
 

@@ -14,6 +14,9 @@
 #include "kernel_tensor.h"
 #include "kernel_utils.h"
 #include "selectwithbytesmask_common_impl.h"
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/select/selectwithbytesmask/selectwithbytesmaskcheck.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "selectwithbytesmask_v220_impl.h"

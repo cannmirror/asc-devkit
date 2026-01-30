@@ -15,18 +15,21 @@
 #ifndef IMPL_TRANSPOSE_CONFUSION_TRANSPOSE_CONFUSION_TRANSPOSE_COMMON_IMPL_H
 #define IMPL_TRANSPOSE_CONFUSION_TRANSPOSE_CONFUSION_TRANSPOSE_COMMON_IMPL_H
 
+#ifdef ASCENDC_CPU_DEBUG
+#include "../../api_check/kernel_check/transpose/confusion_transpose/confusion_transpose_check.h"
+#endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002)
 #include "confusion_transpose_v200_impl.h"
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #include "confusion_transpose_v220_impl.h"
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 #include "confusion_transpose_v220_impl.h"
-#include "confusion_transpose_l300_impl.h"
+#include "confusion_transpose_c310_impl.h"
 #endif
 
 namespace AscendC {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 template <typename T>
 __aicore__ inline void CheckCompatibleTransposeTypeDataType() {
     ASCENDC_ASSERT(
@@ -69,6 +72,16 @@ __aicore__ inline void ConfusionTransposeImpl(const LocalTensor<T>& dstTensor, c
     } else if (transposeType == TransposeType::TRANSPOSE_ND2ND_ONLY) {
         CheckCompatibleTransposeTypeDataType<T>();
         ConfusionTransposeOnly(dstTensor, srcTensor, reinterpret_cast<ConfusionTransposeOnlyTiling &>(tiling));
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+    } else if (transposeType == TransposeType::TRANSPOSE_ND2ND_021) {
+        ConfusionTranspose021(dstTensor, srcTensor, reinterpret_cast<ConfusionTranspose021Tiling &>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_ND2ND_102) {
+        ConfusionTranspose102(dstTensor, srcTensor, reinterpret_cast<ConfusionTranspose102Tiling &>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_ND2ND_210) {
+        ConfusionTranspose210(dstTensor, srcTensor, reinterpret_cast<ConfusionTranspose210Tiling &>(tiling));
+    } else if (transposeType == TransposeType::TRANSPOSE_ND2NZ_WITH_INTLV) {
+        ConfusionTransposeND2NZWithInlv(dstTensor, srcTensor, reinterpret_cast<ConfusionTranspose210Tiling &>(tiling));
+#endif
     } else {
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR,
             "Transpose do not support current TransposeType on current device!"); });

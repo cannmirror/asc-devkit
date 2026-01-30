@@ -37,7 +37,6 @@ __aicore__ inline void CopyHcclMsg(const uint8_t *src, __gm__ HcclMsg *dst)
     tmpDst->data[HCCL_VALID_POS] = HCCL_MSG_VALID_MASK;
 }
 
-
 __aicore__ inline void AssembleHcclMsgExt(const AlltoAllVParamExt &param, uint32_t rankDim, __gm__ HcclMsgExt *dst)
 {
     uint64_t xorCheck = 0U;
@@ -133,12 +132,13 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::CheckCommonPreparePara
     if (commType < HcclCMDType::HCCL_CMD_ALL) {
         tiling = ccOpTilingDataTable_[static_cast<uint32_t>(commType)];
     }
-    if (curVersion_ > HcclTilingVersion::DEPRECATED_TILING_VERSION) {
+    if (curVersion_ == HcclTilingVersion::NEW_TILING_VERSION ||
+        curVersion_ == HcclTilingVersion::ONLINE_COMPILATION_TILING_VERSION) {
         ASCENDC_HCCL_API_ASSERT(tiling != 0UL, { return false; },
                                 "Failed to prepare for type %u, ensure SetCcTiling has been called.",
                                 static_cast<uint32_t>(commType));
     } else {
-        ASCENDC_HCCL_API_ASSERT(curVersion_ == HcclTilingVersion::DEPRECATED_TILING_VERSION && tiling == 0UL,
+        ASCENDC_HCCL_API_ASSERT(curVersion_ != HcclTilingVersion::INVALID_TILING_VERSION && tiling == 0UL,
                                 { return false; }, "Failed to prepare for type %u, ensure Init has been called",
                                 static_cast<uint32_t>(commType));
     }
@@ -182,45 +182,29 @@ template <const auto &config>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::InitInner(GM_ADDR context, HcclTilingVersion version)
 {
-    ASCENDC_HCCL_API_ASSERT(curVersion_ == HcclTilingVersion::INVALID_TILING_VERSION, { return; },
-                            "Init repeatedly is not allowed.");
     hcclContext_ = (__gm__ HcclCombineOpParam *)context;
     ASCENDC_HCCL_API_ASSERT(hcclContext_ != nullptr, { return; }, "Init Hccl failed, context addr is nullptr.");
-    if (unlikely(hcclContext_->workSpace == 0UL)) {
-        return;
+    uint64_t msgAddr;
+    if (version != HcclTilingVersion::CONTEXT_DECOUPLE_VERSION) {
+        ASCENDC_HCCL_API_ASSERT(curVersion_ == HcclTilingVersion::INVALID_TILING_VERSION, { return; },
+                                "Init repeatedly is not allowed.");
+        if (unlikely(hcclContext_->workSpace == 0UL)) {
+            return;
+        }
+        // ensure hcclMsgArea 512B aligned
+        msgAddr = hcclContext_->workSpace;
+        if (msgAddr & 0x1ff) {
+            msgAddr = (msgAddr & (~((uint64_t)0x1ff))) + 0x200;
+        }
+    } else {
+        msgAddr = (reinterpret_cast<__gm__ CommKfcContext *>(context))->apiCtx.workSpace;
     }
-    // ensure hcclMsgArea 512B aligned
-    uint64_t msgAddr = hcclContext_->workSpace;
-    if (msgAddr & 0x1ff) {
-        msgAddr = (msgAddr & (~((uint64_t)0x1ff))) + 0x200;
-    }
-    hcclMsgArea_ = (__gm__ HcclMsgArea *)msgAddr;
+    hcclMsgArea_ = reinterpret_cast<__gm__ HcclMsgArea *>(msgAddr);
     for (uint32_t i = 0U; i < HCCL_MAX_HANDLE_ID; ++i) {
         handleIdMsgPosition_[i] = -1;
     }
     InitWorkingFlag();
     curVersion_ = version;
-}
-
-template <const auto &config>
-__aicore__ inline void
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::InitContext(uint64_t ccTilingAddr)
-{
-    __gm__ Mc2CcTilingInner *ccTilingPtr = reinterpret_cast<__gm__ Mc2CcTilingInner *>(ccTilingAddr);
-    if (ccTilingPtr->version == MC2_CC_TILING_INTERFACE) {
-        aicpuContext_ = reinterpret_cast<__gm__ AicpuContext *>(&(ccTilingPtr->aicpuContext));
-        uint64_t msgAddr = aicpuContext_->workSpace;
-        if (unlikely(msgAddr == 0UL)) {
-            return;
-        }
-        // ensure hcclMsgArea 512B aligned
-        if (msgAddr & 0x1ff) {
-            msgAddr = (msgAddr & (~((uint64_t)0x1ff))) + 0x200;
-        }
-        hcclMsgArea_ = (__gm__ HcclMsgArea *)msgAddr;
-    } else {
-        aicpuContext_ = nullptr;
-    }
 }
 
 template<const auto &config>
@@ -242,16 +226,16 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::SendMsgToServer(uint16
     do {
         HCCL_CHECK_RESTART(hcclMsgArea_, return);
         FlushDataCache(hcclSendMsg);
-    } while ((debugMode_ != HCCL_ONLY_COMPUTE) &&
-            ((curVersion_ == HcclTilingVersion::DEPRECATED_TILING_VERSION &&
-            hcclSendMsg->addMsg.v0Msg.valid == HCCL_MSG_VALID_MASK) ||
-            (curVersion_ != HcclTilingVersion::DEPRECATED_TILING_VERSION &&
-            hcclSendMsg->addMsg.v1Msg.valid == HCCL_MSG_VALID_MASK)));
+    } while (debugMode_ != HCCL_ONLY_COMPUTE && hcclSendMsg->addMsg.v0Msg.valid == HCCL_MSG_VALID_MASK);
     KERNEL_LOG(KERNEL_INFO, "Hccl send msg[%u] is available now.", curMsgPosition_[queId]);
     if (srcGroupID < 0) {
         uint64_t tiling = 0UL;
         if (param.commType.prepareType < HcclCMDType::HCCL_CMD_ALL) {
-            tiling = ccOpTilingDataTable_[static_cast<uint32_t>(param.commType.prepareType)];
+            if (curVersion_ != HcclTilingVersion::CONTEXT_DECOUPLE_VERSION) {
+                tiling = ccOpTilingDataTable_[static_cast<uint32_t>(param.commType.prepareType)];
+            } else {
+                tiling = (reinterpret_cast<__gm__ CommKfcContext *>(hcclContext_))->hcclContext;
+            }
         }
         AssembleHcclMsg(param, curVersion_, curHandleId_, tiling, hcclSendMsg, &hcclMsgArea_->controlMsg);
     } else {
@@ -273,7 +257,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::SendMsgToServer(const 
         FlushDataCache(hcclSendMsg);
     } while ((debugMode_ != HCCL_ONLY_COMPUTE) && (hcclSendMsg->valid == HCCL_MSG_VALID_MASK));
     KERNEL_LOG(KERNEL_INFO, "Hccl send extMsg[%u] is available now.", curMsgPosition_[0U]);
-    uint32_t rankNum = aicpuContext_ != nullptr ? aicpuContext_->rankNum : hcclContext_->rankNum;
+    uint32_t rankNum = GetRankDim();
     AssembleHcclMsgExt(param, rankNum, hcclSendMsg);
     GlobalTensor<int64_t> globalHcclMsgArea;
     for (uint32_t i = 0U; i < rankNum; i += MAX_DCCI_CNT / sizeof(uint64_t)) {
@@ -289,6 +273,10 @@ template<const auto &config>
 __aicore__ inline uint16_t
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_AICPU, config>::GetStepSizeByHandle(HcclHandle handle)
 {
+    if (curVersion_ != HcclTilingVersion::NEW_TILING_VERSION &&
+        curVersion_ != HcclTilingVersion::ONLINE_COMPILATION_TILING_VERSION) {
+        return 0U;
+    }
     const uint8_t commType = handleId2CmdType_[handle];
     if (commType != static_cast<uint8_t>(HcclCMDType::HCCL_CMD_ALLTOALLV)) {
         return 0U;

@@ -70,5 +70,6 @@ enum class IterateOrder : uint32_t {
     ORDER_NTERFIRST,
     UNDEF,
 };
+
 }  // namespace ConvApi
 #endif  // __API_CONV3D_UTIL_H__

@@ -44,6 +44,7 @@ class MatmulNormSchedulerBase : public MatmulSchedulerBase<IMPL, A_TYPE, B_TYPE,
     MATMUL_USE_MODULE(BiasScheduler);
     MATMUL_USE_MODULE(CubeOutBuffer);
 
+    using TransBT = typename decltype(GetTransBDataType<A_TYPE, B_TYPE, MM_CFG>())::T;
     using BiasT = typename BIAS_TYPE::T;
 
 public:
@@ -243,7 +244,11 @@ protected:
         if constexpr (IsStaticPaddingEnable(MM_CFG)) {
             bL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN(), BLOCK_CUBE);
             bL0Params.axisL0Len = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+#if __NPU_ARCH__ == 5102  
+            bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(), c0SizeB_);
+#else          
             bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseK(), c0Size_);
+#endif
         } else {
             if constexpr (IS_INTRA_BLOCK) {
                 bL0Params.axisL1Len = MATMUL_MODULE(NLoop)->template GetTileBlockShape<IS_INTRA_BLOCK>() * BLOCK_CUBE;
@@ -256,26 +261,28 @@ protected:
         bL0Params.kAxisL1Offset = 0;
         // if input is from L1, update related params
         if constexpr (PhyPosIsL1OrUB<MM_CFG>(B_TYPE::pos)) {
-            bL0Params.axisL1Len =
-                CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreN<IS_INTRA_BLOCK>(), BLOCK_CUBE);
+            bL0Params.axisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreN<IS_INTRA_BLOCK>(), BLOCK_CUBE);
             if constexpr (IsBasic(MM_CFG)) {
                 bL0Params.axisL1Offset = 0;
                 if constexpr (MatmulFeatureTrait<MM_CFG>::IsSupportLoad2dV2()) {
-                    bL0Params.kAxisL1Len = IsSupportB8<typename B_TYPE::T>() ?
-                        CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0Size_) :
-                        CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);                   
+#if __NPU_ARCH__ == 5102 
+                    bL0Params.kAxisL1Len = (IsSupportB4<TransBT>() || IsSupportB8<TransBT>()) ? CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0SizeB_) : CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);
+#else
+                    bL0Params.kAxisL1Len = IsSupportB8<typename B_TYPE::T>() ? CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), c0Size_) : CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<false>(), BLOCK_CUBE);                   
+#endif
                     return bL0Params;
                 }
             } else {
-                bL0Params.axisL1Offset =
-                    MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
+                bL0Params.axisL1Offset = MATMUL_MODULE(NLoop)->GetInnerIdx() * MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
             }
             if (MATMUL_MODULE(MatmulShapeInfo)->template IsTransposeB<IS_INTRA_BLOCK>()) {
-                bL0Params.kAxisL1Len =
-                    CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0Size_);
+#if __NPU_ARCH__ == 5102 
+                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0SizeB_);
+#else
+                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), c0Size_);
+#endif
             } else {
-                bL0Params.kAxisL1Len =
-                    CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), BLOCK_CUBE);
+                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(MatmulShapeInfo)->template GetSingleCoreK<IS_INTRA_BLOCK>(), BLOCK_CUBE);
             }
         } else {
             bL0Params.axisL1Offset = 0;
@@ -312,7 +319,11 @@ protected:
             if constexpr (IS_INTRA_BLOCK) {
                 bL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->template GetTileBlockShapeB<true>() * c0Size_;
             } else {
+#if __NPU_ARCH__ == 5102 
+                bL0Params.kAxisL1Len = CeilAlign(MATMUL_MODULE(KLoop)->GetTileShapeB(), c0SizeB_);
+#else
                 bL0Params.kAxisL1Len = MATMUL_MODULE(KLoop)->GetTileBlockShapeB() * c0Size_;
+#endif
             }
         }
     }
@@ -382,6 +393,9 @@ protected:
 
     bool isFirstIter_ = true;
     constexpr static int32_t c0Size_ = AuxGetC0Size<typename A_TYPE::T>();
+#if __NPU_ARCH__ == 5102
+    constexpr static int32_t c0SizeB_ = AuxGetC0Size<TransBT>();
+#endif
 };
 
 }  // namespace Detail

@@ -31,6 +31,48 @@ __aicore__ inline void FlushDataCache(__gm__ void *gmAddr)
     FlushDataCache(globalHcclMsgArea, gmAddr);
 }
 
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+
+template <typename T>
+__aicore__ inline T ReadHBMData(__gm__ T* addr)
+{
+    Barrier();
+    Nop();
+
+    if constexpr (SupportBytes<T, 8>()) {
+        return ReadGmByPassDCache(reinterpret_cast<__gm__ uint64_t*>(addr));
+    } else if constexpr (SupportBytes<T, 4>()) {
+        return ReadGmByPassDCache(reinterpret_cast<__gm__ uint32_t*>(addr));
+    } else if constexpr (SupportBytes<T, 2>()) {
+        return ReadGmByPassDCache(reinterpret_cast<__gm__ uint16_t*>(addr));
+    } else {
+        return ReadGmByPassDCache(reinterpret_cast<__gm__ uint8_t*>(addr));
+    }
+
+    DataSyncBarrier<MemDsbT::ALL>();
+}
+
+template <typename T>
+__aicore__ inline void WriteHBMData(__gm__ T* addr, T value)
+{
+    Barrier();
+    Nop();
+
+    if constexpr (SupportBytes<T, 8>()) {
+        WriteGmByPassDCache(reinterpret_cast<__gm__ uint64_t*>(addr), (uint64_t)value);
+    } else if constexpr (SupportBytes<T, 4>()) {
+        WriteGmByPassDCache(reinterpret_cast<__gm__ uint32_t*>(addr), (uint32_t)value);
+    } else if constexpr (SupportBytes<T, 2>()) {
+        WriteGmByPassDCache(reinterpret_cast<__gm__ uint16_t*>(addr), (uint16_t)value);
+    } else {
+        WriteGmByPassDCache(reinterpret_cast<__gm__ uint8_t*>(addr), (uint8_t)value);
+    }
+
+    DataSyncBarrier<MemDsbT::ALL>();
+}
+
+#endif
+
 }
 
 #endif

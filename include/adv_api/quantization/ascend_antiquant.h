@@ -147,6 +147,46 @@ __aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, c
     }
     AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, offset, scale, k, shapeInfo);
 }
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
+    const LocalTensor<fp8_e8m0_t>& scale, const uint32_t k, const AntiQuantShapeInfo& shapeInfo = {})
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, k, shapeInfo);
+}
+
+template <typename InputDataType, typename OutputDataType, bool isTranspose>
+__aicore__ inline void AscendAntiQuant(const LocalTensor<OutputDataType>& dst, const LocalTensor<InputDataType>& src,
+    const LocalTensor<fp8_e8m0_t>& scale, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t k,
+    const AntiQuantShapeInfo& shapeInfo = {})
+{
+    if ASCEND_IS_AIC {
+        return;
+    }
+    AscendAntiQuantImpl<InputDataType, OutputDataType, isTranspose>(dst, src, scale, sharedTmpBuffer, k, shapeInfo);
+}
+
+template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>
+__aicore__ inline void AscendAntiQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+                                       const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
+                                       const AscendAntiQuantParam& para)
+{
+    AscendAntiQuantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, scaleTensor, offsetTensor, para);
+}
+
+template <typename dstT, typename srcT, typename scaleT, const AscendAntiQuantConfig& config, const AscendAntiQuantPolicy& policy>
+__aicore__ inline void AscendAntiQuant(const LocalTensor<dstT>& dstTensor, const LocalTensor<srcT>& srcTensor,
+                                       const LocalTensor<scaleT> &scaleTensor, const LocalTensor<scaleT> &offsetTensor,
+                                       const LocalTensor<uint8_t> &sharedTmpBuffer, const AscendAntiQuantParam& para)
+{
+    AscendAntiQuantImpl<dstT, srcT, scaleT, config, policy>(dstTensor, srcTensor, sharedTmpBuffer, scaleTensor, offsetTensor, para);
+}
+#endif
+
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ASCEND_ANTIQUANT_H

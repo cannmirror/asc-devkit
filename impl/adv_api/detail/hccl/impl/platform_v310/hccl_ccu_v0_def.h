@@ -9,13 +9,11 @@
 */
 
 /*!
- * \file hccl_ccu_d100_def.h
+ * \file hccl_ccu_v0_def.h
  * \brief
  */
 #ifndef IMPL_V310_HCCL_CCU_D100_DEF_H
 #define IMPL_V310_HCCL_CCU_D100_DEF_H
-
-#include "../../ccu/hccl_ccu_msg_prepare.h"
 
 namespace AscendC {
 
@@ -76,19 +74,9 @@ private:
     template <bool commit = false>
     __aicore__ inline HcclHandle CommonPrepareImpl(const CommonPrepareParam &param);
 
-    __aicore__ inline void FlushCache(GM_ADDR addrGM);
+    __aicore__ inline void CommitMsgInner(const HcclHandle handleId);
 
-    __aicore__ inline void AssembleHcclFinalizeMsgForCCU(__gm__ HcclMsg *hcclSendMsg);
-
-    __aicore__ inline void
-    AssembleHcclSendMsgForCCU(const CommonPrepareParam &commonPrepareParam, __gm__ HcclMsg *hcclSendMsg);
-
-    template<bool commit = false>
-    __aicore__ inline void CCUPrepareInner(const CommonPrepareParam &commonPrepareParam, const HcclHandle handleId);
-
-    __aicore__ inline void DataCopy2XnAddr(GM_ADDR dstGmAddr, GM_ADDR srcGmAddr, uint32_t size);
-
-    __aicore__ inline void CcuSendMsg(uint8_t reqId);
+    __aicore__ inline void CcuSendMsg(uint8_t resourceId);
 
     __aicore__ inline GM_ADDR GetCommitCkeAddr(uint8_t msgId);
 
@@ -96,19 +84,24 @@ private:
 
     __aicore__ inline bool IsFinish(uint8_t reqId);
 
-    __aicore__ inline bool CheckNeedPush();
-
     __aicore__ inline void FlushDataCacheForCopy(GM_ADDR gmAddr, uint32_t size);
-
-    __aicore__ inline void InitCommReq(uint8_t reqId);
 
     __aicore__ inline void InitHandleInfo(uint8_t handleId);
 
-    __aicore__ inline void InitCcuParam(const CommonPrepareParam &commonPrepareParam);
-
-    __aicore__ inline void CommitMsg(HcclHandle handleId, uint8_t reqId);
+    __aicore__ inline void InitCcuParam(const HcclHandle handleId);
 
     __aicore__ inline void InitInner(GM_ADDR context, HcclTilingVersion version);
+
+    __aicore__ inline void CommitMsg(HcclHandle handleId);
+
+    __aicore__ inline void CcuPrepareForOp(const HcclHandle handleId);
+    __aicore__ inline void CcuPrepareForAllGather(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForAllReduce(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForAllToAll(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForAllToAllV(__gm__ CommonPrepareParamCcu *commParam,
+        __gm__ AlltoAllVParamCcu *allToAllVParam);
+    __aicore__ inline void CcuPrepareForAllToAllVWrite(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForReduceScatter(__gm__ CommonPrepareParamCcu *commParam);
 
 private:
     __gm__ HcclCombineOpParam *hcclContext_;
@@ -116,24 +109,40 @@ private:
 
     uint8_t workingFlag_ = false;
     bool needResetDataType_ = false;
-    uint8_t commitCnt_;
     bool isInited_ = false;
-    __gm__ uint32_t *finishCntGM_;
-    uint32_t finishCnt_ = 0;
+    __gm__ uint64_t *finishCntGM_; // 软同步使用
+    uint64_t finishNum_;
+    uint64_t finishNumTemp_;
 
     CCUConfig ccuConfig_;
     CCUMsg ccuMsg_;
     ReduceDataTypeAbility ccuDataType_;
 
-    CCUMsgCommOp commReqBuf_[HCCL_MAX_HANDLE_ID];
-    HandleCommOp handleInfo_[HCCL_MAX_HANDLE_ID];
-    CircularFifo<uint8_t, HCCL_MAX_HANDLE_ID> committedReqFifo_;
-    CircularFifo<uint8_t, CCU_MAX_MSG_NUM> ccuMsgFifo_;
-
     uint64_t ccOpTilingDataTable_[static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALL)] = {0UL};
     HcclTilingVersion curVersion_ = HcclTilingVersion::INVALID_TILING_VERSION;
     uint64_t tilingBaseAddr_;
-    CCUParam ccuParam_;
+    CcuPrepareParam ccuParam_;
+    uint8_t handleReqId_[HCCL_MAX_HANDLE_ID];
+    uint8_t handleRepeatCnt_[HCCL_MAX_HANDLE_ID];
+    uint8_t handleCommitCnt_[HCCL_MAX_HANDLE_ID];
+    uint8_t handleFinishCnt_[HCCL_MAX_HANDLE_ID];
+    uint8_t handleNeedCommitCnt_[HCCL_MAX_HANDLE_ID];
+
+    __gm__ CommonPrepareParamCcu *handleParamGM_;
+
+    __gm__ AlltoAllVParamCcu *allToAllVParam_;
+
+    uint8_t globalCurResId_ = 0; // 全局的消息ID
+    uint8_t globalCurWaitId_ = 0; // 全局的消息ID
+
+    uint32_t globalCurCommitCnt_ = 0;
+    uint32_t globalCurWaitCnt_ = 0;
+
+    uint8_t ccuUsedXnNum_ = 0;
+    uint64_t sizeOfXnMsg_ = 0;
+
+    bool msgQueueIsAvailable_[CCU_MAX_MSG_NUM];
+    uint64_t xnData_[CCU_USED_XN_NUM];
 };
 } // namespace AscendC
 

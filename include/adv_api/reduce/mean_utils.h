@@ -15,6 +15,8 @@
 #ifndef LIB_REDUCE_MEAN_UTILS_H
 #define LIB_REDUCE_MEAN_UTILS_H
 
+#include <cstdint>
+
 namespace AscendC {
 struct MeanParams {
     uint32_t outter = 1;
