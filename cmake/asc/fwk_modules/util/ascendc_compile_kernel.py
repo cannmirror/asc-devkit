@@ -138,7 +138,7 @@ class CompileKernel:
         tiling_key_info, op_debug_config, kernel_json_file, _ = (
             ascendc_bin_param_build.parse_op_debug_confg(
                 opc_config_file, 
-                self.op_type
+                self.op_soc_ver
             )
         )
         if self.op_type in op_debug_config:

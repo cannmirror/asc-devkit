@@ -43,7 +43,6 @@ if(CCACHE_PROGRAM)
 endif()
 
 add_subdirectory(impl)
-add_subdirectory(cmake)
 
 if(BUILD_OPEN_PROJECT)
   include(cmake/intf_pub_linux.cmake)
@@ -51,6 +50,7 @@ if(BUILD_OPEN_PROJECT)
 endif()
 
 add_subdirectory(tools)
+add_subdirectory(cmake)
 
 set(ASC_DEVKIT_VERSION_FILE ${CMAKE_CURRENT_BINARY_DIR}/_CPack_Packages/makeself_staging/share/info/asc-devkit/version.info)
 add_custom_command(

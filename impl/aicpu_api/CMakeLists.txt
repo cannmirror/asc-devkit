@@ -23,6 +23,7 @@ target_compile_options(aicpu_api PRIVATE
     -fvisibility=hidden
     -fvisibility-inlines-hidden
     -ftrapv
+    -Werror
 )
 
 if(BUILD_OPEN_PROJECT)

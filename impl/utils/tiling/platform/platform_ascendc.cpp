@@ -25,7 +25,7 @@
 namespace platform_ascendc {
 const static uint64_t LOCAL_RESERV_SIZE = 256;
 const static uint32_t WORK_SPACE_SIZE_910B = 16 * 1024 * 1024;
-const static uint32_t WORK_SPACE_SIZE_910_95 = 16 * 1024 * 1024;
+const static uint32_t WORK_SPACE_SIZE_950 = 16 * 1024 * 1024;
 const static uint32_t WORK_SPACE_SIZE = 2 * 1024 * 1024;
 const static uint32_t MIX_AIC_AIV_RATION_910B1 = 2;
 const static uint32_t CUBE_GROUP_WORK_SPACE_SIZE_910B = 1 * 1024 * 1024;
@@ -49,7 +49,7 @@ static inline SocVersion SocVersionStrMap(const char *socVersionStr)
         {"Ascend910B", SocVersion::ASCEND910B},
         {"Ascend910_93", SocVersion::ASCEND910B},
         {"Ascend310B", SocVersion::ASCEND310B},
-        {"Ascend910_95", SocVersion::ASCEND910_95},
+        {"Ascend950", SocVersion::ASCEND950},
         {"AS31XM1", SocVersion::AS31XM1},
         {"Ascend031", SocVersion::ASCEND031},
         {"Ascend035", SocVersion::ASCEND035},
@@ -244,7 +244,7 @@ uint32_t PlatformAscendC::GetLibApiWorkSpaceSize(void) const
     } else if (npuArch == NpuArch::DAV_2201) {
         return WORK_SPACE_SIZE_910B;
     } else if (npuArch == NpuArch::DAV_3510) {
-        return WORK_SPACE_SIZE_910_95;
+        return WORK_SPACE_SIZE_950;
     }
     return WORK_SPACE_SIZE;
 }
@@ -304,38 +304,39 @@ const static std::map<std::string, std::string> convertMapInAicpu = {
     {"Ascend310B2", "Ascend310B"},
     {"Ascend310B3", "Ascend310B"},
     {"Ascend310B4", "Ascend310B"},
-    {"Ascend910_95A1", "Ascend910_95"},
-    {"Ascend910_95A2", "Ascend910_95"},
-    {"Ascend910_9591", "Ascend910_95"},
-    {"Ascend910_9592", "Ascend910_95"},
-    {"Ascend910_9595", "Ascend910_95"},
-    {"Ascend910_9596", "Ascend910_95"},
-    {"Ascend910_9581", "Ascend910_95"},
-    {"Ascend910_9582", "Ascend910_95"},
-    {"Ascend910_9583", "Ascend910_95"},
-    {"Ascend910_9584", "Ascend910_95"},
-    {"Ascend910_9585", "Ascend910_95"},
-    {"Ascend910_9586", "Ascend910_95"},
-    {"Ascend910_9587", "Ascend910_95"},
-    {"Ascend910_9588", "Ascend910_95"},
-    {"Ascend910_9571", "Ascend910_95"},
-    {"Ascend910_9572", "Ascend910_95"},
-    {"Ascend910_9573", "Ascend910_95"},
-    {"Ascend910_9574", "Ascend910_95"},
-    {"Ascend910_9575", "Ascend910_95"},
-    {"Ascend910_9576", "Ascend910_95"},
-    {"Ascend910_9577", "Ascend910_95"},
-    {"Ascend910_9578", "Ascend910_95"},
-    {"Ascend910_957b", "Ascend910_95"},
-    {"Ascend910_950x", "Ascend910_95"},
-    {"Ascend910_950y", "Ascend910_95"},
-    {"Ascend910_950z", "Ascend910_95"},
-    {"Ascend910_958b", "Ascend910_95"},
-    {"Ascend910_958a", "Ascend910_95"},
-    {"Ascend910_9599", "Ascend910_95"},
-    {"Ascend910_957d", "Ascend910_95"},
-    {"Ascend910_957c", "Ascend910_95"},
-    {"Ascend910_9589", "Ascend910_95"}, // ascend910_95_list
+    {"Ascend950PR_9599", "Ascend950"},
+    {"Ascend950PR_958a", "Ascend950"},
+    {"Ascend950PR_9589", "Ascend950"},
+    {"Ascend950PR_958b", "Ascend950"},
+    {"Ascend950PR_9579", "Ascend950"},
+    {"Ascend950PR_957b", "Ascend950"},
+    {"Ascend950PR_957c", "Ascend950"},
+    {"Ascend950PR_957d", "Ascend950"},
+    {"Ascend950PR_950z", "Ascend950"},
+    {"Ascend950DT_950x", "Ascend950"},
+    {"Ascend950DT_950y", "Ascend950"},
+    {"Ascend950DT_95A1", "Ascend950"},
+    {"Ascend950DT_95A2", "Ascend950"},
+    {"Ascend950DT_9591", "Ascend950"},
+    {"Ascend950DT_9592", "Ascend950"},
+    {"Ascend950DT_9595", "Ascend950"},
+    {"Ascend950DT_9596", "Ascend950"},
+    {"Ascend950DT_9581", "Ascend950"},
+    {"Ascend950DT_9582", "Ascend950"},
+    {"Ascend950DT_9583", "Ascend950"},
+    {"Ascend950DT_9584", "Ascend950"},
+    {"Ascend950DT_9585", "Ascend950"},
+    {"Ascend950DT_9586", "Ascend950"},
+    {"Ascend950DT_9587", "Ascend950"},
+    {"Ascend950DT_9588", "Ascend950"},
+    {"Ascend950DT_9571", "Ascend950"},
+    {"Ascend950DT_9572", "Ascend950"},
+    {"Ascend950DT_9573", "Ascend950"},
+    {"Ascend950DT_9574", "Ascend950"},
+    {"Ascend950DT_9575", "Ascend950"},
+    {"Ascend950DT_9576", "Ascend950"},
+    {"Ascend950DT_9577", "Ascend950"},
+    {"Ascend950DT_9578", "Ascend950"}, // ascend950_list
     {"MC62CM12AA", "MC62CM12A"},
     {"KirinX90", "KirinX90"},
     {"Kirin9030", "Kirin9030"}
@@ -345,7 +346,7 @@ const static std::map<std::string, std::string> AICPUshortVersionToNpuArchMap = 
     {"Ascend910B", "2201"}, // ascend910b_list
     {"Ascend910", "1001"},
     {"Ascend310B", "3002"},
-    {"Ascend910_95", "3510"}, // ascend910_95_list
+    {"Ascend950", "3510"},
     {"MC62CM12A", "5102"},
     {"KirinX90", "3003"},
     {"Kirin9030", "3113"}

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -7,33 +9,25 @@
 # INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
-add_compile_options(-Werror)
+from ..ascendc_constants import CompileOptionTuple
 
-add_subdirectory(aicpu_api)
-add_subdirectory(adv_api)
-add_subdirectory(basic_api)
-add_subdirectory(c_api)
-add_subdirectory(utils)
 
-if(NOT BUILD_OPEN_PROJECT)
-  install_package(
-    PACKAGE
-    tiling_api
-    TARGETS
-    tiling_api
-    tiling_api_headers
-    DIRECTORY
-    ${ASCENDC_DIR}/include
-    DESTINATION
-    ${INSTALL_INCLUDE_DIR}/asc
-    DIRECTORY
-    ${ASCENDC_DIR}/impl
-    DESTINATION
-    ${INSTALL_INCLUDE_DIR}/asc
-    FILES
-    ${ASCENDC_DIR}/include/adv_api/tiling_api.h
-    DESTINATION
-    ${INSTALL_INCLUDE_DIR}/asc/include/adv_api)
+class InitializerConfig:
+    def __init__(self, support_impl_mode: bool, is_support_dfx: bool, support_super_kernel: bool):
+        self.support_impl_mode = support_impl_mode
+        self.is_support_dfx = is_support_dfx
+        self.support_super_kernel = support_super_kernel
 
-  install(SCRIPT ${ASCENDC_DIR}/impl/adv_api/cmake/tiling_directory.cmake)
-endif()
+
+class InitializerParams:
+    def __init__(self, kernel_file, origin_func_name, op_info, compile_option_tuple, code_channel,
+                 op_compile_option, extend_options):
+        pass
+
+
+class Initializer(object):
+    def __init__(self, params: InitializerParams, config: InitializerConfig):
+        pass
+
+    def initialize(self):
+        pass

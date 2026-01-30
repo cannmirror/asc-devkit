@@ -1,5 +1,6 @@
-build
+.vscode
+/build/
 build_out
-scripts/package/common/__pycache__/
-scripts/package/common/py/__pycache__/
-scripts/package/common/py/utils/__pycache__/
+output
+__pycache__/
+/examples/**/build/

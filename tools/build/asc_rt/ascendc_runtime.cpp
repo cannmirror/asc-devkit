@@ -155,7 +155,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
     for (char c : curSocVersion) {
         lowerCurSocVersion += std::tolower(c);
     }
-    // ascend950 
+    // ascend950
     if (AscendCheckSoC950Version(lowerCurSocVersion.c_str())) {
         return true;
     }
@@ -207,13 +207,14 @@ static SocVersion GetSocVersion() {
         ASCENDLOGE("aclrtGetSocName failed\n");
         return SocVersion::UNKNOWN;
     }
-    if (std::strncmp(socName, "Ascend310P", 10) == 0) {
+    if (std::strncmp(socName, "Ascend310P", sizeof("Ascend310P") - 1) == 0) {
         return SocVersion::ASCEND310P;
     }
-    if (std::strncmp(socName, "Ascend910B", 10) == 0) {
+    if (std::strncmp(socName, "Ascend910B", sizeof("Ascend910B") - 1) == 0 ||
+        std::strncmp(socName, "Ascend910_93", sizeof("Ascend910_93") - 1) == 0) {
         return SocVersion::ASCEND910B;
     }
-    if (std::strncmp(socName, "Ascend950", 12) == 0) {
+    if (std::strncmp(socName, "Ascend950", sizeof("Ascend950") - 1) == 0) {
         return SocVersion::ASCEND950;
     }
     ASCENDLOGE("unsupport soc name: %s\n", socName);
