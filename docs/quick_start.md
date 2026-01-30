@@ -82,23 +82,23 @@
     - 缺省--install-path时， 则使用默认路径安装。
     若使用root用户安装，安装完成后相关软件存储在“/usr/local/Ascend/cann”路径下；若使用非root用户安装，安装完成后相关软件存储在“$HOME/Ascend/cann”路径下。
 
-2. **安装社区版CANN legacy包（运行态依赖）**
+2. **安装社区版CANN ops包（运行态依赖）**
 
     运行算子前必须安装本包，若仅编译算子，可跳过本操作。
 
-    根据产品型号和环境架构，下载对应`cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run`包，下载链接如下：
+    根据产品型号和环境架构，下载对应`Ascend-cann-${soc_name}-ops_8.5.0-beta.1_linux-${arch}.run`包，下载链接如下：
 
-    - Atlas A2 训练系列产品/Atlas A2 推理系列产品：[legacy x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/ops/cann-910b-ops-legacy_8.5.0-beta.1_linux-x86_64.run)、[legacy aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/ops/cann-910b-ops-legacy_8.5.0-beta.1_linux-aarch64.run)。
-    - Atlas A3 训练系列产品/Atlas A3 推理系列产品：[legacy x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/ops/cann-910_93-ops-legacy_8.5.0-beta.1_linux-x86_64.run)、[legacy aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/ops/cann-910_93-ops-legacy_8.5.0-beta.1_linux-aarch64.run)。
+    - Atlas A2 训练系列产品/Atlas A2 推理系列产品：[ops x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/Ascend-cann-910b-ops_8.5.0-beta.1_linux-x86_64.run)、[ops aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/Ascend-cann-910b-ops_8.5.0-beta.1_linux-aarch64.run)。
+    - Atlas A3 训练系列产品/Atlas A3 推理系列产品：[ops x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/Ascend-cann-A3-ops_8.5.0-beta.1_linux-x86_64.run)、[ops aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/Ascend-cann-A3-ops_8.5.0-beta.1_linux-aarch64.run)。
 
     ```bash
     # 确保安装包具有可执行权限
-    chmod +x cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run
+    chmod +x Ascend-cann-${soc_name}-ops_8.5.0-beta.1_linux-${arch}.run
     # 安装命令
-    ./cann-${soc_name}-ops-legacy_${cann_version}_linux-${arch}.run --full --install-path=${install_path}
+    ./Ascend-cann-${soc_name}-ops_8.5.0-beta.1_linux-${arch}.run --install --install-path=${install_path}
     ```
-    - \$\{soc\_name\}：表示NPU型号名称，即\$\{soc\_version\}删除“ascend”后剩余的内容。
-    - \$\{install\_path\}：表示指定安装路径，需要与toolkit包安装在相同路径，默认安装在`/usr/local/Ascend`目录。
+    - \$\{soc\_name\}：表示NPU型号名称，（Atlas A2 训练系列产品/Atlas A2 推理系列产品：910b，Atlas A3 训练系列产品/Atlas A3 推理系列产品：A3）。
+    - \$\{install\_path\}：表示指定安装路径，需要与toolkit包安装在相同路径，root用户默认安装在`/usr/local/Ascend`目录，非root用户默认安装在`$HOME/Ascend`目录。
 
 3. **配置环境变量**
 
