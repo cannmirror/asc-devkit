@@ -271,8 +271,9 @@ public:
     template <TPosition pos, class DataType> LocalTensor<DataType> __aicore__ inline Alloc(uint32_t tileSize);
     template <class DataType, uint32_t tileSize> LocalTensor<DataType> __aicore__ inline Alloc();
     template <class DataType> LocalTensor<DataType> __aicore__ inline Alloc(uint32_t tileSize);
-    template <class TensorTraitType> LocalTensor<TensorTraitType> __aicore__ inline Alloc();
-    template <class TensorTraitType, typename LayoutType> LocalTensor<TensorTraitType> __aicore__ inline Alloc(const LayoutType& layout);
+    template <class DataType> LocalTensor<DataType> __aicore__ inline Alloc();
+    template <class DataType, typename LayoutType> typename Std::enable_if<is_layout_v<LayoutType>, LocalTensor<DataType>>::type 
+    __aicore__ inline Alloc(const LayoutType& layout);
 
 private:
     uint32_t head_ = 0;

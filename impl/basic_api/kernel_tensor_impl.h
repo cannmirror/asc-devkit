@@ -1648,27 +1648,28 @@ __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc(uint32_t 
     return output;
 }
 template <Hardware hard>
-template <class TensorTraitType>
-__aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc()
+template <class DataType>
+__aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc()
 {
-    static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
-    static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
-    using liteType = typename TensorTraitType::LiteType;
+    static_assert(is_tensorTrait_v<DataType>, "only support TensorTrait type!");
+    static_assert(GetPhyType(DataType::tPos) == hard, "logic pos and hardware pos not matched.");
+    using liteType = typename DataType::LiteType;
     static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
-    LocalTensor<TensorTraitType> tensorOut(head_);
+    LocalTensor<DataType> tensorOut(head_);
     head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
     return tensorOut;
 }
 
 template <Hardware hard>
-template <class TensorTraitType, typename LayoutType>
-__aicore__ inline LocalTensor<TensorTraitType> LocalMemAllocator<hard>::Alloc(const LayoutType& layout)
+template <class DataType, typename LayoutType>
+__aicore__ inline typename Std::enable_if<is_layout_v<LayoutType>, LocalTensor<DataType>>::type 
+    LocalMemAllocator<hard>::Alloc(const LayoutType& layout)
 {
-    static_assert(is_tensorTrait_v<TensorTraitType>, "only support TensorTrait type!");
-    static_assert(GetPhyType(TensorTraitType::tPos) == hard, "logic pos and hardware pos not matched.");
-    using liteType = typename TensorTraitType::LiteType;
+    static_assert(is_tensorTrait_v<DataType>, "only support TensorTrait type!");
+    static_assert(GetPhyType(DataType::tPos) == hard, "logic pos and hardware pos not matched.");
+    using liteType = typename DataType::LiteType;
     static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
-    LocalTensor<TensorTraitType> tensorOut(head_, layout);
+    LocalTensor<DataType> tensorOut(head_, layout);
     head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
     return tensorOut;
 }   
