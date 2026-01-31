@@ -1,4 +1,4 @@
-# BestPractices样例介绍
+# AI CPU算子Tiling下沉样例介绍
 ## 概述
 
 本样例介绍使用AI CPU算子进行tiling下沉计算，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程。
