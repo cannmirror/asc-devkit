@@ -162,7 +162,7 @@ TEST_P(atanfTestSuite, atanfTestCaseFloat)
     const auto param = this->GetParam();
     float x = param.x;
     float yExpected = param.yExpected;
-    float y = __atanf(x);
+    float y = atanf(x);
     VerifyFloatNumber1(y, yExpected);
 }
 // ================================ Test atanf end ==================================

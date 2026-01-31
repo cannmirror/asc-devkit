@@ -19,14 +19,6 @@
 
 #include <cstdint>
 
-half2 __expf(half2 x);
-
-half2 __logf(half2 x);
-
-half2 __sqrtf(half2 x);
-
-float __atanf(float x);
-
 namespace bisheng {
 namespace cce {
 namespace simt {

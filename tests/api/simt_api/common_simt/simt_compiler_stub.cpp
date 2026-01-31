@@ -33,50 +33,6 @@ int32_t get_block_num()
 }
 }
 
-half2 __expf(half2 x)
-{
-    half htmp1 = x.x;
-    half htmp2 = x.y;
-    float tmp1 = htmp1.ToFloat();
-    float tmp2 = htmp2.ToFloat();
-    tmp1 = exp(tmp1);
-    tmp2 = exp(tmp2);
-    htmp1 = half(tmp1);
-    htmp2 = half(tmp2);
-    return {htmp1, htmp2};
-}
-
-half2 __logf(half2 x)
-{
-    half htmp1 = x.x;
-    half htmp2 = x.y;
-    float tmp1 = htmp1.ToFloat();
-    float tmp2 = htmp2.ToFloat();
-    tmp1 = log(tmp1);
-    tmp2 = log(tmp2);
-    htmp1 = half(tmp1);
-    htmp2 = half(tmp2);
-    return {htmp1, htmp2};
-}
-
-half2 __sqrtf(half2 x)
-{
-    half htmp1 = x.x;
-    half htmp2 = x.y;
-    float tmp1 = htmp1.ToFloat();
-    float tmp2 = htmp2.ToFloat();
-    tmp1 = sqrt(tmp1);
-    tmp2 = sqrt(tmp2);
-    htmp1 = half(tmp1);
-    htmp2 = half(tmp2);
-    return {htmp1, htmp2};
-}
-
-float __atanf(float x)
-{
-    return atan(x);
-}
-
 int32_t asc_get_block_idx()
 {
     return bisheng::cce::simt::get_block_idx();
@@ -837,17 +793,41 @@ void asc_stwt(float4* address, float4 val)
 
 half2 h2exp(half2 x)
 {
-    return __expf(x);
+    half htmp1 = x.x;
+    half htmp2 = x.y;
+    float tmp1 = htmp1.ToFloat();
+    float tmp2 = htmp2.ToFloat();
+    tmp1 = exp(tmp1);
+    tmp2 = exp(tmp2);
+    htmp1 = half(tmp1);
+    htmp2 = half(tmp2);
+    return {htmp1, htmp2};
 }
 
 half2 h2log(half2 x)
 {
-    return __logf(x);
+    half htmp1 = x.x;
+    half htmp2 = x.y;
+    float tmp1 = htmp1.ToFloat();
+    float tmp2 = htmp2.ToFloat();
+    tmp1 = log(tmp1);
+    tmp2 = log(tmp2);
+    htmp1 = half(tmp1);
+    htmp2 = half(tmp2);
+    return {htmp1, htmp2};
 }
 
 half2 h2sqrt(half2 x)
 {
-    return __sqrtf(x);
+    half htmp1 = x.x;
+    half htmp2 = x.y;
+    float tmp1 = htmp1.ToFloat();
+    float tmp2 = htmp2.ToFloat();
+    tmp1 = sqrt(tmp1);
+    tmp2 = sqrt(tmp2);
+    htmp1 = half(tmp1);
+    htmp2 = half(tmp2);
+    return {htmp1, htmp2};
 }
 
 half2 h2rsqrt(half2 x)
