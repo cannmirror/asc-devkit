@@ -436,23 +436,19 @@ function build_test() {
 }
 
 function build_test_part() {
-  if [[ "$TEST_PART" == "adv_test" ]]; then
-    CUSTOM_OPTION="${CUSTOM_OPTION} -DTEST_MOD=adv"
-    build_test
-    return 0
-  fi
+  source ${CURRENT_DIR}/tests/test_parts.sh
 
-  source ${CURRENT_DIR}/tests/unit/basic_api/common/ci/basic_tests_part.sh
-
-  if [ "$TEST_PART" == "basic_test_one" ]; then
-    BASIC_TEST_PART=("${test_one_targets[@]}")
+  if [ "$TEST_PART" == "adv_test" ]; then
+    TEST_TARGET_LIST=("${adv_test_targets[@]}")
+  elif [ "$TEST_PART" == "basic_test_one" ]; then
+    TEST_TARGET_LIST=("${basic_test_one_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_two" ]; then
-    BASIC_TEST_PART=("${test_two_targets[@]}")
+    TEST_TARGET_LIST=("${basic_test_two_targets[@]}")
   elif [ "$TEST_PART" == "basic_test_three" ]; then
-    BASIC_TEST_PART=("${test_three_targets[@]}")
+    TEST_TARGET_LIST=("${basic_test_three_targets[@]}")
   fi
 
-  for tag in "${BASIC_TEST_PART[@]}"; do
+  for tag in "${TEST_TARGET_LIST[@]}"; do
     TARGETS="${TARGETS} --target ${tag}"
     TEST_MOD="${tag},${TEST_MOD}"
   done

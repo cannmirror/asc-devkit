@@ -1,0 +1,421 @@
+/**
+* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+#include <gtest/gtest.h>
+#include <type_traits>
+#include "simt_compiler_stub.h"
+#include "kernel_operator.h"
+#include "simt_api/asc_bf16.h"
+using namespace std;
+using namespace AscendC;
+using namespace AscendC::Simt;
+
+#define THREAD_DIM 128
+
+template <typename DstType, typename SrcType>
+class KernelCast {
+public:
+    __aicore__ KernelCast() {}
+
+public:
+    __aicore__ inline void Process(__gm__ DstType* dst, const int mode);
+};
+
+template <typename DstType, typename SrcType>
+__simt_vf__ LAUNCH_BOUND(1024) inline __aicore__ void KernelCastCompute(__gm__ DstType* dst, const int mode)
+{
+    for (int idx = GetThreadIdx<0>() + block_idx * GetThreadNum<0>(); idx < 128;
+         idx += block_num * GetThreadNum<0>()) {
+
+        if (mode == 1) {
+            DstType srcNum = idx;
+            if (idx == 1022) {
+                srcNum = -30144;
+            }
+            if (idx == 1023) {
+                srcNum = -87825;
+            }
+            dst[idx] = hrint(srcNum);
+        } else if (mode == 2) {
+            DstType srcNum = idx;
+            if (idx == 1022) {
+                srcNum = -30144;
+            }
+            if (idx == 1023) {
+                srcNum = -87825;
+            }
+            dst[idx] = hfloor(srcNum);
+        } else if (mode == 3) {
+            DstType srcNum = idx;
+            if (idx == 1022) {
+                srcNum = -30144;
+            }
+            if (idx == 1023) {
+                srcNum = -87825;
+            }
+            dst[idx] = hceil(srcNum);
+        } else if (mode == 7) {
+            DstType srcNum = idx;
+            if (idx == 1022) {
+                srcNum = -30144;
+            }
+            if (idx == 1023) {
+                srcNum = -87825;
+            }
+            dst[idx] = htrunc(srcNum);
+        }
+    }
+}
+
+template <typename DstType, typename SrcType>
+__aicore__ inline void KernelCast<DstType, SrcType>::Process(__gm__ DstType* dst, const int mode)
+{
+    asc_vf_call<KernelCastCompute<DstType, SrcType>>(AscendC::Simt::Dim3(THREAD_DIM, 1, 1), dst, mode);
+}
+
+// ================================ Test half start ================================
+struct CastParams_half {
+    int32_t mode;
+};
+
+class CastTestsuite_half : public testing::Test, public testing::WithParamInterface<CastParams_half> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+INSTANTIATE_TEST_CASE_P(CastTestCase_half, CastTestsuite_half,
+                        ::testing::Values(CastParams_half{1}, CastParams_half{2}, CastParams_half{3},
+                                          CastParams_half{7}));
+
+TEST_P(CastTestsuite_half, CastTestCase_half)
+{
+    auto param = GetParam();
+    int32_t mode = mode = param.mode;
+    int fpByteSize = 4;
+    int shapeSize = 128;
+
+    uint8_t dstGm[shapeSize * fpByteSize] = {0};
+    KernelCast<half, int> op;
+    op.Process((__gm__ half*)dstGm, mode);
+
+    half expectValues[shapeSize] = {0};
+    for (int i = 0; i < shapeSize; i += 1) {
+        expectValues[i] = i;
+        if (i == 1022) {
+            expectValues[i] = -30144;
+        }
+        if (i == 1023) {
+            expectValues[i] = -87825;
+        }
+        if (mode == 1) {
+            expectValues[i] = hrint(expectValues[i]);
+        } else if (mode == 2) {
+            expectValues[i] = hfloor(expectValues[i]);
+        } else if (mode == 3) {
+            expectValues[i] = hceil(expectValues[i]);
+        } else if (mode == 7) {
+            expectValues[i] = htrunc(expectValues[i]);
+        }
+    }
+
+    half *actualValue = reinterpret_cast<half *>(dstGm);
+    for (int i = 0; i < shapeSize; i += 1) {
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+    }
+}
+// ================================ Test half end ==================================
+
+// ================================ Test bfloat16_t start ================================
+struct CastParams_bfloat16t {
+    int32_t mode;
+};
+
+class CastTestsuite_bfloat16t : public testing::Test, public testing::WithParamInterface<CastParams_bfloat16t> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+INSTANTIATE_TEST_CASE_P(CastTestCase_bfloat16t, CastTestsuite_bfloat16t,
+                        ::testing::Values(CastParams_bfloat16t{1}, CastParams_bfloat16t{2}, CastParams_bfloat16t{3},
+                                          CastParams_bfloat16t{7}));
+
+TEST_P(CastTestsuite_bfloat16t, CastTestCase_bfloat16t)
+{
+    auto param = GetParam();
+    int32_t mode = mode = param.mode;
+    int fpByteSize = 4;
+    int shapeSize = 128;
+
+    uint8_t dstGm[shapeSize * fpByteSize] = {0};
+    KernelCast<bfloat16_t, int> op;
+    op.Process((__gm__ bfloat16_t*)dstGm, mode);
+
+    bfloat16_t expectValues[shapeSize] = {0};
+    for (int i = 0; i < shapeSize; i += 1) {
+        expectValues[i] = i;
+        if (i == 1022) {
+            expectValues[i] = -30144;
+        }
+        if (i == 1023) {
+            expectValues[i] = -87825;
+        }
+        if (mode == 1) {
+            expectValues[i] = hrint(expectValues[i]);
+        } else if (mode == 2) {
+            expectValues[i] = hfloor(expectValues[i]);
+        } else if (mode == 3) {
+            expectValues[i] = hceil(expectValues[i]);
+        } else if (mode == 7) {
+            expectValues[i] = htrunc(expectValues[i]);
+        }
+    }
+
+    bfloat16_t *actualValue = reinterpret_cast<bfloat16_t *>(dstGm);
+    for (int i = 0; i < shapeSize; i += 1) {
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+        ASSERT_EQ(expectValues[i], actualValue[i]);
+    }
+}
+// ================================ Test bfloat16_t end ==================================
+
+// ================================ Test type cast(float) start ==================================
+struct TypeCastApiFloatParams {
+    int32_t mode;
+};
+
+class TypeCastApiFloatTestsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiFloatParams> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiFloatTestsuite, TypeCastApiFloatTest)
+{
+    float x1 = static_cast<float>(rand()) / RAND_MAX;
+
+    uint32_t result1 = __float2uint_rna(x1);
+    uint32_t expect1 = static_cast<uint32_t>(round(x1));
+    
+    int32_t result2 = __float2int_rna(x1);
+    int32_t expect2 = static_cast<int32_t>(round(x1));
+
+    uint64_t result3 = __float2ull_rna(x1);
+    uint64_t expect3 = static_cast<uint64_t>(round(x1));
+
+    int64_t result4 = __float2ll_rna(x1);
+    int64_t expect4 = static_cast<int64_t>(round(x1));
+
+    half result5 = __float2half_rna(x1);
+    half expect5 = static_cast<half>(round(x1));
+
+    half result6 = __float2half_ro(x1);
+    half expect6 = static_cast<half>(round(x1));
+
+    bfloat16_t result7 = __float2bfloat16_rna(x1);
+    bfloat16_t expect7 = static_cast<bfloat16_t>(round(x1));
+
+    x1 = 1.0f;
+    EXPECT_EQ(x1, 1.0f);
+}
+// ================================ Test type cast(float) end ==================================
+
+// ================================ Test type cast(uint32) start ==================================
+struct TypeCastApiUintParams {
+    int32_t mode;
+};
+
+class TypeCastApiUintTestsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiUintParams> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiUintTestsuite, TypeCastApiUintTest)
+{
+    uint32_t x1 = static_cast<uint32_t>(rand()) / RAND_MAX;
+
+    float result1 = __uint2float_rna(x1);
+    float expect1 = static_cast<float>(round(x1));
+    
+    half result2 = __uint2half_rna(x1);
+    half expect2 = static_cast<half>(round(x1));
+
+    bfloat16_t result3 = __uint2bfloat16_rna(x1);
+    bfloat16_t expect3 = static_cast<bfloat16_t>(round(x1));
+
+    x1 = 1;
+    EXPECT_EQ(x1, 1);
+}
+// ================================ Test type cast(uint32) end ==================================
+
+// ================================ Test type cast(int32) start ==================================
+struct TypeCastApiIntParams {
+    int32_t mode;
+};
+
+class TypeCastApiIntTestsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiIntParams> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiIntTestsuite, TypeCastApiIntTest)
+{
+    int32_t x1 = static_cast<int32_t>(rand()) / RAND_MAX;
+
+    float result1 = __int2float_rna(x1);
+    float expect1 = static_cast<float>(round(x1));
+    
+    half result2 = __int2half_rna(x1);
+    half expect2 = static_cast<half>(round(x1));
+
+    bfloat16_t result3 = __int2bfloat16_rna(x1);
+    bfloat16_t expect3 = static_cast<bfloat16_t>(round(x1));
+
+    x1 = 1;
+    EXPECT_EQ(x1, 1);
+}
+// ================================ Test type cast(int32) end ==================================
+
+// ================================ Test type cast(uint64) start ==================================
+struct TypeCastApiUllParams {
+    int32_t mode;
+};
+
+class TypeCastApiUllTestsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiUllParams> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiUllTestsuite, TypeCastApiUllTest)
+{
+    uint64_t x1 = static_cast<uint64_t>(rand()) / RAND_MAX;
+
+    float result1 = __ull2float_rna(x1);
+    float expect1 = static_cast<float>(round(x1));
+    
+    half result2 = __ull2half_rna(x1);
+    half expect2 = static_cast<half>(round(x1));
+
+    bfloat16_t result3 = __ull2bfloat16_rna(x1);
+    bfloat16_t expect3 = static_cast<bfloat16_t>(round(x1));
+
+    x1 = 1;
+    EXPECT_EQ(x1, 1);
+}
+// ================================ Test type cast(uint64) end ==================================
+
+// ================================ Test type cast(int64) start ==================================
+struct TypeCastApiLlParams {
+    int32_t mode;
+};
+
+class TypeCastApiLlTestsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiLlParams> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiLlTestsuite, TypeCastApiLlTest)
+{
+    int64_t x1 = static_cast<int64_t>(rand()) / RAND_MAX;
+
+    float result1 = __ll2float_rna(x1);
+    float expect1 = static_cast<float>(round(x1));
+    
+    half result2 = __ll2half_rna(x1);
+    half expect2 = static_cast<half>(round(x1));
+
+    bfloat16_t result3 = __ll2bfloat16_rna(x1);
+    bfloat16_t expect3 = static_cast<bfloat16_t>(round(x1));
+
+    x1 = 1;
+    EXPECT_EQ(x1, 1);
+}
+// ================================ Test type cast(int64) end ==================================
+
+// ================================ Test type cast(half) start ==================================
+struct TypeCastApiHalfParams {
+    int32_t mode;
+};
+
+class TypeCastApiHalfTestsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiHalfParams> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiHalfTestsuite, TypeCastApiHalfTest)
+{
+    float x1 = static_cast<float>(rand()) / RAND_MAX;
+    half hx1 = half(x1);
+
+    uint32_t result1 = __half2uint_rna(hx1);
+    uint32_t expect1 = static_cast<uint32_t>(round(float(hx1)));
+    
+    int32_t result2 = __half2int_rna(hx1);
+    int32_t expect2 = static_cast<int32_t>(round(float(hx1)));
+
+    uint64_t result3 = __half2ull_rna(hx1);
+    uint64_t expect3 = static_cast<uint64_t>(round(float(hx1)));
+
+    int64_t result4 = __half2ll_rna(hx1);
+    int64_t expect4 = static_cast<int64_t>(round(float(hx1)));
+
+    bfloat16_t result5 = __half2bfloat16_rna(hx1);
+    bfloat16_t expect5 = static_cast<bfloat16_t>(round(float(hx1)));
+
+    x1 = 1.0f;
+    EXPECT_EQ(x1, 1.0f);
+}
+// ================================ Test type cast(half) end ==================================
+
+// ================================ Test type cast(bfloat16) start ==================================
+struct TypeCastApiBfloat16Params {
+    int32_t mode;
+};
+
+class TypeCastApiBfloat16Testsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiBfloat16Params> {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(TypeCastApiBfloat16Testsuite, TypeCastApiBfloat16Test)
+{
+    float x1 = static_cast<float>(rand()) / RAND_MAX;
+    bfloat16_t bfx1 = bfloat16_t(x1);
+
+    half result1 = __bfloat162half_rna(bfx1);
+    half expect1 = static_cast<half>(round(float(bfx1)));
+    
+    uint32_t result2 = __bfloat162uint_rna(bfx1);
+    uint32_t expect2 = static_cast<uint32_t>(round(float(bfx1)));
+
+    int32_t result3 = __bfloat162int_rna(bfx1);
+    int32_t expect3 = static_cast<int32_t>(round(float(bfx1)));
+
+    uint64_t result4 = __bfloat162ull_rna(bfx1);
+    uint64_t expect4 = static_cast<uint64_t>(round(float(bfx1)));
+
+    int64_t result5 = __bfloat162ll_rna(bfx1);
+    int64_t expect5 = static_cast<int64_t>(round(float(bfx1)));
+
+    x1 = 1.0f;
+    EXPECT_EQ(x1, 1.0f);
+}
+// ================================ Test type cast(bfloat16) end ==================================

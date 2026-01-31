@@ -10,4 +10,16 @@
 project(ascendc_tests)
 cmake_minimum_required(VERSION 3.16.0)
 
-add_subdirectory(unit)
+add_compile_options(-Werror)
+
+set(CMAKE_CXX_STANDARD 17)
+
+if (BUILD_OPEN_PROJECT)
+    include(cmake/config.cmake)
+    include(cmake/intf.cmake)
+    include(cmake/func.cmake)
+endif()
+
+add_subdirectory(api)
+add_subdirectory(tools)
+add_subdirectory(python)
