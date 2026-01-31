@@ -8,7 +8,6 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-
 cmake_minimum_required(VERSION 3.16)
 
 find_package(ASC REQUIRED)
@@ -28,12 +27,12 @@ target_link_libraries(demo PRIVATE
 message(STATUS "[INFO] M_SIZE is ${M_SIZE}")
 message(STATUS "[INFO] K_SIZE is ${K_SIZE}")
 message(STATUS "[INFO] N_SIZE is ${N_SIZE}")
-message(STATUS "[INFO] TILING_KEY is ${TILING_KEY}")
+message(STATUS "[INFO] SCENARIO_NUM is ${SCENARIO_NUM}")
 target_compile_definitions(demo PRIVATE
     M_SIZE=${M_SIZE}
     K_SIZE=${K_SIZE}
     N_SIZE=${N_SIZE}
-    TILING_KEY=${TILING_KEY}
+    SCENARIO_NUM=${SCENARIO_NUM}
 )
 
 target_compile_options(demo PRIVATE
