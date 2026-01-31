@@ -174,6 +174,7 @@ __aicore__ constexpr inline float Cast(const T& bVal)
     return 0.0f;
 }
 
+template <typename T>
 __aicore__ constexpr inline float ToFloat(const T& bVal)
 {
     ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupport ToFloat"); });
