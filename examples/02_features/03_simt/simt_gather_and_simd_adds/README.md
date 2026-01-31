@@ -8,7 +8,7 @@
 - Ascend 950PR/Ascend 950DT
 ## 目录结构
 ```
-├── 01_simt_gather_and_simd_adds
+├── simt_gather_and_simd_adds
 │   ├── CMakeLists.txt         # cmake编译文件
 │   ├── gather_and_adds.asc    # Ascend C算子实现 & 调用样例
 |   └── README.md
