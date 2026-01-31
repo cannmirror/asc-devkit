@@ -11,5 +11,4 @@ project(ascendc_tools_tests)
 cmake_minimum_required(VERSION 3.16.0)
 
 add_subdirectory(aclrtc)
-add_subdirectory(ascc)
 add_subdirectory(utils)

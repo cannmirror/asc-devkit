@@ -11,7 +11,6 @@
 add_compile_options(-Werror)
 
 if(NOT ENABLE_TEST)
-  add_subdirectory(ascc)
   add_subdirectory(aclrtc)
 endif()
 add_subdirectory(build)

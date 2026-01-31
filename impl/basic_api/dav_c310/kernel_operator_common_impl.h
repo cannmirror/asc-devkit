@@ -85,7 +85,11 @@ __aicore__ inline void SetSysWorkspaceForce(GM_ADDR workspace)
         { KERNEL_LOG(KERNEL_ERROR, "workspace can not be nullptr"); });
 #else
 #if (WORKSPACE_PARAM_OFFSET == 0xffffffff)
+#if defined(__NPU_DEVICE__)
+    __set_kfc_workspace_addr(workspace);
+#else
     g_sysWorkspaceReserved = workspace;
+#endif
 #endif
 #endif
 }
@@ -160,20 +164,20 @@ __aicore__ inline int64_t GetSprImpl()
         "current GetSpr api only support SpecialPurposeReg AR on current device!");
     return bisheng::cce::get_ar();
 }
- 
+
 __simd_vf__ inline void ClearARImpl()
 {
     constexpr uint8_t SPR_AR_VALUE = 74;
     constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
     sprclr(sprValue);
 }
- 
+
 template <SpecialPurposeReg spr>
 __aicore__ inline void ClearSprImpl()
 {
     static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
         "current ClearSpr api only support SpecialPurposeReg AR on current device!");
-    
+
     if constexpr (spr == SpecialPurposeReg::AR) {
         ClearARImpl();
     }

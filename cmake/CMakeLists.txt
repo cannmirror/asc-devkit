@@ -13,9 +13,6 @@ add_custom_target(ascendc_kernel_cmake ALL
     COMMAND ${CMAKE_COMMAND} -E make_directory "${ASC_CMAKE_MODULE_BINARY_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/asc" "${ASC_CMAKE_MODULE_BINARY_DIR}"
 )
-if(NOT BUILD_OPEN_PROJECT)
-    add_dependencies(ascendc_kernel_cmake ascendc_kernel_cmake_legacy)
-endif()
 
 install(DIRECTORY ${ASC_CMAKE_MODULE_BINARY_DIR}
     DESTINATION ${INSTALL_LIBRARY_DIR} OPTIONAL

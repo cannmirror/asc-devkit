@@ -7,38 +7,38 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
- 
+
 /*!
  * \file kfc_comm_client_gm.h
  * \brief
  */
 #ifndef KFC_COMM_CLIENT_GM_H
 #define KFC_COMM_CLIENT_GM_H
- 
+
 #include "kfc_comm_gm.h"
- 
+
 namespace AscendC {
 class KfcCommClient {
 public:
     // Send Message Queue Maintenance
     __gm__ KfcMsg *msgSendHead;   // Message header
     __gm__ KfcMsg *msgSendStart;  // the global position of the initialized message.
- 
+
     // Receiving Message Queue Maintenance
     __gm__ KfcMsg *msgRcvHead;
     __gm__ KfcMsg *msgRcvStart;
- 
+
     GM_ADDR ubStart;
     GM_ADDR ubAvalidTail;
- 
+
     __ubuf__ KfcMsg *ubMsg;
     uint32_t head;
     uint32_t tail;
     uint8_t msgRcvPos;
     uint8_t msgSendPos;  // Index used for circular queues. msgQueueHead = msgQueueStart + msgPos
     uint8_t eventID_;
-    uint8_t enableHardWare; 
- 
+    uint8_t enableHardWare;
+
 public:
     __aicore__ inline KfcCommClient(GM_ADDR workspace, int subBlockID, uint8_t enableHardWare = 0)
     {
@@ -54,12 +54,12 @@ public:
             // Note that the addresses of aic and aiv are exchanged.
             this->msgSendStart = (__gm__ KfcMsg *)GetMsgHead(workspace, subBlockID);
             this->msgRcvStart = this->msgSendStart + MAX_MSG_COUNT;
- 
+
             this->msgSendHead = this->msgSendStart;
             this->msgSendPos = 0;
             this->msgRcvHead = this->msgRcvStart;
             this->msgRcvPos = 0;
- 
+
             // During debugging, CPU need to know the global variable address of the tpipe.
 #if ASCENDC_CPU_DEBUG
             ubMsg = reinterpret_cast<__ubuf__ KfcMsg *>(GetTPipePtr()->GetBaseAddr((int8_t)TPosition::VECIN) +
@@ -70,7 +70,7 @@ public:
 #endif
             eventID_ = GetTPipePtr()->AllocEventID<HardEvent::MTE3_S>();
             SetFlag<HardEvent::MTE3_S>((event_t)eventID_);
-            
+
  #ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
             if (MIX_NUM == 1 && GetSubBlockIdxImpl() == 1) {
                 WaitFlag<HardEvent::MTE3_S>((event_t)eventID_);
@@ -82,7 +82,7 @@ public:
             tail = 0;
         }
     }
- 
+
     __aicore__ inline ~KfcCommClient()
     {
         if ASCEND_IS_AIV {
@@ -101,7 +101,7 @@ public:
             uint32_t quitSignal = KfcMsgMakeFlag(KFC_Enum::SERVICE_QUIT, 0);
             *((__gm__ uint32_t *)msg) = quitSignal;
             msg->ubAddr = GetTaskRationImpl(); // vector core nums: 1 & 2
- 
+
 #ifdef __MSTX_DFX_REPORT__
             MstxCrossRecord record = {
                 .addr = reinterpret_cast<uint64_t>(msg),
@@ -110,13 +110,13 @@ public:
             };
             __mstx_dfx_report_stub(0, sizeof(MstxCrossRecord), &record);
 #endif
- 
+
             dcci(reinterpret_cast<__gm__ int64_t *>(msg), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
         }
     }
- 
+
     template <bool isAck>
-    __aicore__ inline void PostMessage(__gm__ KfcMsg *msg)
+    __disable_kernel_type_autoinfer__ __aicore__ inline void PostMessage(__gm__ KfcMsg *msg)
     {
         event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_MTE3));
         SetFlag<HardEvent::S_MTE3>(eventID);
@@ -131,10 +131,10 @@ public:
         };
         __mstx_dfx_report_stub(0, sizeof(MstxCrossRecord), &record);
 #endif
- 
+
         SetFlag<HardEvent::MTE3_S>((event_t)this->eventID_);
     }
- 
+
     __aicore__ inline __gm__ KfcMsg *AllocMessage()
     {
         auto ret = AllocMessageImpl(this->msgSendHead, this->msgSendPos, this->msgSendStart);
@@ -143,12 +143,12 @@ public:
             { KERNEL_LOG(KERNEL_ERROR, "ret of alloc message can not be nullptr"); });
         return ret;
     }
- 
+
     __aicore__ inline void FreeMessage(__gm__ KfcMsg *msg)
     {
         FreeMessageImpl(msg);
     }
- 
+
     __aicore__ inline GM_ADDR AllocUB(uint32_t size, int32_t &tailInfo)
     {
 #ifdef __MSTX_DFX_REPORT__
@@ -160,7 +160,7 @@ public:
         };
         __mstx_dfx_report_stub(0, sizeof(MstxCrossRecord), &record);
 #endif
- 
+
         GM_ADDR ret;
         if (head + size >= WORKSPACE_UB_SIZE) {
             dcci(reinterpret_cast<__gm__ int64_t *>(ubAvalidTail), cache_line_t::SINGLE_CACHE_LINE,
@@ -178,7 +178,7 @@ public:
             }
             head = 0;
         }
- 
+
         while (head < tail && (head + size >= tail)) {
             Barrier();
             dcci(reinterpret_cast<__gm__ int64_t *>(ubAvalidTail), cache_line_t::SINGLE_CACHE_LINE,
@@ -186,28 +186,28 @@ public:
             Barrier();
             tail = *(reinterpret_cast<__gm__ uint32_t *>(ubAvalidTail));
         }
- 
+
 #ifdef __MSTX_DFX_REPORT__
         __mstx_dfx_report_stub(0, sizeof(MstxCrossRecord), &record);
 #endif
- 
+
         ret = ubStart + head;
         head += size;
         tailInfo = head;
         return ret;
     }
- 
+
     __aicore__ inline __gm__ KfcMsg *RcvMessage()
     {
         auto ret = RcvMessageImpl(this->msgRcvHead, this->msgRcvPos, this->msgRcvStart);
         return ret;
     }
 };
- 
+
 #if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101 && !defined(__DAV_CUBE__))
 __BLOCK_LOCAL__ __inline__ AscendC::KfcCommClient* g_kfcClient;
 #endif
- 
+
 __aicore__ inline AscendC::KfcCommClient* GetKfcClient()
 {
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101

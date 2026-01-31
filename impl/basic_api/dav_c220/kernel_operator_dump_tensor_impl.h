@@ -723,7 +723,7 @@ __aicore__ inline void SkipRingBufWithInfo(
     return;
 }
 
-template <uint64_t timeoutCycle = 1000 * 1000> // 20ms
+template <uint64_t timeoutCycle = 15 * 1000 * 1000> // 15 * 20ms
 __aicore__ inline void RingBufferWaitRtsSync()
 {
     const uint64_t firstTimeStamp = static_cast<uint64_t>(GetSystemCycle());
@@ -738,10 +738,10 @@ __aicore__ inline bool RingBufferWait(__gm__ RingBufReadInfo* readInfo, __gm__ R
     constexpr uint32_t maxCounter = 15;
     volatile uint32_t counter = 0;
     while (writeInfo->bufOffset < readInfo->bufOffset && writeInfo->bufOffset + tlvLen >= readInfo->bufOffset) {
-        if (counter >= maxCounter) { // max wait 300ms, rts read gm per 200ms
+        if (counter >= maxCounter) { // max wait 15 * 300ms, rts read gm per 200ms
             return false;
         }
-        RingBufferWaitRtsSync(); // wait 20 ms
+        RingBufferWaitRtsSync(); // wait 15 * 20 ms
         ++counter;
         dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     }
@@ -810,10 +810,10 @@ __aicore__ inline bool WaitRingBufBeginRead(__gm__ RingBufReadInfo* readInfo)
     constexpr uint32_t maxCounter = 15;
     volatile uint32_t counter = 0;
     while (readInfo->bufOffset == 0) {
-        if (counter >= maxCounter) { // max wait 300ms, rts read gm per 200ms
+        if (counter >= maxCounter) { // max wait 15 * 300ms, rts read gm per 200ms
             return false;
         }
-        RingBufferWaitRtsSync(); // wait 20 ms
+        RingBufferWaitRtsSync(); // wait 15 * 20 ms
         ++counter;
         dcci(reinterpret_cast<__gm__ uint64_t*>(readInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     }

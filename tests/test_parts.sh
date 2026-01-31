@@ -58,7 +58,6 @@ basic_test_one_targets=(
 basic_test_two_targets=(
     ascendc_ut_aclrtc
     ascendc_ut_asc_compile_base
-    ascendc_ut_asc_plugin
     ascendc_ut_asc_runtime
     ascendc_ut_elf_tool
     ascendc_ut_pack_kernel
