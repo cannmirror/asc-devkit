@@ -118,6 +118,15 @@ remove_empty_dir() {
     fi
 }
 
+remove_package_leftovers() {
+    local _path="$1"
+    if [ -d "${_path}" ]; then
+        prev_path=$(dirname "${_path}")
+        chmod +w "${prev_path}" > /dev/null 2>&1
+        rm -rf "${_path}" > /dev/null 2>&1
+    fi
+}
+
 WHL_SOFTLINK_INSTALL_DIR_PATH="${common_parse_dir}/share/info/asc-devkit/python/site-packages"
 WHL_INSTALL_DIR_PATH="${common_parse_dir}/python/site-packages"
 ASC_OP_COMPILE_BASE_NAME="asc_op_compile_base"
@@ -133,10 +142,12 @@ custom_uninstall() {
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base" 2> /dev/null
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_op_compile_base-0.1.0.dist-info" 2> /dev/null
         whl_uninstall_package "${ASC_OP_COMPILE_BASE_NAME}" "${WHL_INSTALL_DIR_PATH}"
+        remove_package_leftovers "${WHL_INSTALL_DIR_PATH}/${ASC_OP_COMPILE_BASE_NAME}"
         
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_opc_tool" 2> /dev/null
         chmod +w -R "${WHL_INSTALL_DIR_PATH}/asc_opc_tool-0.1.0.dist-info" 2> /dev/null
         whl_uninstall_package "${ASC_OPC_TOOL_NAME}" "${WHL_INSTALL_DIR_PATH}"
+        remove_package_leftovers "${WHL_INSTALL_DIR_PATH}/${ASC_OPC_TOOL_NAME}"
 
         if [ -d "${WHL_INSTALL_DIR_PATH}" ]; then
             local python_path=$(dirname "${WHL_INSTALL_DIR_PATH}")
