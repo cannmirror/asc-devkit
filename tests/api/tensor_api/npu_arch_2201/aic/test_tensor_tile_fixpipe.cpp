@@ -9,7 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
-#include "tensor_api_impl.h"
+#include "impl/experimental/tensor_api/tensor_api_impl.h"
 
 class TEST_TENSOR_TILE_FIXPIPE : public testing::Test {
 protected:
