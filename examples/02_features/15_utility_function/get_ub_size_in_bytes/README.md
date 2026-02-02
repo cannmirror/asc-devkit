@@ -1,6 +1,6 @@
 # GetUBSizeInBytes样例
 ## 概述
-【新特性】本样例基于GetUBSizeInBytes获取UB的大小（单位为Byte），开发者可以根据UB大小计算循环次数等参数值。
+本样例基于GetUBSizeInBytes获取UB的大小（单位为Byte），开发者可以根据UB大小计算循环次数等参数值。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

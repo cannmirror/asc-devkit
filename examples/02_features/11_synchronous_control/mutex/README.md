@@ -1,6 +1,6 @@
 # Mutex样例
 ## 概述
-【新特性】本样例基于Mutex::Lock和Mutex::Unlock实现核内异步流水之间的同步，通过锁定指定流水再释放流水来实现流水的同步依赖。
+本样例基于Mutex::Lock和Mutex::Unlock实现核内异步流水之间的同步，通过锁定指定流水再释放流水来实现流水的同步依赖。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT

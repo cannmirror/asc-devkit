@@ -33,6 +33,86 @@
 
 通常的矩阵乘法计算公式：C = A × B，其中A、B、C矩阵的需要满足的shape分别为[M,K]、[K,N]和[M,N]。当A矩阵需要转置才能参与矩阵乘法时，GM上输入的A矩阵shape为[K,M]，同理，当B矩阵需要转置才能参与矩阵乘法时,GM上输入的A矩阵shape为[N,K]。当输入数据类型分别取S8/F16/F32时，若同时通过布尔变量isAtranspose和isBtranspose分别控制A、B矩阵是否转置，组合得到12种场景。下文将介绍上述12种场景下，A、B矩阵在完整矩阵乘法流程的各个阶段前后数据的排布方式、对齐要求、所调用的指令以及如何配置相应的参数。
 
+程序中以参数scenarioNum来代表上述12中场景，scenarioNum不同取值对应的含义如下表所示：
+
+<table border="2" align="center">
+<caption>表1：scenarioNum不同取值的含义</caption>
+  <tr>
+    <td >scenarioNum</td>
+    <td>输入数据类型</td>
+    <td>输出数据类型</td>
+    <td>A矩阵</td>
+    <td>B矩阵</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td rowspan="4" >int8_t</td>
+    <td rowspan="4" >int32_t</td>
+    <td>不转置</td>
+    <td>不转置</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>不转置</td>
+    <td>转置</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>转置</td>
+    <td>不转置</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td>转置</td>
+    <td>转置</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td rowspan="4" >half</td>
+    <td rowspan="4" >float</td>
+    <td>不转置</td>
+    <td>不转置</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>不转置</td>
+    <td>转置</td>
+  </tr>
+  <tr>
+    <td>7</td>
+    <td>转置</td>
+    <td>不转置</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>转置</td>
+    <td>转置</td>
+  </tr>
+    <tr>
+    <td>9</td>
+    <td rowspan="4" >float</td>
+    <td rowspan="4" >float</td>
+    <td>不转置</td>
+    <td>不转置</td>
+  </tr>
+  <tr>
+    <td>10</td>
+    <td>不转置</td>
+    <td>转置</td>
+  </tr>
+  <tr>
+    <td>11</td>
+    <td>转置</td>
+    <td>不转置</td>
+  </tr>
+  <tr>
+    <td>12</td>
+    <td>转置</td>
+    <td>转置</td>
+  </tr>
+</table>
+
+
 为了方便描述，在此对后续常用概念给出定义：
 
 （1）a矩阵和b矩阵：L1上A、B矩阵都是NZ排布的，其中的分形矩阵分别称为a矩阵和b矩阵。
@@ -62,35 +142,129 @@
 
 从L1-->L0通路，常用的搬运指令有LoadData2D、LoadDataWithTranspose 和 LoadData3DV2 三个指令，现在将上述12种场景下可以调用指令总结如下表所示：
 
-<p align="center">
-  <img src="img/loaddata总结表格.png" width="1200">
-</p>
-
-<p align="center">
-表1：L1-->L1,12种场景下调用的指令
-</p>
-
+<table border="2" align="center">
+<caption>表2：L1-->L1,12种场景下可以调用的指令</caption>
+  <tr>
+    <td></td>
+    <td>int8_t</td>
+    <td>half</td>
+    <td>float</td>
+  </tr>
+  <tr>
+    <td>A矩阵不转置(a不转置)</td>
+    <td>LoadData、LoadData3DV2</td>
+    <td>LoadData、LoadData3DV2</td>
+    <td>LoadData、LoadData3DV2</td>
+  </tr>
+    <tr>
+    <td>A矩阵转置(a转置)</td>
+    <td>LoadDataWithTranspose</td>
+    <td>LoadData、LoadData3DV2、LoadDataWithTranspose</td>
+    <td>LoadData3DV2、LoadDataWithTranspose</td>
+  </tr>
+    <tr>
+    <td>B矩阵不转置(b转置)</td>
+    <td>LoadDataWithTranspose</td>
+    <td>LoadData、LoadData3DV2、LoadDataWithTranspose</td>
+    <td>LoadData3DV2、LoadDataWithTranspose</td>
+  </tr>
+    <tr>
+    <td>B矩阵转置(b不转置)</td>
+    <td>LoadData</td>
+    <td>LoadData</td>
+    <td>LoadData</td>
+  </tr>
+</table>
 
 另外，12种场景下，A、B矩阵在L1和L0上在高度和宽度方向上对齐的要求也不相同，现将对齐要求总结得到
 如下两个表格：
 
-<p align="center">
-  <img src="img/对齐要求L1.png" width="1200">
-</p>
+<table border="2" align="center">
+<caption>表3：A、B矩阵在L1上各个轴的对齐要求</caption>
+  <tr>
+    <td></td>
+    <td>int8_t</td>
+    <td>half</td>
+    <td>float</td>
+  </tr>
+  <tr>
+    <td rowspan="2">A矩阵不转置(a不转置)</td>
+    <td colspan="3" align="center">mAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" >kAlignValue = fS[1]</td>
+  </tr>
+  <tr>
+    <td rowspan="2">A矩阵转置(a转置)</td>
+    <td>kAlignValue = fS[0] * fN</td>
+    <td colspan="2">kAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" >mAlignValue = fS[1]</td>
+  </tr>
+    <tr>
+    <td rowspan="2">B矩阵不转置(b转置)</td>
+    <td>kAlignValue = fS[0] * fN</td>
+    <td colspan="2">kAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" >nAlignValue = fS[1]</td>
+  </tr>
+ <tr>
+    <td rowspan="2">B矩阵转置(b不转置)</td>
+    <td colspan="3" align="center">nAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" >kAlignValue = fS[1]</td>
+  </tr>
+  <tr>
+</table>
 
-<p align="center">
-表2：A、B矩阵在L1上各个轴的对齐要求
-</p>
 
-
-<p align="center">
-  <img src="img/对齐要求L0.png" width="1200">
-</p>
-
-<p align="center">
-表3：A、B矩阵在L0上各个轴的对齐要求
-</p>
-
+<table border="2" align="center">
+<caption>表4：A、B矩阵在L0上各个轴的对齐要求</caption>
+  <tr>
+    <td></td>
+    <td>int8_t</td>
+    <td>half</td>
+    <td>float</td>
+  </tr>
+  <tr>
+    <td rowspan="2">A矩阵不转置(a不转置)</td>
+    <td colspan="3" align="center">mAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" >kAlignValue = fS[1]</td>
+  </tr>
+  <tr>
+    <td rowspan="2">A矩阵转置(a转置)</td>
+    <td colspan="2" align="center">kAlignValue = fS[1]</td>
+    <td >kAlignValue = fS[1] * fN</td>
+  </tr>
+  <tr>
+    <td align="center" >mAlignValue = fS[0] * fN</td>
+    <td align="center" >mAlignValue = fS[0]</td>
+    <td align="center" >mAlignValue = fS[1]</td>
+  </tr>
+    <tr>
+    <td rowspan="2">B矩阵不转置(b转置)</td>
+    <td colspan="2" align="center">kAlignValue = fS[1]</td>
+      <td align="center">kAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td align="center" >nAlignValue = fS[0] * fN</td>
+    <td align="center" >nAlignValue = fS[0]</td>
+    <td align="center" >nAlignValue = fS[1]</td>
+  </tr>
+ <tr>
+    <td rowspan="2">B矩阵转置(b不转置)</td>
+    <td colspan="3" align="center">nAlignValue = fS[0]</td>
+  </tr>
+  <tr>
+    <td colspan="3" align="center" >kAlignValue = fS[1]</td>
+  </tr>
+  <tr>
+</table>
 
 
 ### 一.A矩阵不转置

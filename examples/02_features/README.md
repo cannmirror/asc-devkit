@@ -11,3 +11,7 @@
 | [03_micro_api](./03_micro_api/) | 通过微指令API实现自定义算子，分别给出对应的<<<>>>直调实现 |
 | [06_static_tensor_programming](./06_static_tensor_programming) | 本样例介绍基于静态Tensor方式编程的场景下Add算子的实现方法，并提供核函数直调方法 |
 | [09_unalign](./09_unalign/) | 本样例路径以abs、reduce_min、whole_reduce_sum等算子为示例，展示了数据非32字节对齐场景中的处理方式，包括数据搬入，计算和搬出的处理 |
+| [10_memory_management](./10_memory_management/) | 本路径下包含了与资源管理相关的多个API的样例。每个样例均基于Ascend C的Add算子的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |
+| [11_synchronous_control](./11_synchronous_control/) | 本路径下包含了与同步控制相关的多个API的样例。每个样例均基于Ascend C的Add算子的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |
+| [13_atomic_operations](./13_atomic_operations/) | 本路径下包含了与原子操作相关的多个API的样例。每个样例均基于Ascend C的Add算子的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |
+| [15_utility_function](./15_utility_function/) | 本路径下包含了与工具函数相关的多个API的样例。每个样例均基于Ascend C的Add算子的<<<>>>直调方法，支持main函数和kernel函数在同一个cpp文件中实现。         |
