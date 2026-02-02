@@ -30,7 +30,7 @@
   $$
   C = A * B
   $$
-  其中A的形状为[512, 512], B的形状为[512, 1024], C的形状为[512, 1024]。
+  其中A的形状为[512, 512]，B的形状为[512, 1024]，C的形状为[512, 1024]。
 - 算子规格：  
 
   在核函数直调样例中，算子实现支持的shape为：M = 512, N = 1024, K = 512。
@@ -48,8 +48,26 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">matmul_custom</td></tr>
   </table>
 - 算子实现：  
+  本样例中实现的是[M, K, N]固定为[512, 512, 1024]的Matmul算子。Matmul的计算公式为：C = A * B。  
+  A、B为源操作数，A为左矩阵，形状为[M, K]；B为右矩阵，形状为[K, N]。  
+  C为目的操作数，存放矩阵乘结果的矩阵，形状为[M, N]。  
 
-  使用内核调用符<<<>>>调用核函数。
+  - Kernel实现  
+    初始化Tiling数据，从设备全局内存中读取预先生成的TCubeTiling结构体，包含关键参数。   
+    流程如下：   
+    - 设置输入矩阵A、B和输出矩阵C的全局Tensor，并指定维度。  
+    - 调用CalcGMOffset计算出偏移量和尾块大小。  
+    - 初始化Matmul对象，设置接口配置计算参数并执行计算。 
+
+  - Tiling实现  
+    Ascend C提供一组Matmul Tiling API，方便用户获取Matmul Kernel计算时所需的Tiling参数。只需要传入A/B/C矩阵等信息，调用API接口，即可获取到TCubeTiling结构体中的相关参数。  
+    获取Tiling参数的流程如下：  
+      - 创建一个Tiling对象。  
+      - 设置A、B、C 的参数类型信息；M、N形状信息等。  
+      - 调用GetTiling接口，获取Tiling信息。  
+
+  - 调用实现  
+    使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
 

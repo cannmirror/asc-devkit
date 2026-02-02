@@ -46,16 +46,13 @@
 
     Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
-    - basic_api_tque_add  
-      使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程。
-    - basic_api_memory_allocator_add  
-      使用LocalMemAllocator进行线性内存分配并简化代码，使用double buffer进行流水排布优化性能。
+      
+    使用tque管理内存，使用静态Tensor编程方法进行Add算子的编程。
+      
   - Tiling实现  
-    TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，其中basic_api_tque_add算子使用了2个tiling参数，basic_api_memory_allocator_add算子使用了1个tiling参数.
-    - basic_api_tque_add  
-      使用的tiling参数为totalLength、tileNum。totalLength是指需要计算的数据量大小，tileNum是指每个核上总计算数据分块个数。比如，totalLength这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。
-    - basic_api_memory_allocator_add  
-      使用的tiling参数为singleCoreLength。singleCoreLength是指每个核上需要计算的数据量大小。
+    TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，其中basic_api_tque_add算子使用了2个tiling参数。
+     
+    使用的tiling参数为totalLength、tileNum。totalLength是指需要计算的数据量大小，tileNum是指每个核上总计算数据分块个数。比如，totalLength这个参数传递到kernel侧后，可以通过除以参与计算的核数，得到每个核上的计算量，这样就完成了多核数据的切分。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

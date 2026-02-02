@@ -1,4 +1,4 @@
-# VectorAdd算子直调样例
+# 使用TmpBuf实现VectorAdd算子样例
 
 ## 概述
 

@@ -8,4 +8,4 @@
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [matmul_leakyrelu](./matmul_leakyrelu) | 本样例基于Ascend C异构混合编程模型演示MatmulLeakyRelu融合算子的核函数直调实现。通过将矩阵乘加（Matmul）与LeakyRelu激活函数融合计算 |
+| [matmul_leakyrelu](./matmul_leakyrelu) | 本样例基于Ascend C演示MatmulLeakyRelu算子的核函数直调实现。通过将矩阵乘加（Matmul）与LeakyRelu激活函数计算 |

@@ -12,4 +12,4 @@
 | [01_add](./01_add) | 本样例介绍了基于Ascend C的Add自定义Vector算子的核函数直调方法，实现两个输入张量的逐元素相加，支持main函数和kernel函数在同一个cpp文件中实现 |
 | [02_matmul](./02_matmul) | 本样例介绍了基于Ascend C的Matmul算子的核函数直调方法，可最大化利用AI处理器的并行计算能力，显著提升算子的执行效率，使用与高性能推理与训练场景 |
 | [03_matmulleakyrelu](./03_matmulleakyrelu) | 本样例介绍了基于Ascend C的MatmulLeakyRelu自定义算子的核函数直调方法，能够完成矩阵乘加与LeakyReLU激活的融合计算，该方式将关键计算步骤在硬件层面高效协同执行，显著降低内存访问开销与计算延时 |
-| [04_simple_operator](./04_addn) | 样例介绍了5个基于Ascend C的算子的核函数直调样例，可最大化利用AI处理器的并行计算能力，显著提升算子的执行效率，使用与高性能推理与训练场景 |
+| [04_simple_operator](./04_simple_operator) | 样例介绍了5个基于Ascend C的算子的核函数直调样例，涵盖AddN、Broadcast、Gather、Sub以及向量Add等典型算子，展示了动态Tensor、纯SIMT编程、临时缓冲区使用等关键技术，充分体现了Ascend C在高性能算子开发中的灵活性与高效性 |

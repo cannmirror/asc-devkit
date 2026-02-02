@@ -2,7 +2,7 @@
 
 ## 概述
 
-本样例基于Ascend C异构混合编程模型演示MatmulLeakyRelu融合算子的核函数直调实现。通过将矩阵乘加（Matmul）与LeakyRelu激活函数融合计算，实现计算步骤在硬件层面的高效协同执行，降低内存访问开销与计算延时。
+本样例基于Ascend C演示MatmulLeakyRelu算子的核函数直调实现。通过将矩阵乘加（Matmul）与LeakyRelu激活函数计算，实现计算步骤在硬件层面的高效协同执行，降低内存访问开销与计算延时。
 
 ## 支持的产品
 
@@ -50,14 +50,28 @@
   </table>
 - 算子实现：  
   
-  本样例中实现的是[m, n, k]固定为[1024, 640, 256]的MatmulLeakyRelu算子。
-  - kernel实现  
-    MatmulLeakyRelu算子的数学表达式为：
+  本样例中实现的是[m, n, k]固定为[1024, 640, 256]的MatmulLeakyRelu算子。  
+  MatmulLeakyRelu算子的数学表达式为：
     ```
     C = A * B + Bias
     C = C > 0 ? C : C * 0.001
     ```
     其中A的形状为[1024, 256]，B的形状为[256, 640]，C的形状为[1024, 640]，Bias的形状为[640]。
+
+  - Kernel实现  
+    初始化Tiling数据，从设备全局内存中读取预先生成的TCubeTiling结构体，包含关键参数。 
+    流程如下：   
+    - 初始化算子以及其参数。  
+    - 调用MatmulCompute计算matmul结果，并写进 reluOutLocal。  
+    - 调用LeakyReLU函数对 reluOutLocal 中的矩阵进行LeakyReLU激活运算。 
+
+  - Tiling实现  
+    Ascend C提供一组Matmul Tiling API，方便用户获取kernel计算时所需的Tiling参数。只需要传入A/B/C矩阵等信息，调用API接口，即可获取到TCubeTiling结构体中的相关参数。  
+    获取Tiling参数的流程如下：  
+      - 创建一个Tiling对象。  
+      - 设置输入矩阵A、B、输出矩阵C、偏置Bias 的参数类型信息；设置M、N、K形状信息等。  
+      - 配置多核计算策略  
+      - 调用GetTiling接口，获取Tiling信息。  
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

@@ -17,7 +17,7 @@
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── cast.asc      // Ascend C算子实现 & 调用样例
+│   └── cast.asc                // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -26,7 +26,7 @@
   CastCustom算子根据源操作数和目的操作数Tensor的数据类型进行精度转换。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> cast </td></tr>
 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>

@@ -28,6 +28,7 @@
 
 - 算子规格：  
   <table> 
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> cast </td></tr>
   <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">128</td><td align="center">half</td><td align="center">ND</td><td align="center"></td></tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">64</td><td align="center">int8_t</td><td align="center">ND</td></tr>
