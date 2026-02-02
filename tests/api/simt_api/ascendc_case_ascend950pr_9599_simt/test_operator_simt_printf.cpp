@@ -42,17 +42,15 @@ struct dim3
     uint32_t y;
     uint32_t z;
 };
-
-dim3 blockIdx = {8, 0, 0};
-dim3 threadIdx = {512, 0, 0};
-
-namespace bisheng {
-namespace cce {
-namespace simt {
+namespace __asc_simt_vf {
+static dim3 blockIdx = {8, 0, 0};
+static dim3 threadIdx = {512, 0, 0};
+}
 uint64_t atomicAdd(uint64_t *addr, uint64_t val);
-}
-}
-}
+
+void __threadfence();
+
+void __sync_workitems();
 
 namespace __cce_scalar {
 void dcci(uint8_t *addr, uint64_t entire, uint64_t type)
