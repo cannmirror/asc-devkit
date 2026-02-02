@@ -139,10 +139,10 @@
         ```
       - 设置A、B、C、Bias的参数类型信息；M、N、Ka、Kb形状信息等。
         ```
-        auto blockDim = ascendcPlatform->GetCoreNumAiv(); // 方式一：非纯Cube模式，SetDim设置为AIV的核数
-        auto blockDim = ascendcPlatform->GetCoreNumAic(); // 方式二：纯Cube模式，SetDim设置为AIC的核数
+        auto numBlocks = ascendcPlatform->GetCoreNumAiv(); // 方式一：非纯Cube模式，SetDim设置为AIV的核数
+        auto numBlocks = ascendcPlatform->GetCoreNumAic(); // 方式二：纯Cube模式，SetDim设置为AIC的核数
 
-        cubeTiling.SetDim(blockDim);
+        cubeTiling.SetDim(numBlocks);
         cubeTiling.SetAType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
             matmul_tiling::DataType::DT_FLOAT16, isAtrans);
         cubeTiling.SetBType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,

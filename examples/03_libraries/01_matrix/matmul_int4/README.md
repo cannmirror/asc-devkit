@@ -69,7 +69,7 @@
         TCubeTiling tilingData;
         auto ascendcPlatform = platform_ascendc::PlatformAscendCManager::GetInstance();
         matmul_tiling::MultiCoreMatmulTiling cubeTiling(*ascendcPlatform);
-        cubeTiling.SetDim(blockDim);
+        cubeTiling.SetDim(numBlocks);
         cubeTiling.SetAType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,
             matmul_tiling::DataType::DT_INT4, isAtrans);
         cubeTiling.SetBType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND,

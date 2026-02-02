@@ -20,15 +20,15 @@ def gen_golden_data_simple():
     work_type = input_type
     sync_type = np.int32
 
-    block_dim = 8
+    num_blocks = 8
     sync_need_size = 8
     block_length = 256
     scalar_value = 2
     input_shape = [block_length]
     input_x = np.ones(input_shape).astype(input_type)
-    sync = np.zeros(block_dim * sync_need_size).astype(sync_type)
+    sync = np.zeros(num_blocks * sync_need_size).astype(sync_type)
     work = np.zeros(input_shape).astype(work_type)
-    golden = input_x * scalar_value * block_dim
+    golden = input_x * scalar_value * num_blocks
     os.makedirs("input", exist_ok=True)
     os.makedirs("output", exist_ok=True)
     input_x.tofile("./input/input_x.bin")

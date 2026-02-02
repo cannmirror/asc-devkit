@@ -14,7 +14,7 @@
 #include "../../op_kernel/add_custom_template/tiling_key_add_custom_template.h"
 
 namespace optiling {
-const uint32_t BLOCK_DIM = 8;
+const uint32_t NUM_BLOCKS = 8;
 const uint32_t DEFAULT_TILE_NUM = 8;
 constexpr uint32_t MIN_LENGTH_FOR_SPLIT = 2048;
 
@@ -36,7 +36,7 @@ static ge::graphStatus TilingFunc(gert::TilingContext *context)
         IS_SPLIT = 1;
         TILE_NUM = DEFAULT_TILE_NUM;
     }
-    context->SetBlockDim(BLOCK_DIM);
+    context->SetBlockDim(NUM_BLOCKS);
     TilingDataTemplate *tiling = context->GetTilingData<TilingDataTemplate>();
     tiling->totalLength = totalLength;
     // 模板参数tilingkey配置

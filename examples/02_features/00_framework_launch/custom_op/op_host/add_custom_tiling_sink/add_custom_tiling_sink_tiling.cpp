@@ -15,7 +15,7 @@
 #include "tiling/platform/platform_ascendc.h"
 
 namespace optiling {
-static constexpr uint32_t BLOCK_DIM = 8;
+static constexpr uint32_t NUM_BLOCKS = 8;
 static constexpr uint32_t TILE_NUM = 3;
 static constexpr size_t MAX_WORKSPACE_SIZE = 32; // 算子所需用户workspace空间最大值，AddCustomTilingSink算子本身逻辑无需用户workspace空间，此处设置为固定值仅作为示例
 static constexpr size_t DEFAULT_WORKSPACE_SIZE = 0;
@@ -24,7 +24,7 @@ ge::graphStatus AddCustomSinkTilingFunc(gert::TilingContext *context)
 {
     TilingSinkTilingData *tiling = context->GetTilingData<TilingSinkTilingData>();
     uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-    context->SetBlockDim(BLOCK_DIM);
+    context->SetBlockDim(NUM_BLOCKS);
     tiling->totalLength = totalLength;
     tiling->tileNum = TILE_NUM;
     size_t *currentWorkspace = context->GetWorkspaceSizes(1);
