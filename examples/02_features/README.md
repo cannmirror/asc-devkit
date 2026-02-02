@@ -8,6 +8,6 @@
 | [00_framework_launch](./00_framework_launch/) | 本样例以Add算子为样例，展示了Tiling模板编程。Add算子实现了两个数据相加，返回相加结果的功能。本样例使用自定义算子工程，编译并部署自定义算子包到自定义算子库中，并调用执行自定义算子 |
 | [01_c_api](./01_c_api) | 本样例展示了使用C_API构建Add算子样例的编译流程 |
 | [02_simt](./02_simt/) | 本样例展示了SIMT算子实现，包括新同构和纯SIMT两种模式的实现 |
-| [03_micro_api](./03_micro_api/) | 通过微指令API实现自定义算子，分别给出对应的<<<>>>直调实现，未来支持 |
+| [03_micro_api](./03_micro_api/) | 通过微指令API实现自定义算子，分别给出对应的<<<>>>直调实现 |
 | [06_static_tensor_programming](./06_static_tensor_programming) | 本样例介绍基于静态Tensor方式编程的场景下Add算子的实现方法，并提供核函数直调方法 |
 | [09_unalign](./09_unalign/) | 本样例路径以abs、reduce_min、whole_reduce_sum等算子为示例，展示了数据非32字节对齐场景中的处理方式，包括数据搬入，计算和搬出的处理 |
