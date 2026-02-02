@@ -232,7 +232,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __float_as_uint(const float x
 }
 
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
-#ifndef ASCENDC_CPU_DEBUG
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int asc_ldcg(__gm__ long int* address)
 {
     return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address);
@@ -1001,10 +1000,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ float4* address, floa
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
 }
-#endif
 
 #else
-#ifndef ASCENDC_CPU_DEBUG
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int asc_ldcg(long int* address)
 {
     return __ldg<LD_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::NON_CACHEABLE>(address);
@@ -1752,7 +1749,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(float4* address, float4 val)
 {
     __stg<ST_L2CacheType::L2_CACHE_HINT_NORMAL_FV, L1CacheType::CACHEABLE>(address, val);
 }
-#endif
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_IMPL__)
