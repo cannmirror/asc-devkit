@@ -25,55 +25,55 @@
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int lroundf(float x)
 {
-    float tmp = bisheng::cce::simt::__roundf(x);
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
+    float tmp = __roundf(x);
+    return __cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llroundf(float x)
 {
-    float tmp = bisheng::cce::simt::__roundf(x);
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
+    float tmp = __roundf(x);
+    return __cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long int lrintf(float x)
 {
-    float tmp = bisheng::cce::simt::__rintf(x);
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
+    float tmp = __rintf(x);
+    return __cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llrintf(float x)
 {
-    float tmp = bisheng::cce::simt::__rintf(x);
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
+    float tmp = __rintf(x);
+    return __cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(tmp);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float truncf(float x)
 {
     if (x > 0.0f) {
-        return bisheng::cce::simt::__floorf(x);
+        return __floorf(x);
     } else {
-        return bisheng::cce::simt::__ceilf(x);
+        return __ceilf(x);
     }
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float roundf(float x)
 {
-    return bisheng::cce::simt::__roundf(x);
+    return __roundf(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rintf(float x)
 {
-    return bisheng::cce::simt::__rintf(x);
+    return __rintf(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float floorf(float x)
 {
-    return bisheng::cce::simt::__floorf(x);
+    return __floorf(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ceilf(float x)
 {
-    return bisheng::cce::simt::__ceilf(x);
+    return __ceilf(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fabsf(float x)
@@ -87,7 +87,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fabsf(float x)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fmaf(float x, float y, float z)
 {
-    return bisheng::cce::simt::__fma(x, y, z);
+    return __fma(x, y, z);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float expf(float x)
@@ -465,7 +465,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float nearbyintf(float x)
     if (isinf(x) || isnan(x)) {
         return x;
     }
-    return bisheng::cce::simt::__rintf(x);
+    return __rintf(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float nextafterf(float x, float y)
@@ -1636,7 +1636,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfcf(float x)
     float neg_x2 = -x_squared;
     float f1 = 1.442695f;
     float scaled = neg_x2 * f1;
-    float int_part = scaled > 0 ? bisheng::cce::simt::__floorf(x) : bisheng::cce::simt::__ceilf(x);
+    float int_part = scaled > 0 ? __floorf(x) : __ceilf(x);
     float abs_part = fabsf(int_part);
     uint32_t sign_bit = *reinterpret_cast<uint32_t *>(&int_part) & 0x80000000;
     float clamped_bits = sign_bit | 0x42FC0000;
@@ -2251,7 +2251,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float lgammaf(float x)
         result = y3 - abs_x + y3 + y2 + 0.9189385f;          //  0.9189385f : ln[(2*pi)/2]
     }
     if (x < 0) {
-        if (bisheng::cce::simt::__floorf(abs_x) == abs_x) {
+        if (__floorf(abs_x) == abs_x) {
             return ASCRT_INF_F;
         } else if (abs_x < 9.9999996e-20f) {                 // 9.9999996e-20 : minimum-value
             //  According Euler's Reflection Formula

@@ -35,187 +35,187 @@ constexpr int32_t LANE_MASK_START_POS = 16;
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_all(int32_t predicate)
 {
-    return bisheng::cce::simt::__all(predicate);
+    return __all(predicate);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_any(int32_t predicate)
 {
-    return bisheng::cce::simt::__any(predicate);
+    return __any(predicate);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_ballot(int32_t predicate)
 {
-    return bisheng::cce::simt::__ballot(predicate);
+    return __ballot(predicate);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_activemask()
 {
-    return bisheng::cce::simt::__activemask();
+    return __activemask();
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_shfl(int32_t var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_shfl(uint32_t var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_shfl(float var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int64_t asc_shfl(int64_t var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t asc_shfl(uint64_t var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_shfl_up(int32_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_shfl_up(uint32_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_shfl_up(float var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int64_t asc_shfl_up(int64_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t asc_shfl_up(uint64_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_shfl_down(int32_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_shfl_down(uint32_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_shfl_down(float var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int64_t asc_shfl_down(int64_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t asc_shfl_down(uint64_t var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_shfl_xor(int32_t var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_shfl_xor(uint32_t var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_shfl_xor(float var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int64_t asc_shfl_xor(int64_t var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t asc_shfl_xor(uint64_t var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_reduce_add(int32_t val)
 {
-    return bisheng::cce::simt::__reduce_add(val);
+    return __reduce_add(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_reduce_add(uint32_t val)
 {
-    return bisheng::cce::simt::__reduce_add(val);
+    return __reduce_add(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_reduce_add(float val)
 {
-    return bisheng::cce::simt::__reduce_add(val);
+    return __reduce_add(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_reduce_max(int32_t val)
 {
-    return bisheng::cce::simt::__reduce_max(val);
+    return __reduce_max(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_reduce_max(uint32_t val)
 {
-    return bisheng::cce::simt::__reduce_max(val);
+    return __reduce_max(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_reduce_max(float val)
 {
-    return bisheng::cce::simt::__reduce_max(val);
+    return __reduce_max(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t asc_reduce_min(int32_t val)
 {
-    return bisheng::cce::simt::__reduce_min(val);
+    return __reduce_min(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint32_t asc_reduce_min(uint32_t val)
 {
-    return bisheng::cce::simt::__reduce_min(val);
+    return __reduce_min(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asc_reduce_min(float val)
 {
-    return bisheng::cce::simt::__reduce_min(val);
+    return __reduce_min(val);
 }
 
 #endif

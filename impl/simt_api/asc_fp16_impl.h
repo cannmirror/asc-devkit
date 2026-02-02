@@ -379,31 +379,31 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 h2trunc(half2 x)
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half_rn(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half_rz(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half_rd(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half_ru(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half_rna(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __float2half_ro(const float x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::O, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::O, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float(const half x) {
@@ -449,292 +449,292 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float(const half x) {
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __half2uint_rn(const half x) {
-    return bisheng::cce::simt::__cvt_uint32_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_uint32_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __half2uint_rz(const half x) {
-    return bisheng::cce::simt::__cvt_uint32_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_uint32_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __half2uint_rd(const half x) {
-    return bisheng::cce::simt::__cvt_uint32_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_uint32_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __half2uint_ru(const half x) {
-    return bisheng::cce::simt::__cvt_uint32_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_uint32_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __half2uint_rna(const half x) {
-    return bisheng::cce::simt::__cvt_uint32_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_uint32_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int __half2int_rn(const half x) {
-    return bisheng::cce::simt::__cvt_int32_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_int32_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int __half2int_rz(const half x) {
-    return bisheng::cce::simt::__cvt_int32_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_int32_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int __half2int_rd(const half x) {
-    return bisheng::cce::simt::__cvt_int32_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_int32_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int __half2int_ru(const half x) {
-    return bisheng::cce::simt::__cvt_int32_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_int32_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline int __half2int_rna(const half x) {
-    return bisheng::cce::simt::__cvt_int32_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x);
+    return __cvt_int32_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rn(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_uint64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_uint64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rz(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_uint64_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_uint64_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rd(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_uint64_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_uint64_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_ru(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_uint64_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_uint64_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rna(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_uint64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_uint64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rn(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rz(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_int64_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rd(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_int64_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_ru(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_int64_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rna(const half x) {
     float x_fp32 = x;
-    return bisheng::cce::simt::__cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
+    return __cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __uint2half_rn(const unsigned int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __uint2half_rz(const unsigned int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __uint2half_rd(const unsigned int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __uint2half_ru(const unsigned int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __uint2half_rna(const unsigned int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __int2half_rn(const int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __int2half_rz(const int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __int2half_rd(const int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __int2half_ru(const int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __int2half_rna(const int x) {
-    return bisheng::cce::simt::__cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
+    return __cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ull2half_rn(const unsigned long long int x) {
     uint64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ull2half_rz(const unsigned long long int x) {
     uint64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ull2half_rd(const unsigned long long int x) {
     uint64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ull2half_ru(const unsigned long long int x) {
     uint64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ull2half_rna(const unsigned long long int x) {
     uint64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ll2half_rn(const long long int x) {
     int64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ll2half_rz(const long long int x) {
     int64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ll2half_rd(const long long int x) {
     int64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ll2half_ru(const long long int x) {
     int64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ll2half_rna(const long long int x) {
     int64_t y = x;
-    float f = bisheng::cce::simt::__cvt_float<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(y);
-    return bisheng::cce::simt::__cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(f);
+    float f = __cvt_float<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(y);
+    return __cvt_half<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(f);
 }
 
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 #ifndef ASCENDC_CPU_DEBUG
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_add(__ubuf__ half *address, half val)
 {
-    bisheng::cce::simt::atomicAdd(address, val);
+    atomicAdd(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_add(__ubuf__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicAdd(address, val);
+    return atomicAdd(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_sub(__ubuf__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicSub(address, val);
+    return atomicSub(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_exch(__ubuf__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicExch(address, val);
+    return atomicExch(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_max(__ubuf__ half *address, half val)
 {
-    bisheng::cce::simt::atomicMax(address, val);
+    atomicMax(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_max(__ubuf__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicMax(address, val);
+    return atomicMax(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_min(__ubuf__ half *address, half val)
 {
-    bisheng::cce::simt::atomicMin(address, val);
+    atomicMin(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_min(__ubuf__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicMin(address, val);
+    return atomicMin(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_cas(__ubuf__ half2 *address, half2 compare, half2 val)
 {
-    return bisheng::cce::simt::atomicCAS(address, compare, val);
+    return atomicCAS(address, compare, val);
 }
 #endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_add(__gm__ half *address, half val)
 {
-    bisheng::cce::simt::atomicAdd(address, val);
+    atomicAdd(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_add(__gm__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicAdd(address, val);
+    return atomicAdd(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_sub(__gm__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicSub(address, val);
+    return atomicSub(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_exch(__gm__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicExch(address, val);
+    return atomicExch(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_max(__gm__ half *address, half val)
 {
-    bisheng::cce::simt::atomicMax(address, val);
+    atomicMax(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_max(__gm__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicMax(address, val);
+    return atomicMax(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_min(__gm__ half *address, half val)
 {
-    bisheng::cce::simt::atomicMin(address, val);
+    atomicMin(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_min(__gm__ half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicMin(address, val);
+    return atomicMin(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_cas(__gm__ half2 *address, half2 compare, half2 val)
 {
-    return bisheng::cce::simt::atomicCAS(address, compare, val);
+    return atomicCAS(address, compare, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
@@ -784,50 +784,50 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(__gm__ half2* address, half2
 #else
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_add(half *address, half val)
 {
-    bisheng::cce::simt::atomicAdd(address, val);
+    atomicAdd(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_add(half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicAdd(address, val);
+    return atomicAdd(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_sub(half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicSub(address, val);
+    return atomicSub(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_exch(half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicExch(address, val);
+    return atomicExch(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_max(half *address, half val)
 {
-    bisheng::cce::simt::atomicMax(address, val);
+    atomicMax(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_max(half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicMax(address, val);
+    return atomicMax(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_atomic_min(half *address, half val)
 {
-    bisheng::cce::simt::atomicMin(address, val);
+    atomicMin(address, val);
     return *address;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_min(half2 *address, half2 val)
 {
-    return bisheng::cce::simt::atomicMin(address, val);
+    return atomicMin(address, val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_atomic_cas(half2 *address, half2 compare, half2 val)
 {
-    return bisheng::cce::simt::atomicCAS(address, compare, val);
+    return atomicCAS(address, compare, val);
 }
 
 #ifndef ASCENDC_CPU_DEBUG
@@ -877,65 +877,65 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(half2* address, half2 val)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl(half var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl(half2 var, int32_t src_lane, int32_t width)
 {
-    return bisheng::cce::simt::__shfl(var,
+    return __shfl(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl_up(half var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl_up(half2 var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_up(var,
+    return __shfl_up(var,
         ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl_down(half var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl_down(half2 var, uint32_t delta, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_down(var,
+    return __shfl_down(var,
                        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl_xor(half var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl_xor(half2 var, int32_t lane_mask, int32_t width)
 {
-    return bisheng::cce::simt::__shfl_xor(var,
+    return __shfl_xor(var,
                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_reduce_add(half val)
 {
-    return bisheng::cce::simt::__reduce_add(val);
+    return __reduce_add(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_reduce_max(half val)
 {
-    return bisheng::cce::simt::__reduce_max(val);
+    return __reduce_max(val);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_reduce_min(half val)
 {
-    return bisheng::cce::simt::__reduce_min(val);
+    return __reduce_min(val);
 }
 
  __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 make_half2(half x, half y)

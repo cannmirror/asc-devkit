@@ -28,7 +28,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_syncthreads()
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_threadfence()
 {
-    bisheng::cce::simt::__threadfence();
+    __threadfence();
 }
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_SYNC_FUNCTIONS_IMPL__)

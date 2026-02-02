@@ -233,7 +233,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline uint64_t check_and_wait_ring_buf_space(
     __gm__ RingBufReadInfo* read_info = get_ring_buf_read_info(block_ring_buf_info);
     __gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
 
-    uint64_t start_offset = bisheng::cce::simt::atomicAdd(&write_info->bufOffset, tlv_len);
+    uint64_t start_offset = atomicAdd(&write_info->bufOffset, tlv_len);
     uint64_t end_offset = start_offset + tlv_len;
     if (end_offset > read_info->bufOffset + block_ring_buf_info->ringBufLen) {
         ring_buffer_wait(read_info, end_offset - block_ring_buf_info->ringBufLen);
@@ -427,7 +427,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_finish(__gm__ BlockRingBufInfo*
     }
 
     __gm__ RingBufWriteInfo* write_info = get_ring_buf_write_info(block_ring_buf_info);
-    bisheng::cce::simt::atomicAdd(&write_info->packIdx, 1);
+    atomicAdd(&write_info->packIdx, 1);
 }
 #endif
 
