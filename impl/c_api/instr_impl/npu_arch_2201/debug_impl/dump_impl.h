@@ -219,7 +219,7 @@ private:
             uint16_t burst_len = static_cast<uint16_t>(align_dump_len / ASC_C_API_ONE_DATABLOCK_SIZE);
             instruction_forward::call_sync();
             if (dump_tensor_tlv->position == static_cast<uint16_t>(Hardware::UB)) {
-                instruction_forward::call_copy_ub2gm(dump_addr, src, 0, 1, burst_len, 0, 0);
+                instruction_forward::call_copy_ub2gm(dump_addr, src, 1, burst_len, 0, 0);
             }
             instruction_forward::call_sync();
             asc_dcci_entire_out(reinterpret_cast<__gm__ uint64_t*>(dump_addr));

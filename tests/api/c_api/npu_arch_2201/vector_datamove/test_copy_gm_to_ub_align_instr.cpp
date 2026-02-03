@@ -44,7 +44,6 @@ TEST_F(TestVectorDatamove##class_name, c_api_name##_CopyConfig_Succ)            
     __ubuf__ dst_date_type *dst = reinterpret_cast<__ubuf__ dst_date_type *>(11);               \
     __gm__ src_date_type *src = reinterpret_cast<__gm__ src_date_type *>(22);                   \
                                                                                                 \
-    uint8_t sid = static_cast<uint8_t>(0);                                                      \
     uint16_t n_burst = static_cast<uint64_t>(1);                                                \
     uint32_t len_burst = static_cast<uint64_t>(44);                                              \
     uint8_t left_padding_num = static_cast<uint64_t>(0);                                        \
@@ -56,7 +55,7 @@ TEST_F(TestVectorDatamove##class_name, c_api_name##_CopyConfig_Succ)            
             .times(1)                                                                           \
             .will(invoke(cce_name##_##dst_date_type##_##src_date_type##_uint64_t_Stub));                                            \
                                                                                                 \
-    c_api_name(dst, src, sid, n_burst, len_burst, left_padding_num, right_padding_num, src_gap, dst_gap); \
+    c_api_name(dst, src, n_burst, len_burst, left_padding_num, right_padding_num, src_gap, dst_gap); \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \

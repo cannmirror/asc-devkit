@@ -16,28 +16,28 @@
 - 常规搬运
 
     ```c++
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ half* dst, __gm__ half* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ half* dst, __gm__ half* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ float* dst, __gm__ float* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ float* dst, __gm__ float* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
     ```
@@ -45,28 +45,28 @@
 - 同步搬运
 
     ```c++
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ uint8_t* dst, __gm__ uint8_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ bfloat16_t* dst, __gm__ bfloat16_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ half* dst, __gm__ half* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ half* dst, __gm__ half* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int16_t* dst, __gm__ int16_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ float* dst, __gm__ float* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ float* dst, __gm__ float* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ int32_t* dst, __gm__ int32_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
-    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint8_t sid, uint16_t nd_num,
+    __aicore__ inline void asc_copy_gm2l1_nd2nz_sync(__cbuf__ uint32_t* dst, __gm__ uint32_t* src, uint16_t nd_num,
         uint16_t n_value, uint16_t d_value, uint16_t src_nd_matrix_stride, uint16_t src_d_value, uint16_t dst_nz_c0_stride,
         uint16_t dst_nz_n_stride, uint16_t dst_nz_matrix_stride)
     ```
@@ -78,7 +78,6 @@
 |:---------------------|:------|:--------------------------------------------------------------------------------------------------------------------------------------|
 | dst                  | 输出    | 目的操作数（矢量）的起始地址。                                                                                                                               |
 | src                  | 输入    | 源操作数的起始地址。                                                                                                                                |
-| sid                  | 输入    | 保留，未使用，填0即可。                                                                                                                          |
 | nd_num               | 输入    | 传输ND矩阵的数目，取值范围：n_num∈[0, 4095]。                                                                                                       |
 | n_value              | 输入    | ND矩阵的行数，取值范围：n_value∈[0, 16384]。                                                                                                      |
 | d_value              | 输入    | ND矩阵的列数，取值范围：d_value∈[0, 65535]。                                                                                                      |
@@ -109,5 +108,5 @@ PIPE_MTE2
 //total_length指参与搬运的数据总长度。
 constexpr uint64_t total_length = 128;
 __cbuf__ int8_t dst[total_length];
-asc_copy_gm2l1_nd2nz(dst, src, 0, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_c0_stride, dst_nz_n_stride, dst_nz_matrix_stride);
+asc_copy_gm2l1_nd2nz(dst, src, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_c0_stride, dst_nz_n_stride, dst_nz_matrix_stride);
 ```

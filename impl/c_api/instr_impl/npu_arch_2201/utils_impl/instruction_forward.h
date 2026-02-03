@@ -73,12 +73,12 @@ private:
     }
     
     template <typename T>
-    __aicore__ static inline void copy_ub2gm(__gm__ T* dst, __ubuf__ T* src, uint8_t sid,
+    __aicore__ static inline void copy_ub2gm(__gm__ T* dst, __ubuf__ T* src,
         uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
     {
         if constexpr (CURRENT_ARCH_VERSION == arch_version::v2201) {
             asc_copy_ub2gm(reinterpret_cast<__gm__ void*>(dst), reinterpret_cast<__ubuf__ void*>(src),
-                sid, n_burst, burst_len, src_gap, dst_gap);
+                n_burst, burst_len, src_gap, dst_gap);
         }
     }
 
@@ -121,10 +121,10 @@ public:
     }
     
     template<typename T>
-    __aicore__ static inline void call_copy_ub2gm(__gm__ T* dst, __ubuf__ T* src, uint8_t sid,
+    __aicore__ static inline void call_copy_ub2gm(__gm__ T* dst, __ubuf__ T* src,
         uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
     {
-        copy_ub2gm(dst, src, sid, n_burst, burst_len, src_gap, dst_gap);
+        copy_ub2gm(dst, src, n_burst, burst_len, src_gap, dst_gap);
     }
 
     __aicore__ static inline auto call_get_g_sys_print_fifo_space()

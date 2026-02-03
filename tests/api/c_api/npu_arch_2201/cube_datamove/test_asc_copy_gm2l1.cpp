@@ -46,7 +46,6 @@ TEST_F(TestCubeDmamove##class_name, c_api_name##_CopyConfig_Succ)               
     __cbuf__ void *dst = reinterpret_cast<__cbuf__ void *>(11);                                  \
     __gm__ void *src = reinterpret_cast<__gm__ void *>(22);                                     \
                                                                                                 \
-    uint8_t sid = static_cast<uint8_t>(0);                                                      \
     uint16_t n_burst = static_cast<uint16_t>(1);                                                  \
     uint16_t burst_len = static_cast<uint16_t>(1);                                                \
     uint16_t src_stride = static_cast<uint16_t>(0);                                              \
@@ -57,7 +56,7 @@ TEST_F(TestCubeDmamove##class_name, c_api_name##_CopyConfig_Succ)               
             .times(1)                                                                           \
             .will(invoke(cce_name##_uint64_t_Stub));                                              \
                                                                                                 \
-    c_api_name(dst, src, sid, n_burst, burst_len, src_stride, dst_stride, (pad_t)0);             \
+    c_api_name(dst, src, n_burst, burst_len, src_stride, dst_stride, (pad_t)0);             \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \

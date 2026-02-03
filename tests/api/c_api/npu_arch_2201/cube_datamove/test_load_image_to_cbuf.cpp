@@ -61,7 +61,6 @@ TEST_F(TestCubeDmamove##class_name##data_type, c_api_name##_LoadImageConfig_Succ
     uint8_t bot_pad_size = static_cast<uint8_t>(0);                                             \
     uint16_t left_pad_size = static_cast<uint16_t>(0);                                          \
     uint16_t right_pad_size = static_cast<uint16_t>(0);                                         \
-    uint8_t sid = static_cast<uint8_t>(0);                                                      \
                                                                                                 \
     MOCKER_CPP(cce_name, void(__ubuf__ data_type *, uint16_t, uint16_t, uint16_t, uint16_t,     \
                 uint16_t, uint8_t, uint8_t, uint16_t, uint16_t, uint8_t))                       \
@@ -69,7 +68,7 @@ TEST_F(TestCubeDmamove##class_name##data_type, c_api_name##_LoadImageConfig_Succ
             .will(invoke(cce_name##_##data_type##_uint16_uint16_uint16_uint16_uint16_uint8_uint8_uint16_uint16_uint8_Stub));  \
                                                                                                 \
     c_api_name(dst, hor_size, ver_size, hor_start_pos, ver_start_pos, src_hor_size, top_pad_size,\
-               bot_pad_size, left_pad_size, right_pad_size, sid);                               \
+               bot_pad_size, left_pad_size, right_pad_size);                               \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \
@@ -86,7 +85,6 @@ TEST_F(TestCubeDmamove##class_name##data_type, c_api_name##_sync_Succ)          
     uint8_t bot_pad_size = static_cast<uint8_t>(0);                                             \
     uint16_t left_pad_size = static_cast<uint16_t>(0);                                          \
     uint16_t right_pad_size = static_cast<uint16_t>(0);                                         \
-    uint8_t sid = static_cast<uint8_t>(0);                                                      \
                                                                                                 \
     MOCKER_CPP(cce_name, void(__ubuf__ data_type *, uint16_t, uint16_t, uint16_t, uint16_t,     \
                 uint16_t, uint8_t, uint8_t, uint16_t, uint16_t, uint8_t))                       \
@@ -94,7 +92,7 @@ TEST_F(TestCubeDmamove##class_name##data_type, c_api_name##_sync_Succ)          
             .will(invoke(cce_name##_##data_type##_uint16_uint16_uint16_uint16_uint16_uint8_uint8_uint16_uint16_uint8_Stub));  \
                                                                                                 \
     c_api_name##_sync(dst, hor_size, ver_size, hor_start_pos, ver_start_pos, src_hor_size,      \
-                      top_pad_size, bot_pad_size, left_pad_size, right_pad_size, sid);          \
+                      top_pad_size, bot_pad_size, left_pad_size, right_pad_size);          \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 

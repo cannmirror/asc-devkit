@@ -52,7 +52,6 @@ TEST_F(TestCubeDmamove##class_name##datatype, c_api_name##_CopyConfig_Succ)     
     __cbuf__ datatype *dst = reinterpret_cast<__cbuf__ datatype *>(11);                         \
     __gm__ datatype *src = reinterpret_cast<__gm__ datatype *>(22);                             \
                                                                                                 \
-    uint8_t sid = static_cast<uint8_t>(0);                                                      \
     uint16_t nd_num = static_cast<uint16_t>(1);                                                 \
     uint16_t n_value = static_cast<uint16_t>(1);                                                \
     uint16_t d_value = static_cast<uint16_t>(1);                                                \
@@ -67,7 +66,7 @@ TEST_F(TestCubeDmamove##class_name##datatype, c_api_name##_CopyConfig_Succ)     
             .times(1)                                                                           \
             .will(invoke(cce_name##_##datatype##datatype##_uint8_t_uint16_uint16_uint16_uint16_uint16_uint16_uint16_uint16_t_Stub));\
                                                                                                 \
-    c_api_name(dst, src, sid, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_co_stride, \
+    c_api_name(dst, src, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_co_stride, \
             dst_nz_n_stride, dst_nz_matrix_stride);                                             \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
@@ -77,7 +76,6 @@ TEST_F(TestCubeDmamove##class_name##datatype, c_api_name##_sync_Succ)           
     __cbuf__ datatype *dst = reinterpret_cast<__cbuf__ datatype *>(11);                         \
     __gm__ datatype *src = reinterpret_cast<__gm__ datatype *>(22);                             \
                                                                                                 \
-    uint8_t sid = static_cast<uint8_t>(0);                                                      \
     uint16_t nd_num = static_cast<uint16_t>(1);                                                 \
     uint16_t n_value = static_cast<uint16_t>(1);                                                \
     uint16_t d_value = static_cast<uint16_t>(1);                                                \
@@ -92,7 +90,7 @@ TEST_F(TestCubeDmamove##class_name##datatype, c_api_name##_sync_Succ)           
             .times(1)                                                                           \
             .will(invoke(cce_name##_##datatype##datatype##_uint8_t_uint16_uint16_uint16_uint16_uint16_uint16_uint16_uint16_t_Stub));\
                                                                                                 \
-    c_api_name(dst, src, sid, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_co_stride, \
+    c_api_name(dst, src, nd_num, n_value, d_value, src_nd_matrix_stride, src_d_value, dst_nz_co_stride, \
             dst_nz_n_stride, dst_nz_matrix_stride);                                             \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \

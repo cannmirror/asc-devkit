@@ -28,11 +28,11 @@
 __aicore__ inline void asc_load_image_to_cbuf_impl(__cbuf__ half* dst, uint16_t hor_size, uint16_t ver_size,
                                                    uint16_t hor_start_pos, uint16_t ver_start_pos,
                                                    uint16_t src_hor_size, uint8_t top_pad_size, uint8_t bot_pad_size,
-                                                   uint16_t left_pad_size, uint16_t right_pad_size, uint8_t sid)
+                                                   uint16_t left_pad_size, uint16_t right_pad_size)
 {
     if ASC_IS_AIC {
         load_image_to_cbuf(dst, hor_size, ver_size, hor_start_pos, ver_start_pos, src_hor_size, top_pad_size,
-                           bot_pad_size, left_pad_size, right_pad_size, sid);
+                           bot_pad_size, left_pad_size, right_pad_size, 0);
     }
 }
 
@@ -40,10 +40,10 @@ __aicore__ inline void asc_load_image_to_cbuf_sync_impl(__cbuf__ half* dst, uint
                                                         uint16_t hor_start_pos, uint16_t ver_start_pos,
                                                         uint16_t src_hor_size, uint8_t top_pad_size,
                                                         uint8_t bot_pad_size, uint16_t left_pad_size,
-                                                        uint16_t right_pad_size, uint8_t sid)
+                                                        uint16_t right_pad_size)
 {
     asc_load_image_to_cbuf_impl(dst, hor_size, ver_size, hor_start_pos, ver_start_pos, src_hor_size, top_pad_size,
-                                bot_pad_size, left_pad_size, right_pad_size, sid);
+                                bot_pad_size, left_pad_size, right_pad_size);
     asc_sync_post_process();
 }
 
@@ -51,11 +51,11 @@ __aicore__ inline void asc_load_image_to_cbuf_sync_impl(__cbuf__ half* dst, uint
 __aicore__ inline void asc_load_image_to_cbuf_impl(__cbuf__ int8_t* dst, uint16_t hor_size, uint16_t ver_size,
                                                    uint16_t hor_start_pos, uint16_t ver_start_pos,
                                                    uint16_t src_hor_size, uint8_t top_pad_size, uint8_t bot_pad_size,
-                                                   uint16_t left_pad_size, uint16_t right_pad_size, uint8_t sid)
+                                                   uint16_t left_pad_size, uint16_t right_pad_size)
 {
     if ASC_IS_AIC {
         load_image_to_cbuf(dst, hor_size, ver_size, hor_start_pos, ver_start_pos, src_hor_size, top_pad_size,
-                           bot_pad_size, left_pad_size, right_pad_size, sid);
+                           bot_pad_size, left_pad_size, right_pad_size, 0);
     }
 }
 
@@ -63,10 +63,10 @@ __aicore__ inline void asc_load_image_to_cbuf_sync_impl(__cbuf__ int8_t* dst, ui
                                                         uint16_t hor_start_pos, uint16_t ver_start_pos,
                                                         uint16_t src_hor_size, uint8_t top_pad_size,
                                                         uint8_t bot_pad_size, uint16_t left_pad_size,
-                                                        uint16_t right_pad_size, uint8_t sid)
+                                                        uint16_t right_pad_size)
 {
     asc_load_image_to_cbuf_impl(dst, hor_size, ver_size, hor_start_pos, ver_start_pos, src_hor_size, top_pad_size,
-                                bot_pad_size, left_pad_size, right_pad_size, sid);
+                                bot_pad_size, left_pad_size, right_pad_size);
     asc_sync_post_process();
 }
 

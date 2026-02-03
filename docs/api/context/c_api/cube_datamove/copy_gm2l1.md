@@ -22,7 +22,7 @@
 - 高维切分搬运
 
     ```c++
-    __aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint8_t sid, uint16_t n_burst, uint16_t burst_len,
+    __aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst, uint16_t burst_len,
         uint16_t src_gap, uint16_t dst_gap, pad_t padMode)
     ```
 
@@ -40,7 +40,6 @@
 | dst | 输出    | 目的操作数（矢量）的起始地址。                                                 |
 | src | 输入    | 源操作数的起始地址。                                                      |
 | size | 输入    | 搬运数据大小（字节）。                                                     |
-| sid | 输入    | 保留，未使用，填0即可。                                                    |
 | n_burst | 输入    | 待搬运的连续传输数据块个数。取值范围：[1, 4095]。                                   |
 | burst_len | 输入    | 待搬运的每个连续传输数据块的长度，单位为DataBlock（32字节）。取值范围：[1, 65535]。            |
 | src_gap | 输入    | 源操作数相邻连续数据块的间隔（前面一个数据块的尾与后面一个数据块的头的间隔）。<br>单位为DataBlock（32字节）。  |
@@ -67,5 +66,5 @@ PIPE_MTE2
 //total_length指参与搬运的数据总长度。
 constexpr uint64_t total_length = 128;
 __cbuf__ void dst[total_length];
-asc_copy_gm2l1(dst, src, 0, n_burst, burst_len, src_stride, dst_stride, pad_mode);
+asc_copy_gm2l1(dst, src, n_burst, burst_len, src_stride, dst_stride, pad_mode);
 ```
