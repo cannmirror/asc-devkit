@@ -21,7 +21,7 @@
 ## 算子描述
 
 - 算子功能：  
-  将数据从UB搬运到L1 Buffer，然后进行mmad计算。
+  将数据从UB搬运到L1 Buffer，然后进行mmad计算，其中UB到L1 Buffer使用硬件通道搬运，对比基于kfc通信实现的软件搬运具有更好的性能。
 - 算子规格：
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">MIX算子</td></tr>

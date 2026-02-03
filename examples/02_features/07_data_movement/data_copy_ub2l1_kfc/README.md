@@ -21,7 +21,7 @@ ub->l1通路搬运样例
 ## 算子描述
 
 - 算子功能：  
-  通过Matmul高阶API注册KFC，将数据从UB搬运到L1 Buffer，然后进行mmad计算。
+  通过Matmul高阶API注册KFC，将数据从UB搬运到L1 Buffer，然后进行mmad计算，不使用UB->L1 Buffer的硬件通道能力，底层是UB->GM->L1 Buffer的搬运，对比硬通道搬运性能较差。
 - 算子规格：
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">MIX算子</td></tr>
