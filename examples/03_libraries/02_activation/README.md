@@ -16,7 +16,6 @@
 | [silu](./silu) | 本样例演示了基于Silu高阶API的算子实现。样例按元素做Silu运算 |
 | [simplesoftmax](./simplesoftmax) | 本样例介绍了调用SimpleSoftMax高阶API实现softmax单算子，使用计算好的sum和max数据对输入tensor做Softmax计算 |
 | [softmax](./softmax) | 本样例介绍了调用SoftMax高阶API实现softmax单算子，将输入tensor[m0, m1, ...mt, n]（t大于等于0）的非尾轴长度相乘的结果看作m，则输入tensor的shape看作[m, n] |
-| [softmaxflash](./softmaxflash) | 本样例基于Kernel直调算子工程，介绍了调用SoftmaxFlashV2高阶api实现softmaxflash单算子，Softmax增强版本，除了可以对输入tensor做SoftmaxFlash计算，还可以根据上一次Softmax计算的sum和max来更新本次的Softmax计算结果 |
 | [softmaxflashv2](./softmaxflashv2) | 本样例介绍了调用SoftmaxFlashV2高阶api实现softmaxflashv2单算子，SoftmaxFlash增强版本，对应FlashAttention-2算法 |
 | [softmaxflashv3](./softmaxflashv3) | 本样例介绍了调用SoftmaxFlashV3高阶api实现softmaxflashv3单算子，SoftmaxFlash增强版本，对应Softmax PASA算法 |
 | [softmaxgrad](./softmaxgrad) | 本样例介绍了调用SoftmaxGrad高阶API实现softmaxgrad单算子，将输入tensor[m0, m1, ...mt, n]（t大于等于0）的非尾轴长度相乘的结果看作m，则输入tensor的shape看作[m, n] |
