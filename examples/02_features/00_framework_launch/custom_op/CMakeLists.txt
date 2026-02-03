@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.16.0)
 project(custom_op_prj)
 find_package(ASC REQUIRED)
 
-set(ASCEND_COMPUTE_UNIT ascend910b)
+set(ASCEND_COMPUTE_UNIT ascend910b ascend910_93 ascend950)
 set(package_name customize)
 
 npu_op_package(${package_name}
@@ -22,6 +22,14 @@ npu_op_package(${package_name}
         INSTALL_PATH ${CMAKE_BINARY_DIR}
 )
 
-add_subdirectory(framework)
-add_subdirectory(op_host)
-add_subdirectory(op_kernel)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/framework")
+    add_subdirectory(framework)
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/op_host")
+    add_subdirectory(op_host)
+endif()
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/op_kernel")
+    add_subdirectory(op_kernel)
+endif()
