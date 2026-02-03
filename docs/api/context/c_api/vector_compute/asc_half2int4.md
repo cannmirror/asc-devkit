@@ -101,9 +101,9 @@ PIPE_V
 
 ```cpp
 constexpr uint32_t total_length = 256;
-uint64_t offset = 0;  
-__ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);  
-offset += total_length * sizeof(half); 
+uint64_t offset = 0;
+__ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
+offset += total_length * sizeof(half);
 __ubuf__ int4b_t* dst = (__ubuf__ int4b_t*)asc_get_phy_buf_addr(offset);
 asc_half2int4(dst, src, total_length);
 ```

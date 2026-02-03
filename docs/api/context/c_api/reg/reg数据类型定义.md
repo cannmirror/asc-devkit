@@ -2,7 +2,7 @@
 
 ## 矢量数据寄存器
 
-矢量数据寄存器用于存储矢量数据，其位宽为VL（Vector Length），可存储VL/sizeof(T)的数据（T表示数据类型）。在Ascend 950PR/Ascend 950DT版本中， VL = 256B。
+矢量数据寄存器用于存储矢量数据，其位宽为VL（Vector Length），可存储VL/sizeof(T)的数据（T表示数据类型）。在Ascend 950PR/Ascend 950DT版本中， VL = 256B。例如对于矢量数据类型vector_float，该寄存器可存储的元素数量为256B / sizeof(float) = 64个。
 
 以下是以位宽为分类，列举的所有矢量数据寄存器的数据类型：
 
@@ -14,7 +14,7 @@
 | b64       | vector_int64_t/vector_uint64_t |
 
 **注意：**
-vector_int4x2_t/vector_fp4x2_e2m1_t/vector_fp4x2_e1m2_t这三个矢量数据类型内存排布需要为两个一组，表现为b8类型。
+vector_int4x2_t、vector_fp4x2_e2m1_t、vector_fp4x2_e1m2_t这三个矢量数据类型在内存中的排布需要将两个元素打包为一个字节的存储单元。
 
 ### 调用示例
 
@@ -28,6 +28,8 @@ asc_arange(dst, index);
 
 掩码寄存器的数据类型为vector_bool，用于矢量计算中选择参与计算的元素，其位宽为VL/8。
 
+![vector_bool](../figures/vector_bool.png)
+
 ### 调用示例
 
 ```cpp
@@ -38,7 +40,9 @@ vector_bool mask = asc_update_mask_b16(length); // 根据矢量计算需要操�
 
 ## 非对齐寄存器
 
-非对齐寄存器包括vector_load_align和vector_store_align，作为缓冲区，用来优化UB和矢量数据寄存器之间的连续非对齐地址访问的开销。在读非对齐地址前，vector_load_align应该通过asc_loadunalign_pre初始化，然后再使用asc_loadunalign。在写非对齐地址时，先使用asc_storealign，再使用asc_storealign_post进行处理。
+非对齐寄存器包括vector_load_align和vector_store_align。这些寄存器作为缓冲区，用于在UB和矢量数据寄存器之间进行连续的非对齐数据搬运，其中非对齐特指数据起始地址未按32字节对齐。在搬运过程中，非对齐数据首先被加载到专用的非对齐寄存器，随后通过相应的搬运接口完成数据的分块读取或写入。
+
+在读非对齐地址前，vector_load_align应该通过asc_loadunalign_pre初始化，然后再使用asc_loadunalign。在写非对齐地址时，应先使用asc_storealign，再使用asc_storealign_post进行处理。
 
 ### 调用示例
 
@@ -56,13 +60,11 @@ __simd_vf__ inline void neg_vf(__ubuf__ int8_t* dst_addr, __ubuf__ int8_t* src_a
     vector_bool mask;
     for (uint16_t i = 0; i < repeat_time; ++i) {
         mask = asc_update_mask_b8(count);
-        auto src_addr_tmp = src_addr + i * one_repeat_size;
-        asc_loadunalign_pre(ureg0, src_addr_tmp); // 非对齐搬入前的初始化
-        asc_loadalign_postupdate(src, ureg0, src_addr_tmp, one_repeat_size); // 配合vector_load_align的使用，非对齐搬入源数据
+        asc_loadunalign_pre(ureg0, src_addr + i * one_repeat_size); // 非对齐搬入前的初始化
+        asc_loadunalign(src, ureg0, src_addr + i * one_repeat_size); // 配合vector_load_align的使用，非对齐搬入源数据
         asc_neg(dst, src, mask);
-        auto dst_addr_tmp = dst_addr + i * one_repeat_size;
-        asc_storeunalign_postupdate(dst_addr_tmp, ureg1, dst, one_repeat_size); // 配合vector_store_align的使用，非对齐搬出目的数据
-        asc_storeunalign_post(dst_addr_tmp, ureg1, 0); // 处理非对齐搬出的尾块
+        asc_storeunalign(dst_addr + i * one_repeat_size, ureg1, dst, one_repeat_size); // 配合vector_store_align的使用，非对齐搬出目的数据
+        asc_storeunalign_post(dst_addr + i * one_repeat_size, ureg1, 0); // 处理非对齐搬出的尾块
     }
 }
 ```
@@ -91,7 +93,7 @@ __simd_vf__ inline void add_vf(__ubuf__ int8_t* dst_addr, __ubuf__ int8_t* src0_
         asc_loadalign(src0, src0_addr, addr_reg);
         asc_loadalign(src1, src1_addr, addr_reg);
         asc_add(dst, src0, src1, mask);
-        asc_store_align(dst_addr, dst, addr_reg, mask);
+        asc_storealign(dst_addr, dst, addr_reg, mask);
     }
 }
 ```
