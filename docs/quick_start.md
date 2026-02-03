@@ -68,7 +68,7 @@
 
 1. **安装社区尝鲜版CANN toolkit包**
 
-    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/Ascend-cann-toolkit_8.5.0-beta.1_linux-x86_64.run)、[toolkit aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/Ascend-cann-toolkit_8.5.0-beta.1_linux-aarch64.run)。
+    根据实际环境，下载对应`Ascend-cann-toolkit_${cann_version}_linux-${arch}.run`包，下载链接为[toolkit x86_64包](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/cann-run-release/software/9.0.0/20260127000324761/x86_64/Ascend-cann-toolkit_9.0.0_linux-x86_64.run)、[toolkit aarch64包](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/cann-run-release/software/9.0.0/20260127000324761/aarch64/Ascend-cann-toolkit_9.0.0_linux-aarch64.run)。
 
     ```bash
     # 确保安装包具有可执行权限
@@ -86,18 +86,18 @@
 
     运行算子前必须安装本包，若仅编译算子，可跳过本操作。
 
-    根据产品型号和环境架构，下载对应`Ascend-cann-${soc_name}-ops_8.5.0-beta.1_linux-${arch}.run`包，下载链接如下：
+    根据产品型号和环境架构，下载对应`Ascend-cann-${soc_name}-ops_9.0.0_linux-${arch}.run`包，下载链接如下：
 
-    - Atlas A2 训练系列产品/Atlas A2 推理系列产品：[ops x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/Ascend-cann-910b-ops_8.5.0-beta.1_linux-x86_64.run)、[ops aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/Ascend-cann-910b-ops_8.5.0-beta.1_linux-aarch64.run)。
-    - Atlas A3 训练系列产品/Atlas A3 推理系列产品：[ops x86_64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/x86_64/Ascend-cann-A3-ops_8.5.0-beta.1_linux-x86_64.run)、[ops aarch64包](https://ascend.devcloud.huaweicloud.com/cann/run/software/8.5.0-beta.1/aarch64/Ascend-cann-A3-ops_8.5.0-beta.1_linux-aarch64.run)。
+    - Atlas A2 训练系列产品/Atlas A2 推理系列产品：[ops x86_64包](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/cann-run-release/software/9.0.0/20260127000324761/x86_64/Ascend-cann-910b-ops_9.0.0_linux-x86_64.run)、[ops aarch64包](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/cann-run-release/software/9.0.0/20260127000324761/aarch64/Ascend-cann-910b-ops_9.0.0_linux-aarch64.run)。
+    - Atlas A3 训练系列产品/Atlas A3 推理系列产品：[ops x86_64包](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/cann-run-release/software/9.0.0/20260127000324761/x86_64/Ascend-cann-A3-ops_9.0.0_linux-x86_64.run)、[ops aarch64包](https://mirror-centralrepo.devcloud.cn-north-4.huaweicloud.com/artifactory/cann-run-release/software/9.0.0/20260127000324761/aarch64/Ascend-cann-A3-ops_9.0.0_linux-aarch64.run)。
 
     ```bash
     # 确保安装包具有可执行权限
-    chmod +x Ascend-cann-${soc_name}-ops_8.5.0-beta.1_linux-${arch}.run
+    chmod +x Ascend-cann-${soc_name}-ops_9.0.0_linux-${arch}.run
     # 安装命令
-    ./Ascend-cann-${soc_name}-ops_8.5.0-beta.1_linux-${arch}.run --install --install-path=${install_path}
+    ./Ascend-cann-${soc_name}-ops_9.0.0_linux-${arch}.run --install --install-path=${install_path}
     ```
-    - \$\{soc\_name\}：表示NPU型号名称，（Atlas A2 训练系列产品/Atlas A2 推理系列产品：910b，Atlas A3 训练系列产品/Atlas A3 推理系列产品：A3）。
+    - \$\{soc\_name\}：表示NPU型号名称。
     - \$\{install\_path\}：表示指定安装路径，需要与toolkit包安装在相同路径，root用户默认安装在`/usr/local/Ascend`目录，非root用户默认安装在`$HOME/Ascend`目录。
 
 3. **配置环境变量**
