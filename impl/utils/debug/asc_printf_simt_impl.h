@@ -268,7 +268,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void write_ring_buf_tlv_head(__gm__ BlockR
         __gm__ PrintTlvInfoHead* print_tlv =
             reinterpret_cast<__gm__ PrintTlvInfoHead*>(block_ring_buf_info->ringBufAddr + write_ptr);
         print_tlv->type = static_cast<uint32_t>(DumpType::DUMP_WAIT);
-        print_tlv->length = static_cast<uint32_t>(tlv_len - (sizeof(uint32_t) * 2)); // exclude type and length
+        print_tlv->length = static_cast<uint32_t>(tlv_len - (sizeof(uint32_t) * 2)); // 2: exclude type and length
         print_tlv->blockIdx[0] = blockIdx.x;
         print_tlv->blockIdx[1] = blockIdx.y;
         print_tlv->blockIdx[2] = blockIdx.z;

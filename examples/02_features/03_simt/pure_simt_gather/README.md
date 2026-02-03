@@ -8,7 +8,7 @@
 
 ## 目录结构
 ```
-├── gather
+├── pure_simt_gather
 │   ├── gather.asc             # SIMT实现gather调用样例
 |   └── README.md
 ```
