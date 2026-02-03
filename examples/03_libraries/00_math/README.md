@@ -21,6 +21,7 @@
 | [bitwisexor](./bitwisexor)           | 本样例演示了基于BitwiseXor高阶API的算子实现。样例逐比特对两个输入进行异或操作 |
 | [axpy_half_half](./axpy_half_half)   | 本样例基于Axpy实现源操作数src中每个元素与标量求积后和目的操作数dst中的对应元素相加的功能。Axpy接口的源操作数和目的操作数的数据类型只能取三种组合：(half, half)、(float, float)、(half, float)。本样例中输入tensor、标量、输出tensor数据类型均为half。本样例通过Ascend C编程语言实现了Axpy算子，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程，给出了对应的端到端实现 | 
 | [cast](./cast)                       | 本样例基于Cast实现数据精度转换，根据源操作数和目的操作数Tensor的数据类型进行精度转换 |
+| [cast_int4b_t](./cast_int4b_t)       | 本样例基于Cast实现int4b_t类型的数据精度转换，进行half类型源操作数和int4b_t类型目的操作数Tensor之间的精度转换 |
 | [ceil](./ceil)                       | 本样例演示了基于Ceil高阶API的算子实现。样例获取大于或等于x的最小的整数值，即向正无穷取整操作 |
 | [clamp](./clamp)                     | 本样例演示了基于Clamp高阶API的算子实现。将输入中非nan且超出[min, max]范围的值剪裁至max或min，若min>max，则所有非nan值均置为max |
 | [clampmax](./clampmax)               | 本样例演示了基于ClampMax高阶API的算子实现。样例将srcTensor中大于scalar的数替换为scalar，小于等于scalar的数保持不变，作为dstTensor输出 |

@@ -1,11 +1,16 @@
 # 归约操作算子样例介绍
+
 ## 概述
+
 本样例集介绍了归约操作算子不同特性的典型用法，给出了对应的端到端实现。
 
 ## 算子开发样例
+
 | 目录名称                                                                                                                 | 功能描述                                                                        | 
 |----------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------| 
 | [block_reduce_max](./block_reduce_max)                                                                               | 本样例基于BlockReduceMax实现最大值归约，可用于对每个datablock内所有元素求最大值                         |
+| [get_acc_val](./get_acc_val)                                                                                         | 本样例介绍基础api GetAccVal的调用。GetAccVal的功能是获取ReduceSum接口的计算结果 |
+| [get_reduce_max_min_count](./get_reduce_max_min_count)                                                               | 本样例介绍基础api GetReduceMaxMinCount的调用，GetReduceMaxMinCount的功能是获取ReduceMax、ReduceMin连续场景下的最大/最小值以及相应的索引值 |
 | [mean](./mean)                                                                                                       | 本样例介绍了基于Ascend C异构混合编程模型演示Mean融合算子的核函数直调实现，根据最后一轴的方向对各元素求平均值                |
 | [pair_reduce_sum](./pair_reduce_sum)                                                                                 | 本样例基于PairReduceSum实现求和归约，可用于相邻两个（奇数下标和偶数下标）元素求和                             |
 | [reduce_max_computation_of_the_first_n_data_elements](./reduce_max_computation_of_the_first_n_data_elements)         | 本样例基于ReduceMax的tensor前n个数据计算接口实现最大值归约，可用于指定从输入tensor的前n个数据中计算找出最大值及最大值对应的索引位置 |

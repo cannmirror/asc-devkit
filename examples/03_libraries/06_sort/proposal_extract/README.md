@@ -18,10 +18,10 @@
 
 ## 算子描述
 
-- 算子功能
+- 算子功能：  
   与ProposalConcat相反，从Region Proposal内将相应位置的单个元素抽取后重排，每次迭代处理16个Region Proposals，抽取16个元素后连续排列。
 
-- 算子规格：
+- 算子规格：  
   <table>
   <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">256</td><td align="center">half</td><td align="center">ND</td></tr>
@@ -32,7 +32,7 @@
 - 算子实现：  
   本样例中实现的是ProposalExtract算子。
 
-  - Kernel实现
+  - Kernel实现  
     ProposalExtract算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责调用ProposalExtract api将srcLocal对应的Region Proposals中的score域元素抽取出来排列成连续元素，并将结果存储到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   - 调用实现  

@@ -18,7 +18,7 @@
 
 ## 算子描述
 
-- 算子功能
+- 算子功能：  
   将连续元素合入Region Proposal内对应位置，每次迭代会将16个连续元素合入到16个Region Proposal的对应位置里。
 
 - 算子规格：  
@@ -32,7 +32,7 @@
 - 算子实现：  
   本样例中实现的是ProposalConcat算子。
 
-  - Kernel实现
+  - Kernel实现  
     ProposalConcat算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责调用ProposalConcat api将srcLocal中的元素合入到对应数量的Region Proposals的对应位置里，并将结果存储到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   - 调用实现  

@@ -8,7 +8,6 @@
 # See LICENSE in the root of the software repository for the full text of the License.
 # ----------------------------------------------------------------------------------------------------------
 
-
 cmake_minimum_required(VERSION 3.16)
 
 find_package(ASC REQUIRED)
@@ -16,7 +15,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    init_determine_compute_workspace.asc
+    group_barrier.asc
 )
 
 target_link_libraries(demo PRIVATE

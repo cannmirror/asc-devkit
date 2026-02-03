@@ -16,12 +16,13 @@
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
+│   ├── data_utils.h            // 数据读入写出函数
 │   └── read_gm_by_pass_dcache.asc      // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
 
-- 算子功能
+- 算子功能：  
   ReadGmByPassDcache算子实现了不经过DCache从GM地址上读数据的功能。
 
 - 算子规格：  
@@ -35,7 +36,7 @@
 - 算子实现：  
   本样例中实现的是ReadGmByPassDcache算子。
 
-  - Kernel实现
+  - Kernel实现  
     ReadGmByPassDcache算子从srcGm直接读出int32_t类型的标量, 然后将其写入dstGm。
 
   - 调用实现  

@@ -18,12 +18,13 @@
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
+│   ├── data_utils.h            // 数据读入写出函数
 │   └── to_float.asc            // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
 
-- 算子功能
+- 算子功能：  
   KernelToFloat算子实现了将输入bfloat16类型Tensor的第0个元素转换为float类型，并Duplicate成Shape为1024的Tensor的功能。
 
 - 算子规格：  
@@ -37,7 +38,7 @@
 - 算子实现：  
   本样例中实现的是固定shape为256的ToFLoat算子。
 
-  - Kernel实现
+  - Kernel实现  
     ToFLoat算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责将srcLocal中第0个元素转换为float类型标量，并将该标量Duplicate到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   - 调用实现  

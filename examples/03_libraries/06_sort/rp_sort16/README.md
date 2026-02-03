@@ -18,7 +18,7 @@
 
 ## 算子描述
 
-- 算子功能
+- 算子功能：  
   根据Region Proposals中的score域对其进行排序（score大的排前面），每次排16个Region Proposals。
 
 - 算子规格：  
@@ -32,7 +32,7 @@
 - 算子实现：  
   本样例中实现的是RpSort16算子。
 
-  - Kernel实现
+  - Kernel实现  
     RpSort16算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责调用RpSort16 api将srcLocal中对应的Region Proposals按照score域从大到小排序（每次排16个Region Proposals），并将结果存储到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   - 调用实现  
@@ -42,7 +42,7 @@
 
 在本样例根目录下执行如下步骤，编译并执行算子。
 
-- 配置环境变量
+- 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
   - 默认路径，root用户安装CANN软件包
 

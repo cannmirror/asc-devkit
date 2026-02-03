@@ -20,7 +20,7 @@
 
 ## 算子描述
 
-- 算子功能
+- 算子功能：  
   获取ReduceMax、ReduceMin连续场景下的最大/最小值以及相应的索引值。
 
 - 算子规格：  
@@ -34,7 +34,7 @@
 - 算子实现：  
   本样例中实现的是GetReduceMaxMinCount算子。
 
-  - Kernel实现
+  - Kernel实现  
     GetReduceMaxMinCount算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责WholeReduceMax/WholeReduceMin获取准确的索引值，然后立即调用GetReduceMaxMinCount获取最大/最小值，以及其对应的索引值，并存储到dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   - 调用实现  
