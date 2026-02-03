@@ -18,7 +18,7 @@
 #include "kernel_micro_common_impl.h"
 namespace AscendC {
 namespace MicroAPI {
-template <typename T> __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0)
+template <typename T> __simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
@@ -34,7 +34,7 @@ template <typename T> __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index
 }
 
 template <typename T>
-__aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1)
+__simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
@@ -50,8 +50,8 @@ __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, u
 }
 
 template <typename T>
-__aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1,
-    uint16_t index2, uint16_t stride2)
+__simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
+                                                 uint16_t index2, uint32_t stride2)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
@@ -67,8 +67,8 @@ __aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, u
 }
 
 template <typename T>
-__aicore__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint16_t stride0, uint16_t index1, uint16_t stride1,
-    uint16_t index2, uint16_t stride2, uint16_t index3, uint16_t stride3)
+__simd_callee__ inline AddrReg CreateAddrRegImpl(uint16_t index0, uint32_t stride0, uint16_t index1, uint32_t stride1,
+                                                 uint16_t index2, uint32_t stride2, uint16_t index3, uint32_t stride3)
 {
     static_assert(sizeof(T) == 1 || sizeof(T) == 2 || sizeof(T) == 4,
         "CreateAddrReg only support type b8/b16/b32 on current device");
