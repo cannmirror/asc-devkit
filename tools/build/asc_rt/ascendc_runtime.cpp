@@ -124,7 +124,6 @@ bool AscendCheckSoCVersion(const char *socVersion, char *errMsg)
         {"ascend910_9382", "Ascend910_9382"},
         {"ascend910_9362", "Ascend910_9362"},
 
-
         {"ascend910a", "Ascend910A"},
         {"ascend910proa", "Ascend910ProA"},
         {"ascend910b", "Ascend910B"},

@@ -345,6 +345,7 @@ const static std::map<std::string, std::string> convertMapInAicpu = {
 const static std::map<std::string, std::string> AICPUshortVersionToNpuArchMap = {
     {"Ascend910B", "2201"}, // ascend910b_list
     {"Ascend910", "1001"},
+    {"Ascend310P", "2002"},
     {"Ascend310B", "3002"},
     {"Ascend950", "3510"},
     {"MC62CM12A", "5102"},
