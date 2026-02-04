@@ -52,6 +52,7 @@
 | [matmul_mndb](./matmul_mndb)                                                               | 本样例介绍调用Matmul API实现M或N轴方向流水并行的单算子 |
 | [matmul_preload](./matmul_preload)                                                         | 本样例介绍调用Matmul MDL模板实现使能M或N方向预加载功能的单算子 |
 | [matmul_constant](./matmul_constant)                                                       | 本样例介绍调用Matmul MDL模板使能Tiling常量化的单算子 |
+| [matmul_column_major](./matmul_column_major)                                               | 本样例介绍A、B、C矩阵为COLUMN_MAJOR格式排布的矩阵乘的单算子 |
 | [mmad](./mmad)                                                                             | 本样例介绍基于基础API Mmad实现矩阵乘 |
 | [mmad_load3dv2](./mmad_load3dv2)                                                           | 本样例介绍LoadData3DV2指令将A、B矩阵从L1搬运到L0A/L0B的过程，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵。LoadData3DV2指令参数配置及执行指令前后各个矩阵数据排布变化，均配合示意图进行了说明 |
 | [mmad_s8_f16_f32_with_A_B_transpose_option](./mmad_s8_f16_f32_with_A_B_transpose_option)                                                           | 本样例介绍了在 int8_t / half / float 三种数据类型下，以及左、右矩阵均不转置 / 左矩阵不转置、右矩阵转置 / 左矩阵转置、右矩阵不转置 / 左、右矩阵均转置 共 12 种矩阵乘法场景中，相关指令的使用方法，其中 A 和 B 分别表示矩阵乘法的左右输入矩阵。|
