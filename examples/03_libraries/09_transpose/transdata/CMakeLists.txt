@@ -1,6 +1,3 @@
-#!/usr/bin/python3
-# coding=utf-8
-
 # ----------------------------------------------------------------------------------------------------------
 # Copyright (c) 2025 Huawei Technologies Co., Ltd.
 # This program is free software, you can redistribute it and/or modify it under the terms and conditions of
@@ -12,22 +9,29 @@
 # ----------------------------------------------------------------------------------------------------------
 
 
-import os
-import numpy as np
+cmake_minimum_required(VERSION 3.16)
 
+find_package(ASC REQUIRED)
 
-def gen_golden_data_simple():
-    dtype = np.float32
-    input_shape = [7, 2024]
-    input_x = np.random.uniform(-100, 100, input_shape).astype(dtype)
-    golden = np.sum(input_x[:, :-1], axis=1).astype(dtype)
-    os.makedirs("input", exist_ok=True)
-    os.makedirs("output", exist_ok=True)
-    input_x.tofile("./input/input_x.bin")
-    golden.tofile("./output/golden.bin")
-    print(f" golden: {golden}")
-    print(f" input: {input_x}")
+project(kernel_samples LANGUAGES ASC CXX)
 
+add_executable(demo
+    transdata.asc
+)
 
-if __name__ == '__main__':
-    gen_golden_data_simple()
+target_link_libraries(demo PRIVATE
+    tiling_api
+    register
+)
+
+# ======================================================================================
+# NPU 编译选项配置
+#
+# 说明：
+#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
+# ======================================================================================
+target_compile_options(demo PRIVATE
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    # # 该NPU架构版本号暂未正式发布，后续可能会有变更，请关注正式版本发布信息
+    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+)

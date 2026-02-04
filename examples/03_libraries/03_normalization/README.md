@@ -17,4 +17,5 @@
 | [layernormgradbeta](./layernormgradbeta) | 本样例基于Kernel直调算子工程，介绍了调用LayerNormGradBeta高阶API实现layernormgradbeta单算子，LayerNormGradBeta是对于每一层的输入做规范化处理，使得每一层的分布尽可能的相同，从而加速训练过程和提高模型的泛化能力（有效减少梯度消失和梯度爆炸问题） |
 | [normalize](./normalize) | 本样例基于Kernel直调算子工程，介绍了调用Normalize高阶API实现normalize单算子，LayerNorm中，已知均值和方差，计算shape为[A，R]的输入数据的标准差的倒数rstd和y |
 | [rmsnorm](./rmsnorm) | 本样例基于Kernel直调算子工程，介绍了调用RmsNorm高阶API实现rmsnorm单算子，实现对shape大小为[B，S，H]的输入数据的RmsNorm归一化 |
+| [welford_finalize](./welford_finalize) | 本样例演示了基于WelfordFinalize高阶API的算子实现，Welford计算是一种在线计算均值和方差的方法 |
 | [welford_update](./welford_update) | 本样例基于Kernel直调算子工程，介绍了调用WelfordUpdate高阶API实现welford_update单算子，Welford是一种在线计算均值和方差的方法 |
