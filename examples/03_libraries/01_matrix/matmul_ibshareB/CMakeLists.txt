@@ -26,6 +26,15 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
+message(STATUS "[INFO] MODE is ${MODE}")
+if (MODE GREATER 0)
+    target_compile_definitions(demo PRIVATE
+        ENABLE_CUBE_ONLY
+    )
+    message(STATUS "[INFO] Enable CUBE_ONLY")
+endif()
+
+
 # ======================================================================================
 # NPU 编译选项配置
 #

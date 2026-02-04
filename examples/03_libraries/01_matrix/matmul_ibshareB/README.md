@@ -56,14 +56,28 @@
       - C为目的操作数，存放矩阵乘结果的矩阵，形状为[M, N]。
       - Bias为矩阵乘偏置，形状为[1, N]。对A*B结果矩阵的每一行都采用该bias进行偏置。
     - 具体步骤：
-      - 创建Matmul对象，设置B矩阵的IBShare参数为true，使用默认的IBShare模板CFG_IBSHARE_NORM创建Matmul对象。
-        ```
-        using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>;
-        using B_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType, false, LayoutMode::NONE, true>;
-        using C_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>;
-        using BIAS_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>;
-        AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_IBSHARE_NORM> matmulObj;
-        ```
+      - 创建Matmul对象，设置B矩阵的IBShare参数为true。
+        - 方式一：默认实现，使用默认的IBShare模板CFG_IBSHARE_NORM创建Matmul对象。
+          ```
+          #include "lib/matmul_intf.h"
+      
+          using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>;
+          using B_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType, false, LayoutMode::NONE, true>;
+          using C_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>;
+          using BIAS_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>;
+          AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_IBSHARE_NORM> matmulObj;
+          ```
+        - 方式二：使能纯Cube模式实现，在定义Matmul对象的代码中，设置ASCEND_CUBE_ONLY宏，且必须在#include "lib/matmul_intf.h"之前设置。
+          ```
+          #define ASCNEND_CUBE_ONLY // 设置ASCEND_CUBE_ONLY宏
+          #include "lib/matmul_intf.h"
+
+          using A_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, AType>;
+          using B_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BType, false, LayoutMode::NONE, true>;
+          using C_TYPE = AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, CType>;
+          using BIAS_TYPE =  AscendC::MatmulType<AscendC::TPosition::GM, CubeFormat::ND, BiasType>;
+          AscendC::Matmul<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, CFG_NORM> matmulObj;
+          ```
       - 初始化操作。
       - 设置左矩阵A、右矩阵B、Bias。
       - 完成矩阵乘操作。
@@ -76,8 +90,21 @@
         - 设置A、B、C、Bias的参数类型信息；M、N、Ka、Kb形状信息等。
         - 调用GetTiling接口，获取Tiling信息。
 
+  - 核函数  
+    使用纯Cube模式时，在核函数实现的入口处，指定KERNEL_TYPE_AIC_ONLY。
+    ```
+    #ifdef ENABLE_CUBE_ONLY
+    KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIC_ONLY);
+    #endif
+    ```
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
+    ```
+    matmul_ibshareb_custom<<<tilingData.usedCoreNum / MIX_RATIO, nullptr, stream>>>(x1, x2, bias, y, workspaceDevice,
+                          tilingDevice);       // 方式一：非纯Cube模式，SetDim设置为AIV:AIC组合的核数
+    matmul_ibshareb_custom<<<tilingData.usedCoreNum, nullptr, stream>>>(x1, x2, bias, y, workspaceDevice,
+                          tilingDevice);       // 方式二：纯Cube模式，SetDim设置为AIC的核数                          
+    ```
 
 ## 编译运行
 
@@ -101,8 +128,10 @@
 
 - 样例执行  
   ```bash
+  # -DMODE=0：默认实现。使能IBShare模板；
+  # -DMODE=1：使能纯Cube模式 + IBShareB；
   mkdir -p build && cd build;    # 创建并进入build目录
-  cmake ..;make -j;    # 编译工程
+  cmake .. -DMODE=0;make -j;    # 编译工程
   python3 ../scripts/gen_data.py    # 生成测试输入数据
   ./demo                        # 执行编译生成的可执行程序，执行样例
   python3 ../scripts/verify_result.py output/output.bin output/golden.bin    # 验证输出结果是否正确，确认算法逻辑正确
