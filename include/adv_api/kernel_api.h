@@ -157,6 +157,7 @@
 #include "activation/reglu.h"
 #include "normalization/rmsnorm.h"
 #include "math/cumsum.h"
+#include "reduce/reduce_common.h"
 #endif
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \

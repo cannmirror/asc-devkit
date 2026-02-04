@@ -18,7 +18,6 @@
 #include "kernel_micro_common_impl.h"
 namespace AscendC {
 namespace MicroAPI {
-#define SPR_AR_VALUE 74
 
 template <typename T = DefaultType, typename U = DefaultType, typename RegT, typename RegU>
 __simd_callee__ inline void GatherImpl(RegT &dstReg, RegT &srcReg0, RegU &srcReg1)
@@ -75,6 +74,7 @@ __aicore__ inline int64_t GetSprImpl()
 template <SpecialPurposeReg spr = SpecialPurposeReg::AR>
 __simd_callee__ inline void ClearSprImpl()
 {
+    constexpr uint8_t SPR_AR_VALUE = 74;
     static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
         "current ClearSpr api only support SpecialPurposeReg AR on current device!");
     constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
