@@ -9,5 +9,5 @@
 | 目录名称 | 功能描述 |
 | ------- | -------- |
 | [read_gm_by_pass_dcache](./read_gm_by_pass_dcache)   | 本样例介绍基础api ReadGmByPassDcache的调用，该api功能：不经过DCache从GM地址上读数据。 |
-| [to_float](./to_float)                               | 本样例介绍基础api ToFLoat的调用，该api的功能将输入的标量数据转换为float类型。 |
+| [cast](./cast)                               | 本样例介绍基础api Cast的调用，该api的功能将输入的标量数据转换为float类型。 |
 | [write_gm_by_pass_dcache](./write_gm_by_pass_dcache) | 本样例介绍基础api WriteGmByPassDcache的调用，该api功能：不经过DCache向GM地址上写数据。 |

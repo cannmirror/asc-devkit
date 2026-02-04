@@ -8,6 +8,6 @@
 
 |  目录名称                                                   |  功能描述                                              |
 | ------------------------------------------------------------ | ---------------------------------------------------- |
-| [cast_deq](./cast_deq) | 本样例介绍调用CastDeq基础API实现对输入做量化并进行精度转换 |
+| [cast_dequant](./cast_dequant) | 本样例介绍调用CastDequant基础API实现对输入做量化并进行精度转换 |
 | [dequant](./dequant) | 本样例基于Kernel直调算子工程，介绍了调用Dequant高阶API实现Dequant单算子，按元素做反量化计算，比如将int32_t数据类型反量化为half/float等数据类型 |
 | [quant](./quant) | 本样例基于Kernel直调算子工程，介绍了调用Quant高阶API实现QuantCustom单算子，按元素做量化计算，比如将half/float数据类型量化为int8_t数据类型 |

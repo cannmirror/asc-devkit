@@ -66,7 +66,7 @@
 
   - Kernel实现
 
-    计算逻辑是：在Process中使用InitDetermineComputeWorkspace基础API接口完成workspace初始化，然后调用WaitPreBlock确认是否需要继续等待；接着调用SetAtomicAdd开启原子累加，通过DataCopy将数据从dstLocal累加至GM；然后调用SetAtomicNone关闭原子累加；最后，调用NotifyNextBlock通过写GM地址，通知下一个核当前核的操作已完成，下一个核可以进行操作
+    计算逻辑是：在Process中使用InitDetermineComputeWorkspace基础API接口完成workspace初始化，然后调用WaitPreBlock确认是否需要继续等待；接着调用SetAtomicAdd开启原子累加，通过DataCopy将数据从dstLocal累加至GM；然后调用DisableDmaAtomic关闭原子累加；最后，调用NotifyNextBlock通过写GM地址，通知下一个核当前核的操作已完成，下一个核可以进行操作
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

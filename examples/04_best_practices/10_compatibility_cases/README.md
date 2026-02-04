@@ -19,11 +19,11 @@
 </tr>
 <tr>
 <td rowspan="2" align="center">L0A Buffer/L0B Buffer初始化</td>
-<td align="center"><a href="./init_const_value_910B/">init_const_value_910B</a></td>
-<td align="center">直接使用基础API InitConstValue对L0A Buffer和L0B Buffer进行初始化</td>
+<td align="center"><a href="./fill_910B/">fill_910B</a></td>
+<td align="center">直接使用基础API Fill对L0A Buffer和L0B Buffer进行初始化</td>
 </tr>
 <tr>
-<td align="center"><a href="./init_const_value_950/">init_const_value_950</a></td>
+<td align="center"><a href="./fill_950/">fill_950</a></td>
 <td align="center">新架构版本删除L0A Buffer/L0B Buffer初始化的相关硬件指令。用户可以通过先初始化L1 Buffer，再通过LoadData接口将L1 Buffer上的数据搬运到L0A Buffer/L0B Buffer。</td>
 </tr>
 <td rowspan="2" align="center">int4b_t数据类型的矩阵计算</td>
