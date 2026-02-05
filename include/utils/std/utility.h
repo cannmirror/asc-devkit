@@ -15,9 +15,11 @@
 #ifndef AICORE_UTILS_STD_UTILITY_H
 #define AICORE_UTILS_STD_UTILITY_H
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
+
 #include "impl/utils/std/utility/declval.h"
-#include "impl/utils/std/utility/forward.h"
-#include "impl/utils/std/utility/move.h"
 #include "impl/utils/std/utility/integer_sequence.h"
 
 namespace AscendC {
@@ -28,4 +30,8 @@ template <size_t N>
 using make_index_sequence = MakeIntegerSequence<size_t, N>;
 }
 }
+
+#include "impl/utils/std/utility/forward.h"
+#include "impl/utils/std/utility/move.h"
+
 #endif // AICORE_UTILS_STD_UTILITY_H

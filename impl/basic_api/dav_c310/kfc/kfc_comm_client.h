@@ -16,8 +16,12 @@
 #define __KERNEL_KFC_COMM_CLIENT_H__
 
 #include "kfc_comm.h"
+#include "kernel_tpipe.h"
 
 namespace AscendC {
+
+class KfcCommClient;
+
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
 #ifdef SPLIT_CORE_CUBE
 #elif defined(SPLIT_CORE_VEC)

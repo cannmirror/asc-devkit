@@ -14,11 +14,18 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BINARY_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BINARY_INTERFACE_H
+
+#include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "kernel_struct_binary.h"
 
-#if ASCENDC_CPU_DEBUG
-#include "kernel_check.h"
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#include "micro_api/kernel_micro_utils.h"
+#endif
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
 #endif
 
 #pragma begin_pipe(V)

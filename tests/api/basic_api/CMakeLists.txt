@@ -12,6 +12,8 @@ cmake_minimum_required(VERSION 3.16.0)
 set(CMAKE_CXX_STANDARD 17)
 find_package(tikicpulib REQUIRED)
 
+add_subdirectory(ascendc_header_checker)
+
 set(BASIC_UT_PRODUCT_TYPE_LIST_INIT
     ascend910
     ascend610

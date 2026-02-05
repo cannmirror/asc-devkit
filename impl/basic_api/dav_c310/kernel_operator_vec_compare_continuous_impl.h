@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_COMPARE_CONTINUOUS_IMPL_H
 
 #include "kernel_utils.h"
+#include "micro_api/kernel_micro_intf.h"
 
 namespace AscendC {
 

@@ -16,6 +16,12 @@
 #define ASCENDC_MODULE_MICRO_ADDRREG_INTERFACE_H
 
 #include "kernel_micro_common_intf.h"
+
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2103) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || \
+           (__NPU_ARCH__ == 3113))
+#include "kernel_macros.h"
+#endif
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T> __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0);

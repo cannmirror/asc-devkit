@@ -19,6 +19,11 @@
 #include "kernel_struct_gather.h"
 #include "kernel_struct_binary.h"
 #include "kernel_struct_unary.h"
+#include "kernel_operator_vec_binary_intf.h"
+#include "kernel_operator_block_sync_intf.h"
+#include "kernel_operator_vec_gather_impl.h"
+#include "../../../include/basic_api/kernel_operator_vec_brcb_intf.h"
+#include "../../../include/basic_api/kernel_operator_vec_binary_scalar_intf.h"
 #if ASCENDC_CPU_DEBUG
 #include "kernel_check.h"
 #endif

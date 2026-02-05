@@ -14,10 +14,18 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_VCONV_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_VCONV_INTERFACE_H
+
+#include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "kernel_struct_binary.h"
 #include "kernel_struct_unary.h"
 #include "kernel_struct_vdeq.h"
+#include "utils/kernel_utils_mode.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 #pragma begin_pipe(V)

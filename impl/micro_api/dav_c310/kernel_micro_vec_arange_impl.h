@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_ARANGE_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_ARANGE_IMPL_H
 
+#include "../../../include/micro_api/kernel_micro_vec_duplicate_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <IndexOrder order = IndexOrder::INCREASE_ORDER, typename T, typename U>

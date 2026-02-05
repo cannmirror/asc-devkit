@@ -15,7 +15,6 @@
 #ifndef ASCENDC_MODULE_MICRO_UTILS_H
 #define ASCENDC_MODULE_MICRO_UTILS_H
 
-#include "kernel_tensor.h"
 #include "utils/kernel_utils_mode.h"
 
 namespace AscendC {

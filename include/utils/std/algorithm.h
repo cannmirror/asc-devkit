@@ -14,8 +14,10 @@
  */
 #ifndef AICORE_UTILS_STD_ALGORITHM_H
 #define AICORE_UTILS_STD_ALGORITHM_H
-#include "impl/utils/std/algorithm/max.h"
-#include "impl/utils/std/algorithm/min.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 namespace Std {
@@ -23,4 +25,8 @@ template <typename T, typename U> ASCENDC_HOST_AICORE inline T min(const T src0,
 template <typename T, typename U> ASCENDC_HOST_AICORE inline T max(const T src0, const U src1);
 }
 }
+
+#include "impl/utils/std/algorithm/max.h"
+#include "impl/utils/std/algorithm/min.h"
+
 #endif  // AICORE_UTILS_STD_ALGORITHM_H

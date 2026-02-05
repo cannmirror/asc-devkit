@@ -17,6 +17,11 @@
 
 #include "kernel_basic_intf.h"
 
+#if defined (ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif // ASCENDC_CPU_DEBUG
+
 namespace AscendC {
 constexpr int64_t INIT_PRELOAD_OFFSET = -256;
 constexpr int64_t PRELOAD_OFFSET = 256;

@@ -17,6 +17,7 @@
 
 #include "kernel_operator_tensor_trait.h"
 #include "kernel_struct_data_copy.h"
+#include "kernel_tensor.h"
 
 namespace AscendC {
 namespace TileInternal {

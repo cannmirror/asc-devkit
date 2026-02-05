@@ -17,6 +17,43 @@
 #define ASCENDC_MODULE_OPERATOR_SYS_VAR_IMPL_H
 
 namespace AscendC {
+
+__aicore__ inline int64_t GetSubBlockIdxImpl()
+{
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    return 0;
+#else
+    return get_subblockid();
+#endif
+}
+
+__aicore__ inline int64_t GetTaskRationImpl()
+{
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    return g_taskRation;
+#else
+    return get_subblockdim();
+#endif
+}
+
+__aicore__ inline int64_t TscmGetTaskRation()
+{
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        return g_taskRation;
+#else
+        return get_subblockdim();
+#endif
+}
+
+__aicore__ inline int64_t GetBlockIdxImpl()
+{
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    return block_idx;
+#else
+    return get_block_idx();
+#endif
+}
+
 __aicore__ inline void GetArchVersionImpl(uint32_t& coreVersion)
 {
     const int32_t coreVersionOffset = 32;
@@ -51,6 +88,28 @@ __aicore__ inline int64_t GetSystemCycleImpl()
     asm volatile("MOV %0, SYS_CNT\n" : "+l"(sysCnt));
     return (int64_t)(sysCnt);
 #endif
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline int64_t GetSprImpl(){
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current GetSpr api only support SpecialPurposeReg AR on current device!");
+    return get_ar();
+}
+
+__aicore__ inline void ClearARImpl() {
+    constexpr uint8_t SPR_AR_VALUE = 74;
+    constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
+    sprclr(sprValue);
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline void ClearSprImpl(){
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current ClearSpr api only support SpecialPurposeReg AR on current device!");
+    if constexpr (spr == SpecialPurposeReg::AR) {
+        VF_CALL<ClearARImpl>();
+    }
 }
 
 __aicore__ inline void SetPcieRDCtrlImpl(bool isSetPcie, uint8_t maxBurstLen)

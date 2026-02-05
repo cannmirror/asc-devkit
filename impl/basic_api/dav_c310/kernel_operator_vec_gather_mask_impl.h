@@ -15,6 +15,9 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_GATHER_MASK_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_GATHER_MASK_IMPL_H
 #include "kernel_struct_gather.h"
+#include "kernel_common.h"
+#include "kernel_operator_sys_var_intf.h"
+#include "micro_api/kernel_micro_intf.h"
 
 namespace AscendC {
 __aicore__ inline int64_t GetGatherMaskRemainCountImpl()

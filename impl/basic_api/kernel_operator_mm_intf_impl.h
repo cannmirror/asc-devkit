@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_MM_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_check.h"
+#include "kernel_reg.h"
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_mm.h"
 #include "tile_api/kernel_tensor_tile_load_data_impl.h"
@@ -609,5 +610,24 @@ __aicore__ inline void SetHF32TransMode(bool hf32TransMode)
     SetHF32TransModeImpl(hf32TransMode);
 }
 
+__aicore__ inline void SetHF32Mode(HF32Mode mode)
+{
+    SetHF32ModeImpl(mode == HF32Mode::Enable);
+}
+
+__aicore__ inline void SetHF32TransMode(HF32TransMode mode)
+{
+    SetHF32TransModeImpl(mode == HF32TransMode::Enable);
+}
+
+__aicore__ inline void SetMMRowMajor()
+{
+    SetMMLayoutTransformImpl(false);
+}
+
+__aicore__ inline void SetMMColumnMajor()
+{
+    SetMMLayoutTransformImpl(true);
+}
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_MM_INTERFACE_IMPL_H

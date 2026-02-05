@@ -22,6 +22,50 @@
 
 namespace AscendC {
 
+__aicore__ inline int64_t GetSubBlockIdxImpl()
+{
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    if ASCEND_IS_AIV {
+        return sub_block_idx;
+    }
+    return 0;
+#else
+    return get_subblockid();
+#endif
+}
+
+__aicore__ inline int64_t GetTaskRationImpl()
+{
+    if ASCEND_IS_AIC {
+        return 1;
+    } else {
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+        return g_taskRation;
+#else
+        return get_subblockdim();
+#endif
+    }
+}
+
+__aicore__ inline int64_t GetBlockIdxImpl()
+{
+    // get_block_idx --- return 0 ~ 23 in aic/aiv
+    // get_subblockdim --- return 1 in aic, return 2 in aiv
+    // get_subblockid --- return 0 in aic, return 0 ~ 1 in aiv
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    if ASCEND_IS_AIV {
+        return block_idx * g_taskRation + sub_block_idx;
+    }
+    return block_idx;
+#else
+    if ASCEND_IS_AIV {
+        return get_block_idx() * GetTaskRationImpl() + get_subblockid();
+    } else {
+        return get_block_idx();
+    }
+#endif
+}
+
 __aicore__ inline int64_t GetSubBlockNumImpl()
 {
     if ASCEND_IS_AIC {

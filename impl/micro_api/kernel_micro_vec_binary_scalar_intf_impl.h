@@ -15,8 +15,6 @@
 #ifndef ASCENDC_KERNEL_MICRO_VEC_BINARY_SCALAR_INTERFACE_IMPL_H
 #define ASCENDC_KERNEL_MICRO_VEC_BINARY_SCALAR_INTERFACE_IMPL_H
 
-#include "kernel_micro_vec_binary_intf_impl.h"
-
 #if __NPU_ARCH__ == 3003
 #include "micro_api/dav_l300/kernel_micro_vec_binary_scalar_impl.h"
 #elif __NPU_ARCH__ == 3113

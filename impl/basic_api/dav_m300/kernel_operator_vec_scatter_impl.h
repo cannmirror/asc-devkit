@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_SCATTER_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_SCATTER_IMPL_H
 
+#include "kernel_common.h"
+
 namespace AscendC {
 /* **************************************************************************************************
  * Scatter                                             *

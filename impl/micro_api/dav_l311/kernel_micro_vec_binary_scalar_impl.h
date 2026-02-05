@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_MICRO_VEC_BINARY_SCALAR_IMPL_H
 
 #include "kernel_micro_common_impl.h"
+#include "../../../include/micro_api/kernel_micro_vec_binary_intf.h"
 
 namespace AscendC {
 namespace MicroAPI {

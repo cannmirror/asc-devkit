@@ -15,11 +15,29 @@
 #ifndef ASCENDC_MODULE_OPERATOR_UTILS_INTF_H
 #define ASCENDC_MODULE_OPERATOR_UTILS_INTF_H
 
+#include "kernel_macros.h"
+#include "kernel_operator_block_sync_intf.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
 namespace AscendC {
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 template <int count = 1>
-__aicore__ inline void Nop();
+__aicore__ inline void Nop()
+{
+    if (count <= 0) {
+        return;
+    }
+    PipeBarrier<PIPE_ALL>();
+    #pragma unroll
+    for (int i = 0; i < count; i++) {
+        asm volatile("nop");
+    }
+    PipeBarrier<PIPE_ALL>();
+}
 #endif
 
 enum class EngineType : int32_t {

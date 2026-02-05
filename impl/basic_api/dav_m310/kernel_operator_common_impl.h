@@ -15,21 +15,8 @@
 #ifndef ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #include "kernel_struct_mm.h"
+#include "kernel_operator_swap_mem_intf.h"
 namespace AscendC {
-__aicore__ inline int64_t GetSubBlockIdxImpl()
-{
-    return 0;
-}
-
-__aicore__ inline int64_t GetTaskRationImpl()
-{
-    return 1;
-}
-
-__aicore__ inline int64_t GetBlockIdxImpl()
-{
-    return block_idx;
-}
 
 __aicore__ inline void SetSysWorkspace(GM_ADDR workspace)
 {
@@ -120,23 +107,6 @@ __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &
 __aicore__ inline void SetSyncBaseAddr(uint64_t config)
 {
     ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "SetSyncBaseAddr is not supported on current device"); });
-}
-
-template <typename T>
-__aicore__ inline void DataCachePreloadImpl(const GlobalTensor<uint64_t> &src, const T cacheOffset)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupport DataCachePreload on current device"); });
-}
-
-__aicore__ inline int64_t GetICachePreloadStatusImpl()
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupport GetICachePreloadStatus on current device"); });
-    return 0;
-}
-
-__aicore__ inline void PreLoad(const int64_t preFetchLen)
-{
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ICachePreLoad is not supported on current device"); });
 }
 
 __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& checkParams)

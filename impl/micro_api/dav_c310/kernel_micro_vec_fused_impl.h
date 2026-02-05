@@ -15,6 +15,9 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_FUSED_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_FUSED_IMPL_H
 
+#include "kernel_micro_common_impl.h"
+#include "../../../include/micro_api/kernel_micro_struct_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T0, typename T1, typename T2, RegLayout layout, typename T3, typename T4>

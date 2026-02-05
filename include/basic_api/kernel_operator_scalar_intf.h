@@ -14,8 +14,14 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_SCALAR_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_SCALAR_INTERFACE_H
-#include "kernel_tensor.h"
-#include "kernel_scalar.h"
+
+#include "kernel_macros.h"
+#include "utils/kernel_utils_mode.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 template <int countValue>

@@ -15,7 +15,18 @@
 #ifndef ASCENDC_KERNEL_OPERATOR_LIMITS_INTF_H
 #define ASCENDC_KERNEL_OPERATOR_LIMITS_INTF_H
 
+#include "kernel_macros.h"
+#include "kernel_tensor.h"
 #include "kernel_operator_vec_duplicate_intf.h"
+#include "utils/kernel_utils_ceil_oom_que.h"
+#include "utils/kernel_utils_struct_norm_sort.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "kernel_bf16.h"
+#endif
+
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 namespace AscendC {
 template <typename T>

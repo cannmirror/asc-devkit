@@ -14,12 +14,16 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_INTERFACE_H
+
+#include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "kernel_struct_unary.h"
 
-#if ASCENDC_CPU_DEBUG
-#include "kernel_check.h"
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
 #endif
+
 #pragma begin_pipe(V)
 namespace AscendC {
 /*

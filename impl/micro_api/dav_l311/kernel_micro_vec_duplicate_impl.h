@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_MICRO_VEC_DUPLICATE_IMPL_H
 
 #include "kernel_micro_common_impl.h"
+#include "../../basic_api/dav_l311/kernel_operator_common_impl.h"
 
 namespace AscendC {
 namespace MicroAPI {

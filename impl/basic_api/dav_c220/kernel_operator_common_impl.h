@@ -19,49 +19,6 @@
 #include "kernel_tensor.h"
 #include "kernel_struct_mm.h"
 namespace AscendC {
-__aicore__ inline int64_t GetSubBlockIdxImpl()
-{
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    if ASCEND_IS_AIV {
-        return sub_block_idx;
-    }
-    return 0;
-#else
-    return get_subblockid();
-#endif
-}
-
-__aicore__ inline int64_t GetTaskRationImpl()
-{
-    if ASCEND_IS_AIC {
-        return 1;
-    } else {
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-        return g_taskRation;
-#else
-        return get_subblockdim();
-#endif
-    }
-}
-
-__aicore__ inline int64_t GetBlockIdxImpl()
-{
-    // get_block_idx --- return 0 ~ 23 in aic/aiv
-    // get_subblockdim --- return 1 in aic, return 2 in aiv
-    // get_subblockid --- return 0 in aic, return 0 ~ 1 in aiv
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    if ASCEND_IS_AIV {
-        return block_idx * g_taskRation + sub_block_idx;
-    }
-    return block_idx;
-#else
-    if ASCEND_IS_AIV {
-        return get_block_idx() * GetTaskRationImpl() + get_subblockid();
-    } else {
-        return get_block_idx();
-    }
-#endif
-}
 
 [[deprecated(
     "NOTICE: SetSysWorkSpace has been deprecated and will be removed in the next version.")]]
@@ -128,26 +85,6 @@ __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &
     atomicOp = ((static_cast<uint64_t>(stAtomic) >> opBit) & opMask);
 }
 
-template <typename T>
-__aicore__ inline void DataCachePreloadImpl(const GlobalTensor<uint64_t> &src, const T cacheOffset)
-{
-    if constexpr ((IsSameType<T, int16_t>::value) || (IsSameType<T, int64_t>::value)) {
-        dc_preload((__gm__ uint64_t *)src.GetPhyAddr(), cacheOffset);
-    } else {
-        ASCENDC_REPORT_NOT_SUPPORT(false, "current data type");
-    }
-}
-
-__aicore__ inline void PreLoadImpl(void *pc, const int64_t preFetchLen)
-{
-    preload(pc, preFetchLen);
-}
-
-__aicore__ inline int64_t GetICachePreloadStatusImpl()
-{
-    return get_icache_prl_st();
-}
-
 __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& checkParams)
 {
     uint64_t config = 0;
@@ -174,10 +111,5 @@ __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& che
     }
 }
 
-__aicore__ inline void PreLoad(const int64_t preFetchLen)
-{
-    int64_t pc = get_pc() & 0xFFFFFFFFFFFF;
-    PreLoadImpl(reinterpret_cast<void *>(pc), preFetchLen);
-}
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H

@@ -16,8 +16,11 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_CMPSEL_IMPL_H
 
 #include "kernel_utils.h"
+#include "kernel_tpipe.h"
+#include "kernel_common.h"
 #include "kernel_struct_binary.h"
 #include "kernel_struct_unary.h"
+#include "kernel_operator_block_sync_intf.h"
 
 namespace AscendC {
 /* ***************************************************************************************

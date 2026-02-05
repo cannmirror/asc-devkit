@@ -14,9 +14,11 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_SYNC_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_SYNC_IMPL_H
-namespace AscendC {
 
 #include "utils/kernel_utils_constants.h"
+#include "kernel_tpipe.h"
+#include "kernel_common.h"
+namespace AscendC {
 
 __aicore__ inline void ClcSyncCount(__gm__ int32_t* localSyncGM, __ubuf__ int32_t* ubWorkspaceAddr,
     const int32_t blockIdx, const int32_t totalBlocks, bool isFirst, int32_t& count)

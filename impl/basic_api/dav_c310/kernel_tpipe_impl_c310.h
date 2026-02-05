@@ -14,10 +14,42 @@
  */
 #ifndef ASCENDC_MODULE_TPIPE_IMPL_C310_H
 #define ASCENDC_MODULE_TPIPE_IMPL_C310_H
+
+#include "common_types.h"
+#include "dav_c310/kernel_operator_common_impl.h"
+#include "kernel_check.h"
+#include "kernel_common.h"
+#include "kernel_event.h"
+#include "kernel_log.h"
+#include "kernel_macros.h"
+#include "kernel_operator_block_sync_intf.h"
+#include "kernel_struct_data_copy.h"
+#include "kernel_tensor.h"
+#include "kernel_tensor_base.h"
+#include "kernel_tensor_impl.h"
 #include "kernel_tpipe.h"
-#include "kernel_prof_trace_intf.h"
-#include "include/utils/std/tuple.h"
+#include "kernel_tpipe_base.h"
 #include "kernel_utils.h"
+#include "kernel_utils_base.h"
+#include "include/utils/std/tuple.h"
+#include "utils/kernel_utils_ceil_oom_que.h"
+#include "utils/kernel_utils_constants.h"
+#include "utils/kernel_utils_mode_cpu.h"
+
+#if defined (ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include <map>
+#include <random>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif
+
+namespace AscendC {
+namespace Std {
+template <typename... Tps>
+class tuple;
+}
+} // namespace AscendC
 
 namespace AscendC {
 __aicore__ inline void PrintTimeStamp(uint32_t descId);

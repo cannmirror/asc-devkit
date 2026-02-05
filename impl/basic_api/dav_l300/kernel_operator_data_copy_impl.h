@@ -327,6 +327,9 @@ __aicore__ inline void DataCopyPadL12GMImpl(__gm__ T* dst, __cbuf__ T* src, cons
     copy_cbuf_to_gm_align((__gm__ uint8_t*)dst, (__cbuf__ uint8_t*)src, 0, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride, intriParams.dstStride);
 }
 
+template <TPosition pos>
+__aicore__ inline uint64_t TransUBAddr(uint64_t addr);
+
 template <typename T>
 __aicore__ inline void DataCopyL12GMNZ2NDImplBase(__gm__ T* dstAddr, __cbuf__ T* srcAddr, uint16_t high, uint16_t width,
     uint16_t srcNStride, uint16_t dstDStride)

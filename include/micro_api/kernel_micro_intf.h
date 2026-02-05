@@ -15,10 +15,19 @@
 #ifndef ASCENDC_MODULE_MICRO_INTERFACE_H
 #define ASCENDC_MODULE_MICRO_INTERFACE_H
 
+#include "kernel_macros.h"
+
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || \
     ((__NPU_ARCH__ == 3113))) || defined(__ASC_NPU_HOST__)
-#include "kernel_micro_common_intf.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
+
+#include "kernel_micro_utils.h"
 #include "kernel_micro_maskreg_intf.h"
+#include "kernel_micro_common_intf.h"
+#include "kernel_micro_membar_intf.h"
 #include "kernel_micro_addrreg_intf.h"
 #include "kernel_micro_vec_duplicate_intf.h"
 #include "kernel_micro_vec_cmpsel_intf.h"
@@ -28,6 +37,7 @@
 #include "kernel_micro_datacopy_intf.h"
 #include "kernel_micro_gather_mask_intf.h"
 #include "kernel_micro_pack_intf.h"
+#include "kernel_micro_struct_intf.h"
 #include "kernel_micro_vec_arange_intf.h"
 #include "kernel_micro_vec_reduce_intf.h"
 #include "kernel_micro_vec_ternary_scalar_intf.h"

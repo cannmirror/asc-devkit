@@ -10,6 +10,8 @@
 #ifndef ASCENDC_MODULE_OPERATOR_MM_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_MM_IMPL_H
 
+#include "../../../include/basic_api/kernel_operator_mm_bitmode_intf.h"
+
 namespace AscendC {
 /* **************************************************************************************************
  * LoadData 2dv1                                             *

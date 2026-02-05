@@ -14,15 +14,24 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_MM_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_MM_INTERFACE_H
-#include "kernel_tensor.h"
+
+#include "kernel_macros.h"
+#include "common_types.h"
+#include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_mm.h"
+#include "kernel_tensor.h"
+#include "utils/kernel_utils_constants.h"
+#include "utils/kernel_utils_macros.h"
+#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #include "kernel_operator_mm_bitmode_intf.h"
 #endif
 
-#include "kernel_operator_mm_base_impl.h"
-#include "tile_api/kernel_tensor_tile_intf_utils.h"
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 /* **************************************************************************************************
@@ -385,6 +394,58 @@ __aicore__ inline void LoadImageToLocal(const LocalTensor<T>& dst, const LoadIma
 template <typename T>
 __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTensor<T>& src);
 
+/*
+ * @brief Sets whether to enable HF32 mode for Mmad computation
+ * @param [in] hf32Mode Control parameter for Mmad HF32 mode
+ * @note When hf32Mode is true, FP32 data in L0A/L0B will be rounded to HF32 before matrix multiplication; when false,
+ * regular FP32 matrix multiplication will be executed
+ */
+__aicore__ inline void SetHF32Mode(bool hf32Mode);
+
+/*
+ * @brief Sets whether to enable HF32 mode for Mmad computation
+ * @param [in] mode HF32 mode enumeration
+ * @note When mode is HF32Mode::ENABLE, FP32 data in L0A/L0B will be rounded to HF32 before matrix multiplication;
+ * when mode is HF32Mode::DISABLE, regular FP32 matrix multiplication will be executed
+ */
+__aicore__ inline void SetHF32Mode(HF32Mode mode);
+
+/*
+ * @brief Sets the rounding method for HF32 rounding mode
+ * @param [in] hf32TransMode Control parameter for Mmad HF32 mode
+ * @note Must Call SetHF32Mode to enable HF32 rounding mode first.When hf32TransMode is true, FP32 is rounded to HF32
+ * with rounding towards zero; when false, rounded to nearest even
+ */
+__aicore__ inline void SetHF32TransMode(bool hf32TransMode);
+
+/*
+ * @brief Sets the rounding method for HF32 rounding mode
+ * @param [in] mode HF32 trans mode enumeration
+ * @note Must call SetHF32Mode to enable HF32 rounding mode first.
+ */
+__aicore__ inline void SetHF32TransMode(HF32TransMode mode);
+
+/*
+ * @brief Sets the priority direction (M or N) for Mmad/MmadWithSparse computation
+ * @param [in] mmLayoutMode Control parameter for Mmad/MmadWithSparse priority direction
+ * @note When mmLayoutMode is true, CUBE generates results first through N direction then M direction; when false, first
+ * through M direction then N direction
+ */
+__aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode);
+
+/*
+ * @ingroup MMLayout
+ * @brief Sets matrix multiplication result layout to row major
+ * @note This function sets the CUBE output to row major format (M direction first, then N direction)
+ */
+__aicore__ inline void SetMMRowMajor();
+
+/*
+ * @ingroup MMLayout
+ * @brief Sets matrix multiplication result layout to column major
+ * @note This function sets the CUBE output to column major format (N direction first, then M direction)
+ */
+__aicore__ inline void SetMMColumnMajor();
 } // namespace AscendC
 
 /* **************************************************************************************************

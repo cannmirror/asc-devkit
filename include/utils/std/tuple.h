@@ -15,6 +15,10 @@
 #ifndef AICORE_UTILS_STD_TUPLE_H
 #define AICORE_UTILS_STD_TUPLE_H
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
+
 #include "impl/utils/std/tuple/tuple_impl.h"
 
 namespace AscendC {

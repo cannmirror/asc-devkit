@@ -14,7 +14,13 @@
  */
 #ifndef ASCENDC_MODULE_STRUCT_TRANSPOSE_H
 #define ASCENDC_MODULE_STRUCT_TRANSPOSE_H
+
 #include <cstdint>
+#include "kernel_macros.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 enum class TransposeType : uint8_t {

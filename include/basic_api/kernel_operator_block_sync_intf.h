@@ -16,76 +16,36 @@
 #ifndef ASCENDC_MODULE_OPERATOR_BLOCK_SYNC_INTF_H
 #define ASCENDC_MODULE_OPERATOR_BLOCK_SYNC_INTF_H
 
+#include "kernel_macros.h"
+#include "kernel_event.h"
 #include "kernel_reg.h"
+#include "kernel_tensor.h"
 #include "kernel_tensor_base.h"
+#include "utils/kernel_utils_mode.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif
 
 namespace AscendC {
 
 template <HardEvent event>
-__aicore__ inline void SetFlag(int32_t eventID)
-{
-    if ASCEND_IS_AIC {
-        if constexpr (event == HardEvent::MTE2_V || event == HardEvent::V_MTE2 || event == HardEvent::MTE3_V
-                      || event == HardEvent::V_MTE3 || event == HardEvent::V_V || event == HardEvent::S_V ||
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-                      event == HardEvent::V_S || event == HardEvent::MTE2_MTE3 || event == HardEvent::MTE3_MTE2
-                      || event == HardEvent::MTE3_S || event == HardEvent::S_MTE3) {
-#else
-                      event == HardEvent::V_S) {
-#endif
-            return;
-        }
-    }
-    if ASCEND_IS_AIV {
-        if constexpr ((event == HardEvent::MTE2_MTE1) || (event == HardEvent::MTE1_MTE2) ||
-                      (event == HardEvent::MTE1_M) || (event == HardEvent::M_MTE1) || (event == HardEvent::M_FIX) ||
-                      (event == HardEvent::FIX_M)) {
-            return;
-        }
-    }
-    SetFlagImpl<event>(eventID);
-}
+__aicore__ inline void SetFlag(int32_t eventID);
 
 template <HardEvent event>
-__aicore__ inline void WaitFlag(int32_t eventID)
-{
-    if ASCEND_IS_AIC {
-        if constexpr (event == HardEvent::MTE2_V || event == HardEvent::V_MTE2 || event == HardEvent::MTE3_V
-                      || event == HardEvent::V_MTE3 || event == HardEvent::V_V || event == HardEvent::S_V ||
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-                      event == HardEvent::V_S || event == HardEvent::MTE2_MTE3 || event == HardEvent::MTE3_MTE2
-                      || event == HardEvent::MTE3_S || event == HardEvent::S_MTE3) {
-#else
-                      event == HardEvent::V_S) {
-#endif
-            return;
-        }
-    }
-    if ASCEND_IS_AIV {
-        if constexpr ((event == HardEvent::MTE2_MTE1) || (event == HardEvent::MTE1_MTE2) ||
-                      (event == HardEvent::MTE1_M) || (event == HardEvent::M_MTE1) || (event == HardEvent::M_FIX) ||
-                      (event == HardEvent::FIX_M)) {
-            return;
-        }
-    }
-    WaitFlagImpl(event, eventID);
-}
+__aicore__ inline void WaitFlag(int32_t eventID);
 
 template <pipe_t pipe>
-__aicore__ inline void PipeBarrier()
-{
-    PipeBarrierImpl<pipe>();
-}
+__aicore__ inline void PipeBarrier();
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||       \
     (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) ||       \
     (__NPU_ARCH__ == 3003) ||                                 \
     (__NPU_ARCH__ == 3113))
 template <MemDsbT arg0>
-__aicore__ inline void DataSyncBarrier()
-{
-    DataSyncBarrierImpl<arg0>();
-}
+__aicore__ inline void DataSyncBarrier();
 #endif
 
 /*
@@ -136,4 +96,5 @@ public:
 
 } // namespace AscendC
 
+#include "../../impl/basic_api/kernel_operator_block_sync_intf_impl.h"
 #endif // KERNEL_BLOCK_SYNC_INTF_H

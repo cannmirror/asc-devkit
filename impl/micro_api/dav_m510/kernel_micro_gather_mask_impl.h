@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_GATHER_MASK_IMPL_H
 #define ASCENDC_MODULE_MICRO_GATHER_MASK_IMPL_H
 
+#include "../../../include/micro_api/kernel_micro_struct_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, GatherMaskMode store = GatherMaskMode::NO_STORE_REG, typename U>

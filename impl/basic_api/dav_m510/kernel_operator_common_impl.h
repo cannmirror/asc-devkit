@@ -14,42 +14,6 @@
 #include "kernel_struct_mm.h"
 namespace AscendC {
 
-__aicore__ inline int64_t GetSubBlockIdxImpl()
-{
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    return 0;
-#else
-    return get_subblockid();
-#endif
-}
-
-__aicore__ inline int64_t GetTaskRationImpl()
-{
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    return g_taskRation;
-#else
-    return get_subblockdim();
-#endif
-}
-
-__aicore__ inline int64_t TscmGetTaskRation()
-{
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-        return g_taskRation;
-#else
-        return get_subblockdim();
-#endif
-}
-
-__aicore__ inline int64_t GetBlockIdxImpl()
-{
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-    return block_idx;
-#else
-    return get_block_idx();
-#endif
-}
-
 __aicore__ inline void SetSysWorkspace(GM_ADDR workspace)
 {
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -101,30 +65,6 @@ __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &
     atomicOp = ((static_cast<uint64_t>(stAtomic) >> opBit) & opMask);
 }
 
-template <typename T>
-__aicore__ inline void DataCachePreloadImpl(__gm__ uint64_t *src, const T cacheOffset)
-{
-    static_assert(SupportType<T, int16_t, int64_t>(),
-        "Failed to check dtype in DataCachePreload, current api support dtype is int16_t / int64_t");
-    dc_preload(src, cacheOffset);
-}
-
-__aicore__ inline void PreLoadImpl(void *pc, const int64_t preFetchLen)
-{
-    preload(pc, preFetchLen);
-}
-
-__aicore__ inline int64_t GetICachePreloadStatusImpl()
-{
-    return get_icache_prl_st();
-}
-
-__aicore__ inline void PreLoad(const int64_t preFetchLen)
-{
-    int64_t pc = get_pc() & 0xFFFFFFFFFFFF;
-    PreLoadImpl(reinterpret_cast<void *>(pc), preFetchLen);
-}
-
 __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& checkParams)
 {
     (void)(checkParams);
@@ -135,30 +75,6 @@ template <atomic_type_t type, atomic_op_t op>
 __aicore__ inline void SetStoreAtomicConfigImpl()
 {
     set_st_atomic_cfg(type, op);
-}
-
-template <SpecialPurposeReg spr>
-__aicore__ inline int64_t GetSprImpl(){
- 
-    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
-        "current GetSpr api only support SpecialPurposeReg AR on current device!");
-    return get_ar();
-}
- 
-__aicore__ inline void ClearARImpl() {
-    constexpr uint8_t SPR_AR_VALUE = 74;
-    constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
-    sprclr(sprValue);
-}
- 
-template <SpecialPurposeReg spr>
-__aicore__ inline void ClearSprImpl(){
-    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
-        "current ClearSpr api only support SpecialPurposeReg AR on current device!");
-    
-    if constexpr (spr == SpecialPurposeReg::AR) {
-        VF_CALL<ClearARImpl>();
-    }
 }
 
 template <int8_t startBit, int8_t endBit>

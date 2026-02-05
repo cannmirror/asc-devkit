@@ -15,8 +15,10 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_DUPLICATE_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_DUPLICATE_IMPL_H
 
-#include "kernel_tensor.h"
 #include "micro_api/kernel_micro_utils.h"
+#include "kernel_micro_common_impl.h"
+#include "../../../include/micro_api/kernel_micro_struct_intf.h"
+#include "../../../include/utils/std/type_traits.h"
 
 namespace AscendC {
 namespace MicroAPI {

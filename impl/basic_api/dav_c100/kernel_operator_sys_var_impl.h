@@ -21,6 +21,21 @@
 #include "kernel_macros.h"
 
 namespace AscendC {
+__aicore__ inline int64_t GetSubBlockIdxImpl()
+{
+    return 0;
+}
+
+__aicore__ inline int64_t GetTaskRationImpl()
+{
+    return 1;
+}
+
+__aicore__ inline int64_t GetBlockIdxImpl()
+{
+    return block_idx;
+}
+
 __aicore__ inline void GetArchVersionImpl(uint32_t& coreVersion)
 {
     (void)(coreVersion);

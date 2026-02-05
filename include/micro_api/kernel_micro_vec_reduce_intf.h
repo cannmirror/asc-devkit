@@ -16,6 +16,8 @@
 #define ASCENDC_MODULE_MICRO_VEC_REDUCE_INTERFACE_H
 
 #include "kernel_micro_common_intf.h"
+#include "kernel_micro_utils.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <ReduceType type = ReduceType::SUM, typename T = DefaultType, typename U = DefaultType,

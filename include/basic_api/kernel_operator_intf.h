@@ -52,6 +52,8 @@
 #include "kernel_operator_sys_var_intf.h"
 #include "kernel_operator_atomic_intf.h"
 #include "kernel_operator_set_atomic_intf.h"
+#include "kernel_operator_cache_intf.h"
+#include "kernel_operator_utils_intf.h"
 
 #include "include/adv_api/kernel_api.h"
 

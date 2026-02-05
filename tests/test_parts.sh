@@ -71,6 +71,7 @@ basic_test_two_targets=(
     ascendc_ut_basic_api_mc62cm12aa_FRAMEWORK
     ascendc_ut_micro_api_mc62cm12aa
     # ascendc_ut_simt_api_mc62cm12aa
+    ascendc_run_all_header_checks
 )
 
 basic_test_three_targets=(

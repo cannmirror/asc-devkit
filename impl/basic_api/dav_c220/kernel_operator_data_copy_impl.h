@@ -60,6 +60,8 @@ __aicore__ inline void ValidateUbL1Address(uint64_t absUbAddr, uint64_t absL1Add
     });
 }
 
+template <TPosition pos>
+__aicore__ inline uint64_t TransUBAddr(uint64_t addr);
 /* **************************************************************************************************
  * DataCopy                                             *
  * ************************************************************************************************* */

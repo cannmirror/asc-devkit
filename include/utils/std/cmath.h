@@ -14,8 +14,10 @@
  */
 #ifndef AICORE_UTILS_STD_CMATH_H
 #define AICORE_UTILS_STD_CMATH_H
-#include "impl/utils/std/cmath/sqrt.h"
-#include "impl/utils/std/cmath/abs.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 namespace Std {
@@ -23,4 +25,8 @@ template <typename T> __aicore__ inline T sqrt(const T src);
 template <typename T> __aicore__ inline T abs(const T src);
 }
 }
+
+#include "impl/utils/std/cmath/sqrt.h"
+#include "impl/utils/std/cmath/abs.h"
+
 #endif  // AICORE_UTILS_STD_CMATH_H

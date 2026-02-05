@@ -15,6 +15,9 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_BINARY_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_BINARY_IMPL_H
 
+#include "../../../include/micro_api/kernel_micro_vec_cmpsel_intf.h"
+#include "../../../include/micro_api/kernel_micro_vec_duplicate_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 namespace Internal {

@@ -15,13 +15,21 @@
 
 #ifndef ASCENDC_MODULE_OPERATOR_CUBE_GROUP_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_CUBE_GROUP_INTERFACE_H
-#include "kernel_tensor.h"
+
+#include "kernel_macros.h"
+#include "utils/kernel_utils_macros.h"
 #if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
 #if __NPU_ARCH__ == 2201
 #include "dav_c220/core_mng/roc/kernel_operator_cube_group_info.h"
 #elif __NPU_ARCH__ == 3101
 #include "dav_c310/core_mng/roc/kernel_operator_cube_group_info.h"
 #endif
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
+
 namespace AscendC {
 class KfcWorkspace {
 public:

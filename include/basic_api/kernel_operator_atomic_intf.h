@@ -14,7 +14,13 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_ATOMIC_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_ATOMIC_INTERFACE_H
-#include "kernel_tensor.h"
+
+#include "kernel_macros.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
+
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
 namespace AscendC {

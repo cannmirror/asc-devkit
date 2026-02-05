@@ -17,6 +17,21 @@
 #define ASCENDC_MODULE_OPERATOR_SYS_VAR_IMPL_H
 
 namespace AscendC {
+__aicore__ inline int64_t GetSubBlockIdxImpl()
+{
+    return 0;
+}
+
+__aicore__ inline int64_t GetTaskRationImpl()
+{
+    return 1;
+}
+
+__aicore__ inline int64_t GetBlockIdxImpl()
+{
+    return block_idx;
+}
+
 __aicore__ inline void GetArchVersionImpl(uint32_t& coreVersion)
 {
     ASCENDC_ASSERT((false), "unsupported GetArchVersion!");
@@ -83,6 +98,32 @@ __aicore__ inline int64_t GetSystemCycleImpl()
     return (int64_t)(sysCnt);
 #endif
     return 0;
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline int64_t GetSprImpl()
+{
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current GetSpr api only support SpecialPurposeReg AR on current device!");
+    return get_ar();
+}
+
+__simd_vf__ inline void ClearARImpl()
+{
+    constexpr uint8_t SPR_AR_VALUE = 74;
+    constexpr auto sprValue = std::integral_constant<::Spr, static_cast<::Spr>(SPR_AR_VALUE)>();
+    sprclr(sprValue);
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline void ClearSprImpl()
+{
+    static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
+        "current ClearSpr api only support SpecialPurposeReg AR on current device!");
+
+    if constexpr (spr == SpecialPurposeReg::AR) {
+        ClearARImpl();
+    }
 }
 
 __aicore__ inline int64_t GetSystemVirtualBaseImpl()

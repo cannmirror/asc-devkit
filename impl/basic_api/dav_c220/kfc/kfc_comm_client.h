@@ -17,6 +17,7 @@
 
 #include "kernel_macros.h"
 #include "kfc_comm.h"
+#include "kernel_tpipe.h"
 
 namespace AscendC {
 class KfcCommClient {

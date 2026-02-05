@@ -14,6 +14,8 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_CUBE_GROUP_INFO_H
 #define ASCENDC_MODULE_OPERATOR_CUBE_GROUP_INFO_H
+
+#include "utils/kernel_utils_constants.h"
 namespace AscendC {
 
 constexpr uint32_t MAX_MSG_PER_AIV = 4;   // for 1 aic and 1 aiv, table stores at most 4 message

@@ -15,6 +15,8 @@
 #include "kernel_pop_stack_buffer.h"
 #include "kernel_struct_unary.h"
 #include "kernel_operator_vec_template_impl.h"
+#include "kernel_operator_vec_binary_scalar_impl.h"
+#include "kernel_operator_swap_mem_intf.h"
 #include <utility>
 
 namespace AscendC {
@@ -559,6 +561,9 @@ __aicore__ inline void DataCopyUB2UBImpl(__ubuf__ T* dst, __ubuf__ T* src, const
     CopyUbufToUbuf(dst, src, intriParams.blockCount, intriParams.blockLen, intriParams.srcStride,
                    intriParams.dstStride);
 }
+
+template <TPosition pos>
+__aicore__ inline uint64_t TransUBAddr(uint64_t addr);
 
 template <typename T>
 __aicore__ inline __in_pipe__(MTE3)

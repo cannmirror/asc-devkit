@@ -15,7 +15,9 @@
 #ifndef ASCENDC_MODULE_MICRO_PACK_IMPL_H
 #define ASCENDC_MODULE_MICRO_PACK_IMPL_H
 
-#include "kernel_micro_common_impl.h"
+#include "../../../include/micro_api/kernel_micro_copy_intf.h"
+#include "../../../include/micro_api/kernel_micro_vec_duplicate_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename RegT,

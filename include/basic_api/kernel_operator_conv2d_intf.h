@@ -14,9 +14,18 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_CONV2D_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_CONV2D_INTERFACE_H
-#include "kernel_tensor.h"
+
+#include "kernel_macros.h"
+#include "kernel_struct_conv2d.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
+template <typename T>
+class LocalTensor;
+
 // T should be featureMap matrix dtype
 template <typename T> __aicore__ inline Conv2dTilling GetConv2dTiling(Conv2dParams& conv2dParams);
 

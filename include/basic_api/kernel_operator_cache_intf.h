@@ -16,9 +16,20 @@
 #ifndef ASCENDC_MODULE_OPERATOR_CACHE_INTF_H
 #define ASCENDC_MODULE_OPERATOR_CACHE_INTF_H
 
+#include "kernel_macros.h"
 #include "kernel_reg.h"
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
+
 namespace AscendC {
+template <typename T>
+class GlobalTensor;
+
+template <typename T>
+class LocalTensor;
 
 template <typename T>
 __aicore__ inline void DataCachePreload(const GlobalTensor<uint64_t>& src, const T cacheOffset);
@@ -26,26 +37,17 @@ __aicore__ inline void DataCachePreload(const GlobalTensor<uint64_t>& src, const
 #if defined(__NPU_ARCH__) &&            \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T, CacheLine entireType, DcciDst dcciDst>
-__aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst)
-{
-    DcciGMImpl<T, entireType, dcciDst>(const_cast<__gm__ T*>(dst.GetPhyAddr()));
-}
+__aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst);
 
 template <typename T, CacheLine entireType, DcciDst dcciDst>
-__aicore__ inline void DataCacheCleanAndInvalid(const LocalTensor<T>& dst)
-{
-    DcciUBImpl<T, entireType, dcciDst>(const_cast<__ubuf__ T*>(dst.GetPhyAddr()));
-}
+__aicore__ inline void DataCacheCleanAndInvalid(const LocalTensor<T>& dst);
 #endif
 
 #if defined(__NPU_ARCH__) &&                                                            \
     ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 3002) ||      \
     (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 template <typename T, CacheLine entireType>
-__aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst)
-{
-    DcciGMImpl<T, entireType>(const_cast<__gm__ T*>(dst.GetPhyAddr()));
-}
+__aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst);
 #endif
 
 __aicore__ inline void ICachePreLoad(const int64_t preFetchLen);
@@ -54,5 +56,6 @@ __aicore__ inline int64_t GetICachePreloadStatus();
 
 } // namespace AscendC
 
+#include "../../impl/basic_api/kernel_operator_cache_intf_impl.h"
 #endif // KERNEL_CACHE_INTF_H
 

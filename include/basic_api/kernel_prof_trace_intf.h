@@ -15,6 +15,13 @@
 #ifndef ASCENDC_MODULE_KERNEL_PROF_TRACE_INTERFACE_H
 #define ASCENDC_MODULE_KERNEL_PROF_TRACE_INTERFACE_H
 
+#include <cstdint>
+#include "kernel_macros.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
+
 namespace AscendC {
 #ifdef ASCENDC_TRACE_ON
 enum class TraceId : uint32_t {

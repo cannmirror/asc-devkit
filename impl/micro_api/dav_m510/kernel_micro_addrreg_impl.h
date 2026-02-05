@@ -15,6 +15,10 @@
 #ifndef ASCENDC_MODULE_MICRO_ADDRREG_IMPL_H
 #define ASCENDC_MODULE_MICRO_ADDRREG_IMPL_H
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_fun.h"
+#endif
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T>

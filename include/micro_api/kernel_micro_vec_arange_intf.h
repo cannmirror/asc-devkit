@@ -15,7 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_ARANGE_INTERFACE_H
 #define ASCENDC_MODULE_MICRO_VEC_ARANGE_INTERFACE_H
 
-#include "kernel_micro_common_intf.h"
+#include "kernel_micro_struct_intf.h"
+#include "kernel_micro_utils.h"
 
 namespace AscendC {
 namespace MicroAPI {

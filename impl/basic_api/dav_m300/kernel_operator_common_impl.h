@@ -16,21 +16,8 @@
 #define ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #include "kernel_utils.h"
 #include "kernel_struct_mm.h"
+#include "kernel_operator_swap_mem_intf.h"
 namespace AscendC {
-__aicore__ inline int64_t GetSubBlockIdxImpl()
-{
-    return 0;
-}
-
-__aicore__ inline int64_t GetTaskRationImpl()
-{
-    return 1;
-}
-
-__aicore__ inline int64_t GetBlockIdxImpl()
-{
-    return get_block_idx();
-}
 
 [[deprecated(
     "NOTICE: SetSysWorkSpace has been deprecated and will be removed in the next version.")]]
@@ -127,28 +114,6 @@ __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &
 __aicore__ inline void SetSyncBaseAddr(uint64_t config)
 {
     ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "SetSyncBaseAddr is not supported on current device"); });
-}
-
-template <typename T>
-__aicore__ inline void DataCachePreloadImpl(const GlobalTensor<uint64_t> &src, const T cacheOffset)
-{
-    if constexpr ((IsSameType<T, int16_t>::value) || (IsSameType<T, int64_t>::value)) {
-        dc_preload((__gm__ uint64_t *)src.GetPhyAddr(), cacheOffset);
-    } else {
-        static_assert(SupportType<T, int16_t, int64_t>(),
-                      "current cacheOffset data type is not supported on current device.");
-    }
-}
-
-__aicore__ inline int64_t GetICachePreloadStatusImpl()
-{
-    ASCENDC_REPORT_NOT_SUPPORT(false, "GetICachePreloadStatus");
-    return 0;
-}
-
-__aicore__ inline void PreLoad(const int64_t preFetchLen)
-{
-    ASCENDC_ASSERT((false), "ICachePreLoad is not supported on current device");
 }
 
 __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& checkParams)

@@ -17,6 +17,8 @@
 #include "kernel_utils.h"
 #include "kernel_operator_common_impl.h"
 #include "kernel_struct_binary.h"
+#include "kernel_tpipe.h"
+#include "kernel_common.h"
 
 namespace AscendC {
 /* **************************************************************************************************

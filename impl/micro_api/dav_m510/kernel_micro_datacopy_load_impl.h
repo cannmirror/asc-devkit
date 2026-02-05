@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_DATACOPY_LOAD_IMPL_H
 #define ASCENDC_MODULE_MICRO_DATACOPY_LOAD_IMPL_H
 
+#include "kernel_micro_common_impl.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <int outputNum, LoadDist dist>

@@ -15,6 +15,11 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_UNARY_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_UNARY_IMPL_H
 
+#include "../../../include/micro_api/kernel_micro_struct_intf.h"
+#include "../../../include/micro_api/kernel_micro_vec_binary_intf.h"
+#include "kernel_micro_common_impl.h"
+#include "../../../include/utils/std/type_traits.h"
+
 namespace AscendC {
 namespace MicroAPI {
 namespace Internal {

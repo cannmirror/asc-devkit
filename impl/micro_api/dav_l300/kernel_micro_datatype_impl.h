@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_DATATYPE_IMPL_H
 #define ASCENDC_MODULE_MICRO_DATATYPE_IMPL_H
 
+#include "kernel_utils.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T> struct TypeGet;

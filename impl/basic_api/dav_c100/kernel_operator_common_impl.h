@@ -16,20 +16,6 @@
 #define ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #include "kernel_struct_mm.h"
 namespace AscendC {
-__aicore__ inline int64_t GetSubBlockIdxImpl()
-{
-    return 0;
-}
-
-__aicore__ inline int64_t GetTaskRationImpl()
-{
-    return 1;
-}
-
-__aicore__ inline int64_t GetBlockIdxImpl()
-{
-    return block_idx;
-}
 
 [[deprecated(
     "NOTICE: SetSysWorkSpace has been deprecated and will be removed in the next version.")]]
@@ -80,23 +66,6 @@ __aicore__ inline int64_t GetStoreAtomicConfigImpl()
 __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &atomicOp)
 {
     ASCENDC_ASSERT((false), "GetStoreAtomicConfig is not supported on current device");
-}
-
-template <typename T>
-__aicore__ inline void DataCachePreloadImpl(const GlobalTensor<uint64_t> &src, const T cacheOffset)
-{
-    ASCENDC_REPORT_NOT_SUPPORT(false, "DataCachePreload");
-}
-
-__aicore__ inline int64_t GetICachePreloadStatusImpl()
-{
-    ASCENDC_REPORT_NOT_SUPPORT(false, "GetICachePreloadStatus");
-    return 0;
-}
-
-__aicore__ inline void PreLoad(const int64_t preFetchLen)
-{
-    ASCENDC_ASSERT((false), "ICachePreLoad is not supported on current device");
 }
 
 __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& checkParams)

@@ -15,26 +15,36 @@
 #ifndef ASCENDC_KERNEL_COMMON_H
 #define ASCENDC_KERNEL_COMMON_H
 
+#include "kernel_macros.h"
+#include "kernel_event.h"
+#include "kernel_log.h"
 #include "kernel_reg.h"
 #include "kernel_process_lock.h"
-#include "kernel_operator_tensor_trait.h"
-#include "kernel_operator_cache_intf.h"
-#include "kernel_operator_block_sync_intf.h"
-#include "kernel_operator_sys_var_intf.h"
+#include "kernel_struct_aipp.h"
+#include "kernel_utils.h"
+#include "utils/kernel_utils_macros.h"
 #include "kernel_operator_swap_mem_intf.h"
+#include "kernel_operator_sys_var_intf.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "stub_fun.h"
+#include "kernel_fp16.h"
+#endif
 
 namespace AscendC {
 class TPipe;
-class KfcCommClient;
+
+template <typename T>
+class GlobalTensor;
 } // namespace AscendC
 
 #if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #if defined(__ASCENDC_SUPERKERNEL_EARLY_START_V1) || defined(__ASCENDC_SUPERKERNEL_EARLY_START_V2)
 __BLOCK_LOCAL__ __inline__ uint32_t g_super_kernel_early_start_config;
 #endif
-#ifdef __SUPER_KERNEL_DYNAMIC_BLOCK_NUM__
-__BLOCK_LOCAL__ __inline__ uint32_t g_super_kernel_dynamic_block_num;
-#endif
+
 #ifdef SPLIT_CORE_CUBE
 __BLOCK_LOCAL__ __inline__ AscendC::TPipe* g_cubeTPipePtr;
 #elif defined(SPLIT_CORE_VEC)
@@ -161,26 +171,6 @@ __aicore__ inline void SetMaskNorm()
     SetMaskNormImpl();
 }
 
-__aicore__ inline void SetHF32Mode(HF32Mode mode)
-{
-    SetHF32ModeImpl(mode == HF32Mode::Enable);
-}
-
-__aicore__ inline void SetHF32TransMode(HF32TransMode mode)
-{
-    SetHF32TransModeImpl(mode == HF32TransMode::Enable);
-}
-
-__aicore__ inline void SetMMRowMajor()
-{
-    SetMMLayoutTransformImpl(false);
-}
-
-__aicore__ inline void SetMMColumnMajor()
-{
-    SetMMLayoutTransformImpl(true);
-}
-
 template <uint32_t index>
 __aicore__ inline void SetHcclContext(__gm__ uint8_t* context)
 {
@@ -230,14 +220,4 @@ __aicore__ inline __gm__ uint8_t* __gm__ GetDumpWorkSpacePtr()
 {
     return g_dumpWorkspaceReserved;
 }
-#if defined(ASCENDC_CPU_DEBUG)
-__aicore__ void SetSysWorkSpacePtr(__gm__ uint8_t* workspace);
-#else
-[[deprecated(
-    "NOTICE: SetSysWorkSpacePtr has been deprecated and will be removed in the next version.")]]
-__aicore__ inline void SetSysWorkSpacePtr(__gm__ uint8_t* workspace)
-{
-    g_sysWorkspaceReserved = workspace;
-}
-#endif
 #endif

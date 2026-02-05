@@ -14,27 +14,6 @@
  */
 #ifndef ASCENDC_MODULE_TPIPE_BASE_H
 #define ASCENDC_MODULE_TPIPE_BASE_H
-#include "kernel_tensor_impl.h"
-#if __NPU_ARCH__ == 1001
-#include "dav_c100/kernel_operator_common_impl.h"
-#elif __NPU_ARCH__ == 2002
-#include "dav_m200/kernel_operator_common_impl.h"
-#elif __NPU_ARCH__ == 2201
-#include "dav_c220/kernel_operator_common_impl.h"
-#include "dav_c220/kfc/kfc_comm.h"
-#elif __NPU_ARCH__ == 3002
-#include "dav_m300/kernel_operator_common_impl.h"
-#elif __NPU_ARCH__ == 3102
-#include "dav_m300/kernel_operator_common_impl.h"
-#elif __NPU_ARCH__ == 3101
-#include "dav_c310/kernel_operator_common_impl.h"
-#elif (__NPU_ARCH__ == 5102)
-#include "dav_m510/kernel_operator_common_impl.h"
-#elif (__NPU_ARCH__ == 3003)
-#include "dav_l300/kernel_operator_common_impl.h"
-#elif (__NPU_ARCH__ == 3113)
-#include "dav_l311/kernel_operator_common_impl.h"
-#endif
 
 namespace AscendC {
 // begin base define of tquebind

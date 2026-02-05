@@ -14,8 +14,16 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_GEMM_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_GEMM_INTERFACE_H
+
+#include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "kernel_struct_conv2d.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
+
 namespace AscendC {
 // T should be left matrix dtype
 template <typename T> __aicore__ inline GemmTiling GetGemmTiling(uint32_t m, uint32_t k, uint32_t n);

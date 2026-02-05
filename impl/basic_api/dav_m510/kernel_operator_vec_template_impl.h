@@ -17,7 +17,51 @@
 
 #include "kernel_utils.h"
 #include "kernel_struct_binary.h"
-#include "kernel_operator_common_impl.h"
+
+// Forward declaration
+namespace AscendC {
+namespace Internal {
+__aicore__ inline bool IsCounterMode();
+
+template <bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
+__aicore__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const uint64_t maskCount,
+    __ubuf__ uint64_t *maskBuf);
+
+template <typename T, bool isNormalMode = true>
+__aicore__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t repeatTime);
+
+template <typename T, bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
+__aicore__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count);
+
+enum class BinaryFuncMode {
+    NORMAL,        // Add, Sub, Mul, Div, Max, Min, And, Or etc..
+    DST_SRC_INPUT, // FusedMulAdd, FusedMulAddRelu, MulAddDst
+};
+/*
+ * T: data type
+ * func: MicroAPI input/output function
+ * isSetMask: basic api whether to set mask
+ * isNormalMode: true: NormalMode, false: CounterMode
+ * isMaskBitMode: true: mask bit mode, false: mask count mode
+ */
+template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode,
+    BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T, typename U>
+__aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const uint64_t maskArray[],
+    const uint64_t maskCount, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams,
+    __ubuf__ uint64_t *maskBuf);
+
+template <auto func, bool isSetMask, bool isMaskBitMode, BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T,
+    typename U>
+__aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1,
+    const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,
+    const BinaryRepeatParams &repeatParams);
+} // namespace Internal
+} // namespace AscendC
+
+#include "kernel_operator_sys_var_intf.h"
+#include "kernel_operator_block_sync_intf.h"
+#include "micro_api/kernel_micro_intf.h"
+
 
 namespace AscendC {
 namespace Internal {
@@ -28,7 +72,7 @@ __aicore__ inline bool IsCounterMode()
     return ((get_ctrl() >> CTRL_COUNTER) & 0x1) == 0x1;
 }
 
-template <bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
+template <bool isSetMask, bool isNormalMode, bool isMaskBitMode>
 __aicore__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const uint64_t maskCount,
     __ubuf__ uint64_t *maskBuf)
 {
@@ -58,7 +102,7 @@ __aicore__ inline uint32_t VecMicroGetCount(const uint64_t maskArray[], const ui
     return count;
 }
 
-template <typename T, bool isNormalMode = true>
+template <typename T, bool isNormalMode>
 __aicore__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t repeatTime)
 {
     if constexpr (isNormalMode) {
@@ -67,7 +111,7 @@ __aicore__ inline uint16_t VecMicroGetRepeatTimes(uint32_t count, const uint8_t 
     return CeilDivision(count, GetVecLen() / sizeof(T));
 }
 
-template <typename T, bool isSetMask = true, bool isNormalMode = true, bool isMaskBitMode = true>
+template <typename T, bool isSetMask, bool isNormalMode, bool isMaskBitMode>
 __aicore__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBuf, uint32_t &count)
 {
     MicroAPI::MaskReg maskReg;
@@ -89,10 +133,6 @@ __aicore__ inline MicroAPI::MaskReg VecMicroGetMaskReg(__ubuf__ uint64_t *maskBu
     return maskReg;
 }
 
-enum class BinaryFuncMode {
-    NORMAL,        // Add, Sub, Mul, Div, Max, Min, And, Or etc..
-    DST_SRC_INPUT, // FusedMulAdd, FusedMulAddRelu, MulAddDst
-};
 /*
  * T: data type
  * func: MicroAPI input/output function
@@ -101,7 +141,7 @@ enum class BinaryFuncMode {
  * isMaskBitMode: true: mask bit mode, false: mask count mode
  */
 template <auto func, bool isSetMask, bool isMaskBitMode, bool isNormalMode,
-    BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T, typename U>
+    BinaryFuncMode funcMode, typename T, typename U>
 __aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1, const uint64_t maskArray[],
     const uint64_t maskCount, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams,
     __ubuf__ uint64_t *maskBuf)
@@ -156,7 +196,7 @@ __aicore__ inline void VecBinaryVFImpl(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf
     }
 }
 
-template <auto func, bool isSetMask, bool isMaskBitMode, BinaryFuncMode funcMode = BinaryFuncMode::NORMAL, typename T,
+template <auto func, bool isSetMask, bool isMaskBitMode, BinaryFuncMode funcMode, typename T,
     typename U>
 __aicore__ inline void VecBinaryImplTemplate(__ubuf__ T *dst, __ubuf__ U *src0, __ubuf__ U *src1,
     const uint64_t maskArray[], const uint64_t maskCount, const uint8_t repeatTime,

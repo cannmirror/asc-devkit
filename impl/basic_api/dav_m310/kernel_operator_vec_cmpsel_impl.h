@@ -18,6 +18,8 @@
 #include "kernel_utils.h"
 #include "kernel_struct_binary.h"
 #include "kernel_struct_unary.h"
+#include "kernel_tpipe.h"
+#include "kernel_common.h"
 
 namespace AscendC {
 /* ***************************************************************************************

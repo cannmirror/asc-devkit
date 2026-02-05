@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_CONV2D_BASE_IMPL_H
 
 #include "kernel_tensor.h"
+#include "kernel_operator_mm_intf.h"
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_operator_gemm_base_impl.h"
 #include "kernel_struct_conv2d.h"

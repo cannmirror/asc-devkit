@@ -10,10 +10,13 @@
 
 /* !
  * \file kernel_micro_vec_ternary_scalar_impl.h
- * \brief AscendC c310 support vaxpy level 0/2 api.
+ * \brief AscendC m510 support vaxpy level 0/2 api.
  */
 #ifndef ASCENDC_MODULE_MICRO_VEC_TERNARY_SCALAR_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_TERNARY_SCALAR_IMPL_H
+
+#include "../../../include/micro_api/kernel_micro_vec_binary_intf.h"
+#include "../../../include/micro_api/kernel_micro_vec_binary_scalar_intf.h"
 
 namespace AscendC {
 namespace MicroAPI {

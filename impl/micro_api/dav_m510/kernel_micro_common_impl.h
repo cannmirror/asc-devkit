@@ -15,8 +15,9 @@
 #ifndef ASCENDC_MODULE_MICRO_COMMON_IMPL_H
 #define ASCENDC_MODULE_MICRO_COMMON_IMPL_H
 
-#include "kernel_tensor.h"
 #include "micro_api/kernel_micro_utils.h"
+#include "../../../include/micro_api/kernel_micro_struct_intf.h"
+#include "../../../include/micro_api/kernel_micro_maskreg_intf.h"
 
 namespace AscendC {
 namespace MicroAPI {
@@ -96,49 +97,7 @@ template <MaskMergeMode mode> __aicore__ inline constexpr auto GetMaskMergeMode(
     return std::integral_constant<::Mode, static_cast<::Mode>(mode)>();
 #endif
 }
-
-template <MemType src, MemType dst> __simd_callee__ inline void LocalMemBarImpl()
-{
-    static_assert((SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::VEC_LOAD>()) ||
-                  (SupportEnum<src, MemType::VEC_LOAD>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-                  (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-                  (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::SCALAR_LOAD>()) ||
-                  (SupportEnum<src, MemType::VEC_STORE>() && SupportEnum<dst, MemType::SCALAR_STORE>()) ||
-                  (SupportEnum<src, MemType::VEC_LOAD>() && SupportEnum<dst, MemType::SCALAR_STORE>()) ||
-                  (SupportEnum<src, MemType::SCALAR_STORE>() && SupportEnum<dst, MemType::VEC_LOAD>()) ||
-                  (SupportEnum<src, MemType::SCALAR_STORE>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-                  (SupportEnum<src, MemType::SCALAR_LOAD>() && SupportEnum<dst, MemType::VEC_STORE>()) ||
-                  (SupportEnum<src, MemType::VEC_ALL>() && SupportEnum<dst, MemType::VEC_ALL>()) ||
-                  (SupportEnum<src, MemType::VEC_ALL>() && SupportEnum<dst, MemType::SCALAR_ALL>()) ||
-                  (SupportEnum<src, MemType::SCALAR_ALL>() && SupportEnum<dst, MemType::VEC_ALL>()),
-                  "LocalMemBar does support current MemType Combination on current device!");
-    if constexpr (src == MemType::VEC_STORE && dst == MemType::VEC_LOAD) {
-        mem_bar(VST_VLD);
-    } else if constexpr (src == MemType::VEC_LOAD && dst == MemType::VEC_STORE) {
-        mem_bar(VLD_VST);
-    } else if constexpr (src == MemType::VEC_STORE && dst == MemType::VEC_STORE) {
-        mem_bar(VST_VST);
-    } else if constexpr (src == MemType::VEC_STORE && dst == MemType::SCALAR_LOAD) {
-        mem_bar(VST_LD);
-    } else if constexpr (src == MemType::VEC_STORE && dst == MemType::SCALAR_STORE) {
-        mem_bar(VST_ST);
-    } else if constexpr (src == MemType::VEC_LOAD && dst == MemType::SCALAR_STORE) {
-        mem_bar(VLD_ST);
-    } else if constexpr (src == MemType::SCALAR_STORE && dst == MemType::VEC_LOAD) {
-        mem_bar(ST_VLD);
-    } else if constexpr (src == MemType::SCALAR_STORE && dst == MemType::VEC_STORE) {
-        mem_bar(ST_VST);
-    } else if constexpr (src == MemType::SCALAR_LOAD && dst == MemType::VEC_STORE) {
-        mem_bar(LD_VST);
-    } else if constexpr (src == MemType::VEC_ALL && dst == MemType::VEC_ALL) {
-        mem_bar(VV_ALL);
-    } else if constexpr (src == MemType::VEC_ALL && dst == MemType::SCALAR_ALL) {
-        mem_bar(VS_ALL);
-    } else if constexpr (src == MemType::SCALAR_ALL && dst == MemType::VEC_ALL) {
-        mem_bar(SV_ALL);
-    }
-}
-#endif
+#endif  // #ifndef __ASC_NPU_HOST__
 
 template <typename T, typename U, typename ShortType>
 __simd_callee__ inline void TraitOneToTaitTwoTmpl(T& dstReg, U& srcReg)

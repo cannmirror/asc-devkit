@@ -293,6 +293,8 @@ __aicore__ inline void VcmpvsImpl(__ubuf__ U* dst, __ubuf__ T* src0, T src1, CMP
     CompareScalarCompute(reinterpret_cast<__ubuf__ uint8_t*>(dst), src0, src1, cmpMode, count);
 }
 
+template <pipe_t pipe>
+__aicore__ inline void PipeBarrier();
 /* ***************************************************************************************
  * *************************************** Select ****************************************
  * ************************************************************************************** */

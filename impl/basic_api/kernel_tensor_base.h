@@ -17,6 +17,7 @@
 #include <cstdint>
 #include "kernel_utils.h"
 #include "kernel_operator_layout.h"
+#include "kernel_operator_tensor_trait.h"
 
 namespace AscendC {
 using TBufHandle = uint8_t*;

@@ -15,8 +15,8 @@
 #ifndef ASCENDC_MODULE_OPERATOR_H
 #define ASCENDC_MODULE_OPERATOR_H
 
-#include "kernel_tpipe_impl.h"
-#include "kernel_tensor_impl.h"
+#include "kernel_tpipe.h"
+#include "kernel_tensor.h"
 #include "kernel_type.h"
 #include "kernel_operator_intf.h"
 

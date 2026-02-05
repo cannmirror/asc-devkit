@@ -14,12 +14,16 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_COMMON_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_COMMON_INTERFACE_H
+
+#include "kernel_macros.h"
 #include "kernel_tensor.h"
 #include "kernel_struct_mm.h"
-#include "kernel_operator_cache_intf.h"
-#include "kernel_operator_block_sync_intf.h"
-#include "kernel_operator_sys_var_intf.h"
-#include "kernel_operator_utils_intf.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif
 
 /*
  * ingroup：SetAtomicAdd

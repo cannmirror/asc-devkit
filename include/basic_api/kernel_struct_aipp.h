@@ -15,6 +15,11 @@
 #ifndef ASCENDC_MODULE_STRUCT_AIPP_H
 #define ASCENDC_MODULE_STRUCT_AIPP_H
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "kernel_fp16.h"
+#endif
+
 namespace AscendC {
 enum class AippInputFormat : uint8_t {
     YUV420SP_U8 = 0,

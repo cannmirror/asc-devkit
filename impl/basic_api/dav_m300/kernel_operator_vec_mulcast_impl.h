@@ -15,6 +15,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_MULCAST_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_MULCAST_IMPL_H
 #include "kernel_tensor.h"
+#include "kernel_common.h"
 #include "kernel_struct_binary.h"
 #if ASCENDC_CPU_DEBUG
 #include "kernel_check.h"

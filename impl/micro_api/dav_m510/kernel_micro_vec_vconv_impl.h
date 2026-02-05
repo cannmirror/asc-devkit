@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_VCONV_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_VCONV_IMPL_H
 
+#include "../../../include/micro_api/kernel_micro_vec_duplicate_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 constexpr int16_t SHIFT_ONE_BIT = 1;

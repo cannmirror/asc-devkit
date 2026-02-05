@@ -16,6 +16,8 @@
 #define ASCENDC_MODULE_MICRO_PACK_INTERFACE_H
 
 #include "kernel_micro_common_intf.h"
+#include "kernel_micro_utils.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U = DefaultType, HighLowPart part = HighLowPart::LOWEST, typename S,

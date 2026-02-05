@@ -18,6 +18,8 @@
 #include "kernel_struct_binary.h"
 #include "kernel_struct_unary.h"
 #include "kernel_struct_vdeq.h"
+#include "kernel_tpipe.h"
+#include "kernel_common.h"
 
 namespace AscendC {
 #define VCVT_U8_TO_F16(roundMode) vcvt(vreg1, vreg0, preg, PART_EVEN)

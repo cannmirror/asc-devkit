@@ -568,7 +568,7 @@ __aicore__ inline void InitDump(bool mixFlag, uint32_t gmLen)
         return;
     }
     if (reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved) < DUMP_WORKSPACE_SIZE) {
-        KERNEL_LOG(KERNEL_ERROR, "DumpWorkSpace addr is %ul, which must be greater than %u",
+        KERNEL_LOG(KERNEL_ERROR, "DumpWorkSpace addr is %lu, which must be greater than %u",
             reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved), DUMP_WORKSPACE_SIZE);
         return;
     }

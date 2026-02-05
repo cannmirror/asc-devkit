@@ -20,6 +20,8 @@
 #include "dav_c310/kernel_operator_set_atomic_impl.h"
 #include "dav_c310/kernel_tpipe_impl_c310.h"
 #include "kfc_log.h"
+#include "kernel_tpipe.h"
+#include "kernel_operator_block_sync_intf.h"
  
 namespace AscendC {
 #define MSG_POS __gm__

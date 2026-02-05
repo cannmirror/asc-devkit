@@ -173,7 +173,7 @@ __aicore__ inline void VselIntrinsicsImpl(__ubuf__ T* dst, __ubuf__ U* sel, __ub
 {
     if (selMode == SELMODE::VSEL_CMPMASK_SPR) {
         set_cmpmask(sel);
-        PipeBarrier<PIPE_V>();
+        PipeBarrierImpl<PIPE_V>();
         vsel(dst, src0, src1, repeatTime, repeatParams.dstBlkStride, repeatParams.src0BlkStride, repeatParams.src1BlkStride,
             repeatParams.dstRepStride, repeatParams.src0RepStride, repeatParams.src1RepStride);
     } else {

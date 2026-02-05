@@ -17,6 +17,7 @@
 
 #include <cstdint>
 #include "integral_constant.h"
+#include "../../../../include/utils/std/tuple.h"
 
 namespace AscendC {
 namespace Std {

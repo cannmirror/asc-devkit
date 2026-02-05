@@ -14,7 +14,14 @@
  */
 #ifndef ASCENDC_MODULE_STRUCT_BINARY_H
 #define ASCENDC_MODULE_STRUCT_BINARY_H
+
+#include "kernel_macros.h"
 #include "utils/kernel_utils_constants.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)

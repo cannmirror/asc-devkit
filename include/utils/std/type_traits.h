@@ -15,6 +15,40 @@
 #ifndef AICORE_UTILS_STD_TYPE_TRAITS_H
 #define AICORE_UTILS_STD_TYPE_TRAITS_H
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include "stub_def.h"
+#endif
+
+namespace AscendC {
+namespace Std {
+
+// enable_if
+template <bool, typename Tp>
+struct enable_if;
+
+// conditional
+template <bool Bp, typename If, typename Then>
+struct conditional;
+
+// is_convertible
+template <typename From, typename To>
+struct is_convertible;
+
+// is_base_of
+template <typename Base, typename Derived>
+struct is_base_of;
+
+// is_same
+template <typename Tp, typename Up>
+struct is_same;
+
+// integral_constant
+template <typename Tp, Tp v>
+struct integral_constant;
+
+} // namespace Std
+} // namespace AscendC
+
 #include "impl/utils/std/type_traits/add_const.h"
 #include "impl/utils/std/type_traits/add_cv.h"
 #include "impl/utils/std/type_traits/add_lvalue_reference.h"
@@ -49,35 +83,5 @@
 #include "impl/utils/std/type_traits/remove_reference.h"
 #include "impl/utils/std/type_traits/remove_volatile.h"
 #include "impl/utils/std/type_traits/is_one_of.h"
-
-namespace AscendC {
-namespace Std {
-
-// enable_if
-template <bool, typename Tp>
-struct enable_if;
-
-// conditional
-template <bool Bp, typename If, typename Then>
-struct conditional;
-
-// is_convertible
-template <typename From, typename To>
-struct is_convertible;
-
-// is_base_of
-template <typename Base, typename Derived>
-struct is_base_of;
-
-// is_same
-template <typename Tp, typename Up>
-struct is_same;
-
-// integral_constant
-template <typename Tp, Tp v>
-struct integral_constant;
-
-}
-}
 
 #endif // AICORE_UTILS_STD_TYPE_TRAITS_H

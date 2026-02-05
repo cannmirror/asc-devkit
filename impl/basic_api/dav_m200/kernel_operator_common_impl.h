@@ -16,24 +16,6 @@
 #define ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H
 #include "kernel_struct_mm.h"
 namespace AscendC {
-__aicore__ inline int64_t GetSubBlockIdxImpl()
-{
-    return 0;
-}
-
-__aicore__ inline int64_t GetTaskRationImpl()
-{
-    return 1;
-}
-
-__aicore__ inline int64_t GetBlockIdxImpl()
-{
-#ifdef __ENABLE_VECTOR_CORE__
-    return block_idx + get_data_main_base();
-#else
-    return block_idx;
-#endif
-}
 
 [[deprecated(
     "NOTICE: SetSysWorkSpace has been deprecated and will be removed in the next version.")]]
@@ -86,28 +68,6 @@ __aicore__ inline void GetStoreAtomicConfigImpl(uint16_t &atomicType, uint16_t &
     ASCENDC_REPORT_NOT_SUPPORT(false, "GetStoreAtomicConfig");
 }
 
-template <typename T>
-__aicore__ inline void DataCachePreloadImpl(const GlobalTensor<uint64_t> &src, const T cacheOffset)
-{
-    if constexpr ((IsSameType<T, int16_t>::value) || (IsSameType<T, int64_t>::value)) {
-        dc_preload((__gm__ uint64_t *)src.GetPhyAddr(), cacheOffset);
-    } else {
-        ASCENDC_ASSERT(false, {
-            KERNEL_LOG(KERNEL_ERROR, "cacheOffset only supporte int16_t and int64_t on current device"); });
-    }
-}
-
-__aicore__ inline int64_t GetICachePreloadStatusImpl()
-{
-    ASCENDC_REPORT_NOT_SUPPORT(false, "GetICachePreloadStatus");
-    return 0;
-}
-
-__aicore__ inline void PreLoadImpl(void *pc, const int64_t preFetchLen)
-{
-    preload(pc);
-}
-
 __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& checkParams)
 {
     uint64_t config = 0;
@@ -135,10 +95,5 @@ __aicore__ inline void CheckLocalMemoryIAImpl(const CheckLocalMemoryIAParam& che
     }
 }
 
-__aicore__ inline void PreLoad(const int64_t preFetchLen)
-{
-    int64_t pc = get_pc() & 0xFFFFFFFFFFFF;
-    PreLoadImpl(reinterpret_cast<void *>(pc), preFetchLen);
-}
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_COMMON_IMPL_H

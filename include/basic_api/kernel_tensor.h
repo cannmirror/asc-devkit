@@ -15,9 +15,21 @@
 #ifndef KERNEL_TENSOR_H
 #define KERNEL_TENSOR_H
 
-#include "kernel_utils.h"
-#include "kernel_common.h"
+#include "kernel_macros.h"
+#include "common_types.h"
+#include "kernel_event.h"
+#include "kernel_log.h"
+#include "kernel_operator_tensor_trait.h"
+#include "kernel_struct_data_copy.h"
 #include "kernel_tensor_base.h"
+#include "utils/kernel_utils_macros.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include <iosfwd>
+#include <string>
+#include "stub_def.h"
+#endif
 
 namespace AscendC {
 /* \brief the shape info of tensor;
@@ -279,4 +291,6 @@ private:
     uint32_t head_ = 0;
 };
 } // namespace AscendC
+
+#include "../../impl/basic_api/kernel_tensor_impl.h"
 #endif // KERNEL_TENSOR_H

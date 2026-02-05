@@ -14,10 +14,18 @@
  */
 #ifndef ASCENDC_MODULE_STRUCT_PROPOSAL_H
 #define ASCENDC_MODULE_STRUCT_PROPOSAL_H
-#include "kernel_tensor.h"
+
 #include "utils/kernel_utils_constants.h"
 
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#endif
+
 namespace AscendC {
+
+template <typename T> class LocalTensor;
+
 struct MrgSort4Info {
     __aicore__ MrgSort4Info() {}
 

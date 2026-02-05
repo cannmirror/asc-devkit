@@ -14,6 +14,21 @@
  */
 #ifndef ASCENDC_MODULE_OPERATOR_PROPOSAL_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_PROPOSAL_IMPL_H
+
+#include "kernel_log.h"
+#include "kernel_macros.h"
+#include "kernel_tensor.h"
+#include "kernel_operator_block_sync_intf.h"
+#include "kernel_struct_proposal.h"
+#include "utils/kernel_utils_ceil_oom_que.h"
+#include "utils/kernel_utils_constants.h"
+#include "utils/kernel_utils_struct_param.h"
+
+#if defined (ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif // ASCENDC_CPU_DEBUG
  
 namespace AscendC {
 constexpr uint32_t singleSortElementCountC310 = 32;

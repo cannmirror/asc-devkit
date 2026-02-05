@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_PROPOSAL_IMPL_H
 #include "kernel_operator_proposal_base_impl.h"
 #include "kernel_struct_proposal.h"
+#include "kernel_operator_block_sync_intf.h"
 
 namespace AscendC {
 constexpr uint32_t singleSortElementCountV220 = 32;

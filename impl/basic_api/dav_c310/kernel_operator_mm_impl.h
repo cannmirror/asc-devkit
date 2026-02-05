@@ -13,6 +13,8 @@
 #include "kernel_utils.h"
 #include "kernel_struct_aipp.h"
 #include "kernel_struct_mm.h"
+#include "kernel_operator_mm_bitmode_intf.h"
+#include "kernel_operator_sys_var_intf.h"
 
 namespace AscendC {
 /* **************************************************************************************************

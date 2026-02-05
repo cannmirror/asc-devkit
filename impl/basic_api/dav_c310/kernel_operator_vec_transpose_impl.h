@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_TRANSPOSE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_TRANSPOSE_IMPL_H
 
+#include "kernel_operator_block_sync_intf.h"
+
 namespace AscendC {
 constexpr int8_t TWO_NUM = 2;
 __aicore__ inline void TransDataTo5HDIntrinsicsImpl(__ubuf__ float* dstList[16], __ubuf__ float* srcList[16],

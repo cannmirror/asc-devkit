@@ -19,6 +19,7 @@
 #include "kernel_struct_binary.h"
 #include "kernel_operator_vec_cmp_impl.h"
 #include "kernel_operator_vec_duplicate_impl.h"
+#include "kernel_operator_block_sync_intf.h"
 
 namespace AscendC {
 /* ***************************************************************************************

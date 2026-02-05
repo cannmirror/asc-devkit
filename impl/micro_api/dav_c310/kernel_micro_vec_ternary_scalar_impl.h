@@ -15,6 +15,9 @@
 #ifndef ASCENDC_MODULE_MICRO_VEC_TERNARY_SCALAR_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_TERNARY_SCALAR_IMPL_H
 
+#include "../../../include/micro_api/kernel_micro_vec_binary_intf.h"
+#include "../../../include/micro_api/kernel_micro_vec_binary_scalar_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T = DefaultType, typename U, MaskMergeMode mode = MaskMergeMode::ZEROING, typename S>

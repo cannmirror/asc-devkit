@@ -14,7 +14,9 @@
  */
 #ifndef ASCENDC_MODULE_MICRO_VEC_SINGLE_IMPL_H
 #define ASCENDC_MODULE_MICRO_VEC_SINGLE_IMPL_H
+
 #include "kernel_micro_common_impl.h"
+#include "../../../include/utils/std/type_traits.h"
 
 namespace AscendC {
 namespace MicroAPI {

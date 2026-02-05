@@ -15,6 +15,15 @@
 #ifndef ASCENDC_MODULE_STRUCT_FIXPIPE_H
 #define ASCENDC_MODULE_STRUCT_FIXPIPE_H
 
+#include "kernel_macros.h"
+#include "utils/kernel_utils_struct_dma_params.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif
+
 namespace AscendC {
 enum class CO2Layout : uint8_t {
     NZ = 0,

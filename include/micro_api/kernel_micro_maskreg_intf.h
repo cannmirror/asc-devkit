@@ -15,6 +15,8 @@
 #ifndef ASCENDC_MODULE_MICRO_MASKREG_INTERFACE_H
 #define ASCENDC_MODULE_MICRO_MASKREG_INTERFACE_H
 
+#include "kernel_micro_struct_intf.h"
+#include "kernel_micro_utils.h"
 #include "kernel_micro_common_intf.h"
 
 namespace AscendC {

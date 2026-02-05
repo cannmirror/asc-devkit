@@ -16,6 +16,8 @@
 #define ASCENDC_MODULE_MICRO_DATACOPY_IMPL_H
 
 #include "kernel_micro_common_impl.h"
+#include "../../../include/basic_api/kernel_operator_sys_var_intf.h"
+#include "../../../include/micro_api/kernel_micro_vec_duplicate_intf.h"
 
 namespace AscendC {
 namespace MicroAPI {

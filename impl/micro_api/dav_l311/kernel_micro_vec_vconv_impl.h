@@ -16,6 +16,8 @@
 #define ASCENDC_MODULE_MICRO_VEC_VCONV_IMPL_H
 
 #include "kernel_micro_common_impl.h"
+#include "../../../include/micro_api/kernel_micro_vec_duplicate_intf.h"
+
 namespace AscendC {
 namespace MicroAPI {
 template <typename T, typename U, RegLayout layoutMode, MaskMergeMode mode>

@@ -21,6 +21,8 @@
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_conv2d.h"
 #include "kernel_struct_mm.h"
+#include "kernel_tpipe.h"
+#include "kernel_operator_block_sync_intf.h"
 
 namespace AscendC {
 #if ASCENDC_CPU_DEBUG

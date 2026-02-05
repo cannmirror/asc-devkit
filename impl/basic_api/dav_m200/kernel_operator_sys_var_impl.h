@@ -18,6 +18,25 @@
 #include "kernel_utils.h"
 
 namespace AscendC {
+__aicore__ inline int64_t GetSubBlockIdxImpl()
+{
+    return 0;
+}
+
+__aicore__ inline int64_t GetTaskRationImpl()
+{
+    return 1;
+}
+
+__aicore__ inline int64_t GetBlockIdxImpl()
+{
+#ifdef __ENABLE_VECTOR_CORE__
+    return block_idx + get_data_main_base();
+#else
+    return block_idx;
+#endif
+}
+
 __aicore__ inline int64_t GetSubBlockNumImpl()
 {
     return 1;

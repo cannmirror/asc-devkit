@@ -15,6 +15,9 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_REDUCE_IMPL_H
 
+#include "kernel_tpipe.h"
+#include "kernel_common.h"
+
 namespace AscendC {
 #define VCPADD_FUNC() vcpadd(vreg1, vreg0, preg, MODE_ZEROING)
 #define VCGADD_FUNC() vcgadd(vreg1, vreg0, preg, MODE_ZEROING)

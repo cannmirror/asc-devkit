@@ -19,7 +19,6 @@
 #include "dav_c310/kernel_tpipe_impl_c310_vec.h"
 #include "kernel_tquesync_impl.h"
 #else
-#include "kernel_tpipe.h"
 #include <type_traits>
 #include "kernel_tquebind_impl.h"
 #include "kernel_tquesync_impl.h"
@@ -27,6 +26,16 @@
 #include "kernel_tbuf_impl.h"
 #include "kernel_struct_data_copy.h"
 #include "kernel_utils.h"
+#include "kernel_operator_sys_var_intf.h"
+
+#if defined (ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include <map>
+#include <random>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif
+
 namespace AscendC {
 __aicore__ inline void PrintTimeStamp(uint32_t descId);
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
@@ -945,8 +954,8 @@ template <class T> __aicore__ inline bool TPipe::TscmInitBuffer(T& que, uint8_t 
         curPoolAddr = g_tpipeImpl.tscmBufferPtr_ - num * len;
         g_tpipeImpl.tscmBufferPtr_ -= num * len;
     } else {
-        curPoolAddr = g_tpipeImpl.tscmBufferPtr_ - (GetTaskRationImpl() - GetSubBlockIdxImpl()) * len * num;
-        g_tpipeImpl.tscmBufferPtr_ -= GetTaskRationImpl() * num * len;
+        curPoolAddr = g_tpipeImpl.tscmBufferPtr_ - (GetTaskRation() - GetSubBlockIdx()) * len * num;
+        g_tpipeImpl.tscmBufferPtr_ -= GetTaskRation() * num * len;
     }
 
     auto ptr = que.bufStart;

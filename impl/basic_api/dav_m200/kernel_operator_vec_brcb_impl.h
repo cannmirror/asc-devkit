@@ -15,6 +15,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BRCB_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BRCB_IMPL_H
 #include "kernel_struct_brcb.h"
+#include "kernel_tpipe.h"
 
 namespace AscendC {
 /* **************************************************************************************************

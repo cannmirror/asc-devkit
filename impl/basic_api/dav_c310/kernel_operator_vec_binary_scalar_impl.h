@@ -12,6 +12,7 @@
 #include "kernel_utils.h"
 #include "kernel_operator_common_impl.h"
 #include "kernel_operator_vec_template_impl.h"
+#include "micro_api/kernel_micro_intf.h"
 
 namespace AscendC {
 namespace Internal {

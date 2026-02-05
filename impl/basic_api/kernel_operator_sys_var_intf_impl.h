@@ -39,7 +39,45 @@
 #include "dav_l311/kernel_operator_sys_var_impl.h"
 #endif
 
+#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#ifdef __SUPER_KERNEL_DYNAMIC_BLOCK_NUM__
+__BLOCK_LOCAL__ __inline__ uint32_t g_super_kernel_dynamic_block_num;
+#endif
+#endif
+
 namespace AscendC {
+
+__aicore__ inline int64_t GetBlockIdx()
+{
+    return GetBlockIdxImpl();
+}
+
+__aicore__ inline int64_t GetBlockNum()
+{
+#ifdef __SUPER_KERNEL_STATIC_BLOCK_NUM__
+    return __SUPER_KERNEL_STATIC_BLOCK_NUM__;
+#elif defined(__SUPER_KERNEL_DYNAMIC_BLOCK_NUM__)
+    return g_super_kernel_dynamic_block_num;
+#else
+    return get_block_num();
+#endif
+}
+
+__aicore__ inline int64_t GetSubBlockIdx()
+{
+    return GetSubBlockIdxImpl();
+}
+
+__aicore__ inline int64_t GetTaskRatio()
+{
+    return GetTaskRationImpl();
+}
+
+__aicore__ inline int64_t GetTaskRation()
+{
+    return GetTaskRatio();
+}
+
 __aicore__ inline void GetArchVersion(uint32_t& coreVersion)
 {
     GetArchVersionImpl(coreVersion);
@@ -64,5 +102,17 @@ __aicore__ inline int64_t GetSystemCycle()
 {
     return GetSystemCycleImpl();
 }
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
+template <SpecialPurposeReg spr>
+__aicore__ inline int64_t GetSpr(){
+    return GetSprImpl<spr>();
+}
+
+template <SpecialPurposeReg spr>
+__aicore__ inline void ClearSpr(){
+    ClearSprImpl<spr>();
+}
+#endif
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_OPERATOR_SYS_VAR_INTERFACE_IMPL_H

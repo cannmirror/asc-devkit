@@ -16,7 +16,9 @@
 #define ASCENDC_MODULE_OPERATOR_DATA_COPY_IMPL_H
 #include "kernel_common.h"
 #include "kernel_operator_vec_duplicate_impl.h"
+#include "kernel_operator_vec_binary_scalar_impl.h"
 #include "kernel_struct_unary.h"
+#include "kernel_tpipe.h"
 
 namespace AscendC {
 
@@ -26,6 +28,9 @@ __aicore__ inline void CheckDataCopyParams(uint16_t blockCount, uint16_t blockLe
     ASCENDC_CHECK_VALUE_RANGE(blockCount, 1, UINT12_MAX, "blockCount", "DataCopy");
     ASCENDC_CHECK_VALUE_RANGE(blockLen, 1, UINT16_MAX, "blockLen", "DataCopy");
 }
+
+template <TPosition pos>
+__aicore__ inline uint64_t TransUBAddr(uint64_t addr);
 
 /* **************************************************************************************************
  * DataCopy                                             *

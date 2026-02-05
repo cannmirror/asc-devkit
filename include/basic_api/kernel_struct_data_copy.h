@@ -14,7 +14,17 @@
  */
 #ifndef ASCENDC_MODULE_STRUCT_DATA_COPY_H
 #define ASCENDC_MODULE_STRUCT_DATA_COPY_H
+
+#include "kernel_macros.h"
+#include "utils/kernel_utils_constants.h"
 #include "utils/kernel_utils_mode.h"
+#include "utils/kernel_utils_mode_cpu.h"
+
+#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+#include <cstdint>
+#include "stub_def.h"
+#include "stub_fun.h"
+#endif
 
 namespace AscendC {
 #ifndef ASCC_ENUM_DATAFORMAT
