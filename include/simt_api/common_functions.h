@@ -16,10 +16,6 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COMMON_FUNCTIONS_H__
 #endif
 
-#ifndef __aicore__
-#define __aicore__ [aicore]
-#endif
-
 #include "simt_api/device_types.h"
 #include "utils/debug/asc_printf.h"
 #include "utils/debug/asc_assert.h"
@@ -30,6 +26,7 @@
 #endif
 #endif
 
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 using dim3 = cce::dim3;
 
@@ -40,6 +37,7 @@ __aicore__ inline void asc_vf_call(dim3 threadNums, Args &&...args)
     cce::async_invoke<funcPtr>(threadNums, args...);
 #endif
 }
+#endif
 #endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COMMON_FUNCTIONS_H__)

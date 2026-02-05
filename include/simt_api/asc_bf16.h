@@ -16,10 +16,10 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_BF16_H__
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-
 #include "simt_api/asc_fp16.h"
 #include "simt_api/device_types.h"
+
+#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool __hisnan(bfloat16_t x);
 

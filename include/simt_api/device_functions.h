@@ -16,10 +16,10 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__
 #endif
 
+#include "simt_api/device_types.h"
 #include "simt_api/device_sync_functions.h"
 #include "simt_api/device_warp_functions.h"
 #include "simt_api/device_atomic_functions.h"
-#include "simt_api/device_types.h"
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __float2uint_rn(const float x);
 
