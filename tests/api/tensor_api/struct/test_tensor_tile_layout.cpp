@@ -9,7 +9,7 @@
 */
 #include <gtest/gtest.h>
 #include "tensor_api/stub/cce_stub.h"
-#include "impl/experimental/tensor_api/tensor_api_impl.h"
+#include "include/experimental/tensor_api/tensor.h"
 
 
 class Tensor_Api_Layout : public testing::Test {
@@ -180,11 +180,11 @@ TEST_F(Tensor_Api_Layout, StaticLayoutOperation)
 {
     using TwoDimT = AscendC::Std::tuple<AscendC::Std::Int<3>, AscendC::Std::Int<4>>;
     using TwoDimU = AscendC::Std::tuple<AscendC::Std::Int<2>, AscendC::Std::Int<1>>;
-    EXPECT_EQ((AscendC::TileInternal::StaticLayoutSize<TwoDimT, TwoDimU>::size), 6);
+    EXPECT_EQ((AscendC::TensorInternal::StaticLayoutSize<TwoDimT, TwoDimU>::size), 6);
 
     using FourDimT = AscendC::Std::tuple<AscendC::Std::tuple<AscendC::Std::Int<3>, AscendC::Std::Int<4>>,
                                         AscendC::Std::tuple<AscendC::Std::Int<1>, AscendC::Std::Int<2>>>;
     using FourDimU = AscendC::Std::tuple<AscendC::Std::tuple<AscendC::Std::Int<4>, AscendC::Std::Int<5>>,
                                         AscendC::Std::tuple<AscendC::Std::Int<2>, AscendC::Std::Int<3>>>;
-    EXPECT_EQ((AscendC::TileInternal::StaticLayoutSize<FourDimT, FourDimU>::size), 20);
+    EXPECT_EQ((AscendC::TensorInternal::StaticLayoutSize<FourDimT, FourDimU>::size), 20);
 }

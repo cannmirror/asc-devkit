@@ -1,0 +1,40 @@
+/**
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+
+/*!
+ * \file fixpipe.h
+ * \brief
+ */
+#ifndef EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_H
+#define EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_H
+
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe_impl.h"
+
+namespace AscendC {
+
+template <const FixpipeTrait& trait, typename T, typename U>
+__aicore__ inline typename Std::enable_if<VerifyingFixpipeTemplate<T, U>, void>::type
+Fixpipe(const T& dst, const U& src);
+
+template <const FixpipeTrait& trait, typename T, typename U, typename V>
+__aicore__ inline typename Std::enable_if<VerifyingFixpipeQuantTemplate<T, U, V>, void>::type
+Fixpipe(const T& dst, const U& src, const V& quant);
+
+template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+__aicore__ inline typename Std::enable_if<VerifyingFixpipeTemplateWithCoord<T, U, Coord>, void>::type
+Fixpipe(const T& dst, const U& src, const Coord& coord);
+
+template <const FixpipeTrait& trait, typename T, typename U, typename V,  typename Coord>
+__aicore__ inline typename Std::enable_if<VerifyingFixpipeQuantTemplateWithCoord<T, U, V, Coord>, void>::type
+Fixpipe(const T& dst, const U& src, const V& quant, const Coord& coord);
+
+} // namespace AscendC
+
+#endif // EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_H
