@@ -38,6 +38,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_repeat_reduce_sum](vector_compute/asc_repeat_reduce_sum.md) | 对每个Repeat内所有元素求和。 |
 | [asc_repeat_reduce_max](vector_compute/asc_repeat_reduce_max.md) | 对每个Repeat内所有元素求最大值。 |
 | [asc_repeat_reduce_min](vector_compute/asc_repeat_reduce_min.md) | 对每个Repeat内所有元素求最小值。 |
+| [asc_get_reduce_max_cnt](vector_compute/asc_get_reduce_max_cnt.md) | 获取执行asc_repeat_reduce_max操作后的最大值，以及第一个最大值时的索引。 |
+| [asc_get_reduce_min_cnt](vector_compute/asc_get_reduce_min_cnt.md) | 获取执行asc_repeat_reduce_min操作后的最小值，以及第一个最小值时的索引。 |
 | [asc_brcb](vector_compute/asc_brcb.md) | 将源操作数中的每一个数填充到目的操作数的一个DataBlock中。 |
 | [asc_duplicate](vector_compute/asc_duplicate.md) | 将一个变量或立即数填充到一个矢量中。 |
 | [asc_select](vector_compute/asc_select.md) | 根据掩码，从两个源操作数中选取元素，输出到目的操作数。 |

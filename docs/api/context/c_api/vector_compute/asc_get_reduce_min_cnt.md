@@ -47,7 +47,7 @@ __ubuf__ half src[total_length];
 constexpr uint32_t dst_length = 4;
 __ubuf__ half dst[dst_length];
 
-asc_repeat_reduce_max_value_index(dst, src, total_length);
+asc_repeat_reduce_min_value_index(dst, src, total_length);
 asc_sync();
 
 half minValue;
