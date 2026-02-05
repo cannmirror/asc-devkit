@@ -141,7 +141,7 @@
     </file_info>
 
     <file_info value="device_tiling" copy_type="delivery" src_path="" dst_path="$(TARGET_ENV)/lib64/device/lib64" install_path="$(TARGET_ENV)/lib64/device/lib64" install_type="all" install_mod="440" feature="ascendc">
-        <file value="libtiling_api.a" file_type="static" pkg_feature="filter_as31xm1_device"/>
+        <file value="libtiling_api.a" file_type="static" pkg_feature="filter_as31xm1_device" optional="true"/>
     </file_info>
 
     <file_info value="acl_rtc" copy_type="delivery" src_path="lib/host" dst_path="$(TARGET_ENV)" install_path="$(TARGET_ENV)/lib64" install_type="all" install_mod="440">

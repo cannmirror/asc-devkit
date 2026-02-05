@@ -68,7 +68,7 @@ target_include_directories(
 
 add_subdirectory(tiling)
 
-if (BUILD_OPEN_PROJECT)
+if (BUILD_OPEN_PROJECT AND ENABLE_BUILD_DEVICE)
   include(ExternalProject)
   ExternalProject_Add(device_tiling
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tiling
