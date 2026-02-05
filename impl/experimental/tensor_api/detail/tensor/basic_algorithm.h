@@ -12,8 +12,8 @@
  * \file basic_algorithm.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_BASIC_ALGORITHM_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_BASIC_ALGORITHM_H
+#ifndef IMPL_TENSOR_API_TENSOR_BASIC_ALGORITHM_H
+#define IMPL_TENSOR_API_TENSOR_BASIC_ALGORITHM_H
 
 #include "include/experimental/tensor_api/utils/utils.h"
 
@@ -453,4 +453,4 @@ public:
 };
 }
 } // namespace AscendC
-#endif
+#endif // IMPL_TENSOR_API_TENSOR_BASIC_ALGORITHM_H

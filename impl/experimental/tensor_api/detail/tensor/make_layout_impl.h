@@ -12,8 +12,8 @@
  * \file make_layout_impl.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_MAKE_LAYOUT_IMPL_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_MAKE_LAYOUT_IMPL_H
+#ifndef IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H
+#define IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H
 
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "include/experimental/tensor_api/tensor/local_tensor.h"
@@ -446,4 +446,4 @@ __aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column) {
 }
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_MAKE_LAYOUT_IMPL_H
+#endif // IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H

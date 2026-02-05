@@ -12,8 +12,8 @@
 * \file hardware_pointer.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_HARDWARE_POINTER_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_HARDWARE_POINTER_H
+#ifndef IMPL_TENSOR_API_TENSOR_HARDWARE_POINTER_H
+#define IMPL_TENSOR_API_TENSOR_HARDWARE_POINTER_H
 
 #include "include/experimental/tensor_api/utils/utils.h"
 
@@ -102,4 +102,4 @@ constexpr bool IsHardwareMemV = IsHardwareMem<hardPos, Pointer>::value;
 }
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_HARDWARE_POINTER_H
+#endif // IMPL_TENSOR_API_TENSOR_HARDWARE_POINTER_H

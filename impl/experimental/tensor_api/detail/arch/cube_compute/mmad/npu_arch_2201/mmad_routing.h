@@ -12,8 +12,8 @@
  * \file mmad_routing.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_ROUTING_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_ROUTING_H
 
 #include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_four_dim_2201.h"
 #include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_with_bias_four_dim_2201.h"
@@ -69,4 +69,4 @@ struct MmadWithBiasTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Ha
 } // namespace TensorInternal
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_ROUTING_H

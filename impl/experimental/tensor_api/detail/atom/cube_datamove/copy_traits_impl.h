@@ -12,8 +12,8 @@
 * \file copy_traits_impl.h
 * \brief
 */
-#ifndef IMPL_EXPERIMENTAL_TENSOR_API_DETAIL_ATOM_CUBE_DATAMOVE_COPY_TRAIT_IMPL_H
-#define IMPL_EXPERIMENTAL_TENSOR_API_DETAIL_ATOM_CUBE_DATAMOVE_COPY_TRAIT_IMPL_H
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_TRAIT_IMPL_H
+#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_TRAIT_IMPL_H
 
 #include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy/copy_gm2l1_traits_impl.h"
 #include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy/copy_l0c2gm_traits_impl.h"
@@ -62,4 +62,4 @@ struct CopyTraits<CopyL12L0, TraitStruct>
 
 }
 
-#endif // IMPL_EXPERIMENTAL_TENSOR_API_DETAIL_ATOM_CUBE_DATAMOVE_COPY_TRAIT_IMPL_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_TRAIT_IMPL_H

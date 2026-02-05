@@ -12,8 +12,8 @@
  * \file mmad_impl.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_COMPUTE_MMAD_IMPL_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_COMPUTE_MMAD_IMPL_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_IMPL_H
+#define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_IMPL_H
 
 namespace AscendC {
 struct MmadTrait {
@@ -73,4 +73,4 @@ Mmad(const T& dst, const U& fm, const S& filter, const V& bias)
    Tensor2Tensor{}.template Run<T, U, S, V, trait>(dst, fm, filter, bias);
 }
 } // namespace AscendC
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_COMPUTE_MMAD_IMPL_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_IMPL_H

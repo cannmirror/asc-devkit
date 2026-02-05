@@ -12,8 +12,8 @@
 * \file make_pointer_impl.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_MAKE_POINTER_IMPL_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_MAKE_POINTER_IMPL_H
+#ifndef IMPL_TENSOR_API_TENSOR_MAKE_POINTER_IMPL_H
+#define IMPL_TENSOR_API_TENSOR_MAKE_POINTER_IMPL_H
 
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "impl/experimental/tensor_api/detail/tensor/hardware_pointer.h"
@@ -75,4 +75,4 @@ __aicore__ inline constexpr auto MakeFixbufmemPtr(Iterator iter) {
 }
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_TENSOR_MAKE_POINTER_IMPL_H
+#endif // IMPL_TENSOR_API_TENSOR_MAKE_POINTER_IMPL_H
