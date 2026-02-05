@@ -50,9 +50,9 @@ __aicore__ inline void asc_get_store_atomic_config(asc_store_atomic_config& conf
     asc_get_store_atomic_config_impl(config);
 }
 
-__aicore__ inline void asc_set_store_atomic_config(asc_store_atomic_config& config)
+__aicore__ inline void asc_set_store_atomic_config_v1(uint16_t type, uint16_t op)
 {
-    asc_set_store_atomic_config_impl(config);
+    asc_set_store_atomic_config_v1_impl(type, op);
 }
 
 __aicore__ inline void asc_set_atomic_add_bfloat()
