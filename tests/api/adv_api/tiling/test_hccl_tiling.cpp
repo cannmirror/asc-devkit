@@ -153,3 +153,15 @@ TEST_F(TestHcclTiling, Mc2CcTilingConfig_SetReduceType_NotReduceOp)
     Mc2CcTilingConfig mc2CcTilingConfig(groupName, opType, algConfig, reduceType, srcDataType, dstDataType);
     EXPECT_EQ(mc2CcTilingConfig.SetReduceType(HcclReduceOp::HCCL_REDUCE_SUM, srcDataType, dstDataType), EXIT_SUCCESS);
 }
+
+TEST_F(TestHcclTiling, Mc2CcTilingConfig_multiTiling)
+{
+    ::Mc2InitTiling initTilingInner;
+    ::Mc2CcTiling ccTilingInner;
+    Mc2CcTilingConfig ccTilingConfig("test", 1, "fullmesh", 1);
+    EXPECT_EQ(ccTilingConfig.GetTiling(initTilingInner), EXIT_SUCCESS);
+    for (uint32_t i = 0; i < 8; ++i) {
+        EXPECT_EQ(ccTilingConfig.GetTiling(ccTilingInner), EXIT_SUCCESS);
+    }
+    EXPECT_NE(ccTilingConfig.GetTiling(ccTilingInner), EXIT_SUCCESS);
+}

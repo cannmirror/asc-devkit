@@ -78,13 +78,13 @@ uint32_t SetDevType(Mc2InitTilingInner *tilingInner)
 uint32_t UpdateMc2InitTiling(uint64_t initTilingAddr, uint64_t ccTilingAddr)
 {
     Mc2InitTilingInner *tilingInner = reinterpret_cast<Mc2InitTilingInner *>(static_cast<uintptr_t>(initTilingAddr));
-    tilingInner->offset[tilingInner->mc2HcommCnt] = static_cast<uint32_t>(ccTilingAddr - initTilingAddr);
-    tilingInner->mc2HcommCnt += 1U;
-    ASCENDC_HOST_ASSERT(tilingInner->mc2HcommCnt <= MAX_CC_TILING_NUM, return EXIT_FAILURE,
-                        "mc2HcommCnt(%u) must be less than or equal %u.", tilingInner->mc2HcommCnt, MAX_CC_TILING_NUM);
-    TILING_LOG_INFO("Update Mc2InitTiling, mc2HcommCnt:%u, offset:%u, initTilingAddr:%#lx, ccTilingAddr:%#lx.",
-                    tilingInner->mc2HcommCnt, tilingInner->offset[tilingInner->mc2HcommCnt],
-                    initTilingAddr, ccTilingAddr);
+    uint32_t &cnt = tilingInner->mc2HcommCnt;
+    ASCENDC_HOST_ASSERT(cnt < MAX_CC_TILING_NUM, return EXIT_FAILURE,
+                        "mc2HcommCnt(%u) must be less than or equal %u.", cnt + 1U, MAX_CC_TILING_NUM);
+    tilingInner->offset[cnt] = static_cast<uint32_t>(ccTilingAddr - initTilingAddr);
+    TILING_LOG_INFO("Update Mc2InitTiling, index:%u, offset:%u, initTilingAddr:%#lx, ccTilingAddr:%#lx.",
+                    cnt, tilingInner->offset[cnt], initTilingAddr, ccTilingAddr);
+    ++cnt;
     PrintMc2InitTiling(*tilingInner);
     return EXIT_SUCCESS;
 }
