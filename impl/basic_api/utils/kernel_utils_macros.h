@@ -134,6 +134,7 @@ struct BinaryMetaDebug {
 
 struct BinaryMetaDynamicParam {
     BaseTlv head;
+    uint16_t reserve;
     uint16_t dynamicParamMode;  // 动态参数，支持二级指针方式传参给kernel
 };
 

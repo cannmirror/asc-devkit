@@ -533,7 +533,7 @@ def gen_meta_info_section(compile_info, op_info):
         f"static const struct BinaryMetaDynamicParam "
     section_var += f"{kernel_name}_kernel_metainfo_dynamicparam_section __attribute__ "
     section_var += f"((used, section (\".ascend.meta\"))) = "
-    section_var += f" {{{{B_TYPE_DYNAMIC_PARAM, 2}}, {dynamic_param}}};\n"
+    section_var += f" {{{{B_TYPE_DYNAMIC_PARAM, 4}}, 0, {dynamic_param}}};\n"
 
     #optinalparam
     optional_input_mode = 1 if check_if_gen_placehoder(op_info, True) else 0
