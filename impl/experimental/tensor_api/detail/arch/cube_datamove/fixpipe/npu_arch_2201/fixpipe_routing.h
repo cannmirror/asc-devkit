@@ -23,39 +23,22 @@ namespace TensorInternal {
 
 class FixpipeIgnore {
 public:
-    template <typename T, typename U, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {}
-
-    template <typename T, typename U, const FixpipeTrait& trait, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {}
+    template <const FixpipeTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) {}
 };
 
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version, size_t dimension>
+template <Hardware dstPos, Hardware srcpos, Hardware quantpos, uint32_t Version, size_t dimension>
 struct FixpipeTensor2Tensor {
     using type = FixpipeIgnore;
 };
 
 template <>
-struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, ArchVersion::V2201, FOUR_DIM_DATA> {
+struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::MAX, ArchVersion::V2201, FOUR_DIM_DATA> {
     using type = FixpipeFourDim2201L0C2GM;
 };
 
-class FixpipeQuantIgnore {
-public:
-    template <typename T, typename U, typename V, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant) {}
-
-    template <typename T, typename U, typename V, const FixpipeTrait& trait, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {}
-};
-
-template <Hardware dstTPos, Hardware srcTpos, uint32_t Version, size_t dimension>
-struct FixpipeQuantTensor2Tensor {
-    using type = FixpipeQuantIgnore;
-};
-
 template <>
-struct FixpipeQuantTensor2Tensor<Hardware::GM, Hardware::L0C, ArchVersion::V2201, FOUR_DIM_DATA> {
+struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA> {
     using type = FixpipeQuantFourDim2201L0C2GM;
 };
 } // namespace TensorInternal

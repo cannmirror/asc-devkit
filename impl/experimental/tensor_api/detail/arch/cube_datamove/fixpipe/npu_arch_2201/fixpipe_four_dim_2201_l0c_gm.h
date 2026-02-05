@@ -22,28 +22,13 @@ namespace TensorInternal {
 
 class FixpipetNz2Nz2201Base : public Copy2201MatrixCcToGmBase {
 public:
-    template <typename T, typename U, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto params = GenFixpipeParams<T, U, trait>(dst, src);
-        DataCopy<T, U, decltype(params), trait>(dst, src, params);
-    }
-
-    template <typename T, typename U, const FixpipeTrait& trait, typename Coord>
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenFixpipeParams<T, U, trait>(dst, src);
-        auto dstLayout = dst.Layout();
-        auto index = Crd2Idx(coord, dstLayout);
-        using dstType = typename T::elementType;
-        auto dstNew = reinterpret_cast<dstType *>(dst.Engine().Begin().Get() + index);
-        uint32_t dstN = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
-                        GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        uint32_t dstM = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
-                        GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
-        auto dstIterator = MakeGMmemPtr(dstNew);
-        auto dstMatrixLayout = MakeNZLayout<Std::ignore_t>(dstM, dstN);
-        auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); 
+        CheckCoord<T, U, Coord>(dst, src, coord);
+        auto params = GenFixpipeParams<trait, T, U>(dst, src); 
+        auto dstNzTensor = MakeTensorWithCoord<T, Coord>(dst, coord, 0);
 
-        DataCopy<T, U, decltype(params), trait>(dstTensor, src, params);
+        DataCopy<trait, T, U, decltype(params)>(dstNzTensor, src, params);
     }
 
 private:
@@ -62,7 +47,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Fixpipe Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, const FixpipeTrait& trait>
+    template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -70,16 +55,15 @@ private:
 #if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ float, __cc__ float>,
             Std::tuple<__gm__ int32_t, __cc__ int32_t>>, "The data type is not supported.");
-        static_assert((Std::is_one_of_v<srcType, __cc__ int32_t, __cc__ float>), "The source data type is not supported.");
 #endif
         CheckL0CNZTemplate<T>();
         CheckL0CNZTemplate<U>();
     }
 
-    template <typename T, typename U, const FixpipeTrait& trait>
+    template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
         using dstType = typename T::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -101,32 +85,15 @@ private:
 
 class FixpipetNz2Nd2201Base : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <typename T, typename U, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto ndParams = GenRegisterParams<T, U, trait>(dst, src);
-        SetRegister<decltype(ndParams)>(ndParams);
-        auto params = GenFixpipeParams<T, U, trait>(dst, src);
-        DataCopy<T, U, decltype(params), trait>(dst, src, params);
-    }
-
-    template <typename T, typename U, const FixpipeTrait& trait, typename Coord>
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto ndParams = GenRegisterParams<T, U, trait>(dst, src);
+        CheckCoord<T, U, Coord>(dst, src, coord);
+        auto ndParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(ndParams)>(ndParams);
-        auto params = GenFixpipeParams<T, U, trait>(dst, src);
-        auto dstLayout = dst.Layout();
-        auto index = Crd2Idx(coord, dstLayout);
-        using dstType = typename T::elementType;
-        auto dstNew = reinterpret_cast<dstType *>(dst.Engine().Begin().Get() + index);
-        uint32_t dstN = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
-                        GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-        uint32_t dstM = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
-                        GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
-        auto dstIterator = MakeGMmemPtr(dstNew);
-        auto dstMatrixLayout = MakeRowMajorLayout<dstType>(dstM, dstN);
-        auto dstTensor = MakeTensor(dstIterator, dstMatrixLayout); 
+        auto params = GenFixpipeParams<trait, T, U>(dst, src);
+        auto dstNDTensor = MakeTensorWithCoord<T, Coord>(dst, coord, 0);
 
-        DataCopy<T, U, decltype(params), trait>(dstTensor, src, params);
+        DataCopy<trait, T, U, decltype(params)>(dstNDTensor, src, params);
     }
 
 private:
@@ -161,7 +128,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Fixpipe Src Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, const FixpipeTrait& trait>
+    template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -169,13 +136,12 @@ private:
 #if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ float, __cc__ float>,
             Std::tuple<__gm__ int32_t, __cc__ int32_t>>, "The data type is not supported.");
-        static_assert((Std::is_one_of_v<srcType, __cc__ int32_t, __cc__ float>), "The source data type is not supported.");
 #endif
         CheckNDTemplate<T>();
         CheckL0CNZTemplate<U>();
     }
 
-    template <typename T, typename U, const FixpipeTrait& trait>
+    template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline auto GenRegisterParams(const T& dst, const U& src)
     {
         uint64_t ndNum = 1;
@@ -185,10 +151,10 @@ private:
         return params;
     }
     
-    template <typename T, typename U, const FixpipeTrait& trait>
+    template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
         uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) *
@@ -209,23 +175,12 @@ private:
 
 class FixpipeFourDim2201L0C2GM : public FixpipetNz2Nz2201Base, public FixpipetNz2Nd2201Base {
 public:
-    template <typename T, typename U, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
-            FixpipetNz2Nz2201Base::Run<T, U, trait>(dst, src);
-        } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            FixpipetNz2Nd2201Base::Run<T, U, trait>(dst, src);
-        }
-    }
-
-    template <typename T, typename U, const FixpipeTrait& trait, typename Coord>
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
-            // CheckNzCoord
-            FixpipetNz2Nz2201Base::Run<T, U, trait, Coord>(dst, src, coord);
+            FixpipetNz2Nz2201Base::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            // CheckNdCoord
-            FixpipetNz2Nd2201Base::Run<T, U, trait, Coord>(dst, src, coord);
+            FixpipetNz2Nd2201Base::Run<trait, T, U, Coord>(dst, src, coord);
         }
     }
 };

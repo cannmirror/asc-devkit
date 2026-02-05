@@ -120,6 +120,14 @@ __aicore__ inline constexpr auto TransformLeaf(const T& t, F&& f)
         return f(t);
     }
 }
+
+__aicore__ inline int32_t CeilDivision(int32_t num1, int32_t num2)
+{
+    if (num2 == 0) {
+        return 0;
+    }
+    return (num1 + num2 - 1) / num2;
+}
 }
 }
 

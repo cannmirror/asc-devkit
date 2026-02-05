@@ -50,11 +50,8 @@ __aicore__ inline constexpr QuantMode2201 GetQuantMode2201()
 
 class Format2201RegistorIgnore {
 public:
-    template <typename T, typename U, typename V, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant) {}
-
-    template <typename T, typename U, typename V, const FixpipeTrait& trait, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {}
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Coord& coord) {}
 };
 
 template <Format2201 dstFormat, Format2201 srcFormat, QuantMode2201 quantMode>
@@ -92,7 +89,7 @@ struct Format2201Registor<Format2201::ND, Format2201::NZ, QuantMode2201::Vector>
     using type = FixpipeNZ2ND2201VectorQuant;
 };
 
-template <typename T, typename U, const FixpipeTrait& trait>
+template <const FixpipeTrait& trait, typename T, typename U>
 __aicore__ inline void CheckFixpipe2201QuantParams()
 {
     using srcType = typename U::elementType;
@@ -132,22 +129,13 @@ __aicore__ inline void CheckFixpipe2201QuantParams()
 
 class FixpipeQuantFourDim2201L0C2GM {
 public:
-    template <typename T, typename U, typename V, const FixpipeTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Coord& coord)
     {
-        CheckFixpipe2201QuantParams<T, U, trait>();
-        using FixpipeQuantL0C2GM =
-            typename Format2201Registor<GetDataFormat2201<T>(), GetDataFormat2201<U>(), GetQuantMode2201<trait>()>::type;
-        FixpipeQuantL0C2GM{}.template Run<T, U, V, trait>(dst, src, quant);
-    }
-
-    template <typename T, typename U, typename V, const FixpipeTrait& trait, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
-    {
-        CheckFixpipe2201QuantParams<T, U, trait>();
+        CheckFixpipe2201QuantParams<trait, T, U>();
         using FixpipeQuantCoordL0C2GM =
             typename Format2201Registor<GetDataFormat2201<T>(), GetDataFormat2201<U>(), GetQuantMode2201<trait>()>::type;
-        FixpipeQuantCoordL0C2GM{}.template Run<T, U, V, trait, Coord>(dst, src, quant, coord);
+        FixpipeQuantCoordL0C2GM{}.template Run<trait, T, U, S, Coord>(dst, src, quant, coord);
     }
 };
 }  // namespace TensorInternal

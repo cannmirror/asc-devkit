@@ -130,7 +130,7 @@ public:
 
     __aicore__ inline void CopyL0CToGm()
     {
-        constexpr static FixpipeTrait trait = {static_cast<QuantMode_t>(NoQuant)};
+        constexpr static FixpipeTrait trait(static_cast<QuantMode_t>(NoQuant), false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<Std::ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 
@@ -154,7 +154,7 @@ public:
 
     __aicore__ inline void CopyCoordL0CToGm()
     {
-        constexpr static FixpipeTrait trait = {static_cast<QuantMode_t>(NoQuant)};
+        constexpr static FixpipeTrait trait(static_cast<QuantMode_t>(NoQuant), false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<Std::ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 
@@ -184,7 +184,7 @@ public:
 
     __aicore__ inline void CopyQuantL0CToGm()
     {
-        constexpr static FixpipeTrait trait = {static_cast<QuantMode_t>(F322BF16)};
+        constexpr static FixpipeTrait trait(static_cast<QuantMode_t>(F322BF16), false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<Std::ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 
@@ -208,7 +208,7 @@ public:
 
     __aicore__ inline void CopyQuantCoordL0CToGm()
     {
-        constexpr static FixpipeTrait trait = {static_cast<QuantMode_t>(F322BF16)};
+        constexpr static FixpipeTrait trait(static_cast<QuantMode_t>(F322BF16), false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<Std::ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 
@@ -242,7 +242,7 @@ public:
         auto qMatrixLayout = MakeRowMajorLayout<Q0cT>(1, nLength);
         auto qTensor = MakeTensor(qIterator, qMatrixLayout);
 
-        constexpr static FixpipeTrait trait = {static_cast<QuantMode_t>(VDEQF16)};
+        constexpr static FixpipeTrait trait(static_cast<QuantMode_t>(VDEQF16), false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<Std::ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 
@@ -268,7 +268,7 @@ public:
         auto qMatrixLayout = MakeRowMajorLayout<Q0cT>(1, nLength);
         auto qTensor = MakeTensor(qIterator, qMatrixLayout);
 
-        constexpr static FixpipeTrait trait = {static_cast<QuantMode_t>(VDEQF16)};
+        constexpr static FixpipeTrait trait(static_cast<QuantMode_t>(VDEQF16), false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<Std::ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 

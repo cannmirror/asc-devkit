@@ -21,7 +21,34 @@
 namespace AscendC {
 namespace TensorInternal {
 constexpr uint32_t MAIN_LOOP_N_SIZE_2201 = 512;
-constexpr uint32_t CBURST_NUM_2201 = MAIN_LOOP_N_SIZE_2201 / BLOCK_CUBE;
+constexpr uint32_t CBURST_NUM_2201 = MAIN_LOOP_N_SIZE_2201 / FRACTAL_FIXED;
+
+template <typename T, typename U, typename Coord>
+__aicore__ inline void CheckCoord(const T& dst, const U& src, const Coord& coord)
+{
+    auto coordRow = Std::get<0>(coord);
+    auto coordCol = Std::get<1>(coord);
+    auto dstLayout = dst.Layout();
+    auto srcLayout = src.Layout();
+    uint32_t dstRow1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
+    uint32_t dstCol1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
+    uint32_t srcRow1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+    uint32_t srcCol1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+    ASSERT((coordRow >= 0) && (coordCol >= 0) && (coordRow <= dstRow1 - srcRow1) && (coordCol <= dstCol1 - srcCol1));
+}
+
+template <typename T, typename Coord>
+__aicore__ inline auto MakeTensorWithCoord(const T& oldTensor, const Coord& coord, uint32_t offset = 0)
+{
+    auto oldTensorLayout = oldTensor.Layout();
+    auto index = Crd2Idx(coord, oldTensorLayout);
+    using oldTensorType = typename T::elementType;
+    constexpr Hardware oldTensorPos = TensorInternal::GetHardPos<T>();
+    auto oldTensorIterator = MakeMemPtr<oldTensorPos>(reinterpret_cast<oldTensorType *>(oldTensor.Data().Get() + offset + index));
+    auto oldTensorMatrixLayout = MakeLayout(oldTensorLayout.GetShape(), oldTensorLayout.GetStride());
+    auto newTensor = MakeTensor(oldTensorIterator, oldTensorMatrixLayout); 
+    return newTensor;
+}
 
 template <typename T>
 __aicore__ inline auto AllocTempBuf(const T& calNSize)
@@ -131,7 +158,7 @@ private:
     {
         using srcType = typename T::elementType;
         CopyCbufToFbuf<srcType, decltype(tupleParams)>(
-            dstAddr, (__cbuf__ uint64_t *)src.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+            dstAddr, (__cbuf__ uint64_t *)src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <typename T, typename U>
@@ -149,20 +176,20 @@ private:
 
 class Copy2201MatrixCcToGmBase {
 public:
-    template <typename T, typename U, typename V, const FixpipeTrait& trait>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const V& params)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    __aicore__ inline void DataCopy(const T& dst, const U& src, const S& params)
     {
-        DataCopyImpl<T, U, V, trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+        DataCopyImpl<trait, T, U, S>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <typename T, typename U, typename V, const FixpipeTrait& trait, size_t... Is>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, size_t... Is>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const S& tupleParams, Std::index_sequence<Is...>)
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
         CopyMatrixCcToGm<trait.quantPre, dstType, srcType>(
-            (__gm__ dstType *)dst.Engine().Begin().Get(), (__cc__ srcType *)src.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+            (__gm__ dstType *)dst.Data().Get(), (__cc__ srcType *)src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <QuantMode_t quantPre, typename T, typename U>
