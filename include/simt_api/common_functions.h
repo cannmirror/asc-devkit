@@ -16,13 +16,13 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COMMON_FUNCTIONS_H__
 #endif
 
-#include "simt_api/device_types.h"
-#include "utils/debug/asc_printf.h"
-#include "utils/debug/asc_assert.h"
-
 #ifndef __aicore__
 #define __aicore__ [aicore]
 #endif
+
+#include "simt_api/device_types.h"
+#include "utils/debug/asc_printf.h"
+#include "utils/debug/asc_assert.h"
 
 #ifndef SPLIT_CORE_VEC
 #if (defined(__DAV_VEC__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)) 
