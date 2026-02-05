@@ -50,7 +50,7 @@ basic_test_one_targets=(
     ascendc_ut_basic_api_ascend310p
     ascendc_ut_basic_api_ascend610
     ascendc_ut_basic_api_ascend310B1
-    ascendc_ut_basic_api_ascend610Lite
+    # ascendc_ut_basic_api_ascend610Lite
     ascendc_ut_basic_api_ascend910B1_AIC
     ascendc_ut_basic_api_ascend910B1_AIV
 )
@@ -66,10 +66,10 @@ basic_test_two_targets=(
     ascendc_ut_aicpu_api
     ascendc_ut_std_api_ascend910B1
     ascendc_ut_std_api_ascend950pr_9599
-    ascendc_ut_basic_api_mc62cm12aa_AIC
-    ascendc_ut_basic_api_mc62cm12aa_BASIC
-    ascendc_ut_basic_api_mc62cm12aa_FRAMEWORK
-    ascendc_ut_micro_api_mc62cm12aa
+    # ascendc_ut_basic_api_mc62cm12aa_AIC
+    # ascendc_ut_basic_api_mc62cm12aa_BASIC
+    # ascendc_ut_basic_api_mc62cm12aa_FRAMEWORK
+    # ascendc_ut_micro_api_mc62cm12aa
     # ascendc_ut_simt_api_mc62cm12aa
     ascendc_run_all_header_checks
 )

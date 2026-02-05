@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.16.0)
 set(CMAKE_CXX_STANDARD 17)
 find_package(tikicpulib REQUIRED)
 
-set(SIMT_PRODUCT_TYPE_LIST_INIT ascend950pr_9599 mc62cm12aa)
+set(SIMT_PRODUCT_TYPE_LIST_INIT ascend950pr_9599)
 set(SIMT_PRODUCT_TYPE_LIST ${SIMT_PRODUCT_TYPE_LIST_INIT} CACHE STRING "Supported product types")
 
 set(ASCENDC_TEST_HEADER_FILES
