@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
@@ -98,159 +103,43 @@ __aicore__ inline void SetFmatrix(uint16_t l1H, uint16_t l1W, const uint8_t padL
 ## 调用示例<a name="section642mcpsimp"></a>
 
 ```
-#include "kernel_operator.h"
+AscendC::TPipe pipe;
 
-template <typename dst_T, typename fmap_T, typename weight_T, typename dstCO1_T> class KernelLoad3d {
-public:
-    __aicore__ inline KernelLoad3d()
-    {
-        // ceiling of 16
-        C0 = 32 / sizeof(fmap_T);
-        C1 = channelSize / C0;
-        coutBlocks = (Cout + 16 - 1) / 16;
-        ho = H - dilationH * (Kh - 1);
-        wo = W - dilationW * (Kw - 1);
-        howo = ho * wo;
-        howoRound = ((howo + 16 - 1) / 16) * 16;
+AscendC::TQue<AscendC::TPosition::A1, 1> inQueueFmA1;
+AscendC::TQue<AscendC::TPosition::A2, 1> inQueueFmA2;
+// weight queue
+AscendC::TQue<AscendC::TPosition::B1, 1> inQueueWeB1;
+AscendC::TQue<AscendC::TPosition::B2, 1> inQueueWeB2;
+pipe.InitBuffer(inQueueFmA1, 1, featureMapA1Size * sizeof(fmap_T));
+pipe.InitBuffer(inQueueFmA2, 1, featureMapA2Size * sizeof(fmap_T));
+pipe.InitBuffer(inQueueWeB1, 1, weightA1Size * sizeof(weight_T));
+pipe.InitBuffer(inQueueWeB2, 1, weightB2Size * sizeof(weight_T));
+pipe.InitBuffer(outQueueCO1, 1, dstCO1Size * sizeof(dstCO1_T));
 
-        featureMapA1Size = C1 * H * W * C0;      // shape: [C1, H, W, C0]
-        weightA1Size = C1 * Kh * Kw * Cout * C0; // shape: [C1, Kh, Kw, Cout, C0]
-        featureMapA2Size = howoRound * (C1 * Kh * Kw * C0);
-        weightB2Size = (C1 * Kh * Kw * C0) * coutBlocks * 16;
-        m = howo;
-        k = C1 * Kh * Kw * C0;
-        n = Cout;
-        biasSize = Cout;                  // shape: [Cout]
-        dstSize = coutBlocks * howo * 16; // shape: [coutBlocks, howo, 16]
-        dstCO1Size = coutBlocks * howoRound * 16;
+AscendC::LocalTensor<fmap_T> featureMapA1 = inQueueFmA1.DeQue<fmap_T>();
+AscendC::LocalTensor<weight_T> weightB1 = inQueueWeB1.DeQue<weight_T>();
+AscendC::LocalTensor<fmap_T> featureMapA2 = inQueueFmA2.AllocTensor<fmap_T>();
+AscendC::LocalTensor<weight_T> weightB2 = inQueueWeB2.AllocTensor<weight_T>();
+uint16_t channelSize = 32;
+uint16_t H = 4, W = 4;
+uint8_t Kh = 2, Kw = 2;
+uint16_t Cout = 16;
+uint16_t C0, C1;
+uint8_t dilationH = 2, dilationW = 2;
 
-        fmRepeat = featureMapA2Size / (16 * C0);
-        weRepeat = weightB2Size / (16 * C0);
-    }
-    __aicore__ inline void Init(__gm__ uint8_t* fmGm, __gm__ uint8_t* weGm, __gm__ uint8_t* biasGm,
-        __gm__ uint8_t* dstGm)
-    {
-        fmGlobal.SetGlobalBuffer((__gm__ fmap_T*)fmGm);
-        weGlobal.SetGlobalBuffer((__gm__ weight_T*)weGm);
-        biasGlobal.SetGlobalBuffer((__gm__ dstCO1_T*)biasGm);
-        dstGlobal.SetGlobalBuffer((__gm__ dst_T*)dstGm);
-        pipe.InitBuffer(inQueueFmA1, 1, featureMapA1Size * sizeof(fmap_T));
-        pipe.InitBuffer(inQueueFmA2, 1, featureMapA2Size * sizeof(fmap_T));
-        pipe.InitBuffer(inQueueWeB1, 1, weightA1Size * sizeof(weight_T));
-        pipe.InitBuffer(inQueueWeB2, 1, weightB2Size * sizeof(weight_T));
-        pipe.InitBuffer(outQueueCO1, 1, dstCO1Size * sizeof(dstCO1_T));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Split();
-        Compute();
-        CopyOut();
-    }
+uint8_t padList[PAD_SIZE] = {0, 0, 0, 0};
+AscendC::SetFmatrix(H, W, padList, FmatrixMode::FMATRIX_LEFT);
+AscendC::SetLoadDataPaddingValue(0);
+AscendC::SetLoadDataRepeat({0, 1, 0});
+AscendC::SetLoadDataBoundary((uint32_t)0);
+static constexpr AscendC::IsResetLoad3dConfig LOAD3D_CONFIG = {false,false};
+AscendC::LoadData<fmap_T, LOAD3D_CONFIG>(featureMapA2, featureMapA1,
+    { padList, H, W, channelSize, k, howoRound, 0, 0, 1, 1, Kw, Kh, dilationW, dilationH, false, false, 0 });
+AscendC::LoadData(weightB2, weightB1, { 0, weRepeat, 1, 0, 0, false, 0 });
 
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<fmap_T> featureMapA1 = inQueueFmA1.AllocTensor<fmap_T>();
-        AscendC::LocalTensor<weight_T> weightB1 = inQueueWeB1.AllocTensor<weight_T>();
-
-        AscendC::DataCopy(featureMapA1, fmGlobal, { 1, static_cast<uint16_t>(featureMapA1Size * sizeof(fmap_T) / 32), 0, 0 });
-        AscendC::DataCopy(weightB1, weGlobal, { 1, static_cast<uint16_t>(weightA1Size * sizeof(weight_T) / 32), 0, 0 });
-
-        inQueueFmA1.EnQue(featureMapA1);
-        inQueueWeB1.EnQue(weightB1);
-    }
-    __aicore__ inline void Split()
-    {    
-        AscendC::LocalTensor<fmap_T> featureMapA1 = inQueueFmA1.DeQue<fmap_T>();
-        AscendC::LocalTensor<weight_T> weightB1 = inQueueWeB1.DeQue<weight_T>();
-        AscendC::LocalTensor<fmap_T> featureMapA2 = inQueueFmA2.AllocTensor<fmap_T>();
-        AscendC::LocalTensor<weight_T> weightB2 = inQueueWeB2.AllocTensor<weight_T>();
-
-        uint8_t padList[PAD_SIZE] = {0, 0, 0, 0};
-        AscendC::SetFmatrix(H, W, padList, FmatrixMode::FMATRIX_LEFT);
-
-
-
-
-
-
-
-        AscendC::SetLoadDataPaddingValue(0);
-        AscendC::SetLoadDataRepeat({0, 1, 0});
-        AscendC::SetLoadDataBoundary((uint32_t)0);
-        static constexpr AscendC::IsResetLoad3dConfig LOAD3D_CONFIG = {false,false};
-        AscendC::LoadData<fmap_T, LOAD3D_CONFIG>(featureMapA2, featureMapA1,
-            { padList, H, W, channelSize, k, howoRound, 0, 0, 1, 1, Kw, Kh, dilationW, dilationH, false, false, 0 });
-        AscendC::LoadData(weightB2, weightB1, { 0, weRepeat, 1, 0, 0, false, 0 });
-
-        inQueueFmA2.EnQue<fmap_T>(featureMapA2);
-        inQueueWeB2.EnQue<weight_T>(weightB2);
-        inQueueFmA1.FreeTensor(featureMapA1);
-        inQueueWeB1.FreeTensor(weightB1);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<fmap_T> featureMapA2 = inQueueFmA2.DeQue<fmap_T>();
-        AscendC::LocalTensor<weight_T> weightB2 = inQueueWeB2.DeQue<weight_T>();
-        AscendC::LocalTensor<dstCO1_T> dstCO1 = outQueueCO1.AllocTensor<dstCO1_T>();
-
-        AscendC::Mmad(dstCO1, featureMapA2, weightB2, { m, n, k, true, 0, false, false, false });
-
-        outQueueCO1.EnQue<dstCO1_T>(dstCO1);
-        inQueueFmA2.FreeTensor(featureMapA2);
-        inQueueWeB2.FreeTensor(weightB2);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<dstCO1_T> dstCO1 = outQueueCO1.DeQue<dstCO1_T>();
-        AscendC::FixpipeParamsV220 fixpipeParams;
-        fixpipeParams.nSize = coutBlocks * 16;
-        fixpipeParams.mSize = howo;
-        fixpipeParams.srcStride = howo;
-        fixpipeParams.dstStride = howo * AscendC::BLOCK_CUBE * sizeof(dst_T) / AscendC::ONE_BLK_SIZE;
-        fixpipeParams.quantPre = deqMode;
-        AscendC::Fixpipe<dst_T, dstCO1_T, AscendC::CFG_NZ>(dstGlobal, dstCO1, fixpipeParams);
-        outQueueCO1.FreeTensor(dstCO1);
-    }
-
-private:
-    AscendC::TPipe pipe;
-    // feature map queue
-    AscendC::TQue<AscendC::TPosition::A1, 1> inQueueFmA1;
-    AscendC::TQue<AscendC::TPosition::A2, 1> inQueueFmA2;
-    // weight queue
-    AscendC::TQue<AscendC::TPosition::B1, 1> inQueueWeB1;
-    AscendC::TQue<AscendC::TPosition::B2, 1> inQueueWeB2;
-    // dst queue
-    AscendC::TQue<AscendC::TPosition::CO1, 1> outQueueCO1;
-
-    AscendC::GlobalTensor<fmap_T> fmGlobal;
-    AscendC::GlobalTensor<weight_T> weGlobal;
-    AscendC::GlobalTensor<dst_T> dstGlobal;
-    AscendC::GlobalTensor<dstCO1_T> biasGlobal;
-
-    uint16_t channelSize = 32;
-    uint16_t H = 4, W = 4;
-    uint8_t Kh = 2, Kw = 2;
-    uint16_t Cout = 16;
-    uint16_t C0, C1;
-    uint8_t dilationH = 2, dilationW = 2;
-
-    uint16_t coutBlocks, ho, wo, howo, howoRound;
-    uint32_t featureMapA1Size, weightA1Size, featureMapA2Size, weightB2Size, biasSize, dstSize, dstCO1Size;
-    uint16_t m, k, n;
-    uint8_t fmRepeat, weRepeat;
-    AscendC::QuantMode_t deqMode = AscendC::QuantMode_t::F322F16;
-};
-
-extern "C" __global__ __aicore__ void load3d_simple_kernel(__gm__ uint8_t *fmGm, __gm__ uint8_t *weGm,
-    __gm__ uint8_t *biasGm, __gm__ uint8_t *dstGm)
-{
-    KernelLoad3d<dst_type, fmap_type, weight_type, dstCO1_type> op;
-    op.Init(fmGm, weGm, biasGm, dstGm);
-    op.Process();
-}
-
+inQueueFmA2.EnQue<fmap_T>(featureMapA2);
+inQueueWeB2.EnQue<weight_T>(weightB2);
+inQueueFmA1.FreeTensor(featureMapA1);
+inQueueWeB1.FreeTensor(weightB1);
 ```
 

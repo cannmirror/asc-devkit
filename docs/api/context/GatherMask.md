@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -56,14 +61,15 @@
 <tbody><tr id="row166091324112514"><td class="cellrowborder" valign="top" width="14.77%" headers="mcps1.2.3.1.1 "><p id="p186091247251"><a name="p186091247251"></a><a name="p186091247251"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="85.22999999999999%" headers="mcps1.2.3.1.2 "><p id="p186091824132516"><a name="p186091824132516"></a><a name="p186091824132516"></a>源操作数src0和目的操作数dst的数据类型。</p>
+<p id="p168601414125214"><a name="p168601414125214"></a><a name="p168601414125214"></a><span id="ph1886081495211"><a name="ph1886081495211"></a><a name="ph1886081495211"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/float/int32_t/uint32_t</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/uint16_t/int16_t/float/uint32_t/int32_t</p>
 <p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/uint16_t/int16_t/float/uint32_t/int32_t</p>
 </td>
 </tr>
 <tr id="row135451522112520"><td class="cellrowborder" valign="top" width="14.77%" headers="mcps1.2.3.1.1 "><p id="p1354612213257"><a name="p1354612213257"></a><a name="p1354612213257"></a>U</p>
 </td>
-<td class="cellrowborder" valign="top" width="85.22999999999999%" headers="mcps1.2.3.1.2 "><p id="p125461422142510"><a name="p125461422142510"></a><a name="p125461422142510"></a>用户自定义模式下src1Pattern的数据类型。支持的数据类型为uint16_t/uint32_t。</p>
-<a name="ul186367588592"></a><a name="ul186367588592"></a><ul id="ul186367588592"><li>当目的操作数数据类型为half/uint16_t/int16_t时，src1Pattern应为uint16_t数据类型。</li><li>当目的操作数数据类型为float/uint32_t/int32_t时，src1Pattern应为uint32_t数据类型。</li></ul>
+<td class="cellrowborder" valign="top" width="85.22999999999999%" headers="mcps1.2.3.1.2 "><p id="p125461422142510"><a name="p125461422142510"></a><a name="p125461422142510"></a>用户自定义模式下src1Pattern的数据类型。支持的数据类型为uint8_t/uint16_t/uint32_t。</p>
+<a name="ul186367588592"></a><a name="ul186367588592"></a><ul id="ul186367588592"><li>当目的操作数数据类型为uint8_t/int8_t时，src1Pattern应为uint8_t数据类型。</li><li>当目的操作数数据类型为half/uint16_t/int16_t/bfloat16_t时，src1Pattern应为uint16_t数据类型。</li><li>当目的操作数数据类型为float/uint32_t/int32_t时，src1Pattern应为uint32_t数据类型。</li></ul>
 </td>
 </tr>
 <tr id="row18381947151619"><td class="cellrowborder" valign="top" width="14.77%" headers="mcps1.2.3.1.1 "><p id="p683894716163"><a name="p683894716163"></a><a name="p683894716163"></a>mode</p>
@@ -110,6 +116,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="73.6073607360736%" headers="mcps1.2.4.1.3 "><p id="p19262048174314"><a name="p19262048174314"></a><a name="p19262048174314"></a>gather mask（数据收集的掩码），分为内置固定模式和用户自定义模式两种，根据内置固定模式对应的二进制或者用户自定义输入的Tensor数值对应的二进制从源操作数中选取元素写入目的操作数中。1为选取，0为不选取。</p>
 <a name="ul10546132419271"></a><a name="ul10546132419271"></a><ul id="ul10546132419271"><li>内置固定模式：src1Pattern数据类型为uint8_t，取值范围为[1,7]，所有repeat迭代使用相同的gather mask。不支持配置src1RepeatStride。<a name="ul24853517192"></a><a name="ul24853517192"></a><ul id="ul24853517192"><li>1：01010101…0101 # 每个repeat取偶数索引元素</li><li>2：10101010…1010 # 每个repeat取奇数索引元素</li><li>3：00010001…0001 # 每个repeat内每四个元素取第一个元素</li><li>4：00100010…0010 # 每个repeat内每四个元素取第二个元素，</li><li>5：01000100…0100 # 每个repeat内每四个元素取第三个元素</li><li>6：10001000…1000 # 每个repeat内每四个元素取第四个元素</li><li>7：11111111...1111 # 每个repeat内取全部元素</li></ul>
+<p id="p1760174211581"><a name="p1760174211581"></a><a name="p1760174211581"></a><span id="ph1606424588"><a name="ph1606424588"></a><a name="ph1606424588"></a>Ascend 950PR/Ascend 950DT</span>支持模式1-7</p>
 <p id="p1278782254312"><a name="p1278782254312"></a><a name="p1278782254312"></a><span id="ph1787172284313"><a name="ph1787172284313"></a><a name="ph1787172284313"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>支持模式1-7</p>
 <p id="p1348194411011"><a name="p1348194411011"></a><a name="p1348194411011"></a><span id="ph61181133504"><a name="ph61181133504"></a><a name="ph61181133504"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>支持模式1-7</p>
 </li></ul>
@@ -125,6 +132,7 @@
 </li><li>true：Counter模式。根据mask等参数含义的不同，该模式有以下两种配置方式：<a name="ul16648161913568"></a><a name="ul16648161913568"></a><ul id="ul16648161913568"><li><a href="#fig126588515614">配置方式一</a>：每次repeat操作mask个元素，总的数据计算量为repeatTimes * mask个元素。<a name="ul1472574218223"></a><a name="ul1472574218223"></a><ul id="ul1472574218223"><li>mask值配置为每一次repeat计算的元素个数。</li><li>按需配置repeatTimes、src0BlockStride、src0RepeatStride参数。</li><li>支持src1Pattern配置为内置固定模式或用户自定义模式。用户自定义模式下可根据实际情况配置src1RepeatStride。</li></ul>
 </li><li><a href="#fig13219248171214">配置方式二</a>：总的数据计算量为mask个元素。<a name="ul226118593296"></a><a name="ul226118593296"></a><ul id="ul226118593296"><li>mask配置为总的数据计算量。</li><li>repeatTimes值不生效，指令的迭代次数由源操作数和mask共同决定。</li><li>按需配置src0BlockStride、src0RepeatStride参数。</li><li>支持src1Pattern配置为内置固定模式或用户自定义模式。用户自定义模式下可根据实际情况配置src1RepeatStride。</li></ul>
 </li></ul>
+<p id="p8218151033115"><a name="p8218151033115"></a><a name="p8218151033115"></a><span id="ph1421821073119"><a name="ph1421821073119"></a><a name="ph1421821073119"></a>Ascend 950PR/Ascend 950DT</span>，支持配置方式一</p>
 <p id="p82181610183118"><a name="p82181610183118"></a><a name="p82181610183118"></a><span id="ph121812101314"><a name="ph121812101314"></a><a name="ph121812101314"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，支持配置方式一</p>
 <p id="p1421891033117"><a name="p1421891033117"></a><a name="p1421891033117"></a><span id="ph5218310133120"><a name="ph5218310133120"></a><a name="ph5218310133120"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持配置方式一</p>
 </li></ul>
@@ -215,7 +223,7 @@
             src1Global.SetGlobalBuffer((__gm__ uint32_t*)src1Gm);
             dstGlobal.SetGlobalBuffer((__gm__ uint32_t*)dstGm);
             pipe.InitBuffer(inQueueSrc0, 1, 256 * sizeof(uint32_t));
-            pipe.InitBuffer(inQueueSrc1, 1, 32 * sizeof(uint32_t));
+            pipe.InitBuffer(inQueueSrc1, 1, 8 * sizeof(uint32_t));
             pipe.InitBuffer(outQueueDst, 1, 256 * sizeof(uint32_t));
         }
         __aicore__ inline void Process()
@@ -365,7 +373,7 @@
     ```
     输入数据src0Local：[1 2 3 ... 128]
     输入数据src1Pattern：src1Pattern = 2;
-    输出数据dstLocal：[2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68 70 72 74 76 78 80 82 84 86 88 90 92 94 96 98 100 102 104 106 108 110 112 114 116 118 120 122 124 126 128 undefine ..undefined]
+    输出数据dstLocal：[2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68 70 72 74 76 78 80 82 84 86 88 90 92 94 96 98 100 102 104 106 108 110 112 114 116 118 120 122 124 126 128 undefined ..undefined]
     输出数据rsvdCnt：64
     ```
 

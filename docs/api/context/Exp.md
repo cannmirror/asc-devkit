@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -43,7 +48,7 @@
 -   tensor前n个数据计算
 
     ```
-    template <typename T>
+    template <typename T, const ExpConfig& config = DEFAULT_EXP_CONFIG>
     __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count)
     ```
 
@@ -51,14 +56,14 @@
     -   mask逐bit模式
 
         ```
-        template <typename T, bool isSetMask = true>
+        template <typename T, bool isSetMask = true, const ExpConfig& config = DEFAULT_EXP_CONFIG>
         __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[], const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
         ```
 
     -   mask连续模式
 
         ```
-        template <typename T, bool isSetMask = true>
+        template <typename T, bool isSetMask = true, const ExpConfig& config = DEFAULT_EXP_CONFIG>
         __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
         ```
 
@@ -76,6 +81,7 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="16.28%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p33891341206"><a name="p33891341206"></a><a name="p33891341206"></a><span id="ph126252025205"><a name="ph126252025205"></a><a name="ph126252025205"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p29873508148"><a name="p29873508148"></a><a name="p29873508148"></a><span id="ph13754548217"><a name="ph13754548217"></a><a name="ph13754548217"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p815762322517"><a name="p815762322517"></a><a name="p815762322517"></a><span id="ph1215792313251"><a name="ph1215792313251"></a><a name="ph1215792313251"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p206702014101615"><a name="p206702014101615"></a><a name="p206702014101615"></a><span id="ph0275164617397"><a name="ph0275164617397"></a><a name="ph0275164617397"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -86,6 +92,23 @@
 </td>
 <td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p77520541653"><a name="zh-cn_topic_0000001429830437_p77520541653"></a><a name="zh-cn_topic_0000001429830437_p77520541653"></a>是否在接口内部设置mask。</p>
 <a name="zh-cn_topic_0000001429830437_ul1163765616511"></a><a name="zh-cn_topic_0000001429830437_ul1163765616511"></a><ul id="zh-cn_topic_0000001429830437_ul1163765616511"><li>true，表示在接口内部设置mask。</li><li>false，表示在接口外部设置mask，开发者需要使用<a href="SetVectorMask.md">SetVectorMask</a>接口设置mask值。这种模式下，本接口入参中的mask值必须设置为占位符MASK_PLACEHOLDER。</li></ul>
+</td>
+</tr>
+<tr id="row15613161471811"><td class="cellrowborder" valign="top" width="16.28%" headers="mcps1.2.3.1.1 "><p id="p992122204615"><a name="p992122204615"></a><a name="p992122204615"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="83.72%" headers="mcps1.2.3.1.2 "><p id="p1592118224464"><a name="p1592118224464"></a><a name="p1592118224464"></a>用于配置Subnormal计算模式，ExpConfig类型，定义如下：</p>
+<a name="screen14764145615318"></a><a name="screen14764145615318"></a><pre class="screen" codetype="Cpp" id="screen14764145615318">enum class ExpAlgo {
+    INTRINSIC = 0,
+    PRECISION_1ULP_FTZ_TRUE,
+    PRECISION_1ULP_FTZ_FALSE,
+};
+struct ExpConfig {
+    ExpAlgo algo = ExpAlgo::INTRINSIC;
+}</pre>
+<p id="p20249174272012"><a name="p20249174272012"></a><a name="p20249174272012"></a>通过ExpConfig结构体的参数algo来配置Subnormal计算模式。algo取值如下：</p>
+<a name="ul111801915217"></a><a name="ul111801915217"></a><ul id="ul111801915217"><li>ExpAlgo::INTRINSIC、ExpAlgo::PRECISION_1ULP_FTZ_TRUE，使用单指令计算得出结果，所有Subnormal被近似为0。</li><li>ExpAlgo::PRECISION_1ULP_FTZ_FALSE，支持Subnormal数据计算。</li></ul>
+<p id="p12666153716228"><a name="p12666153716228"></a><a name="p12666153716228"></a>该参数的默认值DEFAULT_EXP_CONFIG的取值如下：</p>
+<a name="screen1663910720465"></a><a name="screen1663910720465"></a><pre class="screen" codetype="Cpp" id="screen1663910720465">constexpr ExpConfig DEFAULT_EXP_CONFIG = { ExpAlgo::INTRINSIC };</pre>
 </td>
 </tr>
 </tbody>
@@ -167,9 +190,9 @@
 
 ## 调用示例<a name="section176061616102911"></a>
 
-本样例的srcLocal和dstLocal均为half类型，占16位bit。
+本样例的srcLocal和dstLocal均为half类型。
 
-更多样例可参考[LINK](更多样例-8.md)。
+更多样例可参考[LINK](更多样例-9.md)。
 
 -   tensor高维切分计算样例-mask连续模式
 
@@ -195,6 +218,8 @@
 
     ```
     AscendC::Exp(dstLocal, srcLocal, 512);
+    static constexpr ExpConfig config = { ExpAlgo::PRECISION_1ULP_FTZ_FALSE };
+    AscendC::Exp<T, config>(dstLocal, srcLocal, 512);
     ```
 
 结果示例如下：

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1743412418717"><a name="p1743412418717"></a><a name="p1743412418717"></a>x</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -143,71 +148,16 @@ __aicore__ inline void CheckLocalMemoryIA(const CheckLocalMemoryIAParam& checkPa
 该示例check矢量写访问是否在设定的\(startAddr, endAddr\]范围内。当前示例check到矢量写在设定的范围内，结果会报错（ACL\_ERROR\_RT\_VECTOR\_CORE\_EXCEPTION）。
 
 ```
-#include "kernel_operator.h"
-
-class KernelAdd {
-public:
-    __aicore__ inline KernelAdd() {}
-    __aicore__ inline void Init(__gm__ uint8_t* src0Gm, __gm__ uint8_t* src1Gm, __gm__ uint8_t* dstGm)
-    {
-        src0Global.SetGlobalBuffer((__gm__ half*)src0Gm);
-        src1Global.SetGlobalBuffer((__gm__ half*)src1Gm);
-        dstGlobal.SetGlobalBuffer((__gm__ half*)dstGm);
-        pipe.InitBuffer(inQueueSrc0, 1, 512 * sizeof(half));
-        pipe.InitBuffer(inQueueSrc1, 1, 512 * sizeof(half));
-        pipe.InitBuffer(outQueueDst, 1, 512 * sizeof(half));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<half> src0Local = inQueueSrc0.AllocTensor<half>();
-        AscendC::LocalTensor<half> src1Local = inQueueSrc1.AllocTensor<half>();
-        AscendC::DataCopy(src0Local, src0Global, 512);
-        AscendC::DataCopy(src1Local, src1Global, 512);
-        inQueueSrc0.EnQue(src0Local);
-        inQueueSrc1.EnQue(src1Local);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<half> src0Local = inQueueSrc0.DeQue<half>();
-        AscendC::LocalTensor<half> src1Local = inQueueSrc1.DeQue<half>();
-        AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
-        AscendC::CheckLocalMemoryIA({ 0, (uint32_t)(dstLocal.GetPhyAddr() / 32),
-            (uint32_t)((dstLocal.GetPhyAddr() + 512 * sizeof(half)) / 32), false, false, false, true, false, false,
-            true });
-        AscendC::Add(dstLocal, src0Local, src1Local, 512);
-
-        outQueueDst.EnQue<half>(dstLocal);
-        inQueueSrc0.FreeTensor(src0Local);
-        inQueueSrc1.FreeTensor(src1Local);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<half> dstLocal = outQueueDst.DeQue<half>();
-        AscendC::DataCopy(dstGlobal, dstLocal, 512);
-        outQueueDst.FreeTensor(dstLocal);
-    }
-
-private:
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc0, inQueueSrc1;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst;
-    AscendC::GlobalTensor<half> src0Global, src1Global, dstGlobal;
-};
-
-extern "C" __global__ __aicore__ void add_simple_kernel(__gm__ uint8_t* src0Gm, __gm__ uint8_t* src1Gm, __gm__ uint8_t* dstGm)
-{
-    KernelAdd op;
-    op.Init(src0Gm, src1Gm, dstGm);
-    op.Process();
-}
-
+AscendC::TPipe pipe;
+AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc0, inQueueSrc1;
+AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst
+pipe.InitBuffer(inQueueSrc0, 1, 512 * sizeof(half));
+pipe.InitBuffer(inQueueSrc1, 1, 512 * sizeof(half));
+pipe.InitBuffer(outQueueDst, 1, 512 * sizeof(half));
+AscendC::LocalTensor<half> src0Local = inQueueSrc0.DeQue<half>();
+AscendC::LocalTensor<half> src1Local = inQueueSrc1.DeQue<half>();
+AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
+AscendC::CheckLocalMemoryIA({ 0, (uint32_t)(dstLocal.GetPhyAddr() / 32),(uint32_t)((dstLocal.GetPhyAddr() + 512 * sizeof(half)) / 32), false, false, false, true, false, false,
+true });
 ```
 

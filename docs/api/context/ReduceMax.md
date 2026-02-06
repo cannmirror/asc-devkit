@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -74,6 +79,7 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="13.59%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="86.41%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p722214293126"><a name="p722214293126"></a><a name="p722214293126"></a><span id="ph6222129101217"><a name="ph6222129101217"></a><a name="ph6222129101217"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint16_t/int16_t/uint32_t/int32_t/half/float/uint64_t/int64_t</p>
 <p id="p1261794045615"><a name="p1261794045615"></a><a name="p1261794045615"></a><span id="ph361715406569"><a name="ph361715406569"></a><a name="ph361715406569"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
 <p id="p5161942102612"><a name="p5161942102612"></a><a name="p5161942102612"></a><span id="ph151614424266"><a name="ph151614424266"></a><a name="ph151614424266"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
 <p id="p854386131917"><a name="p854386131917"></a><a name="p854386131917"></a><span id="ph31931459192112"><a name="ph31931459192112"></a><a name="ph31931459192112"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -121,6 +127,7 @@
 <p id="p1196185464219"><a name="p1196185464219"></a><a name="p1196185464219"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p154118565332"><a name="p154118565332"></a><a name="p154118565332"></a><span id="ph1197925693320"><a name="ph1197925693320"></a><a name="ph1197925693320"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 <p id="p141161146144213"><a name="p141161146144213"></a><a name="p141161146144213"></a>数据类型需要与目的操作数保持一致。</p>
+<p id="p1945113142551"><a name="p1945113142551"></a><a name="p1945113142551"></a><span id="ph44511914195515"><a name="ph44511914195515"></a><a name="ph44511914195515"></a>Ascend 950PR/Ascend 950DT</span>，因接口内部算法实现不同，无需使用sharedTmpBuffer，可以直接传入src或者任意大小的sharedTmpBuffer。</p>
 <p id="p2045113147555"><a name="p2045113147555"></a><a name="p2045113147555"></a><span id="ph0451314155510"><a name="ph0451314155510"></a><a name="ph0451314155510"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，需要使用sharedTmpBuffer。</p>
 <p id="p5451214155517"><a name="p5451214155517"></a><a name="p5451214155517"></a><span id="ph16451121435516"><a name="ph16451121435516"></a><a name="ph16451121435516"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，需要使用sharedTmpBuffer。</p>
 <p id="p12793221078"><a name="p12793221078"></a><a name="p12793221078"></a><span id="ph927942217710"><a name="ph927942217710"></a><a name="ph927942217710"></a>Kirin X90</span>，需要使用sharedTmpBuffer。</p>
@@ -206,7 +213,7 @@ sharedTmpBuffer空间需要开发者申请并传入，根据是否需要获取�
     int finalWorkLocalNeedSize = iter2AlignStart + iter3AlignStart + iter3AlignEnd;       // 最终sharedTmpBuffer所需的空间大小
     ```
 
-以上计算出来的最终的空间大小单位是元素个数，若转成Bytes数表示为finalWorkLocalNeedSize \* typeSize \(Bytes\)，具体计算示例请参考[调用示例](#section107745237168)中sharedTmpBufferl空间计算示例。
+以上计算出来的最终的空间大小单位是元素个数，若转成Bytes数表示为finalWorkLocalNeedSize \* typeSize \(Bytes\)，具体计算示例请参考[调用示例](#section107745237168)中sharedTmpBuffer空间计算示例。
 
 > [!NOTE]说明 
 >开发者为了节省地址空间，可以选择sharedTmpBuffer空间复用源操作数的空间。此时因为sharedTmpBuffer需要的最小空间一定小于源操作数的空间，所以无需关注和计算最小空间。
@@ -229,6 +236,7 @@ sharedTmpBuffer空间需要开发者申请并传入，根据是否需要获取�
 
 -   返回最大值索引时，如果存在多个最大值，返回第一个最大值的索引。
 -   当输入类型是half的时候，只支持获取最大不超过65535（uint16\_t能表示的最大值）的索引值。
+-   针对Ascend 950PR/Ascend 950DT，uint64\_t/int64\_t数据类型仅支持tensor前n个数据计算接口。
 
 ## 调用示例<a name="section107745237168"></a>
 

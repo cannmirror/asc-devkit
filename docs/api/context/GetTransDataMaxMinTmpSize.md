@@ -105,7 +105,7 @@ GetTransDataMaxMinTmpSize返回值为true/false，true表示成功获取TransDat
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 // 输入shape为(1,16,2,4,4)NCDHW转换为输出shape(1,2,1,4,4,16)NDC1HWC0;算子输入的数据类型为half

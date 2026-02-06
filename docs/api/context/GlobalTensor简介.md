@@ -34,8 +34,9 @@ public:
     // 设置GlobalTensor写入L2 Cache的模式
     template<CacheRwMode rwMode = CacheRwMode::RW>
     __aicore__ inline void SetL2CacheHint(CacheMode mode);
-    
-    
+    // 将当前GlobalTensor重解释为用户指定的新类型
+    template <typename CAST_T>
+    __aicore__ inline GlobalTensor<CAST_T> ReinterpretCast() const;
     ...
 };
 ```

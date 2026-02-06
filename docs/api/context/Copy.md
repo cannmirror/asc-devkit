@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -37,6 +42,13 @@
 VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间隔操作。
 
 ## 函数原型<a name="section620mcpsimp"></a>
+
+-   tensor前n个数据计算
+
+    ```
+    template <typename T, bool isSetMask = true>
+    __aicore__ inline void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint32_t count)
+    ```
 
 -   tensor高维切分计算
     -   mask逐bit模式
@@ -67,6 +79,7 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="15.83%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="84.17%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p8993356112520"><a name="p8993356112520"></a><a name="p8993356112520"></a><span id="ph126252025205"><a name="ph126252025205"></a><a name="ph126252025205"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint8_t/int8_t/hifloat8_t/fp8_e4m3fn_t/fp8_e5m2_t/fp4x2_e2m1_t/fp4x2_e1m2_t/fp8_e8m0_t/uint16_t/int16_t/half/bfloat16_t/float/uint32_t/int32_t/uint64_t/int64_t</p>
 <p id="p1477716915716"><a name="p1477716915716"></a><a name="p1477716915716"></a><span id="ph1977719135715"><a name="ph1977719135715"></a><a name="ph1977719135715"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float</p>
 <p id="p377618918578"><a name="p377618918578"></a><a name="p377618918578"></a><span id="ph14777119105720"><a name="ph14777119105720"></a><a name="ph14777119105720"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float</p>
 <p id="p065555314"><a name="p065555314"></a><a name="p065555314"></a><span id="ph15441323310"><a name="ph15441323310"></a><a name="ph15441323310"></a>Kirin X90</span>，支持的数据类型为：half/float/uint16_t/int16_t/uin32_t/int32_t</p>
@@ -108,6 +121,13 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
 <td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.2.4.1.3 "><p id="p158685516535"><a name="p158685516535"></a><a name="p158685516535"></a>源操作数。</p>
 <p id="p138399710538"><a name="p138399710538"></a><a name="p138399710538"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。起始地址需要保证32字节对齐。</p>
 <p id="p1955311137135"><a name="p1955311137135"></a><a name="p1955311137135"></a>源操作数的数据类型需要与目的操作数保持一致。</p>
+</td>
+</tr>
+<tr id="row591792253816"><td class="cellrowborder" valign="top" width="16.49%" headers="mcps1.2.4.1.1 "><p id="p1917202214387"><a name="p1917202214387"></a><a name="p1917202214387"></a>count</p>
+</td>
+<td class="cellrowborder" valign="top" width="11.93%" headers="mcps1.2.4.1.2 "><p id="p6917922183815"><a name="p6917922183815"></a><a name="p6917922183815"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="71.58%" headers="mcps1.2.4.1.3 "><p id="p29181822173818"><a name="p29181822173818"></a><a name="p29181822173818"></a>参与搬运的元素个数。</p>
 </td>
 </tr>
 <tr id="row16554713131317"><td class="cellrowborder" valign="top" width="16.49%" headers="mcps1.2.4.1.1 "><p id="p1728791441620"><a name="p1728791441620"></a><a name="p1728791441620"></a>mask/mask[]</p>
@@ -169,17 +189,34 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
 ## 约束说明<a name="section633mcpsimp"></a>
 
 -   源操作数和目的操作数的起始地址需要保证32字节对齐。
+-   tensor前n个数据计算接口仅支持Ascend 950PR/Ascend 950DT。
+-   针对Ascend 950PR/Ascend 950DT，uint8\_t/int8\_t/hifloat8\_t/fp8\_e4m3fn\_t/fp8\_e5m2\_t/fp4x2\_e2m1\_t/fp4x2\_e1m2\_t/fp8\_e8m0\_t/uint64\_t/int64\_t数据类型仅支持tensor前n个数据计算接口。
+-   针对Ascend 950PR/Ascend 950DT，tensor前n个数据计算接口中的isSetMask参数不生效，保持默认值即可。
 -   Copy和矢量计算API一样，支持和掩码操作API配合使用。但Counter模式配合高维切分计算API时，和通用的Counter模式有一定差异。具体差异如下：
     -   通用的Counter模式：Mask代表**整个矢量计算参与计算的元素个数，迭代次数不生效**。
     -   Counter模式配合Copy高维切分计算API，Mask代表**每次Repeat中处理的元素个数，迭代次数生效。**示意图如下：
 
-        ![](figures/repeat-times-7.png)
+        ![](figures/repeat-times-12.png)
 
 ## 调用示例<a name="section1227835243314"></a>
 
 本示例仅展示Compute流程中的部分代码。如需运行，请参考[样例模板](#section34861445113317)实现完整的代码。
 
 本示例中操作数数据类型为int16\_t。
+
+-   tensor前n个数据计算
+
+    ```
+    AscendC::Copy(dstLocal, srcLocal, 512);
+    ```
+
+    结果示例如下：
+
+    ```
+    输入数据srcLocal：[9 -2 8 ... 9]
+    输出数据dstLocal:
+    [9 -2 8 ... 9]
+    ```
 
 -   mask连续模式
 
@@ -194,8 +231,8 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
     结果示例如下：
 
     ```
-    输入数据srcLocal： [9 -2 8 ... 9]
-    输出数据dstLocal： 
+    输入数据srcLocal:[9 -2 8 ... 9]
+    输出数据dstLocal:
     [9 -2 8 ... 9]
     ```
 
@@ -213,7 +250,7 @@ VECIN，VECCALC，VECOUT之间的搬运指令，支持mask操作和DataBlock间�
 
     ```
     输入数据srcLocal：[9 -2 8 ... 9]
-    输出数据dstLocal： 
+    输出数据dstLocal:
     [9 -2 8 ... 9]
     ```
 

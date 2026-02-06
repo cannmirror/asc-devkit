@@ -26,6 +26,10 @@
 void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 ```
 
+```
+void GetCosTmpBufferFactorSize(const CosConfig& config, const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
+```
+
 ## 参数说明<a name="section8566182019343"></a>
 
 **表 1**  参数列表
@@ -39,7 +43,14 @@ void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
 </th>
 </tr>
 </thead>
-<tbody><tr id="row139791917184711"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p697915173474"><a name="p697915173474"></a><a name="p697915173474"></a>typeSize</p>
+<tbody><tr id="row1753330102410"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p711121152310"><a name="p711121152310"></a><a name="p711121152310"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.19%" headers="mcps1.2.4.1.2 "><p id="p1284816393517"><a name="p1284816393517"></a><a name="p1284816393517"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="69.92%" headers="mcps1.2.4.1.3 "><p id="p107511933673"><a name="p107511933673"></a><a name="p107511933673"></a>Cos接口的相关配置信息。该参数的配置必须与Cos Kernel接口模板参数config的配置保持一致。</p>
+</td>
+</tr>
+<tr id="row139791917184711"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p697915173474"><a name="p697915173474"></a><a name="p697915173474"></a>typeSize</p>
 </td>
 <td class="cellrowborder" valign="top" width="13.19%" headers="mcps1.2.4.1.2 "><p id="p169793179474"><a name="p169793179474"></a><a name="p169793179474"></a>输入</p>
 </td>
@@ -73,11 +84,14 @@ void GetCosTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
 
 ## 调用示例<a name="section85671420193420"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 uint32_t maxLiveNodeCount = 0;
 uint32_t extraBuf = 0;
 AscendC::GetCosTmpBufferFactorSize(typeSize, maxLiveNodeCount, extraBuf);
+AscendC::CosConfig config;
+config.algo = AscendC::CosAlgo::RADIAN_REDUCTION;
+AscendC::GetCosTmpBufferFactorSize(config, typeSize, maxLiveNodeCount, extraBuf);
 ```
 

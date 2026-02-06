@@ -95,7 +95,7 @@ void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
 </td>
 <td class="cellrowborder" valign="top" width="12.8%" headers="mcps1.2.4.1.2 "><p id="p1221613214466"><a name="p1221613214466"></a><a name="p1221613214466"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="69.22%" headers="mcps1.2.4.1.3 "><p id="p277815284439"><a name="p277815284439"></a><a name="p277815284439"></a>中间变量是否能够复用输入内存。该参数预留，传入默认值false即可。</p>
+<td class="cellrowborder" valign="top" width="69.22%" headers="mcps1.2.4.1.3 "><p id="p277815284439"><a name="p277815284439"></a><a name="p277815284439"></a>中间变量是否能够复用输入内存。</p>
 </td>
 </tr>
 <tr id="row3524438151015"><td class="cellrowborder" valign="top" width="17.98%" headers="mcps1.2.4.1.1 "><p id="p108231747151016"><a name="p108231747151016"></a><a name="p108231747151016"></a>groupNum</p>
@@ -213,13 +213,13 @@ void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
 
     ```
     namespace optiling {
-    const uint32_t BLOCK_DIM = 8;
+    const uint32_t NUM_BLOCKS = 8;
     const uint32_t TILE_NUM = 8;
     static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
         TilingData tiling;
         uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-        context->SetBlockDim(BLOCK_DIM);
+        context->SetBlockDim(NUM_BLOCKS);
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
         ... 

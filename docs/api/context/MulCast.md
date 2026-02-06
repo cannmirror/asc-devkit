@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph141589125420"><a name="ph141589125420"></a><a name="ph141589125420"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -67,12 +72,14 @@
 </td>
 <td class="cellrowborder" valign="top" width="83.57%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>目的操作数数据类型。不同数据类型对应的精度转换规则见<a href="#table235404962912">表3</a>。</p>
 <p id="p510942615591"><a name="p510942615591"></a><a name="p510942615591"></a><span id="ph1215792313251"><a name="ph1215792313251"></a><a name="ph1215792313251"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：int8_t、uint8_t。</p>
+<p id="p451112532228"><a name="p451112532228"></a><a name="p451112532228"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：int8_t、uint8_t、int32_t、float。</p>
 </td>
 </tr>
 <tr id="row1648615377"><td class="cellrowborder" valign="top" width="16.43%" headers="mcps1.2.3.1.1 "><p id="p1212015191874"><a name="p1212015191874"></a><a name="p1212015191874"></a>U</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.57%" headers="mcps1.2.3.1.2 "><p id="p1912061914715"><a name="p1912061914715"></a><a name="p1912061914715"></a>源操作数数据类型。</p>
 <p id="p76317231599"><a name="p76317231599"></a><a name="p76317231599"></a><span id="ph8541113314210"><a name="ph8541113314210"></a><a name="ph8541113314210"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half。</p>
+<p id="p03061533154516"><a name="p03061533154516"></a><a name="p03061533154516"></a><span id="ph1989533114515"><a name="ph1989533114515"></a><a name="ph1989533114515"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、int64_t。</p>
 </td>
 </tr>
 <tr id="row488741712611"><td class="cellrowborder" valign="top" width="16.43%" headers="mcps1.2.3.1.1 "><p id="p18887617560"><a name="p18887617560"></a><a name="p18887617560"></a>isSetMask</p>
@@ -173,12 +180,30 @@
 <td class="cellrowborder" valign="top" width="75.34753475347534%" headers="mcps1.2.4.1.3 "><p id="p3903539191515"><a name="p3903539191515"></a><a name="p3903539191515"></a>将源操作数按照CAST_NONE模式取整，以uint8_t格式（溢出默认按照饱和处理）存入目的操作数中。</p>
 </td>
 </tr>
+<tr id="row184704305481"><td class="cellrowborder" valign="top" width="12.171217121712171%" headers="mcps1.2.4.1.1 "><p id="p1230575204517"><a name="p1230575204517"></a><a name="p1230575204517"></a>int64_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.48124812481248%" headers="mcps1.2.4.1.2 "><p id="p13305125104512"><a name="p13305125104512"></a><a name="p13305125104512"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="75.34753475347534%" headers="mcps1.2.4.1.3 "><p id="p143057534511"><a name="p143057534511"></a><a name="p143057534511"></a>将源操作数按照CAST_NONE模式取整，以float格式（溢出默认按照饱和处理）存入目的操作数中。</p>
+</td>
+</tr>
+<tr id="row3470130174810"><td class="cellrowborder" valign="top" width="12.171217121712171%" headers="mcps1.2.4.1.1 "><p id="p0174088458"><a name="p0174088458"></a><a name="p0174088458"></a>int64_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.48124812481248%" headers="mcps1.2.4.1.2 "><p id="p19174138174515"><a name="p19174138174515"></a><a name="p19174138174515"></a>int32_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="75.34753475347534%" headers="mcps1.2.4.1.3 "><p id="p101741384456"><a name="p101741384456"></a><a name="p101741384456"></a>将源操作数按照CAST_NONE模式取到int32_t所能表示的数，以int32_t格式（溢出默认按照饱和处理）存入目的操作数中。</p>
+</td>
+</tr>
 </tbody>
 </table>
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 
 无
+
+## 约束说明<a name="section633mcpsimp"></a>
+
+针对Ascend 950PR/Ascend 950DT，int64\_t数据类型仅支持tensor前n个数据计算接口。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

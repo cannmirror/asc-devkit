@@ -1,6 +1,6 @@
 # Matmul Tiling类使用说明<a name="ZH-CN_TOPIC_0000001621515197"></a>
 
-Ascend C提供一组Matmul Tiling API，方便用户获取[Matmul kernel计算](Matmul使用说明.md#li5878185413338)时所需的Tiling参数。用户只需要传入A/B/C矩阵的Position位置、Format格式和DType数据类型等信息，调用API接口，即可获取到[Init](Init-29.md)中TCubeTiling结构体中的相关参数。
+Ascend C提供一组Matmul Tiling API，方便用户获取[Matmul kernel计算](Matmul使用说明.md#li5878185413338)时所需的Tiling参数。用户只需要传入A/B/C矩阵的Position位置、Format格式和DType数据类型等信息，调用API接口，即可获取到[Init](Init-86.md)中TCubeTiling结构体中的相关参数。
 
 Matmul Tiling API分为Matmul单核Tiling接口、多核Tiling接口和BatchMatmul Tiling接口，分别用于Matmul单核计算、多核计算和BatchMatmul计算场景。获取Tiling参数的流程如下：
 
@@ -248,7 +248,7 @@ Matmul Tiling API分为Matmul单核Tiling接口、多核Tiling接口和BatchMatm
 </tr>
 <tr id="row94141412144815"><td class="cellrowborder" valign="top" width="18.17%" headers="mcps1.2.3.1.1 "><p id="p874113135485"><a name="p874113135485"></a><a name="p874113135485"></a>GetCoreNum</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.83%" headers="mcps1.2.3.1.2 "><p id="p27411313194817"><a name="p27411313194817"></a><a name="p27411313194817"></a>获得多核切分后， 使用的blockDim。</p>
+<td class="cellrowborder" valign="top" width="81.83%" headers="mcps1.2.3.1.2 "><p id="p27411313194817"><a name="p27411313194817"></a><a name="p27411313194817"></a>获得多核切分后， 使用的numBlocks。</p>
 </td>
 </tr>
 <tr id="row1395374761814"><td class="cellrowborder" valign="top" width="18.17%" headers="mcps1.2.3.1.1 "><p id="p1095420479183"><a name="p1095420479183"></a><a name="p1095420479183"></a>SetSplitK</p>
@@ -275,7 +275,7 @@ Matmul Tiling API分为Matmul单核Tiling接口、多核Tiling接口和BatchMatm
 </thead>
 <tbody><tr id="row15258253162014"><td class="cellrowborder" valign="top" width="18.17%" headers="mcps1.2.3.1.1 "><p id="p9258205314208"><a name="p9258205314208"></a><a name="p9258205314208"></a>GetCoreNum</p>
 </td>
-<td class="cellrowborder" valign="top" width="81.83%" headers="mcps1.2.3.1.2 "><p id="p192587535208"><a name="p192587535208"></a><a name="p192587535208"></a>获得多核切分后， 使用的blockDim。</p>
+<td class="cellrowborder" valign="top" width="81.83%" headers="mcps1.2.3.1.2 "><p id="p192587535208"><a name="p192587535208"></a><a name="p192587535208"></a>获得多核切分后， 使用的numBlocks。</p>
 </td>
 </tr>
 </tbody>

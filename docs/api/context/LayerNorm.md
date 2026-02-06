@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -38,7 +43,7 @@
 
     ![](figures/zh-cn_formulaimage_0000001729515829.png)
 
--   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数
+-   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数或方差
 
     本接口实现了对shape为\[A，R\]输入数据的LayerNorm归一化，其计算公式如下，其中γ为缩放系数，β为平移系数，ε为防除零的权重系数：
 
@@ -62,9 +67,9 @@
     1.  计算均值：Muls计算x\*1/m的值，再计算累加值ReduceSum，得到均值outputMean；
     2.  计算方差：Sub计算出输入x与均值的差值，再用Mul进行平方计算，最后用Muls乘上1/m并计算累加值，得到方差outputVariance；
     3.  处理gamma和beta：通过broadcast得到BSH维度的gamma和beta；
-    4.  计算输出：方差通过broadcast得到BSH维度的tensor，再依次经过Adds\(outputVariance, eps\)、Ln, Muls, Exp，最后与（x-均值）相乘，得到的结果乘上gamma，加上beta，得到输出结果。
+    4.  计算输出：方差通过broadcast（或Duplicate）得到BSH维度的tensor，再依次经过Adds\(outputVariance, eps\)、Ln, Muls, Exp（或Sqrt），最后与（x-均值）相乘，得到的结果乘上gamma，加上beta，得到输出结果。
 
--   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数
+-   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数或方差
 
     以float类型，ND格式，输入为inputX\[A, R\]，gamma\[R\] 和beta\[R\]为例，描述LayerNorm高阶API内部算法框架，如下图所示。
 
@@ -103,7 +108,7 @@
 
         该方式下开发者无需申请，但是需要预留临时空间的大小。
 
--   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数
+-   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数或方差
     -   通过sharedTmpBuffer入参传入临时空间
 
         ```
@@ -138,6 +143,7 @@
     <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
     </td>
     <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+    <p id="p1688223162815"><a name="p1688223162815"></a><a name="p1688223162815"></a><span id="ph1168842372812"><a name="ph1168842372812"></a><a name="ph1168842372812"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
     <p id="p105913396307"><a name="p105913396307"></a><a name="p105913396307"></a><span id="ph4591193923018"><a name="ph4591193923018"></a><a name="ph4591193923018"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
     <p id="p10591143917308"><a name="p10591143917308"></a><a name="p10591143917308"></a><span id="ph19591839113014"><a name="ph19591839113014"></a><a name="ph19591839113014"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
     </td>
@@ -147,7 +153,7 @@
     <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p1275717613718"><a name="p1275717613718"></a><a name="p1275717613718"></a>是否允许修改源操作数，默认值为false。如果开发者允许源操作数被改写，可以使能该参数，使能后能够节省部分内存空间。</p>
     <p id="p175786163713"><a name="p175786163713"></a><a name="p175786163713"></a>设置为<strong id="b575706193714"><a name="b575706193714"></a><a name="b575706193714"></a>true</strong>，则本接口内部计算时<strong id="b147578614378"><a name="b147578614378"></a><a name="b147578614378"></a>复用</strong>inputX的内存空间，节省内存空间；设置为<strong id="b475717616379"><a name="b475717616379"></a><a name="b475717616379"></a>false</strong>，则本接口内部计算时<strong id="b157575653719"><a name="b157575653719"></a><a name="b157575653719"></a>不复用</strong>inputX的内存空间。</p>
     <p id="p177571162377"><a name="p177571162377"></a><a name="p177571162377"></a>对于float数据类型输入支持开启该参数，half数据类型输入不支持开启该参数。</p>
-    <p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-27.md#section639165323915">更多样例</a>。</p>
+    <p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-84.md#section639165323915">更多样例</a>。</p>
     </td>
     </tr>
     </tbody>
@@ -237,7 +243,7 @@
     </tbody>
     </table>
 
--   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数的接口
+-   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数或方差的接口
 
     **表 3**  模板参数说明
 
@@ -251,6 +257,7 @@
     <tbody><tr id="row28761718174515"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p88760188458"><a name="p88760188458"></a><a name="p88760188458"></a>U</p>
     </td>
     <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p1876151810457"><a name="p1876151810457"></a><a name="p1876151810457"></a>beta，gamma操作数的数据类型。</p>
+    <p id="p6523155363214"><a name="p6523155363214"></a><a name="p6523155363214"></a><span id="ph1852345353217"><a name="ph1852345353217"></a><a name="ph1852345353217"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、bfloat16_t、float。</p>
     <p id="p952355383212"><a name="p952355383212"></a><a name="p952355383212"></a><span id="ph145231653193211"><a name="ph145231653193211"></a><a name="ph145231653193211"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
     <p id="p5523135310323"><a name="p5523135310323"></a><a name="p5523135310323"></a><span id="ph16523153173213"><a name="ph16523153173213"></a><a name="ph16523153173213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
     </td>
@@ -258,8 +265,9 @@
     <tr id="row91421942114514"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p0143154274510"><a name="p0143154274510"></a><a name="p0143154274510"></a>T</p>
     </td>
     <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p214344224510"><a name="p214344224510"></a><a name="p214344224510"></a>output，inputX操作数的数据类型。</p>
+    <p id="p7358037153113"><a name="p7358037153113"></a><a name="p7358037153113"></a><span id="ph03581337203117"><a name="ph03581337203117"></a><a name="ph03581337203117"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、bfloat16_t、float。</p>
     <p id="p17358153723112"><a name="p17358153723112"></a><a name="p17358153723112"></a><span id="ph1135863773117"><a name="ph1135863773117"></a><a name="ph1135863773117"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
-    <p id="p9358193743116"><a name="p9358193743116"></a><a name="p9358193743116"></a><span id="ph53581137123116"><a name="ph53581137123116"></a><a name="ph53581137123116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为： half、float。</p>
+    <p id="p9358193743116"><a name="p9358193743116"></a><a name="p9358193743116"></a><span id="ph53581137123116"><a name="ph53581137123116"></a><a name="ph53581137123116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为:half、float。</p>
     </td>
     </tr>
     <tr id="row58761518134511"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p687611816458"><a name="p687611816458"></a><a name="p687611816458"></a>isReuseSource</p>
@@ -274,10 +282,12 @@
         bool isNoBeta = false;
         bool isNoGamma = false;
         bool isOnlyOutput = false;
+        bool isOutputRstd = true;
     };</pre>
     <a name="ul1167113259457"></a><a name="ul1167113259457"></a><ul id="ul1167113259457"><li>isNoBeta：计算时，输入beta是否使用。<a name="ul11364174572711"></a><a name="ul11364174572711"></a><ul id="ul11364174572711"><li>false：默认值，LayerNorm计算中使用输入beta。</li><li>true：LayerNorm计算中不使用输入beta。此时，公式中与beta相关的计算被省略。</li></ul>
     </li><li>isNoGamma：可选输入gamma是否使用。<a name="ul748573616312"></a><a name="ul748573616312"></a><ul id="ul748573616312"><li>false：默认值，LayerNorm计算中使用可选输入gamma。</li><li>true：LayerNorm计算中不使用输入gamma。此时，公式中与gamma相关的计算被省略。</li></ul>
-    </li><li>isOnlyOutput：是否只输出y，不输出均值mean与标准差的倒数rstd。当前该参数仅支持取值为false，表示y、mean和rstd的结果全部输出。</li></ul>
+    </li><li>isOnlyOutput：是否只输出y，不输出均值mean与标准差的倒数rstd。当前该参数仅支持取值为false，表示y、mean和rstd的结果全部输出。</li><li>isOutputRstd：选择输出标准差的倒数rstd还是方差。<a name="ul14813145633415"></a><a name="ul14813145633415"></a><ul id="ul14813145633415"><li>true：默认值，输出标准差的倒数。</li><li>false：输出方差。</li></ul>
+    </li></ul>
     </td>
     </tr>
     </tbody>
@@ -314,7 +324,7 @@
     </td>
     <td class="cellrowborder" valign="top" width="10.771077107710772%" headers="mcps1.2.4.1.2 "><p id="p1987741874510"><a name="p1987741874510"></a><a name="p1987741874510"></a>输出</p>
     </td>
-    <td class="cellrowborder" valign="top" width="69.60696069606959%" headers="mcps1.2.4.1.3 "><p id="p14878121814452"><a name="p14878121814452"></a><a name="p14878121814452"></a>标准差的倒数，shape为[A]，LocalTensor数据结构的定义请参考<a href="LocalTensor.md">LocalTensor</a>。</p>
+    <td class="cellrowborder" valign="top" width="69.60696069606959%" headers="mcps1.2.4.1.3 "><p id="p14878121814452"><a name="p14878121814452"></a><a name="p14878121814452"></a>当模板参数config中的isOutputRstd为true，outputRstd为标准差的倒数，否则isOutputRstd为false时，outputRstd为方差，shape为[A]，LocalTensor数据结构的定义请参考<a href="LocalTensor.md">LocalTensor</a>。</p>
     <p id="p1695992210577"><a name="p1695992210577"></a><a name="p1695992210577"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_9"><a name="zh-cn_topic_0000001530181537_ph173308471594_9"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_9"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_9"><a name="zh-cn_topic_0000001530181537_ph9902231466_9"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_9"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_9"><a name="zh-cn_topic_0000001530181537_ph1782115034816_9"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_9"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
     </td>
     </tr>
@@ -394,8 +404,8 @@
     -   inputX、output、gamma、beta的H轴长度相同。
     -   inputX、output、outputMean、outputVariance的B轴长度相同、S轴长度相同。
 
--   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数的接口：
-    -   参数gamma和beta的数据类型精度不低于源操作数的数据类型精度。
+-   对shape为\[A，R\]的输入数据，输出归一化结果、均值、标准差的倒数或方差的接口：
+    -   参数gamma和beta的数据类型精度不低于源操作数的数据类型精度。比如，inputX的数据类型是bfloat16\_t，gamma、beta的数据类型可以是bfloat16\_t、float，精度不低于inputX。
     -   src和dst的Tensor空间不可以复用。
     -   不支持对R轴进行切分。
 
@@ -429,7 +439,7 @@
     AscendC::LayerNorm<float, false>(output, mean, variance, inputX, gamma, beta, (float)epsilon, tiling);
     ```
 
--   输入数据的shape为\[A，R\]，输出归一化结果、均值、标准差的倒数的接口调用示例
+-   输入数据的shape为\[A，R\]，输出归一化结果、均值、标准差的倒数或方差的接口调用示例
 
     ```
     AscendC::TPipe pipe;
@@ -455,7 +465,7 @@
     AscendC::LocalTensor<float> mean = outQueueMean.AllocTensor<float>();
     AscendC::LocalTensor<float> output1 = outQueue1.AllocTensor<float>();
     
-    // config编译期常量，类型及取值: AscendC::LayerNormConfig{false, false, false}
+    // config编译期常量，类型及取值: AscendC::LayerNormConfig{false, false, false, true}
     // para类型及取值: AscendC::LayerNormPara{aLength, rLength, rLengthWithPadding}
     AscendC::LayerNorm<float, float, false, config>(output, mean, output1, inputX, gamma, beta, (float)epsilon, para, tiling);
     ```

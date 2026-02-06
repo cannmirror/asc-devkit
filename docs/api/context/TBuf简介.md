@@ -4,7 +4,7 @@
 
 TBuf继承自TQueBind父类，继承关系如下：
 
-![](figures/enque-9.png)
+![](figures/enque-37.png)
 
 TBuf占用的存储空间通过TPipe进行管理，您可以通过[InitBuffer](InitBuffer.md)接口为TBuf进行内存初始化操作，之后即可通过[Get](Get.md)获取指定长度的Tensor参与计算。
 

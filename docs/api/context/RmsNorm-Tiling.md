@@ -184,13 +184,13 @@ bool GetRmsNormTilingInfo(const ge::Shape& srcShape, const ge::Shape& originSrcS
 
     ```
     namespace optiling {
-    const uint32_t BLOCK_DIM = 8;
+    const uint32_t NUM_BLOCKS = 8;
     const uint32_t TILE_NUM = 8;
     static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
         RmsNormCustomTilingData tiling;
         uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-        context->SetBlockDim(BLOCK_DIM);
+        context->SetBlockDim(NUM_BLOCKS);
         tiling.set_totalLength(totalLength);
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数

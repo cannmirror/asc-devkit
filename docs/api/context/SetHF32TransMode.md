@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p173073381243"><a name="p173073381243"></a><a name="p173073381243"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -29,7 +34,7 @@
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-__aicore__ inline void SetHF32TransMode(bool hf32TransMode)
+__aicore__ inline void SetHF32TransMode(HF32TransMode mode)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -45,12 +50,12 @@ __aicore__ inline void SetHF32TransMode(bool hf32TransMode)
 </th>
 </tr>
 </thead>
-<tbody><tr id="row2137145181815"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p179035252218"><a name="p179035252218"></a><a name="p179035252218"></a>hf32TransMode</p>
+<tbody><tr id="row2137145181815"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p1362793819195"><a name="p1362793819195"></a><a name="p1362793819195"></a>mode</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p7789185214226"><a name="p7789185214226"></a><a name="p7789185214226"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p20789195232218"><a name="p20789195232218"></a><a name="p20789195232218"></a>Mmad HF32取整模式控制入参，bool类型。支持如下两种取值：</p>
-<a name="ul1092372792714"></a><a name="ul1092372792714"></a><ul id="ul1092372792714"><li>true：则FP32将以向零靠近的方式四舍五入为HF32。</li><li>false：则FP32将以最接近偶数的方式四舍五入为HF32。</li></ul>
+<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p20789195232218"><a name="p20789195232218"></a><a name="p20789195232218"></a>Mmad HF32取整模式控制入参，HF32TransMode类型。支持如下两种取值：</p>
+<a name="ul1092372792714"></a><a name="ul1092372792714"></a><ul id="ul1092372792714"><li>Enable：则FP32将以向零靠近的方式四舍五入为HF32。</li><li>Disable：则FP32将以最接近偶数的方式四舍五入为HF32。</li></ul>
 </td>
 </tr>
 </tbody>
@@ -67,7 +72,6 @@ __aicore__ inline void SetHF32TransMode(bool hf32TransMode)
 ## 调用示例<a name="section837496171220"></a>
 
 ```
-bool hf32TransMode = true;
-AscendC::SetHF32TransMode(hf32TransMode);
+AscendC::SetHF32TransMode(HF32TransMode::Enable);  // 设置HF32模式取整的具体方式，需要先使用[SetHF32Mode](SetHF32Mode.md)开启HF32取整模式。
 ```
 

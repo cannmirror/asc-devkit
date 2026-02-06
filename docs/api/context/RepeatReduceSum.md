@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
@@ -33,6 +38,11 @@ template <typename T, bool isSetMask = true>
 __aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride, const int32_t dstRepStride, const int32_t srcRepStride);
 ```
 
+```
+template <typename T, bool isSetMask = true, typename U = T>
+__aicore__ inline void RepeatReduceSum(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t repeatTime, const int32_t mask, const int32_t dstBlkStride, const int32_t srcBlkStride, const int32_t dstRepStride, const int32_t srcRepStride);
+```
+
 ## 参数说明<a name="section622mcpsimp"></a>
 
 **表 1**  模板参数说明
@@ -46,7 +56,12 @@ __aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTen
 </thead>
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="13.51%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
-<td class="cellrowborder" valign="top" width="86.49%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<td class="cellrowborder" valign="top" width="86.49%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>源操作数数据类型。</p>
+</td>
+</tr>
+<tr id="row1068213344417"><td class="cellrowborder" valign="top" width="13.51%" headers="mcps1.2.3.1.1 "><p id="p568211318441"><a name="p568211318441"></a><a name="p568211318441"></a>U</p>
+</td>
+<td class="cellrowborder" valign="top" width="86.49%" headers="mcps1.2.3.1.2 "><p id="p196822311447"><a name="p196822311447"></a><a name="p196822311447"></a>目的操作数数据类型。</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000001429830437_row18835145716587"><td class="cellrowborder" valign="top" width="13.51%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p1383515717581"><a name="zh-cn_topic_0000001429830437_p1383515717581"></a><a name="zh-cn_topic_0000001429830437_p1383515717581"></a>isSetMask</p>
@@ -76,6 +91,7 @@ __aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTen
 <td class="cellrowborder" valign="top" width="77.23772377237724%" headers="mcps1.2.4.1.3 "><p id="p15798114920385"><a name="p15798114920385"></a><a name="p15798114920385"></a>目的操作数。</p>
 <p id="p16703131355116"><a name="p16703131355116"></a><a name="p16703131355116"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p166113131185"><a name="p166113131185"></a><a name="p166113131185"></a>LocalTensor的起始地址需要保证2字节对齐（针对half数据类型），4字节对齐（针对float数据类型）。</p>
+<p id="p13545202711445"><a name="p13545202711445"></a><a name="p13545202711445"></a><span id="ph1054562704411"><a name="ph1054562704411"></a><a name="ph1054562704411"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint32_t/int32_t/half/float</p>
 <p id="p35451927144412"><a name="p35451927144412"></a><a name="p35451927144412"></a><span id="ph154592774418"><a name="ph154592774418"></a><a name="ph154592774418"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
@@ -87,6 +103,8 @@ __aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTen
 <p id="p434181318395"><a name="p434181318395"></a><a name="p434181318395"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_1"><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_1"><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_1"><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p173701626882"><a name="p173701626882"></a><a name="p173701626882"></a><span id="ph1479701815419"><a name="ph1479701815419"></a><a name="ph1479701815419"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 <p id="p1942985674213"><a name="p1942985674213"></a><a name="p1942985674213"></a>源操作数的数据类型需要与目的操作数保持一致。</p>
+<p id="p146062610199"><a name="p146062610199"></a><a name="p146062610199"></a>针对<span id="ph137353553017"><a name="ph137353553017"></a><a name="ph137353553017"></a>Ascend 950PR/Ascend 950DT</span>：src数据类型uint16_t和int16_t时，dst数据类型分别为uint32_t和int32_t，其他情况下，dst数据类型均与src数据类型相同。</p>
+<p id="p118141336182515"><a name="p118141336182515"></a><a name="p118141336182515"></a><span id="ph6654142184717"><a name="ph6654142184717"></a><a name="ph6654142184717"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint16_t/int16_t/uint32_t/int32_t/half/float</p>
 <p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
 </td>
 </tr>
@@ -162,7 +180,13 @@ __aicore__ inline void RepeatReduceSum(const LocalTensor<T>& dst, const LocalTen
     ```
     // dstLocal，srcLocal均为half类型，srcLocal的计算数据量为512，连续排布，计算结果也需要连续排布，使用tensor高维切分计算接口，设定mask为最多的128个全部元素参与计算
     // 根据以上信息，推断出repeat为4，dstRepStride为1，srcBlkStride为1，srcRepStride为8，dstBlkStride无效，此处配置0，因此接口示例为：
-    AscendC::RepeatReduceSum<half>(dstLocal, srcLocal, 4, 128, 0, 1, 1, 8); 
+    AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
+    AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
+    int srcDataSize = 512;
+    int dstDataSize = 128;
+    int mask = 128; // 参与计算的有效数字
+    int repeat = 4; // repeat = srcDataSize / mask
+    AscendC::RepeatReduceSum<half>(dstLocal, srcLocal, repeat, mask, 0, 1, 1, 8);
     ```
 
 -   完整样例

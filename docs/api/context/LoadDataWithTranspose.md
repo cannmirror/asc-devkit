@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -47,7 +52,7 @@
     -   dstGap = 1，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址的间隔为1（单位：512B）；
     -   dstFracGap = 0，表示每个迭代内目的操作数前一个分形的结束地址与后一个分形起始地址的间隔为0（单位：512B）。
 
-    ![](figures/Nd2Nz转换示意图.png)
+    ![](figures/Nd2Nz转换示意图-13.png)
 
     如下图示例：
 
@@ -55,7 +60,7 @@
     -   dstGap = 0，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址和下一个迭代第一个分形起始地址无间隔。
     -   dstFracGap = 2，表示每个迭代内目的操作数前一个分形的结束地址与后一个分形起始地址的间隔为2（单位：512B）。
 
-    ![](figures/Nd2Nz转换示意图-11.png)
+    ![](figures/Nd2Nz转换示意图-14.png)
 
 -   对于half/bfloat16\_t数据类型，每次迭代处理16\*16\*2B数据，可处理1个分形（一个分形512B），每次迭代中，源操作数中1个16\*16分形将被转置。
 
@@ -64,7 +69,7 @@
     -   dstGap = 0，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址无间隔；
     -   该场景下，因为其分形即为方块矩阵，每个迭代处理一个分形，不存在迭代内分形的间隔，该参数设置无效。
 
-    ![](figures/Nd2Nz转换示意图-12.png)
+    ![](figures/Nd2Nz转换示意图-15.png)
 
 -   对于float/int32\_t/uint32\_t数据类型，每次迭代处理16\*16\*4B数据，可处理2个分形（一个分形512B），每次迭代中，源操作数2个连续的16\*8分形将被合并为1个16\*16的方块矩阵，基于方块矩阵做转置，转置后分裂为2个16\*8分形，根据目的操作数分形间隔等参数可以有不同的排布。
 
@@ -75,7 +80,7 @@
     -   dstGap = 1，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址的间隔为1（单位：512B）；
     -   dstFracGap = 0，表示每个迭代内目的操作数前一个分形结束地址与后一个分形起始地址的间隔为0（单位：512B）。
 
-    ![](figures/Nd2Nz转换示意图-13.png)
+    ![](figures/Nd2Nz转换示意图-16.png)
 
     如下图示例：
 
@@ -83,7 +88,7 @@
     -   dstGap = 0，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址和下一个迭代第一个分形起始地址无间隔。
     -   dstFracGap = 2，表示每个迭代内目的操作数前一个分形结束地址与后一个分形起始地址的间隔为2（单位：512B）。
 
-    ![](figures/Nd2Nz转换示意图-14.png)
+    ![](figures/Nd2Nz转换示意图-17.png)
 
 -   对于int4b\_t数据类型，每次迭代处理64\*64\*0.5B数据，可处理4个分形（一个分形512B），每次迭代中，源操作数中4个连续的16\*64分形将被合并为1个64\*64的方块矩阵，基于方块矩阵做转置，转置后分裂为4个16\*64分形，根据目的操作数分形间隔等参数可以有不同的排布。
 
@@ -98,7 +103,7 @@
     -   dstGap = 1，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址的间隔为1（单位：512B）；
     -   dstFracGap = 0，表示每个迭代内目的操作数前一个分形的结束地址与后一个分形起始地址的间隔为0（单位：512B）。
 
-    ![](figures/Nd2Nz转换示意图-15.png)
+    ![](figures/Nd2Nz转换示意图-18.png)
 
     如下图示例：
 
@@ -106,7 +111,7 @@
     -   dstGap = 0，表示相邻迭代间，目的操作数前一个迭代第一个分形的结束地址和下一个迭代第一个分形起始地址无间隔。
     -   dstFracGap = 2，表示每个迭代内目的操作数前一个分形的结束地址与后一个分形起始地址的间隔为2（单位：512B）。
 
-    ![](figures/Nd2Nz转换示意图-16.png)
+    ![](figures/Nd2Nz转换示意图-19.png)
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -116,7 +121,8 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 ```
 
 ```
-
+template <typename T>
+__aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData2dTransposeParamsV2& loadDataParams)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -134,6 +140,7 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 </td>
 <td class="cellrowborder" valign="top" width="77.13%" headers="mcps1.2.3.1.2 "><p id="p990614114434"><a name="p990614114434"></a><a name="p990614114434"></a><span id="ph17565161613616"><a name="ph17565161613616"></a><a name="ph17565161613616"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：int4b_t/int8_t/uint8_t/half/bfloat16_t/float/int32_t/uint32_t。</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：int4b_t/int8_t/uint8_t/half/bfloat16_t/float/int32_t/uint32_t。</p>
+<p id="p1197210813346"><a name="p1197210813346"></a><a name="p1197210813346"></a><span id="ph1697213833413"><a name="ph1697213833413"></a><a name="ph1697213833413"></a>Ascend 950PR/Ascend 950DT</span>，支持数据类型：int8_t/uint8_t/half/bfloat16_t/float/int32_t/uint32_t。</p>
 <p id="p1978741114"><a name="p1978741114"></a><a name="p1978741114"></a>其中int4b_t数据类型仅在LocalTensor的TPosition为B2时支持。</p>
 <p id="p2435350104218"><a name="p2435350104218"></a><a name="p2435350104218"></a><span id="ph488805195815"><a name="ph488805195815"></a><a name="ph488805195815"></a>Kirin X90</span>，支持数据类型：int8_t/half。</p>
 </td>
@@ -159,6 +166,7 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 <td class="cellrowborder" valign="top" width="66.96669666966696%" headers="mcps1.2.4.1.3 "><p id="p7937181983414"><a name="p7937181983414"></a><a name="p7937181983414"></a>目的操作数，结果矩阵，类型为LocalTensor。</p>
 <p id="p16287121461618"><a name="p16287121461618"></a><a name="p16287121461618"></a><span id="ph16453145783416"><a name="ph16453145783416"></a><a name="ph16453145783416"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的TPosition为A2/B2。</p>
 <p id="p1118816112359"><a name="p1118816112359"></a><a name="p1118816112359"></a><span id="ph1229951712358"><a name="ph1229951712358"></a><a name="ph1229951712358"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的TPosition为A2/B2。</p>
+<p id="p436162403412"><a name="p436162403412"></a><a name="p436162403412"></a><span id="ph77901028103411"><a name="ph77901028103411"></a><a name="ph77901028103411"></a>Ascend 950PR/Ascend 950DT</span>，支持的TPosition为B2。</p>
 <p id="p7788134910587"><a name="p7788134910587"></a><a name="p7788134910587"></a><span id="ph278817493586"><a name="ph278817493586"></a><a name="ph278817493586"></a>Kirin X90</span>，支持的TPosition为A2/B2。</p>
 <p id="p9467144018445"><a name="p9467144018445"></a><a name="p9467144018445"></a>LocalTensor的起始地址需要保证512字节对齐。</p>
 <p id="p1127919573117"><a name="p1127919573117"></a><a name="p1127919573117"></a>数据类型和src的数据类型保持一致。</p>
@@ -171,6 +179,7 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 <td class="cellrowborder" valign="top" width="66.96669666966696%" headers="mcps1.2.4.1.3 "><p id="p7888103453511"><a name="p7888103453511"></a><a name="p7888103453511"></a>源操作数，类型为LocalTensor。</p>
 <p id="p54481413617"><a name="p54481413617"></a><a name="p54481413617"></a><span id="ph3441114173620"><a name="ph3441114173620"></a><a name="ph3441114173620"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持的TPosition为A1/B1。</p>
 <p id="p344151412368"><a name="p344151412368"></a><a name="p344151412368"></a><span id="ph174481423610"><a name="ph174481423610"></a><a name="ph174481423610"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，支持的TPosition为A1/B1。</p>
+<p id="p144412143363"><a name="p144412143363"></a><a name="p144412143363"></a><span id="ph3445149367"><a name="ph3445149367"></a><a name="ph3445149367"></a>Ascend 950PR/Ascend 950DT</span>，支持的TPosition为B1。</p>
 <p id="p279113418598"><a name="p279113418598"></a><a name="p279113418598"></a><span id="ph177911941165917"><a name="ph177911941165917"></a><a name="ph177911941165917"></a>Kirin X90</span>，支持的TPosition为A1/B1。</p>
 <p id="p128771714204514"><a name="p128771714204514"></a><a name="p128771714204514"></a>LocalTensor的起始地址需要保证32字节对齐。</p>
 <p id="p9810121419213"><a name="p9810121419213"></a><a name="p9810121419213"></a>数据类型和dst的数据类型保持一致。</p>
@@ -183,6 +192,14 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 <td class="cellrowborder" valign="top" width="66.96669666966696%" headers="mcps1.2.4.1.3 "><p id="p17376814155615"><a name="p17376814155615"></a><a name="p17376814155615"></a>LoadDataWithTranspose相关参数，类型为LoadData2dTransposeParams。</p>
 <p id="p395104375712"><a name="p395104375712"></a><a name="p395104375712"></a>具体定义请参考<span id="ph10562197165916"><a name="ph10562197165916"></a><a name="ph10562197165916"></a>${INSTALL_DIR}</span>/include/ascendc/basic_api/interface/kernel_struct_mm.h，<span id="ph14322531015"><a name="ph14322531015"></a><a name="ph14322531015"></a>${INSTALL_DIR}</span>请替换为CANN软件安装后文件存储路径。</p>
 <p id="p12287014111614"><a name="p12287014111614"></a><a name="p12287014111614"></a>参数说明请参考<a href="#table13526111319538">表3</a>。</p>
+</td>
+</tr>
+<tr id="row329899151017"><td class="cellrowborder" valign="top" width="23.002300230023003%" headers="mcps1.2.4.1.1 "><p id="p050419317321"><a name="p050419317321"></a><a name="p050419317321"></a>loadDataParams</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.03100310031003%" headers="mcps1.2.4.1.2 "><p id="p14131611011"><a name="p14131611011"></a><a name="p14131611011"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="66.96669666966696%" headers="mcps1.2.4.1.3 "><p id="p6131616103"><a name="p6131616103"></a><a name="p6131616103"></a>LoadDataWithTranspose相关参数，类型为LoadData2dTransposeParamsV2。</p>
+<p id="p61171613106"><a name="p61171613106"></a><a name="p61171613106"></a>参数说明请参考<a href="#table64891930194618">表4</a>。</p>
 </td>
 </tr>
 </tbody>
@@ -249,7 +266,78 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 </td>
 <td class="cellrowborder" valign="top" width="12.451245124512452%" headers="mcps1.2.4.1.2 "><p id="p19554114910183"><a name="p19554114910183"></a><a name="p19554114910183"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.26722672267228%" headers="mcps1.2.4.1.3 "><p id="p6264205416479"><a name="p6264205416479"></a><a name="p6264205416479"></a>预留参数。为后续的功能做保留，开发者暂时无需关注，使用默认值即可。</p>
+<td class="cellrowborder" valign="top" width="72.26722672267228%" headers="mcps1.2.4.1.3 "><p id="p11525142812251"><a name="p11525142812251"></a><a name="p11525142812251"></a>控制地址更新方式，默认为false：</p>
+<a name="ul75591732112515"></a><a name="ul75591732112515"></a><ul id="ul75591732112515"><li>true：递减，每次迭代在前一个地址的基础上减去srcStride</li><li>false：递增，每次迭代在前一个地址的基础上加上srcStride</li></ul>
+</td>
+</tr>
+</tbody>
+</table>
+
+**表 4**  LoadData2dTransposeParamsV2结构体内参数说明
+
+<a name="table64891930194618"></a>
+<table><thead align="left"><tr id="row134891330114616"><th class="cellrowborder" valign="top" width="15.28152815281528%" id="mcps1.2.4.1.1"><p id="p8489133017468"><a name="p8489133017468"></a><a name="p8489133017468"></a>参数名称</p>
+</th>
+<th class="cellrowborder" valign="top" width="12.44124412441244%" id="mcps1.2.4.1.2"><p id="p124891330134619"><a name="p124891330134619"></a><a name="p124891330134619"></a>输入/输出</p>
+</th>
+<th class="cellrowborder" valign="top" width="72.27722772277228%" id="mcps1.2.4.1.3"><p id="p1648993016461"><a name="p1648993016461"></a><a name="p1648993016461"></a>含义</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row049015306466"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p1849023013466"><a name="p1849023013466"></a><a name="p1849023013466"></a>startIndex</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p649033054610"><a name="p649033054610"></a><a name="p649033054610"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p1649003024619"><a name="p1649003024619"></a><a name="p1649003024619"></a>方块矩阵 ID，搬运起始位置为源操作数中第几个分形。取值范围：startIndex∈[0, 65535] 。默认为0。</p>
+</td>
+</tr>
+<tr id="row194908302464"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p5490330174620"><a name="p5490330174620"></a><a name="p5490330174620"></a>repeatTimes</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p1449033024611"><a name="p1449033024611"></a><a name="p1449033024611"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p7490193044619"><a name="p7490193044619"></a><a name="p7490193044619"></a>迭代次数。</p>
+<p id="p4490113019466"><a name="p4490113019466"></a><a name="p4490113019466"></a>对于int4b_t数据类型，每次迭代处理4个分形，每个分形为16*64*0.5B数据。</p>
+<p id="p5378144211"><a name="p5378144211"></a><a name="p5378144211"></a>对于uint8_t/int8_t数据类型，每次迭代处理2个分形，每个分形处理16*32*1B数据；</p>
+<p id="p237816419212"><a name="p237816419212"></a><a name="p237816419212"></a>对于half/bfloat16_t数据类型，每次迭代处理1个分形，每个分形处理16*16*2B数据；</p>
+<p id="p137811452113"><a name="p137811452113"></a><a name="p137811452113"></a>对于int32_t/uint32_t/float数据类型，每次迭代处理4个分形，每个分形为16*8*4B数据。</p>
+<p id="p4490133017468"><a name="p4490133017468"></a><a name="p4490133017468"></a>取值范围：repeatTimes∈[1, 255]。</p>
+</td>
+</tr>
+<tr id="row1490143020462"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p14901330174617"><a name="p14901330174617"></a><a name="p14901330174617"></a>srcStride</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p84901630144617"><a name="p84901630144617"></a><a name="p84901630144617"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p154901304460"><a name="p154901304460"></a><a name="p154901304460"></a>相邻迭代间，源操作数前一个分形与后一个分形起始地址的间隔。单位为单个分形512B。</p>
+<p id="p8490183054619"><a name="p8490183054619"></a><a name="p8490183054619"></a>取值范围：srcStride∈[0, 65535]。默认为0。</p>
+</td>
+</tr>
+<tr id="row104903309466"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p13490143014467"><a name="p13490143014467"></a><a name="p13490143014467"></a>dstGap</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p1349012301463"><a name="p1349012301463"></a><a name="p1349012301463"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p17490630194619"><a name="p17490630194619"></a><a name="p17490630194619"></a>相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址的间隔，单位：512B。取值范围：dstGap∈[0, 65535]。默认为0。</p>
+</td>
+</tr>
+<tr id="row13490330144617"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p15490193019465"><a name="p15490193019465"></a><a name="p15490193019465"></a>dstFracGap</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p13490183015465"><a name="p13490183015465"></a><a name="p13490183015465"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p94901130204612"><a name="p94901130204612"></a><a name="p94901130204612"></a>每个迭代内目的操作数转置前一个分形结束地址与后一个分形起始地址的间隔，单位为512B，仅在数据类型为float/int32_t/uint32_t/uint8_t/int8_t/int4b_t时有效。</p>
+</td>
+</tr>
+<tr id="row14152115334616"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p111527535466"><a name="p111527535466"></a><a name="p111527535466"></a>srcFracGap</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p4152175316461"><a name="p4152175316461"></a><a name="p4152175316461"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p191531853124612"><a name="p191531853124612"></a><a name="p191531853124612"></a>每个迭代内源操作数前一个分形结束地址与后一个分形起始地址的间隔，单位为512B，仅在数据类型为float/int32_t/uint32_t/uint8_t/int8_t/int4b_t时有效。</p>
+</td>
+</tr>
+<tr id="row1775517855313"><td class="cellrowborder" valign="top" width="15.28152815281528%" headers="mcps1.2.4.1.1 "><p id="p1828021085318"><a name="p1828021085318"></a><a name="p1828021085318"></a>addrMode</p>
+</td>
+<td class="cellrowborder" valign="top" width="12.44124412441244%" headers="mcps1.2.4.1.2 "><p id="p82801610135312"><a name="p82801610135312"></a><a name="p82801610135312"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.27722772277228%" headers="mcps1.2.4.1.3 "><p id="p356715521283"><a name="p356715521283"></a><a name="p356715521283"></a>控制地址更新方式，默认为false：</p>
+<a name="ul256705272820"></a><a name="ul256705272820"></a><ul id="ul256705272820"><li>true：递减，每次迭代在前一个地址的基础上减去srcStride</li><li>false：递增，每次迭代在前一个地址的基础上加上srcStride</li></ul>
 </td>
 </tr>
 </tbody>
@@ -260,6 +348,8 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
 -   repeat=0表示不执行搬运操作。
 -   开发者需要保证目的操作数转置后的分形没有重叠。
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
+-   针对以下型号，推荐使用LoadData2dTransposeParamsV2作为参数，该参数具有更精细的搬运粒度。
+    -   Ascend 950PR/Ascend 950DT
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
@@ -733,6 +823,35 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
         op.Init(a, b, c);
         op.Process();
     }
-    
+    ```
+
+-   示例4：该示例使用了LoadData2dTransposeParamsV2结构体作为参数，输入a矩阵为int8\_t类型，shape为\[128,128\]，输入数据格式为NZ，输入b矩阵为int8\_t类型，shape为\[128,256\]，输入数据格式为NZ，输出c的类型为float。a矩阵从A1-\>A2不转置，b矩阵从B1-\>B2转置，示例仅展示接口调用过程，其余计算和搬运不作参考。
+
+    ```
+    #include "kernel_operator.h"
+    uint32 m = 256;
+    uint32 n = 256;
+    uint32 k = 128;
+    pipe = tpipe;
+    TQue<TPosition::B1, 1> qidB1_;
+    TQue<TPosition::B2, 1> qidB2_;
+    uint32 m = 128;
+    pipe->InitBuffer(qidB1_, 1, n * k * sizeof(int8_t));
+    pipe->InitBuffer(qidB2_, 1, n * k * sizeof(int8_t));
+    auto rightMatrix = qidB1_.template DeQue<int8_t>();
+    LocalTensor<int8_t> b2 = qidB2_.AllocTensor<int8_t>();
+    uint16_t fracNum = 2;
+    uint16_t kStep = CeilDiv(kLength, 16);
+    uint16_t nStep = CeilDiv(nLength, 32);
+    for (uint16_t i = 0; i < nStep; i ++) {
+        LoadData2dTransposeParamsV2 loadDataParams;
+        loadDataParams.startIndex = i * kStep;
+        loadDataParams.repeatTimes = kStep / 2;
+        loadDataParams.srcStride = 2;
+        loadDataParams.dstGap = nStep*2 - 1;
+        LoadDataWithTranspose(b2[1024*i], rightMatrix, loadDataParams);
+    }
+    qidB2_.EnQue(b2);
+    qidB1_.FreeTensor(rightMatrix);
     ```
 

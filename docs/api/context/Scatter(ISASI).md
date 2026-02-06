@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
@@ -66,6 +71,7 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="14.729999999999999%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="85.27%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p1396113348309"><a name="p1396113348309"></a><a name="p1396113348309"></a><span id="ph1396213414302"><a name="ph1396213414302"></a><a name="ph1396213414302"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint8_t/int8_t/uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float/uint64_t/int64_t</p>
 </td>
 </tr>
 </tbody>
@@ -101,6 +107,8 @@
 <td class="cellrowborder" valign="top" width="10%" headers="mcps1.2.4.1.2 "><p id="p10516104162418"><a name="p10516104162418"></a><a name="p10516104162418"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="74.98%" headers="mcps1.2.4.1.3 "><p id="p22319556114"><a name="p22319556114"></a><a name="p22319556114"></a>用于存储源操作数的每个元素在dst中对应的地址偏移。偏移<span>基于</span>dst<span>的基地址dstBaseAddr计算</span>，以字节为单位，取值应保证按dst数据类型位宽对齐，否则会导致非预期行为。</p>
+<p id="p774419412217"><a name="p774419412217"></a><a name="p774419412217"></a>针对以下型号，地址偏移的取值范围如下：当操作数为8位时，取值范围为[0, 2<sup id="sup3920174615212"><a name="sup3920174615212"></a><a name="sup3920174615212"></a>16</sup>-1]；当操作数为16位时，取值范围为[0, 2<sup id="sup99207467210"><a name="sup99207467210"></a><a name="sup99207467210"></a>17</sup>-1]，当操作数为32位或者64位时，不超过uint32_t的范围即可。超出取值范围可能导致非预期输出。</p>
+<p id="p468305719192"><a name="p468305719192"></a><a name="p468305719192"></a><span id="ph126252025205"><a name="ph126252025205"></a><a name="ph126252025205"></a>Ascend 950PR/Ascend 950DT</span></p>
 </td>
 </tr>
 <tr id="row19460165818515"><td class="cellrowborder" valign="top" width="15.02%" headers="mcps1.2.4.1.1 "><p id="p13461158175117"><a name="p13461158175117"></a><a name="p13461158175117"></a>dstBaseAddr</p>
@@ -134,8 +142,9 @@
 <td class="cellrowborder" valign="top" width="10%" headers="mcps1.2.4.1.2 "><p id="p1092602315814"><a name="p1092602315814"></a><a name="p1092602315814"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="74.98%" headers="mcps1.2.4.1.3 "><p id="p1692718231584"><a name="p1692718231584"></a><a name="p1692718231584"></a>指令迭代次数，每次迭代完成8个datablock的数据收集，数据范围：repeatTime∈[0,255]。</p>
-<div class="p" id="p0618144471917"><a name="p0618144471917"></a><a name="p0618144471917"></a><a name="ul12780145612209"></a><a name="ul12780145612209"></a>
+<div class="p" id="p0618144471917"><a name="p0618144471917"></a><a name="p0618144471917"></a><a name="ul12780145612209"></a><a name="ul12780145612209"></a><ul id="ul12780145612209"><li><span id="ph14607113171416"><a name="ph14607113171416"></a><a name="ph14607113171416"></a>Ascend 950PR/Ascend 950DT</span></li></ul>
 </div>
+<p id="p18148356182117"><a name="p18148356182117"></a><a name="p18148356182117"></a>操作数为<strong id="b84473109468"><a name="b84473109468"></a><a name="b84473109468"></a>8位</strong>时，每次迭代完成<strong id="b1247251454616"><a name="b1247251454616"></a><a name="b1247251454616"></a>4个datablock</strong>（32Bytes）的数据收集。</p>
 </td>
 </tr>
 <tr id="row05851326989"><td class="cellrowborder" valign="top" width="15.02%" headers="mcps1.2.4.1.1 "><p id="p55852261189"><a name="p55852261189"></a><a name="p55852261189"></a>srcRepStride</p>
@@ -154,82 +163,44 @@
 -   操作数地址重叠约束请参考[通用地址重叠约束](通用说明和约束.md#section668772811100)。
 
 -   dstOffset中的偏移地址不能有相同值，如果存在2个或者多个偏移重复的情况，行为是不可预期的。
+-   针对Ascend 950PR/Ascend 950DT，uint8\_t/int8\_t数据类型仅支持tensor前n个数据计算接口。
 
 ## 调用示例<a name="section11276201527"></a>
 
 ```
 #include "kernel_operator.h"
+AscendC::TPipe m_pipe;
+AscendC::TQue<AscendC::TPosition::VECIN, 1> m_queCalc;
+AscendC::GlobalTensor<T> m_valueGlobal;
+uint32_t m_concatRepeatTimes;
+uint32_t m_sortRepeatTimes;
+uint32_t m_extractRepeatTimes;
+uint32_t m_elementCount;
+AscendC::GlobalTensor<uint32_t> m_dstOffsetGlobal;
+AscendC::GlobalTensor<T> m_srcGlobal;
+AscendC::GlobalTensor<T> m_dstGlobal;
+AscendC::TQue<AscendC::TPosition::VECIN, 2> m_queIn;
+AscendC::TQue<AscendC::TPosition::VECOUT, 1> m_queOut;
 
-template <typename T>
-class ScatterTest {
-public:
-    __aicore__ inline ScatterTest() {}
-    __aicore__ inline void Init(__gm__ uint8_t* dstGm, __gm__ uint8_t* srcGm,
-        __gm__ uint8_t* dstOffsetGm, const uint32_t count)
-    {
-        m_elementCount = count;
-        m_dstGlobal.SetGlobalBuffer((__gm__ T*)dstGm);
-        m_srcGlobal.SetGlobalBuffer((__gm__ T*)srcGm);
-        m_dstOffsetGlobal.SetGlobalBuffer((__gm__ uint32_t*)dstOffsetGm);
-        m_pipe.InitBuffer(m_queIn, 2, m_elementCount * sizeof(uint32_t));
-        m_pipe.InitBuffer(m_queOut, 1, m_elementCount * sizeof(uint32_t));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<T> srcLocal = m_queIn.AllocTensor<T>();
-        AscendC::DataCopy(srcLocal, m_srcGlobal, m_elementCount);
-        m_queIn.EnQue(srcLocal);
-        AscendC::LocalTensor<uint32_t> dstOffsetLocal = m_queIn.AllocTensor<uint32_t>();
-        AscendC::DataCopy(dstOffsetLocal, m_dstOffsetGlobal, m_elementCount);
-        m_queIn.EnQue(dstOffsetLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<T> srcLocal = m_queIn.DeQue<T>();
-        AscendC::LocalTensor<uint32_t> dstOffsetLocal = m_queIn.DeQue<uint32_t>();
-        AscendC::LocalTensor<T> dstLocal = m_queOut.AllocTensor<T>();
-        dstLocal.SetSize(m_elementCount);
-        AscendC::Scatter(dstLocal, srcLocal, dstOffsetLocal, (uint32_t)0, m_elementCount);
-        m_queIn.FreeTensor(srcLocal);
-        m_queIn.FreeTensor(dstOffsetLocal);
-        m_queOut.EnQue(dstLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<T> dstLocal = m_queOut.DeQue<T>();
-        AscendC::DataCopy(m_dstGlobal, dstLocal, m_elementCount);
-        m_queOut.FreeTensor(dstLocal);
-    }
-private:
-    AscendC::TPipe m_pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> m_queCalc;
-    AscendC::GlobalTensor<T> m_valueGlobal;
-    uint32_t m_concatRepeatTimes;
-    uint32_t m_sortRepeatTimes;
-    uint32_t m_extractRepeatTimes;
-    uint32_t m_elementCount;
-    AscendC::GlobalTensor<uint32_t> m_dstOffsetGlobal;
-    AscendC::GlobalTensor<T> m_srcGlobal;
-    AscendC::GlobalTensor<T> m_dstGlobal;
-    AscendC::TQue<AscendC::TPosition::VECIN, 2> m_queIn;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> m_queOut;
-}; // class ScatterTest
+AscendC::LocalTensor<T> srcLocal = m_queIn.AllocTensor<T>();
+AscendC::DataCopy(srcLocal, m_srcGlobal, m_elementCount);
+m_queIn.EnQue(srcLocal);
+AscendC::LocalTensor<uint32_t> dstOffsetLocal = m_queIn.AllocTensor<uint32_t>();
+AscendC::DataCopy(dstOffsetLocal, m_dstOffsetGlobal, m_elementCount);
+m_queIn.EnQue(dstOffsetLocal);
 
-#define KERNEL_SCATTER(T, count)                                                                    \
-    extern "C" __global__ __aicore__ void kernel_scatter_##T##_##count(GM_ADDR dstGm, GM_ADDR srcGm,\
-        GM_ADDR dstOffsetGm)                                                                        \
-    {                                                                                               \
-        ScatterTest<T> op;                                                                          \
-        op.Init(dstGm, srcGm, dstOffsetGm, count);                                                  \
-        op.Process();                                                                               \
-    }
+AscendC::LocalTensor<T> srcLocal = m_queIn.DeQue<T>();
+AscendC::LocalTensor<uint32_t> dstOffsetLocal = m_queIn.DeQue<uint32_t>();
+AscendC::LocalTensor<T> dstLocal = m_queOut.AllocTensor<T>();
+dstLocal.SetSize(m_elementCount);
+AscendC::Scatter(dstLocal, srcLocal, dstOffsetLocal, (uint32_t)0, m_elementCount);
+m_queIn.FreeTensor(srcLocal);
+m_queIn.FreeTensor(dstOffsetLocal);
+m_queOut.EnQue(dstLocal);
+
+AscendC::LocalTensor<T> dstLocal = m_queOut.DeQue<T>();
+AscendC::DataCopy(m_dstGlobal, dstLocal, m_elementCount);
+m_queOut.FreeTensor(dstLocal)
 ```
 
 结果示例：

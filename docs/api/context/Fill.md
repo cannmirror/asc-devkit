@@ -1,22 +1,37 @@
-# Fill<a name="ZH-CN_TOPIC_0000002505905487"></a>
+# Fill<a name="ZH-CN_TOPIC_0000001834660669"></a>
 
-## 产品支持情况<a name="section1586581915393"></a>
+## 产品支持情况<a name="section1550532418810"></a>
 
-<a name="table169596713360"></a>
-<table><thead align="left"><tr id="row129590715369"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p17959971362"><a name="p17959971362"></a><a name="p17959971362"></a><span id="ph895914718367"><a name="ph895914718367"></a><a name="ph895914718367"></a>产品</span></p>
+<a name="table38301303189"></a>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.96%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p89594763612"><a name="p89594763612"></a><a name="p89594763612"></a>是否支持</p>
+<th class="cellrowborder" align="center" valign="top" width="42.04%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.96%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42.04%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
 </td>
 </tr>
-<tr id="row89591478362"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p7959157163619"><a name="p7959157163619"></a><a name="p7959157163619"></a><span id="ph1995997193619"><a name="ph1995997193619"></a><a name="ph1995997193619"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.96%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p149598793615"><a name="p149598793615"></a><a name="p149598793615"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42.04%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
+</td>
+</tr>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.96%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42.04%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>√</p>
+</td>
+</tr>
+<tr id="row8325205911538"><td class="cellrowborder" valign="top" width="57.96%" headers="mcps1.1.3.1.1 "><p id="p7743750164"><a name="p7743750164"></a><a name="p7743750164"></a><span id="ph171873262101"><a name="ph171873262101"></a><a name="ph171873262101"></a>Kirin X90</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42.04%" headers="mcps1.1.3.1.2 "><p id="p167558406157"><a name="p167558406157"></a><a name="p167558406157"></a>√</p>
+</td>
+</tr>
+<tr id="row97311222121319"><td class="cellrowborder" valign="top" width="57.96%" headers="mcps1.1.3.1.1 "><p id="p41641126141314"><a name="p41641126141314"></a><a name="p41641126141314"></a><span id="ph14164162661314"><a name="ph14164162661314"></a><a name="ph14164162661314"></a>Kirin 9030</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42.04%" headers="mcps1.1.3.1.2 "><p id="p71641226151312"><a name="p71641226151312"></a><a name="p71641226151312"></a>√</p>
 </td>
 </tr>
 </tbody>
@@ -24,176 +39,139 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-将Global Memory上的数据初始化为指定值。该接口可用于对workspace地址或输出数据进行清零。
+将特定TPosition的LocalTensor初始化为某一具体数值。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
-template <typename T>
-__aicore__ inline void Fill(GlobalTensor<T>& gmWorkspaceAddr, const uint64_t size, const T value)
+template <typename T, typename U = PrimT<T>, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__aicore__ inline void Fill(const LocalTensor<T>& dst, const InitConstValueParams<U>& initConstValueParams)
 ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
 **表 1**  模板参数说明
 
-<a name="table575571914269"></a>
-<table><thead align="left"><tr id="row18755131942614"><th class="cellrowborder" valign="top" width="19.39%" id="mcps1.2.3.1.1"><p id="p675519193268"><a name="p675519193268"></a><a name="p675519193268"></a>参数名</p>
+<a name="table4835205712588"></a>
+<table><thead align="left"><tr id="zh-cn_topic_0000001429830437_row118356578583"><th class="cellrowborder" valign="top" width="17.43%" id="mcps1.2.3.1.1"><p id="zh-cn_topic_0000001429830437_p48354572582"><a name="zh-cn_topic_0000001429830437_p48354572582"></a><a name="zh-cn_topic_0000001429830437_p48354572582"></a>参数名</p>
 </th>
-<th class="cellrowborder" valign="top" width="80.61%" id="mcps1.2.3.1.2"><p id="p2258534164211"><a name="p2258534164211"></a><a name="p2258534164211"></a>含义</p>
+<th class="cellrowborder" valign="top" width="82.57%" id="mcps1.2.3.1.2"><p id="zh-cn_topic_0000001429830437_p583535795817"><a name="zh-cn_topic_0000001429830437_p583535795817"></a><a name="zh-cn_topic_0000001429830437_p583535795817"></a>描述</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
+<tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="17.43%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
-<p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：uint16_t、int16_t、half、uint32_t、int32_t、float。</p>
-<p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：uint16_t、int16_t、half、uint32_t、int32_t、float。</p>
+<td class="cellrowborder" valign="top" width="82.57%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>dst的数据类型。</p>
+<p id="p990614114434"><a name="p990614114434"></a><a name="p990614114434"></a><span id="ph126684217571"><a name="ph126684217571"></a><a name="ph126684217571"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t</p>
+<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t</p>
+<p id="p14564164211111"><a name="p14564164211111"></a><a name="p14564164211111"></a><span id="ph156494218115"><a name="ph156494218115"></a><a name="ph156494218115"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t</p>
+<p id="p1916932318559"><a name="p1916932318559"></a><a name="p1916932318559"></a><span id="ph10169122365515"><a name="ph10169122365515"></a><a name="ph10169122365515"></a>Kirin X90</span>，支持的数据类型为：half/int8_t</p>
+<p id="p18181249132017"><a name="p18181249132017"></a><a name="p18181249132017"></a><span id="ph16103105042019"><a name="ph16103105042019"></a><a name="ph16103105042019"></a>Kirin 9030</span>，支持的数据类型为：half</p>
+</td>
+</tr>
+<tr id="row118213273213"><td class="cellrowborder" valign="top" width="17.43%" headers="mcps1.2.3.1.1 "><p id="p161827233218"><a name="p161827233218"></a><a name="p161827233218"></a>U</p>
+</td>
+<td class="cellrowborder" valign="top" width="82.57%" headers="mcps1.2.3.1.2 "><p id="p15182229327"><a name="p15182229327"></a><a name="p15182229327"></a>初始化值的数据类型。</p>
+<a name="ul17416131483320"></a><a name="ul17416131483320"></a><ul id="ul17416131483320"><li>当dst使用基础数据类型时， U和dst的数据类型T需保持一致，否则编译失败。</li><li>当dst使用<a href="TensorTrait.md">TensorTrait</a>类型时，U和dst的数据类型T的LiteType需保持一致，否则编译失败。</li></ul>
+<p id="p472714219338"><a name="p472714219338"></a><a name="p472714219338"></a>最后一个模板参数仅用于上述数据类型检查，用户无需关注。</p>
 </td>
 </tr>
 </tbody>
 </table>
 
-**表 2**  接口参数说明
+**表 2**  参数说明
 
-<a name="table62161631132810"></a>
-<table><thead align="left"><tr id="row12216103118284"><th class="cellrowborder" valign="top" width="13.661366136613662%" id="mcps1.2.4.1.1"><p id="p1421643114288"><a name="p1421643114288"></a><a name="p1421643114288"></a>参数名</p>
+<a name="table8955841508"></a>
+<table><thead align="left"><tr id="row15956194105014"><th class="cellrowborder" valign="top" width="17.661766176617665%" id="mcps1.2.4.1.1"><p id="p7956144195014"><a name="p7956144195014"></a><a name="p7956144195014"></a>参数名称</p>
 </th>
-<th class="cellrowborder" valign="top" width="12.591259125912593%" id="mcps1.2.4.1.2"><p id="p82165310285"><a name="p82165310285"></a><a name="p82165310285"></a>输入/输出</p>
+<th class="cellrowborder" valign="top" width="8.670867086708672%" id="mcps1.2.4.1.2"><p id="p1295624145013"><a name="p1295624145013"></a><a name="p1295624145013"></a>输入/输出</p>
 </th>
-<th class="cellrowborder" valign="top" width="73.74737473747375%" id="mcps1.2.4.1.3"><p id="p1121663111288"><a name="p1121663111288"></a><a name="p1121663111288"></a>含义</p>
+<th class="cellrowborder" valign="top" width="73.66736673667367%" id="mcps1.2.4.1.3"><p id="p16956144145011"><a name="p16956144145011"></a><a name="p16956144145011"></a>含义</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row82161131182810"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p248574352318"><a name="p248574352318"></a><a name="p248574352318"></a>gmWorkspaceAddr</p>
+<tbody><tr id="row5956546509"><td class="cellrowborder" valign="top" width="17.661766176617665%" headers="mcps1.2.4.1.1 "><p id="p19287714181617"><a name="p19287714181617"></a><a name="p19287714181617"></a>dst</p>
 </td>
-<td class="cellrowborder" valign="top" width="12.591259125912593%" headers="mcps1.2.4.1.2 "><p id="p144841743122315"><a name="p144841743122315"></a><a name="p144841743122315"></a>输入</p>
+<td class="cellrowborder" valign="top" width="8.670867086708672%" headers="mcps1.2.4.1.2 "><p id="p192871614151615"><a name="p192871614151615"></a><a name="p192871614151615"></a>输出</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p1483143162317"><a name="p1483143162317"></a><a name="p1483143162317"></a>gmWorkspaceAddr为用户定义的全局Global空间，是需要被初始化的空间，类型为GlobalTensor。GlobalTensor数据结构的定义请参考<a href="GlobalTensor.md">GlobalTensor</a>。</p>
+<td class="cellrowborder" valign="top" width="73.66736673667367%" headers="mcps1.2.4.1.3 "><p id="p232011551739"><a name="p232011551739"></a><a name="p232011551739"></a>目的操作数，结果矩阵，类型为LocalTensor。</p>
+<p id="p17644116247"><a name="p17644116247"></a><a name="p17644116247"></a><span id="ph26443161442"><a name="ph26443161442"></a><a name="ph26443161442"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的TPosition为A1/A2/B1/B2。</p>
+<p id="p56447161944"><a name="p56447161944"></a><a name="p56447161944"></a><span id="ph3644016948"><a name="ph3644016948"></a><a name="ph3644016948"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的TPosition为A1/A2/B1/B2。</p>
+<p id="p46455161649"><a name="p46455161649"></a><a name="p46455161649"></a><span id="ph864519166416"><a name="ph864519166416"></a><a name="ph864519166416"></a>Ascend 950PR/Ascend 950DT</span>， 支持的TPosition为A1/B1。</p>
+<p id="p1951017519562"><a name="p1951017519562"></a><a name="p1951017519562"></a><span id="ph458106105616"><a name="ph458106105616"></a><a name="ph458106105616"></a>Kirin X90</span>，支持的TPosition为A1/A2/B1/B2。</p>
+<p id="p5899141520216"><a name="p5899141520216"></a><a name="p5899141520216"></a><span id="ph15899201514212"><a name="ph15899201514212"></a><a name="ph15899201514212"></a>Kirin 9030</span>，支持的TPosition为A1/A2/B1/B2。</p>
+<p id="p16287121461618"><a name="p16287121461618"></a><a name="p16287121461618"></a>如果TPosition为A1/B1，起始地址需要满足32B对齐；如果TPosition为A2/B2，起始地址需要满足512B对齐。</p>
 </td>
 </tr>
-<tr id="row5216163192815"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p164821543202310"><a name="p164821543202310"></a><a name="p164821543202310"></a>size</p>
+<tr id="row1075785651510"><td class="cellrowborder" valign="top" width="17.661766176617665%" headers="mcps1.2.4.1.1 "><p id="p486615557145"><a name="p486615557145"></a><a name="p486615557145"></a>InitConstValueParams</p>
 </td>
-<td class="cellrowborder" valign="top" width="12.591259125912593%" headers="mcps1.2.4.1.2 "><p id="p64811843112313"><a name="p64811843112313"></a><a name="p64811843112313"></a>输入</p>
+<td class="cellrowborder" valign="top" width="8.670867086708672%" headers="mcps1.2.4.1.2 "><p id="p11287151451610"><a name="p11287151451610"></a><a name="p11287151451610"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p4481643182317"><a name="p4481643182317"></a><a name="p4481643182317"></a>需要初始化的空间大小，单位为元素个数。</p>
-</td>
-</tr>
-<tr id="row1212625414239"><td class="cellrowborder" valign="top" width="13.661366136613662%" headers="mcps1.2.4.1.1 "><p id="p312613545238"><a name="p312613545238"></a><a name="p312613545238"></a>value</p>
-</td>
-<td class="cellrowborder" valign="top" width="12.591259125912593%" headers="mcps1.2.4.1.2 "><p id="p10126254182313"><a name="p10126254182313"></a><a name="p10126254182313"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p51261854122320"><a name="p51261854122320"></a><a name="p51261854122320"></a>初始化的值，数据类型与gmWorkspaceAddr保持一致。</p>
+<td class="cellrowborder" valign="top" width="73.66736673667367%" headers="mcps1.2.4.1.3 "><p id="p17376814155615"><a name="p17376814155615"></a><a name="p17376814155615"></a>初始化相关参数，类型为InitConstValueParams。</p>
+<p id="p595519531047"><a name="p595519531047"></a><a name="p595519531047"></a>具体定义请参考<span id="ph10562197165916"><a name="ph10562197165916"></a><a name="ph10562197165916"></a>${INSTALL_DIR}</span>/include/ascendc/basic_api/interface/kernel_struct_mm.h，<span id="ph14322531015"><a name="ph14322531015"></a><a name="ph14322531015"></a>${INSTALL_DIR}</span>请替换为CANN软件安装后文件存储路径。</p>
+<p id="p12287014111614"><a name="p12287014111614"></a><a name="p12287014111614"></a>参数说明请参考<a href="#table15780447181917">表3</a>。</p>
+<p id="p179517269366"><a name="p179517269366"></a><a name="p179517269366"></a><span id="ph779572693610"><a name="ph779572693610"></a><a name="ph779572693610"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，支持配置所有参数。</p>
+<p id="p6822956165313"><a name="p6822956165313"></a><a name="p6822956165313"></a><span id="ph6822456165317"><a name="ph6822456165317"></a><a name="ph6822456165317"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，支持配置所有参数。</p>
+<p id="p125181030327"><a name="p125181030327"></a><a name="p125181030327"></a><span id="ph122310317217"><a name="ph122310317217"></a><a name="ph122310317217"></a>Ascend 950PR/Ascend 950DT</span>，支持配置所有参数。</p>
+<p id="p022812305710"><a name="p022812305710"></a><a name="p022812305710"></a><span id="ph142294312571"><a name="ph142294312571"></a><a name="ph142294312571"></a>Kirin X90</span>，支持配置所有参数。</p>
+<p id="p85079382219"><a name="p85079382219"></a><a name="p85079382219"></a><span id="ph116661313221"><a name="ph116661313221"></a><a name="ph116661313221"></a>Kirin 9030</span>，支持配置所有参数。</p>
+<a name="ul1670213162021"></a><a name="ul1670213162021"></a><ul id="ul1670213162021"><li><span>仅支持配置迭代次数（repeatTimes）和初始化值（initValue）场景下，其他参数配置无效。每次迭代处理固定数据量（512字节），迭代间无间隔。</span></li><li>支持配置所有参数场景下，支持配置迭代次数（repeatTimes）、初始化值（initValue）、每个迭代处理的数据块个数（blockNum）和迭代间间隔（dstGap）。</li></ul>
 </td>
 </tr>
 </tbody>
 </table>
 
-## 返回值说明<a name="section91032023123812"></a>
+**表 3**  InitConstValueParams结构体参数说明
 
-无
+<a name="table15780447181917"></a>
+<table><thead align="left"><tr id="row0780947111915"><th class="cellrowborder" valign="top" width="15.25%" id="mcps1.2.3.1.1"><p id="p1780124771913"><a name="p1780124771913"></a><a name="p1780124771913"></a>参数名称</p>
+</th>
+<th class="cellrowborder" valign="top" width="84.75%" id="mcps1.2.3.1.2"><p id="p1578014718198"><a name="p1578014718198"></a><a name="p1578014718198"></a>含义</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row10780647151919"><td class="cellrowborder" valign="top" width="15.25%" headers="mcps1.2.3.1.1 "><p id="p7662195112120"><a name="p7662195112120"></a><a name="p7662195112120"></a>repeatTimes</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p1140916508219"><a name="p1140916508219"></a><a name="p1140916508219"></a>迭代次数。默认值为0。</p>
+<a name="ul98581524450"></a><a name="ul98581524450"></a><ul id="ul98581524450"><li><span>仅支持配置迭代次数（repeatTimes）和初始化值（initValue）场景下，repeatTimes∈[0, 255]。</span></li><li>支持配置所有参数场景下，repeatTimes∈[0, 32767] 。</li></ul>
+</td>
+</tr>
+<tr id="row6780947191919"><td class="cellrowborder" valign="top" width="15.25%" headers="mcps1.2.3.1.1 "><p id="p1778310122113"><a name="p1778310122113"></a><a name="p1778310122113"></a>blockNum</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p1634012352218"><a name="p1634012352218"></a><a name="p1634012352218"></a>每次迭代初始化的数据块个数，取值范围：blockNum∈[0, 32767] 。默认值为0。</p>
+<a name="ul16932118103412"></a><a name="ul16932118103412"></a><ul id="ul16932118103412"><li>dst的位置为A1/B1时，每一个block（数据块）大小是32B；</li><li>dst的位置为A2/B2时，每一个block（数据块）大小是512B。</li></ul>
+</td>
+</tr>
+<tr id="row1078074711194"><td class="cellrowborder" valign="top" width="15.25%" headers="mcps1.2.3.1.1 "><p id="p012671315216"><a name="p012671315216"></a><a name="p012671315216"></a>dstGap</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p71261136859"><a name="p71261136859"></a><a name="p71261136859"></a>目的操作数前一个迭代结束地址到后一个迭代起始地址之间的距离。</p>
+<a name="ul1196025153512"></a><a name="ul1196025153512"></a><ul id="ul1196025153512"><li>dst的位置为A1/B1时，单位是32B；</li><li>dst的位置为A2/B2时，单位是512B。</li></ul>
+<p id="p1734053517219"><a name="p1734053517219"></a><a name="p1734053517219"></a>取值范围：dstGap∈[0, 32767] 。默认值为0。</p>
+</td>
+</tr>
+<tr id="row1761285762117"><td class="cellrowborder" valign="top" width="15.25%" headers="mcps1.2.3.1.1 "><p id="p4579316202119"><a name="p4579316202119"></a><a name="p4579316202119"></a>initValue</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.75%" headers="mcps1.2.3.1.2 "><p id="p193068319220"><a name="p193068319220"></a><a name="p193068319220"></a>初始化的value值，支持的数据类型与dst保持一致。</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
--   单核调用此接口时，如果后续操作涉及Unified Buffer的使用，则需要在调用接口后，设置MTE2流水等待MTE3流水（[MTE3\_MTE2](SetFlag-WaitFlag(ISASI).md#section622mcpsimp)）的同步。
--   当多个核调用此接口对Global Memory进行初始化时，所有核对Global Memory的初始化未必会同时结束，也可能存在核之间读后写、写后读以及写后写等数据依赖问题。这种使用场景下，可以在本接口后调用[SyncAll](SyncAll.md)接口保证多核间同步正确。
--   该接口仅支持在程序内存分配[InitBuffer](InitBuffer.md)接口前使用。
+-   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-本调用示例使用8个核，每个核用当前blockIdx的值初始化zGm上的65536个数，每个核的核内计算为x和y两组全1的65536个half类型数据相加，计算结果累加到zGm。此样例中8个核的blockIdx分别为0到7，输入x和y均为全1数据，则最终zGm输出数据为2到9。
-
 ```
 #include "kernel_operator.h"
-
-constexpr int32_t INIT_SIZE = 65536;
-
-class KernelFill {
-public:
-    __aicore__ inline KernelFill() {}
-    __aicore__ inline void Init(GM_ADDR x, GM_ADDR y, GM_ADDR z, TPipe* pipe)
-    {
-        xGm.SetGlobalBuffer((__gm__ half*)x + INIT_SIZE * AscendC::GetBlockIdx(), INIT_SIZE);
-        yGm.SetGlobalBuffer((__gm__ half*)y + INIT_SIZE * AscendC::GetBlockIdx(), INIT_SIZE);
-        zGm.SetGlobalBuffer((__gm__ half*)z + INIT_SIZE * AscendC::GetBlockIdx(), INIT_SIZE);
-        // init zGm value
-        AscendC::Fill(zGm, INIT_SIZE, (half)(AscendC::GetBlockIdx()));
-
-        AscendC::TEventID eventIdMTE3ToMTE2 = GetTPipePtr()->FetchEventID(AscendC::HardEvent::MTE3_MTE2);
-        AscendC::SetFlag<AscendC::HardEvent::MTE3_MTE2>(eventIdMTE3ToMTE2);
-        AscendC::WaitFlag<AscendC::HardEvent::MTE3_MTE2>(eventIdMTE3ToMTE2);
-
-        pipe->InitBuffer(inQueueX, 1, INIT_SIZE * sizeof(half));
-        pipe->InitBuffer(inQueueY, 1, INIT_SIZE * sizeof(half));
-        pipe->InitBuffer(outQueueZ, 1, INIT_SIZE * sizeof(half));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<half> xLocal = inQueueX.AllocTensor<half>();
-        AscendC::LocalTensor<half> yLocal = inQueueY.AllocTensor<half>();
-        AscendC::DataCopy(xLocal, xGm, INIT_SIZE);
-        AscendC::DataCopy(yLocal, yGm, INIT_SIZE);
-        inQueueX.EnQue(xLocal);
-        inQueueY.EnQue(yLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<half> xLocal = inQueueX.DeQue<half>();
-        AscendC::LocalTensor<half> yLocal = inQueueY.DeQue<half>();
-        AscendC::LocalTensor<half> zLocal = outQueueZ.AllocTensor<half>();
-        AscendC::Add(zLocal, xLocal, yLocal, INIT_SIZE);
-        outQueueZ.EnQue<half>(zLocal);
-        inQueueX.FreeTensor(xLocal);
-        inQueueY.FreeTensor(yLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<half> zLocal = outQueueZ.DeQue<half>();
-        // add result to zGm
-        AscendC::SetAtomicAdd<half>();
-        AscendC::DataCopy(zGm, zLocal, INIT_SIZE);
-        AscendC::SetAtomicNone();
-        outQueueZ.FreeTensor(zLocal);
-    }
-private:
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueX, inQueueY;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueZ;
-    AscendC::GlobalTensor<half> xGm;
-    AscendC::GlobalTensor<half> yGm;
-    AscendC::GlobalTensor<half> zGm;
-};
-
-extern "C" __global__ __aicore__ void init_global_memory_custom(GM_ADDR x, GM_ADDR y, GM_ADDR z)
-{
-    KernelFill op;
-    TPipe pipe;
-    op.Init(x, y, z, &pipe);
-    op.Process();
-}
-```
-
-结果示例如下：
-
-```
-输入数据(x):
-[1. 1. 1. 1. 1. ... 1.]
-输入数据(y):
-[1. 1. 1. 1. 1. ... 1.]
-输出数据(z):
-[2. 2. 2. 2. 2. ... 2.
-3. 3. 3. 3. 3. ... 3.
-4. 4. 4. 4. 4. ... 4.
-5. 5. 5. 5. 5. ... 5.
-6. 6. 6. 6. 6. ... 6.
-7. 7. 7. 7. 7. ... 7.
-8. 8. 8. 8. 8. ... 8.
-9. 9. 9. 9. 9. ... 9.]
+uint32 m = 16;
+uint32 k = 16;
+TPipe pipe;
+TQue<TPosition::A1, 1> qidA1_;
+pipe.InitBuffer(qidA1_, 1, m * k * sizeof(float));
+LocalTensor<float> leftMatrix = qidA1_.template AllocTensor<float>();
+Fill(leftMatrix, {1, static_cast<uint16_t>(mLength * kLength * sizeof(Src0T) / 32), 0, 1});
+qidA1_.EnQue(leftMatrix);
 ```
 

@@ -24,6 +24,8 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品不支持该接口，返�
 
 Atlas A3 训练系列产品/Atlas A3 推理系列产品不支持该接口，返回0
 
+Ascend 950PR/Ascend 950DT不支持该接口，返回0
+
 ## 调用示例<a name="zh-cn_topic_0000001817714666_zh-cn_topic_0000001442758437_section320753512363"></a>
 
 ```

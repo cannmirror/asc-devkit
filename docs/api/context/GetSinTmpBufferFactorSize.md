@@ -26,6 +26,10 @@
 void GetSinTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
 ```
 
+```
+void GetSinTmpBufferFactorSize(const SinConfig& config, const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf)
+```
+
 ## 参数说明<a name="section8566182019343"></a>
 
 **表 1**  参数列表
@@ -39,7 +43,14 @@ void GetSinTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
 </th>
 </tr>
 </thead>
-<tbody><tr id="row139791917184711"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p697915173474"><a name="p697915173474"></a><a name="p697915173474"></a>typeSize</p>
+<tbody><tr id="row115581447151114"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p1558104711119"><a name="p1558104711119"></a><a name="p1558104711119"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="13.19%" headers="mcps1.2.4.1.2 "><p id="p7558194731111"><a name="p7558194731111"></a><a name="p7558194731111"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="69.92%" headers="mcps1.2.4.1.3 "><p id="p1855844719113"><a name="p1855844719113"></a><a name="p1855844719113"></a>Sin接口的相关配置信息。该参数的配置必须与Sin Kernel接口模板参数config的配置保持一致。</p>
+</td>
+</tr>
+<tr id="row139791917184711"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p697915173474"><a name="p697915173474"></a><a name="p697915173474"></a>typeSize</p>
 </td>
 <td class="cellrowborder" valign="top" width="13.19%" headers="mcps1.2.4.1.2 "><p id="p169793179474"><a name="p169793179474"></a><a name="p169793179474"></a>输入</p>
 </td>
@@ -73,11 +84,14 @@ void GetSinTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCou
 
 ## 调用示例<a name="section85671420193420"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 uint32_t maxLiveNodeCount = 0;
 uint32_t extraBuf = 0;
 AscendC::GetSinTmpBufferFactorSize(typeSize, maxLiveNodeCount, extraBuf);
+AscendC::SinConfig config;
+config.algo = AscendC::SinAlgo::RADIAN_REDUCTION;
+AscendC::GetSinTmpBufferFactorSize(config, typeSize, maxLiveNodeCount, extraBuf);
 ```
 

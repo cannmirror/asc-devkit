@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -42,6 +47,16 @@
         ![](figures/zh-cn_formulaimage_0000002223797889.png)
 
         以tensor\(\[\[0, 1, 2\], \[3, 4, 5\]\]\)为例，输出结果是tensor\(\[\[0, 1, 3\], \[3, 7, 12\]\]\)
+
+-   Sklansky二分累加算法
+
+    Sklansky二分累加算法是基于Sklansky Adder的并行前缀和逻辑实现的。[图1](#fig45153311379)为一维二进制的并行前缀和算法示意图。将该算法扩展至二维张量的累加和算法，以按行累加为例，[图2](#fig7422174293712)为该算法的执行步骤示意图，通过并行计算多行的加和，实现Sklansky二分累加算法下的按行累加和。
+
+    **图 1**  Sklansky Adder算法示意图<a name="fig45153311379"></a>  
+    ![](figures/Sklansky-Adder算法示意图.png "Sklansky-Adder算法示意图")
+
+    **图 2**  基于Sklansky的二分累加示意图<a name="fig7422174293712"></a>  
+    ![](figures/基于Sklansky的二分累加示意图.png "基于Sklansky的二分累加示意图")
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -81,23 +96,36 @@
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+<p id="p1470938145713"><a name="p1470938145713"></a><a name="p1470938145713"></a><span id="ph10709148195710"><a name="ph10709148195710"></a><a name="ph10709148195710"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p77087865715"><a name="p77087865715"></a><a name="p77087865715"></a><span id="ph11708118165712"><a name="ph11708118165712"></a><a name="ph11708118165712"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p14708128115717"><a name="p14708128115717"></a><a name="p14708128115717"></a><span id="ph207091987579"><a name="ph207091987579"></a><a name="ph207091987579"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 </td>
 </tr>
 <tr id="row431312153917"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p53131021173917"><a name="p53131021173917"></a><a name="p53131021173917"></a>config</p>
 </td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p51531559114315"><a name="p51531559114315"></a><a name="p51531559114315"></a>定义CumSum接口编译时config参数。</p>
-<a name="screen14153135994311"></a><a name="screen14153135994311"></a><pre class="screen" codetype="Cpp" id="screen14153135994311">struct CumSumConfig {
-    bool isLastAxis{true};
-    bool isReuseSource{false};
-    bool outputLastRow{false};
-};</pre>
-<a name="ul181537593432"></a><a name="ul181537593432"></a><ul id="ul181537593432"><li>isLastAxis：取值为true表示计算按last轴处理，取值为false表示计算按first轴处理；</li><li>isReuseSource：是否可以复用srcTensor的内存空间；该参数预留，传入默认值false即可。</li><li>outputLastRow：是否输出最后一行数据。</li></ul>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p51531559114315"><a name="p51531559114315"></a><a name="p51531559114315"></a>定义CumSum接口编译时config参数。CumSumConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<p id="p168881610207"><a name="p168881610207"></a><a name="p168881610207"></a>isLastAxis：取值为true表示计算按last轴处理，取值为false表示计算按first轴处理；</p>
+<p id="p166881716202015"><a name="p166881716202015"></a><a name="p166881716202015"></a>isReuseSource：是否可以复用srcTensor的内存空间；该参数预留，传入默认值false即可。</p>
+<p id="p068821614209"><a name="p068821614209"></a><a name="p068821614209"></a>outputLastRow：是否输出最后一行数据。</p>
+<div class="p" id="p06882168202"><a name="p06882168202"></a><a name="p06882168202"></a>algorithm：CumSum内部实现使用的累加和算法，该参数支持的取值如下：<a name="ul107741953144114"></a><a name="ul107741953144114"></a><ul id="ul107741953144114"><li>CumSumAlgorithm::CUMSUM_ALGORITHM_LINEBYLINE：逐行累加算法。</li><li>CumSumAlgorithm::CUMSUM_ALGORITHM_SKLANSKY：Sklansky二分累加算法。</li></ul>
+</div>
 </td>
 </tr>
 </tbody>
 </table>
+
+```
+struct CumSumConfig {
+    bool isLastAxis{true};
+    bool isReuseSource{false};
+    bool outputLastRow{false};
+    CumSumAlgorithm algorithm{CumSumAlgorithm::CUMSUM_ALGORITHM_LINEBYLINE};
+};
+enum class CumSumAlgorithm {    
+    CUMSUM_ALGORITHM_LINEBYLINE = 0,    
+    CUMSUM_ALGORITHM_SKLANSKY = 1
+};
+```
 
 **表 2**  接口参数说明
 
@@ -148,18 +176,26 @@
 </td>
 <td class="cellrowborder" valign="top" width="9.68%" headers="mcps1.2.4.1.2 "><p id="p64685451843"><a name="p64685451843"></a><a name="p64685451843"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.55%" headers="mcps1.2.4.1.3 "><p id="p1468912433196"><a name="p1468912433196"></a><a name="p1468912433196"></a>srcTensor的shape信息。CumSumInfo类型，具体定义如下：</p>
-<a name="screen641172125916"></a><a name="screen641172125916"></a><pre class="screen" codetype="Cpp" id="screen641172125916">struct CumSumInfo
-{
-    uint32_t outter{0};    // 表示输入数据的外轴长度
-    uint32_t inner{0};     // 表示输入数据的内轴长度
-};</pre>
-<p id="p1118312311316"><a name="p1118312311316"></a><a name="p1118312311316"></a>注意：</p>
-<a name="ul78139919317"></a><a name="ul78139919317"></a><ul id="ul78139919317"><li>cumSumInfo.outter和cumSumInfo.inner都应大于0。</li><li>cumSumInfo.outter * cumSumInfo.inner不能大于dstTensor或srcTensor的大小。</li><li>cumSumInfo.inner * sizeof(T)必须是32字节的整数倍。</li><li>当模板参数config中的outputLastRow取值为true时，cumSumInfo.inner不能大于lastRowTensor输出的最后一行数据的大小。</li></ul>
+<td class="cellrowborder" valign="top" width="72.55%" headers="mcps1.2.4.1.3 "><p id="p1468912433196"><a name="p1468912433196"></a><a name="p1468912433196"></a>srcTensor的shape信息。CumSumInfo类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<p id="p4682442142115"><a name="p4682442142115"></a><a name="p4682442142115"></a>outter：表示输入数据的外轴长度。</p>
+<p id="p1690924942114"><a name="p1690924942114"></a><a name="p1690924942114"></a>inner：表示输入数据的内轴长度。</p>
+<p id="p1118312311316"><a name="p1118312311316"></a><a name="p1118312311316"></a>请注意：</p>
+<p id="p382219882114"><a name="p382219882114"></a><a name="p382219882114"></a>cumSumInfo.outter和cumSumInfo.inner都应大于0。</p>
+<p id="p1482218112117"><a name="p1482218112117"></a><a name="p1482218112117"></a>cumSumInfo.outter * cumSumInfo.inner不能大于dstTensor或srcTensor的大小。</p>
+<p id="p182211832119"><a name="p182211832119"></a><a name="p182211832119"></a>cumSumInfo.inner * sizeof(T)必须是32字节的整数倍。</p>
+<p id="p4823198102112"><a name="p4823198102112"></a><a name="p4823198102112"></a>当模板参数config中的outputLastRow取值为true时，cumSumInfo.inner不能大于lastRowTensor输出的最后一行数据的大小。</p>
 </td>
 </tr>
 </tbody>
 </table>
+
+```
+struct CumSumInfo
+{
+    uint32_t outter{0};
+    uint32_t inner{0};
+};
+```
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 
@@ -241,7 +277,7 @@ private:
     uint32_t inner{1};
 };
 
-constexpr AscendC::CumSumConfig cumSumConfig{true, false, true};
+constexpr AscendC::CumSumConfig cumSumConfig{true, false, true, AscendC::CumSumAlgorithm::CUMSUM_ALGORITHM_LINEBYLINE};
 
 template <typename T>
 __aicore__ inline void kernel_cumsum_operator(

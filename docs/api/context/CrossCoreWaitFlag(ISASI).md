@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -47,12 +52,13 @@ __aicore__ inline void CrossCoreWaitFlag(uint16_t flagId)
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="18.6%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>modeId</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.39999999999999%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>核间同步的模式，取值如下：</p>
-<a name="ul335269516"></a><a name="ul335269516"></a><ul id="ul335269516"><li>模式0：AI Core核间的同步控制。</li><li>模式1：AI Core内部，Vector核（AIV）之间的同步控制。</li><li>模式2：AI Core内部，Cube核（AIC）与Vector核（AIV）之间的同步控制。</li></ul>
+<a name="ul335269516"></a><a name="ul335269516"></a><ul id="ul335269516"><li>模式0：AI Core核间的同步控制。</li><li>模式1：AI Core内部，Vector核（AIV）之间的同步控制。</li><li>模式2：AI Core内部，Cube核（AIC）与Vector核（AIV）之间的同步控制。</li><li>模式4：AI Core内部，AIC与AIV之间的同步控制。AIV0与AIV1可单独触发AIC等待。</li></ul>
 </td>
 </tr>
 <tr id="row168561422132317"><td class="cellrowborder" valign="top" width="18.6%" headers="mcps1.2.3.1.1 "><p id="p1162623072316"><a name="p1162623072316"></a><a name="p1162623072316"></a>pipe</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.39999999999999%" headers="mcps1.2.3.1.2 "><p id="p13626330102311"><a name="p13626330102311"></a><a name="p13626330102311"></a>设置这条指令所在的流水类型，流水类型可参考<a href="同步控制简介.md#section1272612276459">硬件流水类型</a>。</p>
+<p id="p8834141517517"><a name="p8834141517517"></a><a name="p8834141517517"></a>特别地，PIPE_S流水类型仅<span id="ph1572119291978"><a name="ph1572119291978"></a><a name="ph1572119291978"></a>Ascend 950PR/Ascend 950DT</span>支持。</p>
 </td>
 </tr>
 </tbody>
@@ -76,6 +82,11 @@ __aicore__ inline void CrossCoreWaitFlag(uint16_t flagId)
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p10993195419912"><a name="p10993195419912"></a><a name="p10993195419912"></a>核间同步的标记。</p>
 <p id="p3301156999"><a name="p3301156999"></a><a name="p3301156999"></a><span id="ph1930145610914"><a name="ph1930145610914"></a><a name="ph1930145610914"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，取值范围是0-10。</p>
 <p id="p19301456896"><a name="p19301456896"></a><a name="p19301456896"></a><span id="ph14307561397"><a name="ph14307561397"></a><a name="ph14307561397"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，取值范围是0-10。</p>
+<p id="p193019567919"><a name="p193019567919"></a><a name="p193019567919"></a><span id="ph9301256291"><a name="ph9301256291"></a><a name="ph9301256291"></a>Ascend 950PR/Ascend 950DT</span>，取值范围如下：</p>
+<p id="p4858107124612"><a name="p4858107124612"></a><a name="p4858107124612"></a>AIV0发起的flagId 0-10的CrossCoreSetFlag操作对应AIC CrossCoreWaitFlag中flagId 0-10的操作。</p>
+<p id="p1685813713461"><a name="p1685813713461"></a><a name="p1685813713461"></a>AIV1发起的flagId 0-10的CrossCoreSetFlag操作对应AIC CrossCoreWaitFlag中flagId 16-26的操作。</p>
+<p id="p4858974461"><a name="p4858974461"></a><a name="p4858974461"></a>AIC发起的flagId 0-10的CrossCoreSetFlag操作对应AIV0 CrossCoreWaitFlag中flagId 0-10的操作。</p>
+<p id="p1785837134610"><a name="p1785837134610"></a><a name="p1785837134610"></a>AIC发起的flagId 16-26的CrossCoreSetFlag操作对应AIV1 CrossCoreWaitFlag中flagId 0-10的操作。</p>
 </td>
 </tr>
 </tbody>
@@ -93,6 +104,13 @@ __aicore__ inline void CrossCoreWaitFlag(uint16_t flagId)
 
 -   CrossCoreWaitFlag必须与[CrossCoreSetFlag](CrossCoreSetFlag(ISASI).md)接口配合使用，避免计算核一直处于阻塞阶段。
 -   如果执行CrossCoreWaitFlag时该flagId的计数器的值为0，则CrossCoreWaitFlag之后的所有指令都将被阻塞，直到该flagId的计数器的值不为0。同一个flagId的计数器最多设置15次。
+-   使用该接口模式0时，必须通过[SetScheduleMode](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/basicdataapi/atlasopapi_07_00248.html)使能batchmode模式，使算子独占全部所需核资源，否则可能因满足以下条件导致死锁：
+    -   多流并发场景（≥2条执行流）。
+    -   ≥2个算子并发执行。
+    -   所有并发算子的核数总和超过物理核数。
+    -   ≥2个并发算子使用了核间同步功能。
+
+        具体而言，在多流场景下，某条流的核间同步算子虽分配到n个物理核，但可能仅有n-m个核先被调度执行，而其余m个核因被其他流的核间同步算子抢占而尚未启动。先启动的n-m个核执行到核间同步时等待剩余m核完成，而剩余m核因被其他流的核间同步算子占用而无法释放，形成死锁。
 
 ## 调用示例<a name="section837496171220"></a>
 

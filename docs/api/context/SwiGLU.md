@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -95,6 +100,7 @@ SwiGLU是采用Swish作为激活函数的GLU变体。具体计算公式如下：
 <tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
+<p id="p75831786153"><a name="p75831786153"></a><a name="p75831786153"></a><span id="ph183108134329"><a name="ph183108134329"></a><a name="ph183108134329"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="zh-cn_topic_0000001538537601_p44574117347"><a name="zh-cn_topic_0000001538537601_p44574117347"></a><a name="zh-cn_topic_0000001538537601_p44574117347"></a><span id="ph14922181914253"><a name="ph14922181914253"></a><a name="ph14922181914253"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="zh-cn_topic_0000001538537601_p10451541143416"><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><span id="ph1539933172510"><a name="ph1539933172510"></a><a name="ph1539933172510"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p1472814386289"><a name="p1472814386289"></a><a name="p1472814386289"></a><span id="ph43361116142915"><a name="ph43361116142915"></a><a name="ph43361116142915"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -180,88 +186,25 @@ SwiGLU是采用Swish作为激活函数的GLU变体。具体计算公式如下：
 ```
 #include "kernel_operator.h"
 
-template <typename srcType>
-class KernelSwiGLU {
-public:
-    __aicore__ inline KernelSwiGLU(){}
-    __aicore__ inline void Init(GM_ADDR src0Gm, GM_ADDR src1Gm, GM_ADDR dstGm, uint32_t srcSize, float beta)
-    {
-        betaValue = beta;
-        dataSize = srcSize;
-        src0Global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(src0Gm), dataSize);
-        src1Global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(src1Gm), dataSize);
-        dst_global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(dstGm), dataSize);
-        pipe.InitBuffer(inQueueX, 1, dataSize * sizeof(srcType));
-        pipe.InitBuffer(inQueueY, 1, dataSize * sizeof(srcType));
-        pipe.InitBuffer(outQueue, 1, dataSize * sizeof(srcType));
-        if (sizeof(srcType) != sizeof(float)) {
-            pipe.InitBuffer(calcBufs, dataSize * (sizeof(float) / sizeof(uint8_t)) * 3);
-        }
-
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<srcType> src0Local = inQueueX.AllocTensor<srcType>();
-        AscendC::LocalTensor<srcType> src1Local = inQueueY.AllocTensor<srcType>();
-        AscendC::DataCopy(src0Local, src0Global, dataSize);
-        AscendC::DataCopy(src1Local, src1Global, dataSize);
-        inQueueX.EnQue(src0Local);
-        inQueueY.EnQue(src1Local);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<srcType> dstLocal = outQueue.AllocTensor<srcType>();
-        AscendC::LocalTensor<srcType> src0Local = inQueueX.DeQue<srcType>();
-        AscendC::LocalTensor<srcType> src1Local = inQueueY.DeQue<srcType>();
-        AscendC::LocalTensor<uint8_t> tmpLocal;
-        if (sizeof(srcType) != sizeof(float)) {
-            tmpLocal = calcBufs.Get<uint8_t>();
-            AscendC::SwiGLU<srcType, false>(dstLocal, src0Local, src1Local, betaValue, tmpLocal, dataSize);
-        } else {
-            AscendC::SwiGLU<srcType, false>(dstLocal, src0Local, src1Local, betaValue, dataSize);
-        }
-
-        outQueue.EnQue<srcType>(dstLocal);
-        inQueueX.FreeTensor(src0Local);
-        inQueueY.FreeTensor(src1Local);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<srcType> dstLocal = outQueue.DeQue<srcType>();
-        AscendC::DataCopy(dst_global, dstLocal, dataSize);
-        outQueue.FreeTensor(dstLocal);
-    }
-
-private:
-    AscendC::GlobalTensor<srcType> src0Global;
-    AscendC::GlobalTensor<srcType> src1Global;
-    AscendC::GlobalTensor<srcType> dst_global;
-
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueX;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueY;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueue;
-    AscendC::TBuf<AscendC::TPosition::VECCALC> calcBufs;
-    uint32_t dataSize = 0;
-    float betaValue = 0;
-};
-
-template <typename dataType>
-__aicore__ void kernel_swiglu_operator(GM_ADDR src0Gm, GM_ADDR src1Gm, GM_ADDR dstGm, uint32_t srcSize)
-{
-    KernelSwiGLU<dataType> op;
-    float scalarValue = 1;
-    op.Init(src0Gm, src1Gm, dstGm, srcSize, scalarValue);
-    op.Process();
+AscendC::LocalTensor<T> dstLocal = outQueue.AllocTensor<T>();
+AscendC::LocalTensor<T> src0Local = inQueue0.DeQue<T>();
+AscendC::LocalTensor<T> src1Local = inQueue1.DeQue<T>();
+AscendC::LocalTensor<uint8_t> tmpLocal;
+if (tmpBufSize > 0) {
+    tmpLocal = bufQueue.Get<uint8_t>();
 }
+if ((tmpBufSize > 0) && (calCount > 0)) {
+    AscendC::SwiGLU(dstLocal, src0Local, src1Local, betaValue, tmpLocal, calCount);
+} else if (tmpBufSize > 0) {
+    AscendC::SwiGLU(dstLocal, src0Local, src1Local, betaValue, tmpLocal);
+} else if (calCount > 0) {
+    AscendC::SwiGLU(dstLocal, src0Local, src1Local, betaValue, calCount);
+} else {
+    AscendC::SwiGLU(dstLocal, src0Local, src1Local, betaValue);
+}
+outQueue.EnQue<T>(dstLocal);
+inQueue0.FreeTensor(src0Local);
+inQueue1.FreeTensor(src1Local);
 ```
 
 结果示例如下：

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -51,8 +56,10 @@ class Hccl;
 <td class="cellrowborder" valign="top" width="86.3%" headers="mcps1.2.3.1.2 "><p id="p4885153562018"><a name="p4885153562018"></a><a name="p4885153562018"></a>支持的服务端类型。HcclServerType类型，定义如下。</p>
 <p id="p13941419111720"><a name="p13941419111720"></a><a name="p13941419111720"></a>对于<span id="ph10669162119173"><a name="ph10669162119173"></a><a name="ph10669162119173"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，当前仅支持HCCL_SERVER_TYPE_AICPU。</p>
 <p id="p19970202662712"><a name="p19970202662712"></a><a name="p19970202662712"></a>对于<span id="ph14970726132716"><a name="ph14970726132716"></a><a name="ph14970726132716"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，当前仅支持HCCL_SERVER_TYPE_AICPU。</p>
+<p id="p1880057123714"><a name="p1880057123714"></a><a name="p1880057123714"></a>对于<span id="ph1788095712378"><a name="ph1788095712378"></a><a name="ph1788095712378"></a>Ascend 950PR/Ascend 950DT</span>，当前仅支持HCCL_SERVER_TYPE_CCU。</p>
 <a name="screen519263825511"></a><a name="screen519263825511"></a><pre class="screen" codetype="Cpp" id="screen519263825511">enum HcclServerType {
 HCCL_SERVER_TYPE_AICPU = 0,
+HCCL_SERVER_TYPE_CCU,
 HCCL_SERVER_TYPE_END  // 预留参数，不支持使用
 }</pre>
 </td>
@@ -91,5 +98,8 @@ HCCL_SERVER_TYPE_END  // 预留参数，不支持使用
 static constexpr HcclServerConfig HCCL_CFG = {CoreType::ON_AIV, 10};
 // 选择AICPU作为服务端
 Hccl<HcclServerType::HCCL_SERVER_TYPE_AICPU, HCCL_CFG> hccl; 
+
+// 选择CCU作为服务端
+Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU, HCCL_CFG> hccl; 
 ```
 

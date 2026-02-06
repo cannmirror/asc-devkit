@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -171,6 +176,7 @@ def softmax_flash_2(src, inmax=None, insum=None, update=None):
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+<p id="p660618480410"><a name="p660618480410"></a><a name="p660618480410"></a><span id="ph5770145512415"><a name="ph5770145512415"></a><a name="ph5770145512415"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p209372313303"><a name="p209372313303"></a><a name="p209372313303"></a><span id="ph6937237308"><a name="ph6937237308"></a><a name="ph6937237308"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p23341962334"><a name="p23341962334"></a><a name="p23341962334"></a><span id="ph17309135063314"><a name="ph17309135063314"></a><a name="ph17309135063314"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -215,6 +221,7 @@ def softmax_flash_2(src, inmax=None, insum=None, update=None):
 <a name="zh-cn_topic_0000001621597661_screen19241326175913"></a><a name="zh-cn_topic_0000001621597661_screen19241326175913"></a><pre class="screen" codetype="Cpp" id="zh-cn_topic_0000001621597661_screen19241326175913">constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0, SoftmaxMode::SOFTMAX_NORMAL};</pre>
 <p id="zh-cn_topic_0000001621597661_p19442739102517"><a name="zh-cn_topic_0000001621597661_p19442739102517"></a><a name="zh-cn_topic_0000001621597661_p19442739102517"></a>此参数一般用于配合kernel侧tiling计算的接口使用。</p>
 <p id="p9341337121216"><a name="p9341337121216"></a><a name="p9341337121216"></a>注意：设置了oriSrcM与oriSrcK后，模板参数isBasicBlock不生效，计算数据是否为基本块由API内部判断并处理。</p>
+<p id="p9698920448"><a name="p9698920448"></a><a name="p9698920448"></a>针对<span id="ph1527792911411"><a name="ph1527792911411"></a><a name="ph1527792911411"></a>Ascend 950PR/Ascend 950DT</span>，支持该参数。</p>
 <p id="zh-cn_topic_0000001621597661_p9572132616819"><a name="zh-cn_topic_0000001621597661_p9572132616819"></a><a name="zh-cn_topic_0000001621597661_p9572132616819"></a><span id="ph345715217371"><a name="ph345715217371"></a><a name="ph345715217371"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持该参数。</p>
 <p id="zh-cn_topic_0000001621597661_p17572172617810"><a name="zh-cn_topic_0000001621597661_p17572172617810"></a><a name="zh-cn_topic_0000001621597661_p17572172617810"></a><span id="ph146293710376"><a name="ph146293710376"></a><a name="ph146293710376"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持该参数。</p>
 <p id="p13682193215582"><a name="p13682193215582"></a><a name="p13682193215582"></a>针对<span id="ph13456155475811"><a name="ph13456155475811"></a><a name="ph13456155475811"></a>Kirin X90</span>，支持该参数。</p>
@@ -370,92 +377,19 @@ uint32_t oriSrcK;  // 原始尾轴长度
 #include "kernel_operator.h"
 
 // constexpr AscendC::SoftmaxConfig static_config = {true, 320, 64}; shape常量化使用
-template <typename T>
-class KernelSoftmaxFlashV2 {
-public:
-    __aicore__ inline KernelSoftmaxFlashV2()
-    {}
-    __aicore__ inline void Init(__gm__ uint8_t *srcGm, __gm__ uint8_t *inMaxGm, __gm__ uint8_t *inSumGm,
-        __gm__ uint8_t *dstGm, const SoftMaxTiling &tilingData)
-    {
-        elementNumPerBlk = 32 / sizeof(T);
-        srcGlobal.SetGlobalBuffer((__gm__ T *)srcGm);
-        dstGlobal.SetGlobalBuffer((__gm__ T *)dstGm);
-        maxGlobal.SetGlobalBuffer((__gm__ T *)inMaxGm);
-        sumGlobal.SetGlobalBuffer((__gm__ T *)inSumGm);
-        pipe.InitBuffer(inQueueSrc, 1, height * width * sizeof(T));
-        pipe.InitBuffer(maxQueue, 1, height * elementNumPerBlk * sizeof(T));
-        pipe.InitBuffer(sumQueue, 1, height * elementNumPerBlk * sizeof(T));
-        pipe.InitBuffer(expMaxQueue, 1, height * elementNumPerBlk * sizeof(T));
-        pipe.InitBuffer(outQueueDst, 1, height * width * sizeof(T));
-        tiling = tilingData;
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<T> srcLocal = inQueueSrc.AllocTensor<T>();
-        AscendC::LocalTensor<T> insumLocal = sumQueue.AllocTensor<T>();
-        AscendC::LocalTensor<T> inmaxLocal = maxQueue.AllocTensor<T>();
-        AscendC::DataCopy(srcLocal, srcGlobal, height * width);
-        AscendC::DataCopy(insumLocal, sumGlobal, height * elementNumPerBlk);
-        AscendC::DataCopy(inmaxLocal, maxGlobal, height * elementNumPerBlk);
-        inQueueSrc.EnQue(srcLocal);
-        sumQueue.EnQue(insumLocal);
-        maxQueue.EnQue(inmaxLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<T> srcLocal = inQueueSrc.DeQue<T>();
-        AscendC::LocalTensor<T> insumLocal = sumQueue.DeQue<T>();
-        AscendC::LocalTensor<T> inmaxLocal = maxQueue.DeQue<T>();
-        AscendC::LocalTensor<T> expMaxTensor = expMaxQueue.AllocTensor<T>();
-        AscendC::LocalTensor<T> dstLocal = outQueueDst.AllocTensor<T>();
-        AscendC::SoftMaxShapeInfo srcShape = {height, width, height, width};
-        AscendC::SoftmaxFlashV2<T, true>(
-            dstLocal, insumLocal, inmaxLocal, srcLocal, expMaxTensor, insumLocal, inmaxLocal, tiling, srcShape);
-        //AscendC::SoftmaxFlashV2<T, true, false, false, false, static_config>(dstLocal, insumLocal, inmaxLocal, srcLocal,
+AscendC::LocalTensor<T> srcLocal = inQueueSrc.DeQue<T>();
+AscendC::LocalTensor<T> insumLocal = sumQueue.DeQue<T>();
+AscendC::LocalTensor<T> inmaxLocal = maxQueue.DeQue<T>();
+AscendC::LocalTensor<T> expMaxTensor = expMaxQueue.AllocTensor<T>();
+AscendC::LocalTensor<T> dstLocal = outQueueDst.AllocTensor<T>();
+AscendC::SoftMaxShapeInfo srcShape = {height, width, height, width};
+AscendC::SoftmaxFlashV2<T, true>(
+    dstLocal, insumLocal, inmaxLocal, srcLocal, expMaxTensor, insumLocal, inmaxLocal, tiling, srcShape);
+//AscendC::SoftmaxFlashV2<T, true, false, false, false, static_config>(dstLocal, insumLocal, inmaxLocal, srcLocal,
 //expMaxTensor, insumLocal, inmaxLocal, tiling, srcShape);使用SoftmaxConfig类型的参数static_config,传入模板参数将shape常量化
-        outQueueDst.EnQue<T>(dstLocal);
-        maxQueue.FreeTensor(inmaxLocal);
-        sumQueue.FreeTensor(insumLocal);
-        inQueueSrc.FreeTensor(srcLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<T> dstLocal = outQueueDst.DeQue<T>();
-        AscendC::DataCopy(dstGlobal, dstLocal, height * width);
-        outQueueDst.FreeTensor(dstLocal);
-    }
-
-private:
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> maxQueue;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> sumQueue;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> expMaxQueue;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst;
-    AscendC::GlobalTensor<T> srcGlobal, dstGlobal;
-    AscendC::GlobalTensor<T> maxGlobal, sumGlobal;
-    uint32_t elementNumPerBlk = 0;
-    uint32_t width = 64;
-    uint32_t height = 320;
-    SoftMaxTiling tiling;
-};
-
-extern "C" __global__ __aicore__ void softmax_flashv2_generic_kernel_half(__gm__ uint8_t *srcGm,
-    __gm__ uint8_t *inMaxGm, __gm__ uint8_t *inSumGm, __gm__ uint8_t *dstGm, __gm__ uint8_t *tiling)
-{
-    GET_TILING_DATA(tilingData, tiling);
-    KernelSoftmaxFlashV2<half> op;
-    op.Init(srcGm, inMaxGm, inSumGm, dstGm, tilingData.softmaxTilingData);
-    op.Process();
-}
+outQueueDst.EnQue<T>(dstLocal);
+maxQueue.FreeTensor(inmaxLocal);
+sumQueue.FreeTensor(insumLocal);
+inQueueSrc.FreeTensor(srcLocal);
 ```
 

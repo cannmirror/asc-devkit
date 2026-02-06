@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -32,11 +37,21 @@
     -   通路：Global Memory-\>Local Memory
 
         ```
+        template <typename T, PaddingMode mode = PaddingMode::Normal>
+        __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const DataCopyExtParams& dataCopyParams, const DataCopyPadExtParams<T>& padParams)
+        ```
+
+        ```
         template <typename T>
         __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const DataCopyExtParams& dataCopyParams, const DataCopyPadExtParams<T>& padParams)
         ```
 
     -   通路：Local Memory-\>Global Memory
+
+        ```
+        template <typename T, PaddingMode mode = PaddingMode::Normal>
+        __aicore__ inline void DataCopyPad(const GlobalTensor<T>& dst, const LocalTensor<T>& src, const DataCopyExtParams& dataCopyParams)
+        ```
 
         ```
         template <typename T>
@@ -54,11 +69,21 @@
     -   通路：Global Memory-\>Local Memory
 
         ```
+        template<typename T, PaddingMode mode = PaddingMode::Normal>
+        __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const DataCopyParams& dataCopyParams, const DataCopyPadParams& padParams)
+        ```
+
+        ```
         template<typename T>
         __aicore__ inline void DataCopyPad(const LocalTensor<T>& dst, const GlobalTensor<T>& src, const DataCopyParams& dataCopyParams, const DataCopyPadParams& padParams)
         ```
 
     -   通路：Local Memory-\>Global Memory
+
+        ```
+        template<typename T, PaddingMode mode = PaddingMode::Normal>
+        __aicore__ inline void DataCopyPad(const GlobalTensor<T>& dst, const LocalTensor<T>& src,const DataCopyParams& dataCopyParams)
+        ```
 
         ```
         template<typename T>
@@ -85,7 +110,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row17301101417355"><td class="cellrowborder" valign="top" width="29.909999999999997%" headers="mcps1.2.4.1.1 "><p id="p7585124612359"><a name="p7585124612359"></a><a name="p7585124612359"></a><span id="ph758518467351"><a name="ph758518467351"></a><a name="ph758518467351"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1930181411352"><td class="cellrowborder" valign="top" width="29.909999999999997%" headers="mcps1.2.4.1.1 "><p id="p35852461357"><a name="p35852461357"></a><a name="p35852461357"></a><span id="ph358510464354"><a name="ph358510464354"></a><a name="ph358510464354"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="54.559999999999995%" headers="mcps1.2.4.1.2 "><p id="p1865151212387"><a name="p1865151212387"></a><a name="p1865151212387"></a>GM-&gt;VECIN/VECOUT、GM-&gt;A1/B1、GM-&gt;TSCM、VECIN/VECOUT-&gt;GM、A1/B1-&gt;GM、VECIN/VECOUT-&gt;TSCM、 GM-&gt;VECCALC</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.53%" headers="mcps1.2.4.1.3 "><p id="p1769246192116"><a name="p1769246192116"></a><a name="p1769246192116"></a>是</p>
+</td>
+</tr>
+<tr id="row17301101417355"><td class="cellrowborder" valign="top" width="29.909999999999997%" headers="mcps1.2.4.1.1 "><p id="p7585124612359"><a name="p7585124612359"></a><a name="p7585124612359"></a><span id="ph758518467351"><a name="ph758518467351"></a><a name="ph758518467351"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" valign="top" width="54.559999999999995%" headers="mcps1.2.4.1.2 "><p id="p183162199399"><a name="p183162199399"></a><a name="p183162199399"></a>GM-&gt;VECIN/VECOUT、VECIN/VECOUT-&gt;GM、VECIN/VECOUT-&gt;TSCM</p>
 </td>
@@ -116,8 +148,18 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="18.21%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.78999999999999%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数以及paddingValue（待填充数据值）的数据类型。</p>
+<p id="p468305719192"><a name="p468305719192"></a><a name="p468305719192"></a><span id="ph126252025205"><a name="ph126252025205"></a><a name="ph126252025205"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：bool/int8_t/uint8_t/int16_t/uint16_t/half/bfloat16_t/int32_t/uint32_t/float/complex32/int64_t/uint64_t/double/complex64</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/int16_t/uint16_t/float/int32_t/uint32_t/int8_t/uint8_t/int64_t/uint64_t/double</p>
 <p id="p5583135802514"><a name="p5583135802514"></a><a name="p5583135802514"></a><span id="ph164521232145312"><a name="ph164521232145312"></a><a name="ph164521232145312"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/bfloat16_t/int16_t/uint16_t/float/int32_t/uint32_t/int8_t/uint8_t/int64_t/uint64_t/double</p>
+</td>
+</tr>
+<tr id="row11228130151516"><td class="cellrowborder" valign="top" width="18.21%" headers="mcps1.2.3.1.1 "><p id="p12228202152"><a name="p12228202152"></a><a name="p12228202152"></a>mode</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.78999999999999%" headers="mcps1.2.3.1.2 "><p id="p202731227454"><a name="p202731227454"></a><a name="p202731227454"></a>配置数据搬运模式。PaddingMode类型，定义如下：</p>
+<a name="screen947019218236"></a><a name="screen947019218236"></a><pre class="screen" codetype="Cpp" id="screen947019218236">enum class PaddingMode : uint8_t {
+    Normal = 0,  // 默认模式，与原有数据搬运格式保持一致，每次数据搬运都会补齐至32字节对齐
+    Compact,     // 紧凑模式，允许单次搬运不对齐，统一在整块数据末尾补齐至32字节对齐
+};</pre>
 </td>
 </tr>
 </tbody>
@@ -126,51 +168,51 @@
 **表 3**  接口参数说明
 
 <a name="zh-cn_topic_0235751031_table33761356"></a>
-<table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
+<table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.529999999999998%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
 </th>
-<th class="cellrowborder" valign="top" width="10.05%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
+<th class="cellrowborder" valign="top" width="10.059999999999999%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
 </th>
 <th class="cellrowborder" valign="top" width="71.41%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row42461942101815"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p2925016172518"><a name="p2925016172518"></a><a name="p2925016172518"></a>dst</p>
+<tbody><tr id="row42461942101815"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.4.1.1 "><p id="p2925016172518"><a name="p2925016172518"></a><a name="p2925016172518"></a>dst</p>
 </td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p199251416112517"><a name="p199251416112517"></a><a name="p199251416112517"></a>输出</p>
+<td class="cellrowborder" valign="top" width="10.059999999999999%" headers="mcps1.2.4.1.2 "><p id="p199251416112517"><a name="p199251416112517"></a><a name="p199251416112517"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p188412179332"><a name="p188412179332"></a><a name="p188412179332"></a>目的操作数，类型为LocalTensor或GlobalTensor。</p>
 <p id="p10908340183319"><a name="p10908340183319"></a><a name="p10908340183319"></a>LocalTensor的起始地址需要保证32字节对齐。</p>
 <p id="p62441154113319"><a name="p62441154113319"></a><a name="p62441154113319"></a>GlobalTensor的起始地址无地址对齐约束。</p>
 </td>
 </tr>
-<tr id="row2137145181815"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p3926171610253"><a name="p3926171610253"></a><a name="p3926171610253"></a>src</p>
+<tr id="row2137145181815"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.4.1.1 "><p id="p3926171610253"><a name="p3926171610253"></a><a name="p3926171610253"></a>src</p>
 </td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p4926121682518"><a name="p4926121682518"></a><a name="p4926121682518"></a>输入</p>
+<td class="cellrowborder" valign="top" width="10.059999999999999%" headers="mcps1.2.4.1.2 "><p id="p4926121682518"><a name="p4926121682518"></a><a name="p4926121682518"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p49261616142516"><a name="p49261616142516"></a><a name="p49261616142516"></a>源操作数，类型为LocalTensor或GlobalTensor。</p>
 <p id="p1449332363410"><a name="p1449332363410"></a><a name="p1449332363410"></a>LocalTensor的起始地址需要保证32字节对齐。</p>
 <p id="p10493102318345"><a name="p10493102318345"></a><a name="p10493102318345"></a>GlobalTensor的起始地址无地址对齐约束。</p>
 </td>
 </tr>
-<tr id="row19615183817191"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p1766211402594"><a name="p1766211402594"></a><a name="p1766211402594"></a>dataCopyParams</p>
+<tr id="row19615183817191"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.4.1.1 "><p id="p1766211402594"><a name="p1766211402594"></a><a name="p1766211402594"></a>dataCopyParams</p>
 </td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p566110407591"><a name="p566110407591"></a><a name="p566110407591"></a>输入</p>
+<td class="cellrowborder" valign="top" width="10.059999999999999%" headers="mcps1.2.4.1.2 "><p id="p566110407591"><a name="p566110407591"></a><a name="p566110407591"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p47741322184712"><a name="p47741322184712"></a><a name="p47741322184712"></a>搬运参数。</p>
 <a name="ul823117251473"></a><a name="ul823117251473"></a><ul id="ul823117251473"><li>DataCopyExtParams类型，具体参数说明请参考<a href="#table10572141063919">表4</a>。</li><li>DataCopyParams类型，具体参数说明请参考<a href="#table9182515919">表5</a>。</li></ul>
 </td>
 </tr>
-<tr id="row186451941121915"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p2645114111914"><a name="p2645114111914"></a><a name="p2645114111914"></a>padParams</p>
+<tr id="row186451941121915"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.4.1.1 "><p id="p2645114111914"><a name="p2645114111914"></a><a name="p2645114111914"></a>padParams</p>
 </td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p136451441191912"><a name="p136451441191912"></a><a name="p136451441191912"></a>输入</p>
+<td class="cellrowborder" valign="top" width="10.059999999999999%" headers="mcps1.2.4.1.2 "><p id="p136451441191912"><a name="p136451441191912"></a><a name="p136451441191912"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p186726237528"><a name="p186726237528"></a><a name="p186726237528"></a>从Global Memory搬运数据至Local Memory时，可以根据开发者需要，在搬运数据左边或右边填充数据。padParams是用于控制数据填充过程的参数。</p>
 <a name="ul1641826125213"></a><a name="ul1641826125213"></a><ul id="ul1641826125213"><li>DataCopyPadExtParams类型，具体参数请参考<a href="#table844881954715">表6</a>。<strong id="b1083441293911"><a name="b1083441293911"></a><a name="b1083441293911"></a></strong></li><li>DataCopyPadParams类型，具体参数请参考<a href="#table990103991413">表7</a>。</li></ul>
 </td>
 </tr>
-<tr id="row250163914199"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p266017409595"><a name="p266017409595"></a><a name="p266017409595"></a>nd2nzParams</p>
+<tr id="row250163914199"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.4.1.1 "><p id="p266017409595"><a name="p266017409595"></a><a name="p266017409595"></a>nd2nzParams</p>
 </td>
-<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p1265944005915"><a name="p1265944005915"></a><a name="p1265944005915"></a>输入</p>
+<td class="cellrowborder" valign="top" width="10.059999999999999%" headers="mcps1.2.4.1.2 "><p id="p1265944005915"><a name="p1265944005915"></a><a name="p1265944005915"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p1656164065914"><a name="p1656164065914"></a><a name="p1656164065914"></a>从VECIN/VECOUT-&gt;TSCM进行数据搬运时，可以进行ND到NZ的数据格式转换。nd2nzParams是用于控制数据格式转换的参数，Nd2NzParams类型，具体参数请参考<a href="随路转换ND2NZ搬运.md#table844881954715">表3</a>。</p>
 <p id="p199142613277"><a name="p199142613277"></a><a name="p199142613277"></a><strong id="b15326524194316"><a name="b15326524194316"></a><a name="b15326524194316"></a>注意：Nd2NzParams的ndNum仅支持设置为1</strong>。</p>
@@ -205,7 +247,9 @@
 <td class="cellrowborder" valign="top" width="85%" headers="mcps1.2.3.1.2 "><p id="p59132515611"><a name="p59132515611"></a><a name="p59132515611"></a>源操作数，相邻连续数据块的间隔（前面一个数据块的尾与后面数据块的头的间隔）。</p>
 <p id="p8449273564"><a name="p8449273564"></a><a name="p8449273564"></a><strong id="b1557321011393"><a name="b1557321011393"></a><a name="b1557321011393"></a>如果源操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32字节)。如果源操作数的逻辑位置为GM，则单位为字节</strong>。</p>
 <p id="p1946721919613"><a name="p1946721919613"></a><a name="p1946721919613"></a>数据类型为uint32_t，srcStride不要超出该数据类型的取值范围。</p>
-<p id="p1309123018612"><a name="p1309123018612"></a><a name="p1309123018612"></a></p>
+<p id="p1550210261862"><a name="p1550210261862"></a><a name="p1550210261862"></a>特别地，针对如下型号：</p>
+<p id="p1309123018612"><a name="p1309123018612"></a><a name="p1309123018612"></a><span id="ph1959710240111"><a name="ph1959710240111"></a><a name="ph1959710240111"></a>Ascend 950PR/Ascend 950DT</span></p>
+<p id="p757311106394"><a name="p757311106394"></a><a name="p757311106394"></a>数据类型为int64_t，如果源操作数的逻辑位置为VECIN/VECOUT，取值范围为[0, 65535]；如果源操作数的逻辑位置为GM，取值范围为[-blockLen, 2<sup id="sup98861247195416"><a name="sup98861247195416"></a><a name="sup98861247195416"></a>^40</sup>-1]。</p>
 </td>
 </tr>
 <tr id="row125738105397"><td class="cellrowborder" valign="top" width="15%" headers="mcps1.2.3.1.1 "><p id="p057351013919"><a name="p057351013919"></a><a name="p057351013919"></a>dstStride</p>
@@ -213,7 +257,9 @@
 <td class="cellrowborder" valign="top" width="85%" headers="mcps1.2.3.1.2 "><p id="p9422151918588"><a name="p9422151918588"></a><a name="p9422151918588"></a>目的操作数，相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔）。</p>
 <p id="p16531521145813"><a name="p16531521145813"></a><a name="p16531521145813"></a><strong id="b155732100395"><a name="b155732100395"></a><a name="b155732100395"></a>如果目的操作数的逻辑位置为VECIN/VECOUT，则单位为dataBlock(32字节)，如果目的操作数的逻辑位置为GM，则单位为字节</strong>。</p>
 <p id="p13157421583"><a name="p13157421583"></a><a name="p13157421583"></a>数据类型为uint32_t，dstStride不要超出该数据类型的取值范围。</p>
-<p id="p2054865417810"><a name="p2054865417810"></a><a name="p2054865417810"></a></p>
+<p id="p175488548815"><a name="p175488548815"></a><a name="p175488548815"></a>特别地，针对如下型号：</p>
+<p id="p2054865417810"><a name="p2054865417810"></a><a name="p2054865417810"></a><span id="ph1954818540814"><a name="ph1954818540814"></a><a name="ph1954818540814"></a>Ascend 950PR/Ascend 950DT</span></p>
+<p id="p1857315102399"><a name="p1857315102399"></a><a name="p1857315102399"></a>数据类型为int64_t，如果目的操作数的逻辑位置为VECIN/VECOUT，取值范围为[0, 65535]；如果目的操作数的逻辑位置为GM，取值范围为[0, 2<sup id="sup2038716165513"><a name="sup2038716165513"></a><a name="sup2038716165513"></a>^40</sup>-1]。</p>
 </td>
 </tr>
 <tr id="row13428122712551"><td class="cellrowborder" valign="top" width="15%" headers="mcps1.2.3.1.1 "><p id="p17428152705514"><a name="p17428152705514"></a><a name="p17428152705514"></a>rsv</p>
@@ -336,6 +382,7 @@
 -   [GM-\>VECIN/VECOUT](#li73127579197)
 -   [VECIN/VECOUT-\>GM](#li1526352412213)
 -   [VECIN/VECOUT-\>TSCM](#li1475016332217)
+-   [搬运模式的配置示例](#li1975762118172)
 -   <a name="li73127579197"></a>**GM**-\>**VECIN/VECOUT**
     -   参数解释
         -   当blockLen+leftPadding+rightPadding满足32字节对齐时，若isPad为false，左右两侧填充的数据值会默认为随机值；否则为paddingValue。
@@ -356,6 +403,14 @@
         -   blockLen+leftPadding+rightPadding不满足32字节对齐，leftPadding/rightPadding不为0：若isPad为false，左右两侧填充的数据值和dummy值均为随机值；否则为paddingValue。
 
         ![](figures/datacopypad2.png)
+
+    -   配置示例3：
+
+        -   blockLen为48，每个连续传输数据块包含48字节；srcStride为-48，表示源操作数相邻数据块之间间隔-48字节，相当于每次传输的连续数据块都是同一块；dstStride为1，表示目的操作数相邻数据块之间间隔1个dataBlock。
+        -   blockLen+leftPadding+rightPadding不满足32字节对齐，leftPadding、rightPadding均为0：dummy会默认填充待搬运数据块的第一个元素值。
+        -   blockLen+leftPadding+rightPadding不满足32字节对齐，leftPadding/rightPadding不为0：若isPad为false，左右两侧填充的数据值和dummy值均为随机值；否则为paddingValue。
+
+        ![](figures/datacopypad.png)
 
 -   <a name="li1526352412213"></a>**VECIN/VECOUT**-\>**GM**
     -   当每个连续传输数据块长度blockLen为32字节对齐时，下图呈现了需要传入的DataCopyParams示例，blockLen为64，每个连续传输数据块包含64字节；srcStride为1，因为源操作数的逻辑位置为VECIN/VECOUT，srcStride的单位为dataBlock\(32字节\)，也就是说源操作数相邻数据块之间间隔1个dataBlock；dstStride为1，因为目的操作数的逻辑位置为GM，dstStride的单位为字节，也就是说目的操作数相邻数据块之间间隔1字节。
@@ -391,6 +446,21 @@
     **图 1**  VECIN/VECOUT-\>TSCM搬运示意图<a name="fig9329040132719"></a>  
     ![](figures/VECIN-VECOUT--TSCM搬运示意图.png "VECIN-VECOUT--TSCM搬运示意图")
 
+-   <a name="li1975762118172"></a>搬运模式的配置示例
+    -   Normal模式
+
+        blockLen为48，每个连续传输数据块包含48字节；srcStride为0，因为源操作数的逻辑位置为GM，srcStride的单位为字节，即源操作数相邻数据块之间紧密排列；dstStride为0，因为目的操作数的逻辑位置为VECIN、VECOUT，dstStride的单位为DataBlock（32字节），目的操作数相邻数据块之间无间隔，注意数据块包含leftPadding/rightPadding数据。
+
+        blockLen + leftPadding + rightPadding满足32字节对齐，isPad为false，左右两侧填充的数据值会默认为随机值，否则为paddingValue。此处示例中，leftPadding为0，rightPadding为16，每个连续传输数据块都会在右侧填充16字节。目的操作数的总长度为192字节。
+
+    -   Compact模式
+
+        blockLen为48，每个连续传输数据块包含48字节；srcStride为0，因为源操作数的逻辑位置为GM，srcStride的单位为字节，即源操作数相邻数据块之间紧密排列；dstStride为0，因为目的操作数的逻辑位置为VECIN、VECOUT，dstStride的单位为DataBlock（32字节），目的操作数相邻数据块之间紧密排列，不会填充数据
+
+        blockLen \* blockCount + leftPadding + rightPadding 满足32字节对齐，isPad为false，左右两侧填充的数据值会默认为随机值，否则为paddingValue。此处示例中，leftPadding为0，rightPadding为16，在最后一个数据块右侧填充16字节。目的操作数的总长度为160字节。
+
+        ![](figures/paddingMode.png)
+
 ## 返回值说明<a name="section640mcpsimp"></a>
 
 无
@@ -398,6 +468,7 @@
 ## 约束说明<a name="section633mcpsimp"></a>
 
 -   leftPadding、rightPadding的字节数均不能超过32字节。
+-   针对Ascend 950PR/Ascend 950DT，VECIN/VECOUT-\>TSCM通路，仅支持如下数据类型：half、bfloat16\_t、int16\_t、uint16\_t、float、int32\_t、uint32\_t、int8\_t、uint8\_t、int64\_t、uint64\_t、double。
 
 ## 调用示例<a name="section177231425115410"></a>
 
@@ -406,63 +477,31 @@
 ```
 #include "kernel_operator.h"
 
-class TestDataCopyPad {
-public:
-    __aicore__ inline TestDataCopyPad() {}
-    __aicore__ inline void Init(__gm__ uint8_t* srcGm, __gm__ uint8_t* dstGm)
-    {
-        srcGlobal.SetGlobalBuffer((__gm__ half *)srcGm);
-        dstGlobal.SetGlobalBuffer((__gm__ half *)dstGm);
-        pipe.InitBuffer(inQueueSrc, 1, 32 * sizeof(half));
-        pipe.InitBuffer(outQueueDst, 1, 32 * sizeof(half));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<half> srcLocal = inQueueSrc.AllocTensor<half>();
-        AscendC::DataCopyExtParams copyParams{1, 20 * sizeof(half), 0, 0, 0}; // 结构体DataCopyExtParams最后一个参数是rsv保留位
-        AscendC::DataCopyPadExtParams<half> padParams{true, 0, 2, 0};
-        AscendC::DataCopyPad(srcLocal, srcGlobal, copyParams, padParams); // 从GM->VECIN搬运40字节
-        inQueueSrc.EnQue<half>(srcLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
-        AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
-        AscendC::Adds(dstLocal, srcLocal, scalar, 20);
-        outQueueDst.EnQue(dstLocal);
-        inQueueSrc.FreeTensor(srcLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<half> dstLocal = outQueueDst.DeQue<half>();
-        AscendC::DataCopyExtParams copyParams{1, 20 * sizeof(half), 0, 0, 0};
-        AscendC::DataCopyPad(dstGlobal, dstLocal, copyParams); // 从VECIN->GM搬运40字节
-        outQueueDst.FreeTensor(dstLocal);
-    }
-private:
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst;
-    AscendC::GlobalTensor<half> srcGlobal;
-    AscendC::GlobalTensor<half> dstGlobal;
-    AscendC::DataCopyPadExtParams<half> padParams;
-    AscendC::DataCopyExtParams copyParams;
-    half scalar = 0;
-};
+AscendC::TPipe pipe;
+AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc;
+AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst;
+AscendC::GlobalTensor<half> srcGlobal;
+AscendC::GlobalTensor<half> dstGlobal;
+AscendC::DataCopyPadExtParams<half> padParams;
+AscendC::DataCopyExtParams copyParams;
+half scalar = 0;
+AscendC::LocalTensor<half> srcLocal = inQueueSrc.AllocTensor<half>();
+AscendC::DataCopyExtParams copyParams{1, 20 * sizeof(half), 0, 0, 0}; // 结构体DataCopyExtParams最后一个参数是rsv保留位
+AscendC::DataCopyPadExtParams<half> padParams{true, 0, 2, 0};
+AscendC::DataCopyPad(srcLocal, srcGlobal, copyParams, padParams); // 从GM->VECIN搬运40字节
+inQueueSrc.EnQue<half>(srcLocal);
 
-extern "C" __global__ __aicore__ void kernel_data_copy_pad_kernel(__gm__ uint8_t* src_gm, __gm__ uint8_t* dst_gm)
-{
-    TestDataCopyPad op;
-    op.Init(src_gm, dst_gm);
-    op.Process();
-}
+AscendC::LocalTensor<half> srcLocal = inQueueSrc.DeQue<half>();
+AscendC::LocalTensor<half> dstLocal = outQueueDst.AllocTensor<half>();
+AscendC::Adds(dstLocal, srcLocal, scalar, 20);
+outQueueDst.EnQue(dstLocal);
+inQueueSrc.FreeTensor(srcLocal);
+
+AscendC::LocalTensor<half> dstLocal = outQueueDst.DeQue<half>();
+AscendC::DataCopyExtParams copyParams{1, 20 * sizeof(half), 0, 0, 0};
+AscendC::DataCopyPad(dstGlobal, dstLocal, copyParams); // 从VECIN->GM搬运40字节
+outQueueDst.FreeTensor(dstLocal);
+
 ```
 
 结果示例：

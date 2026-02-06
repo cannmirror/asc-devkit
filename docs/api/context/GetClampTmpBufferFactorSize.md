@@ -6,7 +6,7 @@
 
 推算示例如下：
 
--   算子实现需要调用ClampMax/ClampMin接口，开发者为其预留currBuff大小的空间，利用GetClampTmpBufferFactorSize接口得到maxLiveNodeCount、extraBuf输出值，可推导算子单次最大计算元素数量为：
+-   算子实现需要调用ClampMax/ClampMin/Clamp接口，开发者为其预留currBuff大小的空间，利用GetClampTmpBufferFactorSize接口得到maxLiveNodeCount、extraBuf输出值，可推导算子单次最大计算元素数量为：
 
     **currentShapeSize = \(currBuff - extraBuf\) / maxLiveNodeCount / typeSize**
 
@@ -73,7 +73,7 @@ void GetClampTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeC
 
 ## 调用示例<a name="section85671420193420"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 uint32_t maxLiveNodeCount = 0;

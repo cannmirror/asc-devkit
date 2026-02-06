@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -24,7 +29,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-非[细粒度通信](Iterate-41.md)时，每调用一次本接口，则通知服务端可以执行handleId对应的任务一次。[细粒度通信](Iterate-41.md)时，每调用一次本接口，则通知服务端可以执行handleId对应的[步长](SetStepSize.md)长度的子通信任务。
+非[细粒度通信](Iterate-100.md)时，每调用一次本接口，则通知服务端可以执行handleId对应的任务一次。[细粒度通信](Iterate-100.md)时，每调用一次本接口，则通知服务端可以执行handleId对应的[步长](SetStepSize.md)长度的子通信任务。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -64,7 +69,7 @@ __aicore__ inline void Commit(HcclHandle handleId)
 
 -   调用本接口前确保已调用过[InitV2](InitV2.md)和[SetCcTilingV2](SetCcTilingV2.md)接口。
 -   入参handleId只能使用Prepare原语对应接口的返回值。
--   非[细粒度通信](Iterate-41.md)时，本接口的调用次数应该与Prepare的repeat次数一致。[细粒度通信](Iterate-41.md)时，本接口的调用次数应该与通信任务的总步骤数/步长\*Prepare的repeat次数一致。
+-   非[细粒度通信](Iterate-100.md)时，本接口的调用次数应该与Prepare的repeat次数一致。[细粒度通信](Iterate-100.md)时，本接口的调用次数应该与通信任务的总步骤数/步长\*Prepare的repeat次数一致。
 -   本接口在AIC核或者AIV核上调用必须与对应的Prepare接口的调用核保持一致。
 
 ## 调用示例<a name="section1665082013318"></a>

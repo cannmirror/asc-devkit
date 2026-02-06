@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -58,17 +63,7 @@ MatmulCallBackFunc中包含3个可由用户自定义的回调函数接口，即�
 </td>
 <td class="cellrowborder" valign="top" width="49.480000000000004%" headers="mcps1.2.4.1.3 "><p id="p68020973217"><a name="p68020973217"></a><a name="p68020973217"></a>gm：输出的GM地址。</p>
 <p id="p1731883210186"><a name="p1731883210186"></a><a name="p1731883210186"></a>co1Local: CO1上的计算结果。</p>
-<p id="p183915171207"><a name="p183915171207"></a><a name="p183915171207"></a>dataCopyOutParams：Matmul定义的DataCopyOutParams结构体指针，供用户参考使用。</p>
-<pre class="screen" id="screen12327163316196"><a name="screen12327163316196"></a><a name="screen12327163316196"></a>struct DataCopyOutParams {
-uint16_t cBurstNum; //传输数据片段数目
-uint16_t burstLen; //连续传输数据片段长度
-uint16_t srcStride;//源tensor相邻连续数据片段间隔
-uint32_t dstStride; // 目的tensor相邻连续数据片段间隔
-uint16_t oriNSize; // NZ转ND时，源tensorN方向大小
-bool enUnitFlag; // 是否使能UnitFlag
-uint64_t quantScalar; // 量化场景下量化Scalar的值
-uint64_t cbufWorkspaceAddr; //量化场景下量化Tensor地址
-}</pre>
+<p id="p183915171207"><a name="p183915171207"></a><a name="p183915171207"></a>dataCopyOutParams：Matmul定义的DataCopyOutParams结构体指针，具体定义如下方代码所示，供用户参考使用。</p>
 <p id="p136239555189"><a name="p136239555189"></a><a name="p136239555189"></a>tilingPtr: 用户使用<a href="SetUserDefInfo.md">SetUserDefInfo</a>设置的tiling参数地址。</p>
 <p id="p109576420196"><a name="p109576420196"></a><a name="p109576420196"></a>dataPtr: 用户使用<a href="SetSelfDefineData.md">SetSelfDefineData</a>设置的计算数据地址。</p>
 </td>
@@ -99,6 +94,19 @@ uint64_t cbufWorkspaceAddr; //量化场景下量化Tensor地址
 </tr>
 </tbody>
 </table>
+
+```
+struct DataCopyOutParams {
+uint16_t cBurstNum; //传输数据片段数目
+uint16_t burstLen; //连续传输数据片段长度
+uint16_t srcStride;//源tensor相邻连续数据片段间隔
+uint32_t dstStride; // 目的tensor相邻连续数据片段间隔
+uint16_t oriNSize; // NZ转ND时，源tensorN方向大小
+bool enUnitFlag; // 是否使能UnitFlag
+uint64_t quantScalar; // 量化场景下量化Scalar的值
+uint64_t cbufWorkspaceAddr; //量化场景下量化Tensor地址
+}
+```
 
 ## 约束说明<a name="section1387711715353"></a>
 

@@ -4,6 +4,8 @@
 
 设置是否使能HF32模式。**当前版本暂不支持。**
 
+设置是否使能HF32模式（**当前版本暂不支持**）、设置是否使能MxMatmul场景。在MxMatmul场景，必须调用该接口并配置为使能MxMatmul场景，从而保证该场景下正确计算并返回Tiling参数**。**
+
 ## 函数原型<a name="section620mcpsimp"></a>
 
 ```
@@ -31,8 +33,9 @@ int32_t SetMadType(MatrixMadType madType)
 <a name="screen511415305152"></a><a name="screen511415305152"></a><pre class="screen" codetype="Cpp" id="screen511415305152">enum class MatrixMadType : int32_t {
 NORMAL = 0,
 HF32 = 1, 
+MXMODE = 2,
 }; </pre>
-<a name="ul372412456"></a><a name="ul372412456"></a><ul id="ul372412456"><li>MatrixMadType::NORMAL：普通模式，即非HF32模式。</li><li>MatrixMadType::HF32：使能HF32模式。</li></ul>
+<a name="ul372412456"></a><a name="ul372412456"></a><ul id="ul372412456"><li>MatrixMadType::NORMAL：普通模式，即非HF32模式、非MxMatmul场景。</li><li>MatrixMadType::HF32：使能HF32模式。</li><li>MatrixMadType::MXMODE：使能MxMatmul场景。</li></ul>
 </td>
 </tr>
 </tbody>
@@ -45,4 +48,23 @@ HF32 = 1,
 ## 约束说明<a name="section633mcpsimp"></a>
 
 无
+
+## 调用示例<a name="section1665082013318"></a>
+
+```
+auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+matmul_tiling::MatmulApiTiling tiling(ascendcPlatform); 
+tiling.SetAType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT16); 
+tiling.SetBType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT16);  
+tiling.SetCType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);
+tiling.SetBiasType(matmul_tiling::TPosition::GM, matmul_tiling::CubeFormat::ND, matmul_tiling::DataType::DT_FLOAT);   
+tiling.SetShape(1024, 1024, 1024);
+tiling.SetOrgShape(1024, 1024, 1024);   
+tiling.SetBias(true);
+tiling.SetTraverse(MatrixTraverse::FIRSTM);  // 设置遍历方式
+tiling.SetMadType(MatrixMadType::MXMODE);  // 使能MxMatmul场景
+tiling.SetBufferSpace(-1, -1, -1);
+optiling::TCubeTiling tilingData;   
+int ret = tiling.GetTiling(tilingData);
+```
 

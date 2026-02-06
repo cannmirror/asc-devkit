@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -68,7 +73,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="15.340000000000002%" headers="mcps1.2.4.1.2 "><p id="p18921181812316"><a name="p18921181812316"></a><a name="p18921181812316"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="67.44%" headers="mcps1.2.4.1.3 "><p id="p14921918033"><a name="p14921918033"></a><a name="p14921918033"></a>设置的kernel类型，可选值范围，kernel类型具体说明请参考<a href="#table76335324910">表2</a>。</p>
+<td class="cellrowborder" valign="top" width="67.44%" headers="mcps1.2.4.1.3 "><p id="p14921918033"><a name="p14921918033"></a><a name="p14921918033"></a>设置的kernel类型，可选值范围，kernel类型具体说明请参考<a href="#table76335324910">表2</a>。不同硬件架构支持的参数取值不同，具体支持的参数取值请参考<a href="#li693212153417">kernel&nbsp;type取值约束</a>。</p>
 <a name="screen2031620461932"></a><a name="screen2031620461932"></a><pre class="screen" codetype="Cpp" id="screen2031620461932">enum KernelMetaType {
     KERNEL_TYPE_AIV_ONLY,
     KERNEL_TYPE_AIC_ONLY,
@@ -98,77 +103,66 @@
 </thead>
 <tbody><tr id="row1663413326917"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p12634173214918"><a name="p12634173214918"></a><a name="p12634173214918"></a>KERNEL_TYPE_AIV_ONLY</p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p14634183212912"><a name="p14634183212912"></a><a name="p14634183212912"></a>算子执行时仅启动AI Core上的Vector核：比如用户在host侧设置blockDim为10，则会启动10个Vector核。</p>
-<p id="p116341332996"><a name="p116341332996"></a><a name="p116341332996"></a><span id="ph2634143218911"><a name="ph2634143218911"></a><a name="ph2634143218911"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>：支持该参数</p>
-<p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>：支持该参数</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p14634183212912"><a name="p14634183212912"></a><a name="p14634183212912"></a>算子执行时仅启动AI Core上的Vector核：比如用户在host侧设置numBlocks为10，则会启动10个Vector核。</p>
 </td>
 </tr>
 <tr id="row166346321898"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p1863413321917"><a name="p1863413321917"></a><a name="p1863413321917"></a>KERNEL_TYPE_AIC_ONLY</p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p17634113218918"><a name="p17634113218918"></a><a name="p17634113218918"></a>算子执行时仅启动AI Core上的Cube核：比如用户在host侧设置blockDim为10，则会启动10个Cube核。</p>
-<p id="p8404871139"><a name="p8404871139"></a><a name="p8404871139"></a><span id="ph1040411731317"><a name="ph1040411731317"></a><a name="ph1040411731317"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>：支持该参数</p>
-<p id="p91531273575"><a name="p91531273575"></a><a name="p91531273575"></a><span id="ph9153152715719"><a name="ph9153152715719"></a><a name="ph9153152715719"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>：支持该参数</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p17634113218918"><a name="p17634113218918"></a><a name="p17634113218918"></a>算子执行时仅启动AI Core上的Cube核：比如用户在host侧设置numBlocks为10，则会启动10个Cube核。</p>
 </td>
 </tr>
 <tr id="row196349321693"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p1863411329915"><a name="p1863411329915"></a><a name="p1863411329915"></a>KERNEL_TYPE_MIX_AIV_1_0</p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p101533312255"><a name="p101533312255"></a><a name="p101533312255"></a>AIC、AIV混合场景下，使用了<a href="核间同步.md">多核控制相关指令</a>时，设置核函数的类型为MIX AIV:AIC 1:0（带有硬同步），算子执行时仅会启动AI Core上的Vector核，比如用户在host侧设置blockDim为10，则会启动10个Vector核。</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p101533312255"><a name="p101533312255"></a><a name="p101533312255"></a>AIC、AIV混合场景下，使用了<a href="核间同步.md">多核控制相关指令</a>时，设置核函数的类型为MIX AIV:AIC 1:0（带有硬同步），算子执行时仅会启动AI Core上的Vector核，比如用户在host侧设置numBlocks为10，则会启动10个Vector核。</p>
 <p id="p15178718334"><a name="p15178718334"></a><a name="p15178718334"></a>硬同步的概念解释如下：当不同核之间操作同一块全局内存且可能存在读后写、写后读以及写后写等数据依赖问题时，通过调用<a href="SyncAll.md">SyncAll()</a>函数来插入同步语句来避免上述数据依赖时可能出现的数据读写错误问题。目前多核同步分为硬同步和软同步，硬同步是利用硬件自带的全核同步指令由硬件保证多核同步。</p>
-<p id="p15135153782513"><a name="p15135153782513"></a><a name="p15135153782513"></a><span id="ph5135153720255"><a name="ph5135153720255"></a><a name="ph5135153720255"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>：支持该参数</p>
-<p id="p15338142015551"><a name="p15338142015551"></a><a name="p15338142015551"></a><span id="ph933815208557"><a name="ph933815208557"></a><a name="ph933815208557"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>：支持该参数</p>
 </td>
 </tr>
 <tr id="row12635183213919"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p7635932295"><a name="p7635932295"></a><a name="p7635932295"></a>KERNEL_TYPE_MIX_AIC_1_0</p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p121619511252"><a name="p121619511252"></a><a name="p121619511252"></a>AIC、AIV混合场景下，使用了<a href="核间同步.md">多核控制相关指令</a>时，设置核函数的类型为MIX AIC:AIV 1:0（带有硬同步），算子执行时仅会启动AI Core上的Cube核，比如用户在host侧设置blockDim为10，则会启动10个Cube核。</p>
-<p id="p216155114257"><a name="p216155114257"></a><a name="p216155114257"></a><span id="ph1161151132514"><a name="ph1161151132514"></a><a name="ph1161151132514"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_4"><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a>Atlas A2 推理系列产品</term></span>：支持该参数</p>
-<p id="p201061244553"><a name="p201061244553"></a><a name="p201061244553"></a><span id="ph41061424115514"><a name="ph41061424115514"></a><a name="ph41061424115514"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_4"><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_4"><a name="zh-cn_topic_0000001312391781_term131434243115_4"></a><a name="zh-cn_topic_0000001312391781_term131434243115_4"></a>Atlas A3 推理系列产品</term></span>：支持该参数</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p121619511252"><a name="p121619511252"></a><a name="p121619511252"></a>AIC、AIV混合场景下，使用了<a href="核间同步.md">多核控制相关指令</a>时，设置核函数的类型为MIX AIC:AIV 1:0（带有硬同步），算子执行时仅会启动AI Core上的Cube核，比如用户在host侧设置numBlocks为10，则会启动10个Cube核。</p>
 </td>
 </tr>
 <tr id="row76354321096"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p146354324910"><a name="p146354324910"></a><a name="p146354324910"></a>KERNEL_TYPE_MIX_AIC_1_1</p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1763563216919"><a name="p1763563216919"></a><a name="p1763563216919"></a>AIC、AIV混合场景下，设置核函数的类型为MIX AIC:AIV 1:1，算子执行时会同时启动AI Core上的Cube核和Vector核，比如用户在host侧设置blockDim为10，则会启动10个Cube核和10个Vector核。</p>
-<p id="p17373122617532"><a name="p17373122617532"></a><a name="p17373122617532"></a><span id="ph16373726105320"><a name="ph16373726105320"></a><a name="ph16373726105320"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_5"><a name="zh-cn_topic_0000001312391781_term11962195213215_5"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_5"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_5"><a name="zh-cn_topic_0000001312391781_term184716139811_5"></a><a name="zh-cn_topic_0000001312391781_term184716139811_5"></a>Atlas A2 推理系列产品</term></span>：支持该参数</p>
-<p id="p1373162620531"><a name="p1373162620531"></a><a name="p1373162620531"></a><span id="ph837312265537"><a name="ph837312265537"></a><a name="ph837312265537"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_5"><a name="zh-cn_topic_0000001312391781_term1253731311225_5"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_5"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_5"><a name="zh-cn_topic_0000001312391781_term131434243115_5"></a><a name="zh-cn_topic_0000001312391781_term131434243115_5"></a>Atlas A3 推理系列产品</term></span>：支持该参数</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1763563216919"><a name="p1763563216919"></a><a name="p1763563216919"></a>AIC、AIV混合场景下，设置核函数的类型为MIX AIC:AIV 1:1，算子执行时会同时启动AI Core上的Cube核和Vector核，比如用户在host侧设置numBlocks为10，则会启动10个Cube核和10个Vector核。</p>
 </td>
 </tr>
 <tr id="row15635332191"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p13635113220918"><a name="p13635113220918"></a><a name="p13635113220918"></a>KERNEL_TYPE_MIX_AIC_1_2</p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p16635332397"><a name="p16635332397"></a><a name="p16635332397"></a>AIC、AIV混合场景下，设置核函数的类型为MIX AIC:AIV 1:2，算子执行时会同时启动AI Core上的Cube核和Vector核，比如用户在host侧设置blockDim为10，则会启动10个Cube核和20个Vector核。</p>
-<p id="p155769218292"><a name="p155769218292"></a><a name="p155769218292"></a><span id="ph20576112102915"><a name="ph20576112102915"></a><a name="ph20576112102915"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_6"><a name="zh-cn_topic_0000001312391781_term11962195213215_6"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_6"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_6"><a name="zh-cn_topic_0000001312391781_term184716139811_6"></a><a name="zh-cn_topic_0000001312391781_term184716139811_6"></a>Atlas A2 推理系列产品</term></span>：支持该参数</p>
-<p id="p18714172712552"><a name="p18714172712552"></a><a name="p18714172712552"></a><span id="ph1971419275558"><a name="ph1971419275558"></a><a name="ph1971419275558"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_6"><a name="zh-cn_topic_0000001312391781_term1253731311225_6"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_6"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_6"><a name="zh-cn_topic_0000001312391781_term131434243115_6"></a><a name="zh-cn_topic_0000001312391781_term131434243115_6"></a>Atlas A3 推理系列产品</term></span>：支持该参数</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p16635332397"><a name="p16635332397"></a><a name="p16635332397"></a>AIC、AIV混合场景下，设置核函数的类型为MIX AIC:AIV 1:2，算子执行时会同时启动AI Core上的Cube核和Vector核，比如用户在host侧设置numBlocks为10，则会启动10个Cube核和20个Vector核。</p>
 </td>
 </tr>
 <tr id="row66355321498"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p863516323915"><a name="p863516323915"></a><a name="p863516323915"></a><span>KERNEL_TYPE_AICORE </span></p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1990333814243"><a name="p1990333814243"></a><a name="p1990333814243"></a>算子执行时仅会启动AI Core，比如用户在host侧设置blockDim为5，则会启动5个AI Core。</p>
-<p id="p4838826144412"><a name="p4838826144412"></a><a name="p4838826144412"></a><span id="ph4838192615441"><a name="ph4838192615441"></a><a name="ph4838192615441"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_7"><a name="zh-cn_topic_0000001312391781_term11962195213215_7"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_7"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_7"><a name="zh-cn_topic_0000001312391781_term184716139811_7"></a><a name="zh-cn_topic_0000001312391781_term184716139811_7"></a>Atlas A2 推理系列产品</term></span>：不支持该参数</p>
-<p id="p38581324553"><a name="p38581324553"></a><a name="p38581324553"></a><span id="ph1085817329551"><a name="ph1085817329551"></a><a name="ph1085817329551"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_7"><a name="zh-cn_topic_0000001312391781_term1253731311225_7"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_7"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_7"><a name="zh-cn_topic_0000001312391781_term131434243115_7"></a><a name="zh-cn_topic_0000001312391781_term131434243115_7"></a>Atlas A3 推理系列产品</term></span>：不支持该参数</p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1990333814243"><a name="p1990333814243"></a><a name="p1990333814243"></a>算子执行时仅会启动AI Core，比如用户在host侧设置numBlocks为5，则会启动5个AI Core。</p>
 </td>
 </tr>
 <tr id="row86359321091"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p363511321396"><a name="p363511321396"></a><a name="p363511321396"></a><span>KERNEL_TYPE_VECTORCORE</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p82581757123"><a name="p82581757123"></a><a name="p82581757123"></a><strong id="b20993155161212"><a name="b20993155161212"></a><a name="b20993155161212"></a>该参数为预留参数，当前版本暂不支持。</strong></p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p82581757123"><a name="p82581757123"></a><a name="p82581757123"></a>该参数为预留参数，当前版本暂不支持。</p>
 </td>
 </tr>
 <tr id="row2635113215912"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p18921145171312"><a name="p18921145171312"></a><a name="p18921145171312"></a><span>KERNEL_TYPE_MIX_AICORE</span></p>
 </td>
-<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1842315851216"><a name="p1842315851216"></a><a name="p1842315851216"></a><strong id="b13697901214"><a name="b13697901214"></a><a name="b13697901214"></a>该参数为预留参数，当前版本暂不支持。</strong></p>
+<td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1842315851216"><a name="p1842315851216"></a><a name="p1842315851216"></a>该参数为预留参数，当前版本暂不支持。</p>
 </td>
 </tr>
 <tr id="row3636193212912"><td class="cellrowborder" valign="top" width="35.8%" headers="mcps1.2.3.1.1 "><p id="p663633211910"><a name="p663633211910"></a><a name="p663633211910"></a><span>KERNEL_TYPE_MIX_VECTOR_CORE</span></p>
 </td>
 <td class="cellrowborder" valign="top" width="64.2%" headers="mcps1.2.3.1.2 "><p id="p1487434912401"><a name="p1487434912401"></a><a name="p1487434912401"></a>基于Ascend C开发的矢量计算相关的算子可以运行在<span id="ph182831320115814"><a name="ph182831320115814"></a><a name="ph182831320115814"></a>Vector Core</span>上，调用本接口传入该参数用于使能<span id="ph12899342131115"><a name="ph12899342131115"></a><a name="ph12899342131115"></a>Vector Core</span>。</p>
-<p id="p14506850174012"><a name="p14506850174012"></a><a name="p14506850174012"></a><span id="ph5667172611155"><a name="ph5667172611155"></a><a name="ph5667172611155"></a>使能<span id="ph19742192610399"><a name="ph19742192610399"></a><a name="ph19742192610399"></a>Vector Core</span>后，算子执行时会同时启动AI Core和Vector Core，用于并行计算。比如用户在host侧设置block_dim为10，则会启动总数为10的AI Core和Vector Core。</span></p>
+<p id="p14506850174012"><a name="p14506850174012"></a><a name="p14506850174012"></a><span id="ph5667172611155"><a name="ph5667172611155"></a><a name="ph5667172611155"></a>使能<span id="ph19742192610399"><a name="ph19742192610399"></a><a name="ph19742192610399"></a>Vector Core</span>后，算子执行时会同时启动AI Core和Vector Core，用于并行计算。比如用户在host侧设置numBlocks为10，则会启动总数为10的AI Core和Vector Core。</span></p>
 <p id="p1166792611510"><a name="p1166792611510"></a><a name="p1166792611510"></a>需要注意的是，通过SetBlockDim设置核数时，需要大于AI Core的核数，否则不会启动VectorCore。</p>
-<p id="p1098519561446"><a name="p1098519561446"></a><a name="p1098519561446"></a><span id="ph109856561440"><a name="ph109856561440"></a><a name="ph109856561440"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_8"><a name="zh-cn_topic_0000001312391781_term11962195213215_8"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_8"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_8"><a name="zh-cn_topic_0000001312391781_term184716139811_8"></a><a name="zh-cn_topic_0000001312391781_term184716139811_8"></a>Atlas A2 推理系列产品</term></span>：不支持该参数</p>
-<p id="p16784256135519"><a name="p16784256135519"></a><a name="p16784256135519"></a><span id="ph77841569559"><a name="ph77841569559"></a><a name="ph77841569559"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_8"><a name="zh-cn_topic_0000001312391781_term1253731311225_8"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_8"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_8"><a name="zh-cn_topic_0000001312391781_term131434243115_8"></a><a name="zh-cn_topic_0000001312391781_term131434243115_8"></a>Atlas A3 推理系列产品</term></span>：不支持该参数</p>
 </td>
 </tr>
 </tbody>
 </table>
 
 ## 约束说明<a name="zh-cn_topic_0000001610027821_section65498832"></a>
+
+-   <a name="li693212153417"></a>kernel type取值约束
+    -   Ascend 950PR/Ascend 950DT，支持KERNEL\_TYPE\_AIV\_ONLY、 KERNEL\_TYPE\_AIC\_ONLY、KERNEL\_TYPE\_MIX\_AIV\_1\_0、KERNEL\_TYPE\_MIX\_AIC\_1\_0、KERNEL\_TYPE\_MIX\_AIC\_1\_1、KERNEL\_TYPE\_MIX\_AIC\_1\_2。
+    -   Atlas A3 训练系列产品/Atlas A3 推理系列产品，支持KERNEL\_TYPE\_AIV\_ONLY、 KERNEL\_TYPE\_AIC\_ONLY、KERNEL\_TYPE\_MIX\_AIV\_1\_0、KERNEL\_TYPE\_MIX\_AIC\_1\_0、KERNEL\_TYPE\_MIX\_AIC\_1\_1、KERNEL\_TYPE\_MIX\_AIC\_1\_2。
+    -   Atlas A2 训练系列产品/Atlas A2 推理系列产品，支持KERNEL\_TYPE\_AIV\_ONLY、 KERNEL\_TYPE\_AIC\_ONLY、KERNEL\_TYPE\_MIX\_AIV\_1\_0、KERNEL\_TYPE\_MIX\_AIC\_1\_0、KERNEL\_TYPE\_MIX\_AIC\_1\_1、KERNEL\_TYPE\_MIX\_AIC\_1\_2。
 
 -   **KERNEL\_TASK\_TYPE**优先级高于**KERNEL\_TASK\_TYPE\_DEFAULT**，同时设置了全局kernel type和某一个tiling key的kernel type，该tiling key的kernel type以**KERNEL\_TASK\_TYPE**设置的为准。
 -   没有设置全局默认kernel type的情况下，如果开发者只为其中的某几个tiling key设置kernel type，即部分tiling key没有设置kernel type，会导致算子kernel编译报错。
@@ -189,7 +183,7 @@
                 return;
             }
             KernelAdd op;
-            op.Init(x, y, z, tilingData.blockDim, tilingData.totalLength, tilingData.tileNum);
+            op.Init(x, y, z, tilingData.numBlocks, tilingData.totalLength, tilingData.tileNum);
             KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_MIX_VECTOR_CORE); // 使能VectorCore
             if (TILING_KEY_IS(1)) {
                 op.Process1();
@@ -200,13 +194,13 @@
         }
         ```
 
-    2.  完成算子host侧Tiling开发时，设置的block\_dim代表的是AI Core和Vector Core的总数，比如用户在host侧设置blockDim为10，则会启动总数为10的AI Core和Vector Core；为保证启动Vector Core，设置数值应大于AI Core的核数。您可以通过[GetCoreNumAic](GetCoreNumAic.md)接口获取AI Core的核数，[GetCoreNumVector](GetCoreNumVector.md)接口获取Vector Core的核数。 如下代码片段，展示了block\_dim的设置方法，此处设置为AI Core和Vector Core的总和，表示所有AI Core和Vector Core都启动。
+    2.  完成算子host侧Tiling开发时，设置的numBlocks代表的是AI Core和Vector Core的总数，比如用户在host侧设置numBlocks为10，则会启动总数为10的AI Core和Vector Core；为保证启动Vector Core，设置数值应大于AI Core的核数。您可以通过[GetCoreNumAic](GetCoreNumAic.md)接口获取AI Core的核数，[GetCoreNumVector](GetCoreNumVector.md)接口获取Vector Core的核数。 如下代码片段，展示了numBlocks的设置方法，此处设置为AI Core和Vector Core的总和，表示所有AI Core和Vector Core都启动。
 
         ```
         // 配套的host侧tiling函数示例：
         ge::graphStatus TilingFunc(gert::TilingContext* context)
         {	
-            // 使能VectorCore，将block_dim置为AI Core中vector核数 + Vector Core中的vector核数
+            // 使能VectorCore，将numBlocks置为AI Core中vector核数 + Vector Core中的vector核数
             auto ascendcPlatform = platform_ascendc::PlatformAscendC(platformInfo);
             auto totalCoreNum = ascendcPlatform.GetCoreNumAiv();
             // ASCENDXXX请替换为实际的版本型号
@@ -227,7 +221,7 @@
             return;
         }
         KernelAdd op;
-        op.Init(x, y, z, tilingData.blockDim, tilingData.totalLength, tilingData.tileNum);
+        op.Init(x, y, z, tilingData.numBlocks, tilingData.totalLength, tilingData.tileNum);
         KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIV_ONLY); // 设置默认的kernel类型为纯AIV类型
         if (TILING_KEY_IS(1)) {
             KERNEL_TASK_TYPE(1, KERNEL_TYPE_MIX_AIV_1_0); // 设置tiling key=1对应的kernel类型为MIX AIV 1:0

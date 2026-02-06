@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -69,7 +74,7 @@
 </thead>
 <tbody><tr id="row14345472346"><td class="cellrowborder" valign="top" width="12.13%" headers="mcps1.2.3.1.1 "><p id="p149121233183416"><a name="p149121233183416"></a><a name="p149121233183416"></a>T</p>
 </td>
-<td class="cellrowborder" valign="top" width="87.87%" headers="mcps1.2.3.1.2 "><p id="p1034577203412"><a name="p1034577203412"></a><a name="p1034577203412"></a>队列的类型，支持取值<a href="TQue.md">TQue</a>、<a href="TQueBind.md">TQueBind</a>。</p>
+<td class="cellrowborder" valign="top" width="87.87%" headers="mcps1.2.3.1.2 "><p id="p1034577203412"><a name="p1034577203412"></a><a name="p1034577203412"></a>队列的类型，支持取值<a href="TQue.md">TQue</a>、<a href="TQueBind.md">TQueBind</a>、<a href="TSCM.md">TSCM</a>。</p>
 </td>
 </tr>
 </tbody>
@@ -246,7 +251,7 @@ pipe.InitBuffer(que, num, len);
 // 为TQue分配内存，开发者自定义内存的地址信息，分别为[0, 1024], [2048, 4096], [8192, 12288]
 AscendC::TPipe pipe; // Pipe内存管理对象
 AscendC::TQue<AscendC::TPosition::VECOUT, 1> que; // 输出数据队列管理对象，TPosition为VECOUT
-auto addr0 = Std::make_tuple(0, 1024));
+auto addr0 = Std::make_tuple(0, 1024);
 auto addr1 = Std::make_tuple(2048, 2048);
 auto addr2 = Std::make_tuple(8192, 4096);
 pipe.InitBuffer(que, addr0, addr1, addr2);

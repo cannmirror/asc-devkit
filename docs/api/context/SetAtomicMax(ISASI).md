@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -51,6 +56,7 @@ __aicore__ inline void SetAtomicMax()
 <td class="cellrowborder" valign="top" width="91.36999999999999%" headers="mcps1.2.3.1.2 "><p id="p3844958114318"><a name="p3844958114318"></a><a name="p3844958114318"></a>设定不同的数据类型。</p>
 <p id="p815762322517"><a name="p815762322517"></a><a name="p815762322517"></a><span id="ph1215792313251"><a name="ph1215792313251"></a><a name="ph1215792313251"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持int8_t/int16_t/half/bfloat16_t/int32_t/float</p>
 <p id="p877595822019"><a name="p877595822019"></a><a name="p877595822019"></a><span id="ph2775145813208"><a name="ph2775145813208"></a><a name="ph2775145813208"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持int8_t/int16_t/half/bfloat16_t/int32_t/float</p>
+<p id="p18533125313393"><a name="p18533125313393"></a><a name="p18533125313393"></a><span id="ph1253305317393"><a name="ph1253305317393"></a><a name="ph1253305317393"></a>Ascend 950PR/Ascend 950DT</span>，支持int8_t/int16_t/half/bfloat16_t/int32_t/float</p>
 </td>
 </tr>
 </tbody>
@@ -62,87 +68,25 @@ __aicore__ inline void SetAtomicMax()
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
--   使用完后，建议通过[SetAtomicNone](SetAtomicNone.md)关闭原子最大操作，以免影响后续相关功能。
+-   使用完后，建议通过[DisableDmaAtomic](DisableDmaAtomic.md)关闭原子最大操作，以免影响后续相关功能。
 -   对于Atlas A2 训练系列产品/Atlas A2 推理系列产品，目前无法对bfloat16\_t类型设置inf/nan模式。
 
 ## 调用示例<a name="section177231425115410"></a>
 
 ```
-// 本演示示例使用DataCopy从VECOUT搬出到外部dstGlobal时进行原子最大操作。
 #include "kernel_operator.h"
-static const int data_size = 256;
 
-template <typename T>
-class KernelDataCopyAtomicMax {
-public:
-    __aicore__ inline KernelDataCopyAtomicMax() {}
-    __aicore__ inline void Init(GM_ADDR src0_gm, GM_ADDR src1_gm, GM_ADDR dst_gm, uint32_t size)
-    {
-        this->size = size;
-        src0Global.SetGlobalBuffer((__gm__ T *)src0_gm);
-        src1Global.SetGlobalBuffer((__gm__ T *)src1_gm);
-        dstGlobal.SetGlobalBuffer((__gm__ T *)dst_gm);
-        pipe.InitBuffer(queueSrc0, 1, size * sizeof(T));
-        pipe.InitBuffer(queueSrc1, 1, size * sizeof(T));
-        pipe.InitBuffer(queueDst0, 1, size * sizeof(T));
-        pipe.InitBuffer(queueDst1, 1, size * sizeof(T));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<T> src0local = queueSrc0.AllocTensor<T>();
-        AscendC::LocalTensor<T> src1local = queueSrc1.AllocTensor<T>();
-        AscendC::DataCopy(src0local, src0Global, size);
-        AscendC::DataCopy(src1local, src1Global, size);
-        queueSrc0.EnQue(src0local);
-        queueSrc1.EnQue(src1local);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<T> src0local = queueSrc0.DeQue<T>();
-        AscendC::LocalTensor<T> src1local = queueSrc1.DeQue<T>();
-        AscendC::LocalTensor<T> dst0Local = queueDst0.AllocTensor<T>();
-        AscendC::LocalTensor<T> dst1Local = queueDst1.AllocTensor<T>();
-        AscendC::Abs(dst0Local, src0local, size);
-        AscendC::Abs(dst1Local, src1local, size);
-        queueDst0.EnQue(dst0Local);
-        queueDst1.EnQue(dst1Local);
-        queueSrc0.FreeTensor(src0local);
-        queueSrc1.FreeTensor(src1local);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<T> dst0Local = queueDst0.DeQue<T>();
-        AscendC::LocalTensor<T> dst1Local = queueDst1.DeQue<T>();
-        AscendC::DataCopy(dstGlobal, dst1Local, size);
-        AscendC::PipeBarrier<PIPE_MTE3>();
-        AscendC::SetAtomicMax<T>();
-        AscendC::DataCopy(dstGlobal, dst0Local, size);
-        queueDst0.FreeTensor(dst0Local);
-        queueDst1.FreeTensor(dst1Local);
-        AscendC::SetAtomicNone();
-    }
-private:
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> queueSrc0;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> queueSrc1;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> queueDst0;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> queueDst1;
-    AscendC::GlobalTensor<T> src0Global, src1Global, dstGlobal;
-    uint32_t size;
-};
-extern "C" __global__ __aicore__ void data_copy_atomic_max_kernel(GM_ADDR src0_gm, GM_ADDR src1_gm, GM_ADDR dst_gm)
-{
-    KernelDataCopyAtomicMax<half> op;
-    op.Init(src0_gm, src1_gm, dst_gm, data_size);
-    op.Process();
-}
+uint32_t size = 256;
+AscendC::LocalTensor<half> dst0Local = queueDst0.DeQue<half>();
+AscendC::LocalTensor<half> dst1Local = queueDst1.DeQue<half>();
+AscendC::DataCopy(dstGlobal, dst1Local, size);
+AscendC::PipeBarrier<PIPE_MTE3>();
+AscendC::SetAtomicMax<half>();
+AscendC::DataCopy(dstGlobal, dst0Local, size);
+queueDst0.FreeTensor(dst0Local);
+queueDst1.FreeTensor(dst1Local);
+AscendC::DisableDmaAtomic();
+
 每个核的输入数据为: 
 Src0: [1,1,1,1,1,...,1] // 256个1
 Src1: [2,2,2,2,2,...,2] // 256个2

@@ -4,7 +4,7 @@
 
 -   **[LocalMemAllocator构造函数](LocalMemAllocator构造函数.md)**  
 
--   **[GetCurAddr](GetCurAddr-22.md)**  
+-   **[GetCurAddr](GetCurAddr-73.md)**  
 
 -   **[Alloc](Alloc.md)**  
 

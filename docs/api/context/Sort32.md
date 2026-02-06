@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -59,6 +64,7 @@ __aicore__ inline void Sort32(const LocalTensor<T>& dst, const LocalTensor<T>& s
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="13.58%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="86.42%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p1618914391266"><a name="p1618914391266"></a><a name="p1618914391266"></a><span id="ph219011391667"><a name="ph219011391667"></a><a name="ph219011391667"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half/float</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float</p>
 <p id="p58811040121710"><a name="p58811040121710"></a><a name="p58811040121710"></a><span id="ph14504143371016"><a name="ph14504143371016"></a><a name="ph14504143371016"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float</p>
 </td>
@@ -131,147 +137,13 @@ __aicore__ inline void Sort32(const LocalTensor<T>& dst, const LocalTensor<T>& s
 -   接口使用样例
 
     ```
+    AscendC::LocalTensor<float> srcLocal0 = inQueueSrc0.DeQue<float>();
+    AscendC::LocalTensor<uint32_t> srcLocal1 = inQueueSrc1.DeQue<uint32_t>();
+    AscendC::LocalTensor<float> dstLocal = outQueueDst.AllocTensor<float>();
     // repeatTime = 4, 对128个数分成4组进行排序，每次完成1组32个数的排序
     AscendC::Sort32<float>(dstLocal, srcLocal0, srcLocal1, 4);
-    ```
-
--   完整样例
-
-    ```
-    #include "kernel_operator.h"
-    
-    class KernelSort32 {
-    public:
-        __aicore__ inline KernelSort32() {}
-        __aicore__ inline void Init(__gm__ uint8_t* src0Gm, __gm__ uint8_t* src1Gm, __gm__ uint8_t* dstGm)
-        {
-            srcGlobal0.SetGlobalBuffer((__gm__ float*)src0Gm);
-            srcGlobal1.SetGlobalBuffer((__gm__ uint32_t*)src1Gm);
-            dstGlobal.SetGlobalBuffer((__gm__ float*)dstGm);
-    
-            repeat = srcDataSize / 32;
-            pipe.InitBuffer(inQueueSrc0, 1, srcDataSize * sizeof(float));
-            pipe.InitBuffer(inQueueSrc1, 1, srcDataSize * sizeof(uint32_t));
-            pipe.InitBuffer(outQueueDst, 1, dstDataSize * sizeof(float));
-        }
-        __aicore__ inline void Process()
-        {
-            CopyIn();
-            Compute();
-            CopyOut();
-        }
-    
-    private:
-        __aicore__ inline void CopyIn()
-        {
-            AscendC::LocalTensor<float> srcLocal0 = inQueueSrc0.AllocTensor<float>();
-            AscendC::DataCopy(srcLocal0, srcGlobal0, srcDataSize);
-            inQueueSrc0.EnQue(srcLocal0);
-            AscendC::LocalTensor<uint32_t> srcLocal1 = inQueueSrc1.AllocTensor<uint32_t>();
-            AscendC::DataCopy(srcLocal1, srcGlobal1, srcDataSize);
-            inQueueSrc1.EnQue(srcLocal1);
-        }
-        __aicore__ inline void Compute()
-        {
-            AscendC::LocalTensor<float> srcLocal0 = inQueueSrc0.DeQue<float>();
-            AscendC::LocalTensor<uint32_t> srcLocal1 = inQueueSrc1.DeQue<uint32_t>();
-            AscendC::LocalTensor<float> dstLocal = outQueueDst.AllocTensor<float>();
-    
-            AscendC::Sort32<float>(dstLocal, srcLocal0, srcLocal1, repeat);
-    
-            outQueueDst.EnQue<float>(dstLocal);
-            inQueueSrc0.FreeTensor(srcLocal0);
-            inQueueSrc1.FreeTensor(srcLocal1);
-        }
-        __aicore__ inline void CopyOut()
-        {
-            AscendC::LocalTensor<float> dstLocal = outQueueDst.DeQue<float>();
-            AscendC::DataCopy(dstGlobal, dstLocal, dstDataSize);
-            outQueueDst.FreeTensor(dstLocal);
-        }
-    
-    private:
-        AscendC::TPipe pipe;
-        AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc0;
-        AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc1;
-        AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst;
-        AscendC::GlobalTensor<float> srcGlobal0, dstGlobal;
-        AscendC::GlobalTensor<uint32_t> srcGlobal1;
-        int srcDataSize = 128;
-        int dstDataSize = 256;
-        int repeat = 0;
-    };
-    
-    extern "C" __global__ __aicore__ void vec_sort32_kernel(__gm__ uint8_t* src0Gm, __gm__ uint8_t* src1Gm,
-        __gm__ uint8_t* dstGm)
-    {
-        KernelSort32 op;
-        op.Init(src0Gm, src1Gm, dstGm);
-        op.Process();
-    }
-    ```
-
-    ```
-    示例结果
-    输入数据src0Gm：128个float类型数据
-    [7.867878  9.065992  9.374247  1.0911566 9.262053  2.035779  3.747487
-     2.9315646 5.237765  5.176559  7.965426  3.2341435 7.203623  1.5736973
-     3.386001  5.077001  4.593656  1.8485032 7.8554387 5.1269145 7.223478
-     8.259627  5.5502934 8.795028  9.626377  7.7227993 9.505127  6.683293
-     6.232041  2.1760664 4.504409  2.906819  9.425597  9.467169  4.990563
-     4.609341  1.8662999 3.6319377 3.5542917 8.382838  5.133566  3.1391478
-     5.244712  9.330158  2.0394793 5.9761605 4.937267  6.076068  7.5449195
-     6.5085726 1.8132887 2.5047603 3.3350103 2.7831945 3.0417829 5.0608244
-     3.4855423 2.8485715 4.853921  6.364753  3.1402998 6.052516  3.6143537
-     4.0714087 6.8068676 8.625871  8.040528  1.9881475 4.618402  7.0302424
-     6.0751796 5.877218  9.256125  4.193431  5.2048235 6.9774013 2.8765092
-     5.8294353 8.618196  8.619784  3.9252923 4.491909  6.0063663 2.3781579
-     5.8828945 7.269731  6.1864734 8.32413   5.2518435 9.184813  7.9312286
-     3.8841062 8.540505  7.611145  8.204335  2.110103  4.1796618 7.2383223
-     3.9992998 4.750733  8.650443  7.6469994 6.6126637 8.993322  8.920976
-     7.143699  7.0797443 3.3189814 7.3707795 3.26992   8.58087   5.6882014
-     2.0333889 6.711474  4.353861  7.946233  4.5678067 6.3354545 4.092168
-     2.416961  3.6823056 4.6000533 2.4727547 4.7993317 1.159995  8.025275
-     3.3826146 3.8543346]
-    输入数据src1Gm：
-    [0,0,0,0,0...0]
-    输出数据dstGm：
-    [9.626377  0.        9.505127  0.        9.374247  0.        9.262053
-     0.        9.065992  0.        8.795028  0.        8.259627  0.
-     7.965426  0.        7.867878  0.        7.8554387 0.        7.7227993
-     0.        7.223478  0.        7.203623  0.        6.683293  0.
-     6.232041  0.        5.5502934 0.        5.237765  0.        5.176559
-     0.        5.1269145 0.        5.077001  0.        4.593656  0.
-     4.504409  0.        3.747487  0.        3.386001  0.        3.2341435
-     0.        2.9315646 0.        2.906819  0.        2.1760664 0.
-     2.035779  0.        1.8485032 0.        1.5736973 0.        1.0911566
-     0.        9.467169  0.        9.425597  0.        9.330158  0.
-     8.382838  0.        7.5449195 0.        6.5085726 0.        6.364753
-     0.        6.076068  0.        6.052516  0.        5.9761605 0.
-     5.244712  0.        5.133566  0.        5.0608244 0.        4.990563
-     0.        4.937267  0.        4.853921  0.        4.609341  0.
-     4.0714087 0.        3.6319377 0.        3.6143537 0.        3.5542917
-     0.        3.4855423 0.        3.3350103 0.        3.1402998 0.
-     3.1391478 0.        3.0417829 0.        2.8485715 0.        2.7831945
-     0.        2.5047603 0.        2.0394793 0.        1.8662999 0.
-     1.8132887 0.        9.256125  0.        9.184813  0.        8.625871
-     0.        8.619784  0.        8.618196  0.        8.540505  0.
-     8.32413   0.        8.204335  0.        8.040528  0.        7.9312286
-     0.        7.611145  0.        7.269731  0.        7.0302424 0.
-     6.9774013 0.        6.8068676 0.        6.1864734 0.        6.0751796
-     0.        6.0063663 0.        5.8828945 0.        5.877218  0.
-     5.8294353 0.        5.2518435 0.        5.2048235 0.        4.618402
-     0.        4.491909  0.        4.193431  0.        3.9252923 0.
-     3.8841062 0.        2.8765092 0.        2.3781579 0.        2.110103
-     0.        1.9881475 0.        8.993322  0.        8.920976  0.
-     8.650443  0.        8.58087   0.        8.025275  0.        7.946233
-     0.        7.6469994 0.        7.3707795 0.        7.2383223 0.
-     7.143699  0.        7.0797443 0.        6.711474  0.        6.6126637
-     0.        6.3354545 0.        5.6882014 0.        4.7993317 0.
-     4.750733  0.        4.6000533 0.        4.5678067 0.        4.353861
-     0.        4.1796618 0.        4.092168  0.        3.9992998 0.
-     3.8543346 0.        3.6823056 0.        3.3826146 0.        3.3189814
-     0.        3.26992   0.        2.4727547 0.        2.416961  0.
-     2.0333889 0.        1.159995  0.       ]
+    outQueueDst.EnQue<float>(dstLocal);
+    inQueueSrc0.FreeTensor(srcLocal0);
+    inQueueSrc1.FreeTensor(srcLocal1);
     ```
 

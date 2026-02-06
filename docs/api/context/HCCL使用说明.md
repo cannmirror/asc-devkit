@@ -2,17 +2,20 @@
 
 Ascend C提供一组HCCL通信类高阶API，方便算子Kernel开发用户在AI Core侧灵活管理通算融合算子中计算与通信任务的执行顺序。
 
-HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语接口（以下统称为Prepare接口），对标集合通信C++接口，当前支持[AllReduce](AllReduce.md)、[AllGather](AllGather.md)、[ReduceScatter](ReduceScatter.md)、[AlltoAll](AlltoAll.md)接口等。本章的所有接口运行在AI Core上，且不执行通信任务，而是由用户调用Prepare接口将对应类型的通信任务信息发送给AI CPU服务端，并在合适的时机通过[Commit](Commit.md)接口通知AI CPU上的服务端执行对应的通信任务。
+HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语接口（以下统称为Prepare接口），对标集合通信C++接口，当前支持[AllReduce](AllReduce.md)、[AllGather](AllGather.md)、[ReduceScatter](ReduceScatter.md)、[AlltoAll](AlltoAll.md)接口等。本章的所有接口运行在AI Core上，且不执行通信任务，而是由用户调用Prepare接口将对应类型的通信任务信息发送给AI CPU或CCU服务端，并在合适的时机通过[Commit](Commit.md)接口通知AI CPU或CCU上的服务端执行对应的通信任务。注意，当前Ascend 950PR/Ascend 950DT上仅支持CCU服务端。
 
 所谓合适的时机，取决于用户编排的是先通信后计算的任务，还是先计算后通信的任务。对于这两种场景，简述如下：
 
--   先通信后计算的任务：典型的如AllGather通信+Matmul计算任务编排。此场景下，用户在调用AllGather接口下发通信任务之后，通过AllGather接口返回的该通信任务标识handleId，可立即调用Commit接口通知服务端执行该handleId对应的任务，同时用户调用[Wait](Wait-40.md)阻塞接口等待服务端通知handleId对应的通信任务执行结束，待该通信任务结束后，再执行计算任务。
+-   先通信后计算的任务：典型的如AllGather通信+Matmul计算任务编排。此场景下，用户在调用AllGather接口下发通信任务之后，通过AllGather接口返回的该通信任务标识handleId，可立即调用Commit接口通知服务端执行该handleId对应的任务，同时用户调用[Wait](Wait-99.md)阻塞接口等待服务端通知handleId对应的通信任务执行结束，待该通信任务结束后，再执行计算任务。
 -   先计算后通信的任务：典型的如Matmul计算+AllReduce通信任务编排。此场景下，用户可以先调用AllReduce接口通知服务端先下发通信任务，再调用Matmul计算接口进行计算，这样AllReduce任务的组装和任务下发及执行过程可以被Matmul的计算流水所掩盖，待计算任务完成后，调用Commit接口通知服务端执行AllReduce任务，无须调用Wait接口等待通信任务执行结束。
 
 当后续无通信任务时，调用[Finalize](Finalize.md)接口，通知服务端后续无通信任务，执行结束后退出，客户端检测并等待最后一个通信任务执行结束。以上介绍的AI Core下发HCCL通信任务的机制如下图所示。
 
 **图 1**  AI Core下发HCCL通信任务机制<a name="fig137781871132"></a>  
 ![](figures/AI-Core下发HCCL通信任务机制.png "AI-Core下发HCCL通信任务机制")
+
+**图 2** Ascend 950PR/Ascend 950DTAI Core下发HCCL通信任务机制<a name="fig1188495685117"></a>  
+![](figures/Ascend-950PR-Ascend-950DTAI-Core下发HCCL通信任务机制.png "Ascend-950PR-Ascend-950DTAI-Core下发HCCL通信任务机制")
 
 > [!CAUTION]注意 
 >对于Atlas A3 训练系列产品/Atlas A3 推理系列产品，在AI CPU作为服务端的场景中，HCCL通信API的功能依赖开放AI CPU用户态下发调度任务，存在一定的安全风险，用户需要自行确保AI Core自定义算子的安全可靠，防止恶意攻击行为。
@@ -26,6 +29,7 @@ HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语
     GET_TILING_DATA_WITH_STRUCT(AllGatherCustomTilingData, tilingData, tilingGM); // AllGatherCustomTilingData为对应算子头文件定义的结构体
     
     Hccl hccl;
+    Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl; // 通过模板入参的方式选择硬件类型，默认AICPU，可以指定CCU
     GM_ADDR contextGM = GetHcclContext<0>();  // AscendC自定义算子kernel中，通过此方式获取HCCL context
     
     hccl.InitV2(contextGM, &tilingData);
@@ -90,12 +94,12 @@ HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语
     HCCL_DATA_TYPE_UINT32 = 9, /* uint32 */
     HCCL_DATA_TYPE_FP64 = 10,  /* float64 */
     HCCL_DATA_TYPE_BFP16 = 11, /* bfloat16 */
-    HCCL_DATA_TYPE_INT128 = 12, /* *&lt; int128 */
-    HCCL_DATA_TYPE_HIF8 = 14,  /* *&lt; hif8 */
-    HCCL_DATA_TYPE_FP8E4M3 = 15,  /* *&lt; fp8e4m3 */
-    HCCL_DATA_TYPE_FP8E5M2 = 16,  /* *&lt; fp8e5m2 */
-    HCCL_DATA_TYPE_FP8E8M0 = 17,  /* *&lt; fp8e8m0 */
-    HCCL_DATA_TYPE_RESERVED    /* *&lt; reserved */
+    HCCL_DATA_TYPE_INT128 = 12, /* int128 预留类型，暂不支持 */
+    HCCL_DATA_TYPE_HIF8 = 14,  /* hif8 */
+    HCCL_DATA_TYPE_FP8E4M3 = 15,  /* fp8e4m3 */
+    HCCL_DATA_TYPE_FP8E5M2 = 16,  /* fp8e5m2 */
+    HCCL_DATA_TYPE_FP8E8M0 = 17,  /* fp8e8m0 */
+    HCCL_DATA_TYPE_RESERVED    /* reserved */
     }</pre>
     </td>
     </tr>
@@ -133,7 +137,7 @@ HCCL为**集合通信任务客户端**，主要对外提供了集合通信原语
     hccl.Commit(handleId);
     ```
 
-5.  用户调用[Wait](Wait-40.md)阻塞接口，等待服务端执行完对应的通信任务。
+5.  用户调用[Wait](Wait-99.md)阻塞接口，等待服务端执行完对应的通信任务。
 
     ```
     auto ret = hccl.Wait(handleId);
@@ -239,7 +243,7 @@ extern "C" __global__ __aicore__ void reduce_scatter_custom(GM_ADDR xGM, GM_ADDR
 }
 ```
 
-**图 2**  ReduceScatter通信示例<a name="fig19780192164210"></a>  
+**图 3**  ReduceScatter通信示例<a name="fig19780192164210"></a>  
 ![](figures/ReduceScatter通信示例.png "ReduceScatter通信示例")
 
 **表 3**  MC2\_BUFFER\_LOCATION参数说明

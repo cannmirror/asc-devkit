@@ -15,7 +15,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="24.51%" headers="mcps1.1.4.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="22.689999999999998%" headers="mcps1.1.4.1.3 "><p id="p14301163033011"><a name="p14301163033011"></a><a name="p14301163033011"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="52.800000000000004%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="24.51%" headers="mcps1.1.4.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -48,9 +55,9 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-完成矩阵乘加（C += A \* B）操作。矩阵ABC分别为A2/B2/CO1中的数据。
+**功能一：**完成矩阵乘加（C += A \* B）操作。矩阵ABC分别为A2/B2/CO1中的数据。
 
--   ABC矩阵的数据排布格式分别为ZZ，ZN，NZ。
+-   ABC矩阵的数据排布格式分别为ZZ，ZN，NZ。数据排布格式详解请参考[数据排布格式](zh-cn_topic_0000001700139572.md)。
 
     下图中每个小方格代表一个分形矩阵，Z字形的黑色线条代表数据的排列顺序，起始点是左上角，终点是右下角。
 
@@ -110,49 +117,72 @@
 
     矩阵C的排列顺序：0，1，4，5，8，9，12，13，2，3，6，7，10，11，14，15。
 
-下面表格总结了mmad所有输入数据类型下，左右矩阵的M、K、N方向的对齐要求。
-<table>
-  <tr>
-    <th></th>
-    <th></th>
-    <th></th>
-    <th></th>
-     <th></th>
-  </tr>
-  <tr>
-    <td></td>
-    <td>int8_t</td>
-    <td>half/bfloat16_t</td>
-    <td>float</td>
-     <td>int4b_t</td>
-  </tr>
-  <tr>
-    <td>M</td>
-    <td>16</td>
-    <td>16</td>
-    <td>16</td>
-     <td>16</td>
-  </tr>
-  <tr>
-    <td>K</td>
-    <td>32</td>
-    <td>16</td>
-    <td>8</td>
-     <td>64</td>
-  </tr>
-  <tr>
-    <td>N</td>
-    <td>16</td>
-    <td>16</td>
-    <td>16</td>
-     <td>16</td>
-  </tr>
-</table>
+-   ABC矩阵的数据排布格式分别为NZ，ZN，NZ。
 
-下图中未对齐前的左、右矩阵的shape分别为[30,70]和[70,40],按照上表进行对齐后进行矩阵乘，矩阵乘的结果C矩阵，M方向和N方向都向16对齐，图中灰色代表对齐填充的无效数据，这些数据在执行矩阵乘法时会被忽略。
-<p align="center">
-  <img src="figures/f32_mmad_A不转置_B不转置.png" width="1000">
-</p>
+    矩阵A：每个分形矩阵内部是行主序，分形矩阵之间是列主序。简称小Z大N格式。其shape为16 x \(32B/sizeof\(AType\)\)，大小为512Byte。
+
+    矩阵B：每个分形矩阵内部是列主序，分形矩阵之间是行主序。简称小N大Z格式。其shape为 \(32B/sizeof\(BType\)\) x 16，大小为512Byte。
+
+    矩阵C：每个分形矩阵内部是行主序，分形矩阵之间是列主序。简称小Z大N格式。其shape为16 x 16，大小为256个元素。
+
+    ![](figures/zh-cn_image_0000002106101314.png)
+
+    以下是一个简单的例子，假设分形矩阵的大小是2x2（并不符合真实情况，仅作为示例），矩阵ABC的大小都是4x4。
+
+    <a name="table56024246811"></a>
+    <table><tbody><tr id="row9603122410813"><td class="cellrowborder" valign="top" width="25%"><p id="p060342411811"><a name="p060342411811"></a><a name="p060342411811"></a>0</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p13603524285"><a name="p13603524285"></a><a name="p13603524285"></a>1</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p1860372417818"><a name="p1860372417818"></a><a name="p1860372417818"></a>2</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p560322410814"><a name="p560322410814"></a><a name="p560322410814"></a>3</p>
+    </td>
+    </tr>
+    <tr id="row116035244810"><td class="cellrowborder" valign="top" width="25%"><p id="p106034248818"><a name="p106034248818"></a><a name="p106034248818"></a>4</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p26033243812"><a name="p26033243812"></a><a name="p26033243812"></a>5</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p166033243818"><a name="p166033243818"></a><a name="p166033243818"></a>6</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p2603424480"><a name="p2603424480"></a><a name="p2603424480"></a>7</p>
+    </td>
+    </tr>
+    <tr id="row360315249815"><td class="cellrowborder" valign="top" width="25%"><p id="p1860316241786"><a name="p1860316241786"></a><a name="p1860316241786"></a>8</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p13603624784"><a name="p13603624784"></a><a name="p13603624784"></a>9</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p176037241189"><a name="p176037241189"></a><a name="p176037241189"></a>10</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p19603182417818"><a name="p19603182417818"></a><a name="p19603182417818"></a>11</p>
+    </td>
+    </tr>
+    <tr id="row1160312241281"><td class="cellrowborder" valign="top" width="25%"><p id="p1160332416817"><a name="p1160332416817"></a><a name="p1160332416817"></a>12</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p1460314246820"><a name="p1460314246820"></a><a name="p1460314246820"></a>13</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p12603124087"><a name="p12603124087"></a><a name="p12603124087"></a>14</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="25%"><p id="p560316241082"><a name="p560316241082"></a><a name="p560316241082"></a>15</p>
+    </td>
+    </tr>
+    </tbody>
+    </table>
+
+    矩阵A的排列顺序:0，1，4，5，8，9，12，13，2，3，6，7，10，11，14，15。
+
+    矩阵B的排列顺序:0，4，1，5，2，6，3，7，8，12，9，13，10，14，11，15。
+
+    矩阵C的排列顺序:0，1，4，5，8，9，12，13，2，3，6，7，10，11，14，15。
+
+**功能二：**针对Ascend 950PR/Ascend 950DT，还支持包含缩放功能的矩阵乘，公式如下：C = \(ScaleA ⊗ A\) ∗ \(ScaleB ⊗ B\) + C。ScaleA和ScaleB通过LoadData2DMX接口载入。
+
+-   ScaleA的分形格式为小Z大Z ，shape为（16，2），数据类型为fp8\_e8m0\_t。
+-   ScaleB的分形格式为小N大N，shape为 （2，16），数据类型为fp8\_e8m0\_t。
+
+以AB矩阵均为fp4x2\_e2m1\_t数据类型为例，下图展示了ScaleA、ScaleB的分形排布格式和缩放功能原理：
+
+![](figures/zh-cn_image_0000002142715589.png)
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -161,7 +191,6 @@
     ```
     template <typename T, typename U, typename S>
     __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm, const LocalTensor<S>& filter, const MmadParams& mmadParams)
-    
     ```
 
 -   传入bias
@@ -169,7 +198,6 @@
     ```
     template <typename T, typename U, typename S, typename V>
     __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm, const LocalTensor<S>& filter, const LocalTensor<V>& bias, const MmadParams& mmadParams)
-    
     ```
 
 ## 参数说明<a name="section622mcpsimp"></a>
@@ -297,6 +325,7 @@
 <a name="ul206805011715"></a><a name="ul206805011715"></a><ul id="ul206805011715"><li>true：来源于C2。</li></ul>
 <p id="p136815501475"><a name="p136815501475"></a><a name="p136815501475"></a><span id="ph14689501479"><a name="ph14689501479"></a><a name="ph14689501479"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持配置为true/false。</p>
 <p id="p91531273575"><a name="p91531273575"></a><a name="p91531273575"></a><span id="ph9153152715719"><a name="ph9153152715719"></a><a name="ph9153152715719"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持配置为true/false。</p>
+<p id="p717213521147"><a name="p717213521147"></a><a name="p717213521147"></a><span id="ph1217214529416"><a name="ph1217214529416"></a><a name="ph1217214529416"></a>Ascend 950PR/Ascend 950DT</span>，支持配置为true/false。</p>
 <p id="p649352174712"><a name="p649352174712"></a><a name="p649352174712"></a><span id="ph649312144719"><a name="ph649312144719"></a><a name="ph649312144719"></a>Kirin X90</span> 仅支持配置为false。</p>
 <p id="p27233916477"><a name="p27233916477"></a><a name="p27233916477"></a><span id="ph272193964718"><a name="ph272193964718"></a><a name="ph272193964718"></a>Kirin 9030</span>仅支持配置为false。</p>
 <p id="p18124101113283"><a name="p18124101113283"></a><a name="p18124101113283"></a>注意：带bias输入的接口配置该参数无效，会根据bias输入的位置来判断C矩阵初始值是否来源于CO1还是C2。</p>
@@ -309,36 +338,28 @@
 <a name="ul1530653162214"></a><a name="ul1530653162214"></a><ul id="ul1530653162214"><li>false：矩阵乘，无需累加初始矩阵，C = A * B。</li><li>true：矩阵乘加，需要累加初始矩阵，C += A * B。</li></ul>
 </td>
 </tr>
-<tr id="row55001333313"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p115000313310"><a name="p115000313310"></a><a name="p115000313310"></a><span id="ph1287098193117"><a name="ph1287098193117"></a><a name="ph1287098193117"></a>unitFlag</span></p>
+<tr id="row858572783416"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p13585182710349"><a name="p13585182710349"></a><a name="p13585182710349"></a>disableGemv</p>
 </td>
-<td class="cellrowborder" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p103614380020"><a name="p103614380020"></a><a name="p103614380020"></a>unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。对于L0C中每一个512字节的内存都有一个单元标志位用于指示该内存块是否可读或者可写，对于Mmad指令和Fixpipe指令都有两位单元控制位，取值说明如下：</p>
+<td class="cellrowborder" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p5654816133510"><a name="p5654816133510"></a><a name="p5654816133510"></a>M = 1时，用于配置Mmad计算是否开启GEMV。当输入为false时，表示开启GEMV；反之，输入为true时，表示关闭GEMV。</p>
+<p id="p125065316343"><a name="p125065316343"></a><a name="p125065316343"></a><span>GEMV（General Matrix-Vector Multiplication）表示实现矩阵和向量的乘积，开启GEMV后，Mmad API 从L0A Buffer读取数据时，数据将以ND格式进行读取，而不会将其视为ZZ格式。</span></p>
+<p id="p20786171433510"><a name="p20786171433510"></a><a name="p20786171433510"></a>该参数仅支持<span id="ph16467175418188"><a name="ph16467175418188"></a><a name="ph16467175418188"></a>昇腾910_96 AI处理器</span>、<span id="ph1578616140352"><a name="ph1578616140352"></a><a name="ph1578616140352"></a>Ascend 950PR/Ascend 950DT</span>。</p>
+</td>
+</tr>
+<tr id="row55001333313"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p115000313310"><a name="p115000313310"></a><a name="p115000313310"></a>unitFlag</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p103614380020"><a name="p103614380020"></a><a name="p103614380020"></a>unitFlag是一种Mmad指令和Fixpipe指令细粒度的并行，使能该功能后，硬件每计算完一个分形，计算结果就会被搬出，该功能不适用于在L0C Buffer累加的场景。取值说明如下：</p>
 <p id="p1225131744220"><a name="p1225131744220"></a><a name="p1225131744220"></a>0：保留值；</p>
 <p id="p3836113514213"><a name="p3836113514213"></a><a name="p3836113514213"></a>2：使能unitFlag，硬件执行完指令之后，不会关闭unitFlag功能；</p>
 <p id="p173663815011"><a name="p173663815011"></a><a name="p173663815011"></a>3：使能unitFlag，硬件执行完指令之后，会将unitFlag功能关闭。</p>
-<p id="p14988589213"><a name="p14988589213"></a><a name="p14988589213"></a>使能该功能时，假设调用N次Mmad指令，需要将前N-1次Mmad指令的unitFlag设置为2，将最后一次Mmad指令的unitFlag设置为3。</p>
-<p id="p181158034917"><a name="p181158034917"></a><a name="p181158034917"></a>该参数仅支持如下型号</p>
+<p id="p14988589213"><a name="p14988589213"></a><a name="p14988589213"></a>使能该功能时，Mmad指令的unitFlag在最后1个分形设置为3、其余分形计算设置为2即可。</p>
+<p id="p181158034917"><a name="p181158034917"></a><a name="p181158034917"></a>该参数仅支持如下型号：</p>
 <p id="p15910825145415"><a name="p15910825145415"></a><a name="p15910825145415"></a><span id="ph1292674871116"><a name="ph1292674871116"></a><a name="ph1292674871116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span></p>
 <p id="p29873508148"><a name="p29873508148"></a><a name="p29873508148"></a><span id="ph13754548217"><a name="ph13754548217"></a><a name="ph13754548217"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 </tr>
-<tr>
-<td class="cellrowborder" valign="top" width="15.31%">
-<p>kDirectionAlign</p>
-</td>
-<td class="cellrowborder" valign="top" width="84.69%">
-<p>kDirectionAlign仅当左、右矩阵输入数据类型为float时生效。该参数取值以及含义：
-
-(1)false，默认值，表示L0A/L0B上的矩阵在K方向上对齐到ceil(K/8)*8。
-
-(2)true，表示L0A/L0B上的矩阵在K方向上对齐到ceil(K/16)*16。
-
-当A矩阵转置时，该参数需要配置为true。如下图所示，当A矩阵转置后，K方向对齐到16，设置kDirectionAlign=true矩阵计算单元从L0A读取数据时就能够跳过最右侧一列两个全部为无效数据的分形。</p>
-</td>
-</tr>
-
 <tr id="row429212884719"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p92641454114714"><a name="p92641454114714"></a><a name="p92641454114714"></a>fmOffset</p>
 </td>
-<td class="cellrowborder" rowspan="5" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p6264205416479"><a name="p6264205416479"></a><a name="p6264205416479"></a>预留参数。为后续的功能做保留，开发者暂时无需关注，使用默认值即可。</p>
+<td class="cellrowborder" rowspan="4" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p6264205416479"><a name="p6264205416479"></a><a name="p6264205416479"></a>预留参数。为后续的功能做保留，开发者暂时无需关注，使用默认值即可。</p>
 </td>
 </tr>
 <tr id="row209292371475"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p12264175418478"><a name="p12264175418478"></a><a name="p12264175418478"></a>enSsparse</p>
@@ -350,13 +371,19 @@
 <tr id="row2694932114712"><td class="cellrowborder" valign="top" headers="mcps1.2.3.1.1 "><p id="p152651254104718"><a name="p152651254104718"></a><a name="p152651254104718"></a>enWinogradB</p>
 </td>
 </tr>
-
+<tr id="row1916264744713"><td class="cellrowborder" valign="top" width="15.310000000000002%" headers="mcps1.2.3.1.1 "><p id="p926555412477"><a name="p926555412477"></a><a name="p926555412477"></a>kDirectionAlign</p>
+</td>
+<td class="cellrowborder" valign="top" width="84.69%" headers="mcps1.2.3.1.2 "><p id="p420713237308"><a name="p420713237308"></a><a name="p420713237308"></a><span id="ph152644419344"><a name="ph152644419344"></a><a name="ph152644419344"></a>设置是否需要对齐，默认值为false。</span></p>
+<p id="p1421843995318"><a name="p1421843995318"></a><a name="p1421843995318"></a><span id="ph2218103918538"><a name="ph2218103918538"></a><a name="ph2218103918538"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，仅支持配置为false。</p>
+<p id="p152181339125320"><a name="p152181339125320"></a><a name="p152181339125320"></a><span id="ph1121833955319"><a name="ph1121833955319"></a><a name="ph1121833955319"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，仅支持配置为false。</p>
+<p id="p15218133935313"><a name="p15218133935313"></a><a name="p15218133935313"></a><span id="ph6218163985319"><a name="ph6218163985319"></a><a name="ph6218163985319"></a>Ascend 950PR/Ascend 950DT</span>，仅支持配置为false。</p>
+<p id="p9218039185320"><a name="p9218039185320"></a><a name="p9218039185320"></a><span id="ph72181393531"><a name="ph72181393531"></a><a name="ph72181393531"></a>Kirin X90</span> 支持配置为true/false。</p>
+<p id="p19218203995319"><a name="p19218203995319"></a><a name="p19218203995319"></a><span id="ph10218203912535"><a name="ph10218203912535"></a><a name="ph10218203912535"></a>Kirin 9030</span>支持配置为true/false。</p>
+</td>
+</tr>
 </tbody>
 </table>
 
-<p align="center">
-  <img src="figures/k参数示意图.png" width="400">
-</p>
 **表 4**  dst、fm、filter支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
 
 <a name="table311391475117"></a>
@@ -406,7 +433,146 @@
 </tbody>
 </table>
 
-**表 5**  dst、fm、filter、bias支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
+**表 5**  dst、fm、filter支持的精度类型组合（Ascend 950PR/Ascend 950DT）
+
+<a name="table03371561072"></a>
+<table><thead align="left"><tr id="row143371660716"><th class="cellrowborder" valign="top" width="30.759999999999998%" id="mcps1.2.5.1.1"><p id="p4337161713"><a name="p4337161713"></a><a name="p4337161713"></a><strong id="b833766377"><a name="b833766377"></a><a name="b833766377"></a>左矩阵fm type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="30.919999999999998%" id="mcps1.2.5.1.2"><p id="p83381167717"><a name="p83381167717"></a><a name="p83381167717"></a><strong id="b933876475"><a name="b933876475"></a><a name="b933876475"></a>右矩阵filter type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="16.400000000000002%" id="mcps1.2.5.1.3"><p id="p833876776"><a name="p833876776"></a><a name="p833876776"></a><strong id="b133381661174"><a name="b133381661174"></a><a name="b133381661174"></a>结果矩阵dst type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="21.92%" id="mcps1.2.5.1.4"><p id="p959235418717"><a name="p959235418717"></a><a name="p959235418717"></a>备注</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row13381761270"><td class="cellrowborder" valign="top" width="30.759999999999998%" headers="mcps1.2.5.1.1 "><p id="p15338569715"><a name="p15338569715"></a><a name="p15338569715"></a>int8_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.919999999999998%" headers="mcps1.2.5.1.2 "><p id="p1033846379"><a name="p1033846379"></a><a name="p1033846379"></a>int8_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.400000000000002%" headers="mcps1.2.5.1.3 "><p id="p73383619710"><a name="p73383619710"></a><a name="p73383619710"></a>int32_t</p>
+</td>
+<td class="cellrowborder" rowspan="9" valign="top" width="21.92%" headers="mcps1.2.5.1.4 "><p id="p172471636132516"><a name="p172471636132516"></a><a name="p172471636132516"></a>仅支持不含缩放的矩阵乘</p>
+</td>
+</tr>
+<tr id="row633811610710"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p1433846374"><a name="p1433846374"></a><a name="p1433846374"></a>half</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p123383618718"><a name="p123383618718"></a><a name="p123383618718"></a>half</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p12338116570"><a name="p12338116570"></a><a name="p12338116570"></a>float</p>
+</td>
+</tr>
+<tr id="row9338761074"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p19338361873"><a name="p19338361873"></a><a name="p19338361873"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p13381661077"><a name="p13381661077"></a><a name="p13381661077"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p18338464718"><a name="p18338464718"></a><a name="p18338464718"></a>float</p>
+</td>
+</tr>
+<tr id="row18338861573"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p103381261679"><a name="p103381261679"></a><a name="p103381261679"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p143381866717"><a name="p143381866717"></a><a name="p143381866717"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p5338176779"><a name="p5338176779"></a><a name="p5338176779"></a>float</p>
+</td>
+</tr>
+<tr id="row163381761371"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p43388619719"><a name="p43388619719"></a><a name="p43388619719"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p1333856471"><a name="p1333856471"></a><a name="p1333856471"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p73398618717"><a name="p73398618717"></a><a name="p73398618717"></a>float</p>
+</td>
+</tr>
+<tr id="row8727145116415"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p102553714427"><a name="p102553714427"></a><a name="p102553714427"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p525514724210"><a name="p525514724210"></a><a name="p525514724210"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p025587154213"><a name="p025587154213"></a><a name="p025587154213"></a>float</p>
+</td>
+</tr>
+<tr id="row1045015515412"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p191159279422"><a name="p191159279422"></a><a name="p191159279422"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p8115132717428"><a name="p8115132717428"></a><a name="p8115132717428"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p4116127184212"><a name="p4116127184212"></a><a name="p4116127184212"></a>float</p>
+</td>
+</tr>
+<tr id="row2250205814415"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p1636435217425"><a name="p1636435217425"></a><a name="p1636435217425"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p1036435284212"><a name="p1036435284212"></a><a name="p1036435284212"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p2364105215427"><a name="p2364105215427"></a><a name="p2364105215427"></a>float</p>
+</td>
+</tr>
+<tr id="row115641627161519"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p456402761517"><a name="p456402761517"></a><a name="p456402761517"></a>hifloat8_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p556422718157"><a name="p556422718157"></a><a name="p556422718157"></a>hifloat8_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p135647271154"><a name="p135647271154"></a><a name="p135647271154"></a>float</p>
+</td>
+</tr>
+<tr id="row16167344115612"><td class="cellrowborder" valign="top" width="30.759999999999998%" headers="mcps1.2.5.1.1 "><p id="p55237214574"><a name="p55237214574"></a><a name="p55237214574"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="30.919999999999998%" headers="mcps1.2.5.1.2 "><p id="p1948210346513"><a name="p1948210346513"></a><a name="p1948210346513"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="16.400000000000002%" headers="mcps1.2.5.1.3 "><p id="p416719441569"><a name="p416719441569"></a><a name="p416719441569"></a>float</p>
+</td>
+<td class="cellrowborder" rowspan="8" valign="top" width="21.92%" headers="mcps1.2.5.1.4 "><p id="p165928541974"><a name="p165928541974"></a><a name="p165928541974"></a>仅支持包含缩放的矩阵乘</p>
+</td>
+</tr>
+<tr id="row6328195345616"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p19329145318569"><a name="p19329145318569"></a><a name="p19329145318569"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p15955461257"><a name="p15955461257"></a><a name="p15955461257"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p1332935317564"><a name="p1332935317564"></a><a name="p1332935317564"></a>float</p>
+</td>
+</tr>
+<tr id="row2058765065610"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p558735017568"><a name="p558735017568"></a><a name="p558735017568"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p18587205065614"><a name="p18587205065614"></a><a name="p18587205065614"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p1958713509563"><a name="p1958713509563"></a><a name="p1958713509563"></a>float</p>
+</td>
+</tr>
+<tr id="row646324715616"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p13796541269"><a name="p13796541269"></a><a name="p13796541269"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p6621164614"><a name="p6621164614"></a><a name="p6621164614"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p1746354711567"><a name="p1746354711567"></a><a name="p1746354711567"></a>float</p>
+</td>
+</tr>
+<tr id="row15137171364320"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p2013813138437"><a name="p2013813138437"></a><a name="p2013813138437"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p1925141954616"><a name="p1925141954616"></a><a name="p1925141954616"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p1178064134613"><a name="p1178064134613"></a><a name="p1178064134613"></a>float</p>
+</td>
+</tr>
+<tr id="row9645192034314"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p8222142315463"><a name="p8222142315463"></a><a name="p8222142315463"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p204516147460"><a name="p204516147460"></a><a name="p204516147460"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p510415439460"><a name="p510415439460"></a><a name="p510415439460"></a>float</p>
+</td>
+</tr>
+<tr id="row132901518134312"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p468952711468"><a name="p468952711468"></a><a name="p468952711468"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p164186375465"><a name="p164186375465"></a><a name="p164186375465"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p19232144419467"><a name="p19232144419467"></a><a name="p19232144419467"></a>float</p>
+</td>
+</tr>
+<tr id="row98407150438"><td class="cellrowborder" valign="top" headers="mcps1.2.5.1.1 "><p id="p9994528104619"><a name="p9994528104619"></a><a name="p9994528104619"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.2 "><p id="p1753553013461"><a name="p1753553013461"></a><a name="p1753553013461"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.5.1.3 "><p id="p19462045134614"><a name="p19462045134614"></a><a name="p19462045134614"></a>float</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+**表 6**  dst、fm、filter、bias支持的精度类型组合（Atlas A2 训练系列产品/Atlas A2 推理系列产品）（Atlas A3 训练系列产品/Atlas A3 推理系列产品）
 
 <a name="table1068062217226"></a>
 <table><thead align="left"><tr id="row14680182202213"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.5.1.1"><p id="p1680192219225"><a name="p1680192219225"></a><a name="p1680192219225"></a><strong id="b126801322112219"><a name="b126801322112219"></a><a name="b126801322112219"></a>左矩阵fm type</strong></p>
@@ -458,7 +624,182 @@
 </tbody>
 </table>
 
-**表 6**  dst、fm、filter、bias支持的精度类型组合 （Kirin 9030）
+**表 7**  dst、fm、filter、bias支持的精度类型组合（Ascend 950PR/Ascend 950DT）
+
+<a name="table17716153612"></a>
+<table><thead align="left"><tr id="row9716051961"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.6.1.1"><p id="p12716751761"><a name="p12716751761"></a><a name="p12716751761"></a><strong id="b1571645761"><a name="b1571645761"></a><a name="b1571645761"></a>左矩阵fm type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="20.06%" id="mcps1.2.6.1.2"><p id="p13716058619"><a name="p13716058619"></a><a name="p13716058619"></a><strong id="b157161557618"><a name="b157161557618"></a><a name="b157161557618"></a>右矩阵filter type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="15.03%" id="mcps1.2.6.1.3"><p id="p1446612216713"><a name="p1446612216713"></a><a name="p1446612216713"></a><strong id="b1546610213719"><a name="b1546610213719"></a><a name="b1546610213719"></a>bias type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="21.54%" id="mcps1.2.6.1.4"><p id="p10716155661"><a name="p10716155661"></a><a name="p10716155661"></a><strong id="b571615517617"><a name="b571615517617"></a><a name="b571615517617"></a>结果矩阵dst type</strong></p>
+</th>
+<th class="cellrowborder" valign="top" width="20.27%" id="mcps1.2.6.1.5"><p id="p157162520610"><a name="p157162520610"></a><a name="p157162520610"></a>备注</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row1716155264"><td class="cellrowborder" valign="top" width="23.1%" headers="mcps1.2.6.1.1 "><p id="p1971785260"><a name="p1971785260"></a><a name="p1971785260"></a>int8_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.06%" headers="mcps1.2.6.1.2 "><p id="p8717351869"><a name="p8717351869"></a><a name="p8717351869"></a>int8_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.03%" headers="mcps1.2.6.1.3 "><p id="p8673171714"><a name="p8673171714"></a><a name="p8673171714"></a>int32_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.54%" headers="mcps1.2.6.1.4 "><p id="p127173519619"><a name="p127173519619"></a><a name="p127173519619"></a>int32_t</p>
+</td>
+<td class="cellrowborder" rowspan="9" valign="top" width="20.27%" headers="mcps1.2.6.1.5 "><p id="p2717851617"><a name="p2717851617"></a><a name="p2717851617"></a>仅支持不含缩放的矩阵乘</p>
+</td>
+</tr>
+<tr id="row8717195860"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p27171554614"><a name="p27171554614"></a><a name="p27171554614"></a>half</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p171719514610"><a name="p171719514610"></a><a name="p171719514610"></a>half</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p545817543612"><a name="p545817543612"></a><a name="p545817543612"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p16717051463"><a name="p16717051463"></a><a name="p16717051463"></a>float</p>
+</td>
+</tr>
+<tr id="row107171457617"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p67178517617"><a name="p67178517617"></a><a name="p67178517617"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p127171759617"><a name="p127171759617"></a><a name="p127171759617"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p13458154367"><a name="p13458154367"></a><a name="p13458154367"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p3717135263"><a name="p3717135263"></a><a name="p3717135263"></a>float</p>
+</td>
+</tr>
+<tr id="row16717559614"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p20717155565"><a name="p20717155565"></a><a name="p20717155565"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p4717451468"><a name="p4717451468"></a><a name="p4717451468"></a>bfloat16_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p1745805419615"><a name="p1745805419615"></a><a name="p1745805419615"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p147171515615"><a name="p147171515615"></a><a name="p147171515615"></a>float</p>
+</td>
+</tr>
+<tr id="row16717751264"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p2717255616"><a name="p2717255616"></a><a name="p2717255616"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p147171456613"><a name="p147171456613"></a><a name="p147171456613"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p54581545611"><a name="p54581545611"></a><a name="p54581545611"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p177171951616"><a name="p177171951616"></a><a name="p177171951616"></a>float</p>
+</td>
+</tr>
+<tr id="row19717651661"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p187171459616"><a name="p187171459616"></a><a name="p187171459616"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p17717165761"><a name="p17717165761"></a><a name="p17717165761"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p14584541167"><a name="p14584541167"></a><a name="p14584541167"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p47171851063"><a name="p47171851063"></a><a name="p47171851063"></a>float</p>
+</td>
+</tr>
+<tr id="row3717751464"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p97185516618"><a name="p97185516618"></a><a name="p97185516618"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p16718251611"><a name="p16718251611"></a><a name="p16718251611"></a>fp8_e4m3fn_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p1845815541611"><a name="p1845815541611"></a><a name="p1845815541611"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p77188514619"><a name="p77188514619"></a><a name="p77188514619"></a>float</p>
+</td>
+</tr>
+<tr id="row197181515618"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p1771817516619"><a name="p1771817516619"></a><a name="p1771817516619"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p1071815563"><a name="p1071815563"></a><a name="p1071815563"></a>fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p7458554566"><a name="p7458554566"></a><a name="p7458554566"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p13718554610"><a name="p13718554610"></a><a name="p13718554610"></a>float</p>
+</td>
+</tr>
+<tr id="row7718195468"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p171814520617"><a name="p171814520617"></a><a name="p171814520617"></a>hifloat8_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p8718135261"><a name="p8718135261"></a><a name="p8718135261"></a>hifloat8_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p34581454663"><a name="p34581454663"></a><a name="p34581454663"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p771816513618"><a name="p771816513618"></a><a name="p771816513618"></a>float</p>
+</td>
+</tr>
+<tr id="row1471811517612"><td class="cellrowborder" valign="top" width="23.1%" headers="mcps1.2.6.1.1 "><p id="p207181057610"><a name="p207181057610"></a><a name="p207181057610"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="20.06%" headers="mcps1.2.6.1.2 "><p id="p57185515618"><a name="p57185515618"></a><a name="p57185515618"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" width="15.03%" headers="mcps1.2.6.1.3 "><p id="p11458205414611"><a name="p11458205414611"></a><a name="p11458205414611"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" width="21.54%" headers="mcps1.2.6.1.4 "><p id="p771812516615"><a name="p771812516615"></a><a name="p771812516615"></a>float</p>
+</td>
+<td class="cellrowborder" rowspan="8" valign="top" width="20.27%" headers="mcps1.2.6.1.5 "><p id="p1571875269"><a name="p1571875269"></a><a name="p1571875269"></a>仅支持包含缩放的矩阵乘</p>
+</td>
+</tr>
+<tr id="row1271805462"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p17181151064"><a name="p17181151064"></a><a name="p17181151064"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p2071811513613"><a name="p2071811513613"></a><a name="p2071811513613"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p44585546613"><a name="p44585546613"></a><a name="p44585546613"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p9718145160"><a name="p9718145160"></a><a name="p9718145160"></a>float</p>
+</td>
+</tr>
+<tr id="row27182519619"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p12718155167"><a name="p12718155167"></a><a name="p12718155167"></a>fp4x2_e1m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p8718105061"><a name="p8718105061"></a><a name="p8718105061"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p12458165414615"><a name="p12458165414615"></a><a name="p12458165414615"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p2718754614"><a name="p2718754614"></a><a name="p2718754614"></a>float</p>
+</td>
+</tr>
+<tr id="row1071810512610"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p12719151964"><a name="p12719151964"></a><a name="p12719151964"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p97191751169"><a name="p97191751169"></a><a name="p97191751169"></a>fp4x2_e2m1_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p154586543614"><a name="p154586543614"></a><a name="p154586543614"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p177191951618"><a name="p177191951618"></a><a name="p177191951618"></a>float</p>
+</td>
+</tr>
+<tr id="row67191353612"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p20719951618"><a name="p20719951618"></a><a name="p20719951618"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p77193510615"><a name="p77193510615"></a><a name="p77193510615"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p1445813547619"><a name="p1445813547619"></a><a name="p1445813547619"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p1471925768"><a name="p1471925768"></a><a name="p1471925768"></a>float</p>
+</td>
+</tr>
+<tr id="row27196514617"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p1719557618"><a name="p1719557618"></a><a name="p1719557618"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p0719195366"><a name="p0719195366"></a><a name="p0719195366"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p1445919541262"><a name="p1445919541262"></a><a name="p1445919541262"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p87191952614"><a name="p87191952614"></a><a name="p87191952614"></a>float</p>
+</td>
+</tr>
+<tr id="row8719951260"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p107191259612"><a name="p107191259612"></a><a name="p107191259612"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p971935761"><a name="p971935761"></a><a name="p971935761"></a>AscendC::mx_fp8_e4m3_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p1845915541965"><a name="p1845915541965"></a><a name="p1845915541965"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p147191551614"><a name="p147191551614"></a><a name="p147191551614"></a>float</p>
+</td>
+</tr>
+<tr id="row971975863"><td class="cellrowborder" valign="top" headers="mcps1.2.6.1.1 "><p id="p571915966"><a name="p571915966"></a><a name="p571915966"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.2 "><p id="p771975566"><a name="p771975566"></a><a name="p771975566"></a>AscendC::mx_fp8_e5m2_t</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.3 "><p id="p1945915548616"><a name="p1945915548616"></a><a name="p1945915548616"></a>float</p>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.6.1.4 "><p id="p8719555612"><a name="p8719555612"></a><a name="p8719555612"></a>float</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+**表 8**  dst、fm、filter、bias支持的精度类型组合 （Kirin 9030）
 
 <a name="table1967917541518"></a>
 <table><thead align="left"><tr id="row10680654195111"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.5.1.1"><p id="p19680105405113"><a name="p19680105405113"></a><a name="p19680105405113"></a><strong id="b768065485115"><a name="b768065485115"></a><a name="b768065485115"></a>左矩阵fm type</strong></p>
@@ -483,7 +824,7 @@
 </tbody>
 </table>
 
-**表 7**  dst、fm、filter、bias支持的精度类型组合 （Kirin x90）
+**表 9**  dst、fm、filter、bias支持的精度类型组合 （Kirin X90）
 
 <a name="table128881130185314"></a>
 <table><thead align="left"><tr id="row68884308538"><th class="cellrowborder" valign="top" width="23.1%" id="mcps1.2.5.1.1"><p id="p1888863016536"><a name="p1888863016536"></a><a name="p1888863016536"></a><strong id="b58886308539"><a name="b58886308539"></a><a name="b58886308539"></a>左矩阵fm type</strong></p>
@@ -521,13 +862,13 @@
 
 -   dst只支持位于CO1，fm只支持位于A2，filter只支持位于B2。
 -   当M、K、N中的任意一个值为0时，该指令不会被执行。
--   当M = 1时，会默认开启GEMV（General Matrix-Vector Multiplication）功能。在这种情况下，Mmad API从L0A Buffer读取数据时，会以ND格式进行读取，而不会将其视为ZZ格式。所以此时左矩阵需要直接按照ND格式进行排布。
+-   当M = 1时，会默认开启GEMV（General Matrix-Vector Multiplication）功能。在这种情况下，Mmad API从L0A Buffer读取数据时，会以ND格式进行读取，而不会将其视为ZZ格式。所以此时左矩阵需要直接按照ND格式进行排布。针对Ascend 950PR/Ascend 950DT，可以通过设置MmadParams的disableGemv参数为true，将该功能关闭。
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 -   通过一个具体的示例来介绍无效数据与有效数据的排布方式。
 
     数据为half类型，当M=30，K=70，N=40的时候，A2中有2x5个16x16矩阵，B2中有5x3个16x16矩阵，CO1中有2x3个16x16矩阵。在这种场景下M、K和N都不是16的倍数，A2中右下角的矩阵实际有效的数据只有14x6个，但是也需要占一个16x16矩阵的空间，其他无效数据在计算中会被忽略。一个16x16分形的数据块中，无效数据与有效数据排布的方式示意如下：
 
-    ![](figures/repeat-times-17.png)
+    ![](figures/repeat-times-20.png)
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

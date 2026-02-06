@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="zh-cn_topic_0000001560400104_row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="zh-cn_topic_0000001560400104_p48327011813"><a name="zh-cn_topic_0000001560400104_p48327011813"></a><a name="zh-cn_topic_0000001560400104_p48327011813"></a><span id="zh-cn_topic_0000001560400104_ph583230201815"><a name="zh-cn_topic_0000001560400104_ph583230201815"></a><a name="zh-cn_topic_0000001560400104_ph583230201815"></a><term id="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="zh-cn_topic_0000001560400104_row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="zh-cn_topic_0000001560400104_p17301775812"><a name="zh-cn_topic_0000001560400104_p17301775812"></a><a name="zh-cn_topic_0000001560400104_p17301775812"></a><span id="zh-cn_topic_0000001560400104_ph2272194216543"><a name="zh-cn_topic_0000001560400104_ph2272194216543"></a><a name="zh-cn_topic_0000001560400104_ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="zh-cn_topic_0000001560400104_p37256491200"><a name="zh-cn_topic_0000001560400104_p37256491200"></a><a name="zh-cn_topic_0000001560400104_p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="zh-cn_topic_0000001560400104_row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="zh-cn_topic_0000001560400104_p48327011813"><a name="zh-cn_topic_0000001560400104_p48327011813"></a><a name="zh-cn_topic_0000001560400104_p48327011813"></a><span id="zh-cn_topic_0000001560400104_ph583230201815"><a name="zh-cn_topic_0000001560400104_ph583230201815"></a><a name="zh-cn_topic_0000001560400104_ph583230201815"></a><term id="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001560400104_zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="zh-cn_topic_0000001560400104_p7948163910184"><a name="zh-cn_topic_0000001560400104_p7948163910184"></a><a name="zh-cn_topic_0000001560400104_p7948163910184"></a>√</p>
 </td>
@@ -114,6 +119,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="85%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000002382908021_p11780174752617"><a name="zh-cn_topic_0000002382908021_p11780174752617"></a><a name="zh-cn_topic_0000002382908021_p11780174752617"></a>待搬运的每个连续传输数据块长度，单位为DataBlock（32字节）。uint16_t类型，取值范围：blockLen∈[1, 65535]。</p>
 <p id="zh-cn_topic_0000002382908021_p4353141191111"><a name="zh-cn_topic_0000002382908021_p4353141191111"></a><a name="zh-cn_topic_0000002382908021_p4353141191111"></a>特别地，当dst位于C2PIPE2GM时，单位为128B；当dst位于C2时，表示源操作数的连续传输数据块长度，单位为64B。</p>
+<p id="zh-cn_topic_0000002382908021_p957989122316"><a name="zh-cn_topic_0000002382908021_p957989122316"></a><a name="zh-cn_topic_0000002382908021_p957989122316"></a>当dst位于C2时，表示源操作数的连续传输数据长度，单位为32B。</p>
 </td>
 </tr>
 <tr id="zh-cn_topic_0000002382908021_row1589112062510"><td class="cellrowborder" valign="top" width="15%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000002382908021_p378018478265"><a name="zh-cn_topic_0000002382908021_p378018478265"></a><a name="zh-cn_topic_0000002382908021_p378018478265"></a>srcGap</p>
@@ -125,7 +131,7 @@
 <tr id="zh-cn_topic_0000002382908021_row3593192082512"><td class="cellrowborder" valign="top" width="15%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000002382908021_p18780347152610"><a name="zh-cn_topic_0000002382908021_p18780347152610"></a><a name="zh-cn_topic_0000002382908021_p18780347152610"></a>dstGap</p>
 </td>
 <td class="cellrowborder" valign="top" width="85%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000002382908021_p18780947162613"><a name="zh-cn_topic_0000002382908021_p18780947162613"></a><a name="zh-cn_topic_0000002382908021_p18780947162613"></a>目的操作数相邻连续数据块间的间隔（前面一个数据块的尾与后面数据块的头的间隔），单位为DataBlock（32字节）。uint16_t类型，dstGap不要超出该数据类型的取值范围。</p>
-<p id="zh-cn_topic_0000002382908021_p77262264817"><a name="zh-cn_topic_0000002382908021_p77262264817"></a><a name="zh-cn_topic_0000002382908021_p77262264817"></a>特别地，当dstLocal位于C2PIPE2GM时，单位为128B；当dstLocal位于C2时，单位为64B。</p>
+<p id="zh-cn_topic_0000002382908021_p77262264817"><a name="zh-cn_topic_0000002382908021_p77262264817"></a><a name="zh-cn_topic_0000002382908021_p77262264817"></a>特别地，当dstLocal位于C2PIPE2GM时，单位为128B；当dstLocal位于C2时，单位为64B。<span id="zh-cn_topic_0000002382908021_ph13801134292512"><a name="zh-cn_topic_0000002382908021_ph13801134292512"></a><a name="zh-cn_topic_0000002382908021_ph13801134292512"></a>当dstLocal位于C2时，单位为32B。</span></p>
 <p id="zh-cn_topic_0000002382908021_p1764792281920"><a name="zh-cn_topic_0000002382908021_p1764792281920"></a><a name="zh-cn_topic_0000002382908021_p1764792281920"></a>在L1 Buffer -&gt; Fixpipe Buffer场景中，dstGap特指源操作数相邻连续数据块的间隔（前面一个数据块的头与后面数据块的头的间隔），单位为DataBlock（32字节）。uint16_t类型，dstGap不要超出该数据类型的取值范围。</p>
 </td>
 </tr>

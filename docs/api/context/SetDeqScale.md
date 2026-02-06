@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -28,19 +33,19 @@
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
--   用于[AddDeqRelu](AddDeqRelu.md)/[Cast](Cast.md)/[CastDeq](CastDeq.md)的s322f16场景
+-   用于[AddDeqRelu](AddDeqRelu.md)/[Cast](Cast.md)/[CastDeq](CastDequant.md)的s322f16场景
 
     ```
     __aicore__ inline void SetDeqScale(half scale)
     ```
 
--   用于[CastDeq](CastDeq.md)（isVecDeq=false）的场景
+-   用于[CastDeq](CastDequant.md)（isVecDeq=false）的场景
 
     ```
     __aicore__ inline void SetDeqScale(float scale, int16_t offset, bool signMode)
     ```
 
--   用于[CastDeq](CastDeq.md)（isVecDeq=true）的场景
+-   用于[CastDeq](CastDequant.md)（isVecDeq=true）的场景
 
     ```
     template <typename T>
@@ -82,8 +87,9 @@
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.2.4.1.2 "><p id="p1579635215228"><a name="p1579635215228"></a><a name="p1579635215228"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p1179555214221"><a name="p1179555214221"></a><a name="p1179555214221"></a>scale量化参数，half类型。</p>
-<p id="p999076132917"><a name="p999076132917"></a><a name="p999076132917"></a><span id="ph599018612911"><a name="ph599018612911"></a><a name="ph599018612911"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，用于<a href="AddDeqRelu.md">AddDeqRelu</a>/<a href="Cast.md">Cast</a>/<a href="CastDeq.md">CastDeq</a>的s322f16场景。</p>
-<p id="p116811630632"><a name="p116811630632"></a><a name="p116811630632"></a><span id="ph528225493214"><a name="ph528225493214"></a><a name="ph528225493214"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，用于<a href="AddDeqRelu.md">AddDeqRelu</a>/<a href="Cast.md">Cast</a>/<a href="CastDeq.md">CastDeq</a>的s322f16场景。</p>
+<p id="p455695691814"><a name="p455695691814"></a><a name="p455695691814"></a><span id="ph8949105641813"><a name="ph8949105641813"></a><a name="ph8949105641813"></a>Ascend 950PR/Ascend 950DT</span>：用于<a href="AddDeqRelu.md">AddDeqRelu</a>/<a href="CastDequant.md">CastDeq</a><span id="ph1754538123720"><a name="ph1754538123720"></a><a name="ph1754538123720"></a>/<a href="Cast.md">Cast</a></span>的s322f16场景。</p>
+<p id="p999076132917"><a name="p999076132917"></a><a name="p999076132917"></a><span id="ph599018612911"><a name="ph599018612911"></a><a name="ph599018612911"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，用于<a href="AddDeqRelu.md">AddDeqRelu</a>/<a href="Cast.md">Cast</a>/<a href="CastDequant.md">CastDeq</a>的s322f16场景。</p>
+<p id="p116811630632"><a name="p116811630632"></a><a name="p116811630632"></a><span id="ph528225493214"><a name="ph528225493214"></a><a name="ph528225493214"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，用于<a href="AddDeqRelu.md">AddDeqRelu</a>/<a href="Cast.md">Cast</a>/<a href="CastDequant.md">CastDeq</a>的s322f16场景。</p>
 </td>
 </tr>
 <tr id="row2137145181815"><td class="cellrowborder" valign="top" width="18.52%" headers="mcps1.2.4.1.1 "><p id="p179035252218"><a name="p179035252218"></a><a name="p179035252218"></a>scale（float）</p>
@@ -91,7 +97,7 @@
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.2.4.1.2 "><p id="p7789185214226"><a name="p7789185214226"></a><a name="p7789185214226"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p20789195232218"><a name="p20789195232218"></a><a name="p20789195232218"></a>scale量化参数，float类型。</p>
-<p id="p1249811013143"><a name="p1249811013143"></a><a name="p1249811013143"></a>用于<a href="CastDeq.md">CastDeq</a>（isVecDeq=false）场景设置DEQSCALE寄存器的值。</p>
+<p id="p1249811013143"><a name="p1249811013143"></a><a name="p1249811013143"></a>用于<a href="CastDequant.md">CastDeq</a>（isVecDeq=false）场景设置DEQSCALE寄存器的值。</p>
 </td>
 </tr>
 <tr id="row137797127280"><td class="cellrowborder" valign="top" width="18.52%" headers="mcps1.2.4.1.1 "><p id="p16783195216221"><a name="p16783195216221"></a><a name="p16783195216221"></a>offset</p>
@@ -99,7 +105,7 @@
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.2.4.1.2 "><p id="p14782205213226"><a name="p14782205213226"></a><a name="p14782205213226"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p16781115219227"><a name="p16781115219227"></a><a name="p16781115219227"></a>offset量化参数，int16_t类型，只有前9位有效。</p>
-<p id="p6760911151412"><a name="p6760911151412"></a><a name="p6760911151412"></a>用于<a href="CastDeq.md">CastDeq</a>（isVecDeq=false）的场景，设置offset。</p>
+<p id="p6760911151412"><a name="p6760911151412"></a><a name="p6760911151412"></a>用于<a href="CastDequant.md">CastDeq</a>（isVecDeq=false）的场景，设置offset。</p>
 </td>
 </tr>
 <tr id="row19615183817191"><td class="cellrowborder" valign="top" width="18.52%" headers="mcps1.2.4.1.1 "><p id="p6780452102214"><a name="p6780452102214"></a><a name="p6780452102214"></a>signMode</p>
@@ -107,14 +113,14 @@
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.2.4.1.2 "><p id="p4780145232218"><a name="p4780145232218"></a><a name="p4780145232218"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p1779752192216"><a name="p1779752192216"></a><a name="p1779752192216"></a>bool类型，表示量化结果是否带符号。</p>
-<p id="p13636582366"><a name="p13636582366"></a><a name="p13636582366"></a>用于<a href="CastDeq.md">CastDeq</a>（isVecDeq=false）的场景，设置signMode。</p>
+<p id="p13636582366"><a name="p13636582366"></a><a name="p13636582366"></a>用于<a href="CastDequant.md">CastDeq</a>（isVecDeq=false）的场景，设置signMode。</p>
 </td>
 </tr>
 <tr id="row250163914199"><td class="cellrowborder" valign="top" width="18.52%" headers="mcps1.2.4.1.1 "><p id="p167521752102219"><a name="p167521752102219"></a><a name="p167521752102219"></a>vdeq</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.07%" headers="mcps1.2.4.1.2 "><p id="p157511152112217"><a name="p157511152112217"></a><a name="p157511152112217"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p19784265526"><a name="p19784265526"></a><a name="p19784265526"></a>用于<a href="CastDeq.md">CastDeq</a>（isVecDeq=true）的场景，输入量化tensor，大小为128Byte。</p>
+<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p19784265526"><a name="p19784265526"></a><a name="p19784265526"></a>用于<a href="CastDequant.md">CastDeq</a>（isVecDeq=true）的场景，输入量化tensor，大小为128Byte。</p>
 <p id="p167301549113818"><a name="p167301549113818"></a><a name="p167301549113818"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
 <p id="p11840758205316"><a name="p11840758205316"></a><a name="p11840758205316"></a><span id="ph1479701815419"><a name="ph1479701815419"></a><a name="ph1479701815419"></a>LocalTensor的起始地址需要32字节对齐。</span></p>
 </td>

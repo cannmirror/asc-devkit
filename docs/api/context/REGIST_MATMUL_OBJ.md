@@ -56,7 +56,7 @@ REGIST_MATMUL_OBJ(tpipe, workspace, ...)
 
 -   在分离模式中，本接口必须在[InitBuffer](InitBuffer.md)接口前调用。
 -   在程序中，最多支持定义4个Matmul对象。
--   当代码中只有一个Matmul对象时，本接口可以不传入tiling参数，通过[Init](Init-29.md)接口单独传入tiling参数。
+-   当代码中只有一个Matmul对象时，本接口可以不传入tiling参数，通过[Init](Init-86.md)接口单独传入tiling参数。
 -   当代码中有多个Matmul对象时，必须满足Matmul对象与其tiling参数一一对应，依次传入，具体方式请参考调用示例。
 
 ## 调用示例<a name="section15468239131714"></a>
