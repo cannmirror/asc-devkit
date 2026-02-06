@@ -4,12 +4,14 @@
 
 | 产品 | 是否支持  |
 | :-----------| :------: |
+|<cann-filter npu_type = "950"> Ascend 950PR/Ascend 950DT | √</cann-filter> |
 | Atlas A3 训练系列产品/Atlas A3 推理系列产品 |    √     |
 | Atlas A2 训练系列产品/Atlas A2 推理系列产品 |    √     |
 
 ## 功能说明
 
 在AI Core内部，Scalar单元和DMA单元都可能对Global Memory进行访问。
+
 ![](../figures/dcci.png "DataCache内存层次示意图") \\
 
 如上图所示：
@@ -53,9 +55,13 @@ Scalar单元访问Global Memory，首先会访问每个核内的Data Cache，因
 PIPE_S
 
 
+<cann-filter npu_type = "950">
+
 ## 约束说明
 
-无
+针对Ascend 950PR/Ascend 950DT，不支持asc_dcci_single_ub、asc_dcci_entire_ub接口。
+
+</cann-filter>
 
 ## 调用示例
 
