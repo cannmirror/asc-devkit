@@ -861,9 +861,11 @@ public:
         }
         ASSERT(enAtomic == 0);
         ASSERT(kfcMsg_.body.isFirstIter == 1);
-        kfcMsg_.body.cAddr = GetTscmAddr(ubCmatrix);
         if (ubCmatrix.GetPosition() == static_cast<int32_t>(TPosition::TSCM)) {
+            kfcMsg_.body.cAddr = GetTscmAddr(ubCmatrix);
             kfcMsg_.body.cIsTscm = 1;
+        } else {
+            kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(ubCmatrix.GetPhyAddr());
         }
         kfcMsg_.body.enAtomic = (uint8_t)(enAtomic);
         kfcMsg_.body.sync = sync;
