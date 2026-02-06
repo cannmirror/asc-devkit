@@ -15,6 +15,8 @@
 #ifndef EXPERIMENTAL_TENSOR_API_ARCH_ARCH_H
 #define EXPERIMENTAL_TENSOR_API_ARCH_ARCH_H
 
+#include "include/experimental/tensor_api/arch/cube_compute/cube_compute_struct.h"
+#include "include/experimental/tensor_api/arch/cube_datamove/cube_datamove_struct.h"
 #include "include/experimental/tensor_api/arch/cube_compute/mmad.h"
 #include "include/experimental/tensor_api/arch/cube_datamove/load_data.h"
 #include "include/experimental/tensor_api/arch/cube_datamove/data_copy.h"

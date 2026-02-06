@@ -24,44 +24,30 @@ namespace TensorInternal {
 class MmadIgnore
 {
 public:
-    template <typename T, typename U, typename S, const MmadTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& fm, const S& filter) {}
+    template <const MmadTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) {}
 };
 
-template<Hardware dstPos, Hardware fmPos, Hardware filterPos, uint32_t Version, size_t dimension>
+template<Hardware dstPos, Hardware fmPos, Hardware filterPos, Hardware biasPos, uint32_t Version, size_t dimension>
 struct MmadTensor2Tensor
 {
     using type = MmadIgnore;
 };
 
 template<>
-struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, ArchVersion::V2201, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V2201, FOUR_DIM_DATA>
 {
     using type = MmadFourDim2201;
 };
 
-
-class MmadWithBiasIgnore
-{
-public:
-    template <typename T, typename U, typename S, typename V, const MmadTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& fm, const S& filter, const V& bias) {}
-};
-
-template<Hardware dstPos, Hardware fmPos, Hardware filterPos, Hardware biasPos, uint32_t Version, size_t dimension>
-struct MmadWithBiasTensor2Tensor
-{
-    using type = MmadWithBiasIgnore;
-};
-
 template<>
-struct MmadWithBiasTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V2201, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V2201, FOUR_DIM_DATA>
 {
     using type = MmadWithBiasFourDim2201;
 };
 
 template<>
-struct MmadWithBiasTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V2201, FOUR_DIM_DATA>
+struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V2201, FOUR_DIM_DATA>
 {
     using type = MmadWithBiasFourDim2201;
 };

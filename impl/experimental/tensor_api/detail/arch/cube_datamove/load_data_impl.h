@@ -15,17 +15,6 @@
 #ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
 #define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
 
-namespace AscendC {
-struct LoadDataTrait {
-    __aicore__ constexpr LoadDataTrait() {}
-
-    __aicore__ constexpr LoadDataTrait(const bool transposedIn) : transposed(transposedIn) {}
-
-    bool transposed = false;
-};
-constexpr LoadDataTrait DEFAULT_LOAD_DATA_TRAIT{};
-}
-
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_routing.h"
 
 namespace AscendC {
@@ -33,11 +22,8 @@ template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typen
 __aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type 
 LoadData(const T& dst, const U& src)
 {
-    auto coord = AscendC::MakeCoord(
-        AscendC::MakeCoord(Std::Int<0>{}, Std::Int<0>{}),
-        AscendC::MakeCoord(Std::Int<0>{}, Std::Int<0>{})
-    );
-    LoadData<trait, T, U, decltype(coord)>(dst, src, coord);
+    LoadData<trait, T, U>(dst, src, 
+        MakeCoord(MakeCoord(Std::Int<0>{}, Std::Int<0>{}), MakeCoord(Std::Int<0>{}, Std::Int<0>{})));
 }
 
 template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U, class Coord>
@@ -48,7 +34,7 @@ LoadData(const T& dst, const U& src, const Coord& coord)
     constexpr Hardware srcPos = TensorInternal::GetHardPos<U>();
     using Tensor2Tensor = typename TensorInternal::LoadDataTensor2Tensor<dstPos, srcPos, 
         TensorInternal::CURRENT_ARCH_VERSION, TensorInternal::FOUR_DIM_DATA>::type;
-    Tensor2Tensor{}.template Run<T, U, trait, Coord>(dst, src, coord);
+    Tensor2Tensor{}.template Run<trait, T, U, Coord>(dst, src, coord);
 }
 } // namespace AscendC
 #endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H

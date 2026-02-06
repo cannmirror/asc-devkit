@@ -22,10 +22,10 @@ namespace TensorInternal {
 class MmadGenParams
 {
 public:
-    template <typename T, typename U, typename S, const MmadTrait& trait>
+    template <const MmadTrait& trait, typename T, typename U, typename S>
     __aicore__ inline auto GenParams(const T& dst, const U& fm, const S& filter)
     {
-        return GenParamsImpl<T, U, S, trait>(dst, fm, filter);
+        return GenParamsImpl<trait, T, U, S>(dst, fm, filter);
     }
 private:
     template<typename T>
@@ -78,7 +78,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Dst Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, typename S, const MmadTrait& trait>
+    template <const MmadTrait& trait, typename T, typename U, typename S>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using dstDataType = typename T::elementType;
@@ -95,10 +95,10 @@ private:
 #endif
     }
 
-    template <typename T, typename U, typename S, const MmadTrait& trait>
+    template <const MmadTrait& trait, typename T, typename U, typename S>
     __aicore__ inline auto GenParamsImpl(const T& dst, const U& fm, const S& filter)
     {
-        CheckTemplate<T, U, S, trait>();
+        CheckTemplate<trait, T, U, S>();
         using fmType = typename U::elementType;
         auto fmLayout = fm.Layout();
         auto dstLayout = dst.Layout();
@@ -115,11 +115,11 @@ private:
 class MmadCore
 {
 public:
-    template <typename T, typename U, typename S, typename V, const MmadTrait& trait, size_t... Is>
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, size_t... Is>
     __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const V& tupleParams, Std::index_sequence<Is...>)
     {
         // MTE2
-        MmadImpl(dst.Engine().Begin().Get(), fm.Engine().Begin().Get(), filter.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+        MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 private:
     template <typename T, typename U, typename S>
@@ -137,11 +137,11 @@ private:
 class MmadFourDim2201 : public MmadCore, public MmadGenParams
 {
 public:
-    template <typename T, typename U, typename S, const MmadTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& fm, const S& filter)
+    template <const MmadTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) 
     {
-        auto params = GenParams<T, U, S, trait>(dst, fm, filter);
-        Mmad<T, U, S, decltype(params), trait>(dst, fm, filter, params, tuple_sequence<decltype(params)>{});
+        auto params = GenParams<trait>(args...);
+        Mmad<trait>(args..., params, tuple_sequence<decltype(params)>{});
     }
 };
 } // namespace TensorInternal

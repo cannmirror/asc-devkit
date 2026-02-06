@@ -23,7 +23,7 @@ namespace TensorInternal {
 
 class LoadDataFourDim2201L12L0ABase{
 public:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         return;
     }
@@ -94,7 +94,7 @@ public:
             "LoadDataFourDim2201L12L0A Layout->Stride->Column->ZeroDim is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, const LoadDataTrait& trait>
+    template <const LoadDataTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -106,7 +106,7 @@ public:
             CheckZNTemplate<U>();
         }
         CheckZZTemplate<T>();
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, 
             Std::tuple<__ca__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__ca__ half, __cbuf__ half>, 
             Std::tuple<__ca__ float, __cbuf__ float>, Std::tuple<__ca__ int16_t, __cbuf__ int16_t>, 
@@ -116,7 +116,8 @@ public:
 #endif
     }
 
-    __aicore__ inline void SetMatrixL0AImpl(uint64_t config)
+    template<typename T>
+    __aicore__ inline void SetMatrixL0AImpl(T config)
     {
         if ASCEND_IS_AIV {
             return;
@@ -153,36 +154,36 @@ public:
 
 class LoadDataFourDim2201L12L0ANZ2ZZ : public LoadDataFourDim2201L12L0ABase {
 public:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenLoadDataParams<T, U, trait, Coord>(dst, src, coord);
-        LoadDataL0AImpl<T, U, decltype(params), trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+        auto params = GenLoadDataParams<trait, T, U, Coord>(dst, src, coord);
+        LoadDataL0AImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src, const Coord& coord)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
         using DstType = typename T::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * 16;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * 32 / sizeof(DstType);
-        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * 16;
-        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * 32 / sizeof(DstType);
-        auto indexRow = Std::get<1>(Std::get<0>(coord)) * 16;
-        auto indexCol = Std::get<1>(Std::get<1>(coord)) * 32 / sizeof(DstType);
+        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * TensorInternal::FRACTAL_FIXED;
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * TensorInternal::FRACTAL_FIXED;
+        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto indexRow = Std::get<1>(Std::get<0>(coord)) * TensorInternal::FRACTAL_FIXED;
+        auto indexCol = Std::get<1>(Std::get<1>(coord)) * TensorInternal::C0_SIZE / sizeof(DstType);
         // NZ
-        auto config = srcRow | (1u << 16);
+        auto config = srcRow | TensorInternal::SHIFT_LEFT_16;
         auto params = Std::make_tuple(dstRow, dstCol, srcRow, srcCol, indexRow, indexCol, config);
         return params;
     }
 
-    template <typename T, typename U, typename V, const LoadDataTrait& trait, size_t... Is>
+    template <const LoadDataTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void LoadDataL0AImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        LoadL1ToL0AImpl<trait.transposed>(dst.Engine().Begin().Get(), src.Engine().Begin().Get(),
+        LoadL1ToL0AImpl<trait.transposed>(dst.Data().Get(), src.Data().Get(),
             Std::get<Is>(tupleParams)...);
     }
 
@@ -206,27 +207,27 @@ private:
 
 class LoadDataFourDim2201L12L0AZN2ZZB8 : public LoadDataFourDim2201L12L0ABase {
 public:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenLoadDataParams<T, U, trait, Coord>(dst, src, coord);
-        LoadDataL0AImpl<T, U, decltype(params), trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+        auto params = GenLoadDataParams<trait, T, U, Coord>(dst, src, coord);
+        LoadDataL0AImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src, const Coord& coord)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
         using DstType = typename T::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * 16;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * 32 / sizeof(DstType);
+        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * TensorInternal::FRACTAL_FIXED;
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * TensorInternal::C0_SIZE / sizeof(DstType);
         // ZN
-        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * 32 / sizeof(DstType);
-        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * 16;
-        auto indexRow = Std::get<1>(Std::get<0>(coord)) * 32 / sizeof(DstType);
-        auto indexCol = Std::get<1>(Std::get<1>(coord)) * 16;
+        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * TensorInternal::FRACTAL_FIXED;
+        auto indexRow = Std::get<1>(Std::get<0>(coord)) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto indexCol = Std::get<1>(Std::get<1>(coord)) * TensorInternal::FRACTAL_FIXED;
         constexpr const uint32_t SHIFT_BLOCK_LEN = 4;
         constexpr const uint32_t SHIFT_BLOCK_BYTE = 5;
         constexpr uint16_t CUBE_BLOCK_SIZE = 512;
@@ -240,10 +241,10 @@ private:
         return params;
     }
 
-    template <typename T, typename U, typename V, const LoadDataTrait& trait, size_t... Is>
+    template <const LoadDataTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void LoadDataL0AImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        LoadL1ToL0AImpl<trait.transposed>(dst.Engine().Begin().Get(), src.Engine().Begin().Get(),
+        LoadL1ToL0AImpl<trait.transposed>(dst.Data().Get(), src.Data().Get(),
             Std::get<Is>(tupleParams)...);
     }
 
@@ -276,35 +277,35 @@ private:
 
 class LoadDataFourDim2201L12L0AZN2ZZ : public LoadDataFourDim2201L12L0ABase {
 public:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenLoadDataParams<T, U, trait, Coord>(dst, src, coord);
-        LoadDataL0AImpl<T, U, decltype(params), trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+        auto params = GenLoadDataParams<trait, T, U, Coord>(dst, src, coord);
+        LoadDataL0AImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src, const Coord& coord)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
         using DstType = typename T::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * 16;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * 32 / sizeof(DstType);
-        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * 32 / sizeof(DstType);
-        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * 16;
-        auto indexRow = Std::get<1>(Std::get<0>(coord)) * 32 / sizeof(DstType);
-        auto indexCol = Std::get<1>(Std::get<1>(coord)) * 16;
-        auto config = srcCol | (1u << 16);
+        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * TensorInternal::FRACTAL_FIXED;
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout) * TensorInternal::FRACTAL_FIXED;
+        auto indexRow = Std::get<1>(Std::get<0>(coord)) * TensorInternal::C0_SIZE / sizeof(DstType);
+        auto indexCol = Std::get<1>(Std::get<1>(coord)) * TensorInternal::FRACTAL_FIXED;
+        auto config = srcCol | TensorInternal::SHIFT_LEFT_16;
         auto params = Std::make_tuple(dstRow, dstCol, srcRow, srcCol, indexRow, indexCol, config);
         return params;
     }
 
-    template <typename T, typename U, typename V, const LoadDataTrait& trait, size_t... Is>
+    template <const LoadDataTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void LoadDataL0AImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        LoadL1ToL0AImpl<trait.transposed>(dst.Engine().Begin().Get(), src.Engine().Begin().Get(),
+        LoadL1ToL0AImpl<trait.transposed>(dst.Data().Get(), src.Data().Get(),
             Std::get<Is>(tupleParams)...);
     }
 
@@ -329,14 +330,14 @@ private:
 class LoadDataFourDim2201L12L0A : public LoadDataFourDim2201L12L0ANZ2ZZ, public LoadDataFourDim2201L12L0AZN2ZZB8,
     public LoadDataFourDim2201L12L0AZN2ZZ {
 public:
-    template <typename T, typename U, const LoadDataTrait& trait, class Coord>
+    template <const LoadDataTrait& trait, typename T, typename U, class Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         if constexpr (IsNZFormat<U>::value && IsZZFormat<T>::value) {
-            LoadDataFourDim2201L12L0ANZ2ZZ::Run<T, U, trait, Coord>(dst, src, coord);
+            LoadDataFourDim2201L12L0ANZ2ZZ::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsZNFormat<U>::value && IsZZFormat<T>::value && (sizeof(typename U::elementType) == 1)) {
-            LoadDataFourDim2201L12L0AZN2ZZB8::Run<T, U, trait, Coord>(dst, src, coord);
+            LoadDataFourDim2201L12L0AZN2ZZB8::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsZNFormat<U>::value && IsZZFormat<T>::value) {
-            LoadDataFourDim2201L12L0AZN2ZZ::Run<T, U, trait, Coord>(dst, src, coord);
+            LoadDataFourDim2201L12L0AZN2ZZ::Run<trait, T, U, Coord>(dst, src, coord);
         }
     }
 };

@@ -22,10 +22,10 @@ namespace AscendC {
 namespace TensorInternal {
 class CopyCbufToFB2201 {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto params = GenDataCopyParams<T, U, trait>(dst, src);
-        DataCopyImpl<T, U, decltype(params), trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+        auto params = GenDataCopyParams<trait, T, U>(dst, src);
+        DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
@@ -44,7 +44,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>, "CopyCbufToFB Layout->Stride->Column->ZeroDim, is not Std::Int<0> type!");
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "CopyCbufToFB Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
     }
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -52,7 +52,7 @@ private:
 
         CheckNDTemplate<T>();
         CheckNDTemplate<U>();
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, 
             Std::tuple<__fbuf__ bfloat16_t, __cbuf__ bfloat16_t>, Std::tuple<__fbuf__ half, __cbuf__ half>, 
             Std::tuple<__fbuf__ float, __cbuf__ float>, Std::tuple<__fbuf__ int16_t, __cbuf__ int16_t>, 
@@ -64,11 +64,11 @@ private:
 #endif
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
         constexpr uint32_t C2PIPE2GM_UNIT = TensorInternal::C0_SIZE * 4;
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
 
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -88,12 +88,12 @@ private:
         return Std::make_tuple(blockCount, blockLen, srcStride, dstStride);
     }
 
-    template <typename T, typename U, typename V, const DataCopyTrait& trait, size_t... Is>
+    template <const DataCopyTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
-        CopyCbufToFb<dstType, srcType>(reinterpret_cast<uint64_t>(dst.Engine().Begin().Get()), (__cbuf__ srcType*)src.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+        CopyCbufToFb<dstType, srcType>(reinterpret_cast<uint64_t>(dst.Data().Get()), (__cbuf__ srcType*)src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <typename T, typename U>

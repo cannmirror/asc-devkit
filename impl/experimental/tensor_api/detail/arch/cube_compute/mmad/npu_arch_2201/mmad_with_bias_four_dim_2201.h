@@ -23,10 +23,10 @@ namespace TensorInternal {
 class MmadWithBiasGenParams
 {
 public:
-    template <typename T, typename U, typename S, typename V, const MmadTrait& trait>
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
     __aicore__ inline auto GenParams(const T& dst, const U& fm, const S& filter, const V& bias)
     {
-        return GenParamsImpl<T, U, S, V, trait>(dst, fm, filter, bias);
+        return GenParamsImpl<trait, T, U, S, V>(dst, fm, filter, bias);
     }
 private:
     template<typename T>
@@ -95,7 +95,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Bias Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, typename S, typename V, const MmadTrait& trait>
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using dstDataType = typename T::elementType;
@@ -126,10 +126,10 @@ private:
 #endif
     }
 
-    template <typename T, typename U, typename S, typename V, const MmadTrait& trait>
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
     __aicore__ inline auto GenParamsImpl(const T& dst, const U& fm, const S& filter, const V& bias)
     {
-        CheckTemplate<T, U, S, V, trait>();
+        CheckTemplate<trait, T, U, S, V>();
         using fmType = typename U::elementType;
         constexpr auto biasPos = GetHardPos<V>();
         auto fmLayout = fm.Layout();
@@ -151,12 +151,12 @@ private:
 class MmadWithBiasCore
 {
 public:
-    template <typename T, typename U, typename S, typename V, typename K, const MmadTrait& trait, size_t... Is>
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename K, size_t... Is>
     __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const K& tupleParams, Std::index_sequence<Is...>)
     {
         // MTE2
-        MmadImpl(dst.Engine().Begin().Get(), fm.Engine().Begin().Get(), filter.Engine().Begin().Get(), 
-            reinterpret_cast<uint64_t>(bias.Engine().Begin().Get()), Std::get<Is>(tupleParams)...);
+        MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), 
+            reinterpret_cast<uint64_t>(bias.Data().Get()), Std::get<Is>(tupleParams)...);
     }
 private:
     template <typename T, typename U, typename S>
@@ -174,11 +174,11 @@ private:
 class MmadWithBiasFourDim2201 : public MmadWithBiasCore, public MmadWithBiasGenParams
 {
 public:
-    template <typename T, typename U, typename S, typename V, const MmadTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& fm, const S& filter, const V& bias)
+    template <const MmadTrait& trait, typename ...Args>
+    __aicore__ inline void Run(const Args&... args) 
     {
-        auto params = GenParams<T, U, S, V, trait>(dst, fm, filter, bias);
-        Mmad<T, U, S, V, decltype(params), trait>(dst, fm, filter, bias, params, tuple_sequence<decltype(params)>{});
+        auto params = GenParams<trait>(args...);
+        Mmad<trait>(args..., params, tuple_sequence<decltype(params)>{});
     }
 };
 } // namespace TensorInternal

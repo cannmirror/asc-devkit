@@ -176,7 +176,9 @@ public:
             MakeCoord(Std::Int<0>{}, Std::Int<0>{})
         );
 
-        LoadData<DEFAULT_LOAD_DATA_TRAIT>(l0bTensor, b1Tensor, coord);
+        static constexpr LoadDataTrait triat = {true};
+
+        LoadData<triat>(l0bTensor, b1Tensor, coord);
     }
         
     __aicore__ inline void ComputeBt()

@@ -24,8 +24,8 @@ namespace TensorInternal {
 
 class DataCopyIgnore {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {}
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {}
 };
 
 template <Hardware dstTPos, Hardware srcTpos, uint32_t Version, size_t dimension>

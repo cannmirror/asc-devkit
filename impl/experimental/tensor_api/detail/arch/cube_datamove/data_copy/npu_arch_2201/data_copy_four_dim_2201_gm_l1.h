@@ -22,16 +22,16 @@ namespace AscendC {
 namespace TensorInternal {
 class CopyGmToCbufBase {
 public:
-    template <typename T, typename U, typename V, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U, typename V>
     __aicore__ inline void DataCopy(const T& dst, const U& src, const V& tupleParams) {
-        DataCopyImpl<T, U, V, trait>(dst, src, tupleParams, tuple_sequence<V>{});
+        DataCopyImpl<trait, T, U, V>(dst, src, tupleParams, tuple_sequence<V>{});
     }
 
 private:
-    template <typename T, typename U, typename V, const DataCopyTrait& trait, size_t... Is>
+    template <const DataCopyTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        CopyGmToCbuf(dst.Engine().Begin().Get(), src.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+        CopyGmToCbuf(dst.Data().Get(), src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <typename T>
@@ -50,11 +50,11 @@ private:
 
 class CopyGmToCbufNZBase : public CopyGmToCbufBase {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
 
-        auto params = GenDataCopyParams<T, U, trait>(dst, src);
-        CopyGmToCbufBase::DataCopy<T, U, decltype(params), trait>(dst, src, params);
+        auto params = GenDataCopyParams<trait, T, U>(dst, src);
+        CopyGmToCbufBase::DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -73,7 +73,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -91,10 +91,10 @@ private:
 #endif
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
 
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -117,10 +117,10 @@ private:
 
 class CopyGmToCbufNDBase : public CopyGmToCbufBase {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto params = GenDataCopyParams<T, U, trait>(dst, src);
-        CopyGmToCbufBase::DataCopy<T, U, decltype(params), trait>(dst, src, params);
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+        auto params = GenDataCopyParams<trait, T, U>(dst, src);
+        CopyGmToCbufBase::DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -140,7 +140,7 @@ private:
         static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>, "Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -149,17 +149,17 @@ private:
         CheckNDTemplate<T>();
         CheckNDTemplate<U>();
 
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
         static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, 
             Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, Std::tuple<__cbuf__ half, __gm__ half>, 
             Std::tuple<__cbuf__ float, __gm__ float>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>>, "The data type is not supported.");
 #endif
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
 
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
@@ -183,10 +183,10 @@ private:
 
 class CopyGmToCbufMultiND2NZBase {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto params = GenDataCopyParams<T, U, trait>(dst, src);
-        DataCopyImpl<T, U, decltype(params), trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+        auto params = GenDataCopyParams<trait, T, U>(dst, src);
+        DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
@@ -224,7 +224,7 @@ private:
             "Dst Layout->Stride->Row->OneDim, is not Std::Int<C0_SIZE / sizeof(type) * FRACTAL_FIXED> type!");
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -242,17 +242,17 @@ private:
 #endif
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
 
         using type = typename U::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * 16;
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * 32 / sizeof(type);
+        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * TensorInternal::FRACTAL_FIXED;
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * TensorInternal::C0_SIZE / sizeof(type);
         auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
 
@@ -268,10 +268,10 @@ private:
                 dstNzNStride, dstNzMatrixStride);
     }
 
-    template <typename T, typename U, typename V, const DataCopyTrait& trait, size_t... Is>
+    template <const DataCopyTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        CopyGmToCbufMultiNd2nz(dst.Engine().Begin().Get(), src.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+        CopyGmToCbufMultiNd2nz(dst.Data().Get(), src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <typename T>
@@ -297,10 +297,10 @@ private:
 
 class CopyGmToCbufMultiDN2ZNBase {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
-        auto params = GenDataCopyParams<T, U, trait>(dst, src);
-        DataCopyImpl<T, U, decltype(params), trait>(dst, src, params, tuple_sequence<decltype(params)>{});
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+        auto params = GenDataCopyParams<trait, T, U>(dst, src);
+        DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
@@ -337,7 +337,7 @@ private:
             "Dst Layout->Stride->Column->OneDim, is not Std::Int<C0_SIZE / sizeof(type) * FRACTAL_FIXED> type!");
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
@@ -355,17 +355,17 @@ private:
 #endif
     }
 
-    template <typename T, typename U, const DataCopyTrait& trait>
+    template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        CheckTemplate<T, U, trait>();
+        CheckTemplate<trait, T, U>();
 
         using type = typename U::elementType;
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * 32 / sizeof(type);
-        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * 16;
+        auto dstRow = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) * TensorInternal::C0_SIZE / sizeof(type);
+        auto dstCol = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * TensorInternal::FRACTAL_FIXED;
         auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
 
@@ -382,10 +382,10 @@ private:
                 dstNzNStride, dstNzMatrixStride);
     }
 
-    template <typename T, typename U, typename V, const DataCopyTrait& trait, size_t... Is>
+    template <const DataCopyTrait& trait, typename T, typename U, typename V, size_t... Is>
     __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        CopyGmToCbufMultiNd2nz(dst.Engine().Begin().Get(), src.Engine().Begin().Get(), Std::get<Is>(tupleParams)...);
+        CopyGmToCbufMultiNd2nz(dst.Data().Get(), src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <typename T>
@@ -412,16 +412,16 @@ private:
 class DataCopyFourDim2201GM2L1 : public CopyGmToCbufMultiND2NZBase, public CopyGmToCbufMultiDN2ZNBase,
     public CopyGmToCbufNZBase, public CopyGmToCbufNDBase {
 public:
-    template <typename T, typename U, const DataCopyTrait& trait>
-    __aicore__ inline void Run(const T& dst, const U& src) {
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufNZBase::Run<T, U, trait>(dst, src);
+            CopyGmToCbufNZBase::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsNDFormat<U>::value && IsNZFormat<T>::value) {
-            CopyGmToCbufMultiND2NZBase::Run<T, U, trait>(dst, src);
+            CopyGmToCbufMultiND2NZBase::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsDNFormat<U>::value && IsZNFormat<T>::value) {
-            CopyGmToCbufMultiDN2ZNBase::Run<T, U, trait>(dst, src);
+            CopyGmToCbufMultiDN2ZNBase::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
-            CopyGmToCbufNDBase::Run<T, U, trait>(dst, src);
+            CopyGmToCbufNDBase::Run<trait, T, U, Coord>(dst, src, coord);
         }
     }
 };
