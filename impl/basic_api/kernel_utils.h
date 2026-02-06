@@ -27,16 +27,6 @@
 #include "kernel_scalar_convert.h"
 #include "kernel_utils_base.h"
 
-enum class HF32Mode {
-    Enable,
-    Disable
-};
-
-enum class HF32TransMode {
-    Enable,
-    Disable
-};
-
 #if ENABLE_CV_COMM_VIA_SSBUF != 0 && __MIX_CORE_AIC_RATION__ != 1
 #define KFC_C310_SSBUF 1
 #else

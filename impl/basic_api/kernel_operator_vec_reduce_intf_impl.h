@@ -955,6 +955,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
 }
 #pragma end_pipe
 
+// GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.
 template <typename T>
 __aicore__ inline void GetReduceMaxMinCount(uint32_t &maxMinValue, uint32_t &maxMinIndex)
 {
@@ -967,6 +968,7 @@ __aicore__ inline void GetReduceMaxMinCount(uint32_t &maxMinValue, uint32_t &max
     GetReduceMaxMinCountImpl<PrimType>(maxMinValue, maxMinIndex);
 }
 
+// GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.
 template <typename T>
 __aicore__ inline void GetReduceMaxMinCount(uint32_t &maxMinValue)
 {
@@ -1008,11 +1010,13 @@ __aicore__ inline int64_t GetReduceRepeatSumSpr()
 #endif
 }
 
+// GetAccVal has been updated, please use GetReduceRepeatSumSpr instead.
 __aicore__ inline int64_t GetAccVal()
 {
     return GetReduceRepeatSumSpr();
 }
 
+// GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.
 template <typename T>
 __aicore__ inline __inout_pipe__(S) void GetReduceMaxMinCount(T &maxMinValue, T &maxMinIndex)
 {
@@ -1027,6 +1031,7 @@ __aicore__ inline __inout_pipe__(S) void GetReduceMaxMinCount(T &maxMinValue, T 
     GetReduceMaxMinCountImpl<T>(maxMinValue, maxMinIndex);
 }
 
+// GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.
 template <typename T>
 __aicore__ inline __inout_pipe__(S) void GetReduceMaxMinCount(T &maxMinValue)
 {
@@ -1070,6 +1075,7 @@ __aicore__ inline __inout_pipe__(S) T GetReduceRepeatSumSpr()
     return GetAccValImpl<T>();
 }
 
+// GetAccVal has been updated, please use GetReduceRepeatSumSpr instead.
 template <typename T>
 __aicore__ inline __inout_pipe__(S) T GetAccVal()
 {

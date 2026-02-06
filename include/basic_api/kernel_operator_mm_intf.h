@@ -34,6 +34,17 @@
 #endif
 
 namespace AscendC {
+
+enum class HF32Mode {
+    ENABLE,
+    DISABLE
+};
+
+enum class HF32TransMode {
+    NEAREST_ZERO,
+    NEAREST_EVEN
+};
+
 /* **************************************************************************************************
  * LoadData 2d                                             *
  * ************************************************************************************************* */
@@ -322,6 +333,12 @@ template <typename T, typename U = PrimT<T>,
 __aicore__ inline void Fill(const LocalTensor<T> &dst,
     const InitConstValueParams<U> &initConstValueParams);
     
+// InitConstValue has been updated, please use Fill instead.
+template <typename T, typename U = PrimT<T>,
+    typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+__aicore__ inline void InitConstValue(const LocalTensor<T> &dst,
+    const InitConstValueParams<U> &initConstValueParams);
+    
 /* **************************************************************************************************
  * SetLoadDataPaddingValue                                             *
  * ************************************************************************************************* */
@@ -396,14 +413,6 @@ __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTens
 
 /*
  * @brief Sets whether to enable HF32 mode for Mmad computation
- * @param [in] hf32Mode Control parameter for Mmad HF32 mode
- * @note When hf32Mode is true, FP32 data in L0A/L0B will be rounded to HF32 before matrix multiplication; when false,
- * regular FP32 matrix multiplication will be executed
- */
-__aicore__ inline void SetHF32Mode(bool hf32Mode);
-
-/*
- * @brief Sets whether to enable HF32 mode for Mmad computation
  * @param [in] mode HF32 mode enumeration
  * @note When mode is HF32Mode::ENABLE, FP32 data in L0A/L0B will be rounded to HF32 before matrix multiplication;
  * when mode is HF32Mode::DISABLE, regular FP32 matrix multiplication will be executed
@@ -416,7 +425,8 @@ __aicore__ inline void SetHF32Mode(HF32Mode mode);
  * @note Must Call SetHF32Mode to enable HF32 rounding mode first.When hf32TransMode is true, FP32 is rounded to HF32
  * with rounding towards zero; when false, rounded to nearest even
  */
-__aicore__ inline void SetHF32TransMode(bool hf32TransMode);
+// SetHF32Mode(bool hf32Mode) has been updated, please use SetHF32Mode(HF32Mode mode) instead.
+__aicore__ inline void SetHF32Mode(bool hf32Mode);
 
 /*
  * @brief Sets the rounding method for HF32 rounding mode
@@ -426,12 +436,13 @@ __aicore__ inline void SetHF32TransMode(bool hf32TransMode);
 __aicore__ inline void SetHF32TransMode(HF32TransMode mode);
 
 /*
- * @brief Sets the priority direction (M or N) for Mmad/MmadWithSparse computation
- * @param [in] mmLayoutMode Control parameter for Mmad/MmadWithSparse priority direction
- * @note When mmLayoutMode is true, CUBE generates results first through N direction then M direction; when false, first
- * through M direction then N direction
+ * @brief Sets the rounding method for HF32 rounding mode
+ * @param [in] hf32TransMode Control parameter for Mmad HF32 mode
+ * @note Must Call SetHF32Mode to enable HF32 rounding mode first.When hf32TransMode is true, FP32 is rounded to HF32
+ * with rounding towards zero; when false, rounded to nearest even
  */
-__aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode);
+// SetHF32TransMode(bool hf32TransMode) has been updated, please use SetHF32TransMode(HF32TransMode mode) instead.
+__aicore__ inline void SetHF32TransMode(bool hf32TransMode);
 
 /*
  * @ingroup MMLayout
@@ -446,6 +457,17 @@ __aicore__ inline void SetMMRowMajor();
  * @note This function sets the CUBE output to column major format (N direction first, then M direction)
  */
 __aicore__ inline void SetMMColumnMajor();
+
+
+/*
+ * @brief Sets the priority direction (M or N) for Mmad/MmadWithSparse computation
+ * @param [in] mmLayoutMode Control parameter for Mmad/MmadWithSparse priority direction
+ * @note When mmLayoutMode is true, CUBE generates results first through N direction then M direction; when false, first
+ * through M direction then N direction
+ */
+// SetMMLayoutTransform has been updated, please use SetMMRowMajor/SetMMColumnMajor instead.
+__aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode);
+
 } // namespace AscendC
 
 /* **************************************************************************************************

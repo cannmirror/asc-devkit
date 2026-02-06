@@ -54,6 +54,7 @@ __aicore__ inline void DisableDmaAtomic()
     SetAtomicNoneImpl();
 }
 
+// SetAtomicNone has been updated, please use DisableDmaAtomic instead.
 __aicore__ inline void SetAtomicNone()
 {
     DisableDmaAtomic();

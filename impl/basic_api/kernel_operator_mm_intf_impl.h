@@ -380,66 +380,56 @@ __aicore__ inline __inout_pipe__(V) void BroadCastVecToMM(const LocalTensor<T> &
     BroadCastVecToMMImpl(dst, src, blockCount, blockLen, srcGap, dstGap);
 }
 
- /* ************************************************************************************************** 
-  * Fill                                             * 
-  * ************************************************************************************************* */ 
- /* 
-  * @ingroup Fill 
-  * @brief L0A/L0B/L1 value initializing 
-  * @param [out] dst output LocalTensor 
-  * @param [in] initConstValueParams.repeatTimes repeat times 
-  * @param [in] initConstValueParams.repeatTimes blockNum block number 
-  * @param [in] initConstValueParams.dstGap interval between the previous tail and the next block head 
-  * @param [in] initConstValueParams.initValue initialize Value 
-  */ 
-  template <typename T, typename U> 
- __aicore__ inline void CheckInitParams(const LocalTensor<T> &dst, 
-     const InitConstValueParams<U>& initConstValueParams, const char* intriName) 
- { 
- #if ASCENDC_CPU_DEBUG 
-     uint16_t repeatTime = initConstValueParams.repeatTimes; 
- #if __NPU_ARCH__ == 2201 
-     uint16_t blockNum = initConstValueParams.blockNum; 
-     uint16_t dstGap = initConstValueParams.dstGap; 
- #else 
-     uint16_t blockNum = 1; 
-     uint16_t dstGap = 0; 
- #endif 
-     if (!CheckFuncInitConstValue(dst, repeatTime, blockNum, dstGap, intriName)) { 
-         ASCENDC_REPORT_CHECK_ERROR(intriName, KernelFuncType::NONE_MODE); 
-     } 
- #endif 
- }
+/* ************************************************************************************************** 
+ * Fill                                             * 
+ * ************************************************************************************************* */ 
+/* 
+ * @ingroup Fill 
+ * @brief L0A/L0B/L1 value initializing 
+ * @param [out] dst output LocalTensor 
+ * @param [in] initConstValueParams.repeatTimes repeat times 
+ * @param [in] initConstValueParams.repeatTimes blockNum block number 
+ * @param [in] initConstValueParams.dstGap interval between the previous tail and the next block head 
+ * @param [in] initConstValueParams.initValue initialize Value 
+ */ 
+template <typename T, typename U> 
+__aicore__ inline void CheckInitParams(const LocalTensor<T> &dst, 
+    const InitConstValueParams<U>& initConstValueParams, const char* intriName) 
+{ 
+#if ASCENDC_CPU_DEBUG 
+    uint16_t repeatTime = initConstValueParams.repeatTimes; 
+#if __NPU_ARCH__ == 2201 
+    uint16_t blockNum = initConstValueParams.blockNum; 
+    uint16_t dstGap = initConstValueParams.dstGap; 
+#else 
+    uint16_t blockNum = 1; 
+    uint16_t dstGap = 0; 
+#endif 
+    if (!CheckFuncInitConstValue(dst, repeatTime, blockNum, dstGap, intriName)) { 
+        ASCENDC_REPORT_CHECK_ERROR(intriName, KernelFuncType::NONE_MODE); 
+    } 
+#endif 
+}
 
-constexpr const char* fillIntriName = "Fill";
-constexpr const char* initConstValueIntriName = "InitConstValue";
+namespace Impl {
+constexpr const char* FILL_INTRINSIC_NAME = "Fill"; 
+constexpr const char* INITCONSTVALUE_INTRINSIC_NAME = "InitConstValue";
+}  // namespace Impl
 
 template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type> 
 __aicore__ inline void Fill(const LocalTensor<T> &dst, 
     const InitConstValueParams<U>& initConstValueParams) 
 { 
-    CheckInitParams(dst, initConstValueParams, fillIntriName); 
+    CheckInitParams(dst, initConstValueParams, Impl::FILL_INTRINSIC_NAME); 
     FillImpl(dst, initConstValueParams); 
 }
- 
-/* **************************************************************************************************
- * InitConstValue                                             *
- * ************************************************************************************************* */
-/*
- * @ingroup InitConstValue
- * @brief L0A/L0B/L1 value initializing
- * @param [out] dst output LocalTensor
- * @param [in] initConstValueParams.repeatTimes repeat times
- * @param [in] initConstValueParams.repeatTimes blockNum block number
- * @param [in] initConstValueParams.dstGap interval between the previous tail and the next block head
- * @param [in] initConstValueParams.initValue initialize Value
- */
-template <typename T, typename U = PrimT<T>,	 
-     typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type = true>
+
+// InitConstValue has been updated, please use Fill instead.
+template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>, U>::value, bool>::type> 
 __aicore__ inline void InitConstValue(const LocalTensor<T> &dst, 
     const InitConstValueParams<U>& initConstValueParams) 
 { 
-    CheckInitParams(dst, initConstValueParams, initConstValueIntriName); 
+    CheckInitParams(dst, initConstValueParams, Impl::INITCONSTVALUE_INTRINSIC_NAME); 
     InitConstValueImpl(dst, initConstValueParams); 
 }
 
@@ -571,63 +561,82 @@ __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTens
     LoadDataUnzipImpl(dst, src);
 }
 
-/* **************************************************************************************************
- * SetMMLayoutTransform                                             *
- * ************************************************************************************************* */
 /*
- * @ingroup SetMMLayoutTransform
- * @brief set mmad computation to prioritize M/N direction
- * @param [in] mmLayoutMode mm layout mode
+ * @brief Sets whether to enable HF32 mode for Mmad computation
+ * @param [in] mode HF32 mode enumeration
+ * @note When mode is HF32Mode::ENABLE, FP32 data in L0A/L0B will be rounded to HF32 before matrix multiplication;
+ * when mode is HF32Mode::DISABLE, regular FP32 matrix multiplication will be executed
  */
-__aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode)
+__aicore__ inline void SetHF32Mode(HF32Mode mode)
 {
-    SetMMLayoutTransformImpl(mmLayoutMode);
+    SetHF32ModeImpl(mode == AscendC::HF32Mode::ENABLE);
 }
 
- /* **************************************************************************************************
- * SetHF32Mode                                             *
- * ************************************************************************************************* */
 /*
- * @ingroup SetHF32Mode
- * @brief set mmad hf32 mode
- * @param [in] hf32Mode mm layout mode
+ * @brief Sets whether to enable HF32 mode for Mmad computation
+ * @param [in] hf32Mode Control parameter for Mmad HF32 mode
+ * @note When hf32Mode is true, FP32 data in L0A/L0B will be rounded to HF32 before matrix multiplication; when false,
+ * regular FP32 matrix multiplication will be executed
  */
+// SetHF32Mode(bool hf32Mode) has been updated, please use SetHF32Mode(HF32Mode mode) instead.
 __aicore__ inline void SetHF32Mode(bool hf32Mode)
 {
     SetHF32ModeImpl(hf32Mode);
 }
 
- /* **************************************************************************************************
- * SetHF32TransMode                                             *
- * ************************************************************************************************* */
 /*
- * @ingroup SetHF32TransMode
- * @brief specify rounding mode for hf32 mode
- * @param [in] hf32TransMode rounding mode for hf32 mode
+ * @brief Sets the rounding method for HF32 rounding mode
+ * @param [in] mode HF32 trans mode enumeration
+ * @note Must call SetHF32Mode to enable HF32 rounding mode first.
  */
+__aicore__ inline void SetHF32TransMode(HF32TransMode mode)
+{
+    SetHF32TransModeImpl(mode == AscendC::HF32TransMode::NEAREST_ZERO);
+}
+
+/*
+ * @brief Sets the rounding method for HF32 rounding mode
+ * @param [in] hf32TransMode Control parameter for Mmad HF32 mode
+ * @note Must Call SetHF32Mode to enable HF32 rounding mode first.When hf32TransMode is true, FP32 is rounded to HF32
+ * with rounding towards zero; when false, rounded to nearest even
+ */
+// SetHF32TransMode(bool hf32TransMode) has been updated, please use SetHF32TransMode(HF32TransMode mode) instead.
 __aicore__ inline void SetHF32TransMode(bool hf32TransMode)
 {
     SetHF32TransModeImpl(hf32TransMode);
 }
 
-__aicore__ inline void SetHF32Mode(HF32Mode mode)
-{
-    SetHF32ModeImpl(mode == HF32Mode::Enable);
-}
-
-__aicore__ inline void SetHF32TransMode(HF32TransMode mode)
-{
-    SetHF32TransModeImpl(mode == HF32TransMode::Enable);
-}
-
+/*
+ * @ingroup MMLayout
+ * @brief Sets matrix multiplication result layout to row major
+ * @note This function sets the CUBE output to row major format (M direction first, then N direction)
+ */
 __aicore__ inline void SetMMRowMajor()
+{
+    SetMMLayoutTransformImpl(true);
+}
+
+/*
+ * @ingroup MMLayout
+ * @brief Sets matrix multiplication result layout to column major
+ * @note This function sets the CUBE output to column major format (N direction first, then M direction)
+ */
+__aicore__ inline void SetMMColumnMajor()
 {
     SetMMLayoutTransformImpl(false);
 }
 
-__aicore__ inline void SetMMColumnMajor()
-{
-    SetMMLayoutTransformImpl(true);
+/*
+ * @brief Sets the priority direction (M or N) for Mmad/MmadWithSparse computation
+ * @param [in] mmLayoutMode Control parameter for Mmad/MmadWithSparse priority direction
+ * @note When mmLayoutMode is true, CUBE generates results first through N direction then M direction; when false, first
+ * through M direction then N direction
+ */
+// SetMMLayoutTransform has been updated, please use SetMMRowMajor/SetMMColumnMajor instead.
+__aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode)	 
+{	 
+    SetMMLayoutTransformImpl(mmLayoutMode);
 }
+
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_MM_INTERFACE_IMPL_H

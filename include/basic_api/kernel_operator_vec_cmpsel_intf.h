@@ -114,6 +114,17 @@ __aicore__ inline void Compares(const LocalTensor<U>& dst, const LocalTensor<T>&
     const T src1Scalar, CMPMODE cmpMode, const uint64_t mask, uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams);
 
+// CompareScalar has been updated, please use Compares instead.
+template <typename T, typename U, bool isSetMask = true>
+__aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const T src1Scalar, CMPMODE cmpMode, const uint64_t mask[], uint8_t repeatTime,
+    const UnaryRepeatParams& repeatParams);
+
+// CompareScalar has been updated, please use Compares instead.
+template <typename T, typename U, bool isSetMask = true>
+__aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const T src1Scalar, CMPMODE cmpMode, const uint64_t mask, uint8_t repeatTime,
+    const UnaryRepeatParams& repeatParams);
 /*
  * @ingroup Compares Level 2
  * @brief Compares the size of two tensors one by one. If true, the corresponding bit is 1, otherwise it is 0
@@ -125,6 +136,11 @@ __aicore__ inline void Compares(const LocalTensor<U>& dst, const LocalTensor<T>&
  */
 template <typename T, typename U>
 __aicore__ inline void Compares(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
+    const T src1Scalar, CMPMODE cmpMode, uint32_t count);
+
+// CompareScalar has been updated, please use Compares instead.
+template <typename T, typename U>
+__aicore__ inline void CompareScalar(const LocalTensor<U>& dst, const LocalTensor<T>& src0,
     const T src1Scalar, CMPMODE cmpMode, uint32_t count);
 
 /* **************************************************************************************************
@@ -255,6 +271,24 @@ __aicore__ inline void Compares(const T2& dst, const T3& src0, const T4& src1, C
 template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
           const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
 __aicore__ inline void Compares(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    uint32_t count);
+
+// CompareScalar has been updated, please use Compares instead.
+template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
+          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
+__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+
+// CompareScalar has been updated, please use Compares instead.
+template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
+          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
+__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
+    const uint64_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams);
+
+// CompareScalar has been updated, please use Compares instead.
+template <typename T0 = BinaryDefaultType, typename T1 = BinaryDefaultType, bool isSetMask = true,
+          const BinaryConfig &config = DEFAULT_BINARY_CONFIG, typename T2, typename T3, typename T4>
+__aicore__ inline void CompareScalar(const T2& dst, const T3& src0, const T4& src1, CMPMODE cmpMode,
     uint32_t count);
 
 // select mode 1

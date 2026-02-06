@@ -191,6 +191,42 @@ __aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<
         (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
 
+// CastDeq has been updated, please use CastDequant instead.
+template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
+__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0), mask,
+        repeatTime, repeatParams, "CastDeq")) {
+        ASCENDC_REPORT_CHECK_ERROR("CastDeq", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
+        (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
+}
+
+// CastDeq has been updated, please use CastDequant instead.
+template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
+__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
+    const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
+{
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0), mask,
+        repeatTime, repeatParams, "CastDeq")) {
+        ASCENDC_REPORT_CHECK_ERROR("CastDeq", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
+        (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
+}
+
 /*
  * @ingroup CastDequant Level 2
  * @brief Dequant from int16_t to uint8_t/int8_t
@@ -218,62 +254,8 @@ __aicore__ inline void CastDequant(const LocalTensor<T>& dst, const LocalTensor<
         count);
 }
 
-/*
- * @ingroup CastDeq Level 0
- * @brief Dequant from int16_t to uint8_t/int8_t
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] intriParams.dstBlkStride dst block stride
- * @param [in] intriParams.srcBlkStride src block stride
- * @param [in] intriParams.dstRepStride dst repeat stride
- * @param [in] intriParams.srcRepStride src repeat stride
- */
-template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
-__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
-    const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
-{
-    using DstPrimType = PrimT<T>;
-    using SrcPrimType = PrimT<U>;
-#if ASCENDC_CPU_DEBUG
-    MaskSetter::Instance().SetMask(isSetMask);
-    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0), mask,
-        repeatTime, repeatParams, "CastDeq")) {
-        ASCENDC_REPORT_CHECK_ERROR("CastDeq", KernelFuncType::MASK_BIT_MODE);
-    }
-#endif
-    CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
-        (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
-}
-template <typename T, typename U, bool isSetMask = true, bool isVecDeq = true, bool halfBlock = true>
-__aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
-    const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
-{
-    using DstPrimType = PrimT<T>;
-    using SrcPrimType = PrimT<U>;
-#if ASCENDC_CPU_DEBUG
-    MaskSetter::Instance().SetMask(isSetMask);
-    if (!CheckFunVecBinaryScalarDiffType(dst.template ReinterpretCast<half>(), src, static_cast<SrcPrimType>(0), mask,
-        repeatTime, repeatParams, "CastDeq")) {
-        ASCENDC_REPORT_CHECK_ERROR("CastDeq", KernelFuncType::MASK_COUNT_MODE);
-    }
-#endif
-    CastDeqImpl<DstPrimType, SrcPrimType, isSetMask, isVecDeq, halfBlock>((__ubuf__ DstPrimType*)dst.GetPhyAddr(),
-        (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask, repeatTime, repeatParams);
-}
-
-/*
- * @ingroup CastDeq Level 2
- * @brief Dequant from int16_t to uint8_t/int8_t
- * @param [out] dst output LocalTensor
- * @param [in] src input LocalTensor
- * @param [in] repeatTime repeat times
- * @param [in] intriParams.dstBlkStride dst block stride
- * @param [in] intriParams.srcBlkStride src block stride
- * @param [in] intriParams.dstRepStride dst repeat stride
- * @param [in] intriParams.srcRepStride src repeat stride
- */
-template <typename T, typename U, bool isVecDeq = true, bool halfBlock = true>
+// CastDeq has been updated, please use CastDequant instead.
+template <typename T, typename U, bool isVecDeq, bool halfBlock>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint32_t count)
 {

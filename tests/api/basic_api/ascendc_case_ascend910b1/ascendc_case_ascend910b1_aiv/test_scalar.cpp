@@ -236,9 +236,9 @@ TEST_F(TestScalarInstr, ScalarInstrNewCase)
     int64_t stAtomicCfg = GetStoreAtomicConfig();
     EXPECT_EQ(stAtomicCfg, 0);
 
-    SetHF32Mode(HF32Mode::Enable);
-    SetHF32TransMode(HF32TransMode::Enable);
-    SetMMColumnMajor();
+    SetHF32Mode(AscendC::HF32Mode::ENABLE);
+    SetHF32TransMode(AscendC::HF32TransMode::NEAREST_ZERO);
+    SetMMRowMajor();
 
     set_cond(u64XnVal);
     EXPECT_EQ(get_cond(), 0);
