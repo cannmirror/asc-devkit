@@ -15,7 +15,8 @@ super kernel
 import os
 import stat
 from .global_storage import global_var_storage
-from .super_kernel_utility import CommonUtility, gen_func_align_attribute, get_wait_flag_for_chip
+from .super_kernel_utility import CommonUtility, gen_func_align_attribute, get_wait_flag_for_chip, \
+    AscendCLogLevel
 from .super_kernel_op_compile import compile_super_kernel, gen_file_header
 from .super_kernel_constants import SuperKernelPreLoadMode, SuperKernelDataCacheMode, \
     SuperKernelEarlyStartMode, SubOperatorType, SuperKernelDebugDcciAllMode, SuperKernelDebugSyncAllMode, \
@@ -1024,7 +1025,7 @@ not have any send event, op:{sub_operator.kernel_name}, event_list:{sub_operator
         CommonUtility().ascendc_raise_python_err(ERR_CODE, ("gen super kernel func file failed, reason is:", err))
 
 
-def compile(kernel_infos, called_kernel_name="ascendc_super_kernel_plus", impl_mode=""):
+def compile(kernel_infos, called_kernel_name="ascendc_super_kernel_plus", compile_infos=None):
     """ entry of super kernel compile
 
         Args:
@@ -1042,6 +1043,9 @@ def compile(kernel_infos, called_kernel_name="ascendc_super_kernel_plus", impl_m
         CommonUtility().ascendc_raise_python_err(ERR_CODE, \
         f'current soc: {global_var_storage.get_variable("ascendc_short_soc_version")} '
         f'series do not support super kernel feature')
+
+    if compile_infos is not None:
+        CommonUtility.print_compile_log("[SuperKernel]", f"compile_infos: {compile_infos}", AscendCLogLevel.LOG_INFO)
 
     kernel_meta_dir = CommonUtility.get_kernel_meta_dir()
     if os.path.exists(os.path.join(kernel_meta_dir, called_kernel_name + ".o")):

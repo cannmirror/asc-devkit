@@ -82,7 +82,10 @@ def gen_usr_origin_kernel_function_call(func_name: str, opinfo: OpInfo, tiling_i
         else:
             source += " nullptr, "
     for output in opinfo.outputs:
-        source += "{}, ".format(output["param_name"])
+        if output is not None:
+            source += "{}, ".format(output["param_name"])
+        else:
+            source += " nullptr, "
 
     if opinfo.output_shape_depend_on_compute is not None and len(opinfo.output_shape_depend_on_compute) > 0:
         source += "__ascendc_output_shape, "
