@@ -173,7 +173,7 @@ struct FuncMetaFunctionEntry {
     uint64_t functionEntry; // functionEntry value
 };
 
-struct FuncMetaBlockDim {
+struct FuncMetaNumBlocks {
     BaseTlv head;
     uint32_t blockDim; // blockdim
 };

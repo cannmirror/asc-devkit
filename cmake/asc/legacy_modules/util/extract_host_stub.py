@@ -444,13 +444,13 @@ def convert_func_param_cce_param_type(func_param: FuncParam) -> FuncParam:
 
 def add_block_num_and_stream_func_params(func_params: Tuple[FuncParam, ...]
                                          ) -> Tuple[FuncParam, ...]:
-    """Add blockDim and stream to function parameters."""
+    """Add numBlocks and stream to function parameters."""
     param_names = set(get_param_names_by_func_params(func_params))
 
-    if 'blockDim' in param_names:
-        block_num_param = FuncParam(('uint32_t', '_blockDim'))
+    if 'numBlocks' in param_names:
+        block_num_param = FuncParam(('uint32_t', '_numBlocks'))
     else:
-        block_num_param = FuncParam(('uint32_t', 'blockDim'))
+        block_num_param = FuncParam(('uint32_t', 'numBlocks'))
 
     if 'stream' in param_names:
         stream_param = FuncParam(('aclrtStream', '_stream'))
@@ -947,7 +947,7 @@ def generate_func_impl_code(func_sign: FuncSign,
     buff = io.StringIO()
     new_func_params = func_sign.func_params
     if func_sign.func_template_decl:
-        # set start index 2 to skip blockdim and stream definitions
+        # set start index 2 to skip numBlocks and stream definitions
         new_func_params = replace_func_params_with_specilization_typename(func_sign, dehash_template_id(func_key), 2)
         new_func_params = tiling_add_ref_or_ptr_func_params(func_sign, new_func_params)
 
@@ -1013,23 +1013,23 @@ template<>
         buff.write('    ascendc_set_exception_dump_info(__ascendc_one_core_dump_size);\n')
     if mode == CodeMode.MIX_VECTOR_CORE:
         mix_vector_core_launch_code = f'''
-    uint32_t __ascendc_aicBlockDim;
-    uint32_t __ascendc_aivBlockDim;
-    __ascendc_ret = GetCoreNumForMixVectorCore(&__ascendc_aicBlockDim, &__ascendc_aivBlockDim);
-    if ({block_num_name} <= __ascendc_aicBlockDim) {{
+    uint32_t __ascendc_aicNumBlocks;
+    uint32_t __ascendc_aivNumBlocks;
+    __ascendc_ret = GetCoreNumForMixVectorCore(&__ascendc_aicNumBlocks, &__ascendc_aivNumBlocks);
+    if ({block_num_name} <= __ascendc_aicNumBlocks) {{
         __ascendc_ret = launch_and_profiling_{name}({func_key}, {block_num_name}, {stream_name}, (void **)&__ascendc_args, sizeof(__ascendc_args));
     }} else {{
-        uint32_t __ascendc_totalCoreNum = __ascendc_aicBlockDim + __ascendc_aivBlockDim;
+        uint32_t __ascendc_totalCoreNum = __ascendc_aicNumBlocks + __ascendc_aivNumBlocks;
         if ({block_num_name} > __ascendc_totalCoreNum) {{
-            __ascendc_aicBlockDim = ({block_num_name} * __ascendc_aicBlockDim + \\
+            __ascendc_aicNumBlocks = ({block_num_name} * __ascendc_aicNumBlocks + \\
                                     __ascendc_totalCoreNum - 1U) / __ascendc_totalCoreNum;
         }}
-        __ascendc_aivBlockDim = {block_num_name} - __ascendc_aicBlockDim;
+        __ascendc_aivNumBlocks = {block_num_name} - __ascendc_aicNumBlocks;
         bool __ascendc_profStatus = GetAscendProfStatus();
-        uint32_t __ascendc_aivBlockDimOffset = __ascendc_aicBlockDim;
+        uint32_t __ascendc_aivNumBlocksOffset = __ascendc_aicNumBlocks;
         __ascendc_ret = LaunchAscendKernelForVectorCore(__ascendc_name, g_kernel_handle, {func_key}, \\
                         (void **)&__ascendc_args, sizeof(__ascendc_args), {stream_name}, __ascendc_profStatus,\\
-                        __ascendc_aicBlockDim, __ascendc_aivBlockDim, __ascendc_aivBlockDimOffset);
+                        __ascendc_aicNumBlocks, __ascendc_aivNumBlocks, __ascendc_aivNumBlocksOffset);
     }}
 '''
         buff.write(mix_vector_core_launch_code)

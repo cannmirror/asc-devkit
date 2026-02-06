@@ -140,7 +140,7 @@ struct   AddCustomTilingData
                 func_name='aclrtlaunch_add_custom',
                 func_params=(
                     FuncParam(
-                        parts=('uint32_t', 'blockDim'),
+                        parts=('uint32_t', 'numBlocks'),
                         cce_global=False,
                         tiling_struct=False
                     ),
@@ -264,7 +264,7 @@ struct AddCustomTilingData {{
                 func_name='aclrtlaunch_hello_world',
                 func_params=(
                     FuncParam(
-                        parts=('uint32_t', 'blockDim'),
+                        parts=('uint32_t', 'numBlocks'),
                         cce_global=False,
                         tiling_struct=False
                     ),
@@ -855,7 +855,7 @@ struct AddCustomTilingData {{
             func_name='aclrtlaunch_hello_world',
             func_params=(
                 FuncParam(
-                    parts=('uint32_t', 'blockDim'),
+                    parts=('uint32_t', 'numBlocks'),
                     cce_global=False,
                     tiling_struct=False
                 ),
@@ -877,13 +877,13 @@ struct AddCustomTilingData {{
 
 
 template<int a>
-uint32_t aclrtlaunch_hello_world(uint32_t blockDim, void* stream);
+uint32_t aclrtlaunch_hello_world(uint32_t numBlocks, void* stream);
 
 template<int a>
-inline uint32_t hello_world(uint32_t blockDim, void* hold, void* stream)
+inline uint32_t hello_world(uint32_t numBlocks, void* hold, void* stream)
 {{
     (void)hold;
-    return aclrtlaunch_hello_world<a>(blockDim, stream);
+    return aclrtlaunch_hello_world<a>(numBlocks, stream);
 }}
 
 #endif
@@ -1077,17 +1077,17 @@ inline uint32_t hello_world(uint32_t blockDim, void* hold, void* stream)
     def test_generate_launch_kernel_code(self):
         mode = CodeMode.MIX
         func_key = 0
-        block_dim = "block_dim"
+        num_blocks = "num_blocks"
         stream = "stream"
-        generate_code = generate_launch_kernel_code(mode, func_key, block_dim, stream)
+        generate_code = generate_launch_kernel_code(mode, func_key, num_blocks, stream)
         self.assertIn("g_kernel_handle == nullptr", generate_code)
 
         mode = CodeMode.AIC
-        generate_code = generate_launch_kernel_code(mode, func_key, block_dim, stream)
+        generate_code = generate_launch_kernel_code(mode, func_key, num_blocks, stream)
         self.assertIn("g_kernel_handle_aic == nullptr", generate_code)
 
         mode = CodeMode.AIV
-        generate_code = generate_launch_kernel_code(mode, func_key, block_dim, stream)
+        generate_code = generate_launch_kernel_code(mode, func_key, num_blocks, stream)
         self.assertIn("g_kernel_handle_aiv == nullptr", generate_code)
 
     def test_get_dump_info_by_source(self):
@@ -1403,7 +1403,7 @@ inline uint32_t hello_world(uint32_t blockDim, void* hold, void* stream)
         self.assertRaises(Exception, get_func_param_name_by_parts, func_param_error_list)
 
         func_param_input = FuncParam(
-                        parts=('uint32_t', 'blockDim'),
+                        parts=('uint32_t', 'numBlocks'),
                         cce_global=False,
                         tiling_struct=True
                     )
@@ -1412,7 +1412,7 @@ inline uint32_t hello_world(uint32_t blockDim, void* hold, void* stream)
         self.assertEqual(convert_to_void("int"), "void")
 
         func_param_output = FuncParam(
-                        parts=('uint32_t*', 'blockDim'),
+                        parts=('uint32_t*', 'numBlocks'),
                         cce_global=False,
                         tiling_struct=True
                     )
