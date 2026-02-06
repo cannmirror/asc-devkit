@@ -489,52 +489,52 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int __half2int_rna(const half x) {
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rn(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_uint64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rz(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_uint64_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rd(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_uint64_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_ru(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_uint64_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int __half2ull_rna(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_uint64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rn(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_int64_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rz(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_int64_t<ROUND::Z, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rd(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_int64_t<ROUND::F, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_ru(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_int64_t<ROUND::C, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int __half2ll_rna(const half x) {
-    float x_fp32 = x;
+    float x_fp32 = __cvt_float<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x);
     return __cvt_int64_t<ROUND::A, RoundingSaturation::RS_ENABLE_VALUE>(x_fp32);
 }
 
