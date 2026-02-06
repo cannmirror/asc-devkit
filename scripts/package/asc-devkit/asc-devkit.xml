@@ -57,7 +57,7 @@
         <path value="$(TARGET_ENV)/include/ascendc/c_api"/>
         <path value="$(TARGET_ENV)/include/utils"/>
         <path value="$(TARGET_ENV)/include/utils/log"/>
-        <path value="$(TARGET_ENV)/asc" install_softlink="compiler/asc"/>
+        <path value="$(TARGET_ENV)/asc" install_softlink="compiler/asc;asc"/>
         <path value="$(TARGET_ENV)/asc/include"/>
         <path value="$(TARGET_ENV)/asc/include/tiling" install_softlink="$(TARGET_ENV)/ascendc/include/highlevel_api/tiling;$(TARGET_ENV)/include/tiling;$(TARGET_ENV)/include/ascendc/host_api/tiling"/>
         <path value="$(TARGET_ENV)/asc/include/adv_api" install_softlink="$(TARGET_ENV)/tikcpp/tikcfw/include/adv_api;$(TARGET_ENV)/include/ascendc/include/adv_api;$(TARGET_ENV)/tikcpp/tikcfw/lib;$(TARGET_ENV)/ascendc/include/highlevel_api/lib;$(TARGET_ENV)/include/ascendc/highlevel_api/lib"/>
