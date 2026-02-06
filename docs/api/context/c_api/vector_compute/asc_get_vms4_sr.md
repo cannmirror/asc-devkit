@@ -60,6 +60,6 @@ src[3] = &src_workspace[3 * array_length];
 asc_mrgsort4(dst, src, repeat, element_length, element_length, element_length, element_length, if_exhausted_suspension, valid_bit);
 asc_sync();
 
-__ubuf__ uint16_t sorted_num[ASC_C_API_MRGSORT_ELEMENT_LEN];
+uint16_t sorted_num[ASC_C_API_MRGSORT_ELEMENT_LEN];
 asc_get_vms4_sr(sorted_num);
 ```
