@@ -11,7 +11,7 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── fixpipe.asc              // Ascend C算子实现 & 调用样例
+│   └── fixpipe_nz2dn_tensor_quantization_f322f16.asc              // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能： 
@@ -30,7 +30,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">C</td><td align="center">M * N</td><td align="center">half</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">fixpipe</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">fixpipe_nz2dn_tensor_quantization_f322f16_custom</td></tr>
   </table>
 - 算子实现： 
  

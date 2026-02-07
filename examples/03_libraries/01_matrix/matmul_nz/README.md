@@ -15,7 +15,7 @@
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
 │   ├── nd2nz_utils.h           // 数据ND to NZ格式转换函数
-│   └── matmul.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_nz.asc              // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能： 
@@ -36,7 +36,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_nz_custom</td></tr>
   </table>
 - 算子实现： 
   - Kernel实现

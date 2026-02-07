@@ -12,7 +12,7 @@
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_int4.asc              // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能：
@@ -33,7 +33,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">int32_t</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_int4_custom</td></tr>
   </table>
 - 算子实现： 
   - 约束条件
