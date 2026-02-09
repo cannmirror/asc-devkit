@@ -394,7 +394,7 @@ __aicore__ inline DstType Floor_(SrcType x)
 
 __aicore__ inline void Floor_(half2 &dst, float2 &src)
 {
-    dst = bisheng::cce::simt::__float22half2_rf(src);
+    dst = __cvt_half2<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
@@ -552,7 +552,7 @@ __aicore__ inline DstType Rint_(SrcType x)
 
 __aicore__ inline void Rint_(half2 &dst, float2 &src)
 {
-    dst = bisheng::cce::simt::__float22half2(src);
+    dst = __cvt_half2<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
@@ -637,14 +637,14 @@ __aicore__ inline DstType Ceil_(SrcType x)
 
 __aicore__ inline void Ceil_(half2 &dst, float2 &src)
 {
-    dst = bisheng::cce::simt::__float22half2_rc(src);
+    dst = __cvt_half2<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
 #ifndef ASCENDC_CPU_DEBUG
 __aicore__ inline void Trunc_(half2 &dst, float2 &src)
 {
-    dst = bisheng::cce::simt::__float22half2_rz(src);
+    dst = __cvt_half2<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(src);
 }
 #endif
 
