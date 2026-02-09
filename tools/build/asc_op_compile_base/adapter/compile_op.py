@@ -226,7 +226,16 @@ def _json_post_process(compile_info: CompileInfo, op_info: OpInfo, tiling_info: 
             js["deterministic"] = "true"
         else:
             js["deterministic"] = "false"
-    js["supportSuperKernel"] = 1
+
+    superkernel_black_op_list = ["MoeInitRoutingV3", "MoeInitRoutingV2", "MoeInitRoutingQuant"]
+    if op_info.op_type not in superkernel_black_op_list or not CommonUtility.is_v220():
+        js["supportSuperKernel"] = 1
+    else:
+        CommonUtility.print_compile_log(compile_info.kernel_name, \
+            f"The operator {op_info.op_type} has not been adapted to superkernel. Therefore, \
+the superkernel cannot be integrated with the operator.", \
+            AscendCLogLevel.LOG_WARNING)
+
     if not global_var_storage.get_variable("ascendc_dump_disable_compile_options") \
         and compile_info.dump_info.get("dump_type", "") != "":
         js["debugOptions"] = compile_info.dump_info["dump_type"]
