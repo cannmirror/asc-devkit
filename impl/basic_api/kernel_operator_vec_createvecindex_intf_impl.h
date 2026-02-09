@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_CREATEVECINDEX_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_check.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_createvecindex_impl.h"
@@ -43,6 +44,9 @@ template <typename T>
 __aicore__ inline __in_pipe__(S) __out_pipe__(V) void CreateVecIndex(LocalTensor<T> &dst, const T &firstValue,
     uint64_t mask, uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecIndexInfo(dst, mask, repeatTime, dstBlkStride, dstRepStride, "CreateVecIndex");
+#endif
     ASCENDC_ASSERT((SupportType<T, half, int16_t, float, int32_t>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check "
         "dtype in CreateVecIndex, current api support dtype combination is dst: half / int16_t / float / int32_t");});
 #if ASCENDC_CPU_DEBUG
@@ -57,6 +61,9 @@ template <typename T>
 __aicore__ inline __in_pipe__(S) __out_pipe__(V) void CreateVecIndex(LocalTensor<T> &dst, const T &firstValue,
     uint64_t mask[], uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecIndexInfo(dst, mask[0], mask[1], repeatTime, dstBlkStride, dstRepStride, "CreateVecIndex");
+#endif
     ASCENDC_ASSERT((SupportType<T, half, int16_t, float, int32_t>()), {KERNEL_LOG(KERNEL_ERROR, "Failed to check "
         "dtype in CreateVecIndex, current api support dtype combination is dst: half / int16_t / float / int32_t");});
 #if ASCENDC_CPU_DEBUG
@@ -71,6 +78,9 @@ template <typename T>
 __aicore__ inline __in_pipe__(S) __out_pipe__(V) void CreateVecIndex(LocalTensor<T> dst, const T &firstValue,
     uint32_t count)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecIndexInfo(dst, count, "CreateVecIndex");
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncCreateVecIndex(dst, count, "CreateVecIndex")) {
         ASCENDC_REPORT_CHECK_ERROR("CreateVecIndex", KernelFuncType::CALCOUNT_MODE);

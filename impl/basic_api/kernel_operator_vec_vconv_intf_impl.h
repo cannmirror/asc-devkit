@@ -19,6 +19,7 @@
 #include "kernel_struct_binary.h"
 #include "kernel_struct_unary.h"
 #include "kernel_struct_vdeq.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_vconv_impl.h"
@@ -64,6 +65,9 @@ __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src
     const RoundMode& roundMode, const uint64_t mask[], const uint8_t repeatTime,
     const UnaryRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryCastInfo<T, U, isSetMask>(dst, src, mask[0], mask[1], repeatTime, repeatParams, "Cast");
+#endif
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -90,6 +94,9 @@ template <typename T, typename U, bool isSetMask>
 __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const RoundMode& roundMode, const uint64_t mask, const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryCastInfo<T, U, isSetMask>(dst, src, mask, repeatTime, repeatParams, "Cast");
+#endif
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -123,6 +130,9 @@ template <typename T, typename U>
 __aicore__ inline void Cast(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const RoundMode& roundMode, const uint32_t count)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryCastInfo<T, U, true>(dst, src, "Cast", count);
+#endif
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -196,6 +206,9 @@ template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint64_t mask[], uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryCastDeqInfo<T, U, isSetMask>(dst, src, mask[0], mask[1], repeatTime, repeatParams, "CastDeq", halfBlock);
+#endif
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -214,6 +227,9 @@ template <typename T, typename U, bool isSetMask, bool isVecDeq, bool halfBlock>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const int32_t mask, uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryCastDeqInfo<T, U, isSetMask>(dst, src, mask, repeatTime, repeatParams, "CastDeq", halfBlock);
+#endif
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -259,6 +275,9 @@ template <typename T, typename U, bool isVecDeq, bool halfBlock>
 __aicore__ inline void CastDeq(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const uint32_t count)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryCastDeqInfo<T, U, true>(dst, src, "CastDeq", count, halfBlock);
+#endif
     using DstPrimType = PrimT<T>;
     using SrcPrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -305,6 +324,9 @@ __aicore__ inline void AddReluCast(const LocalTensor<T>& dst, const LocalTensor<
         ASCENDC_REPORT_CHECK_ERROR("AddReluCast", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "AddReluCast");
+#endif
     AddReluCastImpl<PrimT<T>, PrimT<U>, isSetMask>((__ubuf__ PrimT<T>*)dst.GetPhyAddr(), (__ubuf__ PrimT<U>*)src0.GetPhyAddr(),
         (__ubuf__ PrimT<U>*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -325,6 +347,9 @@ __aicore__ inline void AddReluCast(const LocalTensor<T>& dst, const LocalTensor<
     if (!CheckFuncVecBinaryCmp(dst, src0, src1, mask, repeatTime, repeatParams, "AddReluCast")) {
         ASCENDC_REPORT_CHECK_ERROR("AddReluCast", KernelFuncType::MASK_BIT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "AddReluCast");
 #endif
     AddReluCastImpl<PrimT<T>, PrimT<U>, isSetMask>((__ubuf__ PrimT<T>*)dst.GetPhyAddr(), (__ubuf__ PrimT<U>*)src0.GetPhyAddr(),
         (__ubuf__ PrimT<U>*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -351,6 +376,9 @@ __aicore__ inline void AddReluCast(const LocalTensor<T>& dst, const LocalTensor<
     if (!CheckFuncVecBinaryCmp(dst, src0, src1, count, "AddReluCast")) {
         ASCENDC_REPORT_CHECK_ERROR("AddReluCast", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "AddReluCast", count);
 #endif
     AddReluCastImpl((__ubuf__ PrimT<T>*)dst.GetPhyAddr(), (__ubuf__ PrimT<U>*)src0.GetPhyAddr(),
         (__ubuf__ PrimT<U>*)src1.GetPhyAddr(), count);
@@ -392,6 +420,9 @@ __aicore__ inline void SubReluCast(const LocalTensor<T>& dst, const LocalTensor<
         ASCENDC_REPORT_CHECK_ERROR("SubReluCast", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "SubReluCast");
+#endif
     SubReluCastImpl<DstPrimType, SrcPrimType, isSetMask>((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src0.GetPhyAddr(),
         (__ubuf__ SrcPrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -414,6 +445,9 @@ __aicore__ inline void SubReluCast(const LocalTensor<T>& dst, const LocalTensor<
     if (!CheckFuncVecBinaryCmp(dst, src0, src1, mask, repeatTime, repeatParams, "SubReluCast")) {
         ASCENDC_REPORT_CHECK_ERROR("SubReluCast", KernelFuncType::MASK_BIT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "SubReluCast");
 #endif
     SubReluCastImpl<DstPrimType, SrcPrimType, isSetMask>((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src0.GetPhyAddr(),
         (__ubuf__ SrcPrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -442,6 +476,9 @@ __aicore__ inline void SubReluCast(const LocalTensor<T>& dst, const LocalTensor<
     if (!CheckFuncVecBinaryCmp(dst, src0, src1, count, "SubReluCast")) {
         ASCENDC_REPORT_CHECK_ERROR("SubReluCast", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "SubReluCast", count);
 #endif
     SubReluCastImpl((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src0.GetPhyAddr(),
         (__ubuf__ SrcPrimType*)src1.GetPhyAddr(), count);

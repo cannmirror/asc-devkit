@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_REDUCEV2_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_struct_gather.h"
+#include "mstx_local_tensor_info.h"
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_gather_mask_impl.h"
 #elif __NPU_ARCH__ == 2002
@@ -44,6 +45,9 @@ __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T
     const LocalTensor<U>& src1Pattern, const bool reduceMode, const uint32_t mask,
     const GatherMaskParams& gatherMaskParams, uint64_t& rsvdCnt)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecGatherMaskInfo(dst, src0, mask, gatherMaskParams, mode, "GatherMask");
+#endif
     using DstPrimType = PrimT<T>;
     using Src1PrimType = PrimT<U>;
 #if ASCENDC_CPU_DEBUG
@@ -69,6 +73,9 @@ __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T
     const uint8_t src1Pattern, const bool reduceMode, const uint32_t mask, const GatherMaskParams& gatherMaskParams,
     uint64_t& rsvdCnt)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecGatherMaskInfo(dst, src0, mask, gatherMaskParams, mode, "GatherMask");
+#endif
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncVecGatherMask(dst, src0, src1Pattern, reduceMode, mask, gatherMaskParams, rsvdCnt,

@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_DATA_COPY_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_process_lock.h"
+#include "mstx_local_tensor_info.h"
 
 #include "kernel_check.h"
 
@@ -40,6 +41,9 @@ template <typename T>
 __aicore__ inline void __inout_pipe__(MTE2) DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const DataCopyParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, repeatParams, "DataCopy");
+#endif
     using PrimType = PrimT<T>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
 #if ASCENDC_CPU_DEBUG
@@ -240,6 +244,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>& src,
     const DataCopyParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, repeatParams, "DataCopy");
+#endif
     using PrimType = PrimT<T>;
     const Hardware srcHWPos = GetPhyType((TPosition)src.GetPosition());
 #ifdef ASCENDC_CPU_DEBUG
@@ -308,6 +315,9 @@ template <typename T>
 __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
     const DataCopyParams &repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, repeatParams, "DataCopy");
+#endif
     using PrimType = PrimT<T>;
 
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
@@ -380,6 +390,9 @@ template <typename T, typename U>
 __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const DataCopyParams &repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, repeatParams, "DataCopy");
+#endif
     using PrimDstType = PrimT<T>;
     using PrimSrcType = PrimT<U>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
@@ -449,6 +462,9 @@ template <typename T, bool IsSetMask>
 __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const uint64_t mask[], const uint8_t repeatTime, const CopyRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecCopyInfo(dst, src, mask[0], mask[1], repeatTime, repeatParams, IsSetMask, "Copy");
+#endif
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
     MaskSetter::Instance().SetMask(IsSetMask);
@@ -465,6 +481,9 @@ template <typename T, bool IsSetMask>
 __aicore__ inline __inout_pipe__(V) void Copy(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const uint64_t mask, const uint8_t repeatTime, const CopyRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecCopyInfo(dst, src, mask, repeatTime, repeatParams, IsSetMask, "Copy");
+#endif
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
     MaskSetter::Instance().SetMask(IsSetMask);
@@ -871,6 +890,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
     const DataCopyParams& intriParams, const DataCopyEnhancedParams& enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     using PrimType = PrimT<T>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
@@ -906,6 +928,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>& src,
     const DataCopyParams& intriParams, const DataCopyEnhancedParams& enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     using PrimType = PrimT<T>;
     const Hardware srcHWPos = GetPhyType((TPosition)src.GetPosition());
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
@@ -943,6 +968,9 @@ template <typename T>
 __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<T> &src,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     using PrimType = PrimT<T>;
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
     const Hardware srcHWPos = GetPhyType((TPosition)src.GetPosition());
@@ -1031,6 +1059,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const DataCopyParams& intriParams, const DataCopyEnhancedParams& enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
     const Hardware srcHWPos = GetPhyType((TPosition)src.GetPosition());
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
@@ -1058,6 +1089,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline void DataCopy(const LocalTensor<T>& dst, const LocalTensor<U>& src,
     const DataCopyParams& intriParams, const DataCopyEnhancedParams& enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     const Hardware dstHWPos = GetPhyType((TPosition)dst.GetPosition());
     const Hardware srcHWPos = GetPhyType((TPosition)src.GetPosition());
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
@@ -1103,6 +1137,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(V) void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     CheckTensorL0C2UB(dst, src);
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
     DataCopyL0C2UBImpl((__ubuf__ half*)dst.GetPhyAddr(), (__cc__ int32_t*)src.GetPhyAddr(), intriParams,
@@ -1115,6 +1152,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(V) void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     CheckTensorL0C2UB(dst, src);
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
     DataCopyL0C2UBImpl((__ubuf__ int16_t*)dst.GetPhyAddr(), (__cc__ int32_t*)src.GetPhyAddr(), intriParams,
@@ -1127,6 +1167,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(V) void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     CheckTensorL0C2UB(dst, src);
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
     DataCopyL0C2UBImpl((__ubuf__ int8_t*)dst.GetPhyAddr(), (__cc__ int32_t*)src.GetPhyAddr(), intriParams,
@@ -1139,6 +1182,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(V) void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     CheckTensorL0C2UB(dst, src);
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, intriParams, enhancedParams)));
     DataCopyL0C2UBImpl((__ubuf__ uint8_t*)dst.GetPhyAddr(), (__cc__ int32_t*)src.GetPhyAddr(), intriParams,
@@ -1151,6 +1197,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(V) void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> &src,
     const DataCopyParams &intriParams, const DataCopyEnhancedParams &enhancedParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyInfo(dst, src, intriParams, "DataCopy");
+#endif
     CheckTensorPos<U>(src, Hardware::UB, "src", "CO2",
         "DataCopy from LocalTensor(CO2) to LocalTensor(CO1) with DataCopyEnhancedParams");
     CheckTensorPos<T>(dst, Hardware::L0C, "dst", "CO1",
@@ -1165,6 +1214,9 @@ template <typename T, PaddingMode mode>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyParams &dataCopyParams, const DataCopyPadParams &padParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncDataCopyPad(dst, src, dataCopyParams, padParams, "DataCopyPad from GM to VECIN/VECOUT")) {
@@ -1193,6 +1245,9 @@ template <typename T, PaddingMode mode>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &dst,
     const LocalTensor<T> &src, const DataCopyParams &dataCopyParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
 #if (__NPU_ARCH__ != 5102)
     if ASCEND_IS_AIC {
@@ -1216,6 +1271,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyParams &dataCopyParams, const DataCopyPadParams &padParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
     if ASCEND_IS_AIC {
         return;
@@ -1257,6 +1315,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &dst,
     const LocalTensor<T> &src, const DataCopyParams &dataCopyParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
     if ASCEND_IS_AIC {
         return;
@@ -1308,6 +1369,9 @@ template <typename T, PaddingMode mode>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<T> &padParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncDataCopyPad(dst, src, dataCopyParams, padParams, "DataCopyPad from GM to VECIN/VECOUT")) {
         ASCENDC_REPORT_CHECK_ERROR("DataCopyPad from GM to VECIN / VECOUT", KernelFuncType::NONE_MODE);
@@ -1333,6 +1397,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<T> &padParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
+#endif
     if ASCEND_IS_AIC {
         return;
     }
@@ -1377,6 +1444,9 @@ template <typename T, typename U, typename Std::enable_if<Std::is_same<PrimT<T>,
 __aicore__ inline __inout_pipe__(MTE2) void DataCopyPad(const LocalTensor<T> &dst,
     const GlobalTensor<T> &src, const DataCopyExtParams &dataCopyParams, const DataCopyPadExtParams<U> &padParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, padParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
     if ASCEND_IS_AIC {
         return;
@@ -1397,6 +1467,9 @@ template <typename T, PaddingMode mode>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &dst,
     const LocalTensor<T> &src, const DataCopyExtParams &dataCopyParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
 #if (__NPU_ARCH__ != 5102)
     if ASCEND_IS_AIC {
@@ -1420,6 +1493,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopyPad(const GlobalTensor<T> &dst,
     const LocalTensor<T> &src, const DataCopyExtParams &dataCopyParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxDataCopyPadInfo(dst, src, dataCopyParams, "DataCopyPad");
+#endif
     using PrimType = PrimT<T>;
     if ASCEND_IS_AIC {
         return;

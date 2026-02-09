@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_TERNARY_SCALAR_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_struct_unary.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_ternary_scalar_impl.h"
@@ -63,6 +64,9 @@ __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src
         ASCENDC_REPORT_CHECK_ERROR("Axpy", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryTenaryInfo<T, U, isSetMask>(dst, src, mask, repeatTime, repeatParams, "Axpy");
+#endif
     AxpyImpl<T, U, isSetMask>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), scalarValue, mask,
         repeatTime, repeatParams);
 }
@@ -76,6 +80,9 @@ __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src
     if (!CheckFunVecBinaryScalarDiffType(dst, src, scalarValue, mask, repeatTime, repeatParams, "Axpy")) {
         ASCENDC_REPORT_CHECK_ERROR("Axpy", KernelFuncType::MASK_BIT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryTenaryInfo<T, U, isSetMask>(dst, src, mask[0], mask[1], repeatTime, repeatParams, "Axpy");
 #endif
     AxpyImpl<T, U, isSetMask>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), scalarValue, mask,
         repeatTime, repeatParams);
@@ -97,6 +104,9 @@ __aicore__ inline void Axpy(const LocalTensor<T>& dst, const LocalTensor<U>& src
     if (!CheckFunVecBinaryScalarDiffType(dst, src, scalarValue, count, "Axpy")) {
         ASCENDC_REPORT_CHECK_ERROR("Axpy", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecUnaryTenaryInfo<T, U, true>(dst, src, "Axpy", count);
 #endif
     AxpyImpl<T, U>((__ubuf__ T*)dst.GetPhyAddr(), (__ubuf__ U*)src.GetPhyAddr(), scalarValue, count);
 }
