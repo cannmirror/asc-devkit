@@ -421,15 +421,22 @@ __aicore__ inline void CheckFixpipeParams(__cc__ SrcT *src, const FixpipeParamsC
         ASCENDC_ASSERT((params.nSize <= UINT12_MAX && params.nSize >=1 && params.nSize % 8 == 0),
             {KERNEL_LOG(KERNEL_ERROR,"Failed to check nSize value in Fixpipe, when isChannelSplit is true, its valid "
             "range is 1 ~ 4095 and must be divisible by 8, current value is %u", params.nSize); });
-    } else if (config.format == CO2Layout::ROW_MAJOR || config.format == CO2Layout::COLUMN_MAJOR) {
+    } else if (config.format == CO2Layout::ROW_MAJOR) {
         ASCENDC_CHECK_VALUE_RANGE(params.nSize, 1, UINT12_MAX, "nSize",
-            "Fixpipe when isChannelSplit is false and format is NZ2ND");
+            "Failed to check nSize value in Fixpipe, when isChannelSplit is false and format is NZ2ND"
+            ", its valid range is 1 ~ 4095");
         if constexpr (!IsGm) {
             ASCENDC_ASSERT((params.nSize * sizeof(DstT) % 32 == 0),
-                {KERNEL_LOG(KERNEL_ERROR,"Failed to check nSize value in Fixpipe, when NZ2ND/NZ2DN, "
+                {KERNEL_LOG(KERNEL_ERROR,"Failed to check nSize value in Fixpipe, when NZ2ND, "
                 "its valid value * sizeof(DstT) must be divisible by 32B, current value is %u", params.nSize); });
+        }
+    } else if (config.format == CO2Layout::COLUMN_MAJOR) {
+        ASCENDC_CHECK_VALUE_RANGE(params.mSize, 1, UINT15_MAX, "mSize",
+            "Failed to check mSize value in Fixpipe, when isChannelSplit is false and format is NZ2DN"
+            ", its valid range is 1 ~ 32767");
+        if constexpr (!IsGm) {
             ASCENDC_ASSERT((params.mSize * sizeof(DstT) % 32 == 0),
-                {KERNEL_LOG(KERNEL_ERROR,"Failed to check mSize value in Fixpipe, when NZ2ND/NZ2DN, "
+                {KERNEL_LOG(KERNEL_ERROR,"Failed to check mSize value in Fixpipe, when NZ2DN, "
                 "its valid value * sizeof(DstT) must be divisible by 32B, current value is %u", params.mSize); });
         }
     } else {
