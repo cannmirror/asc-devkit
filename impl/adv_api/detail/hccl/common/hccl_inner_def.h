@@ -97,7 +97,9 @@ struct HcclCombineOpParam {
     uint64_t windowsOut[HCCL_MAX_RANK_NUM_V310];
     GM_ADDR xnOffset;
     GM_ADDR ckeOffset;
-    uint8_t res[7800];
+    uint8_t res[16];
+    uint8_t algorithmType;
+    uint8_t res2[7783];
 #else
     uint64_t windowsIn[HCCL_MAX_RANK_NUM];
     uint64_t windowsOut[HCCL_MAX_RANK_NUM];
@@ -137,11 +139,13 @@ struct HcclOpResParam {
 }
 constexpr uint16_t CCU_CKE_SIZE = 8;
 constexpr uint64_t CCU_XN_DATA_SIZE = 8; // Number of bytes per xn
-constexpr uint16_t CCU_USED_XN_NUM = 9;  // Currently only the first 9 xn are used
+constexpr uint16_t CCU_USED_XN_NUM = 15;  // Currently xn are used
 constexpr uint16_t CCU_MAX_MSG_NUM = 64;  // The message queue length sent to CCU 
 constexpr uint16_t CCU_MSG_XN_NUM = 64;  // Maximum xn number, each CCU message body occupies 8 registers
                                          // the message body length is 64*8B=512B
 constexpr uint64_t CCU_LOOP_COUNT = 64;  // CCU cycle number, MC2 is not aware of it
+constexpr uint64_t CCU_LOOP_COUNT_M2M_RE = 16; // AllReduce ReduceScatter
+constexpr uint64_t CCU_LOOP_COUNT_M2M_AG = 8; // AllGather
 constexpr uint64_t CCU_LOOP_COUNT_ATAVW = 8; // CCU cycle number, only for AlltoAllvWrite
 constexpr uint64_t ALIGN_64_BYTE = 64;
 constexpr uint64_t CCU_MEMSLICE_SIZE = 4096; // CCU MS size, MC2 is not aware of it
@@ -183,6 +187,7 @@ struct CcuPrepareParam {
     uint32_t repeatIndex;
     uint8_t alltoallvCnt = 0;
     __gm__ CCUMsgExt *ccuMsgExt;
+    uint64_t scratchAddr;
 };
 
 struct AlltoAllVParamCcu {

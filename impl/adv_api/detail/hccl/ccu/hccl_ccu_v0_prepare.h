@@ -149,7 +149,90 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForReduceScatt
 {
     CcuPrepareForAllGather(commParam);
 }
+
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllReduceM2M(__gm__ CommonPrepareParamCcu *commParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * dataSize;
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
  
+    uint64_t loopCount = CCU_LOOP_COUNT_M2M_RE;
+    uint64_t tmpCount = commParam->count / ccuParam_.rankNum;
+    uint64_t sliceCount = (ccuParam_.rankId == ccuParam_.rankNum - 1) ?
+                     (commParam->count - (ccuParam_.rankNum - 1) * tmpCount) : tmpCount;
+    uint64_t sliceSize = sliceCount * DATA_TYPE_MAP[commParam->dataType];
+ 
+    xnData_[3] = ccuParam_.scratchAddr;
+    uint64_t rankSliceOffset =
+        ccuParam_.rankId * ((commParam->strideCount == 0) ? sliceSize : (commParam->strideCount * dataSize));
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuPrepareForAllReduceM2M scratchAddr:0x%llx, rankSliceOffset:%d",
+               ccuParam_.scratchAddr, rankSliceOffset);
+    xnData_[4] = rankSliceOffset;
+    xnData_[5] = rankSliceOffset;
+
+    uint64_t normalSliceSize = ((commParam->count * dataSize) + ccuParam_.rankNum - 1) / ccuParam_.rankNum; // count/rankNum 向上取整
+    int64_t lastSliceSize = (commParam->count * dataSize) - ((ccuParam_.rankNum - 1) * normalSliceSize);
+    lastSliceSize = lastSliceSize > 0 ? lastSliceSize : 0;
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuPrepareForAllReduceM2M normalSliceSize:%d, lastSliceSize:%d", normalSliceSize, lastSliceSize);
+    xnData_[6] = normalSliceSize;
+    xnData_[7] = lastSliceSize;
+    xnData_[8] = ccuParam_.rankId < (commParam->count / normalSliceSize) ? normalSliceSize : lastSliceSize;
+    xnData_[9] = ccuParam_.rankId * normalSliceSize;
+    xnData_[10] = 0; // input output not equals
+    if (ccuParam_.rankId == ccuParam_.rankNum - 1) {
+        CalcGoSize(lastSliceSize, loopCount, CCU_MEMSLICE_SIZE, &xnData_[11]);
+    } else {
+        CalcGoSize(normalSliceSize, loopCount, CCU_MEMSLICE_SIZE, &xnData_[11]);
+    }
+}
+
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForAllGatherM2M(__gm__ CommonPrepareParamCcu *commParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * dataSize;
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+ 
+    uint64_t loopCount = CCU_LOOP_COUNT_M2M_AG;
+    uint64_t sliceCount = commParam->count;
+    uint64_t sliceSize = sliceCount * dataSize;
+ 
+    xnData_[3] = ccuParam_.rankId * ((commParam->strideCount == 0) ? sliceSize : (commParam->strideCount * dataSize));
+    xnData_[4] = sliceSize;
+    CalcGoSize(sliceSize, loopCount, CCU_MEMSLICE_SIZE * 8, &xnData_[5]);
+}
+
+template<const auto &config>
+__aicore__ inline void
+HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForReduceScatterM2M(__gm__ CommonPrepareParamCcu *commParam)
+{
+    xnData_[0] = GetOpId(commParam); // ccu xn0
+    auto dataSize = DATA_TYPE_MAP[static_cast<uint64_t>(commParam->dataType)];
+    uint64_t offset = commParam->count * ccuParam_.repeatIndex * dataSize;
+    xnData_[1] = (uint64_t)commParam->sendBuf + offset; // ccu xn1
+    xnData_[2] = (uint64_t)commParam->recvBuf + offset; // ccu xn2
+ 
+    uint64_t loopCount = CCU_LOOP_COUNT_M2M_RE;
+    uint64_t sliceCount = commParam->count;
+    uint64_t sliceSize = sliceCount * dataSize;
+ 
+    xnData_[3] = ccuParam_.scratchAddr;
+    uint64_t rankSliceOffset =
+        ccuParam_.rankId * ((commParam->strideCount == 0) ? sliceSize : (commParam->strideCount * dataSize));
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuPrepareForReduceScatterM2M scratchAddr:0x%llx, rankSliceOffset:%d",
+               ccuParam_.scratchAddr, rankSliceOffset);
+    xnData_[4] = rankSliceOffset;
+    xnData_[7] = sliceSize;
+    xnData_[8] = UINT64_MAX - 1;
+    CalcGoSize(sliceSize, loopCount, CCU_MEMSLICE_SIZE, &xnData_[9]);
+}
 }
  
 #endif
