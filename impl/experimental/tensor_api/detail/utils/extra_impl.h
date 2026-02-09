@@ -18,7 +18,7 @@
 #include "impl/experimental/tensor_api/detail/utils/constant_impl.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 template <typename... Ts>
 using void_t = void;
 
@@ -52,7 +52,7 @@ struct IterVal<T,void_t<typename T::valueType>> {
     using type = typename T::valueType;
 };
 
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_UTILS_EXTRA_IMPL_H

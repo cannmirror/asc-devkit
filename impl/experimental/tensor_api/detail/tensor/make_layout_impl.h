@@ -19,7 +19,7 @@
 #include "include/experimental/tensor_api/tensor/local_tensor.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 template <typename... Ts>
 __aicore__ inline constexpr Shape<Ts...> MakeShapeImpl(const Ts&... t)
@@ -220,7 +220,7 @@ struct CoshapeCompute {
     __aicore__ inline constexpr auto operator()(const T& shape, const U& stride) const {
         if constexpr (Std::is_tuple_v<T> && Std::is_tuple_v<U>) {
             static_assert(Std::tuple_size_v<T> == Std::tuple_size_v<U>, "Mismatched ranks");
-            return TensorInternal::TransformApply(shape, stride, CoshapeCompute{}, CoshapeSum{});
+            return TransformApply(shape, stride, CoshapeCompute{}, CoshapeSum{});
         } else {
             auto m1Shape = shape - Std::Int<1>{};
             auto absStride = stride < 0 ? -stride : stride;
@@ -331,13 +331,9 @@ template <typename T, size_t row, size_t column>
 using ZZStrideFormat = Stride<Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<FRACTAL_FIXED * column>>,
     Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>>>;
 
-}
-} // namespace AscendC
+
 
 // make_coord_impl.h
-namespace AscendC {
-namespace TensorInternal
-{
 template <typename T, typename U, typename S>
 __aicore__ inline constexpr auto Crd2IdxImpl(const T& coord, const U& shape, const S& stride);
 
@@ -392,148 +388,143 @@ __aicore__ inline constexpr auto Crd2IdxImpl(const T& coord, const Layout<U, S>&
 {
     return Crd2IdxImpl(coord, layout.Shape(), layout.Stride());
 }
-}
-} // namespace AscendC
 
 // make_layout.h
-namespace AscendC {
 template <typename... Ts>
 __aicore__ inline constexpr Shape<Ts...> MakeShape(const Ts&... t)
 {
-    return TensorInternal::MakeShapeImpl<Ts...>(t...);
+    return MakeShapeImpl<Ts...>(t...);
 }
 
 template <typename... Ts>
 __aicore__ inline constexpr Stride<Ts...> MakeStride(const Ts&... t)
 {
-    return TensorInternal::MakeStrideImpl<Ts...>(t...);
+    return MakeStrideImpl<Ts...>(t...);
 }
 
 template <typename... Ts>
 __aicore__ inline constexpr Tile<Ts...>  MakeTile(const Ts&... t)
 {
-    return TensorInternal::MakeTileImpl<Ts...>(t...);
+    return MakeTileImpl<Ts...>(t...);
 }
 
 template <typename... Ts>
 __aicore__ inline constexpr Coord<Ts...> MakeCoord(const Ts&... t)
 {
-    return TensorInternal::MakeCoordImpl<Ts...>(t...);
+    return MakeCoordImpl<Ts...>(t...);
 }
 
 template <typename T, typename U>
 __aicore__ inline constexpr auto MakeLayout(const T& shape, const U& stride)
 {
-    return TensorInternal::MakeLayoutImpl(shape, stride);
+    return MakeLayoutImpl(shape, stride);
 }
 
 template <typename T>
 __aicore__ inline constexpr auto MakeLayout(const T& shape)
 {
-    return TensorInternal::MakeLayoutImpl(shape);
+    return MakeLayoutImpl(shape);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Rank(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::RankImpl<Is...>(layout);
+    return RankImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto GetShape(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::GetShapeImpl<Is...>(layout);
+    return GetShapeImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto GetShape(Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::GetShapeImpl<Is...>(layout);
+    return GetShapeImpl<Is...>(layout);
 }
 
 template <typename Tuple>
 __aicore__ inline constexpr auto GetShape(const Tuple& shape)
 {
-    return TensorInternal::GetShapeImpl(shape);
+    return GetShapeImpl(shape);
 }
 
 template <size_t I, size_t... Is, typename Tuple>
 __aicore__ inline constexpr auto GetShape(const Tuple& shape)
 {
-    return TensorInternal::GetShapeImpl<I, Is...>(shape);
+    return GetShapeImpl<I, Is...>(shape);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto GetStride(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::GetStrideImpl<Is...>(layout);
+    return GetStrideImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto GetStride(Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::GetStrideImpl<Is...>(layout);
+    return GetStrideImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Select(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::SelectImpl<Is...>(layout);
+    return SelectImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Get(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::GetImpl<Is...>(layout);
+    return GetImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Size(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::ShapeSizeImpl<Is...>(layout);
+    return ShapeSizeImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Capacity(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::CapacityImpl<Is...>(layout);
+    return CapacityImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Coshape(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::CoshapeImpl<Is...>(layout);
+    return CoshapeImpl<Is...>(layout);
 }
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Cosize(const Layout<Shape, Stride>& layout)
 {
-    return TensorInternal::CosizeImpl<Is...>(layout);
+    return CosizeImpl<Is...>(layout);
 }
 
 template <typename T, typename U, typename S>
 __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Layout<U, S>& layout)
 {
-    return TensorInternal::Crd2IdxImpl(coord, layout);
+    return Crd2IdxImpl(coord, layout);
 }
 
 template <typename T, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, const Stride& stride)
 {
-    return TensorInternal::Crd2IdxImpl(coord, shape, stride);
+    return Crd2IdxImpl(coord, shape, stride);
 }
-} // namespace AscendC
 
 // make_fractal.h
-namespace AscendC {
 template <typename T>
 __aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column) {
-    return TensorInternal::MakeLayoutForNZ<T>(row, column);
+    return MakeLayoutForNZ<T>(row, column);
 }
 
 template <>
 __aicore__ inline decltype(auto) MakeNZLayout<Std::ignore_t>(size_t row, size_t column) {
-    return TensorInternal::MakeLayoutForNZ<uint16_t>(row, column);
+    return MakeLayoutForNZ<uint16_t>(row, column);
 }
 
 __aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column) {
@@ -542,23 +533,25 @@ __aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column) {
 
 template <typename T>
 __aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column) {
-    return TensorInternal::MakeLayoutForND<T>(row, column);
+    return MakeLayoutForND<T>(row, column);
 }
 
 template <typename T>
 __aicore__ inline decltype(auto) MakeColumnMajorLayout(size_t row, size_t column) {
-    return TensorInternal::MakeLayoutForDN<T>(row, column);
+    return MakeLayoutForDN<T>(row, column);
 }
 
 template <typename T>
 __aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column) {
-    return TensorInternal::MakeLayoutForZN<T>(row, column);
+    return MakeLayoutForZN<T>(row, column);
 }
 
 template <typename T>
 __aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column) {
-    return TensorInternal::MakeLayoutForZZ<T>(row, column);
+    return MakeLayoutForZZ<T>(row, column);
 }
+
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H

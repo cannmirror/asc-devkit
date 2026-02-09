@@ -18,6 +18,8 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_routing.h"
 
 namespace AscendC {
+namespace Te {
+
 template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U>
 __aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type 
 LoadData(const T& dst, const U& src)
@@ -30,11 +32,13 @@ template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typen
 __aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplateWithCoord<T, U, Coord>, void>::type 
 LoadData(const T& dst, const U& src, const Coord& coord)
 {
-    constexpr Hardware dstPos = TensorInternal::GetHardPos<T>();
-    constexpr Hardware srcPos = TensorInternal::GetHardPos<U>();
-    using Tensor2Tensor = typename TensorInternal::LoadDataTensor2Tensor<dstPos, srcPos, 
-        TensorInternal::CURRENT_ARCH_VERSION, TensorInternal::FOUR_DIM_DATA>::type;
+    constexpr Hardware dstPos = GetHardPos<T>();
+    constexpr Hardware srcPos = GetHardPos<U>();
+    using Tensor2Tensor = typename LoadDataTensor2Tensor<dstPos, srcPos, 
+        CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
     Tensor2Tensor{}.template Run<trait, T, U, Coord>(dst, src, coord);
 }
+
+} // namespace Te
 } // namespace AscendC
 #endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H

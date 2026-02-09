@@ -18,6 +18,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/npu_arch_2201/data_copy_routing.h"
 
 namespace AscendC {
+namespace Te {
 template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
 DataCopy(const T& dst, const U& src)
@@ -30,13 +31,14 @@ template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, type
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplateWithCoord<T, U, Coord>, void>::type
 DataCopy(const T& dst, const U& src, const Coord& coord)
 {
-    constexpr Hardware dstTPos = TensorInternal::GetHardPos<T>();
-    constexpr Hardware srcTPos = TensorInternal::GetHardPos<U>();
+    constexpr Hardware dstTPos = GetHardPos<T>();
+    constexpr Hardware srcTPos = GetHardPos<U>();
     using Tensor2Tensor = typename
-        TensorInternal::DataCopyTensor2Tensor<dstTPos, srcTPos, TensorInternal::CURRENT_ARCH_VERSION, TensorInternal::FOUR_DIM_DATA>::type;
+        DataCopyTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
     Tensor2Tensor{}.template Run<trait, T, U, Coord>(dst, src, coord);
 }
 
+} // namespace Te
 } // namespace AscendC
 
 #endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H

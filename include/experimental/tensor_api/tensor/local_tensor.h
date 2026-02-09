@@ -19,6 +19,8 @@
 #include "include/experimental/tensor_api/tensor/layout.h"
 
 namespace AscendC {
+namespace Te {
+
 template <typename EngineType, typename LayoutType>
 struct TensorAttribute {};
 
@@ -141,6 +143,8 @@ struct IsTileTensor<LocalTensor<TensorAttribute<Engine,Layout>>> : Std::true_typ
 
 template <typename T>
 constexpr bool IsTileTensorV = IsTileTensor<T>::value;
+
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_TENSOR_LOCAL_TENSOR_H

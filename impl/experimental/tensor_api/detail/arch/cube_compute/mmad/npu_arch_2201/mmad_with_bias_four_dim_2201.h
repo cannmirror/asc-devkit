@@ -18,7 +18,7 @@
 #include "include/experimental/tensor_api/tensor/make.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 class MmadWithBiasGenParams
 {
@@ -181,7 +181,7 @@ public:
         Mmad<trait>(args..., params, tuple_sequence<decltype(params)>{});
     }
 };
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_WITH_BIAS_FOUR_DIM_2201_H

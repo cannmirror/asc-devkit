@@ -19,6 +19,8 @@
 
 // algorithm
 namespace AscendC {
+namespace Te {
+
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeGMmemPtr(Iterator iter);
 
@@ -42,6 +44,8 @@ __aicore__ inline constexpr auto MakeBiasmemPtr(Iterator iter);
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeFixbufmemPtr(Iterator iter);
+
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_TENSOR_MAKE_POINTER_H

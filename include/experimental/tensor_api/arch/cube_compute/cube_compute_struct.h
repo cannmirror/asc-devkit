@@ -18,6 +18,8 @@
 #include "include/experimental/tensor_api/utils/utils.h"
 
 namespace AscendC {
+namespace Te {
+
 struct MmadTrait {
     int32_t fmOffset = 0;
     bool enSsparse = false;
@@ -44,6 +46,8 @@ struct MmadTrait {
    };
 };
 constexpr MmadTrait DEFAULT_MMAD_TRAIT; 
-}
+
+} // namespace Te
+} // namespace AscendC
 
 #endif // EXPERIMENTAL_TENSOR_API_ARCH_CUBE_COMPUTE_CUBE_COMPUTE_STRUCT_H

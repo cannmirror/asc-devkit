@@ -18,13 +18,15 @@
 #include "impl/experimental/tensor_api/detail/tensor/hardware_pointer.h"
 
 namespace AscendC {
+namespace Te {
+
 template <typename Iterator>
 struct ViewEngine
 {
     using iterator     = Iterator;
-    using reference    = typename TensorInternal::IterRef<iterator>::type; // T&
-    using elementType = typename TensorInternal::IterEle<iterator>::type; // rm_ref
-    using valueType   = typename TensorInternal::IterVal<iterator>::type; // rm_cvf
+    using reference    = typename IterRef<iterator>::type; // T&
+    using elementType = typename IterEle<iterator>::type; // rm_ref
+    using valueType   = typename IterVal<iterator>::type; // rm_cvf
     __aicore__ inline constexpr iterator const& Begin() const {
         return storage;
     }
@@ -41,9 +43,9 @@ template <typename Iterator>
 struct ConstViewEngine
 {
     using iterator     = Iterator;
-    using reference    = typename TensorInternal::IterRef<iterator>::type; // T&
-    using elementType = typename TensorInternal::IterEle<iterator>::type; // rm_ref
-    using valueType   = typename TensorInternal::IterVal<iterator>::type; // rm_cvf
+    using reference    = typename IterRef<iterator>::type; // T&
+    using elementType = typename IterEle<iterator>::type; // rm_ref
+    using valueType   = typename IterVal<iterator>::type; // rm_cvf
 
     __aicore__ inline constexpr iterator const& Begin() const {
         return storage;
@@ -52,6 +54,8 @@ struct ConstViewEngine
 private:
     iterator storage;
 };
+
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_TENSOR_ENGINE_H

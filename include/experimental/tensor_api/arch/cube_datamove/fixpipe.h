@@ -18,6 +18,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe_impl.h"
 
 namespace AscendC {
+namespace Te {
 
 template <const FixpipeTrait& trait, typename T, typename U>
 __aicore__ inline typename Std::enable_if<VerifyingFixpipeTemplate<T, U>, void>::type
@@ -35,6 +36,7 @@ template <const FixpipeTrait& trait, typename T, typename U, typename V,  typena
 __aicore__ inline typename Std::enable_if<VerifyingFixpipeQuantTemplateWithCoord<T, U, V, Coord>, void>::type
 Fixpipe(const T& dst, const U& src, const V& quant, const Coord& coord);
 
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_H

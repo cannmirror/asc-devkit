@@ -19,7 +19,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_four_dim_2201_l1_l0b.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 class LoadDataIgnore {
 public:
@@ -43,6 +43,6 @@ struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V2201, FO
 {
     using type = LoadDataFourDim2201L12L0B;
 };
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 #endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_2201_LOAD_DATA_ROUTING_H

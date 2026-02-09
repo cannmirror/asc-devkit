@@ -19,7 +19,7 @@
 #include "include/experimental/tensor_api/tensor/local_tensor.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 template <typename T, typename = void>
 struct HasDereference : Std::false_type {};
@@ -49,16 +49,15 @@ __aicore__ inline constexpr auto MakeTensorImpl(const Iterator& iter, const Args
     static_assert(!(HasDereference<Args>::value && ...), "Expected layout args... in MakeLocalTensor(iter, args...)");
     return MakeLocalTensor<Iterator>{}(iter, args...);
 }
-}
-} // namespace AscendC
 
 // make_tensor.h
-namespace AscendC {
 template <typename Iterator, typename... Args>
 __aicore__ inline constexpr auto MakeTensor(const Iterator& iter, const Args&... args)
 {
-    return TensorInternal::MakeTensorImpl<Iterator, Args...>(iter, args...);
+    return MakeTensorImpl<Iterator, Args...>(iter, args...);
 }
+
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_TENSOR_MAKE_TENSOR_IMPL_H

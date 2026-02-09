@@ -18,8 +18,8 @@
 #include "include/experimental/tensor_api/utils/utils.h"
 
 namespace AscendC {
-namespace TensorInternal
-{
+namespace Te {
+
 template <typename T, typename F, typename G, size_t... I>
 __aicore__ inline constexpr auto TupleApply(T&& t, F&& f, G&& g, Std::index_sequence<I...>)
 {
@@ -60,12 +60,8 @@ __aicore__ inline int32_t CeilDivision(int32_t num1, int32_t num2)
     }
     return (num1 + num2 - 1) / num2;
 }
-}
-}
 
 // make_tuple.h
-namespace AscendC {
-namespace TensorInternal {
 struct MultipliesUnaryLeftFold {
     template <typename... T>
     __aicore__ inline constexpr auto operator()(T&&... t) const {
@@ -81,7 +77,7 @@ struct Product {
             if constexpr (Std::tuple_size_v<T> == 0) {
                 return Std::Int<1>{};
             } else {
-                return TensorInternal::TransformApply(intT, Product{}, MultipliesUnaryLeftFold{});
+                return TransformApply(intT, Product{}, MultipliesUnaryLeftFold{});
             }
         } else if constexpr (Std::is_integral<T>::value) {
             return intT;
@@ -184,7 +180,7 @@ __aicore__ inline constexpr auto GetMax(const T0& t0, const Ts&... ts)
     if constexpr (sizeof...(Ts) == 0) {
         return t0;
     } else {
-        return TensorInternal::max(t0, GetMax(ts...));
+        return max(t0, GetMax(ts...));
     }
 }
 
@@ -207,13 +203,8 @@ __aicore__ inline constexpr auto GetCapacity(const Shape& shape, const Stride& s
         return shape * stride;
     }
 }
-}
-} 
 
 // static_layout_size.h
-namespace AscendC {
-namespace TensorInternal {
-
 template <typename T>
 struct nesting_depth {
     static constexpr size_t value = 1;
@@ -287,9 +278,9 @@ private:
     }
 
     __aicore__ inline static constexpr auto GetStaticLayoutSize() {
-        if constexpr (IsStaticLayout<TensorInternal::FOUR_DIM_DATA, T, U>::value) {
+        if constexpr (IsStaticLayout<FOUR_DIM_DATA, T, U>::value) {
             return GetFourDimStaticLayoutSize();
-        } else if constexpr (IsStaticLayout<TensorInternal::TWO_DIM_DATA, T, U>::value) {
+        } else if constexpr (IsStaticLayout<TWO_DIM_DATA, T, U>::value) {
             return GetTwoDimStaticLayoutSize();
         } else {
             return Std::Int<0>{};
@@ -298,6 +289,8 @@ private:
 public:
     static constexpr size_t size = GetStaticLayoutSize();
 };
-}
+
+} // namespace Te
 } // namespace AscendC
+
 #endif // IMPL_TENSOR_API_TENSOR_BASIC_ALGORITHM_H

@@ -18,7 +18,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_2201_base.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 class FixpipetNz2Nz2201Base : public Copy2201MatrixCcToGmBase {
 public:
@@ -184,7 +184,7 @@ public:
         }
     }
 };
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_FOUR_DIM_2201_L0C_GM_H

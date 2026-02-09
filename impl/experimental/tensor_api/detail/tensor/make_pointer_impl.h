@@ -19,7 +19,7 @@
 #include "impl/experimental/tensor_api/detail/tensor/hardware_pointer.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 template <Hardware hardPos, typename Iterator>
 __aicore__ inline constexpr auto MakeMemPtr(Iterator iter) 
 {
@@ -29,50 +29,48 @@ __aicore__ inline constexpr auto MakeMemPtr(Iterator iter)
         return HardwareMemPtr<hardPos, Iterator>{iter};
     }
 }
-}
-} // namespace AscendC
 
 // make_pointer.h
-namespace AscendC {
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeGMmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::GM, Iterator>(iter);
+    return MakeMemPtr<Hardware::GM, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeUBmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::UB, Iterator>(iter);
+    return MakeMemPtr<Hardware::UB, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL1memPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::L1, Iterator>(iter);
+    return MakeMemPtr<Hardware::L1, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL0AmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::L0A, Iterator>(iter);
+    return MakeMemPtr<Hardware::L0A, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL0BmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::L0B, Iterator>(iter);
+    return MakeMemPtr<Hardware::L0B, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeL0CmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::L0C, Iterator>(iter);
+    return MakeMemPtr<Hardware::L0C, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeBiasmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::BIAS, Iterator>(iter);
+    return MakeMemPtr<Hardware::BIAS, Iterator>(iter);
 }
 
 template <typename Iterator>
 __aicore__ inline constexpr auto MakeFixbufmemPtr(Iterator iter) {
-    return TensorInternal::MakeMemPtr<Hardware::FIXBUF, Iterator>(iter);
+    return MakeMemPtr<Hardware::FIXBUF, Iterator>(iter);
 }
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_TENSOR_MAKE_POINTER_IMPL_H

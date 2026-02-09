@@ -18,6 +18,7 @@
 #include "include/experimental/tensor_api/utils/utils.h"
 
 namespace AscendC {
+namespace Te {
 
 struct DataCopyTrait {};
 constexpr DataCopyTrait DEFAULT_DATA_COPY_TRAIT;
@@ -55,6 +56,7 @@ struct LoadDataTrait {
     bool transposed = false;
 };
 constexpr LoadDataTrait DEFAULT_LOAD_DATA_TRAIT{};
-}
+} // namespace Te
+} // namespace AscendC
 
 #endif // EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_CUBE_DATAMOVE_STRUCT_H

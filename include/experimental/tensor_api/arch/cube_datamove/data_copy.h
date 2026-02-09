@@ -18,6 +18,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy_impl.h"
 
 namespace AscendC {
+namespace Te {
 
 template <const DataCopyTrait& trait, typename T, typename U>
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
@@ -27,6 +28,7 @@ template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplateWithCoord<T, U, Coord>, void>::type
 DataCopy(const T& dst, const U& src, const Coord& coord);
 
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_H

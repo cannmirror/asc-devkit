@@ -18,6 +18,8 @@
 #include "impl/experimental/tensor_api/detail/utils/format_impl.h"
 
 namespace AscendC {
+namespace Te {
+
 template <typename T, typename U>
 constexpr bool VerifyingDataCopyTemplate =
     ((IsTileTensorV<U> && IsTileTensorV<T>) ||
@@ -53,6 +55,7 @@ constexpr bool VerifyingFixpipeTemplateWithCoord = Std::is_tuple_v<Coord> && Ver
 template <typename T, typename U, typename V, typename Coord>
 constexpr bool VerifyingFixpipeQuantTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingFixpipeQuantTemplate<T, U, V>;
 
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_UTILS_FORMAT_H

@@ -19,7 +19,7 @@
 #include "impl/experimental/tensor_api/detail/utils/constant_impl.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 struct ArchVersion {
     static constexpr uint32_t V3101 = 3101;
     static constexpr uint32_t V2201 = 2201;
@@ -254,7 +254,7 @@ __aicore__ inline constexpr auto GetHardPos()
 {
    return T::iterator::hardPos;
 }
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_UTILS_FORMAT_IMPL_H

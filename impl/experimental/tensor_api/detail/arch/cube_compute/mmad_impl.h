@@ -18,16 +18,17 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_routing.h"
 
 namespace AscendC {
+namespace Te {
 
 template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, typename S>
 __aicore__ inline typename Std::enable_if<VerifyingMmadTemplate<T, U, S>, void>::type 
 Mmad(const T& dst, const U& fm, const S& filter)
 {
-   constexpr Hardware dstPos = TensorInternal::GetHardPos<T>();
-   constexpr Hardware fmPos = TensorInternal::GetHardPos<U>();
-   constexpr Hardware filterPos = TensorInternal::GetHardPos<S>();
-   using Tensor2Tensor = typename TensorInternal::MmadTensor2Tensor<dstPos, fmPos, filterPos, Hardware::MAX, 
-      TensorInternal::CURRENT_ARCH_VERSION, TensorInternal::FOUR_DIM_DATA>::type;
+   constexpr Hardware dstPos = GetHardPos<T>();
+   constexpr Hardware fmPos = GetHardPos<U>();
+   constexpr Hardware filterPos = GetHardPos<S>();
+   using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, Hardware::MAX, 
+      CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
    Tensor2Tensor{}.template Run<trait>(dst, fm, filter);
 }
 
@@ -35,13 +36,14 @@ template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, t
 __aicore__ inline typename Std::enable_if<VerifyingMmadWithBiasTemplate<T, U, S, V>, void>::type 
 Mmad(const T& dst, const U& fm, const S& filter, const V& bias)
 {
-   constexpr Hardware dstPos = TensorInternal::GetHardPos<T>();
-   constexpr Hardware fmPos = TensorInternal::GetHardPos<U>();
-   constexpr Hardware filterPos = TensorInternal::GetHardPos<S>();
-   constexpr Hardware biasPos = TensorInternal::GetHardPos<V>();
-   using Tensor2Tensor = typename TensorInternal::MmadTensor2Tensor<dstPos, fmPos, filterPos, biasPos, 
-      TensorInternal::CURRENT_ARCH_VERSION, TensorInternal::FOUR_DIM_DATA>::type;
+   constexpr Hardware dstPos = GetHardPos<T>();
+   constexpr Hardware fmPos = GetHardPos<U>();
+   constexpr Hardware filterPos = GetHardPos<S>();
+   constexpr Hardware biasPos = GetHardPos<V>();
+   using Tensor2Tensor = typename MmadTensor2Tensor<dstPos, fmPos, filterPos, biasPos, 
+      CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
    Tensor2Tensor{}.template Run<trait>(dst, fm, filter, bias);
 }
+} // namespace Te
 } // namespace AscendC
 #endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_IMPL_H

@@ -24,8 +24,8 @@
 #include "include/utils/std/utility.h"
 #include "include/utils/std/algorithm.h"
 
-namespace AscendC{
-namespace TensorInternal{
+namespace AscendC {
+namespace Te {
 constexpr size_t TWO_DIM_DATA = 2;
 constexpr size_t FOUR_DIM_DATA = 4;
 constexpr size_t C0_SIZE = 32;
@@ -90,7 +90,7 @@ using IsVectorQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_TENSOR_QUAN
 
 template <QuantMode_t quantPre>
 using IsDirectQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_DIRECT_QUANT_MODE>;
-}
-}
+} // namespace Te
+} // namespace AscendC
 
 #endif // IMPL_TENSOR_API_UTILS_CONSTANT_IMPL_H

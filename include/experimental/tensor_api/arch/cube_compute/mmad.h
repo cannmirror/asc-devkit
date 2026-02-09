@@ -18,6 +18,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad_impl.h"
 
 namespace AscendC {
+namespace Te {
 
 template <const MmadTrait& trait, typename T, typename U, typename S>
 __aicore__ inline typename Std::enable_if<VerifyingMmadTemplate<T, U, S>, void>::type 
@@ -27,5 +28,7 @@ template <const MmadTrait& trait, typename T, typename U, typename S, typename V
 __aicore__ inline typename Std::enable_if<VerifyingMmadWithBiasTemplate<T, U, S, V>, void>::type 
 Mmad(const T& dst, const U& fm, const S& filter, const V& bias);
 
+} // namespace Te
 } // namespace AscendC
+
 #endif // INCLUDE_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_H

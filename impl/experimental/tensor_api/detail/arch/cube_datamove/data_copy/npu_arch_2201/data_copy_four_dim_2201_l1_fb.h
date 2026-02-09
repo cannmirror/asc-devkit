@@ -21,7 +21,8 @@
 #include "include/experimental/tensor_api/arch/cube_datamove/cube_datamove_struct.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
+
 class CopyCbufToFB2201 {
 public:
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
@@ -69,7 +70,7 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        constexpr uint32_t C2PIPE2GM_UNIT = TensorInternal::C0_SIZE * 4;
+        constexpr uint32_t C2PIPE2GM_UNIT = C0_SIZE * 4;
         CheckTemplate<trait, T, U>();
 
         auto dstLayout = dst.Layout();
@@ -84,7 +85,7 @@ private:
 
         uint16_t blockCount = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         uint16_t blockLen = CeilDivision(dstCol * sizeof(srcType), C2PIPE2GM_UNIT);
-        uint16_t srcStride = CeilDivision(srcRow * sizeof(srcType), TensorInternal::C0_SIZE);
+        uint16_t srcStride = CeilDivision(srcRow * sizeof(srcType), C0_SIZE);
         uint16_t dstStride = CeilDivision(dstRow * sizeof(dstType), C2PIPE2GM_UNIT);
 
         return Std::make_tuple(blockCount, blockLen, srcStride, dstStride);
@@ -112,7 +113,7 @@ private:
     }
 };
 
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_FOUR_DIM_2201_GM_FB_H

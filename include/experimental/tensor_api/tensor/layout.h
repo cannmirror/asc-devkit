@@ -18,6 +18,8 @@
 #include "impl/experimental/tensor_api/detail/tensor/basic_algorithm.h"
 
 namespace AscendC {
+namespace Te {
+
 template <typename... Shapes>
 using Shape = Std::tuple<Shapes...>;
 
@@ -33,7 +35,7 @@ using Coord = Std::tuple<Coords...>;
 template <typename T, typename U>
 struct Layout : private Std::tuple<T, U>
 {
-    static constexpr auto size = TensorInternal::StaticLayoutSize<T, U>::size;
+    static constexpr auto size = StaticLayoutSize<T, U>::size;
 
     __aicore__ inline constexpr Layout(const T& shape  = {}, const U& stride = {})
         : Std::tuple<T, U>(shape, stride)
@@ -43,7 +45,7 @@ struct Layout : private Std::tuple<T, U>
 
     __aicore__ inline constexpr decltype(auto) Capacity() const
     {
-        return TensorInternal::GetCapacity(Shape(), Stride());
+        return GetCapacity(Shape(), Stride());
     }
 
     __aicore__ inline constexpr decltype(auto) layout()
@@ -59,25 +61,25 @@ struct Layout : private Std::tuple<T, U>
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Shape()
     {
-        return TensorInternal::GetValue<0, I...>(static_cast<Std::tuple<T, U>&>(*this));
+        return GetValue<0, I...>(static_cast<Std::tuple<T, U>&>(*this));
     }
 
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Shape() const
     {
-        return TensorInternal::GetValue<0, I...>(static_cast<const Std::tuple<T, U>&>(*this));
+        return GetValue<0, I...>(static_cast<const Std::tuple<T, U>&>(*this));
     }
 
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Stride()
     {
-        return TensorInternal::GetValue<1, I...>(static_cast<Std::tuple<T, U>&>(*this));
+        return GetValue<1, I...>(static_cast<Std::tuple<T, U>&>(*this));
     }
 
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Stride() const
     {
-        return TensorInternal::GetValue<1, I...>(static_cast<const Std::tuple<T, U>&>(*this));
+        return GetValue<1, I...>(static_cast<const Std::tuple<T, U>&>(*this));
     }
 
     template <typename S>
@@ -90,13 +92,13 @@ struct Layout : private Std::tuple<T, U>
     __aicore__ inline constexpr decltype(auto) Rank() const
     {
         static_assert(Std::tuple_size_v<T> == Std::tuple_size_v<U>, "The dimensions of the Shape and Stride are not the same.");
-        return TensorInternal::GetRank<I...>(Shape());
+        return GetRank<I...>(Shape());
     }
 
     template <size_t... I>
     __aicore__ inline constexpr decltype(auto) Size() const
     {
-        return TensorInternal::TupleSize<I...>(Shape());
+        return TupleSize<I...>(Shape());
     }
 
     static constexpr auto rank = Std::tuple_size_v<T>;
@@ -110,6 +112,8 @@ struct is_layout<Layout<T, U>> : Std::true_type {};
 
 template <typename T>
 constexpr bool is_layout_v = is_layout<T>::value;
+
+} // namespace Te
 } // namespace AscendC
 
 #endif // INCLUDE_TENSOR_API_TENSOR_LAYOUT_H

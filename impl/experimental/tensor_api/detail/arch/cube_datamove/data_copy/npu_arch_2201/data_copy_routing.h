@@ -20,7 +20,7 @@
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/npu_arch_2201/data_copy_four_dim_2201_l1_fb.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 class DataCopyIgnore {
 public:
@@ -47,7 +47,7 @@ template <>
 struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA> {
     using type = CopyCbufToFB2201;
 };
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_ROUTING_H

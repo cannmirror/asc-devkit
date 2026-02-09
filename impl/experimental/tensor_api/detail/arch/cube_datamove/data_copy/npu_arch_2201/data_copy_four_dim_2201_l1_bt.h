@@ -21,7 +21,7 @@
 #include "include/experimental/tensor_api/arch/cube_datamove/cube_datamove_struct.h"
 
 namespace AscendC {
-namespace TensorInternal {
+namespace Te {
 
 class CopyCbufToBT2201 {
 public:
@@ -66,7 +66,7 @@ private:
     template <const DataCopyTrait& trait, typename T, typename U>
     __aicore__ inline auto GenDataCopyParams(const T& dst, const U& src)
     {
-        constexpr auto L12BT_UNIT = TensorInternal::C0_SIZE * 2;
+        constexpr auto L12BT_UNIT = C0_SIZE * 2;
         CheckTemplate<trait, T, U>();
 
         auto dstLayout = dst.Layout();
@@ -82,7 +82,7 @@ private:
         bool convControl = false;
         uint16_t blockCount = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
         uint16_t blockLen = dstCol * sizeof(dstType) / L12BT_UNIT;
-        uint16_t srcStride = (srcRow - dstCol) * sizeof(srcType) / TensorInternal::C0_SIZE;
+        uint16_t srcStride = (srcRow - dstCol) * sizeof(srcType) / C0_SIZE;
         uint16_t dstStride = (dstRow - dstCol) * sizeof(dstType) / L12BT_UNIT;
 
         return Std::make_tuple(convControl, blockCount, blockLen, srcStride, dstStride);
@@ -108,7 +108,7 @@ private:
     }
 };
 
-} // namespace TensorInternal
+} // namespace Te
 } // namespace AscendC
 
 #endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_FOUR_DIM_2201_GM_BT_H
