@@ -7,3 +7,77 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
+
+#ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_CACHE_CTRL_IMPL_H
+#define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_CACHE_CTRL_IMPL_H
+
+#include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_icache_preload_impl.h"
+#include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_data_cache_preload_impl.h"
+#include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_dcci_impl.h"
+#include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_get_icache_preload_status_impl.h"
+
+// ==========asc_icache_preload==========
+__aicore__ inline void asc_icache_preload(const void* addr)
+{
+    asc_icache_preload_impl(addr);
+}
+
+__aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len)
+{
+    asc_icache_preload_impl(addr, prefetch_len);
+}
+
+__aicore__ inline void asc_datacache_preload(__gm__ uint64_t* address, int64_t offset)
+{
+    asc_datacache_preload_impl(address, offset);
+}
+
+//==============asc_dcci===============
+__aicore__ inline void asc_dcci_single(__gm__ void* dst)
+{
+    asc_dcci_single_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire(__gm__ void* dst)
+{
+    asc_dcci_entire_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_single_all(__gm__ void* dst)
+{
+    asc_dcci_single_all_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_single_out(__gm__ void* dst)
+{
+    asc_dcci_single_out_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_single_atomic(__gm__ void* dst)
+{
+    asc_dcci_single_atomic_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire_all(__gm__ void* dst)
+{
+    asc_dcci_entire_all_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire_out(__gm__ void* dst)
+{
+    asc_dcci_entire_out_impl(dst);
+}
+
+__aicore__ inline void asc_dcci_entire_atomic(__gm__ void* dst)
+{
+    asc_dcci_entire_atomic_impl(dst);
+}
+
+//=========asc_get_icache_preload_status========
+__aicore__ inline int64_t asc_get_icache_preload_status()
+{
+    return asc_get_icache_preload_status_impl();
+}
+
+
+#endif

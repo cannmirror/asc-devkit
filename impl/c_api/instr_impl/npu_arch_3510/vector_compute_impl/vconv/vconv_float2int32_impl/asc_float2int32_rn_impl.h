@@ -11,7 +11,7 @@
 #ifndef IMPL_CAPI_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_VCON_VCON_FLOAT2INT32_IMPL_ASC_FLOAT2INT32_RN_IMPL_H
 #define IMPL_CAPI_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_VCON_VCON_FLOAT2INT32_IMPL_ASC_FLOAT2INT32_RN_IMPL_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
+#include "instr_impl/npu_arch_3510/utils_impl.h"
 
 __simd_callee__ inline void asc_float2int32_rn_impl(vector_int32_t& dst, vector_float src, vector_bool mask)
 {

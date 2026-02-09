@@ -37,4 +37,37 @@ using vector_fp4x2_e1m2_t = vector_f4e1m2x2;
 using vector_store_align = vector_align;
 using vector_load_align = vector_align;
 using iter_reg = vector_address;
+
+#if (defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1))
+
+using float4_e1m2x2_t = fp4x2_e1m2_t;
+using float4_e2m1x2_t = fp4x2_e2m1_t;
+using float8_e4m3_t = fp8_e4m3fn_t;
+using float8_e5m2_t = fp8_e5m2_t;
+using float8_e8m0_t = fp8_e8m0_t;
+
+#else
+
+struct fp4x2_e2m1_t {
+    float4_e2m1x2_t data;
+};
+
+struct fp4x2_e1m2_t {
+    float4_e1m2x2_t data;
+};
+
+struct fp8_e4m3fn_t {
+    float8_e4m3_t data;
+};
+
+struct fp8_e5m2_t {
+    float8_e5m2_t data;
+};
+
+struct fp8_e8m0_t {
+    float8_e8m0_t data;
+};
+
+#endif
+
 #endif

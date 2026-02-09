@@ -16,15 +16,19 @@
 #ifndef INCLUDE_C_API_SCALAR_COMPUTE_H
 #define INCLUDE_C_API_SCALAR_COMPUTE_H
 
-#include "instr_impl/npu_arch_2201/scalar_compute_impl.h"
-
-__aicore__ inline int64_t asc_ffs(uint64_t value);
-
-__aicore__ inline int64_t asc_clz(uint64_t value_in);
-
 __aicore__ inline int64_t asc_sflbits(int64_t value);
 
 __aicore__ inline int64_t asc_ffz(uint64_t value);
+
+__aicore__ inline int64_t asc_ffs(uint64_t value);
+
+__aicore__ inline int64_t asc_popc(uint64_t value);
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
+#include "instr_impl/npu_arch_2201/scalar_compute_impl.h"
+
+__aicore__ inline int64_t asc_clz(uint64_t value_in);
 
 __aicore__ inline int64_t asc_zero_bits_cnt(uint64_t value);
 
@@ -32,7 +36,35 @@ __aicore__ inline uint64_t asc_set_nthbit(uint64_t bits, int64_t idx);
 
 __aicore__ inline uint64_t asc_clear_nthbit(uint64_t bits, int64_t idx);
 
-__aicore__ inline int64_t asc_popc(uint64_t value);
+__aicore__ inline int32_t asc_float2int32_rd(float value);
+
+__aicore__ inline int32_t asc_float2int32_ru(float value);
+
+__aicore__ inline int32_t asc_float2int32_rn(float value);
+
+__aicore__ inline int32_t asc_float2int32_rna(float value);
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/scalar_compute_impl.h"
+
+__aicore__ inline void asc_store_dev(__gm__ int8_t* addr, int8_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ uint8_t* addr, uint8_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ int16_t* addr, int16_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ uint16_t* addr, uint16_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ int32_t* addr, int32_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ uint32_t* addr, uint32_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ int64_t* addr, int64_t value);
+
+__aicore__ inline void asc_store_dev(__gm__ uint64_t* addr, uint64_t value);
+
+#endif
 
 #endif
 

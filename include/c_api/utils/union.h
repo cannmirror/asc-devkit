@@ -13,11 +13,12 @@
 
 #include <cstdint>
 
-constexpr uint64_t ASC_DEFAULT_REDUCE_CONFIG_VALUE = 0x0100000800010001;
 constexpr uint64_t ASC_FILL_VALUE_DEFAULT_VALUE = 0x0000000000000000;
 constexpr uint64_t ASC_STORE_ATOMIC_DEFAULT_VALUE = 0x0000000000000000;
 constexpr uint64_t ASC_DEFAULT_SET_L0C_COPY_PARAMS_CONFIG_VALUE = 0x0000000000000000;
 constexpr uint64_t ASC_DEFAULT_LOAD3D_V2_CONFIG_VALUE = 0x0000000000010000;
+constexpr uint64_t ASC_DEFAULT_NDIM_PAD_COUNT_CONFIG_VALUE = 0;
+constexpr uint64_t ASC_DEFAULT_L13D_FMATRIX_CONFIG_VALUE = 0;
 
 union asc_fill_value_config {
     uint64_t config = ASC_FILL_VALUE_DEFAULT_VALUE;
@@ -59,8 +60,36 @@ union asc_load3d_v2_config {
     };
 };
 
+union asc_ndim_pad_count_config {
+    uint64_t config = ASC_DEFAULT_NDIM_PAD_COUNT_CONFIG_VALUE;
+    struct {
+        uint8_t loop1_lp_count;
+        uint8_t loop1_rp_count;
+        uint8_t loop2_lp_count;
+        uint8_t loop2_rp_count;
+        uint8_t loop3_lp_count;
+        uint8_t loop3_rp_count;
+        uint8_t loop4_lp_count;
+        uint8_t loop4_rp_count;
+    };
+};
+
+union asc_l13d_fmatrix_config {
+    uint64_t config = ASC_DEFAULT_L13D_FMATRIX_CONFIG_VALUE;
+    struct {
+        uint16_t l1_height;
+        uint16_t l1_width;
+        uint8_t padding_left_size;
+        uint8_t padding_right_size;
+        uint8_t padding_top_size;
+        uint8_t padding_bottom_size;
+    };
+};
+
 constexpr asc_fill_value_config ASC_FILL_VALUE_DEFAULT_CFG{};
 constexpr asc_store_atomic_config ASC_STORE_ATOMIC_DEFAULT_CFG{};
 constexpr asc_set_l0c_copy_params_config ASC_DEFAULT_SET_L0C_COPY_PARAMS_CFG{};
 constexpr asc_load3d_v2_config ASC_DEFAULT_LOAD3D_V2_CONFIG{};
+constexpr asc_ndim_pad_count_config ASC_DEFAULT_NDIM_PAD_COUNT_CONFIG{};
+constexpr asc_l13d_fmatrix_config ASC_DEFAULT_L13D_FMATRIX_CONFIG{};
 #endif

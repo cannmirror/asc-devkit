@@ -17,6 +17,8 @@
 #ifndef INCLUDE_C_API_CUBE_COMPUTE_CUBE_COMPUTE_H
 #define INCLUDE_C_API_CUBE_COMPUTE_CUBE_COMPUTE_H
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
 #include "instr_impl/npu_arch_2201/cube_compute_impl.h"
 
 // asc_mmad(float-bfloat16_t)
@@ -119,10 +121,87 @@ __aicore__ inline void asc_set_l0c2gm_relu(uint64_t relu);
 
 __aicore__ inline void asc_set_l0c2gm_unitflag(uint64_t unit_flag);
 
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/cube_compute_impl.h"
+
+__aicore__ inline void asc_set_l0c2gm_relu(uint64_t relu);
+
+__aicore__ inline void asc_set_l0c2gm_relu(uint64_t quant);
+
+__aicore__ inline void asc_set_l0c2gm_unitflag(bool unitflag);
+
+__aicore__ inline void asc_set_l0c2gm_nz2nd(uint64_t nd_num, uint64_t src_nd_stride, uint64_t dst_nd_stride);
+
+// ==========mmad_mx(e1m2/e1m2, e4m3/e5m2)==========
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp4x2_e1m2_t* a_matrix,
+    __cb__ fp4x2_e1m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp4x2_e1m2_t* a_matrix,
+    __cb__ fp4x2_e1m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp4x2_e1m2_t* a_matrix,
+    __cb__ fp4x2_e2m1_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp4x2_e1m2_t* a_matrix,
+    __cb__ fp4x2_e2m1_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp4x2_e2m1_t* a_matrix,
+    __cb__ fp4x2_e1m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp4x2_e2m1_t* a_matrix,
+    __cb__ fp4x2_e1m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp4x2_e2m1_t* a_matrix,
+    __cb__ fp4x2_e2m1_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp4x2_e2m1_t* a_matrix,
+    __cb__ fp4x2_e2m1_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix,
+    __cb__ fp8_e4m3fn_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix,
+    __cb__ fp8_e4m3fn_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix,
+    __cb__ fp8_e5m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp8_e4m3fn_t* a_matrix,
+    __cb__ fp8_e5m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix,
+    __cb__ fp8_e4m3fn_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix,
+    __cb__ fp8_e4m3fn_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix,
+    __cb__ fp8_e5m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+
+__aicore__ inline void asc_mmad_mx_sync(__cc__ float* c_matrix, __ca__ fp8_e5m2_t* a_matrix,
+    __cb__ fp8_e5m2_t* b_matrix, uint16_t left_height, uint16_t right_width, uint16_t n_dim,
+    uint8_t unit_flag, bool disable_gemv, bool c_matrix_source, bool c_matrix_init_val);
+#endif
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
 #undef ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS  
 #undef UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H  
 #endif    
-

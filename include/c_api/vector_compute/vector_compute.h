@@ -16,7 +16,7 @@
 #ifndef INCLUDE_C_API_VECTOR_COMPUTE_VECTOR_COMPUTE_H
 #define INCLUDE_C_API_VECTOR_COMPUTE_VECTOR_COMPUTE_H
 
-#include "impl/c_api/vector_compute_c_api_impl.h"
+#include "instr_impl/npu_arch_2201/vector_compute_impl.h"
 
 #define asc_transto5hd_b8(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half) asc_transto5hd_b8_impl(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)
 

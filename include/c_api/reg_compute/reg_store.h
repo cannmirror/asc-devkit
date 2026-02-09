@@ -11,7 +11,7 @@
 #ifndef INCLUDE_C_API_REG_COMPUTE_REG_STORE_H
 #define INCLUDE_C_API_REG_COMPUTE_REG_STORE_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/vector_datamove_impl.h"
+#include "instr_impl/npu_arch_3510/vector_datamove_impl.h"
 
 // ==========偏移固定传入0，由用户自行更新src地址=========
 // ==========asc_storealign(u8/s8/half/u16/s16/float/u32/s32/bf16/e4m3/e5m2/e1m2/e2m1)=========
