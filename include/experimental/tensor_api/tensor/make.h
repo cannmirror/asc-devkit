@@ -12,11 +12,11 @@
  * \file make.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_H
-#define EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_H
+#ifndef INCLUDE_TENSOR_API_TENSOR_MAKE_H
+#define INCLUDE_TENSOR_API_TENSOR_MAKE_H
 
 #include "include/experimental/tensor_api/tensor/make_layout.h"
 #include "include/experimental/tensor_api/tensor/make_pointer.h"
 #include "include/experimental/tensor_api/tensor/make_tensor.h"
 
-#endif // EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_H
+#endif // INCLUDE_TENSOR_API_TENSOR_MAKE_H

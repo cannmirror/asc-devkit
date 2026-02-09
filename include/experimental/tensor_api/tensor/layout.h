@@ -12,8 +12,8 @@
  * \file layout.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_TENSOR_LAYOUT_H
-#define EXPERIMENTAL_TENSOR_API_TENSOR_LAYOUT_H
+#ifndef INCLUDE_TENSOR_API_TENSOR_LAYOUT_H
+#define INCLUDE_TENSOR_API_TENSOR_LAYOUT_H
 
 #include "impl/experimental/tensor_api/detail/tensor/basic_algorithm.h"
 
@@ -112,4 +112,4 @@ template <typename T>
 constexpr bool is_layout_v = is_layout<T>::value;
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_TENSOR_LAYOUT_H
+#endif // INCLUDE_TENSOR_API_TENSOR_LAYOUT_H

@@ -12,10 +12,10 @@
  * \file algorithm.h
  * \brief
  */
-#ifndef IMPL_EXPERIMENTAL_TENSOR_API_ALGORITHM_ALGORITHM_H
-#define IMPL_EXPERIMENTAL_TENSOR_API_ALGORITHM_ALGORITHM_H
+#ifndef INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+#define INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
 
 #include "include/experimental/tensor_api/algorithm/copy.h"
 #include "include/experimental/tensor_api/algorithm/gemm.h"
 
-#endif // IMPL_EXPERIMENTAL_TENSOR_API_ALGORITHM_ALGORITHM_H
+#endif // INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H

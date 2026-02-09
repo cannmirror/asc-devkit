@@ -12,8 +12,8 @@
  * \file make_layout.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_LAYOUT_H
-#define EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_LAYOUT_H
+#ifndef INCLUDE_TENSOR_API_TENSOR_MAKE_LAYOUT_H
+#define INCLUDE_TENSOR_API_TENSOR_MAKE_LAYOUT_H
 
 #include "impl/experimental/tensor_api/detail/tensor/make_layout_impl.h"
 
@@ -131,4 +131,4 @@ using L0CLayoutFormat = NZLayoutFormat<Std::ignore_t, row, column>;
 }
 // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_LAYOUT_H
+#endif // INCLUDE_TENSOR_API_TENSOR_MAKE_LAYOUT_H

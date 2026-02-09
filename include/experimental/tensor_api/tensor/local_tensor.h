@@ -12,8 +12,8 @@
  * \file local_tensor.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_TENSOR_LOCAL_TENSOR_H
-#define EXPERIMENTAL_TENSOR_API_TENSOR_LOCAL_TENSOR_H
+#ifndef INCLUDE_TENSOR_API_TENSOR_LOCAL_TENSOR_H
+#define INCLUDE_TENSOR_API_TENSOR_LOCAL_TENSOR_H
 
 #include "include/experimental/tensor_api/tensor/engine.h"
 #include "include/experimental/tensor_api/tensor/layout.h"
@@ -143,4 +143,4 @@ template <typename T>
 constexpr bool IsTileTensorV = IsTileTensor<T>::value;
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_TENSOR_LOCAL_TENSOR_H
+#endif // INCLUDE_TENSOR_API_TENSOR_LOCAL_TENSOR_H

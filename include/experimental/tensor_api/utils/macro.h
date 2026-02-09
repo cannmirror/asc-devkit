@@ -12,9 +12,9 @@
 * \file macro.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_UTILS_MACRO_H
-#define EXPERIMENTAL_TENSOR_API_UTILS_MACRO_H
+#ifndef INCLUDE_TENSOR_API_UTILS_MACRO_H
+#define INCLUDE_TENSOR_API_UTILS_MACRO_H
 
 #include "impl/experimental/tensor_api/detail/utils/macro_impl.h"
 
-#endif //EXPERIMENTAL_TENSOR_API_UTILS_MACRO_H
+#endif //INCLUDE_TENSOR_API_UTILS_MACRO_H

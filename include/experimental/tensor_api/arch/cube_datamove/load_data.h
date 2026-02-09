@@ -12,8 +12,8 @@
  * \file load_data.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
-#define EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
+#ifndef INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
+#define INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
 
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data_impl.h"
 
@@ -28,4 +28,4 @@ __aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplateWithCoord<T, 
 LoadData(const T& dst, const U& src, const Coord& coord);
 
 } // namespace AscendC
-#endif // EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
+#endif // INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H

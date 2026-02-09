@@ -12,9 +12,9 @@
 * \file atom.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_ATOM_ATOM_H
-#define EXPERIMENTAL_TENSOR_API_ATOM_ATOM_H
+#ifndef INCLUDE_TENSOR_API_ATOM_ATOM_H
+#define INCLUDE_TENSOR_API_ATOM_ATOM_H
 
 #include "include/experimental/tensor_api/atom/cube_datamove/copy_atom.h"
 
-#endif // EXPERIMENTAL_TENSOR_API_ATOM_ATOM_H
+#endif // INCLUDE_TENSOR_API_ATOM_ATOM_H

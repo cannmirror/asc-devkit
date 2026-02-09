@@ -12,8 +12,8 @@
 * \file tensor.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_TENSOR_H
-#define EXPERIMENTAL_TENSOR_API_TENSOR_H
+#ifndef INCLUDE_TENSOR_API_TENSOR_H
+#define INCLUDE_TENSOR_API_TENSOR_H
 
 #include "include/experimental/tensor_api/algorithm/algorithm.h"
 #include "include/experimental/tensor_api/arch/arch.h"
@@ -22,4 +22,4 @@
 #include "include/experimental/tensor_api/tensor/make.h"
 #include "include/experimental/tensor_api/utils/utils.h"
 
-#endif // EXPERIMENTAL_TENSOR_API_TENSOR_H
+#endif // INCLUDE_TENSOR_API_TENSOR_H

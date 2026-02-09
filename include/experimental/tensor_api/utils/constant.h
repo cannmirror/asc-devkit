@@ -12,8 +12,8 @@
 * \file constant.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_UTILS_CONSTANT_H
-#define EXPERIMENTAL_TENSOR_API_UTILS_CONSTANT_H
+#ifndef INCLUDE_TENSOR_API_UTILS_CONSTANT_H
+#define INCLUDE_TENSOR_API_UTILS_CONSTANT_H
 
 #include "impl/experimental/tensor_api/detail/utils/constant_impl.h"
 
@@ -22,4 +22,4 @@ enum class Hardware : uint8_t { GM, UB, L1, L0A, L0B, L0C, BIAS, FIXBUF, MAX };
 
 }
 
-#endif // EXPERIMENTAL_TENSOR_API_UTILS_CONSTANT_H
+#endif // INCLUDE_TENSOR_API_UTILS_CONSTANT_H

@@ -12,8 +12,8 @@
 * \file engine.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_TENSOR_ENGINE_H
-#define EXPERIMENTAL_TENSOR_API_TENSOR_ENGINE_H
+#ifndef INCLUDE_TENSOR_API_TENSOR_ENGINE_H
+#define INCLUDE_TENSOR_API_TENSOR_ENGINE_H
 
 #include "impl/experimental/tensor_api/detail/tensor/hardware_pointer.h"
 
@@ -54,4 +54,4 @@ private:
 };
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_TENSOR_ENGINE_H
+#endif // INCLUDE_TENSOR_API_TENSOR_ENGINE_H

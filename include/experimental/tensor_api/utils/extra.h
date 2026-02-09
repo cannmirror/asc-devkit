@@ -12,9 +12,9 @@
 * \file extra.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_UTILS_EXTRA_H
-#define EXPERIMENTAL_TENSOR_API_UTILS_EXTRA_H
+#ifndef INCLUDE_TENSOR_API_UTILS_EXTRA_H
+#define INCLUDE_TENSOR_API_UTILS_EXTRA_H
 
 #include "impl/experimental/tensor_api/detail/utils/extra_impl.h"
 
-#endif // EXPERIMENTAL_TENSOR_API_UTILS_EXTRA_H
+#endif // INCLUDE_TENSOR_API_UTILS_EXTRA_H

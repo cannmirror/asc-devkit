@@ -12,12 +12,12 @@
 * \file utils.h
 * \brief
 */
-#ifndef EXPERIMENTAL_TENSOR_API_UTILS_UTILS_H
-#define EXPERIMENTAL_TENSOR_API_UTILS_UTILS_H
+#ifndef INCLUDE_TENSOR_API_UTILS_UTILS_H
+#define INCLUDE_TENSOR_API_UTILS_UTILS_H
 
 #include "include/experimental/tensor_api/utils/constant.h"
 #include "include/experimental/tensor_api/utils/extra.h"
 #include "include/experimental/tensor_api/utils/format.h"
 #include "include/experimental/tensor_api/utils/macro.h"
 
-#endif // EXPERIMENTAL_TENSOR_API_UTILS_UTILS_H
+#endif // INCLUDE_TENSOR_API_UTILS_UTILS_H
