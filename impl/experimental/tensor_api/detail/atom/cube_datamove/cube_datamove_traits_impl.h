@@ -9,24 +9,14 @@
 */
 
 /*!
-* \file atom.h
+* \file cube_datamove_traits_impl.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_ATOM_ATOM_H
-#define INCLUDE_TENSOR_API_ATOM_ATOM_H
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_TRAITS_IMPL_H
+#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_TRAITS_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/atom/copy_atom_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy_gm2l1_traits_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy_l0c2gm_traits_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy_l12l0_traits_impl.h"
 
-namespace AscendC {
-namespace Te {
-
-template <typename CopyOperation, typename... CopyOpArgs>
-struct CopyTraits;
-
-template <typename... Args>
-struct CopyAtom;
-
-}
-}
-
-#endif // INCLUDE_TENSOR_API_ATOM_ATOM_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_TRAITS_IMPL_H

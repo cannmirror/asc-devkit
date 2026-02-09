@@ -7,11 +7,9 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-#ifndef __TESTS_TENSOR_API_STUB__
-#define __TESTS_TENSOR_API_STUB__
-#ifndef __biasbuf__
-#define __biasbuf__
-#endif
+#ifndef TESTS_API_TENSOR_API_STUB_CCE_STUB_H
+#define TESTS_API_TENSOR_API_STUB_CCE_STUB_H
+
 #include <cstdint>
 #include "stub_fun.h"
 

@@ -12,15 +12,19 @@
 * \file copy_atom_impl.h
 * \brief
 */
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_IMPL_H
-#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_IMPL_H
+#ifndef IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
+#define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy_traits_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/cube_datamove/cube_datamove_traits_impl.h"
 
 namespace AscendC {
+namespace Te {
 
 template <typename... Args>
 struct CopyAtom;
+
+template <typename CopyOperation>
+struct CopyAtom<CopyOperation> : CopyAtom<CopyTraits<CopyOperation>> {};
 
 template <typename... Args>
 struct CopyAtom<CopyTraits<Args...>>: CopyTraits<Args...>
@@ -30,28 +34,18 @@ struct CopyAtom<CopyTraits<Args...>>: CopyTraits<Args...>
     static constexpr const TraitType defaultTrait = CopyTraitType::defaultTrait;
 
     template <const TraitType& traits = defaultTrait, typename... Params>
-    __aicore__ inline static void Call(const Params& ...params) {
+    __aicore__ inline void Call(const Params& ...params) const {
         CopyTraitType::template CopyUnpack<traits>(params...);
+    }
+
+    template <typename... TraitsArgs>
+    __aicore__ inline auto with(TraitsArgs&&... args) const {
+        auto traits = CopyTraitType::with(static_cast<TraitsArgs&&>(args)...);
+        return CopyAtom<decltype(traits)>{traits};
     }
 };
 
-template <typename Tp, const Tp& traits, typename T, typename... Params>
-__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params)
-{
-    atomCopy.template Call<traits>(params...);
+}
 }
 
-template <typename T, typename... Params>
-__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params)
-{
-    atomCopy.Call(params...);
-}
-
-template <typename... Args>
-__aicore__ inline auto MakeCopy(const Args& ...traits) {
-    return CopyAtom<CopyTraits<Args...>>{};
-}
-
-}
-
-#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_IMPL_H
+#endif // IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H

@@ -15,4 +15,29 @@
 #ifndef IMPL_TENSOR_API_ALGORITHM_COPY_IMPL_H
 #define IMPL_TENSOR_API_ALGORITHM_COPY_IMPL_H
 
+#include "impl/experimental/tensor_api/detail/atom/copy_atom_impl.h"
+
+namespace AscendC {
+namespace Te {
+
+template <typename Tp, const Tp& traits, typename T, typename... Params>
+__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params)
+{
+    atomCopy.template Call<traits>(params...);
+}
+
+template <typename T, typename... Params>
+__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params)
+{
+    atomCopy.Call(params...);
+}
+
+template <typename... Args>
+__aicore__ inline auto MakeCopy(const Args& ...traits) {
+    return CopyAtom<CopyTraits<Args...>>{};
+}
+
+}
+}
+
 #endif // IMPL_TENSOR_API_ALGORITHM_COPY_IMPL_H

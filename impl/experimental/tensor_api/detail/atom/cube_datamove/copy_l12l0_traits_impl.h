@@ -12,13 +12,16 @@
 * \file copy_l12l0_traits_impl.h
 * \brief
 */
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_COPY_L12L0_TRAITS_IMPL_H
-#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_COPY_L12L0_TRAITS_IMPL_H
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L12L0_TRAITS_IMPL_H
+#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L12L0_TRAITS_IMPL_H
 
 #include "include/experimental/tensor_api/utils/utils.h"
-#include "include/experimental/tensor_api/arch/arch.h"
+
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/copy_traits_impl.h"
 
 namespace AscendC {
+namespace Te {
 
 struct LoadDataTraitDefault {
     using TraitType = LoadDataTrait;
@@ -33,6 +36,29 @@ struct CopyL12L0 {
     }
 };
 
+template <typename TraitStruct>
+struct CopyTraits<CopyL12L0, TraitStruct>
+{
+    using TraitType = typename TraitStruct::TraitType;
+    static constexpr const TraitType defaultTrait = TraitStruct::value;
+
+    template <const TraitType& trait = defaultTrait, typename... Args>
+    __aicore__ inline void CopyUnpack(const Args& ...args) const {
+      CopyL12L0::Copy<TraitType, trait, Args...>(args...);
+    }
+
+    template <typename... Args>
+    __aicore__ inline constexpr CopyTraits<CopyL12L0, LoadDataTraitDefault>
+    with(const Args& ...args) const
+    {
+        return {args...};
+    }
+};
+
+template <>
+struct CopyTraits<CopyL12L0> : public CopyTraits<CopyL12L0, LoadDataTraitDefault> {};
+
+}
 }
 
-#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_COPY_L12L0_TRAITS_IMPL_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L12L0_TRAITS_IMPL_H

@@ -9,25 +9,19 @@
 */
 
 /*!
-* \file copy_atom.h
+* \file copy_traits_impl.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_H
-#define INCLUDE_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_H
-
-#include "impl/experimental/tensor_api/detail/atom/cube_datamove/copy_atom_impl.h"
+#ifndef IMPL_TENSOR_API_ATOM_COPY_TRAITS_IMPL_H
+#define IMPL_TENSOR_API_ATOM_COPY_TRAITS_IMPL_H
 
 namespace AscendC {
+namespace Te {
 
-template <typename Tp, const Tp& traits, typename T, typename... Params>
-__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params);
-
-template <typename T, typename... Params>
-__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params);
-
-template <typename... Args>
-__aicore__ inline auto MakeCopy(const Args& ...traits);
+template <typename CopyOperation, typename... CopyOpArgs>
+struct CopyTraits{};
 
 }
+}
 
-#endif // INCLUDE_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_ATOM_H
+#endif // IMPL_TENSOR_API_ATOM_COPY_TRAITS_IMPL_H

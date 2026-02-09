@@ -12,13 +12,16 @@
 * \file copy_gm2l1_traits_impl.h
 * \brief
 */
-#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_COPY_GM2L1_TRAITS_IMPL_H
-#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_COPY_GM2L1_TRAITS_IMPL_H
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_GM2L1_TRAITS_IMPL_H
+#define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_GM2L1_TRAITS_IMPL_H
 
 #include "include/experimental/tensor_api/utils/utils.h"
-#include "include/experimental/tensor_api/arch/arch.h"
+
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/copy_traits_impl.h"
 
 namespace AscendC {
+namespace Te {
 
 struct DataCopyTraitDefault {
     using TraitType = DataCopyTrait;
@@ -33,6 +36,29 @@ struct CopyGM2L1 {
     }
 };
 
+template <typename TraitStruct>
+struct CopyTraits<CopyGM2L1, TraitStruct>
+{
+    using TraitType = typename TraitStruct::TraitType;
+    static constexpr const TraitType defaultTrait = TraitStruct::value;
+
+    template <const TraitType& trait = defaultTrait, typename... Args>
+    __aicore__ inline void CopyUnpack(const Args& ...args) const {
+      CopyGM2L1::Copy<TraitType, trait, Args...>(args...);
+    }
+
+    template <typename... Args>
+    __aicore__ inline constexpr CopyTraits<CopyGM2L1, DataCopyTraitDefault>
+    with(const Args& ...args) const
+    {
+        return {args...};
+    }
+};
+
+template <>
+struct CopyTraits<CopyGM2L1> : public CopyTraits<CopyGM2L1, DataCopyTraitDefault> {};
+
+}
 }
 
-#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_COPY_GM2L1_TRAITS_IMPL_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_GM2L1_TRAITS_IMPL_H

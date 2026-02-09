@@ -17,4 +17,19 @@
 
 #include "impl/experimental/tensor_api/detail/algorithm/copy_impl.h"
 
-#endif // INCLUDE_TENSOR_API_ALGORITHM_CPOY_H
+namespace AscendC {
+namespace Te {
+
+template <typename Tp, const Tp& traits, typename T, typename... Params>
+__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params);
+
+template <typename T, typename... Params>
+__aicore__ inline void Copy(const CopyAtom<T>& atomCopy, const Params& ...params);
+
+template <typename... Args>
+__aicore__ inline auto MakeCopy(const Args& ...traits);
+
+}
+}
+
+#endif // EXPERIMENTAL_TENSOR_API_ALGORITHM_CPOY_H

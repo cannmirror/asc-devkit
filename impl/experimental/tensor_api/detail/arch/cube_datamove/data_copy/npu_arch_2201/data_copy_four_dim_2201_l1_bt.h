@@ -18,6 +18,8 @@
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "include/experimental/tensor_api/tensor/make.h"
 
+#include "include/experimental/tensor_api/arch/cube_datamove/cube_datamove_struct.h"
+
 namespace AscendC {
 namespace TensorInternal {
 
