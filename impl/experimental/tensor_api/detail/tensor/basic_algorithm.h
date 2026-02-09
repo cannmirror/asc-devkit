@@ -20,21 +20,6 @@
 namespace AscendC {
 namespace TensorInternal
 {
-template <typename Tuple>
-using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<Tuple>>>;
-
-template <typename T, typename F, size_t... I>
-__aicore__ inline constexpr auto Apply(T&& t, F&& f, Std::index_sequence<I...>)
-{
-    return f(Std::get<I>(static_cast<T&&>(t))...);
-}
-
-template <typename T, typename F>
-__aicore__ inline constexpr auto Apply(T&& t, F&& f)
-{
-    return Apply(static_cast<T&&>(t), f, tuple_sequence<T>{});
-}
-
 template <typename T, typename F, typename G, size_t... I>
 __aicore__ inline constexpr auto TupleApply(T&& t, F&& f, G&& g, Std::index_sequence<I...>)
 {
@@ -46,16 +31,6 @@ __aicore__ inline constexpr auto TupleApply(T0&& t0, T1&& t1, F&& f, G&& g, Std:
 {
     return g(f(Std::get<I>(static_cast<T0&&>(t0)),
                 Std::get<I>(static_cast<T1&&>(t1)))...);
-}
-
-template <typename T, typename F>
-__aicore__ inline constexpr auto Transform(const T& t, F&& f)
-{
-    if constexpr(Std::is_tuple_v<T>) {
-        return TupleApply(t, f, [](auto const&... a){ return Std::make_tuple(a...);}, tuple_sequence<T>{});
-    } else {
-        return f(t);
-    }
 }
 
 template <typename T, typename F, typename G>
@@ -75,49 +50,6 @@ __aicore__ inline constexpr auto TransformApply(T0&& t0, T1&& t1, F&& f, G&& g)
         return TupleApply(static_cast<T0&&>(t0), static_cast<T1&&>(t1), f, g, tuple_sequence<T0>{});
     } else {
         return g(f(static_cast<T0&&>(t0), static_cast<T1&&>(t1)));
-    }
-}
-
-template <typename Fn, typename Val>
-struct FoldAdaptor {
-    template <typename X>
-    __aicore__ inline constexpr auto operator|(X&& x) {
-        auto r =fn_(val_, static_cast<X&&>(x));
-        return FoldAdaptor<Fn, decltype(r)>{fn_, r};
-    }
-    Fn fn_;
-    Val val_;
-};
-
-template <typename T, typename V, typename F, size_t... Is>
-__aicore__ inline constexpr auto Fold(T&& t, const V& v, F&& f, Std::index_sequence<Is...>)
-{
-    return (FoldAdaptor<F, V>{f,v}| ... | Std::get<Is>(static_cast<T&&>(t))).val_;
-}
-
-template <typename T, typename X, size_t... I, size_t... J, size_t... K>
-__aicore__ inline constexpr auto Construct(const T& t, const X& x, Std::index_sequence<I...>, Std::index_sequence<J...>, Std::index_sequence<K...>)
-{
-    return Std::make_tuple(Std::get<I>(t)..., (void(J),x)..., Std::get<K>(t)...);
-}
-
-template<typename T, typename X>
-__aicore__ inline constexpr auto Append(const T& a, const X& x)
-{
-    if constexpr (Std::is_tuple_v<T>) {
-        return Construct(a, x, Std::make_index_sequence<Std::tuple_size_v<T>>{}, Std::index_sequence<0>{}, Std::index_sequence<>{});
-    } else {
-        return Std::make_tuple(a, x);
-    }
-}
-
-template <typename T, typename F>
-__aicore__ inline constexpr auto TransformLeaf(const T& t, F&& f)
-{
-    if constexpr (Std::is_tuple_v<T>) {
-        return Transform(t, [&](const auto& a) { return TransformLeaf(a,f);});
-    } else {
-        return f(t);
     }
 }
 
@@ -159,14 +91,13 @@ struct Product {
     }
 };
 
-static constexpr Product product;
 
 template <size_t I, typename Tuple>
 __aicore__ inline constexpr auto GetTuple(Tuple&& t) 
 {
     static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
     auto&& tt = Std::get<I>(static_cast<Tuple&&>(t));
-    if constexpr (Std::is_tuple_v<Std::remove_cvref_t<decltype(tt)>>) {
+    if constexpr (Std::is_tuple_v<decltype(tt)>) {
         return tt;
     } else {
         return Std::make_tuple(tt);
@@ -176,21 +107,21 @@ __aicore__ inline constexpr auto GetTuple(Tuple&& t)
 template <size_t I0, size_t I1, size_t... Is, typename Tuple>
 __aicore__ inline constexpr auto GetTuple(Tuple&& t) 
 {
-    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple!");
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
     return GetTuple<I1, Is...>(GetTuple<I0>(static_cast<Tuple&&>(t)));
 }
 
 template <typename Tuple>
 __aicore__ inline constexpr auto GetTuple(Tuple&& t) 
 {
-    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple!");
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
     return static_cast<Tuple&&>(t);
 }
 
 template <size_t... Is, typename Tuple>
 __aicore__ inline constexpr auto GetRank(const Tuple& t)
 {
-    static_assert(Std::is_tuple_v<Tuple>, "Shape or Stride is not Tuple!");
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple!");
     if constexpr (sizeof...(Is) == 0) {
         return Std::Int<Std::tuple_size_v<Tuple>>{};
     } else {
@@ -211,7 +142,7 @@ __aicore__ inline constexpr auto TupleSize(const Tuple& t)
 template <size_t I, typename Tuple>
 __aicore__ inline constexpr auto SelectTuple(Tuple&& t)
 {
-    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not tuple");
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
     auto&& tt = Std::get<I>(static_cast<Tuple&&>(t));
     if constexpr (Std::is_tuple_v<Std::remove_cvref_t<decltype(tt)>>) {
         return tt;
@@ -223,14 +154,14 @@ __aicore__ inline constexpr auto SelectTuple(Tuple&& t)
 template <size_t I0, size_t I1, size_t... Is, typename Tuple>
 __aicore__ inline constexpr auto SelectTuple(Tuple&& t)
 {
-     static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not tuple");
-     return Std::make_tuple(Std::get<I0>(static_cast<Tuple&&>(t)), Std::get<I1>(static_cast<Tuple&&>(t)), Std::get<Is>(static_cast<Tuple&&>(t))...);
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
+    return Std::make_tuple(Std::get<I0>(static_cast<Tuple&&>(t)), Std::get<I1>(static_cast<Tuple&&>(t)), Std::get<Is>(static_cast<Tuple&&>(t))...);
 }
 
 template <typename Tuple>
 __aicore__ inline constexpr auto SelectTuple(Tuple&& t)
 {
-    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not tuple");
+    static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
     return static_cast<Tuple&&>(t);
 }
 
@@ -247,121 +178,37 @@ __aicore__ inline constexpr decltype(auto) GetValue(const Tuple& t)
     return Std::get<index>(t);
 }
 
-template<typename Tuple>
-__aicore__ inline constexpr auto GetShape(const Tuple& s)
-{
-    if constexpr (Std::is_tuple_v<Tuple>) {
-        return TensorInternal::Transform(s, [](const auto& a) { return GetShape(a);});
-    } else {
-        return s;
-    }
-}
-
-template<size_t I, size_t... Is, typename Tuple>
-__aicore__ inline constexpr auto GetShape(const Tuple& shape)
-{
-    if constexpr (Std::is_tuple_v<Tuple>) {
-        return GetShape<Is...>(Std::get<I>(shape));
-    } else {
-        return GetTuple<I,Is...>(shape);
-    }
-}
-
 template<typename T0, typename... Ts>
 __aicore__ inline constexpr auto GetMax(const T0& t0, const Ts&... ts)
 {
-    if constexpr (Std::is_tuple_v<T0>) {
-        return GetMax(Apply(t0, [](auto const&... a){ return GetMax(a...);}), ts...);
-    } else if constexpr (sizeof...(Ts) == 0) {
+    if constexpr (sizeof...(Ts) == 0) {
         return t0;
     } else {
-        return Std::max(t0, GetMax(ts...));
+        return TensorInternal::max(t0, GetMax(ts...));
     }
 }
 
-template<typename TupleA, typename TupleB>
-__aicore__ inline constexpr auto GetCapicitySize(const TupleA& a, const TupleB& b)
+template<typename Shape, typename Stride>
+__aicore__ inline constexpr auto GetCapacity(const Shape& shape, const Stride& stride);
+
+template <typename Shape, typename Stride, size_t... Is>
+__aicore__ inline constexpr auto GetCapacityImpl(const Shape& shape, const Stride& stride, Std::index_sequence<Is...>)
 {
-    if constexpr (Std::is_tuple_v<TupleA> && Std::is_tuple_v<TupleB>) {
-        static_assert(Std::tuple_size_v<TupleA> == Std::tuple_size_v<TupleB>, "Mismatched ranks");
-        return TransformApply(a, b, [](const auto& x, const auto& y) { return GetCapicitySize(x,y);},
-                                    [](const auto&... v) { return GetMax(v...);});
-    } else {
-        return a * b;
-    }
+    return GetMax(GetCapacity(Std::get<Is>(shape), Std::get<Is>(stride))...);
 }
 
-template<typename TupleA, typename TupleB>
-__aicore__ inline constexpr auto InnerProduct(const TupleA& a, const TupleB& b)
+template<typename Shape, typename Stride>
+__aicore__ inline constexpr auto GetCapacity(const Shape& shape, const Stride& stride)
 {
-    if constexpr (Std::is_tuple_v<TupleA> && Std::is_tuple_v<TupleB>) {
-        static_assert(Std::tuple_size_v<TupleA> == Std::tuple_size_v<TupleB>, "Mismatched ranks");
-        return TensorInternal::TransformApply(a, b, [](const auto& x, const auto& y) { return InnerProduct(x,y);},
-                                    [](const auto&... v) { return (Std::Int<0>{} + ... + v);});
+    if constexpr (Std::is_tuple_v<Shape> && Std::is_tuple_v<Stride>) {
+        static_assert(Std::tuple_size_v<Shape> == Std::tuple_size_v<Stride>, "Mismatched ranks");
+        return GetCapacityImpl(shape, stride, Std::make_index_sequence<Std::tuple_size_v<Shape>>{});
     } else {
-        return a * b;
+        return shape * stride;
     }
 }
 }
 } 
-
-// make_stride.h
-namespace AscendC {
-namespace TensorInternal {
-
-template <typename TupleType>
-using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
-
-template<typename Major>
-struct CompactLambda;
-
-template <typename Major, typename Shape, typename Current>
-__aicore__ inline constexpr auto Compact(const Shape& shape, const Current& current)
-{
-    if constexpr (Std::is_tuple_v<Shape>) {
-        using Lambda =CompactLambda<Major>;
-        using Seq = typename Lambda::template seq<Shape>;
-        return TensorInternal::Fold(shape, Std::make_tuple(Std::make_tuple(), current), Lambda{}, Seq{});
-    } else {
-        if constexpr (Std::is_constant<1, Shape>::value) {
-            return Std::make_tuple(Std::Int<0>{}, current);
-        } else {
-            return Std::make_tuple(current, current * shape);
-        }
-    }
-}
-
-template <typename Major, typename Shape, typename Current = Std::Int<1>>
-__aicore__ inline constexpr auto CompactMajor(const Shape& shape, const Current& current = {})
-{
-    if constexpr (Std::is_tuple_v<Current>) {
-        static_assert(Std::is_tuple_v<Shape>, "Invalid parameters");
-        static_assert(Std::tuple_size_v<Shape> == Std::tuple_size_v<Current>, "Mismatched Ranks");
-        return TensorInternal::Transform(shape, current, [&](auto const& s, auto const& c){ return CompactMajor<Major>(s, c);});
-    }else {
-        static_assert(Std::is_tuple_v<Shape> || Std::is_integral_v<Shape>, "Shape is not tuple or integer");
-        return Std::get<0>(Compact<Major>(shape, current));
-    }
-}
-
-struct LayoutLeft {
-    template <typename Shape>
-    using Apply = decltype(CompactMajor<LayoutLeft>(Std::declval<Shape>()));
-};
-
-template<>
-struct CompactLambda<LayoutLeft>
-{
-    template <typename Init, typename Shape>
-    __aicore__ inline constexpr auto operator()(const Init& init, const Shape& shape) {
-        auto result = Compact<LayoutLeft>(shape, Std::get<1>(init));
-        return Std::make_tuple(TensorInternal::Append(Std::get<0>(init), Std::get<0>(result)), Std::get<1>(result));
-    }
-    template <typename Shape>
-    using seq = tuple_sequence<Shape>;
-};
-}
-}
 
 // static_layout_size.h
 namespace AscendC {

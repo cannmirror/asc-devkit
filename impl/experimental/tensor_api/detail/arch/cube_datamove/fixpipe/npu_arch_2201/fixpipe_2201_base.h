@@ -45,7 +45,7 @@ __aicore__ inline auto MakeTensorWithCoord(const T& oldTensor, const Coord& coor
     using oldTensorType = typename T::elementType;
     constexpr Hardware oldTensorPos = TensorInternal::GetHardPos<T>();
     auto oldTensorIterator = MakeMemPtr<oldTensorPos>(reinterpret_cast<oldTensorType *>(oldTensor.Data().Get() + offset + index));
-    auto oldTensorMatrixLayout = MakeLayout(oldTensorLayout.GetShape(), oldTensorLayout.GetStride());
+    auto oldTensorMatrixLayout = MakeLayout(oldTensorLayout.Shape(), oldTensorLayout.Stride());
     auto newTensor = MakeTensor(oldTensorIterator, oldTensorMatrixLayout); 
     return newTensor;
 }

@@ -94,32 +94,32 @@ TEST_F(Tensor_Api_Layout, LayoutOperation)
 
     AscendC::Layout<AscendC::Shape<int, int, int>, AscendC::Stride<int, int, int>> layoutInit(shape, stride);
 
-    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.GetShape()), 10);
-    EXPECT_EQ(AscendC::Std::get<1>(layoutMake.GetShape()), 20);
-    EXPECT_EQ(AscendC::Std::get<2>(layoutMake.GetShape()), 30);
+    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.Shape()), 10);
+    EXPECT_EQ(AscendC::Std::get<1>(layoutMake.Shape()), 20);
+    EXPECT_EQ(AscendC::Std::get<2>(layoutMake.Shape()), 30);
 
-    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.GetStride()), 1);
-    EXPECT_EQ(AscendC::Std::get<1>(layoutMake.GetStride()), 100);
-    EXPECT_EQ(AscendC::Std::get<2>(layoutMake.GetStride()), 200);
+    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.Stride()), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(layoutMake.Stride()), 100);
+    EXPECT_EQ(AscendC::Std::get<2>(layoutMake.Stride()), 200);
 
 
-    EXPECT_EQ(AscendC::Std::get<0>(layoutInit.GetShape()), 10);
-    EXPECT_EQ(AscendC::Std::get<1>(layoutInit.GetShape()), 20);
-    EXPECT_EQ(AscendC::Std::get<2>(layoutInit.GetShape()), 30);
+    EXPECT_EQ(AscendC::Std::get<0>(layoutInit.Shape()), 10);
+    EXPECT_EQ(AscendC::Std::get<1>(layoutInit.Shape()), 20);
+    EXPECT_EQ(AscendC::Std::get<2>(layoutInit.Shape()), 30);
 
-    EXPECT_EQ(AscendC::Std::get<0>(layoutInit.GetStride()), 1);
-    EXPECT_EQ(AscendC::Std::get<1>(layoutInit.GetStride()), 100);
-    EXPECT_EQ(AscendC::Std::get<2>(layoutInit.GetStride()), 200);
+    EXPECT_EQ(AscendC::Std::get<0>(layoutInit.Stride()), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(layoutInit.Stride()), 100);
+    EXPECT_EQ(AscendC::Std::get<2>(layoutInit.Stride()), 200);
 
     EXPECT_EQ(layoutMake.Rank(), 3);
     EXPECT_EQ(layoutMake.Rank<0>(), 1);
     EXPECT_EQ(Rank(layoutMake), 3);
 
-    auto shapeTuple = GetShape(AscendC::Select<1,2>(layoutMake));
+    auto shapeTuple = AscendC::GetShape(AscendC::Select<1,2>(layoutMake));
     EXPECT_EQ(AscendC::Std::get<0>(shapeTuple), 20);
     EXPECT_EQ(Size(layoutMake), 6000);
-    EXPECT_EQ(layoutMake.GetSize(), 6000);
-    EXPECT_EQ(layoutMake.GetSize(), 6000);
+    EXPECT_EQ(layoutMake.Size(), 6000);
+    EXPECT_EQ(layoutMake.Size(), 6000);
     EXPECT_EQ(AscendC::Coshape(layoutMake), 7710);
     EXPECT_EQ(AscendC::Cosize(layoutMake), 7710);
 }
@@ -152,12 +152,13 @@ TEST_F(Tensor_Api_Layout, MakeLayoutByShapeOperation)
     auto layoutMake1 = AscendC::MakeLayout(shape, stride);
     auto layoutMake2 = AscendC::MakeLayout(shape);
 
-    EXPECT_EQ(AscendC::Std::get<1>(layoutMake1.GetStride()), 2);
-    EXPECT_EQ(AscendC::Std::get<1>(layoutMake2.GetStride()), 2);
+    EXPECT_EQ(AscendC::Std::get<1>(layoutMake1.Stride()), 2);
+    EXPECT_EQ(AscendC::Std::get<1>(layoutMake2.Stride()), 4);
     EXPECT_EQ(AscendC::Size(layoutMake1), 24);
     EXPECT_EQ(AscendC::Size(layoutMake2), 24);
-    EXPECT_EQ(layoutMake1.ShapeSize(), 24);
-    EXPECT_EQ(layoutMake2.ShapeSize(), 24);
+    EXPECT_EQ(layoutMake1.Size(), 24);
+    EXPECT_EQ(layoutMake2.Size(), 24);
+    EXPECT_EQ(layoutMake2.Capacity(), 24);
 }
 
 TEST_F(Tensor_Api_Layout, LayoutSizeOperation)
@@ -169,11 +170,11 @@ TEST_F(Tensor_Api_Layout, LayoutSizeOperation)
     AscendC::Coord<int, int> coord = AscendC::MakeCoord(1,2);
 
     EXPECT_EQ(layoutMake.size, 256);
-    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.GetShape()), 16);
+    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.Shape()), 16);
     EXPECT_EQ(AscendC::Std::get<0>(GetShape(layoutMake)), 16);
-    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.GetStride()), 1);
+    EXPECT_EQ(AscendC::Std::get<0>(layoutMake.Stride()), 1);
     EXPECT_EQ(AscendC::Std::get<0>(GetStride(layoutMake)), 1);
-    EXPECT_EQ(layoutMake.ShapeSize(), 256);
+    EXPECT_EQ(layoutMake.Size(), 256);
 }
 
 TEST_F(Tensor_Api_Layout, StaticLayoutOperation)

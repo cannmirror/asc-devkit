@@ -45,6 +45,12 @@ __aicore__ inline constexpr auto GetShape(const Layout<Shape, Stride>& layout);
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto GetShape(Layout<Shape, Stride>& layout);
 
+template <typename Tuple>
+__aicore__ inline constexpr auto GetShape(const Tuple& shape);
+
+template <size_t I, size_t... Is, typename Tuple>
+__aicore__ inline constexpr auto GetShape(const Tuple& shape);
+
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto GetStride(const Layout<Shape, Stride>& layout);
 
@@ -55,10 +61,13 @@ template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Select(const Layout<Shape, Stride>& layout);
 
 template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Get(const Layout<Shape, Stride>& layout);
+
+template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Size(const Layout<Shape, Stride>& layout);
 
 template <size_t... Is, typename Shape, typename Stride>
-__aicore__ inline constexpr auto Capicity(const Layout<Shape, Stride>& layout);
+__aicore__ inline constexpr auto Capacity(const Layout<Shape, Stride>& layout);
 
 template <size_t... Is, typename Shape, typename Stride>
 __aicore__ inline constexpr auto Coshape(const Layout<Shape, Stride>& layout);
@@ -77,6 +86,8 @@ __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, con
 namespace AscendC {
 template <typename T>
 __aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column);
+
+__aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column);
 
 template <typename T>
 __aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column);
@@ -114,6 +125,10 @@ using ZNLayoutFormat = Layout<TensorInternal::ZNShapeFormat<T, row, column>, Ten
 
 template <typename T, size_t row, size_t column>
 using ZZLayoutFormat = Layout<TensorInternal::ZZShapeFormat<T, row, column>, TensorInternal::ZZStrideFormat<T, row, column>>;
-} // namespace AscendC
+
+template <size_t row, size_t column>
+using L0CLayoutFormat = NZLayoutFormat<Std::ignore_t, row, column>;
+}
+// namespace AscendC
 
 #endif // EXPERIMENTAL_TENSOR_API_TENSOR_MAKE_LAYOUT_H

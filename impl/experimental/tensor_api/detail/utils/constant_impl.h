@@ -37,6 +37,16 @@ constexpr size_t SHIFT_LEFT_16 = 0x00010000;
 template <QuantMode_t Value, QuantMode_t... Args>
 struct is_one_of_value : Std::false_type {};
 
+template <typename TupleType>
+using tuple_sequence = Std::make_index_sequence<Std::tuple_size_v<Std::remove_cvref_t<TupleType>>>;
+
+template <typename T, typename U>
+__aicore__ inline constexpr auto max(const T src0, const U src1)
+{
+    static_assert(Std::is_same_v<T, U> || Std::is_integral_v<T>, "Only support compare with same type");
+    return (src0 > src1) ? src0 : src1;
+}
+
 template <QuantMode_t Value, QuantMode_t Head, QuantMode_t... Tail>
 struct is_one_of_value<Value, Head, Tail...>
     : Std::bool_constant<(Value == Head) || is_one_of_value<Value, Tail...>::value> {};

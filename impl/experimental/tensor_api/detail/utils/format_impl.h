@@ -239,13 +239,13 @@ public:
 template <typename T, AttrInfo info1, AttrInfo info2, size_t dim>
 __aicore__ inline constexpr decltype(auto) GetEleFromLayout(const T& layout) {
     if constexpr (info1 == AttrInfo::SHAPE && info2 == AttrInfo::ROW) {
-        return Std::get<dim>(Std::get<0>(layout.GetShape()));
+        return Std::get<dim>(Std::get<0>(layout.Shape()));
     } else if constexpr (info1 == AttrInfo::SHAPE && info2 == AttrInfo::COLUMN) {
-        return Std::get<dim>(Std::get<1>(layout.GetShape()));
+        return Std::get<dim>(Std::get<1>(layout.Shape()));
     } else if constexpr (info1 == AttrInfo::STRIDE && info2 == AttrInfo::ROW) {
-        return Std::get<dim>(Std::get<0>(layout.GetStride()));
+        return Std::get<dim>(Std::get<0>(layout.Stride()));
     } else if constexpr (info1 == AttrInfo::STRIDE && info2 == AttrInfo::COLUMN) {
-        return Std::get<dim>(Std::get<1>(layout.GetStride()));
+        return Std::get<dim>(Std::get<1>(layout.Stride()));
     }        
 }
 
