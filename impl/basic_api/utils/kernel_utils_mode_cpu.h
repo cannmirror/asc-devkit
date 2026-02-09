@@ -280,8 +280,8 @@ public:
         { Hardware::L0A, 1024 * 64 },  { Hardware::L0B, 1024 * 64 },   { Hardware::L0C, 1024 * 256 },
         { Hardware::BIAS, 1024 * 4 },  { Hardware::FIXBUF, 1024 * 16 },
     };
-    uint8_t* cpuL0AMx;
-    uint8_t* cpuL0BMx;
+    uint8_t* cpuL0AMx = nullptr;
+    uint8_t* cpuL0BMx = nullptr;
 #elif defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002))
     const std::map<Hardware, uint32_t> bufferInitLen = {
         { Hardware::GM, 1024 * 1024 }, { Hardware::UB, 1024 * 256 },    { Hardware::L1, 1024 * 1024 },
@@ -313,26 +313,44 @@ public:
         { Hardware::BIAS, 1024 * 1 },  { Hardware::FIXBUF, 1024 * 6 },
     };
 #endif
-    uint8_t* cpuGM;
-    uint8_t* cpuUB;
-    uint8_t* cpuL1;
-    uint8_t* cpuL0A;
-    uint8_t* cpuL0B;
-    uint8_t* cpuL0C;
-    uint8_t* cpuBIAS;
-    uint8_t* cpuFIXBUF;
+    uint8_t* cpuGM = nullptr;
+    uint8_t* cpuUB = nullptr;
+    uint8_t* cpuL1 = nullptr;
+    uint8_t* cpuL0A = nullptr;
+    uint8_t* cpuL0B = nullptr;
+    uint8_t* cpuL0C = nullptr;
+    uint8_t* cpuBIAS = nullptr;
+    uint8_t* cpuFIXBUF = nullptr;
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
-    uint8_t* cpuSSbuf;
+    uint8_t* cpuSSbuf = nullptr;
 #endif
     std::map<Hardware, uint8_t*> hardwareCpuBufferMap;
 
 private:
     std::set<Hardware> allocatorUsed;
+
+    ConstDefiner()
+    {
+        if (cpuGM == nullptr) {
+            Allocate();
+        }
+        hardwareCpuBufferMap = {
+            { Hardware::UB, cpuUB }, { Hardware::L1, cpuL1 }, { Hardware::L0A, cpuL0A },
+            { Hardware::L0B, cpuL0B }, { Hardware::L0C, cpuL0C }, { Hardware::BIAS, cpuBIAS },
+            { Hardware::FIXBUF, cpuFIXBUF }
+        };
+    }
+
+    ~ConstDefiner()
+    {
+        Free();
+    }
+
+public:
 #if defined(__NPU_ARCH__) &&                                                                                    \
     ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||    \
 	 (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
-
-    ConstDefiner()
+    void Allocate()
     {
         cpuGM = new uint8_t[bufferInitLen.at(Hardware::GM)];
         cpuL0A = new uint8_t[bufferInitLen.at(Hardware::L0A)];
@@ -372,28 +390,29 @@ private:
         cpuUB = new uint8_t[bufferInitLen.at(Hardware::UB)];
         cpuL1 = new uint8_t[bufferInitLen.at(Hardware::L1)];
 #endif
-        hardwareCpuBufferMap = {
-            { Hardware::UB, cpuUB }, { Hardware::L1, cpuL1 }, { Hardware::L0A, cpuL0A },
-            { Hardware::L0B, cpuL0B }, { Hardware::L0C, cpuL0C }, { Hardware::BIAS, cpuBIAS },
-            { Hardware::FIXBUF, cpuFIXBUF }
-        };
     }
 #else
-    ConstDefiner() : cpuGM(new uint8_t[bufferInitLen.at(Hardware::GM)]),
-        cpuUB(new uint8_t[bufferInitLen.at(Hardware::UB)]), cpuL1(new uint8_t[bufferInitLen.at(Hardware::L1)]),
-        cpuL0A(new uint8_t[bufferInitLen.at(Hardware::L0A)]), cpuL0B(new uint8_t[bufferInitLen.at(Hardware::L0B)]),
-        cpuL0C(new uint8_t[bufferInitLen.at(Hardware::L0C)]), cpuBIAS(new uint8_t[bufferInitLen.at(Hardware::BIAS)]),
-        cpuFIXBUF(new uint8_t[bufferInitLen.at(Hardware::FIXBUF)]),
-        hardwareCpuBufferMap({ { Hardware::UB, cpuUB }, { Hardware::L1, cpuL1 }, { Hardware::L0A, cpuL0A },
-            { Hardware::L0B, cpuL0B }, { Hardware::L0C, cpuL0C }, { Hardware::BIAS, cpuBIAS },
-            { Hardware::FIXBUF, cpuFIXBUF }, }) {}
-#endif
-    ~ConstDefiner()
+    void Allocate()
     {
-        if (cpuGM != nullptr) {
-            delete[] cpuGM;
-            cpuGM = nullptr;
-        }
+        cpuGM = new uint8_t[bufferInitLen.at(Hardware::GM)];
+        cpuUB = new uint8_t[bufferInitLen.at(Hardware::UB)];
+        cpuL1 = new uint8_t[bufferInitLen.at(Hardware::L1)];
+        cpuL0A = new uint8_t[bufferInitLen.at(Hardware::L0A)];
+        cpuL0B = new uint8_t[bufferInitLen.at(Hardware::L0B)];
+        cpuL0C = new uint8_t[bufferInitLen.at(Hardware::L0C)];
+        cpuBIAS = new uint8_t[bufferInitLen.at(Hardware::BIAS)];
+        cpuFIXBUF = new uint8_t[bufferInitLen.at(Hardware::FIXBUF)];
+    }
+#endif
+    void Free()
+    {
+        auto safeDelete = [](auto*& ptr) {
+            if (ptr != nullptr) {
+                delete[] ptr;
+                ptr = nullptr;
+            }
+        };
+        safeDelete(cpuGM);
         if (cpuUB != nullptr) {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
             if (g_kernelMode == KernelMode::MIX_MODE) {
@@ -422,26 +441,11 @@ private:
 #endif
             cpuL1 = nullptr;
         }
-        if (cpuL0A != nullptr) {
-            delete[] cpuL0A;
-            cpuL0A = nullptr;
-        }
-        if (cpuL0B != nullptr) {
-            delete[] cpuL0B;
-            cpuL0B = nullptr;
-        }
-        if (cpuL0C != nullptr) {
-            delete[] cpuL0C;
-            cpuL0C = nullptr;
-        }
-        if (cpuBIAS != nullptr) {
-            delete[] cpuBIAS;
-            cpuBIAS = nullptr;
-        }
-        if (cpuFIXBUF != nullptr) {
-            delete[] cpuFIXBUF;
-            cpuFIXBUF = nullptr;
-        }
+        safeDelete(cpuL0A);
+        safeDelete(cpuL0B);
+        safeDelete(cpuL0C);
+        safeDelete(cpuBIAS);
+        safeDelete(cpuFIXBUF);
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
         if (cpuSSbuf != nullptr) {
             if (g_kernelMode == KernelMode::MIX_MODE) {
@@ -453,14 +457,8 @@ private:
             }
             cpuSSbuf = nullptr;
         }
-        if (cpuL0AMx != nullptr) {
-            delete[] cpuL0AMx;
-            cpuL0AMx = nullptr;
-        }
-        if (cpuL0B != nullptr) {
-            delete[] cpuL0BMx;
-            cpuL0BMx = nullptr;
-        }
+        safeDelete(cpuL0AMx);
+        safeDelete(cpuL0BMx);
 #endif
     }
 };
