@@ -36,7 +36,7 @@ def get_template_config_filepath(dst_dir: str) -> str:
 def generate_template_config_code(filepaths: List[str]) -> str:
     """Parse precompiled src file, generate template_config.cmake."""
     config_options = ""
-    diable_kernel_check_option = "--cce-disable-kernel-global-attr-check"
+    disable_kernel_check_option = "--cce-disable-kernel-global-attr-check"
     src_file_pattern = r'#\s*\d+\s*"([^"]+)"'
     template_kernel_func_pattern = (r'template<([^<>]*(?:<[^<>]*>)*[^<>]*)>\s*__attribute__\(\(cce_kernel\)\)'
                                 r'\s*\[aicore\]\s*(.+?)\s*\{')
@@ -53,7 +53,7 @@ def generate_template_config_code(filepaths: List[str]) -> str:
                 template_match = re.compile(template_kernel_func_pattern, re.DOTALL)
                 if not template_match.search(data):
                     config_options += f'set_source_files_properties({src_file_path} \
-PROPERTIES COMPILE_OPTIONS {diable_kernel_check_option})\n'
+PROPERTIES COMPILE_OPTIONS {disable_kernel_check_option})\n'
 
         except Exception as err:
             print("[ERROR]: read file failed, filename is: {}".format(path))

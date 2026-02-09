@@ -127,7 +127,7 @@ struct MatmulConfigParams {
     uint32_t singleK;
     uint64_t biasAddr;  // 56 bytes, but access to the maximum message size (64 bytes)
     uint64_t quantAddr; // 64 bytes
-    uint64_t quantScalar;        // 80 byets
+    uint64_t quantScalar;        // 80 bytes
     uint32_t quantSize;
     uint32_t batchA;
     uint32_t batchB;

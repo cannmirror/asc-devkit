@@ -25,20 +25,20 @@ template <typename T>
 __aicore__ inline void CreateVecIndexCalc(LocalTensor<T> &dst, const T &firstValue, uint64_t mask,
     uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support CreateVecIndex"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support CreateVecIndex"); });
 }
 
 template <typename T>
 __aicore__ inline void CreateVecIndexCalc(LocalTensor<T> &dst, const T &firstValue, uint64_t mask[],
     uint8_t repeatTime, uint16_t dstBlkStride, uint8_t dstRepStride)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support CreateVecIndex"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support CreateVecIndex"); });
 }
 
 template <typename T>
 __aicore__ inline void CreateVecIndexCalc(LocalTensor<T> dst, const T &firstValue, uint32_t count)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support CreateVecIndex"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support CreateVecIndex"); });
 }
 } // namespace AscendC
 #pragma end_pipe

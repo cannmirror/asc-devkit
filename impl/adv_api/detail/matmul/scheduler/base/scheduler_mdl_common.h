@@ -337,12 +337,12 @@ private:
             co1Offset = MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM() *
                 MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseN();
         }
-        if (MATMUL_MODULE(NLoop)->GetL0DBLoopNum() > 1) { // Means L0 N db, need to excute twice FixpipeL0CToGm
+        if (MATMUL_MODULE(NLoop)->GetL0DBLoopNum() > 1) { // Means L0 N db, need to execute twice FixpipeL0CToGm
             FixpipeL0CToGm(gm, co1Local, MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
                 enAtomic, enSequentialWrite);
             FixpipeL0CToGm(gm, co1Local[co1Offset], MATMUL_MODULE(MLoop)->GetInnerIdx(),
                 MATMUL_MODULE(NLoop)->GetInnerIdx() + 1, enAtomic, enSequentialWrite);
-        } else if (MATMUL_MODULE(MLoop)->GetL0DBLoopNum() > 1) { // Means L0 M db, need to excute twice FixpipeL0CToGm
+        } else if (MATMUL_MODULE(MLoop)->GetL0DBLoopNum() > 1) { // Means L0 M db, need to execute twice FixpipeL0CToGm
             FixpipeL0CToGm(gm, co1Local,
                 MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(), enAtomic, enSequentialWrite);
             FixpipeL0CToGm(gm, co1Local[co1Offset], MATMUL_MODULE(MLoop)->GetInnerIdx() + 1,

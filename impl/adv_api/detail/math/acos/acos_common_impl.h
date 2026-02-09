@@ -46,7 +46,7 @@ __aicore__ inline void AcosCompute<half>(const LocalTensor<half>& dst, const Loc
     PipeBarrier<PIPE_V>();
 
     // Get float result of asin, which is implicitly stored in tmpBuffer, because using the half result of Asin is
-    // unable to statisify Acos precision requirement.
+    // unable to satisfy Acos precision requirement.
     LocalTensor<float> tmpFloatBuffer1 = tmpBuffer.ReinterpretCast<float>();
     Adds<float, false>(tmpFloatBuffer1, tmpFloatBuffer1, -HALF_PI, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();

@@ -75,7 +75,7 @@ __simd_callee__ inline void DuplicateImpl(S& dstReg, U scalarValue)
             if constexpr (CheckRegTrait<S, RegTraitNumOne>()) {
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 DuplicateComplexTraitTwoImpl(traitTwoDstReg, scalarValue);
-                B32TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B32TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             } else {
                 DuplicateComplexTraitTwoImpl(dstReg, scalarValue);
             }
@@ -86,7 +86,7 @@ __simd_callee__ inline void DuplicateImpl(S& dstReg, U scalarValue)
         if constexpr (CheckRegTrait<S, RegTraitNumOne>()) {
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             DuplicateB64Impl(traitTwoDstReg, scalarValue);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
             S dstTemp;
             DuplicateB64Impl(dstTemp, scalarValue);
@@ -153,7 +153,7 @@ __simd_callee__ inline void DuplicateImpl(S& dstReg, U scalarValue, MaskReg& mas
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 DuplicateComplexTraitTwoImpl(traitTwoDstReg, scalarValue, maskTrait2);
-                B32TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B32TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             } else {
                 DuplicateComplexTraitTwoImpl(dstReg, scalarValue, mask);
             }
@@ -166,13 +166,13 @@ __simd_callee__ inline void DuplicateImpl(S& dstReg, U scalarValue, MaskReg& mas
             MaskPack(maskTrait2, mask);
             if constexpr (mode == MaskMergeMode::MERGING) {
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-                B64TraitOneToTaitTwo(traitTwoDstReg, dstReg);
+                B64TraitOneToTraitTwo(traitTwoDstReg, dstReg);
                 DuplicateB64Impl<mode>(traitTwoDstReg, scalarValue, maskTrait2);
-                B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             } else {
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 DuplicateB64Impl<mode>(traitTwoDstReg, scalarValue, maskTrait2);
-                B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             }
         } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
             S dstTemp;
@@ -239,9 +239,9 @@ __simd_callee__ inline void DuplicateImpl(U& dstReg, U& srcReg, MaskReg& mask)
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
-                B32TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+                B32TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
                 DuplicateComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
-                B32TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B32TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             } else {
                 DuplicateComplexTraitTwoImpl(dstReg, srcReg, mask);
             }
@@ -254,9 +254,9 @@ __simd_callee__ inline void DuplicateImpl(U& dstReg, U& srcReg, MaskReg& mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
             DuplicateB64Impl<pos, mode>(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             DuplicateB64Impl<pos, mode>(dstTemp, srcReg, mask);

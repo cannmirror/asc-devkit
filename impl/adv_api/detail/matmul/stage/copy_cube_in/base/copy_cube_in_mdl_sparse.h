@@ -64,7 +64,7 @@ public:
         ASCENDC_ASSERT((IsSameTypeV<TransT, int8_t>), { KERNEL_LOG(KERNEL_ERROR,
             "Sparse matmul only support int8 inputDtype."); });
         ASCENDC_ASSERT((tileHeight % 2 == 0), { KERNEL_LOG(KERNEL_ERROR,
-            "Sparse matmul only support tileHeight is an integer mutiople of 2."); });
+            "Sparse matmul only support tileHeight is an integer multiple of 2."); });
         LocalTensor<TransT> l1;
         int32_t posL1 = BASE_MODULE::GetIterIndex(curRow, curCol);
         int32_t bufferPos = MATMUL_MODULE(CopyCubeInParams)->GetBufferPos();

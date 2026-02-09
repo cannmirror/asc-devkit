@@ -40,7 +40,7 @@ namespace AscendC {
 /*
  * @ingroup brcb Level 0
  * @brief this function fetches 8 b16/b32 data from src0, broadcast each data into one 32B block,
- * @brief then finally writes these 8 blocks into dst continously.
+ * @brief then finally writes these 8 blocks into dst continuously.
  * @brief gather element in the uint of block
  * @param [out] dst output LocalTensor
  * @param [in] src0 input LocalTensor

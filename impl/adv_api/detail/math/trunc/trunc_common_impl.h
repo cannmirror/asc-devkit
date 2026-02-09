@@ -32,7 +32,7 @@ __aicore__ inline void TruncCompute(const LocalTensor<half>& dstTensor, const Lo
         { 1, 1, DEFAULT_REPEAT_STRIDE, HALF_DEFAULT_REPEAT_STRIDE });
     PipeBarrier<PIPE_V>();
 
-    // Get interger part of x = [x]
+    // Get integer part of x = [x]
     TruncCastForTrunc(floatTmpTensor, floatTmpTensor, tmpTensor);
 
     Cast<half, float, false>(dstTensor, floatTmpTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
@@ -43,7 +43,7 @@ __aicore__ inline void TruncCompute(const LocalTensor<half>& dstTensor, const Lo
 __aicore__ inline void TruncCompute(const LocalTensor<float>& dstTensor, const LocalTensor<float>& srcTensor,
     const LocalTensor<uint8_t>& tmpTensor)
 {
-    // Get interger part of x = [x]
+    // Get integer part of x = [x]
     TruncCastForTrunc(dstTensor, srcTensor, tmpTensor);
 }
 

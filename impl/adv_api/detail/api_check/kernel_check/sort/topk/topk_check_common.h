@@ -52,7 +52,7 @@ private:
         const bool isLargest = true) {
         ASCENDC_ASSERT((topKInfo.inner <= CHECK_TOPK_NORMAL_INNER_MAX_LEN) || HighLevelAPIParametersPrint, {
             KERNEL_LOG(KERNEL_ERROR, "[TopK] The value of topKInfo.inner is %u, should be less than or equal to 4096 "
-            "when topkMode is TOPK_NORMAK.", topKInfo.inner);});
+            "when topkMode is TOPK_NORMAL.", topKInfo.inner);});
         ASCENDC_ASSERT(srcIndexLocal.GetSize() >= topKInfo.inner || HighLevelAPIParametersPrint, {
             KERNEL_LOG(KERNEL_ERROR, "[TopK] The topKInfo.inner parameter is %u, "
             "should be less than or equal to the srcIndexLocal size %u when topkMode is TOPK_NORMAL.",

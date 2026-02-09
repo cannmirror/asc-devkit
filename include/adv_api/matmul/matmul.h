@@ -330,7 +330,7 @@ public:
      * @brief Set whether to enable HF32 mode
      * @param [in] enableHF32: whether to enable HF32 mode
      * @param [in] transMode: when enable HF32 mode, set ROUND mode used when converting float to hf32
-     * @note  enable HF32 mode can improve performance but it may also reult in a loss of precision
+     * @note  enable HF32 mode can improve performance but it may also result in a loss of precision
      */
     __aicore__ inline void SetHF32(bool enableHF32 = false, int32_t transMode = 0) {}
     /**

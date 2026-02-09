@@ -229,7 +229,7 @@ __simd_vf__ inline void InterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T *
         sreg = calCount;
         MicroAPI::UnalignReg ureg;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            // unalign process, copy element is sregeLower
+            // unalign process, copy element is sregLower
             MicroAPI::LoadUnAlignPre(ureg, src0Local + halfCount + i * sregLower);
             MicroAPI::LoadUnAlign(src0Reg, ureg, src0Local + halfCount + i * sregLower);
             MicroAPI::LoadUnAlignPre(ureg, src1Local + halfCount + i * sregLower);
@@ -281,7 +281,7 @@ __simd_vf__ inline void InterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *dst
         MicroAPI::UnalignReg ureg;
         MicroAPI::RegTensor<T> src0RegTmp0, src0RegTmp1, src1RegTmp0, src1RegTmp1;
         for (uint16_t i = 0; i < repeatTime; ++i) {
-            // unalign process, copy element is sregeLower
+            // unalign process, copy element is sregLower
             MicroAPI::LoadUnAlignPre(ureg, src0Local + halfCount + i * sregLower);
             MicroAPI::LoadUnAlign(src0RegTmp0, ureg, src0Local + halfCount + i * sregLower);
             MicroAPI::LoadUnAlignPre(ureg, src0Local + halfCount + i * sregLower + GetVecLen() / sizeof(T));
@@ -368,14 +368,14 @@ __simd_vf__ inline void DeInterleaveImplNormal(__ubuf__ T *dst0Local, __ubuf__ T
         }
     } else {
         MicroAPI::UnalignReg ureg;
-        // split main and tail, because dst copy element is diffrent with main block
+        // split main and tail, because dst copy element is different with main block
         for (uint16_t i = 0; i < repeatTime - 1; ++i) {
             MicroAPI::LoadAlign(src0Reg, src1Local + i * 2 * sregLower);
             MicroAPI::LoadAlign(src1Reg, src1Local + i * 2 * sregLower + sregLower);
             MicroAPI::DeInterleave(dst0Reg, dst1Reg, src0Reg, src1Reg);
             __ubuf__ T *dst0LocalTmp = dst0Local + halfCount + i * sregLower;
             __ubuf__ T *dst1LocalTmp = dst1Local + halfCount + i * sregLower;
-            // unalign process, copy element is sregeLower
+            // unalign process, copy element is sregLower
             MicroAPI::StoreUnAlign(dst0LocalTmp, dst0Reg, ureg, sregLower);
             MicroAPI::StoreUnAlignPost(dst0LocalTmp, ureg, 0);
             MicroAPI::StoreUnAlign(dst1LocalTmp, dst1Reg, ureg, sregLower);
@@ -448,7 +448,7 @@ __simd_vf__ inline void DeInterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *d
             MicroAPI::Interleave((MicroAPI::RegTensor<uint32_t> &)dst1RegTmp0,
                 (MicroAPI::RegTensor<uint32_t> &)dst1RegTmp1, (MicroAPI::RegTensor<uint32_t> &)dst1Reg.reg[0],
                 (MicroAPI::RegTensor<uint32_t> &)dst1Reg.reg[1]);
-            // unalign process, copy element is sregeLower / 2
+            // unalign process, copy element is sregLower / 2
             MicroAPI::StoreUnAlign(dst0LocalTmp, dst0RegTmp0, ureg, sregLower / 2);
             MicroAPI::StoreUnAlignPost(dst0LocalTmp, ureg, 0);
             MicroAPI::StoreUnAlign(dst0LocalTmp, dst0RegTmp1, ureg, sregLower / 2);
@@ -458,7 +458,7 @@ __simd_vf__ inline void DeInterleaveImplB64(__ubuf__ T *dst0Local, __ubuf__ T *d
             MicroAPI::StoreUnAlign(dst1LocalTmp, dst1RegTmp1, ureg, sregLower / 2);
             MicroAPI::StoreUnAlignPost(dst1LocalTmp, ureg, 0);
         }
-        // tail block process, because dst copy element is diffrent with main block
+        // tail block process, because dst copy element is different with main block
         // vld dual src
         MicroAPI::LoadAlign(src0Reg, src1Local + (repeatTime - 1) * 2 * sregLower);
         MicroAPI::LoadAlign(src1Reg, src1Local + (repeatTime - 1) * 2 * sregLower + sregLower);

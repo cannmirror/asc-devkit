@@ -427,7 +427,7 @@ __aicore__ static inline void CheckCastDatatype() {
         Tuple<int64_t, int32_t>, Tuple<half, int32_t>, Tuple<int32_t, int64_t>, Tuple<float, int64_t>>()), {
         KERNEL_LOG(KERNEL_ERROR,
         "Failed to check dtype in Cast, current api support dtype combination is src: half, dst: int32_t / int16_t / "
-        "float / int8_t / uint8_t / int4b_t; src: float, dst: int32_t / half; src: uint8_t, dst: half; src: int 8_t, "
+        "float / int8_t / uint8_t / int4b_t; src: float, dst: int32_t / half; src: uint8_t, dst: half; src: int8_t, "
         "dst: half; src: int16_t, dst: half; src: int32_t, dst: float / half");});
 }
 

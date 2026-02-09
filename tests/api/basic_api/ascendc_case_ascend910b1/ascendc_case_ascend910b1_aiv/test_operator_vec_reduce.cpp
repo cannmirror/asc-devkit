@@ -472,7 +472,7 @@ TEST_F(ReduceSimpleTestsuite, GetReduceRepeatMaxMinSprCase)
 
 template <typename T>
 __global__ __aicore__ void MainRepeatReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __restrict__ srcGm,
-    const int32_t repeat, const int32_t elemsInOneRepeate, const int32_t dstBlkStride, const int32_t srcBlkStride,
+    const int32_t repeat, const int32_t elemsInOneRepeat, const int32_t dstBlkStride, const int32_t srcBlkStride,
     const int32_t dstRepStride, const int32_t srcRepStride, const int32_t dataSize1, const int32_t dataSize2)
 {
     TPipe tpipe;
@@ -489,7 +489,7 @@ __global__ __aicore__ void MainRepeatReduceSum(__gm__ uint8_t* __restrict__ dstG
     tpipe.InitBuffer(tbuf2, dataSize2 * sizeof(T));
     LocalTensor<T> outputLocal = tbuf2.Get<T>();
 
-    RepeatReduceSum(outputLocal, inputLocal, repeat, elemsInOneRepeate, dstBlkStride, srcBlkStride, dstRepStride,
+    RepeatReduceSum(outputLocal, inputLocal, repeat, elemsInOneRepeat, dstBlkStride, srcBlkStride, dstRepStride,
         srcRepStride);
     event_t eventIdVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
     SetFlag<HardEvent::V_MTE3>(eventIdVToMte3);
@@ -500,7 +500,7 @@ __global__ __aicore__ void MainRepeatReduceSum(__gm__ uint8_t* __restrict__ dstG
 
 struct RepeatReduceSumTestParams {
     const int32_t repeatIn;
-    const int32_t elemsInOneRepeateIn;
+    const int32_t elemsInOneRepeatIn;
     const int32_t dstBlkStrideIn;
     const int32_t srcBlkStrideIn;
     const int32_t dstRepStrideIn;
@@ -541,7 +541,7 @@ TEST_P(RepeatReduceSumTestsuite, RepeatReduceSumTestCase)
     if (!param.expectRes) {
         MOCKER(raise, int(*)(int)).times(1).will(returnValue(0));
     }
-    param.CalFunc(dstGm, srcGm, param.repeatIn, param.elemsInOneRepeateIn, param.dstBlkStrideIn, param.srcBlkStrideIn,
+    param.CalFunc(dstGm, srcGm, param.repeatIn, param.elemsInOneRepeatIn, param.dstBlkStrideIn, param.srcBlkStrideIn,
         param.dstRepStrideIn, param.srcRepStrideIn, param.dataSize1, param.dataSize2);
 
     for (int i = 1; i < param.dataSize2; i++) {

@@ -70,7 +70,7 @@ uint32_t GetRmsNormMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize
     return maxSize * FLOAT_SIZE_IN_BYTE;
 }
 
-// for RmsNorm, if use dst as tmp buffer then min-tmp-size is size of reduceHlength, which is bLenght*sLgngth
+// for RmsNorm, if use dst as tmp buffer then min-tmp-size is size of reduceHlength, which is bLength*sLength
 uint32_t GetRmsNormMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isBasicBlock = false)
 {
     (void)isBasicBlock;
@@ -121,7 +121,7 @@ bool RmsNormCheckShape(const ge::Shape& srcShape, const ge::Shape& originSrcShap
     const uint32_t oriSLength = static_cast<uint32_t>(originDims[S_INDEX]);
     const uint32_t oriHLength = static_cast<uint32_t>(originDims[H_INDEX]);
 
-    // original shape and tensor shape shuold match
+    // original shape and tensor shape should match
     if (bLength != oriBLength || sLength != oriSLength || hLength < oriHLength || oriHLength == 0U) {
         return false;
     }

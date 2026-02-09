@@ -89,7 +89,7 @@ __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T
 }
 
 template <typename T>
-[[deprecated("NOTICE: This GatheMask in this form has been deprecated and will be removed in the next version. "
+[[deprecated("NOTICE: This GatherMask in this form has been deprecated and will be removed in the next version. "
         "Please do not use it!")]]
 __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<T>& src1, const uint8_t patternMode, const GatherMaskParams& gatherMaskParams)
@@ -100,7 +100,7 @@ __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T
 }
 
 template <typename T>
-[[deprecated("NOTICE: This GatheMask in this form has been deprecated and will be removed in the next version. "
+[[deprecated("NOTICE: This GatherMask in this form has been deprecated and will be removed in the next version. "
         "Please do not use it!")]]
 __aicore__ inline void GatherMask(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const uint8_t patternMode, const GatherMaskParams& gatherMaskParams)

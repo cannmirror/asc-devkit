@@ -23,9 +23,9 @@ namespace AscendC {
 namespace {
 constexpr uint32_t REGLU_HALF_OR_BFLOAT16_CALC_FAC = 6;
 constexpr uint32_t REGLU_ONE_REPEAT_BYTE_SIZE = 256;
-static constexpr uint32_t RE_GELU_HALF_SIEZ = 2;
-static constexpr uint32_t RE_GELU_FLOAT_SIEZ = 4;
-static const std::set<uint32_t> SUPPORT_TYPESIZE = { RE_GELU_HALF_SIEZ, RE_GELU_FLOAT_SIEZ };
+static constexpr uint32_t RE_GELU_HALF_SIZE = 2;
+static constexpr uint32_t RE_GELU_FLOAT_SIZE = 4;
+static const std::set<uint32_t> SUPPORT_TYPESIZE = { RE_GELU_HALF_SIZE, RE_GELU_FLOAT_SIZE };
 static constexpr const char RE_GELU_GET_MAX_MIN[] = "GetReGluMaxMinTmpSize";
 
 uint32_t GetReGluMaxTmpSize(const ge::Shape& srcShape, const uint32_t typeSize)

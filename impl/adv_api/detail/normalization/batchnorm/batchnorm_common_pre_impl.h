@@ -48,7 +48,7 @@ template <bool needCast = false> __aicore__ inline void GetSrcOffset(uint32_t& s
     }
 }
 
-__aicore__ inline void GetUpdataParams(const BatchNormTiling& tiling, BatchNormParams<float>& params)
+__aicore__ inline void GetUpdateParams(const BatchNormTiling& tiling, BatchNormParams<float>& params)
 {
     params.srcRepeatStride = params.srcOffset / FLOAT_BLOCK_NUMBER;
     params.brcRepeatTimes = tiling.originalBLength / FLOAT_BLOCK_NUMBER;

@@ -54,7 +54,7 @@ constexpr uint32_t LAYERNORM_GRAD_BETA_INDEX_ORIGINALHLENGTH = 3;
  * \brief calculate max and min tmp buffer size for LayerNormGradBeta interface.
  * \param [in] srcShape: input shape
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [out] maxValue: max size required for tmp buffer
  * \param [out] minValue: min size required for tmp buffer
  */
@@ -66,7 +66,7 @@ void GetLayerNormGradBetaMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t
  * \param [in] srcShape: input shape
  * \param [in] stackBufferSize: share temporary buffer size
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [out] tiling: LayerNormGradBetaTiling
  */
 void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,

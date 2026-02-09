@@ -254,7 +254,7 @@ __simd_vf__ inline void QuantPerTokenForHif8VF(__ubuf__ dstT* dstUb, __ubuf__ sr
         GetPerTokenScale<scaleT>(scaleUb + i, scaleVreg);
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * para.n + j * vecLen);
                 MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
@@ -302,7 +302,7 @@ __simd_vf__ inline void QuantPerTokenForS8VF(__ubuf__ dstT* dstUb, __ubuf__ srcT
         GetPerTokenScale<scaleT>(scaleUb + i, scaleVreg);
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
                     tempVreg, srcUb + i * para.n + j * vecLen);
@@ -451,7 +451,7 @@ __simd_vf__ inline void QuantPerGroupForKColHif8VF(__ubuf__ dstT* dstUb, __ubuf_
     for (uint16_t i = 0; i < rowNum; ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             GetPerGroupScale(scaleUb  + i * scaleK, j * vecLen, para, config, scaleVreg);
             if constexpr (config.hasOffset) {
                 GetPerGroupOffset(offsetUb + i * scaleK, j * vecLen, para, config, offsetVreg);
@@ -504,7 +504,7 @@ __simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     for (uint16_t i = 0; i < rowNum; ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             GetPerGroupScale(scaleUb  + i * scaleK, j * vecLen, para, config, scaleVreg);
             if constexpr (config.hasOffset) {
                 GetPerGroupOffset(offsetUb + i * scaleK, j * vecLen, para, config, offsetVreg);
@@ -610,7 +610,7 @@ __simd_vf__ inline void QuantPerGroupForKColHif8VF(__ubuf__ dstT* dstUb, __ubuf_
     for (uint16_t i = 0; i < rowNum; ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             GetPerGroupScale(scaleUb  + i * scaleK, j * vecLen, para, config, scaleVreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
@@ -660,7 +660,7 @@ __simd_vf__ inline void QuantPerGroupForKColS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
     for (uint16_t i = 0; i < rowNum; ++i) {
         uint32_t sreg = para.n;
         for (uint16_t j = 0; j < repeat; ++j) {
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             GetPerGroupScale(scaleUb  + i * scaleK, j * vecLen, para, config, scaleVreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
@@ -886,7 +886,7 @@ __simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__ubuf__ dstT* dst
             if constexpr (config.hasOffset) {
                 MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(offsetVreg, offsetUb + j * vecLen);
             }
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempSrcVreg, srcUb + i * n + j * vecLen);
                 MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempSrcVreg, preg);
@@ -924,9 +924,9 @@ __simd_vf__ inline void QuantPerGroupForKRowHif8VF(__ubuf__ dstT* dstUb, __ubuf_
         for (uint16_t j = 0; j < static_cast<uint16_t>(para.groupSize); ++j) {
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
-                LoadContinousScaleAndOffset<scaleT, config>(scaleUb + i * para.n + k * vecLen,
+                LoadContinuousScaleAndOffset<scaleT, config>(scaleUb + i * para.n + k * vecLen,
                     offsetUb + i * para.n + k * vecLen, scaleVreg, offsetVreg);
-                preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+                preg = MicroAPI::UpdateMask<scaleT>(sreg);
                 if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                     MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempSrcVreg,
                         srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
@@ -982,7 +982,7 @@ __simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__ubuf__ dstT* dstUb
             if constexpr (config.hasOffset) {
                 MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(offsetVreg, offsetUb + j * vecLen);
             }
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
                 MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
@@ -1020,9 +1020,9 @@ __simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
         for (uint16_t j = 0; j < static_cast<uint16_t>(para.groupSize); ++j) {
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
-                LoadContinousScaleAndOffset<scaleT, config>(scaleUb + i * para.n + k * vecLen,
+                LoadContinuousScaleAndOffset<scaleT, config>(scaleUb + i * para.n + k * vecLen,
                     offsetUb + i * para.n + k * vecLen, scaleVreg, offsetVreg);
-                preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+                preg = MicroAPI::UpdateMask<scaleT>(sreg);
                 if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                     MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg,
                         srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
@@ -1169,7 +1169,7 @@ __simd_callee__ inline void QuantPerGroupForKRowHif8TailBlock(__ubuf__ dstT* dst
         uint32_t sreg = n;
         for (uint16_t j = 0; j < repeat; ++j) {
             MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + j * vecLen);
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
                 MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
@@ -1208,7 +1208,7 @@ __simd_vf__ inline void QuantPerGroupForKRowHif8VF(__ubuf__ dstT* dstUb, __ubuf_
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
                 MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + i * para.n + k * vecLen);
-                preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+                preg = MicroAPI::UpdateMask<scaleT>(sreg);
                 if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                     MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg,
                         srcUb + (i * para.groupSize + j) * para.n + k * vecLen);
@@ -1261,7 +1261,7 @@ __simd_callee__ inline void QuantPerGroupForKRowS8TailBlock(__ubuf__ dstT* dstUb
         uint32_t sreg = n;
         for (uint16_t j = 0; j < repeat; ++j) {
             MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + j * vecLen);
-            preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+            preg = MicroAPI::UpdateMask<scaleT>(sreg);
             if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                 MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(tempVreg, srcUb + i * n + j * vecLen);
                 MicroAPI::Cast<float, srcT, layoutZMrgZ>(srcVreg, tempVreg, preg);
@@ -1300,7 +1300,7 @@ __simd_vf__ inline void QuantPerGroupForKRowS8VF(__ubuf__ dstT* dstUb, __ubuf__ 
             uint32_t sreg = para.n;
             for (uint16_t k = 0; k < repeat; ++k) {
                 MicroAPI::LoadAlign<scaleT, MicroAPI::LoadDist::DIST_NORM>(scaleVreg, scaleUb + i * para.n + k * vecLen);
-                preg = MicroAPI::UpdateMask<scaleT>(sreg);;
+                preg = MicroAPI::UpdateMask<scaleT>(sreg);
                 if constexpr (SupportType<srcT, half, bfloat16_t>() && SupportType<scaleT, float>()) {
                     MicroAPI::LoadAlign<srcT, MicroAPI::LoadDist::DIST_UNPACK_B16>(
                         tempVreg, srcUb + (i * para.groupSize + j) * para.n + k * vecLen);

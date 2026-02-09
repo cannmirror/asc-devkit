@@ -29,8 +29,8 @@ ATOL = 0.001
 RTOL = 0.001
 
 
-def config(excute_type):
-    if excute_type == 'ai_core':
+def config(execute_type):
+    if execute_type == 'ai_core':
         session_config = tf.compat.v1.ConfigProto(allow_soft_placement=True, log_device_placement=False)
         custom_op = session_config.graph_options.rewrite_options.custom_optimizers.add()
         custom_op.name = "NpuOptimizer"
@@ -39,7 +39,7 @@ def config(excute_type):
         custom_op.parameter_map["use_off_line"].b = True
         custom_op.parameter_map["min_group_size"].b = 1
 
-    elif excute_type == 'cpu':
+    elif execute_type == 'cpu':
         session_config = tf.compat.v1.ConfigProto(allow_soft_placement=True, log_device_placement=False)
 
     return session_config

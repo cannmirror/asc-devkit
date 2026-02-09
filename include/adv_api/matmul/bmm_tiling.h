@@ -138,7 +138,7 @@ public:
     /**
      * @brief Get the NumBlocks used after multi core tiling. It is carried by users to the kernel to control
         the service logic in the kernel.
-     * @param dim : Get the number of cores required fro computation, dim = mDim * nDim.
+     * @param dim : Get the number of cores required for computation, dim = mDim * nDim.
      * @param mDim : Determine the number of core required for the M direction during computation.
      * @param nDim : Determine the number of core required for the N direction during computation.
      */

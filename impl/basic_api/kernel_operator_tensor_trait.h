@@ -24,7 +24,7 @@ namespace AscendC {
  * \note this struct contains primitive type of tensor;
  * info:
  * LiteType: the tensor's primitive type
- * If the layou type is used, the type must be specified and cannot be implicitly deduced.
+ * If the layout type is used, the type must be specified and cannot be implicitly deduced.
  */
 template <typename T, TPosition pos = TPosition::GM, typename LayoutType = Layout<Shape<>, Stride<>>>
 struct TensorTrait {

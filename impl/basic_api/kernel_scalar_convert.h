@@ -49,7 +49,7 @@ __aicore__ inline bfloat16_t Cast(const float& fVal)
         return GetScalarBitcodeValue<uint16_t, bfloat16_t>(u16Num);
     }
     uint32_t expFp = ((u32Val) & FP32_EXP_PART_MASK) >> fp32ManLen;
-    uint32_t manFp = (u32Val & FP32_MAN_PART_MASK); // 23 bit mantissa dont't need to care about denormal
+    uint32_t manFp = (u32Val & FP32_MAN_PART_MASK); // 23 bit mantissa don't need to care about denormal
     manFp = (manFp | fp32ManHideBit);
 
     constexpr uint32_t mLenDelta = fp32ManLen - bf16ManLen;

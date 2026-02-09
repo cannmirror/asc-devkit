@@ -65,37 +65,37 @@ __aicore__ inline void CheckTiling(Intf *self)
 {
 #ifdef ASCENDC_CPU_DEBUG
     ASCENDC_ASSERT((self->ctx.tiling_->batch > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal batch is %d , which should be larger than 0", self->ctx.tiling_->batch); });
+        { KERNEL_LOG(KERNEL_ERROR, "original batch is %d , which should be larger than 0", self->ctx.tiling_->batch); });
     ASCENDC_ASSERT((self->ctx.tiling_->cin > 0), {
-        KERNEL_LOG(KERNEL_ERROR, "orignal cin is %d , which should be larger than 0", self->ctx.tiling_->cin);
+        KERNEL_LOG(KERNEL_ERROR, "original cin is %d , which should be larger than 0", self->ctx.tiling_->cin);
     });
     ASCENDC_ASSERT((self->ctx.tiling_->cout > 0), {
-        KERNEL_LOG(KERNEL_ERROR, "orignal cout is %d , which should be larger than 0", self->ctx.tiling_->cout);
+        KERNEL_LOG(KERNEL_ERROR, "original cout is %d , which should be larger than 0", self->ctx.tiling_->cout);
     });
     ASCENDC_ASSERT((self->ctx.tiling_->cin1G > 0), {
-        KERNEL_LOG(KERNEL_ERROR, "orignal cin1G is %d , which should be larger than 0", self->ctx.tiling_->cin1G);
+        KERNEL_LOG(KERNEL_ERROR, "original cin1G is %d , which should be larger than 0", self->ctx.tiling_->cin1G);
     });
     ASCENDC_ASSERT((self->ctx.tiling_->cout1G > 0), {
-        KERNEL_LOG(KERNEL_ERROR, "orignal cout1G is %d , which should be larger than 0", self->ctx.tiling_->cout1G);
+        KERNEL_LOG(KERNEL_ERROR, "original cout1G is %d , which should be larger than 0", self->ctx.tiling_->cout1G);
     });
     ASCENDC_ASSERT((self->ctx.tiling_->dout > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal dout is %d , which should be larger than 0", self->ctx.tiling_->dout); });
+        { KERNEL_LOG(KERNEL_ERROR, "original dout is %d , which should be larger than 0", self->ctx.tiling_->dout); });
     ASCENDC_ASSERT((self->ctx.tiling_->ho > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal ho is %d , which should be larger than 0", self->ctx.tiling_->ho); });
+        { KERNEL_LOG(KERNEL_ERROR, "original ho is %d , which should be larger than 0", self->ctx.tiling_->ho); });
     ASCENDC_ASSERT((self->ctx.tiling_->wo > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal wo is %d , which should be larger than 0", self->ctx.tiling_->wo); });
+        { KERNEL_LOG(KERNEL_ERROR, "original wo is %d , which should be larger than 0", self->ctx.tiling_->wo); });
     ASCENDC_ASSERT((self->ctx.tiling_->di > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal di is %d , which should be larger than 0", self->ctx.tiling_->di); });
+        { KERNEL_LOG(KERNEL_ERROR, "original di is %d , which should be larger than 0", self->ctx.tiling_->di); });
     ASCENDC_ASSERT((self->ctx.tiling_->hi > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal hi is %d , which should be larger than 0", self->ctx.tiling_->hi); });
+        { KERNEL_LOG(KERNEL_ERROR, "original hi is %d , which should be larger than 0", self->ctx.tiling_->hi); });
     ASCENDC_ASSERT((self->ctx.tiling_->wi > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal wi is %d , which should be larger than 0", self->ctx.tiling_->wi); });
+        { KERNEL_LOG(KERNEL_ERROR, "original wi is %d , which should be larger than 0", self->ctx.tiling_->wi); });
     ASCENDC_ASSERT((self->ctx.tiling_->dk > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal dk is %d , which should be larger than 0", self->ctx.tiling_->dk); });
+        { KERNEL_LOG(KERNEL_ERROR, "original dk is %d , which should be larger than 0", self->ctx.tiling_->dk); });
     ASCENDC_ASSERT((self->ctx.tiling_->hk > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal hk is %d , which should be larger than 0", self->ctx.tiling_->hk); });
+        { KERNEL_LOG(KERNEL_ERROR, "original hk is %d , which should be larger than 0", self->ctx.tiling_->hk); });
     ASCENDC_ASSERT((self->ctx.tiling_->wk > 0),
-        { KERNEL_LOG(KERNEL_ERROR, "orignal wk is %d , which should be larger than 0", self->ctx.tiling_->wk); });
+        { KERNEL_LOG(KERNEL_ERROR, "original wk is %d , which should be larger than 0", self->ctx.tiling_->wk); });
     ASCENDC_ASSERT((self->ctx.tiling_->singleCoreBatch > 0), {
         KERNEL_LOG(
             KERNEL_ERROR, "singleCoreBatch is %d , which should be larger than 0", self->ctx.tiling_->singleCoreBatch);

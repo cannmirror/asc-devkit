@@ -335,13 +335,13 @@ bool Conv3dBpFilterTilingBase::CheckInputShape()
 bool Conv3dBpFilterTilingBase::CheckInputFormat()
 {
     if (this->descInfo.weightType.format != ConvCommonApi::ConvFormat::FRACTAL_Z_3D) {
-        TILING_LOG_ERROR("unSupported weight format: %s.",
+        TILING_LOG_ERROR("Unsupported weight format: %s.",
                          g_formatToStr.at(this->descInfo.weightType.format).c_str());
         return false;
     }
 
     if (this->descInfo.fMapType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("unSupported feature map format: %s.",
+        TILING_LOG_ERROR("Unsupported feature map format: %s.",
                          g_formatToStr.at(this->descInfo.fMapType.format).c_str());
         return false;
     }

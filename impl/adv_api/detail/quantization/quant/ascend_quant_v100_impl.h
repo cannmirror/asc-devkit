@@ -117,7 +117,7 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
     const T offset, const uint32_t scaleCount, const uint32_t calCount)
 {
     ASCENDC_ASSERT(false,
-                    { KERNEL_LOG(KERNEL_ERROR, "This device do not support per channel quant!"); });
+                    { KERNEL_LOG(KERNEL_ERROR, "This device does not support per channel quant!"); });
 }
 template <typename T, bool isReuseSource = false, const AscendQuantConfig& config = ASCEND_QUANT_DEFAULT_CFG>
 __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, const LocalTensor<T>& srcTensor,
@@ -126,7 +126,7 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<int8_t>& dstTensor, con
     const uint32_t calCount)
 {
     ASCENDC_ASSERT(false,
-                    { KERNEL_LOG(KERNEL_ERROR, "This device do not support per channel quant!"); });
+                    { KERNEL_LOG(KERNEL_ERROR, "This device does not support per channel quant!"); });
 }
 } //  namespace AscendC
 #endif // IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_V100_IMPL_H

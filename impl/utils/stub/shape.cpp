@@ -78,9 +78,9 @@ Shape::Shape(const std::vector<int64_t> &dims)
 size_t Shape::GetDimNum() const
 {
     if (impl_ != nullptr) {
-        const bool isDimUnknow = std::any_of(std::begin(impl_->dims_), std::end(impl_->dims_),
+        const bool isDimUnknown = std::any_of(std::begin(impl_->dims_), std::end(impl_->dims_),
             [](const int64_t i) { return i == UNKNOWN_DIM_NUM; });
-        if (isDimUnknow) {
+        if (isDimUnknown) {
             GELOGI("Dim num is unknown, return 0U.");
             return 0U;
         }

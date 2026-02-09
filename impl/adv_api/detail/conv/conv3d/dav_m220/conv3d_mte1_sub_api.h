@@ -66,10 +66,10 @@ public:
 private:
     __aicore__ inline void SetLoadData3DParamsV2(AscendC::LoadData3DParamsV2<typename Intf::InputT> &loadData3Dv2Params)
     {
-        // params about k dicision
+        // params about k decision
         loadData3Dv2Params.kExtension = currentKL0_;
         loadData3Dv2Params.kStartPt = self_->ctx.kAL0Iter * self_->ctx.singleCoreKL0;
-        // params about m dicision
+        // params about m decision
         loadData3Dv2Params.mExtension = currentML0_;
         loadData3Dv2Params.mStartPt = self_->ctx.mL0IsDivisibleByWo ?
             self_->ctx.mAL0Iter * self_->ctx.conv3dTiling->mL0 + self_->ctx.mStartPos % self_->ctx.orgWo :

@@ -32,7 +32,7 @@ __aicore__ inline TransDataTo5HDParams ExtractTransDataParam(uint8_t repeatTimes
 {
     repeatTimes = inner / oneBlockElementNum;
     if (repeatTimes > 1) {
-        // For float date types, within a single repeated iteration, a (16, 8) matrix of float values will be
+        // For float data types, within a single repeated iteration, a (16, 8) matrix of float values will be
         // transposed into an (8, 16) layout.
         return TransDataTo5HDParams(false, false, repeatTimes, alignOutter, 1);
     } else {
@@ -57,7 +57,7 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<T>& dstTensor, const Loca
     if (cumSumInfo.outter == alignOutter && alignOutter > cumSumInfo.inner) {
         repeatTimes = alignOutter / NCHW_CONV_ADDR_LIST_SIZE;
         if (repeatTimes > 1) {
-            // For half date types, within a single repeated iteration, a (16, 16) matrix of half values will be
+            // For half data types, within a single repeated iteration, a (16, 16) matrix of half values will be
             // transposed into an (16, 16) layout.
             dstRepStride = 1;
             srcRepStride = cumSumInfo.inner;
@@ -175,7 +175,7 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
     if (cumSumInfo.outter == alignOutter && alignOutter > cumSumInfo.inner) {
         repeatTimes = alignOutter / NCHW_CONV_ADDR_LIST_SIZE;
         if (repeatTimes > 1) {
-            // For float date types, within a single repeated iteration, a (16, 8) matrix of float values will be
+            // For float data types, within a single repeated iteration, a (16, 8) matrix of float values will be
             // transposed into an (8, 16) layout.
             dstRepStride = 2;                     // 2 is for float transpose
             srcRepStride = cumSumInfo.inner * 2;  // 2 is for float transpose
@@ -234,7 +234,7 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
     if (alignOutter > cumSumInfo.inner) {
         repeatTimes = alignOutter / NCHW_CONV_ADDR_LIST_SIZE;
         if (repeatTimes > 1) {
-            // For float date types, within a single repeated iteration, a (16, 8) matrix of float values will be
+            // For float data types, within a single repeated iteration, a (16, 8) matrix of float values will be
             // transposed into an (8, 16) layout.
             dstRepStride = cumSumInfo.inner * 2;
             srcRepStride = 2;
@@ -262,7 +262,7 @@ __aicore__ inline void CumSumLastDim(const LocalTensor<float>& dstTensor, const 
     } else {
         repeatTimes = cumSumInfo.inner / oneBlockElementNum;
         if (repeatTimes > 1) {
-            // For float date types, within a single repeated iteration, a (16, 8) matrix of float values will be
+            // For float data types, within a single repeated iteration, a (16, 8) matrix of float values will be
             // transposed into an (8, 16) layout.
             dstRepStride = alignOutter;
             srcRepStride = 1;
@@ -379,17 +379,17 @@ __aicore__ inline void CumSumImpl(LocalTensor<T>& dstTensor, LocalTensor<T>& las
         });
 #endif
         // outter serves as the loop count, process at least 16 rows of data at once.
-        const uint32_t oneRepeateSize = tmpBufferSize / minTmpBufferSize * NCHW_CONV_ADDR_LIST_SIZE;
-        const uint32_t rangeM = cumSumInfo.outter / oneRepeateSize;
-        const uint32_t tailM = cumSumInfo.outter - oneRepeateSize * rangeM;
+        const uint32_t oneRepeatSize = tmpBufferSize / minTmpBufferSize * NCHW_CONV_ADDR_LIST_SIZE;
+        const uint32_t rangeM = cumSumInfo.outter / oneRepeatSize;
+        const uint32_t tailM = cumSumInfo.outter - oneRepeatSize * rangeM;
         uint32_t dstLocalOffset = 0;
         uint32_t srcLocalOffset = 0;
         LocalTensor<T> tmpBuffer = sharedTmpBuffer.ReinterpretCast<T>();
         for (uint32_t i = 0; i < rangeM; i++) {
             CumSumLastDim<T>(
-                dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer, {oneRepeateSize, cumSumInfo.inner});
-            dstLocalOffset += cumSumInfo.inner * oneRepeateSize;
-            srcLocalOffset += cumSumInfo.inner * oneRepeateSize;
+                dstTensor[dstLocalOffset], srcTensor[srcLocalOffset], tmpBuffer, {oneRepeatSize, cumSumInfo.inner});
+            dstLocalOffset += cumSumInfo.inner * oneRepeatSize;
+            srcLocalOffset += cumSumInfo.inner * oneRepeatSize;
         }
 
         if (tailM != 0) {

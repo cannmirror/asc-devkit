@@ -131,7 +131,7 @@ __aicore__ inline void AscendDequantTmpCalc(const LocalTensor<float>& stackBuffe
 {
     uint32_t base = dqParams.n;   // expect tmp to be k * dqParams.n (k >= 1), therefore base is dqParams.n
 
-    deqScaleSize = (deqScaleSize + FLOAT_PER_BLOCK - 1) / FLOAT_PER_BLOCK * FLOAT_PER_BLOCK; // gurantee 32B aligned
+    deqScaleSize = (deqScaleSize + FLOAT_PER_BLOCK - 1) / FLOAT_PER_BLOCK * FLOAT_PER_BLOCK; // guarantee 32B aligned
     // one 256B is reserved for safety (avoid writing extra space in normal mode)
     uint32_t tmpSrcSize = (stackBuffer.GetSize() - deqScaleSize) / base * base;
     ASCENDC_ASSERT((tmpSrcSize > 0), { KERNEL_LOG(KERNEL_ERROR, "stackBuffer size is not large enough"); });

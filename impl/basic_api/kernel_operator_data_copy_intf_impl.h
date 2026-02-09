@@ -202,7 +202,7 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, 
  * @brief format transform(such as nd2nz) during data load from UB to L1(Only TSCM)
  * @param [out] dst output LocalTensor
  * @param [in] src input LocalTensor
- * @param [in] intriParams.ndNum nd number of data to be moved, onlyc can be 1
+ * @param [in] intriParams.ndNum nd number of data to be moved, only can be 1
  * @param [in] intriParams.nValue n value
  * @param [in] intriParams.dValue d value in unit of element
  * @param [in] intriParams.srcNdMatrixStride stride between nd matrixs at source ND matrix in unit of element
@@ -404,7 +404,7 @@ __aicore__ inline void DataCopy(const LocalTensor<T> &dst, const LocalTensor<U> 
             if constexpr (Std::is_same<PrimSrcType, bfloat16_t>::value && (!Std::is_same<PrimDstType, float>::value)) {
                 ASCENDC_ASSERT((false), {
                     KERNEL_LOG(KERNEL_ERROR,
-                        "unsupport case where src dtype is bfloat16, dst dtype is not float on current device");
+                        "unsupported case where src dtype is bfloat16, dst dtype is not float on current device");
                 });
             } else if constexpr (Std::is_same<PrimDstType, PrimSrcType>::value ||
                 (Std::is_same<PrimSrcType, bfloat16_t>::value && Std::is_same<PrimDstType, float>::value)) {

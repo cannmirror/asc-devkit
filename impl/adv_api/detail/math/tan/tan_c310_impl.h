@@ -41,7 +41,7 @@ constexpr float KPI_THIR_PI_MULS = 1.21644916362129151821136474609375e-10;
 // kpi_4
 constexpr float KPI_FOR_PI_MULS = -1.0291767438275201129727065563201904296875e-13;
 // define the number of tan_compute
-constexpr float TAN_RES_MULIT_SCA = 0.0698520831551998762793;
+constexpr float TAN_RES_MULTI_SCA = 0.0698520831551998762793;
 constexpr float TAN_RES_ADDICT_UP = -6.8711573651634203789;
 constexpr float TAN_2ADDS = 61.20362572811089435388;
 constexpr float TAN_3ADDS = -24.8048928861126769186219;
@@ -141,7 +141,7 @@ __simd_callee__ inline void TanPolynomialApproximation(MicroAPI::RegTensor<float
     // x^2 = mul(input_x, input_x)
     MicroAPI::Mul(roundReg, resReg, resReg, mask);
     // res_up = muls(x^2, 0.0698520831551998762793)
-    MicroAPI::Muls(tmpReg, roundReg, TAN_RES_MULIT_SCA, mask);
+    MicroAPI::Muls(tmpReg, roundReg, TAN_RES_MULTI_SCA, mask);
     // res_up = adds(res_up, -6.8711573651634203789)
     MicroAPI::Adds(tmpReg, tmpReg, TAN_RES_ADDICT_UP, mask);
     // res_up = mul(res_up, x^2)

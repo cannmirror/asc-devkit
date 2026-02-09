@@ -79,12 +79,12 @@ bool Conv3DBpInputTilingBase::SetWeightShape(int64_t cout, int64_t cin, int64_t 
 {
     if (this->shapeInfo.orgCi > 0 && this->shapeInfo.orgCi != cin) {
         TILING_LOG_ERROR(
-            "inChannels(cin) has been set a different value: curVaule=%ld, oldValue=%ld", cin, this->shapeInfo.orgCi);
+            "inChannels(cin) has been set a different value: curValue=%ld, oldValue=%ld", cin, this->shapeInfo.orgCi);
         return false;
     }
     if (this->shapeInfo.orgCo > 0 && this->shapeInfo.orgCo != cout) {
         TILING_LOG_ERROR(
-            "outChannels(cout) has been set a different value: curVaule=%ld, oldValue=%ld", cout, this->shapeInfo.orgCo);
+            "outChannels(cout) has been set a different value: curValue=%ld, oldValue=%ld", cout, this->shapeInfo.orgCo);
         return false;
     }
 
@@ -100,12 +100,12 @@ bool Conv3DBpInputTilingBase::SetInputShape(int64_t n, int64_t c, int64_t d, int
 {
     if (this->shapeInfo.orgCi > 0 && this->shapeInfo.orgCi != c) {
         TILING_LOG_ERROR(
-            "channels(c) has been set a different value: curVaule=%ld, oldValue=%ld", c, this->shapeInfo.orgCi);
+            "channels(c) has been set a different value: curValue=%ld, oldValue=%ld", c, this->shapeInfo.orgCi);
         return false;
     }
     if (this->shapeInfo.orgN > 0 && this->shapeInfo.orgN != n) {
         TILING_LOG_ERROR(
-            "batch(n) has been set a different value: curVaule=%ld, oldValue=%ld", n, this->shapeInfo.orgN);
+            "batch(n) has been set a different value: curValue=%ld, oldValue=%ld", n, this->shapeInfo.orgN);
         return false;
     }
 
@@ -122,12 +122,12 @@ bool Conv3DBpInputTilingBase::SetGradOutputShape(int64_t n, int64_t c, int64_t d
 {
     if (this->shapeInfo.orgN > 0 && this->shapeInfo.orgN != n) {
          TILING_LOG_ERROR(
-            "batch(n) has been set a different value: curVaule=%ld, oldValue=%ld", n, this->shapeInfo.orgN);
+            "batch(n) has been set a different value: curValue=%ld, oldValue=%ld", n, this->shapeInfo.orgN);
         return false;
     }
     if (this->shapeInfo.orgCo > 0 && this->shapeInfo.orgCo != c) {
         TILING_LOG_ERROR(
-            "channels(c) has been set a different value: curVaule=%ld, oldValue=%ld", c, this->shapeInfo.orgCo);
+            "channels(c) has been set a different value: curValue=%ld, oldValue=%ld", c, this->shapeInfo.orgCo);
         return false;
     }
 
@@ -309,13 +309,13 @@ bool Conv3DBpInputTilingBase::CheckInputShape()
 bool Conv3DBpInputTilingBase::CheckInputFormat()
 {
     if (this->descInfo.weightType.format != ConvCommonApi::ConvFormat::FRACTAL_Z_3D) {
-        TILING_LOG_ERROR("unSupported weight format: %s.",
+        TILING_LOG_ERROR("Unsupported weight format: %s.",
                          g_formatToStr.at(this->descInfo.weightType.format).c_str());
         return false;
     }
 
     if (this->descInfo.outBackpropType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("unSupported outBackprop format: %s.",
+        TILING_LOG_ERROR("Unsupported outBackprop format: %s.",
                          g_formatToStr.at(this->descInfo.outBackpropType.format).c_str());
         return false;
     }

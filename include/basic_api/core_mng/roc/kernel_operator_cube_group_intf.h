@@ -59,7 +59,7 @@ public:
     __aicore__ inline void AssignQueue(uint8_t queueIdIn);
 
     // aiv call: check msgState of msgCurrent is FREE, can allocate only when state is FREE
-    // to gurantee the order, not allowed to skip, must wait until msgState is updated to FREE
+    // to guarantee the order, not allowed to skip, must wait until msgState is updated to FREE
     template <PipeMode pipeMode = PipeMode::SCALAR_MODE>
     __aicore__ inline __gm__ CubeMsgType *AllocMessage();
 

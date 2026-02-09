@@ -78,7 +78,7 @@ public:
             }
 #endif
             ubStart = GetUBMapAddr(workspace, subBlockID);
-            ubAvalidTail = GetUBAvaliedAddr(workspace, subBlockID);
+            ubAvalidTail = GetUBAvailableAddr(workspace, subBlockID);
             head = 0;
             tail = 0;
         }

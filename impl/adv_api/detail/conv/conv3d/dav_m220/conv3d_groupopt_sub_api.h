@@ -39,7 +39,7 @@ public:
     __aicore__ inline void LoadBL1()
     {
         PreProcess();
-        if (specialGroupDimTial()) {
+        if (specialGroupDimTail()) {
             return;
         }
         if (currentNBL1 >= self_->ctx.orgCo) {
@@ -113,7 +113,7 @@ private:
         KERNEL_LOG(KERNEL_DEBUG, "[LoadBL1WithGroupOptTools] bL1GmOffsetTmp %d.\n", bL1GmOffsetTmp);
     }
 
-    __aicore__ inline bool specialGroupDimTial()
+    __aicore__ inline bool specialGroupDimTail()
     {
         if (self_->ctx.isGroupOptDimTail && self_->ctx.groupOptIter >= self_->ctx.maxGroupOptIter - 1 &&
             ConvApi::AlignB(self_->ctx.orgCi, self_->ctx.cin0) * self_->ctx.conv3dTiling->groupOpt >
@@ -227,7 +227,7 @@ public:
                 }
             }
         } else {
-            if (specialGroupDimTial()) {
+            if (specialGroupDimTail()) {
                 return;
             }
             if (currentNL0_ >= self_->ctx.orgCo) {
@@ -257,7 +257,7 @@ private:
             loadData2dParams.repeatTimes);
     }
 
-    __aicore__ inline bool specialGroupDimTial()
+    __aicore__ inline bool specialGroupDimTail()
     {
         if (self_->ctx.isGroupOptDimTail && self_->ctx.groupOptIter >= self_->ctx.maxGroupOptIter - 1 &&
             ConvApi::AlignB(self_->ctx.orgCi, self_->ctx.cin0) * self_->ctx.conv3dTiling->groupOpt >

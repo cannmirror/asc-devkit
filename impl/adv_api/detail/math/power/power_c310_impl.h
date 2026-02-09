@@ -68,7 +68,7 @@ constexpr int32_t R10_COEFF = 0x7F800000;
 constexpr int32_t R12_COEFF = 0x7FFFFFFF;
 
 constexpr int16_t COMPARE_ZERO_OFFSET = 31;
-constexpr int16_t SHITF_OFFSET = 23;
+constexpr int16_t SHIFT_OFFSET = 23;
 constexpr float F32_FRACTIONS = -23.0f;
 
 struct PowerLogParams {
@@ -139,7 +139,7 @@ __simd_callee__ inline void GetLogFExtStepOne(MicroAPI::RegTensor<float>& tmpIRe
 {
     MicroAPI::RegTensor<float> tmpAReg, tmpFloatReg;
     MicroAPI::RegTensor<int32_t> tmpEReg;
-    /* init varaiable a and i:
+    /* init variable a and i:
      *  if (a < 1.175494351e-38f){ // 0x1.0p-126
      *      a = a * 8388608.0f; // 0x1.0p+23
      *      i = -23.0f;
@@ -647,7 +647,7 @@ __aicore__ inline void PowFComputeImpl(__ubuf__ T* dst, const T& scalarValue, __
 }
 
 /*********** PowF Intrinsic Impl **********/
-__simd_callee__ inline void GetPowFInstrinsicCore(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& baseReg,
+__simd_callee__ inline void GetPowFIntrinsicCore(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& baseReg,
     MicroAPI::RegTensor<float>& expReg, MicroAPI::MaskReg& mask)
 {
     // Compute dst = exp(exp * ln(|base|))
@@ -659,7 +659,7 @@ __simd_callee__ inline void GetPowFInstrinsicCore(MicroAPI::RegTensor<float>& ds
 }
 
 template<typename T>
-__simd_vf__ inline void PowFInstrinsicTensorTensorImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
+__simd_vf__ inline void PowFIntrinsicTensorTensorImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -673,14 +673,14 @@ __simd_vf__ inline void PowFInstrinsicTensorTensorImpl(__ubuf__ T* dst, __ubuf__
         tmpMask = mask;
         LoadSrcData(tmpBaseReg, src0, i, mask);
         LoadSrcData(tmpExpReg, src1, i, mask);
-        GetPowFInstrinsicCore(castDstReg, tmpBaseReg, tmpExpReg, mask);
+        GetPowFIntrinsicCore(castDstReg, tmpBaseReg, tmpExpReg, mask);
         ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, tmpR10Reg, tmpR12Reg, twoReg, tmpMask);
         StoreDstData(dst, castDstReg, i, mask);
     }
 }
 
 template<typename T>
-__simd_vf__ inline void PowFInstrinsicTensorScalarImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T scalarValue,
+__simd_vf__ inline void PowFIntrinsicTensorScalarImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T scalarValue,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -694,14 +694,14 @@ __simd_vf__ inline void PowFInstrinsicTensorScalarImpl(__ubuf__ T* dst, __ubuf__
         mask = MicroAPI::UpdateMask<float>(calCount);
         tmpMask = mask;
         LoadSrcData(tmpBaseReg, src0, i, mask); 
-        GetPowFInstrinsicCore(castDstReg, tmpBaseReg, tmpExpReg, mask);
+        GetPowFIntrinsicCore(castDstReg, tmpBaseReg, tmpExpReg, mask);
         ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, tmpR10Reg, tmpR12Reg, twoReg, tmpMask);
         StoreDstData(dst, castDstReg, i, mask);
     }
 }
 
 template<typename T>
-__simd_vf__ inline void PowFInstrinsicScalarTensorImpl(__ubuf__ T* dst, const T scalarValue, __ubuf__ T* src1,
+__simd_vf__ inline void PowFIntrinsicScalarTensorImpl(__ubuf__ T* dst, const T scalarValue, __ubuf__ T* src1,
     uint32_t calCount, uint16_t repeatTime)
 {
     MicroAPI::MaskReg mask, tmpMask;
@@ -715,37 +715,37 @@ __simd_vf__ inline void PowFInstrinsicScalarTensorImpl(__ubuf__ T* dst, const T 
         mask = MicroAPI::UpdateMask<float>(calCount);
         tmpMask = mask;
         LoadSrcData(tmpExpReg, src1, i, mask);
-        GetPowFInstrinsicCore(castDstReg, tmpBaseReg, tmpExpReg, mask);
+        GetPowFIntrinsicCore(castDstReg, tmpBaseReg, tmpExpReg, mask);
         ProcessSpecialCaseForPowF(castDstReg, tmpBaseReg, tmpExpReg, tmpR10Reg, tmpR12Reg, twoReg, tmpMask);
         StoreDstData(dst, castDstReg, i, mask);
     }
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
+__aicore__ inline void PowFIntrinsicImpl(__ubuf__ T* dst, __ubuf__ T* src0, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(calCount, eleCountPerVL);
-    PowFInstrinsicTensorTensorImpl<T>(dst, src0, src1, calCount, repeatTimes);
+    PowFIntrinsicTensorTensorImpl<T>(dst, src0, src1, calCount, repeatTimes);
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T& scalarValue,
+__aicore__ inline void PowFIntrinsicImpl(__ubuf__ T* dst, __ubuf__ T* src0, const T& scalarValue,
     uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(calCount, eleCountPerVL);
-    PowFInstrinsicTensorScalarImpl<T>(dst, src0, scalarValue, calCount, repeatTimes);
+    PowFIntrinsicTensorScalarImpl<T>(dst, src0, scalarValue, calCount, repeatTimes);
 }
 
 template<typename T>
-__aicore__ inline void PowFInstrinsicImpl(__ubuf__ T* dst, const T& scalarValue, __ubuf__ T* src1,
+__aicore__ inline void PowFIntrinsicImpl(__ubuf__ T* dst, const T& scalarValue, __ubuf__ T* src1,
     uint32_t calCount)
 {
     constexpr uint16_t eleCountPerVL = GetVecLen() / sizeof(float);
     uint16_t repeatTimes = DivCeil(calCount, eleCountPerVL);
-    PowFInstrinsicScalarTensorImpl<T>(dst, scalarValue, src1, calCount, repeatTimes);
+    PowFIntrinsicScalarTensorImpl<T>(dst, scalarValue, src1, calCount, repeatTimes);
 }
 } // namespace PowF
 
@@ -1015,7 +1015,7 @@ __aicore__ inline void PowImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 
     if constexpr (IsFloatNum<T>()) {
         if constexpr (config.algo == PowerAlgo::INTRINSIC) {
-            PowerC310Impl::PowF::PowFInstrinsicImpl(dst, src0, src1, calCount);
+            PowerC310Impl::PowF::PowFIntrinsicImpl(dst, src0, src1, calCount);
         } else {
             __ubuf__ uint32_t* tmpBuffer =  (__ubuf__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
             uint32_t sharedTmpBufferSize = GetPowTmpBufferSize<T>(sharedTmpBuffer);
@@ -1047,7 +1047,7 @@ __aicore__ inline void PowImpl(const LocalTensor<T>& dstTensor, const LocalTenso
 
     if constexpr (IsFloatNum<T>()) {
         if constexpr (config.algo == PowerAlgo::INTRINSIC) {
-            PowerC310Impl::PowF::PowFInstrinsicImpl(dst, base, scalarValue, calCount);
+            PowerC310Impl::PowF::PowFIntrinsicImpl(dst, base, scalarValue, calCount);
         } else {
             __ubuf__ uint32_t* tmpBuffer =  (__ubuf__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
             uint32_t sharedTmpBufferSize = GetPowTmpBufferSize<T>(sharedTmpBuffer);
@@ -1076,7 +1076,7 @@ __aicore__ inline void PowImpl(const LocalTensor<T>& dstTensor, const T& scalarV
 
     if constexpr (IsFloatNum<T>()) {
         if constexpr (config.algo == PowerAlgo::INTRINSIC) {
-            PowerC310Impl::PowF::PowFInstrinsicImpl(dst, scalarValue, exp, calCount);
+            PowerC310Impl::PowF::PowFIntrinsicImpl(dst, scalarValue, exp, calCount);
         } else {
             __ubuf__ uint32_t* tmpBuffer =  (__ubuf__ uint32_t *)sharedTmpBuffer.GetPhyAddr();
             uint32_t sharedTmpBufferSize = GetPowTmpBufferSize<T>(sharedTmpBuffer);
@@ -1183,5 +1183,5 @@ __aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const Lo
                    { KERNEL_LOG(KERNEL_ERROR, "PopStackBuffer Error!"); });
     PowerCommonImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Scalar, stackTensor, calCount);
 }
-} //namesapce AscendC
+} //namespace AscendC
 #endif

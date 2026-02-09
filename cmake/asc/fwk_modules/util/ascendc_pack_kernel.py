@@ -48,7 +48,7 @@ class PackKernel:
     def ascendc_gen_object(self: any, in_file: str, soc: str):
         sym = self.get_symbol("_binary_" + in_file)
         out_file = os.path.join(self.out_path, sym + ".o")
-        #ascend610lite only supoort aarch64
+        #ascend610lite only support aarch64
         if soc == 'ascend610lite':
             try:
                 subprocess.run(['llvm-objcopy', '--input-target', 'binary', '--output-target', 'elf64-littleaarch64',
@@ -71,7 +71,7 @@ class PackKernel:
                 subprocess.run(['llvm-objcopy', '--input-target', 'binary', '--output-target', 'elf64-littleaarch64',
                                 '--binary-architecture', 'aarch64', in_file, out_file])
             else:
-                subprocess.run(['echo', 'unsported environment!'])
+                subprocess.run(['echo', 'unsupported environment!'])
         except Exception as e:
             LogUtil.print_compile_log("", f"{target_platform} execute objcopy error: {e}!",
                                       AscendCLogLevel.LOG_ERROR, LogUtil.Option.NON_SOC)

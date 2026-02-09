@@ -48,7 +48,7 @@ constexpr float KPI_THIR_PI_MULS = 1.21644916362129151821136474609375e-10;
 // kpi_4
 constexpr float KPI_FOR_PI_MULS = -1.0291767438275201129727065563201904296875e-13;
 // define the number of tan_compute
-constexpr float TAN_RES_MULIT_SCA = 0.0698520831551998762793;
+constexpr float TAN_RES_MULTI_SCA = 0.0698520831551998762793;
 constexpr float TAN_RES_ADDICT_UP = -6.8711573651634203789;
 constexpr float TAN_2ADDS = 61.20362572811089435388;
 constexpr float TAN_3ADDS = -24.8048928861126769186219;
@@ -206,7 +206,7 @@ __aicore__ inline void TanPolynomialApproximation(const LocalTensor<float>& dstT
     Mul<float, false>(roundTensor, srcTensor, srcTensor, MASK_PLACEHOLDER, 1, binParams);
     PipeBarrier<PIPE_V>();
     // res_up = muls(x^2, 0.0698520831551998762793)
-    Muls<float, false>(dstTensor, roundTensor, TAN_RES_MULIT_SCA, MASK_PLACEHOLDER, 1, unaryParams);
+    Muls<float, false>(dstTensor, roundTensor, TAN_RES_MULTI_SCA, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // res_up = adds(res_up, -6.8711573651634203789)
     Adds<float, false>(dstTensor, dstTensor, TAN_RES_ADDICT_UP, MASK_PLACEHOLDER, 1, unaryParams);

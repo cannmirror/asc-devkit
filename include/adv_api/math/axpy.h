@@ -28,7 +28,7 @@ namespace AscendC {
  * \ingroup Axpy
  * \brief compute axpy   dst = src * scalar + dst
  * \tparam isReuseSource: Whether to reuse the buffer of srcTensor.
- *         If the value is true, srcTensor can used as tmpBuffer and the data in it will be overwritten.
+ *         If the value is true, srcTensor can be used as tmpBuffer and the data in it will be overwritten.
  *         If the value is false, srcTensor will not be used as tmpBuffer for calculation.
  * \param [out] dstTensor: output LocalTensor
  * \param [in] srcTensor: input LocalTensor

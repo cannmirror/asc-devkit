@@ -26,7 +26,7 @@ static void ascendc_set_exception_dump_info(uint32_t dumpSize)
         return;
     }
 
-    // atmoic index
+    // atomic index
     uint64_t *sizeInfoAddr = reinterpret_cast<uint64_t *>(exceptionDumpAddr);
     *sizeInfoAddr = static_cast<uint64_t>(atomicIndex);
     sizeInfoAddr++;
@@ -177,7 +177,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char* errMsg);
 void AscendProfRegister();
 uint32_t GetCoreNumForMixVectorCore(uint32_t *aiCoreNum, uint32_t *vectorCoreNum);
 uint32_t LaunchAscendKernelForVectorCore(const char *opType, void *handle, const uint64_t key, void **args, uint32_t size,
-    const void *stream, bool enbaleProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks, uint32_t aivNumBlocksOffset);
+    const void *stream, bool enableProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks, uint32_t aivNumBlocksOffset);
 ''')
     if dump_assert:
         buff.write('''int32_t rtSetExceptionExtInfo(const rtArgsSizeInfo_t * const sizeInfo);

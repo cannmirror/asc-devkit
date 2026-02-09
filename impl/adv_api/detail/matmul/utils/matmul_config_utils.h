@@ -27,7 +27,7 @@ namespace Impl {
 #endif
 
 constexpr int32_t QUEUE_DEPTH = 1;
-constexpr int32_t NZ_MASK_VAlUE = 2;
+constexpr int32_t NZ_MASK_VALUE = 2;
 constexpr int32_t FLOAT_FACTOR = 2;
 constexpr int32_t B4_C0SIZE = 64;
 constexpr int32_t B8_C0SIZE = 32;

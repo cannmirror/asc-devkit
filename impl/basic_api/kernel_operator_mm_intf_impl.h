@@ -240,7 +240,7 @@ __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>&
 }
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3003))
-// cce compiler process laod3d bfloat16_t using B8, so use the half dtype instead
+// cce compiler process load3d bfloat16_t using B8, so use the half dtype instead
 template <>
 __aicore__ inline void LoadData(const LocalTensor<bfloat16_t>& dst, const LocalTensor<bfloat16_t>& src,
     const LoadData3DParamsV2Pro& loadDataParams)
@@ -260,8 +260,8 @@ __aicore__ inline void LoadData(const LocalTensor<bfloat16_t>& dst, const LocalT
  * @param [in] loadDataParams.startIndex index of the first fractal in the first repeat in the source matrix
  * in unit of frac num
  * @param [in] loadDataParams.repeatTimes the repeat times
- * @param [in] loadDataParams.srcStride source stride between consequent repeat times in unit of frac num
- * @param [in] loadDataParams.dstGap destination gap between consequent repeat times in unit of 512byte
+ * @param [in] loadDataParams.srcStride source stride between consecutive repeat times in unit of frac num
+ * @param [in] loadDataParams.dstGap destination gap between consecutive repeat times in unit of 512byte
  * @param [in] loadDataParams.dstFracGap dst fractal gap in unit of one 512byte fractal
  */
 template <typename T>
@@ -279,8 +279,8 @@ __aicore__ inline void LoadDataWithTranspose(const LocalTensor<T>& dst, const Lo
  * @param [in] loadDataParams.startIndex index of the first fractal in the first repeat in the source matrix
  * in unit of 512byte fractal
  * @param [in] loadDataParams.repeatTime the repeat times
- * @param [in] loadDataParams.srcStride source stride between consequent repeat times in unit of 512byte
- * @param [in] loadDataParams.dstGap destination gap between consequent repeat times in unit of 512byte
+ * @param [in] loadDataParams.srcStride source stride between consecutive repeat times in unit of 512byte
+ * @param [in] loadDataParams.dstGap destination gap between consecutive repeat times in unit of 512byte
  * @param [in] loadDataParams.dstFracGap dst fractal gap in unit of one 512byte fractal
  * @param [in] loadDataParams.srcFracGap dst fractal gap in unit of one 512byte fractal
  */

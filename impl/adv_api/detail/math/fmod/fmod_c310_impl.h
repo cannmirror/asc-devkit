@@ -296,7 +296,7 @@ __simd_vf__ inline void FmodComputeIterationF32(__ubuf__ float* dstTensor, __ubu
         MicroAPI::Abs(src1Reg, src1OriginReg, maskFull);
         MicroAPI::LoadAlign(dstReg, dstTensor + i * FmodInternal::oneRepSize);
 
-        // res = res*(np.float32(asignbit)*np.float32(-2.0) + np.float32(1))
+        // res = res*(np.float32(signbit)*np.float32(-2.0) + np.float32(1))
         FmodInternal::GetSignBit(src0SignBitReg, src0OriginReg, maskFull);
         MicroAPI::Mul(src0SignBitTmpReg, src0SignBitReg, n2Reg, maskFull);
         MicroAPI::Add(src0SignBitTmpReg, src0SignBitTmpReg, oneReg, maskFull);
@@ -322,7 +322,7 @@ __simd_vf__ inline void FmodComputeIterationF32(__ubuf__ float* dstTensor, __ubu
         MicroAPI::Abs(src1Reg, src1OriginReg, maskReg);
         FmodInternal::SolveScaleIter<iterationNum>(dstReg, src1Reg, maskReg);
 
-        // res = res*(np.float32(asignbit)*np.float32(-2.0) + np.float32(1))
+        // res = res*(np.float32(signbit)*np.float32(-2.0) + np.float32(1))
         FmodInternal::GetSignBit(src0SignBitReg, src0OriginReg, maskReg);
         MicroAPI::Mul(src0SignBitTmpReg, src0SignBitReg, n2Reg, maskReg);
         MicroAPI::Add(src0SignBitTmpReg, src0SignBitTmpReg, oneReg, maskReg);

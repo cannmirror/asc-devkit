@@ -28,7 +28,7 @@ constexpr uint32_t FLOAT_PER_REPEAT = 64;       // 256B = FP32(4B) * 64
 
 inline uint32_t GetDequantizeMaxTmpSize(const uint32_t outer, const uint32_t inner, const uint32_t scaleSize)
 {
-    // need extra 256B to avoid norm mode modify value unexpected or exceeds ub (especiall when close to end of ub)
+    // need extra 256B to avoid norm mode modify value unexpected or exceeds ub (especially when close to end of ub)
     // Ex: normal mode + Mul with mask[2], might only want to mul 8 FP32, however eventually Mul must read 64 FP32
     //     as a repeat, which might exceeds ub
     uint32_t fp32Num = FLOAT_PER_REPEAT;
@@ -80,7 +80,7 @@ void GetDequantizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSi
         return;
     }
 
-    // gurantee scaleSize >= scale.GetSize()   Ex: uint32_t inner = 8, bf16 scale = 16
+    // guarantee scaleSize >= scale.GetSize()   Ex: uint32_t inner = 8, bf16 scale = 16
     const uint32_t scaleSize = inner + FLOAT_PER_BLOCK;
     maxValue = GetDequantizeMaxTmpSize(outer, inner, scaleSize);
     minValue = GetDequantizeMinTmpSize(outer, inner, scaleSize);

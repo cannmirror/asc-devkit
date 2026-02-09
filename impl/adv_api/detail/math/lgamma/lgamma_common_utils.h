@@ -12,8 +12,8 @@
  * \file lgamma_common_utils.h
  * \brief
  */
-#ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMOM_UTILS_H
-#define IMPL_MATH_LGAMMA_LGAMMA_COMMOM_UTILS_H
+#ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
+#define IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H
 
 #include "kernel_basic_intf.h"
 
@@ -293,4 +293,4 @@ __simd_callee__ inline void LgammaLoadData(MicroAPI::RegTensor<float>& dstReg,
 #endif
 }  // namespace AscendC
 #endif
-#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMOM_utils_H
+#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMON_UTILS_H

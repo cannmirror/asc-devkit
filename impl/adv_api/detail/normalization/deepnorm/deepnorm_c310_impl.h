@@ -167,16 +167,16 @@ __simd_callee__ inline void CalcHSingleBlockOutPut(__ubuf__ T* output, MicroAPI:
         MicroAPI::Sub(resultH, gxReg, meanReg, hFloatMask);
         // Calc (x - mean) / sdReg in first block.
         MicroAPI::Div(resultH, resultH, sdReg, hFloatMask);
-        MicroAPI::RegTensor<T> oriGamaH;
+        MicroAPI::RegTensor<T> oriGammaH;
         MicroAPI::RegTensor<float> gammaReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriGamaH, gamma);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(gammaReg, oriGamaH, hFloatMask);
+        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriGammaH, gamma);
+        MicroAPI::Cast<float, T, layoutZMrgZ>(gammaReg, oriGammaH, hFloatMask);
         // Calc (x - mean) / sdReg * gamma in first block.
         MicroAPI::Mul(resultH, resultH, gammaReg, hFloatMask);
-        MicroAPI::RegTensor<T> oriBataH;
+        MicroAPI::RegTensor<T> oriBetaH;
         MicroAPI::RegTensor<float> betaReg;
-        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriBataH, beta);
-        MicroAPI::Cast<float, T, layoutZMrgZ>(betaReg, oriBataH, hFloatMask);
+        MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_US_B16>(oriBetaH, beta);
+        MicroAPI::Cast<float, T, layoutZMrgZ>(betaReg, oriBetaH, hFloatMask);
         // Calc (x - mean) * sdReg * gamma + in first block.
         MicroAPI::Add(resultH, resultH, betaReg, hFloatMask);
         MicroAPI::RegTensor<T> oriOutputH;

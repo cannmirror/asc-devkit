@@ -25,9 +25,9 @@ namespace {
 constexpr uint32_t GEGLU_ONE_REPEAT_BYTE_SIZE = 256;
 constexpr uint32_t GEGLU_HALF_CALC_FAC = 4;
 constexpr uint32_t GEGLU_FLOAT_CALC_FAC = 0;
-static constexpr uint32_t GE_GELU_HALF_SIEZ = 2;
-static constexpr uint32_t GE_GELU_FLOAT_SIEZ = 4;
-static const std::set<uint32_t> SUPPORT_TYPESIZE = { GE_GELU_HALF_SIEZ, GE_GELU_FLOAT_SIEZ };
+static constexpr uint32_t GE_GELU_HALF_SIZE = 2;
+static constexpr uint32_t GE_GELU_FLOAT_SIZE = 4;
+static const std::set<uint32_t> SUPPORT_TYPESIZE = { GE_GELU_HALF_SIZE, GE_GELU_FLOAT_SIZE };
 static constexpr const char GE_GELU_GET_MAX_MIN[] = "GetGeGLUMaxMinTmpSize";
 static constexpr const char GE_GELU_GET_TMP_BUFFER[] = "GetGeGLUTmpBufferFactorSize";
 

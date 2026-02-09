@@ -38,11 +38,11 @@ def _is_v220(op_product: str):
     return False
 
 
-InfoCodeChanelParams = collections.namedtuple('InfoCodeChanelParams', \
+InfoCodeChannelParams = collections.namedtuple('InfoCodeChannelParams', \
 ['src_file', 'tiling_header', 'kernel_name', 'outdir', 'op_product', 'compile_options'])
 
 
-def infer_code_channel(params: InfoCodeChanelParams):
+def infer_code_channel(params: InfoCodeChannelParams):
     """get code channel for v220, return CODE_MIX if soc version is not V220
 
     Args:

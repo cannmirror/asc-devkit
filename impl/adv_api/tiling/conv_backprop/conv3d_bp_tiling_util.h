@@ -216,16 +216,16 @@ inline typename std::enable_if <std::is_integral<T>::value, T>::type CeilAlign(T
 }
 
 inline int64_t Lcm(int64_t param1, int64_t param2) {
-  int64_t pram1Lcm = param1;
-  int64_t pram2Lcm = param2;
-  int64_t temp = pram1Lcm * pram2Lcm;
-  int64_t param1Temp = pram1Lcm;
-  while (pram1Lcm % pram2Lcm != 0) {
-    param1Temp = pram1Lcm;
-    pram1Lcm = pram2Lcm;
-    pram2Lcm = param1Temp % pram2Lcm;
+  int64_t param1Lcm = param1;
+  int64_t param2Lcm = param2;
+  int64_t temp = param1Lcm * param2Lcm;
+  int64_t param1Temp = param1Lcm;
+  while (param1Lcm % param2Lcm != 0) {
+    param1Temp = param1Lcm;
+    param1Lcm = param2Lcm;
+    param2Lcm = param1Temp % param2Lcm;
   }
-  return temp / pram2Lcm;
+  return temp / param2Lcm;
 }
 
 inline int64_t Lcm(int32_t param1, int32_t param2) {

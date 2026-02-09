@@ -187,7 +187,7 @@ class OpDesc:
             self.input_value_depend[self.input_idx] = self._parse_str(conf)
         elif conf.startswith('input{}.initValue'.format(int(self.input_idx))):
             raise Exception(f'[ERROR]: Op: {{\'{self.op_type}\'}} input {self.input_ori_name[int(self.input_idx)]}\
- has InitValue, which is not support!')
+ has InitValue, which is not supported!')
         else:
             return
 

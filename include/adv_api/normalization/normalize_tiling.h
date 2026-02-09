@@ -22,7 +22,7 @@ namespace AscendC {
  * \param [in] srcShape: input shape
  * \param [in] typeSizeU: data type size: sizeof(U)
  * \param [in] typeSizeT: data type size: sizeof(T)
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [in] isComputeRstd: indicate whether to calculate rstd. Only support true now.
  * \param [in] isOnlyOutput: indicate whether to only output normalized result y. Only support false now.
  * \param [out] maxValue: max size required for tmp buffer

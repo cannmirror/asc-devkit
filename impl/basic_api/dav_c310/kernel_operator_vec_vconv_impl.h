@@ -1313,7 +1313,7 @@ __simd_callee__ inline void CastDoubleToInt64Impl(MicroAPI::RegTensor<int32_t> &
         fin_lo = over_lo if is_overflow else res_lo
 
         is_nan = (E == 0x7ff) and ((m_high | m_low) != 0)
-        is_not_zero = (E != 0) and (exp >= 0) and !is _nan
+        is_not_zero = (E != 0) and (exp >= 0) and !is_nan
         
         fin_hi = fin_hi if is_not_zero else 0
         fin_lo = fin_lo if is_not_zero else 0
@@ -2254,7 +2254,7 @@ __aicore__ inline void CastImpl(__ubuf__ ORI_DST_TYPE *oriDst, __ubuf__ ORI_SRC_
 
 // scale is stored as  1 sign bit, 8 exponent bits and 10 mantissa bits in 1971 hardware
 // ===============================================================================
-// | 1 signMode bit  | 8 exponet bits | 10bit mantissa bits |       000..0       |
+// | 1 signMode bit  | 8 exponent bits | 10bit mantissa bits |       000..0       |
 // ===============================================================================
 __simd_callee__ inline float GetCastDeqScale(const uint64_t deqScale)
 {
@@ -2408,7 +2408,7 @@ __simd_callee__ inline void GenVecCastDeqParam(uint64_t deqScaleAddr, MicroAPI::
     MicroAPI::Gather((MicroAPI::RegTensor<uint16_t> &)offsetReg, (MicroAPI::RegTensor<uint16_t> &)offsetReg, (MicroAPI::RegTensor<uint16_t> &)offsetIndexReg);
 
     MicroAPI::Gather((MicroAPI::RegTensor<uint16_t> &)signModeReg, (MicroAPI::RegTensor<uint16_t> &)signModeReg, (MicroAPI::RegTensor<uint16_t> &)offsetIndexReg);
-    // Gen mask for elemens which cast to sign and cast to unsign
+    // Gen mask for elements which cast to sign and cast to unsign
     MicroAPI::Duplicate((MicroAPI::RegTensor<int16_t> &)tmpReg, one);
     MicroAPI::Compare(signMask, signModeReg, (MicroAPI::RegTensor<int16_t> &)tmpReg, fullMask);
     MicroAPI::Duplicate((MicroAPI::RegTensor<int16_t> &)tmpReg, zero);

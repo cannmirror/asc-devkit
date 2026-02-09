@@ -725,7 +725,7 @@ __simd_vf__ inline void PhiloxRandomMultiRowWithFuse(__ubuf__ uint32_t *dstUbSta
         PhiloxRoundMainBlockUnroll<Rounds, T, DstBlockUnalign>(dstUbStart, mainRowsNum, ctr0, ctr1, ctr2, ctr3, key0,
             key1, cMul0, cMul1, vEleStrideB32OneRow, pg);
     } else {
-        // if dst repat unalign, use MainBlockUnroll algo may be dst overlap. SpNetworkFull can control each element.
+        // if dst repeat unalign, use MainBlockUnroll algo may be dst overlap. SpNetworkFull can control each element.
         for (uint16_t i = 0; i < mainRowsNum; i++) {
             __ubuf__ uint32_t *dstUb = dstUbStart + i * mainFuseAxis;
             SpNetworkFull<Rounds, T, DstBlockUnalign>(dstUb, mainFuseAxis, ctr0, ctr1, ctr2, ctr3, key0, key1, cMul0,

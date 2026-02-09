@@ -32,7 +32,7 @@ constexpr uint32_t EXP_FOUR = 4;                // when FP16, need 4 tmpBuffer
 
 // Assign tmpBuffer for exp and calculate relevant parameter
 template <typename T, bool isReuseSource = false, uint8_t expandLevel = 10>
-__aicore__ inline void UpdataExpParams(const LocalTensor<T>& src, const uint32_t calCount,
+__aicore__ inline void UpdateExpParams(const LocalTensor<T>& src, const uint32_t calCount,
     const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
 {
     uint32_t alignNum = ONE_BLK_SIZE / sizeof(T);
@@ -71,7 +71,7 @@ template <bool isReuseSource = false, uint8_t expandLevel = 10>
 __aicore__ inline void GetExpTensorInfo(const LocalTensor<half>& src, const LocalTensor<half>& dst,
     const uint32_t calCount, const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
 {
-    UpdataExpParams<half, isReuseSource, expandLevel>(src, calCount, stackBuffer, params);
+    UpdateExpParams<half, isReuseSource, expandLevel>(src, calCount, stackBuffer, params);
     params.tempTensorFloorX = stackBuffer[params.firstTmpStartPos];
     params.tempTensorFloorXPow = stackBuffer[params.secondTmpStartPos];
     params.tempTensorRes = stackBuffer[params.thirdTmpStartPos];
@@ -82,7 +82,7 @@ template <bool isReuseSource = false, uint8_t expandLevel = 10>
 __aicore__ inline void GetExpTensorInfo(const LocalTensor<float>& src, const LocalTensor<float>& dst,
     const uint32_t calCount, const LocalTensor<float>& stackBuffer, ExpParams<float>& params)
 {
-    UpdataExpParams<float, isReuseSource, expandLevel>(src, calCount, stackBuffer, params);
+    UpdateExpParams<float, isReuseSource, expandLevel>(src, calCount, stackBuffer, params);
     if constexpr(isReuseSource) {
         params.tempTensorFloorX = src;
     } else {

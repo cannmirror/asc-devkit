@@ -28,7 +28,7 @@ enum class AscendDeQuantPolicy : int32_t {
     PER_TOKEN,
     PER_GROUP,
     PER_CHANNEL_PER_GROUP,
-    PER_TOEKN_PER_GROUP
+    PER_TOKEN_PER_GROUP
 };
 
 struct AscendDeQuantParam {

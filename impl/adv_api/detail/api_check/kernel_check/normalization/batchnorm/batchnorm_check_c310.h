@@ -74,6 +74,6 @@ public:
                                                         sharedTmpBuffer, epsilon, tiling);
     };
 };
-} // namespace HeighLevelApiCheck
+} // namespace HighLevelApiCheck
 } // namespace AscendC
 #endif // IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_C310_H_

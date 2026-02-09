@@ -129,10 +129,10 @@ public:
         DEFINE_STUCT_FIELD(srcLocalTensor, cacheA1BufPong_);
         DEFINE_STUCT_FIELD(srcLocalTensor, cacheB1BufPing_);
         DEFINE_STUCT_FIELD(srcLocalTensor, cacheB1BufPong_);
-        using GlobalTnesor = AscendC::GlobalTensor<typename Intf::SrcT>;
-        DEFINE_STUCT_FIELD(GlobalTnesor, outBackPropGlobal_);
-        DEFINE_STUCT_FIELD(GlobalTnesor, fmapGlobal_);
-        DEFINE_STUCT_FIELD(GlobalTnesor, weightGlobal_);
+        using GlobalTensor = AscendC::GlobalTensor<typename Intf::SrcT>;
+        DEFINE_STUCT_FIELD(GlobalTensor, outBackPropGlobal_);
+        DEFINE_STUCT_FIELD(GlobalTensor, fmapGlobal_);
+        DEFINE_STUCT_FIELD(GlobalTensor, weightGlobal_);
     };
 };
 

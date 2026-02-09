@@ -160,7 +160,7 @@ struct MatmulConfigParams {
     uint64_t quantAddr; // 64 bytes
     uint32_t quantSize;
     uint32_t quantMode;
-    uint64_t quantScalar;        // 80 byets
+    uint64_t quantScalar;        // 80 bytes
     uint32_t batchA;
     uint32_t batchB;
     uint32_t matrixStrideA;
@@ -230,12 +230,12 @@ struct Conv3DBpFilterConfigParams {
 struct Conv3DForwardConfigParams {
     uint32_t enAtomic: 8; // for enable atomic add
     uint32_t enSequentialWrite: 1;
-    uint32_t enSetTensorFmap: 1; // for enbale SetTensorFmap intf
-    uint32_t enSetTensorWeight: 1; // for enbale SetTensorWeight intf
-    uint32_t enSetTensorBias: 1; // for enbale SetTensorBias intf
+    uint32_t enSetTensorFmap: 1; // for enable SetTensorFmap intf
+    uint32_t enSetTensorWeight: 1; // for enable SetTensorWeight intf
+    uint32_t enSetTensorBias: 1; // for enable SetTensorBias intf
     uint32_t sync: 1; // for control sync aic/aiv
-    uint32_t enSetSingleOutputShape: 1; // for enbale SetSingleOutputShape intf
-    uint32_t enSetFmapStartPosition: 1; // for enbale SetFmapStartPosition intf
+    uint32_t enSetSingleOutputShape: 1; // for enable SetSingleOutputShape intf
+    uint32_t enSetFmapStartPosition: 1; // for enable SetFmapStartPosition intf
     uint32_t waitIterateAll: 1;
     uint32_t enPartialSum: 1; // for part of results of L0C write to gm
     uint32_t fmapSize;
@@ -301,7 +301,7 @@ struct KfcMsg {
         Conv3DForwardConfigParams convForwardBody;
     };
 };
-struct MsgUBAvalied {
+struct MsgUBAvailable {
     uint32_t head;
     uint32_t res;
     uint8_t buffer[56];
@@ -347,7 +347,7 @@ __aicore__ inline constexpr int AlignTo32(int size)
 struct SysWorkspaceDesc {
     KfcMsg kfcMsg[MAX_AIV_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT * MIX_COEFFICIENT];
     MsgMatmulCnt cntMsg[MAX_AIV_NUM * MIX_COEFFICIENT][MAX_MATMUL_OBJ];
-    MsgUBAvalied ubMsg[MAX_AIV_NUM];
+    MsgUBAvailable ubMsg[MAX_AIV_NUM];
     uint8_t ubMap[MAX_AIV_NUM][WORKSPACE_UB_SIZE];
     QuitCnt quitCnt[QUIT_CNT];
     MmTaskCnt mmTaskCnt[MM_CNT_MAX];
@@ -358,7 +358,7 @@ struct SysWorkspaceDesc {
 __aicore__ inline void ClearWorkspaceImpl(__gm__ uint8_t* workspace)
 {
     constexpr uint32_t size = BIDIRECTION_NUM * MAX_MSG_COUNT * AlignTo32(sizeof(KfcMsg)) * MIX_NUM;
-    constexpr uint32_t sizeUbmsg = MIX_NUM * AlignTo32(sizeof(MsgUBAvalied));
+    constexpr uint32_t sizeUbmsg = MIX_NUM * AlignTo32(sizeof(MsgUBAvailable));
     constexpr uint32_t offsetUbMsg = MAX_AIV_NUM * BIDIRECTION_NUM * MAX_MSG_COUNT *
         MIX_COEFFICIENT * AlignTo32(sizeof(KfcMsg)) + MAX_AIV_NUM * MIX_COEFFICIENT *
         MAX_MATMUL_OBJ * AlignTo32(sizeof(MsgMatmulCnt));
@@ -367,7 +367,7 @@ __aicore__ inline void ClearWorkspaceImpl(__gm__ uint8_t* workspace)
     uint32_t msgOffset11 = 0;
     if constexpr (MIX_NUM == 1) {
         msgOffset11 = BIDIRECTION_NUM * MAX_MSG_COUNT * AlignTo32(sizeof(KfcMsg));
-        ubOffset11 = AlignTo32(sizeof(MsgUBAvalied));
+        ubOffset11 = AlignTo32(sizeof(MsgUBAvailable));
     }
     __gm__ uint8_t* msgStartAddr = (__gm__ uint8_t*)(workspace + (size + msgOffset11) * GetBlockIdxImpl());
     __gm__ uint8_t* ubMsgStartAddr =
@@ -429,7 +429,7 @@ __aicore__ inline GM_ADDR GetMatmulIncAddr(GM_ADDR workspace, uint32_t flatBlock
     return reinterpret_cast<GM_ADDR>(&(ptr->cntMsg[flatBlockID][instID]));
 }
 
-__aicore__ inline GM_ADDR GetUBAvaliedAddr(GM_ADDR workspace, uint32_t i = 0)
+__aicore__ inline GM_ADDR GetUBAvailableAddr(GM_ADDR workspace, uint32_t i = 0)
 {
     ASSERT(workspace != nullptr);
     auto flatBlockID = get_block_idx() * MAX_BLOCK_AIV_NUM + i;

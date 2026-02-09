@@ -34,7 +34,7 @@ void GetFracMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, co
 /*!
  * \brief The calculation of the Frac interface requires the developer to reserve or apply for temporary space.
  * It's used to derive the size of elements per calculation iteration based on remain free space size.
- * iterationSize = (remainFreeSapce - extraBuf) / maxLivedNodeCnt / typeSize
+ * iterationSize = (remainFreeSpace - extraBuf) / maxLivedNodeCnt / typeSize
  *
  * \param [in] typeSize, size of the input data type, in bytes
  * \param [out] maxLiveNodeCount, the multiple of the maximum temporary space to the input occupied space

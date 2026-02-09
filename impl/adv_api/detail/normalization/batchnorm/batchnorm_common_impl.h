@@ -213,7 +213,7 @@ __aicore__ inline void BatchNormExeImpl(const LocalTensor<float>& inputX, const 
     } else {
         // 1、outputMean
         GetBatchNormOutputMean<isBasicBlock, needCast>(tmpOutputMean, inputX, tiling, params);
-        // 2、outpouVariance
+        // 2、outputVariance
         GetBatchNormOutputVariance<isBasicBlock, needCast>(tmpOutputVariance, inputX, tmpOutputMean, tiling, params);
         // 3、gamma beta vmul+vadd
         GetBatchNormOutputPre<isBasicBlock>(tmpOutputVariance, params.tempTensorC, epsilon, tiling, params);
@@ -239,7 +239,7 @@ __aicore__ inline void BatchNormExeImpl(const LocalTensor<half>& inputX, const L
         GetBatchNormOutputMean<isBasicBlock, needCast>(tmpOutputMean, params.tempTensorA, tiling, params);
         // 2、cast mean from half->float
         GetOutputMeanVariance<isBasicBlock>(outputMean, tmpOutputMean, tiling, params);
-        // 3、outpouVariance
+        // 3、outputVariance
         GetBatchNormOutputVariance<isBasicBlock, needCast>(tmpOutputVariance, params.tempTensorA, tmpOutputMean, tiling,
             params);
         // 4、cast variance from half->float
@@ -273,7 +273,7 @@ __aicore__ inline void BatchNormCompute(const LocalTensor<T>& inputX, const Loca
     uint32_t mvOffset = 0;
     // update params
     GetSrcOffset<needCast>(params.srcOffset, tiling);
-    GetUpdataParams(tiling, params);
+    GetUpdateParams(tiling, params);
 
     for (uint32_t index = 0; index < tiling.loopRound; index++) {
         BatchNormExeImpl<isBasicBlock>(inputX[mvOffset], gamm, beta, output[mvOffset], outputMean[mvOffset],
@@ -288,7 +288,7 @@ __aicore__ inline void BatchNormCompute(const LocalTensor<T>& inputX, const Loca
         tiling.shCurLength = tiling.meanVarTailSize;
         tiling.shCurLengthBlockNum = tiling.shCurLength / FLOAT_BLOCK_NUMBER;
         GetSrcOffset<needCast>(params.srcOffset, tiling);
-        GetUpdataParams(tiling, params);
+        GetUpdateParams(tiling, params);
 
         BatchNormExeImpl<isBasicBlock>(inputX[tiling.inputTailPos], gamm, beta, output[tiling.inputTailPos],
             outputMean[tiling.meanVarTailPos], outputVariance[tiling.meanVarTailPos],

@@ -30,7 +30,7 @@ namespace Detail {
 */
 /*
 CubeInBuffer: responsible for L1 buffer management.
-This module provides ablities to allocate or free one l1 buffer block, and pipeline syncronization.
+This module provides abilities to allocate or free one l1 buffer block, and pipeline synchronization.
 */
 template <typename IMPL, class INPUT_TYPE, const auto& MM_CFG,
     PolicyType POLICY_TYPE = PolicyType::MATMUL_DEFAULT, typename = void>

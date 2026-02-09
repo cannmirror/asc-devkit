@@ -200,7 +200,7 @@ __aicore__ inline void AntiQuantPerchannelNoTranspose(const LocalTensor<OutputDa
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelUnlignedForB8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+__simd_vf__ inline void PerchannelUnalignedForB8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
     __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -228,7 +228,7 @@ __simd_vf__ inline void PerchannelUnlignedForB8(__ubuf__ OutputDataType* dst, __
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, 
+__aicore__ inline void AntiQuantUnalignedProcess(const LocalTensor<OutputDataType>& dst, const LocalTensor<SrcType>& src, 
     const LocalTensor<OutputDataType>& offset, const LocalTensor<OutputDataType>& scale, const uint32_t K, 
     const uint32_t N)
 {
@@ -237,7 +237,7 @@ __aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType
     __ubuf__ OutputDataType* dstUb = (__ubuf__ OutputDataType*)dst.GetPhyAddr();
     __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
 
-    PerchannelUnlignedForB8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
+    PerchannelUnalignedForB8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
 }
 
 template <typename SrcType>
@@ -353,7 +353,7 @@ __aicore__ inline void AntiQuantPerchannelImpl(const LocalTensor<OutputDataType>
         if (n < 32) { // b8 input single line is not 32B aligned such as input n == 16
             if constexpr (SupportType<SrcType, int8_t>()) {
                 ASCENDC_ASSERT((k % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "input calculate size must be 32B aligned"); });
-                AntiQuantUnlignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
+                AntiQuantUnalignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
             } else {
                 ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "not support int4b_t for AntiQuant when n < 32"); });
             }

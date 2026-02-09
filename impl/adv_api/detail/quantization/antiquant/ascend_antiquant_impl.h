@@ -371,7 +371,7 @@ __aicore__ inline void AntiQuantFp16TransposeMainImpl(const LocalTensor<half>& d
     const LocalTensor<half>& scale, const LocalTensor<half>& offset, const uint32_t srcN, const uint32_t K)
 {
     SetMaskCount();
-    // blk is continuous in dst and src0, and is same with src1
+    // blk is continuous in dst and src0, and is same as src1
     // rep stride for dst and src0 is  from different line of N, which is K * sizeof(half) / 32B
     // rep stride for src1 is from fore-blk to next blk, which is 1
     uint32_t repStride = K * sizeof(half) / ONE_BLK_SIZE;
@@ -396,7 +396,7 @@ __aicore__ inline void AntiQuantFp16TransposeTailImpl(const LocalTensor<half>& d
     SetMaskNorm();
     const uint32_t tailK = K % B16_DATA_NUM_PER_REPEAT;
     SetVectorMask<half, MaskMode::NORMAL>(tailK);
-    // blk is continuous in dst and src0, and is same with src1
+    // blk is continuous in dst and src0, and is same as src1
     // rep stride for dst and src0 is from first K to the next K, which is K * sizeof(half) / 32B(in unit of blk)
     // rep stride for src1 is from fore-blk to next blk, which is 1
     const uint32_t repStride = K * sizeof(half) / ONE_BLK_SIZE;

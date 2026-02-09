@@ -114,7 +114,7 @@ __aicore__ inline void LoadToB1ForKernelSplit(Intf *self, const uint32_t kIdx, c
 
 template <class Intf>
 __aicore__ inline void LoadL0c2GmForKernelSplit(Intf *self, const AscendC::GlobalTensor<typename Intf::DstT> &output,
-    AscendC::LocalTensor<typename Intf::L0cT> &useC1Buf, QuantMode_t fixPipQuantMode)
+    AscendC::LocalTensor<typename Intf::L0cT> &useC1Buf, QuantMode_t fixPipeQuantMode)
 {
     int64_t hiWi = static_cast<int64_t>(self->ctx.tiling_->hi) * self->ctx.tiling_->wi;
     int64_t outOneComputeDstOffset = static_cast<int64_t>(self->ctx.curML0Idx_) % self->ctx.mIter_ * self->ctx.tiling_->baseM *
@@ -130,7 +130,7 @@ __aicore__ inline void LoadL0c2GmForKernelSplit(Intf *self, const AscendC::Globa
         fixpipeParams.mSize = self->ctx.splitWi_;
         fixpipeParams.srcStride = self->ctx.splitWi_;
         fixpipeParams.dstStride = self->ctx.tiling_->strideW * AscendC::BLOCK_CUBE;
-        fixpipeParams.quantPre = fixPipQuantMode;
+        fixpipeParams.quantPre = fixPipeQuantMode;
         fixpipeParams.ndNum = 1;
         for (uint32_t nIdx = 0; nIdx < Ceil(self->ctx.baseUseN_, AscendC::BLOCK_CUBE); ++nIdx) {
             inOneComputeDstOffset = nIdx * hiWi * AscendC::BLOCK_CUBE;
@@ -148,7 +148,7 @@ __aicore__ inline void LoadL0c2GmForKernelSplit(Intf *self, const AscendC::Globa
         fixpipeParams.dstStride = self->ctx.tiling_->strideW * AscendC::BLOCK_CUBE;
         fixpipeParams.srcNdStride = self->ctx.splitWi_ * AscendC::BLOCK_CUBE * sizeof(typename Intf::L0cT) / 1024;
         fixpipeParams.dstNdStride = self->ctx.tiling_->strideH * self->ctx.tiling_->wi * AscendC::BLOCK_CUBE;
-        fixpipeParams.quantPre = fixPipQuantMode;
+        fixpipeParams.quantPre = fixPipeQuantMode;
         fixpipeParams.ndNum = self->ctx.baseUseM_ / self->ctx.splitWi_;
         for (uint32_t nIdx = 0; nIdx < Ceil(self->ctx.baseUseN_, AscendC::BLOCK_CUBE); ++nIdx) {
             inOneComputeDstOffset = nIdx * hiWi * AscendC::BLOCK_CUBE;

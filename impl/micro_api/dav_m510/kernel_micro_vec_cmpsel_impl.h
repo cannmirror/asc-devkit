@@ -142,8 +142,8 @@ __simd_callee__ inline void CompareImpl(MaskReg& dst, U& srcReg0, U& srcReg1, Ma
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             CompareB64Impl<mode>(dst, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             MaskUnPack(dst, dst);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
@@ -201,13 +201,13 @@ __simd_callee__ inline void SelectImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskRe
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             vsel((RegTensor<uint32_t>&)traitTwoDstReg.reg[0], (RegTensor<uint32_t>&)traitTwoSrcReg0.reg[0],
                 (RegTensor<uint32_t>&)traitTwoSrcReg1.reg[0], maskTrait2);
             vsel((RegTensor<uint32_t>&)traitTwoDstReg.reg[1], (RegTensor<uint32_t>&)traitTwoSrcReg0.reg[1],
                 (RegTensor<uint32_t>&)traitTwoSrcReg1.reg[1], maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             vsel((RegTensor<uint32_t>&)dstReg.reg[0], (RegTensor<uint32_t>&)srcReg0.reg[0],
                 (RegTensor<uint32_t>&)srcReg1.reg[0], mask);

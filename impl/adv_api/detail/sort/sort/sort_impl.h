@@ -339,20 +339,20 @@ __simd_vf__ inline void LocalSort(__ubuf__ uint8_t *srcU8, __ubuf__ uint16_t *tm
         MicroAPI::LoadAlign<uint16_t, PostLiteral::POST_MODE_UPDATE>(indexU16Bucket1, (__ubuf__ uint16_t *&)tmpIndexU16,
             GetVecLen() / sizeof(uint16_t));
 
-        RegTensor<uint8_t> bucketOffestLow, bucketOffestHigh;
-        DeInterleave(bucketOffestLow, bucketOffestHigh, (RegTensor<uint8_t> &)bucketOffset0,
+        RegTensor<uint8_t> bucketOffsetLow, bucketOffsetHigh;
+        DeInterleave(bucketOffsetLow, bucketOffsetHigh, (RegTensor<uint8_t> &)bucketOffset0,
             (RegTensor<uint8_t> &)bucketOffset1);
 
-        RegTensor<uint16_t> distrubtionHist0, distrubtionHist1;
+        RegTensor<uint16_t> distributionHist0, distributionHist1;
         RegTensor<uint16_t> cumulativeHist0, cumulativeHist1;
-        Duplicate(distrubtionHist0, 0, fullMaskB16);
-        Duplicate(distrubtionHist1, 0, fullMaskB16);
+        Duplicate(distributionHist0, 0, fullMaskB16);
+        Duplicate(distributionHist1, 0, fullMaskB16);
         Duplicate(cumulativeHist0, 0, fullMaskB16);
         Duplicate(cumulativeHist1, 0, fullMaskB16);
 
-        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN0, HistogramsType::FREQUENCY>(distrubtionHist0, key,
+        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN0, HistogramsType::FREQUENCY>(distributionHist0, key,
             maskRegB8);
-        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN1, HistogramsType::FREQUENCY>(distrubtionHist1, key,
+        Histograms<uint8_t, uint16_t, HistogramsBinType::BIN1, HistogramsType::FREQUENCY>(distributionHist1, key,
             maskRegB8);
 
         Histograms<uint8_t, uint16_t, HistogramsBinType::BIN0, HistogramsType::ACCUMULATE>(cumulativeHist0, key,
@@ -361,8 +361,8 @@ __simd_vf__ inline void LocalSort(__ubuf__ uint8_t *srcU8, __ubuf__ uint16_t *tm
             maskRegB8);
 
         RegTensor<uint16_t> localOffset0, localOffset1;
-        Sub(localOffset0, cumulativeHist0, distrubtionHist0, fullMaskB16);
-        Sub(localOffset1, cumulativeHist1, distrubtionHist1, fullMaskB16);
+        Sub(localOffset0, cumulativeHist0, distributionHist0, fullMaskB16);
+        Sub(localOffset1, cumulativeHist1, distributionHist1, fullMaskB16);
 
         RegTensor<uint8_t> localOffsetLowbits, localOffsetHighbits;
         DeInterleave(localOffsetLowbits, localOffsetHighbits, (RegTensor<uint8_t> &)localOffset0,
@@ -370,8 +370,8 @@ __simd_vf__ inline void LocalSort(__ubuf__ uint8_t *srcU8, __ubuf__ uint16_t *tm
 
         // block_offset[key]
         RegTensor<uint8_t> bucketOffsetKeyLowbits, bucketOffsetKeyHighbits;
-        Gather(bucketOffsetKeyLowbits, bucketOffestLow, key);
-        Gather(bucketOffsetKeyHighbits, bucketOffestHigh, key);
+        Gather(bucketOffsetKeyLowbits, bucketOffsetLow, key);
+        Gather(bucketOffsetKeyHighbits, bucketOffsetHigh, key);
 
         RegTensor<uint8_t> bucketOffsetKey0, bucketOffsetKey1;
         Interleave(bucketOffsetKey0, bucketOffsetKey1, bucketOffsetKeyLowbits, bucketOffsetKeyHighbits);
@@ -417,12 +417,12 @@ __simd_vf__ inline void LocalSort(__ubuf__ uint8_t *srcU8, __ubuf__ uint16_t *tm
         MicroAPI::Scatter(sortedLocalIndex, indexU32P3, bucketRankU32P3, u32Mask3);
 
         // accumulate block offset
-        Add(bucketOffset0, bucketOffset0, distrubtionHist0, fullMaskB16);
-        Add(bucketOffset1, bucketOffset1, distrubtionHist1, fullMaskB16);
+        Add(bucketOffset0, bucketOffset0, distributionHist0, fullMaskB16);
+        Add(bucketOffset1, bucketOffset1, distributionHist1, fullMaskB16);
     }
 }
 
-// Gather B64 elements based on uint32_t offset and store at the correspoding memory.
+// Gather B64 elements based on uint32_t offset and store at the corresponding memory.
 __simd_callee__ inline void GatherAndStoreB64Elements(RegTensor<uint32_t> &localOffset, MaskReg &maskReg,
     __ubuf__ uint32_t *gatherIdxAddr, __ubuf__ uint32_t *storedAddr)
 {

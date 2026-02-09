@@ -103,8 +103,8 @@ public:
                                            int tileHeight, int tileWidth)
     {
         int calcWidth = CeilT(tileWidth, c0Size_) * c0Size_;
-        int calcHigh = CeilT(tileHeight, c0Size_) * c0Size_;
-        int64_t size = static_cast<int64_t>(calcHigh * calcWidth);
+        int calcHeight = CeilT(tileHeight, c0Size_) * c0Size_;
+        int64_t size = static_cast<int64_t>(calcHeight * calcWidth);
         LocalTensor<TransT> rightMatrix =
             MATMUL_MODULE(LocalWorkspace)->GetND2NZWorkspace(0).template ReinterpretCast<TransT>();
         rightMatrix.SetSize(size);
@@ -113,7 +113,7 @@ public:
                             MATMUL_MODULE(CopyCubeInParams)->template GetOrgHeight<IS_TRANS>();
         int dstOffset = 0;
         int srcHigh = CeilT(MATMUL_MODULE(CopyCubeInParams)->template GetOrgHeight<IS_TRANS>(), 16) * 16 * c0Size_;
-        int dstHigh = tileHeight < c0Size_ ? tileHeight * c0Size_ : calcHigh * c0Size_;
+        int dstHigh = tileHeight < c0Size_ ? tileHeight * c0Size_ : calcHeight * c0Size_;
         for (int i = 0; i < CeilT(tileWidth, c0Size_); i++) {
             DataCopy(rightMatrix[dstOffset], src[srcOffset], dstHigh);
             srcOffset += srcHigh;
@@ -129,7 +129,7 @@ public:
         event_t eventIDVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
         SetFlag<HardEvent::V_MTE3>(eventIDVToMte3);
         WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
-        CopyNZ2NZImpl(dst, trans, 0, 0, calcWidth, calcHigh, calcWidth);
+        CopyNZ2NZImpl(dst, trans, 0, 0, calcWidth, calcHeight, calcWidth);
     }
 
 private:

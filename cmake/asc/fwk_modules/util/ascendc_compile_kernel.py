@@ -136,7 +136,7 @@ class CompileKernel:
             self.op_cfg_ini, bin_param_path, self.op_soc_ver, opc_config_file, [self.op_type]
         )
         tiling_key_info, op_debug_config, kernel_json_file, _ = (
-            ascendc_bin_param_build.parse_op_debug_confg(
+            ascendc_bin_param_build.parse_op_debug_config(
                 opc_config_file, 
                 self.op_soc_ver
             )

@@ -50,9 +50,9 @@ __simd_callee__ inline void ReduceSumImpl(S& dstReg, V srcReg, MaskReg mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualSrcRegT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualDstRegT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg);
             ReduceSumB64Impl(traitTwoDstReg, traitTwoSrcReg0, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     }
 }
@@ -110,7 +110,7 @@ __simd_callee__ inline void ReduceMaxImpl(U& dstReg, U srcReg, MaskReg mask)
             DeInterleave((RegTensor<uint32_t>&)traitTwoSrcReg0.reg[0], (RegTensor<uint32_t>&)traitTwoSrcReg0.reg[1],
                 (RegTensor<uint32_t>&)srcReg, (RegTensor<uint32_t>&)srcReg);
             ReduceMaxB64Impl(traitTwoDstReg, traitTwoSrcReg0, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     }
 }
@@ -178,7 +178,7 @@ __simd_callee__ inline void ReduceMinImpl(U& dstReg, U srcReg, MaskReg mask)
             DeInterleave((RegTensor<uint32_t>&)traitTwoSrcReg0.reg[0], (RegTensor<uint32_t>&)traitTwoSrcReg0.reg[1],
                          (RegTensor<uint32_t>&)srcReg, (RegTensor<uint32_t>&)srcReg);
             ReduceMinB64Impl(traitTwoDstReg, traitTwoSrcReg0, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     }
 }

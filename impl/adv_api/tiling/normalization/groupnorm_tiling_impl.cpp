@@ -34,7 +34,7 @@ namespace {
     constexpr uint32_t GROUPNORM_MAX_MASK_VAL = 64;
     constexpr uint32_t GROUPNORM_STEP_MASK_VAL = 8;
     constexpr uint32_t GROUPNORM_MAX_REPEAT_VAL = 255;
-    constexpr uint32_t GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION = 8;
+    constexpr uint32_t GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION = 8;
     constexpr uint32_t GROUPNORM_REDUCESUM_MAX_FLOAT_NUM = 64;
     constexpr uint32_t GROUPNORM_REDUCESUM_MAX_REPEAT_SMALLSHAPE = 8;
 
@@ -158,7 +158,7 @@ namespace {
             }
             ASCENDC_HOST_ASSERT(mask1 > 0, return, "mask1 must be greater than 0.");
             const uint32_t maxBsCurLength = (GROUPNORM_MAX_REPEAT_VAL / (dhwAlignSize / mask1) / 
-                GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION) * GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION;
+                GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION) * GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION;
             if (maxBsCurLength < bsCurLength) {
                 bsCurLength = maxBsCurLength;
             }

@@ -84,7 +84,7 @@ struct HcclMsg {
     uint64_t dataCnt;                   // number of data participating in comm task
     uint64_t strideCount;               // Communication and computing fusion scenario will involve tiling,
                                         // which may lead to data discontinuity.
-                                        // Thus, use strideCount filed to describe the offset of each data-block
+                                        // Thus, use strideCount field to describe the offset of each data-block
                                         // in discontinuous memory.
     union {
         V0MsgAdditionInfo v0Msg;

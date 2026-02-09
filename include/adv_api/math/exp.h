@@ -35,7 +35,7 @@ namespace AscendC {
  * \tparam T: Data type to be calculated, half or float
  * \tparam taylorExpandLevel: The number of Taylor formula terms (n above)
  * \tparam isReuseSource: Whether to reuse the buffer of srcTensor.
- *         If the value is true, srcTensor can used as tmpBuffer and the data in it will be overwritten.
+ *         If the value is true, srcTensor can be used as tmpBuffer and the data in it will be overwritten.
  *         If the value is false, srcTensor will not be used as tmpBuffer for calculation.
  * \param [out] dstLocal: Output localTensor.
  * \param [in] srcLocal: Input localTensor
@@ -60,7 +60,7 @@ __aicore__ inline void Exp(const LocalTensor<T>& dstLocal, const LocalTensor<T>&
  * \tparam T: Data type to be calculated, half or float
  * \tparam taylorExpandLevel: The number of Taylor formula terms (n above)
  * \tparam isReuseSource: Whether to reuse the buffer of srcTensor.
- *         If the value is true, srcTensor can used as tmpBuffer and the data in it will be overwritten.
+ *         If the value is true, srcTensor can be used as tmpBuffer and the data in it will be overwritten.
  *         If the value is false, srcTensor will not be used as tmpBuffer for calculation.
  * \param [out] dstLocal: Output localTensor.
  * \param [in] srcLocal: Input localTensor

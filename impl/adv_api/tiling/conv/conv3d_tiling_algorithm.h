@@ -136,7 +136,7 @@ private:
     virtual int64_t InitCalcL1Params();
     uint64_t InferHiL1(uint64_t inputHoL1, uint64_t hi) const;
     virtual void GetL1TilingRange();
-    void InitL1TiLing();
+    void InitL1Tiling();
     void InitABL1TilingMode();
     void CoreL1TilingDecision();
     void InputL1FullLoadIter();
@@ -151,7 +151,7 @@ private:
     void BiasL1TilingDecision();
     virtual void GetKL0TilingDecision();
     virtual void WeightBypassDecision();
-    void UpdateL1DoubelBuffer();
+    void UpdateL1DoubleBuffer();
     virtual void SetKAL1KBL1TailRes();
     void SetL1TilingRes();
 

@@ -328,7 +328,7 @@ __aicore__ constexpr int32_t GetL1UsedSize(const MatmulConfig &mmCFG, const L1St
             sharedl1Size += depthB1 * mmCFG.basicN * mmCFG.basicK *
                 GetBitSize<SrcBT>() / ONE_BYTE_BIT_SIZE;
         } else {
-            // A16W8 w8 use same with A_TYPE
+            // A16W8 w8 use same as A_TYPE
             sharedl1Size += depthB1 * mmCFG.basicN * mmCFG.basicK *
                 GetBitSize<SrcAT>() / ONE_BYTE_BIT_SIZE;
         }
@@ -354,7 +354,7 @@ __aicore__ constexpr int32_t GetL1UsedSize(const MatmulConfig &mmCFG, int32_t de
             sharedl1Size += depthB1 * mmCFG.basicN * mmCFG.basicK *
                 GetBitSize<typename B_TYPE::T>() / ONE_BYTE_BIT_SIZE;
         } else {
-            // A16W8 w8 use same with A_TYPE
+            // A16W8 w8 use same as A_TYPE
             sharedl1Size += depthB1 * mmCFG.basicN * mmCFG.basicK *
                 GetBitSize<typename A_TYPE::T>() / ONE_BYTE_BIT_SIZE;
         }
@@ -385,7 +385,7 @@ __aicore__ constexpr int32_t GetTransLength(const MatmulConfig &mmCFG, const L1S
     // B matrix ND2NZ
     if constexpr (B_TYPE::format == CubeFormat::ND && (B_TYPE::pos == TPosition::VECIN ||
         B_TYPE::pos == TPosition::VECCALC || B_TYPE::pos == TPosition::VECOUT)) {
-        // A16W8, B type in L1 is same with ATYPE, so use A_TYPE::T
+        // A16W8, B type in L1 is same as ATYPE, so use A_TYPE::T
         b1Length = mmCFG.singleCoreK * mmCFG.singleCoreN * GetBitSize<typename A_TYPE::T>() / ONE_BYTE_BIT_SIZE;
     }
     // C matrix ND2NZ

@@ -171,7 +171,7 @@ __aicore__ inline void ListTensorDescImpl<Sequential>::GetDesc(TensorDescImpl<T>
     desc->SetDataPtr(reinterpret_cast<__gm__ T *>(*(dataPtr_ + index)));
     desc->SetIndex(index);
     int64_t curloadOffset = index * descStructSize_ * sizeof(uint64_t);
-    // check the whole struct has benn loaded in cache
+    // check the whole struct has been loaded in cache
     if (curloadOffset + descStructSize_ * sizeof(uint64_t) > preloadOffset_ + PRELOAD_OFFSET) {
 #ifndef ASCENDC_CPU_DEBUG
         dc_preload(shapeStart_, curloadOffset);  // Preload 256Bytes from the cache miss offset.

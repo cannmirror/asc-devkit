@@ -72,11 +72,11 @@ __aicore__ static inline void CheckLoadData2dDatatype()
 }
 
 // check LoadData3D params
-__aicore__ static inline void CheckLoadData3dParams(const uint16_t srcHeight, const uint16_t srcWeight,
+__aicore__ static inline void CheckLoadData3dParams(const uint16_t srcHeight, const uint16_t srcWidth,
     const uint8_t srcWStride, const uint8_t srcHStride)
 {
     ASCENDC_CHECK_VALUE_RANGE(srcHeight, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1H", "LoadData with LoadData3DParams");
-    ASCENDC_CHECK_VALUE_RANGE(srcWeight, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1W", "LoadData with LoadData3DParams");
+    ASCENDC_CHECK_VALUE_RANGE(srcWidth, MIN_LOAD3D_L1, MAX_LOAD3D_L1, "l1W", "LoadData with LoadData3DParams");
     ASCENDC_CHECK_VALUE_RANGE(srcWStride, MIN_LOAD3D_STRIDE, MAX_LOAD3D_STRIDE, "strideW",
         "LoadData with LoadData3DParams");
     ASCENDC_CHECK_VALUE_RANGE(srcHStride, MIN_LOAD3D_STRIDE, MAX_LOAD3D_STRIDE, "strideH",

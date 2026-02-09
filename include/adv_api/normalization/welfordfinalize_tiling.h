@@ -21,7 +21,7 @@ namespace AscendC {
 * \brief calculate max and min tmp buffer size for WelfordFinalize interface.
 * \param [in] srcShape: input shape
 * \param [in] typeSize: data type size
-* \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+* \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
 * \param [out] maxValue: max size required for tmp buffer
 * \param [out] minValue: min size required for tmp buffer
 */

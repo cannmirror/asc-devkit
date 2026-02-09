@@ -75,7 +75,7 @@ __aicore__ inline void TaylorExpand(const LocalTensor<float>& dstTensor, const L
     Muls<float, false>(dstTensor, dstTensor, factorList[expandLevel], MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     for (uint32_t i = expandLevel - 1; i > 0; --i) {
-        // dst*x^2+ the previois expand factor
+        // dst*x^2+ the previous expand factor
         Adds<float, false>(dstTensor, dstTensor, factorList[i], MASK_PLACEHOLDER, 1, unaryParams);
         PipeBarrier<PIPE_V>();
         Mul<float, false>(dstTensor, dstTensor, squareTensor, MASK_PLACEHOLDER, 1, binaryParams);
@@ -126,7 +126,7 @@ __aicore__ inline void AtanFormulaImpl(const LocalTensor<float>& dstTensor, cons
     LocalTensor<float> tmpTensor2 = absTensor[splitSize];
     LocalTensor<float> squareTensor = tmpTensor2[splitSize];
 
-    // when x's value is too large the first caculator of TaylorExpand will be overflow. when epsilon is 0.0001,
+    // when x's value is too large the first calculator of TaylorExpand will be overflow. when epsilon is 0.0001,
     // the approximate value of `tan(pi/2 - 0.0001)` is 10000
     // Clip x to [MIN_INPUT_VALUE, MAX_INPUT_VALUE] in float
     Mins<float, false>(clipTensor, srcTensor, MAX_INPUT_VALUE, MASK_PLACEHOLDER, 1, unaryParams);

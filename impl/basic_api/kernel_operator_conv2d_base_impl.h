@@ -293,7 +293,7 @@ __aicore__ inline void SetWaitFlagMte1ToM()
     PipeBarrier<PIPE_M>();
 }
  
-__aicore__ inline void PingPongRealeaseEvent(event_t eventId0, event_t eventId1)
+__aicore__ inline void PingPongReleaseEvent(event_t eventId0, event_t eventId1)
 {
     WaitFlag<HardEvent::M_MTE1>(eventId0);
     GetTPipePtr()->ReleaseEventID<HardEvent::M_MTE1>(eventId0);
@@ -358,7 +358,7 @@ __aicore__ inline void Conv2DExecNmPingPong(const LocalTensor<T>& l0c, const Loc
         ping = 1 - ping;
     }
 
-    PingPongRealeaseEvent(eventId0, eventId1);
+    PingPongReleaseEvent(eventId0, eventId1);
 }
 
 template <typename T, typename U>
@@ -464,7 +464,7 @@ __aicore__ inline void Conv2DExecMnPingPong(const LocalTensor<T>& l0c, const Loc
         ping = 1 - ping;
     }
 
-    PingPongRealeaseEvent(eventId0, eventId1);
+    PingPongReleaseEvent(eventId0, eventId1);
 }
 
 template <typename T, typename U>

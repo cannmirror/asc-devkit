@@ -71,8 +71,8 @@ public:
             }
             bool isSingleCore = (MATMUL_MODULE(MatmulShapeInfo)->GetOrgM() <= MATMUL_MODULE(MatmulShapeInfo)->
                 GetSingleCoreM()) && (dimN <= MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN());
-            bool isMutiCoreNeedPad = !isSingleCore && !isComputeLineByLine;
-            return (!isTargetAligned && (isSingleCore || isMutiCoreNeedPad) && !isOdd);
+            bool isMultiCoreNeedPad = !isSingleCore && !isComputeLineByLine;
+            return (!isTargetAligned && (isSingleCore || isMultiCoreNeedPad) && !isOdd);
         } else {
             return (!isTargetAligned);
         }
@@ -108,7 +108,7 @@ public:
             PadUnalignedToTransWithStride(trans[transTailOffset], gm[gmTailOffset], baseHeight, baseWidth, baseBlockWidth);
         }
 
-        // if copy gm to ub, must add the set/wait flag to wait the UB has be writed;
+        // if copy gm to ub, must add the set/wait flag to wait the UB has be written;
         event_t eventIDMte2ToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE2_V));
         SetFlag<HardEvent::MTE2_V>(eventIDMte2ToV);
         WaitFlag<HardEvent::MTE2_V>(eventIDMte2ToV);
@@ -420,7 +420,7 @@ private:
         for (int32_t i = PATTERN_OFFSET; i < PATTERN_SIZE; ++i) {
             src1Pattern.SetValue(i, 0);
         }
-        int32_t orinRemain = baseWidth % blockCount;
+        int32_t originalRemain = baseWidth % blockCount;
         int32_t gmOffset = blockCount * (blockLen - PATTERN_OFFSET);
         int32_t dstOffset = 0;
         int32_t srcOffset = 0;
@@ -439,10 +439,10 @@ private:
                 CopyLocal2GMNZ2NDDeQue();
                 LocalTensor<DstT> tmpTrans = transAligin.template ReinterpretCast<DstT>();
                 for (int32_t j = 0; j < ONE_BLK_SIZE; ++j) {
-                    tmpTrans.SetValue(j, trans[srcOffset + gmOffset + orinRemain].GetValue(j));
+                    tmpTrans.SetValue(j, trans[srcOffset + gmOffset + originalRemain].GetValue(j));
                 }
                 CopyLocal2GMNZ2NDEnQue();
-                DataCopy(gm[dstOffset + gmOffset + orinRemain], tmpTrans, { 1, 1, 0, 0 });
+                DataCopy(gm[dstOffset + gmOffset + originalRemain], tmpTrans, { 1, 1, 0, 0 });
             }
             PipeBarrier<PIPE_MTE3>();
             dstOffset += offset;

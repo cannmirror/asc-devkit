@@ -12,8 +12,8 @@
  * \file lgamma_common_impl.h
  * \brief
  */
-#ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMOM_IMPL_H
-#define IMPL_MATH_LGAMMA_LGAMMA_COMMOM_IMPL_H
+#ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMON_IMPL_H
+#define IMPL_MATH_LGAMMA_LGAMMA_COMMON_IMPL_H
 #include "kernel_basic_intf.h"
 #include "kernel_tensor.h"
 #include "kernel_pop_stack_buffer.h"
@@ -467,4 +467,4 @@ __aicore__ inline void LgammaImpl(
 }
 }  // namespace AscendC
 #endif
-#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMOM_IMPL_H
+#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMON_IMPL_H

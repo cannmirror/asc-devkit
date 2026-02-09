@@ -51,7 +51,7 @@ void GetSortMaxMinTmpSize(const ge::Shape& srcShape, ge::DataType valueType, ge:
         ge::DT_INT32, ge::DT_UINT16,  ge::DT_UINT32, ge::DT_UINT64, ge::DT_INT64 };
     std::set<ge::DataType> supportIndexType = { ge::DT_INT32, ge::DT_UINT32, ge::DT_INT64, ge::DT_UINT64 };
     ASCENDC_HOST_ASSERT((!config.hasSrcIndex || config.hasDstIndex), return,
-        "Sort API couldn't only have source input index.");
+        "Sort API cannot only have source input index.");
     ASCENDC_HOST_ASSERT(supportValueType.find(valueType) != supportValueType.end(), return,
         "Unsupported valueType for Sort API.");
     if (config.hasSrcIndex) {

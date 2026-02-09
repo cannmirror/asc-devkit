@@ -345,7 +345,7 @@ public:
      * @class Hccl
      * @brief 1) Notify the server there is no subsequent comm task, the server can exit after executing all comm tasks;
      *        2) Wait until the last comm task finished;
-     *        3) Clear finishedTurnCnt filed of HcclMsgArea.
+     *        3) Clear finishedTurnCnt field of HcclMsgArea.
      * @note 1) Specify AICube core or AIVector core before calling this interface;
      *       2) Only the core 0 can write fields for hcclMsgArea.
      */

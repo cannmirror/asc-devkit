@@ -59,7 +59,7 @@ public:
     {
         BASE_MODULE::outerIdx_++;
         BASE_MODULE::dstOffset_ += BASE_MODULE::batchCalcSize_;
-        if (oddAndLargeThanL1_ && BASE_MODULE::outerIdx_ == BASE_MODULE::batchOuter_ - 1) {
+        if (oddAndLargerThanL1_ && BASE_MODULE::outerIdx_ == BASE_MODULE::batchOuter_ - 1) {
             const int32_t tail = BASE_MODULE::inputBatchNum_ % BASE_MODULE::batchA_;
             BASE_MODULE::batchA_ = tail == 0 ? mainBatchInner_ : tail;
             BASE_MODULE::batchB_ = BASE_MODULE::batchA_;
@@ -73,7 +73,7 @@ public:
 
     __aicore__ inline bool InnerEnd()
     {
-        if ((!oddAndLargeThanL1_) || (BASE_MODULE::batchNum_ % DB_FACTOR == 0) || (BASE_MODULE::splitSize_ < DB_FACTOR)) {
+        if ((!oddAndLargerThanL1_) || (BASE_MODULE::batchNum_ % DB_FACTOR == 0) || (BASE_MODULE::splitSize_ < DB_FACTOR)) {
             return (BASE_MODULE::innerIdx_ >= BASE_MODULE::splitBatchNum_) || (BASE_MODULE::splitOuterIdx_ * BASE_MODULE::splitBatchNum_ >= BASE_MODULE::batchNum_);
         }
         const auto firstBatchNum = BASE_MODULE::batchNum_ / BASE_MODULE::splitSize_;
@@ -100,17 +100,17 @@ public:
 
     __aicore__ inline int32_t GetMainBatchBlockA() const
     {
-        return oddAndLargeThanL1_ ? mainBatchInner_ : BASE_MODULE::batchA_; // batchNum main block in outLoop
+        return oddAndLargerThanL1_ ? mainBatchInner_ : BASE_MODULE::batchA_; // batchNum main block in outerLoop
     }
 
     __aicore__ inline int32_t GetMainBatchBlockB() const
     {
-        return oddAndLargeThanL1_ ? mainBatchInner_ : BASE_MODULE::batchB_; // batchNum main block in outLoop
+        return oddAndLargerThanL1_ ? mainBatchInner_ : BASE_MODULE::batchB_; // batchNum main block in outerLoop
     }
 
     __aicore__ inline int32_t GetBiasBatchSrcOffset() const
     {
-        return BASE_MODULE::outerIdx_ * (oddAndLargeThanL1_ ? mainBatchInner_ : BASE_MODULE::batchNum_) * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
+        return BASE_MODULE::outerIdx_ * (oddAndLargerThanL1_ ? mainBatchInner_ : BASE_MODULE::batchNum_) * MATMUL_MODULE(MatmulShapeInfo)->GetSingleCoreN();
     }
 
 private:
@@ -157,7 +157,7 @@ private:
 
         int32_t batchInner = TOTAL_L1_SIZE / singleBatchSize;
         BASE_MODULE::inputBatchNum_ = batchNumLarge;
-        oddAndLargeThanL1_ = (multiples == 1) && (BASE_MODULE::inputBatchNum_ % DB_FACTOR != 0);
+        oddAndLargerThanL1_ = (multiples == 1) && (BASE_MODULE::inputBatchNum_ % DB_FACTOR != 0);
         if (batchInner <= 0) {
             outerLoop_ = 1;
             while (batchInner <= 0) {
@@ -173,7 +173,7 @@ private:
             multiples /= outerLoop_;
         }
         ASSERT(batchInner > 0);
-        if (oddAndLargeThanL1_) {
+        if (oddAndLargerThanL1_) {
             mainBatchInner_ = batchInner;
             BASE_MODULE::batchOuter_ = CeilT(batchNumLess, batchInner);
             BASE_MODULE::batchA_ = batchInner;
@@ -210,7 +210,7 @@ private:
     }
 
     int32_t outerLoop_ = 1;
-    bool oddAndLargeThanL1_ = false; // new logical judgment condition for handling odd batchNum && large than L1
+    bool oddAndLargerThanL1_ = false; // new logical judgment condition for handling odd batchNum && larger than L1
     int32_t mainBatchInner_ = 0; // outerLoop main block
 };
 }  // namespace Detail

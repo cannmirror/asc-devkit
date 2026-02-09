@@ -134,9 +134,9 @@ __aicore__ inline __inout_pipe__(V) void SelectWithBytesMaskImpl(const LocalTens
     const uint32_t srcSize = src0.GetSize();
 
     ASCENDC_ASSERT((srcSize == firstAxis * srcLastAxis),
-                   { KERNEL_LOG(KERNEL_ERROR, "ShapeInfo must be match with src Tensor size."); });
+                   { KERNEL_LOG(KERNEL_ERROR, "ShapeInfo must match with src Tensor size."); });
     ASCENDC_ASSERT((mask.GetSize() == firstAxis * maskLastAxis),
-                   { KERNEL_LOG(KERNEL_ERROR, "ShapeInfo must be match with mask Tensor size."); });
+                   { KERNEL_LOG(KERNEL_ERROR, "ShapeInfo must match with mask Tensor size."); });
     ASCENDC_ASSERT((maskLastAxis >= srcLastAxis),
                    { KERNEL_LOG(KERNEL_ERROR, "maskLastAxis must be greater than or equal to srcLastAxis."); });
 

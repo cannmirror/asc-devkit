@@ -37,7 +37,7 @@ public:
     __aicore__ inline void Init(int32_t singleShape) {}
 
     /**
-     * @description: Update KLoop params, should be called when singleCoreK is update.
+     * @description: Update KLoop params, should be called when singleCoreK is updated.
      * @param: singleShape: singleCoreK
      * @return: void
      */

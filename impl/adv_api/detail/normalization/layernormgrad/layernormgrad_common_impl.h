@@ -82,7 +82,7 @@ struct LayerNormGradParams {
 
     LocalTensor<float> x1Tensor;     // for inputDy * inputGamma
     LocalTensor<float> x2Tensor;     // for inputX - inputMean
-    LocalTensor<float> x3Tensor;     // for x1Tensor * np.power((inputVariace + EPSLON), (-0.5))
+    LocalTensor<float> x3Tensor;     // for x1Tensor * np.power((inputVariance + EPSILON), (-0.5))
     LocalTensor<float> pdVarTensor;  // for pdVar
     LocalTensor<float> pdMeanTensor; // for pdMean
     LocalTensor<float> tmpTensor;    // tmp for intermediate use
@@ -274,10 +274,10 @@ __aicore__ inline void ComputePdVar(const LocalTensor<float> &inputVariance, flo
 {
     const float multiplier1 = -1.5;
     const float multiplier2 = -0.5;
-    // 1. inputVariace + EPSLON)
+    // 1. inputVariance + EPSILON)
     Adds(param.tmpTensor, inputVariance, epsilon, nohSize);
     PipeBarrier<PIPE_V>();
-    // 2. res = np.power((inputVariace + EPSLON), (-1.5))
+    // 2. res = np.power((inputVariance + EPSILON), (-1.5))
     Mul(param.tmpTensorBSH, param.tmpTensor, param.tmpTensor, nohSize);
     PipeBarrier<PIPE_V>();
     Mul(param.tmpTensor, param.tmpTensorBSH, param.tmpTensor, nohSize);
@@ -311,11 +311,11 @@ __aicore__ inline void ComputePdMean(const LocalTensor<float> &inputVariance, co
     constexpr float exponent = -0.5;
     constexpr float multiplier = -1.0;
     constexpr float multiplier2 = -2.0;
-    // 1. inputVariace + EPSLON)
+    // 1. inputVariance + EPSILON)
     Adds(param.tmpTensor, inputVariance, epsilon, nohSize);
     PipeBarrier<PIPE_V>();
 
-    // 2. res = np.power((inputVariace + EPSLON), (-0.5))
+    // 2. res = np.power((inputVariance + EPSILON), (-0.5))
     Sqrt(param.tmpTensor, param.tmpTensor, nohSize);
     PipeBarrier<PIPE_V>();
 
@@ -359,7 +359,7 @@ __aicore__ inline void ComputePdMean(const LocalTensor<float> &inputVariance, co
 __aicore__ inline void ComputePdX(const LocalTensor<float> &inputVariance, const LocalTensor<float> &outputPdX,
     float epsilon, const LayerNormGradParams &param, const uint32_t calSize, const uint32_t nohSize)
 {
-    // 1. res0 = x1Tensor * np.power((inputVariace + EPSLON), (-0.5)), already store in resForGamma
+    // 1. res0 = x1Tensor * np.power((inputVariance + EPSILON), (-0.5)), already store in resForGamma
     // 2. res1 = pd_var*(2.0 / H)*(x2Tensor)
     Muls(param.pdVarTensor, param.pdVarTensor, static_cast<float>(param.lastDimValueBackMulTwo), nohSize);
     PipeBarrier<PIPE_V>();
@@ -416,14 +416,14 @@ __aicore__ inline void ComputeProcess<half>(const LocalTensor<half> &inputDy, co
     Cast(param.tmpTensor2, inputMean, RoundMode::CAST_NONE, nohSize);
     PipeBarrier<PIPE_V>();
     ComputePdX2(param.tmpTensor1, param.tmpTensor2, param, calSize, nohSize, param.hLength);
-    // 3. pd_var = np.sum(((-0.5) * x1Tensor * x2Tensor * np.power((inputVariace + EPSLON), (-1.5))))
+    // 3. pd_var = np.sum(((-0.5) * x1Tensor * x2Tensor * np.power((inputVariance + EPSILON), (-1.5))))
     Cast(param.tmpTensor1, inputVariance, RoundMode::CAST_NONE, nohSize);
     PipeBarrier<PIPE_V>();
     ComputePdVar(param.tmpTensor1, epsilon, param, calSize, nohSize);
-    // 4. pd_mean = np.sum(((-1.0) * x1Tensor * np.power((inputVariace + EPSLON), (-0.5)))) +
+    // 4. pd_mean = np.sum(((-1.0) * x1Tensor * np.power((inputVariance + EPSILON), (-0.5)))) +
     //              pd_var * (1.0 / H) * np.sum(((-2.0) * (x2Tensor)))
     ComputePdMean(param.tmpTensor1, param.tmpTensor2, epsilon, param, calSize, nohSize);
-    // 5. pd_x = x1Tensor * np.power((inputVariace + EPSLON), (-0.5)) +
+    // 5. pd_x = x1Tensor * np.power((inputVariance + EPSILON), (-0.5)) +
     //           pd_var*(2.0 / H)*(x2Tensor) +
     //           pd_mean*(1.0 / H)
     ComputePdX(param.tmpTensor1, param.tmpTensor, epsilon, param, calSize, nohSize);
@@ -444,13 +444,13 @@ __aicore__ inline void ComputeProcess<float>(const LocalTensor<float> &inputDy, 
     ComputePdX1(inputDy, inputGamma, param, nohSize, param.hLength);
     // 2. x2Tensor = inputX - inputMean
     ComputePdX2(inputX, inputMean, param, calSize, nohSize, param.hLength);
-    // 3. pd_var = np.sum(((-0.5) * x1Tensor * x2Tensor * np.power((inputVariace + EPSLON), (-1.5))))
+    // 3. pd_var = np.sum(((-0.5) * x1Tensor * x2Tensor * np.power((inputVariance + EPSILON), (-1.5))))
     ComputePdVar(inputVariance, epsilon, param, calSize, nohSize);
-    //         4. pd_mean = np.sum(((-1.0) * x1Tensor * np.power((inputVariace + EPSLON), (-0.5)))) +
+    //         4. pd_mean = np.sum(((-1.0) * x1Tensor * np.power((inputVariance + EPSILON), (-0.5)))) +
     //                      pd_var * (1.0 / H) * np.sum(((-2.0) * (x2Tensor)))
     ComputePdMean(inputVariance, resForGamma, epsilon, param, calSize, nohSize);
     PipeBarrier<PIPE_V>();
-    // 5. pd_x = x1Tensor * np.power((inputVariace + EPSLON), (-0.5)) +
+    // 5. pd_x = x1Tensor * np.power((inputVariance + EPSILON), (-0.5)) +
     //           pd_var*(2.0 / H)*(x2Tensor) +
     //           pd_mean*(1.0 / H)
     ComputePdX(inputVariance, outputPdX, epsilon, param, calSize, nohSize);

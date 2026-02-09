@@ -35,7 +35,7 @@ constexpr uint32_t LAYERNORM_GRAD_B16_DATA_NUM_PER_BLOCK = 16;
  * \brief calculate max and min tmp buffer size for LayerNormGrad interface.
  * \param [in] srcShape: input shape
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [out] maxValue: max size required for tmp buffer
  * \param [out] minValue: min size required for tmp buffer
  */
@@ -47,7 +47,7 @@ void GetLayerNormGradMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
  * \param [in] srcShape: input shape
  * \param [in] stackBufferSize: share temporary buffer size
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [out] tiling: LayerNormGradTiling
  */
 void GetLayerNormGradNDTilingInfo(const ge::Shape srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,

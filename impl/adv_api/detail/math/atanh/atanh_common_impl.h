@@ -42,17 +42,17 @@ __aicore__ inline void AtanhCompute(const LocalTensor<T>& dstTensor,
     const UnaryRepeatParams unaryParams;
     const BinaryRepeatParams binaryParams;
 
-    // Caculates 1 + x
+    // Calculates 1 + x
     Adds<float, false>(tmpBuffer, srcTensor, static_cast<T>(1), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-    // Caculates 1 - x
+    // Calculates 1 - x
     Muls<float, false>(dstTensor, srcTensor, static_cast<T>(-1), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     Adds<float, false>(dstTensor, dstTensor, static_cast<T>(1), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-    // Caulates 0.5 * ln((1 + x) / (1 - x))
+    // Calculates 0.5 * ln((1 + x) / (1 - x))
     Div<float, false>(dstTensor, tmpBuffer, dstTensor, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
 
@@ -82,18 +82,18 @@ __aicore__ inline void AtanhCompute(const LocalTensor<half>& dstTensor,
         1, { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / 2 });
     PipeBarrier<PIPE_V>();
 
-    // Caculates 1 + x
+    // Calculates 1 + x
     Adds<float, false>(tmpFloatBuffer2, tmpFloatBuffer1, static_cast<float>(1), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-    // Caculates 1 - x
+    // Calculates 1 - x
     Muls<float, false>(tmpFloatBuffer1, tmpFloatBuffer1, static_cast<float>(-1), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
     Adds<float, false>(tmpFloatBuffer1, tmpFloatBuffer1, static_cast<float>(1), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
 
-    // Caulates 0.5 * ln((1 + x) / (1 - x))
+    // Calculates 0.5 * ln((1 + x) / (1 - x))
     Div<float, false>(tmpFloatBuffer1, tmpFloatBuffer2, tmpFloatBuffer1, MASK_PLACEHOLDER, 1, binaryParams);
     PipeBarrier<PIPE_V>();
 

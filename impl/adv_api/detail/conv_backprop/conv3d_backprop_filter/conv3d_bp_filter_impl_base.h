@@ -109,14 +109,14 @@ public:
         DEFINE_STUCT_FIELD(uint8_t, l0cPingPongFlag_);
         DEFINE_STUCT_FIELD(uint8_t, useL0PingPong_);
         DEFINE_STUCT_FIELD(uint8_t, isFirstIter_);
-        using LocalTnesor = AscendC::LocalTensor<typename Intf::SrcT>;
-        DEFINE_STUCT_FIELD(LocalTnesor, cacheA1BufPing_);
-        DEFINE_STUCT_FIELD(LocalTnesor, cacheA1BufPong_);
-        DEFINE_STUCT_FIELD(LocalTnesor, cacheB1BufPing_);
-        DEFINE_STUCT_FIELD(LocalTnesor, cacheB1BufPong_);
-        using GlobalTnesor = AscendC::GlobalTensor<typename Intf::SrcT>;
-        DEFINE_STUCT_FIELD(GlobalTnesor, outBackPropGlobal_);
-        DEFINE_STUCT_FIELD(GlobalTnesor, fmapGlobal_);
+        using LocalTensor = AscendC::LocalTensor<typename Intf::SrcT>;
+        DEFINE_STUCT_FIELD(LocalTensor, cacheA1BufPing_);
+        DEFINE_STUCT_FIELD(LocalTensor, cacheA1BufPong_);
+        DEFINE_STUCT_FIELD(LocalTensor, cacheB1BufPing_);
+        DEFINE_STUCT_FIELD(LocalTensor, cacheB1BufPong_);
+        using GlobalTensor = AscendC::GlobalTensor<typename Intf::SrcT>;
+        DEFINE_STUCT_FIELD(GlobalTensor, outBackPropGlobal_);
+        DEFINE_STUCT_FIELD(GlobalTensor, fmapGlobal_);
     };
 };
 

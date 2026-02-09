@@ -120,7 +120,7 @@ template <typename T> struct FixpipeInfoParams {
         c0 = fracLen;
 
         // for 910Pro
-        // burst is defined as consective ceil(M/16) 16X16 fractals,
+        // burst is defined as consecutive ceil(M/16) 16X16 fractals,
         // and burst length is defined as M*16*sizeof(dataType)
         n = intriParams.cburstNum * BLOCK_CUBE;
         m = howo;
@@ -131,7 +131,7 @@ template <typename T> struct FixpipeInfoParams {
 
         // original dst_stride unit is 32B, it's the gap, new dst_stride it's the stride
         // note: input burst_len is calculated by src dtype, if src dtype is different with dst dtype, need to
-        // re-caculate burst_len for dst
+        // re-calculate burst_len for dst
         if (intriParams.nz2ndParams.nz2ndEn) {
             // If NZ2ND is enabled, it is the dst_D value in unit of element. Loop2_dst_stride
             dstStride = intriParams.dstStride;

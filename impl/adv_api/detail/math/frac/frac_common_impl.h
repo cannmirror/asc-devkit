@@ -27,7 +27,7 @@ template <typename T>
 __aicore__ inline void FracCompute(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor,
     const LocalTensor<float>& tmpTensor, const uint32_t splitSize)
 {
-    // Get interger part of x = [x]
+    // Get integer part of x = [x]
     TruncCastForFrac(dstTensor, srcTensor, dstTensor);
 
     Sub<T, false>(dstTensor, srcTensor, dstTensor, MASK_PLACEHOLDER, 1,
@@ -46,7 +46,7 @@ __aicore__ inline void FracCompute(const LocalTensor<half>& dstTensor, const Loc
     Cast<float, half, false>(srcTmpTensor, srcTensor, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1,
         { 1, 1, DEFAULT_REPEAT_STRIDE, DEFAULT_REPEAT_STRIDE / 2 });
     PipeBarrier<PIPE_V>();
-    // Get interger part of x = [x]
+    // Get integer part of x = [x]
     TruncCastForFrac(dstTmpTensor, srcTmpTensor, dstTmpTensor);
 
     Sub<float, false>(dstTmpTensor, srcTmpTensor, dstTmpTensor, MASK_PLACEHOLDER, 1,

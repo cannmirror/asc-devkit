@@ -135,7 +135,7 @@ ver_check() {
             sh "${curpath}/ver_check.sh" "${version_info_file}" "driver" "${dep_pkg_ver_file}" 1> /dev/null
             local ret=$?
             if [ "${ret}" -eq 1 ] && [ "$is_quiet" = "n" ]; then
-                log "WARNING" "Check version does not matched, do you want to continue? [y/n]"
+                log "WARNING" "Check version does not match, do you want to continue? [y/n]"
                 while true
                 do
                     read yn
@@ -149,7 +149,7 @@ ver_check() {
                     fi
                 done
             elif [ "${ret}" -eq 1 ] && [ "$is_quiet" = "y" ]; then
-                log "WARNING" "Check version does not matched!"
+                log "WARNING" "Check version does not match!"
             elif [ "${ret}" -eq 0 ]; then
                 log "INFO" "Check version matched!"
             fi

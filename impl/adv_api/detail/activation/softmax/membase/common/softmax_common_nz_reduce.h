@@ -91,7 +91,7 @@ __aicore__ inline void ReduceMaxLastNZImpl(const LocalTensor<float>& tmpBuffer1,
             SetFlag<HardEvent::V_S>(eventIdVToS);
             WaitFlag<HardEvent::V_S>(eventIdVToS);
 
-            ContinusColumnBrcbImpl(tmpBuffer1, tmpBuffer1, reduceParam.originalSrcM, SOFTMAX_SHAPE_NZ_BASIC_COUNT);
+            ContinuousColumnBrcbImpl(tmpBuffer1, tmpBuffer1, reduceParam.originalSrcM, SOFTMAX_SHAPE_NZ_BASIC_COUNT);
             ResetMask();
         }
     }
@@ -171,7 +171,7 @@ __aicore__ inline void ReduceSumLastNZImpl(const LocalTensor<float>& tmpBuffer1,
             SetFlag<HardEvent::V_S>(eventIdVToS);
             WaitFlag<HardEvent::V_S>(eventIdVToS);
 
-            ContinusColumnBrcbImpl(tmpBuffer1, tmpBuffer1, reduceParam.originalSrcM, SOFTMAX_SHAPE_NZ_BASIC_COUNT);
+            ContinuousColumnBrcbImpl(tmpBuffer1, tmpBuffer1, reduceParam.originalSrcM, SOFTMAX_SHAPE_NZ_BASIC_COUNT);
             ResetMask();
         }
     }

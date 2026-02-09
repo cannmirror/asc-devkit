@@ -38,7 +38,7 @@ constexpr float SIN_KPI_FIRS_PI_MULS = 0.0009670257568359375;
 constexpr float SIN_KPI_TWI_PI_MULS = 6.2771141529083251953125e-7;
 constexpr float SIN_KPI_THIR_PI_MULS = 1.21644916362129151821136474609375e-10;
 // define the number of sin compute
-constexpr float SIN_RES_MULIT_SCA = 2.604926501e-6;
+constexpr float SIN_RES_MULTI_SCA = 2.604926501e-6;
 constexpr float SIN_RES_ADDICT_UP = -0.0001980894471;
 constexpr float SIN_2ADDS = 0.008333049340;
 constexpr float SIN_3ADDS = -0.1666665792;
@@ -90,7 +90,7 @@ __simd_callee__ inline void SinPolynomialApproximation(MicroAPI::RegTensor<float
     MicroAPI::Add(dstReg, dstReg, round, mask);
     MicroAPI::Adds(dstReg, dstReg, SIN_SCALAR_ONE, mask);
     // res_up = mul(x^2, 2.604926501e-6)
-    MicroAPI::Muls(round, kpi, SIN_RES_MULIT_SCA, mask);
+    MicroAPI::Muls(round, kpi, SIN_RES_MULTI_SCA, mask);
     MicroAPI::Adds(round, round, SIN_RES_ADDICT_UP, mask);
     // res_up = mul(res_up, x^2)
     MicroAPI::Mul(round, round, kpi, mask);

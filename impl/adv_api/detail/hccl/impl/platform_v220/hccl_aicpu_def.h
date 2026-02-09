@@ -94,7 +94,7 @@ private:
 
     __aicore__ inline bool CheckCommonPrepareParamValid(const CommonPrepareParam &param);
 
-    // Clear the finishedTurnCnt before aicore exits to ensure the correctness of next launch.
+    // Clear the finishedTurnCnt before aicore exists to ensure the correctness of next launch.
     __aicore__ inline void ResetFinishedTurnCnt();
 
     template <bool sync>

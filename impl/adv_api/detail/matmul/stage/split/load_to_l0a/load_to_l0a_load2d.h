@@ -91,7 +91,7 @@ private:
         int srcOffset = CUBE_MAX_SIZE / factor_;
         loadDataParams.repeatTimes = blockUseK;
         if constexpr (PhyPosIsL1(A_TYPE::pos)) {
-            // alL A matrix is in L1 buffer
+            // all A matrix is in L1 buffer
             loadDataParams.srcStride = Ceil(aL1M, BLOCK_CUBE);
         } else {
             loadDataParams.srcStride = blockUseM;

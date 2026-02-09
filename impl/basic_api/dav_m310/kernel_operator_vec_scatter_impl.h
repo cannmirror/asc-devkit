@@ -24,7 +24,7 @@ __aicore__ inline void ScatterImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, _
     const uint32_t dstLength, const uint32_t dstBaseAddr, const uint64_t mask, const uint8_t repeatTime,
     const uint8_t srcRepStride)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support Scatter"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support Scatter"); });
     return;
 }
 
@@ -33,7 +33,7 @@ __aicore__ inline void ScatterImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, _
     const uint32_t dstLength, const uint32_t dstBaseAddr, const uint64_t mask[], const uint8_t repeatTime,
     const uint8_t srcRepStride)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support Scatter"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support Scatter"); });
     return;
 }
 } // namespace AscendC

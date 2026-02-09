@@ -300,15 +300,15 @@ template <typename T> struct Transpose4dParams {
     __ubuf__ T* srcList2[NCHW_CONV_ADDR_LIST_SIZE];
 };
 
-template <uint32_t size = sizeof(uint8_t)> struct ExtractTranposeTypeBySize {
+template <uint32_t size = sizeof(uint8_t)> struct ExtractTransposeTypeBySize {
     using T = uint8_t;
 };
 
-template <> struct ExtractTranposeTypeBySize<sizeof(uint16_t)> {
+template <> struct ExtractTransposeTypeBySize<sizeof(uint16_t)> {
     using T = uint16_t;
 };
 
-template <> struct ExtractTranposeTypeBySize<sizeof(uint32_t)> {
+template <> struct ExtractTransposeTypeBySize<sizeof(uint32_t)> {
     using T = uint32_t;
 };
 
@@ -391,7 +391,7 @@ __aicore__ inline void CopyFirstBlockCal(const LocalTensor<T> &dstLocal, const L
 }
 
 template <typename T>
-__aicore__ inline void UpdataCopyToTmp2ParamCal(Transpose4dParams<T> &params, const TransposeParamsExt &transposeParams)
+__aicore__ inline void UpdateCopyToTmp2ParamCal(Transpose4dParams<T> &params, const TransposeParamsExt &transposeParams)
 {
     params.copyCIndex += 1;
     params.tmp2NeedRowCount -= 1;
@@ -480,7 +480,7 @@ __aicore__ inline void TransFracCal(const LocalTensor<T> &dstLocal, const LocalT
 }
 
 template <typename T>
-__aicore__ inline void UpdataTransToTmp3ParamCal(Transpose4dParams<T> &params, const uint16_t cSize,
+__aicore__ inline void UpdateTransToTmp3ParamCal(Transpose4dParams<T> &params, const uint16_t cSize,
     const TransposeType transposeType)
 {
     if (transposeType == TransposeType::TRANSPOSE_NCHW2NHWC) {
@@ -542,7 +542,7 @@ __aicore__ inline void Transpose2HwcCal(const LocalTensor<T> &dstLocal, const Lo
             DataCopy(tempTensorB[(params.tmp2Count % params.transRowCount) * (params.blockSize)],
                 tempTensorA[params.preCoffset + params.preCinnerOffset], params.dataCopyParams1);
             // update params
-            UpdataCopyToTmp2ParamCal(params, transposeParams);
+            UpdateCopyToTmp2ParamCal(params, transposeParams);
             // When all valid data in tmp1 is transferred, the operation stops. Reload from src
             if (params.tmp1RemainRowCount == 0) {
                 params.tmp1CopyCount = 0;
@@ -554,7 +554,7 @@ __aicore__ inline void Transpose2HwcCal(const LocalTensor<T> &dstLocal, const Lo
         if (params.tmp2NeedRowCount == 0) {
             TransFracCal(tempTensorC, tempTensorB, params);
             // update params
-            UpdataTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NCHW2NHWC);
+            UpdateTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NCHW2NHWC);
         }
         PipeBarrier<PIPE_V>();
         // 4、dataCopy tmp3->dst
@@ -566,7 +566,7 @@ __aicore__ inline void Transpose2HwcCal(const LocalTensor<T> &dstLocal, const Lo
 }
 
 template <typename T>
-__aicore__ inline void UpdataTransToTmp1ParamCal(Transpose4dParams<T> &params)
+__aicore__ inline void UpdateTransToTmp1ParamCal(Transpose4dParams<T> &params)
 {
     // update the start address of src
     params.srcBlockIndex += 1;
@@ -634,7 +634,7 @@ __aicore__ inline void Transpose2ChwCal(const LocalTensor<T> &dstLocal, const Lo
         if (params.tmp1RemainRowCount == 0) {
             TransBroadCastCal(tempTensorA, srcLocal, params);
             // update params
-            UpdataTransToTmp1ParamCal(params);
+            UpdateTransToTmp1ParamCal(params);
         }
         PipeBarrier<PIPE_V>();
         // 2、datacopy:tmp1->tmp2:transfer one block in each C dimension from src to dst.
@@ -646,7 +646,7 @@ __aicore__ inline void Transpose2ChwCal(const LocalTensor<T> &dstLocal, const Lo
             DataCopy(tempTensorB[params.preCoffset + params.preCinnerOffset],
                 tempTensorA[(params.tmp2Count % params.blockSize) * params.transRowCount], params.dataCopyParams1);
             // update params
-            UpdataCopyToTmp2ParamCal(params, transposeParams);
+            UpdateCopyToTmp2ParamCal(params, transposeParams);
             // When all valid data in tmp1 is transferred, the operation stops. Reload from src
             if (params.tmp1RemainRowCount == 0) {
                 params.tmp1CopyCount = 0;
@@ -665,7 +665,7 @@ __aicore__ inline void Transpose2ChwCal(const LocalTensor<T> &dstLocal, const Lo
                     TransFracCal(tempTensorC[k * params.preTmpLen], tempTensorB[k * params.preTmpLen], params);
                 }
             }
-            UpdataTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NHWC2NCHW);
+            UpdateTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NHWC2NCHW);
         }
         PipeBarrier<PIPE_V>();
         // 4、dataCopy tmp3->dst
@@ -713,7 +713,7 @@ __aicore__ inline void Transpose4DImpl(const LocalTensor<T> &dstLocal, const Loc
 {
     static_assert((SupportBytes<T, 1, 2, 4>()), "Transpose only supports type fp4/b8/b16/b32 on current device");
     ASCENDC_ASSERT((sharedTmpBuffer.GetSize() > 0), { KERNEL_LOG(KERNEL_ERROR, "sharedTmpBuffer size must > 0!"); });
-    using Transpose4DType = typename ExtractTranposeTypeBySize<sizeof(T)>::T;
+    using Transpose4DType = typename ExtractTransposeTypeBySize<sizeof(T)>::T;
     LocalTensor<Transpose4DType> stackBuffer = sharedTmpBuffer.ReinterpretCast<Transpose4DType>();
     LocalTensor<Transpose4DType> dstTmpLocal = dstLocal.template ReinterpretCast<Transpose4DType>();
     LocalTensor<Transpose4DType> srcTmpLocal = srcLocal.template ReinterpretCast<Transpose4DType>();

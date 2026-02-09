@@ -305,7 +305,7 @@ __aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTens
     const int32_t srcRepStride)
 {
     using DstPrimType = PrimT<U>;
-    using SrcPrmiType = PrimT<T>;
+    using SrcPrimType = PrimT<T>;
     ASCENDC_CHECK_VALUE_RANGE(repeatTime, 0, 255, "repeatTime", "WholeReduceSum");
 #if ASCENDC_CPU_DEBUG
     MaskSetter::Instance().SetMask(isSetMask);
@@ -314,7 +314,7 @@ __aicore__ inline void WholeReduceSum(const LocalTensor<U>& dst, const LocalTens
         ASCENDC_REPORT_CHECK_ERROR("WholeReduceSum", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
-    WholeReduceSumImpl<SrcPrmiType, isSetMask, DstPrimType>((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrmiType*)src.GetPhyAddr(), mask,
+    WholeReduceSumImpl<SrcPrimType, isSetMask, DstPrimType>((__ubuf__ DstPrimType*)dst.GetPhyAddr(), (__ubuf__ SrcPrimType*)src.GetPhyAddr(), mask,
         repeatTime, dstRepStride, srcBlkStride, srcRepStride);
 }
 #else
@@ -584,7 +584,7 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
     if (mask == 0) {
         return;
     }
-    ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
+    ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MAX);
@@ -622,7 +622,7 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     if (mask == 0) {
         return;
     }
-    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
+    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MIN);
@@ -658,7 +658,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     if (mask == 0) {
         return;
     }
-    ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
+    ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, 0, ReduceMode::REDUCE_SUM);
@@ -685,7 +685,7 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
     if (mask[0] == 0 && mask[1] == 0) {
         return;
     }
-    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
+    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MAX);
@@ -712,7 +712,7 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     if (mask[0] == 0 && mask[1] == 0) {
         return;
     }
-    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
+    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MIN);
@@ -738,7 +738,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     if (mask[0] == 0 && mask[1] == 0) {
         return;
     }
-    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
+    struct ReduceRepeatParams params(mask, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, srcRepStride);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, 0, ReduceMode::REDUCE_SUM);
@@ -791,7 +791,7 @@ __aicore__ inline void ReduceMin(const LocalTensor<T>& dst, const LocalTensor<T>
     if (count == 0) {
         return;
     }
-    struct ReduceRepeatParams params(bodyCount, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+    struct ReduceRepeatParams params(bodyCount, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
         DEFAULT_REPEAT_STRIDE);
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MIN);
@@ -849,7 +849,7 @@ __aicore__ inline void ReduceMax(const LocalTensor<T>& dst, const LocalTensor<T>
         return;
     }
 
-    struct ReduceRepeatParams params(bodyCount, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+    struct ReduceRepeatParams params(bodyCount, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
         DEFAULT_REPEAT_STRIDE);
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, calIndex, ReduceMode::REDUCE_MAX);
@@ -919,7 +919,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     if (count == 0) {
         return;
     }
-    struct ReduceRepeatParams params(bodyCount, repeatTime, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+    struct ReduceRepeatParams params(bodyCount, repeatTime, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
         DEFAULT_REPEAT_STRIDE);
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(),
         (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(), params, 0, ReduceMode::REDUCE_SUM);
@@ -929,7 +929,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
     PrimType bodySumValue = dst.GetValue(0);
 
     if (tailCount != 0) {
-        struct ReduceRepeatParams tailParams(tailCount, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams tailParams(tailCount, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
 
         ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(),
@@ -945,7 +945,7 @@ __aicore__ inline void ReduceSum(const LocalTensor<T>& dst, const LocalTensor<T>
         event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
-        struct ReduceRepeatParams newParams(2, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams newParams(2, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
 
         ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)sharedTmpBuffer.GetPhyAddr(),

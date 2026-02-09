@@ -360,7 +360,7 @@ __aicore__ inline void AntiQuantizePerChannel(const LocalTensor<DstT>& dstTensor
     const ScaleT& scale, const OffsetT& offset, const LocalTensor<uint8_t>& sharedTmpBuffer, const AntiQuantizeParams& params)
 {
     static_assert(SupportType<DstT, half, bfloat16_t>(),
-        "This AntiQuantize only support half/bfloat16_6 output dtype");
+        "This AntiQuantize only support half/bfloat16_t output dtype");
 
     AntiQuantPerChannelNoTranspose<config.hasOffset, SrcT, DstT>(dstTensor, srcTensor, offset, scale, params.m, params.n);
 }

@@ -274,8 +274,8 @@ __aicore__ inline void ReduceRAReuseSourceUnAlignedB64(__ubuf__ T *dstAddr, __ub
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD_B64;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
 
     // Process vlSize axisA each time
     uint32_t postUpdateStrideTail = dimA % vlSize;
@@ -579,9 +579,9 @@ __aicore__ inline void ReduceRAReuseSourceUnAligned(__ubuf__ T *dstAddr, __ubuf_
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
-    uint16_t foldThree = (tailFolds == ReduceOpInternal::FLOD_THREE) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
+    uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
     // Process vlSize axisA each time
     uint32_t postUpdateStrideTail = dimA % vlSize;
     ReduceRAReuseSourceUnAlignedVF<T, Trait, Binaryfunc>(dstAddr, srcAddr, dimA,
@@ -821,8 +821,8 @@ __aicore__ inline void ReduceAROverVLReuseSourceUnAlignedB64(__ubuf__ T *dstAddr
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD_B64;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
     uint32_t postUpdateStrideTail = tailR % vlSize;
     ReduceAROverVLReuseSourceUnAlignedB64VF<T, Trait, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA,
         dimR, mainR, tailR, base, folds, avgFolds, foldZero, foldOne, foldTwo, postUpdateStrideTail);
@@ -1089,9 +1089,9 @@ __aicore__ inline void ReduceAROverVLReuseSourceUnAligned(__ubuf__ T *dstAddr, _
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
-    uint16_t foldThree = (tailFolds == ReduceOpInternal::FLOD_THREE) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
+    uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
     uint32_t postUpdateStrideTail = tailR % vlSize;
     ReduceAROverVLReuseSourceUnAlignedVF<T, Trait, Binaryfunc, Reducefunc>(dstAddr, srcAddr, dimA, dimR,
         mainR, tailR, base, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree, postUpdateStrideTail);

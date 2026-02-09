@@ -486,7 +486,7 @@ __aicore__ inline void CopyFirstBlockCal(const LocalTensor<T> &dst, const LocalT
 }
 
 template <typename T>
-__aicore__ inline void UpdataCopyToTmp2ParamCal(Transpose4dParams<T> &params, const TransposeParamsExt &transposeParams)
+__aicore__ inline void UpdateCopyToTmp2ParamCal(Transpose4dParams<T> &params, const TransposeParamsExt &transposeParams)
 {
     params.copyCIndex += 1;
     params.tmp2NeedRowCount -= 1;
@@ -499,7 +499,7 @@ __aicore__ inline void UpdataCopyToTmp2ParamCal(Transpose4dParams<T> &params, co
 }
 
 template <typename T>
-__aicore__ inline void UpdataTransToTmp3ParamCal(Transpose4dParams<T> &params, const uint16_t cSize,
+__aicore__ inline void UpdateTransToTmp3ParamCal(Transpose4dParams<T> &params, const uint16_t cSize,
     const TransposeType transposeType)
 {
     if (transposeType == TransposeType::TRANSPOSE_NCHW2NHWC) {
@@ -527,7 +527,7 @@ __aicore__ inline void UpdataTransToTmp3ParamCal(Transpose4dParams<T> &params, c
 }
 
 template <typename T>
-__aicore__ inline void UpdataTransToTmp1ParamCal(Transpose4dParams<T> &params)
+__aicore__ inline void UpdateTransToTmp1ParamCal(Transpose4dParams<T> &params)
 {
     // update the start address of src
     params.srcBlockIndex += 1;
@@ -601,7 +601,7 @@ __aicore__ inline void Transpose2HwcCal(const LocalTensor<T> &dst, const LocalTe
             DataCopy(tempB[(params.tmp2Count % params.transRowCount) * (params.blockSize)],
                 tempA[params.preCoffset + params.preCinnerOffset], params.dataCopyParams1);
             // update params
-            UpdataCopyToTmp2ParamCal(params, transposeParams);
+            UpdateCopyToTmp2ParamCal(params, transposeParams);
             // When all valid data in tmp1 is transferred, the operation stops. Reload from src
             if (params.tmp1RemainRowCount == 0) {
                 params.tmp1CopyCount = 0;
@@ -613,7 +613,7 @@ __aicore__ inline void Transpose2HwcCal(const LocalTensor<T> &dst, const LocalTe
         if (params.tmp2NeedRowCount == 0) {
             TransFracCal(tempC, tempB, params);
             // update params
-            UpdataTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NCHW2NHWC);
+            UpdateTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NCHW2NHWC);
         }
         PipeBarrier<PIPE_V>();
         // 4、dataCopy tmp3->dst
@@ -636,7 +636,7 @@ __aicore__ inline void Transpose2ChwCal(const LocalTensor<T> &dst, const LocalTe
         if (params.tmp1RemainRowCount == 0) {
             TransBroadCastCal(tempA, src, params);
             // update params
-            UpdataTransToTmp1ParamCal(params);
+            UpdateTransToTmp1ParamCal(params);
         }
         PipeBarrier<PIPE_V>();
         // 2、datacopy:tmp1->tmp2:transfer one block in each C dimension from src to dst.
@@ -648,7 +648,7 @@ __aicore__ inline void Transpose2ChwCal(const LocalTensor<T> &dst, const LocalTe
             DataCopy(tempB[params.preCoffset + params.preCinnerOffset],
                 tempA[(params.tmp2Count % params.blockSize) * params.transRowCount], params.dataCopyParams1);
             // update params
-            UpdataCopyToTmp2ParamCal(params, transposeParams);
+            UpdateCopyToTmp2ParamCal(params, transposeParams);
             // When all valid data in tmp1 is transferred, the operation stops. Reload from src
             if (params.tmp1RemainRowCount == 0) {
                 params.tmp1CopyCount = 0;
@@ -667,7 +667,7 @@ __aicore__ inline void Transpose2ChwCal(const LocalTensor<T> &dst, const LocalTe
                     TransFracCal(tempC[k * params.preTmpLen], tempB[k * params.preTmpLen], params);
                 }
             }
-            UpdataTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NHWC2NCHW);
+            UpdateTransToTmp3ParamCal(params, transposeParams.cSize, TransposeType::TRANSPOSE_NHWC2NCHW);
         }
         PipeBarrier<PIPE_V>();
         // 4、dataCopy tmp3->dst

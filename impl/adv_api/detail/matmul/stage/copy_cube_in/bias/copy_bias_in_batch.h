@@ -24,7 +24,7 @@ namespace Detail {
 
 /**
  * CopyBiasIn: responsible for copy bias data management.
- * This module provides ablities to copy bias data in C1/C2 Buffer.
+ * This module provides abilities to copy bias data in C1/C2 Buffer.
  * We retain the freedom to make incompatible changes, but do not guarantee the stability.
  * CopyBiasIn is only for internal usage, does not support extension or customized specialization!
  */
@@ -75,7 +75,7 @@ private:
             DataCopy(bias, srcTensor, intriParams);
 #endif
         } else {
-            // Batched, copy dataNumm data by one instr
+            // Batched, copy dataNum data by one instr
             auto dstStride = CeilAlign(dataLen, c0Size_);
             Nd2NzParams intriParams;
             intriParams.ndNum = dataNum;

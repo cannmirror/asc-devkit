@@ -1254,7 +1254,7 @@ filter_feature_param() {
         }'
 }
 
-# 读取fileist的第2行到最后行
+# 读取filelist的第2行到最后行
 tail_filelist() {
     local filelist_path="$1"
     tail -n +2 "$filelist_path" | grep -v '^#'

@@ -236,7 +236,7 @@ class BinParamBuilder(opdesc_parser.OpDesc):
                 if 'bin_filename' in op_node:
                     op_node['bin_filename'] += "_relocatable"
                 else:
-                    print(f"[WARNING]The op_node in {param_file} does not have bin_filename fiel, please check!!!")
+                    print(f"[WARNING]The op_node in {param_file} does not have bin_filename field, please check!!!")
         else:
             print(f"[WARNING]The op_list in {param_file} is empty or not list type, please check!!!")
         
@@ -512,14 +512,14 @@ def get_tiling_keys(tiling_keys: str) -> Set:
     return all_tiling_keys
 
 
-def trans_soc_verion(soc_ver: str):
+def trans_soc_version(soc_ver: str):
     low_soc_ver = soc_ver.lower()
     if low_soc_ver not in opdesc_parser.SOC_TO_SHORT_SOC_MAP:
         return low_soc_ver
     return opdesc_parser.SOC_TO_SHORT_SOC_MAP[low_soc_ver]
 
 
-def parse_op_debug_confg(opc_config_file: str, soc: str) -> Dict:
+def parse_op_debug_config(opc_config_file: str, soc: str) -> Dict:
     tiling_key_info = defaultdict(set)
     op_debug_config = defaultdict(set)
     kernel_json_file = defaultdict(dict)
@@ -548,7 +548,7 @@ def parse_op_debug_confg(opc_config_file: str, soc: str) -> Dict:
             compute_unit_list = compute_unit.split(';')
             soc_lists = []
             for soc_ver in compute_unit_list:
-                short_soc_ver = trans_soc_verion(soc_ver)
+                short_soc_ver = trans_soc_version(soc_ver)
                 soc_lists.append(short_soc_ver)
             if soc not in soc_lists:
                 continue
@@ -607,7 +607,7 @@ def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
     debug_config = defaultdict(set)
     super_config = defaultdict(set)
     op_descs = opdesc_parser.get_op_desc(cfgfile, [], [], BinParamBuilder, ops)
-    tiling_key_info, op_debug_config, kernel_json_file, input_param_file = parse_op_debug_confg(opc_config_file, soc)
+    tiling_key_info, op_debug_config, kernel_json_file, input_param_file = parse_op_debug_config(opc_config_file, soc)
     gen_option_config(debug_config, super_config, op_debug_config)
 
     auto_gen_path_dir = os.path.dirname(cfgfile)

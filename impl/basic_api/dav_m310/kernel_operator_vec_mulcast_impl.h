@@ -26,7 +26,7 @@ template <typename T, typename U, bool isSetMask = true>
 __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support MulCast"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support MulCast"); });
 }
 
 template <typename T, typename U, bool isSetMask = true>
@@ -34,14 +34,14 @@ __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<
     const LocalTensor<U> &src1, uint64_t mask[], const uint8_t repeatTime,
     const BinaryRepeatParams &repeatParams)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support MulCast"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support MulCast"); });
 }
 
 template <typename T, typename U>
 __aicore__ inline void MulCastCalc(const LocalTensor<T> &dst, const LocalTensor<U> &src0,
     const LocalTensor<U> &src1, uint32_t count)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support MulCast"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support MulCast"); });
 }
 } // namespace AscendC
 #pragma end_pipe

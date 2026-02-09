@@ -9,7 +9,7 @@
 */
 
 /*!
- * \file xor_check_comon.h
+ * \file xor_check_common.h
  * \brief
  */
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_XOR_XOR_CHECK_COMMON_H_

@@ -984,7 +984,7 @@ public:
             "IterateBatch not support when enableMixDualMaster is enabled");
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
         ASSERT(kfcMsg_.body.isFirstIter == 1);
-        ASSERT(!(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateBatch not support when when sameab"
+        ASSERT(!(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateBatch not support when sameab"
                                                         " is enabled");
         kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(gm.GetPhyAddr());
         kfcMsg_.body.enSequentialWrite = enSequentialWrite;

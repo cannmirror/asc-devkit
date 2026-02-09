@@ -50,14 +50,14 @@ private:
 
     template <typename T>
     __aicore__ inline void CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, uint32_t blockCount, uint32_t blockLen, 
-        uint8_t leftPaddingCnt, uint8_t rigntPaddingCnt, uint8_t cacheMode, int64_t srcStride, int64_t dstStride)
+        uint8_t leftPaddingCnt, uint8_t rightPaddingCnt, uint8_t cacheMode, int64_t srcStride, int64_t dstStride)
     {
         if ASCEND_IS_AIV {
             return;
         }
 
         if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3101) {
-            copy_gm_to_cbuf_align_v2(dst, src, 0, blockCount, blockLen, leftPaddingCnt, rigntPaddingCnt, true,
+            copy_gm_to_cbuf_align_v2(dst, src, 0, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, true,
                 cacheMode, srcStride, dstStride);
         }
     }
@@ -120,7 +120,7 @@ private:
         auto dstStrideSize = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
 
         uint8_t leftPaddingCnt = 0;
-        uint8_t rigntPaddingCnt = 0;
+        uint8_t rightPaddingCnt = 0;
         uint8_t cacheMode = GetCacheModeFromTensor(src);
 
         using type = typename GetTensorTraitType<U>::LiteType;
@@ -130,7 +130,7 @@ private:
         auto srcStride = srcStrideSize * sizeof(type);
         auto dstStride = dstStrideSize * sizeof(type);
 
-        return Std::make_tuple(blockCount, blockLen, leftPaddingCnt, rigntPaddingCnt, cacheMode, srcStride, dstStride);
+        return Std::make_tuple(blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
     }
 };
 
@@ -188,7 +188,7 @@ private:
         auto srcStrideRows = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
  
         uint8_t leftPaddingCnt = 0;
-        uint8_t rigntPaddingCnt = 0;
+        uint8_t rightPaddingCnt = 0;
         uint8_t cacheMode = GetCacheModeFromTensor(src);
  
         using type = typename GetTensorTraitType<U>::LiteType;
@@ -198,7 +198,7 @@ private:
         auto srcStride = srcStrideRows * sizeof(type);
         auto dstStride = dstStrideRows * sizeof(type);
  
-        return Std::make_tuple(blockCount, blockLen, leftPaddingCnt, rigntPaddingCnt, cacheMode, srcStride, dstStride);
+        return Std::make_tuple(blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
     }
 };
 

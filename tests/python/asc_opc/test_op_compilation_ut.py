@@ -66,7 +66,7 @@ class TestOpCompilationUt(unittest.TestCase):
                 os.remove(to_del_file)
                 logger.info("Deleta file[%s] success", to_del_file)
             except Exception as e:
-                logger.error("Delete file[%s] filed, reason: %s.", to_del_file, str(e))
+                logger.error("Delete file[%s] field, reason: %s.", to_del_file, str(e))
             finally:
                 pass
 

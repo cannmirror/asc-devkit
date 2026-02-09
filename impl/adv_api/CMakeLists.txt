@@ -26,31 +26,31 @@ if(NOT BUILD_OPEN_PROJECT)
 endif()
 
 # generate kernel_tiling/kernel_tiling.h
-set(GEN_KERENL_TILING_DATA_SCRIPT
+set(GEN_KERNEL_TILING_DATA_SCRIPT
     ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/gen_kernel_tiling_data_def.py)
 set(GENERATE_INSTALL_SCRIPT
     ${ASCENDC_ADV_API_CMAKE_DIR}/scripts/generate_install_script.sh)
 set(TILING_DATA_DEF_DIR ${ASCENDC_INCLUDE_DIR}/adv_api)
 set(KERNEL_TILING_DIR ${PROJECT_BINARY_DIR})
-set(KERNEL_TILING_HAED ${KERNEL_TILING_DIR}/kernel_tiling/kernel_tiling.h)
+set(KERNEL_TILING_HEAD ${KERNEL_TILING_DIR}/kernel_tiling/kernel_tiling.h)
 
 if(NOT BUILD_OPEN_PROJECT)
   add_custom_command(
-    OUTPUT ${KERNEL_TILING_HAED}
-    COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
-            ${KERNEL_TILING_HAED}
+    OUTPUT ${KERNEL_TILING_HEAD}
+    COMMAND ${HI_PYTHON} ${GEN_KERNEL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
+            ${KERNEL_TILING_HEAD}
     COMMAND mkdir -p ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
-    COMMAND cp ${KERNEL_TILING_HAED} ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
-    DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+    COMMAND cp ${KERNEL_TILING_HEAD} ${TOP_DIR}/atc/opcompiler/ascendc_compiler/api/kernel_tiling
+    DEPENDS ${GEN_KERNEL_TILING_DATA_SCRIPT})
 else()
   add_custom_command(
-    OUTPUT ${KERNEL_TILING_HAED}
-    COMMAND ${HI_PYTHON} ${GEN_KERENL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
-            ${KERNEL_TILING_HAED}
-    DEPENDS ${GEN_KERENL_TILING_DATA_SCRIPT})
+    OUTPUT ${KERNEL_TILING_HEAD}
+    COMMAND ${HI_PYTHON} ${GEN_KERNEL_TILING_DATA_SCRIPT} ${TILING_DATA_DEF_DIR}
+            ${KERNEL_TILING_HEAD}
+    DEPENDS ${GEN_KERNEL_TILING_DATA_SCRIPT})
 endif()
 
-add_custom_target(gen_kernel_tiling ALL DEPENDS ${KERNEL_TILING_HAED})
+add_custom_target(gen_kernel_tiling ALL DEPENDS ${KERNEL_TILING_HEAD})
 
 add_library(kernel_tiling_headers INTERFACE)
 add_dependencies(kernel_tiling_headers gen_kernel_tiling)
@@ -96,7 +96,7 @@ endif()
 
 # copy include to asc impl
 install(
-  FILES ${KERNEL_TILING_HAED}
+  FILES ${KERNEL_TILING_HEAD}
   DESTINATION
     ${INSTALL_LIBRARY_DIR}/asc/include/adv_api/
   OPTIONAL)
@@ -147,6 +147,6 @@ if(NOT BUILD_OPEN_PROJECT)
   install_package(
     PACKAGE kernel_tiling
     TARGETS kernel_tiling_headers
-    FILES ${KERNEL_TILING_HAED}
+    FILES ${KERNEL_TILING_HEAD}
     DESTINATION ${INSTALL_INCLUDE_DIR}/asc/include/adv_api/)
 endif()

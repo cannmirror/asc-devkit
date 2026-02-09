@@ -195,7 +195,7 @@ __aicore__ inline void WriteHeadMsg(DumpMessageHead &dumpMsg)
 {
     __gm__ BlockInfo *coreHeadPtr = GetCurCoreHeadPtr();
     *((__gm__ uint32_t *)coreHeadPtr->dumpAddr + DUMP_MESSAGE_HEAD_TYPE_POS) = dumpMsg.type; // static_cast<uint32_t>(DumpType::DUMP_TENSOR);
-    *((__gm__ uint32_t *)coreHeadPtr->dumpAddr + DUMP_MESSAGE_HEAD_LEN_POS) = dumpMsg.lenth; // DUMP_MSG_HEAD_SIZE + dumpSize * sizeof(T);
+    *((__gm__ uint32_t *)coreHeadPtr->dumpAddr + DUMP_MESSAGE_HEAD_LEN_POS) = dumpMsg.length; // DUMP_MSG_HEAD_SIZE + dumpSize * sizeof(T);
     *((__gm__ uint32_t *)coreHeadPtr->dumpAddr + DUMP_MESSAGE_HEAD_ADDR_POS) = dumpMsg.addr; // static_cast<uint32_t>(tensorAddr);
     *((__gm__ uint32_t *)coreHeadPtr->dumpAddr + DUMP_MESSAGE_HEAD_DATA_TYPE_POS) = dumpMsg.dataType; // GetDataType(data);
     *((__gm__ uint32_t *)coreHeadPtr->dumpAddr + DUMP_MESSAGE_HEAD_DESC_POS) = dumpMsg.desc;
@@ -316,7 +316,7 @@ __aicore__ inline void DumpTensorLocal2GMEntityImpl(const LocalTensor<T> &src, u
     __gm__ BlockInfo *coreHeadPtr = (__gm__ BlockInfo *)(dumpWorkspaceStart + DUMP_UINTSIZE * core);
     dcci((__gm__ uint64_t *)coreHeadPtr, cache_line_t::ENTIRE_DATA_CACHE);
     if (coreHeadPtr->dumpOffset < dumpHeadSize + ONE_DUMP_BACKUP_SIZE) {
-            KERNEL_LOG(KERNEL_ERROR, "Remained space[%u] is not enough for check!", coreHeadPtr->dumpOffset);
+            KERNEL_LOG(KERNEL_ERROR, "Remaining space[%u] is not enough for check!", coreHeadPtr->dumpOffset);
             return;
     }
 
@@ -324,7 +324,7 @@ __aicore__ inline void DumpTensorLocal2GMEntityImpl(const LocalTensor<T> &src, u
     PipeBarrier<PIPE_ALL>();
     dcci((__gm__ uint64_t *)gmBackAddr, cache_line_t::ENTIRE_DATA_CACHE);
     if ((coreHeadPtr->dumpOffset < workOffset)) {
-        KERNEL_LOG(KERNEL_ERROR, "Remained space[%u] is less than workOffset[%u]", coreHeadPtr->dumpOffset, workOffset);
+        KERNEL_LOG(KERNEL_ERROR, "Remaining space[%u] is less than workOffset[%u]", coreHeadPtr->dumpOffset, workOffset);
         UpdateBlockInfo(0, DUMP_EXC_FLAG);
         PipeBarrier<PIPE_ALL>();
         return;
@@ -411,7 +411,7 @@ __aicore__ inline void DumpTensorGM2GMEntityImpl(const GlobalTensor<T> &src, uin
     __gm__ BlockInfo *coreHeadPtr = (__gm__ BlockInfo *)(dumpWorkspaceStart + DUMP_UINTSIZE * core);
     dcci((__gm__ uint64_t *)coreHeadPtr, cache_line_t::ENTIRE_DATA_CACHE);
     if (coreHeadPtr->dumpOffset < dumpHeadSize + ONE_DUMP_BACKUP_SIZE) {
-            KERNEL_LOG(KERNEL_ERROR, "Remained space[%u] is not enough for check!", coreHeadPtr->dumpOffset);
+            KERNEL_LOG(KERNEL_ERROR, "Remaining space[%u] is not enough for check!", coreHeadPtr->dumpOffset);
             return;
     }
     /*---------Backup UB start---------*/
@@ -424,7 +424,7 @@ __aicore__ inline void DumpTensorGM2GMEntityImpl(const GlobalTensor<T> &src, uin
     PipeBarrier<PIPE_ALL>();
     dcci((__gm__ uint64_t *)gmBackAddr, cache_line_t::ENTIRE_DATA_CACHE);
     if ((coreHeadPtr->dumpOffset < workOffset)) {
-        KERNEL_LOG(KERNEL_ERROR, "Remained space[%u] is less than workOffset[%u]", coreHeadPtr->dumpOffset, workOffset);
+        KERNEL_LOG(KERNEL_ERROR, "Remaining space[%u] is less than workOffset[%u]", coreHeadPtr->dumpOffset, workOffset);
         UpdateBlockInfo(0, DUMP_EXC_FLAG);
         PipeBarrier<PIPE_ALL>();
         return;

@@ -111,7 +111,7 @@ void GetBroadCastMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcP
     ASCENDC_HOST_ASSERT(typeSize > 0, return, "TypeSize must be greater than 0.");
     for (size_t i = 0; i < dstShapeDimNum; i++) {
         ASCENDC_HOST_ASSERT((srcShape.GetDim(i) == dstShape.GetDim(i) || srcShape.GetDim(i) == 1),
-            return, "SrcShape can't not broadcast to dstShape.");
+            return, "SrcShape cannot broadcast to dstShape.");
     }
 
     auto srcSize = srcShape.GetShapeSize();

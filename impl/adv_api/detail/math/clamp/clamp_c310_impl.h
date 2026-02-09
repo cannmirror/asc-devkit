@@ -195,8 +195,8 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
     if constexpr (TypeUtils::IsLocalTensorType<U>() && TypeUtils::IsLocalTensorType<S>()) {
         using ActualU = typename U::PrimType;
         using ActualS = typename S::PrimType;
-        static_assert(Std::is_same_v<T, ActualU>, "The data type of T and actucalU should be the same");
-        static_assert(Std::is_same_v<T, ActualS>, "The data type of T and actucalS should be the same");
+        static_assert(Std::is_same_v<T, ActualU>, "The data type of T and ActualU should be the same");
+        static_assert(Std::is_same_v<T, ActualS>, "The data type of T and ActualS should be the same");
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));
@@ -213,7 +213,7 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
         
     } else if constexpr (TypeUtils::IsLocalTensorType<U>() && TypeUtils::IsInnerDefaultType<S>()) {
         using ActualU = typename U::PrimType;
-        static_assert(Std::is_same_v<T, ActualU>, "The data type of T and actucalU should be the same");
+        static_assert(Std::is_same_v<T, ActualU>, "The data type of T and ActualU should be the same");
         static_assert(Std::is_same_v<T, S>, "The data type of T and S should be the same");
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
@@ -232,7 +232,7 @@ __aicore__ inline void ClampImpl(const LocalTensor<T>& dst, const LocalTensor<T>
     } else if constexpr (TypeUtils::IsLocalTensorType<S>() && TypeUtils::IsInnerDefaultType<U>()) {
         using ActualS = typename S::PrimType;
         static_assert(Std::is_same_v<T, U>, "The data type of T and U should be the same");
-        static_assert(Std::is_same_v<T, ActualS>, "The data type of T and actucalS should be the same");
+        static_assert(Std::is_same_v<T, ActualS>, "The data type of T and ActualS should be the same");
         if constexpr (sizeof(T) == 8) {
             constexpr uint32_t oneRepElm = static_cast<uint32_t>(GetVecLen() / sizeof(T) * CLAMP_B64_REPEAT_STRIDE);
             uint16_t repeatTime = static_cast<uint16_t>(CeilDivision(count, oneRepElm));

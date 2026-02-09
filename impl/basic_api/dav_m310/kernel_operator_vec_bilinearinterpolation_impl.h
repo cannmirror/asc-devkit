@@ -27,7 +27,7 @@ __aicore__ inline void BilinearInterpolationCalc(const LocalTensor<T> &dst, cons
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support BilinearInterpolation"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support BilinearInterpolation"); });
 }
 
 template <typename T>
@@ -36,7 +36,7 @@ __aicore__ inline void BilinearInterpolationCalc(LocalTensor<T> &dst, LocalTenso
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support BilinearInterpolation"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support BilinearInterpolation"); });
 }
 } // namespace AscendC
 #pragma end_pipe

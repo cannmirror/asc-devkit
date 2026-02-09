@@ -52,7 +52,7 @@ __simd_vf__ inline void VecUnaryLevel2ImplFloat(__ubuf__ T *dst, __ubuf__ T *src
     constexpr uint32_t posZero = 0x00000000u;
     constexpr uint32_t negZero = 0x80000000u;
     constexpr uint32_t posInf = 0x7f800000u;
-    constexpr float subnoramlBound = 1.1754944e-38;
+    constexpr float subnormalBound = 1.1754944e-38;
     constexpr float halfFactor = 0.5f;
     constexpr float negHalfFactor = -0.5f;
     constexpr float oneHalf = 1.5f;
@@ -114,7 +114,7 @@ __simd_vf__ inline void VecUnaryLevel2ImplFloat(__ubuf__ T *dst, __ubuf__ T *src
         MicroAPI::Duplicate(regOne, 1.0f, maskFull);
         MicroAPI::Duplicate(regOneHalf, oneHalf, maskFull);
 
-        MicroAPI::CompareScalar<T, CMPMODE::LT>(cmpMask, srcReg, subnoramlBound, mask);
+        MicroAPI::CompareScalar<T, CMPMODE::LT>(cmpMask, srcReg, subnormalBound, mask);
         MicroAPI::Muls(tmpReg, srcReg, multiplyFactor0, mask);
         MicroAPI::Select(srcReg, tmpReg, srcReg, cmpMask);
 

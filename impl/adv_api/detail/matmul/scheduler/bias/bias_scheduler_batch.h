@@ -27,7 +27,7 @@ constexpr int32_t BIAS_B16_C0SIZE = 32;
 
 /**
  * BiasScheduler: responsible for copy bias data management.
- * This module provides ablities to copy bias data in C2 or L0C.
+ * This module provides abilities to copy bias data in C2 or L0C.
  * We retain the freedom to make incompatible changes, but do not guarantee the stability.
  * BiasScheduler is only for internal usage, does not support extension or customized specialization!
  */

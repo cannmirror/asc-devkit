@@ -58,8 +58,8 @@ public:
     __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& tensor) {}
 
     /**
-     * @description: if is quant senario
-     * @return: quant senario or not
+     * @description: if is quant scenario
+     * @return: quant scenario or not
      */
     __aicore__ inline bool IsQuantSenario()
     {

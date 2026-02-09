@@ -165,7 +165,7 @@ int32_t constexpr GetNdNzMask(CubeFormat dstFormat, CubeFormat srcFormat)
     if ((srcFormat == CubeFormat::ND) && (dstFormat == CubeFormat::NZ)) {
         return 1;
     } else if ((srcFormat == CubeFormat::NZ) && (dstFormat == CubeFormat::ND)) {
-        return Impl::NZ_MASK_VAlUE;
+        return Impl::NZ_MASK_VALUE;
     }
     return 0;
 }

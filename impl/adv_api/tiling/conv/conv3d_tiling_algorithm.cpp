@@ -56,7 +56,7 @@ int64_t Conv3dTilingAlgorithm::GetL1Tiling()
     // get if weight can by pass in L1
     WeightBypassDecision();
     // update l1 pingpong decision
-    UpdateL1DoubelBuffer();
+    UpdateL1DoubleBuffer();
     SetL1TilingRes();
 
     return 0;
@@ -71,7 +71,7 @@ int64_t Conv3dTilingAlgorithm::PreProcessingL1Tiling()
     // get kL1，mL1 and nL1 range value
     GetL1TilingRange();
     // cal full load condition and init range start idx
-    InitL1TiLing();
+    InitL1Tiling();
     return 0;
 }
 
@@ -168,7 +168,7 @@ int64_t Conv3dTilingAlgorithm::InitCalcL1Params()
     this->l1TilingCalc.inputKL1FullLoadSize = tilingIns_->shapeInfo.singlekD * tilingIns_->shapeCalc.singleCi1 *
         tilingIns_->cubeInfo.k0 * hiL1MinLoad * tilingIns_->shapeInfo.orgWi * this->doubleBufferValue.pbAL1 *
         this->fMapDTypeSize;
-    // cal min/kfullload weiht size in L1
+    // cal min/kfullload weight size in L1
     this->l1TilingCalc.weightMinLoadL1Size = this->l1TilingCalc.ci0HkWk * this->l0TilingParams.nL0 *
         this->doubleBufferValue.pbBL1 * this->weightDTypeSize;
     this->l1TilingCalc.weightKL1FullLoadSize = tilingIns_->shapeInfo.singlekD * tilingIns_->shapeCalc.singleCi1 *
@@ -221,7 +221,7 @@ void Conv3dTilingAlgorithm::GetL1TilingRange()
     VectorElementMultip(this->l1TilingRange.mAL1ValueRange, l0TilingParams.mL0);
 }
 
-void Conv3dTilingAlgorithm::InitL1TiLing()
+void Conv3dTilingAlgorithm::InitL1Tiling()
 {
     this->l1TilingInitMap[L1TilingMode::NONE_FULL_LOAD].SetIdx(0, 0, 0, 0);
     this->l1TilingInitMap[L1TilingMode::FULL_LOAD_AL1].SetIdx(this->l1TilingRange.kAL1Range.size() - 1, 0,
@@ -305,7 +305,7 @@ void Conv3dTilingAlgorithm::CoreL1TilingDecision()
                                     this->l1TilingCalc.ci0HkWk;
         this->l1TilingParams.mAL1Value = tilingIns_->cubeInfo.m0 * tilingIns_->shapeCalc.singleM1;
         this->l1TilingFlag.iterateMNOrder = IterateMNOrder::ITER_N_FST;
-        // speical case, when min weight can not load in L1, bypass
+        // special case, when min weight can not load in L1, bypass
         if (CoreL1TilingMinWeightBypass()) {
             this->l1TilingFlag.isWeightBypass = true;
             this->l1TilingParams.kBL1 = 0;
@@ -661,7 +661,7 @@ void Conv3dTilingAlgorithm::WeightBypassDecision()
     return;
 }
 
-void Conv3dTilingAlgorithm::UpdateL1DoubelBuffer()
+void Conv3dTilingAlgorithm::UpdateL1DoubleBuffer()
 {
     if (!this->l1TilingFlag.isWeightBypass && this->l1TilingFlag.abL1Mode != L1TilingMode::FULL_LOAD_BL1 &&
         (this->l1TilingFlag.abL1Mode != L1TilingMode::ALL_FULL_LOAD)) {

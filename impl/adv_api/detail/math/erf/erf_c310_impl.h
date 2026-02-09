@@ -133,7 +133,7 @@ __simd_callee__ inline void ErfSpecialCaseCompute(MicroAPI::RegTensor<float>& ds
     constexpr uint32_t ERF_R0 = 0x3F8060FE;
     constexpr uint32_t ERF_R1 = 0x3F800000;
     constexpr uint32_t ERF_R2 = 0x80000000;
-    constexpr float LOG2_VAULE = 2.0f;
+    constexpr float LOG2_VALUE = 2.0f;
 
     MicroAPI::RegTensor<float> tmpF5Reg, tmpF32Reg, tmpF32Reg1;
     MicroAPI::RegTensor<uint32_t> tmpU32Reg;
@@ -142,7 +142,7 @@ __simd_callee__ inline void ErfSpecialCaseCompute(MicroAPI::RegTensor<float>& ds
     MicroAPI::Duplicate(tmpU32Reg, ERF_R0, mask);
     MicroAPI::Compare<float, CMPMODE::LT>(cmpMask, tmpF5Reg, (MicroAPI::RegTensor<float> &)tmpU32Reg, mask);
 
-    MicroAPI::Duplicate(tmpF32Reg, LOG2_VAULE, mask);
+    MicroAPI::Duplicate(tmpF32Reg, LOG2_VALUE, mask);
     MicroAPI::Log(tmpF32Reg, tmpF32Reg, mask);
     MicroAPI::Mul(tmpF32Reg, tmpReg, tmpF32Reg, mask);
     MicroAPI::Exp(tmpF32Reg, tmpF32Reg, mask);  // tmpF32Reg: f23

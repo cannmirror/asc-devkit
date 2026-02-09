@@ -305,7 +305,7 @@ private:
         int32_t baseWidth = MATMUL_MODULE(NLoop)->GetBaseShape();
         int32_t baseBlockHeight = MATMUL_MODULE(MLoop)->GetBaseBlockShape();
         int32_t baseBlockWidth = MATMUL_MODULE(NLoop)->GetBaseBlockShape();
-        if (MATMUL_MODULE(NLoop)->GetL0DBLoopNum() > 1) { // Means L0 N db, need to excute twice FixpipeL0CToGm
+        if (MATMUL_MODULE(NLoop)->GetL0DBLoopNum() > 1) { // Means L0 N db, need to execute twice FixpipeL0CToGm
             FixpipeL0CToGm(gm, co1Local, MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
                 enAtomic, enSequentialWrite, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
             if (MATMUL_MODULE(NLoop)->GetInnerIdx() + DB_NUM == MATMUL_MODULE(NLoop)->GetTotalIter()) {
@@ -315,7 +315,7 @@ private:
             FixpipeL0CToGm(gm, co1Local[co1Offset],
                 MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx() + 1,
                 enAtomic, enSequentialWrite, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);
-        } else if (MATMUL_MODULE(MLoop)->GetL0DBLoopNum() > 1) { // Means L0 M db, need to excute twice FixpipeL0CToGm
+        } else if (MATMUL_MODULE(MLoop)->GetL0DBLoopNum() > 1) { // Means L0 M db, need to execute twice FixpipeL0CToGm
             FixpipeL0CToGm(gm, co1Local,
                 MATMUL_MODULE(MLoop)->GetInnerIdx(), MATMUL_MODULE(NLoop)->GetInnerIdx(),
                 enAtomic, enSequentialWrite, baseHeight, baseWidth, baseBlockHeight, baseBlockWidth);

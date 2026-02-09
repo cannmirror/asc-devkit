@@ -75,7 +75,7 @@ public:
             constexpr int srcOffset = CUBE_MAX_SIZE;
             loadDataParams.repeatTimes = blockUseN;
             if constexpr (PhyPosIsL1(INPUT_TYPE::pos)) {
-                // alL B matrix is in L1 buffer
+                // all B matrix is in L1 buffer
                 loadDataParams.srcStride = Ceil(bL1K, BLOCK_CUBE);
             } else {
                 loadDataParams.srcStride = blockUseK;

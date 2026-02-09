@@ -23,7 +23,7 @@ namespace AscendC {
  * \brief calculate max and min tmp buffer size for LayerNorm interface.
  * \param [in] srcShape: input shape
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [out] maxValue: max size required for tmp buffer
  * \param [out] minValue: min size required for tmp buffer
  */
@@ -39,7 +39,7 @@ void GetLayerNormNDTillingInfo(const ge::Shape& srcShape, const uint32_t stackBu
  * \param [in] srcShape: input shape
  * \param [in] stackBufferSize: share temporary buffer size
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [out] tiling: LayerNormSeparateTiling
  */
 void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBufferSize, const uint32_t typeSize,
@@ -52,7 +52,7 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
  * \param [in] srcShape: input shape
  * \param [in] typeSizeU: data type size: sizeof(U)
  * \param [in] typeSizeT: data type size: sizeof(T)
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [in] isInplace: indicate whether outputs that are not calculated are multiplexed inputs.
  * \param [out] maxValue: max size required for tmp buffer
  * \param [out] minValue: min size required for tmp buffer
@@ -64,7 +64,7 @@ void GetWelfordUpdateMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typ
  * \brief calculate max and min tmp buffer size for LayerNorm interface.
  * \param [in] srcShape: input shape
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [in] isComputeRstd: indicate whether to calculate rstd. Only support true now.
  * \param [in] isOnlyOutput: indicate whether to only output normalized result y. Only support false now.
  * \param [out] maxValue: max size required for tmp buffer
@@ -78,7 +78,7 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
  * \param [in] srcShape: input shape
  * \param [in] stackBufferSize: share temporary buffer size
  * \param [in] typeSize: data type size
- * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved paramater.
+ * \param [in] isReuseSource: indicate whether to reuse source tensor. Reserved parameter.
  * \param [in] isComputeRstd: indicate whether to calculate rstd. Only support true now.
  * \param [out] tiling: LayerNormSeparateTiling
  */

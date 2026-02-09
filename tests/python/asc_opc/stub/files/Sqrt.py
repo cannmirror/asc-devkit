@@ -47,7 +47,7 @@ def copy_compile_res_files_to_output(kernel_name):
                 json.dump(data, f, indent=2, ensure_ascii=False)
             copy(os.path.realpath(o_res_path), o_output_path)
         except Exception as e:
-            raise RuntimeError("Copy [%s] to [%s] filed, reason: %s." %
+            raise RuntimeError("Copy [%s] to [%s] field, reason: %s." %
                             (json_res_path, json_output_path, str(e)))
         finally:
             pass

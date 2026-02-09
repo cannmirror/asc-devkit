@@ -84,7 +84,7 @@ __aicore__ inline void DeepNormBasicBlockTransdata(const LocalTensor<float>& dst
 __aicore__ inline void DeepNormVarianceBasicBlockByBrcb(const LocalTensor<float>& inputX,
     const LocalTensor<float>& inputMean, const DeepNormTiling& tiling, const DeepNormParams<float>& params)
 {
-    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock gurantee hLength = n * 64
+    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock guarantee hLength = n * 64
 
     // meanX = broadcast inputMean(B*S) -> (B*S*H)
     // assume B*S*H is 2*8*128, then only broadcast to B*S*64, part 64~128 will reuse part 0~64
@@ -108,7 +108,7 @@ __aicore__ inline void DeepNormVarianceBasicBlockByBrcb(const LocalTensor<float>
 __aicore__ inline void DeepNormOutputBasicBlockByBrcb(const LocalTensor<float>& xSubMean, const DeepNormTiling& tiling,
     const DeepNormParams<float>& params)
 {
-    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock gurantee hLength = n * 64
+    const uint8_t num = tiling.hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock guarantee hLength = n * 64
     const UnaryRepeatParams unaryParams;
     BinaryRepeatParams binaryParams;
     binaryParams.dstRepStride = num * DEFAULT_REPEAT_STRIDE;

@@ -17,7 +17,7 @@
 #include "kernel_operator_vec_vconv_intf.h"
 
 namespace AscendC {
-// Initiliaze cmpmask before select instr since the scalar value is never changed.
+// Initialize cmpmask before select instr since the scalar value is never changed.
 template <typename T> __aicore__ inline void InitScalarSelectMask(const LocalTensor<T> &tmpMask, T scalar)
 {
     SetVectorMask<half, MaskMode::COUNTER>(0, ONE_REPEAT_BYTE_SIZE / sizeof(T));

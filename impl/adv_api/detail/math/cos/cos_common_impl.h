@@ -48,7 +48,7 @@ constexpr float COS_PI_DOWN = 1.57079637050628662109375;
 // kpi_2
 constexpr float COS_PI_RESDOWN_ADDS_NEG = -0.00000004371139000189375;
 // define the number of cos compute
-constexpr float COS_RES_MULIT_SCA = 2.604926501e-6;
+constexpr float COS_RES_MULTI_SCA = 2.604926501e-6;
 constexpr float COS_RES_ADDICT_UP = -0.0001980894471;
 constexpr float COS_2ADDS = 0.008333049340;
 constexpr float COS_3ADDS = -0.1666665792;
@@ -177,7 +177,7 @@ __aicore__ inline void CosPolynomialApproximation(const LocalTensor<float>& dstT
     SignCompute(dstTensor, inputX, roundTensor, kpi);
 
     // res_up = mul(x^2, 2.604926501e-6)
-    Muls<float, false>(roundTensor, kpi, COS_RES_MULIT_SCA, MASK_PLACEHOLDER, 1, unaryParams);
+    Muls<float, false>(roundTensor, kpi, COS_RES_MULTI_SCA, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     Adds<float, false>(roundTensor, roundTensor, COS_RES_ADDICT_UP, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();

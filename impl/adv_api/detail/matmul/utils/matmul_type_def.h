@@ -102,10 +102,10 @@ template<typename INPUT_TYPE>
 struct HasScalePosition<INPUT_TYPE, voidT<decltype(&INPUT_TYPE::scalePosition)>> : trueType {};
 
 template <TPosition POSITION, TPosition SCALE_POSITION, CubeFormat FORMAT, typename TYPE, bool ISTRANS = false,
-    TPosition SRCPOS = TPosition::GM, CubeFormat SCALE_FORMT = FORMAT, bool SCALE_ISTRANS = ISTRANS, TPosition SCALE_SRCPOS = SRCPOS>
+    TPosition SRCPOS = TPosition::GM, CubeFormat SCALE_FORMAT = FORMAT, bool SCALE_ISTRANS = ISTRANS, TPosition SCALE_SRCPOS = SRCPOS>
 struct MatmulTypeWithScale : public MatmulType<POSITION, FORMAT, TYPE, ISTRANS, LayoutMode::NONE, false, SRCPOS> {
     constexpr static TPosition scalePosition = SCALE_POSITION;
-    constexpr static CubeFormat scaleFormat = SCALE_FORMT;
+    constexpr static CubeFormat scaleFormat = SCALE_FORMAT;
     constexpr static bool isScaleTrans = SCALE_ISTRANS;
     constexpr static TPosition srcScalePos = SCALE_SRCPOS;
 };

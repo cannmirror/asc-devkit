@@ -42,7 +42,7 @@ constexpr float SIN_KPI_FIRS_PI_MULS = 0.0009670257568359375;
 constexpr float SIN_KPI_TWI_PI_MULS = 6.2771141529083251953125e-7;
 constexpr float SIN_KPI_THIR_PI_MULS = 1.21644916362129151821136474609375e-10;
 // define the number of sin compute
-constexpr float SIN_RES_MULIT_SCA = 2.604926501e-6;
+constexpr float SIN_RES_MULTI_SCA = 2.604926501e-6;
 constexpr float SIN_RES_ADDICT_UP = -0.0001980894471;
 constexpr float SIN_2ADDS = 0.008333049340;
 constexpr float SIN_3ADDS = -0.1666665792;
@@ -93,7 +93,7 @@ __aicore__ inline void SinPolynomialApproximation(const LocalTensor<float>& dstT
     SinSignCompute(dstTensor, inputX, roundTensor, kpi);
 
     // res_up = mul(x^2, 2.604926501e-6)
-    Muls<float, false>(roundTensor, kpi, SIN_RES_MULIT_SCA, MASK_PLACEHOLDER, 1, unaryParams);
+    Muls<float, false>(roundTensor, kpi, SIN_RES_MULTI_SCA, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     Adds<float, false>(roundTensor, roundTensor, SIN_RES_ADDICT_UP, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();

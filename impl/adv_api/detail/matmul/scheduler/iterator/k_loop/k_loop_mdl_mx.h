@@ -72,7 +72,7 @@ public:
                     { KERNEL_LOG(KERNEL_ERROR, "scaleFactorM is %d, which can only be 1.", tiling.GetScaleFactorM()); });
             }
         }
-        // originTailScaleStepKa_ represents the origin size of the GM -> L1 tail blok
+        // originTailScaleStepKa_ represents the origin size of the GM -> L1 tail block
         tailScaleStepKa_ = singleShape % (baseK * stepKa * scaleFactorKa_);
         tailScaleStepKb_ = singleShape % (baseK * stepKb * scaleFactorKb_);
         if (tailScaleStepKa_ == 0) {

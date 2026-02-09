@@ -12,7 +12,7 @@
 #include "graph/tensor.h"
 #include "batchnorm_tiling.h"
 namespace AscendC {
-[[deprecated(__FILE__ " is deprecated, please use batchorm_tiling.h instead!")]]
+[[deprecated(__FILE__ " is deprecated, please use batchnorm_tiling.h instead!")]]
 typedef void BatchnormTilingDeprecatedHeader;
 using LibBatchnormTilingInterface = BatchnormTilingDeprecatedHeader;
 }

@@ -69,12 +69,12 @@ __simd_callee__ inline void TaylorExpand(MicroAPI::RegTensor<float>& dstReg, Mic
     MicroAPI::Mul(dstReg, srcReg, srcReg, preg);
     MicroAPI::Muls(dstReg, dstReg, factorList[expandLevel], preg);
     for (uint16_t i = 0; i < COUNT_SIX; ++i) {
-        // dst*x^2+ the previois expand factor
+        // dst*x^2+ the previous expand factor
         MicroAPI::Adds(dstReg, dstReg, factorList[6], preg);
         MicroAPI::Mul(dstReg, dstReg, squareReg, preg);
         MicroAPI::Adds(dstReg, dstReg, factorList[5], preg);
     }
-    // dst*x^2+ the previois expand factor
+    // dst*x^2+ the previous expand factor
     MicroAPI::Adds(dstReg, dstReg, factorList[4], preg);
     MicroAPI::Mul(dstReg, dstReg, squareReg, preg);
     MicroAPI::Adds(dstReg, dstReg, factorList[3], preg);
@@ -114,7 +114,7 @@ __simd_callee__ inline void AtanCompute(
     MicroAPI::RegTensor<float> tmpReg;
     MicroAPI::RegTensor<float> tmpReg2;
     MicroAPI::RegTensor<float> squareReg;
-    // when x's value is too large the first caculator of TaylorExpand will be overflow. when epsilon is 0.0001,
+    // when x's value is too large the first calculator of TaylorExpand will be overflow. when epsilon is 0.0001,
     // the approximate value of `tan(pi/2 - 0.0001)` is 10000
     // Clip x to [MIN_INPUT_VALUE, MAX_INPUT_VALUE] in float
     MicroAPI::Mins(clipReg, castReg, MAX_INPUT_VALUE, preg);

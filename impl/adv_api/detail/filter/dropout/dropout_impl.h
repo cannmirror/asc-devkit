@@ -93,10 +93,10 @@ __aicore__ inline void DropOutImpl(const LocalTensor<T>& dstLocal, const LocalTe
     }
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
     static_assert(SupportType<T, half, float>(),
-        "Dropout Only Supportes half, float on current device.");
+        "Dropout Only Supports half, float on current device.");
 #else
     static_assert(SupportType<T, half, float, bfloat16_t>(),
-        "Dropout Only Supportes half, float, bfloat16_t on current device.");
+        "Dropout Only Supports half, float, bfloat16_t on current device.");
 #endif
 #endif
 
