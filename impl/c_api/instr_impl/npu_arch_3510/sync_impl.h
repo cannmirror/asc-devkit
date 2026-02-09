@@ -7,3 +7,12 @@
  * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
  * See LICENSE in the root of the software repository for the full text of the License.
  */
+
+#ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_SYNC_IMPL_H
+#define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_SYNC_IMPL_H
+
+#include "instr_impl/npu_arch_3510/sync_impl/asc_sync_notify_impl.h"
+#include "instr_impl/npu_arch_3510/sync_impl/asc_sync_wait_impl.h"
+#include "instr_impl/npu_arch_3510/sync_impl/asc_sync_pipe_impl.h"
+
+#endif

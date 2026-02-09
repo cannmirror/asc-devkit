@@ -71,9 +71,34 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_POSTUPDATE_INSTR(class_name, c_api_name, cce_name, data_type, index)            \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub_##index##_offset##_update(vector_##data_type src, __ubuf__ data_type *dst, int32_t offset,         \
+    Literal dist, vector_bool mask, Literal mode) {}                                            \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
+    vector_##data_type src;                                                                     \
+    vector_bool mask;                                                                           \
+    int32_t offset;                                                                             \
+                                                                                                \
+                                                                                                \
+    c_api_name(dst, src, offset, mask);                                                         \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #define TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_INSTR(class_name, c_api_name, cce_name, data_type, index)            \
                                                                                                 \
-class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
 protected:                                                                                      \
     void SetUp() {}                                                                             \
     void TearDown() {}                                                                          \
@@ -114,11 +139,35 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
 {                                                                                               \
     __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
     vector_##data_type src;                                                                     \
-    int32_t offset;                                                                     \
+    int32_t offset;                                                                             \
                                                                                                 \
-    MOCKER_CPP(cce_name, void(vector_##data_type, __ubuf__ data_type *, int32_t, Literal, vector_bool))                    \
+    MOCKER_CPP(cce_name, void(vector_##data_type, __ubuf__ data_type *, int32_t, Literal, vector_bool))          \
         .times(1)                                                                               \
         .will(invoke(cce_name##_##data_type##_Stub_##index##_offset));                          \
+                                                                                                \
+    c_api_name(dst, src, offset);                                                               \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
+#define TEST_VECTOR_DATAMOVE_STOREALIGN_ONEPT_OFFSET_POSTUPDATE_INSTR(class_name, c_api_name, cce_name, data_type, index)             \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub_##index##_offset##_update(vector_##data_type src, __ubuf__ data_type *dst, int32_t offset,       \
+    Literal dist, vector_bool mask, Literal mode) {}                                            \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
+    vector_##data_type src;                                                                     \
+    int32_t offset;                                                                             \
+                                                                                                \
                                                                                                 \
     c_api_name(dst, src, offset);                                                               \
     GlobalMockObject::verify();                                                                 \

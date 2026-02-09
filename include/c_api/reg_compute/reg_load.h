@@ -14,7 +14,7 @@
 #include "instr_impl/npu_arch_3510/vector_datamove_impl.h"
 
 // ==========源操作数为起初地址，目的数为寄存器=========
-// ==========asc_gather(u8/s8/half/u16/s16/float/u32/s32/bf16/e4m3/e5m2)=========
+// ==========asc_gather(u8/s8/half/u16/s16/float/u32/s32/bf16/e4m3/e5m2/e8m0)=========
 __simd_callee__ inline void asc_gather(vector_int16_t& dst, __ubuf__  int8_t* src,
     vector_uint16_t index, vector_bool mask);
 
@@ -52,7 +52,7 @@ __simd_callee__ inline void asc_gather(vector_fp8_e8m0_t& dst, __ubuf__  fp8_e8m
     vector_uint16_t index, vector_bool mask);
 
 // ==========源操作数和目的数都为寄存器=========
-// ==========asc_gather(u8/s8/half/u16/s16/u32/s32/bf16/e4m3/e5m2)=========
+// ==========asc_gather(u8/s8/half/u16/s16/u32/s32/bf16/e4m3/e5m2/e8m0)=========
 __simd_callee__ inline void asc_gather(vector_int8_t& dst, vector_int8_t src,
     vector_uint8_t index);
 
@@ -133,6 +133,9 @@ __simd_callee__ inline void asc_gather_datablock(vector_fp4x2_e2m1_t& dst, __ubu
 __simd_callee__ inline void asc_gather_datablock(vector_fp4x2_e1m2_t& dst, __ubuf__  fp4x2_e1m2_t* src,
     vector_uint32_t index, vector_bool mask);
 
+__simd_callee__ inline void asc_gather_datablock(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t *src,
+    vector_uint32_t index, vector_bool mask);
+
 // ==========无mask参数=========
 // ==========asc_gather_datablock(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e2m1/e1m2)=========
 __simd_callee__ inline void asc_gather_datablock(vector_int8_t& dst, __ubuf__  int8_t* src,
@@ -176,6 +179,9 @@ __simd_callee__ inline void asc_gather_datablock(vector_fp4x2_e2m1_t& dst, __ubu
 
 __simd_callee__ inline void asc_gather_datablock(vector_fp4x2_e1m2_t& dst, __ubuf__  fp4x2_e1m2_t* src,
     vector_uint32_t index);
+
+__simd_callee__ inline void asc_gather_datablock(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src,
+vector_uint32_t index);
 
 // ==========asc_get_mask_spr==========
 __simd_callee__ inline vector_bool asc_get_mask_spr_b16();
@@ -852,6 +858,8 @@ __simd_callee__ inline void asc_loadalign(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8
 
 __simd_callee__ inline void asc_loadalign(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
 
+__simd_callee__ inline void asc_loadalign(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
+
 __simd_callee__ inline void asc_loadalign(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
 
 __simd_callee__ inline void asc_loadalign(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
@@ -880,6 +888,8 @@ __simd_callee__ inline void asc_loadalign_postupdate(vector_fp8_e4m3fn_t& dst, _
 
 __simd_callee__ inline void asc_loadalign_postupdate(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t*& src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
 
+__simd_callee__ inline void asc_loadalign_postupdate(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t*& src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
+
 __simd_callee__ inline void asc_loadalign_postupdate(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t*& src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
 
 __simd_callee__ inline void asc_loadalign_postupdate(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t*& src_align32b, uint16_t block_stride, uint16_t repeat_stride, vector_bool mask);
@@ -896,6 +906,8 @@ __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp4x2_e2m1_t* src);
 
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp4x2_e1m2_t* src);
+
+__simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp8_e8m0_t* src);
 
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp8_e5m2_t* src);
 
@@ -925,6 +937,8 @@ __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__
 
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp4x2_e1m2_t* src, iter_reg offset);
 
+__simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp8_e8m0_t* src, iter_reg offset);
+
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp8_e5m2_t* src, iter_reg offset);
 
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ fp8_e4m3fn_t* src, iter_reg offset);
@@ -944,5 +958,284 @@ __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ float* src, iter_reg offset);
 
 __simd_callee__ inline void asc_loadunalign_pre(vector_load_align& dst, __ubuf__ int64_t* src, iter_reg offset);
+
+// ==========asc_loadunalign(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e8m0/e2m1/e1m2)=========
+__simd_callee__ inline void asc_loadunalign(vector_int8_t& dst, vector_load_align& src0, __ubuf__ int8_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_uint8_t& dst, vector_load_align& src0, __ubuf__ uint8_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_int16_t& dst, vector_load_align& src0, __ubuf__ int16_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_uint16_t& dst, vector_load_align& src0, __ubuf__ uint16_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_int32_t& dst, vector_load_align& src0, __ubuf__ int32_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_uint32_t& dst, vector_load_align& src0, __ubuf__ uint32_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_half& dst, vector_load_align& src0, __ubuf__ half *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_float& dst, vector_load_align& src0, __ubuf__ float *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_int64_t& dst, vector_load_align& src0, __ubuf__ int64_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_bfloat16_t& dst, vector_load_align& src0, __ubuf__ bfloat16_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_fp8_e4m3fn_t& dst, vector_load_align& src0, __ubuf__ fp8_e4m3fn_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_fp8_e5m2_t& dst, vector_load_align& src0, __ubuf__ fp8_e5m2_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_fp8_e8m0_t& dst, vector_load_align& src0, __ubuf__ fp8_e8m0_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_fp4x2_e2m1_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e2m1_t *src1);
+
+__simd_callee__ inline void asc_loadunalign(vector_fp4x2_e1m2_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e1m2_t *src1);
+
+// ==========asc_loadunalign_postupdate(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e2m1/e1m2)=========
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int8_t& dst, vector_load_align& src0, __ubuf__ int8_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint8_t& dst, vector_load_align& src0, __ubuf__ uint8_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int16_t& dst, vector_load_align& src0, __ubuf__ int16_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint16_t& dst, vector_load_align& src0, __ubuf__ uint16_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int32_t& dst, vector_load_align& src0, __ubuf__ int32_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint32_t& dst, vector_load_align& src0, __ubuf__ uint32_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_half& dst, vector_load_align& src0, __ubuf__ half *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_float& dst, vector_load_align& src0, __ubuf__ float *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int64_t& dst, vector_load_align& src0, __ubuf__ int64_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_bfloat16_t& dst, vector_load_align& src0, __ubuf__ bfloat16_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e4m3fn_t& dst, vector_load_align& src0, __ubuf__ fp8_e4m3fn_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e5m2_t& dst, vector_load_align& src0, __ubuf__ fp8_e5m2_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e2m1_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e2m1_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e1m2_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e1m2_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e8m0_t& dst, vector_load_align& src0, __ubuf__ fp8_e8m0_t *src1, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int8_t& dst, vector_load_align& src0, __ubuf__ int8_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint8_t& dst, vector_load_align& src0, __ubuf__ uint8_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int16_t& dst, vector_load_align& src0, __ubuf__ int16_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint16_t& dst, vector_load_align& src0, __ubuf__ uint16_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int32_t& dst, vector_load_align& src0, __ubuf__ int32_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_uint32_t& dst, vector_load_align& src0, __ubuf__ uint32_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_half& dst, vector_load_align& src0, __ubuf__ half *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_float& dst, vector_load_align& src0, __ubuf__ float *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_int64_t& dst, vector_load_align& src0, __ubuf__ int64_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_bfloat16_t& dst, vector_load_align& src0, __ubuf__ bfloat16_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e4m3fn_t& dst, vector_load_align& src0, __ubuf__ fp8_e4m3fn_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e5m2_t& dst, vector_load_align& src0, __ubuf__ fp8_e5m2_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e2m1_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e2m1_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp4x2_e1m2_t& dst, vector_load_align& src0, __ubuf__ fp4x2_e1m2_t *src1, iter_reg offset, uint32_t count);
+
+__simd_callee__ inline void asc_loadunalign_postupdate(vector_fp8_e8m0_t& dst, vector_load_align& src0, __ubuf__ fp8_e8m0_t *src1, iter_reg offset, uint32_t count);
+
+// ==========asc_load(u8/s8/half/u16/s16/float/u32/s32/s64/bf16/e4m3/e5m2/e8m0/e2m1/e1m2)=========
+__simd_callee__ inline void asc_load(vector_int8_t& dst, __ubuf__  int8_t* src);
+
+__simd_callee__ inline void asc_load(vector_uint8_t& dst, __ubuf__  uint8_t* src);
+
+__simd_callee__ inline void asc_load(vector_int16_t& dst, __ubuf__  int16_t* src);
+
+__simd_callee__ inline void asc_load(vector_uint16_t& dst, __ubuf__  uint16_t* src);
+
+__simd_callee__ inline void asc_load(vector_int32_t& dst, __ubuf__  int32_t* src);
+
+__simd_callee__ inline void asc_load(vector_uint32_t& dst, __ubuf__  uint32_t* src);
+
+__simd_callee__ inline void asc_load(vector_half& dst, __ubuf__ half* src);
+
+__simd_callee__ inline void asc_load(vector_float& dst, __ubuf__ float* src);
+
+__simd_callee__ inline void asc_load(vector_int64_t& dst, __ubuf__  int64_t* src);
+
+__simd_callee__ inline void asc_load(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src);
+
+__simd_callee__ inline void asc_load(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src);
+
+__simd_callee__ inline void asc_load(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src);
+
+__simd_callee__ inline void asc_load(vector_fp8_e8m0_t& dst, __ubuf__ fp8_e8m0_t* src);
+
+__simd_callee__ inline void asc_load(vector_fp4x2_e2m1_t& dst, __ubuf__ fp4x2_e2m1_t* src);
+
+__simd_callee__ inline void asc_load(vector_fp4x2_e1m2_t& dst, __ubuf__ fp4x2_e1m2_t* src);
+
+__simd_callee__ inline void asc_loadalign(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_uint32_t& dst, __ubuf__ uint32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_int32_t& dst, __ubuf__ int32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_int64_t& dst, __ubuf__ int64_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_uint64_t& dst, __ubuf__ uint64_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign(vector_float& dst, __ubuf__ float* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+// =========BRC_B16(u16/s16/bf16/half)=========
+__simd_callee__ inline void asc_loadalign_brc(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_half& dst, __ubuf__ half* src_align_32b, iter_reg offset);
+
+// =========BRC_B32(u32/s32/float)=========
+__simd_callee__ inline void asc_loadalign_brc(vector_uint32_t& dst, __ubuf__ uint32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_int32_t& dst, __ubuf__ int32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc(vector_float& dst, __ubuf__ float* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_upsample(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_upsample(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_upsample(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_upsample(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_upsample(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_upsample(vector_half& dst, __ubuf__ half* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_downsample(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_downsample(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_downsample(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_downsample(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_downsample(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_downsample(vector_half& dst, __ubuf__ half* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_uint8_t& dst0, vector_uint8_t& dst1, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_int8_t& dst0, vector_int8_t& dst1, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_uint16_t& dst0, vector_uint16_t& dst1, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_int16_t& dst0, vector_int16_t& dst1, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_bfloat16_t& dst0, vector_bfloat16_t& dst1, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_half& dst0, vector_half& dst1, __ubuf__ half* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_uint32_t& dst0, vector_uint32_t& dst1, __ubuf__ uint32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_int32_t& dst0, vector_int32_t& dst1, __ubuf__ int32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_deintlv(vector_float& dst0, vector_float& dst1, __ubuf__ float* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_half& dst, __ubuf__ half* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_uint32_t& dst, __ubuf__ uint32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_int32_t& dst, __ubuf__ int32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack(vector_float& dst, __ubuf__ float* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_unpack_v2(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_uint8_t& dst, __ubuf__ uint8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_int8_t& dst, __ubuf__ int8_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_half& dst, __ubuf__ half* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_uint32_t& dst, __ubuf__ uint32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_int32_t& dst, __ubuf__ int32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v2(vector_float& dst, __ubuf__ float* src_align_32b, iter_reg offset);
+
+/// brc_v3(B16/B32)
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_uint16_t& dst, __ubuf__ uint16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_int16_t& dst, __ubuf__ int16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_half& dst, __ubuf__ half* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_uint32_t& dst, __ubuf__ uint32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_int32_t& dst, __ubuf__ int32_t* src_align_32b, iter_reg offset);
+
+__simd_callee__ inline void asc_loadalign_brc_v3(vector_float& dst, __ubuf__ float* src_align_32b, iter_reg offset);
+
+//==============asc_scatter=============
+__simd_callee__ inline void asc_scatter(vector_int8_t& dst, __ubuf__ int8_t* src, vector_uint16_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_uint8_t& dst, __ubuf__ uint8_t* src, vector_uint16_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_int16_t& dst, __ubuf__ int16_t* src, vector_uint16_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_uint16_t& dst, __ubuf__ uint16_t* src, vector_uint16_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_int32_t& dst, __ubuf__ int32_t* src, vector_uint32_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_uint32_t& dst, __ubuf__ uint32_t* src, vector_uint32_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_bf16& dst, __ubuf__ bfloat16_t* src, vector_uint16_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_half& dst, __ubuf__ half* src, vector_uint16_t index, vector_bool mask);
+
+__simd_callee__ inline void asc_scatter(vector_float& dst, __ubuf__ float* src, vector_uint32_t index, vector_bool mask);
 
 #endif
