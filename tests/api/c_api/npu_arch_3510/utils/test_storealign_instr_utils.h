@@ -228,6 +228,31 @@ TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
+#define TEST_VECTOR_DATAMOVE_STOREALIGN_OFFSET_INTLV_POSTUPDATE_INSTR(class_name, c_api_name, cce_name, data_type, index)            \
+                                                                                                \
+class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {              \
+protected:                                                                                      \
+    void SetUp() {}                                                                             \
+    void TearDown() {}                                                                          \
+};                                                                                              \
+                                                                                                \
+namespace {                                                                                     \
+void cce_name##_##data_type##_Stub_##index##_offset_update(vector_##data_type src0, vector_##data_type src1, __ubuf__ data_type *dst, int32_t offset,                    \
+    int dist, vector_bool mask, int mode) {}                                                              \
+}                                                                                               \
+                                                                                                \
+TEST_F(TestVectorDataMove##class_name##_##data_type##_CApi, c_api_name##_##data_type##_Succ)    \
+{                                                                                               \
+    __ubuf__ data_type *dst = reinterpret_cast<__ubuf__ data_type *>(0);                        \
+    vector_##data_type src0;                                                                    \
+    vector_##data_type src1;                                                                    \
+    int32_t offset;                                                                             \
+                                                                                                \
+                                                                                                \
+    c_api_name(dst, src0, src1, offset);                                                        \
+    GlobalMockObject::verify();                                                                 \
+}                                                                                               \
+
 #define TEST_VECTOR_DATAMOVE_STOREALIGN_INSTR_1(class_name, c_api_name, cce_name, data_type, index)            \
                                                                                                 \
 class TestVectorDataMove##class_name##_##data_type##_CApi : public testing::Test {                 \

@@ -20,14 +20,28 @@
 __simd_callee__ inline void asc_hif82float_impl(vector_float& dst, vector_hifloat8_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vcvt(dst, src, mask, PART_EVEN, MODE_ZEROING);
+        vcvt(dst, src, mask, PART_P0, MODE_ZEROING);
     }
 }
 
 __simd_callee__ inline void asc_hif82float_v2_impl(vector_float& dst, vector_hifloat8_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vcvt(dst, src, mask, PART_ODD, MODE_ZEROING);
+        vcvt(dst, src, mask, PART_P1, MODE_ZEROING);
+    }
+}
+
+__simd_callee__ inline void asc_hif82float_v3_impl(vector_float& dst, vector_hifloat8_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vcvt(dst, src, mask, PART_P2, MODE_ZEROING);
+    }
+}
+
+__simd_callee__ inline void asc_hif82float_v4_impl(vector_float& dst, vector_hifloat8_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vcvt(dst, src, mask, PART_P3, MODE_ZEROING);
     }
 }
 

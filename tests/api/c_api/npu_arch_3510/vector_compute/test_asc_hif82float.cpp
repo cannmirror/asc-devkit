@@ -12,3 +12,5 @@
 
 TEST_VECTOR_COMPUTE_VCVT_INSTR_0(Hif82float, asc_hif82float, vcvt, vector_float, vector_hifloat8_t, 0);
 TEST_VECTOR_COMPUTE_VCVT_INSTR_0(Hif82float_v2, asc_hif82float_v2, vcvt, vector_float, vector_hifloat8_t, 1);
+TEST_VECTOR_COMPUTE_VCVT_INSTR_0(Hif82float_v3, asc_hif82float_v3, vcvt, vector_float, vector_hifloat8_t, 2);
+TEST_VECTOR_COMPUTE_VCVT_INSTR_0(Hif82float_v4, asc_hif82float_v4, vcvt, vector_float, vector_hifloat8_t, 3);

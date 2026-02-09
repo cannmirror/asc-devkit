@@ -80,6 +80,13 @@ __simd_callee__ inline void asc_le_scalar_impl(vector_bool& dst, vector_float sr
         vcmps_le(dst, src, value, mask);
     }
 }
+
+__simd_callee__ inline void asc_le_scalar_impl(vector_bool& dst, vector_bfloat16_t src, bfloat16_t value, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vcmps_le(dst, src, value, mask);
+    }
+}
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

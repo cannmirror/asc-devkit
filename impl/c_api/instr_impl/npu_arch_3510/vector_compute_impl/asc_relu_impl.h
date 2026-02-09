@@ -8,6 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+/* !
+ * \file asc_relu_impl.h
+ * \brief
+ */
+
 #ifndef IMPL_CAPI_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_RELU_IMPL_H
 #define IMPL_CAPI_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_RELU_IMPL_H
 
@@ -16,21 +21,21 @@
 __simd_callee__ inline void asc_relu_impl(vector_half& dst, vector_half src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vrelu(dst, src, mask, Literal::MODE_ZEROING);
+        vrelu(dst, src, mask, MODE_ZEROING);
     }
 }
 
 __simd_callee__ inline void asc_relu_impl(vector_int32_t& dst, vector_int32_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vrelu(dst, src, mask, Literal::MODE_ZEROING);
+        vrelu(dst, src, mask, MODE_ZEROING);
     }
 }
 
 __simd_callee__ inline void asc_relu_impl(vector_float& dst, vector_float src, vector_bool mask)
 {
     if ASC_IS_AIV {
-        vrelu(dst, src, mask, Literal::MODE_ZEROING);
+        vrelu(dst, src, mask, MODE_ZEROING);
     }
 }
 #endif

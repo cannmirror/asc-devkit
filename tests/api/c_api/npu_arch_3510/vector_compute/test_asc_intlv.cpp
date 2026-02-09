@@ -48,6 +48,10 @@ TEST_VECTOR_COMPUTE_INTLV(vector_uint32_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_int32_t);
 TEST_VECTOR_COMPUTE_INTLV(vector_half);
 TEST_VECTOR_COMPUTE_INTLV(vector_float);
+TEST_VECTOR_COMPUTE_INTLV(vector_fp8_e4m3fn_t);
+TEST_VECTOR_COMPUTE_INTLV(vector_fp8_e5m2_t);
+TEST_VECTOR_COMPUTE_INTLV(vector_fp8_e8m0_t);
+TEST_VECTOR_COMPUTE_INTLV(vector_bfloat16_t);
 
 class TestVectorComputePintlv : public testing::Test { 
 protected:
