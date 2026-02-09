@@ -33,6 +33,7 @@ constexpr size_t FRACTAL_FIXED = 16;
 constexpr size_t DISABLE_COORD = 0;
 constexpr size_t ENABLE_COORD = 1;
 constexpr size_t SHIFT_LEFT_16 = 0x00010000;
+constexpr size_t L2_CACHE_OFFSET = 60;
 
 template <QuantMode_t Value, QuantMode_t... Args>
 struct is_one_of_value : Std::false_type {};
@@ -54,7 +55,7 @@ struct is_one_of_value<Value, Head, Tail...>
 template <QuantMode_t Value, QuantMode_t... Args>
 inline constexpr bool is_one_of_value_v = is_one_of_value<Value, Args...>::value;
 
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #define SCALAR_QUANT_MODE QuantMode_t::DEQF16, QuantMode_t::QF322B8_PRE, QuantMode_t::REQ8,\
     QuantMode_t::QS322BF16_PRE, QuantMode_t::QF322F16_PRE, QuantMode_t::QF322BF16_PRE, QuantMode_t::QF322FP8_PRE,\
     QuantMode_t::QF322HIF8_PRE, QuantMode_t::QF322HIF8_PRE_HYBRID, QuantMode_t::QF322F32_PRE
@@ -67,7 +68,7 @@ inline constexpr bool is_one_of_value_v = is_one_of_value<Value, Args...>::value
 template <QuantMode_t quantPre>
 using IsScalarQuantMode = is_one_of_value<quantPre, SCALAR_QUANT_MODE>;
 
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #define TILE_OP_INTERNAL_TENSOR_QUANT_MODE QuantMode_t::VDEQF16, QuantMode_t::VQF322B8_PRE, QuantMode_t::VREQ8,\
     QuantMode_t::VQS322BF16_PRE, QuantMode_t::VQF322F16_PRE, QuantMode_t::VQF322BF16_PRE, QuantMode_t::VQF322FP8_PRE,\
     QuantMode_t::VQF322HIF8_PRE, QuantMode_t::VQF322HIF8_PRE_HYBRID, QuantMode_t::VQF322F32_PRE
@@ -80,7 +81,7 @@ using IsScalarQuantMode = is_one_of_value<quantPre, SCALAR_QUANT_MODE>;
 template <QuantMode_t quantPre>
 using IsVectorQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_TENSOR_QUANT_MODE>;
 
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #define TILE_OP_INTERNAL_DIRECT_QUANT_MODE QuantMode_t::F322F16, QuantMode_t::F322BF16
 #elif defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
 #define TILE_OP_INTERNAL_DIRECT_QUANT_MODE QuantMode_t::F322F16, QuantMode_t::F322BF16

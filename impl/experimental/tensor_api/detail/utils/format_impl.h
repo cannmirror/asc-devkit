@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Te {
 struct ArchVersion {
-    static constexpr uint32_t V3101 = 3101;
+    static constexpr uint32_t V3510 = 3510;
     static constexpr uint32_t V2201 = 2201;
 };
 
@@ -36,7 +36,14 @@ struct GetArchVersion {
 };
 
 constexpr uint32_t CURRENT_ARCH_VERSION = GetArchVersion{}();
-
+template <typename T>
+__aicore__ inline uint8_t GetCacheModeFromTensor(__gm__ T* src) {
+    if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+        return static_cast<uint8_t>((reinterpret_cast<uint64_t>(src)) >> L2_CACHE_OFFSET);
+    } else {
+        return 0;
+    }
+}
 // IsIntegralConstant
 template <typename T>
 struct IsIntegralConstant : Std::false_type {};

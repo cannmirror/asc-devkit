@@ -8,18 +8,19 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 /*!
- * \file mmad_four_dim_2201.h
+ * \file mmad_four_dim_3510.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_FOUR_DIM_2201_H
-#define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_FOUR_DIM_2201_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_FOUR_DIM_3510_H
+#define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_FOUR_DIM_3510_H
+
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "include/experimental/tensor_api/tensor/make.h"
 
 namespace AscendC {
 namespace Te {
 
-class MmadGenParams2201
+class MmadGenParams3510
 {
 public:
     template <const MmadTrait& trait, typename T, typename U, typename S>
@@ -28,23 +29,22 @@ public:
         return GenParamsImpl<trait, T, U, S>(dst, fm, filter);
     }
 private:
-    template<typename T>
-    __aicore__ inline constexpr void CheckZZTemplate()
+    template <typename T>
+    __aicore__ inline constexpr void CheckNZTemplate()
     {
-        using dataType = typename T::elementType;
+        using type = typename T::elementType;
         using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(dataType)>>,
-            "Fm Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!");
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-            "Fm Layout->Shape->Row->ZeroDim is not Std::Int<16> type!"); 
+        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>, "Dst Layout->Shape->Row->ZeroDim, is not Std::Int<16> type!");
+        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>, "Dst Layout->Shape->Column->ZeroDim, is not Std::Int<C0Size/Type> type!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
-            "Fm Layout->Stride->Column-ZeroDim is not Std::Int<1> type!");
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(dataType)>>,
-            "Fm Layout->Stride->Row->ZeroDim is not Std::Int<C0Size/Type> type!");
+        using StrideRow1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 1>::type;
+        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(type)>>, "Dst Layout->Stride->Row->ZeroDim, is not Std::Int<C0Size/Type> type!");
+        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Dst Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
+        static_assert(Std::is_same_v<StrideRow1, Std::Int<C0_SIZE / sizeof(type) * FRACTAL_FIXED>>,
+            "Dst Layout->Stride->Row->OneDim, is not Std::Int<C0_SIZE / sizeof(type) * FRACTAL_FIXED> type!");
     }
     template<typename T>
     __aicore__ inline constexpr void CheckZNTemplate()
@@ -85,11 +85,13 @@ private:
         using fmDataType = typename U::elementType;
         using filterDataType = typename S::elementType;
         CheckL0CNZTemplate<T>();
-        CheckZZTemplate<U>();
+        CheckNZTemplate<U>();
         CheckZNTemplate<S>();
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         static_assert(Std::is_one_of_v<Std::tuple<dstDataType, fmDataType, filterDataType>,
             Std::tuple<__cc__ int32_t, __ca__ int8_t, __cb__ int8_t>, Std::tuple<__cc__ float, __ca__ half, __cb__ half>, 
+            Std::tuple<__cc__ fp8_e4m3fn_t, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>, Std::tuple<__cc__ fp8_e5m2_t, __ca__ fp8_e4m3fn_t, __cb__ fp8_e4m3fn_t>, 
+            Std::tuple<__cc__ fp8_e4m3fn_t, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>, Std::tuple<__cc__ fp8_e5m2_t, __ca__ fp8_e5m2_t, __cb__ fp8_e5m2_t>, 
             Std::tuple<__cc__ float, __ca__ bfloat16_t, __cb__ bfloat16_t>, Std::tuple<__cc__ float, __ca__ float, __cb__ float>>, 
             "The data type is not supported.");
 #endif
@@ -106,13 +108,14 @@ private:
         uint16_t m = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(fmLayout) * FRACTAL_FIXED;
         uint16_t k = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(fmLayout) * C0_SIZE / sizeof(fmType);
         uint16_t n = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * FRACTAL_FIXED;
-        auto params = Std::make_tuple(m, k, n, trait.unitFlag, trait.kDirectionAlign, trait.cmatrixSource, 
+        bool disableGemv = false;
+        auto params = Std::make_tuple(m, k, n, trait.unitFlag, disableGemv, trait.cmatrixSource, 
             trait.cmatrixInitVal);
         return params;
     }
 };
 
-class MmadCore2201
+class MmadCore3510
 {
 public:
     template <const MmadTrait& trait, typename T, typename U, typename S, typename V, size_t... Is>
@@ -124,17 +127,17 @@ public:
 private:
     template <typename T, typename U, typename S>
     __aicore__ inline void MmadImpl(__cc__ T* dst, __ca__ U* fm, __cb__ S* filter, uint16_t m, uint16_t k, uint16_t n,
-        int8_t unitFlag, bool kDirectionAlign, bool cmatrixSource, bool cmatrixInitVal) {
+        int8_t unitFlag, bool disableGemv, bool cmatrixSource, bool cmatrixInitVal) {
         if ASCEND_IS_AIV {
             return;
         }
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-            mad(dst, fm, filter, m, k, n, unitFlag, kDirectionAlign, cmatrixSource, cmatrixInitVal);
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            mad(dst, fm, filter, m, k, n, unitFlag, disableGemv, cmatrixSource, cmatrixInitVal);
         }
     }
 };
 
-class MmadFourDim2201 : public MmadCore2201, public MmadGenParams2201
+class MmadFourDim3510 : public MmadCore3510, public MmadGenParams3510
 {
 public:
     template <const MmadTrait& trait, typename ...Args>
@@ -147,4 +150,4 @@ public:
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_FOUR_DIM_2201_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_3510_MMAD_FOUR_DIM_3510_H

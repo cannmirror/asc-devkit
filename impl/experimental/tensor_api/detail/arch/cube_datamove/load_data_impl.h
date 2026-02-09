@@ -12,10 +12,10 @@
  * \file load_data_impl.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_routing.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/load_data_routing.h"
 
 namespace AscendC {
 namespace Te {
@@ -41,4 +41,4 @@ LoadData(const T& dst, const U& src, const Coord& coord)
 
 } // namespace Te
 } // namespace AscendC
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_IMPL_H

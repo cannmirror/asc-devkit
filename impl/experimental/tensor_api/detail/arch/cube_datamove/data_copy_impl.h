@@ -12,10 +12,10 @@
  * \file data_copy_impl.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/npu_arch_2201/data_copy_routing.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/data_copy_routing.h"
 
 namespace AscendC {
 namespace Te {
@@ -41,4 +41,4 @@ DataCopy(const T& dst, const U& src, const Coord& coord)
 } // namespace Te
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_IMPL_H

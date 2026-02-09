@@ -12,8 +12,8 @@
  * \file fixpipe_quant_four_dim_2201_l0c_gm.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_FOUR_DIM_2201_L0C_GM_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_FOUR_DIM_2201_L0C_GM_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_FOUR_DIM_2201_L0C_GM_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_FOUR_DIM_2201_L0C_GM_H
 
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_quant_nz2nd_four_dim_2201_l0c_gm.h"
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_quant_nz2nz_four_dim_2201_l0c_gm.h"
@@ -141,4 +141,4 @@ public:
 }  // namespace Te
 }  // namespace AscendC
 
-#endif  // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_FOUR_DIM_2201_L0C_GM_H
+#endif  // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_QUANT_FOUR_DIM_2201_L0C_GM_H

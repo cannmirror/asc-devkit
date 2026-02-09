@@ -9,11 +9,11 @@
 */
 
 /*!
- * \file fixpipe_2201_base.h
+ * \file fixpipe_3510_base.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_2201_BASE_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_2201_BASE_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_3510_BASE_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_3510_BASE_H
 
 #include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "include/experimental/tensor_api/utils/utils.h"
@@ -21,37 +21,10 @@
 
 namespace AscendC {
 namespace Te {
-constexpr uint32_t MAIN_LOOP_N_SIZE_2201 = 512;
-constexpr uint32_t CBURST_NUM_2201 = MAIN_LOOP_N_SIZE_2201 / FRACTAL_FIXED;
+constexpr uint32_t MAIN_LOOP_N_SIZE_3510 = 512;
+constexpr uint32_t CBURST_NUM_3510 = MAIN_LOOP_N_SIZE_3510 / BLOCK_CUBE;
 
-template <typename T, typename U, typename Coord>
-__aicore__ inline void CheckCoord(const T& dst, const U& src, const Coord& coord)
-{
-    auto coordRow = Std::get<0>(coord);
-    auto coordCol = Std::get<1>(coord);
-    auto dstLayout = dst.Layout();
-    auto srcLayout = src.Layout();
-    uint32_t dstRow1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout);
-    uint32_t dstCol1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
-    uint32_t srcRow1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
-    uint32_t srcCol1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-    ASSERT((coordRow >= 0) && (coordCol >= 0) && (coordRow <= dstRow1 - srcRow1) && (coordCol <= dstCol1 - srcCol1));
-}
-
-template <typename T, typename Coord>
-__aicore__ inline auto MakeTensorWithCoord(const T& oldTensor, const Coord& coord, uint32_t offset = 0)
-{
-    auto oldTensorLayout = oldTensor.Layout();
-    auto index = Crd2Idx(coord, oldTensorLayout);
-    using oldTensorType = typename T::elementType;
-    constexpr Hardware oldTensorPos = GetHardPos<T>();
-    auto oldTensorIterator = MakeMemPtr<oldTensorPos>(reinterpret_cast<oldTensorType *>(oldTensor.Data().Get() + offset + index));
-    auto oldTensorMatrixLayout = MakeLayout(oldTensorLayout.Shape(), oldTensorLayout.Stride());
-    auto newTensor = MakeTensor(oldTensorIterator, oldTensorMatrixLayout); 
-    return newTensor;
-} 
-
-class Copy2201DeqTensorToFbuf {
+class CopyDeqTensorToFbuf3510 {
 public:
     template <typename T>
     __aicore__ inline void CopyDeqTensorToFbufImpl(const T& src, uint16_t calNSize, uint16_t nIterIndex)
@@ -88,10 +61,8 @@ private:
     {
         using srcType = typename T::elementType;
         CheckNDTemplate<T>();
-        constexpr Hardware srcTPos = GetHardPos<T>();
-        static_assert(srcTPos == Hardware::L1, "The hardware of quant must be L1");
-#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 2201
-        static_assert(Std::is_one_of_v<srcType, __cbuf__ uint64_t>, "The source data type is not supported.");
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
+        static_assert(Std::is_one_of_v<srcType, __fbuf__ uint64_t>, "The source data type is not supported.");
 #endif
     }
 
@@ -99,7 +70,7 @@ private:
     __aicore__ inline auto CopyDeqTensorToFbufGenParams(const T& src, uint16_t calNSize, uint16_t nIterIndex)
     {
         CheckTemplate<T>();
-        constexpr uint16_t fbufBurstLenUnit = 128;
+        constexpr uint16_t fbufBurstLenUnit = 64;
         using srcType = typename T::elementType;
         auto layout = src.Layout();
         uint16_t colLength = GetEleFromLayout<decltype(layout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(layout);
@@ -108,7 +79,7 @@ private:
         uint16_t blockLen = CeilDivision(colLength * sizeof(srcType), fbufBurstLenUnit);
         uint16_t srcStride = CeilDivision(rowStride * sizeof(srcType), C0_SIZE);
         uint16_t dstStride = blockLen;
-        uint32_t deqValueOffset = MAIN_LOOP_N_SIZE_2201 / colLength * rowStride * nIterIndex;
+        uint32_t deqValueOffset = MAIN_LOOP_N_SIZE_3510 / colLength * rowStride * nIterIndex;
 
         auto params = Std::make_tuple(blockCount, blockLen, srcStride, dstStride, deqValueOffset);
         return params;
@@ -119,61 +90,55 @@ private:
         const uint64_t& dstAddr, const T& src, const U& tupleParams, Std::index_sequence<Is...>)
     {
         using srcType = typename T::elementType;
-        CopyCbufToFbuf<srcType, decltype(tupleParams)>(
+        CopyCbufToFbuf<srcType>(
             dstAddr, (__cbuf__ uint64_t *)src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
-    template <typename T, typename U>
+    template <typename T>
     __aicore__ inline void CopyCbufToFbuf(uint64_t dst, __cbuf__ T *src, uint16_t blockCount,
         uint16_t blockLen, uint16_t srcStride, uint16_t dstStride, uint32_t deqValueOffset)
     {
         if ASCEND_IS_AIV {
             return;
         }
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
             copy_cbuf_to_fbuf((__fbuf__ uint64_t *)dst, src + deqValueOffset, blockCount, blockLen, srcStride, dstStride);
         }
     }
 };
 
-class Copy2201MatrixCcToGmBase {
+class CopyMatrixCcToGmBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const S& params)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void DataCopy(const T& dst, const U& src, const V& params)
     {
-        DataCopyImpl<trait, T, U, S>(dst, src, params, tuple_sequence<decltype(params)>{});
+        DataCopyImpl<trait, T, U, V>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, size_t... Is>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const S& tupleParams, Std::index_sequence<Is...>)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V, size_t... Is>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        using srcType = typename U::elementType;
-        using dstType = typename T::elementType;
-        CopyMatrixCcToGm<trait.quantPre, dstType, srcType>(
-            (__gm__ dstType *)dst.Data().Get(), (__cc__ srcType *)src.Data().Get(), Std::get<Is>(tupleParams)...);
+        CopyMatrixCcToGm<trait.quantPre>(dst.Data().Get(), src.Data().Get(), Std::get<Is>(tupleParams)...);
     }
 
     template <QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline void CopyMatrixCcToGm(__gm__ T *dst, __cc__ U *src, uint32_t nSize, uint32_t mSize,
-        uint32_t srcStride, uint32_t dstStride, bool reluEn, uint8_t unitFlag, bool isChannelSplit, bool nz2ndEn)
+        uint32_t srcStride, uint32_t dstStride, uint8_t cacheMode, bool reluEn, uint8_t unitFlag, bool isChannelSplit,
+        bool nz2ndEn, bool nz2dnEn)
     {
         if ASCEND_IS_AIV {
             return;
         }
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-#if defined(ASCENDC_CPU_DEBUG)
-            copy_matrix_cc_to_gm(dst, src, 0, nSize, mSize, dstStride, srcStride, unitFlag,
-                quantPre, reluEn, isChannelSplit, nz2ndEn);
-#else
-            copy_matrix_cc_to_gm(dst, src, 0, nSize, mSize, dstStride, srcStride, unitFlag,
-                static_cast<uint64_t>(quantPre), reluEn, isChannelSplit, nz2ndEn);
-#endif
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            copy_matrix_cc_to_gm(dst, src, 0, nSize, mSize, dstStride, srcStride, cacheMode, 0, unitFlag, static_cast<uint64_t>(quantPre),
+                reluEn, isChannelSplit, nz2ndEn, static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false, false, false, 
+                nz2dnEn); 
         }
     }
 };
 
-class SetRegister2201Base {
+class SetRegisterBase3510 {
 public:
     template <typename T, typename U>
     __aicore__ inline void SetRegister(const T& quant, const U& params)
@@ -204,23 +169,38 @@ private:
         if ASCEND_IS_AIV {
             return;
         }
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
             set_quant_pre(quant);
         }
     }
 
     template <typename T>
-    __aicore__ inline void SetParamsToRegister(uint64_t ndNum, uint64_t dstNDStride, uint64_t srcNDStride)
+    __aicore__ inline void SetParamsToRegister(uint32_t ndNum, uint32_t dstNDStride, uint32_t srcNDStride)
     {
         if ASCEND_IS_AIV {
             return;
         }
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-            T ndPara = 0;
-            ndPara = ndPara | (static_cast<T>(ndNum));
-            ndPara = ndPara | (static_cast<T>(srcNDStride) << 16);
-            ndPara = ndPara | (static_cast<T>(dstNDStride) << 32);
-            set_nd_para(ndPara);
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            T loop3Para = static_cast<T>(dstNDStride) << 32;
+            loop3Para |= static_cast<T>(srcNDStride) << 16;
+            loop3Para |= static_cast<T>(ndNum);
+            set_loop3_para(loop3Para);
+        }
+    }
+
+    template <typename T>
+    __aicore__ inline void SetParamsToRegister(uint32_t dnNum, uint32_t dstDNStride, uint32_t srcNZMatrixStride, uint32_t srcNZC0Stride)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            T loop3Para = static_cast<T>(dstDNStride) << 32;
+            loop3Para |= static_cast<T>(srcNZMatrixStride) << 16;
+            loop3Para |= static_cast<T>(dnNum);
+            set_loop3_para(loop3Para);
+            T channelPara = static_cast<T>(srcNZC0Stride) << 48;
+            set_channel_para(channelPara);
         }
     }
 };
@@ -228,4 +208,4 @@ private:
 }
 }
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_2201_FIXPIPE_2201_BASE_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_3510_BASE_H

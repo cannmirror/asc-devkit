@@ -12,10 +12,10 @@
  * \file fixpipe_impl.h
  * \brief
  */
-#ifndef EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_IMPL_H
-#define EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_IMPL_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_IMPL_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_routing.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/fixpipe_routing.h"
 
 namespace AscendC {
 namespace Te {
@@ -73,4 +73,4 @@ Fixpipe(const T& dst, const U& src, const S& quant, const Coord& coord)
 } // namespace Te
 } // namespace AscendC
 
-#endif // EXPERIMENTAL_TENSOR_API_DETAIL_ARCH_CUBE_DATAMOVE_FIXPIPE_IMPL_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_IMPL_H
