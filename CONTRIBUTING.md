@@ -16,7 +16,7 @@
 高阶API基于单核对常见算法进行抽象和封装，实现了一些常用的计算算法，旨在提高编程开发效率。高阶API一般通过调用多种基础API实现。高阶API包数学计算、矩阵计算、激活函数等API。
 
 - **适用场景**：常见算法的抽象和封装，提高算子开发效率
-- **贡献指南**：[docs/asc_api_contributing.md](./docs/asc_adv_api_contributing.md)
+- **贡献指南**：[docs/asc_adv_api_contributing.md](./docs/asc_adv_api_contributing.md)
 
 ### 2. 基础API
 
