@@ -25,6 +25,26 @@
 #define ASCRT_Z_OFFSET       2   // 2 : offset of z
 #define ASCRT_W_OFFSET       3   // 3 : offset of w
 
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rn(const float x) {
+    return __cvt_float<ROUND::R, RoundingSaturation::RS_DISABLE_VALUE>(x);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rz(const float x) {
+    return __cvt_float<ROUND::Z, RoundingSaturation::RS_DISABLE_VALUE>(x);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rd(const float x) {
+    return __cvt_float<ROUND::F, RoundingSaturation::RS_DISABLE_VALUE>(x);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_ru(const float x) {
+    return __cvt_float<ROUND::C, RoundingSaturation::RS_DISABLE_VALUE>(x);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rna(const float x) {
+    return __cvt_float<ROUND::A, RoundingSaturation::RS_DISABLE_VALUE>(x);
+}
+
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __float2uint_rn(const float x) {
     return __cvt_uint32_t<ROUND::R, RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
