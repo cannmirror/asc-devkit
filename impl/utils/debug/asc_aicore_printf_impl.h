@@ -185,7 +185,6 @@ __aicore__ inline void scalar_printf_impl(DumpType debugType, __gm__ const char*
     update_write_info(writeInfo, tlvLen);
 }
 
-
 template <class... Args>
 __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 {

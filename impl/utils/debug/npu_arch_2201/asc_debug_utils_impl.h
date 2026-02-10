@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
 #endif
 
 #include "impl/utils/debug/asc_utils_macros.h"
+#include "impl/utils/debug/asc_debug_utils.h"
+
 namespace __asc_aicore {
 __aicore__ inline void asc_entire_dcci_impl(__gm__ uint64_t* ptr)
 {
@@ -52,7 +54,7 @@ __aicore__ inline uint32_t asc_debug_get_core_idx_impl()
 
 __aicore__ inline int64_t get_task_ration()
 {
-#if defined(SPLIT_CORE_CUBE)
+#if defined(__DAV_CUBE__)
     return 1;
 #else // SPLIT_CORE_VEC(2201 is split)
     return get_subblockdim();
@@ -61,12 +63,50 @@ __aicore__ inline int64_t get_task_ration()
 
 __aicore__ inline uint64_t asc_debug_get_block_idx_impl()
 {
-#if defined(SPLIT_CORE_VEC)
+#if defined(__DAV_VEC__)
     return get_block_idx() * get_task_ration() + get_subblockid();
 #else // SPLIT_CORE_CUBE(2201 is split)
     return get_block_idx();
 #endif
 }
+
+template <typename T>
+__aicore__ constexpr inline DumpTensorDataType get_dump_datatype_impl()
+{
+    if constexpr (std::is_same<T, bool>::value) {
+        return DumpTensorDataType::ACL_BOOL;
+    } else if (std::is_same<T, uint8_t>::value) {
+        return DumpTensorDataType::ACL_UINT8;
+    } else if (std::is_same<T, int8_t>::value) {
+        return DumpTensorDataType::ACL_INT8;
+    } else if (std::is_same<T, int16_t>::value) {
+        return DumpTensorDataType::ACL_INT16;
+    } else if (std::is_same<T, uint16_t>::value) {
+        return DumpTensorDataType::ACL_UINT16;
+    } else if (std::is_same<T, int32_t>::value) {
+        return DumpTensorDataType::ACL_INT32;
+    } else if (std::is_same<T, uint32_t>::value) {
+        return DumpTensorDataType::ACL_UINT32;
+    } else if (std::is_same<T, uint64_t>::value) {
+        return DumpTensorDataType::ACL_UINT64;
+    } else if (std::is_same<T, int64_t>::value) {
+        return DumpTensorDataType::ACL_INT64;
+    } else if (std::is_same<T, float>::value) {
+        return DumpTensorDataType::ACL_FLOAT;
+    } else if (std::is_same<T, half>::value) {
+        return DumpTensorDataType::ACL_FLOAT16;
+    } else if (std::is_same<T, bfloat16_t>::value) {
+        return DumpTensorDataType::ACL_BF16;
+    } else {
+        return DumpTensorDataType::ACL_MAX;
+    }
+}
+
+__aicore__ inline void sync_all_impl()
+{
+    pipe_barrier(pipe_t::PIPE_ALL);
+}
+
 } // namespace __asc_aicore
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_DEBUG_UTILS_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

@@ -25,6 +25,10 @@
 #define __aicore__ [aicore]
 #endif // __aicore__
 
+#ifndef K_MAX_SHAPE_DIM
+#define K_MAX_SHAPE_DIM 8
+#endif
+
 constexpr int32_t MIX = 0;
 constexpr int32_t AIC = 1;
 constexpr int32_t AIV = 2;

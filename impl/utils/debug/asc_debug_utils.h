@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -94,6 +94,24 @@ __aicore__ inline uint32_t get_cstring_len(__gm__ const char* s)
         i++;
     }
     return i + 1;
+}
+
+__aicore__ constexpr inline uint32_t div_ceil(uint32_t a, uint32_t b)
+{
+    if (b == 0) {
+        return 0;
+    }
+    return (a + b - 1) / b;
+}
+
+__aicore__ constexpr inline uint32_t align_up(uint32_t a, uint32_t b)
+{
+    return div_ceil(a, b) * b;
+}
+
+__aicore__ inline void sync_all()
+{
+    sync_all_impl();
 }
 
 __aicore__ inline void mem_copy_gm_to_gm(__gm__ uint8_t* dst, __gm__ const uint8_t* src, const uint32_t& len)
@@ -225,6 +243,13 @@ __aicore__ inline bool check_ringbuf_space(__gm__ DebugBlockHeadInfo* blockInfo,
     }
     return true;
 }
+
+template <typename T>
+__aicore__ constexpr inline DumpTensorDataType get_dump_datatype()
+{
+    return get_dump_datatype_impl<T>();
+}
+
 } // namespace __asc_aicore
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_DEBUG_UTILS__)

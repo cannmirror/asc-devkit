@@ -56,6 +56,7 @@ __aicore__ inline uint64_t asc_debug_get_block_idx_impl()
 {
     return static_cast<uint64_t>(asc_debug_get_core_idx_impl());
 }
+
 } // namespace __asc_aicore
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_DEBUG_UTILS_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
