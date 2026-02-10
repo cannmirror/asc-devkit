@@ -453,6 +453,26 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float y1f(float x);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ynf(int n, float x);
 
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline long int labs(long int x);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llabs(long long int x);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llmax(const long long int x, const long long int y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int ullmax(const unsigned long long int x, const unsigned long long int y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int umax(const unsigned int x, const unsigned int y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline long long int llmin(const long long int x, const long long int y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned long long int ullmin(const unsigned long long int x, const unsigned long long int y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int umin(const unsigned int x, const unsigned int y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float fdividef(float x, float y);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline int signbit(float x);
+
 #include "impl/simt_api/math_functions_impl.h"
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_FUNCTIONS_H__)

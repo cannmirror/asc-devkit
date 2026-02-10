@@ -193,4 +193,92 @@ TEST_F(BF162Testsuite, MathApiTest_bfloat16x2t)
     EXPECT_EQ(expect1, result.x);
     EXPECT_EQ(expect2, result.y);
 }
+
+TEST_F(BF162Testsuite, CastApiTest_bfloat16x2t)
+{
+    float x = static_cast<float>(rand()) / RAND_MAX;
+    float y = static_cast<float>(rand()) / RAND_MAX;
+    float2 xy_f322 = {x, y};
+    bfloat16_t x_h = bfloat16_t(x);
+    bfloat16_t y_h = bfloat16_t(y);
+    bfloat16x2_t xy_h2_1 = {x_h, y_h};
+    bfloat16x2_t xy_h2_2 = {x_h, y_h};
+
+    bfloat16x2_t result = __float2bfloat162_rn(x);
+    bfloat16_t expect1 = bfloat16_t(x);
+    bfloat16_t expect2 = bfloat16_t(x);
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    result = __floats2bfloat162_rn(x, y);
+    expect1 = bfloat16_t(x);
+    expect2 = bfloat16_t(y);
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    result = __float22bfloat162_rn(xy_f322);
+    expect1 = bfloat16_t(xy_f322.x);
+    expect2 = bfloat16_t(xy_f322.y);
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    result = __bfloat162bfloat162(x_h);
+    expect1 = x_h;
+    expect2 = x_h;
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    result = __halves2bfloat162(x_h, y_h);
+    expect1 = x_h;
+    expect2 = y_h;
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    bfloat16_t res_bf16 = __high2bfloat16(xy_h2_1);
+    EXPECT_EQ(xy_h2_1.y, res_bf16);
+
+    result = __high2bfloat162(xy_h2_1);
+    EXPECT_EQ(xy_h2_1.y, result.x);
+    EXPECT_EQ(xy_h2_1.y, result.y);
+
+    float res_32 = __high2float(xy_h2_1);
+    EXPECT_EQ((float)xy_h2_1.y, res_32);
+
+    result = __highs2bfloat162(xy_h2_1, xy_h2_2);
+    expect1 = bfloat16_t(xy_h2_1.y);
+    expect2 = bfloat16_t(xy_h2_2.y);
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    res_bf16 = __low2bfloat16(xy_h2_1);
+    EXPECT_EQ(xy_h2_1.x, res_bf16);
+
+    result = __low2bfloat162(xy_h2_1);
+    EXPECT_EQ(xy_h2_1.x, result.x);
+    EXPECT_EQ(xy_h2_1.x, result.y);
+
+    res_32 = __low2float(xy_h2_1);
+    EXPECT_EQ((float)xy_h2_1.x, res_32);
+
+    result = __lowhigh2highlow(xy_h2_1);
+    expect1 = xy_h2_1.x;
+    expect2 = xy_h2_1.y;
+    EXPECT_EQ(expect1, result.y);
+    EXPECT_EQ(expect2, result.x);
+
+    result = __lows2bfloat162(xy_h2_1, xy_h2_2);
+    expect1 = bfloat16_t(xy_h2_1.x);
+    expect2 = bfloat16_t(xy_h2_2.x);
+    EXPECT_EQ(expect1, result.x);
+    EXPECT_EQ(expect2, result.y);
+
+    float2 res_fp32_2 = __bfloat1622float2(xy_h2_1);
+    expect1 = float(xy_h2_1.x);
+    expect2 = float(xy_h2_1.y);
+    EXPECT_EQ(expect1, res_fp32_2.x);
+    EXPECT_EQ(expect2, res_fp32_2.y);
+
+    res_bf16  = __ushort_as_bfloat16((unsigned short)0x3F80U);
+    EXPECT_EQ(1, res_bf16);
+}
 // ================================ Test bfloat16_t end ===============================

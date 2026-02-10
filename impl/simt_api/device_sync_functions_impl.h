@@ -31,6 +31,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_threadfence()
     __threadfence();
 }
 
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_threadfence_block()
+{
+    __threadfence_block();
+}
+
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_SYNC_FUNCTIONS_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_SYNC_FUNCTIONS_IMPL__

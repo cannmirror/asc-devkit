@@ -21,6 +21,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_syncthreads();
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_threadfence();
 
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_threadfence_block();
+
 #include "impl/simt_api/device_sync_functions_impl.h"
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEVICE_SYNC_FUNCTIONS_H__)
