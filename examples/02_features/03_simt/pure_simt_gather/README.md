@@ -91,7 +91,7 @@ bisheng \
   -lregister \
   -lerror_manager \
   -lprofapi \
-  -lascendalog \
+  -lunified_dlog \
   -lmmpa \
   -lascend_dump \
   -ltiling_api \

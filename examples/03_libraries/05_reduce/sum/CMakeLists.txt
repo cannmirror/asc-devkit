@@ -23,7 +23,8 @@ target_link_libraries(demo PRIVATE
     tiling_api
     register
     platform
-    ascendalog
+    unified_dlog
+    dl
     m
     graph_base
 )
