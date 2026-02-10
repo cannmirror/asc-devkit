@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -46,14 +51,14 @@
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const AtanConfig& config = defaultAtanConfig>
         __aicore__ inline void Atan(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const AtanConfig& config = defaultAtanConfig>
         __aicore__ inline void Atan(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
         ```
 
@@ -61,14 +66,14 @@
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const AtanConfig& config = defaultAtanConfig>
         __aicore__ inline void Atan(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const AtanConfig& config = defaultAtanConfig>
         __aicore__ inline void Atan(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
         ```
 
@@ -93,6 +98,7 @@
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+<p id="p20761101616589"><a name="p20761101616589"></a><a name="p20761101616589"></a><span id="ph126252025205"><a name="ph126252025205"></a><a name="ph126252025205"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p8982175011514"><a name="p8982175011514"></a><a name="p8982175011514"></a><span id="ph297103081920"><a name="ph297103081920"></a><a name="ph297103081920"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -104,8 +110,26 @@
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p98212044172612"><a name="p98212044172612"></a><a name="p98212044172612"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
 </td>
 </tr>
+<tr id="row198517399205"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p20985539122016"><a name="p20985539122016"></a><a name="p20985539122016"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p1977105611138"><a name="p1977105611138"></a><a name="p1977105611138"></a>Atan算法的相关配置。此参数可选配，AtanConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<div class="p" id="p07186146383"><a name="p07186146383"></a><a name="p07186146383"></a>algo：Atan内部实现使用的算法。AtanAlgo类型，支持的取值如下：<a name="ul827932118545"></a><a name="ul827932118545"></a><ul id="ul827932118545"><li>TAYLOR_EXPANSION：默认值。该算法使用6阶泰勒展开实现Atan，支持的数据类型为half、float。</li><li>POLYNOMIAL_APPROXIMATION：该算法是17次多项式逼近算法，支持的数据类型为float。</li></ul>
+</div>
+</td>
+</tr>
 </tbody>
 </table>
+
+```
+enum class AtanAlgo {
+    TAYLOR_EXPANSION = 0,
+    POLYNOMIAL_APPROXIMATION, 
+};
+
+struct AtanConfig {
+    AtanAlgo algo = AtanAlgo::TAYLOR_EXPANSION;
+};
+```
 
 **表 2**  参数说明
 
@@ -173,6 +197,9 @@ pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize 通过Host侧tiling参数�
 AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
 // 输入tensor长度为1024, 算子输入的数据类型为half, 实际计算个数为512
 AscendC::Atan(dstLocal, srcLocal, sharedTmpBuffer, 512);
+// 指定输入算法为POLYNOMIAL_APPROXIMATION, 输入的数据类型为float, 实际计算个数为512
+static constexpr AscendC::AtanConfig atanConfig = { AscendC::AtanAlgo::POLYNOMIAL_APPROXIMATION};
+AscendC::Atan<float, false, atanConfig>(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
 
 结果示例如下：

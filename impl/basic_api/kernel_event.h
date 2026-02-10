@@ -134,7 +134,7 @@ constexpr uint8_t EVENT_NUM = static_cast<uint8_t>(HardEventAiv::MAX);
 
 __aicore__ constexpr uint8_t EventToIndexAic(HardEvent evt)
 {
-    // in v220 aic, only 21 events is usefull, so convert evt to index in event pool
+    // in v220 aic, only 21 events is useful, so convert evt to index in event pool
     // in other chip version, all events are valid;
     if (evt == HardEvent::MTE2_MTE1) {
         return static_cast<uint8_t>(HardEventAic::MTE2_MTE1);
@@ -191,7 +191,7 @@ __aicore__ constexpr uint8_t EventToIndexAic(HardEvent evt)
 
 __aicore__ constexpr uint8_t EventToIndexAiv(HardEvent evt)
 {
-    // in v220 aiv, only 13 events is usefull, so convert evt to index in event pool
+    // in v220 aiv, only 13 events is useful, so convert evt to index in event pool
     // in other chip version, all events are valid;
     if (evt == HardEvent::MTE2_V) {
         return static_cast<uint8_t>(HardEventAiv::MTE2_V);

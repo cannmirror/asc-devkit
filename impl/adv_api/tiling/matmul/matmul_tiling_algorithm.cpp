@@ -1636,9 +1636,9 @@ void MatmulTilingAlgorithm::GetUsedSize(int32_t& l1Size, int32_t& l0cSize, int32
             return;
         }
 
-        // case3: output GM/VECCAL, format is ND, for now not re-use input and ouput non-aligned, is related with db open
+        // case3: output GM/VECCAL, format is ND, for now not re-use input and output non-aligned, is related with db open
         // (1) output GM, format is NZ/ND_ALIGN/ND, need restore in ub, ND and D is non-aligned , then add more 32B, ub->gm NZ->ND format and data type transform
-        // (2) output VECCALC,format is ND_ALIGN/ND(D alined), need doNZ->ND transform in ub
+        // (2) output VECCALC,format is ND_ALIGN/ND(D aligned), need doNZ->ND transform in ub
         if (tilingIns_->cType_.pos == TPosition::GM) {
             ubSize += tilingIns_->tiling_.get_baseM() * tilingIns_->tiling_.get_baseN() * cTypeSize;
             if (tilingIns_->cType_.type == CubeFormat::ND &&
@@ -1901,9 +1901,9 @@ int32_t MatmulTilingAlgorithm::GetIteratorOrder(const SingleCoreStatus& singleCo
     // if KAL1 and KBL1 both can not be full loaded, then select m or n which is no matter
     if (!fullkAL1Load && !fullkBL1Load) {
         return static_cast<int32_t>(MatrixTraverse::FIRSTM) - 1;
-    } else if (fullkAL1Load && !fullkBL1Load) { // if KAL1 is full loaded, then select the order N fist
+    } else if (fullkAL1Load && !fullkBL1Load) { // if KAL1 is full loaded, then select the order N first
         return static_cast<int32_t>(MatrixTraverse::FIRSTN) - 1;
-    } else if (!fullkAL1Load && fullkBL1Load) { // if KBL1 is full loaded, then select the order M fist
+    } else if (!fullkAL1Load && fullkBL1Load) { // if KBL1 is full loaded, then select the order M first
         return static_cast<int32_t>(MatrixTraverse::FIRSTM) - 1;
     } else {
         // if AL1LoadSize less then BL1LoadSize, then select order N first, vice versa.
@@ -2791,7 +2791,7 @@ bool MatmulTilingAlgorithm::CalcNBuffer33Dims(const MatmulRunParas& params, cons
     }
     if (coreStatus.mDim * coreStatus.kDim > numOfBlock_) {
         TILING_LOG_WARNING("MatmulApi Tiling : M %d (baseM %d) or K %d (baseK %d) is too large to find a valid NBuffer33 single core "
-            "shape within %d cores. Remnind to slice M or K in test code.", GetSingleM(), baseBlock.baseM,
+            "shape within %d cores. Remind to slice M or K in test code.", GetSingleM(), baseBlock.baseM,
             GetSingleK(), baseBlock.baseK, numOfBlock_);
     }
 
@@ -3126,7 +3126,7 @@ void MatmulTilingAlgorithm::FillParam(MatmulRunParas& param)
     param.nMapped = MathUtil::MapShape(param.n32, true);
 }
 
-bool MatmulTilingAlgorithm::CheckFinaleParams(const CoreStatusPack& coreStatus) const
+bool MatmulTilingAlgorithm::CheckFinalParams(const CoreStatusPack& coreStatus) const
 {
     (void)coreStatus;
     const int32_t stepM = tilingIns_->tiling_.get_stepM();
@@ -3139,7 +3139,7 @@ bool MatmulTilingAlgorithm::CheckFinaleParams(const CoreStatusPack& coreStatus) 
     const int32_t uBSize = tilingIns_->tiling_.get_shareUbSize();
 
     if (stepM == 0 || stepN == 0 || depthA1 == 0 || depthB1 == 0) {
-        TILING_LOG_WARNING("MatmulApi Tiling : stepM/N  depthA1/B1 should greate then zeros");
+        TILING_LOG_WARNING("MatmulApi Tiling : stepM/N  depthA1/B1 should greater then zeros");
         return false;
     }
 
@@ -3278,7 +3278,7 @@ void MatmulTilingAlgorithm::UpdateBaseKForMxGemv(int32_t &baseK, SingleCoreStatu
 
 void MatmulTilingAlgorithm::AdjustMxL0Factors(SingleCoreStatus& singleCoreStatus) const
 {
-    // Determine wherther the scenario is MX.
+    // Determine whether the scenario is MX.
     if (tilingIns_->madType_ != MatrixMadType::MXMODE) {
         return;
     }
@@ -4035,7 +4035,7 @@ int64_t MatmulTilingAlgorithm::Process()
     if (UpdateTiling(param, coreStatus, singleCoreStatus) == -1L) {
         return -1L;
     }
-    const bool ans = CheckFinaleParams(coreStatus);
+    const bool ans = CheckFinalParams(coreStatus);
     return ans ? 0 : -1;
 }
 

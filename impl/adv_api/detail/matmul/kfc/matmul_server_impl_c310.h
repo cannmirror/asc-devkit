@@ -29,7 +29,7 @@ __aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
         MSG_POS TilingInfo *tilingSSbuf = reinterpret_cast<MSG_POS TilingInfo *>(GetTilingAddr(mul.GetSubBlockIdx()));
         auto temp1 = ((MSG_POS uint64_t *)(&(tilingSSbuf->tCubeTiling)));
         tiling_.SetTiling(&tmpTiling_);
-        auto temp2 = (uint64_t *)(&tmpTiling_); // need to be same with c220
+        auto temp2 = (uint64_t *)(&tmpTiling_); // need to be same as c220
         for (int i = 0; i < sizeof(TCubeTiling) / sizeof(uint64_t); i++, temp1++, temp2++) {
             *temp2 = *temp1;
         }
@@ -107,12 +107,12 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
         cLocal = GetLocalTensor<typename C_TYPE::T, C_TYPE::pos>(body.cAddr, size);
     }
 
-    // calulate offset
+    // calculate offset
     uint64_t offset = 0;
     uint64_t offsetSize = 0;
     GetOffsetSize(&body, funID, sync, offsetSize, enSequentialWrite, hasSetWorkspace);
 
-    // excute iterate
+    // execute iterate
     bool isFirstIterate = true;
     TRACE_START(TraceId::MatMul_CALC);
     // Asynchronous and configure the workspace

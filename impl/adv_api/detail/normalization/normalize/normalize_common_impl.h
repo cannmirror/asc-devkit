@@ -92,7 +92,7 @@ __aicore__ inline void GetNormalizeOutputRstd(const LocalTensor<float>& dstRstd,
     SetMaskCount();
     SetVectorMask<float, MaskMode::COUNTER>(0, para.aLength);
 
-    // 1. Variance + espilon ==> AddsX
+    // 1. Variance + epsilon ==> AddsX
     Adds<float, false>(dstRstd, srcVar, epsilon, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     // 2. Rsqrt(AddsX) = 1 / Sqrt(AddsX) ==> dstRstd

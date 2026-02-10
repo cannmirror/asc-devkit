@@ -50,7 +50,7 @@ main() {
         log "[INFO]: Check version matched!"
         return 0
     else
-        log "[WARNING]: Check version does not matched!"
+        log "[WARNING]: Check version does not match!"
         return 1
     fi
 }

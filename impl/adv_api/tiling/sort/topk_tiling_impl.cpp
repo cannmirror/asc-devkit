@@ -320,7 +320,7 @@ void SetTopkNSmallVal(const int32_t inner, const int32_t outter, const int32_t k
     if (!isLargest) {
         generateNegativeValSize = inner * outter;
     }
-    int32_t mrgSrc1MaskSizeOffset = (innerDataSize) + generateNegativeValSize; // sort32 sort8B + asc(vmuls * -1) + maks space + generate index
+    int32_t mrgSrc1MaskSizeOffset = (innerDataSize) + generateNegativeValSize; // sort32 sort8B + asc(vmuls * -1) + mask space + generate index
     topKTiling.set_topkMrgSrc1MaskSizeOffset(mrgSrc1MaskSizeOffset);
     topKTiling.set_tmpLocalSize(mrgSrc1MaskSizeOffset + TOPKNSMALL_MASK_BYTES / dataTypeSize);
     if (!isInitIndex) {

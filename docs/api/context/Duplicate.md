@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -36,6 +41,8 @@
 
 将一个变量或立即数复制多次并填充到向量中。
 
+针对Ascend 950PR/Ascend 950DT，为方便开发者使用，tensor前n个数据计算接口同时也支持直接传入Tensor，此时会将Tensor的第一个元素复制多次并填充到向量中。
+
 ## 函数原型<a name="section620mcpsimp"></a>
 
 -   tensor前n个数据计算
@@ -44,6 +51,13 @@
         ```
         template <typename T>
         __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, const int32_t& count)
+        ```
+
+    -   源操作数为Tensor
+
+        ```
+        template <typename T>
+        __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count)
         ```
 
 -   tensor高维切分计算
@@ -75,6 +89,7 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="16.36%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="83.64%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p15909527141511"><a name="p15909527141511"></a><a name="p15909527141511"></a><span id="ph1390915278152"><a name="ph1390915278152"></a><a name="ph1390915278152"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：bool、int8_t、uint8_t、fp4x2_e2m1_t、fp4x2_e1m2_t、 hifloat8_t、fp8_e5m2_t、fp8_e4m3fn_t、 fp8_e8m0_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32、int64_t、uint64_t、complex64。</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float。</p>
 <p id="p815762322517"><a name="p815762322517"></a><a name="p815762322517"></a><span id="ph1215792313251"><a name="ph1215792313251"></a><a name="ph1215792313251"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float。</p>
 <p id="p065555314"><a name="p065555314"></a><a name="p065555314"></a><span id="ph15441323310"><a name="ph15441323310"></a><a name="ph15441323310"></a>Kirin X90</span>，支持的数据类型为：half。</p>
@@ -115,6 +130,15 @@
 <td class="cellrowborder" valign="top" width="14.471447144714473%" headers="mcps1.2.4.1.2 "><p id="p15369205520396"><a name="p15369205520396"></a><a name="p15369205520396"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="69.14691469146915%" headers="mcps1.2.4.1.3 "><p id="p536955533918"><a name="p536955533918"></a><a name="p536955533918"></a>被复制的源操作数，数据类型需与dst中元素的数据类型保持一致。</p>
+</td>
+</tr>
+<tr id="row1983415412112"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p1483510547111"><a name="p1483510547111"></a><a name="p1483510547111"></a>src</p>
+</td>
+<td class="cellrowborder" valign="top" width="14.471447144714473%" headers="mcps1.2.4.1.2 "><p id="p783585415117"><a name="p783585415117"></a><a name="p783585415117"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="69.14691469146915%" headers="mcps1.2.4.1.3 "><p id="p17711183217"><a name="p17711183217"></a><a name="p17711183217"></a><span id="ph197123532916"><a name="ph197123532916"></a><a name="ph197123532916"></a><span id="ph199714359297"><a name="ph199714359297"></a><a name="ph199714359297"></a><span id="ph1697183512918"><a name="ph1697183512918"></a><a name="ph1697183512918"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
+<p id="p1883513541411"><a name="p1883513541411"></a><a name="p1883513541411"></a>数据类型需与dst中元素的数据类型保持一致。</p>
+<p id="p184156281022"><a name="p184156281022"></a><a name="p184156281022"></a>当传入该参数时，会将src[0]复制多次并填充到向量中。</p>
 </td>
 </tr>
 <tr id="row580965317368"><td class="cellrowborder" valign="top" width="16.38163816381638%" headers="mcps1.2.4.1.1 "><p id="p1637513013717"><a name="p1637513013717"></a><a name="p1637513013717"></a>count</p>
@@ -162,6 +186,7 @@
 ## 约束说明<a name="section633mcpsimp"></a>
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
+-   针对Ascend 950PR/Ascend 950DT，bool、int8\_t、uint8\_t、fp4x2\_e2m1\_t、fp4x2\_e1m2\_t、hifloat8\_t、fp8\_e5m2\_t、fp8\_e4m3fn\_t、 fp8\_e8m0\_t、complex32、int64\_t、uint64\_t、complex64数据类型仅支持tensor前n个数据计算接口。
 
 ## 返回值说明<a name="section640mcpsimp"></a>
 
@@ -200,10 +225,17 @@
     AscendC::Duplicate<half>(dstLocal, inputVal, srcDataSize);
     ```
 
+-   tensor前n个数据计算样例，源操作数为Tensor
+
+    ```
+    AscendC::Duplicate<half>(dstLocal, srcLocal, srcDataSize);
+    ```
+
 结果示例如下：
 
 ```
 scalar: 18.0
+srcLocal: [18.0 1.0 2.0 ... 254.0 255.0]
 dstLocal: [18.0 18.0 18.0 ... 18.0 18.0]
 ```
 

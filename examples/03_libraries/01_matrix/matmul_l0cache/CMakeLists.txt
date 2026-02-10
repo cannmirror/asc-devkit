@@ -16,7 +16,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    matmul.asc
+    matmul_l0cache.asc
 )
 
 target_link_libraries(demo PRIVATE

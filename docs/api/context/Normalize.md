@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -70,6 +75,7 @@
 <tbody><tr id="row28761718174515"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p88760188458"><a name="p88760188458"></a><a name="p88760188458"></a>U</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p1876151810457"><a name="p1876151810457"></a><a name="p1876151810457"></a>beta，gamma操作数的数据类型。</p>
+<p id="p1264818365429"><a name="p1264818365429"></a><a name="p1264818365429"></a><span id="ph9648123613427"><a name="ph9648123613427"></a><a name="ph9648123613427"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、bfloat16_t、float。</p>
 <p id="p164863616422"><a name="p164863616422"></a><a name="p164863616422"></a><span id="ph8648036204214"><a name="ph8648036204214"></a><a name="ph8648036204214"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为: half、float。</p>
 <p id="p66481936194217"><a name="p66481936194217"></a><a name="p66481936194217"></a><span id="ph1164883617422"><a name="ph1164883617422"></a><a name="ph1164883617422"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为: half、float。</p>
 </td>
@@ -77,6 +83,7 @@
 <tr id="row91421942114514"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p0143154274510"><a name="p0143154274510"></a><a name="p0143154274510"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p214344224510"><a name="p214344224510"></a><a name="p214344224510"></a>output，inputX操作数的数据类型。</p>
+<p id="p166031656114210"><a name="p166031656114210"></a><a name="p166031656114210"></a><span id="ph16038569426"><a name="ph16038569426"></a><a name="ph16038569426"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、bfloat16_t、float。</p>
 <p id="p1760385654216"><a name="p1760385654216"></a><a name="p1760385654216"></a><span id="ph860325674213"><a name="ph860325674213"></a><a name="ph860325674213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为: half、float。</p>
 <p id="p16031556154219"><a name="p16031556154219"></a><a name="p16031556154219"></a><span id="ph116037567421"><a name="ph116037567421"></a><a name="ph116037567421"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为: half、float。</p>
 </td>
@@ -96,7 +103,7 @@
     bool isNoGamma = false;
     bool isOnlyOutput = false;
 };</pre>
-<a name="ul1167113259457"></a><a name="ul1167113259457"></a><ul id="ul1167113259457"><li>reducePattern：当前仅支持ReducePattern::AR模式，表示输入的内轴R轴为reduce计算轴。</li><li>aLength：用于描述输入的A轴大小。支持的取值如下：<a name="ul6718193712463"></a><a name="ul6718193712463"></a><ul id="ul6718193712463"><li>-1：默认值。取<a href="#table2087718184450">接口参数</a>para中的aLength作为A轴大小。</li><li>其它值：该值需要与<a href="#table2087718184450">接口参数</a>para中的aLength数值一致。</li></ul>
+<a name="ul1167113259457"></a><a name="ul1167113259457"></a><ul id="ul1167113259457"><li>reducePattern：当前仅支持ReducePattern::AR模式，表示输入的内轴R轴为reduce计算轴。</li><li>aLength：用于描述输入的A轴大小。支持的取值如下：<a name="ul6718193712463"></a><a name="ul6718193712463"></a><ul id="ul6718193712463"><li>-1：默认值。取<a href="#table2087718184450">接口参数</a>para中的aLength作为A轴大小。</li><li>1：支持outputRstd数据非对齐搬出，支持inputMean，inputVariance数据非对齐搬入。aLength为其它取值时，不支持上述三个输入输出的非对齐搬入和非对齐搬出。该取值需要与<a href="#table2087718184450">接口参数</a>para中的aLength数值一致。</li><li>其它值：该值需要与<a href="#table2087718184450">接口参数</a>para中的aLength数值一致。</li></ul>
 </li><li>isNoBeta：计算时，输入beta是否使用。<a name="ul11364174572711"></a><a name="ul11364174572711"></a><ul id="ul11364174572711"><li>false：默认值，Normalize计算中使用输入beta。</li><li>true：Normalize计算中不使用输入beta。此时，公式中与beta相关的计算被省略。</li></ul>
 </li><li>isNoGamma：可选输入gamma是否使用。<a name="ul748573616312"></a><a name="ul748573616312"></a><ul id="ul748573616312"><li>false：默认值，Normalize计算中使用可选输入gamma。</li><li>true：Normalize计算中不使用输入gamma。此时，公式中与gamma相关的计算被省略。</li></ul>
 </li><li>isOnlyOutput：是否只输出y，不输出标准差的倒数rstd。当前该参数仅支持取值为false，表示y和rstd的结果全部输出。</li></ul>
@@ -210,7 +217,7 @@
 ## 约束说明<a name="section2673867191"></a>
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
--   缩放系数gamma和平移系数beta的数据类型精度必须不低于源操作数inputX的数据类型精度。比如，inputX的数据类型是half，gamma、beta的数据类型可以是half或者float，精度不低于inputX。
+-   缩放系数gamma和平移系数beta的数据类型精度必须不低于源操作数inputX的数据类型精度。比如，inputX的数据类型是half，gamma、beta的数据类型可以是half或者float，精度不低于inputX。比如，inputX的数据类型是bfloat16\_t，gamma、beta的数据类型可以是bfloat16\_t或者float，精度不低于inputX。
 -   src和dst的Tensor空间不可以复用。
 -   输入仅支持ND格式。
 -   R轴不支持切分。

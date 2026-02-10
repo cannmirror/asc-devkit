@@ -22,7 +22,7 @@ namespace Detail {
 
 /**
  * CopyBiasIn: responsible for copy bias data management.
- * This module provides ablities to copy bias data in C1/C2 Buffer.
+ * This module provides abilities to copy bias data in C1/C2 Buffer.
  * We retain the freedom to make incompatible changes, but do not guarantee the stability.
  * CopyBiasIn is only for internal usage, does not support extension or customized specialization!
  */

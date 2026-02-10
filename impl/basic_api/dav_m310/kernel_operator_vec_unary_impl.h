@@ -34,7 +34,7 @@ namespace AscendC {
 #define UNARY_VEC_NORMAL_NOT_SUPPORT(FUNC_NAME)                                                                           \
     template <typename T, bool isSetMask = true>                                                                          \
     __aicore__ inline void FUNC_NAME(__ubuf__ T* dst, __ubuf__ T* src, const uint64_t mask,                               \
-        const uint8_t repeatTime, const UnaryRepeatParams& reapeatParams)                                                \
+        const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)                                                \
     {                                                                                                                     \
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported on current device"); }); \
     }                                                                                                                     \
@@ -42,7 +42,7 @@ namespace AscendC {
 #define UNARY_VEC_BITWISE_NOT_SUPPORT(FUNC_NAME)                                                                          \
     template <typename T, bool isSetMask = true>                                                                          \
     __aicore__ inline void FUNC_NAME(__ubuf__ T* dst, __ubuf__ T* src, const uint64_t mask[],                            \
-        const uint8_t repeatTime, const UnaryRepeatParams& reapeatParams)                                                \
+        const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)                                                \
     {                                                                                                                     \
         ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported on current device"); }); \
     }                                                                                                                     \

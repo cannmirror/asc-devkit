@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -40,6 +45,8 @@
 -   MatmulConfig信息（可选），用于配置Matmul模板信息以及相关的配置参数。不配置默认使能Norm模板。
 -   MatmulCallBackFunc回调函数信息（可选），用于配置左右矩阵从GM拷贝到A1/B1、计算结果从CO1拷贝到GM的自定义函数。当前支持如下产品型号：
 
+    Ascend 950PR/Ascend 950DT
+
     Atlas A3 训练系列产品/Atlas A3 推理系列产品
 
     Atlas A2 训练系列产品/Atlas A2 推理系列产品
@@ -48,9 +55,13 @@
 
 -   MatmulPolicy信息（可选），用于配置Matmul可拓展模块策略。不配置使能默认模板策略。当前支持如下产品型号：
 
+    Ascend 950PR/Ascend 950DT
+
     Atlas A3 训练系列产品/Atlas A3 推理系列产品
 
     Atlas A2 训练系列产品/Atlas A2 推理系列产品
+
+    Kirin X90
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -69,7 +80,7 @@ using Matmul = AscendC::MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM
 
         MatmulApiStaticTiling参数说明见[表1](#table7939847143412)。
 
-        MatmulApiStaticTiling结构体中包括一组常量化Tiling参数和MatmulConfig结构。这种类型参数的定义方式为，通过调用[MatmulConfig](MatmulConfig.md)章节中介绍的获取模板的接口，指定\(singleM, singleN, singleK, baseM, baseN, baseK\)参数，获取自定义模板；将该模板传入[GetMatmulApiTiling](GetMatmulApiTiling.md)接口，得到常量化的参数。这种常量化的方式将得到MatmulApiStaticTiling结构体中定义的一组常量化参数，可以优化Matmul计算中的Scalar计算。当前支持定义为MatmulApiStaticTiling常量化的Tiling参数的模板有：Norm、IBShare、MDL模板。
+        MatmulApiStaticTiling结构体中包括一组常量化Tiling参数和MatmulConfig结构。这种类型参数的定义方式为，通过调用[MatmulConfig](MatmulConfig.md)章节中介绍的获取模板的接口，指定\(singleM, singleN, singleK, baseM, baseN, baseK\)参数，获取自定义模板；将该模板传入[GetMatmulApiTiling](GetMatmulApiTiling.md)接口，得到常量化的参数。这种常量化的方式将得到MatmulApiStaticTiling结构体中定义的一组常量化参数，可以优化Matmul计算中的Scalar计算。当前支持定义为MatmulApiStaticTiling常量化的Tiling参数的模板有：Norm、IBShare、MDL模板。MxMatmul场景支持定义为MatmulApiStaticTiling常量化的Tiling参数的模板有：Norm、MDL模板。
 
 -   MM\_CB（可选），用于支持不同的搬入搬出需求，实现定制化的搬入搬出功能。具体内容见[MatmulCallBackFunc](MatmulCallBackFunc.md)。
 -   MATMUL\_POLICY\_DEFAULT\_OF\(MatmulPolicy\)（可选），用于配置Matmul可拓展模块的策略。当前支持不配置该参数（使能默认模板策略）或者配置1个MatmulPolicy参数。
@@ -112,8 +123,8 @@ using Matmul = AscendC::MatmulImpl<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM
 <p id="p1451132883311"><a name="p1451132883311"></a><a name="p1451132883311"></a>batchM,</p>
 <p id="p175122873319"><a name="p175122873319"></a><a name="p175122873319"></a>batchN,</p>
 <p id="p115222814337"><a name="p115222814337"></a><a name="p115222814337"></a>singleBatchM,</p>
-<p id="p152182833318"><a name="p152182833318"></a><a name="p152182833318"></a>singleBatchN</p>
-<p id="p1171123122314"><a name="p1171123122314"></a><a name="p1171123122314"></a></p>
+<p id="p152182833318"><a name="p152182833318"></a><a name="p152182833318"></a>singleBatchN,</p>
+<p id="p1171123122314"><a name="p1171123122314"></a><a name="p1171123122314"></a>mxTypePara</p>
 </td>
 <td class="cellrowborder" valign="top" width="34.47%" headers="mcps1.2.4.1.2 "><p id="p1889915586561"><a name="p1889915586561"></a><a name="p1889915586561"></a>int32_t</p>
 </td>

@@ -16,7 +16,7 @@
 #ifndef INCLUDE_C_API_VECTOR_COMPUTE_VECTOR_COMPUTE_H
 #define INCLUDE_C_API_VECTOR_COMPUTE_VECTOR_COMPUTE_H
 
-#include "impl/c_api/vector_compute_c_api_impl.h"
+#include "instr_impl/npu_arch_2201/vector_compute_impl.h"
 
 #define asc_transto5hd_b8(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half) asc_transto5hd_b8_impl(dst, src, repeat, dst_stride, src_stride, dst_high_half, src_high_half)
 
@@ -772,49 +772,49 @@ __aicore__ inline void asc_div_sync(__ubuf__ float* dst, __ubuf__ float* src0, _
 
 // ==========asc_duplicate(half/int16_t/uint16_t/bfloat16_t/float/int32_t/uint32_t)==========
 __aicore__ inline void asc_duplicate(__ubuf__ half* dst, half src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ half* dst, half src, uint32_t count);
 
 __aicore__ inline void asc_duplicate_sync(__ubuf__ half* dst, half src, uint32_t count);
 
 __aicore__ inline void asc_duplicate(__ubuf__ int16_t* dst, int16_t src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ int16_t* dst, int16_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate_sync(__ubuf__ int16_t* dst, int16_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate(__ubuf__ uint16_t* dst, uint16_t src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ uint16_t* dst, uint16_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate_sync(__ubuf__ uint16_t* dst, uint16_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate(__ubuf__ bfloat16_t* dst, bfloat16_t src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ bfloat16_t* dst, bfloat16_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate_sync(__ubuf__ bfloat16_t* dst, bfloat16_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate(__ubuf__ float* dst, float src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ float* dst, float src, uint32_t count);
 
 __aicore__ inline void asc_duplicate_sync(__ubuf__ float* dst, float src, uint32_t count);
 
 __aicore__ inline void asc_duplicate(__ubuf__ int32_t* dst, int32_t src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ int32_t* dst, int32_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate_sync(__ubuf__ int32_t* dst, int32_t src, uint32_t count);
 
 __aicore__ inline void asc_duplicate(__ubuf__ uint32_t* dst, uint32_t src, uint8_t repeat,
-    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+    uint16_t dst_block_stride, uint16_t dst_repeat_stride);
 
 __aicore__ inline void asc_duplicate(__ubuf__ uint32_t* dst, uint32_t src, uint32_t count);
 

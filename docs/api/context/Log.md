@@ -1,32 +1,27 @@
-# Log<a name="ZH-CN_TOPIC_0000001649961642"></a>
+# Log<a name="ZH-CN_TOPIC_0000001929827648"></a>
 
 ## 产品支持情况<a name="section1550532418810"></a>
 
-<a name="table1334714391211"></a>
-<table><thead align="left"><tr id="row1334743121213"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p834713321216"><a name="p834713321216"></a><a name="p834713321216"></a><span id="ph834783101215"><a name="ph834783101215"></a><a name="ph834783101215"></a>产品</span></p>
+<a name="table38301303189"></a>
+<table><thead align="left"><tr id="row20831180131817"><th class="cellrowborder" valign="top" width="57.99999999999999%" id="mcps1.1.3.1.1"><p id="p1883113061818"><a name="p1883113061818"></a><a name="p1883113061818"></a><span id="ph20833205312295"><a name="ph20833205312295"></a><a name="ph20833205312295"></a>产品</span></p>
 </th>
-<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p2347234127"><a name="p2347234127"></a><a name="p2347234127"></a>是否支持</p>
+<th class="cellrowborder" align="center" valign="top" width="42%" id="mcps1.1.3.1.2"><p id="p783113012187"><a name="p783113012187"></a><a name="p783113012187"></a>是否支持</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1622020982912"><a name="p1622020982912"></a><a name="p1622020982912"></a><span id="ph1522010992915"><a name="ph1522010992915"></a><a name="ph1522010992915"></a>Ascend 950PR/Ascend 950DT</span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
-</td>
-</tr>
-<tr id="row33481333123"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p2034813321217"><a name="p2034813321217"></a><a name="p2034813321217"></a><span id="ph334833191213"><a name="ph334833191213"></a><a name="ph334833191213"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
-</td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p20751740131216"><a name="p20751740131216"></a><a name="p20751740131216"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
 </td>
 </tr>
-<tr id="row929015378520"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p171071651104613"><a name="p171071651104613"></a><a name="p171071651104613"></a><span id="ph1181723016471"><a name="ph1181723016471"></a><a name="ph1181723016471"></a>Kirin X90</span></p>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p141071451154617"><a name="p141071451154617"></a><a name="p141071451154617"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
 </tr>
-<tr id="row15416193715523"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p18587175114614"><a name="p18587175114614"></a><a name="p18587175114614"></a><span id="ph5776533104711"><a name="ph5776533104711"></a><a name="ph5776533104711"></a>Kirin 9030</span></p>
+<tr id="row173226882415"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p14832120181815"><a name="p14832120181815"></a><a name="p14832120181815"></a><span id="ph1483216010188"><a name="ph1483216010188"></a><a name="ph1483216010188"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
-<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p2058745154620"><a name="p2058745154620"></a><a name="p2058745154620"></a>√</p>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p19948143911820"><a name="p19948143911820"></a><a name="p19948143911820"></a>x</p>
 </td>
 </tr>
 </tbody>
@@ -34,114 +29,55 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-按元素以e、2、10为底做对数运算，计算公式如下：
+根据mask对输入数据srcReg进行求自然对数操作，将结果写入dstReg。计算公式如下：
 
-![](figures/zh-cn_formulaimage_0000002182888036.png)
+![](figures/zh-cn_formulaimage_0000001930468012.png)
 
-![](figures/zh-cn_formulaimage_0000002188813710.png)
+## 函数原型<a name="section620mcpsimp"></a>
 
-![](figures/zh-cn_formulaimage_0000002218328397.png)
-
-![](figures/zh-cn_formulaimage_0000002188654338.png)
-
-![](figures/zh-cn_formulaimage_0000002182888172.png)
-
-![](figures/zh-cn_formulaimage_0000002188814822.png)
-
-## 函数原型<a name="section19670529163214"></a>
-
--   以e为底：
-
-    -   源操作数Tensor全部/部分参与计算
-
-    ```
-    template<typename T, bool isReuseSource = false>
-    __aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
-    ```
-
-    -   源操作数Tensor全部参与计算
-
-    ```
-    template<typename T, bool isReuseSource = false>
-    __aicore__ inline void Log(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
-    ```
-
--   以2为底
-    -   通过sharedTmpBuffer入参传入临时空间
-        -   源操作数Tensor全部/部分参与计算
-
-            ```
-            template<typename T, bool isReuseSource = false>
-            __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
-            ```
-
-        -   源操作数Tensor全部参与计算
-
-            ```
-            template <typename T, bool isReuseSource = false>
-            __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
-            ```
-
-    -   接口框架申请临时空间
-        -   源操作数Tensor全部/部分参与计算
-
-            ```
-            template<typename T, bool isReuseSource = false>
-            __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
-            ```
-
-        -   源操作数Tensor全部参与计算
-
-            ```
-            template <typename T, bool isReuseSource = false>
-            __aicore__ inline void Log2(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
-            ```
-
--   以10为底：
-    -   源操作数Tensor全部/部分参与计算
-
-        ```
-        template<typename T, bool isReuseSource = false>
-        __aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, uint32_t calCount)
-        ```
-
-    -   源操作数Tensor全部参与计算
-
-        ```
-        template<typename T, bool isReuseSource = false>
-        __aicore__ inline void Log10(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
-        ```
-
-由于该接口的内部实现中涉及复杂的数学计算，需要额外的临时空间来存储计算过程中的中间变量。临时空间支持开发者**通过sharedTmpBuffer入参传入**和**接口框架申请**两种方式。
-
--   通过sharedTmpBuffer入参传入，使用该tensor作为临时空间进行处理，接口框架不再申请。该方式开发者可以自行管理sharedTmpBuffer内存空间，并在接口调用完成后，复用该部分内存，内存不会反复申请释放，灵活性较高，内存利用率也较高。
--   接口框架申请临时空间，开发者无需申请，但是需要预留临时空间的大小。
-
-通过sharedTmpBuffer传入的情况，开发者需要为tensor申请空间；接口框架申请的方式，开发者需要预留临时空间。临时空间大小BufferSize的获取方式如下：通过[GetLogMaxMinTmpSize](GetLogMaxMinTmpSize.md)中提供的接口获取需要预留空间范围的大小。
+```
+template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
+__simd_callee__ inline void Log(U& dstReg, U& srcReg, MaskReg& mask)
+```
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
 **表 1**  模板参数说明
 
-<a name="table575571914269"></a>
-<table><thead align="left"><tr id="zh-cn_topic_0000001538537601_row18755131942614"><th class="cellrowborder" valign="top" width="19.39%" id="mcps1.2.3.1.1"><p id="zh-cn_topic_0000001538537601_p675519193268"><a name="zh-cn_topic_0000001538537601_p675519193268"></a><a name="zh-cn_topic_0000001538537601_p675519193268"></a>参数名</p>
+<a name="table4835205712588"></a>
+<table><thead align="left"><tr id="row118356578583"><th class="cellrowborder" valign="top" width="18.529999999999998%" id="mcps1.2.3.1.1"><p id="p48354572582"><a name="p48354572582"></a><a name="p48354572582"></a>参数名</p>
 </th>
-<th class="cellrowborder" valign="top" width="80.61%" id="mcps1.2.3.1.2"><p id="zh-cn_topic_0000001538537601_p375511918267"><a name="zh-cn_topic_0000001538537601_p375511918267"></a><a name="zh-cn_topic_0000001538537601_p375511918267"></a>描述</p>
+<th class="cellrowborder" valign="top" width="81.47%" id="mcps1.2.3.1.2"><p id="p583535795817"><a name="p583535795817"></a><a name="p583535795817"></a>描述</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
+<tbody><tr id="row1835857145817"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.3.1.1 "><p id="p5835457165816"><a name="p5835457165816"></a><a name="p5835457165816"></a>T</p>
 </td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
-<p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
-<p id="p1647418294485"><a name="p1647418294485"></a><a name="p1647418294485"></a><span id="ph74741329164816"><a name="ph74741329164816"></a><a name="ph74741329164816"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
-<p id="p184962505471"><a name="p184962505471"></a><a name="p184962505471"></a><span id="ph9713141120484"><a name="ph9713141120484"></a><a name="ph9713141120484"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
-<p id="p8588195884716"><a name="p8588195884716"></a><a name="p8588195884716"></a><span id="ph1601215144817"><a name="ph1601215144817"></a><a name="ph1601215144817"></a>Kirin 9030</span>，支持的数据类型为：half、float。</p>
+<td class="cellrowborder" valign="top" width="81.47%" headers="mcps1.2.3.1.2 "><p id="p168351657155818"><a name="p168351657155818"></a><a name="p168351657155818"></a>操作数数据类型。</p>
+<p id="p1669174114813"><a name="p1669174114813"></a><a name="p1669174114813"></a><span id="ph969113417481"><a name="ph969113417481"></a><a name="ph969113417481"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 </td>
 </tr>
-<tr id="zh-cn_topic_0000001538537601_row9756719122620"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p1682112447268"><a name="zh-cn_topic_0000001538537601_p1682112447268"></a><a name="zh-cn_topic_0000001538537601_p1682112447268"></a>isReuseSource</p>
+<tr id="row18835145716587"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.3.1.1 "><p id="p1756419170189"><a name="p1756419170189"></a><a name="p1756419170189"></a>mode</p>
 </td>
-<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p98212044172612"><a name="zh-cn_topic_0000001538537601_p98212044172612"></a><a name="zh-cn_topic_0000001538537601_p98212044172612"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
+<td class="cellrowborder" valign="top" width="81.47%" headers="mcps1.2.3.1.2 "><div class="p" id="p4367181482310"><a name="p4367181482310"></a><a name="p4367181482310"></a>可配置为MaskMergeMode的枚举或LogSpecificMode的结构体指针。<a name="ul1131085281310"></a><a name="ul1131085281310"></a><ul id="ul1131085281310"><li>MaskMergeMode，选择MERGING模式或ZEROING模式。<a name="ul13721340113818"></a><a name="ul13721340113818"></a><ul id="ul13721340113818"><li>ZEROING，mask未筛选的元素在dstReg中置零。</li><li>MERGING，暂不支持。</li></ul>
+</li><li>LogSpecificMode，定义如下：<pre class="screen" id="screen18481935171419"><a name="screen18481935171419"></a><a name="screen18481935171419"></a>enum class LogAlgo {
+    INTRINSIC = 0,
+    PRECISION_1ULP_FTZ_TRUE,
+    PRECISION_1ULP_FTZ_FALSE,
+};
+struct LogSpecificMode{
+    MaskMergeMode mrgMode = MaskMergeMode::ZEROING,
+    LogAlgo algo = LogAlgo::INTRINSIC;
+};</pre>
+<a name="ul196783155815"></a><a name="ul196783155815"></a><ul id="ul196783155815"><li>mrgMode：选择MERGING模式或ZEROING模式。</li><li>algo：用于配置Subnormal模式。<a name="ul111801915217"></a><a name="ul111801915217"></a><ul id="ul111801915217"><li>LogAlgo::INTRINSIC、LogAlgo::PRECISION_1ULP_FTZ_TRUE，使用单指令计算得出结果，所有Subnormal被近似为0。</li><li>LogAlgo::PRECISION_1ULP_FTZ_FALSE，支持Subnormal数据计算。</li></ul>
+</li></ul>
+</li></ul>
+</div>
+</td>
+</tr>
+<tr id="row5249053201712"><td class="cellrowborder" valign="top" width="18.529999999999998%" headers="mcps1.2.3.1.1 "><p id="p916243141912"><a name="p916243141912"></a><a name="p916243141912"></a>U</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.47%" headers="mcps1.2.3.1.2 "><p id="p15901115914145"><a name="p15901115914145"></a><a name="p15901115914145"></a><span id="ph19851723182011"><a name="ph19851723182011"></a><a name="ph19851723182011"></a>源操作数和目的操作数的RegTensor类型，例如RegTensor&lt;half&gt;，由编译器自动推导，用户不需要填写。</span></p>
 </td>
 </tr>
 </tbody>
@@ -149,172 +85,70 @@
 
 **表 2**  参数说明
 
-<a name="table44731299481"></a>
-<table><thead align="left"><tr id="row247482914489"><th class="cellrowborder" valign="top" width="16.45%" id="mcps1.2.4.1.1"><p id="p147413295483"><a name="p147413295483"></a><a name="p147413295483"></a>参数名</p>
+<a name="zh-cn_topic_0235751031_table33761356"></a>
+<table><thead align="left"><tr id="zh-cn_topic_0235751031_row27598891"><th class="cellrowborder" valign="top" width="18.54%" id="mcps1.2.4.1.1"><p id="zh-cn_topic_0235751031_p20917673"><a name="zh-cn_topic_0235751031_p20917673"></a><a name="zh-cn_topic_0235751031_p20917673"></a>参数名</p>
 </th>
-<th class="cellrowborder" valign="top" width="11.31%" id="mcps1.2.4.1.2"><p id="p1147432994819"><a name="p1147432994819"></a><a name="p1147432994819"></a>输入/输出</p>
+<th class="cellrowborder" valign="top" width="10.05%" id="mcps1.2.4.1.2"><p id="zh-cn_topic_0235751031_p16609919"><a name="zh-cn_topic_0235751031_p16609919"></a><a name="zh-cn_topic_0235751031_p16609919"></a>输入/输出</p>
 </th>
-<th class="cellrowborder" valign="top" width="72.24000000000001%" id="mcps1.2.4.1.3"><p id="p74749297483"><a name="p74749297483"></a><a name="p74749297483"></a>描述</p>
+<th class="cellrowborder" valign="top" width="71.41%" id="mcps1.2.4.1.3"><p id="zh-cn_topic_0235751031_p59995477"><a name="zh-cn_topic_0235751031_p59995477"></a><a name="zh-cn_topic_0235751031_p59995477"></a>描述</p>
 </th>
 </tr>
 </thead>
-<tbody><tr id="row12474329104814"><td class="cellrowborder" valign="top" width="16.45%" headers="mcps1.2.4.1.1 "><p id="p1047411294482"><a name="p1047411294482"></a><a name="p1047411294482"></a>dstTensor</p>
+<tbody><tr id="row42461942101815"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p108051250181214"><a name="p108051250181214"></a><a name="p108051250181214"></a>dstReg</p>
 </td>
-<td class="cellrowborder" valign="top" width="11.31%" headers="mcps1.2.4.1.2 "><p id="p047412984813"><a name="p047412984813"></a><a name="p047412984813"></a>输出</p>
+<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p158449584436"><a name="p158449584436"></a><a name="p158449584436"></a>输出</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.24000000000001%" headers="mcps1.2.4.1.3 "><p id="p3989161814016"><a name="p3989161814016"></a><a name="p3989161814016"></a>目的操作数。</p>
-<p id="p1747492917489"><a name="p1747492917489"></a><a name="p1747492917489"></a><span id="zh-cn_topic_0000001530181537_ph173308471594"><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><a name="zh-cn_topic_0000001530181537_ph173308471594"></a><span id="zh-cn_topic_0000001530181537_ph9902231466"><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><a name="zh-cn_topic_0000001530181537_ph9902231466"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816"><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-</td>
-</tr>
-<tr id="row18474729124817"><td class="cellrowborder" valign="top" width="16.45%" headers="mcps1.2.4.1.1 "><p id="p54741029164810"><a name="p54741029164810"></a><a name="p54741029164810"></a>srcTensor</p>
-</td>
-<td class="cellrowborder" valign="top" width="11.31%" headers="mcps1.2.4.1.2 "><p id="p144741829194814"><a name="p144741829194814"></a><a name="p144741829194814"></a>输入</p>
-</td>
-<td class="cellrowborder" valign="top" width="72.24000000000001%" headers="mcps1.2.4.1.3 "><p id="p6914123244017"><a name="p6914123244017"></a><a name="p6914123244017"></a>源操作数。</p>
-<p id="p1493334184019"><a name="p1493334184019"></a><a name="p1493334184019"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_1"><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_1"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_1"><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_1"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_1"><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_1"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p64745299487"><a name="p64745299487"></a><a name="p64745299487"></a>源操作数的数据类型需要与目的操作数保持一致。</p>
+<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p6389114616514"><a name="p6389114616514"></a><a name="p6389114616514"></a>目的操作数。</p>
+<p id="p66093533169"><a name="p66093533169"></a><a name="p66093533169"></a>类型为<a href="RegTensor.md">RegTensor</a>。</p>
 </td>
 </tr>
-<tr id="row1747412296483"><td class="cellrowborder" valign="top" width="16.45%" headers="mcps1.2.4.1.1 "><p id="p74741029204817"><a name="p74741029204817"></a><a name="p74741029204817"></a>sharedTmpBuffer</p>
+<tr id="row2137145181815"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p19574165615129"><a name="p19574165615129"></a><a name="p19574165615129"></a>srcReg</p>
 </td>
-<td class="cellrowborder" valign="top" width="11.31%" headers="mcps1.2.4.1.2 "><p id="p1747452954810"><a name="p1747452954810"></a><a name="p1747452954810"></a>输入</p>
+<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p128442058144312"><a name="p128442058144312"></a><a name="p128442058144312"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.24000000000001%" headers="mcps1.2.4.1.3 "><p id="p191160465422"><a name="p191160465422"></a><a name="p191160465422"></a>临时缓存。</p>
-<p id="p979635010404"><a name="p979635010404"></a><a name="p979635010404"></a><span id="zh-cn_topic_0000001530181537_ph173308471594_2"><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><a name="zh-cn_topic_0000001530181537_ph173308471594_2"></a><span id="zh-cn_topic_0000001530181537_ph9902231466_2"><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><a name="zh-cn_topic_0000001530181537_ph9902231466_2"></a><span id="zh-cn_topic_0000001530181537_ph1782115034816_2"><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a><a name="zh-cn_topic_0000001530181537_ph1782115034816_2"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</span></span></span></p>
-<p id="p5881016172817"><a name="p5881016172817"></a><a name="p5881016172817"></a>临时空间大小BufferSize的获取方式请参考<a href="GetLogMaxMinTmpSize.md">GetLogMaxMinTmpSize</a>。</p>
+<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p172083541517"><a name="p172083541517"></a><a name="p172083541517"></a>源操作数。</p>
+<p id="p7123111612517"><a name="p7123111612517"></a><a name="p7123111612517"></a>类型为<a href="RegTensor.md">RegTensor</a>。</p>
+<p id="p148551298496"><a name="p148551298496"></a><a name="p148551298496"></a>源操作数的数据类型需要与目的操作数保持一致。</p>
 </td>
 </tr>
-<tr id="row16421712252"><td class="cellrowborder" valign="top" width="16.45%" headers="mcps1.2.4.1.1 "><p id="p1949611581317"><a name="p1949611581317"></a><a name="p1949611581317"></a>calCount</p>
+<tr id="row19615183817191"><td class="cellrowborder" valign="top" width="18.54%" headers="mcps1.2.4.1.1 "><p id="p1484519586432"><a name="p1484519586432"></a><a name="p1484519586432"></a>mask</p>
 </td>
-<td class="cellrowborder" valign="top" width="11.31%" headers="mcps1.2.4.1.2 "><p id="p174961758436"><a name="p174961758436"></a><a name="p174961758436"></a>输入</p>
+<td class="cellrowborder" valign="top" width="10.05%" headers="mcps1.2.4.1.2 "><p id="p484514581433"><a name="p484514581433"></a><a name="p484514581433"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.24000000000001%" headers="mcps1.2.4.1.3 "><p id="p11378261546"><a name="p11378261546"></a><a name="p11378261546"></a>参与计算的元素个数。</p>
+<td class="cellrowborder" valign="top" width="71.41%" headers="mcps1.2.4.1.3 "><p id="p9345164383914"><a name="p9345164383914"></a><a name="p9345164383914"></a><span id="ph15776181222"><a name="ph15776181222"></a><a name="ph15776181222"></a>源操作数元素操作的有效指示，详细说明请参考<a href="MaskReg.md">MaskReg</a>。</span></p>
 </td>
 </tr>
 </tbody>
 </table>
 
-## 返回值说明<a name="section38228281712"></a>
+## 返回值说明<a name="section640mcpsimp"></a>
 
 无
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
--   **不支持源操作数与目的操作数地址重叠。**
--   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
+src输入为-0时，输出-inf。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-本样例中只展示Compute流程中的部分代码。如果您需要运行样例代码，请将该代码段拷贝并替换[样例模板](#section641453261311)中Compute函数的部分代码即可。
-
--   Log接口样例
-
-    ```
-    Log(dstLocal, srcLocal);
-    ```
-
-    结果示例如下：
-
-    ```
-    输入数据(srcLocal): [144.22607 9634.764 ... 1835.1245 3145.5125]
-    输出数据(dstLocal): [4.971382 9.173133 ... 7.514868 8.053732]
-    ```
-
--   Log2接口样例
-
-    ```
-    Log2(dstLocal, srcLocal);
-    ```
-
-    结果示例如下：
-
-    ```
-    输入数据(srcLocal): [6299.54 338.45963 ... 2.853525 5752.1323]
-    输出数据(dstLocal): [12.621031 8.40284 ... 1.5127451 12.4898815]
-    ```
-
--   Log10接口样例
-
-    ```
-    Log10(dstLocal, srcLocal);
-    ```
-
-    结果示例如下：
-
-    ```
-    输入数据(srcLocal): [712.7535 78.36265 ... 3099.0571 9313.082]
-    输出数据(dstLocal): [2.8529394 1.8941091 ... 3.4912295 3.9690933]
-    ```
-
-## 样例模板<a name="section641453261311"></a>
-
 ```
-#include "kernel_operator.h"
-template <typename srcType>
-class KernelLog
+template<typename T>
+__simd_vf__ inline void LogVF(__ubuf__ T* dstAddr, __ubuf__ T* srcAddr, uint32_t count, 
+ uint32_t oneRepeatSize, uint16_t repeatTimes)
 {
-public:
-    __aicore__ inline KernelLog()
-    {
+    AscendC::MicroAPI::RegTensor<T> srcReg;
+    AscendC::MicroAPI::RegTensor<T> dstReg;
+    AscendC::MicroAPI::MaskReg mask;
+    // Subnormal模式
+    // static constexpr AscendC::MicroAPI::LogSpecificMode mode = {MaskMergeMode::ZEROING, LogAlgo::PRECISION_1ULP_FTZ_FALSE};
+    for (uint16_t i = 0; i < repeatTimes; i++) {     
+        mask = AscendC::MicroAPI::UpdateMask<T>(count);
+        AscendC::MicroAPI::LoadAlign(srcReg, srcAddr + i * oneRepeatSize);
+        AscendC::MicroAPI::Log(dstReg, srcReg, mask);
+        // Subnormal模式
+        // AscendC::MicroAPI::Log<DTYPE, &mode>(dstReg, srcReg, mask);
+        AscendC::MicroAPI::StoreAlign(dstAddr + i * oneRepeatSize, dstReg, mask);
     }
-    __aicore__ inline void Init(GM_ADDR srcGm, GM_ADDR dstGm, uint32_t srcSize)
-    {
-        src_global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(srcGm), srcSize);
-        dst_global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(dstGm), srcSize);
-        pipe.InitBuffer(inQueueX, 1, srcSize * sizeof(srcType));
-        pipe.InitBuffer(outQueue, 1, srcSize * sizeof(srcType));
-        bufferSize = srcSize;
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
-
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<srcType> srcLocal = inQueueX.AllocTensor<srcType>();
-        AscendC::DataCopy(srcLocal, src_global, bufferSize);
-        inQueueX.EnQue(srcLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<srcType> dstLocal = outQueue.AllocTensor<srcType>();
-        AscendC::LocalTensor<srcType> srcLocal = inQueueX.DeQue<srcType>();
-        AscendC::Log(dstLocal, srcLocal);
-        // 或可调用 AscendC::Log10(dstLocal, srcLocal);
-        // 或可调用 AscendC::Log2(dstLocal, srcLocal);
-        outQueue.EnQue<srcType>(dstLocal);
-        inQueueX.FreeTensor(srcLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<srcType> dstLocal = outQueue.DeQue<srcType>();
-        AscendC::DataCopy(dst_global, dstLocal, bufferSize);
-        outQueue.FreeTensor(dstLocal);
-    }
-
-private:
-    AscendC::GlobalTensor<srcType> src_global;
-    AscendC::GlobalTensor<srcType> dst_global;
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueX;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueue;
-    uint32_t bufferSize = 0;
-};
-template <typename dataType>
-__aicore__ void kernel_log_operator(GM_ADDR srcGm, GM_ADDR dstGm, uint32_t srcSize)
-{
-    KernelLog<dataType> op;
-    op.Init(srcGm, dstGm, srcSize);
-    op.Process();
-}
-
-extern "C" __global__ __aicore__ void log_operator_custom(GM_ADDR srcGm, GM_ADDR dstGm, uint32_t srcSize)
-{
-    kernel_log_operator<half>(srcGm, dstGm, srcSize); // 传入类型和大小
 }
 ```
 

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -46,14 +51,14 @@
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const ErfConfig& config = defaultErfConfig>
         __aicore__ inline void Erf(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const ErfConfig& config = defaultErfConfig>
         __aicore__ inline void Erf( const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
         ```
 
@@ -61,14 +66,14 @@
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const ErfConfig& config = defaultErfConfig>
         __aicore__ inline void Erf(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const ErfConfig& config = defaultErfConfig>
         __aicore__ inline void Erf(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
         ```
 
@@ -93,6 +98,7 @@
 <tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
+<p id="p128161314143818"><a name="p128161314143818"></a><a name="p128161314143818"></a><span id="ph18379131520383"><a name="ph18379131520383"></a><a name="ph18379131520383"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p118841059143112"><a name="p118841059143112"></a><a name="p118841059143112"></a><span id="ph743132016510"><a name="ph743132016510"></a><a name="ph743132016510"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -104,8 +110,26 @@
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p98212044172612"><a name="zh-cn_topic_0000001538537601_p98212044172612"></a><a name="zh-cn_topic_0000001538537601_p98212044172612"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
 </td>
 </tr>
+<tr id="row1744952561"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p11451552266"><a name="p11451552266"></a><a name="p11451552266"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p1645452763"><a name="p1645452763"></a><a name="p1645452763"></a>Erf算法的相关配置，此参数可选配，ErfConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<div class="p" id="p365114318553"><a name="p365114318553"></a><a name="p365114318553"></a>algo：Erf内部实现使用的算法。ErfAlgo类型，支持的取值如下：<a name="ul1487515305155"></a><a name="ul1487515305155"></a><ul id="ul1487515305155"><li>PADE_APPROXIMATION：默认值，高性能算法。该算法通过帕德近似算法实现Erf接口。</li><li>SUBSECTION_POLYNOMIAL_APPROXIMATION：高精度算法。该算法通过将数值分段，采用不同的系数对分段的数据进行多项式逼近，以实现Erf接口。</li></ul>
+</div>
+</td>
+</tr>
 </tbody>
 </table>
+
+```
+enum class ErfAlgo {
+    PADE_APPROXIMATION = 0,
+    SUBSECTION_POLYNOMIAL_APPROXIMATION,
+};
+
+struct ErfConfig {
+    ErfAlgo algo = ErfAlgo::PADE_APPROXIMATION;
+};
+```
 
 **表 2**  接口参数说明
 
@@ -201,6 +225,9 @@ private:
         AscendC::LocalTensor<srcType> dstLocal = outQueue.AllocTensor<srcType>();
         AscendC::LocalTensor<srcType> srcLocal = inQueueX.DeQue<srcType>();
         AscendC::Erf<srcType, false>(dstLocal, srcLocal);
+        // static constexpr AscendC::ErfAlgo algo = AscendC::ErfAlgo::SUBSECTION_POLYNOMIAL_APPROXIMATION;
+        // static constexpr AscendC::ErfConfig config = { algo };
+        // AscendC::Erf<srcType, false，config>(dstLocal, srcLocal);
         outQueue.EnQue<srcType>(dstLocal);
         inQueueX.FreeTensor(srcLocal);
     }

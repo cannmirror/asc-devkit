@@ -25,7 +25,7 @@ constexpr int32_t LEN_CEIL_DIV_NUM = 32;
 
 /**
  * LoadBias2C2: responsible for load bias data into C2 buffer.
- * This module provides ablities to copy bias data in C2 Buffer.
+ * This module provides abilities to copy bias data in C2 Buffer.
  * We retain the freedom to make incompatible changes, but do not guarantee the stability.
  * LoadBias2C2 is only for internal usage, does not support extension or customized specialization!
  */

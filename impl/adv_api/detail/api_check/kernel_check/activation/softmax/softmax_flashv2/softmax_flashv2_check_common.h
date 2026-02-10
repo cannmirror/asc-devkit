@@ -99,7 +99,7 @@ private:
         const SoftMaxTiling& tiling, const SoftMaxShapeInfo& softmaxShapeInfo) 
     {
         ASCENDC_LOG_IF_CHECK((config.mode == SoftmaxMode::SOFTMAX_NORMAL || HighLevelAPIParametersPrint), {
-            KERNEL_LOG(KERNEL_WARN, "[%s] The config.mode is %d, should be defalut value SoftmaxMode::SOFTMAX_NORMAL.",
+            KERNEL_LOG(KERNEL_WARN, "[%s] The config.mode is %d, should be default value SoftmaxMode::SOFTMAX_NORMAL.",
             apiName, config.mode); });
     }
 

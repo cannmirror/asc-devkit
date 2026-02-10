@@ -61,7 +61,7 @@ public:
      * @param: quantOut: tensor after changing type
      * @param: quantIn: origin input tensor
      * @param: isBankConflict: if current tiling params is bank-conflict
-     * @param: isTranspose: if current input tensor is tranposed
+     * @param: isTranspose: if current input tensor is transposed
      * @return: void
      */
     __aicore__ inline void AntiQuantCompute(const LocalTensor<TransT>& quantOut, const LocalTensor<SrcT>& quantIn,

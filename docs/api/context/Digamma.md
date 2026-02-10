@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -67,6 +72,7 @@
 <tbody><tr id="zh-cn_topic_0000001698360521_row14755141911264"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001698360521_p47551198266"><a name="zh-cn_topic_0000001698360521_p47551198266"></a><a name="zh-cn_topic_0000001698360521_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001698360521_p125969172719"><a name="zh-cn_topic_0000001698360521_p125969172719"></a><a name="zh-cn_topic_0000001698360521_p125969172719"></a>操作数的数据类型。</p>
+<p id="p112121351185217"><a name="p112121351185217"></a><a name="p112121351185217"></a><span id="ph4372141181317"><a name="ph4372141181317"></a><a name="ph4372141181317"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 </td>
@@ -74,8 +80,9 @@
 <tr id="zh-cn_topic_0000001698360521_row9756719122620"><td class="cellrowborder" valign="top" width="19.38%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001698360521_p1682112447268"><a name="zh-cn_topic_0000001698360521_p1682112447268"></a><a name="zh-cn_topic_0000001698360521_p1682112447268"></a>isReuseSource</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.62%" headers="mcps1.2.3.1.2 "><p id="p165511311158"><a name="p165511311158"></a><a name="p165511311158"></a>是否允许修改源操作数，默认值为false。该参数仅在输入的数据类型为float时生效。</p>
-<a name="ul1513803335520"></a><a name="ul1513803335520"></a><ul id="ul1513803335520"><li>true：开发者允许源操作数被改写，可以使能该参数，使能后本接口内部计算时<strong id="b68501198557"><a name="b68501198557"></a><a name="b68501198557"></a>复用</strong>srcTensor的内存空间，节省部分内存空间；</li><li>false：本接口内部计算时<strong id="b2850191935517"><a name="b2850191935517"></a><a name="b2850191935517"></a>不复用</strong>srcTensor的内存空间。</li></ul>
-<p id="zh-cn_topic_0000001698360521_p62891018544"><a name="zh-cn_topic_0000001698360521_p62891018544"></a><a name="zh-cn_topic_0000001698360521_p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-27.md#section639165323915">更多样例</a>。</p>
+<p id="p843911117182"><a name="p843911117182"></a><a name="p843911117182"></a>true：开发者允许源操作数被改写，可以使能该参数，使能后本接口内部计算时<strong id="b68501198557"><a name="b68501198557"></a><a name="b68501198557"></a>复用</strong>srcTensor的内存空间，节省部分内存空间；</p>
+<p id="p15439181121812"><a name="p15439181121812"></a><a name="p15439181121812"></a>false：本接口内部计算时<strong id="b2850191935517"><a name="b2850191935517"></a><a name="b2850191935517"></a>不复用</strong>srcTensor的内存空间。</p>
+<p id="zh-cn_topic_0000001698360521_p62891018544"><a name="zh-cn_topic_0000001698360521_p62891018544"></a><a name="zh-cn_topic_0000001698360521_p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-84.md#section639165323915">更多样例</a>。</p>
 </td>
 </tr>
 </tbody>
@@ -141,7 +148,7 @@
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 AscendC::TPipe pipe;

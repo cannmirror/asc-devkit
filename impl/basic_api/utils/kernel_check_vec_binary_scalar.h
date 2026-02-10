@@ -12,8 +12,8 @@
  * \file kernel_check_vec_binary_scalar.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_CHECK_VEC_BINARY_SACLAR_H
-#define ASCENDC_MODULE_CHECK_VEC_BINARY_SACLAR_H
+#ifndef ASCENDC_MODULE_CHECK_VEC_BINARY_SCALAR_H
+#define ASCENDC_MODULE_CHECK_VEC_BINARY_SCALAR_H
 
 #if ASCENDC_CPU_DEBUG
 #include "kernel_check_util.h"

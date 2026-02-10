@@ -622,11 +622,11 @@ def _get_atomic_init_args(atomic_args):
 
 
 # Example: pylint: disable=too-many-locals,too-many-branches,too-many-statements,too-many-arguments
-# blockdim: cpu num,default value is 1.
+# numblocks: cpu num,default value is 1.
 # @register_func
 def tvm_callback_cce_postproc(target,
                               kernel_name,
-                              blockdim=1,
+                              numblocks=1,
                               args_size=0,
                               atomic_args="",
                               json_info=None,
@@ -635,7 +635,7 @@ def tvm_callback_cce_postproc(target,
                               kernel_list=None,
                               kernel_list_deterministic=None,
                               is_ffts_id_needed: bool = False,
-                              subblockdim: int = 1,
+                              subnumblocks: int = 1,
                               mix: str = None,
                               mix_type_info: str = None) -> any:
     """
@@ -647,7 +647,7 @@ def tvm_callback_cce_postproc(target,
     is_aicpu, kernel_name, title_dict = init_json_info(target, kernel_name, core_type_info,
                                                        is_ffts_id_needed, mix, mix_type_info)
     if mix != "MIX":
-        subblockdim = 0
+        subnumblocks = 0
     # to short_soc_version : add taskRation and modeInArgsFirstField params
     from asc_op_compile_base.common.platform.platform_info import get_soc_spec
     from asc_op_compile_base.common.buildcfg.buildcfg_mapping import enforce_mix_mode
@@ -669,7 +669,7 @@ def tvm_callback_cce_postproc(target,
             elif core_type == "VectorCore" and mix != "MIX":
                 title_dict[cce_params.JSON_KEY_TASK_RATION] = "0:1"
 
-    title_dict["blockDim"] = blockdim
+    title_dict["blockDim"] = numblocks
     title_dict["opParaSize"] = args_size
 
     if short_soc_version in ["Ascend910B", "Ascend910_93", "Ascend950", "MC62CM12A"]:

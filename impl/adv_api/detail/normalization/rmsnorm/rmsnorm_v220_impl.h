@@ -15,7 +15,7 @@
 
 namespace AscendC {
 namespace RmsNormAPI {
-// src0 is input: [b,s,h], src1 is reduce resulst: [h,], repeatTime is b*s
+// src0 is input: [b,s,h], src1 is reduce results: [h,], repeatTime is b*s
 // basic block brc: vbrcb + adds(0)
 __aicore__ inline void RmsNormBasicBlockBrc(const LocalTensor<float>& dst, const LocalTensor<float>& inputAddr,
     const LocalTensor<float>& reduceAddr, const uint32_t hLength, const uint32_t bsLength)

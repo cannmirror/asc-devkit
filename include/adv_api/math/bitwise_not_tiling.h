@@ -36,7 +36,7 @@ void GetBitwiseNotMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendc
 /*!
  * \brief The calculation of the BitwiseNot interface requires the developer to reserve or apply for temporary space.
  * It's used to derive the size of elements per calculation iteration based on remain free space size.
- * iterationSize = (remainFreeSapce - extraBuf) / maxLivedNodeCnt / typeSize
+ * iterationSize = (remainFreeSpace - extraBuf) / maxLivedNodeCnt / typeSize
  *
  * \param [in] ascendcPlatform, platform information
  * \param [in] typeSize, size of the input data type, in bytes

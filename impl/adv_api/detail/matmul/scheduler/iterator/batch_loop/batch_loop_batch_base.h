@@ -124,12 +124,12 @@ public:
 
     __aicore__ inline int32_t GetMainBatchBlockA() const
     {
-        return batchA_; // batchNum main block in outLoop
+        return batchA_; // batchNum main block in outerLoop
     }
 
     __aicore__ inline int32_t GetMainBatchBlockB() const
     {
-        return batchB_; // batchNum main block in outLoop
+        return batchB_; // batchNum main block in outerLoop
     }
 
     __aicore__ inline int32_t GetBiasBatchSrcOffset() const

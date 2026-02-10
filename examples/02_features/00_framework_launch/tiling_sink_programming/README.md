@@ -72,6 +72,6 @@
   执行结果如下，说明精度对比成功。
 
   ```bash
-  Ran 1 test in **s.
+  Ran 1 test in **s
   OK
   ```

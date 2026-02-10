@@ -49,7 +49,7 @@ public:
             { KERNEL_LOG(KERNEL_ERROR, "msgSendStart can not be nullptr"); });
         ASCENDC_ASSERT((this->msgRcvStart != nullptr),
             { KERNEL_LOG(KERNEL_ERROR, "msgRcvStart can not be nullptr"); });
-        ubAvalidTail = GetUBAvaliedAddr(workspace, i);
+        ubAvalidTail = GetUBAvailableAddr(workspace, i);
     }
  
     __aicore__ inline __gm__ KfcMsg* AllocMessage()

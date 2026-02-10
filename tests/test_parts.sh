@@ -53,6 +53,7 @@ basic_test_one_targets=(
     # ascendc_ut_basic_api_ascend610Lite
     ascendc_ut_basic_api_ascend910B1_AIC
     ascendc_ut_basic_api_ascend910B1_AIV
+    ascendc_ut_basic_api_ascend910B1_AIV_MSTX
 )
 
 basic_test_two_targets=(

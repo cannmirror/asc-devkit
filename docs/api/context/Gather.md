@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -64,6 +69,7 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="14.729999999999999%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="85.27%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p1396113348309"><a name="p1396113348309"></a><a name="p1396113348309"></a><span id="ph1396213414302"><a name="ph1396213414302"></a><a name="ph1396213414302"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint8_t/int8_t/uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float/uint64_t/int64_t</p>
 <p id="p523904010149"><a name="p523904010149"></a><a name="p523904010149"></a><span id="ph16239174011416"><a name="ph16239174011416"></a><a name="ph16239174011416"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：int16_t/uint16_t/int32_t/uint32_t/float/half/bfloat16_t</p>
 <p id="p1613523215812"><a name="p1613523215812"></a><a name="p1613523215812"></a><span id="ph5135133214816"><a name="ph5135133214816"></a><a name="ph5135133214816"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：int16_t/uint16_t/int32_t/uint32_t/float/half/bfloat16_t</p>
 </td>
@@ -111,6 +117,8 @@
 <p id="p8570104304111"><a name="p8570104304111"></a><a name="p8570104304111"></a>该偏移量相对于src的起始基地址而言。单位为Bytes。取值要求如下：</p>
 <a name="ul4670145164111"></a><a name="ul4670145164111"></a><ul id="ul4670145164111"><li>取值应保证src元素类型位宽对齐。</li><li>偏移地址后不能超出UB大小数据的范围。</li><li>针对以下型号，地址偏移的取值范围：不能超出uint32_t的范围。<p id="p867711574191"><a name="p867711574191"></a><a name="p867711574191"></a><span id="ph1567785713199"><a name="ph1567785713199"></a><a name="ph1567785713199"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span></p>
 <p id="p267718573198"><a name="p267718573198"></a><a name="p267718573198"></a><span id="ph186771857191912"><a name="ph186771857191912"></a><a name="ph186771857191912"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span></p>
+<p id="p774419412217"><a name="p774419412217"></a><a name="p774419412217"></a>针对以下型号，地址偏移的取值范围：当操作数为8位时，取值范围为[0, 2<sup id="sup3920174615212"><a name="sup3920174615212"></a><a name="sup3920174615212"></a>16</sup>-1]；当操作数为16位时，取值范围为[0, 2<sup id="sup99207467210"><a name="sup99207467210"></a><a name="sup99207467210"></a>17</sup>-1]，当操作数为32位或者64位时，不能超出uint32_t的范围。</p>
+<p id="p1767725718196"><a name="p1767725718196"></a><a name="p1767725718196"></a><span id="ph11677205761917"><a name="ph11677205761917"></a><a name="ph11677205761917"></a>Ascend 950PR/Ascend 950DT</span></p>
 </li></ul>
 </td>
 </tr>
@@ -144,8 +152,9 @@
 <td class="cellrowborder" valign="top" width="10%" headers="mcps1.2.4.1.2 "><p id="p1092602315814"><a name="p1092602315814"></a><a name="p1092602315814"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="74.98%" headers="mcps1.2.4.1.3 "><p id="p1692718231584"><a name="p1692718231584"></a><a name="p1692718231584"></a>指令迭代次数，每次迭代完成8个datablock（32Bytes）的数据收集，数据范围：repeatTime∈[0,255]。</p>
-<div class="p" id="p0618144471917"><a name="p0618144471917"></a><a name="p0618144471917"></a><a name="ul12780145612209"></a><a name="ul12780145612209"></a>
+<div class="p" id="p0618144471917"><a name="p0618144471917"></a><a name="p0618144471917"></a>特别地，针对以下型号：<a name="ul12780145612209"></a><a name="ul12780145612209"></a><ul id="ul12780145612209"><li><span id="ph09061844102518"><a name="ph09061844102518"></a><a name="ph09061844102518"></a>Ascend 950PR/Ascend 950DT</span></li></ul>
 </div>
+<p id="p18148356182117"><a name="p18148356182117"></a><a name="p18148356182117"></a>操作数为<strong id="b84473109468"><a name="b84473109468"></a><a name="b84473109468"></a>8位</strong>时，每次迭代完成<strong id="b1247251454616"><a name="b1247251454616"></a><a name="b1247251454616"></a>4个datablock</strong>（32Bytes）的数据收集。</p>
 </td>
 </tr>
 <tr id="row05851326989"><td class="cellrowborder" valign="top" width="15.02%" headers="mcps1.2.4.1.1 "><p id="p55852261189"><a name="p55852261189"></a><a name="p55852261189"></a>dstRepStride</p>
@@ -162,6 +171,8 @@
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 -   操作数地址重叠约束请参考[通用地址重叠约束](通用说明和约束.md#section668772811100)。
+
+-   针对Ascend 950PR/Ascend 950DT，uint8\_t/int8\_t数据类型仅支持tensor前n个数据计算接口。
 
 ## 调用示例<a name="section11276201527"></a>
 

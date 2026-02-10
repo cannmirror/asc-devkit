@@ -52,7 +52,7 @@ struct arch_version {
     static constexpr uint32_t v2201 = 2201;
 };
 
-struct get_arrch_version {
+struct get_arch_version {
     __aicore__ inline constexpr uint32_t operator()() const {
 #ifdef __NPU_ARCH__
         return __NPU_ARCH__;
@@ -62,7 +62,7 @@ struct get_arrch_version {
     }
 };
 
-constexpr uint32_t CURRENT_ARCH_VERSION = get_arrch_version{}();
+constexpr uint32_t CURRENT_ARCH_VERSION = get_arch_version{}();
 
 struct OpSystemRunCfg {
     uint64_t l2Cacheoffset;

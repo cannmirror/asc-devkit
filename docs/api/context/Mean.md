@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -34,7 +39,7 @@
 
 在了解接口具体功能之前，需要了解一些必备概念：数据的行数称之为**外轴长度（outter）**，每行实际的元素个数称之为**内轴的实际元素个数（n）**，内轴实际元素个数n向上32字节对齐后的元素个数称之为**补齐后的内轴元素个数\(inner\)**。本接口要求输入的内轴长度满足32字节对齐，所以当n占据的字节长度不是32字节的整数倍时，需要开发者将其向上补齐到32字节的整数倍。如下样例中，元素类型为float，每行的实际元素个数n为5，占据字节长度为20字节，不是32字节的整数倍，向上补齐后得到32字节，对应的元素个数为8。图中的padding代表补齐操作。n和inner的关系如下：**inner = \(n \*sizeof\(T\) + 32 - 1\) / 32 \* 32 / sizeof\(T\)**。
 
-![](figures/nz-reduce-22.png)
+![](figures/nz-reduce-42.png)
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -73,6 +78,7 @@
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+<p id="p382544110205"><a name="p382544110205"></a><a name="p382544110205"></a><span id="ph1168842372812"><a name="ph1168842372812"></a><a name="ph1168842372812"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p115780585428"><a name="p115780585428"></a><a name="p115780585428"></a><span id="ph115788581422"><a name="ph115788581422"></a><a name="ph115788581422"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 </td>
@@ -170,159 +176,26 @@
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
--   kernel侧调用示例
+```
+#include "kernel_operator.h"
 
-    ```
-    #include "kernel_operator.h"
-    template <typename T, typename accType>
-    class KernelMean
-    {
-    public:
-        __aicore__ inline KernelMean() {}
-        __aicore__ inline void Init(__gm__ uint8_t *srcGm, __gm__ uint8_t *dstGm, uint32_t outter, uint32_t inner, uint32_t n, uint32_t Size)
-        {
-            meanParams.outter = outter;
-            meanParams.inner = inner;
-            meanParams.n = n;
-            tmpSize = Size;
-            srcGlobal.SetGlobalBuffer((__gm__ T *)srcGm);
-            dstGlobal.SetGlobalBuffer((__gm__ T *)dstGm);
-            pipe.InitBuffer(inQueueX, 1, meanParams.outter * meanParams.inner * sizeof(T));
-            pipe.InitBuffer(outQueueY, 1, (meanParams.outter * sizeof(T) + AscendC::ONE_BLK_SIZE - 1) / AscendC::ONE_BLK_SIZE * AscendC::ONE_BLK_SIZE);
-        }
-        __aicore__ inline void Process()
-        {
-            CopyIn();
-            Compute();
-            CopyOut();
-        }
-    
-    private:
-        __aicore__ inline void CopyIn()
-        {
-            AscendC::LocalTensor<T> srcLocal = inQueueX.AllocTensor<T>();
-            AscendC::DataCopy(srcLocal, srcGlobal, meanParams.outter * meanParams.inner);
-            inQueueX.EnQue(srcLocal);
-        }
-        __aicore__ inline void Compute()
-        {
-            AscendC::LocalTensor<T> srcLocal = inQueueX.DeQue<T>();
-            AscendC::LocalTensor<T> dstLocal = outQueueY.AllocTensor<T>();
-            if (tmpSize != 0) {
-                pipe.InitBuffer(tmplocalBuf, tmpSize);
-                AscendC::LocalTensor<uint8_t> tmplocalTensor = tmplocalBuf.Get<uint8_t>();
-                AscendC::Mean<T, accType>(dstLocal, srcLocal, tmplocalTensor, meanParams);
-            } else {
-                AscendC::Mean<T, accType>(dstLocal, srcLocal, meanParams);
-            }
-            outQueueY.EnQue<T>(dstLocal);
-        }
-        __aicore__ inline void CopyOut()
-        {
-            AscendC::LocalTensor<T> dstLocal = outQueueY.DeQue<T>();
-            AscendC::DataCopy(dstGlobal, dstLocal, (meanParams.outter * sizeof(T) + AscendC::ONE_BLK_SIZE - 1) / AscendC::ONE_BLK_SIZE * AscendC::ONE_BLK_SIZE / sizeof(T));
-            outQueueY.FreeTensor(dstLocal);
-        }
-    
-    private:
-        AscendC::GlobalTensor<T> srcGlobal;
-        AscendC::GlobalTensor<T> dstGlobal;
-        AscendC::TPipe pipe;
-        AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueX;
-        AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueY;
-        AscendC::TBuf<AscendC::TPosition::VECCALC> tmplocalBuf;
-        AscendC::MeanParams meanParams;
-        uint32_t tmpSize;
-    };
-    
-    extern "C" __global__ __aicore__ void mean_custom(GM_ADDR x, GM_ADDR y, GM_ADDR workspace, GM_ADDR tiling)
-    {
-        GET_TILING_DATA(tiling_data, tiling);
-        if (TILING_KEY_IS(1)) {
-            KernelMean<half, half> op;
-            op.Init(x, y, tiling_data.outter, tiling_data.inner, tiling_data.n, tiling_data.tmpSize);
-            op.Process();
-        } else if (TILING_KEY_IS(2)) {
-            KernelMean<float, float> op;
-            op.Init(x, y, tiling_data.outter, tiling_data.inner, tiling_data.n, tiling_data.tmpSize);
-            op.Process();
-        } else if (TILING_KEY_IS(3)) {
-            KernelMean<half, float> op;
-            op.Init(x, y, tiling_data.outter, tiling_data.inner, tiling_data.n, tiling_data.tmpSize);
-            op.Process();
-        }
-    }
-    ```
+AscendC::LocalTensor<T> srcLocal = inQueue.DeQue<T>();
+AscendC::LocalTensor<T> dstLocal = outQueue.AllocTensor<T>();
+T scalar(0);
+AscendC::Duplicate<T>(dstLocal, scalar,
+                        (meanParams.outter * sizeof(T) + AscendC::ONE_BLK_SIZE - 1) / AscendC::ONE_BLK_SIZE
+                            * AscendC::ONE_BLK_SIZE);
+if (tmpSize != 0) {
+    pipe->InitBuffer(tmplocalBuf, tmpSize);
+    AscendC::LocalTensor<uint8_t> tmplocalTensor = tmplocalBuf.Get<uint8_t>();
+    AscendC::Mean<T, accType>(dstLocal, srcLocal, tmplocalTensor, meanParams);
+} else {
+    AscendC::Mean<T, accType>(dstLocal, srcLocal, meanParams);
+}
 
--   **host侧tiling定义如下：**
-
-    ```
-    #include "register/tilingdata_base.h"
-    namespace optiling {
-    BEGIN_TILING_DATA_DEF(MeanCustomTilingData)
-      TILING_DATA_FIELD_DEF(uint32_t, outter);
-      TILING_DATA_FIELD_DEF(uint32_t, inner);
-      TILING_DATA_FIELD_DEF(uint32_t, n);
-      TILING_DATA_FIELD_DEF(uint32_t, tmpSize);
-    END_TILING_DATA_DEF;
-    REGISTER_TILING_DATA_CLASS(MeanCustom, MeanCustomTilingData)
-    }
-    ```
-
--   **host侧tiling实现如下：**
-
-    ```
-    #include "mean_custom_tiling.h"
-    #include "register/op_def_registry.h"
-    #include "tiling/tiling_api.h"
-    namespace optiling {
-    static ge::graphStatus TilingFunc(gert::TilingContext* context)
-    {
-        MeanCustomTilingData tiling;
-        const gert::StorageShape *src_shape = context->GetInputShape(0); // src_shape给两维
-        uint32_t outter = src_shape->GetStorageShape().GetDim(0);
-        uint32_t inner = src_shape->GetStorageShape().GetDim(1);
-        
-        const gert::RuntimeAttrs *meanattrs = context->GetAttrs();
-        const uint32_t n = *(meanattrs->GetAttrPointer<uint32_t>(0)); 
-        const uint32_t iscast = *(meanattrs->GetAttrPointer<uint32_t>(1)); // iscast为1表示accType升精度
-        const uint32_t sizeflag = *(meanattrs->GetAttrPointer<uint32_t>(2)); // sizeflag为0表示框架申请tmpbuffer，为1表示通过sharedTmpBuffer入参传入临时空间
-        auto dt = context->GetInputTensor(0)->GetDataType();
-        uint32_t typeSize = 0;
-        if (iscast == 1) {
-            typeSize = 2;
-            context->SetTilingKey(3);
-        } else if(dt == ge::DT_FLOAT16) {
-            typeSize = 2;
-            context->SetTilingKey(1);
-        } else if (dt == ge::DT_FLOAT) {
-            typeSize = 4;
-            context->SetTilingKey(2);
-        }
-        uint32_t maxValue = 0;
-        uint32_t minValue = 0;
-        if (iscast == 1) {
-            AscendC::GetMeanMaxMinTmpSize(n, typeSize, 4, false, maxValue, minValue);
-        } else {
-            AscendC::GetMeanMaxMinTmpSize(n, typeSize, typeSize, false, maxValue, minValue);
-        }
-        if (sizeflag == 0) {
-            tiling.set_tmpSize(0);
-        } else {
-            tiling.set_tmpSize(minValue);
-        }
-        tiling.set_outter(outter);
-        tiling.set_inner(inner);
-        tiling.set_n(n);
-        context->SetBlockDim(1);
-        tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
-        context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
-        size_t *currentWorkspace = context->GetWorkspaceSizes(1);
-        currentWorkspace[0] = 0;
-        return ge::GRAPH_SUCCESS;
-    }
-    }
-    ```
+outQueue.EnQue<T>(dstLocal);
+inQueue.FreeTensor(srcLocal);
+```
 
 结果示例如下：
 

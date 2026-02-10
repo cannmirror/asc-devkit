@@ -15,7 +15,7 @@ enableKdimReorderLoad用于配置是否使能K轴错峰加载数据。基于相�
 │       └── verify_result.py    // 真值对比文件
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── matmul.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_k_reorder_load.asc              // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能： 
@@ -39,7 +39,7 @@ enableKdimReorderLoad用于配置是否使能K轴错峰加载数据。基于相�
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">(512, 2048)</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_k_reorder_load_custom</td></tr>
   </table>
 - 算子实现： 
  

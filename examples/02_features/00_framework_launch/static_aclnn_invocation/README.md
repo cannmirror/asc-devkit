@@ -28,7 +28,7 @@
 
 ## 代码实现介绍
 
-本样例中`op`目录负责编译打包生成自定义算子静态库，生成的静态库路径为`./build/customize-install/lib/libcustomize.a`；`app`目录通过`find_package(customize)`引入静态库，编译`main.cpp`生成`execute_add_op`，调用`aclnnAddCustom`并校验结果。
+本样例中`op`目录负责编译打包生成自定义算子静态库，生成的静态库路径为`./build/customize-install/lib/lib${package_name}.a`；`app`目录通过`find_package(${package_name})`引入静态库，编译`main.cpp`生成`execute_add_op`，调用`aclnnAddCustom`并校验结果。
 
 AddCustom算子介绍等内容可参考[算子描述](../custom_op/README.md)。
 

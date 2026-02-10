@@ -13,8 +13,14 @@
 #define UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H
 #endif
 
-#ifndef INCLUDE_C_API_ATOMIC_H
-#define INCLUDE_C_API_ATOMIC_H
+#ifndef INCLUDE_C_API_ATOMIC_ATOMIC_H
+#define INCLUDE_C_API_ATOMIC_ATOMIC_H
+
+__aicore__ inline void asc_set_atomic_add_float();
+
+__aicore__ inline void asc_set_atomic_max_float16();
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
 #include "instr_impl/npu_arch_2201/atomic_impl.h"
 
@@ -22,11 +28,9 @@ __aicore__ inline void asc_set_atomic_none();
 
 __aicore__ inline void asc_get_store_atomic_config(asc_store_atomic_config& config);
 
-__aicore__ inline void asc_set_store_atomic_config(asc_store_atomic_config& config);
+__aicore__ inline void asc_set_store_atomic_config_v1(uint16_t type, uint16_t op);
 
 __aicore__ inline void asc_set_atomic_add_bfloat();
-
-__aicore__ inline void asc_set_atomic_add_float();
 
 __aicore__ inline void asc_set_atomic_add_float16();
 
@@ -39,8 +43,6 @@ __aicore__ inline void asc_set_atomic_add_int16();
 __aicore__ inline void asc_set_atomic_max_bfloat();
 
 __aicore__ inline void asc_set_atomic_max_float();
-
-__aicore__ inline void asc_set_atomic_max_float16();
 
 __aicore__ inline void asc_set_atomic_max_int();
 
@@ -59,6 +61,20 @@ __aicore__ inline void asc_set_atomic_min_int();
 __aicore__ inline void asc_set_atomic_min_int8();
 
 __aicore__ inline void asc_set_atomic_min_int16();
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/atomic_impl.h"
+// ==========asc_set_atomic_add_float16==========
+__simd_callee__ inline void asc_set_atomic_add_float16();
+
+// ==========asc_set_atomic_max_float==========
+__simd_callee__ inline void asc_set_atomic_max_float();
+
+__aicore__ inline void asc_set_store_atomic_config_v2(uint16_t type, uint16_t op);
+
+#endif
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)

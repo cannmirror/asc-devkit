@@ -20,6 +20,7 @@ set(BASIC_UT_PRODUCT_TYPE_LIST_INIT
     ascend310p
     ascend910B1_AIC
     ascend910B1_AIV
+    ascend910B1_AIV_MSTX
     ascend310B1
     ascend950pr_9599_AIC
     ascend950pr_9599_AIV_BASIC
@@ -70,6 +71,11 @@ file(GLOB ASCENDC_TEST_ascend910B1_AIV_CASE_SRC_FILES
     ascendc_case_common/test_data_copy_slice.cpp
     ascendc_case_common/test_tscm_data.cpp
     ascendc_case_ascend910b1/ascendc_case_ascend910b1_aiv/*.cpp
+)
+
+# ascend910B1 aiv mstx test cases
+file(GLOB ASCENDC_TEST_ascend910B1_AIV_MSTX_CASE_SRC_FILES
+    ascendc_case_ascend910b1/ascendc_case_ascend910b1_aiv_mstx/test_operator_vec_mstx.cpp
 )
 
 # ascend910B1 aic test cases
@@ -150,6 +156,7 @@ foreach(product_type ${BASIC_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend310p>:../common/tik_pv_wrapper.cpp>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:../common/k3_pvwrap.cpp>
+        $<$<STREQUAL:${product_type},ascend910B1_AIV_MSTX>:../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend310B1>:../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend610Lite>:../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:../common/k3_pvwrap.cpp>
@@ -159,6 +166,7 @@ foreach(product_type ${BASIC_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},mc62cm12aa_BASIC>:../common/k3_pvwrap.cpp>
         $<$<STREQUAL:${product_type},mc62cm12aa_FRAMEWORK>:../common/k3_pvwrap.cpp>
         ${ASCENDC_TEST_${product_type}_CASE_SRC_FILES}
+        $<$<STREQUAL:${product_type},ascend910B1_AIV_MSTX>:${ASCENDC_TEST_ascend910B1_AIV_MSTX_CASE_SRC_FILES}>
     )
 
     target_compile_definitions(ascendc_ut_basic_api_${product_type} PRIVATE
@@ -170,6 +178,7 @@ foreach(product_type ${BASIC_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend610>:__NPU_ARCH__=2002;__DAV_M200__>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:__NPU_ARCH__=2201;__DAV_C220__;__DAV_C220_CUBE__;__DAV_CUBE__>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:__NPU_ARCH__=2201;__DAV_C220__;__DAV_C220_VEC__;__DAV_VEC__>
+        $<$<STREQUAL:${product_type},ascend910B1_AIV_MSTX>:__NPU_ARCH__=2201;__DAV_C220__;__DAV_C220_VEC__;__DAV_VEC__>
         $<$<STREQUAL:${product_type},ascend310B1>:__NPU_ARCH__=3002;__DAV_M300__>
         $<$<STREQUAL:${product_type},ascend610Lite>:__NPU_ARCH__=3102;__DAV_M310__>
         $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:__NPU_ARCH__=3101;__DAV_C310__;__DAV_C310_CUBE__>
@@ -200,6 +209,7 @@ foreach(product_type ${BASIC_UT_PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend310p>:tikicpulib::ascend310p>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:tikicpulib::ascend910B1>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:tikicpulib::ascend910B1>
+        $<$<STREQUAL:${product_type},ascend910B1_AIV_MSTX>:tikicpulib::ascend910B1>
         $<$<STREQUAL:${product_type},ascend310B1>:tikicpulib::ascend310B1>
         $<$<STREQUAL:${product_type},ascend610Lite>:tikicpulib::ascend610Lite>
         $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:tikicpulib::ascend950pr_9599>

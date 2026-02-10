@@ -23,7 +23,7 @@ struct ReduceRepeatParams {
         highMask = FULL_MASK;
         lowMask = FULL_MASK;
         repeatTimes = 0;
-        dstRepStride = DEFAULT_REDUCE_DST_REP_SRIDE; // dst Stride Unit is 2B(fp16)/4B(fp32)
+        dstRepStride = DEFAULT_REDUCE_DST_REP_STRIDE; // dst Stride Unit is 2B(fp16)/4B(fp32)
         srcBlkStride = DEFAULT_BLK_STRIDE;
         srcRepStride = DEFAULT_REPEAT_STRIDE; // src Stride Unit is 32B
     }
@@ -37,18 +37,18 @@ struct ReduceRepeatParams {
         normalMask = mask;
         maskMode = 1;
 #else
-        if (mask == HLAF_MASK_LEN) {
+        if (mask == HALF_MASK_LEN) {
             highMask = 0;
             lowMask = FULL_MASK;
-        } else if (mask == HLAF_MASK_LEN * DOUBLE_FACTOR) {
+        } else if (mask == HALF_MASK_LEN * DOUBLE_FACTOR) {
             highMask = FULL_MASK;
             lowMask = FULL_MASK;
         } else {
-            highMask = (mask > HLAF_MASK_LEN) ?
-                (((static_cast<uint64_t>(1)) << static_cast<uint32_t>(mask - HLAF_MASK_LEN)) - 1) :
+            highMask = (mask > HALF_MASK_LEN) ?
+                (((static_cast<uint64_t>(1)) << static_cast<uint32_t>(mask - HALF_MASK_LEN)) - 1) :
                 0;
             lowMask =
-                (mask > HLAF_MASK_LEN) ? FULL_MASK : (((static_cast<uint64_t>(1)) << static_cast<uint32_t>(mask)) - 1);
+                (mask > HALF_MASK_LEN) ? FULL_MASK : (((static_cast<uint64_t>(1)) << static_cast<uint32_t>(mask)) - 1);
         }
 #endif
         repeatTimes = repeatTimesIn;
@@ -90,7 +90,7 @@ struct DumpMessageHead {
     __aicore__ DumpMessageHead()
     {
         type = 0;
-        lenth = 0;
+        length = 0;
         addr = 0;
         dataType = 0;
         desc = 0;
@@ -99,11 +99,11 @@ struct DumpMessageHead {
         dumpSize = 0;
     }
 
-    __aicore__ DumpMessageHead(uint32_t typeIn, uint32_t lenthIn, uint32_t addrIn, uint32_t dataTypeIn, uint32_t descIn,
+    __aicore__ DumpMessageHead(uint32_t typeIn, uint32_t lengthIn, uint32_t addrIn, uint32_t dataTypeIn, uint32_t descIn,
         uint32_t bufferIdIn, uint32_t positionIn, uint32_t dumpSizeIn)
     {
         type = typeIn;
-        lenth = lenthIn;
+        length = lengthIn;
         addr = addrIn;
         dataType = dataTypeIn;
         desc = descIn;
@@ -113,7 +113,7 @@ struct DumpMessageHead {
     }
 
     uint32_t type = 0; // Dump Type 1:DumpScalar(DUMP_SCALAR), 2:DumpTensor (DUMP_TENSOR)
-    uint32_t lenth = 0;
+    uint32_t length = 0;
     uint32_t addr = 0;     // Dumptensor address, DumpScalar:0
     uint32_t dataType = 0; // data type: int32_t/half/...
     uint32_t desc = 0;     // for usr to add info or tag

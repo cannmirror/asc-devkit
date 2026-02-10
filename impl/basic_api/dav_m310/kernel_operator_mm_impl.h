@@ -582,7 +582,7 @@ __aicore__ inline void SetLoadDataRepeatCal(const LoadDataRepeatParam& repeatPar
  * ************************************************************************************************* */
 __aicore__ inline void SetLoadDataBoundaryCal(uint32_t boundaryValue)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support SetLoadDataBoundary"); });
+    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support SetLoadDataBoundary"); });
 }
 
 /* **************************************************************************************************
@@ -592,7 +592,7 @@ template <typename T>
 __aicore__ inline void LoadImageToLocalCal(__cbuf__ T *dst, const LoadImageToLocalParams &loadDataParams)
 {
     ASCENDC_ASSERT(
-        false, { KERNEL_LOG(KERNEL_ERROR, "current device don't support LoadImageToLocal"); });
+        false, { KERNEL_LOG(KERNEL_ERROR, "current device does not support LoadImageToLocal"); });
 }
 /* **************************************************************************************************
  * LoadDataUnzip                                            *
@@ -601,7 +601,7 @@ template <typename T>
 __aicore__ inline void LoadDataUnzipToL1Cal(__cbuf__ T *dst, __gm__ T *src)
 {
     ASCENDC_ASSERT(false, {
-        KERNEL_LOG(KERNEL_ERROR, "current device don't support LoadDataUnzip");
+        KERNEL_LOG(KERNEL_ERROR, "current device does not support LoadDataUnzip");
     });
 }
 
@@ -609,7 +609,7 @@ template <typename T>
 __aicore__ inline void LoadDataUnzipToL0BCal(__cb__ T *dst, __gm__ T *src)
 {
     ASCENDC_ASSERT(false, {
-        KERNEL_LOG(KERNEL_ERROR, "current device don't support LoadDataUnzip");
+        KERNEL_LOG(KERNEL_ERROR, "current device does not support LoadDataUnzip");
     });
 }
 
@@ -617,7 +617,7 @@ template <typename T>
 __aicore__ inline void LoadDataUnzipToL0ACal(__ca__ T *dst, __gm__ T *src)
 {
     ASCENDC_ASSERT(false, {
-        KERNEL_LOG(KERNEL_ERROR, "current device don't support LoadDataUnzip");
+        KERNEL_LOG(KERNEL_ERROR, "current device does not support LoadDataUnzip");
     });
 }
 } // namespace AscendC

@@ -20,17 +20,19 @@
 
 -   **[GetBasicConfig](GetBasicConfig.md)**  
 
--   **[GetSpecialBasicConfig](GetSpecialBasicConfig.md)**  
-
 -   **[GetMMConfig](GetMMConfig.md)**  
 
 -   **[REGIST\_MATMUL\_OBJ](REGIST_MATMUL_OBJ.md)**  
 
--   **[Init](Init-29.md)**  
+-   **[Init](Init-86.md)**  
 
 -   **[SetTensorA](SetTensorA.md)**  
 
 -   **[SetTensorB](SetTensorB.md)**  
+
+-   **[SetTensorScaleA](SetTensorScaleA.md)**  
+
+-   **[SetTensorScaleB](SetTensorScaleB.md)**  
 
 -   **[SetBias](SetBias.md)**  
 
@@ -68,6 +70,8 @@
 
 -   **[SetSingleShape](SetSingleShape.md)**  
 
+-   **[SetLocalWorkspace](SetLocalWorkspace.md)**  
+
 -   **[SetWorkspace](SetWorkspace.md)**  
 
 -   **[SetAntiQuantScalar](SetAntiQuantScalar.md)**  
@@ -79,6 +83,10 @@
 -   **[GetOffsetC](GetOffsetC.md)**  
 
 -   **[AsyncGetTensorC](AsyncGetTensorC.md)**  
+
+-   **[SetSubBlockIdx](SetSubBlockIdx.md)**  
+
+-   **[GetSubBlockIdx](GetSubBlockIdx.md)**  
 
 -   **[SetUserDefInfo](SetUserDefInfo.md)**  
 

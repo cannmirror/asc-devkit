@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -105,6 +110,7 @@ GeGLU是采用GELU作为激活函数的GLU变体。具体计算公式如下：
 <tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
+<p id="p38041041613"><a name="p38041041613"></a><a name="p38041041613"></a><span id="ph183108134329"><a name="ph183108134329"></a><a name="ph183108134329"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="zh-cn_topic_0000001538537601_p44574117347"><a name="zh-cn_topic_0000001538537601_p44574117347"></a><a name="zh-cn_topic_0000001538537601_p44574117347"></a><span id="ph991211132813"><a name="ph991211132813"></a><a name="ph991211132813"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="zh-cn_topic_0000001538537601_p10451541143416"><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><a name="zh-cn_topic_0000001538537601_p10451541143416"></a><span id="ph7582151042819"><a name="ph7582151042819"></a><a name="ph7582151042819"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p9306214193017"><a name="p9306214193017"></a><a name="p9306214193017"></a><span id="ph1365810359219"><a name="ph1365810359219"></a><a name="ph1365810359219"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -184,92 +190,25 @@ GeGLU是采用GELU作为激活函数的GLU变体。具体计算公式如下：
 ```
 #include "kernel_operator.h"
 
-template <typename srcType>
-class KernelGeGLU
-{
-public:
-    __aicore__ inline KernelGeGLU() {}
-    __aicore__ inline void Init(GM_ADDR src0Gm, GM_ADDR src1Gm, GM_ADDR dstGm, uint32_t inputSize,
-                                uint32_t tmpBufSize)
-    {
-        dataSize = inputSize;
-        uint32_t bufSize = 4 * tmpBufSize;
-        src0Global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(src0Gm), dataSize);
-        src1Global.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(src1Gm), dataSize);
-        dstGlobal.SetGlobalBuffer(reinterpret_cast<__gm__ srcType *>(dstGm), dataSize);
-        pipe.InitBuffer(inQueue0, 1, dataSize * sizeof(srcType));
-        pipe.InitBuffer(inQueue1, 1, dataSize * sizeof(srcType));
-        pipe.InitBuffer(outQueue, 1, dataSize * sizeof(srcType));
-        if ((sizeof(srcType) == sizeof(half)) && (tmpBufSize > 0))
-        {
-            pipe.InitBuffer(buf, bufSize * sizeof(srcType));
-        }
-    }
-    __aicore__ inline void Process(uint32_t tmpBufSize, uint32_t calCount)
-    {
-        CopyIn();
-        Compute(tmpBufSize, calCount);
-        CopyOut();
-    }
-
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<srcType> src0Local = inQueue0.AllocTensor<srcType>();
-        AscendC::LocalTensor<srcType> src1Local = inQueue1.AllocTensor<srcType>();
-        AscendC::DataCopy(src0Local, src0Global, dataSize);
-        AscendC::DataCopy(src1Local, src1Global, dataSize);
-        inQueue0.EnQue(src0Local);
-        inQueue1.EnQue(src1Local);
-    }
-    __aicore__ inline void Compute(uint32_t tmpBufSize, uint32_t calCount)
-    {
-        AscendC::LocalTensor<srcType> dstLocal = outQueue.AllocTensor<srcType>();
-        AscendC::LocalTensor<srcType> src0Local = inQueue0.DeQue<srcType>();
-        AscendC::LocalTensor<srcType> src1Local = inQueue1.DeQue<srcType>();
-        AscendC::LocalTensor<uint8_t> temp;
-        if ((sizeof(srcType) == sizeof(half)) && (tmpBufSize > 0)) {
-            temp = buf.Get<uint8_t>();
-        }
-        if ((tmpBufSize > 0) && (calCount > 0)) {
-            AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local, temp, calCount);
-        } else if (tmpBufSize > 0) {
-            AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local, temp);
-        } else if (calCount > 0) {
-            AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local, calCount);
-        } else {
-            AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local);
-        }
-        outQueue.EnQue<srcType>(dstLocal);
-        inQueue0.FreeTensor(src0Local);
-        inQueue1.FreeTensor(src1Local);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<srcType> dstLocal = outQueue.DeQue<srcType>();
-        AscendC::DataCopy(dstGlobal, dstLocal, dataSize);
-        outQueue.FreeTensor(dstLocal);
-    }
-
-private:
-    AscendC::GlobalTensor<srcType> src0Global;
-    AscendC::GlobalTensor<srcType> src1Global;
-    AscendC::GlobalTensor<srcType> dstGlobal;
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueue0;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueue1;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueue;
-    AscendC::TBuf<AscendC::TPosition::VECCALC> buf;
-    uint32_t dataSize = 0;
-};
-template <typename dataType>
-__aicore__ void kernel_geglu_operator(GM_ADDR src0Gm, GM_ADDR src1Gm, GM_ADDR dstGm, uint32_t srcSize,
-                                      uint32_t tmpBufSize, uint32_t calCount)
-{
-    KernelGeGLU<dataType> op;
-    op.Init(src0Gm, src1Gm, dstGm, srcSize, tmpBufSize);
-    op.Process(tmpBufSize, calCount);
+AscendC::LocalTensor<srcType> dstLocal = outQueue.AllocTensor<srcType>();
+AscendC::LocalTensor<srcType> src0Local = inQueue0.DeQue<srcType>();
+AscendC::LocalTensor<srcType> src1Local = inQueue1.DeQue<srcType>();
+AscendC::LocalTensor<uint8_t> temp;
+if ((sizeof(srcType) == sizeof(half)) && (tmpBufSize > 0)) {
+    temp = buf.Get<uint8_t>();
 }
+if ((tmpBufSize > 0) && (calCount > 0)) {
+    AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local, temp, calCount);
+} else if (tmpBufSize > 0) {
+    AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local, temp);
+} else if (calCount > 0) {
+    AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local, calCount);
+} else {
+    AscendC::GeGLU<srcType, false>(dstLocal, src0Local, src1Local);
+}
+outQueue.EnQue<srcType>(dstLocal);
+inQueue0.FreeTensor(src0Local);
+inQueue1.FreeTensor(src1Local);
 ```
 
 结果示例如下：

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>x</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -294,162 +299,45 @@ __aicore__ inline void MmadWithSparse(const LocalTensor<T>& dst, const LocalTens
 
 该索引矩阵用于A矩阵的稠密化，根据索引矩阵从MatrixA中的4个元素中选择2个元素参与计算，如下图所示：
 
-![](figures/绘图4-18.png)
+![](figures/绘图4-22.png)
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
 ```
 #include "kernel_operator.h"
+int srcOffset = 0;
+int dstOffset = 0;
+AscendC::LocalTensor<int8_t> a1Local = inQueueA1.DeQue<int8_t>();
+AscendC::LocalTensor<int8_t> a2Local = inQueueA2.AllocTensor<int8_t>();
 
-class KernelMatmul {
-public:
-    __aicore__ inline KernelMatmul() {}
-    __aicore__ inline void Init(__gm__ uint8_t* a, __gm__ uint8_t* b, __gm__ uint8_t* idx, __gm__ uint8_t* c, uint16_t m, uint16_t k, uint16_t n)
-    {
-        this->m = m;
-        this->k = k;
-        this->n = n;
+AscendC::LoadData2DParams loadDataParams;
+loadDataParams.repeatTimes = kBlocks * mBlocks;
+loadDataParams.srcStride = 1;
+loadDataParams.ifTranspose = false;
 
-        aSize = m * k;
-        bSize = k / 2 * n;
-        cSize = m * n;
-        mBlocks = m / 16;
-        nBlocks = n / 16;
-        kBlocks = k / 32;
+AscendC::LoadData(a2Local, a1Local, loadDataParams);
 
-        aGM.SetGlobalBuffer((__gm__ int8_t*)a);
-        bGM.SetGlobalBuffer((__gm__ int8_t*)b);
-        idxGM.SetGlobalBuffer((__gm__ uint8_t*)idx);
-        cGM.SetGlobalBuffer((__gm__ int32_t*)c);
-        pipe.InitBuffer(inQueueA1, 1, aSize * sizeof(int8_t));
-        pipe.InitBuffer(inQueueA2, 1, aSize * sizeof(int8_t));
-        pipe.InitBuffer(inQueueB1, 1, bSize * sizeof(int8_t));
-        pipe.InitBuffer(inQueueIdxB1, 1, (bSize / 4) * sizeof(int8_t));
-        pipe.InitBuffer(inQueueB2, 1, bSize * sizeof(int8_t));
-        pipe.InitBuffer(outQueueCO1, 1, cSize * sizeof(int32_t));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        SplitA();
+inQueueA2.EnQue<int8_t>(a2Local);
+inQueueA1.FreeTensor(a1Local);
 
-        AscendC::LocalTensor<int8_t> b1Local = inQueueB1.DeQue<int8_t>();
-        AscendC::LocalTensor<uint8_t> idexb1Local = inQueueIdxB1.DeQue<uint8_t>();
-        AscendC::LocalTensor<int8_t> a2Local = inQueueA2.DeQue<int8_t>();
-        SplitB(b1Local, idexb1Local);
-        Compute(a2Local);
-        inQueueB1.FreeTensor(b1Local);
-        inQueueIdxB1.FreeTensor(idexb1Local);
-        inQueueA2.FreeTensor(a2Local);
+AscendC::LocalTensor<int8_t> b2Local = inQueueB2.AllocTensor<int8_t>();
 
-        CopyOut();
-    }
+// transform nz to zn
+AscendC::LoadData2DParams loadDataParams;
+loadDataParams.repeatTimes = kBlocks * nBlocks / 2;
+loadDataParams.srcStride = 0;
+loadDataParams.ifTranspose = false;
 
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<int8_t> a1Local = inQueueA1.AllocTensor<int8_t>();
-        AscendC::LocalTensor<int8_t> b1Local = inQueueB1.AllocTensor<int8_t>();
-        AscendC::LocalTensor<uint8_t> idxb1Local = inQueueIdxB1.AllocTensor<uint8_t>();
-        AscendC::DataCopy(a1Local, aGM, { 1, static_cast<uint16_t>(aSize * sizeof(int8_t) / 32), 0, 0 });
-        AscendC::DataCopy(b1Local, bGM, { 1, static_cast<uint16_t>(bSize * sizeof(int8_t) / 32), 0, 0 });
-        AscendC::DataCopy(idxb1Local, idxGM, { 1, static_cast<uint16_t>(bSize / 4 * sizeof(int8_t) / 32), 0, 0 });
+AscendC::LoadDataWithSparse(b2Local, b1Local, idxb1Local, loadDataParams);
 
-        inQueueA1.EnQue(a1Local);
-        inQueueB1.EnQue(b1Local);
-        inQueueIdxB1.EnQue(idxb1Local);
-    }
-    __aicore__ inline void SplitA()
-    {
-        int srcOffset = 0;
-        int dstOffset = 0;
-        AscendC::LocalTensor<int8_t> a1Local = inQueueA1.DeQue<int8_t>();
-        AscendC::LocalTensor<int8_t> a2Local = inQueueA2.AllocTensor<int8_t>();
+inQueueB2.EnQue<int8_t>(b2Local);
 
-        AscendC::LoadData2DParams loadDataParams;
-        loadDataParams.repeatTimes = kBlocks * mBlocks;
-        loadDataParams.srcStride = 1;
-        loadDataParams.ifTranspose = false;
+AscendC::LocalTensor<int8_t> b2Local = inQueueB2.DeQue<int8_t>();
+AscendC::LocalTensor<int32_t> c1Local = outQueueCO1.AllocTensor<int32_t>();
 
-        AscendC::LoadData(a2Local, a1Local, loadDataParams);
-
-        inQueueA2.EnQue<int8_t>(a2Local);
-        inQueueA1.FreeTensor(a1Local);
-    }
-    __aicore__ inline void SplitB(AscendC::LocalTensor<int8_t>& b1Local, AscendC::LocalTensor<uint8_t>& idxb1Local)
-    {
-        AscendC::LocalTensor<int8_t> b2Local = inQueueB2.AllocTensor<int8_t>();
-
-        // transform nz to zn
-        AscendC::LoadData2DParams loadDataParams;
-        loadDataParams.repeatTimes = kBlocks * nBlocks / 2;
-        loadDataParams.srcStride = 0;
-        loadDataParams.ifTranspose = false;
-
-        AscendC::LoadDataWithSparse(b2Local, b1Local, idxb1Local, loadDataParams);
-
-        inQueueB2.EnQue<int8_t>(b2Local);
-    }
-    __aicore__ inline void Compute(const AscendC::LocalTensor<int8_t>& a2Local)
-    {
-        AscendC::LocalTensor<int8_t> b2Local = inQueueB2.DeQue<int8_t>();
-        AscendC::LocalTensor<int32_t> c1Local = outQueueCO1.AllocTensor<int32_t>();
-
-        AscendC::MmadWithSparse(c1Local, a2Local, b2Local, { m, n, k, false, 0, false, false, false });
-
-        outQueueCO1.EnQue<int32_t>(c1Local);
-        inQueueB2.FreeTensor(b2Local);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<int32_t> c1Local = outQueueCO1.DeQue<int32_t>();
-
-        AscendC::FixpipeParamsV220 fixpipeParams;
-        fixpipeParams.nSize = n;
-        fixpipeParams.mSize = m;
-        fixpipeParams.srcStride = m;
-        fixpipeParams.dstStride = n;
-
-        fixpipeParams.ndNum = 1;
-        fixpipeParams.srcNdStride = 0;
-        fixpipeParams.dstNdStride = 0;
-
-        AscendC::Fixpipe(cGM, c1Local, fixpipeParams);
-
-        outQueueCO1.FreeTensor(c1Local);
-    }
-
-private:
-    AscendC::TPipe pipe;
-
-    AscendC::TQue<AscendC::TPosition::A1, 1> inQueueA1;
-    AscendC::TQue<AscendC::TPosition::A2, 1> inQueueA2;
-    AscendC::TQue<AscendC::TPosition::B1, 1> inQueueB1;
-    AscendC::TQue<AscendC::TPosition::B1, 1> inQueueIdxB1;
-    AscendC::TQue<AscendC::TPosition::B2, 1> inQueueB2;
-    // dst queue
-    AscendC::TQue<AscendC::TPosition::CO1, 1> outQueueCO1;
-
-    AscendC::GlobalTensor<int8_t> aGM, bGM;
-    AscendC::GlobalTensor<uint8_t> idxGM;
-    AscendC::GlobalTensor<int32_t> cGM;
-
-    uint16_t m;
-    uint16_t n;
-    uint16_t k;
-
-    uint16_t aSize, bSize, cSize, mBlocks, nBlocks, kBlocks;
-};
-
-#define KERNEL_MMAD_WITH_SPARSE_OPERATOR_TEST(m, k, n)                                        \
-    extern "C" __global__ __aicore__ void kernel_mmad_with_sparse_operator##_##m##_##k##_##n( \
-        GM_ADDR a, GM_ADDR b, GM_ADDR idx, GM_ADDR c)                                         \
-    {                                                                                         \
-        KernelMatmul op;                                                                      \
-        op.Init(a, b, idx, c, m, k, n);                                                       \
-        op.Process();                                                                         \
-    }
-
-KERNEL_MMAD_WITH_SPARSE_OPERATOR_TEST(16, 64, 16)
+uint32 m = 16;
+uint32 k = 64;
+uint32 n = 16;
+AscendC::MmadWithSparse(c1Local, a2Local, b2Local, { m, n, k, false, 0, false, false, false });
 ```
 

@@ -345,7 +345,7 @@ def _decode_tiling_data(tiling_def, run_info_tiling_data, struct_tiling_def_base
     """ decode tiling data by tiling field info and run_info_tiling_data
 
         Args:
-            tiling_def: record tiling filed info
+            tiling_def: record tiling field info
             run_info_tiling_data: src binary of tiling data
             struct_tiling_def_base: used to decode struct tiling data
         Return:
@@ -514,7 +514,7 @@ def gen_all_dynamic_struct_def_except_self(is_optype_self, tiling_key, tiling_ke
 
     optype_tiling_def.class_def = get_dynamic_tiling_struct(optype_tiling_def, struct_tiling_def_base)
 
-    # all fileds of substruct and file-item defination, just like dynamic shape scene
+    # all fields of substruct and file-item defination, just like dynamic shape scene
     codes = get_struct_shape(struct_tiling_def_base)
     if not is_optype_self:
         # when the tilingkey of this shape now use the special registered tilingkey struct, not optype struct
@@ -619,7 +619,7 @@ def gen_static_shape(tiling_def, tilingdata, struct_tiling_def_base, all_dynamic
     class_body += "public:\n"
     has_arr = False
     if len(field_list) != len(tilingdata):
-        msg = "size not match: filed_info_list = %s, tilingdata = %s:\n" % (str(field_list), str(tilingdata))
+        msg = "size not match: field_info_list = %s, tilingdata = %s:\n" % (str(field_list), str(tilingdata))
         raise_tbe_python_err(TBE_DEFAULT_PYTHON_ERROR_CODE, (msg))
     for field in field_list:
         if field.class_type == 0:
@@ -961,7 +961,7 @@ def get_dynamic_tiling_struct(tiling_def, struct_tiling_def_base):
             class_def += f"    {field.dtype} {field.name}[{field.arr_size}];\n"
         elif field.class_type == 2:
             class_def += "    "
-            # if filed in struct is from api, add a namespace
+            # if field in struct is from api, add a namespace
             if struct_tiling_def_base[field.struct_type].is_api:
                 class_def += f"{_TILING_NAMESPACE}::"
             class_def += f"{field.struct_type} {field.name};\n"

@@ -69,7 +69,7 @@ __aicore__ inline void AntiQuantizePerTensorImpl(const LocalTensor<DstT>& dstTen
     static_assert(SupportType<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t, int8_t>(),
         "This AntiQuantize PER_TENSOR only support fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t/int8_t input dtype");
     static_assert(TypeUtils::IsInnerDefaultType<ScaleT, OffsetT>());
-    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same with offset");
+    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same as offset");
     static_assert(IsDataTypeValid<DstT, SrcT, ScaleT, config.policy>(),
         "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
     static_assert(IsSameType<DstT, ScaleT>::value && IsSameType<DstT, OffsetT>::value);
@@ -89,7 +89,7 @@ __aicore__ inline void AntiQuantizePerChannelImpl(const LocalTensor<DstT>& dstTe
     static_assert(TypeUtils::IsLocalTensorType<ScaleT, OffsetT>());
     static_assert(SupportType<SrcT, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t, int8_t>(),
         "This AntiQuantize PER_CHANNEL only support fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t/int8_t input dtype");
-    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same with offset");
+    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same as offset");
     static_assert(IsDataTypeValid<DstT, SrcT, typename ScaleT::PrimType, config.policy>(),
         "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
     ASCENDC_ASSERT(params.n * sizeof(SrcT) % 32 == 0, {KERNEL_LOG(KERNEL_ERROR,
@@ -108,7 +108,7 @@ __aicore__ inline void AntiQuantizePerTokenImpl(const LocalTensor<DstT>& dstTens
     static_assert(TypeUtils::IsLocalTensorType<ScaleT, OffsetT>());
     static_assert(SupportType<SrcT, int8_t, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t>(),
         "AntiQuantize PerToken only support int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t input dtype");
-    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same with offset");
+    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same as offset");
     static_assert(IsDataTypeValid<DstT, SrcT, typename ScaleT::PrimType, config.policy>(),
         "current combination of scale dtype and dstTensor dtype is not supported, please check the document");
     ASCENDC_ASSERT(params.n * sizeof(SrcT) % 32 == 0, {KERNEL_LOG(KERNEL_ERROR,
@@ -127,7 +127,7 @@ __aicore__ inline void AntiQuantizePerGroupImpl(const LocalTensor<DstT>& dstTens
         return;
     }
     static_assert(TypeUtils::IsLocalTensorType<ScaleT, OffsetT>());
-    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same with offset");
+    static_assert(IsSameType<ScaleT, OffsetT>::value, "Dtype of scale should be same as offset");
     static_assert(
         SupportType<SrcT, int8_t, fp8_e4m3fn_t, fp8_e5m2_t, hifloat8_t, fp4x2_e1m2_t, fp4x2_e2m1_t>(),
         "AntiQuantize PerGroup only support "

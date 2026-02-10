@@ -105,8 +105,8 @@ __simd_vf__ inline void ReduceARB64OverVLVF(__ubuf__ T *dstAddr, __ubuf__ T *src
                 MicroAPI::StoreAlign(addr + loopA * dimRTmp + loopR * vlSize, b64VregMain, fullMask);
             }
         }
-        // add remainer in tail with first element for each R axis
-        // tail process is necessary as mode merging is not support
+        // add remainder in tail with first element for each R axis
+        // tail process is necessary as mode merging is not supported
         for (uint16_t i = 0; i < needInplaceAdd; i++) {
             mask = MicroAPI::UpdateMask<T, Trait>(inplaceTail);
             MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
@@ -241,8 +241,8 @@ __aicore__ inline void ReduceARB64OverVL(__ubuf__ T *dstAddr, __ubuf__ T *srcAdd
     uint16_t mainTimes = folds / avgFolds;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
 
     ReduceARB64OverVLVF<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
         dimR, mainR, tailR, dimRAxis, inplaceRepeats, inplaceTail, needInplaceAdd, copyRepeats, base, folds,
@@ -297,8 +297,8 @@ __simd_vf__ inline void ReduceAROverVLVFImpl(__ubuf__ T *dstAddr, __ubuf__ T *sr
                 MicroAPI::StoreAlign(addr + loopA * dimRTmp + loopR * vlSize, vregMain, fullMask);
             }
         }
-        // add remainer in tail with first element for each R axis
-        // tail process is necessary as mode merging is not support
+        // add remainder in tail with first element for each R axis
+        // tail process is necessary as mode merging is not supported
         for (uint16_t i = 0; i < needInplaceAdd; i++) {
             mask = MicroAPI::UpdateMask<T, Trait>(inplaceTail);
             MicroAPI::LocalMemBar<MicroAPI::MemType::VEC_STORE, MicroAPI::MemType::VEC_LOAD>();
@@ -493,9 +493,9 @@ __aicore__ inline void ReduceAROverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
     uint16_t mainTimes = folds / avgFolds;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
-    uint16_t foldThree = (tailFolds == ReduceOpInternal::FLOD_THREE) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
+    uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
 
     ReduceAROverVLVFImpl<T, Trait, vlSize, Binaryfunc, Reducefunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
         dimR, mainR, tailR, dimRAxis, inplaceRepeats, inplaceTail, needInplaceAdd, copyRepeats, base, folds,

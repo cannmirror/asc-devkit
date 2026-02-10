@@ -17,6 +17,7 @@
 #include "kernel_tensor.h"
 #include "kernel_check.h"
 #include "kernel_struct_binary.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_binary_impl.h"
@@ -69,6 +70,9 @@ __aicore__ inline void Add(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Add", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Add");
+#endif
     AddImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -83,6 +87,9 @@ __aicore__ inline void Add(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Add")) {
         ASCENDC_REPORT_CHECK_ERROR("Add", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Add");
 #endif
     AddImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -105,6 +112,9 @@ __aicore__ inline void Add(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Add")) {
         ASCENDC_REPORT_CHECK_ERROR("Add", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Add", count);
 #endif
     AddImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -140,6 +150,9 @@ __aicore__ inline void Sub(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Sub", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Sub");
+#endif
     SubImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -154,6 +167,9 @@ __aicore__ inline void Sub(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Sub")) {
         ASCENDC_REPORT_CHECK_ERROR("Sub", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Sub");
 #endif
     SubImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -176,6 +192,9 @@ __aicore__ inline void Sub(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Sub")) {
         ASCENDC_REPORT_CHECK_ERROR("Sub", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Sub", count);
 #endif
     SubImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -211,6 +230,9 @@ __aicore__ inline void Mul(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Mul", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Mul");
+#endif
     MulImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -225,6 +247,9 @@ __aicore__ inline void Mul(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Mul")) {
         ASCENDC_REPORT_CHECK_ERROR("Mul", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Mul");
 #endif
     MulImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -247,6 +272,9 @@ __aicore__ inline void Mul(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Mul")) {
         ASCENDC_REPORT_CHECK_ERROR("Mul", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Mul", count);
 #endif
     MulImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -283,6 +311,9 @@ __aicore__ inline void Div(const LocalTensor<T> &dst, const LocalTensor<T> &src0
         ASCENDC_REPORT_CHECK_ERROR("Div", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Div");
+#endif
     DivImpl<PrimType, isSetMask, config>((__ubuf__ PrimType *)dst.GetPhyAddr(),
         (__ubuf__ PrimType *)src0.GetPhyAddr(),
         (__ubuf__ PrimType *)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -299,6 +330,9 @@ __aicore__ inline void Div(const LocalTensor<T> &dst, const LocalTensor<T> &src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Div")) {
         ASCENDC_REPORT_CHECK_ERROR("Div", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Div");
 #endif
     DivImpl<PrimType, isSetMask, config>((__ubuf__ PrimType *)dst.GetPhyAddr(), 
         (__ubuf__ PrimType *)src0.GetPhyAddr(),
@@ -317,6 +351,9 @@ __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Div", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Div");
+#endif
     DivImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -331,6 +368,9 @@ __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Div")) {
         ASCENDC_REPORT_CHECK_ERROR("Div", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Div");
 #endif
     DivImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -356,6 +396,9 @@ __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Div", KernelFuncType::CALCOUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Div", count);
+#endif
     DivImpl<PrimType, config>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
 }
@@ -369,6 +412,9 @@ __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Div")) {
         ASCENDC_REPORT_CHECK_ERROR("Div", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Div", count);
 #endif
     DivImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -406,6 +452,9 @@ __aicore__ inline void MulAddDst(const LocalTensor<T>& dst, const LocalTensor<U>
         ASCENDC_REPORT_CHECK_ERROR("MulAddDst", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "MulAddDst");
+#endif
     MulAddDstImpl<PrimDstType, PrimSrcType, isSetMask>((__ubuf__ PrimDstType*)dst.GetPhyAddr(),
         (__ubuf__ PrimSrcType*)src0.GetPhyAddr(), (__ubuf__ PrimSrcType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -423,6 +472,9 @@ __aicore__ inline void MulAddDst(const LocalTensor<T>& dst, const LocalTensor<U>
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, mask, repeatTime, repeatParams, "MulAddDst")) {
         ASCENDC_REPORT_CHECK_ERROR("MulAddDst", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "MulAddDst");
 #endif
     MulAddDstImpl<PrimDstType, PrimSrcType, isSetMask>((__ubuf__ PrimDstType*)dst.GetPhyAddr(),
         (__ubuf__ PrimSrcType*)src0.GetPhyAddr(), (__ubuf__ PrimSrcType*)src1.GetPhyAddr(), mask, repeatTime,
@@ -447,6 +499,9 @@ __aicore__ inline void MulAddDst(const LocalTensor<T>& dst, const LocalTensor<U>
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, count, "MulAddDst")) {
         ASCENDC_REPORT_CHECK_ERROR("MulAddDst", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "MulAddDst", count);
 #endif
     MulAddDstImpl((__ubuf__ PrimDstType*)dst.GetPhyAddr(), (__ubuf__ PrimSrcType*)src0.GetPhyAddr(),
         (__ubuf__ PrimSrcType*)src1.GetPhyAddr(), count);
@@ -482,6 +537,9 @@ __aicore__ inline void Max(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Max", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Max");
+#endif
     MaxImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -496,6 +554,9 @@ __aicore__ inline void Max(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Max")) {
         ASCENDC_REPORT_CHECK_ERROR("Max", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Max");
 #endif
     MaxImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -518,6 +579,9 @@ __aicore__ inline void Max(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Max")) {
         ASCENDC_REPORT_CHECK_ERROR("Max", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Max", count);
 #endif
     MaxImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -553,6 +617,9 @@ __aicore__ inline void Min(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("Min", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Min");
+#endif
     MinImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -567,6 +634,9 @@ __aicore__ inline void Min(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Min")) {
         ASCENDC_REPORT_CHECK_ERROR("Min", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Min");
 #endif
     MinImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -589,6 +659,9 @@ __aicore__ inline void Min(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Min")) {
         ASCENDC_REPORT_CHECK_ERROR("Min", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Min", count);
 #endif
     MinImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -624,6 +697,9 @@ __aicore__ inline void And(const LocalTensor<T>& dst, const LocalTensor<T>& src0
         ASCENDC_REPORT_CHECK_ERROR("And", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "And");
+#endif
     AndImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -638,6 +714,9 @@ __aicore__ inline void And(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "And")) {
         ASCENDC_REPORT_CHECK_ERROR("And", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "And");
 #endif
     AndImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -660,6 +739,9 @@ __aicore__ inline void And(const LocalTensor<T>& dst, const LocalTensor<T>& src0
     if (!CheckFuncVecBinary(dst, src0, src1, count, "And")) {
         ASCENDC_REPORT_CHECK_ERROR("And", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "And", count);
 #endif
     AndImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -695,6 +777,9 @@ __aicore__ inline void Or(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
         ASCENDC_REPORT_CHECK_ERROR("Or", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "Or");
+#endif
     OrImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -709,6 +794,9 @@ __aicore__ inline void Or(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "Or")) {
         ASCENDC_REPORT_CHECK_ERROR("Or", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "Or");
 #endif
     OrImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -731,6 +819,9 @@ __aicore__ inline void Or(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     if (!CheckFuncVecBinary(dst, src0, src1, count, "Or")) {
         ASCENDC_REPORT_CHECK_ERROR("Or", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "Or", count);
 #endif
     OrImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -829,6 +920,9 @@ __aicore__ inline void AddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
         ASCENDC_REPORT_CHECK_ERROR("AddRelu", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "AddRelu");
+#endif
     AddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
         (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -850,6 +944,9 @@ __aicore__ inline void AddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
         ASCENDC_REPORT_CHECK_ERROR("AddRelu", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "AddRelu");
+#endif
     AddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
         (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -869,6 +966,9 @@ __aicore__ inline void AddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
     if (!CheckFuncVecBinary(dst, src0, src1, count, "AddRelu")) {
         ASCENDC_REPORT_CHECK_ERROR("AddRelu", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "AddRelu", count);
 #endif
     AddReluImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -903,6 +1003,9 @@ __aicore__ inline void AddDeqRelu(const LocalTensor<half>& dst, const LocalTenso
         ASCENDC_REPORT_CHECK_ERROR("AddDeqRelu", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryAddReqReluInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "AddDeqRelu");
+#endif
     AddDeqReluImpl<isSetMask>((__ubuf__ half*)dst.GetPhyAddr(), (__ubuf__ int32_t*)src0.GetPhyAddr(),
         (__ubuf__ int32_t*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
 }
@@ -922,6 +1025,9 @@ __aicore__ inline void AddDeqRelu(const LocalTensor<T>& dst, const LocalTensor<U
         ASCENDC_REPORT_CHECK_ERROR("AddDeqRelu", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryAddReqReluInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "AddDeqRelu");
+#endif
     AddDeqReluImpl<isSetMask>((__ubuf__ PrimDstType*)dst.GetPhyAddr(),
         (__ubuf__ PrimSrcType*)src0.GetPhyAddr(), (__ubuf__ PrimSrcType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -937,6 +1043,9 @@ __aicore__ inline void AddDeqRelu(const LocalTensor<half> &dst, const LocalTenso
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, mask, repeatTime, repeatParams, "AddDeqRelu")) {
         ASCENDC_REPORT_CHECK_ERROR("AddDeqRelu", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryAddReqReluInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "AddDeqRelu");
 #endif
     AddDeqReluImpl<isSetMask>((__ubuf__ half*)dst.GetPhyAddr(), (__ubuf__ int32_t*)src0.GetPhyAddr(),
         (__ubuf__ int32_t*)src1.GetPhyAddr(), mask, repeatTime, repeatParams);
@@ -956,6 +1065,9 @@ __aicore__ inline void AddDeqRelu(const LocalTensor<T> &dst, const LocalTensor<U
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, mask, repeatTime, repeatParams, "AddDeqRelu")) {
         ASCENDC_REPORT_CHECK_ERROR("AddDeqRelu", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryAddReqReluInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "AddDeqRelu");
 #endif
     AddDeqReluImpl<isSetMask>((__ubuf__ PrimDstType*)dst.GetPhyAddr(),
         (__ubuf__ PrimSrcType*)src0.GetPhyAddr(), (__ubuf__ PrimSrcType*)src1.GetPhyAddr(), mask, repeatTime,
@@ -978,6 +1090,9 @@ __aicore__ inline void AddDeqRelu(const LocalTensor<half>& dst, const LocalTenso
         ASCENDC_REPORT_CHECK_ERROR("AddDeqRelu", KernelFuncType::CALCOUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryAddReqReluInfo(dst, src0, src1, "AddDeqRelu", count);
+#endif
     AddDeqReluImpl((__ubuf__ half *)dst.GetPhyAddr(), (__ubuf__ int32_t *)src0.GetPhyAddr(),
         (__ubuf__ int32_t *)src1.GetPhyAddr(), count);
 }
@@ -994,6 +1109,9 @@ __aicore__ inline void AddDeqRelu(const LocalTensor<T>& dst, const LocalTensor<U
     if (!CheckFuncVecBinaryDiffType(dst, src0, src1, count, "AddDeqRelu")) {
         ASCENDC_REPORT_CHECK_ERROR("AddDeqRelu", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryAddReqReluInfo(dst, src0, src1, "AddDeqRelu", count);
 #endif
     AddDeqReluImpl((__ubuf__ PrimDstType*)dst.GetPhyAddr(), (__ubuf__ PrimSrcType*)src0.GetPhyAddr(),
         (__ubuf__ PrimSrcType*)src1.GetPhyAddr(), count);
@@ -1034,6 +1152,9 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
         ASCENDC_REPORT_CHECK_ERROR("FusedMulAdd", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "FusedMulAdd");
+#endif
     FusedMulAddImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
         (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -1054,6 +1175,9 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
     if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "FusedMulAdd")) {
         ASCENDC_REPORT_CHECK_ERROR("FusedMulAdd", KernelFuncType::MASK_COUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "FusedMulAdd");
 #endif
     FusedMulAddImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
         (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
@@ -1082,6 +1206,9 @@ __aicore__ inline void FusedMulAdd(const LocalTensor<T>& dst, const LocalTensor<
     if (!CheckFuncVecBinary(dst, src0, src1, count, "FusedMulAdd")) {
         ASCENDC_REPORT_CHECK_ERROR("FusedMulAdd", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "FusedMulAdd", count);
 #endif
     FusedMulAddImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -1148,6 +1275,51 @@ __aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T
         repeatParams);
 }
 
+// FusedMulAddRelu has been updated, please use MulAddRelu instead.
+template <typename T, bool isSetMask>
+__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
+    const BinaryRepeatParams& repeatParams)
+{
+    using PrimType = PrimT<T>;
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "FusedMulAddRelu")) {
+        ASCENDC_REPORT_CHECK_ERROR("FusedMulAddRelu", KernelFuncType::MASK_BIT_MODE);
+    }
+#endif
+    FusedMulAddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
+        (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
+        repeatParams);
+}
+
+// FusedMulAddRelu has been updated, please use MulAddRelu instead.
+template <typename T, bool isSetMask>
+__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
+    const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
+{
+    using PrimType = PrimT<T>;
+#if __NPU_ARCH__ == 2201
+    if (g_coreType == AIC) {
+        return;
+    }
+#endif
+#if ASCENDC_CPU_DEBUG
+    MaskSetter::Instance().SetMask(isSetMask);
+    if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "FusedMulAddRelu")) {
+        ASCENDC_REPORT_CHECK_ERROR("FusedMulAddRelu", KernelFuncType::MASK_COUNT_MODE);
+    }
+#endif
+    FusedMulAddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
+        (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
+        repeatParams);
+}
+
 /*
  * @ingroup MulAddRelu Level 2
  * @brief dst = src0 * dst + src1
@@ -1175,75 +1347,6 @@ __aicore__ inline void MulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
 }
 
-/* **************************************************************************************************
- * FusedMulAddRelu                                             *
- * ************************************************************************************************* */
-/*
- * @ingroup FusedMulAddRelu Level 0
- * @brief dst = src0 * dst + src1
- * @param [out] dst output LocalTensor
- * @param [in] src0 input LocalTensor
- * @param [in] src1 input LocalTensor
- * @param [in] mask[]/mask mask array/count
- * @param [in] repeatTime repeat times
- * @param [in] intriParams.dstBlkStride dst block stride
- * @param [in] intriParams.src0BlkStride src0 block stride
- * @param [in] intriParams.src1BlkStride src1 block stride
- * @param [in] intriParams.dstRepStride dst repeat stride
- * @param [in] intriParams.src0RepStride src0 repeat stride
- * @param [in] intriParams.src1RepStride src1 repeat stride
- */
-template <typename T, bool isSetMask = true>
-__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
-    const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime,
-    const BinaryRepeatParams& repeatParams)
-{
-    using PrimType = PrimT<T>;
-#if __NPU_ARCH__ == 2201
-    if (g_coreType == AIC) {
-        return;
-    }
-#endif
-#if ASCENDC_CPU_DEBUG
-    MaskSetter::Instance().SetMask(isSetMask);
-    if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "FusedMulAddRelu")) {
-        ASCENDC_REPORT_CHECK_ERROR("FusedMulAddRelu", KernelFuncType::MASK_BIT_MODE);
-    }
-#endif
-    FusedMulAddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
-        (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
-        repeatParams);
-}
-
-template <typename T, bool isSetMask = true>
-__aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
-    const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
-{
-    using PrimType = PrimT<T>;
-#if __NPU_ARCH__ == 2201
-    if (g_coreType == AIC) {
-        return;
-    }
-#endif
-#if ASCENDC_CPU_DEBUG
-    MaskSetter::Instance().SetMask(isSetMask);
-    if (!CheckFuncVecBinary(dst, src0, src1, mask, repeatTime, repeatParams, "FusedMulAddRelu")) {
-        ASCENDC_REPORT_CHECK_ERROR("FusedMulAddRelu", KernelFuncType::MASK_COUNT_MODE);
-    }
-#endif
-    FusedMulAddReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
-        (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
-        repeatParams);
-}
-
-/*
- * @ingroup FusedMulAddRelu Level 2
- * @brief dst = src0 * dst + src1
- * @param [out] dst output LocalTensor
- * @param [in] src0 input LocalTensor
- * @param [in] src1 input LocalTensor
- * @param [in] count number Number of data involved in calculation
- */
 template <typename T>
 __aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<T>& src1, const int32_t& count)
@@ -1258,6 +1361,9 @@ __aicore__ inline void FusedMulAddRelu(const LocalTensor<T>& dst, const LocalTen
     if (!CheckFuncVecBinary(dst, src0, src1, count, "FusedMulAddRelu")) {
         ASCENDC_REPORT_CHECK_ERROR("FusedMulAddRelu", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "FusedMulAddRelu", count);
 #endif
     FusedMulAddReluImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -1298,6 +1404,9 @@ __aicore__ inline void SubRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
         ASCENDC_REPORT_CHECK_ERROR("SubRelu", KernelFuncType::MASK_BIT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask[0], mask[1], repeatTime, repeatParams, isSetMask, "SubRelu");
+#endif
     SubReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
         (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -1319,6 +1428,9 @@ __aicore__ inline void SubRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
         ASCENDC_REPORT_CHECK_ERROR("SubRelu", KernelFuncType::MASK_COUNT_MODE);
     }
 #endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, mask, repeatTime, repeatParams, isSetMask, "SubRelu");
+#endif
     SubReluImpl<PrimType, isSetMask>((__ubuf__ PrimType*)dst.GetPhyAddr(),
         (__ubuf__ PrimType*)src0.GetPhyAddr(), (__ubuf__ PrimType*)src1.GetPhyAddr(), mask, repeatTime,
         repeatParams);
@@ -1338,6 +1450,9 @@ __aicore__ inline void SubRelu(const LocalTensor<T>& dst, const LocalTensor<T>& 
     if (!CheckFuncVecBinary(dst, src0, src1, count, "SubRelu")) {
         ASCENDC_REPORT_CHECK_ERROR("SubRelu", KernelFuncType::CALCOUNT_MODE);
     }
+#endif
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBinaryInfo(dst, src0, src1, "SubRelu", count);
 #endif
     SubReluImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src0.GetPhyAddr(),
         (__ubuf__ PrimType*)src1.GetPhyAddr(), count);
@@ -1430,17 +1545,7 @@ __aicore__ inline void AbsSub(const LocalTensor<T> &dst, const LocalTensor<T> &s
         (__ubuf__ PrimType *)src1.GetPhyAddr(), count);
 }
 
-/* **************************************************************************************************
- * FusedAbsSub                                             *
- * ************************************************************************************************* */
-/*
- * @ingroup FusedAbsSub Level 2
- * @brief dst = abs(src0 - src1)
- * @param [out] dst output LocalTensor
- * @param [in] src0 input LocalTensor
- * @param [in] src1 input LocalTensor
- * @param [in] count number Number of data involved in calculation
- */
+// FusedAbsSub has been updated, please use AbsSub instead.
 template <typename T>
 __aicore__ inline void FusedAbsSub(const LocalTensor<T> &dst, const LocalTensor<T> &src0, 
     const LocalTensor<T> &src1, const uint32_t count)
@@ -1458,16 +1563,36 @@ __aicore__ inline void FusedAbsSub(const LocalTensor<T> &dst, const LocalTensor<
 }
 
 /* **************************************************************************************************
- * FusedExpSub                                             *
+ * ExpSub                                             *
  * ************************************************************************************************* */
 /*
- * @ingroup FusedExpSub Level 2
+ * @ingroup ExpSub Level 2
  * @brief when T is float : dst = e^(src0 - src1); when T is half : dst = e^(cast_f16_to_f32(src0) - cast_f16_to_f32(src1))
  * @param [out] dst output LocalTensor
  * @param [in] src0 input LocalTensor
  * @param [in] src1 input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
+template <typename T, typename U>
+__aicore__ inline void ExpSub(const LocalTensor<T> &dst, const LocalTensor<U> &src0, 
+    const LocalTensor<U> &src1, const uint32_t count)
+{
+    using DstPrimType = PrimT<T>;
+    using SrcPrimType = PrimT<U>;
+    CheckTensorPos<T>(dst, Hardware::UB, "dst", "VECIN / VECCALC / VECOUT", "ExpSub");
+    CheckTensorPos<U>(src0, Hardware::UB, "src0", "VECIN / VECCALC / VECOUT", "ExpSub");
+    CheckTensorPos<U>(src1, Hardware::UB, "src1", "VECIN / VECCALC / VECOUT", "ExpSub");
+    ASCENDC_ASSERT((count <= src0.GetSize() && count <= src1.GetSize() && count <= dst.GetSize()), {
+        KERNEL_LOG(KERNEL_ERROR,
+                   "count is %u, which should not larger than tensor size of dst / src0 / src1", count);
+    });
+    static_assert(SupportType<Tuple<DstPrimType, SrcPrimType>, Tuple<half, half>, Tuple<float, float>>(), "Failed to check dtype in " 
+        "ExpSub, current api support dtype combination is src and dst both: half / float.");
+    FusedExpSubImpl<DstPrimType, SrcPrimType>((__ubuf__ DstPrimType *)dst.GetPhyAddr(), (__ubuf__ SrcPrimType *)src0.GetPhyAddr(), 
+        (__ubuf__ SrcPrimType *)src1.GetPhyAddr(), count);
+}
+
+// FusedExpSub has been updated, please use ExpSub instead.
 template <typename T, typename U>
 __aicore__ inline void FusedExpSub(const LocalTensor<T> &dst, const LocalTensor<U> &src0, 
     const LocalTensor<U> &src1, const uint32_t count)
@@ -1484,6 +1609,7 @@ __aicore__ inline void FusedExpSub(const LocalTensor<T> &dst, const LocalTensor<
     FusedExpSubImpl<DstPrimType, SrcPrimType>((__ubuf__ DstPrimType *)dst.GetPhyAddr(), (__ubuf__ SrcPrimType *)src0.GetPhyAddr(), 
         (__ubuf__ SrcPrimType *)src1.GetPhyAddr(), count);
 }
+
 #endif
 } // namespace AscendC
 #pragma end_pipe

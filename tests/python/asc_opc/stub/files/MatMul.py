@@ -115,7 +115,7 @@ def copy_compile_res_files_to_output(kernel_name):
             
             update_json_file("binFileName", kernel_name, json_output_path)
         except Exception as e:
-            raise RuntimeError("Copy [%s] to [%s] filed, reason: %s." %
+            raise RuntimeError("Copy [%s] to [%s] field, reason: %s." %
                             (json_res_path, json_output_path, str(e)))
         finally:
             pass

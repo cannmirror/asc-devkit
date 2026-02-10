@@ -265,7 +265,7 @@ private:
             MATMUL_MODULE(BatchCopyCubeInParams)->template GetSingleHeight<IS_TRANS, NEED_BASIC>();
     }
 
-    // ND format, src data default don't need to use constant parameters
+    // ND format, src data default does not need to use constant parameters
     template <bool IS_TRANS = false, bool NEED_BASIC = true>
     __aicore__ inline int64_t GetSrcStride()
     {

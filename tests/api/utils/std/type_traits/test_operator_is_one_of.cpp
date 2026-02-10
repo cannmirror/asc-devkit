@@ -130,3 +130,52 @@ TEST_F(IsOneOfTest, TemplateTypesDifferent)
     EXPECT_FALSE((AscendC::Std::is_one_of<TemplateClass<int>, TemplateClass<double>, TemplateClass<long>>::value));
     EXPECT_FALSE((AscendC::Std::is_one_of_v<TemplateClass<int>, TemplateClass<double>, TemplateClass<long>>));
 }
+
+/*
+  is_one_of_value
+*/ 
+class IsOneOfValueTest : public testing::Test {
+protected:
+    virtual void SetUp() {}
+    void TearDown() {}
+
+    static void SetUpTestCase()
+    {
+        std::cout << "IsOneOfValueTest SetUpTestCase" << std::endl;
+    }
+    static void TearDownTestCase()
+    {
+        std::cout << "IsOneOfValueTest TearDownTestCase" << std::endl;
+    }
+};
+
+// test the same
+TEST_F(IsOneOfValueTest, BasicTypesSame)
+{
+    EXPECT_TRUE((AscendC::Std::is_one_of_value<int, 1, 1, 2>::value));
+    EXPECT_TRUE((AscendC::Std::is_one_of_value_v<int, 1, 1, 2>));
+}
+
+// test the different
+TEST_F(IsOneOfValueTest, BasicTypesDifferent)
+{
+    EXPECT_FALSE((AscendC::Std::is_one_of_value<int, 1, 2, 3>::value));
+    EXPECT_FALSE((AscendC::Std::is_one_of_value_v<int, 1, 2, 3>));
+}
+
+// test the enum
+enum TestColor {
+    Red = 0,
+    Green = 1,
+    Blue = 2
+};
+
+TEST_F(IsOneOfValueTest, CustomType)
+{
+    EXPECT_TRUE((AscendC::Std::is_one_of_value<TestColor, TestColor::Green, TestColor::Green, TestColor::Blue>::value));
+    EXPECT_TRUE((AscendC::Std::is_one_of_value<TestColor, TestColor::Green, TestColor::Blue, TestColor::Green>::value));
+    EXPECT_TRUE((AscendC::Std::is_one_of_value_v<TestColor, TestColor::Green, TestColor::Green, TestColor::Blue>));
+    EXPECT_TRUE((AscendC::Std::is_one_of_value_v<TestColor, TestColor::Green, TestColor::Blue, TestColor::Green>));
+    EXPECT_FALSE((AscendC::Std::is_one_of_value<TestColor, TestColor::Red, TestColor::Green, TestColor::Blue>::value));
+    EXPECT_FALSE((AscendC::Std::is_one_of_value_v<TestColor, TestColor::Red, TestColor::Green, TestColor::Blue>));
+}

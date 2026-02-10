@@ -4,9 +4,11 @@
 
 -   **[构造及析构函数](构造及析构函数.md)**  
 
--   **[GetCoreNum](GetCoreNum-80.md)**  
+-   **[GetCoreNum](GetCoreNum-143.md)**  
 
 -   **[GetSocVersion](GetSocVersion.md)**  
+
+-   **[GetCurNpuArch](GetCurNpuArch.md)**  
 
 -   **[GetCoreNumAic](GetCoreNumAic.md)**  
 

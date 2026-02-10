@@ -41,7 +41,7 @@ int32_t SetCType(TPosition pos, CubeFormat type, DataType dataType)
 </td>
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p104801814231"><a name="p104801814231"></a><a name="p104801814231"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p12971926710"><a name="p12971926710"></a><a name="p12971926710"></a>C矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_BFLOAT16 /DataType::DT_INT8/DataType::DT_INT32。</p>
+<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p12971926710"><a name="p12971926710"></a><a name="p12971926710"></a>C矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_BFLOAT16 /DataType::DT_INT8/DataType::DT_INT32/DataType::DT_FLOAT8_E4M3FN/DataType::DT_HIFLOAT8。</p>
 </td>
 </tr>
 </tbody>

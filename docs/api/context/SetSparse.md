@@ -2,7 +2,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-设置Matmul的使用场景是否为Sparse Matmul场景。
+设置Matmul的使用场景是否为Sparse Matmul场景Sparse Matmul场景。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 

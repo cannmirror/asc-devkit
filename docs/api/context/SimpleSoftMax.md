@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -105,6 +110,7 @@ def simple_softmax(src, max, sum):
 <tbody><tr id="zh-cn_topic_0000001621597661_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001621597661_p47551198266"><a name="zh-cn_topic_0000001621597661_p47551198266"></a><a name="zh-cn_topic_0000001621597661_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001621597661_p125969172719"><a name="zh-cn_topic_0000001621597661_p125969172719"></a><a name="zh-cn_topic_0000001621597661_p125969172719"></a>操作数的数据类型。</p>
+<p id="p12719118196"><a name="p12719118196"></a><a name="p12719118196"></a><span id="ph1839423196"><a name="ph1839423196"></a><a name="ph1839423196"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p318727114519"><a name="p318727114519"></a><a name="p318727114519"></a><span id="ph142231253104816"><a name="ph142231253104816"></a><a name="ph142231253104816"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 </td>
@@ -139,6 +145,7 @@ def simple_softmax(src, max, sum):
 <a name="zh-cn_topic_0000001621597661_screen19241326175913"></a><a name="zh-cn_topic_0000001621597661_screen19241326175913"></a><pre class="screen" codetype="Cpp" id="zh-cn_topic_0000001621597661_screen19241326175913">constexpr SoftmaxConfig SOFTMAX_DEFAULT_CFG = {true, 0, 0};</pre>
 <p id="zh-cn_topic_0000001621597661_p19442739102517"><a name="zh-cn_topic_0000001621597661_p19442739102517"></a><a name="zh-cn_topic_0000001621597661_p19442739102517"></a>此参数一般用于配合kernel侧tiling计算的接口使用。</p>
 <p id="p1860515359212"><a name="p1860515359212"></a><a name="p1860515359212"></a>注意：config参数生效的优先级低于模板参数isBasicBlock，即使能isBasicBlock参数时，接口内部做基本块的切分优化，config参数的shape常量化不生效。</p>
+<p id="p16541183012147"><a name="p16541183012147"></a><a name="p16541183012147"></a><span id="ph254193071416"><a name="ph254193071416"></a><a name="ph254193071416"></a>Ascend 950PR/Ascend 950DT</span>，该参数为预留参数，暂未启用，保持默认值即可。</p>
 <p id="zh-cn_topic_0000001621597661_p9572132616819"><a name="zh-cn_topic_0000001621597661_p9572132616819"></a><a name="zh-cn_topic_0000001621597661_p9572132616819"></a><span id="ph2869178153412"><a name="ph2869178153412"></a><a name="ph2869178153412"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持该参数。</p>
 <p id="zh-cn_topic_0000001621597661_p17572172617810"><a name="zh-cn_topic_0000001621597661_p17572172617810"></a><a name="zh-cn_topic_0000001621597661_p17572172617810"></a><span id="ph72541716183414"><a name="ph72541716183414"></a><a name="ph72541716183414"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持该参数。</p>
 </td>
@@ -251,90 +258,18 @@ uint32_t oriSrcK;  // 原始尾轴长度
 #include "kernel_operator.h"
 
 // constexpr AscendC::SoftmaxConfig static_config = {true, 320, 64}; shape常量化使用
-template <typename T>
-class KernelSimpleSoftmax {
-public:
-    __aicore__ inline KernelSimpleSoftmax()
-    {}
-    __aicore__ inline void Init(__gm__ uint8_t *srcGm, __gm__ uint8_t *inMaxGm, __gm__ uint8_t *inSumGm,
-        __gm__ uint8_t *dstGm, const SoftMaxTiling &tilingData)
-    {
-        elementNumPerBlk = 32 / sizeof(T);
-        srcGlobal.SetGlobalBuffer((__gm__ T *)srcGm);
-        dstGlobal.SetGlobalBuffer((__gm__ T *)dstGm);
-        maxGlobal.SetGlobalBuffer((__gm__ T *)inMaxGm);
-        sumGlobal.SetGlobalBuffer((__gm__ T *)inSumGm);
+AscendC::LocalTensor<T> srcLocal = inQueueSrc.DeQue<T>();
+AscendC::LocalTensor<T> sumTempLocal = sumQueue.DeQue<T>();
+AscendC::LocalTensor<T> maxTempLocal = maxQueue.DeQue<T>();
+AscendC::LocalTensor<T> dstLocal = outQueueDst.AllocTensor<T>();
 
-        pipe.InitBuffer(inQueueSrc, 1, height * width * sizeof(T));
-        pipe.InitBuffer(maxQueue, 1, height * elementNumPerBlk * sizeof(T));
-        pipe.InitBuffer(sumQueue, 1, height * elementNumPerBlk * sizeof(T));
-        pipe.InitBuffer(outQueueDst, 1, height * width * sizeof(T));
-        tiling = tilingData;
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyOut();
-    }
+AscendC::SoftMaxShapeInfo srcShape = {height, width, height, width};
+AscendC::SimpleSoftMax<T>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, tiling, srcShape);
+//AscendC::SimpleSoftMax<T, false, false, static_config>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, tiling, //srcShape);使用SoftmaxConfig类型的参数static_config，传入模板参数将shape常量化
 
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<T> srcLocal = inQueueSrc.AllocTensor<T>();
-        AscendC::LocalTensor<T> sumTempLocal = sumQueue.AllocTensor<T>();
-        AscendC::LocalTensor<T> maxTempLocal = maxQueue.AllocTensor<T>();
-        AscendC::DataCopy(srcLocal, srcGlobal, height * width);
-        AscendC::DataCopy(sumTempLocal, sumGlobal, height * elementNumPerBlk);
-        AscendC::DataCopy(maxTempLocal, maxGlobal, height * elementNumPerBlk);
-        inQueueSrc.EnQue(srcLocal);
-        sumQueue.EnQue(sumTempLocal);
-        maxQueue.EnQue(maxTempLocal);
-    }
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<T> srcLocal = inQueueSrc.DeQue<T>();
-        AscendC::LocalTensor<T> sumTempLocal = sumQueue.DeQue<T>();
-        AscendC::LocalTensor<T> maxTempLocal = maxQueue.DeQue<T>();
-        AscendC::LocalTensor<T> dstLocal = outQueueDst.AllocTensor<T>();
-
-        AscendC::SoftMaxShapeInfo srcShape = {height, width, height, width};
-        AscendC::SimpleSoftMax<T>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, tiling, srcShape);
-        //AscendC::SimpleSoftMax<T, false, false, static_config>(dstLocal, sumTempLocal, maxTempLocal, srcLocal, tiling, //srcShape);使用SoftmaxConfig类型的参数static_config，传入模板参数将shape常量化
-
-        outQueueDst.EnQue<T>(dstLocal);
-        maxQueue.FreeTensor(maxTempLocal);
-        sumQueue.FreeTensor(sumTempLocal);
-        inQueueSrc.FreeTensor(srcLocal);
-    }
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<T> dstLocal = outQueueDst.DeQue<T>();
-        AscendC::DataCopy(dstGlobal, dstLocal, height * width);
-        outQueueDst.FreeTensor(dstLocal);
-    }
-
-private:
-    AscendC::TPipe pipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueSrc;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> maxQueue;
-    AscendC::TQue<AscendC::TPosition::VECIN, 1> sumQueue;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueDst;
-    AscendC::GlobalTensor<T> srcGlobal, dstGlobal;
-    AscendC::GlobalTensor<T> maxGlobal, sumGlobal;
-    uint32_t elementNumPerBlk = 0;
-    uint32_t width = 64;
-    uint32_t height = 320;
-    SoftMaxTiling tiling;
-};
-
-extern "C" __global__ __aicore__ void simple_softmax_kernel_half(__gm__ uint8_t *srcGm, __gm__ uint8_t *inMaxGm,
-    __gm__ uint8_t *inSumGm, __gm__ uint8_t *dstGm, __gm__ uint8_t *tiling)
-{
-    GET_TILING_DATA(tilingData, tiling);
-    KernelSimpleSoftmax<half> op;
-    op.Init(srcGm, inMaxGm, inSumGm, dstGm, tilingData.softmaxTilingData);
-    op.Process();
-}
+outQueueDst.EnQue<T>(dstLocal);
+maxQueue.FreeTensor(maxTempLocal);
+sumQueue.FreeTensor(sumTempLocal);
+inQueueSrc.FreeTensor(srcLocal);
 ```
 

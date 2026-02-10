@@ -12,8 +12,8 @@
  * \file lgamma_common_basic_impl.h
  * \brief
  */
-#ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMOM_BASIC_IMPL_H
-#define IMPL_MATH_LGAMMA_LGAMMA_COMMOM_BASIC_IMPL_H
+#ifndef IMPL_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H
+#define IMPL_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H
 
 #include "kernel_basic_intf.h"
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201
@@ -499,4 +499,4 @@ __aicore__ inline void LGammaInitHParams(
 }
 }  // namespace AscendC
 #endif
-#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMOM_BASIC_IMPL_H
+#endif  // IMPL_MATH_LGAMMA_LGAMMA_COMMON_BASIC_IMPL_H

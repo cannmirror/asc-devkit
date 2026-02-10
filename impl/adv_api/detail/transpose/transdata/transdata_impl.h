@@ -285,7 +285,7 @@ __aicore__ inline void TransDataImplNcdhwToFractal(const LocalTensor<T>& dst, co
         currAxis = h * w * n1 * n0;
         copyParams.blockCount = c * d;
         copyParams.blockLen = currAxis / elePerBlk;
-        // Merge axis by skiping padded H,W.
+        // Merge axis by skipping padded H,W.
         copyParams.srcStride = (padHw - h * w) * n1 * n0 / elePerBlk;
         copyParams.dstStride = 0;
         DataCopy(dst, tmpDstTensor, copyParams);
@@ -313,11 +313,11 @@ __aicore__ inline void TransDataImplNcdhwToFractal(const LocalTensor<T>& dst, co
         TransDataTo5HD<half>(dstLocalList, srcLocalList, transDataParams);
     }
     PipeBarrier<PIPE_V>();
-    // steo3 C1DHW, N1N0, C0 -> DC1HW, N1N0, C0
+    // step3 C1DHW, N1N0, C0 -> DC1HW, N1N0, C0
     currAxis = c0 * h * w * n1 * n0;
     copyParams.blockCount = d;
     copyParams.blockLen = currAxis / elePerBlk;
-    // Merge axis by skiping padding padHW -> h, w
+    // Merge axis by skipping padding padHW -> h, w
     copyParams.srcStride = 0;
     copyParams.dstStride = (c1 - 1) * currAxis / elePerBlk;
     for (int32_t i = 0; i < c1; i++) {
@@ -472,7 +472,7 @@ template <typename T, typename U, typename S>
 __aicore__ inline void TransDataCheck(const TransDataParams<U, S>& params)
 {
     static_assert(SupportType<T, half, bfloat16_t, uint16_t, int16_t>(),
-        "Currents only supports half/bfloat16_t/uint16_t/int16_t types.");
+        "Current only supports half/bfloat16_t/uint16_t/int16_t types.");
     static_assert(is_layout_v<U>, "srcLayout must be a layout");
     static_assert(is_layout_v<S>, "dstLayout must be a layout");
     using SrcShapeTuple = Std::remove_cvref_t<decltype(params.srcLayout.GetShape())>;

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -42,14 +47,14 @@ Fmod\(-3.0, 1.1\) = -0.8
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
         __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
         __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
         ```
 
@@ -57,14 +62,14 @@ Fmod\(-3.0, 1.1\) = -0.8
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
         __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const FmodConfig& config = DEFAULT_FMOD_CONFIG>
         __aicore__ inline void Fmod(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor)
         ```
 
@@ -90,6 +95,7 @@ Fmod\(-3.0, 1.1\) = -0.8
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.37%" headers="mcps1.2.3.1.1 "><p id="p14431424724"><a name="p14431424724"></a><a name="p14431424724"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.63%" headers="mcps1.2.3.1.2 "><p id="p18431192420215"><a name="p18431192420215"></a><a name="p18431192420215"></a>操作数的数据类型。</p>
+<p id="p1688223162815"><a name="p1688223162815"></a><a name="p1688223162815"></a><span id="ph1168842372812"><a name="ph1168842372812"></a><a name="ph1168842372812"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p16687142314287"><a name="p16687142314287"></a><a name="p16687142314287"></a><span id="ph106871423132817"><a name="ph106871423132817"></a><a name="ph106871423132817"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p9687152317282"><a name="p9687152317282"></a><a name="p9687152317282"></a><span id="ph136877239281"><a name="ph136877239281"></a><a name="ph136877239281"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 </td>
@@ -99,8 +105,28 @@ Fmod\(-3.0, 1.1\) = -0.8
 <td class="cellrowborder" valign="top" width="80.63%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p98212044172612"><a name="zh-cn_topic_0000001538537601_p98212044172612"></a><a name="zh-cn_topic_0000001538537601_p98212044172612"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
 </td>
 </tr>
+<tr id="row19674913154"><td class="cellrowborder" valign="top" width="19.37%" headers="mcps1.2.3.1.1 "><p id="p179771456161314"><a name="p179771456161314"></a><a name="p179771456161314"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.63%" headers="mcps1.2.3.1.2 "><p id="p1977105611138"><a name="p1977105611138"></a><a name="p1977105611138"></a>Fmod计算的相关配置。此参数可选配，FmodConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<div class="p" id="p1267610594274"><a name="p1267610594274"></a><a name="p1267610594274"></a>algo：指定Fmod的算法。该参数支持的取值如下：<a name="ul827932118545"></a><a name="ul827932118545"></a><ul id="ul827932118545"><li>NORMAL：algo的默认值，使用模拟的普通模式，支持的数据类型为：half、float。</li><li>ITERATION_COMPENSATION：迭代补偿的高精度模式，支持的数据类型为：float。</li></ul>
+</div>
+<p id="p126764595271"><a name="p126764595271"></a><a name="p126764595271"></a>iterationNum：迭代补偿的高精度模式下的迭代补偿轮次，该参数仅在algo为ITERATION_COMPENSATION模式下生效，轮次范围1至11，默认值为11次。迭代轮次越多，结果精度越高，但性能会相应降低。使用时，可根据两个浮点数的指数位差异来选择迭代轮次，float类型共有8位指数位，src0Tensor和src1Tensor之间的指数位差异不应超过24*iterationNum。</p>
+</td>
+</tr>
 </tbody>
 </table>
+
+```
+constexpr uint32_t FMOD_ITERATION_NUM_MAX = 11;
+enum class FmodAlgo {
+    NORMAL = 0,
+    ITERATION_COMPENSATION = 1,
+};
+struct FmodConfig {
+    FmodAlgo algo = FmodAlgo::NORMAL;
+    uint32_t iterationNum = FMOD_ITERATION_NUM_MAX;
+};
+```
 
 **表 2**  接口参数说明
 
@@ -159,6 +185,7 @@ Fmod\(-3.0, 1.1\) = -0.8
 -   源操作数src0Tensor与src1Tensor的数据长度必须保持一致。
 -   **不支持源操作数与目的操作数地址重叠。**
 -   不支持sharedTmpBuffer与源操作数和目的操作数地址重叠。
+-   对于Ascend 950PR/Ascend 950DT，模板参数config中的algo为ITERATION\_COMPENSATION迭代补偿模式下，操作数的数据类型仅支持float。
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 
 ## 调用示例<a name="section642mcpsimp"></a>
@@ -170,6 +197,14 @@ pipe.InitBuffer(tmpQue, 1, bufferSize);  // bufferSize 通过Host侧tiling参数
 AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
 // 输入tensor长度为1024， 算子输入的数据类型为half， 实际计算个数为512
 AscendC::Fmod(dstLocal, src0Local, src1Local, sharedTmpBuffer, 512);
+```
+
+```
+__aicore__ constexpr AscendC::FmodConfig GetConfig() {
+    return { .algo = AscendC::FmodAlgo::ITERATION_COMPENSATION, .iterationNum = 11 };
+}
+static constexpr AscendC::FmodConfig config = GetConfig();
+AscendC::Fmod<float, false, config>(dstLocal, src0Local, src1Local, sharedTmpBuffer, 512);
 ```
 
 结果示例如下：

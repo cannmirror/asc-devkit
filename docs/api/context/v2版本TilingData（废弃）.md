@@ -180,7 +180,7 @@ public:
         this->Attr("ep_world_size").AttrType(REQUIRED).Int();
         this->Attr("tp_world_size").AttrType(REQUIRED).Int();
         this->AICore().SetTiling(optiling::AlltoAllVDoubleCommCustomTilingFunc);
-        this->AICore().AddConfig("ascendxxx"); // ascendxxx请修改为对应的昇腾AI处理器型号。
+        this->AICore().AddConfig("ascendxxx"); // ascendxxx请修改为对应的AI处理器型号。
         this->MC2().HcclGroup({"group_ep", "group_tp"});
     }
 };

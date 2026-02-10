@@ -70,7 +70,7 @@ private:
     bool CheckAttrs();
     bool CheckPadRange();
     bool CheckOutputHeight();
-    bool CheckTransposeOutputdingRange();
+    bool CheckTransposeOutputtingRange();
     bool InferShape();
 };
 }  // namespace ConvBackpropApi

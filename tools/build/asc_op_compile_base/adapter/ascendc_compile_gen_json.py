@@ -21,11 +21,14 @@ from tbe.common.platform.platform_info import set_soc_spec
 from tbe.tvm.error_mgr import raise_tbe_python_err, TBE_DEFAULT_PYTHON_ERROR_CODE
 from tbe.tvm.runtime.cce_runtime import tvm_callback_cce_postproc
 from tbe.tvm import var
+from .log_utils import LogUtil, AscendCLogLevel
 from .ascendc_common_utility import CommonUtility, CompileInfo
-from .ascendc_constants import CORE_TYPE_CUBE, CORE_TYPE_VEC
+from .ascendc_constants import CORE_TYPE_CUBE, CORE_TYPE_VEC, CORE_TYPE_MIX
 from .get_op_tiling import TilingInfo
 from .ascendc_constants import KernelMetaType
 from .super_kernel_sub_op_compile import save_kernel_type
+from .global_storage import global_var_storage
+from .ascendc_identify_meta_section_info import check_op_type_is_simt
 
 
 def _get_kernel_type_dict(compile_info: CompileInfo, tiling_key: int):
@@ -458,3 +461,39 @@ def _generate_final_json(compile_info: CompileInfo, tiling_info: TilingInfo):
     if not tiling_info.static_shape_flag:
         _dynamic_kernel_list_to_json_for_kernel_type(compile_info, compile_info.kernel_name, \
             compile_info.tiling_key_list, compile_info.enable_deterministic, final_kernel_type)
+
+
+def _get_simt_type_in_staic(tiling_info: TilingInfo, compile_info: CompileInfo, obj_path):
+    if global_var_storage.get_variable("ascendc_enable_super_kernel") is True:
+        return False
+    if tiling_info.static_shape_flag is False:
+        LogUtil.print_compile_log(compile_info.kernel_name, f"non static scenarios \
+not support detecting SIMT type", AscendCLogLevel.LOG_INFO)
+        return False
+    if compile_info.kernel_name.startswith("te_superkernel"):
+        LogUtil.print_compile_log(compile_info.kernel_name, f"current op is superkernel, \
+no need to detect SIMT type", AscendCLogLevel.LOG_INFO)
+        return False
+    vec_marker = "_mix_aiv"
+    if compile_info.no_set_kernel_type is False:
+        kernel_type = compile_info.tiling_key_kernel_type[str(tiling_info.tiling_key)]
+        if kernel_type in [KernelMetaType.KERNEL_TYPE_AIV_ONLY]:
+            kernel_name = compile_info.get_kernel_func_name()
+            return check_op_type_is_simt(obj_path, kernel_name)
+        elif kernel_type in [KernelMetaType.KERNEL_TYPE_MIX_AIC_1_1, \
+            KernelMetaType.KERNEL_TYPE_MIX_AIC_1_2]:
+            kernel_name = compile_info.kernel_name + vec_marker
+            return check_op_type_is_simt(obj_path, kernel_name)
+    else:
+        if compile_info.code_channel == CORE_TYPE_MIX:
+            kernel_name = compile_info.kernel_name + vec_marker
+            return check_op_type_is_simt(obj_path, kernel_name)
+        elif compile_info.code_channel == CORE_TYPE_VEC:
+            if compile_info.hard_sync:
+                kernel_name = compile_info.kernel_name + vec_marker
+            else:
+                kernel_name = compile_info.get_kernel_func_name()
+            return check_op_type_is_simt(obj_path, kernel_name)
+
+    return False
+        

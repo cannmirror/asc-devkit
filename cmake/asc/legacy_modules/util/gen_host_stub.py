@@ -26,7 +26,7 @@ static void ascendc_set_exception_dump_info(uint32_t dumpSize)
         return;
     }
 
-    // atmoic index
+    // atomic index
     uint64_t *sizeInfoAddr = reinterpret_cast<uint64_t *>(exceptionDumpAddr);
     *sizeInfoAddr = static_cast<uint64_t>(atomicIndex);
     sizeInfoAddr++;
@@ -164,12 +164,12 @@ typedef struct rtArgsSizeInfo {
 
     buff.write('''extern "C" {
 uint32_t RegisterAscendBinary(const char *fileBuf, size_t fileSize, uint32_t type, void **handle);
-uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t blockDim, void **args,
+uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t numBlocks, void **args,
                             uint32_t size, const void *stream);
 uint32_t GetAscendCoreSyncAddr(void **addr);
 int UnregisterAscendBinary(void *hdl);
 void StartAscendProf(const char *name, uint64_t *startTime);
-void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
+void ReportAscendProf(const char *name, uint32_t numBlocks, uint32_t taskType, const uint64_t startTime);
 bool GetAscendProfStatus();
 uint32_t AllocAscendMemDevice(void **devMem, uint64_t size);
 uint32_t FreeAscendMemDevice(void *devMem);
@@ -177,7 +177,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char* errMsg);
 void AscendProfRegister();
 uint32_t GetCoreNumForMixVectorCore(uint32_t *aiCoreNum, uint32_t *vectorCoreNum);
 uint32_t LaunchAscendKernelForVectorCore(const char *opType, void *handle, const uint64_t key, void **args, uint32_t size,
-    const void *stream, bool enbaleProf, uint32_t aicBlockDim, uint32_t aivBlockDim, uint32_t aivBlockDimOffset);
+    const void *stream, bool enableProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks, uint32_t aivNumBlocksOffset);
 ''')
     if dump_assert:
         buff.write('''int32_t rtSetExceptionExtInfo(const rtArgsSizeInfo_t * const sizeInfo);

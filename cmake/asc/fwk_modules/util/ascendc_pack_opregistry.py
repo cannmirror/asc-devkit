@@ -68,7 +68,7 @@ class PackKernel:
         path = vname + "/" + path
         sym = self.get_symbol("_binary_" + in_file)
         out_file = os.path.join(self.out_path, sym + ".o")
-        #ascend610lite only supoort aarch64
+        #ascend610lite only support aarch64
         if path.find("ascend610lite") != -1:
             try:
                 subprocess.run(['llvm-objcopy', '--input-target', 'binary', '--output-target', 'elf64-littleaarch64',
@@ -237,7 +237,7 @@ class PackKernel:
     def ascendc_copy_dir_recursive(self: any, src_dir, dst_dir):
         try:
             if not os.path.isdir(src_dir):
-                raise NotADirectoryError(f"kernel src dir not exits: {src_dir}")
+                raise NotADirectoryError(f"kernel src dir not exists: {src_dir}")
 
             os.makedirs(dst_dir, exist_ok=True)
 

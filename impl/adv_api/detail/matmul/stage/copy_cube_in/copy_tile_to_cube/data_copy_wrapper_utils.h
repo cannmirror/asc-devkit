@@ -371,7 +371,7 @@ __aicore__ inline void CopyNZ2NZImpl(const LocalTensor<TransT>& dst, const Local
 }
 
 template <typename TransT>
-__aicore__ inline void NDTrans2NZForInt8(LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHigh,
+__aicore__ inline void NDTrans2NZForInt8(LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHeight,
                                          const int calcWidth, const bool isBankConflict)
 {
     constexpr int32_t c0Size_ = AuxGetC0Size<TransT>();
@@ -396,19 +396,19 @@ __aicore__ inline void NDTrans2NZForInt8(LocalTensor<TransT>& dst, LocalTensor<T
         mask[1] = 0;
         SetVectorMask<int16_t>(mask[1], mask[0]);
         for (int i = 0; i < calcWidth; i++) {
-            for (int j = 0; j < calcHigh * BLOCK_CUBE; ++j) {
-                dstOffset = i * calcHigh * CUBE_MAX_SIZE + j * BLOCK_CUBE;
+            for (int j = 0; j < calcHeight * BLOCK_CUBE; ++j) {
+                dstOffset = i * calcHeight * CUBE_MAX_SIZE + j * BLOCK_CUBE;
                 srcOffset = j * blkStride * BLOCK_CUBE + i * BLOCK_CUBE;
                 Muls<int16_t, false>(tmpDst[dstOffset], tmpSrc[srcOffset], (int16_t)1, mask, 1, intriParams);
             }
         }
     } else {
         SetVectorMask<int16_t>(mask[1], mask[0]);
-        int32_t totalRepTimes = 2 * calcHigh;
+        int32_t totalRepTimes = 2 * calcHeight;
         int32_t highBlock = totalRepTimes / MAX_REPEAT_TIMES;
         int32_t highTail = totalRepTimes % MAX_REPEAT_TIMES;
         for (int i = 0; i < calcWidth; i++) {
-            dstOffset = i * calcHigh * CUBE_MAX_SIZE;
+            dstOffset = i * calcHeight * CUBE_MAX_SIZE;
             srcOffset = i * BLOCK_CUBE;
             for (int32_t idx = 0; idx < highBlock; ++idx) {
                 Muls<int16_t, false>(tmpDst[dstOffset], tmpSrc[srcOffset], (int16_t)1, mask, MAX_REPEAT_TIMES,
@@ -424,7 +424,7 @@ __aicore__ inline void NDTrans2NZForInt8(LocalTensor<TransT>& dst, LocalTensor<T
 }
 
 template <typename SrcT, typename TransT>
-__aicore__ inline void NDTrans2NZForFP16(LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHigh,
+__aicore__ inline void NDTrans2NZForFP16(LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHeight,
                                          const int calcWidth, const bool isBankConflict)
 {
     const int c0Count = AscendCUtils::GetC0Count(sizeof(TransT));
@@ -451,8 +451,8 @@ __aicore__ inline void NDTrans2NZForFP16(LocalTensor<TransT>& dst, LocalTensor<T
         mask[1] = 0;
         SetVectorMask<TransT>(mask[1], mask[0]);
         for (int i = 0; i < calcWidth; i++) {
-            for (int j = 0; j < calcHigh * BLOCK_CUBE; ++j) {
-                dstOffset = i * calcHigh * CUBE_MAX_SIZE + j * BLOCK_CUBE;
+            for (int j = 0; j < calcHeight * BLOCK_CUBE; ++j) {
+                dstOffset = i * calcHeight * CUBE_MAX_SIZE + j * BLOCK_CUBE;
                 srcOffset = j * blkStride * BLOCK_CUBE + i * BLOCK_CUBE;
                 Muls<TransT, false>(dst[dstOffset], src[srcOffset], (TransT)1, mask, 1, intriParams);
                 if constexpr (sizeof(TransT) == sizeof(float)) {
@@ -464,26 +464,26 @@ __aicore__ inline void NDTrans2NZForFP16(LocalTensor<TransT>& dst, LocalTensor<T
     } else {
         SetVectorMask<TransT>(mask[1], mask[0]);
         for (int i = 0; i < calcWidth; i++) {
-            dstOffset = i * calcHigh * CUBE_MAX_SIZE;
+            dstOffset = i * calcHeight * CUBE_MAX_SIZE;
             srcOffset = i * BLOCK_CUBE;
-            Muls<TransT, false>(dst[dstOffset], src[srcOffset], (TransT)1, mask, BLOCK_NUM * calcHigh, intriParams);
+            Muls<TransT, false>(dst[dstOffset], src[srcOffset], (TransT)1, mask, BLOCK_NUM * calcHeight, intriParams);
             if constexpr (sizeof(TransT) == sizeof(float)) {
                 Muls<TransT, false>(dst[dstOffset + c0Count], src[srcOffset + c0Count], (TransT)1, mask,
-                                    BLOCK_NUM * calcHigh, intriParams);
+                                    BLOCK_NUM * calcHeight, intriParams);
             }
         }
     }
 }
 
 template <typename SrcT, typename TransT>
-__aicore__ inline void NDTrans2NZ(LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHigh,
+__aicore__ inline void NDTrans2NZ(LocalTensor<TransT>& dst, LocalTensor<TransT>& src, const int calcHeight,
                                   const int calcWidth, const bool isBankConflict)
 {
     // Use Muls, convert to NZ format
     if constexpr (IsSameTypeV<TransT, int8_t>) {
-        NDTrans2NZForInt8(dst, src, calcHigh, calcWidth, isBankConflict);
+        NDTrans2NZForInt8(dst, src, calcHeight, calcWidth, isBankConflict);
     } else {
-        NDTrans2NZForFP16<SrcT>(dst, src, calcHigh, calcWidth, isBankConflict);
+        NDTrans2NZForFP16<SrcT>(dst, src, calcHeight, calcWidth, isBankConflict);
     }
 }
 

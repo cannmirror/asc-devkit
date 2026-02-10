@@ -491,7 +491,7 @@ __aicore__ inline void AntiQuantPerchannelNoTranspose(const LocalTensor<OutputDa
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelUnlignedForFp8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+__simd_vf__ inline void PerchannelUnalignedForFp8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
     __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -536,7 +536,7 @@ __simd_vf__ inline void PerchannelUnlignedForFp8(__ubuf__ OutputDataType* dst, _
 }
 
 template <typename SrcType, typename OutputDataType>
-__simd_vf__ inline void PerchannelUnlignedForB8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
+__simd_vf__ inline void PerchannelUnalignedForB8(__ubuf__ OutputDataType* dst, __ubuf__ SrcType* src,
     __ubuf__ OutputDataType* offset, __ubuf__ OutputDataType* scale, const uint32_t srcCalCount)
 {
     MicroAPI::MaskReg preg;
@@ -570,7 +570,7 @@ __simd_vf__ inline void PerchannelUnlignedForB8(__ubuf__ OutputDataType* dst, __
 }
 
 template <typename SrcType, typename OutputDataType>
-__aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType>& dst,
+__aicore__ inline void AntiQuantUnalignedProcess(const LocalTensor<OutputDataType>& dst,
     const LocalTensor<SrcType>& src, const LocalTensor<OutputDataType>& offset,
     const LocalTensor<OutputDataType>& scale, const uint32_t K, const uint32_t N)
 {
@@ -580,9 +580,9 @@ __aicore__ inline void AntiQuantUnlignedProcess(const LocalTensor<OutputDataType
     __ubuf__ SrcType* srcUb = (__ubuf__ SrcType*)src.GetPhyAddr();
 
     if constexpr (SupportType<SrcType, fp8_e4m3fn_t, fp8_e5m2_t>()) {
-        PerchannelUnlignedForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
+        PerchannelUnalignedForFp8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
     } else { // now only support hifloat8 and int8
-        PerchannelUnlignedForB8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
+        PerchannelUnalignedForB8<SrcType, OutputDataType>(dstUb, srcUb, offsetUb, scaleUb, N * K);
     }
 }
 
@@ -744,7 +744,7 @@ __aicore__ inline void AntiQuantPerchannelImpl(const LocalTensor<OutputDataType>
         uint32_t n = (shapeInfo.offsetWidth == 0 ? offset.GetShapeInfo().shape[1] : shapeInfo.offsetWidth);
         if (n < 32) { // b8 input single line is not 32B aligned such as input n == 16
             ASCENDC_ASSERT((k % 2 == 0), { KERNEL_LOG(KERNEL_ERROR, "input calculate size must be 32B aligned!"); });
-            AntiQuantUnlignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
+            AntiQuantUnalignedProcess<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
         } else {
             AntiQuantPerchannelNoTranspose<SrcType, OutputDataType>(dst, src, offset, scale, k, n);
         }
@@ -2124,7 +2124,7 @@ __aicore__ inline void AscendAntiQuantPerGroupForCol(const LocalTensor<dstT>& ds
         AntiQuantPerGroupForColFp8<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor,
             offsetTensor, para);
     } else if constexpr (SupportType<srcT, fp4x2_e1m2_t, fp4x2_e2m1_t>()) {
-        // fp4 dosen't count offset
+        // fp4 doesn't count offset
         AntiQuantPerGroupForColFp4<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor, para);
     } else {
         AntiQuantPerGroupForColB8<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor,
@@ -2141,7 +2141,7 @@ __aicore__ inline void AscendAntiQuantPerGroupForRow(const LocalTensor<dstT>& ds
         AntiQuantPerGroupForRowFp8<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor,
             offsetTensor, para);
     } else if constexpr (SupportType<srcT, fp4x2_e1m2_t, fp4x2_e2m1_t>()) {
-        // fp4 dosen't count offset
+        // fp4 doesn't count offset
         AntiQuantPerGroupForRowFp4<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor, para);
     } else {
         AntiQuantPerGroupForRowB8<dstT, srcT, scaleT, config>(dstTensor, srcTensor, scaleTensor,

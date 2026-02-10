@@ -38,6 +38,8 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_repeat_reduce_sum](vector_compute/asc_repeat_reduce_sum.md) | 对每个Repeat内所有元素求和。 |
 | [asc_repeat_reduce_max](vector_compute/asc_repeat_reduce_max.md) | 对每个Repeat内所有元素求最大值。 |
 | [asc_repeat_reduce_min](vector_compute/asc_repeat_reduce_min.md) | 对每个Repeat内所有元素求最小值。 |
+| [asc_get_reduce_max_cnt](vector_compute/asc_get_reduce_max_cnt.md) | 获取执行asc_repeat_reduce_max操作后的最大值，以及第一个最大值时的索引。 |
+| [asc_get_reduce_min_cnt](vector_compute/asc_get_reduce_min_cnt.md) | 获取执行asc_repeat_reduce_min操作后的最小值，以及第一个最小值时的索引。 |
 | [asc_brcb](vector_compute/asc_brcb.md) | 将源操作数中的每一个数填充到目的操作数的一个DataBlock中。 |
 | [asc_duplicate](vector_compute/asc_duplicate.md) | 将一个变量或立即数填充到一个矢量中。 |
 | [asc_select](vector_compute/asc_select.md) | 根据掩码，从两个源操作数中选取元素，输出到目的操作数。 |
@@ -97,6 +99,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_log](vector_compute/asc_log.md) | 按元素取自然对数。 |
 | [asc_lt_scalar](vector_compute/asc_lt_scalar.md) | 执行矢量中每个位置和标量比较，如果值小于标量值则为1，否则为0，结果为每个bit位按小端序排布 |
 | [asc_mrgsort4](vector_compute/asc_mrgsort4.md) | 将已经排好序的最多4条队列，合并排列成1条队列，结果按照score域由大到小排序。 |
+| [asc_get_vms4_sr](vector_compute/asc_get_vms4_sr.md) | 获取执行asc_mrgsort4操作后的队列中，每个队列已经理过的Region Proposal个数 |
 | [asc_fma](vector_compute/asc_fma.md) | 按元素将src0和src1相乘并和dst相加，将最终结果存放进dst中。 |
 | [asc_mul_add_relu](vector_compute/asc_mul_add_relu.md) | 按元素将src0和dst相乘并加上src1，再进行Relu计算（结果和0对比取较大值），最终结果存放进dst中。 |
 | [asc_mul_cast_half2int8](vector_compute/asc_mul_cast_half2int8.md) | 按元素求积，并将结果转换为int8_t类型 |

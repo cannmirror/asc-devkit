@@ -30,8 +30,8 @@ constexpr int64_t ONE_S64 = 1;
 constexpr uint32_t BASIC_BLOCK_SIZE_256 = 256;
 constexpr uint32_t BASIC_BLOCK_SIZE_128 = 128;
 constexpr uint32_t BASIC_BLOCK_SIZE_64 = 64;
-constexpr int32_t W_MERGE_THRESHHOLD = 64; // 256 basic block scenario, if w is smaller than this value, the tailing effect will not be greater than 1/8
-constexpr uint32_t L2_CACHE_SIZE_THRESHHOLD = 150994944; // 144 * 1024 * 1024, B2 experience value, L2 efficiency begins to decrease after crossing 144M
+constexpr int32_t W_MERGE_THRESHOLD = 64; // 256 basic block scenario, if w is smaller than this value, the tailing effect will not be greater than 1/8
+constexpr uint32_t L2_CACHE_SIZE_THRESHOLD = 150994944; // 144 * 1024 * 1024, B2 experience value, L2 efficiency begins to decrease after crossing 144M
 }
 
 namespace ConvBackpropApi {
@@ -93,17 +93,17 @@ bool Conv3DBpInputTiling::CheckAttrs()
         return false);
 
     OP_TILING_CHECK(CheckRange(attrInfo.strideH, DIM_LOW, STRIDES_DIM_HW_UP) == false,
-                    TILING_LOG_ERROR("stride_h: %ld is invaild, support range [%d, %d]",
+                    TILING_LOG_ERROR("stride_h: %ld is invalid, support range [%d, %d]",
                                                     attrInfo.strideH, DIM_LOW, STRIDES_DIM_HW_UP),
                     return false);
 
     OP_TILING_CHECK(CheckRange(attrInfo.strideW, DIM_LOW, STRIDES_DIM_HW_UP) == false,
-                    TILING_LOG_ERROR("stride_w: %ld is invaild, support range [%d, %d]",
+                    TILING_LOG_ERROR("stride_w: %ld is invalid, support range [%d, %d]",
                                                     attrInfo.strideW, DIM_LOW, STRIDES_DIM_HW_UP),
                     return false);
 
     OP_TILING_CHECK(CheckRange(attrInfo.strideD, DIM_LOW, STRIDES_DIM_DEPTH_UP) == false,
-                    TILING_LOG_ERROR("stride_d: %ld is invaild, support range [%d, %d]",
+                    TILING_LOG_ERROR("stride_d: %ld is invalid, support range [%d, %d]",
                                                     attrInfo.strideD, DIM_LOW, STRIDES_DIM_DEPTH_UP),
                     return false);
     uint64_t curL0CDstStride = static_cast<uint64_t>(shapeInfo.orgHi) *
@@ -126,27 +126,27 @@ bool Conv3DBpInputTiling::CheckPadRange()
     int32_t padUDimUp = std::min(PAD_DIM_UP, static_cast<int32_t>(shapeInfo.orgkH - 1));
     int32_t padLDimUp = std::min(PAD_DIM_UP, static_cast<int32_t>(shapeInfo.orgkW - 1));
     OP_TILING_CHECK(CheckRange(attrInfo.padFront, PAD_DIM_LOW, padHDimUp) == false,
-                    TILING_LOG_ERROR("pad head: %ld invaild, it should be in [%d, %d]",
+                    TILING_LOG_ERROR("pad head: %ld invalid, it should be in [%d, %d]",
                                           attrInfo.padFront, PAD_DIM_LOW, padHDimUp),
                     return false);
     OP_TILING_CHECK(CheckRange(attrInfo.padBack, PAD_DIM_LOW, padHDimUp) == false,
-                    TILING_LOG_ERROR("pad tail: %ld invaild, it should be in [%d, %d]",
+                    TILING_LOG_ERROR("pad tail: %ld invalid, it should be in [%d, %d]",
                                           attrInfo.padBack, PAD_DIM_LOW, padHDimUp),
                     return false);
     OP_TILING_CHECK(CheckRange(attrInfo.padUp, PAD_DIM_LOW, padUDimUp) == false,
-                    TILING_LOG_ERROR("pad up: %ld invaild, it should be in [%d, %d]",
+                    TILING_LOG_ERROR("pad up: %ld invalid, it should be in [%d, %d]",
                                           attrInfo.padUp, PAD_DIM_LOW, padUDimUp),
                     return false);
     OP_TILING_CHECK(CheckRange(attrInfo.padDown, PAD_DIM_LOW, padUDimUp) == false,
-                    TILING_LOG_ERROR("pad down: %ld invaild, it should be in [%d, %d]",
+                    TILING_LOG_ERROR("pad down: %ld invalid, it should be in [%d, %d]",
                                           attrInfo.padDown, PAD_DIM_LOW, padUDimUp),
                     return false);
     OP_TILING_CHECK(CheckRange(attrInfo.padLeft, PAD_DIM_LOW, padLDimUp) == false,
-                    TILING_LOG_ERROR("pad left: %ld invaild, it should be in [%d, %d]",
+                    TILING_LOG_ERROR("pad left: %ld invalid, it should be in [%d, %d]",
                                           attrInfo.padLeft, PAD_DIM_LOW, padLDimUp),
                     return false);
     OP_TILING_CHECK(CheckRange(attrInfo.padRight, PAD_DIM_LOW, padLDimUp) == false,
-                    TILING_LOG_ERROR("pad right: %ld invaild, it should be in [%d, %d]",
+                    TILING_LOG_ERROR("pad right: %ld invalid, it should be in [%d, %d]",
                                           attrInfo.padRight, PAD_DIM_LOW, padLDimUp),
                     return false);
     return true;
@@ -170,7 +170,7 @@ bool Conv3DBpInputTiling::CheckOutputHeight()
     return true;
 }
 
-bool Conv3DBpInputTiling::CheckTransposeOutputdingRange() 
+bool Conv3DBpInputTiling::CheckTransposeOutputtingRange() 
 {
   // The outputPadding value needs to be less than the dilation or stride of the same dimension
   OP_TILING_CHECK((attrInfo.outputPadD >= attrInfo.strideD && attrInfo.outputPadD >= attrInfo.dilationD), 
@@ -206,7 +206,7 @@ bool Conv3DBpInputTiling::CheckInputParam()
         return false;
     }
     if (opType_ == OpType::kConv3DTranspose) {
-        CheckTransposeOutputdingRange();
+        CheckTransposeOutputtingRange();
         if(!InferShape()) {
             return false;
         }
@@ -257,7 +257,7 @@ void Conv3DBpInputTiling::SetInitOutput()
     if (doModulo > attrInfo.padBack || hoModulo > attrInfo.padDown || attrInfo.strideH > shapeInfo.orgkH ||
         (opType_ == OpType::kConv3DTranspose && (attrInfo.backpropPadDown > 0 || attrInfo.backpropPadHead > 0)) || 
         attrInfo.dilationD > 1) {
-        // 1 is init output with l0C, 2 is init output with l1, defualt is 0 means not init output
+        // 1 is init output with l0C, 2 is init output with l1, default is 0 means not init output
         initOutputFlag = 1;
     }
 }
@@ -400,7 +400,7 @@ void Conv3DBpInputTiling::SetFinalTiling(AscendC::tiling::Conv3DBackpropInputTil
     dxt.iterateOrder = tilingParams.iterateOrder;
 
     if (shapeInfo.orgkH * shapeInfo.orgkW == 1) {
-        loadB2Condition_ = 2; // 2represents the case where Hk*Wk = 1
+        loadB2Condition_ = 2; // 2 represents the case where Hk*Wk = 1
     } else if (tilingParams.baseK / blockSize_ >= static_cast<uint32_t>(shapeInfo.orgkH * shapeInfo.orgkW)) {
         loadB2Condition_ = 1;
     } else {
@@ -817,7 +817,7 @@ bool Conv3DBpInputTiling::IsL2Efficient(const uint64_t singleCoreM, const uint64
     uint64_t l2CacheSize = (inputL2Cache +
         singleCoreN * singleCoreK * doutCopyLine +
         singleCoreM * singleCoreN + transdataWorkSpace) * dtypeByte_ * coreNum_;
-    return l2CacheSize <= L2_CACHE_SIZE_THRESHHOLD;
+    return l2CacheSize <= L2_CACHE_SIZE_THRESHOLD;
 }
 
 void Conv3DBpInputTiling::SetSingleCoreInfo()
@@ -837,7 +837,7 @@ void Conv3DBpInputTiling::SetSingleCoreInfo()
 
     // Scenario 1: When the cores in other directions are evenly distributed, moderately merge tasks in the M direction to reduce head overhead
     // Scenario 2: Due to the transfer alignment, the single-round basic block calculation imitation-to-memory ratio is too low, moderately merge the tasks in the M direction
-    if (shapeInfo.orgWi > W_MERGE_THRESHHOLD && mAl1 % shapeInfo.orgWi != 0 && shapeInfo.orgWi % mAl1 != 0) {
+    if (shapeInfo.orgWi > W_MERGE_THRESHOLD && mAl1 % shapeInfo.orgWi != 0 && shapeInfo.orgWi % mAl1 != 0) {
         uint64_t maxMCnt = ConvBackpropApi::CeilDiv(hwI, mAl1);
         for (uint64_t i = 1; i <= maxMCnt; ++i) {
             uint64_t tmpSingleCoreHWI =  ConvBackpropApi::CeilDiv(static_cast<uint64_t>(shapeInfo.orgHi), i) * shapeInfo.orgWi;
@@ -878,7 +878,7 @@ static int32_t CalBackpropPadBefore(int32_t filter, int32_t dilation, int32_t pa
 }
 
 static int64_t CalBackpropPadAfter(int64_t inputDim, int64_t outputDim, int32_t stride, int32_t pad) {
-    // orginal formula is inputDim = (outputDim * stride + 1) - padBefore + filterDilation, it can be simplified as follow.
+    // original formula is inputDim = (outputDim * stride + 1) - padBefore + filterDilation, it can be simplified as follow.
     return inputDim - outputDim * stride + pad;
 }
 

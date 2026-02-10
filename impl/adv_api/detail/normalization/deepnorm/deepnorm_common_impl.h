@@ -43,7 +43,7 @@ __aicore__ inline bool IsDeepNormParamValid(DeepNormTiling& tiling)
     if constexpr (isBasicBlock) {
         ASCENDC_ASSERT(hDivBy64 && bsDivBy8,
             {KERNEL_LOG(KERNEL_ERROR, "In DeepNorm, when isBasicBlock is true, input must have hLength %% 64 = 0, " \
-                "originalHLegnth %% 64 = 0 and (bLength * sLength) %% 8 = 0 !");});
+                "originalHLength %% 64 = 0 and (bLength * sLength) %% 8 = 0 !");});
     }
 
     return true;
@@ -126,7 +126,7 @@ __aicore__ inline void DeepNormExec(const LocalTensor<half>& inputX, const Local
     const BinaryRepeatParams binaryParams;
     SetVectorMask<float, MaskMode::COUNTER>(0, tiling.bshCurLength);
 
-    // inputX + inputGx both cast to FP32 to gurantee precision
+    // inputX + inputGx both cast to FP32 to guarantee precision
     unaryParams.srcRepStride = HALF_REPEAT_STRIDE;
     Cast<float, half, false>(params.tempTensorA, inputX, RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
@@ -167,7 +167,7 @@ __aicore__ inline void DeepNormBasicBlockReduceSum(const LocalTensor<float>& out
     const LocalTensor<float>& input, const UnaryRepeatParams& unaryParams, const uint32_t bsLength,
     const uint32_t hLength)
 {
-    const uint8_t num = hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock gurantee hLength = n * 64
+    const uint8_t num = hLength / BASIC_BLOCK_HLENGTH;     // isBasicBlock guarantee hLength = n * 64
 
     BinaryRepeatParams binaryParams;
     binaryParams.dstRepStride = num * DEFAULT_REPEAT_STRIDE;

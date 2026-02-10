@@ -23,9 +23,9 @@
 namespace AscendC {
 namespace {
 constexpr uint32_t SIGMOID_MEMORY_SIZE = 256;
-static constexpr uint32_t SIGMOID_HALF_SIEZ = 2;
-static constexpr uint32_t SIGMOID_FLOAT_SIEZ = 4;
-static const std::set<uint32_t> SUPPORT_TYPESIZE = { SIGMOID_HALF_SIEZ, SIGMOID_FLOAT_SIEZ };
+static constexpr uint32_t SIGMOID_HALF_SIZE = 2;
+static constexpr uint32_t SIGMOID_FLOAT_SIZE = 4;
+static const std::set<uint32_t> SUPPORT_TYPESIZE = { SIGMOID_HALF_SIZE, SIGMOID_FLOAT_SIZE };
 static constexpr const char SIGMOID_GET_MAX_MIN[] = "GetSigmoidMaxMinTmpSize";
 inline uint32_t GetSigmoidMaxTmpSize(const uint32_t inputSize, const uint32_t typeSize)
 {

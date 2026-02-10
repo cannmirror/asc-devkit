@@ -2,7 +2,7 @@
 
 ## 功能说明<a name="section618mcpsimp"></a>
 
-获得多核切分所使用的BlockDim参数。
+获得多核切分所使用的NumBlocks参数。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -95,7 +95,7 @@ tiling.SetBufferSpace(-1, -1, -1);
 optiling::TCubeTiling tilingData;   
 int ret = tiling.GetTiling(tilingData);
 
-// 获得多核切分后，使用的BlockDim
+// 获得多核切分后，使用的NumBlocks
 int32_t dim, mDim, nDim;
 int ret1 = tiling.GetCoreNum(dim, mDim, nDim);
 ```

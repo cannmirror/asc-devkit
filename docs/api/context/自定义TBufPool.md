@@ -2,9 +2,9 @@
 
 -   **[EXTERN\_IMPL\_BUFPOOL宏](EXTERN_IMPL_BUFPOOL宏.md)**  
 
--   **[Reset](Reset-12.md)**  
+-   **[Reset](Reset-59.md)**  
 
--   **[Init](Init-13.md)**  
+-   **[Init](Init-60.md)**  
 
 -   **[GetBufHandle](GetBufHandle.md)**  
 

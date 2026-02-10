@@ -314,7 +314,7 @@ __aicore__ inline void DumpTensorLocal2GMEntityImpl(const LocalTensor<T>& tensor
     uint32_t offset;
     uint32_t padOffset;
     if (IsSpecialDtype<PrimType>()) {
-        // calculate total tensor size, over flow will not happen for special dtype
+        // calculate total tensor size, overflow will not happen for special dtype
         offset = dumpSize * ONE_BYTE_BIT_SIZE / GetSpecialDtypeBitSize<PrimType>();
     } else {
         offset = dumpSize * sizeof(PrimType);
@@ -453,7 +453,7 @@ __aicore__ inline void DumpTensorGM2GMEntityImpl(const GlobalTensor<T>& tensor, 
     uint32_t offset;
     uint32_t padOffset;
     if (IsSpecialDtype<PrimType>()) {
-        // calculate total tensor size , over flow will not happen
+        // calculate total tensor size , overflow will not happen
         offset = dumpSize * ONE_BYTE_BIT_SIZE / GetSpecialDtypeBitSize<PrimType>();
     } else {
         offset = dumpSize * sizeof(PrimType);

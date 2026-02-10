@@ -156,9 +156,9 @@ __simd_callee__ inline void AbsImpl(U& dstReg, U& srcReg, MaskReg& mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
             AbsB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             AbsB64Impl<mode>(dstTemp, srcReg, mask);
@@ -207,7 +207,7 @@ __simd_callee__ inline void AbsImpl(S& dstReg, V& srcReg, MaskReg& mask)
         MaskReg maskTrait2;
         MaskPack(maskTrait2, mask);
         RegTensor<ActualU, RegTraitNumTwo> traitTwoSrcReg;
-        TraitOneToTaitTwoTmpl<RegTensor<ActualU, RegTraitNumTwo>, RegTensor<ActualU, RegTraitNumOne>,
+        TraitOneToTraitTwoTmpl<RegTensor<ActualU, RegTraitNumTwo>, RegTensor<ActualU, RegTraitNumOne>,
             typename ActualU::EleType>(traitTwoSrcReg, srcReg);
         ComplexAbsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumOne>, RegTensor<ActualU, RegTraitNumTwo>>(
             dstReg, traitTwoSrcReg, maskTrait2);
@@ -245,9 +245,9 @@ __simd_callee__ inline void ReluImpl(U& dstReg, U& srcReg, MaskReg& mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
             ReluB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             ReluB64Impl<mode>(dstTemp, srcReg, mask);
@@ -719,9 +719,9 @@ __simd_callee__ inline void NegImpl(U& dstReg, U& srcReg, MaskReg& mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
             NegB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             NegB64Impl<mode>(dstReg, srcReg, mask);
         }
@@ -757,9 +757,9 @@ __simd_callee__ inline void NotImpl(U& dstReg, U& srcReg, MaskReg& mask)
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
             NotB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             NotB64Impl<mode>(dstTemp, srcReg, mask);

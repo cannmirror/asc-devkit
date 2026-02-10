@@ -32,7 +32,7 @@ __aicore__ constexpr int32_t GetL1Size(const L1Status &l1Status, const MatmulCon
         curScaleA1Size = GetScaleAL1Size<A_TYPE>(l1Status, mmCFG);
         curScaleB1Size = GetScaleBL1Size<B_TYPE>(l1Status, mmCFG);
     }
-    // overflow will generate complier error
+    // overflow will generate compiler error
     return curA1Size + curB1Size + biasSize + dequantSize + curScaleA1Size + curScaleB1Size;
 }
 

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -52,6 +57,13 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
     __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData3DParamsV2<U>& loadDataParams)
     ```
 
+-   Load3Dv2Pro接口
+
+    ```
+    template <typename T>
+    __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LoadData3DParamsV2Pro& loadDataParams)
+    ```
+
 ## 参数说明<a name="section622mcpsimp"></a>
 
 **表 1**  模板参数说明
@@ -71,8 +83,10 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 <p id="p7145122512582"><a name="p7145122512582"></a><a name="p7145122512582"></a><span id="ph8145132513582"><a name="ph8145132513582"></a><a name="ph8145132513582"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，</p>
 <a name="ul14193394403"></a><a name="ul14193394403"></a><ul id="ul14193394403"><li>TPosition为A1/A2时，支持数据类型为：uint8_t/int8_t/half/bfloat16_t/uint32_t/int32_t/float/int4b_t</li><li>TPosition为B1/B2时，支持数据类型为：half/bfloat16_t/uint32_t/int32_t/float</li></ul>
 <a name="ul8314334018"></a><a name="ul8314334018"></a>
+<p id="p1892174715910"><a name="p1892174715910"></a><a name="p1892174715910"></a><span id="ph892347155911"><a name="ph892347155911"></a><a name="ph892347155911"></a>Ascend 950PR/Ascend 950DT</span>，支持数据类型为：uint8_t/int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t/half/bfloat16_t/uint32_t/int32_t/float</p>
 <p id="p1712071982813"><a name="p1712071982813"></a><a name="p1712071982813"></a><span id="ph1809122113363"><a name="ph1809122113363"></a><a name="ph1809122113363"></a>Kirin X90</span>产品，</p>
 <a name="ul1612061972813"></a><a name="ul1612061972813"></a><ul id="ul1612061972813"><li>TPosition为A1/A2时，支持数据类型为：int8_t/half</li><li>TPosition为B1/B2时，支持数据类型为：int8_t/half</li></ul>
+</li><li><strong id="b1883346102717"><a name="b1883346102717"></a><a name="b1883346102717"></a>Load3Dv2Pro接口：</strong><p id="p1295201512711"><a name="p1295201512711"></a><a name="p1295201512711"></a><span id="ph1295615152713"><a name="ph1295615152713"></a><a name="ph1295615152713"></a>Ascend 950PR/Ascend 950DT</span>，uint8_t/int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t/half/bfloat16_t/uint32_t/int32_t/float。</p>
 </li></ul>
 </td>
 </tr>
@@ -116,7 +130,7 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 </td>
 <td class="cellrowborder" valign="top" width="71.99719971997199%" headers="mcps1.2.4.1.3 "><p id="p729941117282"><a name="p729941117282"></a><a name="p729941117282"></a>目的操作数，类型为LocalTensor。</p>
 <p id="p3610102994715"><a name="p3610102994715"></a><a name="p3610102994715"></a>数据连续排列顺序由目的操作数所在TPosition决定，具体约束如下：</p>
-<a name="ul76107290479"></a><a name="ul76107290479"></a><ul id="ul76107290479"><li>A2：ZZ格式；</li><li>B2：ZN格式；</li><li>A1/B1：无格式要求，一般情况下为NZ格式。</li></ul>
+<a name="ul76107290479"></a><a name="ul76107290479"></a><ul id="ul76107290479"><li>A2：ZZ格式/NZ格式；</li><li>B2：ZN格式；</li><li>A1/B1：无格式要求，一般情况下为NZ格式。</li></ul>
 </td>
 </tr>
 <tr id="row1836875519393"><td class="cellrowborder" valign="top" width="16.89168916891689%" headers="mcps1.2.4.1.1 "><p id="p7650141019171"><a name="p7650141019171"></a><a name="p7650141019171"></a>src</p>
@@ -132,7 +146,7 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 <td class="cellrowborder" valign="top" width="11.111111111111112%" headers="mcps1.2.4.1.2 "><p id="p11675191610195"><a name="p11675191610195"></a><a name="p11675191610195"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="71.99719971997199%" headers="mcps1.2.4.1.3 "><p id="p1667541617193"><a name="p1667541617193"></a><a name="p1667541617193"></a>LoadData参数结构体，类型为：</p>
-<a name="ul207951119112217"></a><a name="ul207951119112217"></a><ul id="ul207951119112217"><li>LoadData3DParamsV1，具体参考<a href="#table679014222918">表3</a>。</li><li>LoadData3DParamsV2，具体参考<a href="#table193501032193419">表4</a>。</li></ul>
+<a name="ul207951119112217"></a><a name="ul207951119112217"></a><ul id="ul207951119112217"><li>LoadData3DParamsV1，具体参考<a href="#table679014222918">表3</a>。</li><li>LoadData3DParamsV2，具体参考<a href="#table193501032193419">表4</a>。</li><li>LoadData3DParamsV2Pro，具体参考。<a href="#table118027314415">表5</a></li></ul>
 <p id="p21811725744"><a name="p21811725744"></a><a name="p21811725744"></a>上述结构体参数定义请参考<span id="ph10562197165916"><a name="ph10562197165916"></a><a name="ph10562197165916"></a>${INSTALL_DIR}</span>/include/ascendc/basic_api/interface/kernel_struct_mm.h，<span id="ph14322531015"><a name="ph14322531015"></a><a name="ph14322531015"></a>${INSTALL_DIR}</span>请替换为CANN软件安装后文件存储路径。</p>
 </td>
 </tr>
@@ -278,6 +292,7 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 <p id="p175715359111"><a name="p175715359111"></a><a name="p175715359111"></a>针对以下型号，channelSize的取值要求为：对于uint32_t/int32_t/float，channelSize可取值为4，N * 8，N * 8 + 4；对于half/bfloat16，channelSize可取值为4，8，N * 16，N * 16 + 4，N * 16 + 8；对于int8_t/uint8_t，channelSize可取值为4，8，16， 32 * N，N * 32 + 4，N * 32 + 8，N * 32 + 16；对于int4b_t，ChannelSize可取值为8，16，32，N * 64，N * 64 + 8，N * 64 + 16，N * 64 + 32。N为正整数。</p>
 <p id="p118494416125"><a name="p118494416125"></a><a name="p118494416125"></a><span id="ph484924119124"><a name="ph484924119124"></a><a name="ph484924119124"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span></p>
 <p id="p784964121215"><a name="p784964121215"></a><a name="p784964121215"></a><span id="ph108492414128"><a name="ph108492414128"></a><a name="ph108492414128"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span></p>
+<p id="p4363105305613"><a name="p4363105305613"></a><a name="p4363105305613"></a><span id="ph2363165375615"><a name="ph2363165375615"></a><a name="ph2363165375615"></a>Ascend 950PR/Ascend 950DT</span></p>
 <p id="p048253823514"><a name="p048253823514"></a><a name="p048253823514"></a><span id="ph98501357366"><a name="ph98501357366"></a><a name="ph98501357366"></a>Kirin X90</span></p>
 </td>
 </tr>
@@ -367,11 +382,72 @@ Load3D用于完成image to column操作，将多维feature map转为二维矩阵
 </tbody>
 </table>
 
+**表 5**  LoadData3DParamsV2Pro结构体内参数说明
+
+<a name="table118027314415"></a>
+<table><thead align="left"><tr id="row1080373114413"><th class="cellrowborder" valign="top" width="18.56%" id="mcps1.2.3.1.1"><p id="p6803631149"><a name="p6803631149"></a><a name="p6803631149"></a>参数名称</p>
+</th>
+<th class="cellrowborder" valign="top" width="81.44%" id="mcps1.2.3.1.2"><p id="p178031131749"><a name="p178031131749"></a><a name="p178031131749"></a>含义</p>
+</th>
+</tr>
+</thead>
+<tbody><tr id="row12803131842"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p180316314410"><a name="p180316314410"></a><a name="p180316314410"></a>channelSize</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p8804153113415"><a name="p8804153113415"></a><a name="p8804153113415"></a>源操作数的通道数，取值范围：channelSize∈[1, 63] 。</p>
+<p id="p58041831944"><a name="p58041831944"></a><a name="p58041831944"></a>对于half，channelSize除16的余数应当为0，4或8。</p>
+<p id="p280413313418"><a name="p280413313418"></a><a name="p280413313418"></a>对于int8_t和uint8_t，channelSize除32的余数应当为0，4，8或16。</p>
+<p id="p19804163112418"><a name="p19804163112418"></a><a name="p19804163112418"></a>对于int4b_t，ChannelSize为8，16，32，N*64，N*64+8，N*64+16，N*64+32，N为正整数。</p>
+</td>
+</tr>
+<tr id="row88051331649"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p18805143120412"><a name="p18805143120412"></a><a name="p18805143120412"></a>enTranspose</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p188051331347"><a name="p188051331347"></a><a name="p188051331347"></a>是否启用转置功能，对整个目标矩阵进行转置，支持数据类型为bool，仅在目的TPosition为A2，且源操作数为half类型时有效。默认为false。</p>
+<a name="ul178050311942"></a><a name="ul178050311942"></a><ul id="ul178050311942"><li>true：启用</li><li>false：不启用</li></ul>
+</td>
+</tr>
+<tr id="row198062311146"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p118062311942"><a name="p118062311942"></a><a name="p118062311942"></a>enSmallK</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p198064316413"><a name="p198064316413"></a><a name="p198064316413"></a>是否使能small k特性，每个分形矩阵大小为16*4，支持数据类型为bool，默认为false。当前产品形态，该特性已不再支持。</p>
+<a name="ul16806173116414"></a><a name="ul16806173116414"></a><ul id="ul16806173116414"><li>true：使能</li><li>false：不使能</li></ul>
+</td>
+</tr>
+<tr id="row678812152919"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p712818336200"><a name="p712818336200"></a><a name="p712818336200"></a>filterSizeW</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p1812853392016"><a name="p1812853392016"></a><a name="p1812853392016"></a>是否在filterW的基础上将卷积核width增加256个元素。true，增加；false，不增加。</p>
+</td>
+</tr>
+<tr id="row532971912915"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p4128133314209"><a name="p4128133314209"></a><a name="p4128133314209"></a>filterSizeH</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p1312863318200"><a name="p1312863318200"></a><a name="p1312863318200"></a>是否在filterH的基础上将卷积核height增加256个元素。true，增加；false，不增加。</p>
+</td>
+</tr>
+<tr id="row156501445185512"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p1612853320207"><a name="p1612853320207"></a><a name="p1612853320207"></a>fMatrixCtrl</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p812815338206"><a name="p812815338206"></a><a name="p812815338206"></a>表示LoadData3DV2指令从左矩阵还是右矩阵获取FeatureMap的属性描述，与<a href="SetFmatrix.md">SetFmatrix</a>配合使用，当前只支持设置为false，默认值为false。</p>
+<a name="ul61281633122018"></a><a name="ul61281633122018"></a><ul id="ul61281633122018"><li>true：从右矩阵中获取FeatureMap的属性描述；</li><li>false：从左矩阵中获取FeatureMap的属性描述。</li></ul>
+</td>
+</tr>
+<tr id="row3826237345"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p7826193713417"><a name="p7826193713417"></a><a name="p7826193713417"></a>extConfig</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p0826337141"><a name="p0826337141"></a><a name="p0826337141"></a>组合参数(uint64_t类型)，默认值为0；</p>
+<p id="p53001713161513"><a name="p53001713161513"></a><a name="p53001713161513"></a>extConfig= ((uint64_t)mStartPt &lt;&lt; 48) | ((uint64_t)kStartPt &lt;&lt; 32) | ((uint64_t)mExtension &lt;&lt; 16) | (uint64_t)kExtension。</p>
+</td>
+</tr>
+<tr id="row92374211416"><td class="cellrowborder" valign="top" width="18.56%" headers="mcps1.2.3.1.1 "><p id="p1323042940"><a name="p1323042940"></a><a name="p1323042940"></a>filterConfig</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.44%" headers="mcps1.2.3.1.2 "><p id="p4231942148"><a name="p4231942148"></a><a name="p4231942148"></a>组合参数(uint64_t类型)，默认值为0X10101010101；</p>
+<p id="p196571042171717"><a name="p196571042171717"></a><a name="p196571042171717"></a>filterConfig= ((uint64_t)dilationFilterH &lt;&lt; 40) | ((uint64_t)dilationFilterW &lt;&lt; 32) | ((uint64_t)filterH &lt;&lt; 24) | ((uint64_t)filterW &lt;&lt; 16) | ((uint64_t)strideH &lt;&lt; 8) | (uint64_t)strideW。</p>
+</td>
+</tr>
+</tbody>
+</table>
+
 ## 约束说明<a name="section633mcpsimp"></a>
 
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
 
 -   LoadData3DParamsV1 cSize特性的开启，需要保证A1/B1中的feature map为 4 channel对齐。
+-   调用Load3Dv2/Load3Dv2Pro指令需要通过[SetLoadDataRepeat](SetLoadDataRepeat.md)接口配置dstStride，若不使能repeat模式，接口内repeat相关参数使用默认构造值。
 
 ## Load3d数据格式说明<a name="section726316123184"></a>
 

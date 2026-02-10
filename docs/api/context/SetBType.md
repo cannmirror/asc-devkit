@@ -41,7 +41,7 @@ int32_t SetBType(TPosition pos, CubeFormat type, DataType dataType, bool isTrans
 </td>
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p1973684116119"><a name="p1973684116119"></a><a name="p1973684116119"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p573604117119"><a name="p573604117119"></a><a name="p573604117119"></a>B矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_BFLOAT16 /DataType::DT_INT8/DataType::DT_INT4。</p>
+<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p573604117119"><a name="p573604117119"></a><a name="p573604117119"></a>B矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_BFLOAT16 /DataType::DT_INT8/DataType::DT_INT4/DataType::DT_FLOAT8_E4M3FN/DataType::DT_FLOAT8_E5M2/DataType::DT_HIFLOAT8。</p>
 </td>
 </tr>
 <tr id="row17121826135920"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p47369411111"><a name="p47369411111"></a><a name="p47369411111"></a>isTrans</p>

@@ -114,7 +114,7 @@ void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t s
     constexpr uint32_t LAYERNORM_GRAD_BETA_SHAPE_SIZE = 4;
     ASCENDC_HOST_ASSERT(shapeDims.size() >= LAYERNORM_GRAD_BETA_SHAPE_SIZE,
         return, "srcShape dims must not be less than 4.");
-    // detectaion shapeDims dimension
+    // detection shapeDims dimension
 
     tilingTmp.bLength = static_cast<uint32_t>(shapeDims[LAYERNORM_GRAD_BETA_INDEX_BLENGTH]);
     tilingTmp.sLength = static_cast<uint32_t>(shapeDims[LAYERNORM_GRAD_BETA_INDEX_SLENGTH]);

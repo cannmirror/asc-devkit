@@ -27,6 +27,6 @@ TEST_F(TestSimdAtomicGetStoreAtomicConfigCApi, get_st_atomic_cfg_Succ)
     uint16_t atomic_op = config.atomic_op;
     EXPECT_EQ(atomic_type, 0);
     EXPECT_EQ(atomic_op, 0);
-    asc_set_store_atomic_config(config);
+    asc_set_store_atomic_config_v1(atomic_type, atomic_op);
     GlobalMockObject::verify();
 }

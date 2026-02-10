@@ -16,10 +16,6 @@
 
 #ifndef INCLUDE_C_API_SIMD_ATOMIC_H
 #define INCLUDE_C_API_SIMD_ATOMIC_H
- 
-#include "instr_impl/npu_arch_2201/cache_ctrl_impl.h"
-
-__aicore__ inline int64_t asc_get_icache_preload_status();
 
 __aicore__ inline void asc_dcci_single(__gm__ void* dst);
 
@@ -27,25 +23,37 @@ __aicore__ inline void asc_dcci_entire(__gm__ void* dst);
 
 __aicore__ inline void asc_dcci_single_all(__gm__ void* dst);
 
-__aicore__ inline void asc_dcci_single_ub(__gm__ void* dst);
-
 __aicore__ inline void asc_dcci_single_out(__gm__ void* dst);
 
 __aicore__ inline void asc_dcci_single_atomic(__gm__ void* dst);
 
 __aicore__ inline void asc_dcci_entire_all(__gm__ void* dst);
 
-__aicore__ inline void asc_dcci_entire_ub(__gm__ void* dst);
-
 __aicore__ inline void asc_dcci_entire_out(__gm__ void* dst);
 
 __aicore__ inline void asc_dcci_entire_atomic(__gm__ void* dst);
 
+__aicore__ inline int64_t asc_get_icache_preload_status();
+
+__aicore__ inline void asc_datacache_preload(__gm__ uint64_t* address, int64_t offset);
+
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
+#include "instr_impl/npu_arch_2201/cache_ctrl_impl.h"
+
+__aicore__ inline void asc_dcci_single_ub(__gm__ void* dst);
+
+__aicore__ inline void asc_dcci_entire_ub(__gm__ void* dst);
+
 __aicore__ inline void asc_icache_preload(const void* addr);
 
 __aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len);
- 
-__aicore__ inline void asc_datacache_preload(__gm__ uint64_t* address, int64_t offset);
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/cache_ctrl_impl.h"
+
+#endif
 
 #endif
 

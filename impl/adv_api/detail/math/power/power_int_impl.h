@@ -41,7 +41,7 @@ __aicore__ inline void FineProcessPowerI(const LocalTensor<int32_t>& dst, const 
     Cast<float, int32_t, false>(param.tmpTensor1.ReinterpretCast<float>(), param.recordExpNode,
         RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParam);
     PipeBarrier<PIPE_V>();
-    // ReduceSum is ended with a scalar operate on dst[0]
+    // ReduceSum is ended with a scalar operation on dst[0]
     ReduceSumCount(param.tmpScalar.ReinterpretCast<float>(), param.tmpTensor1.ReinterpretCast<float>(),
         param.tmpTensor3.ReinterpretCast<float>(), calCount);
     param.expIterateSum = param.tmpScalar.ReinterpretCast<float>().GetValue(0);
@@ -68,7 +68,7 @@ __aicore__ inline void BulkProcessPowerI(const LocalTensor<int32_t>& dst, AscPow
     Cast<float, int32_t, false>(param.tmpTensor1.ReinterpretCast<float>(), param.expUBIterate,
         RoundMode::CAST_NONE, MASK_PLACEHOLDER, 1, unaryParam);
     PipeBarrier<PIPE_V>();
-    // ReduceSum is ended with a scalar operate on dst[0]
+    // ReduceSum is ended with a scalar operation on dst[0]
     ReduceSumCount(param.tmpScalar.ReinterpretCast<float>(), param.tmpTensor1.ReinterpretCast<float>(),
         param.tmpTensor3.ReinterpretCast<float>(), calCount);
     param.expIterateSum = param.tmpScalar.ReinterpretCast<float>().GetValue(0);

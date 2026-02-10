@@ -36,7 +36,7 @@ __aicore__ inline void AlignedBrcbImpl(const LocalTensor<T>& dstLocal, const Loc
     }
 }
 
-__aicore__ inline void ContinusColumnBrcbImpl(const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal,
+__aicore__ inline void ContinuousColumnBrcbImpl(const LocalTensor<float>& dstLocal, const LocalTensor<float>& srcLocal,
     const uint32_t& repeat, const uint32_t& brcbCount)
 {
     float scalarList[SCALAR_STACK_DEPTH] = {0};

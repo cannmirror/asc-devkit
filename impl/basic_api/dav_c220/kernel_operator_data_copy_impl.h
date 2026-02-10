@@ -48,14 +48,14 @@ __aicore__ inline void ValidateUbL1Address(uint64_t absUbAddr, uint64_t absL1Add
         KERNEL_LOG(KERNEL_ERROR, "absUbAddr is 0x%lx, which should be in range of [0, %u)", absUbAddr, TOTAL_UB_SIZE);
     });
     ASCENDC_ASSERT((static_cast<uint64_t>(absUbAddr + tensorSize) < TOTAL_UB_SIZE), {
-        KERNEL_LOG(KERNEL_ERROR, "absUbAddr is 0x%lx, tensorSize is %u, which exceed the limit of ub %d)", absUbAddr,
+        KERNEL_LOG(KERNEL_ERROR, "absUbAddr is 0x%lx, tensorSize is %u, which exceeds the limit of ub %d)", absUbAddr,
             tensorSize, TOTAL_UB_SIZE);
     });
     ASCENDC_ASSERT((absL1Addr < TOTAL_L1_SIZE), {
         KERNEL_LOG(KERNEL_ERROR, "absL1Addr is 0x%lx, which should be in range [0, %u)", absL1Addr, TOTAL_L1_SIZE);
     });
     ASCENDC_ASSERT((static_cast<uint64_t>(absL1Addr + tensorSize) < TOTAL_L1_SIZE), {
-        KERNEL_LOG(KERNEL_ERROR, "absL1Addr is 0x%lx, tensorSize is %u, which exceed the limit of l1 %u)", absL1Addr,
+        KERNEL_LOG(KERNEL_ERROR, "absL1Addr is 0x%lx, tensorSize is %u, which exceeds the limit of l1 %u)", absL1Addr,
             tensorSize, TOTAL_L1_SIZE);
     });
 }
@@ -820,7 +820,7 @@ __aicore__ inline void DataCopyUB2GMNZ2NDImpl(__gm__ T* dst, __ubuf__ T* src, co
     ASCENDC_DEBUG_ASSERT((TransUBAddr<TPosition::VECIN>(reinterpret_cast<uint64_t>(src)) % ONE_BLK_SIZE == 0),
         KERNEL_LOG_INTERNAL(KERNEL_ERROR, "src address should be 32B aligned \n"));
     ASCENDC_ASSERT((sizeof(T) == sizeof(int16_t) || sizeof(T) == sizeof(int32_t)),
-        {KERNEL_LOG(KERNEL_ERROR, "DataCopy NZ2ND only suppports dtype B16 and B32");});
+        {KERNEL_LOG(KERNEL_ERROR, "DataCopy NZ2ND only supports dtype B16 and B32");});
     const uint16_t ndNum = intriParams.ndNum;
     const uint16_t nValue = intriParams.nValue;
     const uint16_t dValue = intriParams.dValue;

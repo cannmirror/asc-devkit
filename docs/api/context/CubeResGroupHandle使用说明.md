@@ -327,19 +327,19 @@ CubeResGroupHandle用于在分离模式下对AI Core计算资源分组。分组�
     {
         auto msgPtr = handle.template AllocMessage(); // alloc for queue space
         offset = handle.template PostMessage(msgPtr, bCubeMsgBody); // post true msgPtr
-        bool waitState = handle.template Wait<true> (offset); // wait until the msgPtr is proscessed
+        bool waitState = handle.template Wait<true> (offset); // wait until the msgPtr is processed
     }
     else if (GetBlockIdx() < 4)
     {
         auto msgPtr = handle.AllocMessage();
         offset = handle.PostFakeMsg(msgPtr); // post fake msgPtr
-        bool waitState = handle.template Wait<true> (offset); // wait until the msgPtr is proscessed
+        bool waitState = handle.template Wait<true> (offset); // wait until the msgPtr is processed
     }
     else
     {
         auto msgPtr = handle.template AllocMessage();
         offset = handle.template PostMessage(msgPtr, aCubeMsgBody);
-        bool waitState = handle.template Wait<true> (offset); // wait until the msgPtr is proscessed
+        bool waitState = handle.template Wait<true> (offset); // wait until the msgPtr is processed
     }
     ```
 

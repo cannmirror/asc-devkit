@@ -23,7 +23,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_SQUEEZE_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_SQUEEZE_IMPL_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
+#include "instr_impl/npu_arch_3510/utils_impl.h"
 
 __simd_callee__ inline void asc_squeeze_impl(vector_uint8_t& dst, vector_uint8_t src, vector_bool mask)
 {
@@ -81,6 +81,41 @@ __simd_callee__ inline void asc_squeeze_impl(vector_float& dst, vector_float src
     }
 }
 
+__simd_callee__ inline void asc_squeeze_impl(vector_bfloat16_t& dst, vector_bfloat16_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_NO_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_impl(vector_hifloat8_t& dst, vector_hifloat8_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_NO_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_impl(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3fn_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_NO_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_impl(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_NO_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_impl(vector_fp8_e8m0_t& dst, vector_fp8_e8m0_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_NO_STORED);
+    }
+}
+
 __simd_callee__ inline void asc_squeeze_v2_impl(vector_uint8_t& dst, vector_uint8_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
@@ -131,6 +166,41 @@ __simd_callee__ inline void asc_squeeze_v2_impl(vector_half& dst, vector_half sr
 }
 
 __simd_callee__ inline void asc_squeeze_v2_impl(vector_float& dst, vector_float src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_v2_impl(vector_bfloat16_t& dst, vector_bfloat16_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_v2_impl(vector_hifloat8_t& dst, vector_hifloat8_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_v2_impl(vector_fp8_e4m3fn_t& dst, vector_fp8_e4m3fn_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_v2_impl(vector_fp8_e5m2_t& dst, vector_fp8_e5m2_t src, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vsqz(dst, src, mask, MODE_STORED);
+    }
+}
+
+__simd_callee__ inline void asc_squeeze_v2_impl(vector_fp8_e8m0_t& dst, vector_fp8_e8m0_t src, vector_bool mask)
 {
     if ASC_IS_AIV {
         vsqz(dst, src, mask, MODE_STORED);

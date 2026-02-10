@@ -29,7 +29,7 @@ constexpr float COEFF1 = 2.2363860002236e1;
 constexpr uint32_t GEGLU_HALF_BUFFER_SIZE = 8; // 1 half data needs 2 float tmpbuffer which is 8 uint8 size
 constexpr uint32_t GEGLU_FLOAT_BUFFER_SIZE = 0;
 constexpr uint32_t GEGLU_STRIDE_DIGITS = 2;
-constexpr uint32_t GEGLU_ALGINED = 31;
+constexpr uint32_t GEGLU_ALIGNED = 31;
 
 template <typename T, bool isReuseSource = false>
 __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor0,
@@ -73,7 +73,7 @@ __aicore__ inline void GeGLUImpl(const LocalTensor<T>& dstTensor, const LocalTen
         for (uint32_t offset = 0; offset < calCount; offset += tmpBufCount) {
             auto splitSize = (calCount - offset) > tmpBufCount ? tmpBufCount : (calCount - offset);
             SetVectorMask<T>(0, splitSize);
-            splitSize = (splitSize * sizeof(T) + GEGLU_ALGINED) / ONE_BLK_SIZE * ONE_BLK_SIZE / sizeof(T);
+            splitSize = (splitSize * sizeof(T) + GEGLU_ALIGNED) / ONE_BLK_SIZE * ONE_BLK_SIZE / sizeof(T);
             GeGLUCompute(dstTensor[offset], srcTensor0[offset], srcTensor1[offset], tmpBuffer, splitSize);
         }
     } else {

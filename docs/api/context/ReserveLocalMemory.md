@@ -60,5 +60,5 @@ ge::graphStatus TilingXXX(gert::TilingContext* context) {
 }
 ```
 
-完整样例可参考[与数学库高阶API配合使用的样例](更多样例-27.md#section577043422516)。
+完整样例可参考[与数学库高阶API配合使用的样例](更多样例-84.md#section577043422516)。
 

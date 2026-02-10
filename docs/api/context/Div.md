@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="zh-cn_topic_0000001530181537_row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="zh-cn_topic_0000001530181537_p48327011813"><a name="zh-cn_topic_0000001530181537_p48327011813"></a><a name="zh-cn_topic_0000001530181537_p48327011813"></a><span id="zh-cn_topic_0000001530181537_ph583230201815"><a name="zh-cn_topic_0000001530181537_ph583230201815"></a><a name="zh-cn_topic_0000001530181537_ph583230201815"></a><term id="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="zh-cn_topic_0000001530181537_row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="zh-cn_topic_0000001530181537_p17301775812"><a name="zh-cn_topic_0000001530181537_p17301775812"></a><a name="zh-cn_topic_0000001530181537_p17301775812"></a><span id="zh-cn_topic_0000001530181537_ph2272194216543"><a name="zh-cn_topic_0000001530181537_ph2272194216543"></a><a name="zh-cn_topic_0000001530181537_ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="zh-cn_topic_0000001530181537_p37256491200"><a name="zh-cn_topic_0000001530181537_p37256491200"></a><a name="zh-cn_topic_0000001530181537_p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="zh-cn_topic_0000001530181537_row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="zh-cn_topic_0000001530181537_p48327011813"><a name="zh-cn_topic_0000001530181537_p48327011813"></a><a name="zh-cn_topic_0000001530181537_p48327011813"></a><span id="zh-cn_topic_0000001530181537_ph583230201815"><a name="zh-cn_topic_0000001530181537_ph583230201815"></a><a name="zh-cn_topic_0000001530181537_ph583230201815"></a><term id="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001530181537_zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="zh-cn_topic_0000001530181537_p7948163910184"><a name="zh-cn_topic_0000001530181537_p7948163910184"></a><a name="zh-cn_topic_0000001530181537_p7948163910184"></a>√</p>
 </td>
@@ -49,7 +54,7 @@
 -   tensor前n个数据计算
 
     ```
-    template <typename T>
+    template <typename T, const DivConfig& config = DEFAULT_DIV_CONFIG>
     __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1, const int32_t& count)
     ```
 
@@ -57,14 +62,14 @@
     -   mask逐bit模式
 
         ```
-        template <typename T, bool isSetMask = true>
+        template <typename T, bool isSetMask = true, const DivConfig& config = DEFAULT_DIV_CONFIG>
         __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1, uint64_t mask[], const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
         ```
 
     -   mask连续模式
 
         ```
-        template <typename T, bool isSetMask = true>
+        template <typename T, bool isSetMask = true, const DivConfig& config = DEFAULT_DIV_CONFIG>
         __aicore__ inline void Div(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<T>& src1, uint64_t mask, const uint8_t repeatTime, const BinaryRepeatParams& repeatParams)
         ```
 
@@ -82,6 +87,7 @@
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="18.5%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.5%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p598151511113"><a name="p598151511113"></a><a name="p598151511113"></a><span id="ph793716154116"><a name="ph793716154116"></a><a name="ph793716154116"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：int16_t、uint16_t、half、int32_t、uint32_t、float、complex32、int64_t、uint64_t、complex64。</p>
 <p id="p13256330211"><a name="p13256330211"></a><a name="p13256330211"></a><span id="ph202567307120"><a name="ph202567307120"></a><a name="ph202567307120"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p1687451713"><a name="p1687451713"></a><a name="p1687451713"></a><span id="ph1215792313251"><a name="ph1215792313251"></a><a name="ph1215792313251"></a><term id="zh-cn_topic_0000001312391781_term11962195213215"><a name="zh-cn_topic_0000001312391781_term11962195213215"></a><a name="zh-cn_topic_0000001312391781_term11962195213215"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811"><a name="zh-cn_topic_0000001312391781_term184716139811"></a><a name="zh-cn_topic_0000001312391781_term184716139811"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p854386131917"><a name="p854386131917"></a><a name="p854386131917"></a><span id="ph31931459192112"><a name="ph31931459192112"></a><a name="ph31931459192112"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -92,6 +98,26 @@
 </td>
 <td class="cellrowborder" valign="top" width="81.5%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p77520541653"><a name="zh-cn_topic_0000001429830437_p77520541653"></a><a name="zh-cn_topic_0000001429830437_p77520541653"></a>是否在接口内部设置mask。</p>
 <a name="zh-cn_topic_0000001429830437_ul1163765616511"></a><a name="zh-cn_topic_0000001429830437_ul1163765616511"></a><ul id="zh-cn_topic_0000001429830437_ul1163765616511"><li>true，表示在接口内部设置mask。</li><li>false，表示在接口外部设置mask，开发者需要使用<a href="SetVectorMask.md">SetVectorMask</a>接口设置mask值。这种模式下，本接口入参中的mask值必须设置为占位符MASK_PLACEHOLDER。</li></ul>
+</td>
+</tr>
+<tr id="row4920122174612"><td class="cellrowborder" valign="top" width="18.5%" headers="mcps1.2.3.1.1 "><p id="p992122204615"><a name="p992122204615"></a><a name="p992122204615"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="81.5%" headers="mcps1.2.3.1.2 "><p id="p1592118224464"><a name="p1592118224464"></a><a name="p1592118224464"></a>用于配置精度计算模式，DivConfig类型，定义如下：</p>
+<a name="screen14764145615318"></a><a name="screen14764145615318"></a><pre class="screen" codetype="Cpp" id="screen14764145615318">enum class DivAlgo {
+    INTRINSIC = 0,
+    DIFF_COMPENSATION,
+    PRECISION_1ULP_FTZ_TRUE,
+    PRECISION_0ULP_FTZ_TRUE,
+    PRECISION_0ULP_FTZ_FALSE,
+    PRECISION_1ULP_FTZ_FALSE
+};
+struct DivConfig {
+    DivAlgo algo = DivAlgo::INTRINSIC;
+};</pre>
+<p id="p1132192735718"><a name="p1132192735718"></a><a name="p1132192735718"></a>通过DivConfig结构体的参数algo来配置精度计算模式。algo取值如下：</p>
+<a name="ul111801915217"></a><a name="ul111801915217"></a><ul id="ul111801915217"><li>DivAlgo::INTRINSIC、DivAlgo::PRECISION_1ULP_FTZ_TRUE，使用单指令计算得出结果，最大精度误差为1 ulp。</li><li>DivAlgo::DIFF_COMPENSATION、DivAlgo::PRECISION_0ULP_FTZ_TRUE，使用差值补偿算法得出结果，最大精度误差为0 ulp。目前，该算法支持float数据类型。</li><li>DivAlgo::PRECISION_0ULP_FTZ_FALSE，支持Subnormal数据计算，使用差值补偿算法得出结果，最大精度误差为0 ulp。目前，该算法支持float数据类型。</li><li>DivAlgo::PRECISION_1ULP_FTZ_FALSE，支持Subnormal数据计算，使用单指令计算得出结果，最大精度误差为1 ulp。</li></ul>
+<p id="p2086215311552"><a name="p2086215311552"></a><a name="p2086215311552"></a>该参数的默认值DEFAULT_DIV_CONFIG的取值如下：</p>
+<a name="screen170457975"></a><a name="screen170457975"></a><pre class="screen" codetype="Cpp" id="screen170457975">constexpr DivConfig DEFAULT_DIV_CONFIG = { DivAlgo::INTRINSIC };</pre>
 </td>
 </tr>
 </tbody>
@@ -174,9 +200,11 @@
 -   使用整个tensor参与计算接口符号重载时，运算量为目的LocalTensor的总长度。
 -   注意除零错误。
 
+-   针对Ascend 950PR/Ascend 950DT，uint64\_t/int64\_t/complex32/complex64数据类型仅支持tensor前n个数据计算接口和整个tensor参与计算的运算符重载。
+
 ## 调用示例<a name="section642mcpsimp"></a>
 
-更多样例可参考[LINK](更多样例-8.md)。
+更多样例可参考[LINK](更多样例-9.md)。
 
 -   tensor高维切分计算样例-mask连续模式
 
@@ -261,6 +289,12 @@
 
     ```
     AscendC::Div(dstLocal, src0Local, src1Local, 512);
+    // Div 0ulp
+    static constexpr DivConfig config = { DivAlgo::DIFF_COMPENSATION };
+    Div<T, config>(dstLocalX, srcLocalX, srcLocalY, calCount);
+    // Div Subnormal
+    static constexpr DivConfig config = { DivAlgo::PRECISION_0ULP_FTZ_FALSE };
+    Div<T, config>(dstLocalX, srcLocalX, srcLocalY, calCount);
     ```
 
 -   整个tensor参与计算样例

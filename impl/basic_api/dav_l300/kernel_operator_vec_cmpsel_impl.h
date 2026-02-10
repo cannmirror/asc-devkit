@@ -751,7 +751,7 @@ __aicore__ inline VcmpvImpl(__ubuf__ U* dst, __ubuf__ T* src0, __ubuf__ T* src1,
 /* ***************************************************************************************
  * ************************************** CompareScalar ****************************************
  * ************************************************************************************** */
-// CompareScalar::Level 0 - bit mode / continious mode
+// CompareScalar::Level 0 - bit mode / continuous mode
 template <typename T, typename U, CMPMODE cmpMode, bool isSetMask>
 __simd_vf__ inline void CompareScalarLevel0CounterMode(__ubuf__ U *dst, __ubuf__ T *src0, const T src1, const uint64_t mask, __ubuf__ uint64_t *tempBuf,
     const UnaryRepeatParams repeatParams)

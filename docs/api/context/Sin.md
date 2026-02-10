@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -48,14 +53,14 @@ Sin\(x\)的泰勒展开式为：
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template<typename T, bool isReuseSource = false>
+        template<typename T, bool isReuseSource = false, const SinConfig& config = defaultSinConfig>
         __aicore__ inline void Sin(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template<typename T, bool isReuseSource = false>
+        template<typename T, bool isReuseSource = false, const SinConfig& config = defaultSinConfig>
         __aicore__ inline void Sin(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
         ```
 
@@ -63,14 +68,14 @@ Sin\(x\)的泰勒展开式为：
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template<typename T, bool isReuseSource = false>
+        template<typename T, bool isReuseSource = false, const SinConfig& config = defaultSinConfig>
         __aicore__ inline void Sin(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template<typename T, bool isReuseSource = false>
+        template<typename T, bool isReuseSource = false, const SinConfig& config = defaultSinConfig>
         __aicore__ inline void Sin(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
         ```
 
@@ -96,6 +101,7 @@ Sin\(x\)的泰勒展开式为：
 <tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
+<p id="p3784111051020"><a name="p3784111051020"></a><a name="p3784111051020"></a><span id="ph578461091013"><a name="ph578461091013"></a><a name="ph578461091013"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p1985319233113"><a name="p1985319233113"></a><a name="p1985319233113"></a><span id="ph7853323191110"><a name="ph7853323191110"></a><a name="ph7853323191110"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p350519362913"><a name="p350519362913"></a><a name="p350519362913"></a><span id="ph851606181015"><a name="ph851606181015"></a><a name="ph851606181015"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -108,8 +114,25 @@ Sin\(x\)的泰勒展开式为：
 <a name="ul1513803335520"></a><a name="ul1513803335520"></a><ul id="ul1513803335520"><li>true：开发者允许源操作数被改写，可以使能该参数，使能后本接口内部计算时<strong id="b68501198557"><a name="b68501198557"></a><a name="b68501198557"></a>复用</strong>srcTensor的内存空间，节省部分内存空间；</li><li>false：本接口内部计算时<strong id="b2850191935517"><a name="b2850191935517"></a><a name="b2850191935517"></a>不复用</strong>srcTensor的内存空间。</li></ul>
 </td>
 </tr>
+<tr id="row17906183963010"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p990618396302"><a name="p990618396302"></a><a name="p990618396302"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p63862020193115"><a name="p63862020193115"></a><a name="p63862020193115"></a>Sin算法的相关配置。此参数可选配，SinConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<div class="p" id="p12989224164"><a name="p12989224164"></a><a name="p12989224164"></a>algo：Sin内部实现使用的算法。SinAlgo类型，支持的取值如下：<a name="ul81121913307"></a><a name="ul81121913307"></a><ul id="ul81121913307"><li>POLYNOMIAL_APPROXIMATION：默认值。该算法通过简单的多项式逼近实现Sin接口，支持的输入值域范围为[-65504.0, 65504.0]，支持的数据类型为half、float。</li><li>RADIAN_REDUCTION：该算法通过完整的周期约减实现Sin接口，支持输入全值域，支持的数据类型为half、float。</li></ul>
+</div>
+</td>
+</tr>
 </tbody>
 </table>
+
+```
+struct SinConfig {
+  SinAlgo algo = SinAlgo::POLYNOMIAL_APPROXIMATION;
+}
+enum class SinAlgo {
+  POLYNOMIAL_APPROXIMATION = 0;
+  RADIAN_REDUCTION;
+}
+```
 
 **表 2**  参数说明
 
@@ -165,6 +188,7 @@ Sin\(x\)的泰勒展开式为：
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
+-   对于Ascend 950PR/Ascend 950DT，模板参数config中使用多项式拟合算法POLYNOMIAL\_APPROXIMATION时，必须保证输入源数据的值域在\[-65504.0, 65504.0\]范围内。
 -   对于以下产品，输入源数据必须保持值域在\[-65504.0, 65504.0\]范围内。
     -   Atlas A3 训练系列产品/Atlas A3 推理系列产品
     -   Atlas A2 训练系列产品/Atlas A2 推理系列产品
@@ -182,6 +206,9 @@ pipe.InitBuffer(tmpQue, 1, bufferSize); // bufferSize 通过Host侧tiling参数�
 AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
 // 输入tensor长度为1024, 算子输入的数据类型为half, 实际计算个数为512
 AscendC::Sin(dstLocal, srcLocal, sharedTmpBuffer, 512);
+constexpr AscendC::SinAlgo algo = AscendC::SinAlgo::RADIAN_REDUCTION;
+constexpr AscendC::SinConfig config = { algo };
+AscendC::Sin<half, false, config>(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
 
 结果示例如下：

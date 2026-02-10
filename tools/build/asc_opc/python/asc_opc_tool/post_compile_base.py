@@ -179,7 +179,7 @@ class PostCompilation:
                 file_copy(os.path.realpath(object_file_path), output_path)
         except Exception as e:
             raise RuntimeError(
-                "Copy [%s] to [%s] filed, reason: %s." % (json_file_path, output_path, str(e))) from e
+                "Copy [%s] to [%s] field, reason: %s." % (json_file_path, output_path, str(e))) from e
         finally:
             pass
 

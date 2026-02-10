@@ -59,7 +59,7 @@ public:
 
     __aicore__ inline bool isRun()
     {
-        // The function exits when all AIVs exit. The client sends a Quit message when the destructor ends.
+        // The function exists when all AIVs exit. The client sends a Quit message when the destructor ends.
         return quitSize < MIX_NUM;
     }
 #if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) && KFC_C310_SSBUF
@@ -87,7 +87,7 @@ public:
             if constexpr (enableHardPoll != 1) {
                 // soft kfc
                 if (msg == nullptr) {
-                    if (ret && mcgSyncSwitch) { // =false, lock a queue and must wait for release.
+                    if (ret && mcgSyncSwitch) { // = false, lock a queue and must wait for release.
                         i = 1 - i;
                         ptr = &(kfcCommSrv[i]);
                     }
@@ -155,7 +155,7 @@ public:
                     continue;
                 }
             }
-            if (ret && mcgSyncSwitch) { // =false, lock a queue and must wait for release.
+            if (ret && mcgSyncSwitch) { // = false, lock a queue and must wait for release.
                 i = 1 - i;
                 ptr = &(kfcCommSrv[i]);
                 intraId = 46 - intraId;
@@ -214,7 +214,7 @@ public:
                     continue;
                 }
             }
-            if (switchPoll) { // =false, lock a queue and must wait for release.
+            if (switchPoll) { // = false, lock a queue and must wait for release.
                 i++;
                 ptr++;
             }

@@ -17,6 +17,23 @@
 
 namespace AscendC {
 
+enum class AlgorithmType: uint8_t {
+    CcuAllGatherMesh1D = 0,
+    CcuAllGatherMeshMem2Mem1D,
+    CcuAllGatherMesh2D,
+    CcuReduceScatterMesh1D,
+    CcuReduceScatterMeshMem2Mem1D,
+    CcuReduceScatterMesh2D,
+    CcuAllReduceMesh1D,
+    CcuAllReduceMeshMem2Mem1D,
+    CcuAllReduceMesh2DOneShot,
+    CcuReduceMesh1D,
+    CcuReduceMesh2D,
+    CcuAlltoAllMesh1D,
+    CcuAlltoAllVMesh1D,
+    CcuHalfAll2AllVMesh1D
+};
+
 template<const auto &config>
 class HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config> {
 public:
@@ -84,8 +101,6 @@ private:
 
     __aicore__ inline bool IsFinish(uint8_t reqId);
 
-    __aicore__ inline void FlushDataCacheForCopy(GM_ADDR gmAddr, uint32_t size);
-
     __aicore__ inline void InitHandleInfo(uint8_t handleId);
 
     __aicore__ inline void InitCcuParam(const HcclHandle handleId);
@@ -102,6 +117,9 @@ private:
         __gm__ AlltoAllVParamCcu *allToAllVParam);
     __aicore__ inline void CcuPrepareForAllToAllVWrite(__gm__ CommonPrepareParamCcu *commParam);
     __aicore__ inline void CcuPrepareForReduceScatter(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForAllReduceM2M(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForAllGatherM2M(__gm__ CommonPrepareParamCcu *commParam);
+    __aicore__ inline void CcuPrepareForReduceScatterM2M(__gm__ CommonPrepareParamCcu *commParam);
 
 private:
     __gm__ HcclCombineOpParam *hcclContext_;
@@ -139,7 +157,6 @@ private:
     uint32_t globalCurWaitCnt_ = 0;
 
     uint8_t ccuUsedXnNum_ = 0;
-    uint64_t sizeOfXnMsg_ = 0;
 
     bool msgQueueIsAvailable_[CCU_MAX_MSG_NUM];
     uint64_t xnData_[CCU_USED_XN_NUM];

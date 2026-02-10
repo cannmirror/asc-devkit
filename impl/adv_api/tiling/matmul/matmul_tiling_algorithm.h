@@ -380,7 +380,7 @@ public:
     bool EnableL1BankConflictOptimise() const;
 
 private:
-    bool CheckFinaleParams(const CoreStatusPack& coreStatus) const;
+    bool CheckFinalParams(const CoreStatusPack& coreStatus) const;
     bool CheckBaseMN() const;
     int32_t GetBestValue(int32_t base) const;
     int32_t GetC0Size() const;

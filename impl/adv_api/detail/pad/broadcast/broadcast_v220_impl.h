@@ -29,26 +29,26 @@ __aicore__ inline void BrcbToOneBlock(const LocalTensor<T> &srcLocal, const uint
     uint32_t oneBlockElementNum, LocalTensor<T> &brcbOneBlockTempBuffer)
 {
     const uint32_t brcbRepeatTime = (firstDim + BRCB_ONE_SIZE - 1) / BRCB_ONE_SIZE;
-    uint32_t brcbMaxRepeateTimes = BRCB_HALF_MAX_REPEATE_TIMES;
+    uint32_t brcbMaxRepeatTimes = BRCB_HALF_MAX_REPEATE_TIMES;
     if constexpr (sizeof(T) == sizeof(float)) {
-        brcbMaxRepeateTimes = BRCB_FLOAT_MAX_REPEATE_TIMES;
+        brcbMaxRepeatTimes = BRCB_FLOAT_MAX_REPEATE_TIMES;
     }
-    const uint32_t brcbCount = brcbRepeatTime / brcbMaxRepeateTimes;
-    const uint32_t tailBrcbRepeateTime = brcbRepeatTime % brcbMaxRepeateTimes;
+    const uint32_t brcbCount = brcbRepeatTime / brcbMaxRepeatTimes;
+    const uint32_t tailBrcbRepeatTime = brcbRepeatTime % brcbMaxRepeatTimes;
     uint32_t brcbSrcOffset = 0;
     uint32_t brcbOneBlockTempBufferOffset = 0;
     for (uint32_t i = 0; i < brcbCount; i++) {
         Brcb(brcbOneBlockTempBuffer[brcbOneBlockTempBufferOffset],
             srcLocal[brcbSrcOffset],
-            brcbMaxRepeateTimes,
+            brcbMaxRepeatTimes,
             {1, DEFAULT_REPEAT_STRIDE});
-        brcbOneBlockTempBufferOffset += brcbMaxRepeateTimes * oneBlockElementNum * BRCB_ONE_SIZE;
-        brcbSrcOffset += brcbMaxRepeateTimes * BRCB_ONE_SIZE;
+        brcbOneBlockTempBufferOffset += brcbMaxRepeatTimes * oneBlockElementNum * BRCB_ONE_SIZE;
+        brcbSrcOffset += brcbMaxRepeatTimes * BRCB_ONE_SIZE;
     }
-    if (tailBrcbRepeateTime != 0) {
+    if (tailBrcbRepeatTime != 0) {
         Brcb(brcbOneBlockTempBuffer[brcbOneBlockTempBufferOffset],
             srcLocal[brcbSrcOffset],
-            tailBrcbRepeateTime,
+            tailBrcbRepeatTime,
             {1, DEFAULT_REPEAT_STRIDE});
     }
     PipeBarrier<PIPE_V>();
@@ -74,12 +74,12 @@ __aicore__ inline void TwoDimBroadCastLastDimAlign220(const LocalTensor<T> &dstL
         dstOffset += MAX_REPEAT_TIMES * numBlocks;
         brcbOneBlockTempBufferOffset += MAX_REPEAT_TIMES * oneBlockElementNum;
     }
-    uint32_t tailsCopyRepeateTimes = firstDim % MAX_REPEAT_TIMES;
-    if (tailsCopyRepeateTimes != 0) {
+    uint32_t tailsCopyRepeatTimes = firstDim % MAX_REPEAT_TIMES;
+    if (tailsCopyRepeatTimes != 0) {
         Copy<T, false>(dstLocal[dstOffset],
             tmpBuffer[brcbOneBlockTempBufferOffset],
             MASK_PLACEHOLDER,
-            tailsCopyRepeateTimes,
+            tailsCopyRepeatTimes,
             copyRepeatParams);
     }
     PipeBarrier<PIPE_V>();
@@ -108,12 +108,12 @@ __aicore__ inline void TwoDimBroadCastLastDimNotAlign220(const LocalTensor<T> &d
         dstOffset += MAX_REPEAT_TIMES * numBlocksAlign;
         brcbOneBlockTempBufferOffset += MAX_REPEAT_TIMES * oneBlockElementNum;
     }
-    uint32_t tailsCopyRepeateTimes = firstDim % MAX_REPEAT_TIMES;
-    if (tailsCopyRepeateTimes != 0) {
+    uint32_t tailsCopyRepeatTimes = firstDim % MAX_REPEAT_TIMES;
+    if (tailsCopyRepeatTimes != 0) {
         Copy<T, false>(copyTempBuffer[dstOffset],
             tmpBuffer[brcbOneBlockTempBufferOffset],
             MASK_PLACEHOLDER,
-            tailsCopyRepeateTimes,
+            tailsCopyRepeatTimes,
             copyRepeatParams);
     }
     PipeBarrier<PIPE_V>();
@@ -127,7 +127,7 @@ __aicore__ inline void TwoDimBroadCastLastDimNotAlign220(const LocalTensor<T> &d
 
 template <typename T>
 __aicore__ inline void GetAlignLoopNumbers(const uint32_t firstDim, const uint32_t numBlocks,
-    const uint32_t tmpBufferSize, uint32_t &oneRepeateSize, uint32_t &rangeM, uint32_t &tailM)
+    const uint32_t tmpBufferSize, uint32_t &oneRepeatSize, uint32_t &rangeM, uint32_t &tailM)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t minBrcbTempBufferSize = oneBlockElementNum * oneBlockElementNum;
@@ -138,14 +138,14 @@ __aicore__ inline void GetAlignLoopNumbers(const uint32_t firstDim, const uint32
             tmpBufferSize,
             minTmpBufferSize);
     });
-    oneRepeateSize = tmpBufferSize / minTmpBufferSize * oneBlockElementNum;
-    rangeM = firstDim / oneRepeateSize;
-    tailM = firstDim - oneRepeateSize * rangeM;
+    oneRepeatSize = tmpBufferSize / minTmpBufferSize * oneBlockElementNum;
+    rangeM = firstDim / oneRepeatSize;
+    tailM = firstDim - oneRepeatSize * rangeM;
 }
 
 template <typename T>
 __aicore__ inline void GetNotAlignLoopNumbers(const uint32_t firstDim, const uint32_t numBlocks,
-    const uint32_t tmpBufferSize, uint32_t &oneRepeateSize, uint32_t &rangeM, uint32_t &tailM)
+    const uint32_t tmpBufferSize, uint32_t &oneRepeatSize, uint32_t &rangeM, uint32_t &tailM)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     constexpr uint32_t minBrcbTempBufferSize = oneBlockElementNum * oneBlockElementNum;
@@ -159,9 +159,9 @@ __aicore__ inline void GetNotAlignLoopNumbers(const uint32_t firstDim, const uin
             tmpBufferSize,
             minTmpBufferSize);
     });
-    oneRepeateSize = tmpBufferSize / minTmpBufferSize * oneBlockElementNum;
-    rangeM = firstDim / oneRepeateSize;
-    tailM = firstDim - oneRepeateSize * rangeM;
+    oneRepeatSize = tmpBufferSize / minTmpBufferSize * oneBlockElementNum;
+    rangeM = firstDim / oneRepeatSize;
+    tailM = firstDim - oneRepeatSize * rangeM;
 }
 
 template <typename T, int32_t dim, int32_t axis, bool isReuseSource = false>
@@ -170,18 +170,18 @@ __aicore__ inline void TwoDimBroadCastLastDim(const LocalTensor<T> &dstLocal, co
 {
     const auto firstDim = dstShape[0];
     const auto numBlocks = dstShape[axis];
-    uint32_t oneRepeateSize = 0;
+    uint32_t oneRepeatSize = 0;
     uint32_t rangeM = 0;
     uint32_t tailM = 0;
     uint32_t dstLocalOffset = 0;
     uint32_t srcLocalOffset = 0;
     if (numBlocks * sizeof(T) % ONE_BLK_SIZE == 0) {
-        GetAlignLoopNumbers<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeateSize, rangeM, tailM);
+        GetAlignLoopNumbers<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeatSize, rangeM, tailM);
         for (uint32_t i = 0; i < rangeM; i++) {
             TwoDimBroadCastLastDimAlign220<T, isReuseSource>(
-                dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], tmpBuffer, oneRepeateSize, numBlocks);
-            dstLocalOffset += oneRepeateSize * numBlocks;
-            srcLocalOffset += oneRepeateSize;
+                dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], tmpBuffer, oneRepeatSize, numBlocks);
+            dstLocalOffset += oneRepeatSize * numBlocks;
+            srcLocalOffset += oneRepeatSize;
         }
         
         if (tailM != 0) {
@@ -189,12 +189,12 @@ __aicore__ inline void TwoDimBroadCastLastDim(const LocalTensor<T> &dstLocal, co
                 dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], tmpBuffer, tailM, numBlocks);
         }
     } else {
-        GetNotAlignLoopNumbers<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeateSize, rangeM, tailM);
+        GetNotAlignLoopNumbers<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeatSize, rangeM, tailM);
         for (uint32_t i = 0; i < rangeM; i++) {
             TwoDimBroadCastLastDimNotAlign220<T, isReuseSource>(
-                dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], tmpBuffer, oneRepeateSize, numBlocks);
-            dstLocalOffset += oneRepeateSize * numBlocks;
-            srcLocalOffset += oneRepeateSize;
+                dstLocal[dstLocalOffset], srcLocal[srcLocalOffset], tmpBuffer, oneRepeatSize, numBlocks);
+            dstLocalOffset += oneRepeatSize * numBlocks;
+            srcLocalOffset += oneRepeatSize;
         }
 
         if (tailM != 0) {

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -64,6 +69,7 @@ __aicore__ constexpr MatmulConfig GetIBShareNormConfig(const bool intrinsicsLimi
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p1147594373717"><a name="p1147594373717"></a><a name="p1147594373717"></a>用于设置参数intrinsicsCheck。</p>
 <p id="p19428173891615"><a name="p19428173891615"></a><a name="p19428173891615"></a><span id="ph31274661320"><a name="ph31274661320"></a><a name="ph31274661320"></a>当左矩阵或右矩阵在单核上内轴（即尾轴）大于等于65535（元素个数）时，是否使能循环执行数据从<span id="zh-cn_topic_0000002013427316_ph610031519596"><a name="zh-cn_topic_0000002013427316_ph610031519596"></a><a name="zh-cn_topic_0000002013427316_ph610031519596"></a>Global Memory</span>到<span id="zh-cn_topic_0000002013427316_ph6551115913423"><a name="zh-cn_topic_0000002013427316_ph6551115913423"></a><a name="zh-cn_topic_0000002013427316_ph6551115913423"></a><span id="zh-cn_topic_0000002013427316_ph455120597421"><a name="zh-cn_topic_0000002013427316_ph455120597421"></a><a name="zh-cn_topic_0000002013427316_ph455120597421"></a>L1 Buffer</span></span>的搬入。例如，左矩阵A[M, K]，单核上的内轴数据singleCoreK大于65535，配置该参数为true后，API内部通过循环执行数据的搬入。参数取值如下：</span></p>
 <a name="ul143331631192217"></a><a name="ul143331631192217"></a><ul id="ul143331631192217"><li><span id="ph19135469139"><a name="ph19135469139"></a><a name="ph19135469139"></a>false：当左矩阵或右矩阵在单核上内轴大于等于65535时，不使能循环执行数据的搬入（默认值）。</span></li><li><span id="ph514346131313"><a name="ph514346131313"></a><a name="ph514346131313"></a>true：当左矩阵或右矩阵在单核上内轴大于等于65535时，使能循环执行数据的搬入。</span></li></ul>
+<p id="p131018512498"><a name="p131018512498"></a><a name="p131018512498"></a><span id="ph4151946101317"><a name="ph4151946101317"></a><a name="ph4151946101317"></a>注意：MxMatmul场景仅支持false。</span></p>
 </td>
 </tr>
 <tr id="row1282014916166"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p14807165981614"><a name="p14807165981614"></a><a name="p14807165981614"></a>batchLoop</p>
@@ -80,8 +86,9 @@ __aicore__ constexpr MatmulConfig GetIBShareNormConfig(const bool intrinsicsLimi
 <td class="cellrowborder" valign="top" width="11.799999999999999%" headers="mcps1.2.4.1.2 "><p id="p1420734110385"><a name="p1420734110385"></a><a name="p1420734110385"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p98238315389"><a name="p98238315389"></a><a name="p98238315389"></a>用于设置参数enVecND2NZ。</p>
-<p id="p11614143215153"><a name="p11614143215153"></a><a name="p11614143215153"></a><span id="ph443123711176"><a name="ph443123711176"></a><a name="ph443123711176"></a>使能通过vector指令进行ND2NZ。使能时需要设置<a href="zh-cn_topic_0000001716468737.md">SetLocalWorkspace</a>。参数取值如下：</span></p>
+<p id="p11614143215153"><a name="p11614143215153"></a><a name="p11614143215153"></a><span id="ph443123711176"><a name="ph443123711176"></a><a name="ph443123711176"></a>使能通过vector指令进行ND2NZ。使能时需要设置<a href="SetLocalWorkspace.md">SetLocalWorkspace</a>。参数取值如下：</span></p>
 <a name="ul196141232181511"></a><a name="ul196141232181511"></a><ul id="ul196141232181511"><li><span id="ph11451937131714"><a name="ph11451937131714"></a><a name="ph11451937131714"></a>false：不使能通过vector指令进行ND2NZ（默认值）。</span></li><li><span id="ph646193741711"><a name="ph646193741711"></a><a name="ph646193741711"></a>true：使能通过vector指令进行ND2NZ。</span></li></ul>
+<p id="p78127493504"><a name="p78127493504"></a><a name="p78127493504"></a><span id="ph348193731711"><a name="ph348193731711"></a><a name="ph348193731711"></a>注意：MxMatmul场景仅支持false。</span></p>
 </td>
 </tr>
 <tr id="row13809141083811"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p7810910113819"><a name="p7810910113819"></a><a name="p7810910113819"></a>bmmMode</p>
@@ -101,6 +108,7 @@ __aicore__ constexpr MatmulConfig GetIBShareNormConfig(const bool intrinsicsLimi
 <p id="p156677274213"><a name="p156677274213"></a><a name="p156677274213"></a><span id="ph137426373192"><a name="ph137426373192"></a><a name="ph137426373192"></a>开启IBShare模板后，在<span id="zh-cn_topic_0000002013427316_ph1899163892912"><a name="zh-cn_topic_0000002013427316_ph1899163892912"></a><a name="zh-cn_topic_0000002013427316_ph1899163892912"></a>L1 Buffer</span>上是否同时缓存两块数据。参数取值如下：</span></p>
 <a name="ul991213147241"></a><a name="ul991213147241"></a><ul id="ul991213147241"><li><span id="ph10757237101911"><a name="ph10757237101911"></a><a name="ph10757237101911"></a>false：<span id="zh-cn_topic_0000002013427316_ph14992203818292"><a name="zh-cn_topic_0000002013427316_ph14992203818292"></a><a name="zh-cn_topic_0000002013427316_ph14992203818292"></a>L1 Buffer</span>上同时缓存一块数据（默认值）。</span></li><li><span id="ph6771113713194"><a name="ph6771113713194"></a><a name="ph6771113713194"></a>true：使能<span id="zh-cn_topic_0000002013427316_ph159923388291"><a name="zh-cn_topic_0000002013427316_ph159923388291"></a><a name="zh-cn_topic_0000002013427316_ph159923388291"></a>L1 Buffer</span>上同时缓存两块数据。</span></li></ul>
 <p id="p5312142173716"><a name="p5312142173716"></a><a name="p5312142173716"></a><span id="ph2064785683619"><a name="ph2064785683619"></a><a name="ph2064785683619"></a>注意：该参数取值为true时，需要控制基本块大小，防止两块数据的缓存超过<span id="zh-cn_topic_0000002013427316_ph5992173842912"><a name="zh-cn_topic_0000002013427316_ph5992173842912"></a><a name="zh-cn_topic_0000002013427316_ph5992173842912"></a>L1 Buffer</span>大小限制。</span></p>
+<p id="p45216710517"><a name="p45216710517"></a><a name="p45216710517"></a><span id="ph14521170515"><a name="ph14521170515"></a><a name="ph14521170515"></a><span id="zh-cn_topic_0000002013427316_ph999243810293"><a name="zh-cn_topic_0000002013427316_ph999243810293"></a><a name="zh-cn_topic_0000002013427316_ph999243810293"></a>Ascend 950PR/Ascend 950DT</span>仅支持取值为false。</span></p>
 </td>
 </tr>
 <tr id="row20814103513386"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p4814183503815"><a name="p4814183503815"></a><a name="p4814183503815"></a>enUnitFlag</p>
@@ -110,6 +118,7 @@ __aicore__ constexpr MatmulConfig GetIBShareNormConfig(const bool intrinsicsLimi
 <td class="cellrowborder" valign="top" width="70.43%" headers="mcps1.2.4.1.3 "><p id="p14814133518382"><a name="p14814133518382"></a><a name="p14814133518382"></a>用于设置参数enUnitFlag。</p>
 <p id="p17614103216152"><a name="p17614103216152"></a><a name="p17614103216152"></a><span id="ph1065621641910"><a name="ph1065621641910"></a><a name="ph1065621641910"></a>使能UnitFlag功能，使计算与搬运流水并行，提高性能。Norm, IBShare下默认使能，MDL下默认不使能。参数取值如下：</span></p>
 <a name="ul152765814315"></a><a name="ul152765814315"></a><ul id="ul152765814315"><li><span id="ph13657141617192"><a name="ph13657141617192"></a><a name="ph13657141617192"></a>false：不使能UnitFlag功能。</span></li><li><span id="ph166581616141912"><a name="ph166581616141912"></a><a name="ph166581616141912"></a>true：使能UnitFlag功能。</span></li></ul>
+<p id="p6593921135211"><a name="p6593921135211"></a><a name="p6593921135211"></a><span id="ph10659101671916"><a name="ph10659101671916"></a><a name="ph10659101671916"></a>注意：MxMatmul场景，仅在NORM/MDL模板、A和scaleA不转置、 B和scaleB转置、C为ND格式，输出到GM场景下，使能UnitFlag功能有性能收益。</span></p>
 </td>
 </tr>
 </tbody>

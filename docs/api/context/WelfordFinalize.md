@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -32,15 +37,31 @@ LayerNorm算法中Reduce轴较大的场景，可以通过切分Reduce轴，联�
 
     ![](figures/zh-cn_formulaimage_0000002047308822.png)
 
+    -   方差系数未修正场景：
+
+        ![](figures/zh-cn_formulaimage_0000002188346134.png)
+
+    -   方差系数修正场景：
+
+        ![](figures/zh-cn_formulaimage_0000002223917377.png)
+
     其中，Mean为均值输出，Var为方差输出。
 
-    Mean<sub>i</sub>代表输入的第i个均值，Var<sub>i</sub>代表输入的第i个方差。Ab代表Reduce轴切分后一次计算的大小，Rn代表Reduce轴按Ab拆分的次数，![](figures/zh-cn_formulaimage_0000002235200305.png)代表方差系数rRec。
+    Mean<sub>i</sub>代表输入的第i个均值，Var<sub>i</sub>代表输入的第i个方差。Ab代表Reduce轴切分后一次计算的大小，Rn代表Reduce轴按Ab拆分的次数，![](figures/zh-cn_formulaimage_0000002235200305.png)代表未修正的方差系数rRec，![](figures/zh-cn_image_0000002200279866.png)代表修正方差系数rRecWithCorrection。
 
 -   带尾块/带counts参数场景：
 
     ![](figures/zh-cn_formulaimage_0000002047309002.png)
 
-    除上述参数含义外，counts<sub>i</sub>代表Mean<sub>i</sub>对应的系数，R代表未切分的原始Reduce轴长度，![](figures/zh-cn_formulaimage_0000002200133484.png)代表方差系数rRec。
+    -   方差系数未修正场景：
+
+        ![](figures/zh-cn_formulaimage_0000002223802977.png)
+
+    -   方差系数修正场景：
+
+        ![](figures/zh-cn_formulaimage_0000002223917381.png)
+
+    除上述参数含义外，counts<sub>i</sub>代表Mean<sub>i</sub>对应的系数，R代表未切分的原始Reduce轴长度，![](figures/zh-cn_formulaimage_0000002200133484.png)代表未修正的方差系数rRec，![](figures/zh-cn_image_0000002200279878.png)代表修正系数rRecWithCorrection。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -48,14 +69,14 @@ LayerNorm算法中Reduce轴较大的场景，可以通过切分Reduce轴，联�
     -   不带counts参数场景
 
         ```
-        template <bool isReuseSource = false>
+        template <bool isReuseSource = false, const WelfordFinalizeConfig& config = WFFINALIZE_DEFAULT_CFG>
         __aicore__ inline void WelfordFinalize(const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<uint8_t>& sharedTmpBuffer, WelfordFinalizePara& para)
         ```
 
     -   带counts参数场景
 
         ```
-        template <bool isReuseSource = false>
+        template <bool isReuseSource = false, const WelfordFinalizeConfig& config = WFFINALIZE_DEFAULT_CFG>
         __aicore__ inline void WelfordFinalize(const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<int32_t>& counts, const LocalTensor<uint8_t>& sharedTmpBuffer, WelfordFinalizePara& para)
         ```
 
@@ -63,14 +84,14 @@ LayerNorm算法中Reduce轴较大的场景，可以通过切分Reduce轴，联�
     -   不带counts参数场景
 
         ```
-        template <bool isReuseSource = false>
+        template <bool isReuseSource = false, const WelfordFinalizeConfig& config = WFFINALIZE_DEFAULT_CFG>
         __aicore__ inline void WelfordFinalize(const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, WelfordFinalizePara& para)
         ```
 
     -   带counts参数场景
 
         ```
-        template <bool isReuseSource = false>
+        template <bool isReuseSource = false, const WelfordFinalizeConfig& config = WFFINALIZE_DEFAULT_CFG>
         __aicore__ inline void WelfordFinalize(const LocalTensor<float>& outputMean, const LocalTensor<float>& outputVariance, const LocalTensor<float>& inputMean, const LocalTensor<float>& inputVariance, const LocalTensor<int32_t>& counts, WelfordFinalizePara& para)
         ```
 
@@ -96,6 +117,18 @@ LayerNorm算法中Reduce轴较大的场景，可以通过切分Reduce轴，联�
 <tbody><tr id="row9756719122620"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p1682112447268"><a name="p1682112447268"></a><a name="p1682112447268"></a>isReuseSource</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p175786163713"><a name="p175786163713"></a><a name="p175786163713"></a>该参数预留，传入默认值false即可。</p>
+</td>
+</tr>
+<tr id="row726932710267"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p92691827112616"><a name="p92691827112616"></a><a name="p92691827112616"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p145341387272"><a name="p145341387272"></a><a name="p145341387272"></a>结构体模板参数，用于配置相关信息，WelfordFinalizeConfig类型，具体定义如下：</p>
+<a name="screen55453174426"></a><a name="screen55453174426"></a><pre class="screen" codetype="Cpp" id="screen55453174426">struct WelfordFinalizeConfig {
+     bool isCorrection = false;
+}</pre>
+<a name="ul13824145153916"></a><a name="ul13824145153916"></a><ul id="ul13824145153916"><li>isCorrection：计算方差时，是否使用修正系数，取值如下：<a name="ul58395710396"></a><a name="ul58395710396"></a><ul id="ul58395710396"><li>false：不使用修正系数，即方差系数为rRec。</li><li>true：使用修正系数rRecWithCorrection。</li></ul>
+</li></ul>
+<p id="p75171231133714"><a name="p75171231133714"></a><a name="p75171231133714"></a>配置示例如下。</p>
+<a name="screen14584144314375"></a><a name="screen14584144314375"></a><pre class="screen" codetype="Cpp" id="screen14584144314375">constexpr WelfordFinalizeConfig WFFINALIZE_DEFAULT_CFG = { false };</pre>
 </td>
 </tr>
 </tbody>
@@ -176,9 +209,9 @@ LayerNorm算法中Reduce轴较大的场景，可以通过切分Reduce轴，联�
     uint32_t tailCountLength;
     float abRec;
     float rRec;
-    
+    float rRecWithCorrection;
 };</pre>
-<a name="ul20925141115211"></a><a name="ul20925141115211"></a><ul id="ul20925141115211"><li>rnLength：输入的Reduce轴，按abLength为一次计算的大小，拆分的次数。如果拆分后有尾块，则次数向上取整。</li><li>abLength：Reduce轴拆分的大小。在不带counts参数的接口中，abLength=headCountLength+tailCountLength。</li><li>headCount：在不带counts参数的接口中使能该参数，作为公式中非尾块的counts系数，headCount值。</li><li>headCountLength：在不带counts参数的接口中使能该参数，headCount值对应的长度。</li><li>tailCount：在不带counts参数的接口中使能该参数，作为公式中尾块的counts系数，tailCount值。</li><li>tailCountLength：在不带counts参数的接口中使能该参数，tailCount值对应的长度。</li><li>abRec：abLength的倒数，即为1/abLength的值。</li><li>rRec：输入的Reduce轴拆分后，若没有尾块，表示1/(rnLength*abLength)的值，若有尾块，表示1/R的值。</li></ul>
+<a name="ul20925141115211"></a><a name="ul20925141115211"></a><ul id="ul20925141115211"><li>rnLength：输入的Reduce轴，按abLength为一次计算的大小，拆分的次数。如果拆分后有尾块，则次数向上取整。</li><li>abLength：Reduce轴拆分的大小。在不带counts参数的接口中，abLength=headCountLength+tailCountLength。</li><li>headCount：在不带counts参数的接口中使能该参数，作为公式中非尾块的counts系数，headCount值。</li><li>headCountLength：在不带counts参数的接口中使能该参数，headCount值对应的长度。</li><li>tailCount：在不带counts参数的接口中使能该参数，作为公式中尾块的counts系数，tailCount值。</li><li>tailCountLength：在不带counts参数的接口中使能该参数，tailCount值对应的长度。</li><li>abRec：abLength的倒数，即为1/abLength的值。</li><li>rRec：输入的Reduce轴拆分后，若没有尾块，表示1/(rnLength*abLength)的值，若有尾块，表示1/R的值。</li><li>rRecWithCorrection：输入的方差修正系数，当模板参数config中的isCorrection为true时生效。</li></ul>
 </td>
 </tr>
 </tbody>
@@ -204,5 +237,131 @@ pipe.InitBuffer(sharedTmpBuffer, stackBufferSize);
 AscendC::LocalTensor<uint8_t> tmpLocalTensor = sharedTmpBuffer.Get<uint8_t>();         
 struct AscendC::WelfordFinalizePara para = {rnLength, abLength, head, headLength, tail, tailLength, abRec, rRec};
 AscendC::WelfordFinalize<false>(meanLocal, varianceLocal, inputMeanLocal, inputVarianceLocal, inputCountsLocal, tmpLocalTensor, para); 
+```
+
+```
+#include "kernel_operator.h"
+
+template <typename dataType, bool isCounts = false> class KernelWelfordFinalize {
+public:
+    __aicore__ inline KernelWelfordFinalize() {}
+    __aicore__ inline void Init(GM_ADDR inputX_gm, GM_ADDR inputmean_gm, GM_ADDR inputvar_gm, GM_ADDR outputMean_gm,
+        GM_ADDR outputVariance_gm, uint32_t rnLength, uint32_t abLength, uint32_t rLength, uint32_t head,
+        uint32_t headLength, uint32_t tail, uint32_t tailLength, float rRecWithCorrection)
+    {
+        this->rnLength = rnLength;
+        this->abLength = abLength;
+        this->head = head;
+        this->headLength = headLength;
+        this->tail = tail;
+        this->tailLength = tailLength;
+
+        totalLength = rnLength * abLength;
+        this->rLength = rLength;
+        this->abRec = 1 / (float)abLength;
+        this->rRec = 1 / (float)rLength;
+        this->rRecWithCorrection = rRecWithCorrection;
+        this->outLength = (rnLength + 8 - 1) / 8 * 8;
+
+        inputX_global.SetGlobalBuffer(reinterpret_cast<__gm__ dataType *>(inputX_gm), totalLength);
+        inputmean_global.SetGlobalBuffer(reinterpret_cast<__gm__ float *>(inputmean_gm), totalLength);
+        inputvar_global.SetGlobalBuffer(reinterpret_cast<__gm__ float *>(inputvar_gm), totalLength);
+
+        outputMean_global.SetGlobalBuffer(reinterpret_cast<__gm__ float *>(outputMean_gm), totalLength);
+        outputVariance_global.SetGlobalBuffer(reinterpret_cast<__gm__ float *>(outputVariance_gm), totalLength);
+
+        pipe.InitBuffer(inQueueX, 1, sizeof(dataType) * totalLength);
+        pipe.InitBuffer(inQueueMean, 1, sizeof(float) * totalLength);
+        pipe.InitBuffer(inQueueVar, 1, sizeof(float) * totalLength);
+        pipe.InitBuffer(outQueueMean, 1, sizeof(float) * outLength);
+        pipe.InitBuffer(outQueueVariance, 1, sizeof(float) * outLength);
+    }
+    __aicore__ inline void Process()
+    {
+        CopyIn();
+        Compute();
+        CopyOut();
+    }
+
+private:
+    __aicore__ inline void CopyIn()
+    {
+        AscendC::LocalTensor<dataType> inputXLocal = inQueueX.AllocTensor<dataType>();
+        AscendC::LocalTensor<float> inmeanLocal = inQueueMean.AllocTensor<float>();
+        AscendC::LocalTensor<float> invarLocal = inQueueVar.AllocTensor<float>();
+
+        AscendC::DataCopy(inputXLocal, inputX_global, totalLength);
+        AscendC::DataCopy(inmeanLocal, inputmean_global, totalLength);
+        AscendC::DataCopy(invarLocal, inputvar_global, totalLength);
+
+        inQueueX.EnQue(inputXLocal);
+        inQueueMean.EnQue(inmeanLocal);
+        inQueueVar.EnQue(invarLocal);
+    }
+    __aicore__ inline void Compute()
+    {
+        AscendC::LocalTensor<dataType> inputXLocal = inQueueX.DeQue<dataType>();
+        AscendC::LocalTensor<float> inmeanLocal = inQueueMean.DeQue<float>();
+        AscendC::LocalTensor<float> invarLocal = inQueueVar.DeQue<float>();
+
+        AscendC::LocalTensor<float> meanLocal = outQueueMean.AllocTensor<float>();
+        AscendC::LocalTensor<float> varianceLocal = outQueueVariance.AllocTensor<float>();
+        AscendC::Duplicate(meanLocal, float(0), outLength);
+        AscendC::Duplicate(varianceLocal, float(0), outLength);
+
+        static constexpr AscendC::WelfordFinalizeConfig CONFIG = {false};
+        AscendC::WelfordFinalizePara para = { rnLength, abLength, head, headLength, tail, tailLength, abRec, rRec, rRecWithCorrection};
+        if constexpr (isCounts) {
+            AscendC::WelfordFinalize<false, CONFIG>(meanLocal, varianceLocal, inmeanLocal, invarLocal, inputXLocal, para);
+        } else {
+            AscendC::WelfordFinalize<false, CONFIG>(meanLocal, varianceLocal, inmeanLocal, invarLocal, para);
+        }
+
+        outQueueMean.EnQue<float>(meanLocal);
+        outQueueVariance.EnQue<float>(varianceLocal);
+
+        inQueueX.FreeTensor(inputXLocal);
+        inQueueMean.FreeTensor(inmeanLocal);
+        inQueueVar.FreeTensor(invarLocal);
+    }
+    __aicore__ inline void CopyOut()
+    {
+        AscendC::LocalTensor<float> meanLocal = outQueueMean.DeQue<float>();
+        AscendC::LocalTensor<float> varianceLocal = outQueueVariance.DeQue<float>();
+
+        AscendC::DataCopy(outputMean_global, meanLocal, outLength);
+        AscendC::DataCopy(outputVariance_global, varianceLocal, outLength);
+
+        outQueueMean.FreeTensor(meanLocal);
+        outQueueVariance.FreeTensor(varianceLocal);
+    }
+
+private:
+    AscendC::GlobalTensor<dataType> inputX_global;
+    AscendC::GlobalTensor<float> inputmean_global;
+    AscendC::GlobalTensor<float> inputvar_global;
+    AscendC::GlobalTensor<float> outputMean_global;
+    AscendC::GlobalTensor<float> outputVariance_global;
+
+    AscendC::TPipe pipe;
+    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueX;
+    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueMean;
+    AscendC::TQue<AscendC::TPosition::VECIN, 1> inQueueVar;
+    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueMean;
+    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueVariance;
+
+    uint32_t rnLength;
+    uint32_t abLength;
+    uint32_t rLength;
+    uint32_t head;
+    uint32_t headLength;
+    uint32_t tail;
+    uint32_t tailLength;
+    uint32_t totalLength;
+    uint32_t outLength;
+    float abRec;
+    float rRec;
+    float rRecWithCorrection;
+};
 ```
 

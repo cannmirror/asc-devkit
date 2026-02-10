@@ -10,7 +10,7 @@
 
 /*!
  * \file math_common_util.h
- * \brief defined common used math related function.
+ * \brief defined commonly used math related function.
  */
 #ifndef IMPL_MATH_MATH_COMMON_UTIL_H
 #define IMPL_MATH_MATH_COMMON_UTIL_H

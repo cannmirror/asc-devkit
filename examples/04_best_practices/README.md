@@ -13,4 +13,6 @@
 | [06_grouped_matmul](./06_grouped_matmul) | 本样例介绍QuantGroupMatmul算子在NPU上高性能实现，支持分组量化矩阵乘与Gelu激活计算。 |
 | [10_compatibility_cases](./10_compatibility_cases) | 本样例介绍Atlas A2 训练系列产品/Atlas A2 推理系列产品部分不兼容特性迁移至950的实现样例方法，不兼容场景包括从L1 Buffer直接搬运到GM、L0A Buffer/L0B Buffer、int4b_t数据类型下的矩阵计算、L1 Buffer带边界值场景。 |
 | [11_pattern_transformation](./11_pattern_transformation) | 新架构下基础的mmad样例，从L1 Buffer->L0A的通路不需要做Nz2Zz分型转换。 |
-| [14_pure_simt_gather](./14_pure_simt_gather) |纯SIMT编程方式实现的算子样例，支持动态计算切分参数 |
+| [12_high_performance_vf](./12_high_performance_vf) | 基于VF函数的性能优化样例，通过<<<>>>直调的实现方式，介绍了VF循环优化、VF指令双发优化、VF连续非对齐场景优化、VF融合优化的方法。 |
+| [13_optimize_datacopy](./13_optimize_datacopy) | 基于搬运类API使用的优化样例，通过<<<>>>直调的实现方式，介绍了减少无效数据搬运、减少搬运指令数量等方法。 |
+| [14_pure_simt_gather](./14_pure_simt_gather) |纯SIMT编程方式实现的算子样例，支持动态计算切分参数。 |

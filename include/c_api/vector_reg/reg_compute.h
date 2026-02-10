@@ -11,7 +11,7 @@
 #ifndef INCLUDE_C_API_NPU_ARCH_3510_VECTOR_COMPUTE_H
 #define INCLUDE_C_API_NPU_ARCH_3510_VECTOR_COMPUTE_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/vector_compute_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl.h"
 
 // ==========asc_sub(uint8_t/int8_t/uint16_t/int16_t/half/bfloat16_t/uint32_t/int32_t/float)==========
 __simd_callee__ inline void asc_sub(vector_uint8_t& dst, vector_uint8_t src0, vector_uint8_t src1, vector_bool mask);

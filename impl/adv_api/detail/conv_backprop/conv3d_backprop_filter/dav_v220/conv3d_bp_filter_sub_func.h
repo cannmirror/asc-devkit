@@ -248,7 +248,7 @@ __aicore__ inline void LoadToA1(Intf *self, bool cachePosA1, uint64_t kaIdx, con
             }
         }
 
-        // blockcout and blockLen are associated with L1, and the risk of overflow is low
+        // blockcount and blockLen are associated with L1, and the risk of overflow is low
         uint64_t srcStride = self->ctx.hwO_ - dataCopyParams.blockLen;
         if (srcStride <= MAX_16BITS_STRIDE) {
             dataCopyParams.srcStride = srcStride;
@@ -287,7 +287,7 @@ __aicore__ inline void LoadToB1(Intf *self, bool cachePosB1, uint64_t kbIdx, con
     // 2.singleShapeK / stepKb > 2, priority is given to looping in the k direction, and data on BL1 cannot be reused
     // 3.When order_M, AL1 resides on L1, and BL1 data is not reused
     // 4.When order_N, BL1 resides on L1, and K <=
-    // 2，That is, all Kb can be planted on L1. At this time, the M direction is traversed, and the data on BL1 will not be overwritten. BL1 will only be loaded in the first cycle of the M direction
+    // 2，That is, all Kb can be placed on L1. At this time, the M direction is traversed, and the data on BL1 will not be overwritten. BL1 will only be loaded in the first cycle of the M direction
     if (params.isLoad2L1B) {
         AscendC::LocalTensor<typename Intf::SrcT> useB1Buf;
         if (cachePosB1) {

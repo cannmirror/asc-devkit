@@ -23,6 +23,7 @@
 
 #include <type_traits>
 
+#include "impl/utils/debug/asc_utils_macros.h"
 #include "impl/utils/debug/asc_utils_types.h"
 #include "impl/utils/debug/asc_debug_types.h"
 
@@ -73,6 +74,11 @@ __aicore__ inline uint32_t asc_debug_get_core_idx()
 __aicore__ inline uint64_t asc_debug_get_block_idx()
 {
     return asc_debug_get_block_idx_impl();
+}
+
+__aicore__ inline int64_t asc_debug_get_program_counter()
+{
+    return get_pc();
 }
 
 template <uint64_t timeoutCycle = 15 * 1000 * 1000> // 20ms * 15

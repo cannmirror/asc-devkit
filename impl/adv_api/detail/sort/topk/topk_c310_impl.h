@@ -275,19 +275,19 @@ __aicore__ inline void InitializeTempBuffer(const LocalTensor<T> &tempBuffer, bo
     }
 }
 
-__simd_callee__ inline void GetLowerstByte(RegTensor<uint8_t>& dst, RegTensor<uint16_t>& src0, RegTensor<uint16_t>& src1)
+__simd_callee__ inline void GetLowestByte(RegTensor<uint8_t>& dst, RegTensor<uint16_t>& src0, RegTensor<uint16_t>& src1)
 {
     RegTensor<uint8_t> tmpU8Reg;
     DeInterleave(dst, tmpU8Reg, (RegTensor<uint8_t> &)src0, (RegTensor<uint8_t> &)src1);
 }
 
-__simd_callee__ inline void GetLowerstByte(RegTensor<uint8_t>& dst, RegTensor<uint32_t>& src0, RegTensor<uint32_t>& src1, RegTensor<uint32_t>& src2, RegTensor<uint32_t>& src3)
+__simd_callee__ inline void GetLowestByte(RegTensor<uint8_t>& dst, RegTensor<uint32_t>& src0, RegTensor<uint32_t>& src1, RegTensor<uint32_t>& src2, RegTensor<uint32_t>& src3)
 {
     RegTensor<uint16_t> tmpU16Reg0, tmpU16Reg1, tmpU16Reg2;
     DeInterleave(tmpU16Reg0, tmpU16Reg1, (RegTensor<uint16_t> &)src0, (RegTensor<uint16_t> &)src1);
     DeInterleave(tmpU16Reg2, tmpU16Reg1, (RegTensor<uint16_t> &)src2, (RegTensor<uint16_t> &)src3);
 
-    GetLowerstByte(dst, tmpU16Reg0, tmpU16Reg2);
+    GetLowestByte(dst, tmpU16Reg0, tmpU16Reg2);
 }
 
 __simd_callee__ inline void TransToB8Mask(MaskReg& dst, MaskReg& u16Src0, MaskReg& u16Src1)
@@ -352,7 +352,7 @@ __ubuf__ uint64_t* tmpLocal)
     MicroAPI::LoadAlign(work2, tmpU32 + loadCount * 2);
     MicroAPI::LoadAlign(work3, tmpU32 + loadCount * 3);
 
-    GetLowerstByte(colWorkBits, work0, work1, work2, work3);  
+    GetLowestByte(colWorkBits, work0, work1, work2, work3);  
 }
 
 __simd_callee__ inline void CompareHighBytesBeforePos(MaskReg& filterMask, __ubuf__ uint64_t *&src, MaskReg& maskReg,
@@ -459,7 +459,7 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
     ShiftRights(tmpU32ByteReg2, input2, byteOffsets, fullMask);
     ShiftRights(tmpU32ByteReg3, input3, byteOffsets, fullMask);
 
-    GetLowerstByte(colWorkBits, tmpU32ByteReg0, tmpU32ByteReg1, tmpU32ByteReg2, tmpU32ByteReg3);
+    GetLowestByte(colWorkBits, tmpU32ByteReg0, tmpU32ByteReg1, tmpU32ByteReg2, tmpU32ByteReg3);
 
     RegTensor<uint32_t> tmpU32MaskReg0, tmpU32MaskReg1, tmpU32MaskReg2, tmpU32MaskReg3;
     ShiftRights(tmpU32MaskReg0, input0, maskOffsets, fullMask);
@@ -496,7 +496,7 @@ __simd_callee__ inline void FilterDataAndGivenByteFromOri(
     ShiftRights(tmpBShift0, input0, byteOffsets, fullMask);
     ShiftRights(tmpBShift1, input1, byteOffsets, fullMask);
 
-    GetLowerstByte(colWorkBits, tmpBShift0, tmpBShift1);
+    GetLowestByte(colWorkBits, tmpBShift0, tmpBShift1);
 
     RegTensor<uint16_t> tmpMShift0, tmpMShift1;
     ShiftRights(tmpMShift0, input0, maskOffsets, fullMask);
@@ -902,7 +902,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint16_t *src, __ub
     constexpr uint32_t u32EleCountPerVL = GetVecLen() / sizeof(int32_t);
     constexpr uint32_t u16EleCountPerVL = GetVecLen() / sizeof(uint16_t);
     uint16_t dataRepeatTimes = DivCeil(count, u16EleCountPerVL);
-    uint16_t indexRepeatTImes = DivCeil(count, u32EleCountPerVL);
+    uint16_t indexRepeatTimes = DivCeil(count, u32EleCountPerVL);
 
     auto firstCount = count;
     auto secondCount = count;
@@ -965,7 +965,7 @@ __simd_vf__ inline void GatherGreaterAndEqualKIndex(__ubuf__ uint8_t *src, __ubu
     constexpr uint32_t u32EleCountPerVL = GetVecLen() / sizeof(int32_t);
 
     uint16_t dataRepeatTimes = DivCeil(count, u8EleCountPerVL);
-    uint16_t indexRepeatTImes = DivCeil(count, u32EleCountPerVL);
+    uint16_t indexRepeatTimes = DivCeil(count, u32EleCountPerVL);
 
     auto firstCount = count;
     auto secondCount = count;

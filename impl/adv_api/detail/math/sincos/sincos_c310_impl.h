@@ -69,7 +69,7 @@ __simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::R
 __simd_callee__ inline void FMaf(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     MicroAPI::RegTensor<float>& srcReg2, float scalarValue, MicroAPI::MaskReg& mask)
 {
-    // dst = src1 * src2 + scalerValue
+    // dst = src1 * src2 + scalarValue
     MicroAPI::RegTensor<float> tmpReg;
     MicroAPI::Duplicate(tmpReg, scalarValue, mask);
     FMaf(dstReg, srcReg1, srcReg2, tmpReg, mask);
@@ -380,7 +380,7 @@ __simd_callee__ inline void CosfPoly(MicroAPI::RegTensor<float> &dstReg, MicroAP
     FMaf(dstReg, srcRegS, COS_POLY_COEFF4, mask);
 }
 
-__simd_callee__ inline void TrigRedFPreporcessForHalf(MicroAPI::RegTensor<float> &regR, MicroAPI::RegTensor<int32_t> &regI,
+__simd_callee__ inline void TrigRedFPreprocessForHalf(MicroAPI::RegTensor<float> &regR, MicroAPI::RegTensor<int32_t> &regI,
     MicroAPI::RegTensor<float> &srcRegA, MicroAPI::MaskReg& mask)
 {
     constexpr float J_MUL_COEFF = 0.636619747f;
@@ -540,7 +540,7 @@ __simd_vf__ inline void TrigRedFPreProcessImpl(__ubuf__ float *tmpBufferR, __ubu
         MicroAPI::MaskReg mask = MicroAPI::UpdateMask<float>(calCount);
         MicroAPI::LoadAlign<T, MicroAPI::LoadDist::DIST_UNPACK_B16>(srcReg, src + i * B32_DATA_NUM_PER_REPEAT);
         MicroAPI::Cast<float, T, SinCosImpl::castTraitF16F32>(castReg, srcReg, mask);
-        TrigRedFPreporcessForHalf(regR, regI, castReg, mask);
+        TrigRedFPreprocessForHalf(regR, regI, castReg, mask);
 
         MicroAPI::StoreAlign(tmpBufferR + i * B32_DATA_NUM_PER_REPEAT, regR, mask);
         MicroAPI::StoreAlign(tmpBufferI + i * B32_DATA_NUM_PER_REPEAT, regI, mask);
@@ -565,7 +565,7 @@ __simd_vf__ inline void TrigRedFComputePImpl(__ubuf__ uint32_t *tmpBufferRegPHig
         // a = a * 0.0f + a
         MicroAPI::Duplicate(tmpF32Reg, 0.0f, mask);
         MicroAPI::FusedMulDstAdd(castReg, tmpF32Reg, castReg, mask);
-        // initilize q and r: *q = 0; r = a;
+        // initialize q and r: *q = 0; r = a;
         MicroAPI::Duplicate(regI, 0, mask);
         regR = castReg;
         // store the origin q and r in ub

@@ -279,12 +279,12 @@ bool CheckFuncBilinearInterpolation(const LocalTensor<T>& dst, const LocalTensor
 template <typename T>
 bool CheckFunTranspose(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const char* intriName)
 {
-    const uint16_t defualtStride = 16;
+    const uint16_t defaultStride = 16;
     check::VecTransposeApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         1,
-        defualtStride,
-        defualtStride,
+        defaultStride,
+        defaultStride,
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
@@ -298,12 +298,12 @@ template <typename T, typename U>
 bool CheckFunTranspose(const LocalTensor<T>& dst, const LocalTensor<T>& src0,
     const LocalTensor<U> &sharedTmpBuffer, const TransposeParamsExt &transposeParams, const char* intriName)
 {
-    const uint16_t defualtStride = 16;
+    const uint16_t defaultStride = 16;
     check::VecTransposeApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src0.GetPhyAddr())),
         1,
-        defualtStride,
-        defualtStride,
+        defaultStride,
+        defaultStride,
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),

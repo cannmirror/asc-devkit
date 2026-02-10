@@ -27,16 +27,6 @@
 #include "kernel_scalar_convert.h"
 #include "kernel_utils_base.h"
 
-enum class HF32Mode {
-    Enable,
-    Disable
-};
-
-enum class HF32TransMode {
-    Enable,
-    Disable
-};
-
 #if ENABLE_CV_COMM_VIA_SSBUF != 0 && __MIX_CORE_AIC_RATION__ != 1
 #define KFC_C310_SSBUF 1
 #else
@@ -52,7 +42,7 @@ __BLOCK_LOCAL__ __inline__ half g_deqValue;
 #endif
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
 namespace Internal {
-// global varaibles g_cmpMaskLow and g_cmpMaskHigh are used to simulate the registr CMPMASK in 1971
+// global variables g_cmpMaskLow and g_cmpMaskHigh are used to simulate the register CMPMASK in 1971
 // both of them are 64 bits and they are used to store the result of API Compare
 __BLOCK_LOCAL__ __inline__ uint64_t g_cmpMaskLow;
 __BLOCK_LOCAL__ __inline__ uint64_t g_cmpMaskHigh;
@@ -65,7 +55,7 @@ __BLOCK_LOCAL__ __inline__ uint64_t g_deqScale;
 // manage the global id for get/rls buff.
 __BLOCK_LOCAL__ __inline__ uint32_t g_bufId;
 __BLOCK_LOCAL__ __inline__ uint32_t g_sharedEvtId;
-// global varaibles g_aipp* are used to simulate the spr for SetAippFunctions and LoadImageToLocal, they will save
+// global variables g_aipp* are used to simulate the spr for SetAippFunctions and LoadImageToLocal, they will save
 // the configs and apply them to pre-process the input image in LoadImageToLocal function.
 __BLOCK_LOCAL__ __inline__ uint64_t g_aippSrc0;
 __BLOCK_LOCAL__ __inline__ uint64_t g_aippSrc1;

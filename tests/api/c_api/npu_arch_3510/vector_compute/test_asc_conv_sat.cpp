@@ -53,26 +53,26 @@ TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_float2int32_rna, vcvt, vector_i
 TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_float2int32_rna_sat, vcvt, vector_int32_t, vector_float);
 
 // ==========asc_bfloat162e2m1x2_rd/ru/rz/rn/rna)==========
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd_v2, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd_v3, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd_v4, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru_v2, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru_v3, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru_v4, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz_v2, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz_v3, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz_v4, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn_v2, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn_v3, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn_v4, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna_v2, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna_v3, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
-TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna_v4, vcvt, vector_f4e2m1x2, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd_v2, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd_v3, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rd_v4, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru_v2, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru_v3, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_ru_v4, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz_v2, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz_v3, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rz_v4, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn_v2, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn_v3, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rn_v4, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna_v2, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna_v3, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_bfloat162e2m1x2_rna_v4, vcvt, vector_fp4x2_e2m1_t, vector_bfloat16_t);
 
 // ==========asc_uint322uint16==========
 TEST_VECTOR_COMPUTE_VCONV_SAT_INSTR(CONVSAT, asc_uint322uint16_sat, vcvt, vector_uint16_t, vector_uint32_t);

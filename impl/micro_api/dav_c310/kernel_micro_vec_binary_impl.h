@@ -86,11 +86,11 @@ __simd_callee__ inline void AddComplex32OnetraitImpl(U& dstReg, U& srcReg0, U& s
     RegTensor<ActualT, RegTraitNumTwo> addTraitTwoSrcReg0;
     RegTensor<ActualT, RegTraitNumTwo> addTraitTwoSrcReg1;
     RegTensor<ActualT, RegTraitNumTwo> addTraitTwoDstReg;
-    B32TraitOneToTaitTwo(addTraitTwoSrcReg0, srcReg0);
-    B32TraitOneToTaitTwo(addTraitTwoSrcReg1, srcReg1);
+    B32TraitOneToTraitTwo(addTraitTwoSrcReg0, srcReg0);
+    B32TraitOneToTraitTwo(addTraitTwoSrcReg1, srcReg1);
     AddComplexTwoRegImpl<T, mode, RegTensor<ActualT, RegTraitNumTwo>>(
         addTraitTwoDstReg, addTraitTwoSrcReg0, addTraitTwoSrcReg1, maskTrait2);
-    B32TraitTwoToTaitOne(dstReg, addTraitTwoDstReg);
+    B32TraitTwoToTraitOne(dstReg, addTraitTwoDstReg);
 }
 
 template <typename T, auto mode, typename U, auto func>
@@ -102,10 +102,10 @@ __simd_callee__ inline void CalTraitOneByTransToTraitTwo(U& dstReg, U& srcReg0, 
     RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
     RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
     RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-    B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-    B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+    B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+    B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
     func(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
-    B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+    B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
@@ -209,11 +209,11 @@ __simd_callee__ inline void SubComplex32OnetraitImpl(U& dstReg, U& srcReg0, U& s
     RegTensor<ActualT, RegTraitNumTwo> subTraitTwoSrcReg0;
     RegTensor<ActualT, RegTraitNumTwo> subTraitTwoSrcReg1;
     RegTensor<ActualT, RegTraitNumTwo> subTraitTwoDstReg;
-    B32TraitOneToTaitTwo(subTraitTwoSrcReg0, srcReg0);
-    B32TraitOneToTaitTwo(subTraitTwoSrcReg1, srcReg1);
+    B32TraitOneToTraitTwo(subTraitTwoSrcReg0, srcReg0);
+    B32TraitOneToTraitTwo(subTraitTwoSrcReg1, srcReg1);
     SubComplex32TwoImpl<T, mode, RegTensor<ActualT, RegTraitNumTwo>>(
         subTraitTwoDstReg, subTraitTwoSrcReg0, subTraitTwoSrcReg1, maskTrait2);
-    B32TraitTwoToTaitOne(dstReg, subTraitTwoDstReg);
+    B32TraitTwoToTraitOne(dstReg, subTraitTwoDstReg);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
@@ -331,10 +331,10 @@ __simd_callee__ inline void MulComplex32OnetraitImpl(U& dstReg, U& srcReg0, U& s
     RegTensor<ActualT, RegTraitNumTwo> mulTraitTwoSrcReg1;
     RegTensor<ActualT, RegTraitNumTwo> mulTraitTwoDstReg;
 
-    B32TraitOneToTaitTwo(mulTraitTwoSrcReg0, srcReg0);
-    B32TraitOneToTaitTwo(mulTraitTwoSrcReg1, srcReg1);
+    B32TraitOneToTraitTwo(mulTraitTwoSrcReg0, srcReg0);
+    B32TraitOneToTraitTwo(mulTraitTwoSrcReg1, srcReg1);
     MulComplex32TwoImpl(mulTraitTwoDstReg, mulTraitTwoSrcReg0, mulTraitTwoSrcReg1, maskTrait2);
-    B32TraitTwoToTaitOne(dstReg, mulTraitTwoDstReg);
+    B32TraitTwoToTraitOne(dstReg, mulTraitTwoDstReg);
 }
 
 template <typename T = DefaultType, MaskMergeMode mode = MaskMergeMode::ZEROING, typename U>
@@ -383,9 +383,9 @@ __simd_callee__ inline void AbsUsingS32(T& dstReg, T& srcReg0, MaskReg& mask)
 }
 
 template <typename T>
-__simd_callee__ inline void VbrUsingU32(T& dstReg, uint32_t highScalr, uint32_t lowScalar)
+__simd_callee__ inline void VbrUsingU32(T& dstReg, uint32_t highScalar, uint32_t lowScalar)
 {
-    vbr((RegTensor<uint32_t>&)dstReg.reg[0], highScalr);
+    vbr((RegTensor<uint32_t>&)dstReg.reg[0], highScalar);
     vbr((RegTensor<uint32_t>&)dstReg.reg[1], lowScalar);
 }
 
@@ -831,10 +831,10 @@ __simd_callee__ inline void DivComplex32OnetraitImpl(U& dstReg, U& srcReg0, U& s
     RegTensor<ActualT, RegTraitNumTwo> divTraitTwoSrcReg1;
     RegTensor<ActualT, RegTraitNumTwo> divTraitTwoDstReg;
 
-    B32TraitOneToTaitTwo(divTraitTwoSrcReg0, srcReg0);
-    B32TraitOneToTaitTwo(divTraitTwoSrcReg1, srcReg1);
+    B32TraitOneToTraitTwo(divTraitTwoSrcReg0, srcReg0);
+    B32TraitOneToTraitTwo(divTraitTwoSrcReg1, srcReg1);
     DivComplex32TwoImpl(divTraitTwoDstReg, divTraitTwoSrcReg0, divTraitTwoSrcReg1, maskTrait2);
-    B32TraitTwoToTaitOne(dstReg, divTraitTwoDstReg);
+    B32TraitTwoToTraitOne(dstReg, divTraitTwoDstReg);
 }
 
 template <typename T = DefaultType, auto mode = MaskMergeMode::ZEROING, typename U>
@@ -947,9 +947,9 @@ __simd_callee__ inline void DivIEEE754FloatImpl(RegTensor<float>& dst, RegTensor
 
     MaskReg mask0;
     MaskReg maskSrc0Normal;
-    MaskReg maskSrc0Subormal;
+    MaskReg maskSrc0Subnormal;
     MaskReg maskSrc1Normal;
-    MaskReg maskSrc1Subormal;
+    MaskReg maskSrc1Subnormal;
     MaskReg maskTmp;
     MaskReg maskNan; // divisor or dividend 0
     MaskReg maskInf; // divisor or dividend inf
@@ -993,16 +993,16 @@ __simd_callee__ inline void DivIEEE754FloatImpl(RegTensor<float>& dst, RegTensor
 
     // normalize subnormal elements of src0
     // get positions of subnormal numbers in dividend
-    Compare<float, CMPMODE::LT>(maskSrc0Subormal, src0Abs, maxSubnormal, mask);
+    Compare<float, CMPMODE::LT>(maskSrc0Subnormal, src0Abs, maxSubnormal, mask);
     // negating for normal positions
-    MaskNot(maskSrc0Normal, maskSrc0Subormal, mask);
+    MaskNot(maskSrc0Normal, maskSrc0Subnormal, mask);
     // normalizatoin
-    Muls(src0Subnormal, src0, normalizeScaleEnlarge.f, maskSrc0Subormal);
+    Muls(src0Subnormal, src0, normalizeScaleEnlarge.f, maskSrc0Subnormal);
 
     // normalize subnormal elements of src1
-    Compare<float, CMPMODE::LT>(maskSrc1Subormal, src1Abs, maxSubnormal, mask);
-    MaskNot(maskSrc1Normal, maskSrc1Subormal, mask);
-    Muls(src1Subnormal, src1, normalizeScaleEnlarge.f, maskSrc1Subormal);
+    Compare<float, CMPMODE::LT>(maskSrc1Subnormal, src1Abs, maxSubnormal, mask);
+    MaskNot(maskSrc1Normal, maskSrc1Subnormal, mask);
+    Muls(src1Subnormal, src1, normalizeScaleEnlarge.f, maskSrc1Subnormal);
 
     // merge the normalized subnormal elements with normal elements
     Select(src0All, src0, src0Subnormal, maskSrc0Normal);
@@ -1032,13 +1032,13 @@ __simd_callee__ inline void DivIEEE754FloatImpl(RegTensor<float>& dst, RegTensor
     }
 
     // subnormal dividend, normal divisor
-    MaskAnd(mask0, maskSrc0Subormal, maskSrc1Normal, mask);
+    MaskAnd(mask0, maskSrc0Subnormal, maskSrc1Normal, mask);
     // normalization compensation
     Muls(z1, dst, normalizeScaleReduce.f, mask0);
     Select(dst, z1, dst, mask0);
 
     // normal dividend, subnormal divisor
-    MaskAnd(mask0, maskSrc0Normal, maskSrc1Subormal, mask);
+    MaskAnd(mask0, maskSrc0Normal, maskSrc1Subnormal, mask);
     // normalization compensation
     Muls(z1, dst, normalizeScaleEnlarge.f, mask0);
     // merge the compensated result
@@ -1168,9 +1168,9 @@ __simd_callee__ inline void DivIEEE754HalfImpl(RegTensor<half>& dst, RegTensor<h
 
     MaskReg mask0;
     MaskReg maskSrc0Normal;
-    MaskReg maskSrc0Subormal;
+    MaskReg maskSrc0Subnormal;
     MaskReg maskSrc1Normal;
-    MaskReg maskSrc1Subormal;
+    MaskReg maskSrc1Subnormal;
     MaskReg maskTmp;
     MaskReg maskNan; // divisor or dividend 0
     MaskReg maskInf; // divisor or dividend inf
@@ -1214,16 +1214,16 @@ __simd_callee__ inline void DivIEEE754HalfImpl(RegTensor<half>& dst, RegTensor<h
 
     // normalize subnormal elements of src0
     // get positions of subnormal numbers in dividend
-    Compare<half, CMPMODE::LT>(maskSrc0Subormal, src0Abs, maxSubnormal, mask);
+    Compare<half, CMPMODE::LT>(maskSrc0Subnormal, src0Abs, maxSubnormal, mask);
     // negating for normal positions
-    MaskNot(maskSrc0Normal, maskSrc0Subormal, mask);
+    MaskNot(maskSrc0Normal, maskSrc0Subnormal, mask);
     // normalizatoin
-    Muls(src0Subnormal, src0, normalizeScaleEnlarge.f, maskSrc0Subormal);
+    Muls(src0Subnormal, src0, normalizeScaleEnlarge.f, maskSrc0Subnormal);
 
     // normalize subnormal elements of src1
-    Compare<half, CMPMODE::LT>(maskSrc1Subormal, src1Abs, maxSubnormal, mask);
-    MaskNot(maskSrc1Normal, maskSrc1Subormal, mask);
-    Muls(src1Subnormal, src1, normalizeScaleEnlarge.f, maskSrc1Subormal);
+    Compare<half, CMPMODE::LT>(maskSrc1Subnormal, src1Abs, maxSubnormal, mask);
+    MaskNot(maskSrc1Normal, maskSrc1Subnormal, mask);
+    Muls(src1Subnormal, src1, normalizeScaleEnlarge.f, maskSrc1Subnormal);
 
     // merge the normalized subnormal elements with normal elements
     Select(src0All, src0, src0Subnormal, maskSrc0Normal);
@@ -1249,13 +1249,13 @@ __simd_callee__ inline void DivIEEE754HalfImpl(RegTensor<half>& dst, RegTensor<h
     vdiv(dst, src0Norm, src1Norm, mask, modeValue);
 
     // subnormal dividend, normal divisor
-    MaskAnd(mask0, maskSrc0Subormal, maskSrc1Normal, mask);
+    MaskAnd(mask0, maskSrc0Subnormal, maskSrc1Normal, mask);
     // normalization compensation
     Muls(z1, dst, normalizeScaleReduce.f, mask0);
     Select(dst, z1, dst, mask0);
 
     // normal dividend, subnormal divisor
-    MaskAnd(mask0, maskSrc0Normal, maskSrc1Subormal, mask);
+    MaskAnd(mask0, maskSrc0Normal, maskSrc1Subnormal, mask);
     // normalization compensation
     Muls(z1, dst, normalizeScaleEnlarge.f, mask0);
     // merge the compensated result
@@ -1431,14 +1431,14 @@ __simd_callee__ inline void MaxOperator(U& dstReg, U& srcReg0, U& srcReg1, MaskR
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoTmpReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             MaskReg selMask;
             Compare<ActualT, CMPMODE::GT>(selMask, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             Select(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, selMask);
             Duplicate(traitTwoTmpReg, static_cast<ActualT>(0));
             Select(traitTwoDstReg, traitTwoDstReg, traitTwoTmpReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
         U tmpReg;
@@ -1483,14 +1483,14 @@ __simd_callee__ inline void MinOperator(U& dstReg, U& srcReg0, U& srcReg1, MaskR
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoTmpReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             MaskReg selMask;
             Compare<ActualT, CMPMODE::LT>(selMask, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             Select(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, selMask);
             Duplicate(traitTwoTmpReg, static_cast<ActualT>(0));
             Select(traitTwoDstReg, traitTwoDstReg, traitTwoTmpReg, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
         U tmpReg;
@@ -1577,10 +1577,10 @@ __simd_callee__ inline void ShiftLeftImpl(S& dstReg, S& srcReg0, V& srcReg1, Mas
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0, traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             ShiftLeftB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg0, (RegTensor<int32_t>&)traitTwoSrcReg1, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
             S dstTemp;
             ShiftLeftB64Impl<mode>(dstTemp, srcReg0, (RegTensor<int32_t>&)srcReg1, mask);
@@ -1646,10 +1646,10 @@ __simd_callee__ inline void ShiftRightImpl(S& dstReg, S& srcReg0, V& srcReg1, Ma
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0, traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             ShiftRightB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg0, (RegTensor<int32_t>&)traitTwoSrcReg1, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<S, RegTraitNumTwo>()) {
             S dstTemp;
             ShiftRightB64Impl<mode>(dstTemp, srcReg0, (RegTensor<int32_t>&)srcReg1, mask);
@@ -1699,10 +1699,10 @@ __simd_callee__ inline void AndImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& 
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             AndB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             AndB64Impl<mode>(dstTemp, srcReg0, srcReg1, mask);
@@ -1752,10 +1752,10 @@ __simd_callee__ inline void OrImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& m
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             OrB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             OrB64Impl<mode>(dstTemp, srcReg0, srcReg1, mask);
@@ -1805,10 +1805,10 @@ __simd_callee__ inline void XorImpl(U& dstReg, U& srcReg0, U& srcReg1, MaskReg& 
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
             XorB64Impl<mode>(traitTwoDstReg, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             U dstTemp;
             XorB64Impl<mode>(dstTemp, srcReg0, srcReg1, mask);
@@ -1855,13 +1855,13 @@ __simd_callee__ inline void MulAddDstImpl(U& dstReg, U& srcReg0, U& srcReg1, Mas
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg1;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg0);
-            B64TraitOneToTaitTwo(traitTwoSrcReg1, srcReg1);
-            B64TraitOneToTaitTwo(traitTwoDstReg, dstReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg0);
+            B64TraitOneToTraitTwo(traitTwoSrcReg1, srcReg1);
+            B64TraitOneToTraitTwo(traitTwoDstReg, dstReg);
             Mul(traitTwoDstTmpReg, traitTwoSrcReg0, traitTwoSrcReg1, maskTrait2);
             Add(traitTwoDstReg, traitTwoDstTmpReg, traitTwoDstReg, maskTrait2);
 
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr (CheckRegTrait<U, RegTraitNumTwo>()) {
             Mul(traitTwoDstTmpReg, srcReg0, srcReg1, mask);
             Add(dstReg, traitTwoDstTmpReg, dstReg, mask);

@@ -25,10 +25,10 @@ TCubeTiling结构体包含Matmul Tiling切分算法的相关参数，被传递�
 <td class="cellrowborder" valign="top" width="8.309999999999999%" headers="mcps1.2.4.1.2 "><p id="p1889915586561"><a name="p1889915586561"></a><a name="p1889915586561"></a>int</p>
 </td>
 <td class="cellrowborder" valign="top" width="76.61%" headers="mcps1.2.4.1.3 "><p id="p198991658115617"><a name="p198991658115617"></a><a name="p198991658115617"></a>A、B、C矩阵原始输入的shape大小，以元素为单位。M, Ka为A矩阵原始输入的Shape，Kb, N为B矩阵原始输入的Shape。</p>
-<a name="ul649113422368"></a><a name="ul649113422368"></a><ul id="ul649113422368"><li>大小约束<div class="p" id="p359955915916"><a name="p359955915916"></a><a name="p359955915916"></a>下述场景需要使能MatmulConfig中的<a href="MatmulConfig.md#p13786349422">intrinsicsCheck</a>参数，以完成Matmul计算。<a name="ul11644191013411"></a><a name="ul11644191013411"></a><ul id="ul11644191013411"><li>若A矩阵为ND格式，不进行转置，Ka大于65535时需要使能intrinsicsCheck参数，M无大小限制；进行转置，M大于65535时需要使能intrinsicsCheck参数，Ka无大小限制。</li><li>若B矩阵为ND格式，不进行转置，N大于65535时需要使能intrinsicsCheck参数，Kb无大小限制；进行转置，Kb大于65535时需要使能intrinsicsCheck参数，N无大小限制。</li></ul>
+<a name="ul649113422368"></a><a name="ul649113422368"></a><ul id="ul649113422368"><li>大小约束<div class="p" id="p359955915916"><a name="p359955915916"></a><a name="p359955915916"></a>除<span id="ph166474141701"><a name="ph166474141701"></a><a name="ph166474141701"></a>Ascend 950PR/Ascend 950DT</span>外，下述场景需要使能MatmulConfig中的<a href="MatmulConfig.md#p13786349422">intrinsicsCheck</a>参数，以完成Matmul计算。<a name="ul11644191013411"></a><a name="ul11644191013411"></a><ul id="ul11644191013411"><li>若A矩阵为ND格式，不进行转置，Ka大于65535时需要使能intrinsicsCheck参数，M无大小限制；进行转置，M大于65535时需要使能intrinsicsCheck参数，Ka无大小限制。</li><li>若B矩阵为ND格式，不进行转置，N大于65535时需要使能intrinsicsCheck参数，Kb无大小限制；进行转置，Kb大于65535时需要使能intrinsicsCheck参数，N无大小限制。</li></ul>
 </div>
 </li><li>对齐约束<a name="ul1055914453710"></a><a name="ul1055914453710"></a><ul id="ul1055914453710"><li>若A矩阵以NZ格式输入，则M需要以16个元素对齐，Ka需要以C0_size对齐；若B矩阵以NZ格式输入，Kb需要以C0_size对齐，N需要以16个元素对齐。</li><li>若A、B矩阵为ND格式，无对齐约束。</li></ul>
-<p id="p182910378520"><a name="p182910378520"></a><a name="p182910378520"></a><strong id="b164651949135214"><a name="b164651949135214"></a><a name="b164651949135214"></a>注意：</strong>NZ格式的输入，float数据类型的C0_size为8，half/bfloat16_t数据类型的C0_size为16，int8_t数据类型的C0_size为32，int4b_t数据类型的C0_size为64。</p>
+<p id="p182910378520"><a name="p182910378520"></a><a name="p182910378520"></a><strong id="b164651949135214"><a name="b164651949135214"></a><a name="b164651949135214"></a>注意：</strong>NZ格式的输入，float数据类型的C0_size为8，half/bfloat16_t数据类型的C0_size为16，int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t数据类型的C0_size为32，int4b_t/fp4x2_e2m1_t/fp4x2_e1m2_t数据类型的C0_size为64。</p>
 </li></ul>
 </td>
 </tr>
@@ -39,7 +39,7 @@ TCubeTiling结构体包含Matmul Tiling切分算法的相关参数，被传递�
 <td class="cellrowborder" valign="top" width="76.61%" headers="mcps1.2.4.1.3 "><p id="p6154454164619"><a name="p6154454164619"></a><a name="p6154454164619"></a>A、B、C矩阵单核内shape大小，以元素为单位。该参数取值必须大于0。</p>
 <p id="p1154854114616"><a name="p1154854114616"></a><a name="p1154854114616"></a>singleCoreK = K，多核处理时不对K进行切分；singleCoreM &lt;= M；singleCoreN &lt;= N。</p>
 <p id="p1815415545463"><a name="p1815415545463"></a><a name="p1815415545463"></a><strong id="b15489103520172"><a name="b15489103520172"></a><a name="b15489103520172"></a>注意</strong>：若A矩阵以NZ格式输入，则singleCoreM需要以16个元素对齐，singleCoreK需要以C0_size * fractal_num对齐；若B矩阵以NZ格式输入，则singleCoreK需要以C0_size * fractal_num对齐，singleCoreN需要以16个元素对齐。</p>
-<p id="p115435418463"><a name="p115435418463"></a><a name="p115435418463"></a>NZ格式的输入，half/bfloat16_t数据类型的C0_size为16，fractal_num为1，float数据类型的C0_size为8，fractal_num为2，int8_t数据类型的C0_size为32，fractal_num为1，int4b_t数据类型的C0_size为64，fractal_num为1。其中，fractal_num表示为满足计算中的对齐要求需要的C0_size个数。</p>
+<p id="p115435418463"><a name="p115435418463"></a><a name="p115435418463"></a>NZ格式的输入，half/bfloat16_t数据类型的C0_size为16，fractal_num为1，float数据类型的C0_size为8，fractal_num为2，int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t数据类型的C0_size为32，fractal_num为1，int4b_t/fp4x2_e2m1_t/fp4x2_e1m2_t数据类型的C0_size为64，fractal_num为1。其中，fractal_num表示为满足计算中的对齐要求需要的C0_size个数。</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="15.079999999999998%" headers="mcps1.2.4.1.1 "><p id="p17899165811566"><a name="p17899165811566"></a><a name="p17899165811566"></a>baseM, baseN, baseK</p>
@@ -48,7 +48,7 @@ TCubeTiling结构体包含Matmul Tiling切分算法的相关参数，被传递�
 </td>
 <td class="cellrowborder" valign="top" width="76.61%" headers="mcps1.2.4.1.3 "><p id="p6650125471110"><a name="p6650125471110"></a><a name="p6650125471110"></a>A、B、C矩阵参与一次矩阵乘指令的shape大小，以元素为单位。</p>
 <p id="p7900105816569"><a name="p7900105816569"></a><a name="p7900105816569"></a>A、B、C矩阵参与一次矩阵乘的shape大小需要按分形对齐，其含义请参考<a href="Mmad.md">Mmad</a>中的数据格式说明。</p>
-<p id="p18764185218271"><a name="p18764185218271"></a><a name="p18764185218271"></a><strong id="b16145148296"><a name="b16145148296"></a><a name="b16145148296"></a>注意：</strong>该参数取值必须大于0。</p>
+<p id="p18764185218271"><a name="p18764185218271"></a><a name="p18764185218271"></a><strong id="b16145148296"><a name="b16145148296"></a><a name="b16145148296"></a>注意：</strong>该参数取值必须大于0。MxMatmul场景，baseK必须为64的倍数。</p>
 </td>
 </tr>
 <tr id="row12649134314567"><td class="cellrowborder" valign="top" width="15.079999999999998%" headers="mcps1.2.4.1.1 "><p id="p490012584566"><a name="p490012584566"></a><a name="p490012584566"></a>depthA1, depthB1</p>
@@ -162,6 +162,16 @@ TCubeTiling结构体包含Matmul Tiling切分算法的相关参数，被传递�
 <td class="cellrowborder" valign="top" width="76.61%" headers="mcps1.2.4.1.3 "><p id="p171307421531"><a name="p171307421531"></a><a name="p171307421531"></a>该参数预留，开发者无需关注。</p>
 </td>
 </tr>
+<tr id="row1464747139"><td class="cellrowborder" valign="top" width="15.079999999999998%" headers="mcps1.2.4.1.1 "><p id="p194641647938"><a name="p194641647938"></a><a name="p194641647938"></a>mxTypePara</p>
+</td>
+<td class="cellrowborder" valign="top" width="8.309999999999999%" headers="mcps1.2.4.1.2 "><p id="p54647471537"><a name="p54647471537"></a><a name="p54647471537"></a>int</p>
+</td>
+<td class="cellrowborder" valign="top" width="76.61%" headers="mcps1.2.4.1.3 "><p id="p157933526912"><a name="p157933526912"></a><a name="p157933526912"></a>组合参数，在MxMatmul场景使用 ，表示scaleA/scaleB载入L1的大小与A/B矩阵载入L1大小的倍数，具体如下：</p>
+<a name="ul587817175385"></a><a name="ul587817175385"></a><ul id="ul587817175385"><li>0~6bit表示scaleA与A矩阵在K方向载入数据量的比例系数，scaleFactorKa，即scaleFactorKa=scaleA在K方向载入数据量/A矩阵在K方向载入数据量，数据范围为[1, 127]；</li><li>8~14bit表示scaleB与B矩阵在K方向载入数据量的比例系数，scaleFactorKb，即scaleFactorKb=scaleB在K方向载入数据量/B矩阵在K方向载入数据量，数据范围为[1, 127]；</li><li>16~22bit表示scaleA与A矩阵在M方向载入数据量的比例系数，scaleFactorM，即scaleFactorM=scaleA在M方向载入数据量/A矩阵在M方向载入数据量，数据范围为[1, 127]；</li><li>24~30bit表示scaleB与B矩阵在N方向载入数据量的比例系数，scaleFactorN，即scaleFactorN=scaleB在N方向载入数据量/B矩阵在N方向载入数据量，数据范围为[1, 127]；</li></ul>
+<p id="p458918471366"><a name="p458918471366"></a><a name="p458918471366"></a>注意：</p>
+<a name="ul1582962810398"></a><a name="ul1582962810398"></a><ul id="ul1582962810398"><li>对于scaleA矩阵，仅当Ka方向全载时，支持使能M方向的多倍载入。即baseK * stepKa * scaleFactorKa &gt;= singleCoreK时，才能设置scaleFactorM为大于1的取值。</li><li>对于scaleB矩阵，仅当Kb方向全载时，支持使能N方向的多倍载入。即baseK * stepKb * scaleFactorKb &gt;= singleCoreK时，才能设置scaleFactorN为大于1的取值。</li><li>scaleA、scaleB在M、N、K方向的载入数据量不能超过实际大小。</li><li>该参数仅在MDL模板生效。</li></ul>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -230,14 +240,21 @@ TCubeTiling结构体包含Matmul Tiling切分算法的相关参数，被传递�
     </div>
     </td>
     <td class="cellrowborder" valign="top" width="39.09%" headers="mcps1.2.3.1.2 "><p id="p2047419821417"><a name="p2047419821417"></a><a name="p2047419821417"></a>A矩阵、B矩阵和Bias在L1缓存块满足L1 buffer大小限制；</p>
-    <p id="p4767112213712"><a name="p4767112213712"></a><a name="p4767112213712"></a><strong id="b143344328214"><a name="b143344328214"></a><a name="b143344328214"></a>注意：</strong>float数据类型的C0_size为8，half/bfloat16_t数据类型的C0_size为16，int8_t数据类型的C0_size为32，int4b_t数据类型的C0_size为64。</p>
+    <p id="p4767112213712"><a name="p4767112213712"></a><a name="p4767112213712"></a><strong id="b143344328214"><a name="b143344328214"></a><a name="b143344328214"></a>注意：</strong>float数据类型的C0_size为8，half/bfloat16_t数据类型的C0_size为16，int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t数据类型的C0_size为32，int4b_t/fp4x2_e2m1_t/fp4x2_e1m2_t数据类型的C0_size为64。</p>
     </td>
     </tr>
     <tr id="row25793104147"><td class="cellrowborder" valign="top" width="60.91%" headers="mcps1.2.3.1.1 "><p id="p1496513306143"><a name="p1496513306143"></a><a name="p1496513306143"></a>baseM * baseK, baseK * baseN和baseM * baseN按照NZ格式的分形对齐</p>
     </td>
     <td class="cellrowborder" valign="top" width="39.09%" headers="mcps1.2.3.1.2 "><p id="p1579710111417"><a name="p1579710111417"></a><a name="p1579710111417"></a>A矩阵、B矩阵、C矩阵的base块需要满足对齐约束：</p>
     <a name="ul02397128219"></a><a name="ul02397128219"></a><ul id="ul02397128219"><li>baseM和baseN需要以16个元素对齐；A矩阵非转置且B矩阵转置场景，baseK需要以C0_size对齐；其余场景（A矩阵转置或B矩阵非转置场景），baseK以16个元素对齐；</li></ul>
-    <p id="p123912122213"><a name="p123912122213"></a><a name="p123912122213"></a><strong id="b14239512224"><a name="b14239512224"></a><a name="b14239512224"></a>注意：</strong>float/int32_t数据类型的C0_size为8，half/bfloat16_t数据类型的C0_size为16，int8_t数据类型的C0_size为32，int4b_t数据类型的C0_size为64。</p>
+    <p id="p123912122213"><a name="p123912122213"></a><a name="p123912122213"></a><strong id="b14239512224"><a name="b14239512224"></a><a name="b14239512224"></a>注意：</strong>float/int32_t数据类型的C0_size为8，half/bfloat16_t数据类型的C0_size为16，int8_t/fp8_e4m3fn_t/fp8_e5m2_t/hifloat8_t数据类型的C0_size为32，int4b_t/fp4x2_e2m1_t/fp4x2_e1m2_t数据类型的C0_size为64。</p>
+    </td>
+    </tr>
+    <tr id="row7204716162516"><td class="cellrowborder" valign="top" width="60.91%" headers="mcps1.2.3.1.1 "><p id="p1477216333352"><a name="p1477216333352"></a><a name="p1477216333352"></a>MxMatmul场景，如果A与B矩阵的位置同时为GM，对singleCoreK没有特殊限制，在这种情况下，若scaleA和scaleB的K方向大小（即Ceil(singleCoreK, 32)）为奇数，用户需自行在scaleA和scaleB的K方向补0至偶数；对于其它A、B矩阵逻辑位置的组合情况，即A与B矩阵的位置不同时为GM，singleCoreK以32个元素向上对齐后的数值必须是32的偶数倍；</p>
+    <p id="p542513380355"><a name="p542513380355"></a><a name="p542513380355"></a>输入数据类型为fp4x2_e2m1_t/fp4x2_e1m2_t时，内轴必须为偶数。</p>
+    </td>
+    <td class="cellrowborder" valign="top" width="39.09%" headers="mcps1.2.3.1.2 "><p id="p16264723163518"><a name="p16264723163518"></a><a name="p16264723163518"></a>scaleA/scaleB的数据类型是fp8_e8m0_t，K方向必须2字节连续，scaleA/scaleB的K方向是A/B矩阵K的1/32；A与B矩阵的位置不同时为GM时，singleCoreK以32个元素向上对齐后的数值，必须是32的偶数倍。</p>
+    <p id="p4610152911425"><a name="p4610152911425"></a><a name="p4610152911425"></a>在MxMatmul场景，输入数据类型为fp4x2_e2m1_t/fp4x2_e1m2_t，计算时的最小单元为8字节，需要将2个4字节的元素拼成一个8字节进行计算，内轴必须为偶数。</p>
     </td>
     </tr>
     </tbody>

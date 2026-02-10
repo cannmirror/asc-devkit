@@ -48,7 +48,7 @@ private:
         bool ans = ((para.abRec - 1.0 / para.abLength > -CHECK_WELFINAL_FLOAT_RTOL) &&
             (para.abRec - 1.0 / para.abLength < CHECK_WELFINAL_FLOAT_RTOL));
         ASCENDC_ASSERT((ans || HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
-            "[WelfordFinalize] The para.abRec is %f, should be equant to 1 / para.abLength, para.abLength is %u.",
+            "[WelfordFinalize] The para.abRec is %f, should be equal to 1 / para.abLength, para.abLength is %u.",
             para.abRec, para.abLength); });
         ASCENDC_ASSERT((para.abLength * sizeof(float) % ONE_BLK_SIZE == 0 || HighLevelAPIParametersPrint), { KERNEL_LOG(KERNEL_ERROR,
             "[WelfordFinalize] The para.abLength is %u, should be an integral multiple of 32/sizeof(float).",

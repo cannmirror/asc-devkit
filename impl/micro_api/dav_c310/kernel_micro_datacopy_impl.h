@@ -100,8 +100,8 @@ __simd_callee__ inline void DataCopyGatherBImpl(U& dstReg, __ubuf__ T* baseAddr,
     using ActualIndexT = typename S::ActualT;
     static_assert(std::is_same_v<T, DefaultType> || std::is_same_v<T, ActualT>, "T type is not correct!");
     static_assert(std::is_same_v<ActualIndexT, uint32_t>, "IndexT type is not correct!");
-    static_assert(CheckRegTrait<U, RegTraitNumOne>(), "RegTensor only suppoort RegTraitNumOne on current device!");
-    static_assert(CheckRegTrait<S, RegTraitNumOne>(), "RegTensor only suppoort RegTraitNumOne on current device!");
+    static_assert(CheckRegTrait<U, RegTraitNumOne>(), "RegTensor only support RegTraitNumOne on current device!");
+    static_assert(CheckRegTrait<S, RegTraitNumOne>(), "RegTensor only support RegTraitNumOne on current device!");
     static_assert(SupportBytes<ActualT, 1, 2, 4, 8>(),
                   "GatherB only support src & dst datatype b8/b16/b32/b64 on current device");
     if constexpr (sizeof(ActualT) == 1) {

@@ -49,7 +49,7 @@ __aicore__ inline bfloat16_t Cast(const float& fVal)
         return GetScalarBitcodeValue<uint16_t, bfloat16_t>(u16Num);
     }
     uint32_t expFp = ((u32Val) & FP32_EXP_PART_MASK) >> fp32ManLen;
-    uint32_t manFp = (u32Val & FP32_MAN_PART_MASK); // 23 bit mantissa dont't need to care about denormal
+    uint32_t manFp = (u32Val & FP32_MAN_PART_MASK); // 23 bit mantissa don't need to care about denormal
     manFp = (manFp | fp32ManHideBit);
 
     constexpr uint32_t mLenDelta = fp32ManLen - bf16ManLen;
@@ -72,6 +72,7 @@ __aicore__ inline bfloat16_t Cast(const float& fVal)
     return GetScalarBitcodeValue<uint16_t, bfloat16_t>(u16Num);
 }
 
+// ToBfloat16 has been updated, please use Cast instead.
 __aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
 {
     return Cast(fVal);
@@ -112,6 +113,7 @@ __aicore__ constexpr inline float Cast(const T& bVal)
     return fNum;
 }
 
+// ToFloat has been updated, please use Cast instead.
 template <typename T>
 __aicore__ constexpr inline float ToFloat(const T& bVal)
 {
@@ -138,6 +140,7 @@ __aicore__ inline bfloat16_t Cast(const float& fVal)
     return bf16Union.bNum;
 }
 
+// ToBfloat16 has been updated, please use Cast instead.
 __aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
 {
     return Cast(fVal);
@@ -161,6 +164,7 @@ __aicore__ inline float Cast(const bfloat16_t& bVal)
     return floatUnion.fNum;
 }
 
+// ToFloat has been updated, please use Cast instead.
 __aicore__ inline float ToFloat(const bfloat16_t& bVal)
 {
     return Cast(bVal);
@@ -174,6 +178,7 @@ __aicore__ constexpr inline float Cast(const T& bVal)
     return 0.0f;
 }
 
+// ToFloat has been updated, please use Cast instead.
 template <typename T>
 __aicore__ constexpr inline float ToFloat(const T& bVal)
 {
@@ -188,6 +193,7 @@ __aicore__ inline bfloat16_t Cast(const float& fVal)
     return bNum;
 }
 
+// ToBfloat16 has been updated, please use Cast instead.
 __aicore__ inline bfloat16_t ToBfloat16(const float& fVal)
 {
     ASCENDC_ASSERT((false), { KERNEL_LOG(KERNEL_ERROR, "unsupport ToBfloat"); });

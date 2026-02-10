@@ -72,5 +72,5 @@ else
     fi
 fi
 
-log "[INFO] Successfully deteled $vendor_name."
+log "[INFO] Successfully deleted $vendor_name."
 exit 0

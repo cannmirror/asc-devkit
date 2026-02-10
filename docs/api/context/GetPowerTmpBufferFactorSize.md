@@ -86,7 +86,7 @@ void GetPowerTmpBufferFactorSize(const bool baseIsTensor, const bool expIsTensor
 
 ## 调用示例<a name="section85671420193420"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 uint32_t maxLiveNodeCount = 0;

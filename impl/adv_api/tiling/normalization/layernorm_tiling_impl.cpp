@@ -27,7 +27,7 @@ constexpr uint32_t LAYERNORM_TWO_TIMES = 2;
 constexpr uint32_t LAYERNORM_ONE_BLK_SIZE = 32;
 constexpr uint32_t LAYERNORM_ONE_BLK_SHIFT_AMOUNT = 5;
 constexpr uint32_t LAYERNORM_ONE_NUMBER = 1;
-constexpr uint32_t LAYERNOR_ZERO_NUMBER = 0;
+constexpr uint32_t LAYERNORM_ZERO_NUMBER = 0;
 constexpr float LAYERNOR_LAST_DIM_INIT_VALUE = 1.0;
 constexpr uint32_t WEL_UP_REP_SIZE = 256;
 constexpr uint32_t WEL_UP_FLOAT_SIZE = 256 / sizeof(float);
@@ -109,14 +109,14 @@ void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stac
     }
 
     constexpr uint32_t oneBlockNum = LAYERNORM_ONE_BLK_SIZE / LAYERNORM_SIZEOF_FLOAT;
-    constexpr uint32_t meanTmpTensorPos = LAYERNOR_ZERO_NUMBER;
+    constexpr uint32_t meanTmpTensorPos = LAYERNORM_ZERO_NUMBER;
     const uint32_t meanTmpTensorSize = (meanVarSize + oneBlockNum - LAYERNORM_ONE_NUMBER) / oneBlockNum * oneBlockNum;
     const uint32_t varianceTmpTensorPos = meanTmpTensorSize;
     const uint32_t varianceTmpTensorSize = meanTmpTensorSize;
 
     uint32_t meanVarTotalSize = meanTmpTensorSize + varianceTmpTensorSize;
     if (typeSize == LAYERNORM_SIZEOF_FLOAT) {
-        meanVarTotalSize = LAYERNOR_ZERO_NUMBER;
+        meanVarTotalSize = LAYERNORM_ZERO_NUMBER;
     }
 
     const uint32_t tmpBufSize = stackBufferSize / LAYERNORM_SIZEOF_FLOAT;
@@ -129,7 +129,7 @@ void GetLayerNormNDTilingInfoImpl(const ge::Shape& srcShape, const uint32_t stac
         oneTmpSize = inputXSize;
     }
 
-    if (oneTmpSize == LAYERNOR_ZERO_NUMBER) {
+    if (oneTmpSize == LAYERNORM_ZERO_NUMBER) {
         return;
     }
 
@@ -359,7 +359,7 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
         uint32_t numberOfTmpBuf = LAYERNORM_TWO_TIMES;
     
         constexpr uint32_t oneBlockNum = LAYERNORM_ONE_BLK_SIZE / LAYERNORM_SIZEOF_FLOAT;
-        constexpr uint32_t varianceTmpTensorPos = LAYERNOR_ZERO_NUMBER;
+        constexpr uint32_t varianceTmpTensorPos = LAYERNORM_ZERO_NUMBER;
         const uint32_t varianceTmpTensorSize = (meanVarSize + oneBlockNum - LAYERNORM_ONE_NUMBER) / oneBlockNum * oneBlockNum;
     
         const uint32_t tmpBufSize = stackBufferSize / LAYERNORM_SIZEOF_FLOAT;
@@ -371,7 +371,7 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
             oneTmpSize = inputXSize;
         }
     
-        if (oneTmpSize == LAYERNOR_ZERO_NUMBER) {
+        if (oneTmpSize == LAYERNORM_ZERO_NUMBER) {
             return;
         }
     

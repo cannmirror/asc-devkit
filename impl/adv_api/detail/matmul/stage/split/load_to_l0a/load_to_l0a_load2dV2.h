@@ -90,7 +90,7 @@ private:
             uint64_t dstAddrStride = CeilAlign(madM, ALIGN_NUM) * ONE_BLK_SIZE;
             loadDataParams.mStep = M_STEP_MIN_VAL_B8;
             uint16_t oriMstartPos = loadDataParams.mStartPosition;
-            // K aixs is m direction, and M aixs is k direction in load2dv2 intrin
+            // K axis is m direction, and M axis is k direction in load2dv2 intrin
             for (uint16_t idx = 0; idx < l0ALoop; ++idx) {
                 loadDataParams.mStartPosition = oriMstartPos + M_STEP_MIN_VAL_B8 * idx;
                 LoadData(dst[dstOffset], aMatrix, loadDataParams);
@@ -104,7 +104,7 @@ private:
             uint64_t dstAddrStride = CeilAlign(madM, ALIGN_NUM) * ONE_BLK_SIZE * 2;
             loadDataParams.mStep = M_STEP_MIN_VAL_B4;
             uint16_t oriMstartPos = loadDataParams.mStartPosition;
-            // K aixs is m direction, and M aixs is k direction in load2dv2 intrin
+            // K axis is m direction, and M axis is k direction in load2dv2 intrin
             for (uint16_t idx = 0; idx < l0ALoop; ++idx) {
                 loadDataParams.mStartPosition = oriMstartPos + M_STEP_MIN_VAL_B4 * idx;
                 LoadData(dst[dstOffset], aMatrix, loadDataParams);

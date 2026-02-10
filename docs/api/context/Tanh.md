@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -46,14 +51,14 @@
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const TanhConfig& config = DEFAULT_TANH_CONFIG>
         __aicore__ inline void Tanh(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const TanhConfig& config = DEFAULT_TANH_CONFIG>
         __aicore__ inline void Tanh(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
         ```
 
@@ -62,14 +67,14 @@
     -   源操作数Tensor全部/部分参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const TanhConfig& config = DEFAULT_TANH_CONFIG>
         __aicore__ inline void Tanh(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor, const uint32_t calCount)
         ```
 
     -   源操作数Tensor全部参与计算
 
         ```
-        template <typename T, bool isReuseSource = false>
+        template <typename T, bool isReuseSource = false, const TanhConfig& config = DEFAULT_TANH_CONFIG>
         __aicore__ inline void Tanh(const LocalTensor<T>& dstTensor, const LocalTensor<T>& srcTensor)
         ```
 
@@ -94,6 +99,7 @@
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+<p id="p2010815466345"><a name="p2010815466345"></a><a name="p2010815466345"></a><span id="ph910804683414"><a name="ph910804683414"></a><a name="ph910804683414"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：half、float。</p>
 <p id="p44574117347"><a name="p44574117347"></a><a name="p44574117347"></a><span id="ph545114114349"><a name="ph545114114349"></a><a name="ph545114114349"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p10451541143416"><a name="p10451541143416"></a><a name="p10451541143416"></a><span id="ph3453419348"><a name="ph3453419348"></a><a name="ph3453419348"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p6325357255"><a name="p6325357255"></a><a name="p6325357255"></a><span id="ph1435713361879"><a name="ph1435713361879"></a><a name="ph1435713361879"></a>Kirin X90</span>，支持的数据类型为：half、float。</p>
@@ -105,8 +111,25 @@
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p98212044172612"><a name="p98212044172612"></a><a name="p98212044172612"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
 </td>
 </tr>
+<tr id="row93715712348"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p2381075340"><a name="p2381075340"></a><a name="p2381075340"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p63862020193115"><a name="p63862020193115"></a><a name="p63862020193115"></a>Tanh算法的相关配置。此参数可选配，TanhConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<div class="p" id="p8824319548"><a name="p8824319548"></a><a name="p8824319548"></a>algo：Tanh内部实现使用的算法。TanhAlgo类型，支持的取值如下：<a name="ul81121913307"></a><a name="ul81121913307"></a><ul id="ul81121913307"><li>INTRINSIC：默认值。该算法直接计算公式y = (e^(2x)-1)/(e^(2x)+1)，性能更好。</li><li>SUBSECTION_COMPENSATION：该算法通过误差补偿实现Tanh，精度更高。</li></ul>
+</div>
+</td>
+</tr>
 </tbody>
 </table>
+
+```
+struct TanhConfig {
+  TanhAlgo algo = TanhAlgo::INTRINSIC;
+}
+enum class TanhAlgo {
+  INTRINSIC = 0;
+  SUBSECTION_COMPENSATION;
+}
+```
 
 **表 2**  接口参数说明
 
@@ -168,7 +191,7 @@
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 AscendC::TPipe pipe;
@@ -177,6 +200,9 @@ pipe.InitBuffer(tmpQue, 1, bufferSize);  // bufferSize 通过Host侧tiling参数
 AscendC::LocalTensor<uint8_t> sharedTmpBuffer = tmpQue.AllocTensor<uint8_t>();
 // 输入tensor长度为1024, 算子输入的数据类型为half，实际计算个数为512
 AscendC::Tanh(dstLocal, srcLocal, sharedTmpBuffer, 512);
+static constexpr AscendC::TanhAlgo algo = AscendC::TanhAlgo::SUBSECTION_COMPENSATION;
+static constexpr AscendC::TanhConfig config = { algo };
+AscendC::Tanh<half, false, config>(dstLocal, srcLocal, sharedTmpBuffer, 512);
 ```
 
 结果示例如下：

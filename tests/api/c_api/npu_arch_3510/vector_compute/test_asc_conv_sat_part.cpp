@@ -40,7 +40,7 @@ TEST_F(TestVectorCompute##class_name##_##c_api_name##_##dst_type##src_type##CApi
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 
-// ==========asc_float2hif8_rh/rna)==========
+// ==========(asc_float2hif8_rh/rna)==========
 TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rh, vcvt, vector_hifloat8_t, vector_float);
 TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rh_sat, vcvt, vector_hifloat8_t, vector_float);
 TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rh_sat_v2, vcvt, vector_hifloat8_t, vector_float);
@@ -57,3 +57,12 @@ TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rna_sat_v3, vcvt,
 TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rna_v3, vcvt, vector_hifloat8_t, vector_float);
 TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rna_sat_v4, vcvt, vector_hifloat8_t, vector_float);
 TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2hif8_rna_v4, vcvt, vector_hifloat8_t, vector_float);
+// ==========(asc_float2e4m3_rn)==========
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_sat, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_sat_v2, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_v2, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_sat_v3, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_v3, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_sat_v4, vcvt, vector_fp8_e4m3fn_t, vector_float);
+TEST_VECTOR_COMPUTE_VCONV_SAT_PART(ASCFLOATHIF, asc_float2e4m3_rn_v4, vcvt, vector_fp8_e4m3fn_t, vector_float);

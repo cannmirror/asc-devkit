@@ -51,10 +51,10 @@ __simd_vf__ inline void UnAlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
     uint32_t regBlockElementCnt = CUBE_MAX_SIZE / sizeof(T);
     uint32_t regBlockCntPerRow = padTiling.srcWidth / regBlockElementCnt;
 
-    MicroAPI::MaskReg leftPadask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
-    SetLeftPadMask<T>(leftPadask, padParams.leftPad);
-    MicroAPI::MaskReg rightPadask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
-    SetRightPadMask<T>(rightPadask, padTiling.srcOriWidth - regBlockCntPerRow * regBlockElementCnt, padParams.rightPad);
+    MicroAPI::MaskReg leftPadMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
+    SetLeftPadMask<T>(leftPadMask, padParams.leftPad);
+    MicroAPI::MaskReg rightPadMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
+    SetRightPadMask<T>(rightPadMask, padTiling.srcOriWidth - regBlockCntPerRow * regBlockElementCnt, padParams.rightPad);
 
     uint32_t lastRegBlockPerRowCopyOutCnt = lastRegBlockPerRowElementCnt + padParams.rightPad;
 
@@ -64,7 +64,7 @@ __simd_vf__ inline void UnAlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
         MicroAPI::UnalignReg unalignRegCpyIn;
         MicroAPI::UnalignReg unalignRegCpyOut;
 
-        MicroAPI::Duplicate<T, MicroAPI::MaskMergeMode::MERGING>(regT, static_cast<T>(padParams.padValue), leftPadask);
+        MicroAPI::Duplicate<T, MicroAPI::MaskMergeMode::MERGING>(regT, static_cast<T>(padParams.padValue), leftPadMask);
         MicroAPI::StoreUnAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
             dstStartPerBlock, regT, unalignRegCpyOut, padParams.leftPad);
 
@@ -81,7 +81,7 @@ __simd_vf__ inline void UnAlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
         MicroAPI::LoadUnAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
             regT, unalignRegCpyIn, srcStartPerBlock, lastRegBlockPerRowElementCnt);
 
-        MicroAPI::Duplicate<T, MicroAPI::MaskMergeMode::MERGING>(regT, static_cast<T>(padParams.padValue), rightPadask);
+        MicroAPI::Duplicate<T, MicroAPI::MaskMergeMode::MERGING>(regT, static_cast<T>(padParams.padValue), rightPadMask);
 
         MicroAPI::StoreUnAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
             dstStartPerBlock, regT, unalignRegCpyOut, lastRegBlockPerRowCopyOutCnt);
@@ -107,8 +107,8 @@ __simd_vf__ inline void AlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
     MicroAPI::MaskReg regBlockPerRowCopyOutMask = MicroAPI::UpdateMask<T>(regBlockElementCntForMask);
     MicroAPI::MaskReg lastRegBlockPerRowCopyOutMask = MicroAPI::UpdateMask<T>(lastRegBlockPerRowElementCntForMask);
 
-    MicroAPI::MaskReg rightPadask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
-    SetRightPadMask<T>(rightPadask, tiling.srcOriWidth - regBlockCntPerRow * regBlockElementCnt, padParams.rightPad);
+    MicroAPI::MaskReg rightPadMask = MicroAPI::CreateMask<T, MicroAPI::MaskPattern::ALLF>();
+    SetRightPadMask<T>(rightPadMask, tiling.srcOriWidth - regBlockCntPerRow * regBlockElementCnt, padParams.rightPad);
 
     __ubuf__ T* srcStartPerBlock = srcUb;
     __ubuf__ T* dstStartPerBlock = dstUb;
@@ -123,7 +123,7 @@ __simd_vf__ inline void AlignedPad(__ubuf__ T* dstUb, __ubuf__ T* srcUb,
 
         MicroAPI::LoadAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
             regT, srcStartPerBlock, lastRegBlockPerRowElementCnt);
-        MicroAPI::Duplicate<T, MicroAPI::MaskMergeMode::MERGING>(regT, static_cast<T>(padParams.padValue), rightPadask);
+        MicroAPI::Duplicate<T, MicroAPI::MaskMergeMode::MERGING>(regT, static_cast<T>(padParams.padValue), rightPadMask);
         MicroAPI::StoreAlign<T, MicroAPI::PostLiteral::POST_MODE_UPDATE>(
             dstStartPerBlock, regT, lastRegBlockPerRowElementCnt, lastRegBlockPerRowCopyOutMask);
     }

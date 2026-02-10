@@ -8,3 +8,5 @@ RTC是Ascend C运行时编译库，通过aclrtc接口，在程序运行时，将
 #include "acl/acl_rt_compile.h"
 ```
 
+需要链接的库文件：libacl\_rtc.so。
+

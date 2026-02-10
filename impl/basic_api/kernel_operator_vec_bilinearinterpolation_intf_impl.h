@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_BILINEARINTERPOLATION_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_check.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_bilinearinterpolation_impl.h"
@@ -70,6 +71,10 @@ __aicore__ inline void BilinearInterpolation(const LocalTensor<T> &dst, const Lo
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBilinearInterpolationInfo(dst, src0, src0Offset, src1, mask, hRepeat,
+    repeatMode, dstBlkStride, vROffset, vRepeat, sharedTmpBuffer, "BilinearInterpolation");
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncBilinearInterpolation(dst, src0, src0Offset, src1, mask, hRepeat, repeatMode,
         dstBlkStride, vROffset, vRepeat, "BilinearInterpolation")) {
@@ -87,6 +92,10 @@ __aicore__ inline void BilinearInterpolation(const LocalTensor<T> &dst, const Lo
     bool repeatMode, uint16_t dstBlkStride, uint16_t vROffset, uint8_t vRepeat,
     const LocalTensor<uint8_t> &sharedTmpBuffer)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBilinearInterpolationInfo(dst, src0, src0Offset, src1, mask[0], mask[1], hRepeat,
+    repeatMode, dstBlkStride, vROffset, vRepeat, sharedTmpBuffer, "BilinearInterpolation");
+#endif
 #if ASCENDC_CPU_DEBUG
     if (!CheckFuncBilinearInterpolation(dst, src0, src0Offset, src1, mask, hRepeat, repeatMode,
         dstBlkStride, vROffset, vRepeat, "BilinearInterpolation")) {

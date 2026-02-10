@@ -123,8 +123,8 @@ void GetWelfordFinalizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t t
         uint32_t minTmpsize = 0;
         AscendC::GetWelfordFinalizeMaxMinTmpSize(srcShape, 4, false, maxTmpsize, minTmpsize);
     
-        
-        
+        // auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+        // AscendC::GetWelfordFinalizeMaxMinTmpSize(srcShape, 4, false, ascendcPlatform, maxTmpsize, minTmpsize);
         ... // 其他逻辑
         context->SetTilingKey(1);
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());

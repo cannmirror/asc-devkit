@@ -49,7 +49,7 @@ def copy_dir(src_dir, dst_dir, exclude_dir=None):
     try:
         src_dir, dst_dir = map(lambda x: os.path.abspath(x), [src_dir, dst_dir])
         if not os.path.isdir(src_dir):
-            raise NotADirectoryError(f"kernel src dir not exits: {src_dir}")
+            raise NotADirectoryError(f"kernel src dir not exists: {src_dir}")
         if exclude_dir is not None and is_subdirectory(exclude_dir, src_dir):
             warnings.warn(
                 f"\n[Warning]: Copy Warning, src_dir include dst_dir."
@@ -66,7 +66,7 @@ def copy_dir(src_dir, dst_dir, exclude_dir=None):
                 src_item = os.path.abspath(os.path.join(dir_path, item))
                 dst_item = os.path.abspath(os.path.join(dst_dir, dir_path.replace(src_dir, "."), item))
                 if os.path.islink(src_item):
-                    raise ValueError(f"unsport soft link file, please check it. {os.path.abspath(src_item)}")
+                    raise ValueError(f"unsupport soft link file, please check it. {os.path.abspath(src_item)}")
                 elif os.path.isdir(src_item):
                     continue
                 if not check_file_extension(src_item, ["", ".txt", ".h", ".hpp", ".cpp", ".c"]):
@@ -87,11 +87,11 @@ def copy_file(src_file, dst_file):
         os.makedirs(os.path.dirname(dst_file), exist_ok=True)
         if (not src_file.endswith(".txt")) and (not os.path.exists(dst_file)):
             if os.path.islink(src_file):
-                raise ValueError(f"unsport soft link file, please check it. {os.path.abspath(src_file)}")
+                raise ValueError(f"unsupport soft link file, please check it. {os.path.abspath(src_file)}")
             elif os.path.isfile(src_file):
                 shutil.copy2(src_file, dst_file)
             else:
-                raise TypeError(f"undefind type : {os.path.abspath(src_file)}")
+                raise TypeError(f"undefined type : {os.path.abspath(src_file)}")
     except Exception as e:
         raise RuntimeError("copy kernel file failed: {}".format(e))
 

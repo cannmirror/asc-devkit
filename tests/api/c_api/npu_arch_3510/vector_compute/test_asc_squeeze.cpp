@@ -18,3 +18,8 @@ TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_uint32_t);
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_int32_t);
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_half);
 TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_float);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_bfloat16_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_hifloat8_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_fp8_e4m3fn_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_fp8_e5m2_t);
+TEST_VECTOR_COMPUTE_UNARY_INSTR(Squeeze, asc_squeeze, vsqz, vector_fp8_e8m0_t);

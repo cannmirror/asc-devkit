@@ -32,13 +32,13 @@
 namespace AscendC {
 namespace Std {
 
-constexpr uint32_t ASCENDC_STD_TUPLE_STACK_DEEP = 64;
+constexpr uint32_t ASCENDC_STD_TUPLE_STACK_DEPTH = 64;
 
 template <size_t N = 0, typename ...Tps>
 ASCENDC_HOST_AICORE inline void tuple_static_assert()
 {
-    static_assert(N < ASCENDC_STD_TUPLE_STACK_DEEP, "Index overflow. The index must be smaller than 64!");
-    static_assert(sizeof...(Tps) <= ASCENDC_STD_TUPLE_STACK_DEEP, "The number of template elements must be <= 64!");
+    static_assert(N < ASCENDC_STD_TUPLE_STACK_DEPTH, "Index overflow. The index must be smaller than 64!");
+    static_assert(sizeof...(Tps) <= ASCENDC_STD_TUPLE_STACK_DEPTH, "The number of template elements must be <= 64!");
 }
 
 template <typename ...Tps>

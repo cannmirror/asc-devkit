@@ -44,7 +44,7 @@ int64_t GetTiling(AscendC::tiling::TCubeTiling &tiling)
 
 ## 约束说明<a name="section633mcpsimp"></a>
 
-在Tiling计算失败的场景，若需查看Tiling计算失败的原因，请将日志级别设置为WARNING级别，并在日志中搜索关键字“MatmulApi Tiling”。
+在Tiling计算失败的场景，若需查看Tiling计算失败的原因，请将日志级别设置为WARNING级别，并在日志中搜索关键字“MatmulApi Tiling”。在Tiling计算成功的场景，若需查看Tiling结构体的参数值，请将日志级别设置为INFO级别，并在日志中搜索关键字“MatmulTiling”。
 
 ## 调用示例<a name="section1665082013318"></a>
 

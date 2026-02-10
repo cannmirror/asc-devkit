@@ -16,7 +16,7 @@
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
 |   ├── l2_cache_optimizer.h    // L2Cache切分算法实现函数
-│   └── matmul.asc              // Ascend C算子实现 & 调用样例
+│   └── matmul_l2cache.asc              // Ascend C算子实现 & 调用样例
 ```
 ## 算子描述
 - 算子功能： 
@@ -40,7 +40,7 @@
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td>
   <td align="center">(30720, 1024)</td><td align="center">float16</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_l2cache_custom</td></tr>
   </table>
 - 算子实现： 
   - Kernel实现

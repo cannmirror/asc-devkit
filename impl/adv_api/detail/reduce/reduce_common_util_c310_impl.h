@@ -40,9 +40,9 @@ enum class ReduceType {
 
 constexpr uint16_t BASE_FOLD = 4;
 constexpr uint16_t BASE_FOLD_B64 = 3;
-constexpr uint16_t FLOD_THREE = 3;
-constexpr uint16_t FLOD_TWO = 2;
-constexpr uint16_t FLOD_ONE = 1;
+constexpr uint16_t FOLD_THREE = 3;
+constexpr uint16_t FOLD_TWO = 2;
+constexpr uint16_t FOLD_ONE = 1;
 constexpr uint32_t U16_STRIDE = 65535;
 constexpr uint16_t REGULAR_FOLD_NUM = 2;
 constexpr uint16_t NO_REUSE_FOLD_NUM = 2;

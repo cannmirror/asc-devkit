@@ -41,7 +41,7 @@ int32_t SetAType(TPosition pos, CubeFormat type, DataType dataType, bool isTrans
 </td>
 <td class="cellrowborder" valign="top" width="12%" headers="mcps1.2.4.1.2 "><p id="p149341231195917"><a name="p149341231195917"></a><a name="p149341231195917"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.00999999999999%" headers="mcps1.2.4.1.3 "><p id="p13232439505"><a name="p13232439505"></a><a name="p13232439505"></a>A矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_BFLOAT16/DataType::DT_INT8/DataType::DT_INT4。</p>
+<td class="cellrowborder" valign="top" width="73.00999999999999%" headers="mcps1.2.4.1.3 "><p id="p13232439505"><a name="p13232439505"></a><a name="p13232439505"></a>A矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_BFLOAT16/DataType::DT_INT8/DataType::DT_INT4/DataType::DT_FLOAT8_E4M3FN/DataType::DT_FLOAT8_E5M2/DataType::DT_HIFLOAT8。</p>
 </td>
 </tr>
 <tr id="row17121826135920"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p2934103115919"><a name="p2934103115919"></a><a name="p2934103115919"></a>isTrans</p>

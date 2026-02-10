@@ -11,7 +11,7 @@
 #ifndef IMPL_CAPI_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_SHIFT_LEFT_SCALAR_IMPL_H
 #define IMPL_CAPI_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_SHIFT_LEFT_SCALAR_IMPL_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
+#include "instr_impl/npu_arch_3510/utils_impl.h"
 
 __simd_callee__ inline void asc_shift_left_scalar_impl(vector_uint8_t& dst, vector_uint8_t src, int16_t scalar, vector_bool mask)
 {

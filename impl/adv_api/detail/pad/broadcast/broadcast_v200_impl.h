@@ -21,7 +21,7 @@
 namespace AscendC {
 template <typename T>
 __aicore__ inline void GetAlignLoopNumbers200(const uint32_t firstDim, const uint32_t numBlocks, uint32_t tmpBufferSize,
-    uint32_t &oneRepeateSize, uint32_t &rangeM, uint32_t &tailM)
+    uint32_t &oneRepeatSize, uint32_t &rangeM, uint32_t &tailM)
 {
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
     tmpBufferSize -= oneBlockElementNum;
@@ -32,9 +32,9 @@ __aicore__ inline void GetAlignLoopNumbers200(const uint32_t firstDim, const uin
         KERNEL_LOG(
             KERNEL_ERROR, "tmpBufferSize %u should bigger than minTmpBufferSize %u!", tmpBufferSize, minTmpBufferSize);
     });
-    oneRepeateSize = tmpBufferSize / minTmpBufferSize * oneBlockElementNum;
-    rangeM = firstDim / oneRepeateSize;
-    tailM = firstDim - oneRepeateSize * rangeM;
+    oneRepeatSize = tmpBufferSize / minTmpBufferSize * oneBlockElementNum;
+    rangeM = firstDim / oneRepeatSize;
+    tailM = firstDim - oneRepeatSize * rangeM;
 }
 
 template <typename T>
@@ -77,21 +77,21 @@ __aicore__ inline void TwoDimBroadCastLastDim(const LocalTensor<T> &dstLocal, co
     }
 
     if (firstDim * sizeof(T) % ONE_BLK_SIZE == 0) {
-        uint32_t oneRepeateSize = 0;
+        uint32_t oneRepeatSize = 0;
         uint32_t rangeM = 0;
         uint32_t tailM = 0;
         uint32_t dstLocalOffset = 0;
         uint32_t srcLocalOffset = 0;
-        GetAlignLoopNumbers200<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeateSize, rangeM, tailM);
+        GetAlignLoopNumbers200<T>(firstDim, numBlocks, tmpBuffer.GetSize(), oneRepeatSize, rangeM, tailM);
         for (uint32_t i = 0; i < rangeM; i++) {
             TwoDimBroadCastLastDimAlign200<T, isReuseSource>(dstLocal[dstLocalOffset],
                 srcLocal[srcLocalOffset],
                 zeroTemp,
                 tmpBuffer[blockSize],
-                oneRepeateSize,
+                oneRepeatSize,
                 numBlocks);
-            dstLocalOffset += oneRepeateSize * numBlocks;
-            srcLocalOffset += oneRepeateSize;
+            dstLocalOffset += oneRepeatSize * numBlocks;
+            srcLocalOffset += oneRepeatSize;
         }
 
         if (tailM != 0) {

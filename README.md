@@ -68,7 +68,7 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
   | 文档  |  说明   |
   |---------|--------|
   |[API列表](./docs/api/README.md)|Ascend C API列表。|
-  |[API贡献指南](./docs/asc_api_contributing.md)|介绍如何扩展或开发Ascend C API。|
+  |[API贡献指南](CONTRIBUTING.md)|介绍如何扩展或开发Ascend C API。|
 
 - 算子开发
   | 文档  |  说明   |

@@ -303,8 +303,20 @@ __aicore__ inline __inout_pipe__(S) void GetReduceRepeatMaxMinSpr(T &maxMinValue
 template <typename T>
 __aicore__ inline __inout_pipe__(S) void GetReduceRepeatMaxMinSpr(T &maxMinValue);
 
+// GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.
+template <typename T>
+__aicore__ inline __inout_pipe__(S) void GetReduceMaxMinCount(T &maxMinValue, T &maxMinIndex);
+
+// GetReduceMaxMinCount has been updated, please use GetReduceRepeatMaxMinSpr instead.
+template <typename T>
+__aicore__ inline __inout_pipe__(S) void GetReduceMaxMinCount(T &maxMinValue);
+
 template <typename T>
 __aicore__ inline __inout_pipe__(S) T GetReduceRepeatSumSpr();
+
+// GetAccVal has been updated, please use GetReduceRepeatSumSpr instead.
+template <typename T>
+__aicore__ inline __inout_pipe__(S) T GetAccVal();
 } // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_vec_reduce_intf_impl.h"

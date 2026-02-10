@@ -25,9 +25,9 @@ namespace {
 constexpr uint32_t SWIGLU_HALF_TMP_SIZE = 6;
 constexpr uint32_t SWIGLU_FLOAT_TMP_SIZE = 0;
 constexpr uint32_t SWIGLU_ONE_REPEAT_BYTE_SIZE = 256;
-static constexpr uint32_t SWI_GELU_HALF_SIEZ = 2;
-static constexpr uint32_t SWI_GELU_FLOAT_SIEZ = 4;
-static const std::set<uint32_t> SUPPORT_TYPESIZE = { SWI_GELU_HALF_SIEZ, SWI_GELU_FLOAT_SIEZ };
+static constexpr uint32_t SWI_GELU_HALF_SIZE = 2;
+static constexpr uint32_t SWI_GELU_FLOAT_SIZE = 4;
+static const std::set<uint32_t> SUPPORT_TYPESIZE = { SWI_GELU_HALF_SIZE, SWI_GELU_FLOAT_SIZE };
 static constexpr const char SWI_GELU_GET_MAX_MIN[] = "GetSwiGLUMaxMinTmpSize";
 static constexpr const char SWI_GELU_GET_TMP_BUFFER[] = "GetSwiGLUTmpBufferFactorSize";
 

@@ -324,7 +324,7 @@ def gen_all_soc_config(all_path):
     return True
 
 
-def args_prase():
+def args_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p',
                         '--path',
@@ -357,7 +357,7 @@ def args_prase():
 
 
 def main():
-    args = args_prase()
+    args = args_parse()
     if args.out is None:
         out_dir = args.path
     else:

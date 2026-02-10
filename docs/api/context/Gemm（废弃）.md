@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p173073381243"><a name="p173073381243"></a><a name="p173073381243"></a>x</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>x</p>
 </td>
@@ -409,138 +414,4 @@
 
 -   参数m，k，n可以不是16对齐，但因硬件原因，操作数dst，Src0Local和Src1Local的shape需满足对齐要求，即m方向，n方向要求向上16对齐，k方向根据操作数数据类型按16或32向上对齐。
 -   操作数地址对齐要求请参见[通用地址对齐约束](通用说明和约束.md#section796754519912)。
-
-## 调用示例<a name="section642mcpsimp"></a>
-
-本示例中，左矩阵形状为\[m,k\]，右矩阵形状为\[k,n\]，计算结果搬出至GM，目的矩阵无需初始化。
-
-```
-#include "kernel_operator.h"
-
-class KernelCubeGEMM {
-public:
-    __aicore__ inline KernelCubeGEMM() {}
-    __aicore__ inline void Init(__gm__ uint8_t* fmGm, __gm__ uint8_t* weGm, __gm__ uint8_t* dstGm, uint32_t mInput,
-        uint32_t kInput, uint32_t nInput, bool initVal, AscendC::LoopMode mode)
-    {
-        m = mInput;
-        k = kInput;
-        n = nInput;
-
-        initValue = initVal;
-        loopMode = mode;
-
-        featureMapA1Size = m * k;
-        weightA1Size = k * n;
-        dstCO1Size = m * n;
-
-        roundm = AscendC::DivCeil(m, 16) * 16;
-        roundn = AscendC::DivCeil(n, 16) * 16;
-        roundk = AscendC::DivCeil(k, c0Size) * c0Size;
-
-        fmGlobal.SetGlobalBuffer((__gm__ half*)fmGm);
-        weGlobal.SetGlobalBuffer((__gm__ half*)weGm);
-        dstGlobal.SetGlobalBuffer((__gm__ float*)dstGm);
-
-        pipe.InitBuffer(inQueueFmA1, 1, featureMapA1Size * sizeof(half));
-        pipe.InitBuffer(inQueueWeB1, 1, weightA1Size * sizeof(half));
-        pipe.InitBuffer(outQueueCO1, 1, dstCO1Size * sizeof(float));
-        pipe.InitBuffer(outQueueUB, 1, dstCO1Size * sizeof(float));
-    }
-    __aicore__ inline void Process()
-    {
-        CopyIn();
-        Compute();
-        CopyUB();
-        CopyOut();
-    }
-
-private:
-    __aicore__ inline void CopyIn()
-    {
-        AscendC::LocalTensor<half> featureMapA1 = inQueueFmA1.AllocTensor<half>();
-        AscendC::LocalTensor<half> weightB1 = inQueueWeB1.AllocTensor<half>();
-
-        AscendC::DataCopy(featureMapA1, fmGlobal, featureMapA1Size);
-        AscendC::DataCopy(weightB1, weGlobal, weightA1Size);
-
-        inQueueFmA1.EnQue(featureMapA1);
-        inQueueWeB1.EnQue(weightB1);
-    }
-
-    __aicore__ inline void Compute()
-    {
-        AscendC::LocalTensor<half> featureMapA1 = inQueueFmA1.DeQue<half>();
-        AscendC::LocalTensor<half> weightB1 = inQueueWeB1.DeQue<half>();
-        AscendC::LocalTensor<float> dstCO1 = outQueueCO1.AllocTensor<float>();
-
-        AscendC::GemmTiling tilling = GetGemmTiling<half>(m, k, n);
-        tilling.loopMode = loopMode;
-        // 左矩阵形状为[m,k],右矩阵形状为[k,n]，计算结果搬出至GM，目的矩阵无需初始化
-        AscendC::Gemm(dstCO1, featureMapA1, weightB1, m, k, n, tilling, false, initValue);
-
-        outQueueCO1.EnQue<float>(dstCO1);
-        inQueueFmA1.FreeTensor(featureMapA1);
-        inQueueWeB1.FreeTensor(weightB1);
-    }
-
-    __aicore__ inline void CopyUB()
-    {
-        AscendC::LocalTensor<float> dstCO1 = outQueueCO1.DeQue<float>();
-        AscendC::LocalTensor<float> dstUB = outQueueUB.AllocTensor<float>();
-
-        AscendC::DataCopyParams dataCopyParams;
-        dataCopyParams.blockCount = 1;
-        dataCopyParams.blockLen = roundm * roundn * sizeof(float) / 1024;
-        AscendC::DataCopyEnhancedParams enhancedParams;
-        enhancedParams.blockMode = BlockMode::BLOCK_MODE_MATRIX;
-
-        AscendC::DataCopy(dstUB, dstCO1, dataCopyParams, enhancedParams);
-
-        outQueueUB.EnQue<float>(dstUB);
-        outQueueCO1.FreeTensor(dstCO1);
-    }
-
-    __aicore__ inline void CopyOut()
-    {
-        AscendC::LocalTensor<float> dstUB = outQueueUB.DeQue<float>();
-        AscendC::DataCopy(dstGlobal, dstUB, roundm * roundn);
-        outQueueUB.FreeTensor(dstUB);
-    }
-
-private:
-    AscendC::TPipe pipe;
-    // feature map queue
-    AscendC::TQue<AscendC::TPosition::A1, 1> inQueueFmA1;
-    // weight queue
-    AscendC::TQue<AscendC::TPosition::B1, 1> inQueueWeB1;
-    // dst queue
-    AscendC::TQue<AscendC::TPosition::CO1, 1> outQueueCO1;
-
-    AscendC::TQue<AscendC::TPosition::VECOUT, 1> outQueueUB;
-
-    AscendC::GlobalTensor<half> fmGlobal, weGlobal;
-    AscendC::GlobalTensor<float> dstGlobal;
-
-    uint16_t m;
-    uint16_t k;
-    uint16_t n;
-    uint32_t roundm, roundk, roundn;
-
-    uint32_t c0Size = 16;
-    bool initValue = false;
-    AscendC::LoopMode loopMode = AscendC::LoopMode::MODE_NM;
-
-    uint32_t featureMapA1Size, weightA1Size, dstCO1Size;
-};
-
-extern "C" __global__ __aicore__ void cube_gemm_simple_kernel(__gm__ uint8_t* fmGm, __gm__ uint8_t* weGm,
-    __gm__ uint8_t* dstGm, uint32_t m, uint32_t k, uint32_t n, bool initValue, LoopMode mode)
-{
-    KernelCubeGEMM op;
-    // 上方示例结果入参为：m = 32, k = 64, n = 32, initValue = false, mode = LoopMode::MODE_NM
-    op.Init(fmGm, weGm, dstGm, m, k, n, initValue, mode);
-    op.Process();
-}
-```
 

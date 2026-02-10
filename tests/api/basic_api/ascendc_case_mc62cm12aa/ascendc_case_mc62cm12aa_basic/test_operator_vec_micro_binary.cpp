@@ -112,6 +112,8 @@ private:
             AbsSub(dstLocalX, srcLocalX, srcLocalY, calCount);
         #elif VF == 17
             MulAddRelu(dstLocalX, srcLocalX, srcLocalY, calCount);
+        #elif VF == 18
+            ExpSub(dstLocalX, srcLocalX, srcLocalY, calCount);
         #endif
         #endif
         outQueueX.EnQue<U>(dstLocalX);
@@ -201,7 +203,9 @@ INSTANTIATE_TEST_CASE_P(MicroVecBinaryTestCases, MicroVecBinaryTestSuite,
                       MicroVecBinaryParams { RunCase<half, half, 16>},
                       MicroVecBinaryParams { RunCase<float, float, 16>},
                       MicroVecBinaryParams { RunCase<uint64_t, uint64_t, 17>},
-                      MicroVecBinaryParams { RunCase<int64_t, int64_t, 17>}
+                      MicroVecBinaryParams { RunCase<int64_t, int64_t, 17>},
+                      MicroVecBinaryParams { RunCase<half, float, 18>},
+                      MicroVecBinaryParams { RunCase<float, float, 18>}
                       ));
  
 TEST_P(MicroVecBinaryTestSuite, MicroVecBinaryTestCase)

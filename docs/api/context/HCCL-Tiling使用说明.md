@@ -79,7 +79,7 @@ HCCL Tiling API获取Tiling参数的流程如下：
     </tbody>
     </table>
 
-3.  调用[GetTiling](GetTiling-42.md)接口，获取Tiling信息。
+3.  调用[GetTiling](GetTiling-101.md)接口，获取Tiling信息。
 
     ```
     mc2CcTilingConfig.GetTiling(tiling->mc2InitTiling); // tiling为算子组装的TilingData结构体

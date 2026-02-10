@@ -11,7 +11,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="23.43%" headers="mcps1.1.4.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="22.93%" headers="mcps1.1.4.1.3 "><p id="p1441038173417"><a name="p1441038173417"></a><a name="p1441038173417"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="23.43%" headers="mcps1.1.4.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -58,7 +65,7 @@
 -   硬同步
 
     ```
-    template <bool isAIVOnly = true>
+    template <bool isAIVOnly = true, const SyncAllConfig& config = DEFAULT_SYNC_ALL_CONFIG>
     __aicore__ inline void SyncAll()
     ```
 
@@ -77,6 +84,15 @@
 </td>
 <td class="cellrowborder" valign="top" width="86.57000000000001%" headers="mcps1.2.3.1.2 "><p id="p6912194943411"><a name="p6912194943411"></a><a name="p6912194943411"></a>控制SyncAll作用于纯Vector算子或融合（Cube和Vector融合）算子。可选值：</p>
 <a name="ul1034511561784"></a><a name="ul1034511561784"></a><ul id="ul1034511561784"><li><strong id="b891244983410"><a name="b891244983410"></a><a name="b891244983410"></a>true</strong>（默认值）：纯Vector算子的全核同步，仅执行Vector核的全核同步。</li><li><strong id="b79121249133420"><a name="b79121249133420"></a><a name="b79121249133420"></a>false</strong>：融合算子的全核同步，先分别完成Vector核和Cube核的全核同步，再执行两者之间的同步（软同步接口不支持此功能）。</li></ul>
+</td>
+</tr>
+<tr id="row47986408408"><td class="cellrowborder" valign="top" width="13.43%" headers="mcps1.2.3.1.1 "><p id="p18798194094017"><a name="p18798194094017"></a><a name="p18798194094017"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="86.57000000000001%" headers="mcps1.2.3.1.2 "><p id="p479815400409"><a name="p479815400409"></a><a name="p479815400409"></a>控制SyncAll函数的行为 ，在多个AI Core之间进行流水线同步时，指定哪些管道（pipe）用于触发和等待。</p>
+<a name="ul047327174317"></a><a name="ul047327174317"></a><ul id="ul047327174317"><li><strong id="b7762111519458"><a name="b7762111519458"></a><a name="b7762111519458"></a>triggerPipe</strong>：指定哪个管道用于“发送触发信号”。</li><li><strong id="b1849919164510"><a name="b1849919164510"></a><a name="b1849919164510"></a>waitPipe</strong>：指定哪个管道用于“接收等待信号”。</li></ul>
+<p id="p16336151565418"><a name="p16336151565418"></a><a name="p16336151565418"></a>默认为SyncAllConfig  DEFAULT_SYNC_ALL_CONFIG= {PIPE_ALL, PIPE_ALL} ，使用全部管道来进行触发和等待行为。</p>
+<p id="p141061754195214"><a name="p141061754195214"></a><a name="p141061754195214"></a>该参数仅支持如下型号：</p>
+<p id="p468305719192"><a name="p468305719192"></a><a name="p468305719192"></a><span id="ph126252025205"><a name="ph126252025205"></a><a name="ph126252025205"></a>Ascend 950PR/Ascend 950DT</span></p>
 </td>
 </tr>
 </tbody>
@@ -116,7 +132,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="12.591259125912593%" headers="mcps1.2.4.1.2 "><p id="p131012372711"><a name="p131012372711"></a><a name="p131012372711"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p15101023102712"><a name="p15101023102712"></a><a name="p15101023102712"></a>指定多少个核之间的同步，传入数值不能超过算子调用时指定的逻辑blockDim。此参数为默认参数，不传此参数表示全核软同步。</p>
+<td class="cellrowborder" valign="top" width="73.74737473747375%" headers="mcps1.2.4.1.3 "><p id="p15101023102712"><a name="p15101023102712"></a><a name="p15101023102712"></a>指定多少个核之间的同步，传入数值不能超过算子调用时指定的逻辑numBlocks。此参数为默认参数，不传此参数表示全核软同步。</p>
 <p id="p13881143914351"><a name="p13881143914351"></a><a name="p13881143914351"></a>仅在软同步接口中支持，硬同步接口不支持该参数。</p>
 </td>
 </tr>
@@ -134,10 +150,18 @@
     -   在kernel侧初始化的时候对gmWorkspace缓存初始化，需要注意的是，每个核上都需要初始化全部的gmWorkspace缓存空间。
 
 -   ubWorkspace申请的空间大小要求大于等于核数\*32Bytes。
--   使用该接口进行多核控制时，算子调用时指定的逻辑blockDim必须保证不大于实际运行该算子的AI处理器核数，否则框架进行多轮调度时会插入异常同步，导致Kernel“卡死”现象。
+-   使用该接口进行多核控制时，算子调用时指定的逻辑numBlocks必须保证不大于实际运行该算子的AI处理器核数，否则框架进行多轮调度时会插入异常同步，导致Kernel“卡死”现象。
 -   在分离模式下，建议使用硬同步接口而非软同步接口。软同步接口仅适用于纯Vector场景，且性能较低。使用硬同步接口时，需根据场景设置Kernel类型：
     -   在纯Vector/Cube场景下，需设置Kernel类型为KERNEL\_TYPE\_MIX\_AIV\_1\_0或KERNEL\_TYPE\_MIX\_AIC\_1\_0。
     -   对于Vector和Cube混合场景，需根据实际情况灵活配置Kernel类型。
+
+-   使用该接口时，必须通过[SetScheduleMode](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/basicdataapi/atlasopapi_07_00248.html)使能batchmode模式，使算子独占全部所需核资源，否则可能因满足以下条件导致死锁：
+    -   多流并发场景（≥2条执行流）。
+    -   ≥2个算子并发执行。
+    -   所有并发算子的核数总和超过物理核数。
+    -   ≥2个并发算子使用了核间同步功能。
+
+        具体而言，在多流场景下，某条流的核间同步算子虽分配到n个物理核，但可能仅有n-m个核先被调度执行，而其余m个核因被其他流的核间同步算子抢占而尚未启动。先启动的n-m个核执行到核间同步时等待剩余m核完成，而剩余m核因被其他流的核间同步算子占用而无法释放，形成死锁。
 
 ## 调用示例<a name="section642mcpsimp"></a>
 

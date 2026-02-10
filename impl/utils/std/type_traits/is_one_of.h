@@ -28,6 +28,16 @@ struct is_one_of<T, Head, Tail...>
     : Std::conditional_t<Std::is_same_v<T, Head>, Std::true_type, is_one_of<T, Tail...>> {};
 
 template <typename T, typename... Args> inline constexpr bool is_one_of_v = is_one_of<T, Args...>::value;
+
+
+template <typename T, T... Value> struct is_one_of_value : public false_type {};
+
+template <typename T, T Value, T Head, T... Tail>
+struct is_one_of_value<T, Value, Head, Tail...>
+    : Std::conditional_t<Value == Head, Std::true_type, is_one_of_value<T, Value, Tail...>> {};
+
+template <typename T, T... Value> inline constexpr bool is_one_of_value_v = is_one_of_value<T, Value...>::value;
+
 }
 }
 

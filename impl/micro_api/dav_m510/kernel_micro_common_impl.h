@@ -100,14 +100,14 @@ template <MaskMergeMode mode> __aicore__ inline constexpr auto GetMaskMergeMode(
 #endif  // #ifndef __ASC_NPU_HOST__
 
 template <typename T, typename U, typename ShortType>
-__simd_callee__ inline void TraitOneToTaitTwoTmpl(T& dstReg, U& srcReg)
+__simd_callee__ inline void TraitOneToTraitTwoTmpl(T& dstReg, U& srcReg)
 {
     using ActualT1 = typename U::ActualT;
     using ActualT2 = typename T::ActualT;
     static_assert(CheckRegTrait<T, RegTraitNumTwo>() && CheckRegTrait<U, RegTraitNumOne>(),
                   "T should be RegTraitNumTwo and U should be RegTraitNumOne");
     static_assert(sizeof(ActualT2) == (sizeof(ShortType) * 2) && sizeof(ActualT1) == (sizeof(ShortType) * 2),
-                  "T and U should be 2 times of shortType lenth");
+                  "T and U should be 2 times of shortType length");
     RegTensor<ShortType> zeroReg;
     MaskReg maskFull = CreateMask<ShortType, MaskPattern::ALL>();
     Duplicate(zeroReg, 0, maskFull);
@@ -116,14 +116,14 @@ __simd_callee__ inline void TraitOneToTaitTwoTmpl(T& dstReg, U& srcReg)
 }
 
 template <typename T, typename U, typename ShortType>
-__simd_callee__ inline void TraitTwoToTaitOneTmpl(T& dstReg, U& srcReg)
+__simd_callee__ inline void TraitTwoToTraitOneTmpl(T& dstReg, U& srcReg)
 {
     using ActualT1 = typename T::ActualT;
     using ActualT2 = typename U::ActualT;
     static_assert(CheckRegTrait<T, RegTraitNumOne>() && CheckRegTrait<U, RegTraitNumTwo>(),
                   "T should be RegTraitNumOne and U should be RegTraitNumTwo");
     static_assert(sizeof(ActualT2) == (sizeof(ShortType) * 2) && sizeof(ActualT1) == (sizeof(ShortType) * 2),
-                  "U and T should be 2 times of shortType lenth");
+                  "U and T should be 2 times of shortType length");
     RegTensor<ShortType> dstRegShortFake;
     Interleave((RegTensor<ShortType>&)dstReg, dstRegShortFake, (RegTensor<ShortType>&)srcReg.reg[0],
                (RegTensor<ShortType>&)srcReg.reg[1]);
@@ -160,27 +160,27 @@ __simd_callee__ inline void CopyMerging(RegT& dstReg, RegT& srcReg, MaskReg& mas
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void B64TraitOneToTaitTwo(T& dstReg, U& srcReg)
+__simd_callee__ inline void B64TraitOneToTraitTwo(T& dstReg, U& srcReg)
 {
-    TraitOneToTaitTwoTmpl<T, U, uint32_t>(dstReg, srcReg);
+    TraitOneToTraitTwoTmpl<T, U, uint32_t>(dstReg, srcReg);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void B64TraitTwoToTaitOne(T& dstReg, U& srcReg)
+__simd_callee__ inline void B64TraitTwoToTraitOne(T& dstReg, U& srcReg)
 {
-    TraitTwoToTaitOneTmpl<T, U, uint32_t>(dstReg, srcReg);
+    TraitTwoToTraitOneTmpl<T, U, uint32_t>(dstReg, srcReg);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void B32TraitOneToTaitTwo(T& dstReg, U& srcReg)
+__simd_callee__ inline void B32TraitOneToTraitTwo(T& dstReg, U& srcReg)
 {
-    TraitOneToTaitTwoTmpl<T, U, uint16_t>(dstReg, srcReg);
+    TraitOneToTraitTwoTmpl<T, U, uint16_t>(dstReg, srcReg);
 }
 
 template <typename T, typename U>
-__simd_callee__ inline void B32TraitTwoToTaitOne(T& dstReg, U& srcReg)
+__simd_callee__ inline void B32TraitTwoToTraitOne(T& dstReg, U& srcReg)
 {
-    TraitTwoToTaitOneTmpl<T, U, uint16_t>(dstReg, srcReg);
+    TraitTwoToTraitOneTmpl<T, U, uint16_t>(dstReg, srcReg);
 }
 } // namespace MicroAPI
 } // namespace AscendC

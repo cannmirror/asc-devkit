@@ -23,7 +23,7 @@ namespace AscendC {
 namespace Internal {
 constexpr float ATANH_ONE = 1;
 constexpr float ATANH_NEG_ONE = -1;
-constexpr float ATANH_MULS_COSNTANT = 0.5;
+constexpr float ATANH_MULS_CONSTANT = 0.5;
 /*
     atanh = 0.5 * ln((1 + x) / (1 - x))
 */
@@ -51,7 +51,7 @@ __simd_vf__ inline void AtanhImplVF(__ubuf__ T* dst, __ubuf__ T* src, uint32_t c
         MicroAPI::Sub(tmpReg2, dupReg, (MicroAPI::RegTensor<float>&)srcVreg, mask);
         MicroAPI::Div(tmpReg1, tmpReg1, tmpReg2, mask);
         MicroAPI::Ln(tmpReg1, tmpReg1, mask);
-        MicroAPI::Muls((MicroAPI::RegTensor<float>&)dstVreg, tmpReg1, ATANH_MULS_COSNTANT, mask);
+        MicroAPI::Muls((MicroAPI::RegTensor<float>&)dstVreg, tmpReg1, ATANH_MULS_CONSTANT, mask);
         if constexpr (sizeof(T) == sizeof(half)) {
             MicroAPI::Cast<half, float, castTraitB32ToB16>(
                 dstVreg, (MicroAPI::RegTensor<float>&)dstVreg, mask);

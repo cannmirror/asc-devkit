@@ -38,13 +38,25 @@
 #endif // __host_aicore__
 
 #if (_ASCENDC_HAS_BISHENG_COMPILER)
+#ifndef ASCENDC_HOST
 #define ASCENDC_HOST __host__
+#endif
+#ifndef ASCENDC_AICORE
 #define ASCENDC_AICORE __aicore__
+#endif
+#ifndef ASCENDC_HOST_AICORE
 #define ASCENDC_HOST_AICORE __host_aicore__
+#endif
 #else
+#ifndef ASCENDC_HOST
 #define ASCENDC_HOST
+#endif
+#ifndef ASCENDC_AICORE
 #define ASCENDC_AICORE
+#endif
+#ifndef ASCENDC_HOST_AICORE
 #define ASCENDC_HOST_AICORE
+#endif
 #endif
 
 #include "impl/utils/std/type_traits/is_same.h"

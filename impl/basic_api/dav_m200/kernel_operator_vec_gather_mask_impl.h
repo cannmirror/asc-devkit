@@ -21,7 +21,7 @@ __aicore__ inline void GatherMaskImpl(__ubuf__ uint16_t* dst, __ubuf__ uint16_t*
     const uint8_t patternMode, const bool reduceMode, const uint32_t mask, const GatherMaskParams& gatherMaskParams,
     uint64_t& rsvdCnt)
 {
-    // reduceMode false - norm mode, mask shopuld be none
+    // reduceMode false - norm mode, mask should be none
     // reduceMode true - counter mode, src1 should be tensor
     if (reduceMode) {
         SetMaskCount();

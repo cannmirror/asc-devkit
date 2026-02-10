@@ -13,7 +13,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="25.28%" headers="mcps1.1.4.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="21.08%" headers="mcps1.1.4.1.3 "><p id="p10204845184116"><a name="p10204845184116"></a><a name="p10204845184116"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="25.28%" headers="mcps1.1.4.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -207,7 +214,19 @@ ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 </th>
 </tr>
 </thead>
-<tbody><tr id="row5426164114556"><td class="cellrowborder" valign="top" width="11.04%" headers="mcps1.2.4.1.1 "><p id="p44261641165518"><a name="p44261641165518"></a><a name="p44261641165518"></a><span id="ph14504143371016"><a name="ph14504143371016"></a><a name="ph14504143371016"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span></p>
+<tbody><tr id="row156095446519"><td class="cellrowborder" rowspan="2" valign="top" width="11.04%" headers="mcps1.2.4.1.1 "><p id="p11535204114617"><a name="p11535204114617"></a><a name="p11535204114617"></a><span id="ph653514111619"><a name="ph653514111619"></a><a name="ph653514111619"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="24.05%" headers="mcps1.2.4.1.2 "><a name="ul884513177617"></a><a name="ul884513177617"></a><ul id="ul884513177617"><li>GM -&gt; VECIN（GM -&gt; UB）</li></ul>
+</td>
+<td class="cellrowborder" valign="top" width="64.91%" headers="mcps1.2.4.1.3 "><p id="p0272814618"><a name="p0272814618"></a><a name="p0272814618"></a>bool、int8_t、uint8_t、hifloat8_t、fp8_e5m2_t、fp8_e4m3fn_t、fp8_e8m0_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32</p>
+</td>
+</tr>
+<tr id="row1532804818512"><td class="cellrowborder" valign="top" headers="mcps1.2.4.1.1 "><a name="ul15365240612"></a><a name="ul15365240612"></a><ul id="ul15365240612"><li>GM -&gt; A1、B1（GM -&gt; L1 Buffer）</li></ul>
+</td>
+<td class="cellrowborder" valign="top" headers="mcps1.2.4.1.2 "><p id="p22221129269"><a name="p22221129269"></a><a name="p22221129269"></a>bool、int8_t、uint8_t、fp4x2_e2m1_t、fp4x2_e1m2_t、hifloat8_t、fp8_e5m2_t、fp8_e4m3fn_t、fp8_e8m0_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32</p>
+</td>
+</tr>
+<tr id="row5426164114556"><td class="cellrowborder" valign="top" width="11.04%" headers="mcps1.2.4.1.1 "><p id="p44261641165518"><a name="p44261641165518"></a><a name="p44261641165518"></a><span id="ph14504143371016"><a name="ph14504143371016"></a><a name="ph14504143371016"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" valign="top" width="24.05%" headers="mcps1.2.4.1.2 "><a name="ul13726471275"></a><a name="ul13726471275"></a><ul id="ul13726471275"><li>GM -&gt; VECIN（GM -&gt; UB）</li><li>GM -&gt; A1、B1（GM -&gt; L1 Buffer）</li></ul>
 </td>
@@ -249,7 +268,14 @@ ND2NZ转换示意图如下，样例中参数设置值和解释说明如下：
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1691833514564"><td class="cellrowborder" valign="top" width="11.04%" headers="mcps1.2.4.1.1 "><p id="p189191635205617"><a name="p189191635205617"></a><a name="p189191635205617"></a><span id="ph09199351563"><a name="ph09199351563"></a><a name="ph09199351563"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span></p>
+<tbody><tr id="row2761529173511"><td class="cellrowborder" valign="top" width="11.04%" headers="mcps1.2.4.1.1 "><p id="p89153712353"><a name="p89153712353"></a><a name="p89153712353"></a><span id="ph7919377356"><a name="ph7919377356"></a><a name="ph7919377356"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" valign="top" width="24.05%" headers="mcps1.2.4.1.2 "><p id="p16771429123518"><a name="p16771429123518"></a><a name="p16771429123518"></a>VECIN、VECCALC、VECOUT -&gt; TSCM（UB -&gt; L1 Buffer）</p>
+</td>
+<td class="cellrowborder" valign="top" width="64.91%" headers="mcps1.2.4.1.3 "><p id="p8567350105519"><a name="p8567350105519"></a><a name="p8567350105519"></a>bool、int8_t、uint8_t、hifloat8_t、fp8_e5m2_t、fp8_e4m3fn_t、fp8_e8m0_t、int16_t、uint16_t、half、bfloat16_t、int32_t、uint32_t、float、complex32</p>
+</td>
+</tr>
+<tr id="row1691833514564"><td class="cellrowborder" valign="top" width="11.04%" headers="mcps1.2.4.1.1 "><p id="p189191635205617"><a name="p189191635205617"></a><a name="p189191635205617"></a><span id="ph09199351563"><a name="ph09199351563"></a><a name="ph09199351563"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" valign="top" width="24.05%" headers="mcps1.2.4.1.2 "><p id="p1682515325716"><a name="p1682515325716"></a><a name="p1682515325716"></a>VECIN、VECCALC、VECOUT -&gt; TSCM（UB -&gt; L1 Buffer）</p>
 </td>

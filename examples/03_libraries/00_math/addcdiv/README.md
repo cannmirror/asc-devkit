@@ -19,7 +19,7 @@
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── addcdiv_custom.asc      // Ascend C算子实现 & 调用样例
+│   └── addcdiv.asc      // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -40,7 +40,7 @@
   <tr><td align="center">z</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr>  
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">-</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr>  
   <tr><td align="center">attr属性</td><td align="center">value</td><td align="center">\</td><td align="center">float16</td><td align="center">\</td><td align="center">1.0</td></tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">addcdiv_custom</td></tr>  
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">addcdiv</td></tr>  
   </table>
 
 - 算子实现：  

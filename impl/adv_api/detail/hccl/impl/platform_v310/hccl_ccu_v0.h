@@ -103,18 +103,6 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::AlltoAllvWrite(GM_ADDR u
 }
 
 template<const auto &config>
-__aicore__ inline void
-HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::FlushDataCacheForCopy(GM_ADDR gmAddr, uint32_t size)
-{
-    uint32_t offset = 0;
-    for (uint32_t i = 0; i < size; i += MAX_DCCI_CNT) {
-        FlushDataCache((GM_ADDR)(gmAddr + i));
-        offset += MAX_DCCI_CNT;
-    }
-    FlushDataCache((GM_ADDR)(gmAddr + offset));
-}
-
-template<const auto &config>
 __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitWorkingFlag()
 {
     using T = decltype(config);
@@ -172,9 +160,9 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
     }
 
     isInited_ = true;
-    KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner rankId:%d, rankNum:%d, xnAddr:0x%llx, ckeAddr:0x%llx, ccuMsgExt:0x%llx",
+    KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner rankId:%d, rankNum:%d, xnAddr:0x%llx, ckeAddr:0x%llx, ccuMsgExt:0x%llx, algorithmType:%u",
                     hcclContext_->rankId, hcclContext_->rankNum, hcclContext_->xnOffset, hcclContext_->ckeOffset,
-                    reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt));
+                    reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt), hcclContext_->algorithmType);
 }
 
 template<const auto &config>
@@ -229,25 +217,38 @@ template<const auto &config>
 __aicore__ inline void
 HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForOp(const HcclHandle handleId)
 {
-    ccuUsedXnNum_ = 8; // 除alltoallvWrite外其他算法用8个Xn
-    sizeOfXnMsg_ = CCU_XN_DATA_SIZE * ccuUsedXnNum_;
+    ccuUsedXnNum_ = 8; // 算法默认使用的xn num
     FlushDataCache(&handleParamGM_[handleId]);
     if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLGATHER) {
-        CcuPrepareForAllGather(&handleParamGM_[handleId]);
+        if (hcclContext_->algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllGatherMeshMem2Mem1D)) {
+            ccuUsedXnNum_ = 9;
+            CcuPrepareForAllGatherM2M(&handleParamGM_[handleId]);
+        } else {
+            CcuPrepareForAllGather(&handleParamGM_[handleId]);
+        }
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLREDUCE) {
-        CcuPrepareForAllReduce(&handleParamGM_[handleId]);
+        if (hcclContext_->algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D)) {
+            ccuUsedXnNum_ = 15;
+            CcuPrepareForAllReduceM2M(&handleParamGM_[handleId]);
+        } else {
+            CcuPrepareForAllReduce(&handleParamGM_[handleId]);
+        }
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLTOALL) {
         CcuPrepareForAllToAll(&handleParamGM_[handleId]);
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLTOALLV) {
         FlushDataCache(&allToAllVParam_[handleId]);
         CcuPrepareForAllToAllV(&handleParamGM_[handleId], &allToAllVParam_[handleId]);
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_HALF_ALLTOALLV) {
-        ccuUsedXnNum_ = 9; // 除alltoallvWrit用了9个Xn
-        sizeOfXnMsg_ += CCU_XN_DATA_SIZE;
+        ccuUsedXnNum_ = 9;
         FlushDataCache(reinterpret_cast<__gm__ uint8_t*>(&handleParamGM_[handleId]) + MAX_DCCI_CNT);
         CcuPrepareForAllToAllVWrite(&handleParamGM_[handleId]);
-    } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_REDUCE_SCATTER) {
-        CcuPrepareForReduceScatter(&handleParamGM_[handleId]);
+    } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_REDUCE_SCATTER) { 
+        if (hcclContext_->algorithmType == static_cast<uint8_t>(AlgorithmType::CcuReduceScatterMeshMem2Mem1D)) {
+            ccuUsedXnNum_ = 13;
+            CcuPrepareForReduceScatterM2M(&handleParamGM_[handleId]);
+        } else {
+            CcuPrepareForReduceScatter(&handleParamGM_[handleId]);
+        }
     }
 }
 
@@ -304,6 +305,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitCcuParam(const HcclH
 
     ccuParam_.rankNum = hcclContext_->rankNum;
     ccuParam_.rankId = hcclContext_->rankId;
+    ccuParam_.scratchAddr = hcclContext_->windowsOut[0];
 }
 
 template<const auto &config>
@@ -390,15 +392,18 @@ __aicore__ inline void HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::C
     for (int i = 0; i < ccuUsedXnNum_; i++) {
         *(reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + CCU_XN_DATA_SIZE * i)) = xnData_[i];
     }
-    FlushDataCache(ccuMsg_.xnAddr);
-    if (ccuUsedXnNum_ > 8) { // 一次dcci是8个unit64
-        FlushDataCache(ccuMsg_.xnAddr + MAX_DCCI_CNT);
+
+    // 循环刷新xn, ccuUsedXnNum_ + 7) / 8 向上取整
+    for (int i = 0; i < ((ccuUsedXnNum_ + 7) / 8); i++) {
+        FlushDataCache(ccuMsg_.xnAddr + MAX_DCCI_CNT * i);
     }
 
-    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuSendMsg ccuMsg_.xnAddr, Id0: 0x%llx, Id1: 0x%llx, Id2: 0x%llx, Id3: 0x%llx, Id4: 0x%llx, Id5: 0x%llx, Id6: 0x%llx, Id7: 0x%llx, Id8: 0x%llx",
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuSendMsg ccuMsg_.xnAddr, Id0: 0x%llx, Id1: 0x%llx, Id2: 0x%llx, Id3: 0x%llx, Id4: 0x%llx, Id5: 0x%llx, Id6: 0x%llx, Id7: 0x%llx, Id8: 0x%llx, Id9: 0x%llx, Id10: 0x%llx, Id11: 0x%llx, Id12: 0x%llx, Id13: 0x%llx, Id14: 0x%llx",
         *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 8), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 16),
         *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 24), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 32), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 40),
-        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 48), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 56), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 64));
+        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 48), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 56), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 64),
+        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 72), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 80), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 88),
+        *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 96), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 104), *reinterpret_cast<__gm__ uint64_t*>(ccuMsg_.xnAddr + 112));
 
     WriteHBMData(ccuMsg_.commitCKEAddr, CCU_MSG_CKE_SET_VALUE);
 }

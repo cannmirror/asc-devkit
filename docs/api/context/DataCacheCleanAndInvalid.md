@@ -11,7 +11,14 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row835162718427"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1835227144211"><a name="p1835227144211"></a><a name="p1835227144211"></a><span id="ph1351727134210"><a name="ph1351727134210"></a><a name="ph1351727134210"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="24.63%" headers="mcps1.1.4.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="21.73%" headers="mcps1.1.4.1.3 "><p id="p6730933174216"><a name="p6730933174216"></a><a name="p6730933174216"></a>√</p>
+</td>
+</tr>
+<tr id="row835162718427"><td class="cellrowborder" valign="top" width="53.64%" headers="mcps1.1.4.1.1 "><p id="p1835227144211"><a name="p1835227144211"></a><a name="p1835227144211"></a><span id="ph1351727134210"><a name="ph1351727134210"></a><a name="ph1351727134210"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="24.63%" headers="mcps1.1.4.1.2 "><p id="p113512277421"><a name="p113512277421"></a><a name="p113512277421"></a>√</p>
 </td>
@@ -59,6 +66,7 @@
 -   读取Global Memory的数据，但该数据可能在外部被其余核修改，此时需要使用DataCacheCleanAndInvalid接口，直接访问Global Memory，获取最新数据；
 
 -   用户通过Scalar单元写Global Memory的数据，希望立刻写出，也需要使用DataCacheCleanAndInvalid接口。
+-   针对Ascend 950PR/Ascend 950DT，原子操作过程中，如果希望改变后续数据的饱和模式，需要先使用DataCacheCleanAndInvalid接口将Cache Line中现存的数据立刻写出，再调用[SetCtrlSpr](SetCtrlSpr(ISASI).md)设置后续数据的饱和模式。
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
@@ -69,7 +77,7 @@
     __aicore__ inline void DataCacheCleanAndInvalid(const GlobalTensor<T>& dst)
     ```
 
--   预留接口，为后续功能做保留
+-   支持通过配置dcciDst确保Data Cache与Local Memory存储的一致性
 
     ```
     template <typename T, CacheLine entireType, DcciDst dcciDst>
@@ -109,7 +117,7 @@
 <tr id="row429315710413"><td class="cellrowborder" valign="top" width="18.14%" headers="mcps1.2.3.1.1 "><p id="p172937571143"><a name="p172937571143"></a><a name="p172937571143"></a>dcciDst</p>
 </td>
 <td class="cellrowborder" valign="top" width="81.86%" headers="mcps1.2.3.1.2 "><p id="p172935571246"><a name="p172935571246"></a><a name="p172935571246"></a>表示使用该接口来保证Data Cache与哪一种存储保持一致性，类型为DcciDst枚举类。</p>
-<a name="ul0740116780"></a><a name="ul0740116780"></a><ul id="ul0740116780"><li>CACHELINE_ALL：与CACHELINE_OUT效果一致。</li><li>CACHELINE_UB：预留参数，暂未支持。</li><li>CACHELINE_OUT：表示通过该接口来保证Data Cache与Global Memory的一致性。</li><li>CACHELINE_ATOMIC：<a name="ul174370221398"></a><a name="ul174370221398"></a><ul id="ul174370221398"><li><span id="ph191391637074"><a name="ph191391637074"></a><a name="ph191391637074"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，预留参数，暂未支持。</li><li><span id="ph1410413421715"><a name="ph1410413421715"></a><a name="ph1410413421715"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，预留参数，暂未支持。</li></ul>
+<a name="ul0740116780"></a><a name="ul0740116780"></a><ul id="ul0740116780"><li>CACHELINE_ALL：与CACHELINE_OUT效果一致。</li><li>CACHELINE_UB：预留参数，暂未支持。</li><li>CACHELINE_OUT：表示通过该接口来保证Data Cache与Global Memory的一致性。</li><li>CACHELINE_ATOMIC：<a name="ul174370221398"></a><a name="ul174370221398"></a><ul id="ul174370221398"><li><span id="ph142607321878"><a name="ph142607321878"></a><a name="ph142607321878"></a>Ascend 950PR/Ascend 950DT</span>，原子操作过程中保证Data Cache和Global Memory的一致性。</li><li><span id="ph191391637074"><a name="ph191391637074"></a><a name="ph191391637074"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，预留参数，暂未支持。</li><li><span id="ph1410413421715"><a name="ph1410413421715"></a><a name="ph1410413421715"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，预留参数，暂未支持。</li></ul>
 </li></ul>
 </td>
 </tr>

@@ -57,7 +57,7 @@ __aicore__ inline __inout_pipe__(V) void SelectWithBytesMaskImpl(const LocalTens
             const uint32_t tmpMaskRequiredBuffer = ComputeMaskExtraBufSize(srcSize, sizeof(U));
             ASCENDC_ASSERT((bufferSize >= MIN_REQUIRED_BUFFER + tmpMaskRequiredBuffer), {
                 KERNEL_LOG(KERNEL_ERROR, "Insufficient temporary space, current operation is not enough, "
-                    "unalign axis and do not reuse source must provide %d buffer",
+                    "unaligned axis and do not reuse source must provide %d buffer",
                     MIN_REQUIRED_BUFFER + tmpMaskRequiredBuffer);
             });
             tmpMask = sharedTmpBuffer.template ReinterpretCast<U>();

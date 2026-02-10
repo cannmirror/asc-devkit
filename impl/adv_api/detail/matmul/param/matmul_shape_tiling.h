@@ -417,7 +417,7 @@ private:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 2002
         if (IMPL::CType::format == CubeFormat::ND && (tiling_.GetN() * sizeof(typename IMPL::CType::T) % ONE_BLK_SIZE != 0)) {
             ASCENDC_ASSERT(
-                (false), { KERNEL_LOG(KERNEL_ERROR, "N dims need to be aligined to 32B when ND format output in v200."); });
+                (false), { KERNEL_LOG(KERNEL_ERROR, "N dims need to be aligned to 32B when ND format output in v200."); });
         }
 #endif
         if constexpr (IMPL::AType::layout == LayoutMode::NONE && !ToMatmulConfig(MM_CFG).isBiasBatch) {

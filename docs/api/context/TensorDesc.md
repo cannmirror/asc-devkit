@@ -2,7 +2,7 @@
 
 -   **[TensorDesc简介](TensorDesc简介.md)**  
 
--   **[构造和析构函数](构造和析构函数-84.md)**  
+-   **[构造和析构函数](构造和析构函数.md)**  
 
 -   **[SetShapeAddr](SetShapeAddr.md)**  
 
@@ -10,7 +10,7 @@
 
 -   **[GetIndex](GetIndex.md)**  
 
--   **[GetShape](GetShape-85.md)**  
+-   **[GetShape](GetShape-139.md)**  
 
 -   **[GetDataPtr](GetDataPtr.md)**  
 

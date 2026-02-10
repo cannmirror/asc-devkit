@@ -13,6 +13,10 @@ kernel侧Cos接口的计算需要开发者预留/申请临时空间，本接口�
 void GetCosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
 ```
 
+```
+void GetCosMaxMinTmpSize(const CosConfig& config, const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource, uint32_t& maxValue, uint32_t& minValue)
+```
+
 ## 参数说明<a name="section622mcpsimp"></a>
 
 **表 1**  接口参数列表
@@ -26,7 +30,14 @@ void GetCosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, con
 </th>
 </tr>
 </thead>
-<tbody><tr id="row12299165018421"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p189045212538"><a name="p189045212538"></a><a name="p189045212538"></a>srcShape</p>
+<tbody><tr id="row1152142315"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p711121152310"><a name="p711121152310"></a><a name="p711121152310"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.2.4.1.2 "><p id="p1284816393517"><a name="p1284816393517"></a><a name="p1284816393517"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="75.59%" headers="mcps1.2.4.1.3 "><p id="p107511933673"><a name="p107511933673"></a><a name="p107511933673"></a>Cos接口的相关配置信息。该参数的配置必须与Cos Kernel接口模板参数config的配置保持一致。</p>
+</td>
+</tr>
+<tr id="row12299165018421"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p189045212538"><a name="p189045212538"></a><a name="p189045212538"></a>srcShape</p>
 </td>
 <td class="cellrowborder" valign="top" width="7.5200000000000005%" headers="mcps1.2.4.1.2 "><p id="p490205216537"><a name="p490205216537"></a><a name="p490205216537"></a>输入</p>
 </td>
@@ -53,8 +64,7 @@ void GetCosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, con
 <p id="p13901052205318"><a name="p13901052205318"></a><a name="p13901052205318"></a></p>
 </td>
 <td class="cellrowborder" valign="top" width="75.59%" headers="mcps1.2.4.1.3 "><p id="p1890195216531"><a name="p1890195216531"></a><a name="p1890195216531"></a>Cos接口能完成计算所需的最大临时空间大小，超出该值的空间不会被该接口使用。在最小临时空间-最大临时空间范围内，随着临时空间增大，kernel侧接口计算性能会有一定程度的优化提升。为了达到更好的性能，开发者可以根据实际的内存使用情况进行空间预留/申请。最大空间大小为0表示计算不需要临时空间。</p>
-<div class="note" id="note1275197121212"><a name="note1275197121212"></a><a name="note1275197121212"></a><span class="notetitle"> 说明： </span><div class="notebody"><p id="p1040915016493"><a name="p1040915016493"></a><a name="p1040915016493"></a>maxValue仅作为参考值，有可能大于<span id="ph1088254310583"><a name="ph1088254310583"></a><a name="ph1088254310583"></a>Unified Buffer</span>剩余空间的大小，该场景下，开发者需要根据<span id="ph20796650203718"><a name="ph20796650203718"></a><a name="ph20796650203718"></a>Unified Buffer</span>剩余空间的大小来选取合适的临时空间大小。</p>
-</div></div>
+<p id="p20795195462720"><a name="p20795195462720"></a><a name="p20795195462720"></a>请注意，maxValue仅作为参考值，有可能大于<span id="ph1088254310583"><a name="ph1088254310583"></a><a name="ph1088254310583"></a>Unified Buffer</span>剩余空间的大小，该场景下，开发者需要根据<span id="ph20796650203718"><a name="ph20796650203718"></a><a name="ph20796650203718"></a>Unified Buffer</span>剩余空间的大小来选取合适的临时空间大小。</p>
 </td>
 </tr>
 <tr id="row66944015289"><td class="cellrowborder" valign="top" width="16.89%" headers="mcps1.2.4.1.1 "><p id="p1369580162813"><a name="p1369580162813"></a><a name="p1369580162813"></a>minValue</p>
@@ -77,7 +87,7 @@ void GetCosMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, con
 
 ## 调用示例<a name="section642mcpsimp"></a>
 
-完整的调用样例请参考[更多样例](更多样例-27.md)。
+完整的调用样例请参考[更多样例](更多样例-84.md)。
 
 ```
 // 输入shape信息为1024;算子输入的数据类型为half;不允许修改源操作数
@@ -86,5 +96,8 @@ ge::Shape shape(shape_vec);
 uint32_t maxValue = 0;
 uint32_t minValue = 0;
 AscendC::GetCosMaxMinTmpSize(shape, 2, false, maxValue, minValue);
+AscendC::CosConfig config;
+config.algo = AscendC::CosAlgo::RADIAN_REDUCTION;
+AscendC::GetCosMaxMinTmpSize(config, shape, 2, false, maxValue, minValue);
 ```
 

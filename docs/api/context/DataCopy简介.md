@@ -83,6 +83,17 @@ DataCopy系列接口提供全面的数据搬运功能，支持多种数据搬运
 <td class="cellrowborder" colspan="2" align="center" valign="top" headers="mcps1.1.9.1.5 "><p id="p590783413615"><a name="p590783413615"></a><a name="p590783413615"></a>√</p>
 </td>
 </tr>
+<tr id="row1550572453212"><td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.1 "><p id="zh-cn_topic_0000002299156297_p5831180161811"><a name="zh-cn_topic_0000002299156297_p5831180161811"></a><a name="zh-cn_topic_0000002299156297_p5831180161811"></a><a href="多维数据搬运（ISASI）.md">多维数据搬运</a></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" headers="mcps1.1.9.1.2 "><p id="p171162612257"><a name="p171162612257"></a><a name="p171162612257"></a>多维数据搬运接口，相比于基础数据搬运接口，可更加自由配置搬入的维度信息以及对应的Stride。</p>
+</td>
+<td class="cellrowborder" colspan="2" align="center" valign="top" headers="mcps1.1.9.1.3 "><p id="p154156153315"><a name="p154156153315"></a><a name="p154156153315"></a>×</p>
+</td>
+<td class="cellrowborder" colspan="2" align="center" valign="top" headers="mcps1.1.9.1.4 "><p id="p65653753619"><a name="p65653753619"></a><a name="p65653753619"></a>√</p>
+</td>
+<td class="cellrowborder" colspan="2" align="center" valign="top" headers="mcps1.1.9.1.5 "><p id="p15411760337"><a name="p15411760337"></a><a name="p15411760337"></a>×</p>
+</td>
+</tr>
 </tbody>
 </table>
 

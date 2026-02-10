@@ -409,7 +409,7 @@ TEST_F(ReduceSimpleTestsuite, GetReduceRepeatMaxMinSprCase)
 }
 template <typename T>
 __global__ __aicore__ void MainRepeatReduceSum(__gm__ uint8_t* __restrict__ dstGm, __gm__ uint8_t* __restrict__ srcGm,
-    const int32_t repeat, const int32_t elemsInOneRepeate, const int32_t dstBlkStride, const int32_t srcBlkStride,
+    const int32_t repeat, const int32_t elemsInOneRepeat, const int32_t dstBlkStride, const int32_t srcBlkStride,
     const int32_t dstRepStride, const int32_t srcRepStride, const int32_t dataSize1, const int32_t dataSize2)
 {
     TPipe tpipe;
@@ -431,7 +431,7 @@ __global__ __aicore__ void MainRepeatReduceSum(__gm__ uint8_t* __restrict__ dstG
     set_flag(PIPE_MTE2, PIPE_V, EVENT_ID0);
     wait_flag(PIPE_MTE2, PIPE_V, EVENT_ID0);
 
-    RepeatReduceSum(outputLocal, inputLocal, repeat, elemsInOneRepeate, dstBlkStride, srcBlkStride, dstRepStride,
+    RepeatReduceSum(outputLocal, inputLocal, repeat, elemsInOneRepeat, dstBlkStride, srcBlkStride, dstRepStride,
         srcRepStride);
 
     set_flag(PIPE_V, PIPE_MTE3, EVENT_ID0);
@@ -444,7 +444,7 @@ __global__ __aicore__ void MainRepeatReduceSum(__gm__ uint8_t* __restrict__ dstG
 
 struct RepeatReduceSumTestParams {
     const int32_t repeatIn;
-    const int32_t elemsInOneRepeateIn;
+    const int32_t elemsInOneRepeatIn;
     const int32_t dstBlkStrideIn;
     const int32_t srcBlkStrideIn;
     const int32_t dstRepStrideIn;
@@ -472,7 +472,7 @@ TEST_P(RepeatReduceSumTestsuite, RepeatReduceSumTestCase)
     uint8_t dstGm[param.datasize1 * param.typeByte];
     uint8_t srcGm[param.datasize2 * param.typeByte];
 
-    param.cal_func(dstGm, srcGm, param.repeatIn, param.elemsInOneRepeateIn, param.dstBlkStrideIn, param.srcBlkStrideIn,
+    param.cal_func(dstGm, srcGm, param.repeatIn, param.elemsInOneRepeatIn, param.dstBlkStrideIn, param.srcBlkStrideIn,
         param.dstRepStrideIn, param.srcRepStrideIn, param.datasize1, param.datasize2);
 
     for (int i = 1; i < param.datasize2; i++) {

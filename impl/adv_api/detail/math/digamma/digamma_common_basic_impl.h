@@ -12,8 +12,8 @@
  * \file digamma_common_basic_impl.h
  * \brief
  */
-#ifndef IMPL_MATH_DIGAMMA_DIGAMMA_COMMOM_BASIC_IMPL_H
-#define IMPL_MATH_DIGAMMA_DIGAMMA_COMMOM_BASIC_IMPL_H
+#ifndef IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H
+#define IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H
 
 #include <cstdint>
 #include "kernel_basic_intf.h"
@@ -179,13 +179,13 @@ __aicore__ inline void DigammaNegativeRange(
     PipeBarrier<PIPE_V>();
     SinCompute<float>(params.tmpScalar, src, params.result, params.splitSize, true);
 
-    // Positiv(1 - x) - pi * tmp / tmp1
+    // Positive(1 - x) - pi * tmp / tmp1
     Muls<float, false>(params.tmpCal3, params.tmpCal3, DIGAMMA_PI, MASK_PLACEHOLDER, 1, params.unaryParams);
     PipeBarrier<PIPE_V>();
     Div<float, false>(params.tmpCal3, params.tmpCal3, params.tmpScalar, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
 
-    // tmpCal2 is Positiv(1 - x), calculating saves in DigammaNegativeHalf
+    // tmpCal2 is Positive(1 - x), calculating saves in DigammaNegativeHalf
     Sub<float, false>(dst, params.tmpCal2, params.tmpCal3, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
 }
@@ -254,4 +254,4 @@ __aicore__ inline void DigammaInitParams(const LocalTensor<float> &tmp, const ui
 #pragma end_pipe
 }  // namespace AscendC
 #endif
-#endif  // IMPL_MATH_DIGAMMA_DIGAMMA_COMMOM_BASIC_IMPL_H
+#endif  // IMPL_MATH_DIGAMMA_DIGAMMA_COMMON_BASIC_IMPL_H

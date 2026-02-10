@@ -24,3 +24,5 @@
 
 -   **[SetL2CacheHint](SetL2CacheHint.md)**  
 
+-   **[ReinterpretCast](ReinterpretCast-8.md)**  
+

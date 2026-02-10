@@ -143,7 +143,7 @@
 从L1-->L0通路，常用的搬运指令有LoadData2D、LoadDataWithTranspose 和 LoadData3DV2 三个指令，现在将上述12种场景下可以调用指令总结如下表所示：
 
 <table border="2" align="center">
-<caption>表2：L1-->L1,12种场景下可以调用的指令</caption>
+<caption>表2：L1-->L0,12种场景下可以调用的指令</caption>
   <tr>
     <td></td>
     <td>int8_t</td>

@@ -287,13 +287,13 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 
     ```
     namespace optiling {
-    const uint32_t BLOCK_DIM = 8;
+    const uint32_t NUM_BLOCKS = 8;
     const uint32_t TILE_NUM = 8;
     static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
         TilingData tiling;
         uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-        context->SetBlockDim(BLOCK_DIM);
+        context->SetBlockDim(NUM_BLOCKS);
         tiling.set_totalLength(totalLength);
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
@@ -347,13 +347,13 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
 
     ```
     namespace optiling {
-    const uint32_t BLOCK_DIM = 1;
+    const uint32_t NUM_BLOCKS = 1;
     const uint32_t TILE_NUM = 8;
     static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
         TilingData tiling;
         uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-        context->SetBlockDim(BLOCK_DIM);
+        context->SetBlockDim(NUM_BLOCKS);
         tiling.set_totalLength(totalLength);
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
@@ -367,10 +367,10 @@ Ascend C提供一组LayerNorm Tiling API，方便用户获取LayerNorm kernel计
         AscendC::GetLayerNormMaxMinTmpSize(srcShape, sizeof(half), false, true, false, max, min);
         // 获取Layernorm Tiling参数
         AscendC::GetLayerNormNDTilingInfo(srcShape, min, sizeof(half), false, true, tiling.layernormTilingData); 
-        
-        
-        
-        
+        // auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+        // AscendC::GetLayerNormMaxMinTmpSize(srcShape, sizeof(half), false, true, false, ascendcPlatform, max, min);
+        // 获取Layernorm Tiling参数
+        // AscendC::GetLayerNormNDTilingInfo(srcShape, min, sizeof(half), false, true, ascendcPlatform, tiling.layernormTilingData);
          ... // 其他逻辑
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
         context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());

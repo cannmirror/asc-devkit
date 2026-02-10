@@ -108,7 +108,7 @@ __aicore__ inline void CubeResGroupHandle<T>::AssignQueue(uint8_t queueIdIn)
 }
 
 // aiv call: check msgState of msgCurrent is FREE, can allocate only when state is FREE
-// to gurantee the order, not allowed to skip, must wait until msgState is updated to FREE
+// to guarantee the order, not allowed to skip, must wait until msgState is updated to FREE
 template <typename T>
 template <PipeMode pipeMode>
 __aicore__ inline __gm__ T *CubeResGroupHandle<T>::AllocMessage()

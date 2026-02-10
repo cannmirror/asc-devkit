@@ -46,8 +46,8 @@ TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVSAT, asc_uint82uint32_v2, vcvt, ve
 TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVSAT, asc_uint82uint32_v3, vcvt, vector_uint32_t, vector_uint8_t);
 TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVSAT, asc_uint82uint32_v4, vcvt, vector_uint32_t, vector_uint8_t);
 
-// ==========asc_e2m1x22bfloat==========
-TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat, vcvt, vector_bfloat16_t, vector_f4e2m1x2);
-TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat_v2, vcvt, vector_bfloat16_t, vector_f4e2m1x2);
-TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat_v3, vcvt, vector_bfloat16_t, vector_f4e2m1x2);
-TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat_v4, vcvt, vector_bfloat16_t, vector_f4e2m1x2);
+// ==========asc_e2m1x22bfloat16==========
+TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat16, vcvt, vector_bfloat16_t, vector_fp4x2_e2m1_t);
+TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat16_v2, vcvt, vector_bfloat16_t, vector_fp4x2_e2m1_t);
+TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat16_v3, vcvt, vector_bfloat16_t, vector_fp4x2_e2m1_t);
+TEST_VECTOR_COMPUTE_VCONV_PART_INSTR_PART(CONVPART, asc_e2m1x22bfloat16_v4, vcvt, vector_bfloat16_t, vector_fp4x2_e2m1_t);

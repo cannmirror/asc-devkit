@@ -32,14 +32,14 @@ aclError aclrtBinaryUnLoad(aclrtBinHandle binHandle)
     return 0;
 }
 
-rtError_t rtKernelLaunchWithHandle(void *hdl, const uint64_t tilingKey, uint32_t blockDim,
+rtError_t rtKernelLaunchWithHandle(void *hdl, const uint64_t tilingKey, uint32_t numBlocks,
                                            rtArgsEx_t *argsInfo, rtSmDesc_t *smDesc, rtStream_t stm,
                                            const void *kernelInfo)
 {
     return 0;
 }
 
-aclError aclrtLaunchKernelWithConfig(aclrtFuncHandle funcHandle, uint32_t blockDim,
+aclError aclrtLaunchKernelWithConfig(aclrtFuncHandle funcHandle, uint32_t numBlocks,
                                                          aclrtStream stream, aclrtLaunchKernelCfg *cfg,
                                                          aclrtArgsHandle argsHandle, void *reserve)
 {
@@ -72,7 +72,7 @@ rtError_t rtFunctionRegister(void *binHandle, const void *stubFunc, const char_t
     return 0;
 }
 
-rtError_t rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t blockDim, rtArgsEx_t *argsInfo,
+rtError_t rtKernelLaunchWithFlagV2(const void *stubFunc, uint32_t numBlocks, rtArgsEx_t *argsInfo,
                                    rtSmDesc_t *smDesc, rtStream_t stm, uint32_t flags, const rtTaskCfgInfo_t *cfgInfo)
 {
     return 0;

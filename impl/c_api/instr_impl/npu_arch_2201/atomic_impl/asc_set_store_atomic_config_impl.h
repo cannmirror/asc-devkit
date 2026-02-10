@@ -24,9 +24,13 @@
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_ATOMIC_IMPL_ASC_SET_STORE_ATOMIC_CONFIG_IMPL_H
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-__aicore__ inline void asc_set_store_atomic_config_impl(asc_store_atomic_config& config)
+__aicore__ inline void asc_set_store_atomic_config_v1_impl(uint16_t type, uint16_t op)
 {
-    set_st_atomic_cfg(config.config);
+    constexpr uint64_t type_mask = 0x7;
+    constexpr uint64_t op_mask = 0x3;
+    constexpr uint64_t op_bit = 3;
+    uint64_t config = (type & type_mask) | ((op & op_mask) << op_bit);
+    set_st_atomic_cfg(config);
 }
 
 #endif

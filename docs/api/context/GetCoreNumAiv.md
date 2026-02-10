@@ -20,6 +20,8 @@ Atlas A2 训练系列产品/Atlas A2 推理系列产品，分离模式，返回V
 
 Atlas A3 训练系列产品/Atlas A3 推理系列产品，分离模式，返回Vector Core的核数
 
+Ascend 950PR/Ascend 950DT，分离模式，返回Vector Core的核数
+
 ## 约束说明<a name="zh-cn_topic_0000001675101185_zh-cn_topic_0000001442758437_section19165124931511"></a>
 
 无

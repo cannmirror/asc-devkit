@@ -23,7 +23,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_INTLV_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_INTLV_IMPL_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
+#include "instr_impl/npu_arch_3510/utils_impl.h"
 
 __simd_callee__ inline void asc_intlv_b8_impl(vector_bool& dst0, vector_bool& dst1, vector_bool src0, vector_bool src1)
 {
@@ -96,6 +96,34 @@ __simd_callee__ inline void asc_intlv_impl(vector_half& dst0, vector_half& dst1,
 }
 
 __simd_callee__ inline void asc_intlv_impl(vector_float& dst0, vector_float& dst1, vector_float src0, vector_float src1)
+{
+    if ASC_IS_AIV {
+        vintlv(dst0, dst1, src0, src1);
+    }
+}
+
+__simd_callee__ inline void asc_intlv_impl(vector_fp8_e4m3fn_t& dst0, vector_fp8_e4m3fn_t& dst1, vector_fp8_e4m3fn_t src0, vector_fp8_e4m3fn_t src1)
+{
+    if ASC_IS_AIV {
+        vintlv(dst0, dst1, src0, src1);
+    }
+}
+
+__simd_callee__ inline void asc_intlv_impl(vector_fp8_e5m2_t& dst0, vector_fp8_e5m2_t& dst1, vector_fp8_e5m2_t src0, vector_fp8_e5m2_t src1)
+{
+    if ASC_IS_AIV {
+        vintlv(dst0, dst1, src0, src1);
+    }
+}
+
+__simd_callee__ inline void asc_intlv_impl(vector_fp8_e8m0_t& dst0, vector_fp8_e8m0_t& dst1, vector_fp8_e8m0_t src0, vector_fp8_e8m0_t src1)
+{
+    if ASC_IS_AIV {
+        vintlv(dst0, dst1, src0, src1);
+    }
+}
+
+__simd_callee__ inline void asc_intlv_impl(vector_bfloat16_t& dst0, vector_bfloat16_t& dst1, vector_bfloat16_t src0, vector_bfloat16_t src1)
 {
     if ASC_IS_AIV {
         vintlv(dst0, dst1, src0, src1);

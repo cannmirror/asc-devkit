@@ -22,7 +22,7 @@ namespace Detail {
 
 /**
  * BiasScheduler: responsible for bias management module.
- * This module provides ablities to copy bias to C2 or L0C.
+ * This module provides abilities to copy bias to C2 or L0C.
  * We retain the freedom to make incompatible changes, but do not guarantee the stability.
  * BiasScheduler is only for internal usage, does not support extension or customized specialization!
  */

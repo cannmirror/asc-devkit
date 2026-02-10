@@ -176,7 +176,7 @@ __aicore__ inline void TPipe::AllocAddrs(TBufType* ptr, const First& addr, const
     Hardware pool = GetBufferPos(T::srcPosition, T::dstPosition);
     int32_t currentPoolSize = ConstDefiner::Instance().bufferInitLen.at(pool);
     ASCENDC_ASSERT(maxLen <= currentPoolSize, {
-        KERNEL_LOG(KERNEL_ERROR, "current buffer access buffer at %d, exceed limits %d", maxLen, currentPoolSize);
+        KERNEL_LOG(KERNEL_ERROR, "current buffer access buffer at %d, exceeds the limit %d", maxLen, currentPoolSize);
     });
 #endif
     ptr->usertag = -1;
@@ -194,7 +194,7 @@ __aicore__ inline bool TPipe::InitBuffer(T& que, const Std::tuple<U, V>& addr0, 
         KERNEL_LOG(KERNEL_ERROR, "buffer number is %u, which should be the same as TQueConfig::bufferNumber(%u)", num,
                    que.config.bufferNumber);
     });
-    static_assert(T::dstPosition != TPosition::TSCM, "Init Buffer is not support Postion TSCM");
+    static_assert(T::dstPosition != TPosition::TSCM, "Init Buffer is not supported Postion TSCM");
     Hardware pool = GetBufferPos(T::srcPosition, T::dstPosition);
     que.bufStart = this->g_tpipeImpl.buf_ + this->g_tpipeImpl.curBufSize_;
     que.value = num;
@@ -247,7 +247,7 @@ template <class T> __aicore__ inline bool TPipe::InitBuffer(T& que, uint8_t num,
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
         auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
         ASCENDC_ASSERT((num * len <= bufferInitLen.at(pool)), {
-            KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceed limits %d", num * len, bufferInitLen.at(pool)); });
+            KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceeds the limit %d", num * len, bufferInitLen.at(pool)); });
         auto pos_ = GetPosition(T::srcPosition, T::dstPosition);
         auto absAddr = GetBaseAddr(static_cast<int8_t>(pos_));
         AscendCBufInit(static_cast<uint8_t>(pos_), 0, num, reinterpret_cast<uint64_t>(curPoolAddr + absAddr), len);
@@ -316,7 +316,7 @@ template <TPosition pos> __aicore__ inline bool TPipe::InitBuffer(TBuf<pos>& buf
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_ASSERT((len <= bufferInitLen.at(pool)),
-                   { KERNEL_LOG(KERNEL_ERROR, "len is %u, exceed limits %d", len, bufferInitLen.at(pool)); });
+                   { KERNEL_LOG(KERNEL_ERROR, "len is %u, exceeds the limit %d", len, bufferInitLen.at(pool)); });
     auto absAddr = GetBaseAddr(static_cast<int8_t>(pos));
     AscendCBufInit(static_cast<uint8_t>(pos), 1, 1, reinterpret_cast<uint64_t>(curPoolAddr + absAddr), len);
 #endif
@@ -329,12 +329,12 @@ template <TPosition pos> __aicore__ inline bool TPipe::InitBuffer(TBuf<pos>& buf
     curPoolAddr += len;
     ptr++;
     ASCENDC_ASSERT((curPoolAddr <= bufferInitLen.at(pool)), {
-        KERNEL_LOG(KERNEL_ERROR, "curPoolAddr is %d, exceed limits %d", curPoolAddr, bufferInitLen.at(pool));
+        KERNEL_LOG(KERNEL_ERROR, "curPoolAddr is %d, exceeds the limit %d", curPoolAddr, bufferInitLen.at(pool));
     });
     this->g_tpipeImpl.bufPool_[static_cast<uint8_t>(pool)].maxAddr = curPoolAddr;
     this->g_tpipeImpl.curBufSize_ += 1;
     ASCENDC_ASSERT((this->g_tpipeImpl.curBufSize_ < QBUF_MAX_LEN), {
-        KERNEL_LOG(KERNEL_ERROR, "current total buffer num is %d, exceed limits %d", this->g_tpipeImpl.curBufSize_,
+        KERNEL_LOG(KERNEL_ERROR, "current total buffer num is %d, exceeds the limit %d", this->g_tpipeImpl.curBufSize_,
             QBUF_MAX_LEN);
     });
     return true;
@@ -364,7 +364,7 @@ __aicore__ inline bool TPipe::InitBufPool(T &bufPool, uint32_t len)
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_ASSERT((len <= bufferInitLen.at(pool)),
-        { KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceed limits %d", len, bufferInitLen.at(pool)); });
+        { KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceeds the limit %d", len, bufferInitLen.at(pool)); });
     auto pos = T::poolPos;
     auto absAddr = GetBaseAddr(static_cast<int8_t>(pos));
     AscendCTBufPoolInit(static_cast<uint8_t>(pos),
@@ -395,7 +395,7 @@ __aicore__ inline bool TPipe::InitBufPool(T &bufPool, uint32_t len, U &shareBuf)
     len = AlignUp(len, ONE_BLK_SIZE);
     constexpr auto pool = GetPhyType(T::poolPos);
     ASCENDC_ASSERT((pool == GetPhyType(U::poolPos)),
-        { KERNEL_LOG(KERNEL_ERROR, "Hardware type of input bufPool should be same with shareBuf"); });
+        { KERNEL_LOG(KERNEL_ERROR, "Hardware type of input bufPool should be same as shareBuf"); });
     static_assert((T::bufSize <= U::bufSize), "U bufIDSize must be > T bufIDSize");
 
     bufPool.tBufPoolImpl.startAddr_ = shareBuf.tBufPoolImpl.startAddr_;
@@ -411,7 +411,7 @@ __aicore__ inline bool TPipe::InitBufPool(T &bufPool, uint32_t len, U &shareBuf)
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     auto bufferInitLen = ConstDefiner::Instance().bufferInitLen;
     ASCENDC_ASSERT((len <= bufferInitLen.at(pool)),
-        { KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceed limits %d", len, bufferInitLen.at(pool)); });
+        { KERNEL_LOG(KERNEL_ERROR, "buffer size is %d, exceeds the limit %d", len, bufferInitLen.at(pool)); });
     auto pos = T::poolPos;
     auto absAddr = GetBaseAddr(static_cast<int8_t>(pos));
     AscendCTBufPoolInit(static_cast<uint8_t>(pos),
@@ -482,7 +482,7 @@ template <TPosition pos> __aicore__ inline TBuffAddr TPipe::GetAbsAddr(int32_t o
     constexpr auto pool = GetPhyType(pos);
     ASCENDC_ASSERT((pool != Hardware::GM), { KERNEL_LOG(KERNEL_ERROR, "buffer pos can not be Hardware::GM"); });
     ASCENDC_ASSERT(((offset + len) <= bufferInitLen.at(pool)), {
-        KERNEL_LOG(KERNEL_ERROR, "offset is %d, len is %d, exceed limits %d", offset, len, bufferInitLen.at(pool));
+        KERNEL_LOG(KERNEL_ERROR, "offset is %d, len is %d, exceeds the limit %d", offset, len, bufferInitLen.at(pool));
     });
     auto absAddr = this->g_tpipeImpl.bufPoolBaseAddr_[static_cast<uint8_t>(pool)].absAddr;
     addr.absAddr = absAddr + addr.bufferAddr;
@@ -569,7 +569,7 @@ __aicore__ inline void TPipe::WriteSpmBuffer(const LocalTensor<T>& writeLocal, c
     int32_t writeOffset)
 {
     /*
-     * before write, the local may come frome MTE2/V, so need insert MTE3 wait V/MTE2
+     * before write, the local may come from MTE2/V, so need insert MTE3 wait V/MTE2
      * after write, the local may used to compute or copy out, need insert V/MTE2 wait MTE3
      */
     event_t eventIDVToMTE3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
@@ -643,7 +643,7 @@ __aicore__ inline void TPipe::WriteSpmBuffer(const LocalTensor<T>& writeLocal, c
     int32_t writeOffset)
 {
     /*
-     * before write, the local may come frome MTE2/V, so need insert MTE3 wait V/MTE2
+     * before write, the local may come from MTE2/V, so need insert MTE3 wait V/MTE2
      * after write, the local may used to compute or copy out, need insert V/MTE2 wait MTE3
      */
     int computeSize = writeSize != 0 ? writeSize : GetShapeSize(writeLocal.GetShapeInfo());

@@ -957,20 +957,20 @@ __aicore__ inline void LocalTensor<T>::CreateTensor(AscendC::TPosition pos, uint
     AscendC::Hardware hardPos = ConstDefiner::Instance().positionHardMap.at(pos);
     uint32_t maxLen = ConstDefiner::Instance().bufferInitLen.at(hardPos);
     ASCENDC_DEBUG_ASSERT((addr % ONE_BLK_SIZE == 0),
-            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "addr input is %u, which shoule be 32 bytes align", addr));
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "addr input is %u, which should be 32 bytes align", addr));
     if constexpr (IsHalfByteDataType<PrimType>()) {
         ASCENDC_DEBUG_ASSERT(((tileSize > 0) && ((tileSize % INT4_TWO) == 0) && (tileSize / INT4_TWO) <= maxLen),
             KERNEL_LOG_INTERNAL(KERNEL_ERROR,
-                "tensor size input is %u, which shoule be even number in range (0, %u]",
+                "tensor size input is %u, which should be even number in range (0, %u]",
                 tileSize, maxLen * INT4_TWO));
     } else {
         ASCENDC_DEBUG_ASSERT(((tileSize > 0) && (tileSize * sizeof(U)) <= maxLen),
-            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "tensor size input is %u, which shoule be in range (0, %u]",
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "tensor size input is %u, which should be in range (0, %u]",
                 tileSize, maxLen / sizeof(U)));
     }
     uint32_t tensorLength = tileSize * SizeOfBits<U>::value / SizeOfBits<uint8_t>::value;
     ASCENDC_DEBUG_ASSERT((tensorLength % ONE_BLK_SIZE == 0),
-            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "tensor length is %u bytes, which shoule be 32 bytes align", tensorLength));
+            KERNEL_LOG_INTERNAL(KERNEL_ERROR, "tensor length is %u bytes, which should be 32 bytes align", tensorLength));
     ASCENDC_DEBUG_ASSERT(((addr >= 0) && ((addr + tensorLength) <= maxLen)),
         KERNEL_LOG_INTERNAL(KERNEL_ERROR,
             "addr input is %u, tensor length is %u bytes, which exceeds max len %u bytes",
@@ -1654,7 +1654,7 @@ __aicore__ inline LocalTensor<DataType> LocalMemAllocator<hard>::Alloc()
     static_assert(is_tensorTrait_v<DataType>, "only support TensorTrait type!");
     static_assert(GetPhyType(DataType::tPos) == hard, "logic pos and hardware pos not matched.");
     using liteType = typename DataType::LiteType;
-    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
+    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only support B8/B16/B32/B64 datatype");
     LocalTensor<DataType> tensorOut(head_);
     head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
     return tensorOut;
@@ -1668,7 +1668,7 @@ __aicore__ inline typename Std::enable_if<is_layout_v<LayoutType>, LocalTensor<D
     static_assert(is_tensorTrait_v<DataType>, "only support TensorTrait type!");
     static_assert(GetPhyType(DataType::tPos) == hard, "logic pos and hardware pos not matched.");
     using liteType = typename DataType::LiteType;
-    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only supoort B8/B16/B32/B64 datatype");
+    static_assert(SupportBytes<liteType, B8_BYTE_SIZE, B16_BYTE_SIZE, B32_BYTE_SIZE, B64_BYTE_SIZE>(), "Only support B8/B16/B32/B64 datatype");
     LocalTensor<DataType> tensorOut(head_, layout);
     head_ += SizeOfBits<liteType>::value * tensorOut.GetSize() / SizeOfBits<uint8_t>::value;
     return tensorOut;

@@ -82,7 +82,10 @@ def gen_usr_origin_kernel_function_call(func_name: str, opinfo: OpInfo, tiling_i
         else:
             source += " nullptr, "
     for output in opinfo.outputs:
-        source += "{}, ".format(output["param_name"])
+        if output is not None:
+            source += "{}, ".format(output["param_name"])
+        else:
+            source += " nullptr, "
 
     if opinfo.output_shape_depend_on_compute is not None and len(opinfo.output_shape_depend_on_compute) > 0:
         source += "__ascendc_output_shape, "
@@ -233,7 +236,18 @@ data_type_map = {
     'DT_INT32': 4,
     'DT_UINT32': 4,
     'DT_INT64': 8,
-    'DT_UINT64': 8
+    'DT_UINT64': 8,
+    'DI_HIFLOAT8': 1,
+    'DT_DOUBLE': 8,
+    'DT_BOOL': 1,
+    'DT_COMPLEX64': 8,
+    'DT_UINT1': (8 << 16) + 1,
+    'DT_INT2': (4 << 16) + 1,
+    'DT_COMPLEX32': 4,
+    'DT_FLOAT8_E5M2': 1,
+    'DT_FLOAT8_E4M3FN': 1,
+    'DT_FLOAT4_E2M1': (2 << 16) + 1,
+    'DT_FLOAT4_E1M2': (2 << 16) + 1
 }
 
 

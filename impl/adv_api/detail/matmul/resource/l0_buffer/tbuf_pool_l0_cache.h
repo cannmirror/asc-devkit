@@ -107,7 +107,7 @@ public:
     }
 
     __aicore__ inline void ResetCache() {
-        WaitFlag<HardEvent::M_MTE1>(0); // To solve sync problem between muti objects, need to wait pingpong here
+        WaitFlag<HardEvent::M_MTE1>(0); // To solve sync problem between multi objects, need to wait pingpong here
         SetFlag<HardEvent::M_MTE1>(0);
         WaitFlag<HardEvent::M_MTE1>(1);
         SetFlag<HardEvent::M_MTE1>(1);

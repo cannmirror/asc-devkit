@@ -24,9 +24,9 @@
 namespace AscendC {
 constexpr uint32_t GELU_THREE_TIMES = 3;
 constexpr uint32_t GELU_ONE_REPEAT_BYTE_SIZE = 256;
-static constexpr uint32_t GELU_HALF_SIEZ = 2;
-static constexpr uint32_t GELU_FLOAT_SIEZ = 4;
-static const std::set<uint32_t> SUPPORT_TYPESIZE = { GELU_HALF_SIEZ, GELU_FLOAT_SIEZ };
+static constexpr uint32_t GELU_HALF_SIZE = 2;
+static constexpr uint32_t GELU_FLOAT_SIZE = 4;
+static const std::set<uint32_t> SUPPORT_TYPESIZE = { GELU_HALF_SIZE, GELU_FLOAT_SIZE };
 static constexpr const char GELU_GET_MAX[] = "GetGeluMaxTmpSize";
 static constexpr const char GELU_GET_MIN[] = "GetGeluMinTmpSize";
 static constexpr const char GELU_GET_MAX_MIN[] = "GetGeluMaxMinTmpSize";

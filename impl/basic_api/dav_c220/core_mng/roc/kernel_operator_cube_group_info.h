@@ -40,7 +40,7 @@ struct CubeGroupMsgHead {                                 // 2B
 
 struct BarrierInfo {
     volatile uint32_t head;  // counter value for Arrive / Wait
-    uint32_t buffer[15];     // gurantee 64B aligned
+    uint32_t buffer[15];     // guarantee 64B aligned
 };
 
 // method to update arrive / wait counter

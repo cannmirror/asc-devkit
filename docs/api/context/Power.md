@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -37,14 +42,14 @@
         -   源操作数Tensor全部/部分参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
             ```
 
         -   源操作数Tensor全部参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
             ```
 
@@ -52,14 +57,14 @@
         -   源操作数Tensor全部/部分参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor, uint32_t calCount)
             ```
 
         -   源操作数Tensor全部参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const LocalTensor<T>& src1Tensor)
             ```
 
@@ -68,14 +73,14 @@
         -   源操作数Tensor全部/部分参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
             ```
 
         -   源操作数Tensor全部参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar, const LocalTensor<uint8_t>& sharedTmpBuffer)
             ```
 
@@ -83,14 +88,14 @@
         -   源操作数Tensor全部/部分参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar, uint32_t calCount)
             ```
 
         -   源操作数Tensor全部参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const LocalTensor<T>& src0Tensor, const T& src1Scalar)
             ```
 
@@ -99,14 +104,14 @@
         -   源操作数Tensor全部/部分参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer, uint32_t calCount)
             ```
 
         -   源操作数Tensor全部参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor, const LocalTensor<uint8_t>& sharedTmpBuffer)
             ```
 
@@ -114,14 +119,14 @@
         -   源操作数Tensor全部/部分参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor, uint32_t calCount)
             ```
 
         -   源操作数Tensor全部参与计算
 
             ```
-            template <typename T, bool isReuseSource = false>
+            template <typename T, bool isReuseSource = false, const PowerConfig& config = defaultPowerConfig>
             __aicore__ inline void Power(const LocalTensor<T>& dstTensor, const T& src0Scalar, const LocalTensor<T>& src1Tensor)
             ```
 
@@ -147,6 +152,7 @@
 <tbody><tr id="zh-cn_topic_0000001538537601_row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001538537601_p47551198266"><a name="zh-cn_topic_0000001538537601_p47551198266"></a><a name="zh-cn_topic_0000001538537601_p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p125969172719"><a name="zh-cn_topic_0000001538537601_p125969172719"></a><a name="zh-cn_topic_0000001538537601_p125969172719"></a>操作数的数据类型。</p>
+<p id="p5315184745513"><a name="p5315184745513"></a><a name="p5315184745513"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：uint8_t、int8_t、uint16_t、int16_t、uint32_t、int32_t、half、bfloat16_t、float。</p>
 <p id="p1314412701316"><a name="p1314412701316"></a><a name="p1314412701316"></a><span id="ph11441227191318"><a name="ph11441227191318"></a><a name="ph11441227191318"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float、int32_t。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float、int32_t。</p>
 </td>
@@ -156,8 +162,26 @@
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001538537601_p98212044172612"><a name="zh-cn_topic_0000001538537601_p98212044172612"></a><a name="zh-cn_topic_0000001538537601_p98212044172612"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
 </td>
 </tr>
+<tr id="row1298025681320"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p179771456161314"><a name="p179771456161314"></a><a name="p179771456161314"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p1977105611138"><a name="p1977105611138"></a><a name="p1977105611138"></a>Power计算的相关配置。此参数可选配，PowerConfig类型，具体定义如下方代码所示，其中参数的含义为：</p>
+<div class="p" id="p4742172411393"><a name="p4742172411393"></a><a name="p4742172411393"></a>algo：不同的数据类型支持的不同的Power算法。该参数支持的取值如下：<a name="ul827932118545"></a><a name="ul827932118545"></a><ul id="ul827932118545"><li>INTRINSIC：默认值。如果数据类型是整型，INTRINSIC算法使用快速幂算法实现Power计算，支持的数据类型为uint8_t、int8_t、uint16_t、int16_t、uint32_t、int32_t。如果数据类型是浮点数类型，INTRINSIC算法按照公式Power(x, y) = exp(y * ln(x))进行Power计算，支持的数据类型为half、float。</li><li>DOUBLE_FLOAT_TECH：DOUBLE_FLOAT_TECH算法是高精度浮点数算法，将源操作数的精度提升后，按照公式Power(x, y) = exp(y * ln(x))进行Power计算，减少计算过程中的精度损失，支持的数据类型为bfloat16_t、half、float。</li></ul>
+</div>
+</td>
+</tr>
 </tbody>
 </table>
+
+```
+enum class PowerAlgo {
+    INTRINSIC = 0,
+    DOUBLE_FLOAT_TECH, 
+};
+
+struct PowerConfig {
+    PowerAlgo algo = PowerAlgo::INTRINSIC;
+};
+```
 
 **表 2**  接口参数说明
 
@@ -321,6 +345,8 @@ private:
         AscendC::LocalTensor<srcType> tmpLocal;
         srcType scalarValue1 = srcLocal1.GetValue(0);
         srcType scalarValue2 = srcLocal2.GetValue(0);
+        // static constexpr AscendC::PowerConfig config = { PowerAlgo::DOUBLE_FLOAT_TECH};
+        // AscendC::Power<srcType, false, config>(dstLocal, scalarValue1, srcLocal2);
         AscendC::Power<srcType, false>(dstLocal, scalarValue1, srcLocal2);
         outQueue.EnQue<srcType>(dstLocal);
         inQueueX1.FreeTensor(srcLocal1);

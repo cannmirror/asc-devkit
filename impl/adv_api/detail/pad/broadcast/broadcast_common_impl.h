@@ -179,8 +179,8 @@ __aicore__ inline void BroadcastCompute(const LocalTensor<T>& dst, const LocalTe
     __ubuf__ BrcType *srcUb = (__ubuf__ BrcType *)src.GetPhyAddr();
     bool isReduceBranch = false;
     if (srcSize == dstSize) {
-        const uint32_t alginSize = ONE_BLK_SIZE / sizeof(T);
-        DataCopy(dst, src, AlignUp(dstSize, alginSize));
+        const uint32_t alignSize = ONE_BLK_SIZE / sizeof(T);
+        DataCopy(dst, src, AlignUp(dstSize, alignSize));
     } else if (srcSize == 1) {
         BroadcastInternal::BrcDuplicate<BrcType>(dstUb, srcUb, dstSize);
     } else {

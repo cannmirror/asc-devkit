@@ -518,7 +518,7 @@ __aicore__ inline void SetAddDeqReluMaskCal(AddDeqReluParams &params)
 }
 
 template <bool isSetMask = true>
-__aicore__ inline void AddDeqReluComput(__ubuf__ half *dst, __ubuf__ int32_t *src0, __ubuf__ int32_t *src1,
+__aicore__ inline void AddDeqReluCompute(__ubuf__ half *dst, __ubuf__ int32_t *src0, __ubuf__ int32_t *src1,
     __ubuf__ int32_t *sharedTmpBuffer, AddDeqReluParams &params)
 {
     // 1、src1+src2(int32_t)
@@ -623,13 +623,13 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
         set_mask_count();
         set_vector_mask(0, static_cast<uint64_t>(params.calcSize));
         for (int i = 0; i < params.mainBlock; i++) {
-            AddDeqReluComput<false>(dst + i * params.dstOffset, src0 + i * params.src0Offset,
+            AddDeqReluCompute<false>(dst + i * params.dstOffset, src0 + i * params.src0Offset,
                 src1 + i * params.src1Offset, sharedTmpBuffer, params);
         }
         if (params.tailSize != 0) {
             params.calcSize = params.tailSize;
             set_vector_mask(0, static_cast<uint64_t>(params.calcSize));
-            AddDeqReluComput<false>(dst + params.tailDstOffset, src0 + params.tailSrc0Offset,
+            AddDeqReluCompute<false>(dst + params.tailDstOffset, src0 + params.tailSrc0Offset,
                 src1 + params.tailSrc1Offset, sharedTmpBuffer, params);
         }
         set_mask_norm();
@@ -647,7 +647,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
         params.maskMode = ADDDEQRELU_MASK_MODE_ONE;
         params.mask1 = mask;
         params.needTmpSize = repeatTime * DEFAULT_BLOCK_SIZE / sizeof(int32_t);
-        // repeatPramas
+        // repeatParams
         params.dstBlkStride = repeatParams.dstBlkStride;
         params.src0BlkStride = repeatParams.src0BlkStride;
         params.src1BlkStride = repeatParams.src1BlkStride;
@@ -660,7 +660,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
             AscendCUtils::SetMask<int32_t>(mask);
         }
         for (int i = 0; i < params.mainBlock; i++) {
-            AddDeqReluComput<isSetMask>(dst + i * params.dstOffset, src0 + i * params.src0Offset,
+            AddDeqReluCompute<isSetMask>(dst + i * params.dstOffset, src0 + i * params.src0Offset,
                 src1 + i * params.src1Offset, sharedTmpBuffer, params);
         }
         if (params.tailSize != 0) {
@@ -668,7 +668,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
                 AscendCUtils::SetMask<int32_t>(mask);
             }
             params.repeat = repeatTime - params.repeat * params.mainBlock;
-            AddDeqReluComput<isSetMask>(dst + params.tailDstOffset, src0 + params.tailSrc0Offset,
+            AddDeqReluCompute<isSetMask>(dst + params.tailDstOffset, src0 + params.tailSrc0Offset,
                 src1 + params.tailSrc1Offset, sharedTmpBuffer, params);
         }
     }
@@ -684,7 +684,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
         params.mask2[0] = mask[0];
         params.mask2[1] = mask[1];
         params.needTmpSize = repeatTime * DEFAULT_BLOCK_SIZE / sizeof(int32_t);
-        // repeatPramas
+        // repeatParams
         params.dstBlkStride = repeatParams.dstBlkStride;
         params.src0BlkStride = repeatParams.src0BlkStride;
         params.src1BlkStride = repeatParams.src1BlkStride;
@@ -698,7 +698,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
             AscendCUtils::SetMask<int32_t>(mask[1], mask[0]);
         }
         for (int i = 0; i < params.mainBlock; i++) {
-            AddDeqReluComput<isSetMask>(dst + i * params.dstOffset, src0 + i * params.src0Offset,
+            AddDeqReluCompute<isSetMask>(dst + i * params.dstOffset, src0 + i * params.src0Offset,
                 src1 + i * params.src1Offset, sharedTmpBuffer, params);
         }
         if (params.tailSize != 0) {
@@ -706,7 +706,7 @@ __aicore__ inline void AddDeqReluImpl(__ubuf__ half *dst, __ubuf__ int32_t *src0
                 AscendCUtils::SetMask<int32_t>(mask[1], mask[0]);
             }
             params.repeat = repeatTime - params.repeat * params.mainBlock;
-            AddDeqReluComput<isSetMask>(dst + params.tailDstOffset, src0 + params.tailSrc0Offset,
+            AddDeqReluCompute<isSetMask>(dst + params.tailDstOffset, src0 + params.tailSrc0Offset,
                 src1 + params.tailSrc1Offset, sharedTmpBuffer, params);
         }
     }

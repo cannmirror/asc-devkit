@@ -3,6 +3,7 @@
 本样例介绍基础API LoadDataWithTranspose b16数据类型下的使用样例。
 
 ## 支持的产品
+- Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 

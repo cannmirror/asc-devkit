@@ -71,7 +71,7 @@ __aicore__ inline void ReduceProdByLastAxis(const LocalTensor<T>& dst, const Loc
 
     BinaryRepeatParams defaultParam;
     UnaryRepeatParams defaultUnaryParam;
-    BrcbRepeatParams defaultBrcbParam;;
+    BrcbRepeatParams defaultBrcbParam;
     LocalTensor<T> resBeforeGather = tmp[elePerRep];
     LocalTensor<T> finalResStored = isReuseSource ? src : resBeforeGather;
 

@@ -70,6 +70,10 @@
 <p id="p78731079565"><a name="p78731079565"></a><a name="p78731079565"></a>场景5：[B, N, S, H/N]</p>
 <p id="p587315712569"><a name="p587315712569"></a><a name="p587315712569"></a>场景6：[B, N, S, H/N]</p>
 <p id="p28731176568"><a name="p28731176568"></a><a name="p28731176568"></a>场景7：[H, W]</p>
+<p id="p1044575742511"><a name="p1044575742511"></a><a name="p1044575742511"></a>场景13:[H, W]或者[N, H, W]</p>
+<p id="p7718391500"><a name="p7718391500"></a><a name="p7718391500"></a>场景14:[N, H, W]</p>
+<p id="p1496384713504"><a name="p1496384713504"></a><a name="p1496384713504"></a>场景15:[N, H, W]</p>
+<p id="p19251043164910"><a name="p19251043164910"></a><a name="p19251043164910"></a>场景16:[H, W]</p>
 </td>
 </tr>
 <tr id="row345112388304"><td class="cellrowborder" valign="top" width="16.661666166616662%" headers="mcps1.2.4.1.1 "><p id="p15369174917543"><a name="p15369174917543"></a><a name="p15369174917543"></a>typeSize</p>
@@ -83,7 +87,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="11.731173117311732%" headers="mcps1.2.4.1.2 "><p id="p5382309610"><a name="p5382309610"></a><a name="p5382309610"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="71.6071607160716%" headers="mcps1.2.4.1.3 "><p id="p133821902616"><a name="p133821902616"></a><a name="p133821902616"></a>选择数据排布及reshape的类型，根据输入数字选择对应的场景，参数范围为[1,7]。</p>
+<td class="cellrowborder" valign="top" width="71.6071607160716%" headers="mcps1.2.4.1.3 "><p id="p133821902616"><a name="p133821902616"></a><a name="p133821902616"></a>选择数据排布及reshape的类型，根据输入数字选择对应的场景，参数范围为[1,7]。针对<span id="ph19585121944410"><a name="ph19585121944410"></a><a name="ph19585121944410"></a>Ascend 950PR/Ascend 950DT</span>，该参数取值范围为[1, 7]和[13, 16]。</p>
 <p id="p1238220010615"><a name="p1238220010615"></a><a name="p1238220010615"></a>场景1（NZ2ND，1、2轴互换）：1</p>
 <p id="p53821703620"><a name="p53821703620"></a><a name="p53821703620"></a>场景2（NZ2NZ，1、2轴互换）：2</p>
 <p id="p1438290461"><a name="p1438290461"></a><a name="p1438290461"></a>场景3（NZ2NZ，尾轴切分）：3</p>
@@ -91,6 +95,10 @@
 <p id="p103822016611"><a name="p103822016611"></a><a name="p103822016611"></a>场景5（NZ2ND，尾轴合并）：5</p>
 <p id="p4382601466"><a name="p4382601466"></a><a name="p4382601466"></a>场景6（NZ2NZ，尾轴合并）：6</p>
 <p id="p14382902614"><a name="p14382902614"></a><a name="p14382902614"></a>场景7（二维转置）：7</p>
+<p id="p2034633510209"><a name="p2034633510209"></a><a name="p2034633510209"></a>场景13 （二维转置或者三维转置中后两维转置）：13</p>
+<p id="p1166183214527"><a name="p1166183214527"></a><a name="p1166183214527"></a>场景14 （三维转置中第一维和第二维互换）：14</p>
+<p id="p62051333185215"><a name="p62051333185215"></a><a name="p62051333185215"></a>场景15 （三维转置中第一维和第三维互换）：15</p>
+<p id="p11702193214711"><a name="p11702193214711"></a><a name="p11702193214711"></a>场景16 （使用交织指令进行两维ND2NZ转置） :16</p>
 </td>
 </tr>
 <tr id="row645253812305"><td class="cellrowborder" valign="top" width="16.661666166616662%" headers="mcps1.2.4.1.1 "><p id="p11369184905416"><a name="p11369184905416"></a><a name="p11369184905416"></a>maxValue</p>
@@ -135,6 +143,10 @@
 <p id="p87301596412"><a name="p87301596412"></a><a name="p87301596412"></a>场景5：[B, N, S, H/N]</p>
 <p id="p97303597419"><a name="p97303597419"></a><a name="p97303597419"></a>场景6：[B, N, S, H/N]</p>
 <p id="p1373013593417"><a name="p1373013593417"></a><a name="p1373013593417"></a>场景7：[H, W]</p>
+<p id="p6769133222216"><a name="p6769133222216"></a><a name="p6769133222216"></a>场景13：[H, W]或者[N, H, W]</p>
+<p id="p1514182475418"><a name="p1514182475418"></a><a name="p1514182475418"></a>场景14:[N, H, W]</p>
+<p id="p01462485419"><a name="p01462485419"></a><a name="p01462485419"></a>场景15:[N, H, W]</p>
+<p id="p1098122417483"><a name="p1098122417483"></a><a name="p1098122417483"></a>场景16 ：[H, W]</p>
 </td>
 </tr>
 <tr id="row4918174934718"><td class="cellrowborder" valign="top" width="20.14%" headers="mcps1.2.4.1.1 "><p id="p79181749144712"><a name="p79181749144712"></a><a name="p79181749144712"></a>stackBufferSize</p>
@@ -155,7 +167,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="18.7%" headers="mcps1.2.4.1.2 "><p id="p491818497475"><a name="p491818497475"></a><a name="p491818497475"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="61.160000000000004%" headers="mcps1.2.4.1.3 "><p id="p15918249174715"><a name="p15918249174715"></a><a name="p15918249174715"></a>选择数据排布及reshape的类型，根据输入数字选择对应的场景，参数范围为[1,7]。</p>
+<td class="cellrowborder" valign="top" width="61.160000000000004%" headers="mcps1.2.4.1.3 "><p id="p15918249174715"><a name="p15918249174715"></a><a name="p15918249174715"></a>选择数据排布及reshape的类型，根据输入数字选择对应的场景，参数范围为[1,7]。<span id="ph136965363454"><a name="ph136965363454"></a><a name="ph136965363454"></a>Ascend 950PR/Ascend 950DT</span>，该参数取值范围为[1, 7]和[13, 16]。</p>
 <p id="p14713177133417"><a name="p14713177133417"></a><a name="p14713177133417"></a>场景1（NZ2ND，1、2轴互换）：1</p>
 <p id="p3223102053419"><a name="p3223102053419"></a><a name="p3223102053419"></a>场景2（NZ2NZ，1、2轴互换）：2</p>
 <p id="p38651924113417"><a name="p38651924113417"></a><a name="p38651924113417"></a>场景3（NZ2NZ，尾轴切分）：3</p>
@@ -163,6 +175,10 @@
 <p id="p131454317346"><a name="p131454317346"></a><a name="p131454317346"></a>场景5（NZ2ND，尾轴合并）：5</p>
 <p id="p7133103511342"><a name="p7133103511342"></a><a name="p7133103511342"></a>场景6（NZ2NZ，尾轴合并）：6</p>
 <p id="p892014371348"><a name="p892014371348"></a><a name="p892014371348"></a>场景7（二维转置）：7</p>
+<p id="p35195132412"><a name="p35195132412"></a><a name="p35195132412"></a>场景13 （二维转置或者三维转置中后两维转置）：13</p>
+<p id="p10871512559"><a name="p10871512559"></a><a name="p10871512559"></a>场景14 （三维转置中第一维和第二维互换）：14</p>
+<p id="p2883125515"><a name="p2883125515"></a><a name="p2883125515"></a>场景15 （三维转置中第一维和第三维互换）：15</p>
+<p id="p4807141918494"><a name="p4807141918494"></a><a name="p4807141918494"></a>场景16（使用交织指令进行两维ND2NZ转置）：16</p>
 </td>
 </tr>
 <tr id="row5849246113010"><td class="cellrowborder" valign="top" width="20.14%" headers="mcps1.2.4.1.1 "><p id="p1849184612302"><a name="p1849184612302"></a><a name="p1849184612302"></a>tiling</p>
@@ -201,13 +217,13 @@
 
     ```
     namespace optiling {
-    const uint32_t BLOCK_DIM = 8;
+    const uint32_t NUM_BLOCKS = 8;
     const uint32_t TILE_NUM = 8;
     static ge::graphStatus TilingFunc(gert::TilingContext* context)
     {
         TilingData tiling;
         uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-        context->SetBlockDim(BLOCK_DIM);
+        context->SetBlockDim(NUM_BLOCKS);
         tiling.set_tileNum(TILE_NUM);
         // 设置其他Tiling参数
         ... 
@@ -230,7 +246,7 @@
     } // namespace optiling
     ```
 
-3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的ConfusionTransposeTiling信息传入Transpose接口参与计算。完整的kernel侧样例请参考[Transpose](Transpose-39.md)。
+3.  对应的kernel侧通过在核函数中调用GET\_TILING\_DATA获取TilingData，继而将TilingData中的ConfusionTransposeTiling信息传入Transpose接口参与计算。完整的kernel侧样例请参考[Transpose](Transpose-97.md)。
 
     ```
     extern "C" __global__ __aicore__ void  func_custom(GM_ADDR src_gm, GM_ADDR dst_gm, GM_ADDR workspace, GM_ADDR tiling)                     

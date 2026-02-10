@@ -585,7 +585,7 @@ class OpCompilation:
                     os.remove(lock_file)
                     logger.debug("Lock file[%s] has been removed.", lock_file)
             except Exception as e:
-                raise RuntimeError("Del lock file [%s] filed, reason: %s." % (lock_file, str(e))) from e
+                raise RuntimeError("Del lock file [%s] field, reason: %s." % (lock_file, str(e))) from e
             finally:
                 pass
 

@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -59,21 +64,23 @@ __aicore__ inline void SetBias(const LocalTensor<BiasT>& inputBias)
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p54761910603"><a name="p54761910603"></a><a name="p54761910603"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p1122321813286"><a name="p1122321813286"></a><a name="p1122321813286"></a>Bias矩阵。<span id="ph15942199192220"><a name="ph15942199192220"></a><a name="ph15942199192220"></a><span id="ph1294215916225"><a name="ph1294215916225"></a><a name="ph1294215916225"></a><span id="ph894279182218"><a name="ph894279182218"></a><a name="ph894279182218"></a>类型为<a href="GlobalTensor.md">GlobalTensor</a>。</span></span></span></p>
+<p id="p5315184745513"><a name="p5315184745513"></a><a name="p5315184745513"></a><span id="ph439012415105"><a name="ph439012415105"></a><a name="ph439012415105"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为:half/bfloat16_t/float/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
 <p id="p17660350113216"><a name="p17660350113216"></a><a name="p17660350113216"></a><span id="ph10660350183213"><a name="ph10660350183213"></a><a name="ph10660350183213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
 <p id="p116811630632"><a name="p116811630632"></a><a name="p116811630632"></a><span id="ph398410521454"><a name="ph398410521454"></a><a name="ph398410521454"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
 <p id="p8741184912319"><a name="p8741184912319"></a><a name="p8741184912319"></a><span id="ph1956110304275"><a name="ph1956110304275"></a><a name="ph1956110304275"></a>Kirin X90</span>，支持的数据类型为：half/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
-<p id="p10199121963712"><a name="p10199121963712"></a><a name="p10199121963712"></a>A矩阵、B矩阵、Bias支持的数据类型组合可参考<a href="Matmul使用说明.md#table1996113269499">Matmul输入输出数据类型的组合说明</a>。</p>
+<p id="p10199121963712"><a name="p10199121963712"></a><a name="p10199121963712"></a>A矩阵、B矩阵、Bias支持的数据类型组合可参考<a href="Matmul使用说明.md#table1996113269499">Matmul输入输出数据类型的组合说明</a>；在MxMatmul场景，A矩阵、B矩阵、Bias支持的数据类型组合可参考MatmulTypeWithScale参数说明。</p>
 </td>
 </tr>
 <tr id="row16491543185617"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p847612101006"><a name="p847612101006"></a><a name="p847612101006"></a>inputBias</p>
 </td>
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p19476010005"><a name="p19476010005"></a><a name="p19476010005"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p837816382280"><a name="p837816382280"></a><a name="p837816382280"></a>Bias矩阵。<span id="ph173308471594"><a name="ph173308471594"></a><a name="ph173308471594"></a><span id="ph9902231466"><a name="ph9902231466"></a><a name="ph9902231466"></a><span id="ph1782115034816"><a name="ph1782115034816"></a><a name="ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECOUT。</span></span></span></p>
+<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p837816382280"><a name="p837816382280"></a><a name="p837816382280"></a>Bias矩阵。<span id="ph173308471594"><a name="ph173308471594"></a><a name="ph173308471594"></a><span id="ph9902231466"><a name="ph9902231466"></a><a name="ph9902231466"></a><span id="ph1782115034816"><a name="ph1782115034816"></a><a name="ph1782115034816"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为TSCM/VECOUT。</span></span></span></p>
+<p id="p31281041131016"><a name="p31281041131016"></a><a name="p31281041131016"></a><span id="ph7128154181016"><a name="ph7128154181016"></a><a name="ph7128154181016"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为:half/bfloat16_t/float/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
 <p id="p17790185515333"><a name="p17790185515333"></a><a name="p17790185515333"></a><span id="ph137907556334"><a name="ph137907556334"></a><a name="ph137907556334"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half/float/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
 <p id="p9442547115515"><a name="p9442547115515"></a><a name="p9442547115515"></a><span id="ph1828183114552"><a name="ph1828183114552"></a><a name="ph1828183114552"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half/float/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
 <p id="p2117194919283"><a name="p2117194919283"></a><a name="p2117194919283"></a><span id="ph201711150202817"><a name="ph201711150202817"></a><a name="ph201711150202817"></a>Kirin X90</span>，支持的数据类型为：half/int32_t，其中仅在A、B的数据类型为int8_t时，Bias的数据类型可以设置为int32_t</p>
-<p id="p145281958144415"><a name="p145281958144415"></a><a name="p145281958144415"></a>A矩阵、B矩阵、Bias支持的数据类型组合可参考<a href="Matmul使用说明.md#table1996113269499">Matmul输入输出数据类型的组合说明</a>。</p>
+<p id="p145281958144415"><a name="p145281958144415"></a><a name="p145281958144415"></a>A矩阵、B矩阵、Bias支持的数据类型组合可参考<a href="Matmul使用说明.md#table1996113269499">Matmul输入输出数据类型的组合说明</a>；在MxMatmul场景，A矩阵、B矩阵、Bias支持的数据类型组合可参考MatmulTypeWithScale参数说明 。</p>
 </td>
 </tr>
 </tbody>
@@ -87,6 +94,7 @@ __aicore__ inline void SetBias(const LocalTensor<BiasT>& inputBias)
 
 -   在Matmul Tiling计算中，必须配置TCubeTiling结构中的[isBias](TCubeTiling结构体.md#p2051215216314)参数为1，即使能Bias后，才能调用本接口设置Bias矩阵。
 -   传入的Bias地址空间大小需要保证不小于singleN。
+-   Bias矩阵的内存逻辑位置为TSCM且数据类型为float或int32\_t时，Bias矩阵的LocalTensor空间必须64字节对齐。
 
 ## 调用示例<a name="section1665082013318"></a>
 

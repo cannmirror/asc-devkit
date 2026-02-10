@@ -29,14 +29,14 @@ __aicore__ inline void ValidateUbL1Address(uint64_t absUbAddr, uint64_t absL1Add
         KERNEL_LOG(KERNEL_ERROR, "absUbAddr is 0x%lx, which should be in range of [0, %u)", absUbAddr, TOTAL_UB_SIZE);
     });
     ASCENDC_ASSERT((static_cast<uint64_t>(absUbAddr + tensorSize) < TOTAL_UB_SIZE), {
-        KERNEL_LOG(KERNEL_ERROR, "absUbAddr is 0x%lx, tensorSize is %u, which exceed the limit of ub %d)", absUbAddr,
+        KERNEL_LOG(KERNEL_ERROR, "absUbAddr is 0x%lx, tensorSize is %u, which exceeds the limit of ub %d)", absUbAddr,
                    tensorSize, TOTAL_UB_SIZE);
     });
     ASCENDC_ASSERT((absL1Addr < TOTAL_L1_SIZE), {
         KERNEL_LOG(KERNEL_ERROR, "absL1Addr is 0x%lx, which should be in range [0, %u)", absL1Addr, TOTAL_L1_SIZE);
     });
     ASCENDC_ASSERT((static_cast<uint64_t>(absL1Addr + tensorSize) < TOTAL_L1_SIZE), {
-        KERNEL_LOG(KERNEL_ERROR, "absL1Addr is 0x%lx, tensorSize is %u, which exceed the limit of l1 %u)", absL1Addr,
+        KERNEL_LOG(KERNEL_ERROR, "absL1Addr is 0x%lx, tensorSize is %u, which exceeds the limit of l1 %u)", absL1Addr,
                    tensorSize, TOTAL_L1_SIZE);
     });
 }
@@ -302,7 +302,7 @@ __aicore__ inline void DataCopyGM2L1ND2NZImplBase(__cbuf__ T* dst, __gm__ T* src
 
         // input params: srcDValue, srcNdMatrixStride                        unit of element nums
         // expected params for ISA: loop1_src_stride, loop4_src_stride       uint of bytes
-        // loop1SrcStride = srcD * sizeof(srcType)     loop4SrcStride = srcNdMatrixStride * sizof(srcType)
+        // loop1SrcStride = srcD * sizeof(srcType)     loop4SrcStride = srcNdMatrixStride * sizeof(srcType)
         uint64_t loop1SrcStride = intriParams.srcDValue * sizeof(T);
         uint64_t loop4SrcStride = intriParams.srcNdMatrixStride * sizeof(T);
         if constexpr (sizeof(T) == B8_BYTE_SIZE) {
@@ -370,7 +370,7 @@ __aicore__ inline void DataCopyGM2L1DN2NZImplBase(__cbuf__ T* dst, __gm__ T* src
 
         // input params: srcDValue, srcDnMatrixStride                        unit of element nums
         // expected params for ISA: loop1_src_stride, loop4_src_stride       uint of bytes
-        // loop1SrcStride = srcD * sizeof(srcType)     loop4SrcStride = srcDnMatrixStride * sizof(srcType)
+        // loop1SrcStride = srcD * sizeof(srcType)     loop4SrcStride = srcDnMatrixStride * sizeof(srcType)
         uint64_t loop1SrcStride = intriParams.srcDValue * sizeof(T);
         uint64_t loop4SrcStride = intriParams.srcDnMatrixStride * sizeof(T);
 
@@ -708,7 +708,7 @@ __aicore__ inline void DataCopyUB2L1ND2NZImpl(__cbuf__ T* dst, __ubuf__ T* src, 
     ASCENDC_ASSERT((intriParams.srcDValue * sizeof(T) % ONE_BLK_SIZE == 0),
                    { KERNEL_LOG(KERNEL_ERROR, "srcDValue must be 32B aligned"); });
     ASCENDC_ASSERT((intriParams.nValue > 0 && intriParams.dValue > 0 && intriParams.srcDValue > 0),
-                   { KERNEL_LOG(KERNEL_ERROR, "nvalue, dValue and srcDValue must be greather 0"); });
+                   { KERNEL_LOG(KERNEL_ERROR, "nvalue, dValue and srcDValue must be greater than 0"); });
     ASCENDC_ASSERT((intriParams.ndNum == 1),
                    { KERNEL_LOG(KERNEL_ERROR, "intriParams.ndNum is %hu, which can only be 1", intriParams.ndNum); });
     if ASCEND_IS_AIV {
@@ -1470,20 +1470,20 @@ template <uint8_t dim, const NdDmaConfig& config>
 __aicore__ inline void SetNDDMALoopInfo(const MultiCopyLoopInfo<dim>& params, const uint8_t idx, uint64_t& padCount,
                                         uint32_t& loopSize, uint64_t& loopStride)
 {
-    constexpr uint8_t loopEncodingOffest = 16;
+    constexpr uint8_t loopEncodingOffset = 16;
     constexpr uint8_t lpEncodingOffset = 16;
     constexpr uint8_t rpEncodingOffset = 8;
-    constexpr uint8_t srcStrideEncodingOffest = 20;
+    constexpr uint8_t srcStrideEncodingOffset = 20;
 
     const uint8_t loopLpSize =
         config.loopLpSize == NdDmaConfig::unsetPad ? params.loopLpSize[idx] : config.loopLpSize;
     const uint8_t loopRpSize =
         config.loopRpSize == NdDmaConfig::unsetPad ? params.loopRpSize[idx] : config.loopRpSize;
 
-    padCount |= static_cast<uint64_t>(loopLpSize & 0xff) << (loopEncodingOffest * idx - lpEncodingOffset);
-    padCount |= static_cast<uint64_t>(loopRpSize & 0xff) << (loopEncodingOffest * idx - rpEncodingOffset);
+    padCount |= static_cast<uint64_t>(loopLpSize & 0xff) << (loopEncodingOffset * idx - lpEncodingOffset);
+    padCount |= static_cast<uint64_t>(loopRpSize & 0xff) << (loopEncodingOffset * idx - rpEncodingOffset);
     loopSize = params.loopSize[idx];
-    loopStride = (params.loopSrcStride[idx] << srcStrideEncodingOffest)
+    loopStride = (params.loopSrcStride[idx] << srcStrideEncodingOffset)
                  | static_cast<uint64_t>(params.loopDstStride[idx] & 0xfffff);
 }
 

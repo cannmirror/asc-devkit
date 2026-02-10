@@ -19,7 +19,7 @@ import argparse
 import const_var
 
 
-DATA_TPYE_DICT = {
+DATA_TYPE_DICT = {
     'float32': 0,
     'float16': 1,
     'int8': 2,
@@ -158,7 +158,7 @@ def get_parameters(info):
     if info:
         if 'dtype' in info:
             data_type = info['dtype']
-            data_type_value = DATA_TPYE_DICT.get(data_type)
+            data_type_value = DATA_TYPE_DICT.get(data_type)
         else:
             data_type_value = 0
         if 'format' in info:
@@ -243,7 +243,7 @@ def insert_all_simplified_keys(root_dir):
         insert_simplified_keys(_json)
 
 
-def args_prase():
+def args_parse():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p',
                         '--path',
@@ -254,7 +254,7 @@ def args_prase():
 
 
 def main():
-    args = args_prase()
+    args = args_parse()
     if not os.path.exists(args.path):
         raise FileNotFoundError(f"The Target path not found: {args.path}\n")
     insert_all_simplified_keys(args.path)

@@ -28,7 +28,7 @@ constexpr MicroAPI::CastTrait castTraitF322F16 = {
 __simd_callee__ inline void MulAdds(MicroAPI::RegTensor<float>& dstReg, MicroAPI::RegTensor<float>& srcReg1,
     MicroAPI::RegTensor<float>& srcReg2, const float scalarValue, MicroAPI::MaskReg& mask)
 {
-    // dst = src1 * src2 + scalerValue
+    // dst = src1 * src2 + scalarValue
     MicroAPI::RegTensor<float> tmpReg;
     MicroAPI::Mul(tmpReg, srcReg1, srcReg2, mask);
     MicroAPI::Adds(dstReg, tmpReg, scalarValue, mask);

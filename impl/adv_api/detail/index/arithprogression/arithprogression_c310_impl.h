@@ -61,7 +61,7 @@ __aicore__ inline void ArithProgressionImpl(const LocalTensor<T> &dstLocal, cons
     ASCENDC_ASSERT((dstLocal.GetSize() >= count),
                    { KERNEL_LOG(KERNEL_ERROR, "dst length must equal with Arange length"); });
     ASCENDC_ASSERT((static_cast<float>(diffValue) >= static_cast<float>(0)),
-                   { KERNEL_LOG(KERNEL_ERROR, "diff value mast bigger then 0"); });
+                   { KERNEL_LOG(KERNEL_ERROR, "diff value must bigger than 0"); });
     static_assert(SupportType<T, int16_t, int32_t, half, float, int64_t>(),
         "current data type is not supported on current device!");
 

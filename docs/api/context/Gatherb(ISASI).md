@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row1272474920205"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p17301775812"><a name="p17301775812"></a><a name="p17301775812"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p37256491200"><a name="p37256491200"></a><a name="p37256491200"></a>√</p>
+</td>
+</tr>
+<tr id="row220181016240"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p48327011813"><a name="p48327011813"></a><a name="p48327011813"></a><span id="ph583230201815"><a name="ph583230201815"></a><a name="ph583230201815"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7948163910184"><a name="p7948163910184"></a><a name="p7948163910184"></a>√</p>
 </td>
@@ -26,7 +31,7 @@
 
 给定一个输入的张量和一个地址偏移张量，本接口根据偏移地址按照DataBlock的粒度将输入张量收集到结果张量中。
 
-![](figures/repeat-times.png)
+![](figures/repeat-times-31.png)
 
 ## 函数原型<a name="section15660625202219"></a>
 
@@ -49,6 +54,7 @@ __aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& 
 <tbody><tr id="zh-cn_topic_0000001429830437_row1835857145817"><td class="cellrowborder" valign="top" width="14.729999999999999%" headers="mcps1.2.3.1.1 "><p id="zh-cn_topic_0000001429830437_p5835457165816"><a name="zh-cn_topic_0000001429830437_p5835457165816"></a><a name="zh-cn_topic_0000001429830437_p5835457165816"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="85.27%" headers="mcps1.2.3.1.2 "><p id="zh-cn_topic_0000001429830437_p168351657155818"><a name="zh-cn_topic_0000001429830437_p168351657155818"></a><a name="zh-cn_topic_0000001429830437_p168351657155818"></a>操作数数据类型。</p>
+<p id="p8391415163219"><a name="p8391415163219"></a><a name="p8391415163219"></a><span id="ph13391315113210"><a name="ph13391315113210"></a><a name="ph13391315113210"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：int8_t/uint8_t/int16_t/uint16_t/int32_t/uint32_t/half/float/bfloat16_t/uint64_t/int64_t</p>
 <p id="p83911715133216"><a name="p83911715133216"></a><a name="p83911715133216"></a><span id="ph739117153324"><a name="ph739117153324"></a><a name="ph739117153324"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：uint16_t/uint32_t</p>
 <p id="p15391121513321"><a name="p15391121513321"></a><a name="p15391121513321"></a><span id="ph539111563220"><a name="ph539111563220"></a><a name="ph539111563220"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：uint16_t/uint32_t</p>
 </td>
@@ -168,82 +174,39 @@ __aicore__ inline void Gatherb(const LocalTensor<T>& dst, const LocalTensor<T>& 
 
 ```
 #include "kernel_operator.h"
+AscendC::TPipe tpipe;
+AscendC::TQue<AscendC::TPosition::VECIN, 2> vecIn;
+AscendC::TQue<AscendC::TPosition::VECIN, 2> vecOffset;
+AscendC::TQue<AscendC::TPosition::VECOUT, 2> vecOut;
 
-class VgatherbCase {
-public:
-    __aicore__ inline VgatherbCase() {}
+uint32_t bufferLen = 0;
 
-    __aicore__ inline void Init(__gm__ uint8_t *x, __gm__ uint8_t *y, __gm__ uint8_t *offset)
-    {
-        x_gm.SetGlobalBuffer(reinterpret_cast<__gm__ uint16_t *>(x));
-        y_gm.SetGlobalBuffer(reinterpret_cast<__gm__ uint16_t *>(y));
-        offset_gm.SetGlobalBuffer(reinterpret_cast<__gm__ uint32_t *>(offset));
+uint32_t len = 128;
+bufferLen = len;
+tpipe.InitBuffer(vecIn, 2, bufferLen * sizeof(uint16_t));
+tpipe.InitBuffer(vecOffset, 2, 8 * sizeof(uint32_t));
+tpipe.InitBuffer(vecOut, 2, bufferLen * sizeof(uint16_t));
 
-        uint32_t len = 128;
-        bufferLen = len;
-        tpipe.InitBuffer(vecIn, 2, bufferLen * sizeof(uint16_t));
-        tpipe.InitBuffer(vecOffset, 2, 8 * sizeof(uint32_t));
-        tpipe.InitBuffer(vecOut, 2, bufferLen * sizeof(uint16_t));
-    }
+auto x_buf = vecIn.AllocTensor<uint16_t>();
+auto offset_buf = vecOffset.AllocTensor<uint32_t>();
+AscendC::DataCopy(x_buf, x_gm[index * bufferLen], bufferLen);
+AscendC::DataCopy(offset_buf, offset_gm[0], 8);
+vecIn.EnQue(x_buf);
+vecOffset.EnQue(offset_buf);
 
-    __aicore__ inline void CopyIn(uint32_t index)
-    {
-        auto x_buf = vecIn.AllocTensor<uint16_t>();
-        auto offset_buf = vecOffset.AllocTensor<uint32_t>();
-        AscendC::DataCopy(x_buf, x_gm[index * bufferLen], bufferLen);
-        AscendC::DataCopy(offset_buf, offset_gm[0], 8);
-        vecIn.EnQue(x_buf);
-        vecOffset.EnQue(offset_buf);
-    }
+auto y_buf = vecOut.DeQue<uint16_t>();
+AscendC::DataCopy(y_gm[index * bufferLen], y_buf, bufferLen);
+vecOut.FreeTensor(y_buf);
 
-    __aicore__ inline void CopyOut(uint32_t index)
-    {
-        auto y_buf = vecOut.DeQue<uint16_t>();
-        AscendC::DataCopy(y_gm[index * bufferLen], y_buf, bufferLen);
-        vecOut.FreeTensor(y_buf);
-    }
-
-    __aicore__ inline void Compute()
-    {
-        auto x_buf = vecIn.DeQue<uint16_t>();
-        auto offset_buf = vecOffset.DeQue<uint32_t>();
-        auto y_buf = vecOut.AllocTensor<uint16_t>();
-        AscendC::GatherRepeatParams params{1, 8};
-        uint8_t repeatTime = bufferLen * sizeof(uint16_t) / 256;
-        AscendC::Gatherb<uint16_t>(y_buf, x_buf, offset_buf, repeatTime, params);
-        vecIn.FreeTensor(x_buf);
-        vecOffset.FreeTensor(offset_buf);
-        vecOut.EnQue(y_buf);
-    }
-
-    __aicore__ inline void Process()
-    {
-        for (int i = 0; i < 1; i++) {
-            CopyIn(i);
-            Compute();
-            CopyOut(i);
-        }
-    }
-
-private:
-    AscendC::GlobalTensor<uint16_t> x_gm;
-    AscendC::GlobalTensor<uint16_t> y_gm;
-    AscendC::GlobalTensor<uint32_t> offset_gm;
-
-    AscendC::TPipe tpipe;
-    AscendC::TQue<AscendC::TPosition::VECIN, 2> vecIn;
-    AscendC::TQue<AscendC::TPosition::VECIN, 2> vecOffset;
-    AscendC::TQue<AscendC::TPosition::VECOUT, 2> vecOut;
-
-    uint32_t bufferLen = 0;
-};
-
-extern "C" __global__ __aicore__ void vgatherb_core(__gm__ uint8_t *x, __gm__ uint8_t *y, __gm__ uint8_t *offset)
-{
-    VgatherbCase op;
-    op.Init(x, y, offset);
-    op.Process();
-}
+auto x_buf = vecIn.DeQue<uint16_t>();
+auto offset_buf = vecOffset.DeQue<uint32_t>();
+auto y_buf = vecOut.AllocTensor<uint16_t>();
+AscendC::GatherRepeatParams params{1, 8};
+uint8_t repeatTime = bufferLen * sizeof(uint16_t) / 256;
+AscendC::Gatherb<uint16_t>(y_buf, x_buf, offset_buf, repeatTime, params);
+vecIn.FreeTensor(x_buf);
+vecOffset.FreeTensor(offset_buf);
+vecOut.EnQue(y_buf);
 ```
 
 结果示例：

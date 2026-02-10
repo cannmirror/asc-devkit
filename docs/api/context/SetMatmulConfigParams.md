@@ -167,7 +167,8 @@ tiling.SetOrgShape(1024, 1024, 1024);
 tiling.SetBias(true);   
 tiling.SetBufferSpace(-1, -1, -1);
 tiling.SetMatmulConfigParams(0);  // 额外设置
-// tiling.SetMatmulConfigParams({1, false, ScheduleType::OUTER_PRODUCT, MatrixTraverse::FIRSTM});
+// matmul_tiling::MatmulConfigParams configParams = {1, false, matmul_tiling::ScheduleType::OUTER_PRODUCT, matmul_tiling::MatrixTraverse::FIRSTM};
+// tiling.SetMatmulConfigParams(configParams);
 optiling::TCubeTiling tilingData;   
 int ret = tiling.GetTiling(tilingData);
 ```

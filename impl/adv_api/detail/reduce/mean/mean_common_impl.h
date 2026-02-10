@@ -31,7 +31,7 @@ __aicore__ inline void MeanCast(const LocalTensor<half>& dstTensor, const LocalT
     const LocalTensor<uint8_t>& sharedTmpBuffer, const MeanParams& meanParams)
 {
     uint32_t elementNumPerRep = FLOAT_NUM_PER;
-    uint32_t repeateTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
+    uint32_t repeatTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
     const UnaryRepeatParams unaryParams;
     float scalarValue = static_cast<float>(1) / static_cast<float>(static_cast<int32_t>(meanParams.n));
     LocalTensor<float> TmpTensor = sharedTmpBuffer.ReinterpretCast<float>();
@@ -46,7 +46,7 @@ __aicore__ inline void MeanCast(const LocalTensor<half>& dstTensor, const LocalT
                                       MASK_PLACEHOLDER, DEFAULT_BLK_STRIDE,
                                       DEFAULT_BLK_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
         PipeBarrier<PIPE_V>();
-        uint32_t reduceNums = repeateTimes;
+        uint32_t reduceNums = repeatTimes;
         while (reduceNums > 1) {
             SetVectorMask<half>(0, reduceNums);
             reduceNums = (reduceNums + elementNumPerRep - 1) / elementNumPerRep;
@@ -95,16 +95,16 @@ __aicore__ inline void MeanCommon(const LocalTensor<T>& dstTensor, const LocalTe
     if constexpr (sizeof(T) == sizeof(half)) {
         elementNumPerRep = HALF_NUM_PER;
     }
-    uint32_t repeateTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
+    uint32_t repeatTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
     T scalarValue = static_cast<T>(static_cast<float>(1) / static_cast<float>(static_cast<int32_t>(meanParams.n)));
     SetMaskCount();
-    if (repeateTimes == 1) {
+    if (repeatTimes == 1) {
         return MeanForOneRepeatTime(dstTensor, srcTensor, meanParams, scalarValue);
     }
     const UnaryRepeatParams unaryParams;
     LocalTensor<T> TmpTensor = sharedTmpBuffer.ReinterpretCast<T>();
     for (uint32_t row = 0; row < meanParams.outter; ++row) {
-        uint32_t reduceNums = repeateTimes;
+        uint32_t reduceNums = repeatTimes;
         SetVectorMask<T>(0, meanParams.n);
         RepeatReduceSum<T, false>(TmpTensor,
             srcTensor[row * meanParams.inner],
@@ -140,8 +140,8 @@ __aicore__ inline void MeanImpl(const LocalTensor<T>& dstTensor, const LocalTens
     uint32_t elementNumPerRep = FLOAT_NUM_PER;
     if constexpr (sizeof(T) == sizeof(half) && sizeof(accType) == sizeof(float))
     {
-        uint32_t repeateTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
-        uint32_t finalWorkSize = meanParams.inner * sizeof(float) + (repeateTimes + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE * ONE_BLK_SIZE;
+        uint32_t repeatTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
+        uint32_t finalWorkSize = meanParams.inner * sizeof(float) + (repeatTimes + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE * ONE_BLK_SIZE;
         CHECK_FUNC_HIGHLEVEL_API(Mean, (T, accType, isReuseSource, isBasicBlock, reduceDim), (dstTensor, srcTensor,
             sharedTmpBuffer, meanParams, finalWorkSize));
         MeanCast(dstTensor, srcTensor, sharedTmpBuffer, meanParams);
@@ -150,8 +150,8 @@ __aicore__ inline void MeanImpl(const LocalTensor<T>& dstTensor, const LocalTens
         if constexpr (sizeof(T) == sizeof(half)) {
             elementNumPerRep = HALF_NUM_PER;
         }
-        uint32_t repeateTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
-        uint32_t finalWorkSize = (repeateTimes + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE * ONE_BLK_SIZE;
+        uint32_t repeatTimes = (meanParams.n + elementNumPerRep - 1) / elementNumPerRep;
+        uint32_t finalWorkSize = (repeatTimes + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE * ONE_BLK_SIZE;
         
         CHECK_FUNC_HIGHLEVEL_API(Mean, (T, accType, isReuseSource, isBasicBlock, reduceDim), (dstTensor, srcTensor,
             sharedTmpBuffer, meanParams, finalWorkSize));

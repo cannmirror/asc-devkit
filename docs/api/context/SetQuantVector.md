@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row113472312122"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p234710320128"><a name="p234710320128"></a><a name="p234710320128"></a><span id="ph103471336127"><a name="ph103471336127"></a><a name="ph103471336127"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p4751940181211"><a name="p4751940181211"></a><a name="p4751940181211"></a>√</p>
+</td>
+</tr>
+<tr id="row1834733191219"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1234716311218"><a name="p1234716311218"></a><a name="p1234716311218"></a><span id="ph434819391213"><a name="ph434819391213"></a><a name="ph434819391213"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p7751240111217"><a name="p7751240111217"></a><a name="p7751240111217"></a>√</p>
 </td>
@@ -37,9 +42,19 @@ Matmul量化场景：在Matmul计算时，左、右矩阵的输入为half或bflo
 
 ## 函数原型<a name="section620mcpsimp"></a>
 
-```
-__aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor)
-```
+-   量化参数的存储位置为GM
+
+    ```
+    __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor)
+    ```
+
+-   量化参数的存储位置为L1 Buffer
+
+    ```
+    __aicore__ inline void SetQuantVector(const LocalTensor<uint64_t>& quantTensor)
+    ```
+
+    -   Kirin X90暂不支持量化参数的存储位置为L1 Buffer。
 
 ## 参数说明<a name="section622mcpsimp"></a>
 
@@ -56,7 +71,7 @@ __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor)
 </td>
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.1.4.1.2 "><p id="p3755148105719"><a name="p3755148105719"></a><a name="p3755148105719"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.1.4.1.3 "><p id="p1754648185714"><a name="p1754648185714"></a><a name="p1754648185714"></a>量化或反量化运算时的参数向量。</p>
+<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.1.4.1.3 "><p id="p1754648185714"><a name="p1754648185714"></a><a name="p1754648185714"></a>量化或反量化运算时的参数向量。参数向量的存储位置为GM或<span id="ph1671514273511"><a name="ph1671514273511"></a><a name="ph1671514273511"></a>L1 Buffer</span>。</p>
 </td>
 </tr>
 </tbody>
@@ -74,14 +89,36 @@ __aicore__ inline void SetQuantVector(const GlobalTensor<uint64_t>& quantTensor)
 
 ## 调用示例<a name="section1665082013318"></a>
 
-```
-GlobalTensor gmQuant;
-...
-REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);
-mm.SetQuantVector(gmQuant);
-mm.SetTensorA(gm_a);
-mm.SetTensorB(gm_b);
-mm.SetBias(gm_bias);
-mm.IterateAll(gm_c);
-```
+-   量化参数的存储位置为GM
+
+    ```
+    GlobalTensor gmQuant;
+    ...
+    REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);
+    mm.SetQuantVector(gmQuant);
+    mm.SetTensorA(gm_a);
+    mm.SetTensorB(gm_b);
+    mm.SetBias(gm_bias);
+    mm.IterateAll(gm_c);
+    ```
+
+-   量化参数的存储位置为L1
+
+    ```
+    GlobalTensor gmQuant;
+    ...
+    TQue<TPosition::C1, 2, 0> qidC1;
+    LocalTensor<uint64_t> bufferQuant;
+    pipe.InitBuffer(qidC1, 1, tiling.singleCoreN * sizeof(uint64_t));
+    REGIST_MATMUL_OBJ(&pipe, GetSysWorkSpacePtr(), mm, &tiling);
+    bufferQuant = qidC1.AllocTensor<uint64_t>();
+    DataCopy(bufferQuant, gmQuant, tiling.singleCoreN);
+    qidC1.EnQue(bufferQuant);
+    LocalTensor<uint64_t> localQuant = qidC1.DeQue<uint64_t>();
+    mm.SetQuantVector(localQuant);
+    mm.SetTensorA(gm_a);
+    mm.SetTensorB(gm_b);
+    mm.SetBias(gm_bias);
+    mm.IterateAll(gm_c);
+    ```
 

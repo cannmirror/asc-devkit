@@ -241,7 +241,7 @@ __aicore__ inline void TPipeBase::AuxShareBufStart(uint32_t mode, uint32_t* shar
 
 #if defined(ASCENDC_CPU_DEBUG) && (ASCENDC_CPU_DEBUG == 1)
     ASCENDC_DEBUG_ASSERT((g_tpipeImpl.shareBufPool_.length[pos] >= shareLens[pos]),
-        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "share buf addr is %u, exceed limits %u", shareLens[pos],
+        KERNEL_LOG_INTERNAL(KERNEL_ERROR, "share buf addr is %u, exceeds the limit %u", shareLens[pos],
                    g_tpipeImpl.shareBufPool_.length[pos]));
 #endif
 }

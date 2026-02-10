@@ -39,6 +39,7 @@
 | [isfinite](./isfinite)               | 本样例演示了基于IsFinite高阶API的算子实现。样例按元素判断输入的浮点数是否非NAN、非INF，输出结果为浮点数或者布尔值 |
 | [isinf](./isinf)                     | 本样例演示了基于IsInf高阶API的算子实现。样例按元素判断输入的浮点数是否为 $\pm$ inf，输出结果为浮点数或布尔值 |
 | [isnan](./isnan)                     | 本样例演示了基于IsNan高阶API的算子实现。样例按元素判断输入的浮点数是否为nan，输出结果为浮点数或布尔值 |
+| [leaky_relu](./leaky_relu)           | 本样例基于LeakyRelu实现激活函数，可用于对输入tensor按元素执行Leaky Relu（Leaky Rectified Liner Unit）操作 |
 | [lgamma](./lgamma)                   | 本样例演示了基于Lgamma高阶API的算子实现。样例按元素计算x的gamma函数的绝对值并求自然对数 |
 | [log](./log)                         | 本样例演示了基于Log高阶API的算子实现。样例按元素以e、2、10为底做对数运算 |
 | [logicaland](./logicaland)           | 本样例演示了基于LogicalAnd高阶API的算子实现。样例按元素进行与操作，输入数据类型不是bool时，零被视为False，非零数据被视为True |

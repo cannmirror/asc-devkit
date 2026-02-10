@@ -35,16 +35,16 @@ struct ascend_kernels {
 
 extern "C" {
 uint32_t RegisterAscendBinary(const char *fileBuf, size_t fileSize, uint32_t type, void **handle);
-uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t blockDim, void **args,
+uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t numBlocks, void **args,
                             uint32_t size, const void *stream);
 uint32_t GetAscendCoreSyncAddr(void **addr);
 int UnregisterAscendBinary(void *hdl);
 void StartAscendProf(const char *name, uint64_t *startTime);
-void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
+void ReportAscendProf(const char *name, uint32_t numBlocks, uint32_t taskType, const uint64_t startTime);
 bool GetAscendProfStatus();
 uint32_t AllocAscendMemDevice(void **devMem, uint64_t size);
 uint32_t FreeAscendMemDevice(void *devMem);
-uint32_t PrintAscendKernel(void *stream, void *dumpAddr, uint64_t dumpSizePerCore, uint32_t blockDim, uint32_t taskType);
+uint32_t PrintAscendKernel(void *stream, void *dumpAddr, uint64_t dumpSizePerCore, uint32_t numBlocks, uint32_t taskType);
 void AscendProfRegister();
 }
 
@@ -87,7 +87,7 @@ struct TilingStruct {
 };
 
 
-extern "C" uint32_t aclrtlaunch_test_kernel_entry_mix_aic(uint32_t blockDim, void* stream, void* x1, void* x2, void* x3, float x4, void* x5, void* x6, void* y, void* workspace)
+extern "C" uint32_t aclrtlaunch_test_kernel_entry_mix_aic(uint32_t numBlocks, void* stream, void* x1, void* x2, void* x3, float x4, void* x5, void* x6, void* y, void* workspace)
 {
     uint32_t ret;
     struct {
@@ -122,21 +122,21 @@ extern "C" uint32_t aclrtlaunch_test_kernel_entry_mix_aic(uint32_t blockDim, voi
     if (profStatus) {
         StartAscendProf(name, &startTime);
     }
-    ret = LaunchAscendKernel(g_kernel_handle, 0, blockDim, (void **)&args, sizeof(args), stream);
+    ret = LaunchAscendKernel(g_kernel_handle, 0, numBlocks, (void **)&args, sizeof(args), stream);
     if (ret != 0) {
         printf("LaunchAscendKernel ret %u\n", ret);
     }
     if (profStatus) {
-        ReportAscendProf(name, blockDim, 0, startTime);
+        ReportAscendProf(name, numBlocks, 0, startTime);
     }
 #ifdef  ASCENDC_DUMP
-    PrintAscendKernel(stream, args.dump, ASCENDC_DUMP_SIZE, blockDim, 0);
+    PrintAscendKernel(stream, args.dump, ASCENDC_DUMP_SIZE, numBlocks, 0);
     FreeAscendMemDevice(args.dump);
 #endif
     return ret;
 }
 
-extern "C" uint32_t aclrtlaunch_test_kernel_entry_mix_aiv(uint32_t blockDim, void* stream, void* x1, void* x2, void* x3, float x4, void* x5, void* x6, void* y, void* workspace, TilingStruct* tiling)
+extern "C" uint32_t aclrtlaunch_test_kernel_entry_mix_aiv(uint32_t numBlocks, void* stream, void* x1, void* x2, void* x3, float x4, void* x5, void* x6, void* y, void* workspace, TilingStruct* tiling)
 {
     uint32_t ret;
     struct {
@@ -173,15 +173,15 @@ extern "C" uint32_t aclrtlaunch_test_kernel_entry_mix_aiv(uint32_t blockDim, voi
     if (profStatus) {
         StartAscendProf(name, &startTime);
     }
-    ret = LaunchAscendKernel(g_kernel_handle, 1, blockDim, (void **)&args, sizeof(args), stream);
+    ret = LaunchAscendKernel(g_kernel_handle, 1, numBlocks, (void **)&args, sizeof(args), stream);
     if (ret != 0) {
         printf("LaunchAscendKernel ret %u\n", ret);
     }
     if (profStatus) {
-        ReportAscendProf(name, blockDim, 0, startTime);
+        ReportAscendProf(name, numBlocks, 0, startTime);
     }
 #ifdef  ASCENDC_DUMP
-    PrintAscendKernel(stream, args.dump, ASCENDC_DUMP_SIZE, blockDim, 0);
+    PrintAscendKernel(stream, args.dump, ASCENDC_DUMP_SIZE, numBlocks, 0);
     FreeAscendMemDevice(args.dump);
 #endif
     return ret;

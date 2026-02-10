@@ -57,6 +57,10 @@ bool GetTopKMaxMinTmpSize(const platform_ascendc::PlatformAscendC& ascendcPlatfo
 ```
 
 ```
+bool GetTopKMaxMinTmpSize(const int32_t inner, const int32_t outter, const int32_t k, const bool isReuseSource, const bool isInitIndex, enum TopKMode mode, const bool isLargest, ge::DataType dataType, const TopKConfig& config, uint32_t& maxValue, uint32_t& minValue)
+```
+
+```
 bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, const int32_t inner, const int32_t outter, const int32_t k, const uint32_t dataTypeSize, const bool isInitIndex, enum TopKMode mode, const bool isLargest, optiling::TopkTiling& topKTiling)
 ```
 
@@ -98,6 +102,13 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, co
 <td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p15852015175111"><a name="p15852015175111"></a><a name="p15852015175111"></a>表示TopK接口输入srcLocal的外轴长度。</p>
 </td>
 </tr>
+<tr id="row15274173155912"><td class="cellrowborder" valign="top" width="16.869999999999997%" headers="mcps1.2.4.1.1 "><p id="p995153814592"><a name="p995153814592"></a><a name="p995153814592"></a>k</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p139518389595"><a name="p139518389595"></a><a name="p139518389595"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p1895183825919"><a name="p1895183825919"></a><a name="p1895183825919"></a>获取前k个最大值或最小值及其对应的索引。</p>
+</td>
+</tr>
 <tr id="row2725181895118"><td class="cellrowborder" valign="top" width="16.869999999999997%" headers="mcps1.2.4.1.1 "><p id="p103833446514"><a name="p103833446514"></a><a name="p103833446514"></a>isReuseSource</p>
 </td>
 <td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p872519182513"><a name="p872519182513"></a><a name="p872519182513"></a>输入</p>
@@ -124,6 +135,36 @@ bool TopKTilingFunc(const platform_ascendc::PlatformAscendC& ascendcPlatform, co
 <td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p198588170521"><a name="p198588170521"></a><a name="p198588170521"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p585831725214"><a name="p585831725214"></a><a name="p585831725214"></a>表示降序/升序，true表示降序，false表示升序。与kernel侧接口一致。</p>
+</td>
+</tr>
+<tr id="row106551243010"><td class="cellrowborder" valign="top" width="16.869999999999997%" headers="mcps1.2.4.1.1 "><p id="p1865594506"><a name="p1865594506"></a><a name="p1865594506"></a>dataType</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p1765674105"><a name="p1765674105"></a><a name="p1765674105"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p206561415018"><a name="p206561415018"></a><a name="p206561415018"></a>表示待排序数据的数据类型。该参数的取值与Kernel接口参数srcLocal的数据类型保持一致。</p>
+</td>
+</tr>
+<tr id="row69871728191512"><td class="cellrowborder" valign="top" width="16.869999999999997%" headers="mcps1.2.4.1.1 "><p id="p1498802818152"><a name="p1498802818152"></a><a name="p1498802818152"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="10.63%" headers="mcps1.2.4.1.2 "><p id="p199881628191512"><a name="p199881628191512"></a><a name="p199881628191512"></a>输入</p>
+</td>
+<td class="cellrowborder" valign="top" width="72.5%" headers="mcps1.2.4.1.3 "><p id="p4979658192614"><a name="p4979658192614"></a><a name="p4979658192614"></a>TopK计算的相关配置，包括算法选择、取最大值或最小值、是否对结果排序。该参数的配置需要与TopK Kernel接口模板参数的配置保持一致。</p>
+<a name="ul1239918433297"></a><a name="ul1239918433297"></a><ul id="ul1239918433297"><li>algo：选择的排序算法。默认为MERGE_SORT算法，当前仅支持RADIX_SELECT算法，用户需要显式指定algo为TopKAlgo::RADIX_SELECT。</li><li>order：表示获取前k个最大值或者获取前k个最小值，取值如下：<a name="ul425516518113"></a><a name="ul425516518113"></a><ul id="ul425516518113"><li>UNSET：默认值，按照函数参数isLargest的配置实现。isLargest为true时，取前k个最大值及其对应的索引，isLargest为false，取前k个最小值及其对应的索引。</li><li>LARGEST：表示取前k个最大值及其对应的索引。取值为LARGEST时，函数参数isLargest的配置不生效。</li><li>SMALLEST：表示取前k个最小值及其对应的索引。取值为SMALLEST时，函数参数isLargest的配置不生效。</li></ul>
+</li><li>sorted：表示是否对输出结果进行排序。取值为true，对输出结果进行排序；取值为false，不对输出结果进行排序。</li></ul>
+<a name="screen1563331371317"></a><a name="screen1563331371317"></a><pre class="screen" codetype="Cpp" id="screen1563331371317">struct TopKConfig {
+    TopKAlgo algo = TopKAlgo::MERGE_SORT;
+    TopKOrder order = TopKOrder::UNSET;
+    bool sorted = true;
+};
+enum class TopKAlgo {
+    RADIX_SELECT,
+    MERGE_SORT
+};
+enum class TopKOrder {
+    UNSET,
+    LARGEST,
+    SMALLEST
+};</pre>
 </td>
 </tr>
 <tr id="row747183111226"><td class="cellrowborder" valign="top" width="16.869999999999997%" headers="mcps1.2.4.1.1 "><p id="p17472103152216"><a name="p17472103152216"></a><a name="p17472103152216"></a>dataTypeSize</p>
@@ -266,11 +307,11 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
     }
     ```
 
-2.  Tiling实现函数中，首先调用GetTopKMaxMinTmpSize接口获取TopK接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小；然后根据输入shape等信息获取TopK kernel侧接口所需tiling参数。
+2.  Tiling实现函数中，首先调用GetTopKMaxMinTmpSize接口获取TopK接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小；然后根据输入shape等信息获取TopK kernel侧接口所需tiling参数。MERGE\_SORT算法参考如下调用示例。
 
     ```
     namespace optiling {
-    const uint32_t BLOCK_DIM = 8;
+    const uint32_t NUM_BLOCKS = 8;
     const uint32_t TILE_NUM = 8;
     const int32_t OUTTER = 2;
     const int32_t INNER = 32;
@@ -283,7 +324,7 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
     {
         TilingData tiling;
         uint32_t totalLength = context->GetInputTensor(0)->GetShapeSize();
-        context->SetBlockDim(BLOCK_DIM);
+        context->SetBlockDim(NUM_BLOCKS);
         tiling.set_totalLength(totalLength);
         tiling.set_tileNum(TILE_NUM);
         tiling.set_k(K);
@@ -309,6 +350,78 @@ TopKTilingFunc返回值为true/false，true表示成功拿到TopK的Tiling各项
         currentWorkspace[0] = 0;
         return ge::GRAPH_SUCCESS;
     }
+    } // namespace optiling
+    ```
+
+    RADIX\_SELECT算法参考如下调用示例。
+
+    ```
+    namespace optiling
+    {
+        static ge::graphStatus TilingFunc(gert::TilingContext *context)
+        {
+            std::map<ge::DataType, uint32_t> dtypeSizes = {
+                {ge::DataType::DT_UINT32, 4},
+                {ge::DataType::DT_INT32, 4}
+            };
+            RadixtopkCustomTilingData tiling;
+            const gert::RuntimeAttrs *attrs = context->GetAttrs();
+            const uint32_t is_init_index = *(attrs->GetAttrPointer<uint32_t>(0));
+            const uint32_t is_reuse_src = *(attrs->GetAttrPointer<uint32_t>(1));
+            const uint32_t order = *(attrs->GetAttrPointer<uint32_t>(2));
+            const uint32_t is_largest = *(attrs->GetAttrPointer<uint32_t>(3));
+            const uint32_t outter = *(attrs->GetAttrPointer<uint32_t>(4));
+            const uint32_t inner = *(attrs->GetAttrPointer<uint32_t>(5));
+            const uint32_t n = *(attrs->GetAttrPointer<uint32_t>(6));
+            const uint32_t k = *(attrs->GetAttrPointer<uint32_t>(7));
+            const uint32_t k_pad = *(attrs->GetAttrPointer<uint32_t>(8));
+            const uint32_t sorted = *(attrs->GetAttrPointer<uint32_t>(9));
+            const uint32_t top_mode = *(attrs->GetAttrPointer<uint32_t>(10));
+    
+            auto xDType = context->GetInputTensor(0)->GetDataType();
+            uint32_t typeSize = dtypeSizes.at(xDType);
+            AscendC::TopKConfig config;
+            config.algo = AscendC::TopKAlgo::RADIX_SELECT;
+            if (order == 1) {
+                config.order = AscendC::TopKOrder::LARGEST;
+            } else if (order == 2) {
+                config.order = AscendC::TopKOrder::SMALLEST;
+            } else {
+                config.order = AscendC::TopKOrder::UNSET;
+            }
+            if (sorted == 0) {
+                config.sorted = false;
+            } else {
+                config.sorted = true;
+            }
+            uint32_t maxValue = 0;
+            uint32_t minValue = 0;
+     
+            if (top_mode == 0) {
+                AscendC::GetTopKMaxMinTmpSize(inner, outter, k, is_reuse_src, is_init_index, AscendC::TopKMode::TOPK_NORMAL, is_largest, xDType, config, maxValue, minValue);
+                context->SetTilingKey(0);
+            } else {
+                AscendC::GetTopKMaxMinTmpSize(inner, outter, k, is_reuse_src, is_init_index, AscendC::TopKMode::TOPK_NSMALL, is_largest, xDType, config, maxValue, minValue);
+                context->SetTilingKey(1);
+            }
+            context->SetBlockDim(1);
+            tiling.set_is_init_index(is_init_index);
+            tiling.set_is_reuse_src(is_reuse_src);
+            tiling.set_order(order);
+            tiling.set_is_largest(is_largest);
+            tiling.set_outter(outter);
+            tiling.set_inner(inner);
+            tiling.set_n(n);
+            tiling.set_k(k);
+            tiling.set_k_pad(k_pad);
+            tiling.set_sorted(sorted);
+            tiling.set_top_mode(top_mode);
+            tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());
+            context->GetRawTilingData()->SetDataSize(tiling.GetDataSize());
+            size_t *currentWorkspace = context->GetWorkspaceSizes(1);
+            currentWorkspace[0] = 0;
+            return ge::GRAPH_SUCCESS;
+        }
     } // namespace optiling
     ```
 

@@ -51,7 +51,7 @@
 
   - tiling实现
 
-    broadcast算子的tiling实现流程如下：首先获取input和output的二维shape，然后将其与广播的轴、input/ouput tensor的维度填充到TilingData中。
+    broadcast算子的tiling实现流程如下：首先获取input和output的二维shape，然后将其与广播的轴、input/output tensor的维度填充到TilingData中。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

@@ -16,6 +16,7 @@
 #define ASCENDC_MODULE_OPERATOR_VEC_DUPLICATE_INTERFACE_IMPL_H
 #include "kernel_tensor.h"
 #include "kernel_check.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_duplicate_impl.h"
@@ -58,6 +59,9 @@ template <typename T, bool isSetMask>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, uint64_t mask,
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecDupInfo(dst, mask, repeatTime, dstBlockStride, dstRepeatStride, isSetMask, "Duplicate");
+#endif
     CheckDuplicateSupportedType<T>();
 #if ASCENDC_CPU_DEBUG
     MaskSetter::Instance().SetMask(isSetMask);
@@ -73,6 +77,9 @@ template <typename T, bool isSetMask>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, uint64_t mask[],
     const uint8_t repeatTime, const uint16_t dstBlockStride, const uint8_t dstRepeatStride)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecDupInfo(dst, mask[0], mask[1], repeatTime, dstBlockStride, dstRepeatStride, isSetMask, "Duplicate");
+#endif
     CheckDuplicateSupportedType<T>();
 #if ASCENDC_CPU_DEBUG
     MaskSetter::Instance().SetMask(isSetMask);
@@ -94,6 +101,9 @@ __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue
 template <typename T>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, const int32_t& count)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecDupInfo(dst, count, "Duplicate");
+#endif
     CheckDuplicateSupportedType<T>();
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunDup(dst, count, "Duplicate")) {
@@ -115,6 +125,9 @@ template <typename T>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const int32_t& count)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecDupInfo(dst, count, "Duplicate");
+#endif
     using PrimType = PrimT<T>;
     CheckDuplicateSupportedType<PrimType>();
 #if ASCENDC_CPU_DEBUG

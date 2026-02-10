@@ -143,7 +143,9 @@ void GetNormalizeMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
         uint32_t minTmpsize = 0;
         
         AscendC::GetNormalizeMaxMinTmpSize(srcShape, typeSizeU, typeSizeT, false, true, isOnlyOutput, maxTmpsize, minTmpsize);
-        
+        // auto ascendcPlatform = platform_ascendc::PlatformAscendC(context->GetPlatformInfo());
+        // AscendC::GetNormalizeMaxMinTmpSize(srcShape, typeSizeU, typeSizeT, false, true, isOnlyOutput, ascendcPlatform, maxTmpsize, minTmpsize);
+    
         ... // 其他逻辑
         context->SetTilingKey(1);
         tiling.SaveToBuffer(context->GetRawTilingData()->GetData(), context->GetRawTilingData()->GetCapacity());

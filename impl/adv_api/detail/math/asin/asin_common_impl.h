@@ -58,7 +58,7 @@ __aicore__ inline void AsinTaylorCompute(const LocalTensor<T>& dst, const LocalT
     Muls<T, false>(dst, dst, static_cast<T>(kCOEF[ASIN_TAYLOR_EXPAND_COUNT]), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     for (uint32_t i = ASIN_TAYLOR_EXPAND_COUNT - 1; i > 0; i--) {
-        // Accumlates nth Taylor Expansion item.
+        // Accumulates nth Taylor Expansion item.
         Adds<T, false>(dst, dst, static_cast<T>(kCOEF[i]), MASK_PLACEHOLDER, 1, unaryParams);
         PipeBarrier<PIPE_V>();
         Mul<T, false>(dst, dst, localTemp, MASK_PLACEHOLDER, 1, binaryParams);
@@ -82,7 +82,7 @@ __aicore__ inline void AsinTaylorComputeBySquareValue(const LocalTensor<T>& dst,
     Muls<T, false>(dst, dst, static_cast<T>(kCOEF[ASIN_TAYLOR_EXPAND_COUNT]), MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
     for (uint32_t i = ASIN_TAYLOR_EXPAND_COUNT - 1; i > 0; i--) {
-        // Accumlates nth Taylor Expansion item.
+        // Accumulates nth Taylor Expansion item.
         Adds<T, false>(dst, dst, static_cast<T>(kCOEF[i]), MASK_PLACEHOLDER, 1, unaryParams);
         PipeBarrier<PIPE_V>();
         Mul<T, false>(dst, dst, src, MASK_PLACEHOLDER, 1, binaryParams);
@@ -291,7 +291,7 @@ template <>
 __aicore__ inline void AsinCompute<half>(const LocalTensor<half>& dst, const LocalTensor<half>& src,
     const LocalTensor<half>& tmpBuffer, uint32_t calSize)
 {
-    // Due to using half type to computing the above formula, it doesn't statisify the precision standard,
+    // Due to using half type to computing the above formula, it doesn't satisfy the precision standard,
     // upcast to float for getting more precise results.
     AsinFp16Compute(dst, src, tmpBuffer, calSize);
 }

@@ -803,7 +803,7 @@ __aicore__ static inline void CheckCastDatatype() {
         "Failed to check dtype in Cast, current api support dtype combination is src: half, dst: int32_t / int16_t / "
         "float / int8_t / uint8_t / int4b_t; src: float, dst: float / int32_t/ half / int64_t / int16_t / bfloat16_t; "
         "src: bfloat16_t, dst: float / int32_t; src: int4b_t, dst: half; src: uint8_t, dst: half; "
-        "src: int 8_t, dst: half; src: int16_t, dst: half / float; src: int32_t, dst: float / int16_t / int64_t; "
+        "src: int8_t, dst: half; src: int16_t, dst: half / float; src: int32_t, dst: float / int16_t / int64_t; "
         "src: int64_t, dst: int32_t / float / half");});
 }
 

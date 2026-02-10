@@ -70,7 +70,7 @@ def gen_custom_source_files(args):
             if args.op_kernel_dir is not None:
                 flag = is_relative_path(args.op_kernel_dir)
                 if not flag:
-                    print("[ERROR] op kernel dir shoule be relative path to kernel base dir")
+                    print("[ERROR] op kernel dir should be relative path to kernel base dir")
                     return flag
                 fd.write("kernel_dir=" + args.op_kernel_dir + '\n')
             if args.op_kernel_file is not None:

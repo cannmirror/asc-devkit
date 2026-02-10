@@ -66,7 +66,7 @@ private:
     {
         if constexpr (MatmulFeatureTrait<MM_CFG>::IsNeedUB() && IsSameType<TransT, int8_t>::value &&
                       IsSameType<B_T, int8_t>::value) {
-            return; // transPose is true, MTE1 is load2d
+            return; // transpose is true, MTE1 is load2d
         }
         if (!isBTranspose) {
             uint16_t wAlign = CeilAlign(bL1K, HW_M0);

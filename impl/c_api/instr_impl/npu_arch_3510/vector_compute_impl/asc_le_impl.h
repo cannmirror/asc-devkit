@@ -23,7 +23,7 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_LE_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_VECTOR_COMPUTE_IMPL_ASC_LE_IMPL_H
 
-#include "impl/c_api/instr_impl/npu_arch_3510/utils_impl.h"
+#include "instr_impl/npu_arch_3510/utils_impl.h"
 
 __simd_callee__ inline void asc_le_impl(vector_bool& dst, vector_uint8_t src0, vector_uint8_t src1, vector_bool mask)
 {
@@ -81,6 +81,12 @@ __simd_callee__ inline void asc_le_impl(vector_bool& dst, vector_float src0, vec
     }
 }
 
+__simd_callee__ inline void asc_le_impl(vector_bool& dst, vector_bfloat16_t src0, vector_bfloat16_t src1, vector_bool mask)
+{
+    if ASC_IS_AIV {
+        vcmp_le(dst, src0, src1, mask);
+    }
+}
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)

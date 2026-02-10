@@ -861,9 +861,11 @@ public:
         }
         ASSERT(enAtomic == 0);
         ASSERT(kfcMsg_.body.isFirstIter == 1);
-        kfcMsg_.body.cAddr = GetTscmAddr(ubCmatrix);
         if (ubCmatrix.GetPosition() == static_cast<int32_t>(TPosition::TSCM)) {
+            kfcMsg_.body.cAddr = GetTscmAddr(ubCmatrix);
             kfcMsg_.body.cIsTscm = 1;
+        } else {
+            kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(ubCmatrix.GetPhyAddr());
         }
         kfcMsg_.body.enAtomic = (uint8_t)(enAtomic);
         kfcMsg_.body.sync = sync;
@@ -982,7 +984,7 @@ public:
             "IterateBatch not support when enableMixDualMaster is enabled");
         TRACE_START(TraceId::KFC_CLIENT_POST_MSG);
         ASSERT(kfcMsg_.body.isFirstIter == 1);
-        ASSERT(!(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateBatch not support when when sameab"
+        ASSERT(!(A_TYPE::ibShare && B_TYPE::ibShare) && "IterateBatch not support when sameab"
                                                         " is enabled");
         kfcMsg_.body.cAddr = reinterpret_cast<uint64_t>(gm.GetPhyAddr());
         kfcMsg_.body.enSequentialWrite = enSequentialWrite;

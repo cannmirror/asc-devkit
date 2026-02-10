@@ -32,12 +32,12 @@ struct ascend_kernels {
 
 extern "C" {
 uint32_t RegisterAscendBinary(const char *fileBuf, size_t fileSize, uint32_t type, void **handle);
-uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t blockDim, void **args,
+uint32_t LaunchAscendKernel(void *handle, const uint64_t key, const uint32_t numBlocks, void **args,
                             uint32_t size, const void *stream);
 uint32_t GetAscendCoreSyncAddr(void **addr);
 int UnregisterAscendBinary(void *hdl);
 void StartAscendProf(const char *name, uint64_t *startTime);
-void ReportAscendProf(const char *name, uint32_t blockDim, uint32_t taskType, const uint64_t startTime);
+void ReportAscendProf(const char *name, uint32_t numBlocks, uint32_t taskType, const uint64_t startTime);
 bool GetAscendProfStatus();
 uint32_t AllocAscendMemDevice(void **devMem, uint64_t size);
 uint32_t FreeAscendMemDevice(void *devMem);
@@ -45,7 +45,7 @@ bool AscendCheckSoCVersion(const char *socVersion, char* errMsg);
 void AscendProfRegister();
 uint32_t GetCoreNumForMixVectorCore(uint32_t *aiCoreNum, uint32_t *vectorCoreNum);
 uint32_t LaunchAscendKernelForVectorCore(const char *opType, void *handle, const uint64_t key, void **args, uint32_t size,
-    const void *stream, bool enbaleProf, uint32_t aicBlockDim, uint32_t aivBlockDim, uint32_t aivBlockDimOffset);
+    const void *stream, bool enableProf, uint32_t aicNumBlocks, uint32_t aivNumBlocks, uint32_t aivNumBlocksOffset);
 }
 
 namespace Adx {
@@ -110,7 +110,7 @@ struct AddCustomTilingData {
 
 
 
-uint32_t launch_and_profiling_add_custom(uint64_t func_key, uint32_t blockDim, void* stream, void **args, uint32_t size)
+uint32_t launch_and_profiling_add_custom(uint64_t func_key, uint32_t numBlocks, void* stream, void **args, uint32_t size)
 {
     uint64_t startTime;
     const char *name = "add_custom";
@@ -122,17 +122,17 @@ uint32_t launch_and_profiling_add_custom(uint64_t func_key, uint32_t blockDim, v
         printf("[ERROR] %s\n", ascendcErrMsg);
         return 0;
     }
-    uint32_t ret = LaunchAscendKernel(g_kernel_handle_aiv, func_key, blockDim, args, size, stream);
+    uint32_t ret = LaunchAscendKernel(g_kernel_handle_aiv, func_key, numBlocks, args, size, stream);
     if (ret != 0) {
         printf("LaunchAscendKernel ret %u\n", ret);
     }
     if (profStatus) {
-        ReportAscendProf(name, blockDim, 1, startTime);
+        ReportAscendProf(name, numBlocks, 1, startTime);
     }
     return ret;
 }
 
-extern "C" uint32_t aclrtlaunch_add_custom(uint32_t blockDim, void* stream, bool bool_1, bool bool_2, uint32_t uint32_1, A* tmpStruct, uint16_t uint16_1, void* x, void* y, void* z, AddCustomTilingData* tiling)
+extern "C" uint32_t aclrtlaunch_add_custom(uint32_t numBlocks, void* stream, bool bool_1, bool bool_2, uint32_t uint32_1, A* tmpStruct, uint16_t uint16_1, void* x, void* y, void* z, AddCustomTilingData* tiling)
 {
     struct {
     #if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
@@ -168,7 +168,7 @@ extern "C" uint32_t aclrtlaunch_add_custom(uint32_t blockDim, void* stream, bool
     (void) memcpy_s(&__ascendc_args.tiling, sizeof(__ascendc_args.tiling), tiling, sizeof(__ascendc_args.tiling));
 
     const char *__ascendc_name = "add_custom";
-    __ascendc_ret = launch_and_profiling_add_custom(0, blockDim, stream, (void **)&__ascendc_args, sizeof(__ascendc_args));
+    __ascendc_ret = launch_and_profiling_add_custom(0, numBlocks, stream, (void **)&__ascendc_args, sizeof(__ascendc_args));
     KernelHandleGradUnregister::GetInstance();
 #if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON
     Adx::AdumpPrintWorkSpace(__ascendc_args.__ascendc_dump, __ascendc_one_core_dump_size * 75, stream, __ascendc_name);

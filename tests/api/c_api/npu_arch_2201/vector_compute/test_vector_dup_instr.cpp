@@ -25,8 +25,7 @@ protected:                                                                      
 namespace {                                                                                     \
                                                                                                 \
 void cce_name##_##data_type##_uint8_t_uint16_t_uint16_t_uint16_t_uint16_t_Stub(__ubuf__ data_type *dst,   \
-                data_type src, uint8_t repeat,                                                  \
-                uint16_t dst_block_stride, uint16_t src_block_stride,                           \
+                data_type src, uint8_t repeat, uint16_t dst_block_stride, uint16_t src_block_stride,\
                 uint16_t dst_repeat_stride, uint16_t src_repeat_stride)                         \
 {                                                                                               \
     EXPECT_EQ(dst, reinterpret_cast<__ubuf__ data_type *>(11));                                 \
@@ -35,13 +34,12 @@ void cce_name##_##data_type##_uint8_t_uint16_t_uint16_t_uint16_t_uint16_t_Stub(_
     EXPECT_EQ(dst_block_stride, static_cast<uint16_t>(1));                                      \
     EXPECT_EQ(src_block_stride, static_cast<uint16_t>(1));                                      \
     EXPECT_EQ(dst_repeat_stride, static_cast<uint16_t>(8));                                     \
-    EXPECT_EQ(src_repeat_stride, static_cast<uint16_t>(8));                                     \
+    EXPECT_EQ(src_repeat_stride, static_cast<uint16_t>(0));                                     \
 }                                                                                               \
                                                                                                 \
 void  cce_name##_##data_type##_##data_type##_##data_type##_uint64_t_Stub(__ubuf__ data_type *dst,   \
                 data_type src, uint8_t repeat,                                                  \
-                uint16_t dst_block_stride, uint16_t src_block_stride,                           \
-                uint16_t dst_repeat_stride, uint16_t src_repeat_stride)                         \
+                uint16_t dst_block_stride, uint16_t dst_repeat_stride)                          \
 {                                                                                               \
     EXPECT_EQ(dst, reinterpret_cast<__ubuf__ data_type *>(11));                                 \
     EXPECT_EQ(src, static_cast<data_type>(33));                                                 \
@@ -61,9 +59,7 @@ TEST_F(TestVectorCompute##class_name##data_type, c_api_name##_half_half_half_Vec
     data_type src = static_cast<data_type>(33);                                                 \
                                                                                                 \
     uint16_t dst_block_stride = static_cast<uint16_t>(1);                                       \
-    uint16_t src_block_stride = static_cast<uint16_t>(1);                                       \
     uint16_t dst_repeat_stride = static_cast<uint16_t>(8);                                      \
-    uint16_t src_repeat_stride = static_cast<uint16_t>(8);                                      \
     uint8_t repeat = static_cast<uint8_t>(1);                                                   \
                                                                                                 \
     MOCKER_CPP(cce_name, void(__ubuf__ data_type *, data_type,                                  \
@@ -71,7 +67,7 @@ TEST_F(TestVectorCompute##class_name##data_type, c_api_name##_half_half_half_Vec
             .times(1)                                                                           \
             .will(invoke(cce_name##_##data_type##_uint8_t_uint16_t_uint16_t_uint16_t_uint16_t_Stub));   \
                                                                                                 \
-    c_api_name(dst, src, repeat, dst_block_stride, src_block_stride, dst_repeat_stride, src_repeat_stride); \
+    c_api_name(dst, src, repeat, dst_block_stride, dst_repeat_stride);                          \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
                                                                                                 \

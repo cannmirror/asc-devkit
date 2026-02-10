@@ -18,13 +18,15 @@
 
 -   **[AlltoAllV](AlltoAllV.md)**  
 
+-   **[AlltoAllvWrite](AlltoAllvWrite.md)**  
+
 -   **[BatchWrite](BatchWrite.md)**  
 
 -   **[Commit](Commit.md)**  
 
--   **[Wait](Wait-40.md)**  
+-   **[Wait](Wait-99.md)**  
 
--   **[Iterate](Iterate-41.md)**  
+-   **[Iterate](Iterate-100.md)**  
 
 -   **[Query](Query.md)**  
 
@@ -43,6 +45,8 @@
 -   **[QueueBarrier](QueueBarrier.md)**  
 
 -   **[GetQueueNum](GetQueueNum.md)**  
+
+-   **[SetReduceDataTypeAbility（废弃）](SetReduceDataTypeAbility（废弃）.md)**  
 
 -   **[Init（废弃）](Init（废弃）.md)**  
 

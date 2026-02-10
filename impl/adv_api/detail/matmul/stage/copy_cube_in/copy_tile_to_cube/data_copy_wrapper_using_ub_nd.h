@@ -68,7 +68,7 @@ public:
 
         int64_t srcOffset = static_cast<int64_t>(row) * static_cast<int64_t>(gCol) + static_cast<int64_t>(col);
 
-        int calcHigh = CeilT<int32_t>(height, BLOCK_CUBE);
+        int calcHeight = CeilT<int32_t>(height, BLOCK_CUBE);
         auto enQueEvtID = GetTPipePtr()->FetchEventID(HardEvent::V_MTE2);
         if constexpr (!ToMatmulConfig(MM_CFG).enableL1CacheUB) {
             SetFlag<HardEvent::V_MTE2>(enQueEvtID);
@@ -107,7 +107,7 @@ public:
             nzTensor = MATMUL_MODULE(LocalWorkspace)->GetWorkspaceWithOffset(0).template ReinterpretCast<TransT>();
             nzTensor.SetSize(size);
             PipeBarrier<PIPE_V>();
-            NDTrans2NZ<SrcT>(nzTensor, trans, calcHigh, calcWidth, isBankConflict);
+            NDTrans2NZ<SrcT>(nzTensor, trans, calcHeight, calcWidth, isBankConflict);
             enQueEvtID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
             SetFlag<HardEvent::V_MTE3>(enQueEvtID);
             WaitFlag<HardEvent::V_MTE3>(enQueEvtID);
@@ -117,12 +117,12 @@ public:
             WaitFlag<HardEvent::MTE3_MTE2>(enQueEvtID);
         } else {
             int padWidth = isBankConflict ? calcWidth + 1 : calcWidth;
-            int size = calcHigh * padWidth * BLOCK_CUBE * c0Size_ / AuxGetFactor<TransT>();
+            int size = calcHeight * padWidth * BLOCK_CUBE * c0Size_ / AuxGetFactor<TransT>();
             transTensor.SetSize(size);
             trans.SetSize(size);
             (const_cast<LocalTensor<TransT>&>(dst)).SetSize(size);
             NDPadZeros(transTensor, height, padWidth, gCol, width, isBankConflict);
-            NDTrans2NZ<SrcT>(trans, transTensor, calcHigh, calcWidth, isBankConflict);
+            NDTrans2NZ<SrcT>(trans, transTensor, calcHeight, calcWidth, isBankConflict);
             enQueEvtID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
             SetFlag<HardEvent::V_MTE3>(enQueEvtID);
             WaitFlag<HardEvent::V_MTE3>(enQueEvtID);
@@ -285,8 +285,8 @@ public:
                                                   const int tileHeight, const int tileWidth)
     {
         int calcWidth = CeilT(tileWidth, c0Size_) * c0Size_;
-        int calcHigh = CeilT(tileHeight, c0Size_) * c0Size_;
-        int64_t size = calcHigh * calcWidth;
+        int calcHeight = CeilT(tileHeight, c0Size_) * c0Size_;
+        int64_t size = calcHeight * calcWidth;
         LocalTensor<TransT> rightMatrix =
             MATMUL_MODULE(LocalWorkspace)->GetND2NZWorkspace(0).template ReinterpretCast<TransT>();
         rightMatrix.SetSize(size);
@@ -316,7 +316,7 @@ public:
         event_t eventIDVToMte3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_MTE3));
         SetFlag<HardEvent::V_MTE3>(eventIDVToMte3);
         WaitFlag<HardEvent::V_MTE3>(eventIDVToMte3);
-        CopyNZ2NZImpl(dst, trans, 0, 0, calcWidth, calcHigh, calcWidth);
+        CopyNZ2NZImpl(dst, trans, 0, 0, calcWidth, calcHeight, calcWidth);
     }
 
 private:

@@ -141,7 +141,7 @@ __aicore__ inline void PairReduceSumImpl(__ubuf__ float* dst, __ubuf__ float* sr
         newSrc += srcStrideOffset;
         newDstRepStride = 1;
     }
-    BITBYBIT_MODE_FLOAT_REDUCE_VF(VCPADD_FUNC, HLAF_MASK_LEN / HALF_FACTOR);
+    BITBYBIT_MODE_FLOAT_REDUCE_VF(VCPADD_FUNC, HALF_MASK_LEN / HALF_FACTOR);
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
@@ -176,7 +176,7 @@ __aicore__ inline void PairReduceSumImpl(__ubuf__ float* dst, __ubuf__ float* sr
         newSrc += srcStrideOffset;
         newDstRepStride = 1;
     }
-    CONTINUOUS_MODE_REDUCE_VF(VCPADD_FUNC, f32, b32, HLAF_MASK_LEN / HALF_FACTOR);
+    CONTINUOUS_MODE_REDUCE_VF(VCPADD_FUNC, f32, b32, HALF_MASK_LEN / HALF_FACTOR);
 }
 
 /* **************************************** Block Reduce Impl ****************************************** */
@@ -478,7 +478,7 @@ __aicore__ inline void BlockReduceMinImpl(__ubuf__ float* dst, __ubuf__ float* s
 
 template <typename T, bool isSetMask = true>
 __aicore__ inline void RepeatReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, const int32_t repeatTime,
-    const int32_t elemsInOneRepeate, const int32_t dstBlkStride, const int32_t srcBlkStride, const int32_t dstRepStride,
+    const int32_t elemsInOneRepeat, const int32_t dstBlkStride, const int32_t srcBlkStride, const int32_t dstRepStride,
     const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "current data type is not supported on current device"); });
@@ -932,20 +932,20 @@ __aicore__ inline void WholeReduceSumImpl(__ubuf__ float* dst, __ubuf__ float* s
 
 /* **************************************** Reduce Interface ****************************************** */
 template <typename T>
-__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ReduceMaxIntrinsicsImpl is not supported!"); });
 }
 
 template <typename T>
-__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, const uint64_t mask[],
+__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, const uint64_t mask[],
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ReduceMaxIntrinsicsImpl is not supported!"); });
 }
 
-__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __ubuf__ half* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ half* sharedTmpBuffer, __ubuf__ half* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     __VEC_SCOPE__
@@ -960,13 +960,13 @@ __aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 16, strideConfig0, preg);
             vcmax(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
 }
 
-__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __ubuf__ half* srcLocal,
+__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ half* sharedTmpBuffer, __ubuf__ half* srcLocal,
     const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
@@ -988,14 +988,14 @@ __aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 16, strideConfig0, preg);
             vcmax(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
-__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, __ubuf__ float* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ float* sharedTmpBuffer, __ubuf__ float* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     __VEC_SCOPE__
@@ -1010,13 +1010,13 @@ __aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, _
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 8, strideConfig0, preg);
             vcmax(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
 }
 
-__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, __ubuf__ float* srcLocal,
+__aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ float* sharedTmpBuffer, __ubuf__ float* srcLocal,
     const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
@@ -1040,28 +1040,28 @@ __aicore__ inline void ReduceMaxIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, _
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 8, strideConfig0, preg1);
             vcmax(vreg1, vreg0, preg1, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
 template <typename T>
-__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ReduceMinIntrinsicsImpl is not supported!"); });
 }
 
 template <typename T>
-__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, const uint64_t mask[],
+__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, const uint64_t mask[],
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ReduceMinIntrinsicsImpl is not supported!"); });
 }
 
-__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __ubuf__ half* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ half* sharedTmpBuffer, __ubuf__ half* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     __VEC_SCOPE__
@@ -1076,13 +1076,13 @@ __aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 16, strideConfig0, preg);
             vcmin(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
 }
 
-__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __ubuf__ half* srcLocal,
+__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ half* sharedTmpBuffer, __ubuf__ half* srcLocal,
     const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
@@ -1104,14 +1104,14 @@ __aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 16, strideConfig0, preg);
             vcmin(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
-__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, __ubuf__ float* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ float* sharedTmpBuffer, __ubuf__ float* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     __VEC_SCOPE__
@@ -1126,13 +1126,13 @@ __aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, _
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 8, strideConfig0, preg);
             vcmin(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
 }
 
-__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, __ubuf__ float* srcLocal,
+__aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ float* sharedTmpBuffer, __ubuf__ float* srcLocal,
     const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
@@ -1156,28 +1156,28 @@ __aicore__ inline void ReduceMinIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, _
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 8, strideConfig0, preg1);
             vcmin(vreg1, vreg0, preg1, MODE_ZEROING);
-            vstus(ureg, 2, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 2, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ReduceSumIntrinsicsImpl is not supported!"); });
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, const uint64_t mask[],
+__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, const uint64_t mask[],
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "ReduceSumIntrinsicsImpl is not supported!"); });
 }
 
-__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __ubuf__ half* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ half* sharedTmpBuffer, __ubuf__ half* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     __VEC_SCOPE__
@@ -1192,13 +1192,13 @@ __aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 16, strideConfig0, preg);
             vcadd(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 1, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 1, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
 }
 
-__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __ubuf__ half* srcLocal,
+__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ half* sharedTmpBuffer, __ubuf__ half* srcLocal,
     const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
@@ -1220,14 +1220,14 @@ __aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ half* sharedTmpBuffe, __
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 16, strideConfig0, preg);
             vcadd(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 1, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 1, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
-__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, __ubuf__ float* srcLocal, const int32_t mask,
+__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ float* sharedTmpBuffer, __ubuf__ float* srcLocal, const int32_t mask,
     const int32_t repeatTime, const int32_t srcRepStride)
 {
     __VEC_SCOPE__
@@ -1242,13 +1242,13 @@ __aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, _
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 8, strideConfig0, preg);
             vcadd(vreg1, vreg0, preg, MODE_ZEROING);
-            vstus(ureg, 1, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 1, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
 }
 
-__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, __ubuf__ float* srcLocal,
+__aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ float* sharedTmpBuffer, __ubuf__ float* srcLocal,
     const uint64_t mask[], const int32_t repeatTime, const int32_t srcRepStride)
 {
     __ubuf__ uint8_t* tempBuf = AscendCUtils::GetTemporaryBufferAddr<uint8_t>(TMP_UB_OFFSET, 16);
@@ -1272,15 +1272,15 @@ __aicore__ inline void ReduceSumIntrinsicsImpl(__ubuf__ float* sharedTmpBuffe, _
         for (uint16_t i = 0; i < static_cast<uint16_t>(repeatTime); ++i) {
             vsldb(vreg0, srcLocal + i * srcRepStride * 8, strideConfig0, preg1);
             vcadd(vreg1, vreg0, preg1, MODE_ZEROING);
-            vstus(ureg, 1, vreg1, sharedTmpBuffe, POST_UPDATE);
+            vstus(ureg, 1, vreg1, sharedTmpBuffer, POST_UPDATE);
         }
-        vstas(ureg, sharedTmpBuffe, 0, POST_UPDATE);
+        vstas(ureg, sharedTmpBuffer, 0, POST_UPDATE);
     }
     AscendCUtils::FreeTemporaryBuffer<uint8_t>(tempBuf);
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumSecondStep(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffe,
+__aicore__ inline void ReduceSumSecondStep(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params)
 {
     int32_t dstOffset = 0;
@@ -1290,16 +1290,16 @@ __aicore__ inline void ReduceSumSecondStep(__ubuf__ T* dstLocal, __ubuf__ T* sha
     int32_t leftData = params.repeatTimes % elementNumPerRep;
 
     if (newRepeatTimes != 0) {
-        ReduceSumIntrinsicsImpl(sharedTmpBuffe, sharedTmpBuffe, elementNumPerRep, newRepeatTimes, DEFAULT_REPEAT_STRIDE);
+        ReduceSumIntrinsicsImpl(sharedTmpBuffer, sharedTmpBuffer, elementNumPerRep, newRepeatTimes, DEFAULT_REPEAT_STRIDE);
     }
 
     if (leftData > 0) { // has_tail
         srcOffset = elementNumPerRep * newRepeatTimes;
-        ReduceSumIntrinsicsImpl(dstLocal, sharedTmpBuffe + srcOffset, leftData, 1, DEFAULT_REPEAT_STRIDE);
+        ReduceSumIntrinsicsImpl(dstLocal, sharedTmpBuffer + srcOffset, leftData, 1, DEFAULT_REPEAT_STRIDE);
         event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
-        *(sharedTmpBuffe + newRepeatTimes) = *dstLocal;
+        *(sharedTmpBuffer + newRepeatTimes) = *dstLocal;
         if (newRepeatTimes != 0) {
             event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
             SetFlag<HardEvent::S_V>(eventIdSToV);
@@ -1312,7 +1312,7 @@ template <typename T>
 __aicore__ inline void CreateSpecialFormatMask(const int32_t& maskLen, uint64_t& highMask, uint64_t& lowMask)
 {
     // create mask in the "0101010101" format
-    int32_t halfLen = HLAF_MASK_LEN / 2;
+    int32_t halfLen = HALF_MASK_LEN / 2;
     for (int32_t i = 0; i < maskLen - halfLen; i++) {
         highMask = highMask << 2;
         highMask = highMask | 1;
@@ -1325,21 +1325,21 @@ __aicore__ inline void CreateSpecialFormatMask(const int32_t& maskLen, uint64_t&
 }
 
 template <typename T>
-__aicore__ inline void ReduceOperation(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal, struct ReduceRepeatParams& params,
+__aicore__ inline void ReduceOperation(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal, struct ReduceRepeatParams& params,
     const ReduceMode& mode)
 {
     if (params.maskMode == 1) {
         switch (mode) {
             case ReduceMode::REDUCE_MAX:
-                ReduceMaxIntrinsicsImpl(sharedTmpBuffe, srcLocal, params.normalMask, params.repeatTimes,
+                ReduceMaxIntrinsicsImpl(sharedTmpBuffer, srcLocal, params.normalMask, params.repeatTimes,
                     params.srcRepStride);
                 break;
             case ReduceMode::REDUCE_MIN:
-                ReduceMinIntrinsicsImpl(sharedTmpBuffe, srcLocal, params.normalMask, params.repeatTimes,
+                ReduceMinIntrinsicsImpl(sharedTmpBuffer, srcLocal, params.normalMask, params.repeatTimes,
                     params.srcRepStride);
                 break;
             case ReduceMode::REDUCE_SUM:
-                ReduceSumIntrinsicsImpl(sharedTmpBuffe, srcLocal, params.normalMask, params.repeatTimes,
+                ReduceSumIntrinsicsImpl(sharedTmpBuffer, srcLocal, params.normalMask, params.repeatTimes,
                     params.srcRepStride);
                 break;
             default:
@@ -1348,13 +1348,13 @@ __aicore__ inline void ReduceOperation(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* s
     } else {
         switch (mode) {
             case ReduceMode::REDUCE_MAX:
-                ReduceMaxIntrinsicsImpl(sharedTmpBuffe, srcLocal, params.bitMask, params.repeatTimes, params.srcRepStride);
+                ReduceMaxIntrinsicsImpl(sharedTmpBuffer, srcLocal, params.bitMask, params.repeatTimes, params.srcRepStride);
                 break;
             case ReduceMode::REDUCE_MIN:
-                ReduceMinIntrinsicsImpl(sharedTmpBuffe, srcLocal, params.bitMask, params.repeatTimes, params.srcRepStride);
+                ReduceMinIntrinsicsImpl(sharedTmpBuffer, srcLocal, params.bitMask, params.repeatTimes, params.srcRepStride);
                 break;
             case ReduceMode::REDUCE_SUM:
-                ReduceSumIntrinsicsImpl(sharedTmpBuffe, srcLocal, params.bitMask, params.repeatTimes, params.srcRepStride);
+                ReduceSumIntrinsicsImpl(sharedTmpBuffer, srcLocal, params.bitMask, params.repeatTimes, params.srcRepStride);
                 break;
             default:
                 break;
@@ -1363,7 +1363,7 @@ __aicore__ inline void ReduceOperation(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* s
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplFirstStep(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal,
+__aicore__ inline void ReduceImplFirstStep(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal,
     struct ReduceRepeatParams& params, const ReduceMode& mode, int32_t& curData)
 {
     int32_t dstOffset = 0;
@@ -1375,7 +1375,7 @@ __aicore__ inline void ReduceImplFirstStep(__ubuf__ T* sharedTmpBuffe, __ubuf__ 
         srcOffset = index * MAX_REPEAT_TIMES * params.srcRepStride * ONE_BLK_SIZE / sizeof(T);
         struct ReduceRepeatParams newParams = params;
         newParams.repeatTimes = MAX_REPEAT_TIMES;
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, srcLocal + srcOffset, newParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, srcLocal + srcOffset, newParams, mode);
     }
     int32_t leftRepeatTimes = params.repeatTimes % MAX_REPEAT_TIMES;
     if (leftRepeatTimes > 0) {
@@ -1383,13 +1383,13 @@ __aicore__ inline void ReduceImplFirstStep(__ubuf__ T* sharedTmpBuffe, __ubuf__ 
         srcOffset = range * MAX_REPEAT_TIMES * params.srcRepStride * ONE_BLK_SIZE / sizeof(T);
         struct ReduceRepeatParams leftParams = params;
         leftParams.repeatTimes = leftRepeatTimes;
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, srcLocal + srcOffset, leftParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, srcLocal + srcOffset, leftParams, mode);
     }
     curData = VREDUCE_PER_REP_OUTPUT * params.repeatTimes;
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplSecondStep(__ubuf__ T* sharedTmpBuffe, const ReduceMode& mode, int32_t& curData,
+__aicore__ inline void ReduceImplSecondStep(__ubuf__ T* sharedTmpBuffer, const ReduceMode& mode, int32_t& curData,
     int32_t preStartPos, int32_t secondStartPos)
 {
     int32_t dstOffset = 0;
@@ -1408,10 +1408,10 @@ __aicore__ inline void ReduceImplSecondStep(__ubuf__ T* sharedTmpBuffe, const Re
         lowMask = 0x5555555555555555;
         newMask[0] = lowMask;
         newMask[1] = highMask;
-        struct ReduceRepeatParams newParams(newMask, newRepeatTimes, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams newParams(newMask, newRepeatTimes, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
 
-        ReduceOperation<T>(sharedTmpBuffe + secondStartPos, sharedTmpBuffe + preStartPos, newParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + secondStartPos, sharedTmpBuffer + preStartPos, newParams, mode);
         bodyOutputCount = newRepeatTimes * VREDUCE_PER_REP_OUTPUT;
     }
     highMask = 0;
@@ -1423,12 +1423,12 @@ __aicore__ inline void ReduceImplSecondStep(__ubuf__ T* sharedTmpBuffe, const Re
         CreateSpecialFormatMask<T>(newMaskLen, highMask, lowMask);
         newMask[0] = lowMask;
         newMask[1] = highMask;
-        struct ReduceRepeatParams leftParams(newMask, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams leftParams(newMask, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
 
         dstOffset = secondStartPos + bodyOutputCount;
         srcOffset = preStartPos + newRepeatTimes * elementNumPerRep;
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, sharedTmpBuffe + srcOffset, leftParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, sharedTmpBuffer + srcOffset, leftParams, mode);
         tailOutputCount = VREDUCE_PER_REP_OUTPUT;
     }
 
@@ -1436,51 +1436,51 @@ __aicore__ inline void ReduceImplSecondStep(__ubuf__ T* sharedTmpBuffe, const Re
 }
 
 template <typename T>
-__aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffe, int32_t secondStartPos, int32_t& secondIndex,
+__aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffer, int32_t secondStartPos, int32_t& secondIndex,
     int32_t& thirdIndex)
 {
     int32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     if (sizeof(T) == sizeof(half)) {
-        thirdIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + secondStartPos + 1);
+        thirdIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + secondStartPos + 1);
         ASSERT(thirdIndex >= 0);
         ASSERT(thirdIndex < elementNumPerRep);
-        secondIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + thirdIndex + 1);
+        secondIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + thirdIndex + 1);
         ASSERT(secondIndex >= 0);
         ASSERT(secondIndex < elementNumPerRep);
     } else {
-        thirdIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + secondStartPos + 1);
+        thirdIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + secondStartPos + 1);
         ASSERT(thirdIndex >= 0);
         ASSERT(thirdIndex < elementNumPerRep);
-        secondIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + thirdIndex + 1);
+        secondIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + thirdIndex + 1);
         ASSERT(secondIndex >= 0);
         ASSERT(secondIndex < elementNumPerRep);
     }
 }
 
 template <typename T>
-__aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffe, int32_t secondStartPos, int32_t thirdStartPos,
+__aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffer, int32_t secondStartPos, int32_t thirdStartPos,
     int32_t& firstIndex, int32_t& secondIndex, int32_t& thirdIndex)
 {
     int32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     if (sizeof(T) == sizeof(half)) {
-        thirdIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + thirdStartPos + 1);
+        thirdIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + thirdStartPos + 1);
         ASSERT(thirdIndex >= 0);
         ASSERT(thirdIndex < elementNumPerRep);
-        secondIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + secondStartPos + thirdIndex + 1);
+        secondIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + secondStartPos + thirdIndex + 1);
         ASSERT(secondIndex >= 0);
         ASSERT(secondIndex < elementNumPerRep);
-        firstIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe +
+        firstIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer +
             elementNumPerRep * (thirdIndex / VREDUCE_PER_REP_OUTPUT) + secondIndex + 1);
         ASSERT(firstIndex >= 0);
         ASSERT(firstIndex < elementNumPerRep);
     } else {
-        thirdIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + thirdStartPos + 1);
+        thirdIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + thirdStartPos + 1);
         ASSERT(thirdIndex >= 0);
         ASSERT(thirdIndex < elementNumPerRep);
-        secondIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + secondStartPos + thirdIndex + 1);
+        secondIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + secondStartPos + thirdIndex + 1);
         ASSERT(secondIndex >= 0);
         ASSERT(secondIndex < elementNumPerRep);
-        firstIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe +
+        firstIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer +
             elementNumPerRep * (thirdIndex / VREDUCE_PER_REP_OUTPUT) + secondIndex + 1);
         ASSERT(firstIndex >= 0);
         ASSERT(firstIndex < elementNumPerRep);
@@ -1488,39 +1488,39 @@ __aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffe, int32_t secondStartP
 }
 
 template <typename T>
-__aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffe, int32_t secondStartPos, int32_t thirdStartPos,
+__aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffer, int32_t secondStartPos, int32_t thirdStartPos,
     int32_t fourthStartPos, int32_t& firstIndex, int32_t& secondIndex, int32_t& thirdIndex, int32_t& fourthIndex)
 {
     int32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T);
     if (sizeof(T) == sizeof(half)) {
-        fourthIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + fourthStartPos + 1);
+        fourthIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + fourthStartPos + 1);
         ASSERT(fourthIndex >= 0);
         ASSERT(fourthIndex < elementNumPerRep);
-        thirdIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + thirdStartPos + fourthIndex + 1);
+        thirdIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + thirdStartPos + fourthIndex + 1);
         ASSERT(thirdIndex >= 0);
         ASSERT(thirdIndex < elementNumPerRep);
-        secondIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe + secondStartPos +
+        secondIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer + secondStartPos +
             elementNumPerRep * (fourthIndex / VREDUCE_PER_REP_OUTPUT) + thirdIndex + 1);
         ASSERT(secondIndex >= 0);
         ASSERT(secondIndex < elementNumPerRep);
-        firstIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffe +
+        firstIndex = *reinterpret_cast<__ubuf__ uint16_t*>(sharedTmpBuffer +
             elementNumPerRep * (elementNumPerRep * (fourthIndex / VREDUCE_PER_REP_OUTPUT) + thirdIndex) /
             VREDUCE_PER_REP_OUTPUT +
             secondIndex + 1);
         ASSERT(firstIndex >= 0);
         ASSERT(firstIndex < elementNumPerRep);
     } else {
-        fourthIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + fourthStartPos + 1);
+        fourthIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + fourthStartPos + 1);
         ASSERT(fourthIndex >= 0);
         ASSERT(fourthIndex < elementNumPerRep);
-        thirdIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + thirdStartPos + fourthIndex + 1);
+        thirdIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + thirdStartPos + fourthIndex + 1);
         ASSERT(thirdIndex >= 0);
         ASSERT(thirdIndex < elementNumPerRep);
-        secondIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe + secondStartPos +
+        secondIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer + secondStartPos +
             elementNumPerRep * (fourthIndex / VREDUCE_PER_REP_OUTPUT) + thirdIndex + 1);
         ASSERT(secondIndex >= 0);
         ASSERT(secondIndex < elementNumPerRep);
-        firstIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffe +
+        firstIndex = *reinterpret_cast<__ubuf__ uint32_t*>(sharedTmpBuffer +
             elementNumPerRep * (elementNumPerRep * (fourthIndex / VREDUCE_PER_REP_OUTPUT) + thirdIndex) /
             VREDUCE_PER_REP_OUTPUT +
             secondIndex + 1);
@@ -1530,7 +1530,7 @@ __aicore__ inline void GetIndex(__ubuf__ T* sharedTmpBuffe, int32_t secondStartP
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplThirdStep(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffe, const int32_t srcRepStride,
+__aicore__ inline void ReduceImplThirdStep(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffer, const int32_t srcRepStride,
     const ReduceMode& mode, int32_t& curData, int32_t& secondStartPos, int32_t& thirdStartPos)
 {
     int32_t preNum = 0;
@@ -1551,10 +1551,10 @@ __aicore__ inline void ReduceImplThirdStep(__ubuf__ T* dstLocal, __ubuf__ T* sha
     if (curData == VREDUCE_PER_REP_OUTPUT) {
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
-        GetIndex<T>(sharedTmpBuffe, secondStartPos, secondIndex, thirdIndex);
+        GetIndex<T>(sharedTmpBuffer, secondStartPos, secondIndex, thirdIndex);
         preNum = offsetNumPerRep * (thirdIndex / VREDUCE_PER_REP_OUTPUT);
         int32_t resultIndex = secondIndex + preNum;
-        *dstLocal = *(sharedTmpBuffe + secondStartPos);
+        *dstLocal = *(sharedTmpBuffer + secondStartPos);
         *(dstLocal + 1) = *reinterpret_cast<T*>(&resultIndex);
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
@@ -1568,21 +1568,21 @@ __aicore__ inline void ReduceImplThirdStep(__ubuf__ T* dstLocal, __ubuf__ T* sha
     newMask[0] = lowMask;
     newMask[1] = highMask;
     if (curData > elementNumPerRep) {
-        ReduceImplSecondStep<T>(sharedTmpBuffe, mode, curData, secondStartPos, thirdStartPos);
+        ReduceImplSecondStep<T>(sharedTmpBuffer, mode, curData, secondStartPos, thirdStartPos);
 
         int32_t fourthStartPos =
             (((thirdStartPos + curData) * sizeof(T) + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE) * ONE_BLK_SIZE / sizeof(T);
         dstOffset = fourthStartPos;
         srcOffset = thirdStartPos;
-        struct ReduceRepeatParams newParams(newMask, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams newParams(newMask, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
 
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, sharedTmpBuffe + srcOffset, newParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, sharedTmpBuffer + srcOffset, newParams, mode);
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
-        *dstLocal = *(sharedTmpBuffe + dstOffset);
+        *dstLocal = *(sharedTmpBuffer + dstOffset);
 
-        GetIndex<T>(sharedTmpBuffe, secondStartPos, thirdStartPos, fourthStartPos, firstIndex, secondIndex, thirdIndex,
+        GetIndex<T>(sharedTmpBuffer, secondStartPos, thirdStartPos, fourthStartPos, firstIndex, secondIndex, thirdIndex,
             fourthIndex);
         preNum = offsetNumPerRep *
             (elementNumPerRep * (elementNumPerRep * (fourthIndex / VREDUCE_PER_REP_OUTPUT) + thirdIndex) /
@@ -1592,14 +1592,14 @@ __aicore__ inline void ReduceImplThirdStep(__ubuf__ T* dstLocal, __ubuf__ T* sha
     } else {
         dstOffset = thirdStartPos;
         srcOffset = secondStartPos;
-        struct ReduceRepeatParams newParams(newMask, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams newParams(newMask, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, sharedTmpBuffe + srcOffset, newParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, sharedTmpBuffer + srcOffset, newParams, mode);
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
-        *dstLocal = *(sharedTmpBuffe + thirdStartPos);
+        *dstLocal = *(sharedTmpBuffer + thirdStartPos);
 
-        GetIndex<T>(sharedTmpBuffe, secondStartPos, thirdStartPos, firstIndex, secondIndex, thirdIndex);
+        GetIndex<T>(sharedTmpBuffer, secondStartPos, thirdStartPos, firstIndex, secondIndex, thirdIndex);
         preNum = offsetNumPerRep * (elementNumPerRep * (thirdIndex / VREDUCE_PER_REP_OUTPUT) + secondIndex) /
             VREDUCE_PER_REP_OUTPUT;
     }
@@ -1613,7 +1613,7 @@ __aicore__ inline void ReduceImplThirdStep(__ubuf__ T* dstLocal, __ubuf__ T* sha
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumFirstStep(__ubuf__ T* sharedTmpBuffe, __ubuf__ T* srcLocal,
+__aicore__ inline void ReduceSumFirstStep(__ubuf__ T* sharedTmpBuffer, __ubuf__ T* srcLocal,
     struct ReduceRepeatParams& params)
 {
     int32_t dstOffset = 0;
@@ -1626,7 +1626,7 @@ __aicore__ inline void ReduceSumFirstStep(__ubuf__ T* sharedTmpBuffe, __ubuf__ T
         srcOffset = index * maxRepeatTimes * (params.srcRepStride * ONE_BLK_SIZE / sizeof(T));
         struct ReduceRepeatParams newParams = params;
         newParams.repeatTimes = maxRepeatTimes;
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, srcLocal + srcOffset, newParams, ReduceMode::REDUCE_SUM);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, srcLocal + srcOffset, newParams, ReduceMode::REDUCE_SUM);
     }
 
     int32_t leftRepeatTimes = params.repeatTimes % maxRepeatTimes;
@@ -1635,18 +1635,18 @@ __aicore__ inline void ReduceSumFirstStep(__ubuf__ T* sharedTmpBuffe, __ubuf__ T
         srcOffset = range * maxRepeatTimes * (params.srcRepStride * ONE_BLK_SIZE / sizeof(T));
         struct ReduceRepeatParams leftParams = params;
         leftParams.repeatTimes = leftRepeatTimes;
-        ReduceOperation<T>(sharedTmpBuffe + dstOffset, srcLocal + srcOffset, leftParams, ReduceMode::REDUCE_SUM);
+        ReduceOperation<T>(sharedTmpBuffer + dstOffset, srcLocal + srcOffset, leftParams, ReduceMode::REDUCE_SUM);
     }
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumFinalStep(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffe, int32_t& secondResultNum)
+__aicore__ inline void ReduceSumFinalStep(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffer, int32_t& secondResultNum)
 {
     if (secondResultNum == 1) {
         event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
-        *(dstLocal) = *(sharedTmpBuffe);
+        *(dstLocal) = *(sharedTmpBuffer);
         event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
@@ -1654,24 +1654,24 @@ __aicore__ inline void ReduceSumFinalStep(__ubuf__ T* dstLocal, __ubuf__ T* shar
         SetFlag<HardEvent::S_MTE3>(eventIdSToMTE3);
         WaitFlag<HardEvent::S_MTE3>(eventIdSToMTE3);
     } else {
-        struct ReduceRepeatParams newParams(secondResultNum, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams newParams(secondResultNum, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
-        ReduceOperation<T>(dstLocal, sharedTmpBuffe, newParams, ReduceMode::REDUCE_SUM);
+        ReduceOperation<T>(dstLocal, sharedTmpBuffer, newParams, ReduceMode::REDUCE_SUM);
     }
 }
 
 template <typename T>
-__aicore__ inline void ReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffe,
+__aicore__ inline void ReduceSumImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params)
 {
-    ReduceSumFirstStep<T>(sharedTmpBuffe, srcLocal, params);
-    ReduceSumSecondStep<T>(dstLocal, sharedTmpBuffe, params);
+    ReduceSumFirstStep<T>(sharedTmpBuffer, srcLocal, params);
+    ReduceSumSecondStep<T>(dstLocal, sharedTmpBuffer, params);
     int32_t secondResultNum = DivCeil(params.repeatTimes, ONE_REPEAT_BYTE_SIZE / sizeof(T));
-    ReduceSumFinalStep<T>(dstLocal, sharedTmpBuffe, secondResultNum);
+    ReduceSumFinalStep<T>(dstLocal, sharedTmpBuffer, secondResultNum);
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplSecondStepNoIndex(__ubuf__ T* sharedTmpBuffe, const ReduceMode& mode, int32_t& curData)
+__aicore__ inline void ReduceImplSecondStepNoIndex(__ubuf__ T* sharedTmpBuffer, const ReduceMode& mode, int32_t& curData)
 {
     int32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T); // fp16=128,fp32=64
     int32_t newRepeatTimes = curData / elementNumPerRep;
@@ -1683,9 +1683,9 @@ __aicore__ inline void ReduceImplSecondStepNoIndex(__ubuf__ T* sharedTmpBuffe, c
         CreateSpecialFormatMask<T>(elementNumPerRep / VREDUCE_PER_REP_OUTPUT, highMask, lowMask);
         newMask[0] = lowMask;
         newMask[1] = highMask;
-        struct ReduceRepeatParams newParams(newMask, newRepeatTimes, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams newParams(newMask, newRepeatTimes, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
-        ReduceOperation<T>(sharedTmpBuffe, sharedTmpBuffe, newParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer, sharedTmpBuffer, newParams, mode);
     }
     highMask = 0;
     lowMask = 0;
@@ -1693,17 +1693,17 @@ __aicore__ inline void ReduceImplSecondStepNoIndex(__ubuf__ T* sharedTmpBuffe, c
         CreateSpecialFormatMask<T>(leftData / VREDUCE_PER_REP_OUTPUT, highMask, lowMask);
         newMask[0] = lowMask;
         newMask[1] = highMask;
-        struct ReduceRepeatParams leftParams(newMask, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+        struct ReduceRepeatParams leftParams(newMask, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
             DEFAULT_REPEAT_STRIDE);
-        ReduceOperation<T>(sharedTmpBuffe + newRepeatTimes * VREDUCE_PER_REP_OUTPUT,
-            sharedTmpBuffe + newRepeatTimes * elementNumPerRep, leftParams, mode);
+        ReduceOperation<T>(sharedTmpBuffer + newRepeatTimes * VREDUCE_PER_REP_OUTPUT,
+            sharedTmpBuffer + newRepeatTimes * elementNumPerRep, leftParams, mode);
         newRepeatTimes += 1;
     }
     curData = newRepeatTimes * VREDUCE_PER_REP_OUTPUT;
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplThirdStepNoIndex(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffe, const ReduceMode& mode,
+__aicore__ inline void ReduceImplThirdStepNoIndex(__ubuf__ T* dstLocal, __ubuf__ T* sharedTmpBuffer, const ReduceMode& mode,
     int32_t& curData)
 {
     uint64_t highMask = 0;
@@ -1712,13 +1712,13 @@ __aicore__ inline void ReduceImplThirdStepNoIndex(__ubuf__ T* dstLocal, __ubuf__
     CreateSpecialFormatMask<T>(curData / VREDUCE_PER_REP_OUTPUT, highMask, lowMask);
     newMask[0] = lowMask;
     newMask[1] = highMask;
-    struct ReduceRepeatParams newParams(newMask, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+    struct ReduceRepeatParams newParams(newMask, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
         DEFAULT_REPEAT_STRIDE);
-    ReduceOperation<T>(sharedTmpBuffe, sharedTmpBuffe, newParams, mode);
+    ReduceOperation<T>(sharedTmpBuffer, sharedTmpBuffer, newParams, mode);
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     SetFlag<HardEvent::V_S>(eventIdVToS);
     WaitFlag<HardEvent::V_S>(eventIdVToS);
-    *dstLocal = *sharedTmpBuffe;
+    *dstLocal = *sharedTmpBuffer;
     event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
     SetFlag<HardEvent::S_V>(eventIdSToV);
     WaitFlag<HardEvent::S_V>(eventIdSToV);
@@ -1728,7 +1728,7 @@ __aicore__ inline void ReduceImplThirdStepNoIndex(__ubuf__ T* dstLocal, __ubuf__
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplWithIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffe,
+__aicore__ inline void ReduceImplWithIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params, const ReduceMode& mode)
 {
     if (params.repeatTimes == 1) {
@@ -1736,32 +1736,32 @@ __aicore__ inline void ReduceImplWithIndex(__ubuf__ T* dstLocal, __ubuf__ T* src
     } else {
         int32_t curData = 0;
         event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
-        ReduceImplFirstStep<T>(sharedTmpBuffe, srcLocal, params, mode, curData);
+        ReduceImplFirstStep<T>(sharedTmpBuffer, srcLocal, params, mode, curData);
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
 
         int32_t secondStartPos = ((curData * sizeof(T) + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE) * ONE_BLK_SIZE / sizeof(T);
-        ReduceImplSecondStep<T>(sharedTmpBuffe, mode, curData, 0, secondStartPos);
+        ReduceImplSecondStep<T>(sharedTmpBuffer, mode, curData, 0, secondStartPos);
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
 
         int32_t thirdStartPos =
             (((secondStartPos + curData) * sizeof(T) + ONE_BLK_SIZE - 1) / ONE_BLK_SIZE) * ONE_BLK_SIZE / sizeof(T);
-        ReduceImplThirdStep<T>(dstLocal, sharedTmpBuffe, params.srcRepStride, mode, curData, secondStartPos, thirdStartPos);
+        ReduceImplThirdStep<T>(dstLocal, sharedTmpBuffer, params.srcRepStride, mode, curData, secondStartPos, thirdStartPos);
     }
 }
 
 template <typename T>
-__aicore__ inline void ReduceImplNoIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffe,
+__aicore__ inline void ReduceImplNoIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params, const ReduceMode& mode)
 {
     event_t eventIdVToS = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::V_S));
     event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));
     if (params.repeatTimes == 1) {
-        ReduceOperation<T>(sharedTmpBuffe, srcLocal, params, mode);
+        ReduceOperation<T>(sharedTmpBuffer, srcLocal, params, mode);
         SetFlag<HardEvent::V_S>(eventIdVToS);
         WaitFlag<HardEvent::V_S>(eventIdVToS);
-        *dstLocal = *sharedTmpBuffe;
+        *dstLocal = *sharedTmpBuffer;
         SetFlag<HardEvent::S_V>(eventIdSToV);
         WaitFlag<HardEvent::S_V>(eventIdSToV);
         event_t eventIdSToMTE3 = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_MTE3));
@@ -1769,42 +1769,42 @@ __aicore__ inline void ReduceImplNoIndex(__ubuf__ T* dstLocal, __ubuf__ T* srcLo
         WaitFlag<HardEvent::S_MTE3>(eventIdSToMTE3);
     } else {
         if (mode == ReduceMode::REDUCE_SUM) {
-            ReduceSumImpl<T>(dstLocal, srcLocal, sharedTmpBuffe, params);
+            ReduceSumImpl<T>(dstLocal, srcLocal, sharedTmpBuffer, params);
         } else {
             int32_t curData = 0;
-            ReduceImplFirstStep<T>(sharedTmpBuffe, srcLocal, params, mode, curData);
+            ReduceImplFirstStep<T>(sharedTmpBuffer, srcLocal, params, mode, curData);
             SetFlag<HardEvent::V_S>(eventIdVToS);
             WaitFlag<HardEvent::V_S>(eventIdVToS);
 
-            ReduceImplSecondStepNoIndex<T>(sharedTmpBuffe, mode, curData);
+            ReduceImplSecondStepNoIndex<T>(sharedTmpBuffer, mode, curData);
 
             int32_t elementNumPerRep = ONE_REPEAT_BYTE_SIZE / sizeof(T); // fp16=128,fp32=64
             if (curData <= elementNumPerRep) {
                 SetFlag<HardEvent::V_S>(eventIdVToS);
                 WaitFlag<HardEvent::V_S>(eventIdVToS);
-                ReduceImplThirdStepNoIndex<T>(dstLocal, sharedTmpBuffe, mode, curData);
+                ReduceImplThirdStepNoIndex<T>(dstLocal, sharedTmpBuffer, mode, curData);
                 return;
             }
             SetFlag<HardEvent::V_S>(eventIdVToS);
             WaitFlag<HardEvent::V_S>(eventIdVToS);
-            ReduceImplSecondStepNoIndex<T>(sharedTmpBuffe, mode, curData);
+            ReduceImplSecondStepNoIndex<T>(sharedTmpBuffer, mode, curData);
             if (curData <= elementNumPerRep) {
                 SetFlag<HardEvent::V_S>(eventIdVToS);
                 WaitFlag<HardEvent::V_S>(eventIdVToS);
-                ReduceImplThirdStepNoIndex<T>(dstLocal, sharedTmpBuffe, mode, curData);
+                ReduceImplThirdStepNoIndex<T>(dstLocal, sharedTmpBuffer, mode, curData);
             }
         }
     }
 }
 
 template <typename T>
-__aicore__ inline void ReduceImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffe,
+__aicore__ inline void ReduceImpl(__ubuf__ T* dstLocal, __ubuf__ T* srcLocal, __ubuf__ T* sharedTmpBuffer,
     struct ReduceRepeatParams& params, bool calIndex, const ReduceMode& mode)
 {
     if (calIndex) {
-        ReduceImplWithIndex<T>(dstLocal, srcLocal, sharedTmpBuffe, params, mode);
+        ReduceImplWithIndex<T>(dstLocal, srcLocal, sharedTmpBuffer, params, mode);
     } else {
-        ReduceImplNoIndex<T>(dstLocal, srcLocal, sharedTmpBuffe, params, mode);
+        ReduceImplNoIndex<T>(dstLocal, srcLocal, sharedTmpBuffer, params, mode);
     }
 }
 
@@ -1822,7 +1822,7 @@ __aicore__ inline void ReduceTailCompute(const LocalTensor<T>& dst, const LocalT
     PrimType bodyValue = dst.GetValue(0);
     PrimType bodyIndex = dst.GetValue(1);
 
-    struct ReduceRepeatParams tailParams(tailCount, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE,
+    struct ReduceRepeatParams tailParams(tailCount, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE,
         DEFAULT_REPEAT_STRIDE);
 
     ReduceImpl<PrimType>((__ubuf__ PrimType*)dst.GetPhyAddr(), // 复用dst
@@ -1834,7 +1834,7 @@ __aicore__ inline void ReduceTailCompute(const LocalTensor<T>& dst, const LocalT
     PrimType tailIndex = dst.GetValue(1);
 
     // bodyresult tailresult need vcmin/vcmax again
-    struct ReduceRepeatParams lastParams(2, 1, DEFAULT_REDUCE_DST_REP_SRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
+    struct ReduceRepeatParams lastParams(2, 1, DEFAULT_REDUCE_DST_REP_STRIDE, DEFAULT_BLK_STRIDE, DEFAULT_REPEAT_STRIDE);
     work.SetValue(0, bodyValue);
     work.SetValue(1, tailValue);
     event_t eventIdSToV = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::S_V));

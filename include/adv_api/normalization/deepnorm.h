@@ -31,7 +31,7 @@ namespace AscendC {
  * \note User should make sure that memory on UB is big enough for input tiling.
  * \tparam T: Data type to be calculated, half or float
  * \tparam isReuseSrc: Whether to reuse the buffer of srcTensor.
- *                     If the value is true, srcTensor can used as tmpBuffer and the data in it will be overwritten.
+ *                     If the value is true, srcTensor can be used as tmpBuffer and the data in it will be overwritten.
  *                     If the value is false, srcTensor will not be used as tmpBuffer for calculation.
  * \tparam isBasicBlock: Whether the srcTensor shape [B, S, H] meets the following requirement
  *                     1. H % 64 = 0   2. H <= 2040   3. B * S % 8 = 0
@@ -71,7 +71,7 @@ __aicore__ inline void DeepNorm(const LocalTensor<T>& dstLocal, const LocalTenso
  * \note User should make sure that memory on UB is big enough for input tiling.
  * \tparam T: Data type to be calculated, half or float
  * \tparam isReuseSrc: Whether to reuse the buffer of srcTensor.
- *                     If the value is true, srcTensor can used as tmpBuffer and the data in it will be overwritten.
+ *                     If the value is true, srcTensor can be used as tmpBuffer and the data in it will be overwritten.
  *                     If the value is false, srcTensor will not be used as tmpBuffer for calculation.
  * \tparam isBasicBlock: Whether the srcTensor shape [B, S, H] meets the following requirement
  *                     1. H % 64 = 0   2. H <= 2040   3. B * S % 8 = 0

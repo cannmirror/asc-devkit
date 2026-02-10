@@ -16,7 +16,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    fixpipe.asc
+    fixpipe_nz2dn_tensor_quantization_f322f16.asc
 )
 
 target_link_libraries(demo PRIVATE

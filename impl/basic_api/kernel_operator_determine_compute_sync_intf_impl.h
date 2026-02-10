@@ -38,7 +38,7 @@
 namespace AscendC {
 /*
  * @ingroup WaitPreBlock
- * @brief wait previous compute finish
+ * @brief wait previous compute to finish
  * @param [in] global memory workspace
  */
 __aicore__ inline void InitDetermineComputeWorkspace(GlobalTensor<int32_t> &gmWorkspace,
@@ -48,7 +48,7 @@ __aicore__ inline void InitDetermineComputeWorkspace(GlobalTensor<int32_t> &gmWo
 }
 /*
  * @ingroup WaitPreBlock
- * @brief wait previous compute finish
+ * @brief wait previous compute to finish
  * @param [in] global memory workspace
  */
 __aicore__ inline void WaitPreBlock(GlobalTensor<int32_t> &gmWorkspace, LocalTensor<int32_t> &ubWorkspace)
@@ -58,7 +58,7 @@ __aicore__ inline void WaitPreBlock(GlobalTensor<int32_t> &gmWorkspace, LocalTen
 
 /*
  * @ingroup NotifyNextBlock
- * @brief wait previous compute finish
+ * @brief wait previous compute to finish
  * @param [in] global memory workspace
  */
 __aicore__ inline void NotifyNextBlock(GlobalTensor<int32_t> &gmWorkspace, LocalTensor<int32_t> &ubWorkspace)

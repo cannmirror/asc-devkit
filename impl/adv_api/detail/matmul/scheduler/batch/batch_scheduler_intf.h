@@ -32,7 +32,7 @@ public:
 
     /**
      * @description: iterate batch(output to GM or VECIN)
-     * @param: dst: ouput matrix memory addr (GlobalTensor<DstT> or LocalTensor<DstT>)
+     * @param: dst: output matrix memory addr (GlobalTensor<DstT> or LocalTensor<DstT>)
      * @param: enPartialSum: whether accumulate partial sum or not
      * @param: enAtomic: whether atomic
      * @param: enSequentialWrite: the data's write type on dst address, continue or flat write

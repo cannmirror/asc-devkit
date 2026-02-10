@@ -38,9 +38,9 @@ constexpr uint32_t C_API_MIX_TYPE = 3;
     #define ASC_IS_NOT_AIV (g_c_api_core_type != C_API_AIV_TYPE)
     #define ASC_IS_NOT_AIC (g_c_api_core_type != C_API_AIC_TYPE)
 #else
-    #if (defined(__DAV_CUBE__) && defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201)
+    #if (defined(__DAV_CUBE__) && defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
         constexpr uint32_t g_c_api_core_type = C_API_AIC_TYPE;
-    #elif (defined(__DAV_VEC__) && defined(__NPU_ARCH__) && __NPU_ARCH__ == 2201)
+    #elif (defined(__DAV_VEC__) && defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
         constexpr uint32_t g_c_api_core_type = C_API_AIV_TYPE;
     #else
         constexpr uint32_t g_c_api_core_type = C_API_MIX_TYPE;

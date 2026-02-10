@@ -390,23 +390,23 @@ bool Conv3dTilingBase::CheckInputShape()
 bool Conv3dTilingBase::CheckInputFormat()
 {
     if (this->descInfo.weightType.format != ConvCommonApi::ConvFormat::FRACTAL_Z_3D) {
-        TILING_LOG_ERROR("unSupported weight format: %s.",
+        TILING_LOG_ERROR("Unsupported weight format: %s.",
                          g_formatToStr.at(this->descInfo.weightType.format).c_str());
         return false;
     }
 
     if (this->descInfo.fMapType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("unSupported input format: %s.",
+        TILING_LOG_ERROR("Unsupported input format: %s.",
                          g_formatToStr.at(this->descInfo.fMapType.format).c_str());
         return false;
     }
     if (this->descInfo.outputType.format != ConvCommonApi::ConvFormat::NDC1HWC0) {
-        TILING_LOG_ERROR("unSupported output format: %s",
+        TILING_LOG_ERROR("Unsupported output format: %s",
                          g_formatToStr.at(this->descInfo.outputType.format).c_str());
         return false;
     }
     if (this->hasBias && this->descInfo.biasType.format != ConvCommonApi::ConvFormat::ND) {
-        TILING_LOG_ERROR("unSupported bias format: %s",
+        TILING_LOG_ERROR("Unsupported bias format: %s",
                         g_formatToStr.at(this->descInfo.biasType.format).c_str());
         return false;
     }
@@ -427,7 +427,7 @@ bool Conv3dTilingBase::CheckParamsDtype()
                 return true;
             }
         }
-        TILING_LOG_ERROR("unSupported params data type [input, weight, bias, output]: [%s, %s, %s, %s].",
+        TILING_LOG_ERROR("Unsupported params data type [input, weight, bias, output]: [%s, %s, %s, %s].",
             g_dtypeToStr.at(this->descInfo.fMapType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.weightType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.biasType.dtype).c_str(),
@@ -443,7 +443,7 @@ bool Conv3dTilingBase::CheckParamsDtype()
                 return true;
             }
         }
-        TILING_LOG_ERROR("unSupported params data type [input, weight, output]: [%s, %s, %s].",
+        TILING_LOG_ERROR("Unsupported params data type [input, weight, output]: [%s, %s, %s].",
             g_dtypeToStr.at(this->descInfo.fMapType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.weightType.dtype).c_str(),
             g_dtypeToStr.at(this->descInfo.outputType.dtype).c_str());

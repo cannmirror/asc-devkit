@@ -102,7 +102,7 @@ __aicore__ inline void DigammaPositiveHalf(
         PipeBarrier<PIPE_V>();
     }
 
-    // postitive resutl = tmp0 - tmp1
+    // positive result = tmp0 - tmp1
     Sub<float, false>(dst, dst, params.tmpCal1, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
 }
@@ -117,10 +117,10 @@ __aicore__ inline void DigammaNegativeHalf(
     Sub<float, false>(params.tmpCal5, params.tmpScalar, src, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
 
-    // Positiv(1 - x)
+    // Positive(1 - x)
     DigammaPositiveHalf(dst, params.tmpCal5, params);
 
-    // Save Positiv(1 - x) to tmpCal2
+    // Save Positive(1 - x) to tmpCal2
     Adds<float, false>(params.tmpCal2, dst, 0.0f, MASK_PLACEHOLDER, 1, params.unaryParams);
     PipeBarrier<PIPE_V>();
 
@@ -307,7 +307,7 @@ __aicore__ inline void DigammaPositive(
     // calculate tmp1
     DigammaPositiveTmp1(params.tmpCal1, src, params);
 
-    // postitive resutl = tmp0 - tmp1
+    // positive result = tmp0 - tmp1
     Sub<float, false>(dst, dst, params.tmpCal1, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
 }
@@ -382,7 +382,7 @@ __aicore__ inline void DigammaNegPicotPix(
     PipeBarrier<PIPE_V>();
     Div<float, false>(params.tmpCal1, params.tmpScalar, params.tmpCal1, MASK_PLACEHOLDER, 1, params.binaryParams);
     PipeBarrier<PIPE_V>();
-    // selsct f34
+    // select f34
     DigammaSelect(dst, params.tmpCal1, params.mask1,  params.tmpCal3, params);
 
     // dst = dst * pi

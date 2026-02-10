@@ -33,7 +33,7 @@ public:
 
     __aicore__ inline void SetScalar(A_T scalar)
     {
-        // A/B does not come from GM with IBShare is not support
+        // A/B does not come from GM with IBShare is not supported
         if constexpr (DoMatmulIBShareNorm(MM_CFG) && A_TYPE::ibShare) {
             ASCENDC_ASSERT((false), {
                 KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix A with scalar when matmul A is ibShare.");

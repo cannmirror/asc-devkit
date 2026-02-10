@@ -300,7 +300,7 @@ struct VecProposalApiParams {
     VecProposalApiParams(uint64_t dstAddrIn, uint64_t src0AddrIn, uint8_t repeatIn, uint32_t dstDtypeBytesIn,
         uint32_t src0DtypeBytesIn, uint64_t dstSizeIn, uint64_t src0SizeIn, uint8_t dstPosIn, uint8_t src0PosIn,
         uint16_t validBitIn, const uint16_t elementLenIn[4], uint8_t srcIndexIn, bool isExhaustedIn = false,
-        bool isContinousIn = false)
+        bool isContinuousIn = false)
     {
         dstAddr = dstAddrIn;
         src0Addr = src0AddrIn;
@@ -319,7 +319,7 @@ struct VecProposalApiParams {
         }
         srcIndex = srcIndexIn;
         isExhausted = isExhaustedIn;
-        isContinuous = isContinousIn;
+        isContinuous = isContinuousIn;
     }
     const uint32_t eleSize = 4;
     uint64_t dstAddr = 0;

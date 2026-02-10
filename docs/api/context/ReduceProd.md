@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -71,6 +76,7 @@
 <tbody><tr id="row14755141911264"><td class="cellrowborder" valign="top" width="19.39%" headers="mcps1.2.3.1.1 "><p id="p47551198266"><a name="p47551198266"></a><a name="p47551198266"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p125969172719"><a name="p125969172719"></a><a name="p125969172719"></a>操作数的数据类型。</p>
+<p id="p1058170185411"><a name="p1058170185411"></a><a name="p1058170185411"></a><span id="ph758180105419"><a name="ph758180105419"></a><a name="ph758180105419"></a>Ascend 950PR/Ascend 950DT</span>，支持的数据类型为：float。</p>
 <p id="p20617184411319"><a name="p20617184411319"></a><a name="p20617184411319"></a><span id="ph07569061010"><a name="ph07569061010"></a><a name="ph07569061010"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_1"><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_1"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_1"><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a><a name="zh-cn_topic_0000001312391781_term131434243115_1"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：float。</p>
 <p id="p1475612016105"><a name="p1475612016105"></a><a name="p1475612016105"></a><span id="ph167561705104"><a name="ph167561705104"></a><a name="ph167561705104"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_1"><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_1"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_1"><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a><a name="zh-cn_topic_0000001312391781_term184716139811_1"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：float。</p>
 </td>
@@ -86,7 +92,7 @@
 </td>
 <td class="cellrowborder" valign="top" width="80.61%" headers="mcps1.2.3.1.2 "><p id="p19776204217528"><a name="p19776204217528"></a><a name="p19776204217528"></a>是否允许修改源操作数，默认值为false。如果开发者允许源操作数被改写，可以使能该参数，使能后能够节省部分内存空间。</p>
 <p id="p2322650204211"><a name="p2322650204211"></a><a name="p2322650204211"></a>设置为<strong id="b732214507424"><a name="b732214507424"></a><a name="b732214507424"></a>true</strong>，则本接口内部计算时<strong id="b5322165017429"><a name="b5322165017429"></a><a name="b5322165017429"></a>复用</strong>src的内存空间，节省内存空间；设置为<strong id="b2322350134218"><a name="b2322350134218"></a><a name="b2322350134218"></a>false</strong>，则本接口内部计算时<strong id="b6322175013421"><a name="b6322175013421"></a><a name="b6322175013421"></a>不复用</strong>src的内存空间。</p>
-<p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-27.md#section639165323915">更多样例</a>。</p>
+<p id="p62891018544"><a name="p62891018544"></a><a name="p62891018544"></a>isReuseSource的使用样例请参考<a href="更多样例-84.md#section639165323915">更多样例</a>。</p>
 </td>
 </tr>
 </tbody>
@@ -135,6 +141,7 @@
 <td class="cellrowborder" valign="top" width="10.36%" headers="mcps1.2.4.1.2 "><p id="p1440319114363"><a name="p1440319114363"></a><a name="p1440319114363"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.26%" headers="mcps1.2.4.1.3 "><p id="p1638495010443"><a name="p1638495010443"></a><a name="p1638495010443"></a>uint32_t类型的数组，表示源操作数的shape信息。该shape的维度必须和模板参数pattern的维度一致，例如，pattern为AR，该shape维度只能是二维。</p>
+<p id="p1266691613118"><a name="p1266691613118"></a><a name="p1266691613118"></a><span id="ph9666101693113"><a name="ph9666101693113"></a><a name="ph9666101693113"></a>Ascend 950PR/Ascend 950DT</span>，当前只支持二维shape。</p>
 <p id="p12521350162215"><a name="p12521350162215"></a><a name="p12521350162215"></a><span id="ph1152115015224"><a name="ph1152115015224"></a><a name="ph1152115015224"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_2"><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_2"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_2"><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a><a name="zh-cn_topic_0000001312391781_term131434243115_2"></a>Atlas A3 推理系列产品</term></span>，当前只支持二维shape。</p>
 <p id="p75216501229"><a name="p75216501229"></a><a name="p75216501229"></a><span id="ph1752185022220"><a name="ph1752185022220"></a><a name="ph1752185022220"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_2"><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_2"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_2"><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a><a name="zh-cn_topic_0000001312391781_term184716139811_2"></a>Atlas A2 推理系列产品</term></span>，当前只支持二维shape。</p>
 </td>
@@ -144,6 +151,7 @@
 <td class="cellrowborder" valign="top" width="10.36%" headers="mcps1.2.4.1.2 "><p id="p174961758436"><a name="p174961758436"></a><a name="p174961758436"></a>输入</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.26%" headers="mcps1.2.4.1.3 "><p id="p5831834134714"><a name="p5831834134714"></a><a name="p5831834134714"></a>表示实际需要计算的最内层轴数据是否32Bytes对齐。</p>
+<p id="p13604152793111"><a name="p13604152793111"></a><a name="p13604152793111"></a><span id="ph18604172710315"><a name="ph18604172710315"></a><a name="ph18604172710315"></a>Ascend 950PR/Ascend 950DT</span>，当前只支持true。</p>
 <p id="p18615131214236"><a name="p18615131214236"></a><a name="p18615131214236"></a><span id="ph116153129239"><a name="ph116153129239"></a><a name="ph116153129239"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_3"><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_3"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_3"><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a><a name="zh-cn_topic_0000001312391781_term131434243115_3"></a>Atlas A3 推理系列产品</term></span>，当前只支持true。</p>
 <p id="p12615612192318"><a name="p12615612192318"></a><a name="p12615612192318"></a><span id="ph5615171232313"><a name="ph5615171232313"></a><a name="ph5615171232313"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_3"><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_3"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_3"><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a><a name="zh-cn_topic_0000001312391781_term184716139811_3"></a>Atlas A2 推理系列产品</term></span>，当前只支持true。</p>
 </td>

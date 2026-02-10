@@ -27,7 +27,7 @@ int32_t SetBiasType(TPosition pos, CubeFormat type, DataType dataType)
 </td>
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p19741213853"><a name="p19741213853"></a><a name="p19741213853"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p9974131313513"><a name="p9974131313513"></a><a name="p9974131313513"></a>Bias矩阵所在的buffer位置，可设置为：TPosition::GM, TPosition::VECOUT。</p>
+<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p9974131313513"><a name="p9974131313513"></a><a name="p9974131313513"></a>Bias矩阵所在的buffer位置，可设置为：TPosition::GM, TPosition::VECOUT, TPosition::TSCM。</p>
 </td>
 </tr>
 <tr id="row36481043185619"><td class="cellrowborder" valign="top" width="14.99%" headers="mcps1.2.4.1.1 "><p id="p197481310512"><a name="p197481310512"></a><a name="p197481310512"></a>type</p>
@@ -41,7 +41,7 @@ int32_t SetBiasType(TPosition pos, CubeFormat type, DataType dataType)
 </td>
 <td class="cellrowborder" valign="top" width="12.02%" headers="mcps1.2.4.1.2 "><p id="p1497512131654"><a name="p1497512131654"></a><a name="p1497512131654"></a>输入</p>
 </td>
-<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p5975101310512"><a name="p5975101310512"></a><a name="p5975101310512"></a>Bias矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_INT32。</p>
+<td class="cellrowborder" valign="top" width="72.99%" headers="mcps1.2.4.1.3 "><p id="p5975101310512"><a name="p5975101310512"></a><a name="p5975101310512"></a>Bias矩阵的数据类型，可设置为：DataType::DT_FLOAT/DataType::DT_FLOAT16/DataType::DT_INT32/DataType::DT_BFLOAT16 。</p>
 <p id="p119941954142412"><a name="p119941954142412"></a><a name="p119941954142412"></a>其中，仅在A、B的数据类型均为int8_t时，Bias的数据类型可以设置为int32_t。</p>
 </td>
 </tr>

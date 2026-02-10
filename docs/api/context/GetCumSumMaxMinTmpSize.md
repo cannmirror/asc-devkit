@@ -59,8 +59,7 @@ void GetCumSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, 
 <td class="cellrowborder" valign="top" width="9.69%" headers="mcps1.2.4.1.2 "><p id="p1892805516182"><a name="p1892805516182"></a><a name="p1892805516182"></a>输出</p>
 </td>
 <td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p6973262462"><a name="p6973262462"></a><a name="p6973262462"></a>Cumsum接口能完成计算所需的最大临时空间大小，超出该值的空间不会被该接口使用。</p>
-<div class="note" id="note1275197121212"><a name="note1275197121212"></a><a name="note1275197121212"></a><span class="notetitle"> 说明： </span><div class="notebody"><p id="p1040915016493"><a name="p1040915016493"></a><a name="p1040915016493"></a>maxValue仅作为参考值，有可能大于<span id="ph1088254310583"><a name="ph1088254310583"></a><a name="ph1088254310583"></a>Unified Buffer</span>剩余空间的大小，该场景下，开发者需要根据<span id="ph20796650203718"><a name="ph20796650203718"></a><a name="ph20796650203718"></a>Unified Buffer</span>剩余空间的大小来选取合适的临时空间大小。</p>
-</div></div>
+<p id="p1152262216275"><a name="p1152262216275"></a><a name="p1152262216275"></a>请注意，maxValue仅作为参考值，有可能大于<span id="ph1088254310583"><a name="ph1088254310583"></a><a name="ph1088254310583"></a>Unified Buffer</span>剩余空间的大小，该场景下，开发者需要根据<span id="ph20796650203718"><a name="ph20796650203718"></a><a name="ph20796650203718"></a>Unified Buffer</span>剩余空间的大小来选取合适的临时空间大小。</p>
 </td>
 </tr>
 <tr id="row84381851121811"><td class="cellrowborder" valign="top" width="17.77%" headers="mcps1.2.4.1.1 "><p id="p1843495111186"><a name="p1843495111186"></a><a name="p1843495111186"></a>minValue</p>

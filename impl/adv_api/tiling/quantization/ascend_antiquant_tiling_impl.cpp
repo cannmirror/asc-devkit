@@ -22,7 +22,7 @@ namespace AscendC {
 namespace {
 constexpr uint32_t ANTI_QUANT_MIN_TMP_SIZE = 1024;
 constexpr uint32_t ASCEND_ANTIQUANT_TWO = 2;
-constexpr uint32_t ASCEND_ANTIQUANT_SINGE_N_SIZE = 64;
+constexpr uint32_t ASCEND_ANTIQUANT_SINGLE_N_SIZE = 64;
 constexpr uint32_t ASCEND_ANTIQUANT_TPM_N_SIZE = 80;
 constexpr uint32_t ASCEND_ANTIQUANT_ALIGN_K_SIZE = 32;
 
@@ -51,7 +51,7 @@ uint32_t GetScaleSize(const ge::Shape &scaleShape)
     return scaleSize;
 }
 
-void CheckAnitQuantHostCommon(const char* apiName, const char* hostFuncName, const ge::Shape& srcShape,
+void CheckAntiQuantHostCommon(const char* apiName, const char* hostFuncName, const ge::Shape& srcShape,
     bool isTranspose, ge::DataType inputDataType)
 {
     ASCENDC_HOST_ASSERT(srcShape.GetShapeSize() > 0, return, 
@@ -69,7 +69,7 @@ void CheckAnitQuantHostCommon(const char* apiName, const char* hostFuncName, con
 uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
     ge::DataType inputDataType, ge::DataType outputDataType)
 {
-    CheckAnitQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMaxTmpSize", srcShape, isTranspose, inputDataType);
+    CheckAntiQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMaxTmpSize", srcShape, isTranspose, inputDataType);
 #if !(defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
     if (inputDataType == ge::DT_FLOAT4_E2M1 || inputDataType == ge::DT_FLOAT4_E1M2) {
         return GetAscendAntiQuantTmpSizeOfFp4(scaleShape, isTranspose);
@@ -96,7 +96,7 @@ uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape& srcShape, const ge::Shape
         return srcSize * sizeof(float);
     } else if ((!isTranspose) && isPerChannel) {
         uint32_t k = srcShape.GetDims()[0];
-        return scaleSize * ASCEND_ANTIQUANT_TWO * sizeof(float) + ASCEND_ANTIQUANT_SINGE_N_SIZE * k * sizeof(float);
+        return scaleSize * ASCEND_ANTIQUANT_TWO * sizeof(float) + ASCEND_ANTIQUANT_SINGLE_N_SIZE * k * sizeof(float);
     } else {
         return srcSize * sizeof(float);
     }
@@ -105,7 +105,7 @@ uint32_t GetAscendAntiQuantMaxTmpSize(const ge::Shape& srcShape, const ge::Shape
 uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
     ge::DataType inputDataType, ge::DataType outputDataType)
 {
-    CheckAnitQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMinTmpSize", srcShape, isTranspose, inputDataType);
+    CheckAntiQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMinTmpSize", srcShape, isTranspose, inputDataType);
 #if !(defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113))
     if (inputDataType == ge::DT_FLOAT4_E2M1 || inputDataType == ge::DT_FLOAT4_E1M2) {
         return GetAscendAntiQuantTmpSizeOfFp4(scaleShape, isTranspose);
@@ -134,7 +134,7 @@ uint32_t GetAscendAntiQuantMinTmpSize(const ge::Shape& srcShape, const ge::Shape
         return tmpTensorScaleSize + tmpTensorOffsetSize + tmpTensorInputSize;
     } else {
         uint32_t k = srcShape.GetDims()[0];
-        return scaleSize * ASCEND_ANTIQUANT_TWO * sizeof(float) + ASCEND_ANTIQUANT_SINGE_N_SIZE * k * sizeof(float);
+        return scaleSize * ASCEND_ANTIQUANT_TWO * sizeof(float) + ASCEND_ANTIQUANT_SINGLE_N_SIZE * k * sizeof(float);
     }
 }
 
@@ -158,14 +158,14 @@ void GetAscendAntiQuantTmpBufferFactorSize(const ge::Shape& srcShape, const ge::
         maxLiveNodeCount = 1;
     } else if ((!isTranspose) && isPerChannel) {
         extraBuf = scaleSize * ASCEND_ANTIQUANT_TWO * sizeof(float) +
-                   ASCEND_ANTIQUANT_SINGE_N_SIZE * srcShape.GetDims()[0] * sizeof(float);
+                   ASCEND_ANTIQUANT_SINGLE_N_SIZE * srcShape.GetDims()[0] * sizeof(float);
     }
 }
 
 void GetAscendAntiQuantMaxMinTmpSize(const ge::Shape& srcShape, const ge::Shape& scaleShape, bool isTranspose,
     ge::DataType inputDataType, ge::DataType outputDataType, uint32_t& maxValue, uint32_t& minValue)
 {
-    CheckAnitQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMaxMinTmpSize", 
+    CheckAntiQuantHostCommon("AscendAntiQuant", "GetAscendAntiQuantMaxMinTmpSize", 
         srcShape, isTranspose, inputDataType);
     maxValue = GetAscendAntiQuantMaxTmpSize(srcShape, scaleShape, isTranspose, inputDataType, outputDataType);
     minValue = GetAscendAntiQuantMinTmpSize(srcShape, scaleShape, isTranspose, inputDataType, outputDataType);

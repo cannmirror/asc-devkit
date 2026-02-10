@@ -238,9 +238,9 @@ __aicore__ inline void ReduceRAOverVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *srcAd
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
-    uint16_t foldThree = (tailFolds == ReduceOpInternal::FLOD_THREE) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
+    uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
 
     ReduceRAOverVLVFImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA, dimR,
         mainR, tailR, loopANum, loopANumFinal, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree);
@@ -446,9 +446,9 @@ __aicore__ inline void ReduceRALessThanVLImpl(__ubuf__ T *dstAddr, __ubuf__ T *s
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
-    uint16_t foldThree = (tailFolds == ReduceOpInternal::FLOD_THREE) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
+    uint16_t foldThree = (tailFolds == ReduceOpInternal::FOLD_THREE) ? 1 : 0;
 
     ReduceRALessThanVLVFImpl<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
         dimR, mainR, tailR, folds, avgFolds, foldZero, foldOne, foldTwo, foldThree);
@@ -752,8 +752,8 @@ __aicore__ inline void ReduceRAB64ReuseSource(__ubuf__ T *dstAddr, __ubuf__ T *s
     uint16_t avgFolds = ReduceOpInternal::BASE_FOLD_B64;
     uint16_t tailFolds = folds % avgFolds;
     uint16_t foldZero = (tailFolds == 0) ? 1 : 0;
-    uint16_t foldOne = (tailFolds == ReduceOpInternal::FLOD_ONE) ? 1 : 0;
-    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FLOD_TWO) ? 1 : 0;
+    uint16_t foldOne = (tailFolds == ReduceOpInternal::FOLD_ONE) ? 1 : 0;
+    uint16_t foldTwo = (tailFolds == ReduceOpInternal::FOLD_TWO) ? 1 : 0;
 
     ReduceRAB64ReuseSourceVF<T, Trait, Binaryfunc, isReuseSource>(dstAddr, srcAddr, tmpAddr, dimA,
         dimR, mainR, tailR, loopANum, loopANumFinal, folds, avgFolds, foldZero, foldOne, foldTwo);

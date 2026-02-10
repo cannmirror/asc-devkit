@@ -23,7 +23,7 @@ namespace Detail {
 
 /**
  * C2Buffer: responsible for C2 buffer management.
- * This module provides ablities to allocate or free one C2 buffer block, and pipeline syncronization.
+ * This module provides abilities to allocate or free one C2 buffer block, and pipeline synchronization.
  * We retain the freedom to make incompatible changes, but do not guarantee the stability.
  * CopyBiasIn is only for internal usage, does not support extension or customized specialization!
  */

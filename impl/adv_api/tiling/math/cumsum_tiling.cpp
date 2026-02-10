@@ -49,7 +49,7 @@ void GetCumSumMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, 
             minCastTempBuffer = srcShape.GetDim(1) * transDataTo5HDAddrListSize * sizeof(uint16_t);
             maxCastTempBuffer = srcShape.GetDim(1) * alignOutter * sizeof(uint16_t);
         }
-        // transpose dose not need to convert half to float
+        // transpose does not need to convert half to float
         minValue = minCastTempBuffer + transDataTo5HDAddrListSize * srcShape.GetDim(1) * typeSize *
                    transposeTimes;  // Both transpose require tempBuffer
 

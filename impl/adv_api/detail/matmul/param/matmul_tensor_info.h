@@ -106,7 +106,7 @@ private:
 
     __aicore__ inline void CheckMatrixAFromLocalMemory()
     {
-        // A/B does not come from GM with IBShare is not support
+        // A/B does not come from GM with IBShare is not supported
         if constexpr (DoMatmulIBShareNorm(MM_CFG) && INPUT_TYPE::ibShare) {
             ASCENDC_ASSERT((false), {
                 KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix A whose src::pos is L1 when matmul A is ibShare.");
@@ -123,7 +123,7 @@ private:
 
     __aicore__ inline void CheckMatrixBFromLocalMemory()
     {
-        // A/B does not come from GM with IBShare is not support
+        // A/B does not come from GM with IBShare is not supported
         if constexpr (DoMatmulIBShareNorm(MM_CFG) && INPUT_TYPE::ibShare) {
             ASCENDC_ASSERT((false), {
                 KERNEL_LOG(KERNEL_ERROR, "It is not allowed to set matrix B whose src::pos is L1 when matmul B is ibShare.");

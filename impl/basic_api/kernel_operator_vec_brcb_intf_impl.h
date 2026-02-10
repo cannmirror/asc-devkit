@@ -17,6 +17,7 @@
 #include "kernel_tensor.h"
 #include "kernel_check.h"
 #include "kernel_struct_brcb.h"
+#include "mstx_local_tensor_info.h"
 
 #if __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_vec_brcb_impl.h"
@@ -40,7 +41,7 @@ namespace AscendC {
 /*
  * @ingroup brcb Level 0
  * @brief this function fetches 8 b16/b32 data from src0, broadcast each data into one 32B block,
- * @brief then finally writes these 8 blocks into dst continously.
+ * @brief then finally writes these 8 blocks into dst continuously.
  * @brief gather element in the uint of block
  * @param [out] dst output LocalTensor
  * @param [in] src0 input LocalTensor
@@ -52,6 +53,9 @@ template <typename T>
 __aicore__ inline void Brcb(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const uint8_t repeatTime,
     const BrcbRepeatParams& repeatParams)
 {
+#ifdef __MSTX_DFX_REPORT__
+    MstxTensor::GetMstxVecBrcbInfo(dst, src0, repeatTime, repeatParams, "Brcb");
+#endif
     using PrimType = PrimT<T>;
 #if ASCENDC_CPU_DEBUG
     if (!CheckFunBcB(dst, src0, repeatTime, repeatParams, "Brcb")) {

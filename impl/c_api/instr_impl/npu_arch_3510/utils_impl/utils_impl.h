@@ -11,6 +11,38 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_UTILS_IMPL_UTILS_C_API_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_3510_UTILS_IMPL_UTILS_C_API_IMPL_H
 
-#include "impl/c_api/instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+#include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
+
+union asc_gm2l1_loop_size_config {
+    uint64_t config;
+    struct {
+        uint64_t loop1_size : 21;
+        uint64_t loop2_size : 42;
+    };
+};
+
+union asc_gm2l1_loop_stride_config {
+    uint64_t config;
+    struct {
+        uint64_t src_stride : 40;
+        uint64_t dst_stride : 24;
+    };
+};
+
+union asc_gm2ub_loop_size_config {
+    uint64_t config;
+    struct {
+        uint64_t loop1_size : 21;
+        uint64_t loop2_size : 42;
+    };
+};
+
+union asc_gm2ub_loop_stride_config {
+    uint64_t config;
+    struct {
+        uint64_t src_stride : 40;
+        uint64_t dst_stride : 24;
+    };
+};
 
 #endif

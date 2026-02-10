@@ -109,6 +109,33 @@ struct TimeStampTlv {
     uint64_t entry = 0U;           // entry system cycle
     uint32_t resvMem[2];          // reserved
 };
+
+#ifdef ASCENDC_TRACE_ON
+enum class TraceId : uint32_t {
+    KFC_CLIENT_POST_MSG = 0x7001,
+    KFC_CLIENT_REV_MSG_GM = 0x7002,
+    KFC_CLIENT_REV_MSG_UB = 0x7003,
+    KFC_SERVER_RUN = 0x7101,
+    KFC_SERVER_REV_MSG = 0x7102,
+    KFC_SERVER_PROCESS_MSG = 0x7103,
+    MatMul_PROCESS_MSG = 0x8001,
+    MatMul_CALC,
+    Conv = 0x8101,
+    DropOut = 0x8201,
+    SoftMax = 0x8301,
+    SoftmaxGrad,
+    SoftmaxFlash,
+    SoftmaxFlashV2,
+    LogSoftMax,
+    SoftmaxFlashV3,
+    LayerNorm = 0x8401,
+    LayerNormGrad,
+    LayerNormGradBeta,
+    Pad = 0x8501,
+    UnPad,
+    BroadCast = 0x8601,
+};
+#endif
 } // namespace __asc_aicore
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_DEBUG_TYPES__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__

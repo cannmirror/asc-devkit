@@ -48,7 +48,7 @@ __simd_callee__ inline void ArangeImpl(S& dstReg, U scalarValue)
         if constexpr(CheckRegTrait<S, RegTraitNumOne>()) {
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
             ArangeB64Impl(traitTwoDstReg, scalarValue);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         } else if constexpr(CheckRegTrait<S, RegTraitNumTwo>()) {
             S dstTemp;
             ArangeB64Impl<order, U, S>(dstTemp, scalarValue);

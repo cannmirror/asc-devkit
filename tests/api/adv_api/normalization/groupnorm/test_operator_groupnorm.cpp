@@ -25,7 +25,7 @@ constexpr uint32_t GROUPNORM_SIZEOF_HALF = 2;
 constexpr uint32_t GROUPNORM_MAX_MASK_VAL = 64;
 constexpr uint32_t GROUPNORM_STEP_MASK_VAL = 8;
 constexpr uint32_t GROUPNORM_MAX_REPEAT_VAL = 255;
-constexpr uint32_t GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION = 8;
+constexpr uint32_t GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION = 8;
 constexpr uint32_t GROUPNORM_REDUCESUM_MAX_FLOAT_NUM = 64;
 constexpr uint32_t GROUPNORM_REDUCESUM_MAX_REPEAT_SMALLSHAPE = 8;
 
@@ -72,8 +72,8 @@ __aicore__ inline void GetGroupNormNDTillingInfo(const ShapeInfo& inputShapeInfo
 
     // to enable MeanVarTensor to directly use Add without need to use GetValue
     // it is necessary to ensure that each iteration has at least 8 integer multiples of groups
-    tiling.bsCurLength = tiling.oneTmpSize / (GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION * tiling.d * tiling.hwAlignSize) *
-        GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION;
+    tiling.bsCurLength = tiling.oneTmpSize / (GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION * tiling.d * tiling.hwAlignSize) *
+        GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION;
 
     // determine whether the condition for smallShape is met
     uint32_t k = GROUPNORM_REDUCESUM_MAX_REPEAT_SMALLSHAPE;
@@ -96,7 +96,7 @@ __aicore__ inline void GetGroupNormNDTillingInfo(const ShapeInfo& inputShapeInfo
             mask1 = tiling.dhwAlignSize;
         }
         uint32_t max_bsCurLength = (GROUPNORM_MAX_REPEAT_VAL / (tiling.dhwAlignSize / mask1) / 
-            GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION) * GROUPNORM_MIN_BSCURLENGHT_IN_ITERATION;
+            GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION) * GROUPNORM_MIN_BSCURLENGTH_IN_ITERATION;
         if (max_bsCurLength < tiling.bsCurLength) {
             tiling.bsCurLength = max_bsCurLength;
         }

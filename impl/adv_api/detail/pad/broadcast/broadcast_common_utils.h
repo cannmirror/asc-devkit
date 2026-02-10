@@ -9,7 +9,7 @@
 */
 
 /* !
- * \file #inlcude "broadcast_common_utils.h"
+ * \file #include "broadcast_common_utils.h"
  * \brief
  */
 #ifndef IMPL_PAD_BROADCAST_BROADCAST_COMMON_UTILS_H
@@ -124,7 +124,7 @@ __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, c
     }
     uint32_t orCounts = firstDim / ONE_VOR_BLOCK_DIM;
     constexpr uint32_t oneBlockElementNum = ONE_BLK_SIZE / sizeof(T);
-    uint8_t repeateTimes = numBlocks / oneBlockElementNum;
+    uint8_t repeatTimes = numBlocks / oneBlockElementNum;
     SetMaskNorm();
     SetVectorMask<uint16_t, MaskMode::NORMAL>(ONE_VOR_BLOCK_DIM * ELEMENT_NUM_FOR_UINT16);
     uint8_t dstBlkStride = numBlocks * dtypeCount / ELEMENT_NUM_FOR_UINT16;
@@ -135,7 +135,7 @@ __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, c
             srcLocal.template ReinterpretCast<uint16_t>(),
             zeroTemp.template ReinterpretCast<uint16_t>(),
             MASK_PLACEHOLDER,
-            repeateTimes,
+            repeatTimes,
             binaryParams);
         transTmpBufferOffset += ONE_VOR_BLOCK_DIM * numBlocks;
     }
@@ -147,7 +147,7 @@ __aicore__ inline void TwoDimBroadCastDimAlign(const LocalTensor<T> &dstLocal, c
                             srcLocal.template ReinterpretCast<uint16_t>(),
                             zeroTemp.template ReinterpretCast<uint16_t>(),
                             MASK_PLACEHOLDER,
-                            repeateTimes,
+                            repeatTimes,
                             binaryParams);
     }
     PipeBarrier<PIPE_V>();

@@ -105,7 +105,7 @@ __aicore__ inline void RmsNormReduceSum(const LocalTensor<float>& dst, const Loc
     }
 }
 
-// src0 is input: [b,s,h], src1 is reduce resulst: [h,], repeatTime is b*s
+// src0 is input: [b,s,h], src1 is reduce results: [h,], repeatTime is b*s
 // use bsLength as for loop, and muls to do broadcast multiply
 __aicore__ inline void RmsNormGeneralFirstAxisBrcMul(const LocalTensor<float>& dst, const LocalTensor<float>& src0,
     const LocalTensor<float>& src1, const uint32_t bshLength, const uint32_t bsLength, const uint32_t hLength)
@@ -242,7 +242,7 @@ __aicore__ inline void RmsNormCompute(const LocalTensor<T>& dst, const LocalTens
     PipeBarrier<PIPE_V>();
     Exp<float, false>(params.reducedAddr, params.reducedAddr, MASK_PLACEHOLDER, 1, unaryParams);
     PipeBarrier<PIPE_V>();
-    // step 6: broadcast reudce result [b,s] to [b,s,h]
+    // step 6: broadcast reduce result [b,s] to [b,s,h]
     // step 7: x / (rms + e)
     RmsNormFirstAxisBrcMul<isBasicBlock>(params.tmpAddr, params.srcFp32Addr, params.reducedAddr, params.curBshLength,
         params.curBsLength, tiling.hLength);

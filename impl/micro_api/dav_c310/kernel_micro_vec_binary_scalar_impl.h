@@ -49,10 +49,10 @@ __simd_callee__ inline void AddsComplexTraitOneImpl(S& dstReg, S& srcReg, const 
     MaskPack(maskTrait2, mask);
     RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
     RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-    TraitOneToTaitTwoTmpl<RegTensor<ActualT, RegTraitNumTwo>, RegTensor<ActualT, RegTraitNumOne>, typename ActualT::EleType>(
+    TraitOneToTraitTwoTmpl<RegTensor<ActualT, RegTraitNumTwo>, RegTensor<ActualT, RegTraitNumOne>, typename ActualT::EleType>(
                           traitTwoSrcReg, srcReg);
     AddsComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
-    TraitTwoToTaitOneTmpl<RegTensor<ActualT, RegTraitNumOne>, RegTensor<ActualT, RegTraitNumTwo>, typename ActualT::EleType>(
+    TraitTwoToTraitOneTmpl<RegTensor<ActualT, RegTraitNumOne>, RegTensor<ActualT, RegTraitNumTwo>, typename ActualT::EleType>(
                           dstReg, traitTwoDstReg);
 }
 
@@ -86,9 +86,9 @@ __simd_callee__ inline void AddsImpl(S& dstReg, S& srcReg, U scalarValue, MaskRe
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-                B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+                B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
                 AddsComplexTraitTwoImpl(traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
-                B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             }
         } else {
             S srcReg1;
@@ -153,10 +153,10 @@ __simd_callee__ inline void MulsImpl(S& dstReg, S& srcReg, U scalarValue, MaskRe
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-                B32TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+                B32TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
                 MulsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumTwo>>(
                     traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
-                B32TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B32TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             }
         } else {
             vmuls(dstReg, srcReg, scalarValue, mask, modeValue);
@@ -170,10 +170,10 @@ __simd_callee__ inline void MulsImpl(S& dstReg, S& srcReg, U scalarValue, MaskRe
                 MaskPack(maskTrait2, mask);
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg;
                 RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-                B64TraitOneToTaitTwo(traitTwoSrcReg, srcReg);
+                B64TraitOneToTraitTwo(traitTwoSrcReg, srcReg);
                 MulsKernel<T, U, mode, RegTensor<ActualT, RegTraitNumTwo>>(
                     traitTwoDstReg, traitTwoSrcReg, scalarValue, maskTrait2);
-                B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+                B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
             }
         } else {
             S srcReg1;
@@ -253,9 +253,9 @@ __simd_callee__ inline void ShiftLeftsImpl(S& dstReg, S& srcReg, U scalarValue, 
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg);
             ShiftLeftsB64Impl(traitTwoDstReg, traitTwoSrcReg0, scalarValue, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     }
 }
@@ -310,9 +310,9 @@ __simd_callee__ inline void ShiftRightsImpl(S& dstReg, S& srcReg, U scalarValue,
             MaskPack(maskTrait2, mask);
             RegTensor<ActualT, RegTraitNumTwo> traitTwoSrcReg0;
             RegTensor<ActualT, RegTraitNumTwo> traitTwoDstReg;
-            B64TraitOneToTaitTwo(traitTwoSrcReg0, srcReg);
+            B64TraitOneToTraitTwo(traitTwoSrcReg0, srcReg);
             ShiftRightsB64Impl(traitTwoDstReg, traitTwoSrcReg0, scalarValue, maskTrait2);
-            B64TraitTwoToTaitOne(dstReg, traitTwoDstReg);
+            B64TraitTwoToTraitOne(dstReg, traitTwoDstReg);
         }
     }
 }

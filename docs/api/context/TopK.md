@@ -9,7 +9,12 @@
 </th>
 </tr>
 </thead>
-<tbody><tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
+<tbody><tr id="row18959673369"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p1595910763613"><a name="p1595910763613"></a><a name="p1595910763613"></a><span id="ph1595918753613"><a name="ph1595918753613"></a><a name="ph1595918753613"></a>Ascend 950PR/Ascend 950DT</span></p>
+</td>
+<td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1695957133611"><a name="p1695957133611"></a><a name="p1695957133611"></a>√</p>
+</td>
+</tr>
+<tr id="row18959157103612"><td class="cellrowborder" valign="top" width="57.99999999999999%" headers="mcps1.1.3.1.1 "><p id="p13959117193618"><a name="p13959117193618"></a><a name="p13959117193618"></a><span id="ph9959117173614"><a name="ph9959117173614"></a><a name="ph9959117173614"></a><term id="zh-cn_topic_0000001312391781_term1253731311225"><a name="zh-cn_topic_0000001312391781_term1253731311225"></a><a name="zh-cn_topic_0000001312391781_term1253731311225"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115"><a name="zh-cn_topic_0000001312391781_term131434243115"></a><a name="zh-cn_topic_0000001312391781_term131434243115"></a>Atlas A3 推理系列产品</term></span></p>
 </td>
 <td class="cellrowborder" align="center" valign="top" width="42%" headers="mcps1.1.3.1.2 "><p id="p1095914793613"><a name="p1095914793613"></a><a name="p1095914793613"></a>√</p>
 </td>
@@ -40,13 +45,13 @@
 
 如下图所示，对shape为\(4, 32\)的二维矩阵进行排序，k设置为1，输出结果为\[\[32\] \[32\] \[32\] \[32\]\]。
 
-![](figures/nz-reduce-23.png)
+![](figures/nz-reduce-43.png)
 
 -   **必备概念**
 
     基于如上样例，我们引入一些必备概念：行数称之为**外轴长度（outter）**，每行实际的元素个数称之为**内轴的实际长度（n）**。本接口要求输入的内轴长度为32的整数倍，所以当n不是32的整数倍时，需要开发者将其向上补齐到32的整数倍，补齐后的长度称之为**内轴长度（inner）**。比如，如下的样例中，每行的实际长度n为31，不是32的整数倍，向上补齐后得到inner为32，图中的padding代表补齐操作。n和inner的关系如下：当n是32的整数倍时，inner=n；否则，inner \> n。
 
-    ![](figures/nz-reduce-24.png)
+    ![](figures/nz-reduce-44.png)
 
 -   **接口模式**
 
@@ -54,9 +59,11 @@
 
 -   **附加功能**：本接口支持开发者指定某些行的排序是无效排序。通过传入finishLocal参数值来控制，finishLocal对应行的值为true时，表示该行排序无效，此时排序后输出的dstIndexLocal的k个索引值会全部被置为无效索引n。
 
-    ![](figures/nz-reduce-25.png)
+    ![](figures/nz-reduce-45.png)
 
 ## 实现原理<a name="section13229175017585"></a>
+
+TopK提供了两种不同的排序算法，MERGE\_SORT算法和RADIX\_SELECT算法，两种算法在执行速度、时间复杂度和算法稳定性上表现不同。MERGE\_SORT算法的时间复杂度是O\(![](figures/zh-cn_formulaimage_0000002108561704.png)\)，是一种稳定的排序算法，执行速度相对较慢；RADIX\_SELECT算法的时间复杂度是O\(n\)，通常不关心稳定性，执行速度较快。
 
 -   **MERGE\_SORT算法**
 
@@ -65,10 +72,15 @@
     **图 1**  TopK算法框图<a name="fig19454111161219"></a>  
     ![](figures/TopK算法框图.png "TopK算法框图")
 
+    **图 2**  TopK算法框图<a name="fig22051712440"></a>  
+    ![](figures/TopK算法框图-46.png "TopK算法框图-46")
+
     根据TopKMode不同的模式选择，可分为两个分支。
 
     -   计算TopK NORMAL模式，过程如下：
         1.  模板参数isInitIndex为false，需生成0到inner - 1的索引；
+
+            Ascend 950PR/Ascend 950DT采用方式一。
 
             Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式二。
 
@@ -83,6 +95,8 @@
 
         2.  isLargest参数为false，由于Sort32指令默认为降序排序，则给数据乘以-1；
         3.  对输入数据完成全排序。
+
+            Ascend 950PR/Ascend 950DT采用方式一。
 
             Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式二。
 
@@ -108,6 +122,8 @@
     -   计算TopK SMALL模式，过程如下：
         1.  模板参数isInitIndex为false，需生成0到inner - 1的索引，并使用Copy指令将数据复制为outter条；
 
+            Ascend 950PR/Ascend 950DT采用方式一。
+
             Atlas A3 训练系列产品/Atlas A3 推理系列产品采用方式二。
 
             Atlas A2 训练系列产品/Atlas A2 推理系列产品采用方式二。
@@ -124,6 +140,24 @@
         4.  使用GatherMask指令提取前k个数据和索引；
         5.  isLargest参数为false，则给输入数据乘以-1还原数据。
 
+-   **RADIX\_SELECT算法**
+
+    **图 3**  TopK算法框图<a name="fig1101844194019"></a>  
+    ![](figures/TopK算法框图-47.png "TopK算法框图-47")
+
+    计算过程分为如下几步：
+
+    1.  生成索引，根据不同的TopKMode，分为：
+        -   TopK NORMAL模式：模板参数isInitIndex为false，使用CreateVecIndex生成0到inner-1的索引；
+        -   TopK SMALL模式：模板参数isInitIndex为false，使用CreateVecIndex生成0到inner-1的索引，并使用Copy指令将数据复制为outter条；
+
+    2.  根据模板参数选择是否对数据进行预处理。如果数据类型是浮点类型或者有符号的整数类型，需要执行twiddle in操作（将浮点数或有符号的整数转换成无符号的整数类型）。如果TopK取最小值，对无符号整数类型的数据执行取反操作；
+    3.  寻找第K大的数，并保存到kValue中；
+    4.  取出大于kValue的数据和索引；
+    5.  取出等于kValue的数据和索引；
+    6.  根据模板参数sorted选择是否对k个数进行排序，将排序数据结果存放到临时空间中；
+    7.  根据模板参数，如果TopK取最小值，执行取反操作；如果数据类型是浮点类型或者有符号的整数类型，执行twiddle out操作（将无符号的整数类型转换成浮点数或有符号的整数类型）。
+
 ## 函数原型<a name="section620mcpsimp"></a>
 
 -   API内部申请临时空间
@@ -133,10 +167,20 @@
     __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
     ```
 
+    ```
+    template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false, enum TopKMode topkMode = TopKMode::TOPK_NORMAL, const TopKConfig& config = defaultTopKConfig>
+    __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
+    ```
+
 -   通过tmpLocal入参传入临时空间
 
     ```
     template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false, enum TopKMode topkMode = TopKMode::TOPK_NORMAL>
+    __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<uint8_t>& tmpLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
+    ```
+
+    ```
+    template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false, enum TopKMode topkMode = TopKMode::TOPK_NORMAL, const TopKConfig& config = defaultTopKConfig>
     __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTensor<int32_t>& dstIndexLocal, const LocalTensor<T>& srcLocal, const LocalTensor<int32_t>& srcIndexLocal, const LocalTensor<bool>& finishLocal, const LocalTensor<uint8_t>& tmpLocal, const int32_t k, const TopkTiling& tilling, const TopKInfo& topKInfo, const bool isLargest = true)
     ```
 
@@ -160,6 +204,7 @@
 <tbody><tr id="row12299165018421"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p1329915004219"><a name="p1329915004219"></a><a name="p1329915004219"></a>T</p>
 </td>
 <td class="cellrowborder" valign="top" width="80.82000000000001%" headers="mcps1.2.3.1.2 "><p id="p8299155010420"><a name="p8299155010420"></a><a name="p8299155010420"></a>待排序数据的数据类型。</p>
+<p id="p5315184745513"><a name="p5315184745513"></a><a name="p5315184745513"></a><span id="ph2272194216543"><a name="ph2272194216543"></a><a name="ph2272194216543"></a>Ascend 950PR/Ascend 950DT</span>，MERGE_SORT算法当前支持的数据类型为half、float。RADIX_SELECT算法当前支持的数据类型为uint8_t、int8_t、uint16_t、int16_t、uint32_t、int32_t、bfloat16_t、half、float、uint64_t、int64_t。</p>
 <p id="p103633814478"><a name="p103633814478"></a><a name="p103633814478"></a><span id="ph183683884711"><a name="ph183683884711"></a><a name="ph183683884711"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_4"><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_4"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_4"><a name="zh-cn_topic_0000001312391781_term131434243115_4"></a><a name="zh-cn_topic_0000001312391781_term131434243115_4"></a>Atlas A3 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p4369182010169"><a name="p4369182010169"></a><a name="p4369182010169"></a><span id="ph1136972016166"><a name="ph1136972016166"></a><a name="ph1136972016166"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_4"><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_4"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_4"><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a><a name="zh-cn_topic_0000001312391781_term184716139811_4"></a>Atlas A2 推理系列产品</term></span>，支持的数据类型为：half、float。</p>
 <p id="p172321512175112"><a name="p172321512175112"></a><a name="p172321512175112"></a><span id="ph16557452520"><a name="ph16557452520"></a><a name="ph16557452520"></a>Kirin X90</span>，支持的数据类型为：half。</p>
@@ -178,11 +223,18 @@
 <p id="p122985135341"><a name="p122985135341"></a><a name="p122985135341"></a>Normal模式支持的取值：true / false。</p>
 <p id="p16298513113415"><a name="p16298513113415"></a><a name="p16298513113415"></a>Small模式支持的取值：false。</p>
 <p id="p38511725123711"><a name="p38511725123711"></a><a name="p38511725123711"></a>isHasfinish参数和finishLocal的配套使用方法请参考<a href="#zh-cn_topic_0235751031_table33761356">表2</a>中的finishLocal参数说明。</p>
+<p id="p73874274313"><a name="p73874274313"></a><a name="p73874274313"></a><span id="ph19471131234012"><a name="ph19471131234012"></a><a name="ph19471131234012"></a>Ascend 950PR/Ascend 950DT</span>，对于RADIX_SELECT算法，该参数为预留参数，暂未启用，为后续的功能扩展做保留，保持默认值即可。</p>
 </td>
 </tr>
 <tr id="row6563634154317"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p1838644151511"><a name="p1838644151511"></a><a name="p1838644151511"></a>isReuseSrc</p>
 </td>
-<td class="cellrowborder" valign="top" width="80.82000000000001%" headers="mcps1.2.3.1.2 "><p id="p29241916122216"><a name="p29241916122216"></a><a name="p29241916122216"></a>是否允许修改源操作数。该参数预留，传入默认值false即可。</p>
+<td class="cellrowborder" valign="top" width="80.82000000000001%" headers="mcps1.2.3.1.2 "><p id="p165511311158"><a name="p165511311158"></a><a name="p165511311158"></a>是否允许修改源操作数，默认值为false。</p>
+<p id="p123683470326"><a name="p123683470326"></a><a name="p123683470326"></a><span id="ph43682471321"><a name="ph43682471321"></a><a name="ph43682471321"></a>Ascend 950PR/Ascend 950DT</span>，该参数仅在输入的数据类型为float时生效，取值如下：</p>
+<a name="ul146342113310"></a><a name="ul146342113310"></a><ul id="ul146342113310"><li>true：开发者允许源操作数被改写，可以使能该参数，使能后本接口内部计算时<strong id="b1161942143313"><a name="b1161942143313"></a><a name="b1161942143313"></a>复用</strong>srcTensor的内存空间，节省部分内存空间；</li><li>false：本接口内部计算时<strong id="b1684233315"><a name="b1684233315"></a><a name="b1684233315"></a>不复用</strong>srcTensor的内存空间。</li></ul>
+<p id="p1858160123013"><a name="p1858160123013"></a><a name="p1858160123013"></a><span id="ph1949522133011"><a name="ph1949522133011"></a><a name="ph1949522133011"></a><term id="zh-cn_topic_0000001312391781_term1253731311225_5"><a name="zh-cn_topic_0000001312391781_term1253731311225_5"></a><a name="zh-cn_topic_0000001312391781_term1253731311225_5"></a>Atlas A3 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term131434243115_5"><a name="zh-cn_topic_0000001312391781_term131434243115_5"></a><a name="zh-cn_topic_0000001312391781_term131434243115_5"></a>Atlas A3 推理系列产品</term></span>，该参数预留，传入默认值false即可。</p>
+<p id="p0211214415"><a name="p0211214415"></a><a name="p0211214415"></a><span id="ph12112124116"><a name="ph12112124116"></a><a name="ph12112124116"></a><term id="zh-cn_topic_0000001312391781_term11962195213215_5"><a name="zh-cn_topic_0000001312391781_term11962195213215_5"></a><a name="zh-cn_topic_0000001312391781_term11962195213215_5"></a>Atlas A2 训练系列产品</term>/<term id="zh-cn_topic_0000001312391781_term184716139811_5"><a name="zh-cn_topic_0000001312391781_term184716139811_5"></a><a name="zh-cn_topic_0000001312391781_term184716139811_5"></a>Atlas A2 推理系列产品</term></span>，该参数预留，传入默认值false即可。</p>
+<p id="p19281124244111"><a name="p19281124244111"></a><a name="p19281124244111"></a><span id="ph102814426418"><a name="ph102814426418"></a><a name="ph102814426418"></a>Kirin X90</span>，该参数预留，传入默认值false即可。</p>
+<p id="p52811242194113"><a name="p52811242194113"></a><a name="p52811242194113"></a><span id="ph2028114220412"><a name="ph2028114220412"></a><a name="ph2028114220412"></a>Kirin 9030</span>，该参数预留，传入默认值false即可。</p>
 </td>
 </tr>
 <tr id="row879611594513"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p1575851105415"><a name="p1575851105415"></a><a name="p1575851105415"></a>topkMode</p>
@@ -191,6 +243,33 @@
 <a name="screen4446124892020"></a><a name="screen4446124892020"></a><pre class="screen" codetype="Cpp" id="screen4446124892020">enum class TopKMode {
     TOPK_NORMAL, // Normal模式
     TOPK_NSMALL, // Small模式
+};</pre>
+</td>
+</tr>
+<tr id="row9273198366"><td class="cellrowborder" valign="top" width="19.18%" headers="mcps1.2.3.1.1 "><p id="p122741681464"><a name="p122741681464"></a><a name="p122741681464"></a>config</p>
+</td>
+<td class="cellrowborder" valign="top" width="80.82000000000001%" headers="mcps1.2.3.1.2 "><p id="p4979658192614"><a name="p4979658192614"></a><a name="p4979658192614"></a>TopK计算的相关配置，包括算法选择、取最大值或最小值、是否对结果排序。此参数可选配，TopKConfig类型，具体定义如下：</p>
+<a name="ul1239918433297"></a><a name="ul1239918433297"></a><ul id="ul1239918433297"><li>algo：选择的排序算法。默认为MERGE_SORT算法，当前仅支持RADIX_SELECT算法，用户需要显式指定algo为TopKAlgo::RADIX_SELECT。</li><li>order：表示获取前k个最大值或者获取前k个最小值，取值如下：<a name="ul425516518113"></a><a name="ul425516518113"></a><ul id="ul425516518113"><li>UNSET：默认值，按照函数参数isLargest的配置实现。isLargest为true时，取前k个最大值及其对应的索引，isLargest为false，取前k个最小值及其对应的索引。</li><li>LARGEST：表示取前k个最大值及其对应的索引。取值为LARGEST时，函数参数isLargest的配置不生效。</li><li>SMALLEST：表示取前k个最小值及其对应的索引。取值为SMALLEST时，函数参数isLargest的配置不生效。</li></ul>
+</li><li>sorted：表示是否对输出结果进行排序。取值为true，对输出结果进行排序；取值为false，不对输出结果进行排序。</li></ul>
+<a name="screen1563331371317"></a><a name="screen1563331371317"></a><pre class="screen" codetype="Cpp" id="screen1563331371317">struct TopKConfig {
+    TopKAlgo algo = TopKAlgo::MERGE_SORT;
+    TopKOrder order = TopKOrder::UNSET;
+    bool sorted = true;
+};
+enum class TopKAlgo {
+    RADIX_SELECT,
+    MERGE_SORT
+};
+enum class TopKOrder {
+    UNSET,
+    LARGEST,
+    SMALLEST
+};</pre>
+<p id="p15359153511125"><a name="p15359153511125"></a><a name="p15359153511125"></a>该参数的默认值defaultTopKConfig的取值如下：</p>
+<a name="screen4976104811318"></a><a name="screen4976104811318"></a><pre class="screen" codetype="Cpp" id="screen4976104811318">constexpr TopKConfig defaultTopKConfig ={ 
+    TopKAlgo::MERGE_SORT, 
+    TopKOrder::UNSET, 
+    true
 };</pre>
 </td>
 </tr>
@@ -273,6 +352,7 @@ kpad_index = (k + 7) / 8 * 8;</pre>
 </td>
 <td class="cellrowborder" valign="top" width="72.54%" headers="mcps1.2.4.1.3 "><p id="p13630123491515"><a name="p13630123491515"></a><a name="p13630123491515"></a>源操作数。用于指定某些行的排序是无效排序，其shape为(outter, 1)。</p>
 <p id="p1071842161817"><a name="p1071842161817"></a><a name="p1071842161817"></a>类型为<a href="LocalTensor.md">LocalTensor</a>，支持的TPosition为VECIN/VECCALC/VECOUT。</p>
+<p id="p5712015131612"><a name="p5712015131612"></a><a name="p5712015131612"></a>针对<span id="ph271210152165"><a name="ph271210152165"></a><a name="ph271210152165"></a>Ascend 950PR/Ascend 950DT</span>，该参数为预留参数，暂未启用，为后续的功能扩展做保留，取值为false。</p>
 <p id="p079413256378"><a name="p079413256378"></a><a name="p079413256378"></a>该参数和模板参数isHasfinish配合使用，Normal模式下支持isHasfinish配置为true/false，Small模式下仅支持isHasfinish配置为false。</p>
 <a name="ul1221593373814"></a><a name="ul1221593373814"></a><ul id="ul1221593373814"><li>isHasfinish配置为true<a name="ul1195653173913"></a><a name="ul1195653173913"></a><ul id="ul1195653173913"><li>finishLocal对应的outter行的值为true时，该行排序无效，排序后输出的dstIndexLocal的k个索引值会全部被置为n。</li><li>finishLocal对应的outter行的值为false时，该行排序有效。</li></ul>
 </li></ul>
@@ -367,6 +447,31 @@ if (!tmpLocal) {  // 是否通过tmpLocal入参传入临时空间
 }
 ```
 
+```
+if (!tmpLocal) {  // 是否通过tmpLocal入参传入临时空间
+    if (isSmallMode) { // Small模式
+        AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL, defaultTopKConfig>(dstLocalValue,
+            dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
+    } else {
+        AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL, defaultTopKConfig>(dstLocalValue,
+            dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, k, topKTilingData, topKInfo, isLargest);
+    }
+} else {
+    if (tmplocalBytes % 32 != 0) {
+        tmplocalBytes = (tmplocalBytes + 31) / 32 * 32;
+    }
+    pipe.InitBuffer(tmplocalBuf, tmplocalBytes);
+    AscendC::LocalTensor<uint8_t> tmplocalTensor = tmplocalBuf.Get<uint8_t>();
+    if (isSmallMode) {
+        AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NSMALL, defaultTopKConfig>(dstLocalValue,
+            dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, tmplocalTensor, k, topKTilingData, topKInfo, isLargest);
+    } else {
+        AscendC::TopK<T, isInitIndex, isHasfinish, isReuseSrc, AscendC::TopKMode::TOPK_NORMAL, defaultTopKConfig>(dstLocalValue,
+            dstLocalIndex, srcLocalValue, srcLocalIndex, srcLocalFinish, tmplocalTensor, k, topKTilingData, topKInfo, isLargest);
+    }
+}
+```
+
 **表 3**  Normal模式的样例解析
 
 <a name="table996924172412"></a>
@@ -378,7 +483,7 @@ if (!tmpLocal) {  // 是否通过tmpLocal入参传入临时空间
 </tr>
 <tr id="row696424112416"><th class="firstcol" valign="top" width="10.38%" id="mcps1.2.3.2.1"><p id="p1960247246"><a name="p1960247246"></a><a name="p1960247246"></a><strong id="b17311817183614"><a name="b17311817183614"></a><a name="b17311817183614"></a>输入</strong></p>
 </th>
-<td class="cellrowborder" valign="top" width="89.62%" headers="mcps1.2.3.2.1 "><a name="ul14397183252617"></a><a name="ul14397183252617"></a><ul id="ul14397183252617"><li>模板参数T：float</li><li>模板参数isInitIndex：true</li><li>模板参数isHasfinish：true</li><li>模板参数topkMode：TopKMode::TOPK_NORMAL</li><li>输入数据finishLocal：<a name="screen113621594218"></a><a name="screen113621594218"></a><pre class="screen" codetype="ColdFusion" id="screen113621594218">[False  True  False  False False False  False False False  False False False 
+<td class="cellrowborder" valign="top" width="89.62%" headers="mcps1.2.3.2.1 "><a name="ul14397183252617"></a><a name="ul14397183252617"></a><ul id="ul14397183252617"><li>模板参数T：float</li><li>模板参数isInitIndex：true</li><li>模板参数isHasfinish：true</li><li>模板参数topkMode：TopKMode::TOPK_NORMAL</li><li>模板参数topkConfig: defaultTopKConfig</li><li>输入数据finishLocal：<a name="screen113621594218"></a><a name="screen113621594218"></a><pre class="screen" codetype="ColdFusion" id="screen113621594218">[False  True  False  False False False  False False False  False False False 
  False  False False False False False False False False False False False 
  False False False False False False False False]</pre>
 <p id="p12166215265"><a name="p12166215265"></a><a name="p12166215265"></a><strong id="b11462131892710"><a name="b11462131892710"></a><a name="b11462131892710"></a>注意：DataCopy的搬运量要求为32byte的倍数，因此此处finishLocal的实际有效输入是前两位False，True，剩余的值都是进行32bytes向上补齐的值，并不实际参与计算。</strong></p>
@@ -430,7 +535,7 @@ if (!tmpLocal) {  // 是否通过tmpLocal入参传入临时空间
 </tr>
 <tr id="row19881324194716"><th class="firstcol" valign="top" width="10.38%" id="mcps1.2.3.2.1"><p id="p59881724144715"><a name="p59881724144715"></a><a name="p59881724144715"></a><strong id="b4988124174713"><a name="b4988124174713"></a><a name="b4988124174713"></a>输入</strong></p>
 </th>
-<td class="cellrowborder" valign="top" width="89.62%" headers="mcps1.2.3.2.1 "><a name="ul1621931994818"></a><a name="ul1621931994818"></a><ul id="ul1621931994818"><li>模板参数T：float</li><li>模板参数isInitIndex：true</li><li>模板参数isHasfinish：false</li><li>模板参数topkMode：TopKMode::TOPK_NSMALL</li><li>输入数据finishLocal: LocalTensor&lt;bool&gt; finishLocal，不需要赋值</li><li>输入数据k：8</li><li>输入数据topKInfo：<a name="screen12643120185011"></a><a name="screen12643120185011"></a><pre class="screen" codetype="Cpp" id="screen12643120185011">struct TopKInfo {
+<td class="cellrowborder" valign="top" width="89.62%" headers="mcps1.2.3.2.1 "><a name="ul1621931994818"></a><a name="ul1621931994818"></a><ul id="ul1621931994818"><li>模板参数T：float</li><li>模板参数isInitIndex：true</li><li>模板参数isHasfinish：false</li><li>模板参数topkMode：TopKMode::TOPK_NSMALL</li><li>模板参数topkConfig: defaultTopKConfig</li><li>输入数据finishLocal: LocalTensor&lt;bool&gt; finishLocal，不需要赋值</li><li>输入数据k：8</li><li>输入数据topKInfo：<a name="screen12643120185011"></a><a name="screen12643120185011"></a><pre class="screen" codetype="Cpp" id="screen12643120185011">struct TopKInfo {
     int32_t outter = 4;
     int32_t inner = 32;
     int32_t n = 17;
