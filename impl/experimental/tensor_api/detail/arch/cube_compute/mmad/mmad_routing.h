@@ -12,14 +12,14 @@
  * \file mmad_routing.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_MMAD_ROUTING_H
-#define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_MMAD_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_MMAD_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_MMAD_ROUTING_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_four_dim_2201.h"
-#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_with_bias_four_dim_2201.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_details.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_2201/mmad_with_bias_details.h"
 
-#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_3510/mmad_four_dim_3510.h"
-#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_3510/mmad_with_bias_four_dim_3510.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_3510/mmad_details.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_3510/mmad_with_bias_details.h"
 
 namespace AscendC {
 namespace Te {
@@ -75,4 +75,4 @@ struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_MMAD_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_MMAD_ROUTING_H

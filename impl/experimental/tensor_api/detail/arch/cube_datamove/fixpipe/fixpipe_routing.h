@@ -12,14 +12,14 @@
  * \file fixpipe_routing.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_FIXPIPE_ROUTING_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_FIXPIPE_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_ROUTING_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_four_dim_2201_l0c_gm.h"
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_quant_four_dim_2201_l0c_gm.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_l0c2gm.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_2201/fixpipe_quant_l0c2gm.h"
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_four_dim_3510_l0c_gm.h"
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_four_dim_3510_l0c_gm.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_l0c2gm.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2gm.h"
 
 namespace AscendC {
 namespace Te {
@@ -57,4 +57,4 @@ struct FixpipeTensor2Tensor<Hardware::GM, Hardware::L0C, Hardware::L1, ArchVersi
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_FIXPIPE_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_FIXPIPE_ROUTING_H

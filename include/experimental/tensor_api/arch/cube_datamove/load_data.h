@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
 #define INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data_impl.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/load_data_impl.h"
 
 namespace AscendC {
 namespace Te {

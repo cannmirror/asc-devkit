@@ -12,14 +12,14 @@
  * \brief
  */
 
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_LOAD_DATA_ROUTING_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_LOAD_DATA_ROUTING_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_LOAD_DATA_ROUTING_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_LOAD_DATA_ROUTING_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_four_dim_2201_l1_l0a.h"
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_four_dim_2201_l1_l0b.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_l12l0a.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_2201/load_data_l12l0b.h"
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_3510/load_data_four_dim_3510_l1_l0a.h"
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_3510/load_data_four_dim_3510_l1_l0b.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_3510/load_data_l12l0a.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_3510/load_data_l12l0b.h"
 
 namespace AscendC {
 namespace Te {
@@ -60,4 +60,4 @@ struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V3510, FO
 };
 } // namespace Te
 } // namespace AscendC
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_NPU_ARCH_LOAD_DATA_ROUTING_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_LOAD_DATA_ROUTING_H

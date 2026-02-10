@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 #define IMPL_TENSOR_API_ATOM_COPY_ATOM_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/atom/cube_datamove/cube_datamove_traits_impl.h"
+#include "impl/experimental/tensor_api/detail/atom/cube_datamove/cube_datamove_impl.h"
 
 namespace AscendC {
 namespace Te {

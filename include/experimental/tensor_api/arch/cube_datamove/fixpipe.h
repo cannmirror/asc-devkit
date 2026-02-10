@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_H
 #define INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe_impl.h"
+#include "impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/fixpipe_impl.h"
 
 namespace AscendC {
 namespace Te {
