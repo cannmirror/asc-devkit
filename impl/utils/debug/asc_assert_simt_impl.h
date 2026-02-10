@@ -33,7 +33,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap()
 #endif
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void __assert_fail(const char* __assertion,
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void __assert_fail(const char* __assertion,
     const char* __file, unsigned int __line, const char* __function) noexcept
 {
     simt_printf_impl(DumpType::DUMP_SIMT_ASSERT, "[ASSERT] %s:%u: %s: Assertion `%s' failed.\n", __file, __line,
@@ -48,7 +48,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap()
 #endif
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void __assert_fail(const __gm__ char* __assertion,
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void __assert_fail(const __gm__ char* __assertion,
     const __gm__ char* __file, unsigned int __line, const __gm__ char* __function) noexcept
 {
     simt_printf_impl(DumpType::DUMP_SIMT_ASSERT, "[ASSERT] %s:%u: %s: Assertion `%s' failed.\n", __file, __line,

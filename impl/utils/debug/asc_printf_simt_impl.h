@@ -479,9 +479,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type,
 #ifndef __CHECK_FEATURE_AT_PRECOMPILE
 
 template <class... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ __attribute__((always_inline)) inline void printf(const __gm__ char* fmt, Args&&... args)
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const __gm__ char* fmt, Args&&... args)
 {
-#if defined (ASCENDC_DUMP) && (ASCENDC_DUMP == 1)
+#if !defined (ASCENDC_DUMP) || (ASCENDC_DUMP != 0)
     simt_printf_impl(DumpType::DUMP_SIMT_PRINTF, fmt, args...);
 #endif
 }

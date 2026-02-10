@@ -28,9 +28,9 @@
 namespace __asc_simt_vf {
 template <class... Args>
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
-__attribute__((always_inline)) inline __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const __gm__ char* fmt, Args&&... args);
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const __gm__ char* fmt, Args&&... args);
 #else
-__attribute__((always_inline)) inline __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const char* fmt, Args&&... args);
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const char* fmt, Args&&... args);
 #endif
 }   // namespase __asc_simt_vf
 
