@@ -107,7 +107,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_ne](vector_compute/asc_ne.md) | 按元素判断src0 != src1是否成立，若成立则输出结果为1，否则为0。 |
 | [asc_not](vector_compute/asc_not.md) | 按元素做按位取反，计算公式如下。 |
 | [asc_or](vector_compute/asc_or.md) | 每对元素按位或运算。 |
-| [asc_reduce](vector_compute/asc_reduce.md) | Reduce（归约）是将一组数据通过指定运算聚合（聚合指将将一组分散、多个的数据通过某种规则合并成一个或少数几个的操作）为单个、少量结果的核心操作，包括ReduceMax、ReduceMin和ReduceSum等。 |
+| [asc_reduce](vector_compute/asc_reduce.md) | 以内置固定模式对应的二进制或者用户自定义输入的数值对应的gather mask（数据收集的掩码），从源操作数中选取元素写入目的操作数中。 |
 | [asc_rsqrt](vector_compute/asc_rsqrt.md) | 按元素进行开方后取倒数的计算。 |
 | [asc_set_va_reg](vector_compute/asc_set_va_reg.md) | 用于设置transpose的地址，将操作数地址序列与地址寄存器关联。 |
 | [asc_shiftleft](vector_compute/asc_shiftleft.md) | 将所有元素左移distance位。 |
@@ -120,31 +120,31 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 
 数据搬运类API，单独使用时可以引入vector_datamove.h和cube_datamove.h，此类API列表如下：
 
-|   API名称   |   说明   |
-|----------|-----------|
-| [asc_copy_l0c2gm](cube_datamove/asc_copy_l0c2gm.md) | 将L0C中的数据搬运到GM中。 |
-| [asc_set_l13d_rpt](cube_datamove/asc_set_l13d_rpt.md) | 用于设置Load3Dv2接口的repeat参数。 |
-| [asc_fill_l0a](cube_datamove/asc_fill_l0a.md) | 将L0A Buffer的Local Memory初始化为某一具体数值。 |
-| [asc_fill_l0b](cube_datamove/asc_fill_l0b.md) | 将L0B Buffer的Local Memory初始化为某一具体数值。 |
-| [asc_fill_l1](cube_datamove/asc_fill_l1.md) | 将L1 Buffer的Local Memory初始化为某一具体数值。 |
-| [asc_set_l13d_size](cube_datamove/asc_set_l13d_size.md) | 设置[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)的3D格式搬运接口在L1 Buffer的边界值。 |
-| [asc_load_image_to_cbuf](cube_datamove/asc_load_image_to_cbuf.md) | 将图像数据从Global Memory搬运到L1 Buffer。 |
-| [asc_copy_l12bt](cube_datamove/asc_copy_l12bt.md) | 将数据从L1 Buffer搬运到BiasTable Buffer中，BiasTable Buffer用于存放矩阵计算中的Bias。 |
-| [asc_copy_l12fb](cube_datamove/asc_copy_l12fb.md) | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
-| [asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md) | 用于搬运存放在L1 Buffer里的512B大小的矩阵到L0A Buffer里。 |
-| [asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md) | 用于搬运存放在L1 Buffer里的512B大小的矩阵到l0b Buffer里。 |
-| [asc_copy_l12l0b_sparse](cube_datamove/asc_copy_l12l0b_sparse.md) | 用于搬运存放在L1 Buffer里的512B大小的稠密权重矩阵到L0B Buffer里，同时读取128B大小的索引矩阵用于稠密矩阵的稀疏化。 |
-| [asc_copy_l12l0b_trans](cube_datamove/asc_copy_l12l0b_trans.md) | 该接口实现带转置的2D格式数据从L1 Buffer到L0B Buffer的加载。 |
-| [asc_set_l0c_copy_params](cube_datamove/asc_set_l0c_copy_params.md) | DataCopy（CO1->GM、CO1->A1）过程中进行随路格式转换（NZ格式转换为ND格式）时，通过调用该接口设置格式转换的相关配置。 |
+| API名称                                                                   |   说明   |
+|-------------------------------------------------------------------------|-----------|
+| [asc_copy_l0c2gm](cube_datamove/asc_copy_l0c2gm.md)                     | 将L0C中的数据搬运到GM中。 |
+| [asc_copy_l0c2l1](cube_datamove/asc_copy_l0c2l1)                        | 矩阵计算完成后，对结果进行量化处理，之后将处理结果搬运到GM中。 |
+| [asc_set_l13d_rpt](cube_datamove/asc_set_l13d_rpt.md)                   | 用于设置Load3Dv2接口的repeat参数。 |
+| [asc_fill_l0a](cube_datamove/asc_fill_l0a.md)                           | 将L0A Buffer的Local Memory初始化为某一具体数值。 |
+| [asc_fill_l0b](cube_datamove/asc_fill_l0b.md)                           | 将L0B Buffer的Local Memory初始化为某一具体数值。 |
+| [asc_fill_l1](cube_datamove/asc_fill_l1.md)                             | 将L1 Buffer的Local Memory初始化为某一具体数值。 |
+| [asc_set_l13d_size](cube_datamove/asc_set_l13d_size.md)                 | 设置[asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)/[asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)的3D格式搬运接口在L1 Buffer的边界值。 |
+| [asc_load_image_to_cbuf](cube_datamove/asc_load_image_to_cbuf.md)       | 将图像数据从Global Memory搬运到L1 Buffer。 |
+| [asc_copy_l12bt](cube_datamove/asc_copy_l12bt.md)                       | 将数据从L1 Buffer搬运到BiasTable Buffer中，BiasTable Buffer用于存放矩阵计算中的Bias。 |
+| [asc_copy_l12fb](cube_datamove/asc_copy_l12fb.md)                       | 将数据从L1 Buffer搬运到Fixpipe Buffer中，Fixpipe Buffer用于存放量化参数。 |
+| [asc_copy_l12l0a](cube_datamove/asc_copy_l12l0a.md)                     | 用于搬运存放在L1 Buffer里的512B大小的矩阵到L0A Buffer里。 |
+| [asc_copy_l12l0b](cube_datamove/asc_copy_l12l0b.md)                     | 用于搬运存放在L1 Buffer里的512B大小的矩阵到l0b Buffer里。 |
+| [asc_copy_l12l0b_sparse](cube_datamove/asc_copy_l12l0b_sparse.md)       | 用于搬运存放在L1 Buffer里的512B大小的稠密权重矩阵到L0B Buffer里，同时读取128B大小的索引矩阵用于稠密矩阵的稀疏化。 |
+| [asc_copy_l12l0b_trans](cube_datamove/asc_copy_l12l0b_trans.md)         | 该接口实现带转置的2D格式数据从L1 Buffer到L0B Buffer的加载。 |
+| [asc_set_l0c_copy_params](cube_datamove/asc_set_l0c_copy_params.md)     | DataCopy（CO1->GM、CO1->A1）过程中进行随路格式转换（NZ格式转换为ND格式）时，通过调用该接口设置格式转换的相关配置。 |
 | [asc_set_l0c_copy_prequant](cube_datamove/asc_set_l0c_copy_prequant.md) | 数据搬运过程中进行随路量化时，通过调用该接口设置量化流程中的标量量化参数。 |
-| [copy_gm2l1](cube_datamove/copy_gm2l1.md) | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)。 |
-| [copy_gm2l1_nd2nz](cube_datamove/copy_gm2l1_nd2nz.md) | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)，支持在数据搬运时进行ND格式到NZ格式的转换。 |
-| [asc_set_l13d_padding](cube_datamove/asc_set_l13d_padding.md)| 设置Pad属性描述，用于在调用asc_copy_l12l0a接口时配置填充数值。 |
-| [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md) | 将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)。 |
-| [asc_copy_gm2ub_align](vector_datamove/asc_copy_gm2ub_align.md) | 提供数据非对齐搬运的功能，将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)，并支持8位/16位/32位数据类型搬运。 |
-| [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm.md) | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)。 |
-| [asc_copy_ub2gm_align](vector_datamove/asc_copy_ub2gm_align.md) | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)，支持8位/16位/32位分块拷贝操作。 |
-
+| [copy_gm2l1](cube_datamove/copy_gm2l1.md)                               | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)。 |
+| [copy_gm2l1_nd2nz](cube_datamove/copy_gm2l1_nd2nz.md)                   | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)，支持在数据搬运时进行ND格式到NZ格式的转换。 |
+| [asc_set_l13d_padding](cube_datamove/asc_set_l13d_padding.md)           | 设置Pad属性描述，用于在调用asc_copy_l12l0a接口时配置填充数值。 |
+| [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md)                     | 将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)。 |
+| [asc_copy_gm2ub_align](vector_datamove/asc_copy_gm2ub_align.md)         | 提供数据非对齐搬运的功能，将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)，并支持8位/16位/32位数据类型搬运。 |
+| [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm.md)                     | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)。 |
+| [asc_copy_ub2gm_align](vector_datamove/asc_copy_ub2gm_align.md)         | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)，支持8位/16位/32位分块拷贝操作。 |
 
 ## 维测接口
 |   API名称   |   说明   |
