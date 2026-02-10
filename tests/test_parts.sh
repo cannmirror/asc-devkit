@@ -91,5 +91,5 @@ basic_test_three_targets=(
     ascendc_ut_basic_api_ascend950pr_9599_AIV_BASIC
     ascendc_ut_basic_api_ascend950pr_9599_AIV_FRAMEWORK
     ascendc_ut_micro_api_ascend950pr_9599
-    # ascendc_ut_simt_api_ascend950pr_9599
+    ascendc_ut_simt_api_ascend950pr_9599
 )
