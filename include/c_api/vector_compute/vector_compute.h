@@ -50,6 +50,9 @@ __aicore__ inline void asc_set_vector_mask(uint64_t mask1, uint64_t mask0);
 
 __aicore__ inline void asc_set_deq_scale(float scale, int16_t offset, bool sign_mode);
 
+__aicore__ inline void asc_set_deq_scale(__ubuf__ uint64_t* tmp, float scale_arr[ASC_VDEQ_SIZE],
+                int16_t offset_arr[ASC_VDEQ_SIZE], bool sign_mode_arr[ASC_VDEQ_SIZE]);
+
 __aicore__ inline void asc_set_deq_scale(half scale);
 
 __aicore__ inline int64_t asc_get_acc_val();

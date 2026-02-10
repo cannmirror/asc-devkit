@@ -1924,6 +1924,12 @@ __aicore__ inline void asc_set_deq_scale(float scale, int16_t offset, bool sign_
     asc_set_deq_scale_impl(scale, offset, sign_mode);
 }
 
+__aicore__ inline void asc_set_deq_scale(__ubuf__ uint64_t* tmp, float scale_arr[ASC_VDEQ_SIZE],
+                int16_t offset_arr[ASC_VDEQ_SIZE], bool sign_mode_arr[ASC_VDEQ_SIZE])
+{
+    asc_set_deq_scale_impl(tmp, scale_arr, offset_arr, sign_mode_arr);
+}
+
 __aicore__ inline void asc_set_deq_scale(half scale)
 {
     asc_set_deq_scale_impl(scale);
