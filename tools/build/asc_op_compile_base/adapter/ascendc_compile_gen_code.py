@@ -237,7 +237,7 @@ data_type_map = {
     'DT_UINT32': 4,
     'DT_INT64': 8,
     'DT_UINT64': 8,
-    'DI_HIFLOAT8': 1,
+    'DT_HIFLOAT8': 1,
     'DT_DOUBLE': 8,
     'DT_BOOL': 1,
     'DT_COMPLEX64': 8,
