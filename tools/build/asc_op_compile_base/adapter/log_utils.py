@@ -12,6 +12,7 @@
 """
 AscendC compile log
 """
+import re
 import os
 import stat
 import threading
@@ -173,6 +174,7 @@ class LogUtil:
         if kernel_name != "":
             plog_log_msg += " {} ".format(kernel_name)
         plog_log_msg += msg_info
+        plog_log_msg = LogUtil.fix_string_escapes(plog_log_msg)
         if log_level == AscendCLogLevel.LOG_DEBUG:
             LOG_INSTANCE.debug(plog_log_msg)
         elif log_level == AscendCLogLevel.LOG_INFO:
@@ -181,3 +183,35 @@ class LogUtil:
             LOG_INSTANCE.warn(plog_log_msg)
         elif log_level == AscendCLogLevel.LOG_ERROR:
             LOG_INSTANCE.error(plog_log_msg)
+
+
+    @staticmethod
+    def fix_string_escapes(log_message: str) -> str:
+        common_escapes = {
+            0: r'\0', 7: r'\a', 8: r'\b', 9: r'\t', 10: r'\n', 11: r'\v', 12: r'\f', 13: r'\r', 27: r'\e', 
+        }
+
+        # process control symbols
+        def escape_control_symbols(match):
+            chara = match.group(0)
+            code = ord(chara)
+            reserve_codes = {9, 10, 13} # \t, \n, \r
+            if code in reserve_codes:
+                return chara
+            elif code in common_escapes:
+                return common_escapes[code]
+            elif 0 <= code <= 31 or code == 127:
+                return f'\\x{code:02x}'
+            return chara
+        control_pattern = re.compile(r'[\x00-\x1f\x7f]')
+        result = control_pattern.sub(escape_control_symbols, log_message)
+
+        # process backslashes except for control symbols
+        def escape_backslash(match):
+            return '\\\\'
+        backslash_pattern = re.compile(r'(?<!\\)\\(?![ntr0abefv]|x[0-9a-fA-F]|\\)')
+        result = backslash_pattern.sub(escape_backslash, result)
+
+        # process format symbols
+        result = result.replace("%", "%%")
+        return result

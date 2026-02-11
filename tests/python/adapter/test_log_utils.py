@@ -78,3 +78,27 @@ class TestLogUtils(unittest.TestCase):
         output = "a detail info"
         with mock.patch('os.environ', {"ASCEND_GLOBAL_EVENT_ENABLE": 1}):
             LogUtil().detail_log_print(op_name, output, AscendCLogLevel.LOG_INFO)
+
+    def test_fix_string_escapes(self):
+        # test simple texts
+        self.assertEqual(LogUtil.fix_string_escapes("Hellow World"), "Hellow World")
+        self.assertEqual(LogUtil.fix_string_escapes("中文字符！！！"), "中文字符！！！")
+        # test \n \r \t
+        self.assertEqual(LogUtil.fix_string_escapes("\n"), "\n")
+        self.assertEqual(LogUtil.fix_string_escapes("\t"), "\t")
+        self.assertEqual(LogUtil.fix_string_escapes("\r\n"), "\r\n")
+        # test C++ format symbols
+        self.assertEqual(LogUtil.fix_string_escapes("Process 50% complete"), "Process 50%% complete")
+        self.assertEqual(LogUtil.fix_string_escapes("%% in config"), "%%%% in config")
+        self.assertEqual(LogUtil.fix_string_escapes("%s %d"), "%%s %%d")
+        self.assertEqual(LogUtil.fix_string_escapes(r"%A%%"), "%%A%%%%")
+        # test backslash
+        self.assertEqual(LogUtil.fix_string_escapes("Path\\to\\file"), "Path\\to\\file")
+        self.assertEqual(LogUtil.fix_string_escapes(r"C:\\Users\test"), "C:\\\\Users\\test")
+        self.assertEqual(LogUtil.fix_string_escapes(r"\n"), "\\n")
+        # test control symbols
+        self.assertEqual(LogUtil.fix_string_escapes("\x07\a\x00\0\x0c\f\x05"), "\\a\\a\\0\\0\\f\\f\\x05")
+        self.assertEqual(LogUtil.fix_string_escapes(r"\x07\a\x00\0\x0c\f\x05"), "\\x07\\a\\x00\\0\\x0c\\f\\x05")
+        self.assertEqual(LogUtil.fix_string_escapes("\\x00\\0\\x0c\\f\\x05\\r\\n"), "\\x00\\0\\x0c\\f\\x05\\r\\n")
+        # test mix
+        self.assertEqual(LogUtil.fix_string_escapes("%\n%s\\n\"100%完成\n结果：\""), "%%\n%%s\\n\"100%%完成\n结果：\"")
