@@ -69,17 +69,17 @@ __aicore__ inline void CopyGmToUbufAlignV2(__ubuf__ T* dst, __gm__ T* src, const
             leftPaddingCnt = 0;
         }
         if constexpr (sizeof(T) == 8) { // B64
-            bisheng::cce::copy_gm_to_ubuf_align_v2((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_ubuf_align_v2((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt * 2, rigntPaddingCnt * 2, isPad, cacheMode, srcStride310,
                                      dstStride310);
         } else if constexpr (sizeof(T) == 4) {
-            bisheng::cce::copy_gm_to_ubuf_align_v2((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_ubuf_align_v2((__ubuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt, rigntPaddingCnt, isPad, cacheMode, srcStride310, dstStride310);
         } else if constexpr (sizeof(T) == 2) {
-            bisheng::cce::copy_gm_to_ubuf_align_v2((__ubuf__ uint16_t*)dst, (__gm__ uint16_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_ubuf_align_v2((__ubuf__ uint16_t*)dst, (__gm__ uint16_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt, rigntPaddingCnt, isPad, cacheMode, srcStride310, dstStride310);
         } else if constexpr (sizeof(T) == 1) {
-            bisheng::cce::copy_gm_to_ubuf_align_v2((__ubuf__ uint8_t*)dst, (__gm__ uint8_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_ubuf_align_v2((__ubuf__ uint8_t*)dst, (__gm__ uint8_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt, rigntPaddingCnt, isPad, cacheMode, srcStride310, dstStride310);
         }
     }
@@ -106,7 +106,7 @@ __aicore__ inline void CopyUbufToGmAlignV2(__gm__ T* dst, __ubuf__ T* src, const
             srcStride310 = burstLength;
         }
         uint64_t dstStride310 = dstStride * unitOfBytes + burstLength; // GM   DataCopy:32Bytes, DataCopyPad:1Byte
-        bisheng::cce::copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLength, cacheMode,
+        copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLength, cacheMode,
                                  dstStride310, srcStride310);
     }
 }
@@ -138,17 +138,17 @@ CopyGmToCbufAlignV2(__cbuf__ T* dst, __gm__ T* src, const uint16_t blockCount, c
         }
 
         if constexpr (sizeof(T) == 8) { // B64
-            bisheng::cce::copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt * 2, rigntPaddingCnt * 2, true, cacheMode, actSrcStride,
                                      actDstStride);
         } else if constexpr (sizeof(T) == 4) {
-            bisheng::cce::copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)dst, (__gm__ uint32_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt, rigntPaddingCnt, true, cacheMode, actSrcStride, actDstStride);
         } else if constexpr (sizeof(T) == 2) {
-            bisheng::cce::copy_gm_to_cbuf_align_v2((__cbuf__ uint16_t*)dst, (__gm__ uint16_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_cbuf_align_v2((__cbuf__ uint16_t*)dst, (__gm__ uint16_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt, rigntPaddingCnt, true, cacheMode, actSrcStride, actDstStride);
         } else if constexpr (sizeof(T) == 1) {
-            bisheng::cce::copy_gm_to_cbuf_align_v2((__cbuf__ uint8_t*)dst, (__gm__ uint8_t*)src, 0, blockCount, burstLength,
+            copy_gm_to_cbuf_align_v2((__cbuf__ uint8_t*)dst, (__gm__ uint8_t*)src, 0, blockCount, burstLength,
                                      leftPaddingCnt, rigntPaddingCnt, true, cacheMode, actSrcStride, actDstStride);
         }
     }
@@ -161,7 +161,7 @@ __aicore__ inline void CopyUbufToUbuf(__ubuf__ T* dst, __ubuf__ T* src, const ui
                                       const uint16_t blockLen, const uint16_t srcStride, const uint16_t dstStride)
 {
     if ASCEND_IS_AIV {
-        bisheng::cce::copy_ubuf_to_ubuf((__ubuf__ void*)dst, (__ubuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
+        copy_ubuf_to_ubuf((__ubuf__ void*)dst, (__ubuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
     }
 }
 
@@ -172,7 +172,7 @@ __aicore__ inline void CopyUbufToCbuf(__cbuf__ T* dst, __ubuf__ T* src, const ui
                                       const uint16_t blockLen, const uint16_t srcStride, const uint16_t dstStride)
 {
     if ASCEND_IS_AIV {
-        bisheng::cce::copy_ubuf_to_cbuf((__cbuf__ void*)dst, (__ubuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
+        copy_ubuf_to_cbuf((__cbuf__ void*)dst, (__ubuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
     }
 }
 
@@ -183,7 +183,7 @@ __aicore__ inline void CopyCbufToUbuf(__ubuf__ T* dst, __cbuf__ T* src, const ui
                                       const uint16_t blockLen, const uint16_t srcStride, const uint16_t dstStride)
 {
     if ASCEND_IS_AIC {
-        bisheng::cce::copy_cbuf_to_ubuf((__ubuf__ void*)dst, (__cbuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
+        copy_cbuf_to_ubuf((__ubuf__ void*)dst, (__cbuf__ void*)src, 0, blockCount, blockLen, srcStride, dstStride);
     }
 }
 
@@ -197,7 +197,7 @@ __aicore__ inline void CopyCbufToBt(uint64_t dst, __cbuf__ T* src, const uint16_
     if ASCEND_IS_AIC {
         if constexpr (std::is_same<T, bfloat16_t>::value || std::is_same<T, float>::value
                       || std::is_same<T, int32_t>::value || std::is_same<T, half>::value) {
-            bisheng::cce::copy_cbuf_to_bt(dst, src, static_cast<bool>(convControl), blockCount, blockLen, srcStride, dstStride);
+            copy_cbuf_to_bt(dst, src, static_cast<bool>(convControl), blockCount, blockLen, srcStride, dstStride);
         }
     }
 }
@@ -298,7 +298,7 @@ __aicore__ inline void DataCopyGM2L1ND2NZImplBase(__cbuf__ T* dst, __gm__ T* src
         mte2NzPara |= static_cast<uint64_t>(loop3DstStride) << 32;         // MTE2_NZ_PARA[47:32]
         mte2NzPara |= static_cast<uint64_t>(loop2DstStride) << 16;         // MTE2_NZ_PARA[31:16]
         mte2NzPara |= static_cast<uint64_t>(intriParams.ndNum);            // MTE2_NZ_PARA[15:0]
-        bisheng::cce::set_mte2_nz_para(mte2NzPara); // CCE: store parameters for ND2NZ DMA instructions
+        set_mte2_nz_para(mte2NzPara); // CCE: store parameters for ND2NZ DMA instructions
 
         // input params: srcDValue, srcNdMatrixStride                        unit of element nums
         // expected params for ISA: loop1_src_stride, loop4_src_stride       uint of bytes
@@ -306,15 +306,15 @@ __aicore__ inline void DataCopyGM2L1ND2NZImplBase(__cbuf__ T* dst, __gm__ T* src
         uint64_t loop1SrcStride = intriParams.srcDValue * sizeof(T);
         uint64_t loop4SrcStride = intriParams.srcNdMatrixStride * sizeof(T);
         if constexpr (sizeof(T) == B8_BYTE_SIZE) {
-            bisheng::cce::copy_gm_to_cbuf_multi_nd2nz((__cbuf__ int8_t*)dst, (__gm__ int8_t*)src, 0, loop1SrcStride, cacheMode,
+            copy_gm_to_cbuf_multi_nd2nz((__cbuf__ int8_t*)dst, (__gm__ int8_t*)src, 0, loop1SrcStride, cacheMode,
                                         intriParams.nValue, intriParams.dValue, loop4SrcStride, enableSmallC0);
         }
         if constexpr (sizeof(T) == B16_BYTE_SIZE) {
-            bisheng::cce::copy_gm_to_cbuf_multi_nd2nz((__cbuf__ half*)dst, (__gm__ half*)src, 0, loop1SrcStride, cacheMode,
+            copy_gm_to_cbuf_multi_nd2nz((__cbuf__ half*)dst, (__gm__ half*)src, 0, loop1SrcStride, cacheMode,
                                         intriParams.nValue, intriParams.dValue, loop4SrcStride, enableSmallC0);
         }
         if constexpr (sizeof(T) == B32_BYTE_SIZE) {
-            bisheng::cce::copy_gm_to_cbuf_multi_nd2nz((__cbuf__ float*)dst, (__gm__ float*)src, 0, loop1SrcStride, cacheMode,
+            copy_gm_to_cbuf_multi_nd2nz((__cbuf__ float*)dst, (__gm__ float*)src, 0, loop1SrcStride, cacheMode,
                                         intriParams.nValue, intriParams.dValue, loop4SrcStride, enableSmallC0);
         }
     } else if ASCEND_IS_AIV { // Add for TSCM: aiv just send the message
@@ -366,7 +366,7 @@ __aicore__ inline void DataCopyGM2L1DN2NZImplBase(__cbuf__ T* dst, __gm__ T* src
         mte2NzPara |= static_cast<uint64_t>(loop3DstStride) << 32;         // MTE2_NZ_PARA[47:32]
         mte2NzPara |= static_cast<uint64_t>(loop2DstStride) << 16;         // MTE2_NZ_PARA[31:16]
         mte2NzPara |= static_cast<uint64_t>(intriParams.dnNum);            // MTE2_NZ_PARA[15:0]
-        bisheng::cce::set_mte2_nz_para(mte2NzPara); // CCE: store parameters for DN2NZ DMA instructions
+        set_mte2_nz_para(mte2NzPara); // CCE: store parameters for DN2NZ DMA instructions
 
         // input params: srcDValue, srcDnMatrixStride                        unit of element nums
         // expected params for ISA: loop1_src_stride, loop4_src_stride       uint of bytes
@@ -374,7 +374,7 @@ __aicore__ inline void DataCopyGM2L1DN2NZImplBase(__cbuf__ T* dst, __gm__ T* src
         uint64_t loop1SrcStride = intriParams.srcDValue * sizeof(T);
         uint64_t loop4SrcStride = intriParams.srcDnMatrixStride * sizeof(T);
 
-        bisheng::cce::copy_gm_to_cbuf_multi_dn2nz((__cbuf__ T*)dst, (__gm__ T*)src, 0, loop1SrcStride, cacheMode, intriParams.nValue,
+        copy_gm_to_cbuf_multi_dn2nz((__cbuf__ T*)dst, (__gm__ T*)src, 0, loop1SrcStride, cacheMode, intriParams.nValue,
                                     intriParams.dValue, loop4SrcStride, enableSmallC0);
     }
 }
@@ -491,9 +491,9 @@ __aicore__ inline void SetLoopModeOutParaImpl(const LoopModeParams& loopParams)
     uint64_t loop2StridePara = (loopParams.loop2DstStride) << 40; // loop2DstStride must be 32B aligned
     loop2StridePara |= loopParams.loop2SrcStride;                 // LOOP2_STRIDE_OUTTOUB[39:0]
 
-    bisheng::cce::set_loop_size_outtoub(loopSizePara);
-    bisheng::cce::set_loop1_stride_outtoub(loop1StridePara);
-    bisheng::cce::set_loop2_stride_outtoub(loop2StridePara);
+    set_loop_size_outtoub(loopSizePara);
+    set_loop1_stride_outtoub(loop1StridePara);
+    set_loop2_stride_outtoub(loop2StridePara);
 }
 
 __aicore__ inline void SetLoopModeUBParaImpl(const LoopModeParams& loopParams)
@@ -524,23 +524,23 @@ __aicore__ inline void SetLoopModeUBParaImpl(const LoopModeParams& loopParams)
     uint64_t loop2StridePara = (loopParams.loop2SrcStride) << 40; // loop2SrcStride must be 32B aligned
     loop2StridePara |= loopParams.loop2DstStride;    // LOOP2_STRIDE_UBTOOUT[39:0]
 
-    bisheng::cce::set_loop_size_ubtoout(loopSizePara);
-    bisheng::cce::set_loop1_stride_ubtoout(loop1StridePara);
-    bisheng::cce::set_loop2_stride_ubtoout(loop2StridePara);
+    set_loop_size_ubtoout(loopSizePara);
+    set_loop1_stride_ubtoout(loop1StridePara);
+    set_loop2_stride_ubtoout(loop2StridePara);
 }
 
 __aicore__ inline void ResetUBLoopModeParaImpl(void)
 {
     constexpr uint64_t loopSizePara = (1ul << 21) | 1ul; // 设置SPR寄存器，硬件约定置1为normal
 
-    bisheng::cce::set_loop_size_ubtoout(loopSizePara);
+    set_loop_size_ubtoout(loopSizePara);
 }
 
 __aicore__ inline void ResetOutLoopModeParaImpl(void)
 {
     constexpr uint64_t loopSizePara = (1ul << 21) | 1ul; // 设置SPR寄存器，硬件约定置1为normal
 
-    bisheng::cce::set_loop_size_outtoub(loopSizePara);
+    set_loop_size_outtoub(loopSizePara);
 }
 
 template <typename T>
@@ -1037,7 +1037,7 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
         AscendCUtils::CheckGmMemOverflowNormal(src, workSpace, true, true, intriParams);
     }
     if (padParams.isPad == true) {
-        bisheng::cce::set_mov_pad_val(padParams.paddingValue);
+        set_mov_pad_val(padParams.paddingValue);
     }
     if constexpr (sizeof(T) > B32_BYTE_SIZE) {
         ASCENDC_ASSERT((padParams.paddingValue == 0),
@@ -1056,7 +1056,7 @@ __aicore__ inline void DataCopyPadGm2UBImpl(__ubuf__ T* dst, __gm__ T* src, cons
         return;
     }
     if (padParams.isPad == true) {
-        bisheng::cce::set_mov_pad_val(GetScalarBitcodeValue(padParams.paddingValue));
+        set_mov_pad_val(GetScalarBitcodeValue(padParams.paddingValue));
     }
     if constexpr (sizeof(T) > B32_BYTE_SIZE) {
         ASCENDC_ASSERT((padParams.paddingValue == 0),
@@ -1081,7 +1081,7 @@ __aicore__ inline void DataCopyPadGm2L1Impl(__cbuf__ T* dst, __gm__ T* src, cons
         return;
     }
     if (padParams.isPad == true) {
-        bisheng::cce::set_mov_pad_val(padParams.paddingValue);
+        set_mov_pad_val(padParams.paddingValue);
     }
     if constexpr (g_gm_overflow_check) {
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
@@ -1104,7 +1104,7 @@ __aicore__ inline void DataCopyPadGm2L1Impl(__cbuf__ T* dst, __gm__ T* src, cons
         return;
     }
     if (padParams.isPad == true) {
-        bisheng::cce::set_mov_pad_val(GetScalarBitcodeValue((T)padParams.paddingValue));
+        set_mov_pad_val(GetScalarBitcodeValue((T)padParams.paddingValue));
     }
     if constexpr (g_gm_overflow_check) {
         __gm__ uint8_t* workSpace = GetSysWorkSpacePtr();
@@ -1276,7 +1276,7 @@ __aicore__ inline void DataCopyL0C2L1Impl(__cbuf__ T* dst, __cc__ U* src, const 
             if (!intriParams.nz2ndEn) {
                 dstStride = dstStride * ONE_BLK_SIZE / sizeof(T);
             }
-            return bisheng::cce::copy_matrix_cc_to_cbuf(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize, dstStride,
+            return copy_matrix_cc_to_cbuf(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize, dstStride,
                                           intriParams.srcStride, 0, 0, intriParams.unitFlag,
                                           static_cast<uint64_t>(intriParams.quantPre), intriParams.reluPre,
                                           intriParams.channelSplit, intriParams.nz2ndEn, 0, 0, false, false, 0, false,
@@ -1310,7 +1310,7 @@ __aicore__ inline void DataCopyL0C2GMImpl(__gm__ T* dst, __cc__ U* src, const Da
             if (!intriParams.nz2ndEn) {
                 dstStride = dstStride * ONE_BLK_SIZE / sizeof(T);
             }
-            return bisheng::cce::copy_matrix_cc_to_gm(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize, dstStride,
+            return copy_matrix_cc_to_gm(dst, src, intriParams.sid, intriParams.nSize, intriParams.mSize, dstStride,
                                         intriParams.srcStride, 0, 0, intriParams.unitFlag,
                                         static_cast<uint64_t>(intriParams.quantPre), intriParams.reluPre,
                                         intriParams.channelSplit, intriParams.nz2ndEn, 0, 0, false, false, 0, false,
@@ -1389,11 +1389,11 @@ __aicore__ inline void ScmDataCopy(MSG_POS void* kfcMsgPtr)
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     uint8_t* aicBaseTSCMAddr = GetTPipePtr()->GetBaseAddr(int8_t(TPosition::TSCM));
     uint8_t* l1AddrDst = aicBaseTSCMAddr + (uint64_t)scmCopyParams->dst;
-    bisheng::cce::copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)l1AddrDst, (__gm__ uint32_t*)scmCopyParams->src, 0,
+    copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)l1AddrDst, (__gm__ uint32_t*)scmCopyParams->src, 0,
                              scmCopyParams->blockCount, burstLength, 0, 0, false, cacheMode, srcStride, dstStride);
 #else
     auto dst = reinterpret_cast<__cbuf__ void*>(scmCopyParams->dst);
-    bisheng::cce::copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)dst, (__gm__ uint32_t*)scmCopyParams->src, 0,
+    copy_gm_to_cbuf_align_v2((__cbuf__ uint32_t*)dst, (__gm__ uint32_t*)scmCopyParams->src, 0,
                              scmCopyParams->blockCount, burstLength, 0, 0, false, cacheMode, srcStride, dstStride);
 #endif
     auto eventID = GetTPipePtr()->FetchEventID(HardEvent::MTE2_MTE1);
@@ -1427,7 +1427,7 @@ __aicore__ inline void ScmDataCopyND2NZ(MSG_POS void* kfcMsgPtr)
     mte2NzPara |= static_cast<uint64_t>(loop3_dst_stride) << 32;         // MTE2_NZ_PARA[47:32]
     mte2NzPara |= static_cast<uint64_t>(loop2_dst_stride) << 16;         // MTE2_NZ_PARA[31:16]
     mte2NzPara |= static_cast<uint64_t>(scmCopyParams->ndNum);           // MTE2_NZ_PARA[15:0]
-    bisheng::cce::set_mte2_nz_para(mte2NzPara);
+    set_mte2_nz_para(mte2NzPara);
     uint64_t loop1_src_stride = scmCopyParams->srcDValue * scmCopyParams->dataTypeLen;
     uint16_t n_value = scmCopyParams->nValue;
     uint32_t d_value = scmCopyParams->dValue;
@@ -1435,17 +1435,17 @@ __aicore__ inline void ScmDataCopyND2NZ(MSG_POS void* kfcMsgPtr)
 
     uint8_t cacheMode = ExtractCacheMode((__gm__ float*)scmCopyParams->src);
     if (scmCopyParams->dataTypeLen == 2) {
-        bisheng::cce::copy_gm_to_cbuf_multi_nd2nz((__cbuf__ half*)l1AddrDst, (__gm__ half*)scmCopyParams->src, uint8_t(0),
+        copy_gm_to_cbuf_multi_nd2nz((__cbuf__ half*)l1AddrDst, (__gm__ half*)scmCopyParams->src, uint8_t(0),
                                     loop1_src_stride, cacheMode, n_value, d_value, loop4_src_stride, false);
     } else if (scmCopyParams->dataTypeLen == 4) {
-        bisheng::cce::copy_gm_to_cbuf_multi_nd2nz((__cbuf__ float*)l1AddrDst, (__gm__ float*)scmCopyParams->src, uint8_t(0),
+        copy_gm_to_cbuf_multi_nd2nz((__cbuf__ float*)l1AddrDst, (__gm__ float*)scmCopyParams->src, uint8_t(0),
                                     loop1_src_stride, cacheMode, n_value, d_value, loop4_src_stride, false);
     } else {
         ASCENDC_ASSERT((scmCopyParams->dataTypeLen == 1), {
             KERNEL_LOG(KERNEL_ERROR, "type len is %d bytes, which should only be 1/2/4 bytes",
                        scmCopyParams->dataTypeLen);
         });
-        bisheng::cce::copy_gm_to_cbuf_multi_nd2nz((__cbuf__ int8_t*)l1AddrDst, (__gm__ int8_t*)scmCopyParams->src, uint8_t(0),
+        copy_gm_to_cbuf_multi_nd2nz((__cbuf__ int8_t*)l1AddrDst, (__gm__ int8_t*)scmCopyParams->src, uint8_t(0),
                                     loop1_src_stride, cacheMode, n_value, d_value, loop4_src_stride, false);
     }
     auto eventID = GetTPipePtr()->FetchEventID(HardEvent::MTE2_MTE1);
@@ -1570,24 +1570,24 @@ __aicore__ inline void DataCopyWithNDDMAImpl(__ubuf__ T* dst, __gm__ T* src, con
     }
     set_pad_cnt_nddma(padCount);
 
-    bisheng::cce::set_loop0_stride_nddma(loop0Stride);
-    bisheng::cce::set_loop1_stride_nddma(loop1Stride);
-    bisheng::cce::set_loop2_stride_nddma(loop2Stride);
-    bisheng::cce::set_loop3_stride_nddma(loop3Stride);
-    bisheng::cce::set_loop4_stride_nddma(loop4Stride);
-    bisheng::cce::set_pcie_rd_ctrl(0);
+    set_loop0_stride_nddma(loop0Stride);
+    set_loop1_stride_nddma(loop1Stride);
+    set_loop2_stride_nddma(loop2Stride);
+    set_loop3_stride_nddma(loop3Stride);
+    set_loop4_stride_nddma(loop4Stride);
+    set_pcie_rd_ctrl(0);
 
     if constexpr (sizeof(T) == 1) {
-        bisheng::cce::set_pad_val_nddma(*reinterpret_cast<const uint8_t*>(&constValue));
-        bisheng::cce::nddma_out_to_ub_b8(dst, src, sid, loop0Size, loop1Size, loop2Size, loop3Size, loop4Size, loop0LeftPadSize,
+        set_pad_val_nddma(*reinterpret_cast<const uint8_t*>(&constValue));
+        nddma_out_to_ub_b8(dst, src, sid, loop0Size, loop1Size, loop2Size, loop3Size, loop4Size, loop0LeftPadSize,
                            loop0RightPadSize, !config.isNearestValueMode, cacheMode);
     } else if constexpr (sizeof(T) == 2) {
-        bisheng::cce::set_pad_val_nddma(*reinterpret_cast<const uint16_t*>(&constValue));
-        bisheng::cce::nddma_out_to_ub_b16(dst, src, sid, loop0Size, loop1Size, loop2Size, loop3Size, loop4Size, loop0LeftPadSize,
+        set_pad_val_nddma(*reinterpret_cast<const uint16_t*>(&constValue));
+        nddma_out_to_ub_b16(dst, src, sid, loop0Size, loop1Size, loop2Size, loop3Size, loop4Size, loop0LeftPadSize,
                             loop0RightPadSize, !config.isNearestValueMode, cacheMode);
     } else if constexpr (sizeof(T) == 4) {
-        bisheng::cce::set_pad_val_nddma(*reinterpret_cast<const uint32_t*>(&constValue));
-        bisheng::cce::nddma_out_to_ub_b32(dst, src, sid, loop0Size, loop1Size, loop2Size, loop3Size, loop4Size, loop0LeftPadSize,
+        set_pad_val_nddma(*reinterpret_cast<const uint32_t*>(&constValue));
+        nddma_out_to_ub_b32(dst, src, sid, loop0Size, loop1Size, loop2Size, loop3Size, loop4Size, loop0LeftPadSize,
                             loop0RightPadSize, !config.isNearestValueMode, cacheMode);
     }
 }

@@ -662,7 +662,7 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     auto gmBias = biasGlobal[offsetBias];
     auto gmQuant = quantGlobal[offsetQuant];
 
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
     TPipe que;
     E2eCase<A_TYPE, B_TYPE, L0CType, C_TYPE, BIAS_TYPE, HAS_BIAS> ins;
     ins.Init(&que, m, n, k, hasBias);
@@ -673,7 +673,7 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     }
 
     ins.IterateAll(gmC);
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
 }
 
 #define KERNEL_ACTE_E2E(coreNum, M, N, K, A_Pos, B_Pos, C_Pos, BIAS_Pos, A_Format, B_Format, C_Format, BIAS_Format, A_DType, B_DType, C_DType, BIAS_DType, HAS_BIAS) \

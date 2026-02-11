@@ -305,7 +305,7 @@ __aicore__ inline void CastIntrinsicsImpl(__ubuf__ DST_TYPE *dst, __ubuf__ SRC_T
 __aicore__ inline bool GetOverflow()
 {
     constexpr uint32_t CTRL_COUNTER = 48;
-    return (bisheng::cce::get_ctrl() >> CTRL_COUNTER) == 0x1;
+    return (get_ctrl() >> CTRL_COUNTER) == 0x1;
 }
 
 template <RoundMode roundMode>

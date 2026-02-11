@@ -63,7 +63,7 @@ public:
         uint8_t l2CacheCtl = 0;
         uint64_t burstSrcStride = 8;
         uint32_t burstDstStride = 8;
-        bisheng::cce::copy_gm_to_cbuf_align_v2((__gm__ T *)dstGm, (__gm__ T *)srcGm, sid, burstNum,
+        copy_gm_to_cbuf_align_v2((__gm__ T *)dstGm, (__gm__ T *)srcGm, sid, burstNum,
             burstLen, leftPaddingCount, rightPaddingCount, constantPaddingCtl,
             l2CacheCtl, burstSrcStride, burstDstStride);
     }

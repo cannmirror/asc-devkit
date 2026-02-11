@@ -137,7 +137,7 @@ DATA_COPY_L2_CACHE_UB_PAD_TEST(int16_t, CACHE_MODE_DISABLE)
         CacheMode mode = CacheMode::cacheMode;                                                                         \
         const uint8_t expectedMode = GetCacheModeValue(mode);                                                          \
         uint8_t actualMode = 99;                                                                                       \
-        MOCKER(bisheng::cce::nddma_out_to_ub_b8, void (*)(void *, void *, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, \
+        MOCKER(nddma_out_to_ub_b8, void (*)(void *, void *, uint8_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, \
             uint8_t, uint8_t, bool, uint8_t))                                                                          \
             .stubs()                                                                                                   \
             .with(any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), any(), spy(actualMode));       \

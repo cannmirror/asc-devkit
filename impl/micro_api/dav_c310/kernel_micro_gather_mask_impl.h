@@ -45,7 +45,7 @@ __aicore__ inline int64_t GetSprImpl()
 {
     static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
                   "current GetSpr api only support SpecialPurposeReg AR on current device!");
-    return bisheng::cce::get_ar();
+    return get_ar();
 }
 
 template <SpecialPurposeReg spr = SpecialPurposeReg::AR>

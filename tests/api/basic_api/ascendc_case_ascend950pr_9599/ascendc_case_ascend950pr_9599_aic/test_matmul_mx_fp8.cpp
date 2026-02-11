@@ -475,7 +475,7 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     auto gmC = cGlobal[offsetC];
     auto gmBias = biasGlobal[offsetBias];
 
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
     TPipe que;
     E2eCase<AType, BType, L0CType, CType, BiasType, hasBias1> ins;
     ins.Init(&que, m, n, k, hasBias);
@@ -486,7 +486,7 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     }
 
     ins.IterateAll(gmC, transpose);
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
     return;
 }
 class TEST_KERNEL_MATMUL_MX_FP8 : public testing::Test {

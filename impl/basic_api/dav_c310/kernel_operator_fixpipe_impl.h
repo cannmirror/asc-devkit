@@ -44,7 +44,7 @@ __aicore__ inline void SetFixPipeConfigImpl(const LocalTensor<T> &reluPre, const
         config = config | ((uint64_t)reluPre.GetPhyAddr() >> 6);         // align with 64bit, FPC[7:0], ReluPreAddr
         config = config | (((uint64_t)quantPre.GetPhyAddr() >> 7) << 8); // align with 128bit, FPC[15:8], QuantPreAddr.
         config = config | (static_cast<uint64_t>(isUnitFlag) << 63);                  // FPC[63], UnitFlag.
-        bisheng::cce::set_fpc(config);
+        set_fpc(config);
     }
 }
 
@@ -60,7 +60,7 @@ __aicore__ inline void SetFixPipeConfigImpl(const LocalTensor<T> &preTensor, boo
                 config | (((uint64_t)preTensor.GetPhyAddr() >> 7) << 8); // align with 128bit, FPC[15:8], QuantPreAddr.
         }
         config = config | (static_cast<uint64_t>(isUnitFlag) << 63); // FPC[63], UnitFlag.
-        bisheng::cce::set_fpc(config);
+        set_fpc(config);
     }
 }
 
@@ -72,14 +72,14 @@ __aicore__ inline void SetFixpipeNz2ndFlagImpl(uint16_t ndNum, uint16_t srcNdStr
         // ND_PARA[15:0], nd number.
         uint64_t config = (static_cast<uint64_t>(dstNdStride) << 32) | (static_cast<uint64_t>(srcNdStride) << 16) |
                           (static_cast<uint64_t>(ndNum));
-        bisheng::cce::set_loop3_para(config);
+        set_loop3_para(config);
     }
 }
 
 __aicore__ inline void SetFixpipePreQuantFlagImpl(uint64_t config)
 {
     if ASCEND_IS_AIC {
-        bisheng::cce::set_quant_pre(config);
+        set_quant_pre(config);
     }
 }
 /* **************************************************************************************************
@@ -144,10 +144,10 @@ __aicore__ inline void CopyDeqTensorToFbuf(
     // L1 -> FB
     constexpr uint16_t fbufBurstLenUnit = 64;
     uint16_t fbufBurstLen = deqDataSize / fbufBurstLenUnit; // copy from cbuf to fbuf, burst_len unit is 64Bytes
-    bisheng::cce::copy_cbuf_to_fbuf(deqTensorTempBuf, cbufWorkspace + deqValueOffset, 1, fbufBurstLen, 0, 0);
+    copy_cbuf_to_fbuf(deqTensorTempBuf, cbufWorkspace + deqValueOffset, 1, fbufBurstLen, 0, 0);
     // FPC of fixpipe buffer for Quant_PRE is FPC[15:8], unit is 128Bytes
     uint64_t deqTensorAddr = ((uint64_t)deqTensorTempBuf >> static_cast<uint64_t>(7)) << 8;
-    bisheng::cce::set_fpc(deqTensorAddr);
+    set_fpc(deqTensorAddr);
     AscendCUtils::FreeTemporaryFbBuffer<uint64_t>(deqTensorTempBuf);
 }
 
@@ -163,7 +163,7 @@ __aicore__ inline void SetLoop3Para(const FixpipeParamsC310<config.format>& intr
         // src_nd_stride in unit of C0_SIZE, Loop3_src_stride
         loop3Para |= static_cast<uint64_t>(intriParams.params.srcNdStride) << 16;  // LOOP3_PARA[31:16]
         loop3Para |= static_cast<uint64_t>(intriParams.params.ndNum);              // LOOP3_PARA[15:0]
-        bisheng::cce::set_loop3_para(loop3Para);
+        set_loop3_para(loop3Para);
     } else if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
         ASCENDC_ASSERT((intriParams.params.dnNum > 0), { KERNEL_LOG(KERNEL_ERROR, "dnNum must be larger than 0"); });
         // Loop3_dst_stride in uint of element
@@ -171,7 +171,7 @@ __aicore__ inline void SetLoop3Para(const FixpipeParamsC310<config.format>& intr
         // src_nd_stride in unit of C0_SIZE, Loop3_src_stride
         loop3Para |= static_cast<uint64_t>(intriParams.params.srcNzMatrixStride) << 16;  // LOOP3_PARA[31:16]
         loop3Para |= static_cast<uint64_t>(intriParams.params.dnNum);                    // LOOP3_PARA[15:0]
-        bisheng::cce::set_loop3_para(loop3Para);
+        set_loop3_para(loop3Para);
     }
 }
 
@@ -203,7 +203,7 @@ __aicore__ inline void FixpipeL0cToL1(__cbuf__ DstT* dst, __cc__ SrcT* src,
         dstOffset = cburstNum * nIterIndex * intriParams.dstStride * DEFAULT_C0_SIZE / sizeof(DstT);
     }
     // LOC -> L1 only n direction need fixpipeTiling, m no need fixpipeTiling
-    return bisheng::cce::copy_matrix_cc_to_cbuf((__cbuf__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),
+    return copy_matrix_cc_to_cbuf((__cbuf__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),
         0, calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride, 0,
         0, intriParams.unitFlag, static_cast<uint64_t>(intriParams.quantPre),
         static_cast<uint8_t>(intriParams.reluEn), false, nz2ndEn,
@@ -254,7 +254,7 @@ __aicore__ inline void FixpipeL0cToUB(__ubuf__ DstT* dst, __cc__ SrcT* src,
         dstOffset = cburstNum * nIterIndex * intriParams.dstStride * DEFAULT_C0_SIZE / sizeof(DstT);
     }
     // LOC -> UB only n direction need fixpipeTiling, m no need fixpipeTiling
-    return bisheng::cce::copy_matrix_cc_to_ub((__ubuf__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset), 0,
+    return copy_matrix_cc_to_ub((__ubuf__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset), 0,
         calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride, intriParams.dualDstCtl,
         intriParams.subBlockId, 0, intriParams.unitFlag,
         static_cast<uint64_t>(intriParams.quantPre), static_cast<uint8_t>(intriParams.reluEn),
@@ -318,7 +318,7 @@ __aicore__ inline void FixpipeL0cToOut(__gm__ DstT* dst, __cc__ SrcT* src,
         AscendCUtils::CheckGmMemOverflow((__gm__ DstT*)(dst + dstOffset), isSrc, gmLen);
     }
     // LOC -> GM only n direction need fixpipeTiling, m no need fixpipeTiling
-    return bisheng::cce::copy_matrix_cc_to_gm((__gm__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),
+    return copy_matrix_cc_to_gm((__gm__ DstT *)(dst + dstOffset), (__cc__ SrcT *)(src + srcOffset),
         0, calNSize, intriParams.mSize, intriParams.dstStride, intriParams.srcStride, cacheMode,
         0, intriParams.unitFlag, static_cast<uint64_t>(intriParams.quantPre),
         static_cast<uint8_t>(intriParams.reluEn), intriParams.isChannelSplit, nz2ndEn,
@@ -506,7 +506,7 @@ __aicore__ inline void FixpipeL0C2L1Impl(
             // Loop0_dst_stride in uint of CO_SIZE
             uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                    << 48;  // CHANNEL_PARA[63:48]
-            bisheng::cce::set_channel_para(channelPara);
+            set_channel_para(channelPara);
         }
         /*
         make code for scalar quant mode:
@@ -515,7 +515,7 @@ __aicore__ inline void FixpipeL0C2L1Impl(
         */
         if (IsScalarQuantMode(intriParams.quantPre)) {
             // deq factor of uint64 bits describe: bits[31:13] is deq value of fp32,
-            bisheng::cce::set_quant_pre(intriParams.deqScalar);
+            set_quant_pre(intriParams.deqScalar);
         }
         PipeBarrier<PIPE_FIX>();
         FixpipeTiling fixpipeTiling;
@@ -538,7 +538,7 @@ __aicore__ inline void FixpipeL0C2L1Impl(__cbuf__ DstT* dst, __cc__ SrcT* src, _
             // Loop0_dst_stride in uint of CO_SIZE
             uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                    << 48;  // CHANNEL_PARA[63:48]
-            bisheng::cce::set_channel_para(channelPara);
+            set_channel_para(channelPara);
         }
         /*
         make code for vector quant mode:
@@ -575,7 +575,7 @@ __aicore__ inline void FixpipeL0C2UBImpl(
             // Loop0_src_stride in uint of CO_SIZE
             uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                    << 48;  // CHANNEL_PARA[63:48]
-            bisheng::cce::set_channel_para(channelPara);
+            set_channel_para(channelPara);
         }
         /*
         make code for scalar quant mode:
@@ -584,7 +584,7 @@ __aicore__ inline void FixpipeL0C2UBImpl(
         */
         if (IsScalarQuantMode(intriParams.quantPre)) {
             // deq factor of uint64 bits describe: bits[31:13] is deq value of fp32
-            bisheng::cce::set_quant_pre(intriParams.deqScalar);  // float32->uint64_t
+            set_quant_pre(intriParams.deqScalar);  // float32->uint64_t
         }
         PipeBarrier<PIPE_FIX>();
         // LOC->UB
@@ -606,7 +606,7 @@ __aicore__ inline void FixpipeL0C2UBImpl(__ubuf__ DstT* dst, __cc__ SrcT* src, _
             // Loop0_src_stride in uint of CO_SIZE
             uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                    << 48;  // CHANNEL_PARA[63:48]
-            bisheng::cce::set_channel_para(channelPara);
+            set_channel_para(channelPara);
         }
         /*
         make code for vector quant mode:
@@ -642,7 +642,7 @@ __aicore__ inline void FixpipeL0C2GMImpl(__gm__ DstT* dst, __cc__ SrcT* src,
         if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
             uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                    << 48;  // CHANNEL_PARA[63:48]
-            bisheng::cce::set_channel_para(channelPara);
+            set_channel_para(channelPara);
         }
         /*
         make code for scalar quant mode:
@@ -650,7 +650,7 @@ __aicore__ inline void FixpipeL0C2GMImpl(__gm__ DstT* dst, __cc__ SrcT* src,
         2. code gen: move data from l0c to gm
         */
         if (IsScalarQuantMode(intriParams.quantPre)) {
-            bisheng::cce::set_quant_pre(intriParams.deqScalar);
+            set_quant_pre(intriParams.deqScalar);
         }
         PipeBarrier<PIPE_FIX>();
         // LOC -> GM
@@ -671,7 +671,7 @@ __aicore__ inline void FixpipeL0C2GMImpl(__gm__ DstT* dst, __cc__ SrcT* src, __c
         if constexpr (config.format == CO2Layout::COLUMN_MAJOR) {
             uint64_t channelPara = static_cast<uint64_t>(intriParams.params.srcNzC0Stride)
                                    << 48;  // CHANNEL_PARA[63:48]
-            bisheng::cce::set_channel_para(channelPara);
+            set_channel_para(channelPara);
         }
         /*
         make code for vector quant mode:

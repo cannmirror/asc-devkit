@@ -92,7 +92,7 @@ __aicore__ inline void WriteTLHead(DumpType printType, __gm__ uint8_t *tlv, uint
 {
     *((__gm__ uint32_t *)tlv) = static_cast<uint32_t>(printType);
     *((__gm__ uint32_t *)tlv + 1) = valueSize;
-    bisheng::cce::dcci((__gm__ uint64_t*)tlv, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)tlv, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline void WriteString(__gm__ uint8_t* paramAddr, uint32_t paramIdx, __gm__ const char* s, uint32_t& offset)
@@ -102,7 +102,7 @@ __aicore__ inline void WriteString(__gm__ uint8_t* paramAddr, uint32_t paramIdx,
 
     // write string value offset
     *((__gm__ uint64_t *)stringAddr) = static_cast<uint64_t>(offset - ONE_PARAM_SIZE * paramIdx);
-    bisheng::cce::dcci((__gm__ uint64_t*)stringAddr, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)stringAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 
     // write string content
     __gm__ char *d = (__gm__ char *)(dstStrAddr);
@@ -110,7 +110,7 @@ __aicore__ inline void WriteString(__gm__ uint8_t* paramAddr, uint32_t paramIdx,
 
     for (uint32_t i = 0; i < strLen; i++) {
         *(d + i) = *(s + i);
-        bisheng::cce::dcci((__gm__ uint64_t*)d, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+        dcci((__gm__ uint64_t*)d, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     }
     offset += strLen;
 }
@@ -136,7 +136,7 @@ __aicore__ inline void WriteScalar(__gm__ uint8_t* paramAddr, uint32_t paramIdx,
     } else if constexpr(std::is_enum<T>::value) {
         *((__gm__ uint64_t *)scalarAddr) = static_cast<uint64_t>(scalar);
     }
-    bisheng::cce::dcci((__gm__ uint64_t*)scalarAddr, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)scalarAddr, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline void SetParam(__gm__ uint8_t* paramAddr, uint32_t paramIdx, uint32_t& offset)
@@ -183,7 +183,7 @@ __aicore__ __gm__ inline BlockInfo *GetBlockInfo()
     uint8_t core = GetDumpBlockIdx();
     uint64_t dumpWorkspaceStart = reinterpret_cast<uint64_t>(g_dumpWorkspaceReserved);
     __gm__ BlockInfo *blockInfo = (__gm__ BlockInfo *)(dumpWorkspaceStart +  DUMP_UINTSIZE * core);
-    bisheng::cce::dcci((__gm__ uint64_t*)blockInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)blockInfo, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     return blockInfo;
 }
 
@@ -196,7 +196,7 @@ __aicore__ inline void UpdateBlockInfo(uint32_t tlvSize)
     __gm__ uint8_t *blockInfoStart = (__gm__ uint8_t *)blockInfo;
     *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_DUMPOFFSET_POS) = remainSize - tlvSize;
     *((__gm__ uint64_t *)((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_DUMP_ADDR)) = lastDumpAddr + tlvSize;
-    bisheng::cce::dcci((__gm__ uint64_t*)blockInfoStart, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)blockInfoStart, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
 }
 
 template <class... Args>
@@ -207,7 +207,7 @@ __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char* f
         return;
     }
     __gm__ BlockInfo *blockInfo = GetBlockInfo();
-    bisheng::cce::dcci((__gm__ uint64_t*)blockInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)blockInfo, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     uint32_t remainSize = blockInfo->dumpOffset;
     uint64_t dumpAddr = blockInfo->dumpAddr;
 
@@ -219,7 +219,7 @@ __aicore__ inline void PrintfEntityImpl(DumpType printType, __gm__ const char* f
     if (tlvSize > remainSize) {
         __gm__ uint8_t *blockInfoStart = (__gm__ uint8_t *)blockInfo;
         *((__gm__ uint32_t *)blockInfoStart + BLOCK_INFO_RSV_POS) = DUMP_EXC_FLAG;
-        bisheng::cce::dcci((__gm__ uint64_t*)blockInfoStart, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE, bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+        dcci((__gm__ uint64_t*)blockInfoStart, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
         return;
     }
 
@@ -243,8 +243,8 @@ __aicore__ inline void PrintfImpl(DumpType printType, __gm__ const char* fmt, Ar
 {
     uint64_t ctrlValue = get_ctrl();
     set_atomic_none();
-    bisheng::cce::dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         PrintfRingBufImpl(printType, fmt, args...);
     } else {
@@ -271,8 +271,8 @@ __aicore__ inline void MemCopyGm2Gm(__gm__ uint8_t* dst, __gm__ const uint8_t* s
     for (uint32_t i = 0; i < len; i++) {
         *(dst + i) = *(src + i);
     }
-    bisheng::cce::dcci((__gm__ uint64_t*)dst, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)dst, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ __gm__ inline BlockRingBufInfo* GetBlockRingBufInfo()
@@ -309,8 +309,8 @@ __aicore__ inline void UpdateWriteInfo(__gm__ RingBufWriteInfo* writeInfo, const
 {
     writeInfo->bufOffset += tlvLen;
     writeInfo->packIdx += 1;
-    bisheng::cce::dcci((__gm__ uint64_t*)writeInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)writeInfo, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
 }
 
 __aicore__ inline bool WaitRingBufBeginRead(__gm__ RingBufReadInfo* readInfo)
@@ -323,8 +323,8 @@ __aicore__ inline bool WaitRingBufBeginRead(__gm__ RingBufReadInfo* readInfo)
         }
         RingBufferWaitRtsSync(); // wait 20 * 15 ms
         ++counter;
-        bisheng::cce::dcci((__gm__ uint64_t*)readInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-            bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+        dcci((__gm__ uint64_t*)readInfo, cache_line_t::ENTIRE_DATA_CACHE,
+            dcci_dst_t::CACHELINE_OUT);
     }
     return true;
 }
@@ -332,8 +332,8 @@ __aicore__ inline bool WaitRingBufBeginRead(__gm__ RingBufReadInfo* readInfo)
 __aicore__ inline void SkipRingBufDirectly(__gm__ RingBufWriteInfo* writeInfo)
 {
     writeInfo->bufOffset = 0;
-    bisheng::cce::dcci((__gm__ uint64_t*)writeInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)writeInfo, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
     return;
 }
 
@@ -345,10 +345,10 @@ __aicore__ inline void SkipRingBufWithInfo(
     skipInfo->length = ringBufLen - writeInfo->bufOffset - sizeof(SkipTlvInfo);
     writeInfo->bufOffset = 0;
     writeInfo->packIdx += 1;
-    bisheng::cce::dcci((__gm__ uint64_t*)skipInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
-    bisheng::cce::dcci((__gm__ uint64_t*)writeInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)skipInfo, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)writeInfo, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
     return;
 }
 
@@ -363,8 +363,8 @@ __aicore__ inline bool RingBufferWait(__gm__ RingBufReadInfo* readInfo, __gm__ R
         }
         RingBufferWaitRtsSync(); // wait 20 * 15 ms
         ++counter;
-        bisheng::cce::dcci((__gm__ uint64_t*)readInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-            bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+        dcci((__gm__ uint64_t*)readInfo, cache_line_t::ENTIRE_DATA_CACHE,
+            dcci_dst_t::CACHELINE_OUT);
     }
     return true;
 }
@@ -454,8 +454,8 @@ __aicore__ inline void WriteRingBufTlvHead(
     printTlv->blockIdx = static_cast<uint32_t>(GetBlockIdxImpl());
     printTlv->resv = static_cast<uint32_t>(0U);
     printTlv->fmtOffset = (argsNum + 1) * sizeof(uint64_t);      // include fmt offset
-    bisheng::cce::dcci((__gm__ uint64_t*)printTlv, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)printTlv, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
 }
 
 template <typename... Args>
