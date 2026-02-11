@@ -613,7 +613,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
             gen_func_attributes += " __attribute__((need_auto_sync))"
 
     kernel_func_dec = f"extern \"C\" {gen_func_attributes} [aicore] void {auto_gen_kernel_func}("
-    kernel_func_dec_pub = f"__aicore__ inline void ascendc_{auto_gen_kernel_func}("
+    kernel_func_dec_pub = f"__aicore__ inline __attribute__((always_inline)) void ascendc_{auto_gen_kernel_func}("
 
     source_declare_pub, workspace_idx, called_func_params, called_func_params_type = \
         _gen_kernel_func_declare_head(is_mix, is_single_and_using_hard_sync, \

@@ -416,7 +416,7 @@ def gen_sync_and_event_code_for_two_stream(super_operator, pre_sub_operator, sub
 
 
 def gen_2_real_stream_code_by_arch(super_operator, arch, super_kernel_params_str, exits_dynamic_op, sub_ops):
-    super_kernel_file = f"__aicore__ inline void \
+    super_kernel_file = f"__aicore__ inline __attribute__((always_inline)) void \
 auto_gen_{super_operator.kernel_name}_kernel_{arch}(void) {{\n"
     super_kernel_file += "    GM_ADDR *param_base = (GM_ADDR *)get_para_base();\n"
     if exits_dynamic_op is True:
