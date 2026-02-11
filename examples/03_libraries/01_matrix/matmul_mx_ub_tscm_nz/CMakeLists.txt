@@ -15,7 +15,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    matmul.asc
+    matmul_mx_ub_tscm_nz.asc
 )
 
 target_link_libraries(demo PRIVATE
@@ -27,5 +27,6 @@ target_link_libraries(demo PRIVATE
 )
 
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+    -DENABLE_CV_COMM_VIA_SSBUF=true
 )

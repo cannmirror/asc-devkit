@@ -37,6 +37,7 @@
 | [matmul_k_reorder_load](./matmul_k_reorder_load)                                           | 本样例介绍Matmul API使能K轴错峰加载数据的场景 |
 | [matmul_async_iterate](./matmul_async_iterate)                                             | 本样例介绍调用Matmul API实现异步场景下的Matmul矩阵乘法，实现方式为调用Iterate和GetTensorC输出到VECIN |
 | [matmul_async_iterate_all](./matmul_async_iterate_all)                                     | 本样例介绍调用Matmul API实现异步场景下的Matmul矩阵乘法，实现方式为调用IterateAll输出到GM |
+| [matmul_b8](./matmul_b8)                                                                   | 本样例介绍了调用Matmul高阶API实现A、B矩阵为hifloat8、fp8_e4m3fn、fp8_e5m2数据类型输入，并使用MDL模板的Matmul单算子 |
 | [matmul_a2b2_share](./matmul_a2b2_share)                                                   | 本样例介绍调用Matmul API实现开启A2和B2全局管理的单算子 |
 | [matmul_callback](./matmul_callback)                                                       | 本样例介绍Matmul API模板参数MatmulCallbackFunc的自定义使用方式 |
 | [matmul_l0c_extend](./matmul_l0c_extend)                                                   | 本样例介绍Matmul API用户自主管理CO1的Iterate接口的自定义使用方式 |
@@ -50,6 +51,12 @@
 | [batch_mmad](./batch_mmad)                                                                 | 本样例介绍在输入为float数据类型并且左、右矩阵均不转置的场景下，带batch的矩阵乘法，其中从GM-->L1、L0C-->GM、L0C-->L1这三条通路分别采用了DataCopy ND2NZ和Fixpipe批量搬运数据，从L1-->L0A/L0B以及Mmad执行矩阵乘这两个步骤则是循环batch次，每次循环内只处理一对左、右矩阵 |
 | [matmul_gemv](./matmul_gemv)                                                               | 本样例介绍调用Matmul NORM模板实现矩阵向量乘的单算子 |
 | [matmul_mndb](./matmul_mndb)                                                               | 本样例介绍调用Matmul API实现M或N轴方向流水并行的单算子 |
+| [matmul_mx_norm_even](./matmul_mx_norm_even)                                               | 本样例介绍了在Mx数据格式下，Scale的K方向为偶数的带有量化系数的矩阵乘法，即MxMatmul计算场景 |
+| [matmul_mx_norm_odd](./matmul_mx_norm_odd)                                                 | 本样例介绍了在Mx数据格式下，Scale的K方向为奇数的带有量化系数的矩阵乘法，即MxMatmul计算场景 |
+| [matmul_mx_scalea_trans](./matmul_mx_scalea_trans)                                         | 本样例介绍了在Mx数据格式下，scaleA开启转置、scaleB不开启转置的带有量化系数的矩阵乘法，即MxMatmul计算场景 |
+| [matmul_mx_scaleb_trans](./matmul_mx_scaleb_trans)                                         | 本样例介绍了在Mx数据格式下，scaleA不开启转置、scaleB开启转置的带有量化系数的矩阵乘法，即MxMatmul计算场景 |
+| [matmul_mx_typepara](./matmul_mx_typepara)                                                 | 本样例介绍了在Mx数据格式下，左量化系数矩阵scaleA载入L1时，scaleA的K方向上开启多倍缓存，从而实现带有量化系数的矩阵乘法，即MxMatmul计算场景。 |
+| [matmul_mx_ub_tscm_nz](./matmul_mx_ub_tscm_nz)                                             | 本样例介绍了在Mx数据格式下，A、B矩阵内存逻辑位置使用VECOUT，scaleA、scaleB矩阵内存逻辑位置使用TSCM，4个输入矩阵都是NZ格式的带有量化系数的矩阵乘法 |
 | [matmul_preload](./matmul_preload)                                                         | 本样例介绍调用Matmul MDL模板实现使能M或N方向预加载功能的单算子 |
 | [matmul_constant](./matmul_constant)                                                       | 本样例介绍调用Matmul MDL模板使能Tiling常量化的单算子 |
 | [matmul_column_major](./matmul_column_major)                                               | 本样例介绍A、B、C矩阵为COLUMN_MAJOR格式排布的矩阵乘的单算子 |

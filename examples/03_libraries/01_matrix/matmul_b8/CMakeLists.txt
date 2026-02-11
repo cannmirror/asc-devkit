@@ -15,7 +15,7 @@ find_package(ASC REQUIRED)
 project(kernel_samples LANGUAGES ASC CXX)
 
 add_executable(demo
-    matmul.asc
+    matmul_b8.asc
 )
 
 target_link_libraries(demo PRIVATE
@@ -26,6 +26,8 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
+message(STATUS "[INFO] DT_MODE is ${DT_MODE}")
+
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
 )
