@@ -2,7 +2,7 @@
 
 ## 🔥Latest News
 - [2026/01] 优化样例、融合编译性能等；
-  - 迁移高阶API样例[ascendc-api-adv](https://gitee.com/ascend/ascendc-api-adv)到本仓，并使用[<<<>>>调用方式](https://gitcode.com/asc-devkit/tree/master/examples/03_libraries)；
+  - 迁移高阶API样例[ascendc-api-adv](https://gitee.com/ascend/ascendc-api-adv)到本仓，并使用[<<<>>>调用方式](./examples/03_libraries)；
   - 联合毕昇编译器，优化融合编译性能；
 - [2025/12] Ascend C项目新增对Kirin X90和Kirin 9030处理器的支持。鸿蒙开发者基于Ascend C的实践案例可参考：[cann-recipes-harmony-infer](https://gitcode.com/cann/cann-recipes-harmony-infer)。
 - [2025/11] Ascend C项目基于Atlas A3 训练系列产品/Atlas A3 推理系列产品、Atlas A2 训练系列产品/Atlas A2 推理系列产品全面开源开放，包含以下新特性：
@@ -22,7 +22,7 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 
 <img src="docs/figures/architecture.png" alt="架构图"  width="850px" height="580px">
 
-- 语言扩展层C API：纯C接口，支持数组分配内存、基于指针的计算接口，提供与业界一致的C语言编程体验，并开放芯片完备编程能力。Atlas A2/A3支持SIMD的纯C接口；下一代950将支持与业界类似的纯SIMT编程能力、SIMD/SIMT混合编程能力；
+- 语言扩展层C API：纯C接口，支持数组分配内存、基于指针的计算接口，提供与业界一致的C语言编程体验，并开放芯片完备编程能力。Atlas A2/A3支持SIMD的纯C接口；Ascend 950PR/Ascend 950DT将支持与业界类似的纯SIMT编程能力、SIMD/SIMT混合编程能力；
 - 基础API：单指令抽象的C++类库API，一般基于Tensor编程；逐步基于Layout完善Tensor编程能力；
 - 高阶API：基于单核对常见算法进行抽象和封装，提供公共算法的实现；
 - 算子模板库：基于模板提供算子的完整实现参考，简化Tiling开发，支持用户自定义扩展；
@@ -83,7 +83,7 @@ Ascend C是[CANN](https://hiascend.com/software/cann) （Compute Architecture fo
 ## 📌后续规划
 
 - 基于Altas A2/A3发布语言扩展层纯C接口，提供基于数组分配内存能力，支持基于指针的计算接口，实现与业界类似的纯C编程体验；
-- 下一代 950 平台将支持纯 SIMT 编程及 SIMD/SIMT 混合编程，并通过 Layout 进一步强化 Tensor 编程能力；
+- Ascend 950PR/Ascend 950DT将支持纯SIMT编程、SIMD与SIMT混合编程，并通过Layout进一步强化Tensor编程能力；
 - 持续丰富语言扩展层C API(含SIMD、SIMT)和基础API的关键特性介绍，并基于融合编译与 <<<>>>调用完善样例；
 
 ## 📝相关信息
