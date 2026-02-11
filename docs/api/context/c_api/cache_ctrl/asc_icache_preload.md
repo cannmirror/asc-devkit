@@ -4,8 +4,10 @@
 
 | 产品 | 是否支持  |
 | :-----------| :------: |
+| <cann-filter npu_type="950"><term>Ascend 950PR/Ascend 950DT</term>  | √ </cann-filter>|
 | Atlas A3 训练系列产品/Atlas A3 推理系列产品 |    √     |
 | Atlas A2 训练系列产品/Atlas A2 推理系列产品 |    √     |
+
 
 ## 功能说明
 
@@ -41,6 +43,6 @@ PIPE_S
 
 ```cpp
 int64_t prefetch_length = 32;
-int64_t pc = asc_get_program_counter_impl() & 0xFFFFFFFFFFFF;
+int64_t pc = asc_get_program_counter() & 0xFFFFFFFFFFFF;
 asc_icache_preload(reinterpret_cast<void *>(pc), prefetch_length);
 ```

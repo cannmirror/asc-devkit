@@ -4,11 +4,11 @@
 
 |产品|是否支持|
 | :------------ | :------------: |
-| Ascend 950PR/Ascend 950DT | √ |
+| <cann-filter npu_type="950"><term>Ascend 950PR/Ascend 950DT</term>  | √ </cann-filter>|
 
 ## 功能说明
 
-按元素判断src0 != src1是否成立，若成立则输出结果为1，否则为0。每个元素的比较结果占1个bit。
+按元素判断src0_i != src1_i是否成立，若成立则输出结果为1，否则为0。每个元素的比较结果占1个bit。
 
 ## 函数原型
 

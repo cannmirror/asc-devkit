@@ -5,7 +5,8 @@
 
 | 产品         | 是否支持 |
 | :-----------------------| :-----:|
-| Ascend 950PR/Ascend 950DT | √ |
+| <cann-filter npu_type="950"><term>Ascend 950PR/Ascend 950DT</term>  | √ </cann-filter>|
+
 ## 功能说明
 
 给定源操作数src0和src1，将src0和src1中的元素解交织存入结果操作数dst0和dst1中。操作数为掩码寄存器时，不同数据类型的接口决定了交织的位宽大小，例如int32_t(b32)类型，交织时以4bit为一组。

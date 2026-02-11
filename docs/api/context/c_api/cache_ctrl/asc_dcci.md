@@ -23,6 +23,8 @@ Scalar单元访问Global Memory，首先会访问每个核内的Data Cache，因
 读取Global Memory的数据，但该数据可能在外部被其余核修改，此时需要使用asc_dcci接口，直接访问Global Memory，获取最新数据；
 用户通过Scalar单元写Global Memory的数据，希望立刻写出，也需要使用asc_dcci接口。
 
+Scalar单元访问UB数据时，该接口需配合[asc_set_ctrl()](../sys_var/asc_set_ctrl.md)接口使用，将CTRL[49]设置为1'b1，开启datacache模式。
+
 ## 函数原型
 
    ```cpp
