@@ -4996,7 +4996,7 @@ __simd_callee__ inline void asc_mull(vector_int32_t& dst0, vector_int32_t& dst1,
     asc_mull_impl(dst0, dst1, src0, src1, mask);
 }
 
-__aicore__ inline void asc_clear_ar_spr()
+__simd_callee__ inline void asc_clear_ar_spr()
 {
     asc_clear_ar_spr_impl();
 }
