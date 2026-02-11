@@ -153,24 +153,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 __float22half2_ro_sat(const float2 x
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float(const half x);
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float_rn(const half x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float_rz(const half x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float_rd(const half x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float_ru(const half x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __half2float_rna(const half x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __half22float2_rn(const half2 x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __half22float2_rd(const half2 x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __half22float2_ru(const half2 x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __half22float2_rna(const half2 x);
-
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __half2half_rn(const half x);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __half2half_rz(const half x);

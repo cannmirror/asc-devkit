@@ -177,26 +177,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __bfloat162half_rna_sat(const bfloat1
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float __bfloat162float(const bfloat16_t x);
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __bfloat162float_rn(const bfloat16_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __bfloat162float_rz(const bfloat16_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __bfloat162float_rd(const bfloat16_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __bfloat162float_ru(const bfloat16_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __bfloat162float_rna(const bfloat16_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __bfloat1622float2_rn(const bfloat16x2_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __bfloat1622float2_rz(const bfloat16x2_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __bfloat1622float2_rd(const bfloat16x2_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __bfloat1622float2_ru(const bfloat16x2_t x);
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __bfloat1622float2_rna(const bfloat16x2_t x);
-
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t __bfloat162bfloat16_rn(const bfloat16_t x);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bfloat16_t __bfloat162bfloat16_rz(const bfloat16_t x);
