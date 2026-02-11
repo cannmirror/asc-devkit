@@ -4,8 +4,8 @@
 
 | 产品     | 是否支持 |
 | ----------- |:----:|
-| Atlas A3 训练系列产品/Atlas A3 推理系列产品 | √    |
-| Atlas A2 训练系列产品/Atlas A2 推理系列产品 | √    |
+| <term>Atlas A3 训练系列产品/Atlas A3 推理系列产品</term> | √    |
+| <term>Atlas A2 训练系列产品/Atlas A2 推理系列产品</term> | √    |
 
 ## 功能说明
 DataCopy（CO1->GM、CO1->A1）过程中进行随路格式转换（NZ格式转换为ND格式）时，通过调用该接口设置格式转换的相关配置。
