@@ -9,31 +9,35 @@
 */
 
 /*!
-* \file atom.h
+* \file mad_impl.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_ATOM_ATOM_H
-#define INCLUDE_TENSOR_API_ATOM_ATOM_H
+#ifndef IMPL_TENSOR_API_ALGORITHM_MAD_IMPL_H
+#define IMPL_TENSOR_API_ALGORITHM_MAD_IMPL_H
 
-#include "impl/experimental/tensor_api/detail/atom/copy_atom_impl.h"
 #include "impl/experimental/tensor_api/detail/atom/mad_atom_impl.h"
 
 namespace AscendC {
 namespace Te {
 
-template <typename CopyOperation, typename... CopyOpArgs>
-struct CopyTraits;
+template <typename Tp, const Tp& traits, typename T, typename... Params>
+__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params)
+{
+    atomMad.template Call<traits>(params...);
+}
+
+template <typename T, typename... Params>
+__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params)
+{
+    atomMad.Call(params...);
+}
 
 template <typename... Args>
-struct CopyAtom;
-
-template <typename MadOperation, typename... MadOpArgs>
-struct MmadTraits;
-
-template <typename... Args>
-struct MmadAtom;
+__aicore__ inline auto MakeMad(const Args& ...traits) {
+    return MmadAtom<MmadTraits<Args...>>{};
+}
 
 }
 }
 
-#endif // INCLUDE_TENSOR_API_ATOM_ATOM_H
+#endif // IMPL_TENSOR_API_ALGORITHM_MAD_IMPL_H

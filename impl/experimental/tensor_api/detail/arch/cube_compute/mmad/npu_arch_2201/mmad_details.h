@@ -13,6 +13,8 @@
  */
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_DETAILS_H
 #define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_NPU_ARCH_2201_MMAD_DETAILS_H
+
+#include "include/experimental/tensor_api/arch/cube_compute/cube_compute_struct.h"
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "include/experimental/tensor_api/tensor/make.h"
 

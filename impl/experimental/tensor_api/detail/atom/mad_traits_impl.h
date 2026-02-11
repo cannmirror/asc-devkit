@@ -9,14 +9,19 @@
 */
 
 /*!
- * \file algorithm.h
- * \brief
- */
-#ifndef INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
-#define INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+* \file mad_traits_impl.h
+* \brief
+*/
+#ifndef IMPL_TENSOR_API_ATOM_MAD_TRAITS_IMPL_H
+#define IMPL_TENSOR_API_ATOM_MAD_TRAITS_IMPL_H
 
-#include "include/experimental/tensor_api/algorithm/copy.h"
-#include "include/experimental/tensor_api/algorithm/gemm.h"
-#include "include/experimental/tensor_api/algorithm/mad.h"
+namespace AscendC {
+namespace Te {
 
-#endif // INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+template <typename MadOperation, typename... MadOpArgs>
+struct MmadTraits{};
+
+}
+}
+
+#endif // IMPL_TENSOR_API_ATOM_COPY_TRAITS_IMPL_H

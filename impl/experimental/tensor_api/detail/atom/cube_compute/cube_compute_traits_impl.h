@@ -9,14 +9,12 @@
 */
 
 /*!
- * \file algorithm.h
- * \brief
- */
-#ifndef INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
-#define INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+* \file cube_compute_traits_impl.h
+* \brief
+*/
+#ifndef IMPL_TENSOR_API_ATOM_CUBE_COMPUTE_CUBE_COMPUTE_TRAITS_IMPL_H
+#define IMPL_TENSOR_API_ATOM_CUBE_COMPUTE_CUBE_COMPUTE_TRAITS_IMPL_H
 
-#include "include/experimental/tensor_api/algorithm/copy.h"
-#include "include/experimental/tensor_api/algorithm/gemm.h"
-#include "include/experimental/tensor_api/algorithm/mad.h"
+#include "impl/experimental/tensor_api/detail/atom/cube_compute/mad_traits_impl.h"
 
-#endif // INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+#endif // IMPL_TENSOR_API_ATOM_CUBE_COMPUTE_CUBE_COMPUTE_TRAITS_IMPL_H

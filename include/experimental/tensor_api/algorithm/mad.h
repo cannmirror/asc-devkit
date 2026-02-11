@@ -9,14 +9,27 @@
 */
 
 /*!
- * \file algorithm.h
- * \brief
- */
-#ifndef INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
-#define INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+* \file mad.h
+* \brief
+*/
+#ifndef INCLUDE_TENSOR_API_ALGORITHM_MAD_H
+#define INCLUDE_TENSOR_API_ALGORITHM_MAD_H
 
-#include "include/experimental/tensor_api/algorithm/copy.h"
-#include "include/experimental/tensor_api/algorithm/gemm.h"
-#include "include/experimental/tensor_api/algorithm/mad.h"
+#include "impl/experimental/tensor_api/detail/algorithm/mad_impl.h"
 
-#endif // INCLUDE_TENSOR_API_ALGORITHM_ALGORITHM_H
+namespace AscendC {
+namespace Te {
+
+template <typename Tp, const Tp& traits, typename T, typename... Params>
+__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params);
+
+template <typename T, typename... Params>
+__aicore__ inline void Mad(const MmadAtom<T>& atomMad, const Params& ...params);
+
+template <typename... Args>
+__aicore__ inline auto MakeMad(const Args& ...traits);
+
+}
+}
+
+#endif // INCLUDE_TENSOR_API_ALGORITHM_MAD_H
