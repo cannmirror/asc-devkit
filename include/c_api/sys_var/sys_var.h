@@ -17,6 +17,16 @@
 #ifndef INCLUDE_C_API_SYS_VAR_SYS_VAR_H
 #define INCLUDE_C_API_SYS_VAR_SYS_VAR_H
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
+#include "instr_impl/npu_arch_2201/sys_var_impl.h"
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/sys_var_impl.h"
+
+#endif
+
 __aicore__ inline int64_t asc_get_ctrl();
 
 __aicore__ inline int64_t asc_get_block_num();
@@ -26,8 +36,6 @@ __aicore__ inline int64_t asc_get_system_cycle();
 __aicore__ inline void asc_set_ctrl(uint64_t config);
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
-
-#include "instr_impl/npu_arch_2201/sys_var_impl.h"
 
 __aicore__ inline int64_t asc_get_core_id();
 
@@ -46,10 +54,6 @@ __aicore__ inline int64_t asc_get_program_counter();
 __aicore__ inline void asc_get_arch_ver(uint32_t& coreVersion);
 
 __simd_callee__ inline int64_t asc_get_ar_spr();
-
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-
-#include "instr_impl/npu_arch_3510/sys_var_impl.h"
 
 #endif
 

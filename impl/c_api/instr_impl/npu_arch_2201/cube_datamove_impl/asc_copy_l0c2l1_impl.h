@@ -19,7 +19,6 @@
 
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-// asc_copy_l0c2l1
 __aicore__ inline void asc_copy_l0c2l1_impl(__cbuf__ half* dst, __cc__ float* src, uint16_t n_size,
                                             uint16_t m_size, uint32_t dst_stride_dst_d, uint16_t src_stride,
                                             uint8_t uint_flag_mode, uint64_t quant_pre, uint8_t relu_pre, bool channel_split,

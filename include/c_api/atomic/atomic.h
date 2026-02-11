@@ -16,13 +16,21 @@
 #ifndef INCLUDE_C_API_ATOMIC_ATOMIC_H
 #define INCLUDE_C_API_ATOMIC_ATOMIC_H
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
+#include "instr_impl/npu_arch_2201/atomic_impl.h"
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/atomic_impl.h"
+
+#endif
+
 __aicore__ inline void asc_set_atomic_add_float();
 
 __aicore__ inline void asc_set_atomic_max_float16();
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
-
-#include "instr_impl/npu_arch_2201/atomic_impl.h"
 
 __aicore__ inline void asc_set_atomic_none();
 
@@ -64,7 +72,6 @@ __aicore__ inline void asc_set_atomic_min_int16();
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
 
-#include "instr_impl/npu_arch_3510/atomic_impl.h"
 // ==========asc_set_atomic_add_float16==========
 __simd_callee__ inline void asc_set_atomic_add_float16();
 
