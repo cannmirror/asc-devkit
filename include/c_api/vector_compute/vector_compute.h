@@ -2212,6 +2212,22 @@ __aicore__ inline void asc_le_scalar(__ubuf__ uint8_t* dst, __ubuf__ float* src,
 __aicore__ inline void asc_le_scalar_sync(__ubuf__ uint8_t* dst, __ubuf__ float* src, float value, uint8_t repeat,
                                           uint16_t dst_block_stride, uint16_t src_block_stride,
                                           uint16_t dst_repeat_stride, uint16_t src_repeat_stride);
+
+//==========asc_pair_reduce_sum(half/float)============
+__aicore__ inline void asc_pair_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, uint8_t repeat, uint16_t dst_repeat_stride,
+                                           uint16_t src_block_stride, uint16_t src_repeat_stride);
+
+__aicore__ inline void asc_pair_reduce_sum(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count);
+
+__aicore__ inline void asc_pair_reduce_sum_sync(__ubuf__ half* dst, __ubuf__ half* src, uint32_t count);
+
+__aicore__ inline void asc_pair_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, uint8_t repeat, uint16_t dst_repeat_stride,
+                                           uint16_t src_block_stride, uint16_t src_repeat_stride);
+
+__aicore__ inline void asc_pair_reduce_sum(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count);
+
+__aicore__ inline void asc_pair_reduce_sum_sync(__ubuf__ float* dst, __ubuf__ float* src, uint32_t count);
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  

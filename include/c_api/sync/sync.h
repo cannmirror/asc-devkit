@@ -41,6 +41,10 @@ __aicore__ inline void asc_sync_mte2(int id);
 
 __aicore__ inline void asc_sync();
 
+__aicore__ inline void asc_sync_block_arrive(pipe_t pipe, uint8_t mode, int64_t flagID);
+
+__aicore__ inline void asc_sync_block_wait(int64_t flagID);
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC_C_API_H)  
