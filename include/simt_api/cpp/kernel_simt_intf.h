@@ -28,7 +28,7 @@
 #endif
 
 #ifdef ASCENDC_CPU_DEBUG
-#include "simt_api/dav_c310/kernel_simt_cpu.h"
+#include "kernel_simt_cpu.h"
 #endif
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)

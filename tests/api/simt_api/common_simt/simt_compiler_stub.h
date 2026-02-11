@@ -11,7 +11,7 @@
 #ifndef SIMT_COMPILER_STUB_H
 #define SIMT_COMPILER_STUB_H
 
-#include "simt_api/dav_c310/kernel_simt_cpu.h"
+#include "kernel_simt_cpu.h"
 #include "kernel_vectorized.h"
 #include "simt_stub.h"
 #include "stub_def.h"

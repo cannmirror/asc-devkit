@@ -11,7 +11,7 @@
 #include "simt_compiler_stub.h"
 #include "kernel_process_lock.h"
 #include "kernel_utils.h"
-#include "dav_c310/kernel_simt_cpu.h"
+#include "kernel_simt_cpu.h"
 #include "stub_def.h"
 #include <cmath>
 
