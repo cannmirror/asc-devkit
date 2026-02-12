@@ -35,13 +35,80 @@ __aicore__ inline void asc_set_l13d_fmatrix(asc_l13d_fmatrix_config& config);
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
+#include "instr_impl/npu_arch_2201/cube_datamove_impl.h"
+
 // ==========asc_copy_gm2l1==========
-__aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst, uint16_t burst_len,
-    uint16_t src_stride, uint16_t dst_stride, pad_t pad_mode);
+//PAD_NONE
+__aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
 
 __aicore__ inline void asc_copy_gm2l1(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
 
 __aicore__ inline void asc_copy_gm2l1_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE1
+__aicore__ inline void asc_copy_gm2l1_pad1(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad1(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad1_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE2
+__aicore__ inline void asc_copy_gm2l1_pad2(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad2(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad2_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE3
+__aicore__ inline void asc_copy_gm2l1_pad3(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad3(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad3_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE4
+__aicore__ inline void asc_copy_gm2l1_pad4(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad4(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad4_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE5
+__aicore__ inline void asc_copy_gm2l1_pad5(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad5(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad5_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE6
+__aicore__ inline void asc_copy_gm2l1_pad6(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad6(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad6_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE7
+__aicore__ inline void asc_copy_gm2l1_pad7(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad7(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad7_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+//PAD_MODE8
+__aicore__ inline void asc_copy_gm2l1_pad8(__cbuf__ void* dst, __gm__ void* src, uint16_t n_burst,
+                                      uint16_t burst_len, uint16_t src_stride, uint16_t dst_stride);
+
+__aicore__ inline void asc_copy_gm2l1_pad8(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_gm2l1_pad8_sync(__cbuf__ void* dst, __gm__ void* src, uint32_t size);
 
 // ==========asc_copy_gm2l1_nd2nz b8(int8_t/uint8_t)==========
 __aicore__ inline void asc_copy_gm2l1_nd2nz(__cbuf__ int8_t* dst, __gm__ int8_t* src, uint16_t nd_num,
@@ -607,6 +674,8 @@ __aicore__ inline void asc_set_l0c_copy_prequant(uint64_t config);
 __aicore__ inline void asc_set_l0c_copy_params(uint16_t nd_num, uint16_t src_nd_stride, uint16_t dst_nd_stride);
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/cube_datamove_impl.h"
 
 // ==========asc_l0c2l1_l0c2l1===========
 // half  float

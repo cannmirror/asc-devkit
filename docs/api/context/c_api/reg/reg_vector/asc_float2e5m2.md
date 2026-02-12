@@ -8,13 +8,7 @@
 
 ## 功能说明
 
-将float类型数据转换为fp8_e5m2类型，支持多种舍入模式：
-
-- RINT舍入模式：四舍六入五成双舍入
-- ROUND舍入模式：四舍五入舍入
-- FLOOR舍入模式：向负无穷舍入
-- CEIL舍入模式：向正无穷舍入
-- TRUNC舍入模式：向零舍入
+将float类型数据转换为fp8_e5m2类型。
 
 - 非饱和模式：
   - 输入数据超过输出类型最值时，结果被截断为目标格式的数据宽度，例如输入half值为257，输出int8_t值为1。
@@ -28,22 +22,6 @@
 ## 函数原型
 
 ```cpp
-// FLOOR舍入模式，非饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_rd(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，非饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_rd_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，非饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_rd_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，非饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_rd_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_rd_sat(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_rd_sat_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_rd_sat_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// FLOOR舍入模式，饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_rd_sat_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
 // RINT舍入模式，非饱和模式，数据写入索引为0的位置
 __simd_callee__ inline void asc_float2e5m2_rn(vector_f8e5m2& dst, vector_float src, vector_bool mask)
 // RINT舍入模式，非饱和模式，数据写入索引为1的位置
@@ -60,54 +38,6 @@ __simd_callee__ inline void asc_float2e5m2_rn_sat_v2(vector_f8e5m2& dst, vector_
 __simd_callee__ inline void asc_float2e5m2_rn_sat_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
 // RINT舍入模式，饱和模式，数据写入索引为3的位置
 __simd_callee__ inline void asc_float2e5m2_rn_sat_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，非饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_rna(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，非饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_rna_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，非饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_rna_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，非饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_rna_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_rna_sat(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_rna_sat_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_rna_sat_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// ROUND舍入模式，饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_rna_sat_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，非饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_ru(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，非饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_ru_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，非饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_ru_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，非饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_ru_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_ru_sat(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_ru_sat_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_ru_sat_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// CEIL舍入模式，饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_ru_sat_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，非饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_rz(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，非饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_rz_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，非饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_rz_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，非饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_rz_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，饱和模式，数据写入索引为0的位置
-__simd_callee__ inline void asc_float2e5m2_rz_sat(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，饱和模式，数据写入索引为1的位置
-__simd_callee__ inline void asc_float2e5m2_rz_sat_v2(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，饱和模式，数据写入索引为2的位置
-__simd_callee__ inline void asc_float2e5m2_rz_sat_v3(vector_f8e5m2& dst, vector_float src, vector_bool mask)
-// TRUNC舍入模式，饱和模式，数据写入索引为3的位置
-__simd_callee__ inline void asc_float2e5m2_rz_sat_v4(vector_f8e5m2& dst, vector_float src, vector_bool mask)
 ```
 
 ## 参数说明

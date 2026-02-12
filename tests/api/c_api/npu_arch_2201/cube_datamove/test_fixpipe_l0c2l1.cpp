@@ -16,10 +16,11 @@ TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf,
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, half, int32_t);
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int16_t, int32_t);
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, int8_t, int32_t);
+TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1, asc_copy_l0c2l1, copy_matrix_cc_to_cbuf, uint8_t, int32_t);
 
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, half, float);
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, bfloat16_t, float);
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, int8_t, float);
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, half, int32_t);
 TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, int16_t, int32_t);
-TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, int8_t, int32_t);
+TEST_CUBE_COMPUTE_FIXPIPE_INSTR(L0c2L1Sync, asc_copy_l0c2l1_sync, copy_matrix_cc_to_cbuf, uint8_t, int32_t);

@@ -37,7 +37,7 @@
 #include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_half2bfloat16_impl/asc_half2bfloat16_rna_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_half2bfloat16_impl/asc_half2bfloat16_ru_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_half2bfloat16_impl/asc_half2bfloat16_rz_impl.h"
-#include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_float2e5m2_impl/asc_float2e5m2_rn_impl.h"
+#include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_float2e5m2_rn_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_half2float_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_e4m32float_impl.h"
 #include "instr_impl/npu_arch_3510/vector_compute_impl/vconv/asc_int162float_impl.h"
