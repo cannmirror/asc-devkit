@@ -8,6 +8,8 @@
 | [fixpipe_co12gm_quantization_f322f16](./fixpipe_co12gm_quantization_f322f16)               | 本样例介绍如何使用基础API Fixpipe将矩阵乘的结果从CO1搬入GM，并使能随路量化将矩阵乘结果由float类型数据量化为half类型 |
 | [fixpipe_co12gm_tensor_quantization_s322f16](./fixpipe_co12gm_tensor_quantization_s322f16) | 本样例介绍如何使用基础API Fixpipe将矩阵乘的结果从CO1搬入GM，并使能随路量化将矩阵乘结果由int32_t类型数据量化为half类型 |
 | [fixpipe_co12c1_quantization_s322f16](./fixpipe_co12c1_quantization_s322f16)               | 本样例介绍如何使用基础API Fixpipe将矩阵乘的结果从CO1搬入C1，并使能随路量化将矩阵乘结果由int32_t类型数据量化为half类型 |
+| [fixpipe_co12gm_quantization_f322s8](./fixpipe_co12gm_quantization_f322s8)                 | 本样例介绍如何使用组合API Fixpipe或基础API DataCopy将矩阵乘的结果从L0C搬出到GM，并支持随路NZ2ND，unitflag与随路quant, relu能力组合，输入half类型数据，输出由float类型量化为int8_t类型 |
+| [fixpipe_co12gm_quantization_s322f16](./fixpipe_co12gm_quantization_s322f16)               | 本样例介绍如何使用组合API Fixpipe或基础API DataCopy将矩阵乘的结果从L0C搬出到GM，并支持随路NZ2ND，unitflag与随路quant, relu能力组合，输入int8_t类型数据，输出由int32_t类型量化为half类型 |
 | [fixpipe_co12c1_tensor_quantization_s322f16](./fixpipe_co12c1_tensor_quantization_s322f16) | 本样例介绍如何使用基础API Fixpipe将矩阵乘的结果从CO1搬入C1，并使能随路tensor量化将矩阵乘结果由int32_t类型数据量化为half类型 |
 | [fixpipe_nz2dn_tensor_quantization_f322f16](./fixpipe_nz2dn_tensor_quantization_f322f16)   | 本样例介绍如何使用基础API的Fixpipe将矩阵乘的结果从CO1搬入GM，完成NZ2DN分形转换，并使能随路量化将矩阵乘结果由float类型数据量化为half类型 |
 | [load_data](./load_data)                                                                   | 本样例介绍基于基础API LoadData实现A1至A2和B1至B2的数据搬运，其中A1至A2使用Load3D搬运，B1至B2使用Load2D搬运 |
