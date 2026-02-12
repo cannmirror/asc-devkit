@@ -19,6 +19,7 @@
 #include "simt_api/device_types.h"
 #include "utils/debug/asc_printf.h"
 #include "utils/debug/asc_assert.h"
+#include "utils/debug/asc_time.h"
 
 #ifndef SPLIT_CORE_VEC
 #if (defined(__DAV_VEC__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)) 

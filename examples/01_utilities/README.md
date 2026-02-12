@@ -9,3 +9,4 @@
 | [01_assert](./01_assert) | 本样例通过Ascend C编程语言实现了Matmul算子，同时在算子中添加assert调测，给出了对应的端到端实现 |
 | [02_dumptensor](./02_dumptensor) | 本样例通过Ascend C编程语言实现了Add算子和Mmad算子，在算子中添加DumpTensor调测，给出了对应的端到端实现 |
 | [03_cpudebug](./03_cpudebug) | 本样例通过Ascend C编程语言实现了Add算子的CPU Debug调测，给出了对应的端到端实现 |
+| [04_clock](./04_clock) | 本样例通过Ascend C编程语言实现了Gather算子，同时在算子中添加clock调测，给出了对应的端到端实现 |
