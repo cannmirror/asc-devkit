@@ -31,7 +31,7 @@
 #include "impl/utils/debug/npu_arch_2002/asc_debug_utils_impl.h"
 #elif __NPU_ARCH__ == 2201
 #include "impl/utils/debug/npu_arch_2201/asc_debug_utils_impl.h"
-#elif __NPU_ARCH__ == 3501 || __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3101
 #include "impl/utils/debug/npu_arch_3510/asc_debug_utils_impl.h"
 #endif
 

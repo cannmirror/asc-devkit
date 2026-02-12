@@ -94,15 +94,15 @@ __aicore__ constexpr inline DumpTensorDataType get_dump_datatype_impl()
         return DumpTensorDataType::ACL_BF16;
     } else if (std::is_same<T, hifloat8_t>::value) {
         return DumpTensorDataType::ACL_HIFLOAT8;
-    } else if (std::is_same<T, fp8_e5m2_t>::value) {
+    } else if (std::is_same<T, float8_e5m2_t>::value) {
         return DumpTensorDataType::ACL_FLOAT8_E5M2;
-    } else if (std::is_same<T, fp8_e4m3fn_t>::value) {
+    } else if (std::is_same<T, float8_e4m3_t>::value) {
         return DumpTensorDataType::ACL_FLOAT8_E4M3FN;
-    } else if (std::is_same<T, fp8_e8m0_t>::value) {
+    } else if (std::is_same<T, float8_e8m0_t>::value) {
         return DumpTensorDataType::ACL_FLOAT8_E8M0;
-    } else if (std::is_same<T, fp4x2_e2m1_t>::value) {
+    } else if (std::is_same<T, float4_e2m1x2_t>::value) {
         return DumpTensorDataType::ACL_FLOAT4_E2M1;
-    } else if (std::is_same<T, fp4x2_e1m2_t>::value) {
+    } else if (std::is_same<T, float4_e1m2x2_t>::value) {
         return DumpTensorDataType::ACL_FLOAT4_E1M2;
     } else {
         return DumpTensorDataType::ACL_MAX;

@@ -30,7 +30,7 @@ __aicore__ inline void mem_copy_cbuf_to_gm_impl(__gm__ T* dst, __cc__ T* src, co
     constexpr int32_t blockCube = 16;
     constexpr int32_t defaultOneBlockSize = 256;
     constexpr int32_t srcBurstLenSizeEle = 16;
-    constexpr uint6_t b32ByteSize = 4;
+    constexpr uint16_t b32ByteSize = 4;
     
     uint16_t align = (dumpSize % defaultOneBlockSize == 0) ? 0 : 1;
     uint16_t countBlks = align + dumpSize / defaultOneBlockSize;
@@ -54,7 +54,7 @@ __aicore__ inline void mem_copy_ub_to_gm_impl(__gm__ T* dst, __ubuf__ T* src, co
 #if defined(__DAV_VEC__)
     constexpr uint8_t byte_32_align = 32;
     constexpr uint32_t blockCount = 1;
-    constexpr uint32_t blockLen = len;
+    uint32_t blockLen = len;
     constexpr uint32_t dstStride = 0;
     constexpr uint32_t srcStride = 0;
 
@@ -63,7 +63,7 @@ __aicore__ inline void mem_copy_ub_to_gm_impl(__gm__ T* dst, __ubuf__ T* src, co
     uint32_t srcStride1 = srcStride * byte_32_align + burstLen;
     srcStride1 = div_ceil(srcStride1, byte_32_align) * byte_32_align;
     uint64_t dstStride1 = dstStride * unitOfBytes + burstLen;
-    bisheng::cce::copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, uint32_t, burstLen, 0, dstStride1, srcStride1);
+    bisheng::cce::copy_ubuf_to_gm_align_v2((__gm__ void*)dst, (__ubuf__ void*)src, 0, blockCount, burstLen, 0, dstStride1, srcStride1);
 #endif
 }
 
