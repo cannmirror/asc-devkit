@@ -113,7 +113,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_shiftleft](vector_compute/asc_shiftleft.md) | 将所有元素左移distance位。 |
 | [asc_sub_relu](vector_compute/asc_sub_relu.md) | 按元素求差，再进行Relu计算（结果和0对比取较大值），并提供转换最终结果的数据类型的功能(s162s8、f322f16、f162s8)。 |
 | [asc_transto5hd](vector_compute/asc_transto5hd.md) | 数据格式转换，一般用于将NCHW格式转换成NC1HWC0格式。 |
-
+| [asc_copy](vector_compute/asc_copy.md) | 将数据从Unified Buffer搬运到Unified Buffer。支持高维切分。 |
 
 
 ## 数据搬运
@@ -138,13 +138,14 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_copy_l12l0b_trans](cube_datamove/asc_copy_l12l0b_trans.md)         | 该接口实现带转置的2D格式数据从L1 Buffer到L0B Buffer的加载。 |
 | [asc_set_l0c_copy_params](cube_datamove/asc_set_l0c_copy_params.md)     | DataCopy（CO1->GM、CO1->A1）过程中进行随路格式转换（NZ格式转换为ND格式）时，通过调用该接口设置格式转换的相关配置。 |
 | [asc_set_l0c_copy_prequant](cube_datamove/asc_set_l0c_copy_prequant.md) | 数据搬运过程中进行随路量化时，通过调用该接口设置量化流程中的标量量化参数。 |
-| [copy_gm2l1](cube_datamove/copy_gm2l1.md)                               | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)。 |
-| [copy_gm2l1_nd2nz](cube_datamove/copy_gm2l1_nd2nz.md)                   | 将数据从Global Memory (GM) 搬运到 Level 1 cache (L1)，支持在数据搬运时进行ND格式到NZ格式的转换。 |
+| [copy_gm2l1](cube_datamove/copy_gm2l1.md)                               | 将数据从Global Memory搬运到 Level 1 cache。 |
+| [copy_gm2l1_nd2nz](cube_datamove/copy_gm2l1_nd2nz.md)                   | 将数据从Global Memory搬运到 Level 1 cache，支持在数据搬运时进行ND格式到NZ格式的转换。 |
 | [asc_set_l13d_padding](cube_datamove/asc_set_l13d_padding.md)           | 设置Pad属性描述，用于在调用asc_copy_l12l0a接口时配置填充数值。 |
-| [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md)                     | 将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)。 |
-| [asc_copy_gm2ub_align](vector_datamove/asc_copy_gm2ub_align.md)         | 提供数据非对齐搬运的功能，将数据从Global Memory (GM) 搬运到 Unified Buffer (UB)，并支持8位/16位/32位数据类型搬运。 |
-| [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm.md)                     | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)。 |
-| [asc_copy_ub2gm_align](vector_datamove/asc_copy_ub2gm_align.md)         | 将数据从Unified Buffer (UB) 搬运到 Global Memory (GM)，支持8位/16位/32位分块拷贝操作。 |
+| [asc_copy_ub2ub](vector_datamove/asc_copy_ub2ub.md) | 将数据从Unified Buffer搬运到Unified Buffer。 |
+| [asc_copy_gm2ub](vector_datamove/asc_copy_gm2ub.md)                     | 将数据从Global Memory搬运到 Unified Buffer。 |
+| [asc_copy_gm2ub_align](vector_datamove/asc_copy_gm2ub_align.md)         | 提供数据非对齐搬运的功能，将数据从Global Memory搬运到 Unified Buffer，并支持8位/16位/32位数据类型搬运。 |
+| [asc_copy_ub2gm](vector_datamove/asc_copy_ub2gm.md)                     | 将数据从Unified Buffer搬运到 Global Memory。 |
+| [asc_copy_ub2gm_align](vector_datamove/asc_copy_ub2gm_align.md)         | 将数据从Unified Buffer搬运到 Global Memory，支持8位/16位/32位分块拷贝操作。 |
 
 ## 维测接口
 |   API名称   |   说明   |

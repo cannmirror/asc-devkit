@@ -154,6 +154,7 @@
 #include "instr_impl/npu_arch_2201/vector_compute_impl/asc_get_rsvd_cnt_impl.h"
 #include "instr_impl/npu_arch_2201/vector_compute_impl/asc_set_va_reg_impl.h"
 #include "instr_impl/npu_arch_2201/vector_compute_impl/asc_pair_reduce_sum_impl.h"
+#include "instr_impl/npu_arch_2201/vector_compute_impl/asc_copy_impl.h"
 
 // ==========asc_add(half/float/int16_t/int32_t)==========
 __aicore__ inline void asc_add(__ubuf__ half* dst, __ubuf__ half* src0, __ubuf__ half* src1, uint32_t count)
@@ -5100,6 +5101,71 @@ __aicore__ inline void asc_pair_reduce_sum_sync(__ubuf__ float* dst, __ubuf__ fl
     asc_pair_reduce_sum_sync_impl(dst, src, count);
 }
 
+
+// ==========asc_copy(int16_t/uint16_t/int32_t/uint32_t)==========
+__aicore__ inline void asc_copy(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, uint32_t count)
+{
+    asc_copy_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, uint8_t repeat,
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+{
+    asc_copy_impl(dst, src, repeat, dst_block_stride, src_block_stride, dst_repeat_stride, src_repeat_stride);
+}
+
+__aicore__ inline void asc_copy_sync(__ubuf__ int16_t* dst, __ubuf__ int16_t* src, uint32_t count)
+{
+    asc_copy_sync_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src, uint32_t count)
+{
+    asc_copy_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src, uint8_t repeat,
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+{
+    asc_copy_impl(dst, src, repeat, dst_block_stride, src_block_stride, dst_repeat_stride, src_repeat_stride);
+}
+
+__aicore__ inline void asc_copy_sync(__ubuf__ uint16_t* dst, __ubuf__ uint16_t* src, uint32_t count)
+{
+    asc_copy_sync_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, uint32_t count)
+{
+    asc_copy_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, uint8_t repeat,
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+{
+    asc_copy_impl(dst, src, repeat, dst_block_stride, src_block_stride, dst_repeat_stride, src_repeat_stride);
+}
+
+__aicore__ inline void asc_copy_sync(__ubuf__ int32_t* dst, __ubuf__ int32_t* src, uint32_t count)
+{
+    asc_copy_sync_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* src, uint32_t count)
+{
+    asc_copy_impl(dst, src, count);
+}
+
+__aicore__ inline void asc_copy(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* src, uint8_t repeat,
+    uint16_t dst_block_stride, uint16_t src_block_stride, uint16_t dst_repeat_stride, uint16_t src_repeat_stride)
+{
+    asc_copy_impl(dst, src, repeat, dst_block_stride, src_block_stride, dst_repeat_stride, src_repeat_stride);
+}
+
+__aicore__ inline void asc_copy_sync(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* src, uint32_t count)
+{
+    asc_copy_sync_impl(dst, src, count);
+}
 
 #endif
 

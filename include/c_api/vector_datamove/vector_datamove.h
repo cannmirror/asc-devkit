@@ -29,6 +29,13 @@
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 
+__aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
+    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
+
+__aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size);
+
+__aicore__ inline void asc_copy_ub2ub_sync(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size);
+
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src,
     uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap);
 
