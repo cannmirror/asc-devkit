@@ -15,4 +15,4 @@
 | [11_pattern_transformation](./11_pattern_transformation) | 新架构下基础的mmad样例，从L1 Buffer->L0A的通路不需要做Nz2Zz分型转换。 |
 | [12_high_performance_vf](./12_high_performance_vf) | 基于VF函数的性能优化样例，通过<<<>>>直调的实现方式，介绍了VF循环优化、VF指令双发优化、VF连续非对齐场景优化、VF融合优化的方法。 |
 | [13_optimize_datacopy](./13_optimize_datacopy) | 基于搬运类API使用的优化样例，通过<<<>>>直调的实现方式，介绍了减少无效数据搬运、减少搬运指令数量等方法。 |
-| [14_pure_simt_gather](./14_pure_simt_gather) |纯SIMT编程方式实现的算子样例，支持动态计算切分参数。 |
+| [15_simt_gather_with_ub](./15_simt_gather_with_ub)  | 本样例以Gather算子为示例，展示了在SIMD与SIMT混合编程模式下使用UB提升离散内存访问效率的性能优化方式 |
