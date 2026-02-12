@@ -219,15 +219,22 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForOp(const Hc
 {
     ccuUsedXnNum_ = 8; // 算法默认使用的xn num
     FlushDataCache(&handleParamGM_[handleId]);
+    uint8_t algorithmType = 0;
+    for (uint32_t i = 0; i < MAX_CC_TILING_NUM; ++i) {
+        if (hcclContext_->opType[i] == static_cast<uint32_t>(handleParamGM_[handleId].commType.prepareType)) {
+            algorithmType = hcclContext_->algorithmType[i];
+            break;
+        }
+    }
     if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLGATHER) {
-        if (hcclContext_->algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllGatherMeshMem2Mem1D)) {
+        if (algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllGatherMeshMem2Mem1D)) {
             ccuUsedXnNum_ = 9;
             CcuPrepareForAllGatherM2M(&handleParamGM_[handleId]);
         } else {
             CcuPrepareForAllGather(&handleParamGM_[handleId]);
         }
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLREDUCE) {
-        if (hcclContext_->algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D)) {
+        if (algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D)) {
             ccuUsedXnNum_ = 15;
             CcuPrepareForAllReduceM2M(&handleParamGM_[handleId]);
         } else {
@@ -243,7 +250,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForOp(const Hc
         FlushDataCache(reinterpret_cast<__gm__ uint8_t*>(&handleParamGM_[handleId]) + MAX_DCCI_CNT);
         CcuPrepareForAllToAllVWrite(&handleParamGM_[handleId]);
     } else if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_REDUCE_SCATTER) { 
-        if (hcclContext_->algorithmType == static_cast<uint8_t>(AlgorithmType::CcuReduceScatterMeshMem2Mem1D)) {
+        if (algorithmType == static_cast<uint8_t>(AlgorithmType::CcuReduceScatterMeshMem2Mem1D)) {
             ccuUsedXnNum_ = 13;
             CcuPrepareForReduceScatterM2M(&handleParamGM_[handleId]);
         } else {
