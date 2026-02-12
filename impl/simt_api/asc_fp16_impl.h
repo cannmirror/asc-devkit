@@ -279,7 +279,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half hrsqrt(half x)
     return (half)1.0 / hsqrt(x);
 }
 
-#ifndef ASCENDC_CPU_DEBUG
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 h2exp(half2 x)
 {
     return __expf(x);
@@ -301,7 +300,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 h2rsqrt(half2 x)
     half tmp2 = (half)1.0 / __sqrtf(x.y);
     return {tmp1, tmp2};
 }
-#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half hrcp(half x)
 {

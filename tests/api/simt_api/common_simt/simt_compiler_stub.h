@@ -35,12 +35,4 @@ int32_t asc_get_block_idx();
 
 int32_t asc_get_block_num();
 
-half2 h2exp(half2 x);
-
-half2 h2log(half2 x);
-
-half2 h2sqrt(half2 x);
-
-half2 h2rsqrt(half2 x);
-
 #endif
