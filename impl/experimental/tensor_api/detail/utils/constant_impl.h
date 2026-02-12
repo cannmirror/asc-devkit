@@ -91,6 +91,8 @@ using IsVectorQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_TENSOR_QUAN
 
 template <QuantMode_t quantPre>
 using IsDirectQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_DIRECT_QUANT_MODE>;
+
+using ZeroCoord2DType = AscendC::Std::tuple<Std::Int<0>, Std::Int<0>>;
 } // namespace Te
 } // namespace AscendC
 

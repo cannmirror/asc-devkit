@@ -25,7 +25,7 @@ class LoadDataFourDim3510L12L0A {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenLoadDataParams<trait, T, U>(dst, src);
+        auto params = GenLoadDataParams<trait, T, U, Coord>(dst, src, coord);
         LoadDataAlignV2Impl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
@@ -66,8 +66,8 @@ private:
 #endif
     }
 
-    template <const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src)
+    template <const LoadDataTrait& trait, typename T, typename U,  typename Coord>
+    __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();
         
@@ -75,8 +75,8 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        uint16_t mStartPosition = 0;
-        uint16_t kStartPosition = 0;
+        uint16_t mStartPosition = Std::get<0>(coord) / FRACTAL_FIXED;
+        uint16_t kStartPosition = Std::get<1>(coord) * sizeof(typename U::elementType) / C0_SIZE;
         auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         // Nz -> Nz
