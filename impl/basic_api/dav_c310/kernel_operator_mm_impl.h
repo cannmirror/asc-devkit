@@ -1029,8 +1029,8 @@ template <> struct ImageOutputDataType<sizeof(uint16_t)> {
 };
 
 template <typename T>
-__aicore__ inline void LoadImageToLocalCalLoop0(__ubuf__ T* dst, __gm__ uint8_t* src0, __gm__ uint8_t* src1,
-    AippInputFormat format, AippParams<T> config, const LoadImageToLocalParams& loadDataParams)
+__aicore__ inline void LoadImageToLocalCalLoop0(__gm__ T* dst, __gm__ uint8_t* src0, __gm__ uint8_t* src1,
+    uint32_t& dstSize, AippInputFormat format, AippParams<T> config, const LoadImageToLocalParams& loadDataParams)
 {
     uint16_t horizSize = loadDataParams.horizSize;
     uint16_t vertSize = loadDataParams.vertSize;
@@ -1114,7 +1114,7 @@ __aicore__ inline void LoadImageToLocalCalLoop0(__ubuf__ T* dst, __gm__ uint8_t*
     }
     uint32_t height = vertSize + topPadSize + botPadSize;
     uint32_t width = horizSize + leftPadSize + rightPadSize;
-    uint32_t dstSize = height * width * cpaddingNum;
+    dstSize = height * width * cpaddingNum;
     for (uint32_t n = 0; n < dstSize; n += 1) {
         uint32_t i = n / (width * cpaddingNum);
         uint32_t j = n % (width * cpaddingNum) / cpaddingNum;
@@ -1214,8 +1214,8 @@ __aicore__ inline void LoadImageToLocalCalLoop0(__ubuf__ T* dst, __gm__ uint8_t*
 }
 
 template <typename T>
-__aicore__ inline void LoadImageToLocalCalLoop1(__ubuf__ T *dst, AippInputFormat format,
-    AippParams<T> config, const LoadImageToLocalParams& loadDataParams)
+__aicore__ inline void LoadImageToLocalCalLoop1(__gm__ T *dst, uint32_t dstSize,
+    AippInputFormat format, AippParams<T> config, const LoadImageToLocalParams& loadDataParams)
 {
     uint16_t horizSize = loadDataParams.horizSize;
     uint16_t vertSize = loadDataParams.vertSize;
@@ -1258,7 +1258,6 @@ __aicore__ inline void LoadImageToLocalCalLoop1(__ubuf__ T *dst, AippInputFormat
     }
     uint32_t height = vertSize + topPadSize + botPadSize;
     uint32_t width = horizSize + leftPadSize + rightPadSize;
-    uint32_t dstSize = height * width * cpaddingNum;
     uint32_t paddingChannelNum = paddingMode == 0 ? 4 : channelNum;
     for (uint32_t n = 0; n < dstSize; n += 1) {
         uint32_t i = n / (width * cpaddingNum);
@@ -1327,10 +1326,12 @@ __aicore__ inline void LoadImageToLocalCalLoop1(__ubuf__ T *dst, AippInputFormat
     }
 }
 
+static __gm__ uint8_t tmp[36*256*1024] = {0};
+
 template <typename T>
-__aicore__ inline void LoadImageToLocalCal(__ubuf__ T *dst, const LoadImageToLocalParams &loadDataParams)
+__aicore__ inline void LoadImageToLocalCal(__cbuf__ T *dst, const LoadImageToLocalParams &loadDataParams)
 {
-    if ASCEND_IS_AIV {
+    if ASCEND_IS_AIC {
         static_assert(SupportType<T, uint8_t, int8_t, half>(),
         "LoadImageToLocal only supports uint8_t, int8_t, half on current device!");
 
@@ -1411,9 +1412,19 @@ __aicore__ inline void LoadImageToLocalCal(__ubuf__ T *dst, const LoadImageToLoc
 
         AippParams<T> config = {paddingParams, swapParams, singleLineParams, dtcParams, cPaddingParams, cscParams};
 
-        LoadImageToLocalCalLoop0<T>(dst, src0, src1, format, config, loadDataParams);
+        uint32_t dstSize;
 
-        LoadImageToLocalCalLoop1<T>(dst, format, config, loadDataParams);
+        auto actual_tmp = reinterpret_cast<__gm__ PrimT<T>*>(tmp + GetBlockIdx()*256*1024);
+
+        LoadImageToLocalCalLoop0<T>(actual_tmp, src0, src1, dstSize, format, config, loadDataParams);
+
+        LoadImageToLocalCalLoop1<T>(actual_tmp, dstSize, format, config, loadDataParams);
+
+        dcci(reinterpret_cast<__gm__ uint64_t*>(actual_tmp), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+
+        struct DataCopyParams repeatParams;
+        repeatParams.blockLen = dstSize / AscendCUtils::GetC0Count(sizeof(PrimT<T>));
+        DataCopyGM2L1Impl(dst, actual_tmp, repeatParams);
     }
 }
 }  // namespace AscendC

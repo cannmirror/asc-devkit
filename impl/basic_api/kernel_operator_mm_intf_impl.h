@@ -498,7 +498,7 @@ __aicore__ inline void SetLoadDataRepeat(const LoadDataRepeatParam& repeatParams
  * ************************************************************************************************* */
 /*
  * @ingroup LoadImageToLocal
- * @brief loadData image from gm to L1/UB
+ * @brief loadData image from gm to L1
  * @param [out] dst output LocalTensor
  * @param [in] loadImageToLocalParams.horizSize operand height
  * @param [in] loadImageToLocalParams.vertSize operand width
@@ -529,21 +529,12 @@ __aicore__ inline __inout_pipe__(MTE2) void LoadImageToLocal(const LocalTensor<T
     ASCENDC_CHECK_VALUE_RANGE(loadDataParams.leftPadSize, 0, 32, "leftPadSize", "LoadImageToLocal");
     ASCENDC_CHECK_VALUE_RANGE(loadDataParams.rightPadSize, 0, 32, "rightPadSize", "LoadImageToLocal");
     const Hardware dstScope = GetPhyType((TPosition)dst.GetPosition());
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
-    if (dstScope == Hardware::UB) {
-        LoadImageToLocalCal((__ubuf__ PrimT<T>*)dst.GetPhyAddr(), loadDataParams);
-    } else {
-        ASCENDC_CHECK_TPOSITION(false, "dst", "VECIN", "LoadImageToLocal",
-        ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(dst.GetPosition())));
-    }
-#else
     if (dstScope == Hardware::L1) {
         LoadImageToLocalCal((__cbuf__ PrimT<T>*)dst.GetPhyAddr(), loadDataParams);
     } else {
         ASCENDC_CHECK_TPOSITION(false, "dst", "A1 / B1", "LoadImageToLocal",
         ConstDefiner::Instance().logicNameMap.at(static_cast<uint8_t>(dst.GetPosition())));
     }
-#endif
 }
 
 /* **************************************************************************************************
