@@ -25,7 +25,7 @@ class LoadDataFourDim3510L12L0B {
 public:
     template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenLoadDataParams<trait, T, U>(dst, src);
+        auto params = GenLoadDataParams<trait, T, U>(dst, src, coord);
         LoadDataAlignV2Impl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
     }
 
@@ -39,7 +39,7 @@ private:
         static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
             "LoadDataFourDim3510L12L0B Layout->Shape->Row->ZeroDim is not Std::Int<16> type!");
         static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>,
-            "LoadDataFourDim3510L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!"); 
+            "LoadDataFourDim3510L12L0B Layout->Shape->Column->ZeroDim is not Std::Int<C0Size/Type> type!");
 
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
@@ -85,8 +85,8 @@ private:
 #endif
     }
 
-    template <const LoadDataTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src)
+    template <const LoadDataTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline auto GenLoadDataParams(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();
 
@@ -94,15 +94,16 @@ private:
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
 
-        // offset
-        uint16_t mStartPosition = 0;
-        uint16_t kStartPosition = 0;
+        // calc offset from coord structure
+        auto mStartPosition = Std::get<0>(coord) / FRACTAL_FIXED;
+        auto kStartPosition = Std::get<1>(coord) * sizeof(DstType) / C0_SIZE;
+
         auto mStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto kStep = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         // Nz -> Nz
         uint32_t STRIDE_UNIT = FRACTAL_FIXED * (C0_SIZE / sizeof(DstType));
         auto srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / STRIDE_UNIT;
-        auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;        
+        auto dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout) / STRIDE_UNIT;
         auto params = Std::make_tuple(mStartPosition, kStartPosition, mStep, kStep, srcStride, dstStride);
         return params;
     }
@@ -111,7 +112,7 @@ private:
     __aicore__ inline void LoadDataAlignV2Impl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
     {
         // MTE2
-        LoadL1ToL0BAlignV2<!trait.transposed>(dst.Data().Get(), src.Data().Get(),
+        LoadL1ToL0BAlignV2<trait.transposed>(dst.Data().Get(), src.Data().Get(),
             Std::get<Is>(tupleParams)...);
     }
 
