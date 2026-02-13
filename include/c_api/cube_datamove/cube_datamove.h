@@ -27,15 +27,11 @@
 
 #endif
 
-// ==========asc_set_l13d_rpt============
 __aicore__ inline void asc_set_l13d_rpt(asc_load3d_v2_config& config);
 
-// ==========asc_set_l13d_fmatrix============
 __aicore__ inline void asc_set_l13d_fmatrix(asc_l13d_fmatrix_config& config);
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
-
-#include "instr_impl/npu_arch_2201/cube_datamove_impl.h"
 
 // ==========asc_copy_gm2l1==========
 //PAD_NONE
@@ -674,8 +670,6 @@ __aicore__ inline void asc_set_l0c_copy_prequant(uint64_t config);
 __aicore__ inline void asc_set_l0c_copy_params(uint16_t nd_num, uint16_t src_nd_stride, uint16_t dst_nd_stride);
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-
-#include "instr_impl/npu_arch_3510/cube_datamove_impl.h"
 
 // ==========asc_l0c2l1_l0c2l1===========
 // half  float

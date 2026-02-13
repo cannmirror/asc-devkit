@@ -38,6 +38,7 @@
 #include "instr_impl/npu_arch_2201/cube_datamove_impl/asc_copy_l12l0b_2d_impl.h"
 #include "instr_impl/npu_arch_2201/cube_datamove_impl/asc_copy_l12l0b_3d_impl.h"
 #include "instr_impl/npu_arch_2201/cube_datamove_impl/asc_copy_l0c2gm_impl.h"
+#include "instr_impl/npu_arch_2201/cube_datamove_impl/asc_set_l13d_fmatrix_impl.h"
 
 __aicore__ inline void asc_copy_l12l0b_sparse(__cb__ int8_t* dst, __cbuf__ int8_t* src, __cbuf__ int8_t* index,
                                               uint16_t start_index, uint8_t repeat)
@@ -1726,6 +1727,10 @@ __aicore__ inline void asc_copy_l0c2l1_sync(__cbuf__ uint8_t* dst, __cc__ int32_
                         enable_channel_split, enable_nd2nz);
 }
 
+__aicore__ inline void asc_set_l13d_fmatrix(asc_l13d_fmatrix_config& config)
+{
+    asc_set_l13d_fmatrix_impl(config);
+}
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
