@@ -96,6 +96,6 @@ PIPE_MTE2
 ```cpp
 //total_length指参与搬运的数据总长度。
 constexpr uint64_t total_length = 128;
-__cbuf__ void dst[total_length];
-asc_copy_gm2l1(dst, src, n_burst, burst_len, src_stride, dst_stride);
+__cbuf__ half dst[total_length];
+asc_copy_gm2l1((__cbuf__ void)dst, src, n_burst, burst_len, src_stride, dst_stride);
 ```
