@@ -16,7 +16,6 @@
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_icache_preload(const void* addr)
 __aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len)
 ```
 

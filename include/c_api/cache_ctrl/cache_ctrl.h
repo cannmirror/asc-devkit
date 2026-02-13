@@ -27,6 +27,8 @@
 
 #endif
 
+__aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len);
+
 __aicore__ inline void asc_dcci_single(__gm__ void* dst);
 
 __aicore__ inline void asc_dcci_entire(__gm__ void* dst);
@@ -52,10 +54,6 @@ __aicore__ inline void asc_datacache_preload(__gm__ uint64_t* address, int64_t o
 __aicore__ inline void asc_dcci_single_ub(__gm__ void* dst);
 
 __aicore__ inline void asc_dcci_entire_ub(__gm__ void* dst);
-
-__aicore__ inline void asc_icache_preload(const void* addr);
-
-__aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len);
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
 

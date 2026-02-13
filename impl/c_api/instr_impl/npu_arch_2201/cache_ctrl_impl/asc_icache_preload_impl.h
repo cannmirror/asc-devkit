@@ -25,11 +25,6 @@
 
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h" 
 
-__aicore__ inline void asc_icache_preload_impl(const void* addr)
-{
-    preload(addr);
-}
-
 __aicore__ inline void asc_icache_preload_impl(const void* addr, int64_t prefetch_len)
 {
     preload(addr, prefetch_len);
