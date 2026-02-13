@@ -24,8 +24,9 @@ class FixpipetNz2NzBase3510 : public CopyMatrixCcToGmBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenFixpipeParams<trait, T, U>(dst, src);
-        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
+        auto params = GenFixpipeParams<trait, T, U, Coord>(dst, src, coord);
+        auto dstNzTensor = dst(coord, dst.Layout().Shape());
+        DataCopy<trait, T, U, decltype(params)>(dstNzTensor, src, params);
     }
 
 private:
@@ -58,23 +59,27 @@ private:
 #endif
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
-            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint32_t mSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
-            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) - Std::get<1>(coord));
+        uint32_t mSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) - Std::get<0>(coord));
         uint32_t srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
         uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
 
-        bool reluEn = false;
-        uint8_t unitFlag = 0;
-        bool isChannelSplit = false;
+        bool reluEn = trait.enableRelu;
+        uint8_t unitFlag = trait.unitFlag;
+        bool isChannelSplit = trait.enableChannleSplit;
         bool nz2ndEn = false;
         bool nz2dnEn = false;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit,
@@ -89,8 +94,9 @@ public:
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         auto loop3Params = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(loop3Params)>(loop3Params);
-        auto params = GenFixpipeParams<trait, T, U>(dst, src);
-        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
+        auto params = GenFixpipeParams<trait, T, U, Coord>(dst, src, coord);
+        auto dstNDTensor = dst(coord, dst.Layout().Shape());
+        DataCopy<trait, T, U, decltype(params)>(dstNDTensor, src, params);
     }
 
 private:
@@ -148,23 +154,27 @@ private:
         return params;
     }
     
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
-            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint32_t mSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
-            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) - Std::get<1>(coord));
+        uint32_t mSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) - Std::get<0>(coord));
         uint32_t srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
         uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
 
-        bool reluEn = false;
-        uint8_t unitFlag = 0;
-        bool isChannelSplit = false;
+        bool reluEn = trait.enableRelu;
+        uint8_t unitFlag = trait.unitFlag;
+        bool isChannelSplit = trait.enableChannleSplit;
         bool nz2ndEn = true;
         bool nz2dnEn = false;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit,
@@ -180,8 +190,9 @@ public:
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         auto loop3Params = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(loop3Params)>(loop3Params);
-        auto params = GenFixpipeParams<trait, T, U>(dst, src);
-        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
+        auto params = GenFixpipeParams<trait, T, U, Coord>(dst, src, coord);
+        auto dstDNTensor = dst(coord, dst.Layout().Shape());
+        DataCopy<trait, T, U, decltype(params)>(dstDNTensor, src, params);
     }
 
 private:
@@ -240,23 +251,27 @@ private:
         return params;
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline auto GenFixpipeParams(const T& dst, const U& src, const Coord& coord)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
-            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint32_t mSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
-            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) - Std::get<1>(coord));
+        uint32_t mSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) - Std::get<0>(coord));
         uint32_t srcStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
         uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
 
-        bool reluEn = false;
-        uint8_t unitFlag = 0;
-        bool isChannelSplit = false;
+        bool reluEn = trait.enableRelu;
+        uint8_t unitFlag = trait.unitFlag;
+        bool isChannelSplit = trait.enableChannleSplit;
         bool nz2ndEn = false;
         bool nz2dnEn = true;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit,
