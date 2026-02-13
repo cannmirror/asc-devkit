@@ -13,31 +13,28 @@
 #include "c_api/stub/cce_stub.h"
 #include "c_api/asc_simd.h"
 
-class TestCubeComputeSetL0c2gmQuant : public testing::Test { 
+class TestCubeComputeSetL0c2gmConfig : public testing::Test { 
 protected:
-    void SetUp() {
-        g_c_api_core_type = C_API_AIC_TYPE;
-    }
-    void TearDown() {
-        g_c_api_core_type = C_API_AIV_TYPE;
-    }
+    void SetUp() {g_c_api_core_type = C_API_AIC_TYPE;}
+    void TearDown() {g_c_api_core_type = C_API_AIV_TYPE;}
 };
 
 namespace {
-void set_fpc_quant_Stub(uint64_t config)
+void set_set_l0c2gm_config_Stub(uint64_t config)
 {
-    uint64_t conf = 31488;
-    EXPECT_EQ(conf, config);
+    EXPECT_EQ(0x8000000000000201, config);
 }
 }
 
-TEST_F(TestCubeComputeSetL0c2gmQuant, set_l0c2gm_quant_Succ)
+TEST_F(TestCubeComputeSetL0c2gmConfig, set_l0c2gm_config_Succ)
 {
     MOCKER(set_fpc, void(uint64_t))
         .times(1)
-        .will(invoke(set_fpc_quant_Stub));
-    uint64_t config = 123;
+        .will(invoke(set_set_l0c2gm_config_Stub));
+    uint64_t relu_pre = 1;
+    uint64_t quant_pre = 2;
+    bool enable_unit_flag = true;
     
-    asc_set_l0c2gm_quant(config);
+    asc_set_l0c2gm_config(relu_pre, quant_pre, enable_unit_flag);
     GlobalMockObject::verify();
 }

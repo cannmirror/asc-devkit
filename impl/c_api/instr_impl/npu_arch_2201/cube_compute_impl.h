@@ -21,9 +21,7 @@
 #include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_fp32_mode_impl.h"
 #include "instr_impl/npu_arch_2201/cube_compute_impl/asc_mmad_impl.h"
 #include "instr_impl/npu_arch_2201/cube_compute_impl/asc_mmad_impl.h"
-#include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_l0c2gm_quant_impl.h"
-#include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_l0c2gm_relu_impl.h"
-#include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_l0c2gm_unitflag_impl.h"
+#include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_l0c2gm_config_impl.h"
 #include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_mmad_direction_m_impl.h"
 #include "instr_impl/npu_arch_2201/cube_compute_impl/asc_set_mmad_direction_n_impl.h"
 #include "instr_impl/npu_arch_2201/cube_compute_impl/asc_enable_hf32_impl.h"
@@ -40,16 +38,16 @@ __aicore__ inline void asc_enable_hf32_trans(uint32_t mode)
 }
 
 __aicore__ inline void asc_mmad_sparse(__cc__ int32_t* c, __ca__ int8_t* a, __cb__ int8_t* b, uint16_t m, uint16_t k,
-                                       uint16_t n, uint8_t unitFlag, bool cmatrixSource, bool cmatrixInitVal)
+                                       uint16_t n, uint8_t unit_flag, bool cmatrix_source, bool cmatrix_init_val)
 {
-    asc_mmad_sparse_impl(c, a, b, m, k, n, unitFlag, cmatrixSource, cmatrixInitVal);
+    asc_mmad_sparse_impl(c, a, b, m, k, n, unit_flag, cmatrix_source, cmatrix_init_val);
 }
 
 __aicore__ inline void asc_mmad_sparse_sync(__cc__ int32_t* c, __ca__ int8_t* a, __cb__ int8_t* b, uint16_t m,
-                                            uint16_t k, uint16_t n, uint8_t unitFlag, bool cmatrixSource,
-                                            bool cmatrixInitVal)
+                                            uint16_t k, uint16_t n, uint8_t unit_flag, bool cmatrix_source,
+                                            bool cmatrix_init_val)
 {
-    asc_mmad_sparse_sync_impl(c, a, b, m, k, n, unitFlag, cmatrixSource, cmatrixInitVal);
+    asc_mmad_sparse_sync_impl(c, a, b, m, k, n, unit_flag, cmatrix_source, cmatrix_init_val);
 }
 
 __aicore__ inline void asc_set_fp32_mode()
@@ -242,21 +240,10 @@ __aicore__ inline void asc_mmad_s4_sync(__cc__ int32_t* c_matrix, __ca__ int4b_t
                           unit_flag, k_direction_align, is_weight_offset, c_matrix_source, c_matrix_init_val);
 }
 
-__aicore__ inline void asc_set_l0c2gm_quant(uint64_t quant)
+__aicore__ inline void asc_set_l0c2gm_config(uint64_t relu_pre, uint64_t quant_pre, bool enable_unit_flag)
 {
-    asc_set_l0c2gm_quant_impl(quant);
+    asc_set_l0c2gm_config_impl(relu_pre, quant_pre, enable_unit_flag);
 }
-
-__aicore__ inline void asc_set_l0c2gm_relu(uint64_t relu)
-{
-    asc_set_l0c2gm_relu_impl(relu);
-}
-
-__aicore__ inline void asc_set_l0c2gm_unitflag(uint64_t unit_flag)
-{
-    asc_set_l0c2gm_unitflag_impl(unit_flag);
-}
-
 
 #endif
 

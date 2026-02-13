@@ -20,12 +20,14 @@
 
 #include "instr_impl/npu_arch_2201/utils_impl/utils_impl.h"
 
-__aicore__ inline void asc_set_l0c2gm_relu_impl(uint64_t relu)
-{
+__aicore__ inline void asc_set_l0c2gm_config_impl(uint64_t relu_pre, uint64_t quant_pre, bool enable_unit_flag)
+{ 
     if ASC_IS_AIC {
         asc_capi_fpc_reg_config config;
         config.config = 0;
-        config.relu_units = relu;
+        config.relu_units = relu_pre;
+        config.quant_units = quant_pre;
+        config.unit_flag = enable_unit_flag;
         set_fpc(config.config);
     }
 }

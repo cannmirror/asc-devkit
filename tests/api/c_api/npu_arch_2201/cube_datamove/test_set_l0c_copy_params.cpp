@@ -16,26 +16,25 @@
 class TestCubeComputeSetL0cCopyParams : public testing::Test { 
 protected:
     void SetUp() {g_c_api_core_type = C_API_AIC_TYPE;}
-    void TearDown() {g_c_api_core_type = C_API_AIC_TYPE;}
+    void TearDown() {g_c_api_core_type = C_API_AIV_TYPE;}
 };
 
 namespace {
-void set_set_l0c_copy_params_Stub(uint16_t nd_num, uint16_t src_nd_stride, uint16_t dst_nd_stride)
+void set_set_l0c_copy_params_Stub(uint64_t config)
 {
-    EXPECT_EQ(1, nd_num);
-    EXPECT_EQ(4, src_nd_stride);
-    EXPECT_EQ(8, dst_nd_stride);
+    EXPECT_EQ(0x200100001, config);
 }
 }
 
 TEST_F(TestCubeComputeSetL0cCopyParams, set_l0c_copy_params_Succ)
 {
-    MOCKER(asc_set_l0c_copy_params, void(uint16_t, uint16_t, uint16_t))
+    MOCKER(set_nd_para, void(uint64_t))
         .times(1)
         .will(invoke(set_set_l0c_copy_params_Stub));
-    uint64_t nd_num = 1;
-    uint64_t src_nd_stride = 4;
-    uint64_t dst_nd_stride = 8;
+
+    uint16_t nd_num = 1;
+    uint16_t src_nd_stride = 16;
+    uint16_t dst_nd_stride = 2;
     
     asc_set_l0c_copy_params(nd_num, src_nd_stride, dst_nd_stride);
     GlobalMockObject::verify();
