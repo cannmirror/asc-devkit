@@ -44,10 +44,10 @@
 
   <tr><td rowspan="4" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">src0</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">src1</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">src0</td><td align="center">1024</td><td align="center">bool</td><td align="center">ND</td></tr>
+  <tr><td align="center">src1</td><td align="center">1024</td><td align="center">bool</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">dst</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">dst</td><td align="center">1024</td><td align="center">bool</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">logicalors_custom</td></tr>
   </table>
@@ -65,6 +65,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

@@ -33,10 +33,10 @@
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> deepnorm </td></tr>
 
-  <tr><td rowspan="5" align="center">算子输入</td></tr>
+  <tr><td rowspan="6" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">inputX</td><td align="center">4 * 16 * 64</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">inputGx</td><td align="center">64</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">inputGx</td><td align="center">4 * 16 * 64</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">beta</td><td align="center">64</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">gamma</td><td align="center">64</td><td align="center">float</td><td align="center">ND</td></tr>
 
@@ -49,19 +49,19 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(inputX[4, 16, 64]、inputGx[64]、beta[64]、gamma[64]， output[4, 16, 64]、 outputMean[4, 16]、 outputVariance[4, 16])的deepnorm算子。
+  本样例中实现的是固定shape(inputX[4, 16, 64]、inputGx[4, 16, 64]、beta[64]、gamma[64]， output[4, 16, 64]、 outputMean[4, 16]、 outputVariance[4, 16])的deepnorm算子。
 
-  - kernel实现
+  - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用DeepNorm高阶API接口完成deepnorm计算，得到最终结果，再搬出到外部存储上。
 
     deepnorm算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputX_gm、inputGx_gm、gamma_gm、beta_gm Memory搬运至LocalMemory，分别存储在inputXLocal、inputGxLocal、gammaLocal、betaLocal中，Compute任务负责对inputXLocal、inputGxLocal、gammaLocal、betaLocal执行deepnorm计算，计算结果存储在outputLocal、outputMeanLocal、outputVarianceLocal中，CopyOut任务负责将输出数据从outputLocal、outputMeanLocal、outputVarianceLocal搬运至Global Memory上的输出Tensor output、outputMeanGm、outputVarianceGm中。
 
-
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

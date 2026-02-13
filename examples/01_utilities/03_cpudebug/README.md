@@ -1,13 +1,16 @@
 # CPU Debug直调样例说明
 
 ## 概述
+
 本样例通过Ascend C编程语言实现了Add算子的CPU Debug调测。
 
 ## 支持的产品
+
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
  
 ## 目录结构介绍
+
 ```
 ├── 03_cpudebug
 │   ├── scripts
@@ -19,11 +22,12 @@
 ```
 
 ## 算子描述
+
 - 算子功能：  
 CPU Debug介绍
   CPU Debug功能支持对CPU执行过程中的运行状态进行调试，主要通过GDB工具实现。GDB调试支持设置断点、查看寄存器和内存状态、单步执行、查看调用栈等常用调试操作，并支持多线程程序的调试。
 
-  - Add算子介绍
+  - Add算子介绍  
   Add算子实现了两个数据相加，返回相加结果的功能。对应的数学表达式为：  
   ```
   z = x + y
@@ -34,11 +38,11 @@ CPU Debug介绍
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
   </tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">half</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">half</td><td align="center">ND</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">half</td><td align="center">ND</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
   </table>
@@ -49,7 +53,7 @@ CPU Debug介绍
 
   本样例中实现的是固定shape为8*2048的Add算子，同时添加DumpTensor用于Dump指定Tensor的内容。
 
-  - kernel实现  
+  - Kernel实现  
 
     Add算子的数学表达式为：
     ```
@@ -60,6 +64,7 @@ CPU Debug介绍
     Add算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行加法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

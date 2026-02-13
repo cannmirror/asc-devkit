@@ -5,6 +5,7 @@
 本样例基于Kernel直调算子工程，介绍了调用LayerNormGradBeta高阶API实现layernormgradbeta单算子，LayerNormGradBeta是对于每一层的输入做规范化处理，使得每一层的分布尽可能的相同，从而加速训练过程和提高模型的泛化能力（有效减少梯度消失和梯度爆炸问题）。
 
 ## 支持的产品
+
 - Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
@@ -43,37 +44,32 @@
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> layernormgradbeta </td></tr>
 
-  <tr><td rowspan="5" align="center">算子输入</td></tr>
+  <tr><td rowspan="4" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">inputX_gm</td><td align="center">8 * 8 * 8</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">gamma_gm</td><td align="center">8</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">beta_gm</td><td align="center">8</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">inputDy</td><td align="center">4 * 8 * 512</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">resForGamma</td><td align="center">4 * 8 * 512</td><td align="center">float</td><td align="center">ND</td></tr>
 
-  <tr><td rowspan="4" align="center">算子输出</td></tr>
-  <tr><td align="center">output</td><td align="center">8 * 8 * 8</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">outputMean</td><td align="center">8 * 8</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">outputVariance</td><td align="center">8 * 8</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="3" align="center">算子输出</td></tr>
+  <tr><td align="center">outputPdGamma</td><td align="center">512</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">outputPdBeta</td><td align="center">512</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">layernormgradbeta_custom</td></tr>
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(x[8, 8, 8], gamma[8], beta[8])的layernormgradbeta算子。
+  本样例中实现的是固定shape(inputDy[4 * 8 * 512]、resForGamma[4 * 8 * 512]， outputPdGamma[512]、 outputPdBeta[512])的layernormgradbeta_custom算子。
 
-  - kernel实现
+  - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用LayerNormGradBeta高阶API接口完成layernormgradbeta计算，得到最终结果，再搬出到外部存储上。
 
-    layernormgradbeta算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputX_gm、gamma_gm、beta_gm Memory搬运至LocalMemory，分别存储在inputXLocal、gammaLocal、betaLocal中，Compute任务负责对inputXLocal、gammaLocal、betaLocal执行layernormgradbeta计算，计算结果存储在outputLocal、meanLocal、varianceLocal中，CopyOut任务负责将输出数据从outputLocal、meanLocal、varianceLocal搬运至Global Memory上的输出Tensor output、outputMean、outputVariance中。
-
-  - tiling实现
-
-    layernormgradbeta算子的tiling实现流程如下：首先获取LayerNormGradBeta接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入shape、剩余的可供计算的空间大小等信息获取LayerNormGradBeta kernel侧接口所需tiling参数。
+    layernormgradbeta算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputDyGm、resForGammaGm搬运至LocalMemory，分别存储在inputDyLocal、resForGammaLocal中，Compute任务负责对inputDyLocal、resForGammaLocal执行layernormgradbeta计算，计算结果存储在outputPdGammaLocal、outputPdBetaLocal中，CopyOut任务负责将输出数据从outputPdGammaLocal、outputPdBetaLocal搬运至Global Memory上的输出Tensor outputPdGammaGm、outputPdBetaGm中。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

@@ -24,10 +24,10 @@
 ## 算子描述
 
 - 算子功能：  
-  CosCustom算子对输入tensor按元素做三角函数余弦运算。
+  Cos算子对输入tensor按元素做三角函数余弦运算。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">AIV</td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">cos</td></tr>
 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
@@ -39,7 +39,7 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape为输入x[8, 2048]，输出y[8, 2048]的CosCustom算子。
+  本样例中实现的是固定shape为输入x[8, 2048]，输出y[8, 2048]的cos_custom算子。
 
   - Kernel实现
 
@@ -49,12 +49,13 @@
 
   - Tiling实现
 
-    根据输入长度和所用核数量设置tiling参数totalLength和coreNum。
+    根据输入长度和所用核数量设置tiling参数totalLength和tileNum。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

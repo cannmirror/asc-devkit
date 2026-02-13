@@ -31,30 +31,26 @@
 
   <tr><td rowspan="5" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">inMeanGm</td><td align="center">1*128</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">inVarGm</td><td align="center">1*128</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">countsGm</td><td align="center">1*128</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">mean</td><td align="center">1*1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">var</td><td align="center">1*1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">inputX</td><td align="center">1*1024</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="3" align="center">算子输出</td></tr>
-  <tr><td align="center">outMeanGm</td><td align="center">1*8</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">outVarGm</td><td align="center">1*8</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">outMean</td><td align="center">1*8</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">outVar</td><td align="center">1*8</td><td align="center">float</td><td align="center">ND</td></tr>
 
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">welford_finalize_custom</td></tr>
   </table>
 
 - 算子实现：  
-  本样例实现了welford_finalize算子。
+  本样例中实现的是固定shape(inputX[1, 1024]、mean[1, 1024]、var[1, 1024]， outMean[1, 8]、 outVar[1, 8])的welford_finalize算子。
 
   - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用WelfordFinalize高阶API接口完成welford_finalize计算，得到最终结果，再搬出到外部存储上。
 
-    welford_finalize算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责对srcLocal执行welford_finalize计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
-
-  - Tiling实现
-
-    welford_finalize算子的tiling实现流程如下：首先获取welford_finalize接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入长度dataLength确定所需tiling参数。
+    welford_finalize算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputXGm、meanGm、varGm存储在inputXLocal、meanLocal、varLocal中，Compute任务负责对inputXLocal、meanLocal、varLocal执行welford_finalize计算，计算结果存储在outMeanLocal、outVarLocal中，CopyOut任务负责将输出数据从outMeanLocal、outVarLocal搬运至Global Memory上的输出Tensor outMeanGm、outVarGm。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

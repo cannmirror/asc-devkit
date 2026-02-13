@@ -5,6 +5,7 @@
 本样例基于Kernel直调算子工程，介绍了调用RmsNorm高阶API实现rmsnorm单算子，实现对shape大小为[B，S，H]的输入数据的RmsNorm归一化。
 
 ## 支持的产品
+
 - Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
@@ -36,25 +37,25 @@
 
   <tr><td rowspan="4" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">layernormv2</td><td align="center">1 * 1 * 16</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">src</td><td align="center">1 * 1 * 16</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">gamma</td><td align="center">16</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">outdstput</td><td align="center">1 * 1 * 16</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">dst</td><td align="center">1 * 1 * 16</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">rmsnorm_custom</td></tr>
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(layernormv2[1, 1, 16], gamma[16], dst[1, 1, 16])的rmsnorm算子。
+  本样例中实现的是固定shape(src[1, 1, 16], gamma[16], dst[1, 1, 16])的rmsnorm算子。
 
-  - kernel实现
+  - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用RmsNorm高阶API接口完成rmsnorm计算，得到最终结果，再搬出到外部存储上。
 
-    rmsnorm算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor inputX_gm、gamma_gm搬运至LocalMemory，分别存储在srcLocal、gammaLocal中，Compute任务负责对srcLocal、gammaLocal执行rmsnorm计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm中。
+    rmsnorm算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm、gammaGm搬运至LocalMemory，分别存储在srcLocal、gammaLocal中，Compute任务负责对srcLocal、gammaLocal执行rmsnorm计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm中。
 
-  - tiling实现
+  - Tiling实现
 
     rmsnorm算子的tiling实现流程如下：首先获取RmsNorm接口能完成计算所需最大/最小临时空间大小，根据该范围结合实际的内存使用情况设置合适的空间大小，然后根据输入shape、剩余的可供计算的空间大小等信息获取RmsNorm kernel侧接口所需tiling参数。
 
@@ -62,6 +63,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

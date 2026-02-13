@@ -14,12 +14,14 @@
 ```
 ├── 02_dumptensor
 │   ├── scripts
-│   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
-│   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
-│   ├── CMakeLists.txt          // 编译工程文件
-│   ├── data_utils.h            // 数据读入写出函数
-│   └── cube.asc                // Ascend C算子实现 & 调用样例
-│   └── vector.asc              // Ascend C算子实现 & 调用样例
+│   │   ├── gen_data_cube.py           // 输入数据和真值数据生成脚本
+│   │   ├── gen_data_vector.py         // 输入数据和真值数据生成脚本
+│   │   └── verify_result_cube.py      // 验证输出数据和真值数据是否一致的验证脚本
+│   │   └── verify_result_vector.py    // 验证输出数据和真值数据是否一致的验证脚本
+│   ├── CMakeLists.txt                 // 编译工程文件
+│   ├── data_utils.h                   // 数据读入写出函数
+│   └── cube.asc                       // Ascend C算子实现 & 调用样例
+│   └── vector.asc                     // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -37,12 +39,11 @@ DumpTensor介绍：
     计算公式为：
 
     ```
-    C = A * B + Bias
+    C = A * B
     ```
 
     - A、B为源操作数，A为左矩阵，形状为\[M, K]；B为右矩阵，形状为\[K, N]。
     - C为目的操作数，存放矩阵乘结果的矩阵，形状为\[M, N]。
-    - Bias为矩阵乘偏置，形状为\[N]。对A*B结果矩阵的每一行都采用该Bias进行偏置。
 
   - Vector场景Add算子介绍
 
@@ -55,9 +56,11 @@ DumpTensor介绍：
 
     在核函数直调样例中，算子实现支持的shape为：M = 32, N = 32, K = 32。
     <table>
+    <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Mmad</td></tr>
+    </tr>
     <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-    <tr><td align="center">a</td><td align="center">M * K</td><td align="center">float16</td><td align="center">ND</td></tr>
-    <tr><td align="center">b</td><td align="center">K * N</td><td align="center">float16</td><td align="center">ND</td></tr>
+    <tr><td align="center">a</td><td align="center">M * K</td><td align="center">half</td><td align="center">ND</td></tr>
+    <tr><td align="center">b</td><td align="center">K * N</td><td align="center">half</td><td align="center">ND</td></tr>
     </tr>
     </tr>
     <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td></tr>
@@ -70,11 +73,11 @@ DumpTensor介绍：
     <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Add</td></tr>
     </tr>
     <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-    <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
-    <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+    <tr><td align="center">x</td><td align="center">8 * 2048</td><td align="center">half</td><td align="center">ND</td></tr>
+    <tr><td align="center">y</td><td align="center">8 * 2048</td><td align="center">half</td><td align="center">ND</td></tr>
     </tr>
     </tr>
-    <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">float</td><td align="center">ND</td></tr>
+    <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8 * 2048</td><td align="center">half</td><td align="center">ND</td></tr>
     </tr>
     <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
     </table>
@@ -84,21 +87,21 @@ DumpTensor介绍：
 
     本样例中实现的是[m, n, k]固定为[32, 32, 32]的Mmad算子，并使用Ascend C基础API实现，同时添加DumpTensor用于Dump指定Tensor的内容。
 
-    - kernel实现  
+    - Kernel实现  
       Mmad算子的数学表达式为：
       $$
       C = A * B
       $$
       其中A的形状为[32, 32], B的形状为[32, 32], C的形状为[32, 32]。
 
-      调用实现
+    - 调用实现
 
       使用内核调用符<<<>>>调用核函数。
 
   - Vector场景Add算子： 
 
     本样例中实现的是固定shape为8*2048的Add算子，同时添加DumpTensor用于Dump指定Tensor的内容。
-    - kernel实现  
+    - Kernel实现  
       Add算子的数学表达式为：
       ```
       z = x + y
@@ -112,6 +115,7 @@ DumpTensor介绍：
       使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

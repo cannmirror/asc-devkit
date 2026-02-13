@@ -24,32 +24,32 @@
 ## 算子描述
 
 - 算子功能：  
-  pad单算子，用于将输出Global Memory上的数据初始化为0。两个输入作为Add计算的输入，Add的结果放入初始化为0后的Global Memory上。
+  对height * width的二维Tensor在width方向上pad到32B对齐，如果Tensor的width已32B对齐，且全部为有效数据，则不支持调用本接口对齐。
 - 算子规格：  
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center"> pad </td></tr>
 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">input_x</td><td align="center">16*31</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">src</td><td align="center">16*31</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">output_y</td><td align="center">16*32</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">dst</td><td align="center">16*32</td><td align="center">float</td><td align="center">ND</td></tr>
 
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">pad_custom</td></tr>
   </table>
 
 - 算子实现：  
-  对height * width的二维Tensor在width方向上pad到32B对齐，如果Tensor的width已32B对齐，且全部为有效数据，则不支持调用本接口对齐。
+  本样例中实现的是固定shape为输入src[16, 31]，输出dst[16, 32]的pad_custom算子。
 
-  - kernel实现
+  - Kernel实现
 
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，首先搬运输入数据input_x、input_y到片上存储，然后使用Pad高阶API接口完成对Global Memory上output_z的数据初始化，并使用Add高阶API计算input_x与input_y相加的结果，将求和结果搬出到外部存储output_z上。
+    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Pad高阶API接口完成Pad计算，得到最终结果，再搬出到外部存储上。
 
     pad算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，并对Global Memory上的数据初始化，Compute任务负责对srcLocal执行add计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
-  - tiling实现
+  - Tiling实现
 
     将TilingData中的Pad Tiling信息传入Pad接口参与计算。
 
@@ -57,6 +57,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

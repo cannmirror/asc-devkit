@@ -45,15 +45,16 @@
 
 - 算子实现：  
   本样例中实现的是固定shape为8*2048的Addcdiv算子。
-  - kernel实现   
-    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数y,z相除，再乘属性值value，该结果再加上输入参数x，得到最终结果，再搬出到外部存储上。   
+  - Kernel实现   
+    计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数y，z相除，再乘属性值value，该结果再加上输入参数x，得到最终结果，再搬出到外部存储上。   
 
-    Addcdiv算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm，yGm和zGm搬运至Local Memory，分别存储在xLocal，yLocal，zLocal,Compute任务负责对xLocal，yLocal，zLocal执行相关操作，计算结果存储在outLocal中，CopyOut任务负责将输出数据从outLocal搬运至Global Memory上的输出Tensor outGm中。
+    Addcdiv算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm，yGm和zGm搬运至Local Memory，分别存储在xLocal，yLocal，zLocal，Compute任务负责对xLocal，yLocal，zLocal执行相关操作，计算结果存储在outLocal中，CopyOut任务负责将输出数据从outLocal搬运至Global Memory上的输出Tensor outGm中。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。
