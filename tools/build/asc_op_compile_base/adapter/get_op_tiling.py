@@ -889,6 +889,9 @@ def is_static_shape(inputs: list, outputs: list, value_depends: dict = None, par
     Returns:
         res (Boolean): True means static_shape, False means dynamic shape
     """
+    if not inputs and not outputs:
+        mode = op_context.get_op_mode()
+        return False if mode == "dynamic" else True
     for idx, input_ele in enumerate(inputs):
         if input_ele is None:
             continue

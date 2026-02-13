@@ -91,6 +91,10 @@ if __name__ == '__main__':
     for i in range(len(sys.argv) - 3):
         if sys.argv[i + 3].upper().startswith("ASCEND"):
             compute_soc += sys.argv[i + 3] + ";"
+        elif sys.argv[i + 3].upper().startswith("KIRIN"):
+            compute_soc += sys.argv[i + 3] + ";"
+        elif sys.argv[i + 3].upper().startswith("MC62"):
+            compute_soc += sys.argv[i + 3] + ";"
         else:
             comp_options.append(sys.argv[i + 3])
     if compute_soc != "":

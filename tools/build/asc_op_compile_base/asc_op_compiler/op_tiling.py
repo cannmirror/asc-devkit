@@ -262,9 +262,14 @@ def do_op_tiling(optype, compile_info, inputs, outputs, compile_info_hash=None, 
         elif os.path.exists(builtin_optiling_open_path):
             so_files = glob.glob(os.path.join(builtin_optiling_open_path, "*.so"))
             for so_path in so_files:
-                lib_optiling = ctypes.CDLL(so_path)
-                so_path_str = str(so_path)
-                lib_optiling.TbeLoadSoAndSaveToRegistry(so_path_str.encode('utf_8'))
+                if "libophost_legacy.so" in so_path:
+                    lib_optiling_builtin = ctypes.CDLL(so_path)
+                    so_path_str = str(so_path)
+                    lib_optiling_builtin.TbeLoadSoAndSaveToRegistry(so_path_str.encode('utf_8'))
+                else:
+                    lib_optiling = ctypes.CDLL(so_path)
+                    so_path_str = str(so_path)
+                    lib_optiling.TbeLoadSoAndSaveToRegistry(so_path_str.encode('utf_8'))
 
         return libregister
 
@@ -310,6 +315,15 @@ def do_op_tiling(optype, compile_info, inputs, outputs, compile_info_hash=None, 
         if aicore_num is not None and vectorcore_num is not None:
             extra_params["_op_aicore_num"] = aicore_num
             extra_params["_op_vectorcore_num"] = vectorcore_num
+
+        op_context_tmp = op_context.get_context()
+        if op_context_tmp is not None:
+            op_info_ins = op_context_tmp.get_op_info()
+            if op_info_ins is not None and len(op_info_ins) > 0:
+                extra_params_tmp = op_info_ins[0].extra_params
+                if len(extra_params_tmp) > 0:
+                    extra_params.update(extra_params_tmp)
+
     lib_optiling_builtin = None
     libregister = _load_lib()
     if _RT_BANK_CACHE:
