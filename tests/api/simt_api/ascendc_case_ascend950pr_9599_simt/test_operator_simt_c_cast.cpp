@@ -12,6 +12,7 @@
 #include "simt_compiler_stub.h"
 #include "kernel_operator.h"
 #include "simt_api/asc_bf16.h"
+#include "simt_api/asc_fp8.h"
 using namespace std;
 using namespace AscendC;
 using namespace AscendC::Simt;
@@ -415,7 +416,53 @@ TEST_F(TypeCastApiBfloat16Testsuite, TypeCastApiBfloat16Test)
     int64_t result5 = __bfloat162ll_rna(bfx1);
     int64_t expect5 = static_cast<int64_t>(round(float(bfx1)));
 
+    half result6 = __bfloat162half_rn_sat(bfx1);
+
+    half result7 = __bfloat162half_rz_sat(bfx1);
+
+    half result8 = __bfloat162half_rd_sat(bfx1);
+
+    half result9 = __bfloat162half_ru_sat(bfx1);
+
+    half result10 = __bfloat162half_rna_sat(bfx1);
+
+    bfloat16_t result11 = __bfloat162bfloat16_rn(bfx1);
+
+    bfloat16_t result12 = __bfloat162bfloat16_rz(bfx1);
+    
+    bfloat16_t result13 = __bfloat162bfloat16_rd(bfx1);
+
+    bfloat16_t result14 = __bfloat162bfloat16_ru(bfx1);
+
+    bfloat16_t result15 = __bfloat162bfloat16_rna(bfx1);
+
     x1 = 1.0f;
     EXPECT_EQ(x1, 1.0f);
 }
 // ================================ Test type cast(bfloat16) end ==================================
+
+// ================================ Test type cast(hif82) start ==================================
+struct TypeCastApiHif82Params {
+ 	int32_t mode;
+};
+ 	 
+class TypeCastApiHif82Testsuite : public testing::Test, public testing::WithParamInterface<TypeCastApiHif82Params> {
+protected:
+ 	void SetUp() {}
+ 	void TearDown() {}
+};
+ 	 
+TEST_F(TypeCastApiHif82Testsuite, TypeCastApiHif82Test)
+{
+ 	float x1 = static_cast<float>(rand()) / RAND_MAX;
+ 	half x2 = half(x1);
+ 	float2 f2x1 = make_float2(x1, x1);
+ 	half2 h2x2 = {x2, x2};
+ 	 
+ 	hifloat8x2_t result1 = __float22hif82_rna(f2x1);
+ 	result1 = __float22hif82_rna_sat(f2x1);
+
+ 	x1 = 1.0f;
+ 	EXPECT_EQ(x1, 1.0f);
+}
+// ================================ Test type cast(hif82) end ==================================

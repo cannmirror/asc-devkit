@@ -74,22 +74,22 @@ __asc_cvt_float2_to_fp8x2(const float2 x, const __asc_saturation_t saturate,
     if (saturate == __ASC_NOSAT) {
         if (fp8_interpretation == __ASC_E4M3) {
             float8_e4m3x2_t tmp = __cvt_float8_e4m3x2_t<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
-            res = (__asc_fp8x2_storage_t)tmp.x;
-            res = res | (__asc_fp8x2_storage_t(tmp.y) << 8U);
+            float8_e4m3x2_t tmp1 = {tmp.y, tmp.x};
+            res = *reinterpret_cast<__asc_fp8x2_storage_t*>(&tmp1);
         } else {
             float8_e5m2x2_t tmp = __cvt_float8_e5m2x2_t<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
-            res = (__asc_fp8x2_storage_t)tmp.x;
-            res = res | (__asc_fp8x2_storage_t(tmp.y) << 8U);
+            float8_e5m2x2_t tmp1 = {tmp.y, tmp.x};
+            res = *reinterpret_cast<__asc_fp8x2_storage_t*>(&tmp1);
         }
     } else {
         if (fp8_interpretation == __ASC_E4M3) {
             float8_e4m3x2_t tmp = __cvt_float8_e4m3x2_t<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
-            res = (__asc_fp8x2_storage_t)tmp.x;
-            res = res | (__asc_fp8x2_storage_t(tmp.y) << 8U);
+            float8_e4m3x2_t tmp1 = {tmp.y, tmp.x};
+            res = *reinterpret_cast<__asc_fp8x2_storage_t*>(&tmp1);
         } else {
             float8_e5m2x2_t tmp = __cvt_float8_e5m2x2_t<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
-            res = (__asc_fp8x2_storage_t)tmp.x;
-            res = res | (__asc_fp8x2_storage_t(tmp.y) << 8U);
+            float8_e5m2x2_t tmp1 = {tmp.y, tmp.x};
+            res = *reinterpret_cast<__asc_fp8x2_storage_t*>(&tmp1);
         }
     }
     return res;
