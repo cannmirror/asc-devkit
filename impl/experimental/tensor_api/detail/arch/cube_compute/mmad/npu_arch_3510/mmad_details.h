@@ -23,10 +23,10 @@ namespace Te {
 class MmadGenParams3510
 {
 public:
-    template <const MmadTrait& trait, typename T, typename U, typename S>
-    __aicore__ inline auto GenParams(const T& dst, const U& fm, const S& filter)
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>
+    __aicore__ inline auto GenParams(const T& dst, const U& fm, const S& filter, const Params& params)
     {
-        return GenParamsImpl<trait, T, U, S>(dst, fm, filter);
+        return GenParamsImpl<trait, T, U, S, Params>(dst, fm, filter, params);
     }
 private:
     template <typename T>
@@ -97,8 +97,8 @@ private:
 #endif
     }
 
-    template <const MmadTrait& trait, typename T, typename U, typename S>
-    __aicore__ inline auto GenParamsImpl(const T& dst, const U& fm, const S& filter)
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>
+    __aicore__ inline auto GenParamsImpl(const T& dst, const U& fm, const S& filter, const Params& params)
     {
         CheckTemplate<trait, T, U, S>();
         using fmType = typename U::elementType;
@@ -108,18 +108,17 @@ private:
         uint16_t m = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(fmLayout) * FRACTAL_FIXED;
         uint16_t k = GetEleFromLayout<decltype(fmLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(fmLayout) * C0_SIZE / sizeof(fmType);
         uint16_t n = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) * FRACTAL_FIXED;
-        bool disableGemv = false;
-        auto params = Std::make_tuple(m, k, n, trait.unitFlag, disableGemv, trait.cmatrixSource, 
-            trait.cmatrixInitVal);
-        return params;
+        auto genParams = Std::make_tuple(m, k, n, params.unitFlag, trait.disableGemv, trait.cmatrixSource, 
+            params.cmatrixInitVal);
+        return genParams;
     }
 };
 
 class MmadCore3510
 {
 public:
-    template <const MmadTrait& trait, typename T, typename U, typename S, typename V, size_t... Is>
-    __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const V& tupleParams, Std::index_sequence<Is...>)
+    template <const MmadTrait& trait, typename T, typename U, typename S, typename Params, typename V, size_t... Is>
+    __aicore__ inline void Mmad(const T& dst, const U& fm, const S& filter, const Params& params, const V& tupleParams, Std::index_sequence<Is...>)
     {
         // MTE2
         MmadImpl(dst.Data().Get(), fm.Data().Get(), filter.Data().Get(), Std::get<Is>(tupleParams)...);

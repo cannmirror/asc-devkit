@@ -20,13 +20,13 @@
 namespace AscendC {
 namespace Te {
 
-template <const MmadTrait& trait, typename T, typename U, typename S>
+template <const MmadTrait& trait, typename T, typename U, typename S, typename Params>
 __aicore__ inline typename Std::enable_if<VerifyingMmadTemplate<T, U, S>, void>::type 
-Mmad(const T& dst, const U& fm, const S& filter);
+Mmad(const T& dst, const U& fm, const S& filter, const Params& params);
 
-template <const MmadTrait& trait, typename T, typename U, typename S, typename V>
+template <const MmadTrait& trait, typename T, typename U, typename S, typename V, typename Params>
 __aicore__ inline typename Std::enable_if<VerifyingMmadWithBiasTemplate<T, U, S, V>, void>::type 
-Mmad(const T& dst, const U& fm, const S& filter, const V& bias);
+Mmad(const T& dst, const U& fm, const S& filter, const V& bias, const Params& params);
 
 } // namespace Te
 } // namespace AscendC

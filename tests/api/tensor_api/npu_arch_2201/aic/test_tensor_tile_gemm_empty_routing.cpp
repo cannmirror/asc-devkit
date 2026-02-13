@@ -184,7 +184,7 @@ public:
         auto biasMatrixLayout = MakeRowMajorLayout<BiasT>(1, nLength);
         auto biasTensor = MakeTensor(biasIterator, biasMatrixLayout); 
 
-        Mmad(l0cTensor, l0cTensor, l0cTensor, biasTensor);
+        Mmad(l0cTensor, l0cTensor, l0cTensor, biasTensor, defaultMmadWithBiasParams);
     }
         
     __aicore__ inline void Compute()
@@ -199,7 +199,7 @@ public:
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeNZLayout<ignore_t>(mLength, nLength);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout); 
-        Mmad(l0cTensor, l0cTensor, l0bTensor);
+        Mmad(l0cTensor, l0cTensor, l0bTensor, defaultMmadParams);
     }
 
     __aicore__ inline void CopyL0CToGm()

@@ -21,31 +21,36 @@ namespace AscendC {
 namespace Te {
 
 struct MmadTrait {
-    int32_t fmOffset = 0;
-    bool enSsparse = false;
-    bool enWinogradA = false;
-    bool enWinogradB = false;
-    int8_t unitFlag = 0;
-    bool kDirectionAlign = false;
-    bool cmatrixSource = false;
-    bool cmatrixInitVal = true;
+   int32_t fmOffset = 0;
+   bool kDirectionAlign = false;
+   bool cmatrixSource = false;
+   bool disableGemv = false;
 
    __aicore__ constexpr MmadTrait () {};
 
-   __aicore__ constexpr MmadTrait (int32_t fmOffsetIn, bool enSsparseIn, bool enWinogradAIn, bool enWinogradBIn, 
-      int8_t unitFlagIn, bool kDirectionAlignIn, bool cmatrixSourceIn, bool cmatrixInitValIn) 
-   {
-      fmOffset = fmOffsetIn;
-      enSsparse = enSsparseIn;
-      enWinogradA = enWinogradAIn;
-      enWinogradB = enWinogradBIn;
-      unitFlag = unitFlagIn;
-      kDirectionAlign = kDirectionAlignIn;
-      cmatrixSource = cmatrixSourceIn;
-      cmatrixInitVal = cmatrixInitValIn;
-   };
+   __aicore__ constexpr MmadTrait (int32_t fmOffsetIn, bool kDirectionAlignIn, bool cmatrixSourceIn,
+         bool disableGemvIn) 
+      {
+         fmOffset = fmOffsetIn;
+         kDirectionAlign = kDirectionAlignIn;
+         cmatrixSource = cmatrixSourceIn;
+         disableGemv = disableGemvIn;
+      };
 };
 constexpr MmadTrait DEFAULT_MMAD_TRAIT; 
+
+struct MmadParams {
+   uint8_t unitFlag;
+   bool cmatrixInitVal;
+
+   __aicore__ MmadParams() {};
+
+   __aicore__ constexpr MmadParams(uint8_t unitFlagIn, bool cmatrixInitValIn) : 
+      unitFlag(unitFlagIn), cmatrixInitVal(cmatrixInitValIn){};
+};
+constexpr MmadParams defaultMmadParams = {0, true};
+
+constexpr MmadParams defaultMmadWithBiasParams = {0, false};
 
 } // namespace Te
 } // namespace AscendC

@@ -30,6 +30,7 @@ asc-devkit:
       - impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/npu_arch_3510/**
       - impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_3510/**
       - impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_3510/**
+      - impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_3510/**
   llt:
     ut_check: true
     st_check: false
