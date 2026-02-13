@@ -21,7 +21,6 @@
 #include "kernel_check.h"
 
 #include "kernel_operator_data_copy_base_impl.h"
-#include "tile_api/kernel_tensor_tile_data_copy_impl.h"
 
 namespace AscendC {
 /* **************************************************************************************************

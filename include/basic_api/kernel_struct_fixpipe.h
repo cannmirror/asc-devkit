@@ -203,19 +203,4 @@ using FixpipeParamsM300 = FixpipeParamsV220;
 using FixpipeParamsM310 = FixpipeParamsV220;
 } // namespace AscendC
 
-/* **************************************************************************************************
- * Fixpipe(Layout) API Level2                                              *
- * ************************************************************************************************* */
-namespace AscendC {
-
-struct FixpipeTrait {
-    QuantMode_t quantPre = QuantMode_t::NoQuant;
-    bool enableRelu = false;
-    bool enableChannleSplit = false;
-    uint8_t unitFlag = false;
-    uint8_t dualDstCtl = false;
-};
-constexpr FixpipeTrait DEFAULT_FIXPIPE_TRAIT;
-
-}
 #endif // ASCENDC_MODULE_STRUCT_FIXPIPE_H

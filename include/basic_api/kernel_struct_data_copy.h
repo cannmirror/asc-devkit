@@ -441,13 +441,4 @@ struct CopyRepeatParams {
 
 } // namespace AscendC
 
-/* **************************************************************************************************
- * DataCopy(Layout) API Level2                                              *
- * ************************************************************************************************* */
-namespace AscendC {
-
-struct DataCopyTrait {};
-constexpr DataCopyTrait DEFAULT_DATA_COPY_TRAIT;
-
-}
 #endif // ASCENDC_MODULE_STRUCT_DATA_COPY_H

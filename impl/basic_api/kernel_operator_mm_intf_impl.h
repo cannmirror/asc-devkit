@@ -19,7 +19,6 @@
 #include "kernel_reg.h"
 #include "kernel_operator_mm_base_impl.h"
 #include "kernel_struct_mm.h"
-#include "tile_api/kernel_tensor_tile_load_data_impl.h"
 
 namespace AscendC {
 /* **************************************************************************************************
