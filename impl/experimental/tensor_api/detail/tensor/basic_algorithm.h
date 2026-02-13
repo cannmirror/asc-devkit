@@ -92,7 +92,7 @@ template <size_t I, typename Tuple>
 __aicore__ inline constexpr auto GetTuple(Tuple&& t) 
 {
     static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
-    auto&& tt = Std::get<I>(static_cast<Tuple&&>(t));
+    auto tt = Std::get<I>(static_cast<Tuple&&>(t));
     if constexpr (Std::is_tuple_v<decltype(tt)>) {
         return tt;
     } else {
@@ -139,7 +139,7 @@ template <size_t I, typename Tuple>
 __aicore__ inline constexpr auto SelectTuple(Tuple&& t)
 {
     static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
-    auto&& tt = Std::get<I>(static_cast<Tuple&&>(t));
+    auto tt = Std::get<I>(static_cast<Tuple&&>(t));
     if constexpr (Std::is_tuple_v<Std::remove_cvref_t<decltype(tt)>>) {
         return tt;
     }else {

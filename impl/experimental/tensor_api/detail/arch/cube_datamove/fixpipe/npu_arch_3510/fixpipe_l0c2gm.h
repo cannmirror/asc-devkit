@@ -270,6 +270,13 @@ class FixpipeFourDimL0C2GM3510 : public FixpipetNz2NzBase3510, public FixpipetNz
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+        auto fourDimDst = PreProcess(dst);
+        Execute<trait>(fourDimDst, src, coord);
+    }
+
+private:
+    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
         if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
             FixpipetNz2NzBase3510::Run<trait, T, U, Coord>(dst, src, coord);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {

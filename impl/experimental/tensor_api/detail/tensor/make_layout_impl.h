@@ -551,6 +551,34 @@ __aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column) {
     return MakeLayoutForZZ<T>(row, column);
 }
 
+class DimConversion {
+public:
+    template<typename T>
+    __aicore__ inline auto Run(const T& tensor) {
+        return ConvertTwoDim2FourDim(tensor);
+    }
+    
+private:
+    template<typename T>
+    __aicore__ inline auto ConvertTwoDim2FourDim(const T& tensor) {
+        auto layout = tensor.Layout();
+        auto row = Std::get<0>(layout.Shape());
+        auto column = Std::get<1>(layout.Shape());
+        auto fourDimLayout = MakeLayoutForND<Std::ignore_t>(row, column);
+        return MakeTensorImpl(tensor.Engine().Begin(), fourDimLayout);
+    }
+};
+
+template <typename T>
+__aicore__ inline auto PreProcess(const T& tensor) {
+    using  tensorShape = Std::remove_cvref_t<decltype(tensor.Shape())>;
+    if constexpr (nesting_depth_v<tensorShape> == TWO_DIM_DATA) {
+        return DimConversion{}.Run(tensor);
+    } else {
+        static_assert(nesting_depth_v<tensorShape> == FOUR_DIM_DATA, "Only support two or four dim LayoutType");
+        return tensor;
+    }
+}
 } // namespace Te
 } // namespace AscendC
 
