@@ -282,3 +282,60 @@ TEST_F(BF162Testsuite, CastApiTest_bfloat16x2t)
     EXPECT_EQ(1, res_bf16);
 }
 // ================================ Test bfloat16_t end ===============================
+
+// ================================ Test cast start ===============================
+class SimtCastBf16Testsuite : public testing::Test {
+protected:
+    void SetUp() {}
+    void TearDown() {}
+};
+
+TEST_F(SimtCastBf16Testsuite, CastBf16Test)
+{
+    float src0 = 0.5 + pow(2.0, -9) + pow(2.0, -11);
+    bfloat16_t dst0 = 0.0;
+    dst0 = __float2bfloat16_rn_sat(src0);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst0);
+
+    dst0 = __float2bfloat16_rz_sat(src0);
+    EXPECT_EQ(bfloat16_t(0.5), dst0);
+
+    dst0 = __float2bfloat16_rd_sat(src0);
+    EXPECT_EQ(bfloat16_t(0.5), dst0);
+
+    dst0 = __float2bfloat16_ru_sat(src0);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst0);
+
+    dst0 = __float2bfloat16_rna_sat(src0);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst0);
+
+    float2 src1 = {src0, src0};
+    bfloat16x2_t dst1 = {0.0, 0.0};
+    dst1 = __float22bfloat162_rz(src1);
+    EXPECT_EQ(bfloat16_t(0.5), dst1.x);
+
+    dst1 = __float22bfloat162_rd(src1);
+    EXPECT_EQ(bfloat16_t(0.5), dst1.x);
+
+    dst1 = __float22bfloat162_ru(src1);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst1.x);
+
+    dst1 = __float22bfloat162_rna(src1);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst1.x);
+
+    dst1 = __float22bfloat162_rn_sat(src1);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst1.x);
+
+    dst1 = __float22bfloat162_rz_sat(src1);
+    EXPECT_EQ(bfloat16_t(0.5), dst1.x);
+
+    dst1 = __float22bfloat162_rd_sat(src1);
+    EXPECT_EQ(bfloat16_t(0.5), dst1.x);
+
+    dst1 = __float22bfloat162_ru_sat(src1);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst1.x);
+
+    dst1 = __float22bfloat162_rna_sat(src1);
+    EXPECT_EQ(bfloat16_t(0.5 + pow(2.0, -8)), dst1.x);
+}
+// ================================ Test cast end ===============================
