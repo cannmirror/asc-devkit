@@ -11,7 +11,7 @@
 #ifndef ASCENDC_MODULE_SIMT_MATH_INTERFACE_IMPL_H
 #define ASCENDC_MODULE_SIMT_MATH_INTERFACE_IMPL_H
 
-#include "kernel_simt_common_intf_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_math_impl.h"
 
 namespace AscendC {
 namespace Simt {

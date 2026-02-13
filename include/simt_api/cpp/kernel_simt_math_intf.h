@@ -73,5 +73,5 @@ __aicore__ inline T MulHi(T x, T y);
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_math_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_math_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_MATH_INTERFACE_H

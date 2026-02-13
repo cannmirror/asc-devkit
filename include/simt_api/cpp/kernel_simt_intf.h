@@ -32,15 +32,15 @@
 #endif
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
-#include "kernel_simt_common_intf.h"
-#include "kernel_simt_atomic_intf.h"
-#include "kernel_simt_cast_intf.h"
-#include "kernel_simt_cmp_intf.h"
-#include "kernel_simt_print_intf.h"
-#include "kernel_simt_math_intf.h"
-#include "kernel_simt_transcendental_intf.h"
-#include "kernel_simt_warp_level_intf.h"
-#include "kernel_simt_bessel_intf.h"
+#include "simt_api/cpp/kernel_simt_common_intf.h"
+#include "simt_api/cpp/kernel_simt_atomic_intf.h"
+#include "simt_api/cpp/kernel_simt_cast_intf.h"
+#include "simt_api/cpp/kernel_simt_cmp_intf.h"
+#include "simt_api/cpp/kernel_simt_print_intf.h"
+#include "simt_api/cpp/kernel_simt_math_intf.h"
+#include "simt_api/cpp/kernel_simt_transcendental_intf.h"
+#include "simt_api/cpp/kernel_simt_warp_level_intf.h"
+#include "simt_api/cpp/kernel_simt_bessel_intf.h"
 #include "utils/debug/asc_assert.h"
 #endif
 

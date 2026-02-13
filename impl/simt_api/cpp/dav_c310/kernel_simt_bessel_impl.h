@@ -22,8 +22,9 @@
 #include "stub_def.h"
 #endif
 
-#include "kernel_simt_cmp_impl.h"
-#include "kernel_simt_math_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_cmp_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_math_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_transcendental_impl.h"
 
 namespace AscendC {
 namespace Simt {

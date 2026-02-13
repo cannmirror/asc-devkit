@@ -11,7 +11,7 @@
 #ifndef ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_H
 #define ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_H
 
-#include "kernel_simt_utils.h"
+#include "simt_api/cpp/kernel_simt_utils.h"
 
 namespace AscendC {
 namespace Simt {
@@ -52,5 +52,5 @@ __aicore__ inline void ThreadFence();
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_warp_level_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_warp_level_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_WARP_LEVEL_INTERFACE_H

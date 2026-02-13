@@ -28,5 +28,5 @@ __aicore__ inline void printf(const __gm__ char* fmt, Args&&... args);
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_print_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_print_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_PRINT_INTERFACE_H

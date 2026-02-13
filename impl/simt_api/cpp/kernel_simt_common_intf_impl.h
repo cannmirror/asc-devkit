@@ -8,34 +8,45 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef ASCENDC_MODULE_SIMT_CMP_INTERFACE_IMPL_H
-#define ASCENDC_MODULE_SIMT_CMP_INTERFACE_IMPL_H
+/* !
+ * \file kernel_simt_common_intf_impl.h
+ * \brief
+ */
+#ifndef ASCENDC_MODULE_SIMT_COMMON_INTERFACE_IMPL_H
+#define ASCENDC_MODULE_SIMT_COMMON_INTERFACE_IMPL_H
 
-#include "kernel_simt_common_intf_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_common_impl.h"
 
 namespace AscendC {
 namespace Simt {
-template <typename T>
-__aicore__ inline bool IsFinite(T x)
+
+__aicore__ inline int32_t GetWarpSize()
 {
-    static_assert(SupportType<T, half, float>(), "Input type T only supports half, float.");
-    return IsFiniteImpl(x);
+    return GetWarpSizeImpl();
 }
 
-template <typename T>
-__aicore__ inline bool IsNan(T x)
+template <int32_t dim>
+__aicore__ inline int32_t GetThreadNum()
 {
-    static_assert(SupportType<T, half, float>(), "Input type T only supports half, float.");
-    return IsNanImpl(x);
+    return GetThreadNumImpl<dim>();
 }
 
-template <typename T>
-__aicore__ inline bool IsInf(T x)
+template <int32_t dim>
+__aicore__ inline int32_t GetThreadIdx()
 {
-    static_assert(SupportType<T, half, float>(), "Input type T only supports half, float.");
-    return IsInfImpl(x);
+    return GetThreadIdxImpl<dim>();
 }
 
+__aicore__ inline int32_t GetBlockIdx()
+{
+    return GetBlockIdxImpl();
+}
+
+__aicore__ inline int32_t GetBlockNum()
+{
+    return GetBlockNumImpl();
+}
 }  // namespace Simt
 }  // namespace AscendC
-#endif  // ASCENDC_MODULE_SIMT_CMP_INTERFACE_IMPL_H
+
+#endif  // ASCENDC_MODULE_SIMT_COMMON_INTERFACE_IMPL_H

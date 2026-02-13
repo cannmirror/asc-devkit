@@ -11,7 +11,7 @@
 #ifndef ASCENDC_MODULE_SIMT_CMP_IMPL_H
 #define ASCENDC_MODULE_SIMT_CMP_IMPL_H
 
-#include "kernel_simt_constant.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_constant.h"
 
 namespace AscendC {
 

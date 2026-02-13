@@ -16,8 +16,8 @@
 #define ASCENDC_MODULE_SIMT_CAST_IMPL_H
 
 #include "kernel_utils.h"
-#include "kernel_simt_common_impl.h"
-#include "kernel_simt_cast_sat_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_common_impl.h"
+#include "impl/simt_api/cpp/dav_c310/kernel_simt_cast_sat_impl.h"
 
 namespace AscendC {
 namespace Simt {

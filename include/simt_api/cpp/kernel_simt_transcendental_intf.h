@@ -447,5 +447,5 @@ __aicore__ inline T Normcdf(T x);
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_transcendental_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_transcendental_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_H

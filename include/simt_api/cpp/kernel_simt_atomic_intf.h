@@ -80,5 +80,5 @@ __aicore__ inline T AtomicXor(__gm__ T *address, T val);
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_atomic_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_atomic_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_ATOMIC_INTERFACE_H

@@ -24,5 +24,5 @@ __aicore__ inline bool IsInf(T x);
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_cmp_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_cmp_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_CMP_INTERFACE_H

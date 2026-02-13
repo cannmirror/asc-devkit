@@ -16,7 +16,7 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_PRINTF_CPP__
 #endif
 
-#include "utils/debug/asc_printf_simt_impl.h"
+#include "impl/utils/debug/asc_printf_simt_impl.h"
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_PRINTF_CPP__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
