@@ -5974,7 +5974,7 @@ TEST_P(RnnTilingbTestSuite, TestMatmulApiTilngRnnRealCase)
         rnnParams.baseK = rnnMatmul.GetBaseK(); // get output info after cut
         ret = rnnMatmul.GetSingleShape(rnnParams.singleM, rnnParams.singleN, rnnParams.singleK); // get single process info
         ret = rnnMatmul.GetCoreNum(dim, mDim,
-            nDim); // get used blockdim after multi-cores cut, carried by user to kernel， contrl Kernel
+            nDim); // get used numBlocks after multi-cores cut, carried by user to kernel， contrl Kernel
         // input mm
         int32_t l1_left = 512 * 1024 - 64 - rnnParams.singleN * (input_align + hidden_align) * sizeof(float) * 2;
         ret = rnnMatmul1.SetBufferSpace(l1_left, rnnParams.maxUbSize, rnnParams.maxUbSize);
@@ -6032,7 +6032,7 @@ TEST_P(RnnTilingbTestSuite, TestMatmulApiTilngRnnRealCase)
             ret = rnnMatmul.GetSingleShape(rnnParams.singleM, rnnParams.singleN,
                 rnnParams.singleK); // get single process info
             ret = rnnMatmul.GetCoreNum(dim, mDim,
-                nDim); // get used blockdim after multi-cores cut, carried by user to kernel， contrl Kernel business
+                nDim); // get used numBlocks after multi-cores cut, carried by user to kernel， contrl Kernel business
             // input mm
             ret = rnnMatmul1.SetBufferSpace(-1, rnnParams.maxUbSize, rnnParams.maxUbSize);
             ret = rnnMatmul1.SetOrgShape(rnnParams.batch, rnnParams.hiddenSize * 4, rnnParams.inputSize);
@@ -6109,7 +6109,7 @@ TEST_P(RnnTilingbTestSuite, TestMatmulApiTilngRnnRealCase)
             ret = rnnMatmul.GetSingleShape(rnnParams.singleM, rnnParams.singleN,
                 rnnParams.singleK); // get single core data
             ret = rnnMatmul.GetCoreNum(dim, mDim,
-                nDim); // get used blockdim after multi-cores cut, carried by user to kernel， contrl Kernel business
+                nDim); // get used numBlocks after multi-cores cut, carried by user to kernel， contrl Kernel business
             // input mm
             ret = rnnMatmul1.SetBufferSpace(-1, rnnParams.maxUbSize, rnnParams.maxUbSize);
             ret = rnnMatmul1.SetOrgShape(rnnParams.batch, rnnParams.hiddenSize * 4, rnnParams.inputSize);
@@ -7756,12 +7756,12 @@ TEST_F(TestTiling, TestBroadCast220)
     dstShapeDims = {firstDim, lastDimNotAlign};
     dstShape = ge::Shape(dstShapeDims);
 
-    uint32_t blockDimAlignBlockNum = (lastDimNotAlign + halfOneBlockElementNum - 1) / halfOneBlockElementNum;
-    uint32_t blockDimAlign = blockDimAlignBlockNum * halfOneBlockElementNum;
-    uint32_t minCopyTempBufferSize = halfOneBlockElementNum * blockDimAlign * halfSize;
+    uint32_t dstRepeatSize = (lastDimNotAlign + halfOneBlockElementNum - 1) / halfOneBlockElementNum;
+    uint32_t numBlocksAlign = dstRepeatSize * halfOneBlockElementNum;
+    uint32_t minCopyTempBufferSize = halfOneBlockElementNum * numBlocksAlign * halfSize;
     auto minHalfNotAlignSize = minHalfAlignSize + minCopyTempBufferSize;
 
-    uint32_t maxCopyTempBufferSize = firstDim * blockDimAlign * halfSize;
+    uint32_t maxCopyTempBufferSize = firstDim * numBlocksAlign * halfSize;
     uint32_t maxHalfNotAlignValue = maxHalfAlignSize + maxCopyTempBufferSize;
 
     GetBroadCastMaxMinTmpSize(plat, srcShape, dstShape, halfSize, false, maxValue, minValue);

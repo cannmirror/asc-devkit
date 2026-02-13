@@ -59,8 +59,8 @@ void GetBroadCastMaxMinTmpSize220(
         const uint32_t maxBrcbTempBufferSize = firstDimAlignNum * oneBlockElementNum * typeSize;
         maxValue = maxBrcbTempBufferSize + castTempBuffer;
     } else {
-        const uint32_t blockDimAlignBlockNum = (numBlocks + oneBlockElementNum - 1) / oneBlockElementNum;
-        const uint32_t numBlocksAlign = blockDimAlignBlockNum * oneBlockElementNum;
+        const uint32_t dstRepeatSize = (numBlocks + oneBlockElementNum - 1) / oneBlockElementNum;
+        const uint32_t numBlocksAlign = dstRepeatSize * oneBlockElementNum;
         const uint32_t minBrcbTempBufferSize = oneBlockElementNum * oneBlockElementNum * typeSize;
         const uint32_t minCopyTempBufferSize = oneBlockElementNum * numBlocksAlign * typeSize;
         minValue = minBrcbTempBufferSize + minCopyTempBufferSize + castTempBuffer;

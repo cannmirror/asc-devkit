@@ -298,7 +298,7 @@ struct TimeStampTlvInfo {
 struct DumpMeta {
     uint32_t typeId = static_cast<uint32_t>(DumpType::DUMP_META);
     uint32_t len = 8;
-    uint16_t blockDim = 0;
+    uint16_t numBlocks = 0;
     uint8_t coreType = 0;
     uint8_t taskRation = 0;
     uint32_t rsv = 0;
