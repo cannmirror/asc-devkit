@@ -416,15 +416,25 @@ TEST_F(TypeCastApiBfloat16Testsuite, TypeCastApiBfloat16Test)
     int64_t result5 = __bfloat162ll_rna(bfx1);
     int64_t expect5 = static_cast<int64_t>(round(float(bfx1)));
 
+    bfx1 = 1.5f;
     half result6 = __bfloat162half_rn_sat(bfx1);
+    EXPECT_EQ(result6, (half)1.5f);
 
+    bfx1 = 2.5f;
     half result7 = __bfloat162half_rz_sat(bfx1);
+    EXPECT_EQ(result7, (half)2.5f);
 
+    bfx1 = 3.5f;
     half result8 = __bfloat162half_rd_sat(bfx1);
+    EXPECT_EQ(result8, (half)3.5f);
 
+    bfx1 = 4.5f;
     half result9 = __bfloat162half_ru_sat(bfx1);
+    EXPECT_EQ(result9, (half)4.5f);
 
+    bfx1 = 5.5f;
     half result10 = __bfloat162half_rna_sat(bfx1);
+    EXPECT_EQ(result10, (half)5.5f);
 
     bfloat16_t result11 = __bfloat162bfloat16_rn(bfx1);
 
@@ -459,8 +469,68 @@ TEST_F(TypeCastApiHif82Testsuite, TypeCastApiHif82Test)
  	float2 f2x1 = make_float2(x1, x1);
  	half2 h2x2 = {x2, x2};
  	 
+    f2x1 = make_float2(1.0f, 2.0f);
  	hifloat8x2_t result1 = __float22hif82_rna(f2x1);
- 	result1 = __float22hif82_rna_sat(f2x1);
+    EXPECT_EQ(result1.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result1.y.ToFloat(), 2.0f);
+
+    result1 = __float22hif82_rna_sat(f2x1);
+    EXPECT_EQ(result1.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result1.y.ToFloat(), 2.0f);
+
+    result1 = __float22hif82_rh(f2x1);
+    EXPECT_EQ(result1.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result1.y.ToFloat(), 2.0f);
+
+    result1 = __float22hif82_rh_sat(f2x1);
+    EXPECT_EQ(result1.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result1.y.ToFloat(), 2.0f);
+
+    h2x2 = make_half2(1.0f, 2.0f);
+    hifloat8x2_t result2 = __half22hif82_rna(h2x2);
+    EXPECT_EQ(result2.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result2.y.ToFloat(), 2.0f);
+
+    result2 = __half22hif82_rna_sat(h2x2);
+    EXPECT_EQ(result2.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result1.y.ToFloat(), 2.0f);
+
+    result2 = __half22hif82_rh(h2x2);
+    EXPECT_EQ(result2.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result2.y.ToFloat(), 2.0f);
+
+    result2 = __half22hif82_rh_sat(h2x2);
+    EXPECT_EQ(result2.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result2.y.ToFloat(), 2.0f);
+
+    __asc_fp8x2_storage_t result3;
+    f2x1 = make_float2(1.0f, 2.0f);
+    result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_NOSAT, __ASC_E4M3);
+    result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_SATFINITE, __ASC_E4M3);
+    result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_NOSAT, __ASC_E5M2);
+    result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_SATFINITE, __ASC_E5M2);
+
+    hifloat8x2_t hif8x = {1, 2};
+    float2 result4;
+    result4 = __hif822float2(hif8x);
+    EXPECT_EQ(result4.x, 1.0f);
+    EXPECT_EQ(result4.y, 2.0f);
+
+    half2 result5;
+    result5 = __hif822half2(hif8x);
+    EXPECT_EQ(result5.x.ToFloat(), 1.0f);
+    EXPECT_EQ(result5.y.ToFloat(), 2.0f);
+
+    float2 result6;
+    float8_e4m3x2_t e4m3x = {1, 2};
+    result6 = __e4m3x22float2(e4m3x);
+    EXPECT_EQ(result6.x, 1.0f);
+    EXPECT_EQ(result6.y, 2.0f);
+
+    float8_e5m2x2_t e5m2x = {1, 2};
+    result6 = __e5m2x22float2(e5m2x);
+    EXPECT_EQ(result6.x, 1.0f);
+    EXPECT_EQ(result6.y, 2.0f);
 
  	x1 = 1.0f;
  	EXPECT_EQ(x1, 1.0f);
