@@ -49,7 +49,7 @@ void MainDataTypeKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __re
         if constexpr (USE_TOFLOAT) 
             res1 = value.ToFloat();
         else
-            res1 = Cast<T>(value);
+            res1 = Cast<T, float>(value);
         T res2{res1};
     }
     if constexpr(IsSameType<T, hifloat8_t>::value) {
@@ -60,7 +60,7 @@ void MainDataTypeKernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* __re
         if constexpr (USE_TOFLOAT) 
             res1 = value.ToFloat();
         else
-            res1 = Cast<T>(value);
+            res1 = Cast<T, float>(value);
         T res2{res1};
         float x = 0.5f;
         T res3{x};
