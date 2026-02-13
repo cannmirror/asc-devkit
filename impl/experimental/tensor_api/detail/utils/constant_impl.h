@@ -93,6 +93,17 @@ template <QuantMode_t quantPre>
 using IsDirectQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_DIRECT_QUANT_MODE>;
 
 using ZeroCoord2DType = AscendC::Std::tuple<Std::Int<0>, Std::Int<0>>;
+
+// IsIntegralConstant
+template <typename T>
+struct IsIntegralConstant : Std::false_type {};
+
+template <size_t Value>
+struct IsIntegralConstant<Std::Int<Value>> : Std::true_type {};
+
+template <typename T>
+constexpr bool IsIntegralConstantV = IsIntegralConstant<T>::value;
+
 } // namespace Te
 } // namespace AscendC
 

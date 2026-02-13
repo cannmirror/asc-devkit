@@ -101,6 +101,9 @@ __aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column);
 template <typename T>
 __aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column);
 
+template <typename Layout, typename TileShape>
+__aicore__ inline decltype(auto) MakeTileLayout(const Layout& layout, const TileShape& tileShape);
+
 template <typename T, size_t row, size_t column, typename Enable = void>
 struct NZLayoutFormat;
 

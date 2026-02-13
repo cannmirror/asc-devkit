@@ -114,6 +114,20 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
         return operator()(MakeCoord(c0,c1,cs...));
     }
 
+    template <typename Coord, typename Shape>
+    __aicore__ inline constexpr decltype(auto) operator()(const Coord& coord, const Shape& shape) {
+        auto iter = Data() + Layout()(coord);
+        auto tileLayout = MakeTileLayout(Layout(), shape);
+        return MakeTensor(iter, tileLayout);
+    }
+
+    template <typename Coord, typename Shape>
+    __aicore__ inline constexpr decltype(auto) operator()(const Coord& coord, const Shape& shape) const {
+        auto iter = Data() + Layout()(coord);
+        auto tileLayout = MakeTileLayout(Layout(), shape);
+        return MakeTensor(iter, tileLayout);
+    }
+
     template <typename... Layouts>
     __aicore__ inline constexpr auto Compose(const Layouts&... layouts) {
         return MakeTensor(Data(), Layout().Compose(layouts...));

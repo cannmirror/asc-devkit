@@ -259,12 +259,14 @@ private:
         auto srcRow = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         auto srcCol = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
 
+        auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout); 
+
         uint16_t ndNum = 1;
         uint64_t srcNdMatrixStride = 0;
         uint32_t dstNzMatrixStride = 0;
         uint16_t nValue = dstRow;
         uint16_t dValue = dstCol;
-        uint16_t srcDValue = srcCol;
+        uint16_t srcDValue = srcRowStride;
         uint16_t dstNzC0Stride = dstRow;
         uint16_t dstNzNStride = 1;
         return Std::make_tuple(ndNum, nValue, dValue, srcNdMatrixStride, srcDValue, dstNzC0Stride,

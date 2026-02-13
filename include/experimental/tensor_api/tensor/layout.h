@@ -101,6 +101,7 @@ struct Layout : private Std::tuple<T, U>
         return TupleSize<I...>(Shape());
     }
 
+    static constexpr auto depth = nesting_depth_v<T>;
     static constexpr auto rank = Std::tuple_size_v<T>;
 };
 
