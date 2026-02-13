@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_H
 #define INCLUDE_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/data_copy_impl.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_impl.h"
 
 namespace AscendC {
 namespace Te {

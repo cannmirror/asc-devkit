@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_UTILS_CONSTANT_H
 #define INCLUDE_TENSOR_API_UTILS_CONSTANT_H
 
-#include "impl/experimental/tensor_api/detail/utils/constant_impl.h"
+#include "impl/experimental/tensor_api/utils/constant_impl.h"
 
 namespace AscendC {
 namespace Te {

@@ -15,6 +15,6 @@
 #ifndef INCLUDE_TENSOR_API_ALGORITHM_GEMM_H
 #define INCLUDE_TENSOR_API_ALGORITHM_GEMM_H
 
-#include "impl/experimental/tensor_api/detail/algorithm/gemm_impl.h"
+#include "impl/experimental/tensor_api/algorithm/gemm_impl.h"
 
 #endif // INCLUDE_TENSOR_API_ALGORITHM_GEMM_H

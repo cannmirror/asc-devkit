@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_ALGORITHM_CPOY_H
 #define INCLUDE_TENSOR_API_ALGORITHM_CPOY_H
 
-#include "impl/experimental/tensor_api/detail/algorithm/copy_impl.h"
+#include "impl/experimental/tensor_api/algorithm/copy_impl.h"
 
 namespace AscendC {
 namespace Te {

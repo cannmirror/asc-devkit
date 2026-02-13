@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_UTILS_FORMAT_H
 #define INCLUDE_TENSOR_API_UTILS_FORMAT_H
 
-#include "impl/experimental/tensor_api/detail/utils/format_impl.h"
+#include "impl/experimental/tensor_api/utils/format_impl.h"
 
 namespace AscendC {
 namespace Te {

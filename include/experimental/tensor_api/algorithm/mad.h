@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_ALGORITHM_MAD_H
 #define INCLUDE_TENSOR_API_ALGORITHM_MAD_H
 
-#include "impl/experimental/tensor_api/detail/algorithm/mad_impl.h"
+#include "impl/experimental/tensor_api/algorithm/mad_impl.h"
 
 namespace AscendC {
 namespace Te {

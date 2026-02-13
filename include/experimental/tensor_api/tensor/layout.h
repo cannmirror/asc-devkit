@@ -15,104 +15,123 @@
 #ifndef INCLUDE_TENSOR_API_TENSOR_LAYOUT_H
 #define INCLUDE_TENSOR_API_TENSOR_LAYOUT_H
 
-#include "impl/experimental/tensor_api/detail/tensor/basic_algorithm.h"
+#include "impl/experimental/tensor_api/tensor/layout_impl.h"
 
 namespace AscendC {
 namespace Te {
 
-template <typename... Shapes>
-using Shape = Std::tuple<Shapes...>;
+// make_layout.h
+template <typename... Ts>
+__aicore__ inline constexpr Shape<Ts...> MakeShape(const Ts&... t);
 
-template <typename... Strides>
-using Stride = Std::tuple<Strides...>;
+template <typename... Ts>
+__aicore__ inline constexpr Stride<Ts...> MakeStride(const Ts&... t);
 
-template <typename... Layouts>
-using Tile = Std::tuple<Layouts...>;
+template <typename... Ts>
+__aicore__ inline constexpr Tile<Ts...>  MakeTile(const Ts&... t);
 
-template <typename... Coords>
-using Coord = Std::tuple<Coords...>;
+template <typename... Ts>
+__aicore__ inline constexpr Coord<Ts...> MakeCoord(const Ts&... t);
 
 template <typename T, typename U>
-struct Layout : private Std::tuple<T, U>
-{
-    static constexpr auto size = StaticLayoutSize<T, U>::size;
+__aicore__ inline constexpr auto MakeLayout(const T& shape, const U& stride);
 
-    __aicore__ inline constexpr Layout(const T& shape  = {}, const U& stride = {})
-        : Std::tuple<T, U>(shape, stride)
-    {
-        static_assert(Std::is_tuple_v<T> && Std::is_tuple_v<U>, "Shape or Stride is not tuple!");
-    }
+template <typename T>
+__aicore__ inline constexpr auto MakeLayout(const T& shape);
 
-    __aicore__ inline constexpr decltype(auto) Capacity() const
-    {
-        return GetCapacity(Shape(), Stride());
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Rank(const Layout<Shape, Stride>& layout);
 
-    __aicore__ inline constexpr decltype(auto) layout()
-    {
-        return *this;
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto GetShape(const Layout<Shape, Stride>& layout);
 
-    __aicore__ inline constexpr decltype(auto) layout() const
-    {
-        return *this;
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto GetShape(Layout<Shape, Stride>& layout);
 
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Shape()
-    {
-        return GetValue<0, I...>(static_cast<Std::tuple<T, U>&>(*this));
-    }
+template <typename Tuple>
+__aicore__ inline constexpr auto GetShape(const Tuple& shape);
 
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Shape() const
-    {
-        return GetValue<0, I...>(static_cast<const Std::tuple<T, U>&>(*this));
-    }
+template <size_t I, size_t... Is, typename Tuple>
+__aicore__ inline constexpr auto GetShape(const Tuple& shape);
 
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Stride()
-    {
-        return GetValue<1, I...>(static_cast<Std::tuple<T, U>&>(*this));
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto GetStride(const Layout<Shape, Stride>& layout);
 
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Stride() const
-    {
-        return GetValue<1, I...>(static_cast<const Std::tuple<T, U>&>(*this));
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto GetStride(Layout<Shape, Stride>& layout);
 
-    template <typename S>
-    __aicore__ inline constexpr auto operator()(const S& coord) const
-    {
-        return Crd2Idx(coord, *this);
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Select(const Layout<Shape, Stride>& layout);
 
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Rank() const
-    {
-        static_assert(Std::tuple_size_v<T> == Std::tuple_size_v<U>, "The dimensions of the Shape and Stride are not the same.");
-        return GetRank<I...>(Shape());
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Get(const Layout<Shape, Stride>& layout);
 
-    template <size_t... I>
-    __aicore__ inline constexpr decltype(auto) Size() const
-    {
-        return TupleSize<I...>(Shape());
-    }
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Size(const Layout<Shape, Stride>& layout);
 
-    static constexpr auto depth = nesting_depth_v<T>;
-    static constexpr auto rank = Std::tuple_size_v<T>;
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Capacity(const Layout<Shape, Stride>& layout);
+
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Coshape(const Layout<Shape, Stride>& layout);
+
+template <size_t... Is, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Cosize(const Layout<Shape, Stride>& layout);
+
+template <typename T, typename U, typename S>
+__aicore__ inline constexpr auto Crd2Idx(const T& coord, const Layout<U, S>& layout);
+
+template <typename T, typename Shape, typename Stride>
+__aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, const Stride& stride);
+
+// make_fractal.h
+template <typename T>
+__aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column);
+
+__aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeColumnMajorLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column);
+
+template <typename T, size_t row, size_t column, typename Enable = void>
+struct NZLayoutFormat;
+
+template <typename T, size_t row, size_t column>
+struct NZLayoutFormat<T, row, column, typename Std::enable_if<!Std::is_same_v<T, Std::ignore_t>>::type> {
+    using type = Layout<NZShapeFormat<T, row, column>, NZStrideFormat<T, row, column>>;
 };
 
-template <typename T>
-struct is_layout : Std::false_type {};
+template <typename T, size_t row, size_t column>
+struct NZLayoutFormat<T, row, column, typename Std::enable_if<Std::is_same_v<T, Std::ignore_t>>::type> {
+    using type = Layout<NZShapeFormat<uint16_t, row, column>, NZStrideFormat<uint16_t, row, column>>;
+};
 
-template <typename T, typename U>
-struct is_layout<Layout<T, U>> : Std::true_type {};
+template <typename T, size_t row, size_t column>
+using NDLayoutFormat = Layout<NDShapeFormat<T, row, column>, NDStrideFormat<T, row, column>>;
 
-template <typename T>
-constexpr bool is_layout_v = is_layout<T>::value;
+template <typename T, size_t row, size_t column>
+using DNLayoutFormat = Layout<DNShapeFormat<T, row, column>, DNStrideFormat<T, row, column>>;
+
+template <typename T, size_t row, size_t column>
+using ZNLayoutFormat = Layout<ZNShapeFormat<T, row, column>, ZNStrideFormat<T, row, column>>;
+
+template <typename T, size_t row, size_t column>
+using ZZLayoutFormat = Layout<ZZShapeFormat<T, row, column>, ZZStrideFormat<T, row, column>>;
+
+template <size_t row, size_t column>
+using L0CLayoutFormat = NZLayoutFormat<Std::ignore_t, row, column>;
+
+ template <typename Layout, typename TileShape>
+__aicore__ inline decltype(auto) MakeTileLayout(const Layout& layout, const TileShape& tileShape);
 
 } // namespace Te
 } // namespace AscendC

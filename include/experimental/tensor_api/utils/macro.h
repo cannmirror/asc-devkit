@@ -15,6 +15,6 @@
 #ifndef INCLUDE_TENSOR_API_UTILS_MACRO_H
 #define INCLUDE_TENSOR_API_UTILS_MACRO_H
 
-#include "impl/experimental/tensor_api/detail/utils/macro_impl.h"
+#include "impl/experimental/tensor_api/utils/macro_impl.h"
 
 #endif //INCLUDE_TENSOR_API_UTILS_MACRO_H

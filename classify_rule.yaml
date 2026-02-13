@@ -27,10 +27,14 @@ asc-devkit:
       - tools/**/*.h
       - impl/**/dav_l300/*.h
       - impl/**/dav_l311/*.h
-      - impl/experimental/tensor_api/detail/arch/cube_datamove/data_copy/npu_arch_3510/**
-      - impl/experimental/tensor_api/detail/arch/cube_datamove/fixpipe/npu_arch_3510/**
-      - impl/experimental/tensor_api/detail/arch/cube_datamove/load_data/npu_arch_3510/**
-      - impl/experimental/tensor_api/detail/arch/cube_compute/mmad/npu_arch_3510/**
+      - impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/**
+      - impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/**
+      - impl/experimental/tensor_api/arch/cube_datamove/load_data/npu_arch_3510/**
+      - impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/**
+      - impl/experimental/tensor_api/atom/cube_datamove/cube_datamove_impl.h
+      - impl/experimental/tensor_api/atom/cube_compute/cube_compute_impl.h
+      - impl/experimental/tensor_api/utils/extra_impl.h
+      - impl/experimental/tensor_api/tensor/static_layout_size_struct.h
   llt:
     ut_check: true
     st_check: false

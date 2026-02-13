@@ -15,7 +15,7 @@
 #ifndef INCLUDE_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_H
 #define INCLUDE_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_H
 
-#include "impl/experimental/tensor_api/detail/arch/cube_compute/mmad/mmad_impl.h"
+#include "impl/experimental/tensor_api/arch/cube_compute/mmad/mmad_impl.h"
 
 namespace AscendC {
 namespace Te {
