@@ -219,11 +219,12 @@ bool CheckFuncBroadCastToMM(const LocalTensor<T>& dst, const LocalTensor<U>& src
 }
 
 template <typename T, typename U = T>
-bool CheckFunVecReduceOther(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t repeatTime,
-    const int32_t maskCount, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
-    const char* intriName)
+check::VecReduceApiParams BuildVecReduceOtherParams(const LocalTensor<U>& dst, const LocalTensor<T>& src,
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride,
+    const int32_t srcRepStride)
 {
-    check::VecReduceApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::VecReduceApiParams {
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
         static_cast<uint32_t>(sizeof(PrimT<U>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
@@ -235,6 +236,14 @@ bool CheckFunVecReduceOther(const LocalTensor<U>& dst, const LocalTensor<T>& src
         static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src.GetPosition()) };
+}
+
+template <typename T, typename U = T>
+bool CheckFunVecReduceOther(const LocalTensor<U>& dst, const LocalTensor<T>& src, const int32_t repeatTime,
+    const int32_t maskCount, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
+    const char* intriName)
+{
+    auto chkParams = BuildVecReduceOtherParams(dst, src, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     return CheckFunReduceOtherImpl(chkParams, maskCount, intriName);
 }
 
@@ -243,27 +252,17 @@ bool CheckFunVecReduceOther(const LocalTensor<U>& dst, const LocalTensor<T>& src
     const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
     const char* intriName)
 {
-    check::VecReduceApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
-        static_cast<uint32_t>(sizeof(PrimT<U>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        repeatTime,
-        static_cast<uint16_t>(dstRepStride),
-        static_cast<uint16_t>(srcBlkStride),
-        static_cast<uint16_t>(srcRepStride),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<U>)),
-        static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src.GetPosition()) };
+    auto chkParams = BuildVecReduceOtherParams(dst, src, repeatTime, dstRepStride, srcBlkStride, srcRepStride);
     return CheckFunReduceOtherImplForMaskArray(chkParams, mask, intriName);
 }
 
 template <typename T>
-bool CheckFunVecReduceOtherWhl(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t repeatTime,
-    const int32_t maskCount, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
-    ReduceOrder order, const char* intriName)
+check::VecReduceWhlApiParams BuildVecReduceOtherWhlParams(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const int32_t repeatTime, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
+    ReduceOrder order)
 {
-    check::VecReduceWhlApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::VecReduceWhlApiParams {
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
@@ -276,6 +275,15 @@ bool CheckFunVecReduceOtherWhl(const LocalTensor<T>& dst, const LocalTensor<T>& 
         static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src.GetPosition()) };
+}
+
+template <typename T>
+bool CheckFunVecReduceOtherWhl(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t repeatTime,
+    const int32_t maskCount, const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
+    ReduceOrder order, const char* intriName)
+{
+    auto chkParams = BuildVecReduceOtherWhlParams(dst, src, repeatTime, dstRepStride, srcBlkStride,
+        srcRepStride, order);
     return CheckFunReduceOtherWhlImpl(chkParams, maskCount, intriName);
 }
 
@@ -284,28 +292,17 @@ bool CheckFunVecReduceOtherWhl(const LocalTensor<T>& dst, const LocalTensor<T>& 
     const uint64_t mask[], const int32_t dstRepStride, const int32_t srcBlkStride, const int32_t srcRepStride,
     ReduceOrder order, const char* intriName)
 {
-    check::VecReduceWhlApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        repeatTime,
-        static_cast<uint16_t>(dstRepStride),
-        static_cast<uint16_t>(srcBlkStride),
-        static_cast<uint16_t>(srcRepStride),
-        order,
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src.GetPosition()) };
+    auto chkParams = BuildVecReduceOtherWhlParams(dst, src, repeatTime, dstRepStride, srcBlkStride,
+        srcRepStride, order);
     return CheckFunReduceOtherWhlImplForMaskArray(chkParams, mask, intriName);
 }
 
 template <typename T>
-bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& work,
-    const int32_t repeatTime, const int32_t mask, bool calIndex, const int32_t srcRepStride, const char* intriName)
+check::VecReduceApiParams BuildVecReduceWithCalIndexParams(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<T>& work, const int32_t repeatTime, bool calIndex, const int32_t srcRepStride)
 {
-    // max or min level0
-    check::VecReduceApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::VecReduceApiParams {
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(work.GetPhyAddr())),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
@@ -320,6 +317,13 @@ bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, con
         static_cast<uint8_t>(src.GetPosition()),
         static_cast<uint8_t>(work.GetPosition()),
         static_cast<uint16_t>(srcRepStride) };
+}
+
+template <typename T>
+bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& work,
+    const int32_t repeatTime, const int32_t mask, bool calIndex, const int32_t srcRepStride, const char* intriName)
+{
+    auto chkParams = BuildVecReduceWithCalIndexParams(dst, src, work, repeatTime, calIndex, srcRepStride);
     return CheckFunReduceImpl(chkParams, mask, intriName);
 }
 
@@ -327,15 +331,22 @@ template <typename T>
 bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& work,
     const int32_t repeatTime, const uint64_t mask[], bool calIndex, const int32_t srcRepStride, const char* intriName)
 {
-    // max or min level0
-    check::VecReduceApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    auto chkParams = BuildVecReduceWithCalIndexParams(dst, src, work, repeatTime, calIndex, srcRepStride);
+    return CheckFunReduceImplForMaskArray(chkParams, mask, intriName);
+}
+
+template <typename T>
+check::VecReduceApiParams BuildVecReduceWithoutCalIndexParams(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<T>& work, const int32_t repeatTime, const int32_t srcRepStride)
+{
+    return check::VecReduceApiParams {
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(work.GetPhyAddr())),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
         repeatTime,
-        calIndex,
         static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
         static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
         static_cast<uint64_t>(work.GetSize() * sizeof(PrimT<T>)),
@@ -343,27 +354,13 @@ bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, con
         static_cast<uint8_t>(src.GetPosition()),
         static_cast<uint8_t>(work.GetPosition()),
         static_cast<uint16_t>(srcRepStride) };
-    return CheckFunReduceImplForMaskArray(chkParams, mask, intriName);
 }
 
 template <typename T>
 bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& work,
     const int32_t repeatTime, const int32_t mask, const int32_t srcRepStride, const char* intriName)
 {
-    check::VecReduceApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(work.GetPhyAddr())),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        repeatTime,
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(work.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src.GetPosition()),
-        static_cast<uint8_t>(work.GetPosition()),
-        static_cast<uint16_t>(srcRepStride) };
+    auto chkParams = BuildVecReduceWithoutCalIndexParams(dst, src, work, repeatTime, srcRepStride);
     return CheckFunReduceImpl(chkParams, mask, intriName);
 }
 
@@ -371,21 +368,7 @@ template <typename T>
 bool CheckFunVecReduce(const LocalTensor<T>& dst, const LocalTensor<T>& src, const LocalTensor<T>& work,
     const int32_t repeatTime, const uint64_t mask[], const int32_t srcRepStride, const char* intriName)
 {
-    // sum level0
-    check::VecReduceApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(work.GetPhyAddr())),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        repeatTime,
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(work.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src.GetPosition()),
-        static_cast<uint8_t>(work.GetPosition()),
-        static_cast<uint16_t>(srcRepStride) };
+    auto chkParams = BuildVecReduceWithoutCalIndexParams(dst, src, work, repeatTime, srcRepStride);
     return CheckFunReduceImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -451,11 +434,12 @@ bool CheckFunVecReduceMode2(const LocalTensor<T>& dst, const LocalTensor<T>& src
 }
 
 template <typename T, typename U>
-bool CheckFunScatter(const LocalTensor<T>& dst, const LocalTensor<T>& src,
-    const LocalTensor<U>& dstOffset, const uint32_t dstBaseAddr, const uint64_t mask[],
-    const uint8_t repeatTime, const uint16_t srcRepStride, const char* intriName)
+check::VecScatterApiParams BuildVecScatterParams(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<U>& dstOffset, const uint32_t dstBaseAddr, const uint8_t repeatTime,
+    const uint16_t srcRepStride)
 {
-    check::VecScatterApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::VecScatterApiParams {
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dstOffset.GetPhyAddr())),
         static_cast<uint32_t>(sizeof(PrimT<T>)),
@@ -470,6 +454,14 @@ bool CheckFunScatter(const LocalTensor<T>& dst, const LocalTensor<T>& src,
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src.GetPosition()),
         static_cast<uint8_t>(dstOffset.GetPosition()) };
+}
+
+template <typename T, typename U>
+bool CheckFunScatter(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const LocalTensor<U>& dstOffset, const uint32_t dstBaseAddr, const uint64_t mask[],
+    const uint8_t repeatTime, const uint16_t srcRepStride, const char* intriName)
+{
+    auto chkParams = BuildVecScatterParams(dst, src, dstOffset, dstBaseAddr, repeatTime, srcRepStride);
     return CheckFunScatterImplForMaskArray(chkParams, mask, intriName);
 }
 
@@ -478,21 +470,7 @@ bool CheckFunScatter(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const LocalTensor<U>& dstOffset, const uint32_t dstBaseAddr, const uint64_t mask,
     const uint8_t repeatTime, const uint16_t srcRepStride, const char* intriName)
 {
-    check::VecScatterApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dstOffset.GetPhyAddr())),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<T>)),
-        static_cast<uint32_t>(sizeof(PrimT<U>)),
-        dstBaseAddr,
-        repeatTime,
-        static_cast<uint16_t>(srcRepStride),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(src.GetSize() * sizeof(PrimT<T>)),
-        static_cast<uint64_t>(dstOffset.GetSize() * sizeof(PrimT<U>)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src.GetPosition()),
-        static_cast<uint8_t>(dstOffset.GetPosition()) };
+    auto chkParams = BuildVecScatterParams(dst, src, dstOffset, dstBaseAddr, repeatTime, srcRepStride);
     return CheckFunScatterImpl(chkParams, mask, intriName);
 }
 

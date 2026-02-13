@@ -667,20 +667,10 @@ __aicore__ inline __inout_pipe__(MTE3) void DataCopy(const GlobalTensor<T> &dst,
     }
 }
 
-/*
- * @ingroup DataCopy Level 2
- * @brief datacopy from src to dst, applicable to vector data
- * @param [out] dst output LocalTensor
- * @param [in] src input GlobalTensor
- * @param [in] count Number of operands
- */
 template <typename T>
-__aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
-    const uint32_t count)
+__aicore__ inline void DataCopyCheck(const uint32_t count, DataCopyParams& repeatParams)
 {
     using PrimType = PrimT<T>;
-    ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, count)));
-    struct DataCopyParams repeatParams;
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
     if constexpr(Std::is_same<PrimType, int2b_t>::value) {
         ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_B2_NUM == 0),
@@ -708,11 +698,28 @@ __aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, 
 #endif
     {
         ASCENDC_ASSERT((count % AscendCUtils::GetC0Count(sizeof(PrimType)) == 0), { KERNEL_LOG(KERNEL_ERROR, "Failed to "
-            "check count value in DataCopy from GlobalTensor to LocalTensor, count * sizeof(T) must be 32B align, "
-            "current count value is %u. In NPU mode, no error is reported. The value is rounded down by 32B.",
+            "check count value in DataCopy from GlobalTensor to LocalTensor or from LocalTensor to GlobalTensor, "
+            "count * sizeof(T) must be 32B align, current count value is %u. "
+            "In NPU mode, no error is reported. The value is rounded down by 32B.",
             count); });
         repeatParams.blockLen = count / AscendCUtils::GetC0Count(sizeof(PrimType));
     }
+}
+
+/*
+ * @ingroup DataCopy Level 2
+ * @brief datacopy from src to dst, applicable to vector data
+ * @param [out] dst output LocalTensor
+ * @param [in] src input GlobalTensor
+ * @param [in] count Number of operands
+ */
+template <typename T>
+__aicore__ inline __inout_pipe__(MTE2) void DataCopy(const LocalTensor<T>& dst, const GlobalTensor<T>& src,
+    const uint32_t count)
+{
+    ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, count)));
+    struct DataCopyParams repeatParams;
+    DataCopyCheck<T>(count, repeatParams);
     DataCopy(dst, src, repeatParams);
 }
 
@@ -727,41 +734,9 @@ template <typename T>
 __aicore__ inline __inout_pipe__(MTE3) void DataCopy(const GlobalTensor<T>& dst, const LocalTensor<T>& src,
     const uint32_t count)
 {
-    using PrimType = PrimT<T>;
     ASCENDC_REPORT_OVERFLOW_MEM((CheckDataCopyTensorSizeOverflow(dst, src, count)));
     struct DataCopyParams repeatParams;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 5102)
-    if constexpr(Std::is_same<PrimType, int2b_t>::value) {
-        ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_B2_NUM == 0),
-            { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
-                    In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
-        repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_B2_NUM;
-    } else if constexpr(Std::is_same<PrimType, uint1b_t>::value) {
-        ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_B1_NUM == 0),
-            { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
-                    In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
-        repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_B1_NUM;
-    } else if constexpr (Std::is_same<PrimType, fp4x2_e2m1_t>::value || Std::is_same<PrimType, fp4x2_e1m2_t>::value || Std::is_same<PrimType, int4b_t>::value) {
-        ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_FP4_NUM == 0),
-            { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
-                    In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
-        repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_FP4_NUM;
-    } else
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-    if constexpr (Std::is_same<PrimType, fp4x2_e2m1_t>::value || Std::is_same<PrimType, fp4x2_e1m2_t>::value) {
-        ASCENDC_ASSERT((count % ConstantsInternal::ONE_BLK_FP4_NUM == 0),
-            { KERNEL_LOG(KERNEL_ERROR, "DataCopy count is %d, which should be 32B align. \
-                    In NPU mode, no error is reported. The value is rounded down by 32B.", count); });
-        repeatParams.blockLen = count / ConstantsInternal::ONE_BLK_FP4_NUM;
-    } else
-#endif
-    {
-        ASCENDC_ASSERT((count % AscendCUtils::GetC0Count(sizeof(PrimType)) == 0), { KERNEL_LOG(KERNEL_ERROR, "Failed to "
-            "check count value in DataCopy from LocalTensor to GlobalTensor, count * sizeof(T) must be 32B align, "
-            "current count value is %u. In NPU mode, no error is reported. The value is rounded down by 32B.",
-            count); });
-        repeatParams.blockLen = count / AscendCUtils::GetC0Count(sizeof(PrimType));
-    }
+    DataCopyCheck<T>(count, repeatParams);
     DataCopy(dst, src, repeatParams);
 }
 

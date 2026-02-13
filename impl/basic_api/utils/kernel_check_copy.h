@@ -25,10 +25,11 @@ namespace AscendC {
  * Check function for CPU debug
  * ************************************************************************************************* */
 template <typename T>
-bool CheckFuncCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint64_t mask,
-    const uint8_t repeatTime, const CopyRepeatParams& repeatParams, const char* intriName)
+check::CopyApiParams BuildCopyApiParams(const LocalTensor<T>& dst, const LocalTensor<T>& src,
+    const uint8_t repeatTime, const CopyRepeatParams& repeatParams)
 {
-    check::CopyApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
+    return check::CopyApiParams {
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
         static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
         repeatTime,
         static_cast<uint16_t>(repeatParams.dstStride),
@@ -41,6 +42,13 @@ bool CheckFuncCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src, const u
         static_cast<uint64_t>(src.GetSize() * sizeof(T)),
         static_cast<uint8_t>(dst.GetPosition()),
         static_cast<uint8_t>(src.GetPosition()) };
+}
+
+template <typename T>
+bool CheckFuncCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint64_t mask,
+    const uint8_t repeatTime, const CopyRepeatParams& repeatParams, const char* intriName)
+{
+    auto chkParams = BuildCopyApiParams(dst, src, repeatTime, repeatParams);
     return CheckFuncCopyImpl(chkParams, mask, intriName);
 }
 
@@ -48,19 +56,7 @@ template <typename T>
 bool CheckFuncCopy(const LocalTensor<T>& dst, const LocalTensor<T>& src, const uint64_t mask[],
     const uint8_t repeatTime, const CopyRepeatParams& repeatParams, const char* intriName)
 {
-    check::CopyApiParams chkParams { static_cast<uint64_t>(reinterpret_cast<uintptr_t>(dst.GetPhyAddr())),
-        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(src.GetPhyAddr())),
-        repeatTime,
-        static_cast<uint16_t>(repeatParams.dstStride),
-        static_cast<uint16_t>(repeatParams.srcStride),
-        static_cast<uint16_t>(repeatParams.dstRepeatSize),
-        static_cast<uint16_t>(repeatParams.srcRepeatSize),
-        static_cast<uint32_t>(sizeof(T)),
-        static_cast<uint32_t>(sizeof(T)),
-        static_cast<uint64_t>(dst.GetSize() * sizeof(T)),
-        static_cast<uint64_t>(src.GetSize() * sizeof(T)),
-        static_cast<uint8_t>(dst.GetPosition()),
-        static_cast<uint8_t>(src.GetPosition()) };
+    auto chkParams = BuildCopyApiParams(dst, src, repeatTime, repeatParams);
     return CheckFuncCopyImplForMaskArray(chkParams, mask, intriName);
 }
 
