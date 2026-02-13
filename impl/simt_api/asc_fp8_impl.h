@@ -31,6 +31,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __float22hif82_rna_sat(const 
     return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_ROUND>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __float22hif82_rh(const float2 x) {
+    return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_HYBRID>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __float22hif82_rh_sat(const float2 x) {
+    return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_HYBRID>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
+}
+
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __half22hif82_rna(const half2 x) {
     return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_ROUND>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
@@ -39,12 +47,16 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __half22hif82_rna_sat(const h
     return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_ROUND>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __hif822float2(const hifloat8x2_t x) {
-    return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __half22hif82_rh(const half2 x) {
+    return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_HYBRID>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __hif822float2_sat(const hifloat8x2_t x) {
-    return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline hifloat8x2_t __half22hif82_rh_sat(const half2 x) {
+    return __cvt_hifloat8x2_t<__get_round<__RoundMode::CAST_HYBRID>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __hif822float2(const hifloat8x2_t x) {
+    return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 __hif822half2(const hifloat8x2_t x) {
@@ -55,16 +67,8 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __e4m3x22float2(const float8_e4m3x2
     return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __e4m3x22float2_sat(const float8_e4m3x2_t x) {
-    return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
-}
-
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __e5m2x22float2(const float8_e5m2x2_t x) {
     return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_DISABLE_VALUE>(x);
-}
-
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float2 __e5m2x22float2_sat(const float8_e5m2x2_t x) {
-    return __cvt_float2<__get_round<__RoundMode::CAST_RINT>(), RoundingSaturation::RS_ENABLE_VALUE>(x);
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline __asc_fp8x2_storage_t
