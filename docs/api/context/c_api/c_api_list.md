@@ -7,6 +7,7 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 |-----------------------|-----------------------|
 | [asc_load3d_v2_config](struct/asc_load3d_v2_config.md) | Load3Dv2接口的repeat参数 |
 | [asc_store_atomic_config](struct/asc_store_atomic_config.md) | 原子操作使能位与原子操作类型的值 |
+| [asc_fill_value_config](struct/asc_fill_value_config.md) | fill_value的初始化参数结构体，包含[asc_fill_l0a_value](cube_datamove/asc_fill_l0a_value.md)/[asc_fill_l0b_value](cube_datamove/asc_fill_l0b_value.md)/[asc_fill_l1_value](cube_datamove/asc_fill_l1_value.md)接口需要配置的各种初始化参数。 |
 
 ## 矢量计算
 
