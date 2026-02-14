@@ -13,6 +13,7 @@
 | [get_reduce_repeat_max_min_spr](./get_reduce_repeat_max_min_spr)                                                               | 本样例介绍基础api GetReduceRepeatMaxMinSpr的调用，GetReduceRepeatMaxMinSpr的功能是获取ReduceMax、ReduceMin连续场景下的最大/最小值以及相应的索引值 |
 | [mean](./mean)                                                                                                       | 本样例介绍了基于Ascend C异构混合编程模型演示Mean融合算子的核函数直调实现，根据最后一轴的方向对各元素求平均值                |
 | [pair_reduce_sum](./pair_reduce_sum)                                                                                 | 本样例基于PairReduceSum实现求和归约，可用于相邻两个（奇数下标和偶数下标）元素求和                             |
+| [reduce](./reduce)                                                                                                   | 本样例介绍了调用WholeReduceSum和BlockReduceSum高阶API实现reduce算子，实现了连续内存上数据元素的累加，返回累加结果的功能         |
 | [reduce_max_computation_of_the_first_n_data_elements](./reduce_max_computation_of_the_first_n_data_elements)         | 本样例基于ReduceMax的tensor前n个数据计算接口实现最大值归约，可用于指定从输入tensor的前n个数据中计算找出最大值及最大值对应的索引位置 |
 | [reduce_max_high_dimensional_tensor_sharding_computation](./reduce_max_high_dimensional_tensor_sharding_computation) | 本样例基于ReduceMax的tensor高维切分计算接口实现最大值归约，可用于从所有的输入数据中找出最大值及最大值对应的索引位置，使用mask用于控制每次迭代内参与计算的元素。           |
 | [reduce_min_computation_of_the_first_n_data_elements](./reduce_min_computation_of_the_first_n_data_elements)         | 本样例基于ReduceMin的tensor前n个数据计算接口实现最小值归约，可用于指定从输入tensor的前n个数据中找出最小值及最小值对应的索引位置              |
