@@ -19,7 +19,7 @@
 
 ## 算子描述
 - main.asc中内AI CPU算子与AI Core算子均使用内核调用符<<<...>>>进行调用，AI CPU算子将tiling计算的结果传给AI Core算子。
-- AI CPU算子与AI Core算子在不同stream上进行launch，样例中分别为stream与stream2，event用于记录stream上已下发的任务。使用aclrtRecordEvent在指定stream中记录event，使用aclrtStreamWaitEvent阻塞指定的stream，直到指定的event完成。
+- AI CPU算子与AI Core算子在不同stream上进行launch，样例中分别为aicpu_stream与aicore_stream，event用于记录stream上已下发的任务。使用aclrtRecordEvent在指定stream中记录event，使用aclrtStreamWaitEvent阻塞指定的stream，直到指定的event完成。
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行算子。
@@ -48,14 +48,9 @@
   ```
   执行结果如下，说明执行成功。
   ```bash
-  MyAicpuKernel1 inited
-  MyAicpuKernel1 inited type 1 mode 2 len 4 end!
-  MyAicpuKernel2 inited
-  MyAicpuKernel2 inited type 0 mode 1 len 2 end!
-  Hello World: int mode 2 len 4.
-  Hello World: float mode 1 len 2.
-  Hello World: int mode 2 len 4.
-  Hello World: int mode 2 len 4.
-  Hello World: float mode 1 len 2.
-  Hello World: float mode 1 len 2.
+  MyAicpuKernel inited
+  MyAicpuKernel inited type 1 mode 2 len 4 end!
+  Hello World: int mode 2 len 4 m 10.
+  Hello World: int mode 2 len 4 m 10.
+  Hello World: int mode 2 len 4 m 10.
   ```

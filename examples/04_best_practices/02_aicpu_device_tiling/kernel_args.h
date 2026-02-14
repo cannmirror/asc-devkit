@@ -20,7 +20,6 @@
 
 namespace KernelInfo {
 struct TilingInfo {
-    uint64_t lock;  // Synchronization lock between aicpu/aicore
     int8_t type;
     int8_t mode;
     int8_t len;
