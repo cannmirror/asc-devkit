@@ -173,4 +173,10 @@ constexpr int32_t g_coreType = AscendC::MIX;
 #define ASCEND_IS_NOT_AIC constexpr(g_coreType != AscendC::AIC)
 #endif
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 5102 || __NPU_ARCH__ == 3102)
+#define ASCEND_IS_AICORE constexpr(true)
+#else
+#define ASCEND_IS_AICORE constexpr(false)
+#endif
+
 #endif // ASCENDC_KERNEL_MACROS_H
