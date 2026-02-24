@@ -1,6 +1,6 @@
 set(BOOST_NAME "boost")
-set(BOOST_DOWNLOAD_PATH ${CANN_3RD_LIB_PATH}/pkg)
-set(BOOST_SRC_PATH ${CANN_3RD_LIB_PATH}/boost)
+set(BOOST_DOWNLOAD_PATH ${CANN_3RD_LIB_PATH}/boost)
+set(BOOST_SRC_PATH ${CANN_3RD_LIB_PATH}/boost-1.87.0)
 
 # 默认配置的boost不存在则下载
 if (NOT EXISTS "${BOOST_SRC_PATH}/boost/config.hpp")
