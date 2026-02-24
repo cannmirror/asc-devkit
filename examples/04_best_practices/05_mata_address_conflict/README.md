@@ -42,13 +42,11 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">8192 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">adds_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">adds_custom_v1/adds_custom_v2/adds_custom_v3</td></tr>
   </table>
 
 
 - 算子实现：
-
-  本样例中实现的是固定shape为1*4096的Add算子。
 
   - kernel实现   
   
