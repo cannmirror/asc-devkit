@@ -226,7 +226,7 @@ struct BlockRingBufInfo {
     uint32_t blockNum = 0U;      // total core num
     uint32_t ringBufLen = 0U;    // fifo buff size (print tlv storage)
     uint16_t magic = 0U;         // magic number
-    uint16_t flag = 0U;          // 0: simd, 1: simt
+    uint16_t flag = 0U;          // 0: aic, 1: aiv, 2: simt
     uint32_t rsv = 0U;           // reserve
     uint64_t ringBufAddr = 0U;   // start addr of fifo buff
     uint32_t resvMem[6];        // reserved
