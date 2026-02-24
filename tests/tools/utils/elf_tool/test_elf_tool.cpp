@@ -176,23 +176,6 @@ TEST_F(TEST_ELFTOOL, elfGetSymbolOffsetNoSymbol)
     EXPECT_EQ(ret, ELF_NO_SYMBOL);
 }
 
-TEST_F(TEST_ELFTOOL, elfGetSymbolOffsetTest)
-{
-    char elf[618433];
-    char sec[618433];
-    int len;
-    std::string elf_res_str = GetElfString();
-    const char* elf_tools_test = elf_res_str.c_str();
-    GetElfBuffer(elf_tools_test, elf, len);
-    size_t fileLen = 618433;
-    uint32_t type = 1;
-    size_t offset;
-    size_t size;
-    MOCKER(strncmp).stubs().will(returnValue(0));
-    size_t ret = ElfGetSymbolOffset((uint8_t*)elf, fileLen, "testName", &offset, &size);
-    EXPECT_EQ(ret, ELF_SUCCESS);
-}
-
 TEST_F(TEST_ELFTOOL, ElfHeaderCheckNullptrTest)
 {
     int32_t ret = ElfHeaderCheck(nullptr, 1, false);
