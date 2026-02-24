@@ -223,6 +223,12 @@ the superkernel cannot be integrated with the operator.", \
             f"The operator {op_info.op_type} is simt type, current soc version has not been adapted to \
 superkernel. Therefore, the superkernel cannot be integrated with the operator.", AscendCLogLevel.LOG_WARNING)
 
+
+    aicore_num = get_context().get_addition("_op_aicore_num")
+    vectorcore_num = get_context().get_addition("_op_vectorcore_num")
+    if aicore_num is not None and vectorcore_num is not None:
+        js["platformInfo"] = {"cubeCoreNum": int(aicore_num), "vectorCoreNum": int(vectorcore_num)}
+
     if not global_var_storage.get_variable("ascendc_dump_disable_compile_options") \
         and compile_info.dump_info.get("dump_type", "") != "":
         js["debugOptions"] = compile_info.dump_info["dump_type"]
