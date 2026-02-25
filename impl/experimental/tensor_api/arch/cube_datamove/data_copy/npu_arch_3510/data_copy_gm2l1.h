@@ -338,8 +338,15 @@ class CopyGmToCbufMultiNd2nzBase {
 public:
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto params = GenDataCopyParams<trait, T, U>(dst, src);
-        DataCopyImpl<trait, T, U, decltype(params)>(dst, src, params, tuple_sequence<decltype(params)>{});
+        auto shape = MakeShape(
+            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dst.Layout()) *
+            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dst.Layout()),
+            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dst.Layout()) *
+            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dst.Layout())
+            );
+        auto sliceTensor = src(coord, shape);
+        auto params = GenDataCopyParams<trait>(dst, sliceTensor);
+        DataCopyImpl<trait>(dst, sliceTensor, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
@@ -408,7 +415,9 @@ private:
         uint16_t nValue = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
         uint32_t dValue = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
         uint64_t srcNdMatrixStride = 0;
-        uint64_t srcDValue = dValue;
+
+        auto srcRowStride = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        uint64_t srcDValue = srcRowStride;
         uint16_t dstNzC0Stride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout)
             * sizeof(type) / C0_SIZE;
         uint16_t dstNzNStride = 1;

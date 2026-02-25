@@ -23,8 +23,7 @@ template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, type
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
 DataCopy(const T& dst, const U& src)
 {
-    DataCopy<trait, T, U>(dst, src, 
-        MakeCoord(MakeCoord(Std::Int<0>{}, Std::Int<0>{}), MakeCoord(Std::Int<0>{}, Std::Int<0>{})));
+    DataCopy<trait, T, U>(dst, src, ZeroCoord2DType{});
 }
 
 template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U, typename Coord>
