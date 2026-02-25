@@ -28,10 +28,9 @@ from .super_kernel_constants import FUNC_STR, OBJ_FILES_STR, AI_CORE_STR, \
 def gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info, is_static_shape):
     if not is_static_shape:
         # dynamic op runs offline compilation, dcci-before-kernel-start can not modify offline compilation
-        # so call dcci in gm get set value by default
-        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_before_kernel_start", False)
-        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_after_kernel_end", False)
-        compile_option_tuple.compile_options.append("-D__ASCENDC_SUPER_KERNEL_ENABLE_GM_GET_SET_VALUE_DCCI__")
+        # so call dcci before and after kernel by default, remove dcci in gm Get/SetValue
+        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_before_kernel_start", True)
+        global_var_storage.set_variable("ascendc_sub_super_kernel_call_dcci_after_kernel_end", True)
         return
 
     dcci_before_kernel_start_op_list = [
@@ -107,10 +106,10 @@ def gen_sub_super_kernel_compile_options(compile_option_tuple, tiling_info, comp
     sp_add_sub_op_feed_sync_all_macro(compile_info, compile_option_tuple)
     stream_fusion_mode = compile_info.super_kernel_info["sp_options"].get('stream-fusion', \
         SuperKernelStreamFusionMode.StreamFusionDisable)
-    if stream_fusion_mode == SuperKernelStreamFusionMode.StreamFusionEnable:
-        return
+
     # dynamic can not open early start, because do not now id in graph
-    if tiling_info.static_shape_flag:
+    if stream_fusion_mode != SuperKernelStreamFusionMode.StreamFusionEnable and \
+        tiling_info.static_shape_flag:
         gen_sub_super_kernel_early_start_compile_options(compile_option_tuple, compile_info)
 
     gen_gm_get_set_value_dcci_compile_options(compile_option_tuple, compile_info, tiling_info.static_shape_flag)

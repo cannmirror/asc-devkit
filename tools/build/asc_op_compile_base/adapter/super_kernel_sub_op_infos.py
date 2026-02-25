@@ -688,9 +688,9 @@ f"""else {{
         vector_call_func_block = f"if {core_type} {{\n"
         split_times = len(indent_code)
         block_dim = self.block_dim
-        vector_call_func_block += f"  if ({block_type}() < {block_dim}) {{\n"
         if not is_preload:
-            vector_call_func_block += indent_code_func(self.gen_dcci_before_kernel_start_call_block())
+            vector_call_func_block += indent_code_func(self.gen_dcci_before_kernel_start_call_block(), "  ")
+        vector_call_func_block += f"  if ({block_type}() < {block_dim}) {{\n"
 
         if split_times > 1:
             vector_call_func_block += "    uint8_t coreid = (uint8_t)get_coreid();\n"
@@ -705,9 +705,9 @@ f"""else {{
         else:
             vector_call_func_block += indent_code_func(indent_code[0], "      ")
 
-        if not is_preload:
-            vector_call_func_block += indent_code_func(self.gen_dcci_after_kernel_end_call_block())
         vector_call_func_block += "  }\n\n"
+        if not is_preload:
+            vector_call_func_block += indent_code_func(self.gen_dcci_after_kernel_end_call_block(), "  ")
         vector_call_func_block += "}\n\n"
         return vector_call_func_block
 
@@ -716,8 +716,8 @@ f"""else {{
         vector_call_func_block = f"if {core_type} {{\n"
         split_times = len(indent_code)
         block_dim = self.block_dim
+        vector_call_func_block += indent_code_func(self.gen_dcci_before_kernel_start_call_block(), "  ")
         vector_call_func_block += f"  if ({block_type}() < {block_dim}) {{\n"
-        vector_call_func_block += indent_code_func(self.gen_dcci_before_kernel_start_call_block())
 
         if split_times > 1:
             vector_call_func_block += "    uint8_t coreid = (uint8_t)get_coreid();\n"
@@ -735,8 +735,8 @@ f"""else {{
         else:
             vector_call_func_block += indent_code_func(indent_code[0], "      ")
 
-        vector_call_func_block += indent_code_func(self.gen_dcci_after_kernel_end_call_block())
         vector_call_func_block += "  } "
+        vector_call_func_block += indent_code_func(self.gen_dcci_after_kernel_end_call_block(), "  ")
         vector_call_func_block += self.sub_op_gen_feed_sync_all_code(True)
         vector_call_func_block += "}\n\n"
         return vector_call_func_block
