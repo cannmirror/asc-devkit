@@ -91,12 +91,8 @@
         - 调用GetTiling接口，获取Tiling信息。
 
   - 核函数  
-    使用纯Cube模式时，在核函数实现的入口处，指定KERNEL_TYPE_AIC_ONLY。
-    ```
-    #ifdef ENABLE_CUBE_ONLY
-    KERNEL_TASK_TYPE_DEFAULT(KERNEL_TYPE_AIC_ONLY);
-    #endif
-    ```
+    使用纯Cube模式时，在核函数实现的入口处，指定__cube__。
+
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
     ```
