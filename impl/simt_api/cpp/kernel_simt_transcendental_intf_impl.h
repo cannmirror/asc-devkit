@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H
-#define ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H
+#ifndef IMPL_SIMT_API_CPP_KERNEL_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H
+#define IMPL_SIMT_API_CPP_KERNEL_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H
 
 #include "impl/simt_api/cpp/dav_c310/kernel_simt_transcendental_impl.h"
 
@@ -395,4 +395,4 @@ __aicore__ inline T Normcdf(T x)
 
 }  // namespace Simt
 }  // namespace AscendC
-#endif  // ASCENDC_MODULE_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H
+#endif  // IMPL_SIMT_API_CPP_KERNEL_SIMT_TRANSCENDENTAL_INTERFACE_IMPL_H

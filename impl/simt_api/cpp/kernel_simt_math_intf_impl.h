@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -8,8 +8,8 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-#ifndef ASCENDC_MODULE_SIMT_MATH_INTERFACE_IMPL_H
-#define ASCENDC_MODULE_SIMT_MATH_INTERFACE_IMPL_H
+#ifndef IMPL_SIMT_API_CPP_KERNEL_SIMT_MATH_INTERFACE_IMPL_H
+#define IMPL_SIMT_API_CPP_KERNEL_SIMT_MATH_INTERFACE_IMPL_H
 
 #include "impl/simt_api/cpp/dav_c310/kernel_simt_math_impl.h"
 
@@ -158,4 +158,4 @@ __aicore__ inline T MulHi(T x, T y)
 }
 }  // namespace Simt
 }  // namespace AscendC
-#endif  // ASCENDC_MODULE_SIMT_MATH_INTERFACE_IMPL_H
+#endif  // IMPL_SIMT_API_CPP_KERNEL_SIMT_MATH_INTERFACE_IMPL_H

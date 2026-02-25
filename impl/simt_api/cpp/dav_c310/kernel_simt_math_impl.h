@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -12,8 +12,8 @@
  * \file kernel_simt_math_impl.h
  * \brief
  */
-#ifndef ASCENDC_MODULE_SIMT_MATH_IMPL_H
-#define ASCENDC_MODULE_SIMT_MATH_IMPL_H
+#ifndef IMPL_SIMT_API_CPP_DAV_C310_KERNEL_SIMT_MATH_IMPL_H
+#define IMPL_SIMT_API_CPP_DAV_C310_KERNEL_SIMT_MATH_IMPL_H
 
 #if defined(ASCENDC_CPU_DEBUG)
 #include <cmath>
@@ -758,4 +758,4 @@ __aicore__ inline int32_t MulHiImpl(int32_t x, int32_t y)
 #endif
 }  // namespace Simt
 }  // namespace AscendC
-#endif  // ASCENDC_MODULE_SIMT_MATH_IMPL_H
+#endif  // IMPL_SIMT_API_CPP_DAV_C310_KERNEL_SIMT_MATH_IMPL_H
