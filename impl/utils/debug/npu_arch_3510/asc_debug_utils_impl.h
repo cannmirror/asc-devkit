@@ -21,7 +21,7 @@
 #warning "asc_debug_utils_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
 #endif
 
-#include "impl/utils/debug/asc_utils_macros.h"
+#include "impl/utils/sys_macros.h"
 namespace __asc_aicore {
 __aicore__ inline void asc_entire_dcci_impl(__gm__ uint64_t* ptr)
 {

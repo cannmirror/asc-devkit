@@ -28,6 +28,9 @@ asc-devkit:
       - impl/**/dav_l300/*.h
       - impl/**/dav_l311/*.h
       - impl/basic_api/kernel_macros.h
+      - impl/utils/**/*.h
+      - impl/experimental/tensor_api/utils/*.h
+      - impl/c_api/instr_impl/npu_arch_2201/utils_impl/**/*.h
   llt:
     ut_check: true
     st_check: false

@@ -21,7 +21,8 @@
 #warning "asc_aicore_dump_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
 #endif
 
-#include "impl/utils/debug/asc_utils_macros.h"
+#include "impl/utils/sys_macros.h"
+#include "impl/utils/common_types.h"
 #include "impl/utils/debug/asc_debug_types.h"
 #include "impl/utils/debug/asc_debug_utils.h"
 

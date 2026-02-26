@@ -26,30 +26,18 @@
 #include <type_traits>
 #include "utils_intf.h"
 #include "utils_type.h"
+#include "impl/utils/common_types.h"
+#include "impl/utils/sys_macros.h"
+#include "impl/utils/sys_constants.h"
 
-constexpr uint32_t C_API_AIC_TYPE = 1;
-constexpr uint32_t C_API_AIV_TYPE = 2;
-constexpr uint32_t C_API_MIX_TYPE = 3;
+constexpr uint32_t C_API_AIC_TYPE = AscendC::AIC;
+constexpr uint32_t C_API_AIV_TYPE = AscendC::AIV;
+constexpr uint32_t C_API_MIX_TYPE = AscendC::MIX;
 
-#if defined(ASCENDC_CPU_DEBUG)
-    extern uint32_t g_c_api_core_type;
-    #define ASC_IS_AIV (g_c_api_core_type == C_API_AIV_TYPE)
-    #define ASC_IS_AIC (g_c_api_core_type == C_API_AIC_TYPE)
-    #define ASC_IS_NOT_AIV (g_c_api_core_type != C_API_AIV_TYPE)
-    #define ASC_IS_NOT_AIC (g_c_api_core_type != C_API_AIC_TYPE)
-#else
-    #if (defined(__DAV_CUBE__) && defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
-        constexpr uint32_t g_c_api_core_type = C_API_AIC_TYPE;
-    #elif (defined(__DAV_VEC__) && defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
-        constexpr uint32_t g_c_api_core_type = C_API_AIV_TYPE;
-    #else
-        constexpr uint32_t g_c_api_core_type = C_API_MIX_TYPE;
-    #endif
-    #define ASC_IS_AIV constexpr(g_c_api_core_type == C_API_AIV_TYPE)
-    #define ASC_IS_AIC constexpr(g_c_api_core_type == C_API_AIC_TYPE)
-    #define ASC_IS_NOT_AIV constexpr(g_c_api_core_type != C_API_AIV_TYPE)
-    #define ASC_IS_NOT_AIC constexpr(g_c_api_core_type != C_API_AIC_TYPE)
-#endif
+#define ASC_IS_AIV ASCEND_IS_AIV
+#define ASC_IS_AIC ASCEND_IS_AIC
+#define ASC_IS_NOT_AIV ASCEND_IS_NOT_AIV
+#define ASC_IS_NOT_AIC ASCEND_IS_NOT_AIC
 
 struct asc_c_api_default_repeat {
     uint8_t U8 = 1;

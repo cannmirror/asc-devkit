@@ -18,10 +18,6 @@
 #ifndef IMPL_C_API_C_API_INSTR_IMPL_UTILS_C_API_IMPL_UTILS_C_API_TYPE_H
 #define IMPL_C_API_C_API_INSTR_IMPL_UTILS_C_API_IMPL_UTILS_C_API_TYPE_H
 
-#ifndef __aicore__
-#define __aicore__ [aicore]
-#endif // __aicore__
-
 constexpr uint32_t INT4_BIT_NUM = 4;
 
 template <bool condition, class T1, class T2>

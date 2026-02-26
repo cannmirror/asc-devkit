@@ -23,7 +23,7 @@
 
 #include <type_traits>
 
-#include "impl/utils/debug/asc_utils_macros.h"
+#include "impl/utils/sys_macros.h"
 namespace __asc_aicore {
 template <typename T> constexpr __aicore__ inline uint64_t get_scalar_bitcode_value(T scalarValue)
 {

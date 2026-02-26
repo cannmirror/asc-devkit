@@ -15,6 +15,9 @@
 #ifndef IMPL_EXPERIMENTAL_TENSOR_API_UTILS_TENSOR_TILE_MACRO_H
 #define IMPL_EXPERIMENTAL_TENSOR_API_UTILS_TENSOR_TILE_MACRO_H
 
+#include "impl/utils/sys_constants.h"
+#include "impl/utils/sys_macros.h"
+
 #define GM_ADDR __gm__ uint8_t*
 
 #include <cstdint>
@@ -28,27 +31,6 @@
 #define ASSERT(x)
 #endif
 #define DEBUG_CODE(T)
-
-// For ascc preprocess: __global__ should not be replaced
-#ifdef __ASCC_PRE__
-#ifdef __global__
-#undef __global__
-#endif
-#else
-
-#ifndef __aicore__
-#define __aicore__ [aicore]
-#endif // __aicore__
-
-#ifndef __host_aicore__
-#define __host_aicore__ [host, aicore]
-#endif // __host_aicore__
-
-#ifndef __disable_kernel_type_autoinfer__
-#define __disable_kernel_type_autoinfer__
-#endif // __disable_kernel_type_autoinfer__
-
-#endif
 
 #if (__CCE__)
 #define _ASCENDC_HAS_BISHENG_COMPILER 1
@@ -79,10 +61,6 @@
 #endif // __BLOCK_LOCAL__
 #endif // ASCENDC_CPU_DEBUG
 
-#ifndef K_MAX_SHAPE_DIM
-#define K_MAX_SHAPE_DIM 8
-#endif
-
 #ifndef QBUF_MAX_LEN
 #define QBUF_MAX_LEN 64
 #endif
@@ -108,14 +86,6 @@
 
 #ifndef TPIPE_MAX_TYPE
 #define TPIPE_MAX_TYPE 4
-#endif
-
-#if (defined(__DAV_CUBE__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
-#define SPLIT_CORE_CUBE
-#endif
-
-#if (defined(__DAV_VEC__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101))
-#define SPLIT_CORE_VEC
 #endif
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3003 || __NPU_ARCH__ == 3113)
@@ -148,10 +118,6 @@ constexpr int32_t HF32_TRANS_MODE_BIT = 47;
 constexpr int32_t MM_LAYOUT_MODE_BIT = 51;
 constexpr int32_t LEAKY_RELU_MODE_BIT = 50;
 constexpr int32_t CAST_MODE_BIT = 59;
-
-constexpr int32_t MIX = 0;
-constexpr int32_t AIC = 1;
-constexpr int32_t AIV = 2;
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || \
     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
@@ -194,23 +160,6 @@ constexpr uint32_t BLOCK_CUBE = 16;
 
 #if defined(ASCENDC_CPU_DEBUG)
 extern int32_t g_matmulCount;
-extern int32_t g_coreType;
-#define ASCEND_IS_AIV (g_coreType == AscendC::AIV)
-#define ASCEND_IS_AIC (g_coreType == AscendC::AIC)
-#define ASCEND_IS_NOT_AIV (g_coreType != AscendC::AIV)
-#define ASCEND_IS_NOT_AIC (g_coreType != AscendC::AIC)
-#else
-#if defined(SPLIT_CORE_CUBE)
-constexpr int32_t g_coreType = AscendC::AIC;
-#elif defined(SPLIT_CORE_VEC)
-constexpr int32_t g_coreType = AscendC::AIV;
-#else
-constexpr int32_t g_coreType = AscendC::MIX;
-#endif
-#define ASCEND_IS_AIV constexpr(g_coreType == AscendC::AIV)
-#define ASCEND_IS_AIC constexpr(g_coreType == AscendC::AIC)
-#define ASCEND_IS_NOT_AIV constexpr(g_coreType != AscendC::AIV)
-#define ASCEND_IS_NOT_AIC constexpr(g_coreType != AscendC::AIC)
 #endif
 
 #endif //IMPL_EXPERIMENTAL_TENSOR_API_UTILS_TENSOR_TILE_MACRO_H

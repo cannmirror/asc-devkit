@@ -235,6 +235,9 @@ install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_type_conver
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_utils.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_utils.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/kernel_utils_base.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/kernel_utils_base.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../../../asc/impl/basic_api/utils ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/utils SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../../asc/impl/utils/sys_macros.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/utils/sys_macros.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../../asc/impl/utils/sys_constants.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/utils/sys_constants.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../../asc/impl/utils/common_types.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/include/basic_api/impl/utils/common_types.h SYMBOLIC)")
 
 # 3 tikcpp/tikcfw
 install(CODE "file(CREATE_LINK ../../ascendc/include/basic_api/impl ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw/impl SYMBOLIC)")
