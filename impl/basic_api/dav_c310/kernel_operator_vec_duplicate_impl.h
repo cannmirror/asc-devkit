@@ -75,7 +75,7 @@ __aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValu
     
     if (Internal::IsCounterMode()) {
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2); // maskReg 256bit PK-> 128bit
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2); // maskReg 256bit PK-> 128bit
         }
         VecDupLevel0VFImpl<isSetMask, isMaskBitMode, false, T>(dst, scalarValue, maskArrayStruct, maskCount,
             repeatTime, dstBlockStride, dstRepeatStride, maskBuf);
@@ -89,7 +89,7 @@ __aicore__ inline void VecDupLevel0Template(__ubuf__ T *dst, const T& scalarValu
                 auto eventIDV2S = GetTPipePtr()->FetchEventID(HardEvent::V_S);
                 SetFlag<HardEvent::V_S>(eventIDV2S);
                 WaitFlag<HardEvent::V_S>(eventIDV2S);
-                maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
+                maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 4);
                 maskBuf[0] = maskArray[0];
                 maskBuf[1] = maskArray[1];
                 maskBuf[2] = maskArray[2];
