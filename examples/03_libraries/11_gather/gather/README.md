@@ -26,10 +26,10 @@
   <table>  
   <tr><th align="center">算子类型(OpType)</th><th colspan="5" align="center">Gather</th></tr>  
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">default</td></tr>  
-  <tr><td align="center">x</td><td align="center">128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
-  <tr><td align="center">y</td><td align="center">128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>   
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">gather</td></tr>  
+  <tr><td align="center">srcGm</td><td align="center">128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
+  <tr><td align="center">srcOffsetGm</td><td align="center">128</td><td align="center">uint32</td><td align="center">ND</td><td align="center">\</td></tr>   
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">dstGm</td><td align="center">128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_gather</td></tr>  
   </table>
 
 - 算子实现：  

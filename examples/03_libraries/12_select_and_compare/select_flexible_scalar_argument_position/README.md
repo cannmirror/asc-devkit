@@ -30,7 +30,7 @@
   <tr><td align="center">x</td><td align="center">256</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
   <tr><td align="center">y</td><td align="center">32</td><td align="center">uint8</td><td align="center">ND</td><td align="center">\</td></tr>   
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">256</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr>  
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">select_flexible_scalar_argument_position</td></tr>  
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">main_sel_demo</td></tr>  
   </table>
 
 - 算子实现：  
