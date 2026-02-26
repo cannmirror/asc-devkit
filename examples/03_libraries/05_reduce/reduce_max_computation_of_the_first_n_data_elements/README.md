@@ -21,8 +21,8 @@
   ReduceMaxCustom算子在所有的输入tensor数据的前n个数据中找出最大值及最大值对应的索引位置。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
-
+  <td rowspan="1" align="center">算子类型(OpType)</td>
+  <td colspan="4" align="center">ReduceMax</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">288</td><td align="center">half</td><td align="center">ND</td></tr>

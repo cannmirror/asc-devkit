@@ -24,7 +24,7 @@
   当不同核之间操作同一块全局内存且可能存在读后写、写后读以及写后写等数据依赖问题时，通过调用该函数来插入同步语句来避免上述数据依赖时可能出现的数据读写错误问题。调用IBSet设置某一个核的标志位，与IBWait成对出现配合使用，表示核之间的同步等待指令，等待某一个核操作完成。
 - 算子规格：  
   <table>  
-  <tr><th align="center"></th><th colspan="5" align="center"></th></tr>  
+ <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">IBSet</td></tr> 
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center"></td></tr>  
   <tr><td align="center">x</td><td align="center">512</td><td align="center">half</td><td align="center">ND</td><td align="center"></td></tr>  
   <tr><td align="center">y</td><td align="center">512</td><td align="center">half</td><td align="center">ND</td><td align="center"></td></tr>  

@@ -22,7 +22,7 @@
   Sort32Custom算子，一次迭代可以完成32个数的排序。score和index分别存储在src0和src1中，按score进行排序（score大的排前面），排序好的score与其对应的index一起以（score, index）的结构存储在dst中。不论score为half还是float类型，dst中的（score, index）结构总是占据8Bytes空间。。
 - 算子规格：  
   <table>  
-  <tr><th align="center"></th><th colspan="5" align="center"></th></tr>  
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">sort32</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center"></td></tr>  
   <tr><td align="center">x</td><td align="center">128</td><td align="center">float</td><td align="center">ND</td><td align="center"></td></tr>  
   <tr><td align="center">y</td><td align="center">128</td><td align="center">uint32_t</td><td align="center">ND</td><td align="center"></td></tr>  

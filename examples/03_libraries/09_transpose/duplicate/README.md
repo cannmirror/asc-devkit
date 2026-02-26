@@ -22,8 +22,7 @@
   DuplicateCustom算子将一个变量或立即数复制多次并填充到向量中。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
-
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Duplicate</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">256</td><td align="center">float16</td><td align="center">ND</td></tr>

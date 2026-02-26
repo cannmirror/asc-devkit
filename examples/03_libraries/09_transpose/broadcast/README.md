@@ -26,19 +26,36 @@
 - 算子功能：  
   broadcast单算子，对输入tensor做广播计算。
 - 算子规格：  
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">broadcast</td></tr>
-  </tr>
-  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">1 * 48 / 96 * 1</td><td align="center">float</td><td align="center">ND</td></tr>
+<table>
   <tr>
+    <td align="center">算子类型(OpType)</td>
+    <td colspan="4" align="center">broadcast</td>
+  </tr>
   <tr>
+    <td rowspan="2" align="center">算子输入</td>
+    <td align="center">name</td>
+    <td align="center">shape</td>
+    <td align="center">data type</td>
+    <td align="center">format</td>
   </tr>
+  <tr>
+    <td align="center">x</td>
+    <td align="center">1 * 48 / 96 * 1</td>
+    <td align="center">float</td>
+    <td align="center">ND</td>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">96 * 48 / 96 * 96</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr>
+    <td align="center">算子输出</td>
+    <td align="center">y</td>
+    <td align="center">96 * 48 / 96 * 96</td>
+    <td align="center">float</td>
+    <td align="center">ND</td>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">broadcast_custom</td></tr>
-  </table>
+  <tr>
+    <td align="center">核函数名</td>
+    <td colspan="4" align="center">broadcast_custom</td>
+  </tr>
+</table>
 
 - 算子实现：  
   本样例中实现了两种场景的broadcast算子，分别是[1, 48]到[96, 48]的广播和[96, 1]到[96, 96]的广播。

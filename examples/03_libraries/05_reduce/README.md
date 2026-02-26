@@ -19,7 +19,7 @@
 | [reduce_min_computation_of_the_first_n_data_elements](./reduce_min_computation_of_the_first_n_data_elements)         | 本样例基于ReduceMin的tensor前n个数据计算接口实现最小值归约，可用于指定从输入tensor的前n个数据中找出最小值及最小值对应的索引位置              |
 | [reduce_min_high_dimensional_tensor_sharding_computation](./reduce_min_high_dimensional_tensor_sharding_computation) | 本样例基于ReduceMin的tensor高维切分计算接口实现最小值归约，可用于从所有的输入数据中找出最小值及最小值对应的索引位置，使用mask用于控制每次迭代内参与计算的元素。            |
 | [reduce_sum_computation_of_the_first_n_data_elements](./reduce_sum_computation_of_the_first_n_data_elements)         | 本样例基于ReduceSum的tensor前n个数据计算接口实现求和归约，可用于指定对输入tensor的前n个数据求和                 |
-| [reduce_sum_high_dimensional_tensor_sharding_computation](./reduce_sum_computation_of_the_first_n_data_elements)     | 本样例基于ReduceSum的tensor高维切分计算接口实现求和归约，可用于对所有的输入数据求和，使用mask用于控制每次迭代内参与计算的元素                |
+| [reduce_sum_high_dimensional_tensor_sharding_computation](./reduce_sum_high_dimensional_tensor_sharding_computation)     | 本样例基于ReduceSum的tensor高维切分计算接口实现求和归约，可用于对所有的输入数据求和，使用mask用于控制每次迭代内参与计算的元素                |
 | [reducemax](./reducemax)                                                                                             | 本样例介绍了调用ReduceMax高阶API实现reducemax算子，在所有的输入数据中找出最大值及最大值对应的索引位置                  |
 | [reducemean](./reducemean)                                                                                           | 本样例演示了基于ReduceMean高阶API实现reducemean算子。样例对一个多维向量按照指定的维度求平均值                  |
 | [reducemin](./reducemin)                                                                                             | 本样例演示了调用ReduceMin高阶API实现reducemin算子。样例对一个多维向量在指定的维度求最小值                     |

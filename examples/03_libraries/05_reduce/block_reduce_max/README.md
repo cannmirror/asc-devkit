@@ -22,17 +22,16 @@
   BlockReduceMaxCustom算子对每个datablock内所有元素求最大值。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
-
+  <tr>
+  <td rowspan="1" align="center">算子类型(OpType)</td>
+  <td colspan="4" align="center">BlockReduceMax</td></tr>
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">128</td><td align="center">half</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">算子输出</td></tr>
   <tr><td align="center">y</td><td align="center">64</td><td align="center">half</td><td align="center">ND</td></tr>
-
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">block_reduce_max_custom</td></tr>
   </table>
-
 - 算子实现：  
   本样例中实现的是固定shape为输入x[128]，输出y[64]的BlockReduceMaxCustom算子。
 
