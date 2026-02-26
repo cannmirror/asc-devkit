@@ -15,54 +15,6 @@
 #ifndef ASCENDC_MODULE_SIMT_UTILS_H
 #define ASCENDC_MODULE_SIMT_UTILS_H
 
-#ifdef ASCENDC_CPU_DEBUG
-#ifndef SIMT_WARP_SIZE
-#define SIMT_WARP_SIZE
-constexpr int32_t warpSize = 32;
-#endif
-#endif
-
-#if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
-#ifndef SIMT_CCE
-#define SIMT_CCE
-namespace cce {
-struct Dim3 {
-    uint32_t x = 1u, y = 1u, z = 1u;
-    Dim3(uint32_t x_) { x = x_; }
-    Dim3(uint32_t x_, uint32_t y_)
-    {
-        x = x_;
-        y = y_;
-    }
-    Dim3(uint32_t x_, uint32_t y_, uint32_t z_)
-    {
-        x = x_;
-        y = y_;
-        z = z_;
-    }
-};
-
-using dim3 = Dim3;
-
-template <auto funcPtr, typename... Args>
-void async_invoke(const dim3 &dim, Args &&...args)
-{
-    g_threadDimX = dim.x;
-    g_threadDimY = dim.y;
-    g_threadDimZ = dim.z;
-    AscendC::Simt::ThreadBlock &threadBlock = AscendC::Simt::ThreadBlock::GetBlockInstance();
-    const uint32_t threadNum = g_threadDimX * g_threadDimY * g_threadDimZ;
-    threadBlock.Init(threadNum);
-    auto func = [&args...]() { funcPtr(args...); };
-    for (uint32_t i = 0; i < threadNum; i++) {
-        threadBlock.Schedule(func, i);
-    }
-    threadBlock.FinishJobs();
-}
-}  // namespace cce
-#endif
-#endif
-
 namespace AscendC {
 namespace Simt {
 
