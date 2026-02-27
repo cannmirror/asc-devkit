@@ -19,10 +19,7 @@
 #if defined(ASCENDC_CPU_DEBUG)
 #include "simt_stub.h"
 #endif
-
-#ifndef __aicore__
-#define __aicore__ [aicore]
-#endif
+#include "utils/base/sys_macros.h"
 
 #if defined(__NPU_COMPILER_INTERNAL_PURE_SIMT__)
 #define __SIMT_DEVICE_FUNCTIONS_DECL__ __aicore__
