@@ -16,11 +16,15 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_CONSTANTS_H__
 #endif
 
-#define ASCRT_INF_F            __int_as_float(0x7f800000U)
-#define ASCRT_NAN_F            __int_as_float(0x7fffffffU)
-#define ASCRT_MIN_DENORM_F     __int_as_float(0x00000001U)
-#define ASCRT_MAX_NORMAL_F     __int_as_float(0x7f7fffffU)
-#define ASCRT_NEG_ZERO_F       __int_as_float(0x80000000U)
+constexpr int ASCRT_NAN_F_VALUE = 0x7fffffffU;
+constexpr int ASCRT_MIN_DENORM_F_VALUE = 0x00000001U;
+constexpr int ASCRT_MAX_NORMAL_F_VALUE = 0x7f7fffffU;
+constexpr int ASCRT_NEG_ZERO_F_VALUE = 0x80000000U;
+#define ASCRT_INF_F            __builtin_inff()
+#define ASCRT_NAN_F            (*(reinterpret_cast<const float *>(&ASCRT_NAN_F_VALUE)))
+#define ASCRT_MIN_DENORM_F     (*(reinterpret_cast<const float *>(&ASCRT_MIN_DENORM_F_VALUE)))
+#define ASCRT_MAX_NORMAL_F     (*(reinterpret_cast<const float *>(&ASCRT_MAX_NORMAL_F_VALUE)))
+#define ASCRT_NEG_ZERO_F       (*(reinterpret_cast<const float *>(&ASCRT_NEG_ZERO_F_VALUE)))
 #define ASCRT_ZERO_F           0.0F
 #define ASCRT_ONE_F            1.0F
 #define ASCRT_SQRT_HALF_F      0.707106781F
@@ -52,10 +56,6 @@
 #define ASCRT_REMQUO_MASK_F    (~((~0U)<<ASCRT_REMQUO_BITS_F))
 #define ASCRT_TRIG_PLOSS_F     105615.0F
 
-#define ASCRT_INF_F                            __builtin_inff()
-#define ASCRT_PI_F                             3.141592653589793f
-#define ASCRT_PIO2_F                           1.5707963267948966f
-#define ASCRT_PIO4_F                           0.7853981633974483f
 #define ASCRT_PIO8_F                           0.39269908169872415480783042290994f
 #define ASCRT_SCALAR_LN2_F                     0.69314718055994530941723212145818f
 #define ASCRT_2OPI_F                           0.63661975f
