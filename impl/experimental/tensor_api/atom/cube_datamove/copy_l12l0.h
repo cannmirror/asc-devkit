@@ -36,24 +36,8 @@ struct CopyL12L0 {
     }
 };
 
-template <typename TraitStruct>
-struct CopyTraits<CopyL12L0, TraitStruct>
-{
-    using TraitType = typename TraitStruct::TraitType;
-    static constexpr const TraitType defaultTrait = TraitStruct::value;
-
-    template <const TraitType& trait = defaultTrait, typename... Args>
-    __aicore__ inline void CopyUnpack(const Args& ...args) const {
-      CopyL12L0::Copy<TraitType, trait, Args...>(args...);
-    }
-
-    template <typename... Args>
-    __aicore__ inline constexpr CopyTraits<CopyL12L0, LoadDataTraitDefault>
-    with(const Args& ...args) const
-    {
-        return {args...};
-    }
-};
+template <typename Traits>
+struct CopyTraits<CopyL12L0, Traits> : public CopyTraits<CopyL12L0, Traits, CopyL12L0, LoadDataTraitDefault> {};
 
 template <>
 struct CopyTraits<CopyL12L0> : public CopyTraits<CopyL12L0, LoadDataTraitDefault> {};

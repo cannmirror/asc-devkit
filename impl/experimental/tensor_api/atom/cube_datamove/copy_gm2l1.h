@@ -36,24 +36,8 @@ struct CopyGM2L1 {
     }
 };
 
-template <typename TraitStruct>
-struct CopyTraits<CopyGM2L1, TraitStruct>
-{
-    using TraitType = typename TraitStruct::TraitType;
-    static constexpr const TraitType defaultTrait = TraitStruct::value;
-
-    template <const TraitType& trait = defaultTrait, typename... Args>
-    __aicore__ inline void CopyUnpack(const Args& ...args) const {
-      CopyGM2L1::Copy<TraitType, trait, Args...>(args...);
-    }
-
-    template <typename... Args>
-    __aicore__ inline constexpr CopyTraits<CopyGM2L1, DataCopyTraitDefault>
-    with(const Args& ...args) const
-    {
-        return {args...};
-    }
-};
+template <typename Traits>
+struct CopyTraits<CopyGM2L1, Traits> : public CopyTraits<CopyGM2L1, Traits, CopyGM2L1, DataCopyTraitDefault> {};
 
 template <>
 struct CopyTraits<CopyGM2L1> : public CopyTraits<CopyGM2L1, DataCopyTraitDefault> {};

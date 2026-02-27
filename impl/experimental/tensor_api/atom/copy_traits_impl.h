@@ -21,6 +21,25 @@ namespace Te {
 template <typename CopyOperation, typename... CopyOpArgs>
 struct CopyTraits{};
 
+template <typename CopyOp, typename Traits, typename CopyOpWith, typename TraitsWith>
+struct CopyTraits<CopyOp, Traits, CopyOpWith, TraitsWith>
+{
+    using TraitType = typename Traits::TraitType;
+    static constexpr const TraitType defaultTrait = Traits::value;
+
+    template <const TraitType& trait = defaultTrait, typename... Args>
+    __aicore__ inline void CopyUnpack(const Args& ...args) const {
+      CopyOp::template Copy<TraitType, trait, Args...>(args...);
+    }
+
+    template <typename... Args>
+    __aicore__ inline constexpr CopyTraits<CopyOpWith, TraitsWith>
+    with(const Args& ...args) const
+    {
+        return {args...};
+    }
+};
+
 }
 }
 

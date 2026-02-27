@@ -58,24 +58,8 @@ struct CopyTraits<CopyL0C2GMWith, TraitStruct>
     uint8_t unitFlag = 0;
 };
 
-template <typename TraitStruct>
-struct CopyTraits<CopyL0C2GM, TraitStruct>
-{
-    using TraitType = typename TraitStruct::TraitType;
-    static constexpr const TraitType defaultTrait = TraitStruct::value;
-
-    template <const TraitType& trait = defaultTrait, typename... Args>
-    __aicore__ inline void CopyUnpack(const Args& ...args) const {
-      CopyL0C2GM::Copy<TraitType, trait, Args...>(args...);
-    }
-
-    template <typename... Args>
-    __aicore__ inline constexpr CopyTraits<CopyL0C2GMWith, FixpipeTraitDefault>
-    with(const Args& ...args) const
-    {
-        return {args...};
-    }
-};
+template <typename Traits>
+struct CopyTraits<CopyL0C2GM, Traits> : public CopyTraits<CopyL0C2GM, Traits, CopyL0C2GMWith, FixpipeTraitDefault> {};
 
 template <>
 struct CopyTraits<CopyL0C2GM> : public CopyTraits<CopyL0C2GM, FixpipeTraitDefault> {};

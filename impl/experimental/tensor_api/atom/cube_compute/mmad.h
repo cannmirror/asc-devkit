@@ -36,24 +36,8 @@ struct MmadOperation {
     }
 };
 
-template <typename TraitStruct>
-struct MmadTraits<MmadOperation, TraitStruct>
-{
-    using TraitType = typename TraitStruct::TraitType;
-    static constexpr const TraitType defaultTrait = TraitStruct::value;
-
-    template <const TraitType& trait = defaultTrait, typename... Args>
-    __aicore__ inline void MmadUnpack(const Args& ...args) const {
-    MmadOperation::Mad<TraitType, trait, Args...>(args...);
-    }
-
-    template <typename... Args>
-    __aicore__ inline constexpr MmadTraits<MmadOperation, MmadTraitDefault>
-    with(const Args& ...args) const
-    {
-        return {args...};
-    }
-};
+template <typename MadTraits>
+struct MmadTraits<MmadOperation, MadTraits> : public MmadTraits<MmadOperation, MadTraits, MmadOperation, MmadTraitDefault> {};
 
 template <>
 struct MmadTraits<MmadOperation> : public MmadTraits<MmadOperation, MmadTraitDefault> {};

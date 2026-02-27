@@ -21,6 +21,25 @@ namespace Te {
 template <typename MadOperation, typename... MadOpArgs>
 struct MmadTraits{};
 
+template <typename MadOp, typename MadTraits, typename MadOpWith, typename MadTraitsWith>
+struct MmadTraits<MadOp, MadTraits, MadOpWith, MadTraitsWith>
+{
+    using TraitType = typename MadTraits::TraitType;
+    static constexpr const TraitType defaultTrait = MadTraits::value;
+
+    template <const TraitType& trait = defaultTrait, typename... Args>
+    __aicore__ inline void MmadUnpack(const Args& ...args) const {
+    MadOp::template Mad<TraitType, trait, Args...>(args...);
+    }
+
+    template <typename... Args>
+    __aicore__ inline constexpr MmadTraits<MadOpWith, MadTraitsWith>
+    with(const Args& ...args) const
+    {
+        return {args...};
+    }
+};
+
 }
 }
 
