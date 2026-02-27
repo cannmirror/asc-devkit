@@ -34,7 +34,7 @@ __aicore__ inline void SetFpc(const T& deqTensorTempBuf)
 {
     if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510 ||
                   CURRENT_ARCH_VERSION == ArchVersion::V2201) {
-        uint64_t deqTensorAddr = (deqTensorTempBuf >> static_cast<uint64_t>(7)) << 8;
+        uint64_t deqTensorAddr = (reinterpret_cast<uint64_t>(deqTensorTempBuf) >> static_cast<uint64_t>(7)) << 8;
         set_fpc(deqTensorAddr);
     }
 }

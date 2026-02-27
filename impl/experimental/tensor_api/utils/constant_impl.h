@@ -97,6 +97,9 @@ using IsDirectQuantMode = is_one_of_value<quantPre, TILE_OP_INTERNAL_DIRECT_QUAN
 
 using ZeroCoord2DType = AscendC::Std::tuple<Std::Int<0>, Std::Int<0>>;
 
+using EmptyShape = AscendC::Std::tuple<AscendC::Std::tuple<Std::Int<0>, Std::Int<0>>, 
+    AscendC::Std::tuple<Std::Int<0>, Std::Int<0>>>;
+
 // IsIntegralConstant
 template <typename T>
 struct IsIntegralConstant : Std::false_type {};

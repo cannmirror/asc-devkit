@@ -30,81 +30,18 @@ public:
     template <typename T>
     __aicore__ inline void CopyDeqTensorToFbufImpl(const T& src, uint16_t calNSize, uint16_t nIterIndex)
     {
-        auto params = CopyDeqTensorToFbufGenParams(src, calNSize, nIterIndex);
-        uint64_t dstAddr = AllocTempBuf(calNSize);
-        DataCopyImpl<T, decltype(params)>(dstAddr, src, params, tuple_sequence<decltype(params)>{});
+        auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocTempBuf(calNSize));
+        auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
+        auto tileSrc = TileSrcTensor(src, calNSize, nIterIndex);
+        DataCopy(dst, tileSrc);
         SetFpc(dstAddr);
     }
-
 private:
     template <typename T>
-    __aicore__ inline constexpr void CheckNDTemplate()
-    {
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<1>>,
-            "CopyCbufToFB Layout->Shape->Row->ZeroDim, is not Std::Int<1> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<1>>,
-            "CopyCbufToFB Layout->Shape->Column->ZeroDim, is not Std::Int<1> type!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        using StrideColumn1 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 1>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<0>>,
-            "CopyCbufToFB Layout->Stride->Row->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<0>>,
-            "CopyCbufToFB Layout->Stride->Column->ZeroDim, is not Std::Int<0> type!");
-        static_assert(Std::is_same_v<StrideColumn1, Std::Int<1>>,
-            "CopyCbufToFB Layout->Stride->Column->OneDim, is not Std::Int<1> type!");
-    }
-    template <typename T>
-    __aicore__ inline constexpr void CheckTemplate()
-    {
-        using srcType = typename T::elementType;
-        CheckNDTemplate<T>();
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
-        static_assert(Std::is_one_of_v<srcType, __fbuf__ uint64_t>, "The source data type is not supported.");
-#endif
-    }
-
-    template <typename T>
-    __aicore__ inline auto CopyDeqTensorToFbufGenParams(const T& src, uint16_t calNSize, uint16_t nIterIndex)
-    {
-        CheckTemplate<T>();
-        constexpr uint16_t fbufBurstLenUnit = 64;
-        using srcType = typename T::elementType;
-        auto layout = src.Layout();
-        uint16_t colLength = GetEleFromLayout<decltype(layout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(layout);
-        uint16_t rowStride = GetEleFromLayout<decltype(layout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(layout);
-        uint16_t blockCount = CeilDivision(calNSize, colLength);
-        uint16_t blockLen = CeilDivision(colLength * sizeof(srcType), fbufBurstLenUnit);
-        uint16_t srcStride = CeilDivision(rowStride * sizeof(srcType), C0_SIZE);
-        uint16_t dstStride = blockLen;
-        uint32_t deqValueOffset = MAIN_LOOP_N_SIZE_3510 / colLength * rowStride * nIterIndex;
-
-        auto params = Std::make_tuple(blockCount, blockLen, srcStride, dstStride, deqValueOffset);
-        return params;
-    }
-
-    template <typename T, typename U, size_t... Is>
-    __aicore__ inline void DataCopyImpl(
-        const uint64_t& dstAddr, const T& src, const U& tupleParams, Std::index_sequence<Is...>)
-    {
-        using srcType = typename T::elementType;
-        CopyCbufToFbuf<srcType>(
-            dstAddr, (__cbuf__ uint64_t *)src.Data().Get(), Std::get<Is>(tupleParams)...);
-    }
-
-    template <typename T>
-    __aicore__ inline void CopyCbufToFbuf(uint64_t dst, __cbuf__ T *src, uint16_t blockCount,
-        uint16_t blockLen, uint16_t srcStride, uint16_t dstStride, uint32_t deqValueOffset)
-    {
-        if ASCEND_IS_AIV {
-            return;
-        }
-        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
-            copy_cbuf_to_fbuf((__fbuf__ uint64_t *)dst, src + deqValueOffset, blockCount, blockLen, srcStride, dstStride);
-        }
+    __aicore__ inline decltype(auto) TileSrcTensor(const T& src, uint16_t calNSize, uint16_t nIterIndex) {
+        auto coord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterIndex * MAIN_LOOP_N_SIZE_3510));
+        auto shape = MakeShape(1, calNSize);
+        return src(coord, shape);
     }
 };
 

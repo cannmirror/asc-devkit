@@ -26,8 +26,8 @@ public:
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
     {
         auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
-        SetRegister<trait, V, decltype(registerParams)>(quant, registerParams);
-        auto params = GenFixpipeQuantParams<T, U>(dst, src);
+        SetRegister<V, decltype(registerParams)>(quant, registerParams);
+        auto params = GenFixpipeQuantParams<trait, T, U>(dst, src);
         DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
 
@@ -163,19 +163,23 @@ private:
 
     template <const FixpipeTrait& trait, typename T, typename U, typename V>
     __aicore__ inline void FixpipeNZ2DNVectorCompute(const T& dst, const U& src, const V& quant, uint32_t nIterNum,
-        uint32_t calNSize, uint32_t tailNSize, uint32_t dstOffset, uint32_t srcOffset)
+        uint32_t calNSize, uint32_t tailNSize)
     {
         auto mainLoopParam = GenParams<trait, T, U, false>(dst, src);
         for (uint16_t i = 0; i < nIterNum; ++i) {
             CopyDeqTensorToFbufImpl(quant, calNSize, i);
             InsertSync();
-            DataCopy<trait, T, U, decltype(mainLoopParam)>(dst[dstOffset * i], src[srcOffset * i], mainLoopParam);
+            auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
+            auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * MAIN_LOOP_N_SIZE_3510));
+            DataCopy<trait>(dst(dstCoord), src(srcCoord), mainLoopParam);
         }
-        auto tailParam = GenParams<trait, T, U, true>(dst, src);
         if (tailNSize) {
+            auto tailParam = GenParams<trait, T, U, true>(dst, src);
             CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
             InsertSync();
-            DataCopy<trait, T, U, decltype(tailParam)>(dst[dstOffset * nIterNum], src[srcOffset * nIterNum], tailParam);
+            auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
+            auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * MAIN_LOOP_N_SIZE_3510));
+            DataCopy<trait>(dst(dstCoord), src(srcCoord), tailParam);
         }
     }
 };
@@ -187,7 +191,7 @@ public:
     {
         auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(registerParams)>(registerParams);
-        auto params = GenParams<trait, T, U>(dst, src);
+        auto params = GenTileParams<trait, T, U>(dst, src);
         FixpipeNZ2DNVectorEntrance<trait, T, U, V, decltype(params)>(dst, src, quant, params);
     }
 
@@ -239,7 +243,7 @@ private:
     }
 
     template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenParams(const T& dst, const U& src)
+    __aicore__ inline auto GenTileParams(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -253,14 +257,12 @@ private:
         uint16_t nIterNum = 1;
         uint32_t calNSize = nSize;
         uint32_t tailNSize = 0;
-        uint32_t dstOffset = MAIN_LOOP_N_SIZE_3510 * dstStride;
-        uint32_t srcOffset = CBURST_NUM_3510 * srcStride * BLOCK_CUBE;
         if (calNSize > MAIN_LOOP_N_SIZE_3510) {
             nIterNum = nSize / MAIN_LOOP_N_SIZE_3510;
             tailNSize = nSize % MAIN_LOOP_N_SIZE_3510;
             calNSize = MAIN_LOOP_N_SIZE_3510;
         }
-        auto params = Std::make_tuple(nIterNum, calNSize, tailNSize, dstOffset, srcOffset);
+        auto params = Std::make_tuple(nIterNum, calNSize, tailNSize);
         return params;
     }
 

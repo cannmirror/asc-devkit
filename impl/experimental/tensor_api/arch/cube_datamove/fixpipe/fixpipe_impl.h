@@ -27,10 +27,9 @@ Fixpipe(const T& dst, const U& src)
     constexpr Hardware dstPos = GetHardPos<T>();
     constexpr Hardware srcPos = GetHardPos<U>();
     constexpr Hardware quantPos = Hardware::MAX;
-    auto coordZero = MakeCoord(Std::Int<0>{}, Std::Int<0>{});
     using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos,
         CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
-    Tensor2Tensor{}.template Run<trait>(dst, src, coordZero);
+    Tensor2Tensor{}.template Run<trait>(dst, src, ZeroCoord2DType{});
 }
 
 template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename S>
@@ -40,10 +39,9 @@ Fixpipe(const T& dst, const U& src, const S& quant)
     constexpr Hardware dstPos = GetHardPos<T>();
     constexpr Hardware srcPos = GetHardPos<U>();
     constexpr Hardware quantPos = Hardware::L1;
-    auto coordZero = MakeCoord(Std::Int<0>{}, Std::Int<0>{});
     using Tensor2Tensor = typename FixpipeTensor2Tensor<dstPos, srcPos, quantPos,
         CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
-    Tensor2Tensor{}.template Run<trait>(dst, src, quant, coordZero);
+    Tensor2Tensor{}.template Run<trait>(dst, src, quant, ZeroCoord2DType{});
 }
 
 template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename Coord>

@@ -45,15 +45,15 @@ static constexpr bool VerifyingMmadWithBiasTemplate = (IsTileTensorV<T> && IsTil
 template <typename T, typename U>
 static constexpr bool VerifyingFixpipeTemplate = (IsTileTensorV<T> && IsTileTensorV<U>);
 
-template <typename T, typename U, typename V>
+template <typename T, typename U, typename S>
 static constexpr bool VerifyingFixpipeQuantTemplate = (IsTileTensorV<T> && IsTileTensorV<U>
-    && (IsTileTensorV<V> || Std::is_same_v<V, uint64_t>)); 
+    && (IsTileTensorV<S> || Std::is_same_v<S, uint64_t>)); 
 
 template <typename T, typename U, typename Coord>
 constexpr bool VerifyingFixpipeTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingFixpipeTemplate<T, U>;
 
-template <typename T, typename U, typename V, typename Coord>
-constexpr bool VerifyingFixpipeQuantTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingFixpipeQuantTemplate<T, U, V>;
+template <typename T, typename U, typename S, typename Coord>
+constexpr bool VerifyingFixpipeQuantTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingFixpipeQuantTemplate<T, U, S>;
 
 } // namespace Te
 } // namespace AscendC
