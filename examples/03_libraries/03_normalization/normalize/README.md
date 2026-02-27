@@ -5,6 +5,7 @@
 本样例基于Kernel直调算子工程，介绍了调用Normalize高阶API实现normalize单算子，LayerNorm中，已知均值和方差，计算shape为[A，R]的输入数据的标准差的倒数rstd和y。
 
 ## 支持的产品
+
 - Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
@@ -31,7 +32,7 @@
   <tr><td rowspan="7" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">inputX</td><td align="center">8*64</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">inputNormalize</td><td align="center">8</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">inputMean</td><td align="center">8</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">inputVariance</td><td align="center">8</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">gamma</td><td align="center">64</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">beta</td><td align="center">64</td><td align="center">float</td><td align="center">ND</td></tr>
@@ -45,7 +46,7 @@
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape(inputX[8, 64]、inputNormalize[8]、inputVariance[8]、gamma[64], beta[64], outputRstd[8]、output[8, 64])的normalize算子。
+  本样例中实现的是固定shape(inputX[8, 64]、inputMean[8]、inputVariance[8]、gamma[64], beta[64], outputRstd[8]、output[8, 64])的normalize算子。
 
   - Kernel实现
 

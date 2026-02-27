@@ -33,7 +33,7 @@
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">mean</td><td align="center">1*1024</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">var</td><td align="center">1*1024</td><td align="center">float</td><td align="center">ND</td></tr>
-  <tr><td align="center">inputX</td><td align="center">1*1024</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">inputX</td><td align="center">1*1024</td><td align="center">int32_t</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="3" align="center">算子输出</td></tr>
   <tr><td align="center">outMean</td><td align="center">1*8</td><td align="center">float</td><td align="center">ND</td></tr>
