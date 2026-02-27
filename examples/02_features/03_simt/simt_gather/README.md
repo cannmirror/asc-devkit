@@ -55,8 +55,11 @@
   gather_output[row[out_row]] = input[row[in_row]];
   ```
 
-- 调用实现：
-  使用内核调用符<<<>>>调用核函数。
+- 调用实现：  
+  - CPU调测模式使用ICPU_RUN_KF CPU调测宏调用核函数。  
+  - NPU模式使用内核调用符<<<>>>调用核函数。  
+
+  应用程序通过ASCENDC_CPU_DEBUG宏区分代码逻辑运行于CPU模式还是NPU模式。
 
 ## 编译运行
 在本样例根目录下执行如下步骤，编译并执行算子。
@@ -87,7 +90,29 @@
   ```
   [Success] Case accuracy is verification passed.
   ```
-  
+
+## CPU Debug调测
+CPU Debug功能支持对CPU执行过程中的运行状态进行调试，主要通过GDB工具实现。GDB调试支持设置断点、查看寄存器和内存状态、单步执行、查看调用栈等常用调试操作，并支持多线程程序的调试。
+
+- 样例执行
+  ```bash
+  mkdir -p build && cd build;          # 创建并进入build目录
+  cmake -DRUN_MODE=cpu ..; make -j;    # 编译工程
+  ./demo                               # 执行样例
+  ```
+  执行结果如下，说明精度对比成功。
+  ```
+  [Success] Case accuracy is verification passed.
+  ```
+
+- 进入GDB模式调试  
+  在上述指令中"./demo"前加入"gdb --args"，再次执行指令即可进入GDB模式。调试时需要选择子进程进行调试。
+  ```bash
+  mkdir -p build && cd build;
+  cmake -DRUN_MODE=cpu ..; make -j;
+  gdb --args ./demo
+  ```
+
 ## 性能调优
 算子调优工具支持上板调优和仿真调优两种模式，可分别获取算子在实际硬件/仿真环境下的性能数据，用于定位性能瓶颈、优化算子实现。
 ### 上板调优
