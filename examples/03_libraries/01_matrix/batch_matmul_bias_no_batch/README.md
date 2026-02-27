@@ -32,7 +32,7 @@
   <tr><td align="center">bias</td><td align="center">N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">-</td><td align="center">float</td><td align="center">ND</td><td align="center">M * N</td><td align="center">NORMAL</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">M * N</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td><td align="center">NORMAL</td></tr>
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="6" align="center">batch_matmul_bias_no_batch_custom</td></tr>
   </table>
@@ -64,7 +64,7 @@
       - 设置左矩阵A、右矩阵B、Bias。
       - 完成多batch矩阵乘操作。
         ```
-        matmulObj.IterateBatch(cGlobal, batchA, batchB, false);
+        matmulObj.IterateBatch(cGlobal, BatchNum, BatchNum, false);
         ```
       - 结束矩阵乘操作。
 
@@ -73,7 +73,7 @@
     - 获取Tiling参数的流程如下：
       - 创建一个Tiling对象。
       - 根据输入输出Layout设置单核计算的A、B、C、Bias的参数类型信息；M、N、Ka、Kb形状信息等。
-      - 调用SetALayout、SetBLayout、SetCLayout、SetBatchNum设置A/B/C的Layout轴信息和最大BatchNum数。
+      - 调用SetBatchInfoForNormal、SetBatchNum设置A/B/C的Layout轴信息和最大BatchNum数。
       - 调用GetTiling接口，获取Tiling信息。
 
   - 调用实现  
