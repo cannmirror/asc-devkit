@@ -91,8 +91,8 @@ template <size_t I, typename Tuple>
 __aicore__ inline constexpr auto GetTuple(Tuple&& t) 
 {
     static_assert(Std::is_tuple_v<Std::remove_cvref_t<Tuple>>, "Shape or Stride is not Tuple");
-    auto&& tt = Std::get<I>(static_cast<Tuple&&>(t));
-    if constexpr (Std::is_tuple_v<decltype(tt)>) {
+    auto tt = Std::get<I>(static_cast<Tuple&&>(t));
+    if constexpr (Std::is_tuple_v<Std::remove_cvref_t<decltype(tt)>>) {
         return tt;
     } else {
         return Std::make_tuple(tt);
@@ -164,7 +164,11 @@ template<size_t index, size_t I, size_t... Is, typename Tuple>
 __aicore__ inline constexpr decltype(auto) GetValue(const Tuple& t)
 {
     auto tupleEle = Std::get<index>(t);
-    return Std::make_tuple(Std::get<I>(tupleEle), Std::get<Is>(tupleEle)...);
+    if constexpr(sizeof...(Is) == 0) {
+        return Std::get<I>(tupleEle);
+    } else {
+        return Std::make_tuple(Std::get<I>(tupleEle), Std::get<Is>(tupleEle)...);
+    }
 }
 
 template<size_t index, typename Tuple>
@@ -179,7 +183,7 @@ __aicore__ inline constexpr auto GetMax(const T0& t0, const Ts&... ts)
     if constexpr (sizeof...(Ts) == 0) {
         return t0;
     } else {
-        return max(t0, GetMax(ts...));
+        return Te::max(t0, GetMax(ts...));
     }
 }
 

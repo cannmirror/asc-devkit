@@ -86,21 +86,36 @@ __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, con
 
 // make_fractal.h
 template <typename T>
-__aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column);
+__aicore__ inline decltype(auto) MakeNzLayout(size_t row, size_t column);
 
 __aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column);
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column);
+__aicore__ inline decltype(auto) MakeDNLayout(size_t row, size_t column);
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeColumnMajorLayout(size_t row, size_t column);
+__aicore__ inline decltype(auto) MakeNDLayout(size_t row, size_t column);
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column);
+__aicore__ inline decltype(auto) MakeZnLayout(size_t row, size_t column);
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column);
+__aicore__ inline decltype(auto) MakeZzLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeNnLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleANDLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleADNLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleBNDLayout(size_t row, size_t column);
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleBDNLayout(size_t row, size_t column);
 
 template <typename T, size_t row, size_t column, typename Enable = void>
 struct NZLayoutFormat;

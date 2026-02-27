@@ -18,7 +18,6 @@
 #include "include/experimental/tensor_api/utils/utils.h"
 #include "impl/experimental/tensor_api/tensor/layout_struct.h"
 
-
 namespace AscendC {
 namespace Te {
 
@@ -246,16 +245,6 @@ __aicore__ inline constexpr auto CosizeImpl(const Layout<ShapeType, StrideType>&
 }
 
 // NZ
-template <typename T>
-__aicore__ inline decltype(auto) MakeLayoutForNZ(size_t row, size_t column)
-{
-    auto shape = MakeShapeImpl(MakeShapeImpl(Std::Int<FRACTAL_FIXED>{}, row / FRACTAL_FIXED),
-        MakeShapeImpl(Std::Int<C0_SIZE / sizeof(T)>{}, column / (C0_SIZE / sizeof(T))));
-    auto stride = MakeStrideImpl(MakeStrideImpl(Std::Int<C0_SIZE / sizeof(T)>{}, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{}),
-        MakeStrideImpl(Std::Int<1>{}, C0_SIZE / sizeof(T) * row));
-    return MakeLayoutImpl(shape, stride);
-}
-
 template <typename T, size_t row, size_t column>
 using NZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<row / FRACTAL_FIXED>>,
     Shape<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<column / (C0_SIZE / sizeof(T))>>>;
@@ -265,14 +254,6 @@ using NZStrideFormat = Stride<Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<C0_
     Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * row>>>;
 
 // ND
-template <typename T>
-__aicore__ inline decltype(auto) MakeLayoutForND(size_t row, size_t column)
-{
-    auto shape = MakeShapeImpl(MakeShapeImpl(Std::Int<1>{}, row), MakeShapeImpl(Std::Int<1>{}, column));
-    auto stride = MakeStrideImpl(MakeStrideImpl(Std::Int<0>{}, column), MakeStrideImpl(Std::Int<0>{},  Std::Int<1>{}));
-    return MakeLayoutImpl(shape, stride);
-}
-
 template <typename T, size_t row, size_t column>
 using NDShapeFormat = Shape<Shape<Std::Int<1>, Std::Int<row>>, Shape<Std::Int<1>, Std::Int<column>>>;
 
@@ -280,14 +261,6 @@ template <typename T, size_t row, size_t column>
 using NDStrideFormat = Stride<Stride<Std::Int<0>, Std::Int<column>>, Stride<Std::Int<0>, Std::Int<1>>>;
 
 // DN
-template <typename T>
-__aicore__ inline decltype(auto) MakeLayoutForDN(size_t row, size_t column)
-{
-    auto shape = MakeShapeImpl(MakeShapeImpl(Std::Int<1>{}, row), MakeShapeImpl(Std::Int<1>{}, column));
-    auto stride = MakeStrideImpl(MakeStrideImpl(Std::Int<0>{}, Std::Int<1>{}), MakeStrideImpl(Std::Int<0>{}, row));
-    return MakeLayoutImpl(shape, stride);
-}
-
 template <typename T, size_t row, size_t column>
 using DNShapeFormat = Shape<Shape<Std::Int<1>, Std::Int<row>>, Shape<Std::Int<1>, Std::Int<column>>>;
 
@@ -295,20 +268,6 @@ template <typename T, size_t row, size_t column>
 using DNStrideFormat = Stride<Stride<Std::Int<0>, Std::Int<1>>, Stride<Std::Int<0>, Std::Int<row>>>;
 
 // ZN
-template <typename T>
-__aicore__ inline decltype(auto) MakeLayoutForZN(size_t row, size_t  column)
-{
-    auto shape = MakeShapeImpl(
-        MakeShapeImpl(Std::Int<C0_SIZE / sizeof(T)>{}, row / (C0_SIZE / sizeof(T))),
-        MakeShapeImpl(Std::Int<FRACTAL_FIXED>{}, column / FRACTAL_FIXED)
-    );
-    auto stride = MakeStrideImpl(
-        MakeStrideImpl(Std::Int<1>{}, C0_SIZE / sizeof(T) * column),
-        MakeStrideImpl(Std::Int<C0_SIZE / sizeof(T)>{}, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{})
-    );
-    return MakeLayoutImpl(shape, stride);
-}
-
 template <typename T, size_t  row, size_t  column>
 using ZNShapeFormat = Shape<Shape<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<row / (C0_SIZE / sizeof(T))>>,
     Shape<Std::Int<FRACTAL_FIXED>, Std::Int<column / FRACTAL_FIXED>>>;
@@ -316,21 +275,132 @@ template <typename T, size_t  row, size_t  column>
 using ZNStrideFormat = Stride<Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * column>>,
     Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>>>;
 
-template <typename T>
-__aicore__ inline decltype(auto) MakeLayoutForZZ(size_t row, size_t column) {
-    auto shape = MakeShapeImpl(MakeShapeImpl(Std::Int<FRACTAL_FIXED>{}, row / FRACTAL_FIXED),
-        MakeShapeImpl(Std::Int<C0_SIZE / sizeof(T)>{}, column / (C0_SIZE / sizeof(T))));
-    auto stride = MakeStrideImpl(MakeStrideImpl(Std::Int<C0_SIZE / sizeof(T)>{}, FRACTAL_FIXED * column),
-        MakeStrideImpl(Std::Int<1>{}, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{}));
-    return MakeLayoutImpl(shape, stride);
-}
-
+// ZZ
 template <typename T, size_t row, size_t column>
 using ZZShapeFormat = Shape<Shape<Std::Int<FRACTAL_FIXED>, Std::Int<row / FRACTAL_FIXED>>,
     Shape<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<column / (C0_SIZE / sizeof(T))>>>;
 template <typename T, size_t row, size_t column>
 using ZZStrideFormat = Stride<Stride<Std::Int<C0_SIZE / sizeof(T)>, Std::Int<FRACTAL_FIXED * column>>,
     Stride<Std::Int<1>, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>>>;
+
+// layout_construct.h
+struct MakeTupleCons {
+    template <typename... Ts>
+    __aicore__ inline decltype(auto) operator()(Ts&&... ts) {
+        return Std::make_tuple(Std::forward<Ts>(ts)...);
+    }
+};
+
+template <typename F, typename T>
+__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T&& t);
+
+template <typename F, typename T0, typename T1>
+__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1);
+
+template <typename F, typename T0, typename T1, typename... Ts>
+__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1, Ts&&... ts);
+
+template <typename T0, typename T1, typename T2, typename T3, typename... Ts>
+__aicore__ inline decltype(auto) LayoutConstructor(T0&& t0, T1&& t1, T2&& t2, T3&& t3, Ts&&... ts) {
+    auto shape = Make2Params2Tuple(MakeTupleCons{}, t0, t1, t2, t3);
+    auto stride = Make2Params2Tuple(MakeTupleCons{}, ts...);
+    return Layout(shape, stride);
+}
+
+template <typename F, typename T>
+__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T&& t) {
+    return t;
+}
+
+template <typename F, typename T0, typename T1>
+__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1) {
+    return f(t0, t1);
+}
+
+template <typename F, typename T0, typename T1, typename... Ts>
+__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1, Ts&&... ts) {
+    auto tuple1 = Make2Params2Tuple(f, t0, t1);
+    auto tuple2 = Make2Params2Tuple(f, ts...);
+    return Make2Params2Tuple(f, tuple1, tuple2);
+}
+
+// layout_disptach.h
+template <LayoutFormat format, typename T>
+struct LayoutDispatcher;
+
+template <typename T>
+struct LayoutDispatcher<LayoutFormat::NZ, T> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<FRACTAL_FIXED>{},  CeilDivision(row, FRACTAL_FIXED), 
+                                Std::Int<C0_SIZE / sizeof(T)>{},  CeilDivision(column, (C0_SIZE / sizeof(T))), 
+                                Std::Int<C0_SIZE / sizeof(T)>{},  Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{},
+                                Std::Int<1>{},  C0_SIZE / sizeof(T) * row); 
+    }
+};
+
+template <typename T>
+struct LayoutDispatcher<LayoutFormat::ZN, T> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<C0_SIZE / sizeof(T)>{},  CeilDivision(row, (C0_SIZE / sizeof(T))),
+                                Std::Int<FRACTAL_FIXED>{},  CeilDivision(column, FRACTAL_FIXED),
+                                Std::Int<1>{},  C0_SIZE / sizeof(T) * column,
+                                Std::Int<C0_SIZE / sizeof(T)>{},  Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{});
+    }
+};
+
+template <typename T>
+struct LayoutDispatcher<LayoutFormat::DN, T> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<1>{}, row, Std::Int<1>{}, column,
+                                    Std::Int<0>{}, Std::Int<1>{}, Std::Int<0>{}, row);
+    }
+};
+
+template <>
+struct LayoutDispatcher<LayoutFormat::DN, fp8_e8m0_t> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(row, Std::Int<1>{}, Std::Int<2>{}, CeilDivision(column, MX_SCALE_K0),
+                                    Std::Int<MX_SCALE_K0>{}, row * column, Std::Int<1>{}, MX_SCALE_K0 * row);
+    }
+};
+
+template <typename T>
+struct LayoutDispatcher<LayoutFormat::ND, T> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<1>{}, row, Std::Int<1>{}, column,
+                                    Std::Int<0>{}, column, Std::Int<0>{}, Std::Int<1>{});
+    }
+};
+
+template <typename T>
+struct LayoutDispatcher<LayoutFormat::ZZ, T> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, CeilDivision(row, FRACTAL_FIXED),
+                                    Std::Int<C0_SIZE / sizeof(T)>{}, CeilDivision(column, (C0_SIZE / sizeof(T))),
+                                    Std::Int<C0_SIZE / sizeof(T)>{}, FRACTAL_FIXED * column,
+                                    Std::Int<1>{}, Std::Int<C0_SIZE / sizeof(T) * FRACTAL_FIXED>{});
+    }
+};
+
+template <>
+struct LayoutDispatcher<LayoutFormat::ZZ, fp8_e8m0_t> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, CeilDivision(row, FRACTAL_FIXED),
+                                    Std::Int<MX_SCALE_K0>{}, CeilDivision(column, MX_SCALE_K0),
+                                    Std::Int<MX_SCALE_K0>{}, column * FRACTAL_FIXED,
+                                    Std::Int<1>{}, Std::Int<C0_SIZE>{});
+    }
+};
+
+template <>
+struct LayoutDispatcher<LayoutFormat::NN, fp8_e8m0_t> {
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
+        return LayoutConstructor(Std::Int<MX_SCALE_K0>{}, CeilDivision(row, MX_SCALE_K0),
+                                    Std::Int<FRACTAL_FIXED>{}, column * MX_SCALE_K0,
+                                    Std::Int<FRACTAL_FIXED>{}, FRACTAL_FIXED * MX_SCALE_K0,
+                                    Std::Int<1>{}, CeilDivision(row, MX_SCALE_K0));
+    }
+};
 
 // make_coord_impl.h
 template <typename T, typename U, typename S>
@@ -517,37 +587,62 @@ __aicore__ inline constexpr auto Crd2Idx(const T& coord, const Shape& shape, con
 
 // make_fractal.h
 template <typename T>
-__aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column) {
-    return MakeLayoutForNZ<T>(row, column);
+__aicore__ inline decltype(auto) MakeNzLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::NZ, T>::apply(row, column);
 }
 
 template <>
-__aicore__ inline decltype(auto) MakeNZLayout<Std::ignore_t>(size_t row, size_t column) {
-    return MakeLayoutForNZ<uint16_t>(row, column);
+__aicore__ inline decltype(auto) MakeNzLayout<Std::ignore_t>(size_t row, size_t column) {
+    return MakeNzLayout<uint16_t>(row, column);
 }
 
 __aicore__ inline decltype(auto) MakeL0CLayout(size_t row, size_t column) {
-    return MakeNZLayout<Std::ignore_t>(row, column);
+    return MakeNzLayout<uint16_t>(row, column);
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column) {
-    return MakeLayoutForND<T>(row, column);
+__aicore__ inline decltype(auto) MakeNDLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeColumnMajorLayout(size_t row, size_t column) {
-    return MakeLayoutForDN<T>(row, column);
+__aicore__ inline decltype(auto) MakeDNLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column) {
-    return MakeLayoutForZN<T>(row, column);
+__aicore__ inline decltype(auto) MakeZnLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::ZN, T>::apply(row, column);
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeZZLayout(size_t row, size_t column) {
-    return MakeLayoutForZZ<T>(row, column);
+__aicore__ inline decltype(auto) MakeZzLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::ZZ, T>::apply(row, column);
+}
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeNnLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::NN, T>::apply(row, column);
+}
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleANDLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
+}
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleADNLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
+}
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleBNDLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(column, row);
+}
+
+template <typename T>
+__aicore__ inline decltype(auto) MakeScaleBDNLayout(size_t row, size_t column) {
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(column, row);
 }
 
 class DimConversion {
@@ -563,7 +658,7 @@ private:
         auto layout = tensor.Layout();
         auto row = Std::get<0>(layout.Shape());
         auto column = Std::get<1>(layout.Shape());
-        auto fourDimLayout = MakeLayoutForND<Std::ignore_t>(row, column);
+        auto fourDimLayout = MakeNDLayout<Std::ignore_t>(row, column);
         return MakeTensorImpl(tensor.Engine().Begin(), fourDimLayout);
     }
 };
