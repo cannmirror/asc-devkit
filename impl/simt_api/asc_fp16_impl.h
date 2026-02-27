@@ -20,10 +20,9 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_FP16_IMPL__
 #warning "impl/simt_api/asc_fp16_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "simt_api/asc_fp16.h" and use public functions or variables defined in interface header files."
 #endif
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 
-constexpr uint32_t HALF_INF = 0x7C00;
-constexpr uint32_t HALF_NEG_INF = 0xFC00;
+constexpr uint32_t __INTERNAL_HALF_INF = 0x7C00;
+constexpr uint32_t __INTERNAL_HALF_NEG_INF = 0xFC00;
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool __hisnan(half x)
 {
@@ -42,21 +41,21 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hfma(half x, half y, half z)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __habs(half x)
 {
-    uint16_t bits = *(uint16_t*)&x;
+    uint16_t bits = *reinterpret_cast<uint16_t*>(&x);
     bits &= 0x7FFF;
-    return *(half*)&bits;
+    return *reinterpret_cast<half*>(&bits);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool ispositiveinf(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool __internal_ispositiveinf(half x)
 {
-    uint16_t* int_x = (uint16_t*)&x;
-    return *int_x == HALF_INF;
+    uint16_t* int_x = reinterpret_cast<uint16_t*>(&x);
+    return *int_x == __INTERNAL_HALF_INF;
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool isnegativeinf(half x)
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool __internal_isnegativeinf(half x)
 {
-    uint16_t* int_x = (uint16_t*)&x;
-    return *int_x == HALF_NEG_INF;
+    uint16_t* int_x = reinterpret_cast<uint16_t*>(&x);
+    return *int_x == __INTERNAL_HALF_NEG_INF;
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hmax(half x, half y)
@@ -66,14 +65,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hmax(half x, half y)
     } else if (__hisnan(y)) {
         return x;
     }
-    if (ispositiveinf(x)) {
+    if (__internal_ispositiveinf(x)) {
         return x;
-    } else if (ispositiveinf(y)) {
+    } else if (__internal_ispositiveinf(y)) {
         return y;
     }
-    if (isnegativeinf(x)) {
+    if (__internal_isnegativeinf(x)) {
         return y;
-    } else if (isnegativeinf(y)) {
+    } else if (__internal_isnegativeinf(y)) {
         return x;
     }
     if (x == (half)0 && y == (half)0) {
@@ -99,14 +98,14 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __hmin(half x, half y)
     } else if (__hisnan(y)) {
         return x;
     }
-    if (isnegativeinf(x)) {
+    if (__internal_isnegativeinf(x)) {
         return x;
-    } else if (isnegativeinf(y)) {
+    } else if (__internal_isnegativeinf(y)) {
         return y;
     }
-    if (ispositiveinf(x)) {
+    if (__internal_ispositiveinf(x)) {
         return y;
-    } else if (ispositiveinf(y)) {
+    } else if (__internal_ispositiveinf(y)) {
         return x;
     }
     if (x == (half)0 && y == (half)0) {
@@ -1076,49 +1075,49 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void asc_stwt(half2* address, half2 val)
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl(half var, int32_t src_lane, int32_t width)
 {
     return __shfl(var,
-        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
+        ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl(half2 var, int32_t src_lane, int32_t width)
 {
     return __shfl(var,
-        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (src_lane));
+        ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (src_lane));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl_up(half var, uint32_t delta, int32_t width)
 {
     return __shfl_up(var,
-        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
+        ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_UP_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl_up(half2 var, uint32_t delta, int32_t width)
 {
     return __shfl_up(var,
-        ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_UP_MODE << MAX_OFFSET_START_POS) | (delta));
+        ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_UP_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl_down(half var, uint32_t delta, int32_t width)
 {
     return __shfl_down(var,
-                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
+                       ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl_down(half2 var, uint32_t delta, int32_t width)
 {
     return __shfl_down(var,
-                       ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (delta));
+                       ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (delta));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_shfl_xor(half var, int32_t lane_mask, int32_t width)
 {
     return __shfl_xor(var,
-                      ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
+                      ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half2 asc_shfl_xor(half2 var, int32_t lane_mask, int32_t width)
 {
     return __shfl_xor(var,
-                      ((warpSize - width) << LANE_MASK_START_POS) | (MAX_OFFSET_OF_MODE << MAX_OFFSET_START_POS) | (lane_mask));
+                      ((warpSize - width) << __INTERNAL_LANE_MASK_START_POS) | (__INTERNAL_MAX_OFFSET_OF_MODE << __INTERNAL_MAX_OFFSET_START_POS) | (lane_mask));
 }
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline half asc_reduce_add(half val)
@@ -1153,7 +1152,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline half __ushort_as_half(const unsigned short
     union Data data = {.i = x};
     return data.f;
 }
-#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_FP16_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
