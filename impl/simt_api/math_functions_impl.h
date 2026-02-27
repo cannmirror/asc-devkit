@@ -124,17 +124,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool is_inf(float x)
     return (*intX == 0x7F800000) || (*intX == 0xFF800000);
 }
 
-/**
- * Calculate the inverse of the standard normal cumulative distribution function.
- * @param x a value
- * @return Normcdfinv(x)
- * Special cases:
- *      if x is 0, return -inf;
- *      if x is Nan, return Nan;
- *      if x is Inf, return Nan;
- *      if x is -Inf, return -Nan;
- *      if x>1 or x < 0, return NaN.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normcdfinvf(float x)
 {
     float double_x = x + x;
@@ -178,16 +167,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normcdfinvf(float x)
     return result;
 }
 
-/**
- * Break down the input argument into fractional and integral parts.
- * @param x a value
- * @return Modf(x)
- * Special cases:
- *      if x is 0, return 0;
- *      if x is Nan, return Nan;
- *      if x is Inf, return 0;
- *      if x is -Inf, return 0;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float modff(float x, float &n)
 {
     float abs_x = fabsf(x);
@@ -540,14 +519,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float fminf(float x, float y)
     return __fminf(x, y);
 }
 
-/**
- * Performs Payne-Hanek radian reduction for trigonometric functions.
- * Reduce the input angle to the range [0, pi/2) and determine the quadrant.
- *
- * @param x The input angle in radians.
- * @param output_quadrant Pointer to store the quadrant information.
- * @return The reduced angle in the range [0, pi/2).
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float payne_hanek_radian_reduction(float x, int *output_quadrant)
 {
     // Step 1: Extract raw bits of the input angle
@@ -614,14 +585,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float payne_hanek_radian_reduction(float x
     return reduced_angle;
 }
 
-/**
- * Performs Cody-Waite radian reduction for trigonometric functions.
- * Reduce the input angle using a simpler method compared to Payne-Hanek.
- *
- * @param x The input angle in radians.
- * @param quadrant Pointer to store the quadrant information.
- * @return The reduced angle in the range [0, pi/2).
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cody_waite_radian_reduction(float x, int *quadrant)
 {
     float y = fmaf(x, 0.636619747f, 12582912.0f);    // 0.636619747f: 2/pi
@@ -642,15 +605,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float trig_radian_reduction(float x, float
     }
 }
 
-/**
- * Computes the tangent of an angle using a polynomial approximation.
- * The input angle should be in the range [-pi/2, pi/2].
- * According formula: tanx=x+(1/3)*x^3+(2/15)*x^5+(17/315)*x^7+(62/2835)*x^9+(1382/155925)*x^11+
- *           +(21844/6081075)*x^13+(929569/638512875)*x^15+...+O(...)
- *
- * @param x The input angle in radians.
- * @return The tangent of the input angle.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float tan_poly(float x)
 {
     x = x * x;
@@ -693,11 +647,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float tanhf(float x)
     return 1.0f - (2.0f / (expf(2.0f * x) + 1.0f));
 }
 
-/**
- * The trigonometric tangent of an angle*pi
- * @param x an angle, in radians.
- * @return the tangent of the x*PI.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float tanpif(float x)
 {
     return tanf(x * ASCRT_PI_F);
@@ -830,14 +779,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float atanhf(float x)
     return logf((1.0f + x) / (1.0f - x)) / 2.0f;
 }
 
-/**
- * Computes the cosine of an angle using a polynomial approximation.
- * According formula: cos(x) = 1-(1/2!)x^2+(1/4!)x^4+...+((-1)^n/(2n)!)x^2n+O(x^{2n+2})
- * The input angle should be in the range [-pi/2, pi/2].
- *
- * @param x The input angle in radians.
- * @return The cosine of the input angle.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cos_poly(float x)
 {
     x = x * x;
@@ -846,15 +787,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cos_poly(float x)
     y = fmaf(x, y, -5.00000000e-1f); // -5.00000000e-1f: -1/2!
     return fmaf(x, y, 1.00000000e+0f); //  1.00000000e+0f: 1
 }
- 
-/**
- * Computes the sine of an angle using a polynomial approximation.
- * According formula: sin(x) = x-(1/3!)x^3+(1/5!)x^5+...+((-1)^n/(2n+1)!)x^{2n+1}+O(x^{2n+3})
- * The input angle should be in the range [-pi/2, pi/2].
- *
- * @param x The input angle in radians.
- * @return The sine of the input angle.
- */
+
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float sin_poly(float x)
 {
     float y = x * x;
@@ -867,11 +800,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float sin_poly(float x)
     return fmaf(z, m, x); // * x^3 + x
 }
 
-/**
- * The trigonometric cosine of an angle
- * @param x an angle, in radians.
- * @return the cosine of the x.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cosf(float x)
 {
     // Step 1: Reduce the angle to the range [0, pi/2) and determine the quadrant
@@ -902,11 +830,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float coshf(float x)
     return tmp + 0.25f / tmp;
 }
 
-/**
- * The trigonometric cosine of an angle*pi
- * @param x an angle, in radians.
- * @return the cosine of the x*pi.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cospif(float x)
 {
     return cosf(x * ASCRT_PI_F);
@@ -957,11 +880,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float acoshf(float x)
     return logf(x + sqrtf(x * x - 1.0f));
 }
 
-/**
- * The trigonometric sine of an angle
- * @param x an angle, in radians.
- * @return the sine of the x.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float sinf(float x)
 {
     int quadrant;
@@ -1002,11 +920,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float sinhf(float x)
     }
 }
 
-/**
- * The trigonometric sine of an angle
- * @param x an angle, in radians.
- * @return the sine of the x.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float sinpif(float x)
 {
     return sinf(x * ASCRT_PI_F);
@@ -1035,12 +948,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asinhf(float x)
     }
 }
 
-/**
- * The trigonometric sine,cosine of an angle
- * @param x an angle, in radians.
- * @return s the sine of the x.
- *         c the cosine of the x.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, float &s, float &c)
 {
     int quadrant;
@@ -1061,12 +968,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, float &s, float &c)
     c = cos;
 }
 
-/**
- * The trigonometric sine,cosine of an angle*pi
- * @param x an angle, in radians.
- * @return s the sine of the x*pi.
- *         c the cosine of the x*pi.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, float &s, float &c)
 {
     return sincosf(x * ASCRT_PI_F, s, c);
@@ -1098,12 +999,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool is_positive_inf_impl(float x)
     return *int_x == ASCRT_INF_U;
 }
 
-/**
- * The mantissa,exponent of x
- * @param x  a float value.
- * @return   the mantissa of the x
- *         exp: the exponent of the x
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float frexpf(float x, int &exp)
 {
     if (x == 0.0f || is_positive_inf_impl(fabsf(x)) || isnan(x)) {
@@ -1130,12 +1025,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float frexpf(float x, int &exp)
     return copysignf(f32_man_u32, x);
 }
 
-/**
- * The value of x multiplied by 2 exp.
- * @param x a float value.
- *        exp a int value.
- * @return  x * 2^exp
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ldexpf(float x, int exp)
 {
     if (x == 0.0f || is_positive_inf_impl(fabsf(x)) || isnan(x) || exp == 0) {
@@ -1164,12 +1053,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ldexpf(float x, int exp)
     return x;
 }
 
-/**
- * The square root of (x^2+y^2)
- * @param   x  a float value.
- *          y  a float value.
- * @return square root of (x^2+y^2)
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float hypotf(float x, float y)
 {
     float abs_x = fabsf(x);
@@ -1192,29 +1075,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float hypotf(float x, float y)
     return a * sqrtf(fmaf(r, r, 1.0f));
 }
 
- /**
-  * The reciprocal of square root of (x^2+y^2)
-  * @param   x  a float value.
-  *          y  a float value.
-  * @return The reciprocal of square root of (x^2+y^2)
-  */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rhypotf(float x, float y)
 {
     return 1.0f / hypotf(x, y);
 }
 
-/**
- * The square root of (a^2+b^2+c^2)
- * @param a : float value.
- * @param b : float value.
- * @param c : float value.
- * @return The square root of (a^2+b^2+c^2)
- * Special cases:
- *      If any one of a,b,c is ±INF, return INF.
- *      If any one of a,b,c is NAN and other is not ±INF, return NAN.
- *      If all of a,b,c is 0, return 0.
- *      If sqrt(a^2 + b^2 + c^2) overflows, return INF.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float norm3df(float a, float b, float c)
 {
     if (isinf(a) || isinf(b) || isinf(c)) {
@@ -1235,36 +1100,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float norm3df(float a, float b, float c)
     return m * sqrtf(r);
 }
 
-/**
- * The reciprocal of square root of (a^2+b^2+c^2)
- * @param a : float value.
- * @param b : float value.
- * @param c : float value.
- * @return The reciprocal of square root of (a^2+b^2+c^2)
- * Special cases:
- *      If any one of a,b,c is ±INF, return 0.
- *      If any one of a,b,c is NAN and other is not ±INF, return NAN.
- *      If all of a,b,c is 0, return INF.
- *      If sqrt(a^2 + b^2 + c^2) overflows, return INF.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnorm3df(float a, float b, float c)
 {
     return 1.0f / norm3df(a, b, c);
 }
 
-/**
- * The square root of (a^2+b^2+c^2+d^2)
- * @param a : float value.
- * @param b : float value.
- * @param c : float value.
- * @param d : float value.
- * @return The square root of (a^2+b^2+c^2+d^2)
- * Special cases:
- *      If any one of a,b,c,d is ±INF, return INF.
- *      If any one of a,b,c,d is NAN and other is not ±INF, return NAN.
- *      If all of a,b,c,d is 0, return 0.
- *      If sqrt(a^2 + b^2 + c^2+ d^2) overflows, return INF.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float norm4df(float a, float b, float c, float d)
 {
     if (isinf(a) || isinf(b) || isinf(c) || isinf(d)) {
@@ -1287,36 +1127,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float norm4df(float a, float b, float c, f
     return m * sqrtf(r);
 }
 
-/**
- * The reciprocal of square root of (a^2+b^2+c^2+d^2)
- * @param a : float value.
- * @param b : float value.
- * @param c : float value.
- * @param d : float value.
- * @return The reciprocal of square root of (a^2+b^2+c^2+d^2)
- * Special cases:
- *      If any one of a,b,c,d is ±INF, return 0.
- *      If any one of a,b,c,d is NAN and other is not ±INF, return NAN.
- *      If all of a,b,c,d is 0, return INF.
- *      If sqrt(a^2 + b^2 + c^2 + d^2) overflows,return 0.
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnorm4df(float a, float b, float c, float d)
 {
     return 1.0f / norm4df(a, b, c, d);
 }
 
-/**
- * The square root of sum of squares of the first N elements in array a
- * @param n : int value.
- * @param x : float array
- * @return The square root of (a[0]^2+...+a[n-1]^2)
- * Special cases:
- *      If any one of a[i] is ±INF, return 0.
- *      If any one of a[i] is NAN and other is not ±INF, return NAN.
- *      If all of a,b,c,d is 0, return 0.
- *      If sqrt(a[0]^2 +... + a[n-1]^2) overflows, return INF.
- *      If n is less than 1, return |a[0]|.
- */
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normf(int n, __gm__ float* a)
 #else
@@ -1350,18 +1165,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normf(int n, float* a)
     return m * sqrtf(sum);
 }
 
-/**
- * The reciprocal of square root of sum of squares of the first N elements in array a
- * @param n : int value.
- * @param x : float array
- * @return The reciprocal of square root of (a[0]^2+...+a[n-1]^2)
- * Special cases:
- *      If any one of a[i] is ±INF, return 0.
- *      If any one of a[i] is NAN and other is not ±INF, return NAN.
- *      If all of a[i] is 0, return INF.
- *      If sqrt(a[0]^2 +... + a[n-1]^2) overflows, return 0.
- *      If n is less than 1, return 1/|a[0]|.
- */
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnormf(int n, __gm__ float* a)
 #else
@@ -1427,16 +1230,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline int32_t ilogbf(float x)
     return static_cast<int>(logbf(x));
 }
 
-/**
- * calculates a cube root by input x.
- * @param x a value
- * @return cbrt(x)
- * Special cases:
- *      if x is 0, return 0
- *      if x is Nan, return Nan;
- *      if x is Inf, return Inf;
- *      if x is -Inf, return -Inf;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cbrtf(float x)
 {
     uint32_t x_bits = *reinterpret_cast<uint32_t *>(&x);
@@ -1479,16 +1272,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cbrtf(float x)
     return *reinterpret_cast<float *>(&y_bits);
 }
 
-/**
- * calculates reciprocal of the cube root by input x.
- * @param x a value
- * @return rcbrt(x)
- * Special cases:
- *      if x is 0, return Inf
- *      if x is Nan, return Nan;
- *      if x is Inf, return 0;
- *      if x is -Inf, return 0;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rcbrtf(float x)
 {
     if (x == 0.0f) {
@@ -1527,16 +1310,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rcbrtf(float x)
     return y;
 }
 
-/**
- * Calculate the error function of the input x.
- * @param x a value
- * @return erf(x)
- * Special cases:
- *      if x is 0, return 0
- *      if x is Inf, return 1;
- *      if x is -Inf, return -1;
- *      if x is Nan, return Nan;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erff(float x)
 {
     float abs_x = fabsf(x);
@@ -1610,15 +1383,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cal_poly(float abs_x)
     return poly;
 }
 
-/**
- * Calculate the complementary error function of the input x.
- * @param x a value
- * @return erfc(x)
- * Special cases:
- *      if x is Inf, return 2;
- *      if x is -Inf, return +0;
- *      if x is Nan, return Nan;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfcf(float x)
 {
     float abs_x = fabsf(x);
@@ -1662,17 +1426,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfcf(float x)
     return (x < 0) ? (2.0f - result) : result;
 }
 
-/**
- * Calculate the inverse error function of the input x.
- * @param x a value
- * @return erfinv(x)
- * Special cases:
- *      if x is 0, return 0;
- *      if x is 1, return Inf;
- *      if x is -1, return -Inf;
- *      if x outside [-1, 1], return Nan;
- *      if x is Nan, return Nan;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfinvf(float x)
 {
     float opposite_x = -x;
@@ -1706,16 +1459,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfinvf(float x)
     }
 }
 
-/**
- * Calculate the inverse complementary error function of the input x.
- * @param x a value
- * @return erfcinv(x)
- * Special cases:
- *      if x is 0, return Inf;
- *      if x is 2, return -Inf;
- *      if x outside [0, 2], return Nan;
- *      if x is Nan, return Nan;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfcinvf(float x)
 {
     float opposite_x = -x;
@@ -1756,16 +1499,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfcinvf(float x)
     }
 }
 
-
-/**
- * Calculate the scaled complementary error function of the input x.
- * @param x a value
- * @return erfcx(x)
- * Special cases:
- *      if x is -Inf, return Inf;
- *      if x is Inf, return +0;
- *      if x is Nan, return Nan;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float erfcxf(float x)
 {
     if (x < -9.43f) {
@@ -1888,12 +1621,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float compute_ln(float x)
     return y;
 }
 
-/**
- * Calculates gamma value by input x, x in (-1.5, 1.5).
- *
- * @param x a value
- * @return x's gamma-value
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float euler_gamma_function(float x)
 {
     float frac = x - nearbyintf(x);
@@ -1977,15 +1704,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cal_y(float abs_x, float y_diff, flo
     return y;
 }
 
-/**
- * Calculates gamma value by input x, x in (-inf, -1.5] or [1.5, inf).
- *
- * According formula:
- *      f(x) = (x-1)! = sqrt(2*pi*x) * [(x/e)^x] * [1 + 1/(12*x) + 1/(288*x^2) + O(3)] / x, x >= 1.5
- *      f(x) = pi / [sin(pi*x) * f(1-x)], x <= -1.5
- * @param x a value
- * @return x's gamma-value
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float stirling_and_euler_reflection(float x)
 {
     float abs_x = cal_abs_x(x);
@@ -2090,16 +1808,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float stirling_and_euler_reflection(float 
     }
 }
 
-/**
- * Calculates gamma value by input x.
- * @param x a value
- * @return tgamma(x)
- * Special cases:
- *      if x is 0, return Inf
- *      if x is Nan, return Nan;
- *      if x is Inf, return Inf;
- *      if x is -Inf, return Nan;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float tgammaf(float x)
 {
     if (x == 0.0f) {
@@ -2190,16 +1898,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cal_result_case3(float abs_x)
     return fmaf(y0, 1.0f / y1, x_minus_three);
 }
 
-/**
- * Calculates lgamma value by input x.
- * @param x a value
- * @return lgamma(x)
- * Special cases:
- *      if x is 0, return Inf
- *      if x is Nan, return Nan;
- *      if x is Inf, return Inf;
- *      if x is -Inf, return Inf;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float lgammaf(float x)
 {
     float abs_x = fabsf(x);
@@ -2289,16 +1987,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float lgammaf(float x)
     return result;
 }
 
-/**
- * Calculates CylBesselI0 value by input x.
- * @param x a value
- * @return CylBesselI0(x)
- * Special cases:
- *      if x is 0, return 1;
- *      if x is Nan, return Nan;
- *      if x is Inf, return Inf;
- *      if x is -Inf, return Inf;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cyl_bessel_i0f(float x)
 {
     float abs_x = fabsf(x);
@@ -2334,16 +2022,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cyl_bessel_i0f(float x)
     }
 }
 
-/**
- * Calculates CylBesselI1 value by input x.
- * @param x a value
- * @return CylBesselI1(x)
- * Special cases:
- *      if x is 0, return 0;
- *      if x is Nan, return Nan;
- *      if x is Inf, return Inf;
- *      if x is -Inf, return -Inf;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cyl_bessel_i1f(float x)
 {
     float abs_x = fabsf(x);
@@ -2382,15 +2060,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float cyl_bessel_i1f(float x)
     }
 }
 
-/**
- * Calculate the standard normal cumulative distribution function for input x.
- * @param x a value
- * @return Normcdf(x)
- * Special cases:
- *      if x is Nan, return Nan;
- *      if x is Inf, return 1;
- *      if x is -Inf, return 0;
- */
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normcdff(float x)
 {
     if (fabsf(x) > 14.5f) {
