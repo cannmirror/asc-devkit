@@ -13,6 +13,7 @@
 │   │   ├── gen_data.py                     // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py                // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt                      // 编译工程文件
+│   ├── data_utils.h                        // 数据读入写出函数
 │   └── optimize_datacopy_nddma.asc         // AscendC算子实现 & 调用样例
 ```
 
@@ -29,7 +30,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">1024</td><td align="center">float</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">optimize_reduce_invalid_datacopy</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">optimize_datacopy_nddma</td></tr>
   </table>
 - 算子实现：  
   在进行非对齐数据搬运时，使用nddma搬运减少搬运指令的条数

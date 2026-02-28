@@ -15,6 +15,7 @@
 │   ├── scripts
 │   │   ├── gen_data.py                   // 输入数据和真值数据生成脚本
 │   ├── CMakeLists.txt                    // 编译工程文件
+│   ├── data_utils.h                      // 数据读入写出函数
 │   └── data_copy_ub2l1.asc               // AscendC算子实现 & 调用样例
 ```
 
@@ -33,7 +34,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">32 * 32</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">ub2l1</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">data_copy_ub2l1</td></tr>
   </table>
 - 算子实现：  
     1. 拷贝GM到UB。
