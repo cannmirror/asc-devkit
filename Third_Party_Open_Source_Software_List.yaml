@@ -22,6 +22,3 @@ makeself:
 json:
   version: v3.11.3
   type: run
-llvm:
-  version: 15.0.4
-  type: build
