@@ -157,18 +157,19 @@ TEST_F(TestTiling, TestPlatformAscendC)
     EXPECT_EQ(plat.GetCoreNumAiv(), 20);
     EXPECT_EQ(bw, 0);
     EXPECT_EQ(plat.CalcTschBlockDim(1, 0, 1), 1);
-    EXPECT_EQ(plat.CalcTschBlockDim(1, 1, 0), 1);
+    EXPECT_EQ(plat.CalcTschNumBlocks(1, 1, 0), 1);
     EXPECT_EQ(plat.CalcTschBlockDim(2, 1, 1), 2);
-    EXPECT_EQ(plat.CalcTschBlockDim(2, 2, 1), 2);
+    EXPECT_EQ(plat.CalcTschNumBlocks(2, 2, 1), 2);
     EXPECT_EQ(plat.CalcTschBlockDim(2, 1, 2), 1);
     // invalid case, return 0
     EXPECT_EQ(plat.CalcTschBlockDim(3, 1, 2), 0);
-    EXPECT_EQ(plat.CalcTschBlockDim(6, 1, 3), 2);
+    EXPECT_EQ(plat.CalcTschNumBlocks(6, 1, 3), 2);
     EXPECT_EQ(plat.CalcTschBlockDim(38, 20, 40), 19);
-    EXPECT_EQ(plat.CalcTschBlockDim(39, 20, 40), 20);
+    EXPECT_EQ(plat.CalcTschNumBlocks(39, 20, 40), 20);
     EXPECT_EQ(plat.CalcTschBlockDim(40, 20, 40), 20);
     // invalid case, return 0
     EXPECT_EQ(plat.CalcTschBlockDim(41, 20, 40), 0);
+    EXPECT_EQ(plat.CalcTschNumBlocks(41, 20, 40), 0);
     EXPECT_EQ(plat.GetCurNpuArch(), NpuArch::DAV_2201);
     EXPECT_EQ(plat.GetLibApiWorkSpaceSize(), 16 * 1024 * 1024);
     EXPECT_EQ(plat.GetResCubeGroupWorkSpaceSize(), 1 * 1024 * 1024);

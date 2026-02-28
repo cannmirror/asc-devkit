@@ -245,7 +245,7 @@ fe::PlatFormInfos* PlatformAscendC::GetPlatFormInfo(void) const
     return this->platformInfo_;
 }
 
-uint32_t PlatformAscendC::CalcTschBlockDim(uint32_t sliceNum, uint32_t aicCoreNum, uint32_t aivCoreNum) const
+uint32_t PlatformAscendC::CalcTschNumBlocks(uint32_t sliceNum, uint32_t aicCoreNum, uint32_t aivCoreNum) const
 {
     if (aicCoreNum == 0 || aivCoreNum == 0 || aicCoreNum > aivCoreNum) {
         return sliceNum;
@@ -259,6 +259,13 @@ uint32_t PlatformAscendC::CalcTschBlockDim(uint32_t sliceNum, uint32_t aicCoreNu
         return 0;
     }
     return numBlocks;
+}
+
+uint32_t PlatformAscendC::CalcTschBlockDim(uint32_t sliceNum, uint32_t aicCoreNum, uint32_t aivCoreNum) const
+{
+    PF_LOGW("CalcTschBlockDim has been deprecated and will be removed in the next version. "
+             "Please do not use it!");
+    return this->CalcTschNumBlocks(sliceNum, aicCoreNum, aivCoreNum);
 }
 
 uint32_t PlatformAscendC::GetLibApiWorkSpaceSize(void) const

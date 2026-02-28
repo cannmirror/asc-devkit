@@ -116,13 +116,22 @@ public:
      */
     uint32_t GetCoreNumVector(void) const;
     /**
-     * Calc task schedule block dim
+     * Calc task schedule num blocks
     * @sliceNum number slice of data division
      * @aicCoreNum value of GetCoreNumAic() if used cube API, otherwise 0
      * @aivCoreNum value of GetCoreNumAiv() if used vector API, otherwise 0
      * @return task schedule block dim
      */
     uint32_t CalcTschBlockDim(uint32_t sliceNum, uint32_t aicCoreNum, uint32_t aivCoreNum) const;
+
+    /**
+     * Calc task schedule num blocks
+    * @sliceNum number slice of data division
+     * @aicCoreNum value of GetCoreNumAic() if used cube API, otherwise 0
+     * @aivCoreNum value of GetCoreNumAiv() if used vector API, otherwise 0
+     * @return task schedule block
+     */
+    uint32_t CalcTschNumBlocks(uint32_t sliceNum, uint32_t aicCoreNum, uint32_t aivCoreNum) const;
     /**
      * Get Work Space Size
      * @return work sapce size by chip type
