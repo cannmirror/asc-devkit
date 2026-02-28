@@ -66,6 +66,11 @@ __aicore__ inline void asc_sync_block_wait(int64_t flagID)
     asc_sync_block_wait_impl(flagID);
 }
 
+__aicore__ inline void asc_sync_data_barrier(mem_dsb_t arg)
+{
+    asc_sync_data_barrier_impl(arg);
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)  

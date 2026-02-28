@@ -5167,6 +5167,47 @@ __aicore__ inline void asc_copy_sync(__ubuf__ uint32_t* dst, __ubuf__ uint32_t* 
     asc_copy_sync_impl(dst, src, count);
 }
 
+// ==========asc_set_va_reg==========
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int8_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint8_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int16_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint16_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ half** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ int32_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ uint32_t** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
+__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, __ubuf__ float** src_array)
+{
+    asc_set_va_reg_impl(addr, src_array);
+}
+
 #endif
 
 #if defined(UNDEF_ASCENDC_C_API_INCLUDE_COMPILER_INTERNAL_HEADERS_ASCENDC)
