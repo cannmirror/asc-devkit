@@ -16,6 +16,7 @@
 #include <mutex>
 #include <dlfcn.h>
 #include <csignal>
+#include <algorithm>
 #include "securec.h"
 #include "platform/platform_info.h"
 #include "platform_ascendc_log.h"
@@ -72,6 +73,31 @@ static inline SocVersion SocVersionStrMap(const char *socVersionStr)
     }
     PF_LOGE("get platform failed, convertMap do not find soc %s version", socVersionStr);
     return SocVersion::RESERVED_VERSION;
+}
+
+uint32_t PlatformAscendC::GetVecRegLen(void) const 
+{
+    std::string sizeStr; 
+    bool ret = this->GetPlatFormInfo()->GetPlatformResWithLock("AICoreSpec", "vector_reg_width", sizeStr);
+    if(!ret){
+        PF_LOGE("platform do not support get vector_reg_width size !");
+        return 0u;
+    }
+    bool isDecimalNumber = !sizeStr.empty() && std::all_of(sizeStr.begin(), sizeStr.end(), [](unsigned char ch){ return std::isdigit(ch); });
+    if(isDecimalNumber){
+        uint64_t size = std::stoull(sizeStr);
+        if(size > UINT32_MAX){
+            PF_LOGE("The bit width exceeds the maximum value of uint32!");
+            return 0u;
+        }
+        if(!size){
+            PF_LOGE("The bit width equals zero!");
+        }
+        return static_cast<uint32_t>(size);
+    }else{
+        PF_LOGE("The sizeStr is invalid.");
+        return 0u;
+    }
 }
 
 static inline uint32_t GetCoreNumByType(fe::PlatFormInfos *platformInfo, bool isAiv)

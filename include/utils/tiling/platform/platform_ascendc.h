@@ -140,6 +140,7 @@ public:
     SocVersion GetSocVersion(void) const;
     NpuArch GetCurNpuArch(void) const;
 
+    uint32_t GetVecRegLen(void) const;
 private:
     fe::PlatFormInfos *platformInfo_;
     fe::PlatFormInfos* GetPlatFormInfo(void) const;

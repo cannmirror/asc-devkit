@@ -141,6 +141,7 @@ TEST_F(TestTiling, TestPlatformAscendC)
     EXPECT_EQ(l2_bw, 110);
     EXPECT_EQ(hbm_bw, 32);
     plat.GetCoreMemBw(platform_ascendc::CoreMemType::UB, bw);
+    EXPECT_EQ(plat.GetVecRegLen(), 0);
     EXPECT_EQ(plat.GetCoreNum(), 48);
     EXPECT_EQ(plat.GetCoreNumAic(), 24);
     EXPECT_EQ(plat.GetCoreNumAiv(), 48);
@@ -221,6 +222,7 @@ TEST_F(TestTiling, TestPlatformAscendC)
     EXPECT_EQ(l2_bw, 256);
     EXPECT_EQ(hbm_bw, 17);
     plat.GetCoreMemBw(platform_ascendc::CoreMemType::UB, bw);
+    EXPECT_EQ(plat.GetVecRegLen(), 0);
     EXPECT_EQ(plat.GetCoreNum(), 1);
     EXPECT_EQ(plat.GetCoreNumAic(), 1);
     EXPECT_EQ(plat.GetCoreNumAiv(), 1);
@@ -663,6 +665,66 @@ TEST_F(TestTiling, TestGetVectorCoreNum)
         .will(returnValue(platform_info));
     auto ret2 = platform_ascendc::PlatformAscendCManager::GetInstance();
 
+}
+
+TEST_F(TestTiling, TestGetVecRegLen)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    MOCKER_CPP(&fe::PlatFormInfos::GetPlatformResWithLock,
+        bool(fe::PlatFormInfos::*)(const std::string &, const std::string &, std::string &))
+        .stubs()
+        .will(returnValue(false));
+    uint32_t ret = plat.GetVecRegLen();
+    EXPECT_EQ(ret, static_cast<uint32_t>(0));
+}
+
+TEST_F(TestTiling, TestGetVecRegLenWhenSizeExceed)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    
+    std::string largeValue = "5000000000";
+    MOCKER_CPP(&fe::PlatFormInfos::GetPlatformResWithLock,
+        bool(fe::PlatFormInfos::*)(const std::string &, const std::string &, std::string &))
+        .stubs()
+        .with(outBound(std::string("AICoreSpec")), outBound(std::string("vector_reg_width")), outBound(largeValue))
+        .will(returnValue(true));
+    
+    uint32_t ret = plat.GetVecRegLen();
+    EXPECT_EQ(ret, static_cast<uint32_t>(0));
+}
+
+TEST_F(TestTiling, TestGetVecRegLenWhenSizeStrIllegal)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    
+    std::string largeValue = "25x";
+    MOCKER_CPP(&fe::PlatFormInfos::GetPlatformResWithLock,
+        bool(fe::PlatFormInfos::*)(const std::string &, const std::string &, std::string &))
+        .stubs()
+        .with(outBound(std::string("AICoreSpec")), outBound(std::string("vector_reg_width")), outBound(largeValue))
+        .will(returnValue(true));
+    
+    uint32_t ret = plat.GetVecRegLen();
+    EXPECT_EQ(ret, static_cast<uint32_t>(0));
+}
+
+TEST_F(TestTiling, TestGetVecRegLenNormal)
+{
+    fe::PlatFormInfos platform_info;
+    auto plat = platform_ascendc::PlatformAscendC(&platform_info);
+    
+    std::string largeValue = "256";
+    MOCKER_CPP(&fe::PlatFormInfos::GetPlatformResWithLock,
+        bool(fe::PlatFormInfos::*)(const std::string &, const std::string &, std::string &))
+        .stubs()
+        .with(outBound(std::string("AICoreSpec")), outBound(std::string("vector_reg_width")), outBound(largeValue))
+        .will(returnValue(true));
+    
+    uint32_t ret = plat.GetVecRegLen();
+    EXPECT_EQ(ret, static_cast<uint32_t>(256));
 }
 
 TEST_F(TestTiling, TestPlatformCustomSocVersion)

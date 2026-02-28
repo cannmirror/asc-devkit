@@ -8,11 +8,12 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
  
-#include "../../detail/host_log.h"
-#include "cmath"
+
 #include "include/adv_api/normalization/layernorm_tiling.h"
+#include <cmath>
 #include "include/adv_api/normalization/normalize_tiling.h"
 #include "tiling/platform/platform_ascendc.h"
+#include "../../detail/host_log.h"
 
 namespace optiling {
 REGISTER_TILING_DATA_CLASS(LayerNormTilingOpApi, LayerNormTiling);
@@ -265,10 +266,14 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
         npuArch == NpuArch::DAV_5102) {
         (void)isReuseSource;
         std::vector<int64_t> shapeDims = srcShape.GetDims();
+        const uint32_t vecLenB32 = platform->GetVecRegLen() / LAYERNORM_SIZEOF_FLOAT;
+        const uint32_t vecLenB16 = platform->GetVecRegLen() / LAYERNORM_SIZEOF_HALF;
+        ASCENDC_HOST_ASSERT(vecLenB32 != 0, return, "vecLenB32 can not be 0!");
+        ASCENDC_HOST_ASSERT(vecLenB16 != 0, return, "vecLenB16 can not be 0!");
         const uint32_t rLength = static_cast<uint32_t>(shapeDims.back());
-        uint32_t rLengthWithPadding = (rLength + 64 - 1) / 64 * 64;
+        uint32_t rLengthWithPadding = (rLength + vecLenB32 - 1) / vecLenB32 * vecLenB32;
         const uint32_t varianceLen = static_cast<uint32_t>(shapeDims.front());
-        uint32_t len = (rLengthWithPadding / 64 + 128 - 1) / 128 * 128 + varianceLen;
+        uint32_t len = (rLengthWithPadding / vecLenB32 + vecLenB16 - 1) / vecLenB16 * vecLenB16 + varianceLen;
         if (!isComputeRstd) {
             len += varianceLen;
         } 
@@ -282,7 +287,6 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
         const uint32_t rLength = static_cast<uint32_t>(shapeDims[1]);
         int32_t typeAignSize = 32 / typeSize;
         uint32_t rLengthWithPadding = (rLength + typeAignSize - 1) / typeAignSize * typeAignSize;
-    
         uint32_t mvTmpLen = aLength * sizeof(float);
         uint32_t inputLen = aLength * rLengthWithPadding * sizeof(float);
         uint32_t rLengthDiv = rLengthWithPadding * sizeof(float);
@@ -294,7 +298,6 @@ void GetLayerNormMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSiz
             (rLengthDiv + LAYERNORM_ONE_BLK_SIZE - LAYERNORM_ONE_NUMBER) / LAYERNORM_ONE_BLK_SIZE * LAYERNORM_ONE_BLK_SIZE;
         maxValue = LAYERNORM_TWO_TIMES * inputLen + LAYERNORM_ONE_NUMBER * mvTmpLen;
         minValue = LAYERNORM_TWO_TIMES * rLengthDiv + LAYERNORM_ONE_NUMBER * mvTmpLen;
-    
         uint32_t maxNormalizeValue;
         uint32_t minNormalizeValue;
         GetNormalizeMaxMinTmpSize(srcShape, typeSize, typeSize, isReuseSource, isComputeRstd, isOnlyOutput,
@@ -324,8 +327,9 @@ void GetLayerNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
         const uint32_t rLength = static_cast<uint32_t>(shapeDims.back());
         int32_t typeAignSize = 32 / typeSize;
         uint32_t rLengthWithPadding = (rLength + typeAignSize - 1) / typeAignSize * typeAignSize;
-        uint32_t rHeadLength = 64;
-        uint32_t k = 6;
+        uint32_t rHeadLength = platform->GetVecRegLen() / sizeof(float);
+        ASCENDC_HOST_ASSERT(rHeadLength != 0, return, "rHeadLength can not be 0");
+        uint32_t k = log2(rHeadLength);
         for (uint32_t i = 0; i < rLengthWithPadding; i++) {
             if (rHeadLength * LAYERNORM_FOLD_NUM > rLength) {
                 k += i;

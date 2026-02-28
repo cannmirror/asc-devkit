@@ -10,6 +10,8 @@
 #include <cstdint>
 #include <string>
 #include <map>
+#include <algorithm>
+#include <cctype>
 #include "platform_stub.h"
 #include "tiling/platform/platform_ascendc.h"
 
@@ -74,4 +76,23 @@ void PlatformAscendC::GetCoreMemSize(const CoreMemType &memType, uint64_t &size)
 uint32_t PlatformAscendC::GetCoreNumAiv(void) const {
     return this->platformInfo_->GetCoreNum();
 }
+
+uint32_t PlatformAscendC::GetVecRegLen(void) const
+{
+    std::string sizeStr; 
+    bool ret = this->platformInfo_->GetPlatformResWithLock("AICoreSpec", "vector_reg_width", sizeStr);
+    if(!ret){
+        return 0u;
+    }
+    bool isDecimalNumber = !sizeStr.empty() && std::all_of(sizeStr.begin(), sizeStr.end(), [](unsigned char ch){ return std::isdigit(ch); });
+    if(isDecimalNumber){
+        uint64_t size = std::stoull(sizeStr);
+        if(size > UINT32_MAX){
+            return 0u;
+        }
+        return static_cast<uint32_t>(size);
+    }else{
+        return 0u;
+    }
 }
+} // namespace platform_ascendc
