@@ -11,7 +11,7 @@
 ## 目录结构
 
 ```
-├── aimt_add
+├── simt_add
 │   ├── add.asc             # SIMT实现add调用样例
 |   └── README.md
 ```
