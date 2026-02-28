@@ -82,11 +82,15 @@ file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/ascendc/incl
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/tikcpp/tikcfw")
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface")
 file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/utils")
+file(MAKE_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/utils/base")
 
 # 1 asc/include/interface
 install(CODE "file(CREATE_LINK ../micro_api ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/micro_api SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../simt_api ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/simt_api SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../../utils/debug ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/utils/debug SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../utils/common_types.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/utils/common_types.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../utils/base/sys_constants.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/utils/base/sys_constants.h SYMBOLIC)")
+install(CODE "file(CREATE_LINK ../../../utils/base/sys_macros.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/utils/base/sys_macros.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/core_mng ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/core_mng SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_common.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_common.h SYMBOLIC)")
 install(CODE "file(CREATE_LINK ../basic_api/kernel_operator_atomic_intf.h ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIBRARY_DIR}/asc/include/interface/kernel_operator_atomic_intf.h SYMBOLIC)")
