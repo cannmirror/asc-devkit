@@ -51,7 +51,6 @@ template <typename T>
 struct IterVal<T,void_t<typename T::valueType>> {
     using type = typename T::valueType;
 };
-
 } // namespace Te
 } // namespace AscendC
 

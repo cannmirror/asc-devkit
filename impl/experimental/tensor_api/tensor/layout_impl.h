@@ -359,7 +359,7 @@ struct LayoutDispatcher<LayoutFormat::DN, T> {
 template <>
 struct LayoutDispatcher<LayoutFormat::DN, fp8_e8m0_t> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        return LayoutConstructor(row, Std::Int<1>{}, Std::Int<2>{}, CeilDivision(column, MX_SCALE_K0),
+        return LayoutConstructor(row, Std::Int<1>{}, Std::Int<2>{}, column / MX_SCALE_K0,
                                     Std::Int<MX_SCALE_K0>{}, row * column, Std::Int<1>{}, MX_SCALE_K0 * row);
     }
 };
@@ -386,7 +386,7 @@ template <>
 struct LayoutDispatcher<LayoutFormat::ZZ, fp8_e8m0_t> {
     __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
         return LayoutConstructor(Std::Int<FRACTAL_FIXED>{}, CeilDivision(row, FRACTAL_FIXED),
-                                    Std::Int<MX_SCALE_K0>{}, CeilDivision(column, MX_SCALE_K0),
+                                    Std::Int<MX_SCALE_K0>{}, column / MX_SCALE_K0,
                                     Std::Int<MX_SCALE_K0>{}, column * FRACTAL_FIXED,
                                     Std::Int<1>{}, Std::Int<C0_SIZE>{});
     }
@@ -394,11 +394,11 @@ struct LayoutDispatcher<LayoutFormat::ZZ, fp8_e8m0_t> {
 
 template <>
 struct LayoutDispatcher<LayoutFormat::NN, fp8_e8m0_t> {
-    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) {
-        return LayoutConstructor(Std::Int<MX_SCALE_K0>{}, CeilDivision(row, MX_SCALE_K0),
-                                    Std::Int<FRACTAL_FIXED>{}, column * MX_SCALE_K0,
-                                    Std::Int<FRACTAL_FIXED>{}, FRACTAL_FIXED * MX_SCALE_K0,
-                                    Std::Int<1>{}, CeilDivision(row, MX_SCALE_K0));
+    __aicore__ inline static decltype(auto) apply(size_t row, size_t column) { // (scaleK, n)
+        return LayoutConstructor(Std::Int<MX_SCALE_K0>{}, row / MX_SCALE_K0,
+                                    Std::Int<FRACTAL_FIXED>{}, CeilDivision(column, FRACTAL_FIXED),
+                                    Std::Int<1>{}, Std::Int<C0_SIZE>{},
+                                    Std::Int<MX_SCALE_K0>{}, row * FRACTAL_FIXED);
     }
 };
 
@@ -626,23 +626,23 @@ __aicore__ inline decltype(auto) MakeNnLayout(size_t row, size_t column) {
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeScaleANDLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column);
+__aicore__ inline decltype(auto) MakeScaleANDLayout(size_t row, size_t column) { // 不转置(m, scaleK)
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(row, column); // (m, scaleK)
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeScaleADNLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column);
+__aicore__ inline decltype(auto) MakeScaleADNLayout(size_t row, size_t column) { // 转置(m, scaleK)
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(row, column); // 转置(m, scaleK)
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeScaleBNDLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::ND, T>::apply(column, row);
+__aicore__ inline decltype(auto) MakeScaleBNDLayout(size_t row, size_t column) { // 不转置(scaleK, n)
+    return LayoutDispatcher<LayoutFormat::DN, T>::apply(column, row); // (n, scaleK)
 }
 
 template <typename T>
-__aicore__ inline decltype(auto) MakeScaleBDNLayout(size_t row, size_t column) {
-    return LayoutDispatcher<LayoutFormat::DN, T>::apply(column, row);
+__aicore__ inline decltype(auto) MakeScaleBDNLayout(size_t row, size_t column) { // 转置(scaleK, n)
+    return LayoutDispatcher<LayoutFormat::ND, T>::apply(column, row); // (n, scaleK)
 }
 
 class DimConversion {
@@ -656,9 +656,15 @@ private:
     template<typename T>
     __aicore__ inline auto ConvertTwoDim2FourDim(const T& tensor) {
         auto layout = tensor.Layout();
-        auto row = Std::get<0>(layout.Shape());
-        auto column = Std::get<1>(layout.Shape());
-        auto fourDimLayout = MakeNDLayout<Std::ignore_t>(row, column);
+        auto shape4Dim = MakeShape(
+            MakeShape(Std::Int<1>{}, GetShape<0>(layout)),
+            MakeShape(Std::Int<1>{}, GetShape<1>(layout))
+        );
+        auto stride4Dim = MakeStride(
+            MakeStride(Std::Int<0>{}, GetStride<0>(layout)),
+            MakeStride(Std::Int<0>{}, GetStride<1>(layout))
+        );
+        auto fourDimLayout = MakeLayout(shape4Dim, stride4Dim);
         return MakeTensorImpl(tensor.Engine().Begin(), fourDimLayout);
     }
 };
