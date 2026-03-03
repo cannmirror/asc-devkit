@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_TENSOR_POINTER_IMPL_H
 #define IMPL_TENSOR_API_TENSOR_POINTER_IMPL_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 
 namespace AscendC {
 namespace Te {

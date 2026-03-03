@@ -15,10 +15,22 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_IMPL_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_DATA_COPY_IMPL_H
 
+#include "impl/experimental/tensor_api/arch/arch_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/data_copy_routing.h"
 
 namespace AscendC {
 namespace Te {
+
+constexpr DataCopyTrait DEFAULT_DATA_COPY_TRAIT;
+
+template <typename T, typename U>
+constexpr bool VerifyingDataCopyTemplate =
+    ((IsTileTensorV<U> && IsTileTensorV<T>) ||
+    (IsTileTensorV<U> && IsTileTensorV<T>));
+
+template <typename T, typename U, typename Coord>
+constexpr bool VerifyingDataCopyTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingDataCopyTemplate<T, U>;
+
 template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
 DataCopy(const T& dst, const U& src)

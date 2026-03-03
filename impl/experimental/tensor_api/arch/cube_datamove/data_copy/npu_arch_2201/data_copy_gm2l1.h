@@ -15,10 +15,9 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_GM2L1_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_2201_DATA_COPY_GM2L1_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
-#include "include/experimental/tensor_api/arch/cube_datamove/cube_datamove_struct.h"
+#include "impl/experimental/tensor_api/arch/arch_utils.h"
 
 namespace AscendC {
 namespace Te {

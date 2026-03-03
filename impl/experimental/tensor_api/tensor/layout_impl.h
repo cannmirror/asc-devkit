@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H
 #define IMPL_TENSOR_API_TENSOR_MAKE_LAYOUT_IMPL_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 #include "impl/experimental/tensor_api/tensor/layout_struct.h"
 
 namespace AscendC {

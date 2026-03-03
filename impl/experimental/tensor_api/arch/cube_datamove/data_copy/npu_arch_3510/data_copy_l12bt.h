@@ -15,9 +15,9 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12BT_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_L12BT_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
+#include "impl/experimental/tensor_api/arch/arch_utils.h"
 
 namespace AscendC {
 namespace Te {
@@ -96,7 +96,7 @@ private:
     template <typename T>
     __aicore__ inline void CopyCbufToBt(uint64_t dst, __cbuf__ T* src, bool convControl, uint16_t blockCount, uint16_t blockLen,
         uint16_t srcStride, uint16_t dstStride)
-    {
+    { 
         if ASCEND_IS_AIV {
             return;
         }

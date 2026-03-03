@@ -15,10 +15,19 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_LOAD_DATA_IMPL_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_LOAD_DATA_IMPL_H
 
+#include "impl/experimental/tensor_api/arch/arch_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/load_data/load_data_routing.h"
 
 namespace AscendC {
 namespace Te {
+
+constexpr LoadDataTrait DEFAULT_LOAD_DATA_TRAIT;
+
+template <typename T, typename U>
+constexpr bool VerifyingLoadDataTemplate = IsTileTensorV<U> && IsTileTensorV<T>;
+
+template <typename T, typename U, typename Coord>
+constexpr bool VerifyingLoadDataTemplateWithCoord = Std::is_tuple_v<Coord> && VerifyingLoadDataTemplate<T, U>;
 
 template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U>
 __aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type 

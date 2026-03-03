@@ -15,10 +15,25 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_MMAD_IMPL_H
 #define IMPL_TENSOR_API_ARCH_CUBE_COMPUTE_MMAD_MMAD_IMPL_H
 
+#include "impl/experimental/tensor_api/arch/arch_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/mmad_routing.h"
 
 namespace AscendC {
 namespace Te {
+
+constexpr MmadTrait DEFAULT_MMAD_TRAIT;
+
+constexpr MmadParams defaultMmadParams = {0, true};
+
+constexpr MmadParams defaultMmadWithBiasParams = {0, false};
+
+template <typename T, typename U, typename S>
+static constexpr bool VerifyingMmadTemplate = (IsTileTensorV<T> && IsTileTensorV<U> 
+    && IsTileTensorV<S>);
+
+template <typename T, typename U, typename S, typename V>
+static constexpr bool VerifyingMmadWithBiasTemplate = (IsTileTensorV<T> && IsTileTensorV<U> 
+    && IsTileTensorV<S> && IsTileTensorV<V>);
 
 template <const MmadTrait& trait = DEFAULT_MMAD_TRAIT, typename T, typename U, typename S, typename Params>
 __aicore__ inline typename Std::enable_if<VerifyingMmadTemplate<T, U, S>, void>::type 

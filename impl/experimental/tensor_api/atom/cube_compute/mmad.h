@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_ATOM_CUBE_COMPUTE_CUBE_MAD_H
 #define IMPL_TENSOR_API_ATOM_CUBE_COMPUTE_CUBE_MAD_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 
 #include "impl/experimental/tensor_api/atom/mad_traits_impl.h"
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/mmad_impl.h"

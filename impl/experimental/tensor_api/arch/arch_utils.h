@@ -7,20 +7,21 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
-
 /*!
- * \file format_impl.h
+ * \file arch_utils.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_UTILS_FORMAT_IMPL_H
-#define IMPL_TENSOR_API_UTILS_FORMAT_IMPL_H
+#ifndef IMPL_TENSOR_API_ARCH_ARCH_UTILS_H
+#define IMPL_TENSOR_API_ARCH_ARCH_UTILS_H
 
 #include "impl/experimental/tensor_api/tensor/pointer_impl.h"
 #include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
 #include "impl/experimental/tensor_api/utils/constant_impl.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 
 namespace AscendC {
 namespace Te {
+
 struct ArchVersion {
     static constexpr uint32_t V3510 = 3510;
     static constexpr uint32_t V2201 = 2201;
@@ -321,7 +322,8 @@ __aicore__ inline constexpr auto GetHardPos()
 {
    return T::iterator::hardPos;
 }
+
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_UTILS_FORMAT_IMPL_H
+#endif // IMPL_TENSOR_API_ARCH_ARCH_UTILS_H

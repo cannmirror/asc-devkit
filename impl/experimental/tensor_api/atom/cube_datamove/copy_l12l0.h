@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L12L0_H
 #define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_COPY_L12L0_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/load_data/load_data_impl.h"
 #include "impl/experimental/tensor_api/atom/copy_traits_impl.h"

@@ -9,12 +9,15 @@
 */
 
 /*!
-* \file extra.h
+* \file utils_impl.h
 * \brief
 */
-#ifndef INCLUDE_TENSOR_API_UTILS_EXTRA_H
-#define INCLUDE_TENSOR_API_UTILS_EXTRA_H
+#ifndef IMPL_TENSOR_API_UTILS_UTILS_IMPL_H
+#define IMPL_TENSOR_API_UTILS_UTILS_IMPL_H
 
+#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/utils/constant_impl.h"
 #include "impl/experimental/tensor_api/utils/extra_impl.h"
+#include "impl/experimental/tensor_api/utils/macro_impl.h"
 
-#endif // INCLUDE_TENSOR_API_UTILS_EXTRA_H
+#endif // IMPL_TENSOR_API_UTILS_UTILS_IMPL_H

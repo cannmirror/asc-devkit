@@ -15,7 +15,7 @@
 #ifndef IMPL_TENSOR_API_TENSOR_LAYOUT_STRUCT_H
 #define IMPL_TENSOR_API_TENSOR_LAYOUT_STRUCT_H
 
-#include "include/experimental/tensor_api/utils/utils.h"
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
 #include "impl/experimental/tensor_api/tensor/static_layout_size_struct.h"
 #include "impl/experimental/tensor_api/tensor/tuple_impl.h"
 
