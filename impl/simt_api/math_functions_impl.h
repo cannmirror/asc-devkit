@@ -118,12 +118,6 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rsqrtf(float x)
     return 1.0f / sqrtf(x);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline bool is_inf(float x)
-{
-    uint32_t* intX = (uint32_t*)&x;
-    return (*intX == 0x7F800000) || (*intX == 0xFF800000);
-}
-
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normcdfinvf(float x)
 {
     float double_x = x + x;
@@ -167,40 +161,61 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normcdfinvf(float x)
     return result;
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float modff(float x, float &n)
+#define __INTERNAL_MODFF(x, n)                                  \
+    do {                                                        \
+        float abs_x = fabsf(x);                                 \
+        float result;                                           \
+        union Data {                                            \
+            float f;                                            \
+            unsigned int i;                                     \
+        };                                                      \
+        if (__isfinite(abs_x)) {                                \
+            float integral_x = truncf(x);                       \
+            *(n) = integral_x;                                  \
+            float decimal = (x) - integral_x;                   \
+            union Data data{.f = decimal};                      \
+            uint32_t decimal_u32 = data.i;                      \
+            union Data data_x{.f = (x)};                        \
+            uint32_t u32 = data_x.i;                            \
+            uint32_t y_bits = (u32 & 0x80000000) | decimal_u32; \
+            union Data dataY{.i = y_bits};                      \
+            result = dataY.f;                                   \
+        } else {                                                \
+            if (isinf(abs_x)) {                                 \
+                union Data data {.f = (x)};                     \
+                uint32_t u32 = data.i;                          \
+                uint32_t y_bits = u32 & 0x80000000;             \
+                union Data data_y {.i = y_bits};                \
+                result = data_y.f;                              \
+                *(n) = (x);                                     \
+            } else {                                            \
+                result = (x) + (x);                             \
+                *(n) = (x);                                     \
+            }                                                   \
+        }                                                       \
+        return result;                                          \
+    } while (0)
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float modff(float x, float *n)
 {
-    float abs_x = fabsf(x);
-    float result;
-    union Data {
-        float f;
-        unsigned int i;
-    };
-    if (__isfinite(abs_x)) {
-        float integral_x = truncf(x);
-        n = integral_x;
-        float decimal = x - integral_x;
-        union Data data{.f = decimal};
-        uint32_t decimal_u32 = data.i;
-        union Data data_x{.f = x};
-        uint32_t u32 = data_x.i;
-        uint32_t y_bits = (u32 & 0x80000000) | decimal_u32;
-        union Data dataY{.i = y_bits};
-        result = dataY.f;
-    } else {
-        if (is_inf(abs_x)) {
-            union Data data {.f = x};
-            uint32_t u32 = data.i;
-            uint32_t y_bits = u32 & 0x80000000;
-            union Data data_y {.i = y_bits};
-            result = data_y.f;
-            n = x;
-        } else {
-            result = x + x;
-            n = x;
-        }
-    }
-    return result;
+    __INTERNAL_MODFF(x, n);
 }
+
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float modff(float x, __ubuf__ float *n)
+{
+    __INTERNAL_MODFF(x, n);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float modff(float x, __gm__ float *n)
+{
+    __INTERNAL_MODFF(x, n);
+}
+#endif
+#endif
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool isfinite(float x)
 {
@@ -313,57 +328,85 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void  cal_remquo(float &abs_x, float &n_x_
     *quo = n;
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float remquof(float x, float y, int32_t *quo)
+#define __INTERNAL_REMQUOF(x, y, quo)                                                                   \
+    do {                                                                                                \
+        bool is_x_pos = (x) >= 0;                                                                       \
+        float abs_x = abs(x);                                                                           \
+        float abs_y = abs(y);                                                                           \
+        bool is_x_inf = abs_x > ASCRT_INF_F || isnan(x);                                                \
+        bool is_y_inf = abs_y > ASCRT_INF_F || isnan(y);                                                \
+        *(quo) = 0;                                                                                     \
+        int32_t tmp_quo = 0;                                                                            \
+        int32_t n_sign = (((x) <= 0 && (y) <= 0) || ((x) >= 0 && (y) >= 0)) ? 1 : -1;                   \
+        float res = (x) + (y);                                                                          \
+        if (is_x_inf | is_y_inf) {                                                                      \
+            return res;                                                                                 \
+        }                                                                                               \
+                                                                                                        \
+        res = ASCRT_INF_F / ASCRT_INF_F;                                                                \
+        if ((abs_x == ASCRT_INF_F) || (abs_y == 0)) {                                                   \
+            return res;                                                                                 \
+        }                                                                                               \
+                                                                                                        \
+        float tmp_val = 0.0;                                                                            \
+        uint32_t sign_flag = 0;                                                                         \
+        if (abs_x < abs_y) {                                                                            \
+            res = (x);                                                                                  \
+            float result = x_le_y(abs_x, tmp_val, abs_y, is_x_pos, sign_flag, res, &tmp_quo, n_sign);   \
+            *(quo) = tmp_quo;                                                                           \
+            return result;                                                                              \
+        }                                                                                               \
+                                                                                                        \
+        uint32_t *u_abs_y = reinterpret_cast<uint32_t *>(&abs_y);                                       \
+        uint32_t u_y = (*u_abs_y) & ASCRT_MAN_BIT_FLOAT_U;                                              \
+        uint32_t *u_abs_x = reinterpret_cast<uint32_t *>(&abs_x);                                       \
+        uint32_t u_x = (*u_abs_x) & ASCRT_EXP_BIT_FLOAT_U;                                              \
+        float x_y_val = 0.0;                                                                            \
+        uint32_t *uf26 = reinterpret_cast<uint32_t *>(&x_y_val);                                        \
+        *uf26 = u_y | u_x;                                                                              \
+        bool is_gt_abs_x = x_y_val > abs_x && !isnan(x_y_val);                                          \
+        res = 0.0;                                                                                      \
+        float n_x_y_val = (is_gt_abs_x) ? (x_y_val * 0.5f) : x_y_val;                                   \
+        if (abs_x == n_x_y_val && !isnan(n_x_y_val)) {                                                  \
+            return res;                                                                                 \
+        }                                                                                               \
+                                                                                                        \
+        tmp_val = 0.0;                                                                                  \
+        res = abs_x;                                                                                    \
+        *(quo) = 0;                                                                                     \
+        if (n_x_y_val < abs_y || isnan(n_x_y_val)) {                                                    \
+            float result = x_le_y(abs_x, tmp_val, abs_y, is_x_pos, sign_flag, res, &tmp_quo, n_sign);   \
+            *(quo) = tmp_quo;                                                                           \
+            return result;                                                                              \
+        }                                                                                               \
+        cal_remquo(abs_x, n_x_y_val, sign_flag, abs_y, tmp_val, &tmp_quo);                              \
+        res = abs_x;                                                                                    \
+                                                                                                        \
+        float result = x_le_y(abs_x, tmp_val, abs_y, is_x_pos, sign_flag, res, &tmp_quo, n_sign);       \
+        *(quo) = tmp_quo;                                                                               \
+        return result;                                                                                  \
+    } while (0)
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float remquof(float x, float y, int *quo)
 {
-    bool is_x_pos = x >= 0;
-    float abs_x = abs(x);
-    float abs_y = abs(y);
-    bool is_x_inf = abs_x > ASCRT_INF_F || isnan(x);
-    bool is_y_inf = abs_y > ASCRT_INF_F || isnan(y);
-    *quo = 0;
-    int32_t n_sign = ((x <= 0 && y <= 0) || (x >= 0 && y >= 0)) ? 1 : -1;
-    float res = x + y;
-    if (is_x_inf | is_y_inf) {
-        return res;
-    }
-
-    res = ASCRT_INF_F / ASCRT_INF_F;
-    if ((abs_x == ASCRT_INF_F) || (abs_y == 0)) {
-        return res;
-    }
-
-    float tmp_val = 0.0;
-    uint32_t sign_flag = 0;
-    if (abs_x < abs_y) {
-        res = x;
-        return x_le_y(abs_x, tmp_val, abs_y, is_x_pos, sign_flag, res, quo, n_sign);
-    }
-
-    uint32_t *u_abs_y = (uint32_t *)(&abs_y);
-    uint32_t u_y = (*u_abs_y) & ASCRT_MAN_BIT_FLOAT_U;
-    uint32_t *u_abs_x = (uint32_t *)(&abs_x);
-    uint32_t u_x = (*u_abs_x) & ASCRT_EXP_BIT_FLOAT_U;
-    float x_y_val = 0.0;
-    uint32_t *uf26 = (uint32_t *)(&x_y_val);
-    *uf26 = u_y | u_x;
-    bool is_gt_abs_x = x_y_val > abs_x && !isnan(x_y_val);
-    res = 0.0;
-    float n_x_y_val = (is_gt_abs_x) ? (x_y_val * 0.5f) : x_y_val;
-    if (abs_x == n_x_y_val && !isnan(n_x_y_val)) {
-        return res;
-    }
-
-    tmp_val = 0.0;
-    res = abs_x;
-    *quo = 0;
-    if (n_x_y_val < abs_y || isnan(n_x_y_val)) {
-        return x_le_y(abs_x, tmp_val, abs_y, is_x_pos, sign_flag, res, quo, n_sign);
-    }
-    cal_remquo(abs_x, n_x_y_val, sign_flag, abs_y, tmp_val, quo);
-    res = abs_x;
-
-    return x_le_y(abs_x, tmp_val, abs_y, is_x_pos, sign_flag, res, quo, n_sign);
+    __INTERNAL_REMQUOF(x, y, quo);
 }
+
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float remquof(float x, float y, __ubuf__ int *quo)
+{
+    __INTERNAL_REMQUOF(x, y, quo);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float remquof(float x, float y, __gm__ int *quo)
+{
+    __INTERNAL_REMQUOF(x, y, quo);
+}
+#endif
+#endif
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float set_res_mod_neg(float mod_res)
 {
@@ -948,30 +991,127 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float asinhf(float x)
     }
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, float &s, float &c)
+#define __INTERNAL_SINCOSF(x, s, c)                                     \
+    do {                                                                \
+        int quadrant;                                                   \
+        float t;                                                        \
+        float y = trig_radian_reduction((x), 71476.0625f, &quadrant);   \
+        float cos = cos_poly(y);                                        \
+        float sin = sin_poly(y);                                        \
+        if (quadrant & 2) {                                             \
+            sin = -sin;                                                 \
+            cos = -cos;                                                 \
+        }                                                               \
+        if (quadrant & 1) {                                             \
+            t = -sin;                                                   \
+            sin = cos;                                                  \
+            cos = t;                                                    \
+        }                                                               \
+        *(s) = sin;                                                     \
+        *(c) = cos;                                                     \
+    } while (0)
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, float *s, float *c)
 {
-    int quadrant;
-    float t;
-    float y = trig_radian_reduction(x, 71476.0625f, &quadrant);  // 71476.0625f: threshold for reduce algorithm
-    float cos = cos_poly(y);
-    float sin = sin_poly(y);
-    if (quadrant & 2) {  // 2: sin(pi+x) = -sin(x), cos(pi+x) = -cos(x)
-        sin = -sin;
-        cos = -cos;
-    }
-    if (quadrant & 1) {  // 1: sin(pi/2+x) = cos(x), cos(pi/2+x) = -sin(x)
-        t = -sin;
-        sin = cos;
-        cos = t;
-    }
-    s = sin;
-    c = cos;
+    __INTERNAL_SINCOSF(x, s, c);
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, float &s, float &c)
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, float *s, __ubuf__ float *c)
 {
-    return sincosf(x * ASCRT_PI_F, s, c);
+    __INTERNAL_SINCOSF(x, s, c);
 }
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, float *s, __gm__ float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, __gm__ float *s, float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, __gm__ float *s, __ubuf__ float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, __gm__ float *s, __gm__  float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, __ubuf__ float *s, float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, __ubuf__ float *s, __ubuf__ float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincosf(float x, __ubuf__ float *s, __gm__ float *c)
+{
+    __INTERNAL_SINCOSF(x, s, c);
+}
+#endif
+#endif
+#endif
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, float *s, float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, float *s, __ubuf__ float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, float *s, __gm__ float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, __ubuf__ float *s, float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, __ubuf__ float *s, __ubuf__ float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, __ubuf__ float *s, __gm__ float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, __gm__ float *s, float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, __gm__ float *s, __ubuf__ float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline void sincospif(float x, __gm__ float *s, __gm__ float *c)
+{
+    __INTERNAL_SINCOSF(x * ASCRT_PI_F, s, c);
+}
+#endif
+#endif
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float powf(float x, float y)
 {
@@ -995,35 +1135,56 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float expm1f(float x)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline bool is_positive_inf_impl(float x)
 {
-    uint32_t* int_x = (uint32_t*)&x;
+    uint32_t* int_x = reinterpret_cast<uint32_t*>(&x);
     return *int_x == ASCRT_INF_U;
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float frexpf(float x, int &exp)
+#define __INTERNAL_FREXPF(x, exp)                                               \
+    do {                                                                        \
+        if ((x) == 0.0f || is_positive_inf_impl(fabsf(x)) || isnan(x)) {        \
+            *(exp) = 0;                                                         \
+            return (x);                                                         \
+        }                                                                       \
+        uint32_t u32 = reinterpret_cast<uint32_t &>(x);                         \
+        int32_t exponent = u32 & 0x7f800000;                                    \
+        int32_t f32_exp_val = exponent >> 23;                                   \
+        uint32_t man_u32 = u32 & 0x007fffff;                                    \
+        float f32_man_u32 = static_cast<float>(man_u32);                        \
+        f32_man_u32 = f32_man_u32 / (1 << 23);                                  \
+        if (f32_exp_val == 0) {                                                 \
+            if (f32_man_u32 < 0.5f) {                                           \
+                while (f32_man_u32 < 0.5f) {                                    \
+                    f32_man_u32 = f32_man_u32 * 2;                              \
+                    f32_exp_val--;                                              \
+                }                                                               \
+            }                                                                   \
+        } else {                                                                \
+            f32_man_u32 = f32_man_u32 / 2 + 0.5f;                               \
+        }                                                                       \
+        *(exp) = f32_exp_val - 126;                                             \
+        return copysignf(f32_man_u32, (x));                                     \
+    } while (0)
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float frexpf(float x, int *exp)
 {
-    if (x == 0.0f || is_positive_inf_impl(fabsf(x)) || isnan(x)) {
-        exp = 0;
-        return x;
-    }
-    uint32_t u32 = reinterpret_cast<uint32_t &>(x);
-    int32_t exponent = u32 & 0x7f800000;  // 0x7f800000: get exponent
-    int32_t f32_exp_val = exponent >> 23;   // 23: mantissa bit count
-    uint32_t man_u32 = u32 & 0x007fffff;   // 0x007fffff: get mantissa
-    float f32_man_u32 = static_cast<float>(man_u32);
-    f32_man_u32 = f32_man_u32 / (1 << 23);  // 23: mantissa bit count
-    if (f32_exp_val == 0) {
-        if (f32_man_u32 < 0.5f) {
-            while (f32_man_u32 < 0.5f) {
-                f32_man_u32 = f32_man_u32 * 2; // 2:Constants in formulas
-                f32_exp_val--;
-            }
-        }
-    } else {
-        f32_man_u32 = f32_man_u32 / 2 + 0.5f; // 2:Constants in formulas
-    }
-    exp = f32_exp_val - 126;  // 126: subnormal float exp
-    return copysignf(f32_man_u32, x);
+    __INTERNAL_FREXPF(x, exp);
 }
+
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float frexpf(float x, __ubuf__ int *exp)
+{
+    __INTERNAL_FREXPF(x, exp);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float frexpf(float x, __gm__ int *exp)
+{
+    __INTERNAL_FREXPF(x, exp);
+}
+#endif
+#endif
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ldexpf(float x, int exp)
 {
@@ -1132,47 +1293,77 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnorm4df(float a, float b, float c, 
     return 1.0f / norm4df(a, b, c, d);
 }
 
-#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float normf(int n, __gm__ float* a)
-#else
+#define __INTERNAL_NORMF(n, a)                              \
+    do {                                                    \
+        if ((n) <= 0) {                                     \
+            return fabsf((a)[0]);                           \
+        }                                                   \
+        float m = 0;                                        \
+        int32_t has_nan = 0;                                \
+        for (int i = 0; i < (n); i++) {                     \
+            m = fmaxf(m, fabsf((a)[i]));                    \
+            if (isinf((a)[i])) {                            \
+                return ASCRT_INF_F;                         \
+            }                                               \
+            if (isnan((a)[i])) {                            \
+                has_nan = 1;                                \
+            }                                               \
+        }                                                   \
+        if (has_nan) {                                      \
+            return ASCRT_INF_F / ASCRT_INF_F;               \
+        }                                                   \
+        if (m == 0.0f || isnan(m)) {                        \
+            return m;                                       \
+        }                                                   \
+        float sum = 0.0f;                                   \
+        for (int i = 0; i < (n); i++) {                     \
+            sum = fmaf(((a)[i] / m), ((a)[i] / m), sum);    \
+        }                                                   \
+        return m * sqrtf(sum);                              \
+    } while (0)
+
+
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float normf(int n, float* a)
-#endif
 {
-    if (n <= 0) {
-        return fabsf(a[0]);
-    }
-    float m = 0;
-    int32_t has_nan = 0;
-    for (int i = 0; i < n; i++) {
-        m = fmaxf(m, fabsf(a[i]));
-        if (isinf(a[i])) {
-            return ASCRT_INF_F;
-        }
-        if (isnan(a[i])) {
-            has_nan = 1;
-        }
-    }
-    if (has_nan) {
-        return ASCRT_INF_F / ASCRT_INF_F;
-    }
-    if (m == 0.0f || isnan(m)) {
-        return m;
-    }
-    float sum = 0.0f;
-    for (int i = 0; i < n; i++) {
-        sum = fmaf((a[i] / m), (a[i] / m), sum);
-    }
-    return m * sqrtf(sum);
+    __INTERNAL_NORMF(n, a);
 }
 
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnormf(int n, __gm__ float* a)
-#else
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnormf(int n, float* a)
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float normf(int n, __gm__ float* a)
+{
+    __INTERNAL_NORMF(n, a);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float normf(int n, __ubuf__ float* a)
+{
+    __INTERNAL_NORMF(n, a);
+}
 #endif
+#endif
+#endif
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnormf(int n, float* a)
 {
     return 1.0f / normf(n, a);
 }
+
+#ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
+#ifdef __NPU_ARCH__
+#ifndef ASCENDC_CPU_DEBUG
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnormf(int n, __ubuf__ float* a)
+{
+    return 1.0f / normf(n, a);
+}
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float rnormf(int n, __gm__ float* a)
+{
+    return 1.0f / normf(n, a);
+}
+#endif
+#endif
+#endif
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float log10f(float x)
 {
@@ -1651,7 +1842,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float euler_gamma_function(float x)
     //  1/(1/gamma(x))
     if (fabsf(y) < 1.1754943e-38f) {
         int32_t e = 0;
-        float m = frexpf(y, e);
+        float m = frexpf(y, &e);
         return ldexpf(1.0f / m, 0 - e);
     } else {
         return 1.0f / y;
@@ -2300,10 +2491,10 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float jn_case1(int n, float x)
     float ampl = jn_yn_asymptotic_bessel_amplitude(n, x, 0);
     float phase = jn_yn_asymptotic_bessel_phase_mx(n, x);
     float cx, sx, ci, si, cp, sp;
-    sincosf(x, sx, cx);
+    sincosf(x, &sx, &cx);
     float offset = (float)n / 2 + 0.25f;
-    sincospif(offset, si, ci);
-    sincosf(phase, sp, cp);
+    sincospif(offset, &si, &ci);
+    sincosf(phase, &sp, &cp);
     float sin_phase = cp * (cx * ci + sx * si) - sp * (sx *ci - cx * si);
     return sin_phase * ampl;
 }

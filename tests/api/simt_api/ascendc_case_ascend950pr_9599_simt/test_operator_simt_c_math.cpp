@@ -84,14 +84,13 @@ TEST_P(FloatComputeTestsuite1, FloatComputeTestCase1)
     op.Process((__gm__ float*)dstGm, (__gm__ float*)src0Gm, (__gm__ float*)src1Gm, (__gm__ float*)src2Gm, mode);
 }
 
-// TEST_F(FloatComputeTestsuite1, FloatComputeTestCase_absfloat)
-// {
-//     float x = 123.0;
-//     float y = -123.0;
-//     EXPECT_EQ(static_cast<float>(123.0), fabsf(x));
-//     EXPECT_EQ(static_cast<float>(123.0), fabsf(y));
-// }
-
+TEST_F(FloatComputeTestsuite1, FloatComputeTestCase_absfloat)
+{
+    float x = 123.0;
+    float y = -123.0;
+    EXPECT_EQ(static_cast<float>(123.0), fabsf(x));
+    EXPECT_EQ(static_cast<float>(123.0), fabsf(y));
+}
 
 TEST_F(FloatComputeTestsuite1, FloatComputeTestCase_abshalf)
 {
