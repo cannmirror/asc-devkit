@@ -213,16 +213,33 @@ TEST_F(Tensor_Api_Layout, MakeMxLayout)
 
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(NnLayout)), 2);
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(NnLayout)), 16);
+
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(Zzlayout)), 16);
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(Zzlayout)), 2);
+
+    // shape = ((1, row), (1, col)) stride = ((0, col),(0, 1))
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxANDLayout)), 1);
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(MxANDLayout)), 1);
     EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxANDLayout)), 48);
     EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxANDLayout)), 16);
-    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxADNLayout)), 48);
+
+    // shape = ((1, row), (2, col/2)) stride = ((0, 2), (1, row*2))
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxADNLayout)), 1);
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(MxADNLayout)), 2);
-    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxBNDLayout)), 1);
-    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxBNDLayout)), 8);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxADNLayout)), 48);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxADNLayout)), 8);
+
+    // shape = ((2, row/2), (1, col)) stride = ((1, 2*col), (0, 2))
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxBNDLayout)), 2);
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(MxBNDLayout)), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxBNDLayout)), 8);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxBNDLayout)), 48);
+
+    // shape = ((1, row), (1, col)) stride = ((0, 1), (0, row))
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxBDNLayout)), 1);
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(MxBDNLayout)), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxBDNLayout)), 16);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxBDNLayout)), 48);
 }
 
 TEST_F(Tensor_Api_Layout, GetOperation)
@@ -1059,4 +1076,50 @@ TEST_F(Tensor_Api_Layout, TestAttributes)
     EXPECT_EQ(Crd2Idx(coord1, layoutObj1), 9);
     EXPECT_EQ(Crd2Idx(coord2, layoutObj2), 13);
     EXPECT_EQ(Crd2Idx(coord3, layoutObj3), 72);
+}
+
+TEST_F(Tensor_Api_Layout, IsMxLayout)
+{
+    using namespace AscendC::Te;
+    
+    auto NnLayout = MakeNnLayout<fp8_e8m0_t>(16, 48); // (scaleK, n)
+    auto Zzlayout = MakeZzLayout<fp8_e8m0_t>(48, 16); // (m, scaleK)
+    auto MxANDLayout = MakeScaleANDLayout<fp8_e8m0_t>(48, 16); // (m, scaleK) 不转置
+    auto MxADNLayout = MakeScaleADNLayout<fp8_e8m0_t>(48, 16); // (m, scaleK) 转置
+    auto MxBNDLayout = MakeScaleBNDLayout<fp8_e8m0_t>(16, 48); // (scaleK, n) 不转置
+    auto MxBDNLayout = MakeScaleBDNLayout<fp8_e8m0_t>(16, 48); // (scaleK, n) 转置
+
+    constexpr uint32_t TILE_LENGTH = 128;
+    __cbuf__ fp8_e8m0_t srcL1[TILE_LENGTH] = {0};
+    __ca__ fp8_e8m0_t srcL0A[TILE_LENGTH] = {0};
+    __cb__ fp8_e8m0_t srcL0B[TILE_LENGTH] = {0};
+
+    auto MxANDTensor = MakeTensor(MakeL1memPtr(srcL1), MxANDLayout);
+    auto MxADNTensor = MakeTensor(MakeL1memPtr(srcL1), MxADNLayout);
+    auto MxBNDTensor = MakeTensor(MakeL1memPtr(srcL1), MxBNDLayout);
+    auto MxBDNTensor = MakeTensor(MakeL1memPtr(srcL1), MxBDNLayout);
+    EXPECT_EQ(IsScaleANDFormat<decltype(MxANDTensor)>::value, true);
+    EXPECT_EQ(IsScaleADNFormat<decltype(MxADNTensor)>::value, true);
+    EXPECT_EQ(IsScaleBNDFormat<decltype(MxBNDTensor)>::value, true);
+    EXPECT_EQ(IsScaleBDNFormat<decltype(MxBDNTensor)>::value, true);
+    
+    auto MxZzTensor = MakeTensor(MakeL1memPtr(srcL0A), Zzlayout);
+    auto MxNnTensor = MakeTensor(MakeL1memPtr(srcL0B), NnLayout);
+    EXPECT_EQ(IsZZFormat<decltype(MxZzTensor)>::value, true);
+    EXPECT_EQ(IsNNFormat<decltype(MxNnTensor)>::value, true);
+}
+
+TEST_F(Tensor_Api_Layout, TestTileLayout)
+{
+    using namespace AscendC::Te;
+    // MxBNDLayout shape  = ((Std::Int<2>{}, 8),(Std::Int<1>{}, 48)) 
+    auto MxBNDLayout = MakeScaleBNDLayout<fp8_e8m0_t>(16, 48); // (scaleK, n) 不转置
+    auto MxBDNLayout = MakeScaleBDNLayout<fp8_e8m0_t>(16, 48); // (scaleK, n) 转置
+    // 输入二维shape，输出四维Layout ---> tileLayout shape = ((Std::Int<2>{}, 2),(Std::Int<1>, 8))
+    auto tileLayout = MakeTileLayout(MxBNDLayout, MakeShape(4,8));
+
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(tileLayout)), 2);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(tileLayout)), 2);
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(tileLayout)), 1);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(tileLayout)), 8);
 }
