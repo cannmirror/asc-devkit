@@ -117,6 +117,7 @@ public:
             dcci(reinterpret_cast<__gm__ int64_t *>(msg), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
 
 #ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+            // only executed in 1:2 mode
             if (GetTaskRationImpl() == 2) {
                 CrossCoreWaitFlag(KFC_SYNC_ID);
                 dcci(reinterpret_cast<__gm__ int64_t *>(this->msgRcvStart), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);

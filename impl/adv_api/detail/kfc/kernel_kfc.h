@@ -198,8 +198,9 @@ public:
                     switchPoll = true;
 
 #ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+                    // only executed in a 1:2 mode 
                     if (quitSize == 2) {
-                        // AIC
+                        // after receiving two exit message, AIC sends a message to AIV and performs a counter reset.
                         auto secondMsgStartPos = ptr->GetSecondBuffStart();
                         // scalar write the GM, dcci write back to GM
                         dcci(reinterpret_cast<__gm__ int64_t *>(secondMsgStartPos), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);

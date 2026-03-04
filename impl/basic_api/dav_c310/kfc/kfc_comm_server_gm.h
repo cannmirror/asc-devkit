@@ -49,7 +49,7 @@ public:
         // vec0 stores the sendEvent and eventId of the vec1, and the vec1 same as vec0.
         // Therefore, the address position of the other party is taken for writing
         uint8_t mapId = i != 0 ? 0 : 1;
-        this->msgRcvStart = (__gm__ KfcMsg*)GetMsgHead(workspace, mapId) + MAX_MSG_COUNT;
+        this->msgCntStart = (__gm__ KfcMsg*)GetMsgHead(workspace, mapId) + MAX_MSG_COUNT;
 #endif
 
         this->msgSendHead = this->msgSendStart;
