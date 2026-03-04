@@ -160,9 +160,9 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::InitInner(GM_ADDR contex
     }
 
     isInited_ = true;
-    KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner rankId:%d, rankNum:%d, xnAddr:0x%llx, ckeAddr:0x%llx, ccuMsgExt:0x%llx, algorithmType:%u",
+    KERNEL_LOG(KERNEL_INFO, "ApiClient InitInner rankId:%d, rankNum:%d, xnAddr:0x%llx, ckeAddr:0x%llx, ccuMsgExt:0x%llx",
                     hcclContext_->rankId, hcclContext_->rankNum, hcclContext_->xnOffset, hcclContext_->ckeOffset,
-                    reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt), hcclContext_->algorithmType);
+                    reinterpret_cast<uint64_t>(ccuParam_.ccuMsgExt));
 }
 
 template<const auto &config>
@@ -226,6 +226,7 @@ HcclImpl<HcclServerType::HCCL_SERVER_TYPE_CCU, config>::CcuPrepareForOp(const Hc
             break;
         }
     }
+    KERNEL_LOG(KERNEL_INFO, "ApiClient CcuPrepareForOp algorithmType:%u", algorithmType);
     if (handleParamGM_[handleId].commType.prepareType == HcclCMDType::HCCL_CMD_ALLGATHER) {
         if (algorithmType == static_cast<uint8_t>(AlgorithmType::CcuAllGatherMeshMem2Mem1D)) {
             ccuUsedXnNum_ = 9;
