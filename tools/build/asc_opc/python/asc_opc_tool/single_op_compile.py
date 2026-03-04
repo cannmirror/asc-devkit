@@ -129,6 +129,7 @@ class SingleOpCompile:
                      str(kwargs), str(opt_input_mode), str(opt_output_mode), str(dyn_param_mode),
                      str(sub_kernel_option), str(output_path))
         tiling_key_list = self.__opc_compile_args.get(OpcOptions.TILING_KEY)
+        kernel_template_input = self.__opc_compile_args.get(OpcOptions.KERNEL_TEMPLATE_INPUT)
         if self.__op_info.get(OpcOptions.IS_DYNAMIC) or \
             self.__opc_compile_args.get(OpcOptions.OP_MODE) == OpModeType.DYNAMIC:
             with op_context.OpContext("dynamic"):
@@ -140,6 +141,7 @@ class SingleOpCompile:
                 context.add_addition(OpcOptions.TILING_KEY, tiling_key_list)
                 context.add_addition(OpcOptions.SPK_OPT, sub_kernel_option)
                 context.add_addition(OpcOptions.OUTPUT, output_path)
+                context.add_addition(OpcOptions.KERNEL_TEMPLATE_INPUT, kernel_template_input)
                 op_func(*inputs, *outputs, *new_attrs, self.__op_info.get(OpcOptions.KERNEL_NAME), **kwargs)
 
                 # fetch json file path for build result.
@@ -161,6 +163,7 @@ class SingleOpCompile:
                 context.add_addition(OpcOptions.TILING_KEY, tiling_key_list)
                 context.add_addition(OpcOptions.SPK_OPT, sub_kernel_option)
                 context.add_addition(OpcOptions.OUTPUT, output_path)
+                context.add_addition(OpcOptions.KERNEL_TEMPLATE_INPUT, kernel_template_input)
                 op_func(*inputs, *outputs, *new_attrs, self.__op_info.get(OpcOptions.KERNEL_NAME), **kwargs)
 
                 # fetch json file path for build result.
@@ -180,6 +183,7 @@ class SingleOpCompile:
                 context.add_addition(OpcOptions.TILING_KEY, tiling_key_list)
                 context.add_addition(OpcOptions.SPK_OPT, sub_kernel_option)
                 context.add_addition(OpcOptions.OUTPUT, output_path)
+                context.add_addition(OpcOptions.KERNEL_TEMPLATE_INPUT, kernel_template_input)
                 op_func(*inputs, *outputs, *new_attrs, self.__op_info.get(OpcOptions.KERNEL_NAME), **kwargs)
 
                 # fetch json file path for build result.

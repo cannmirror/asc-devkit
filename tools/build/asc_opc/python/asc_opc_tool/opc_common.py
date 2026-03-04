@@ -37,7 +37,7 @@ compiling_option_keys = [
     OpcOptions.DEBUG_DIR, OpcOptions.CORE_TYPE, OpcOptions.GRAPH, OpcOptions.BIN_FILENAME, OpcOptions.AICORE_NUM,
     OpcOptions.LOG, OpcOptions.OPTIONAL_INPUT_MODE,
     OpcOptions.OPTIONAL_OUTPUT_MODE, OpcOptions.OP_MODE, OpcOptions.SIMPLE_KEY_MODE, OpcOptions.DYNAMIC_PARAM_MODE,
-    OpcOptions.TILING_KEY, OpcOptions.RELOCATABLE_BIN, OpcOptions.SPK_OPT
+    OpcOptions.TILING_KEY, OpcOptions.RELOCATABLE_BIN, OpcOptions.SPK_OPT, OpcOptions.KERNEL_TEMPLATE_INPUT
 ]
 
 valid_format_match_mode = ["FormatAgnostic", "FormatDefault", "FormatFixed", None]

@@ -194,6 +194,7 @@ class OpcOptionParser:
         self.__define_option(OpcOptions.TILING_KEY, None, "tiling key list.")
         self.__define_option(OpcOptions.RELOCATABLE_BIN, "False", "op_relocatable_kernel_binary mode.")
         self.__define_option(OpcOptions.SPK_OPT, "", "SPK sub kernel compile options.")
+        self.__define_option(OpcOptions.KERNEL_TEMPLATE_INPUT, "", "kernel template input.")
 
     @staticmethod
     def usage():
@@ -265,6 +266,7 @@ class OpcOptionParser:
               "  --op_super_kernel_options         Set super kernel options. \n"
               "                      For expl: --op_super_kernel_options=aaa,bbb \n"
               "                      if not set, use empty str as default. \n"
+              "  --kernel-template-input         Set specific kernel compilation. \n"
               )
 
     @staticmethod
@@ -519,6 +521,11 @@ class OpcOptionParser:
                 logger.warn("Invalid tiling_key list {}.".format(tiling_key_str))
             self.set_option(OpcOptions.TILING_KEY, tiling_key_list)
             logger.info("Save tiling_key list {}.".format(tiling_key_list))
+    
+    def check_and_save_kernel_template_input(self):
+        kernel_template_input_str = self.get_option(OpcOptions.KERNEL_TEMPLATE_INPUT)
+        if kernel_template_input_str is not None:
+            self.set_option(OpcOptions.KERNEL_TEMPLATE_INPUT, kernel_template_input_str)
 
     def check_op_relocatable_cfg(self):
         """
@@ -624,6 +631,7 @@ class OpcOptionParser:
 
         self.check_and_save_tiling_key()
         self.check_op_relocatable_cfg()
+        self.check_and_save_kernel_template_input()
         return True
 
 def parse_args():
