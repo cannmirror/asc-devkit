@@ -417,3 +417,32 @@ TEST_F(Tensor_Api_Tensor, MakeTensorShapeStrideBranchOperationInt3D)
     EXPECT_EQ(AscendC::Std::get<1>(stride).value, 2);
     EXPECT_EQ(AscendC::Std::get<2>(stride).value, 1);
 }
+
+TEST_F(Tensor_Api_Tensor, MakeOffsetPointer)
+{
+    using namespace AscendC::Te;
+
+    uint32_t ubOffset = 11;
+    uint32_t l1Offset = 12;
+    uint32_t l0aOffset = 13;
+    uint32_t l0bOffset = 14;
+    uint32_t l0cOffset = 15;
+    uint32_t biasOffet = 16;
+    uint32_t fixbufOffset = 17;
+
+    auto ubPtr = MakeUBmemPtr<float>(ubOffset);
+    auto l1Ptr = MakeL1memPtr<float>(l1Offset);
+    auto l0aPtr = MakeL0AmemPtr<float>(l0aOffset);
+    auto l0bPtr = MakeL0BmemPtr<float>(l0bOffset);
+    auto l0cPtr = MakeL0CmemPtr<float>(l0cOffset);
+    auto biasPtr = MakeBiasmemPtr<float>(biasOffet);
+    auto fixbufPtr = MakeFixbufmemPtr<float>(fixbufOffset);
+
+    EXPECT_EQ(ubPtr.Get(), (__ubuf__ float*)ubOffset);
+    EXPECT_EQ(l1Ptr.Get(), (__cbuf__ float*)l1Offset);
+    EXPECT_EQ(l0aPtr.Get(), (__ca__ float*)l0aOffset);
+    EXPECT_EQ(l0bPtr.Get(), (__cb__ float*)l0bOffset);
+    EXPECT_EQ(l0cPtr.Get(), (__cc__ float*)l0cOffset);
+    EXPECT_EQ(biasPtr.Get(), (__biasbuf__ float*)biasOffet);
+    EXPECT_EQ(fixbufPtr.Get(), (__fbuf__ float*)fixbufOffset);
+}
