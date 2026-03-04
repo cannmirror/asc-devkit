@@ -36,7 +36,7 @@ __aicore__ inline int64_t CountLeadingZero(uint64_t valueIn);
 // ScalarCountLeadingZero has been updated, please use CountLeadingZero instead.
 __aicore__ inline int64_t ScalarCountLeadingZero(uint64_t valueIn);
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T>
 __aicore__ inline void GetUintDivMagicAndShift(T& magic, T& shift, T divisor);
 #endif
@@ -57,7 +57,7 @@ __aicore__ inline U Cast(T valueIn);
 template <typename T, typename U, RoundMode roundMode>
 __aicore__ inline U ScalarCast(T valueIn);
 
-#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 2201 || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T>
 __aicore__ inline void WriteGmByPassDCache(__gm__ T* addr, T value);
 

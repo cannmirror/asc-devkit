@@ -20,7 +20,7 @@
 
 #include "instr_impl/npu_arch_2201/scalar_compute_impl.h"
 
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
 #include "instr_impl/npu_arch_3510/scalar_compute_impl.h"
 
@@ -52,7 +52,7 @@ __aicore__ inline int32_t asc_float2int32_rn(float value);
 
 __aicore__ inline int32_t asc_float2int32_rna(float value);
 
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
 __aicore__ inline void asc_store_dev(__gm__ int8_t* addr, int8_t value);
 

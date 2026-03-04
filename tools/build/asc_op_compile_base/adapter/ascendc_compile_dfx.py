@@ -393,8 +393,8 @@ class DFXSectionGenerator:
                 cube_core_marco = "(defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)"
                 vec_core_marco = "(defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)"
             elif CommonUtility.is_c310():
-                cube_core_marco = "(defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)"
-                vec_core_marco = "(defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)"
+                cube_core_marco = "(defined(__DAV_CUBE__) && __NPU_ARCH__ == 3510)"
+                vec_core_marco = "(defined(__DAV_VEC__) && __NPU_ARCH__ == 3510)"
         else:
             # for v200 cube_core_type is aicore type
             cube_core_marco = "defined(__DAV_M200__)"

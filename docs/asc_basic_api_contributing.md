@@ -450,7 +450,7 @@ static_assert(SupportType<T, half, float, int16_t, int32_t>(),
               "Unsupported data type");
 
 // 3. 架构检查
-#if !defined(__NPU_ARCH__) || (__NPU_ARCH__ != 2201 && __NPU_ARCH__ != 3101)
+#if !defined(__NPU_ARCH__) || (__NPU_ARCH__ != 2201 && __NPU_ARCH__ != 3510)
     #error "Unsupported NPU architecture"
 #endif
 ```

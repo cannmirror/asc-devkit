@@ -30,7 +30,7 @@
 #include "dav_m300/kernel_operator_vec_transpose_impl.h"
 #elif __NPU_ARCH__ == 3102
 #include "dav_m310/kernel_operator_vec_transpose_impl.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/kernel_operator_vec_transpose_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_transpose_impl.h"
@@ -136,7 +136,7 @@ __aicore__ inline void Transpose(const LocalTensor<T> &dst, const LocalTensor<T>
 #endif
     if ((transposeParams.transposeType == TransposeType::TRANSPOSE_ND2ND_B16) &&
         (transposeParams.hSize == NCHW_CONV_ADDR_LIST_SIZE) && (transposeParams.wSize == NCHW_CONV_ADDR_LIST_SIZE)) {
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
         ASCENDC_ASSERT((SupportType<PrimT<T>, int16_t, uint16_t, half>()),
             {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Transpose when transposeType is TRANSPOSE_ND2ND_B16, "
             "current api support dtype combination is src and dst both: int16_t, uint16_t, half");});

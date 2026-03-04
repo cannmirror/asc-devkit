@@ -108,7 +108,7 @@ extern "C" __global__ __aicore__ void main_Conv2D_doublebuffer_test(__gm__ half 
     DataCopy(biaslocal, bias_global, conv2dParams.cout);
 
     Conv2D(output, biaslocal, input0, input1, conv2dParams, tilling);
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510)
     FixpipeParams<float> fixpipeParams(static_cast<uint16_t>(conv2dParams.cout / BLOCK_CUBE),
         static_cast<uint16_t>(tilling.howo * BLOCK_CUBE * sizeof(float) / ONE_BLK_SIZE),
         0,

@@ -41,7 +41,7 @@ template <pipe_t pipe>
 __aicore__ inline void PipeBarrier();
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||       \
-    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) ||       \
+    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) ||       \
     (__NPU_ARCH__ == 3003) ||                                 \
     (__NPU_ARCH__ == 3113))
 template <MemDsbT arg0>
@@ -73,7 +73,7 @@ template <bool isAIVOnly = true>
 __aicore__ inline void SyncAll(const GlobalTensor<int32_t>& gmWorkspace, const LocalTensor<int32_t>& ubWorkspace,
                                  const int32_t usedCores = 0);
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <bool isAIVOnly = true, const SyncAllConfig& config = DEFAULT_SYNC_ALL_CONFIG>
 __aicore__ inline void SyncAll();
 #else

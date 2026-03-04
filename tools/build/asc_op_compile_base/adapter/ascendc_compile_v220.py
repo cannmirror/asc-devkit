@@ -395,12 +395,12 @@ def get_ktype_section_head(variable_name: str):
         if CommonUtility.is_v220():
             section_var_head += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 2201)\n"
         elif CommonUtility.is_c310():
-            section_var_head += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3101)\n"
+            section_var_head += f"#if (defined(__DAV_CUBE__) && __NPU_ARCH__ == 3510)\n"
     elif "mix_aiv" in variable_name:
         if CommonUtility.is_v220():
             section_var_head += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 2201)\n"
         elif CommonUtility.is_c310():
-            section_var_head += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 3101)\n"
+            section_var_head += f"#if (defined(__DAV_VEC__) && __NPU_ARCH__ == 3510)\n"
     return section_var_head
 
 

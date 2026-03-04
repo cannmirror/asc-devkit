@@ -27,7 +27,7 @@ struct QuantParams {
     uint64_t deqScalar;
 };
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 struct Nz2NdParams {
     __aicore__ Nz2NdParams() {}
 
@@ -71,7 +71,7 @@ struct Nz2NdParams {
 };
 #endif
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113))
 struct Nz2DnParams {
     __aicore__ Nz2DnParams() {}
 

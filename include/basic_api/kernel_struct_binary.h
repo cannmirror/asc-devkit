@@ -24,7 +24,7 @@
 #endif
 
 namespace AscendC {
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 struct BinaryConfig {
     int8_t scalarTensorIndex = 1;
 };

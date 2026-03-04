@@ -130,7 +130,7 @@
 - 修改编译选项（Ascend 950PR/Ascend 950DT）  
   对于Ascend 950PR/Ascend 950DT，执行前需要修改CMakeLists.txt中编译选项--npu-arch，具体修改如下：  
   ```
-  --npu-arch=dav-3101
+  --npu-arch=dav-3510
   ```
 
 - 样例执行  

@@ -26,7 +26,7 @@
 #include "dav_c220/kernel_operator_vec_gather_impl.h"
 #elif __NPU_ARCH__ == 3002
 #include "dav_m300/kernel_operator_vec_gather_impl.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/kernel_operator_vec_gather_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_gather_impl.h"
@@ -140,7 +140,7 @@ __aicore__ inline void Gather(const LocalTensor<T>& dst, const LocalTensor<T>& s
 {
     using PrimType = PrimT<T>;
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||                       \
-      (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
     ASCENDC_ASSERT((SupportType<PrimType, uint8_t, int8_t, half, bfloat16_t, uint16_t, int16_t, float, uint32_t, int32_t>()),
         {KERNEL_LOG(KERNEL_ERROR, "Failed to check dtype in Gather, current api support dtype combination is src and "
         "dst both: uint8 / int8 / half / bfloat16_t / uint16_t / int16_t / float / uint32_t / int32_t");});

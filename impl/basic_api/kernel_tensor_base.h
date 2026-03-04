@@ -77,7 +77,7 @@ enum class TBufState : uint8_t {
 struct TBufType {
     TBufState state;
     HardEvent freeBufEvt;
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
     union {
         struct {
             TEventID enQueEvtID;

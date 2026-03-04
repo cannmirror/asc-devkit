@@ -68,8 +68,8 @@ foreach(product_type ${ASCENDC_UT_PRODUCT_TYPE_LIST})
         ASCENDC_DUMP=0
         $<$<STREQUAL:${product_type},NPU_ARCH_2201_AIC>:__NPU_ARCH__=2201>
         $<$<STREQUAL:${product_type},NPU_ARCH_2201_AIV>:__NPU_ARCH__=2201>
-        $<$<STREQUAL:${product_type},NPU_ARCH_3510_AIC>:__NPU_ARCH__=3101>
-        $<$<STREQUAL:${product_type},NPU_ARCH_3510_AIV>:__NPU_ARCH__=3101>
+        $<$<STREQUAL:${product_type},NPU_ARCH_3510_AIC>:__NPU_ARCH__=3510>
+        $<$<STREQUAL:${product_type},NPU_ARCH_3510_AIV>:__NPU_ARCH__=3510>
         __disable_kernel_type_autoinfer__=
     )
 

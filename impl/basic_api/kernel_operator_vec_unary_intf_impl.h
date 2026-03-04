@@ -29,7 +29,7 @@
 #include "dav_m300/kernel_operator_vec_unary_impl.h"
 #elif __NPU_ARCH__ == 3102
 #include "dav_m310/kernel_operator_vec_unary_impl.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/kernel_operator_vec_unary_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_unary_impl.h"
@@ -130,7 +130,7 @@ __aicore__ inline void Relu(const LocalTensor<T>& dst, const LocalTensor<T>& src
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.src0RepStride src repeat stride
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask, const ExpConfig& config>
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
@@ -213,7 +213,7 @@ __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, const ExpConfig& config>
 __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count)
 {
@@ -258,7 +258,7 @@ __aicore__ inline void Exp(const LocalTensor<T>& dst, const LocalTensor<T>& src,
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.src0RepStride src repeat stride
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask, const LnConfig& config>
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
@@ -337,7 +337,7 @@ __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, 
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, const LnConfig& config>
 __aicore__ inline void Ln(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count)
 {
@@ -441,7 +441,7 @@ __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     AbsImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(), count);
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 /*
  * @ingroup Abs Level 2 for complex32/complex64, only support ascend950
  * @brief dst[i] = abs(src[i])
@@ -477,7 +477,7 @@ __aicore__ inline void Abs(const LocalTensor<T>& dst, const LocalTensor<U>& src,
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.src0RepStride src repeat stride
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask, const ReciprocalConfig& config>
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
@@ -560,7 +560,7 @@ __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, const ReciprocalConfig& config>
 __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     const int32_t& count)
@@ -607,7 +607,7 @@ __aicore__ inline void Reciprocal(const LocalTensor<T>& dst, const LocalTensor<T
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.src0RepStride src repeat stride
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask, const RsqrtConfig& config>
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
@@ -690,7 +690,7 @@ __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& sr
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, const RsqrtConfig& config>
 __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count)
 {
@@ -735,7 +735,7 @@ __aicore__ inline void Rsqrt(const LocalTensor<T>& dst, const LocalTensor<T>& sr
  * @param [in] intriParams.dstRepStride dst repeat stride
  * @param [in] intriParams.src0RepStride src repeat stride
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, bool isSetMask, const SqrtConfig& config>
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, uint64_t mask[],
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
@@ -818,7 +818,7 @@ __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src
  * @param [in] src input LocalTensor
  * @param [in] count number Number of data involved in calculation
  */
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <typename T, const SqrtConfig& config>
 __aicore__ inline void Sqrt(const LocalTensor<T>& dst, const LocalTensor<T>& src, const int32_t& count)
 {
@@ -922,7 +922,7 @@ __aicore__ inline void Not(const LocalTensor<T>& dst, const LocalTensor<T>& src,
     NotImpl((__ubuf__ PrimType*)dst.GetPhyAddr(), (__ubuf__ PrimType*)src.GetPhyAddr(), count);
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 /* **************************************** Neg ****************************************** */
 /*
  * @ingroup Neg Level 2

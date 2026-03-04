@@ -57,7 +57,7 @@ constexpr bool VerifyingFixpipeQuantTemplateWithCoord = Std::is_tuple_v<Coord> &
 
 namespace TileInternal {
 struct ArchVersion {
-    static constexpr uint32_t V3101 = 3101;
+    static constexpr uint32_t V3101 = 3510;
     static constexpr uint32_t V2201 = 2201;
 };
 

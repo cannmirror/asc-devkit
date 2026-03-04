@@ -24,7 +24,7 @@ public:
     {
         mElementCount = elementCount;
         mConcatRepeatTimes = mElementCount / 16;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 3002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3002)
         mSortRepeatTimes = mElementCount / 32;
         mExtractRepeatTimes = mElementCount / 32;
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
@@ -72,7 +72,7 @@ private:
         
         valueLocal.SetSize(mElementCount);
         Concat(concatLocal, valueLocal, concatTmpLocal, mConcatRepeatTimes);
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 3002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3002)
         if (sizeof(T) == sizeof(half)) {
             sortedLocal.SetSize(mElementCount * 4);
             sortTmpLocal.SetSize(mElementCount * 4);
@@ -86,13 +86,13 @@ private:
 #endif
         Sort<T, isFullSort>(sortedLocal, concatLocal, indexLocal, sortTmpLocal, mSortRepeatTimes);
         
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 3002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3002)
         uint32_t singleMergeTmpElementCount = 32;
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
         uint32_t singleMergeTmpElementCount = 16;
 #endif
         uint32_t baseOffset;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 3002)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 3002)
         baseOffset = singleMergeTmpElementCount * 8 / sizeof(T);
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002)
         if constexpr (sizeof(T) == sizeof(half)) {

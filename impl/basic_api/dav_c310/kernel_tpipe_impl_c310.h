@@ -527,7 +527,7 @@ __aicore__ inline void InitShareBufStart(TPipe* tpipe, uint32_t mode, uint32_t* 
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::L0B)].maxAddr = 0;
     // v100 Shouldn't Use Bias Table
     tpipe->g_tpipeImpl.bufPool_[static_cast<uint8_t>(Hardware::BIAS)].maxAddr = 0;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     Internal::g_sharedEvtId = Internal::g_bufId;
 #endif
     return;
@@ -545,7 +545,7 @@ __aicore__ inline void InitShareBufEnd(TPipe* tpipe)
         tpipe->g_tpipeImpl.shareBufPool_.maxAddr[static_cast<uint8_t>(TShareBuf::ShareHard::UB)];
 #endif
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     Internal::g_bufId = Internal::g_sharedEvtId;
 #endif
     return;

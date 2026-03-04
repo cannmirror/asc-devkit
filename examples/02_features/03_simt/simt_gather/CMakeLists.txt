@@ -29,7 +29,7 @@ add_executable(demo
 
 target_compile_options(demo PRIVATE
     # 该NPU架构版本号暂未正式发布，后续可能会有变更，请关注正式版本发布信息
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
     $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},sim>:-g -O0>>
     $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:-x c++>>
     $<BUILD_INTERFACE:$<$<STREQUAL:${RUN_MODE},cpu>:-g -O2 -std=c++17 -D_GLIBCXX_USE_CXX11_ABI=0 -Wall -Werror>>

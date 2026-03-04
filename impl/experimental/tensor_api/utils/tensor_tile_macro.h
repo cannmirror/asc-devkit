@@ -95,7 +95,7 @@
 #if (defined(__NPU_ARCH__) &&                                               \
      ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002) ||                   \
       (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||                   \
-      (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)))
+      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)))
 #ifndef ASCENDC_DUMP
 #define ASCENDC_DUMP 1
 #endif
@@ -107,7 +107,7 @@
 
 namespace AscendC {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) ||           \
-    (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) ||           \
+    (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) ||           \
     (__NPU_ARCH__ == 5102)) // Available for V200 and V210
 constexpr int32_t QUE_MAX_EVENT = 8;
 #else
@@ -119,7 +119,7 @@ constexpr int32_t MM_LAYOUT_MODE_BIT = 51;
 constexpr int32_t LEAKY_RELU_MODE_BIT = 50;
 constexpr int32_t CAST_MODE_BIT = 59;
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || \
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || \
     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
 __aicore__ constexpr inline int32_t CeilDivision(int32_t num1, int32_t num2)
 {

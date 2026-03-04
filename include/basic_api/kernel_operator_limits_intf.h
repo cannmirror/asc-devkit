@@ -27,7 +27,7 @@
 #include "kernel_bf16.h"
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 namespace AscendC {
 template <typename T>
 struct NumericLimits {

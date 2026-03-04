@@ -54,7 +54,7 @@ __aicore__ void RegTensor<T, regTrait>::Print() const
                     os << reg[regIdx][i * blockNum + j].ToFloat() << " ";
                 } else if constexpr (std::is_same_v<T, fp4x2_e2m1_t> || std::is_same_v<T, fp4x2_e1m2_t>) {
                     os << ((bfloat16_t)reg[regIdx][i * blockNum + j]).ToFloat() << " ";
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
                 } else if constexpr (std::is_same_v<T, complex32>) {
                     const float real = (*(reinterpret_cast<const half*>(&reg[regIdx][i * blockNum + j]))).ToFloat();
                     const float image =

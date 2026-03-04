@@ -35,7 +35,7 @@ protected:
 extern void platfrom_stub_set_chip_version(const char *num);
 extern void platfrom_stub_set_npuarch(const char *num);
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 TEST_F(TestTiling, testTransDataTilingUnalignedHw)
 {
     uint32_t maxSize;

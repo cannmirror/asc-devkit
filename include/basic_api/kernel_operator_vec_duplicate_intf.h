@@ -56,7 +56,7 @@ __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue
 template <typename T>
 __aicore__ inline void Duplicate(const LocalTensor<T>& dst, const T& scalarValue, const int32_t& count);
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 /*
  * @ingroup Duplicate lowest position of src
  * @brief dst = dst[i] = src[0]

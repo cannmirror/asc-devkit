@@ -49,7 +49,7 @@ extern "C" __global__ __aicore__ void KernelTestLoadData4() {
     AscendC::LoadData(dst, src, loadDataParams);
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 // __aicore__ inline void LoadData(const LocalTensor<U>& dst, const LocalTensor<T>& src, const LocalTensor<fp8_e8m0_t>& srcMx, const LoadData2DParamsV2& loadDataParams, const LoadData2DMxParams& loadMxDataParams);
 extern "C" __global__ __aicore__ void KernelTestLoadData5() {
     AscendC::LocalTensor<fp4x2_e2m1_t> dst;
@@ -89,7 +89,7 @@ extern "C" __global__ __aicore__ void KernelTestLoadData8() {
     AscendC::LoadData(dst, src, loadDataParams);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // // template <TPosition DstPos, TPosition SrcPos, typename T>
 // // __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const Load3DBitModeParam& loadDataParams);
 // extern "C" __global__ __aicore__ void KernelTestLoadData9() {
@@ -108,7 +108,7 @@ extern "C" __global__ __aicore__ void KernelTestLoadData10() {
     AscendC::LoadData(dst, src, loadDataParams);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // // __aicore__ inline void LoadData(const LocalTensor<T>& dst, const LocalTensor<T>& src, const Load2DBitModeParam& loadDataParams);
 // extern "C" __global__ __aicore__ void KernelTestLoadData11() {
 //     AscendC::LocalTensor<float> dst;
@@ -153,7 +153,7 @@ extern "C" __global__ __aicore__ void KernelTestMmad2() {
     AscendC::Mmad(dst, fm, filter, bias, mmadParams);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 // __aicore__ inline void Mmad(const LocalTensor<T>& dst, const LocalTensor<U>& fm, const LocalTensor<S>& filter, const MmadBitModeParams& mmadParams);
 extern "C" __global__ __aicore__ void KernelTestMmad3() {
     AscendC::LocalTensor<float> dst;
@@ -238,7 +238,7 @@ extern "C" __global__ __aicore__ void KernelTestSetFmatrix1() {
     AscendC::SetFmatrix(l1H, l1W, padList, fmatrixMode);
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // __aicore__ inline void SetFmatrix(const SetFMatrixBitModeParams& param, const FmatrixMode &fmatrixMode);
 extern "C" __global__ __aicore__ void KernelTestSetFmatrix2() {
     AscendC::SetFMatrixBitModeParams param;
@@ -268,7 +268,7 @@ extern "C" __global__ __aicore__ void KernelTestLoadImageToLocal1() {
 }
 #endif
 
-#if __NPU_ARCH__ != 3101 && __NPU_ARCH__ != 5102
+#if __NPU_ARCH__ != 3510 && __NPU_ARCH__ != 5102
 // __aicore__ inline void LoadDataUnzip(const LocalTensor<T>& dst, const GlobalTensor<T>& src);
 extern "C" __global__ __aicore__ void KernelTestLoadDataUnzip1() {
     AscendC::LocalTensor<float> dst;

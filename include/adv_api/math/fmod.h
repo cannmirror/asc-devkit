@@ -15,10 +15,10 @@
 
 #ifndef LIB_MATH_FMOD_H
 #define LIB_MATH_FMOD_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 
 #include "kernel_tensor.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "include/adv_api/math/fmod_utils.h"
 #include "../../../impl/adv_api/detail/math/fmod/fmod_c310_impl.h"
 #else
@@ -28,7 +28,7 @@
 
 namespace AscendC {
 #pragma begin_pipe(V)
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 /*!
  * \ingroup Fmod
  * \brief compute Fmod elementwisely

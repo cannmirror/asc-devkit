@@ -21,7 +21,7 @@
 #include "hccl_v220_impl.h"
 #endif
 
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 #include "hccl_v310_impl.h"
 #endif
 

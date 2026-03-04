@@ -324,7 +324,7 @@ extern "C" __global__ __aicore__ void KernelTestOr3() {
     AscendC::Or(dst, src0, src1, count);
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 // __aicore__ inline void ShiftLeft(const LocalTensor<T>& dst, const LocalTensor<T>& src0, const LocalTensor<U>& src1, const int32_t& count);
 extern "C" __global__ __aicore__ void KernelTestShiftLeft1() {
     AscendC::LocalTensor<int32_t> dst;
@@ -532,7 +532,7 @@ extern "C" __global__ __aicore__ void KernelTestSubRelu3() {
     AscendC::SubRelu(dst, src0, src1, count);
 }
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 // __aicore__ inline void Prelu(const LocalTensor<T>& dst, const LocalTensor<T> &src0,  const LocalTensor<T> &src1, const uint32_t count);
 extern "C" __global__ __aicore__ void KernelTestPrelu1() {
     AscendC::LocalTensor<float> dst;

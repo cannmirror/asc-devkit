@@ -21,7 +21,7 @@
 
 #include "instr_impl/npu_arch_2201/cube_compute_impl.h"
 
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
 #include "instr_impl/npu_arch_3510/cube_compute_impl.h"
 
@@ -125,7 +125,7 @@ __aicore__ inline void asc_enable_hf32();
 
 __aicore__ inline void asc_set_fp32_mode();
 
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 
 __aicore__ inline void asc_set_l0c2gm_nz2nd(uint64_t nd_num, uint64_t src_nd_stride, uint64_t dst_nd_stride);
 

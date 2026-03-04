@@ -502,7 +502,7 @@ __aicore__ inline void LoadData2DL12L0ATransposeCal(__ca__ T *dst, __cbuf__ T *s
  * Mmad                                             *
  * ************************************************************************************************* */
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template <typename DstT, typename Src0T, typename Src1T>
 __aicore__ inline void MmadCal(__cc__ DstT* c, __ca__ Src0T* a, __cb__ Src1T* b, const MmadParams& mmadParams)
 {

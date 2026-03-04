@@ -50,7 +50,7 @@ __aicore__ inline uint32_t Ceil(uint32_t a, uint32_t b)
     return (a + b - 1) / b;
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || \
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || \
     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)) || defined(__ASC_NPU_HOST__)
 __aicore__ constexpr inline int32_t CeilDivision(int32_t num1, int32_t num2)
 {
@@ -276,7 +276,7 @@ __aicore__ constexpr TQueConfig GetTQueConfig(const TQueConfig* conf)
     };
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 __aicore__ constexpr bool UseAltBufId(TPosition queDstPos, TPosition dstConsumerPos, uint32_t consumerSize)
 {
     if (consumerSize <= 1) {
@@ -318,7 +318,7 @@ __aicore__ constexpr bool SupportType()
     return IsSameType<T, U>::value;
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 template <typename T> struct GetComplexElementType {
     using Type = T;
 };
@@ -380,13 +380,13 @@ template <auto funcPtr, typename... Args> __aicore__ inline void VF_CALL(Args &&
 #endif
 } // namespace AscendC
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || defined(__ASC_NPU_HOST__)
 using complex32 = AscendC::Complex<half>;
 using complex64 = AscendC::Complex<float>;
 
 template <auto funcPtr, typename... Args> __aicore__ inline void asc_vf_call(Args &&... args)
 {
-#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101) 
+#if (defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510) 
         funcPtr(args...);
 #endif
 }

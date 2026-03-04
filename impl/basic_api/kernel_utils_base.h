@@ -27,7 +27,7 @@
 #include "kernel_scalar_convert.h"
 
 namespace AscendC {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 namespace Internal {
 __BLOCK_LOCAL__ extern __inline__ half g_deqValue;
 }
@@ -58,7 +58,7 @@ public:
         } else {
             set_vector_mask(static_cast<uint64_t>(-1), static_cast<uint64_t>(-1));
         }
-    #elif __NPU_ARCH__ == 3101
+    #elif __NPU_ARCH__ == 3510
         set_mask_norm();
         Internal::g_deqValue = static_cast<half>(1);
         uint64_t prevCtrl = get_ctrl() & 0x1000000000000;
@@ -103,7 +103,7 @@ public:
             return;
         }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
         if (sizeof(T) >= sizeof(int32_t)) {
             ASCENDC_ASSERT((maskHigh == 0ULL),
@@ -162,7 +162,7 @@ public:
     }
 
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||       \
-    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)) || (__NPU_ARCH__ == 3003) || __NPU_ARCH__ == 3113
+    (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)) || (__NPU_ARCH__ == 3003) || __NPU_ARCH__ == 3113
     __aicore__ static inline void SetOverflow(uint64_t ctrlValue)
     {
         // set CTRL[48] is 1 --- inf/nan mode
@@ -247,7 +247,7 @@ public:
 #if defined(__NPU_ARCH__) &&                                                                    \
      ((__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) ||             \
       (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||             \
-      (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+      (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510))
     template <typename T>
     __aicore__ static inline __fbuf__ T* GetTemporaryFbBufferAddr(const int32_t bufferOffset, const int32_t bufferSize)
     {
@@ -324,7 +324,7 @@ public:
         return gmLen;
     }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3510))
     __aicore__ static inline uint64_t GetGMLen(const uint64_t& srcEleSize, const Dn2NzParams& intriParams)
     {
         uint64_t gmLen = (intriParams.dnNum - 1) * intriParams.srcDnMatrixStride * srcEleSize
@@ -405,7 +405,7 @@ public:
 #if defined(__NPU_ARCH__) &&                                                                                    \
     ((__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 5102) ||    \
      (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) ||    \
-     (__NPU_ARCH__ == 3101))
+     (__NPU_ARCH__ == 3510))
             trap();
 #else
             trap(errCode);
@@ -444,7 +444,7 @@ public:
         CheckGmMemOverflow(gmAddr, isSrc, gmLen);
     }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3101))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3510))
     template <typename T>
     __aicore__ static inline void CheckGmMemOverflowDn2Nz(__gm__ T* gmAddr, __gm__ uint8_t* workSpace,
                                                           const bool& isSrc, const Dn2NzParams& intriParams)

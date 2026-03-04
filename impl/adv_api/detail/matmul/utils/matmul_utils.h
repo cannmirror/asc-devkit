@@ -18,7 +18,7 @@
 
 // USE_SSBUF       kfc 310 full capability mode (msg ssbuf + data ub2l1 + other new capability)
 // USE_WORKSPACE   kfc 220 or compatible mode of 310 (msg gm + data gm + no other new capability)
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 
 #if (defined(KFC_C310_SSBUF) && KFC_C310_SSBUF == 0)
 #define USE_WORKSPACE
@@ -121,13 +121,13 @@ template <> struct GetMmDstType<int8_t> {
     using Type = int32_t;
 };
 
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510)
 template <> struct GetMmDstType<bfloat16_t> {
     using Type = float;
 };
 #endif
 
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <> struct GetMmDstType<int4b_t> {
     using Type = int32_t;
 };
@@ -195,7 +195,7 @@ __aicore__ inline T CeilAlignT(T num1, T num2)
     return CeilT(num1, num2) * num2;
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510)
 template <class T, class U>
 __aicore__ inline void InitKfcClient(T &matmulClient, U *tiling, TPipe *tpipe, KfcCommClient *client, int instIdx,
     GM_ADDR workspace)

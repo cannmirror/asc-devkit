@@ -89,7 +89,7 @@ if(CMAKE_ASC_RUN_MODE STREQUAL "sim")
     set(_ARCH_TO_DIR_MAP
         "dav-2002" "dav_2002"
         "dav-2201" "dav_2201"
-        "dav-3101" "dav_3510"
+        "dav-3510" "dav_3510"
         "dav-3510" "dav_3510"
     )
     list(FIND _ARCH_TO_DIR_MAP "${CMAKE_ASC_ARCHITECTURES}" _index)

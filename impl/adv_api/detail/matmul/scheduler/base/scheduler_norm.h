@@ -61,7 +61,7 @@ public:
     using BASE_MODULE =
         AscendC::Impl::Detail::MatmulNormSchedulerBase<IMPL, A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, POLICY_TYPE>;
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 2201)
     __aicore__ inline void CheckBasicBlock()
     {
         ASCENDC_ASSERT((MM_CFG.basicM == MATMUL_MODULE(MatmulShapeTiling)->GetTiling().GetBaseM()), { 
@@ -92,7 +92,7 @@ public:
 
     __aicore__ inline bool ScheduleOnce(bool enPartialSum)
     {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 2201)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 2201)
         if constexpr (DoMatmulBasicBlock(MM_CFG)) {
             CheckBasicBlock();
         }
