@@ -177,7 +177,7 @@ TEST_F(TestMatmulMxShapeTiling, MatmulMxShapeTiling) {
     TilingParams tilingParams = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0};
     TCubeTiling tiling;
     tilingParams.GetTiling(tiling);
-    tiling.mxTypePara = 257;
+    tiling.mxTypePara = 16843009;
     mm.InitVar(tiling);
     ASSERT_TRUE(mm.MxCheck());
 }

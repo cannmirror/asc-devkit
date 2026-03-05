@@ -439,25 +439,25 @@ namespace Kernel_Matmul_Case_##tilingParams##_##A_Pos##_##AS_Pos##_##B_Pos##_##B
 
 // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
 TilingParamsMx tiling_params_mx_case1 = {1, 128, 128, 128, 128, 128, 128, 128, 128, 128, 1, 1, 1, 1, 1, 1, 1, 0, 0};
-TilingParamsMx tiling_params_mx_case2 = {1, 465, 251, 192, 465, 251, 192, 256, 256, 192, 2, 1, 2, 1, 1, 1, 0, 1, 257};
+TilingParamsMx tiling_params_mx_case2 = {1, 465, 251, 192, 465, 251, 192, 256, 256, 192, 2, 1, 2, 1, 1, 1, 0, 1, 16843009};
 TilingParamsMx tiling_params_mx_case3 = {1, 32, 128, 128, 32, 128, 128, 32, 128, 128, 1, 1, 1, 1, 1, 1, 1, 0, 0};
 TilingParamsMx tiling_params_mx_case4 = {8, 60, 510, 256, 64, 64, 256, 64, 64, 256, 1, 1, 1, 1, 1, 1, 0, 1, 0};
-TilingParamsMx tiling_params_mx_case5 = {8, 64, 510, 250, 64, 64, 256, 64, 64, 256, 1, 1, 1, 1, 1, 1, 1, 0, 257};
-TilingParamsMx tiling_params_mx_case6 = {1, 339, 288, 768, 339, 288, 768, 176, 256, 64, 1, 1, 1, 1, 1, 1, 0, 0, 3084};
-TilingParamsMx tiling_params_mx_case7 = {1, 448, 256, 64, 448, 256, 64, 128, 128, 128, 1, 1, 1, 1, 1, 1, 0, 0, 257};
+TilingParamsMx tiling_params_mx_case5 = {8, 64, 510, 250, 64, 64, 256, 64, 64, 256, 1, 1, 1, 1, 1, 1, 1, 0, 16843009};
+TilingParamsMx tiling_params_mx_case6 = {1, 339, 288, 768, 339, 288, 768, 176, 256, 64, 1, 1, 1, 1, 1, 1, 0, 0, 16845836};
+TilingParamsMx tiling_params_mx_case7 = {1, 448, 256, 64, 448, 256, 64, 128, 128, 128, 1, 1, 1, 1, 1, 1, 0, 0, 16843009};
 TilingParamsMx tiling_params_mx_case8 = {1, 150, 64, 576, 150, 64, 576, 80, 64, 384, 6, 3, 2, 1, 3, 3, 1, 0, 0};
 TilingParamsMx tiling_params_mx_case9 = {1, 304, 1, 320, 304, 1, 320, 256, 32, 256, 4, 2, 2, 1, 2, 2, 1, 0, 0};
-TilingParamsMx tiling_params_mx_case10 = {1, 1, 684, 314, 1, 684, 314, 32, 256, 128, 3, 9, 1, 3, 3, 3, 1, 0, 257};
-TilingParamsMx tiling_params_mx_case11 = {1, 428, 161, 132, 428, 161, 132, 144, 192, 128, 6, 2, 3, 1, 2, 2, 1, 0, 257};
-TilingParamsMx tiling_params_mx_case12 = {1, 187, 32, 31, 187, 32, 31, 48, 32, 64, 4, 1, 4, 1, 1, 1, 0, 0, 257};
-TilingParamsMx tiling_params_mx_case13 = {1, 208, 64, 96, 208, 64, 96, 96, 208, 64, 2, 2, 1, 1, 2, 2, 1, 0, 257};
-TilingParamsMx tiling_params_mx_case14 = {1, 16, 96, 32, 16, 96, 32, 16, 64, 64, 1, 2, 1, 2, 1, 1, 0, 0, 257};
-TilingParamsMx tiling_params_mx_case15 = {1, 107, 322, 800, 107, 322, 800, 112, 256, 128, 7, 2, 1, 1, 7, 1, 1, 0, 1793};
-TilingParamsMx tiling_params_mx_case16 = {1, 224, 449, 404, 224, 449, 404, 128, 256, 256, 4, 4, 2, 2, 2, 2, 0, 0, 257};
-TilingParamsMx tiling_params_mx_case17 = {1, 408, 28, 272, 408, 28, 272, 208, 32, 256, 4, 2, 2, 1, 2, 2, 0, 0, 257};
-TilingParamsMx tiling_params_mx_case18 = {1, 122, 205, 8, 122, 205, 8, 128, 112, 64, 1, 2, 1, 2, 1, 1, 0, 0, 257};
-TilingParamsMx tiling_params_mx_case19 = {1, 800, 176, 128, 800, 176, 128, 160, 192, 128, 2, 1, 2, 1, 1, 1, 0, 0, 257};
-TilingParamsMx tiling_params_mx_case20 = {1, 624, 800, 128, 624, 800, 128, 128, 256, 128, 5, 4, 5, 4, 1, 1, 0, 0, 257};
+TilingParamsMx tiling_params_mx_case10 = {1, 1, 684, 314, 1, 684, 314, 32, 256, 128, 3, 9, 1, 3, 3, 3, 1, 0, 16843009};
+TilingParamsMx tiling_params_mx_case11 = {1, 428, 161, 132, 428, 161, 132, 144, 192, 128, 6, 2, 3, 1, 2, 2, 1, 0, 16843009};
+TilingParamsMx tiling_params_mx_case12 = {1, 187, 32, 31, 187, 32, 31, 48, 32, 64, 4, 1, 4, 1, 1, 1, 0, 0, 16843009};
+TilingParamsMx tiling_params_mx_case13 = {1, 208, 64, 96, 208, 64, 96, 96, 208, 64, 2, 2, 1, 1, 2, 2, 1, 0, 16843009};
+TilingParamsMx tiling_params_mx_case14 = {1, 16, 96, 32, 16, 96, 32, 16, 64, 64, 1, 2, 1, 2, 1, 1, 0, 0, 16843009};
+TilingParamsMx tiling_params_mx_case15 = {1, 107, 322, 800, 107, 322, 800, 112, 256, 128, 7, 2, 1, 1, 7, 1, 1, 0, 16844545};
+TilingParamsMx tiling_params_mx_case16 = {1, 224, 449, 404, 224, 449, 404, 128, 256, 256, 4, 4, 2, 2, 2, 2, 0, 0, 16843009};
+TilingParamsMx tiling_params_mx_case17 = {1, 408, 28, 272, 408, 28, 272, 208, 32, 256, 4, 2, 2, 1, 2, 2, 0, 0, 16843009};
+TilingParamsMx tiling_params_mx_case18 = {1, 122, 205, 8, 122, 205, 8, 128, 112, 64, 1, 2, 1, 2, 1, 1, 0, 0, 16843009};
+TilingParamsMx tiling_params_mx_case19 = {1, 800, 176, 128, 800, 176, 128, 160, 192, 128, 2, 1, 2, 1, 1, 1, 0, 0, 16843009};
+TilingParamsMx tiling_params_mx_case20 = {1, 624, 800, 128, 624, 800, 128, 128, 256, 128, 5, 4, 5, 4, 1, 1, 0, 0, 16843009};
 
 // dynamics
 // TEST_KERNEL_MATMUL, tilingParams, A_Pos, AS_Pos, B_Pos, BS_Pos, C_Pos, BIAS_Pos, A_Format, AS_Format, B_Format, BS_Format, C_Format, BIAS_Format,
@@ -518,13 +518,13 @@ KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case3, GM, 
 // singleM, singleN, singleK, baseM, baseN, baseK, isBias, mxTypePara, configMode
 KERNEL_MATMUL_TESTCASE_CONSTANT(TEST_KERNEL_MATMUL, tiling_params_mx_case2, GM, GM, GM, GM, GM, GM, NZ, NZ, NZ, NZ, NZ, NZ,
     fp4x2_e1m2_t, fp4x2_e1m2_t, float, half, 1, 0, 1, 1, CONFIG_MDL,
-    465, 251, 192, 256, 256, 192, 0, 257, 1);
+    465, 251, 192, 256, 256, 192, 0, 16843009, 1);
 KERNEL_MATMUL_TESTCASE_CONSTANT(TEST_KERNEL_MATMUL, tiling_params_mx_case4, GM, TSCM, GM, TSCM, VECIN, GM, ND, NZ, ND, NZ, ND, ND,
     fp4x2_e2m1_t, fp4x2_e1m2_t, float, float, 0, 0, 1, 1, CONFIG_NORM,
     64, 64, 256, 64, 64, 256, 0, 0, 0);
 KERNEL_MATMUL_TESTCASE_CONSTANT(TEST_KERNEL_MATMUL, tiling_params_mx_case6, TSCM, TSCM, GM, GM, GM, GM, NZ, NZ, ND, ND, NZ, ND,
     fp8_e4m3fn_t, fp8_e5m2_t, float, float, 1, 1, 1, 0, CONFIG_MDL,
-    339, 288, 768, 176, 256, 64, 0, 3084, 1);
+    339, 288, 768, 176, 256, 64, 0, 16845836, 1);
 
 // mxtype
 // TEST_KERNEL_MATMUL, tilingParams, A_Pos, AS_Pos, B_Pos, BS_Pos, A_SrcPos, AS_SrcPos, B_SrcPos, BS_SrcPos,
@@ -571,8 +571,8 @@ KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case20, GM,
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case20, GM, GM, GM, GM, GM, GM, ND, ND, ND, ND, ND, ND,
     fp4x2_e1m2_t, fp4x2_e1m2_t, float, float, 1, 0, 0, 0, orderMConfig);
 
-TilingParamsMx tiling_params_mx_case21 = {1, 802, 2426, 44, 802, 2462, 44, 128, 256, 64, 7, 10, 7, 5, 1, 1, 0, 1, 257};
-TilingParamsMx tiling_params_mx_case22 = {1, 32, 1904, 256, 32, 1904, 256, 32, 256, 128, 4, 8, 1, 2, 2, 2, 0, 0, 257};
+TilingParamsMx tiling_params_mx_case21 = {1, 802, 2426, 44, 802, 2462, 44, 128, 256, 64, 7, 10, 7, 5, 1, 1, 0, 1, 16843009};
+TilingParamsMx tiling_params_mx_case22 = {1, 32, 1904, 256, 32, 1904, 256, 32, 256, 128, 4, 8, 1, 2, 2, 2, 0, 0, 16843009};
 constexpr static MatmulConfig preloadM = GetMDLConfig(false, false, 1);
 constexpr static MatmulConfig preloadN = GetMDLConfig(false, false, 2);
 
@@ -589,7 +589,7 @@ KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case22, GM,
     fp4x2_e1m2_t, fp4x2_e1m2_t, float, float, 1, 0, 0, 0, preloadN);
 
 // Gemv
-TilingParamsMx tiling_params_mx_case23 = {1, 1, 48, 6272, 1, 48, 6272, 16, 32, 1024, 1, 1, 1, 1, 1, 1, 0, 0, 257};
+TilingParamsMx tiling_params_mx_case23 = {1, 1, 48, 6272, 1, 48, 6272, 16, 32, 1024, 1, 1, 1, 1, 1, 1, 0, 0, 16843009};
 
 KERNEL_MATMUL_TESTCASE_DYNAMICS(TEST_KERNEL_MATMUL, tiling_params_mx_case23, GM, GM, TSCM, GM, GM, GM, VECTOR, VECTOR, NZ, ND, NZ, ND,
     fp8_e4m3fn_t, fp8_e5m2_t, float, float, 0, 0, 0, 0, CFG_MDL);

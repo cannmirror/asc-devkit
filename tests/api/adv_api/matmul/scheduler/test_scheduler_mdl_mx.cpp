@@ -224,7 +224,7 @@ private:
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm1.InitVar(tiling);
@@ -235,7 +235,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderN_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 96, 64, 64, 96, 64, 32, 48, 32, 2, 2, 2, 2, 1, 1, 1, 1, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 96, 64, 64, 96, 64, 32, 48, 32, 2, 2, 2, 2, 1, 1, 1, 1, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm1.InitVar(tiling);
@@ -246,7 +246,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderN_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderN_L1_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 96, 64, 64, 96, 64, 32, 48, 32, 2, 2, 2, 2, 1, 1, 1, 1, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 96, 64, 64, 96, 64, 32, 48, 32, 2, 2, 2, 2, 1, 1, 1, 1, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm2.InitVar(tiling);
@@ -257,7 +257,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderN_L1_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_TranB_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm2.InitVar(tiling);
@@ -268,7 +268,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_TranB_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_Basic_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm3.InitVar(tiling);
@@ -279,7 +279,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_Basic_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_Basic_L1_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm4.InitVar(tiling);
@@ -290,7 +290,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_Basic_L1_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_StaticPadZeros_Mx) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 64, 64, 64, 64, 64, 32, 32, 32, 2, 2, 1, 1, 2, 2, 1, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     mm5.InitVar(tiling);
@@ -301,7 +301,7 @@ TEST_F(TestSchedulerMDLMx, ScheduleOnce_OrderM_StaticPadZeros_Mx) {
 
 TEST_F(TestSchedulerMDLMx, ScheduleOnce_enable_partial_output) {
     // coreNum, M, N, K, singleCoreM, singleCoreN, singleCoreK, baseM, baseN, baseK, depthA1, depthB1, stepM, stepN, stepKa, stepKb, isBias, iterateOrder, mxTypePara
-    TilingParamsMx tilingParamsMx = {1, 272, 416, 384, 272, 416, 384, 128, 256, 128, 9, 6, 3, 2, 3, 3, 0, 0, 257};
+    TilingParamsMx tilingParamsMx = {1, 272, 416, 384, 272, 416, 384, 128, 256, 128, 9, 6, 3, 2, 3, 3, 0, 0, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
     partial_output_mm.InitVar(tiling);

@@ -270,9 +270,9 @@ private:
 #if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
         if constexpr (DoMatmulMDL(MM_CFG)) {
             int32_t mxTypePara = tiling_.GetMxTypePara();
-            // 0x101 is scaleFactorKa, scaleFactorKb min val
-            ASCENDC_ASSERT((mxTypePara >= 0x101), {
-            KERNEL_LOG(KERNEL_ERROR, "mxTypePara value should be greater than or equal to 0x101, current is %d, ",
+            // 0x01010101 is scaleFactorM, scaleFactorN, scaleFactorKa, scaleFactorKb min val
+            ASCENDC_ASSERT((mxTypePara >= 0x01010101), {
+            KERNEL_LOG(KERNEL_ERROR, "mxTypePara value should be greater than or equal to 0x01010101, current is %d, ",
                     mxTypePara);
             });
         }

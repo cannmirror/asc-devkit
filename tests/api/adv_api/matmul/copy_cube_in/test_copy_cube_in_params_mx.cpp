@@ -180,7 +180,7 @@ private:
 };
 
 TEST_F(TestCopyCubeInParamsMx, scaleAB_NORM_GM) {
-    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
 
@@ -194,7 +194,7 @@ TEST_F(TestCopyCubeInParamsMx, scaleAB_NORM_GM) {
 }
 
 TEST_F(TestCopyCubeInParamsMx, scaleAB_NORM_GM_Transpose) {
-    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 257};
+    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 16843009};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
 
@@ -209,7 +209,7 @@ TEST_F(TestCopyCubeInParamsMx, scaleAB_NORM_GM_Transpose) {
 }
 
 TEST_F(TestCopyCubeInParamsMx, scaleAB_NORM_UB) {
-    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 65535};
+    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 16908287};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
 
@@ -223,7 +223,7 @@ TEST_F(TestCopyCubeInParamsMx, scaleAB_NORM_UB) {
 }
 
 TEST_F(TestCopyCubeInParamsMx, scaleAB_MDL_GM) {
-    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 511};
+    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 16843263};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
 
@@ -237,7 +237,7 @@ TEST_F(TestCopyCubeInParamsMx, scaleAB_MDL_GM) {
 }
 
 TEST_F(TestCopyCubeInParamsMx, scaleAB_MDL_UB) {
-    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 65281};
+    TilingParamsMx tilingParamsMx = {1, 64, 48, 256, 64, 48, 256, 32, 48, 96, 2, 4, 1, 2, 1, 3, 1, 1, 16908033};
     TCubeTiling tiling;
     tilingParamsMx.GetTiling(tiling);
 
