@@ -41,7 +41,7 @@ TEST_F(TestFfts, MIXFftsCaseMode0)
     void* ffts_addr = AscendC::GmAlloc(fftsCounterSize);
     memset_s(ffts_addr, fftsCounterSize, 0, fftsCounterSize);
     set_ffts_base_addr(reinterpret_cast<uint64_t>(ffts_addr));
-    AscendC::CheckBlockdimForFfts(1);
+    AscendC::CheckNumBlocksForFfts(1);
     ffts_cross_core_sync(static_cast<pipe_t>(0), 0x301);
     EXPECT_EQ(AscendC::g_syncCounterFfts[72][3], 0);
     EXPECT_EQ(AscendC::g_syncCounterEachcore[72][3], 1);
@@ -71,7 +71,7 @@ TEST_F(TestFfts, AICFftsCaseMode0)
     void* ffts_addr = AscendC::GmAlloc(fftsCounterSize);
     memset_s(ffts_addr, fftsCounterSize, 0, fftsCounterSize);
     set_ffts_base_addr(reinterpret_cast<uint64_t>(ffts_addr));
-    AscendC::CheckBlockdimForFfts(1);
+    AscendC::CheckNumBlocksForFfts(1);
     ffts_cross_core_sync(static_cast<pipe_t>(0), 0x301);
     EXPECT_EQ(AscendC::g_syncCounterFfts[72][3], 0);
     EXPECT_EQ(AscendC::g_syncCounterEachcore[72][3], 1);
@@ -90,7 +90,7 @@ TEST_F(TestFfts, AIVFftsCaseMode0)
     void* ffts_addr = AscendC::GmAlloc(fftsCounterSize);
     memset_s(ffts_addr, fftsCounterSize, 0, fftsCounterSize);
     set_ffts_base_addr(reinterpret_cast<uint64_t>(ffts_addr));
-    AscendC::CheckBlockdimForFfts(1);
+    AscendC::CheckNumBlocksForFfts(1);
     ffts_cross_core_sync(static_cast<pipe_t>(0), 0x301);
     EXPECT_EQ(AscendC::g_syncCounterFfts[0][3], 0);
     EXPECT_EQ(AscendC::g_syncCounterEachcore[0][3], 1);
@@ -107,7 +107,7 @@ TEST_F(TestFfts, FftsCaseMode1)
     void* ffts_addr = AscendC::GmAlloc(fftsCounterSize);
     memset_s(ffts_addr, fftsCounterSize, 0, fftsCounterSize);
     set_ffts_base_addr(reinterpret_cast<uint64_t>(ffts_addr));
-    AscendC::CheckBlockdimForFfts(1);
+    AscendC::CheckNumBlocksForFfts(1);
     g_coreType = 2;
     sub_block_idx = 0;
     ffts_cross_core_sync(static_cast<pipe_t>(0), 0x311);
@@ -142,7 +142,7 @@ TEST_F(TestFfts, FftsCaseMode2)
     sub_block_idx = 0;
     g_kernelMode = KernelMode::MIX_MODE;
 
-    AscendC::CheckBlockdimForFfts(1);
+    AscendC::CheckNumBlocksForFfts(1);
     ffts_cross_core_sync(static_cast<pipe_t>(0), 0x321);
     EXPECT_EQ(AscendC::g_syncCounterEachcore[0][3], 1);
     EXPECT_EQ(AscendC::g_syncCounterEachcore[1][3], 1);

@@ -37,7 +37,7 @@ TEST_F(TestIntraBlock, MIXIntraBlock)
     void* ffts_addr = AscendC::GmAlloc(fftsCounterSize);
     memset_s(ffts_addr, fftsCounterSize, 0, fftsCounterSize);
     set_ffts_base_addr(reinterpret_cast<uint64_t>(ffts_addr));
-    AscendC::CheckBlockdimForFfts(1);
+    AscendC::CheckNumBlocksForFfts(1);
     set_intra_block(static_cast<pipe_t>(0), 0);
     EXPECT_EQ(AscendC::g_syncCounterEachcore[0][0], 1);
     set_intra_block(static_cast<pipe_t>(0), 16);
