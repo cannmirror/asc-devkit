@@ -506,9 +506,20 @@ TEST_F(TypeCastApiHif82Testsuite, TypeCastApiHif82Test)
     __asc_fp8x2_storage_t result3;
     f2x1 = make_float2(1.0f, 2.0f);
     result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_NOSAT, __ASC_E4M3);
+    float fres3 = static_cast<float>(result3);
+    EXPECT_EQ(fres3, 16440.0f);
+
     result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_SATFINITE, __ASC_E4M3);
+    fres3 = static_cast<float>(result3);
+    EXPECT_EQ(fres3, 16440.0f);
+
     result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_NOSAT, __ASC_E5M2);
+    fres3 = static_cast<float>(result3);
+    EXPECT_EQ(fres3, 16444.0f);
+
     result3 = __asc_cvt_float2_to_fp8x2(f2x1, __ASC_SATFINITE, __ASC_E5M2);
+    fres3 = static_cast<float>(result3);
+    EXPECT_EQ(fres3, 16444.0f);
 
     hifloat8x2_t hif8x = {1, 2};
     float2 result4;

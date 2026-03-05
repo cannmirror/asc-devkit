@@ -2887,11 +2887,11 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline float y1f(float x)
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline float ynf(int n, float x)
 {
-    if (x == 0) {
-        return -ASCRT_INF_F;
-    }
     if (n < 0 || x < 0 || isnan(x)) {
         return ASCRT_INF_F / ASCRT_INF_F;
+    }
+    if (x == 0) {
+        return -ASCRT_INF_F;
     }
     if (isinf(x)) {
         return 0;
