@@ -451,7 +451,7 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     auto gmC = cGlobal[offsetC];
     auto gmBias = biasGlobal[offsetBias];
 
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
     TPipe que;
     E2eCase<AType, BType, CType, BiasType> ins;
     ins.Init(&que, m, n, k, hasBias);
@@ -462,7 +462,7 @@ __aicore__ inline void E2eKernel(GM_ADDR aGM, GM_ADDR bGM, GM_ADDR cGM, GM_ADDR 
     }
 
     ins.IterateAll(gmC);
-    bisheng::cce::set_atomic_none();
+    set_atomic_none();
     return;
 }
 
@@ -652,7 +652,7 @@ private:
         }
         LocalTensor<Src0T> featureMapA1 = inQueueFmA1.AllocTensor<Src0T>();
         // set repeat
-        bisheng::cce::set_l3d_rpt(0);
+        set_l3d_rpt(0);
         // init l1
         if constexpr (UseFill) {
             Fill<Src0T>(featureMapA1,
@@ -747,7 +747,7 @@ TEST(SPR_PADDING, SetLoadDataPaddingValue)
 {
     // test impl Load3DSetPaddingCal
     uint16_t paddingValue = 0;
-    MOCKER_CPP(bisheng::cce::set_padding, void(*)(uint16_t))
+    MOCKER_CPP(set_padding, void(*)(uint16_t))
         .stubs()
         .with(spy(paddingValue), any());
     SetLoadDataPaddingValue(static_cast<uint8_t>(2));

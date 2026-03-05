@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -16,10 +16,46 @@
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_CONSTANTS_H__
 #endif
 
-#define ASCRT_INF_F                            __builtin_inff()
-#define ASCRT_PI_F                             3.141592653589793f
-#define ASCRT_PIO2_F                           1.5707963267948966f
-#define ASCRT_PIO4_F                           0.7853981633974483f
+constexpr int ASCRT_NAN_F_VALUE = 0x7fffffffU;
+constexpr int ASCRT_MIN_DENORM_F_VALUE = 0x00000001U;
+constexpr int ASCRT_MAX_NORMAL_F_VALUE = 0x7f7fffffU;
+constexpr int ASCRT_NEG_ZERO_F_VALUE = 0x80000000U;
+#define ASCRT_INF_F            __builtin_inff()
+#define ASCRT_NAN_F            (*(reinterpret_cast<const float *>(&ASCRT_NAN_F_VALUE)))
+#define ASCRT_MIN_DENORM_F     (*(reinterpret_cast<const float *>(&ASCRT_MIN_DENORM_F_VALUE)))
+#define ASCRT_MAX_NORMAL_F     (*(reinterpret_cast<const float *>(&ASCRT_MAX_NORMAL_F_VALUE)))
+#define ASCRT_NEG_ZERO_F       (*(reinterpret_cast<const float *>(&ASCRT_NEG_ZERO_F_VALUE)))
+#define ASCRT_ZERO_F           0.0F
+#define ASCRT_ONE_F            1.0F
+#define ASCRT_SQRT_HALF_F      0.707106781F
+#define ASCRT_SQRT_HALF_HI_F   0.707106781F
+#define ASCRT_SQRT_HALF_LO_F   1.210161749e-08F
+#define ASCRT_SQRT_TWO_F       1.414213562F
+#define ASCRT_THIRD_F          0.333333333F
+#define ASCRT_PIO4_F           0.785398163F
+#define ASCRT_PIO2_F           1.570796327F
+#define ASCRT_3PIO4_F          2.356194490F
+#define ASCRT_2_OVER_PI_F      0.636619772F
+#define ASCRT_SQRT_2_OVER_PI_F 0.797884561F
+#define ASCRT_PI_F             3.141592654F
+#define ASCRT_L2E_F            1.442695041F
+#define ASCRT_L2T_F            3.321928094F
+#define ASCRT_LG2_F            0.301029996F
+#define ASCRT_LGE_F            0.434294482F
+#define ASCRT_LN2_F            0.693147181F
+#define ASCRT_LNT_F            2.302585093F
+#define ASCRT_LNPI_F           1.144729886F
+#define ASCRT_TWO_TO_M126_F    1.175494351e-38F
+#define ASCRT_TWO_TO_126_F     8.507059173e37F
+#define ASCRT_NORM_HUGE_F      3.402823466e38F
+#define ASCRT_TWO_TO_23_F      8388608.0F
+#define ASCRT_TWO_TO_24_F      16777216.0F
+#define ASCRT_TWO_TO_31_F      2147483648.0F
+#define ASCRT_TWO_TO_32_F      4294967296.0F
+#define ASCRT_REMQUO_BITS_F    3U
+#define ASCRT_REMQUO_MASK_F    (~((~0U)<<ASCRT_REMQUO_BITS_F))
+#define ASCRT_TRIG_PLOSS_F     105615.0F
+
 #define ASCRT_PIO8_F                           0.39269908169872415480783042290994f
 #define ASCRT_SCALAR_LN2_F                     0.69314718055994530941723212145818f
 #define ASCRT_2OPI_F                           0.63661975f

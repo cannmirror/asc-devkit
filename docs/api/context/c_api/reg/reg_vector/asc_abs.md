@@ -1,15 +1,14 @@
-
 # asc_abs
 
 ## 产品支持情况
 
 | 产品         | 是否支持 |
 | :-----------------------| :-----:|
-| <term>Ascend 950PR/Ascend 950DT</term> | √ |
+| <cann-filter npu_type="950"><term>Ascend 950PR/Ascend 950DT</term>  | √ </cann-filter>|
 
 ### 功能说明
 
-按元素取绝对值，计算公式如下：
+按元素取绝对值，i为元素索引。计算公式如下：
 $$
 dst_i = |src_i|
 $$

@@ -19,7 +19,6 @@
 #include "kernel_struct_fixpipe.h"
 #include "kernel_tensor.h"
 #include "utils/kernel_utils_macros.h"
-#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
 #include <cstdint>
@@ -156,18 +155,6 @@ template <typename T, typename U, const FixpipeConfig& config = CFG_ROW_MAJOR>
 __aicore__ inline void Fixpipe(const GlobalTensor<T>& dst, const LocalTensor<U>& src,
     const LocalTensor<uint64_t>& cbufWorkspace, const FixpipeParamsC310<config.format>& intriParams);
 #endif
-} // namespace AscendC
-
-namespace AscendC {
-
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U>
-__aicore__ inline typename Std::enable_if<VerifyingFixpipeTemplate<T, U>, void>::type 
-Fixpipe(const T& dst, const U& src);
-
-template <const FixpipeTrait& trait = DEFAULT_FIXPIPE_TRAIT, typename T, typename U, typename V>
-__aicore__ inline typename Std::enable_if<VerifyingFixpipeQuantTemplate<T, U, V>, void>::type 
-Fixpipe(const T& dst, const U& src, const V& quant);
-
 } // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_fixpipe_intf_impl.h"

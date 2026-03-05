@@ -407,8 +407,10 @@ public:
     template <HardEvent evt> __aicore__ inline void ReleaseEventID(TEventID id);
     template <HardEvent evt> __aicore__ inline TEventID FetchEventID();
     __aicore__ inline TEventID FetchEventID(HardEvent evt);
+    // NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. Please do not use it!
     template <TPosition pos, typename T>
     __aicore__ inline LocalTensor<T> GetAbsAddr(int32_t offset, int32_t size) const;
+    // NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. Please do not use it!
     template <TPosition pos> __aicore__ inline TBuffAddr GetAbsAddr(int32_t offset, int32_t len) const;
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
     __aicore__ inline MutexID AllocMutexID();
@@ -444,6 +446,7 @@ public:
     __aicore__ inline void Destroy();
     __aicore__ inline void Reset();
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
+    // NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. Please do not use it!
     template <typename T> inline uint64_t GetAbsAddr(const LocalTensor<T>& tensor);
     inline uint8_t* GetBaseAddr(int8_t logicPos);
 #endif

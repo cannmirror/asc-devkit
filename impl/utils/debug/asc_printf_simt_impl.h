@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_PRINTF_SIMT_IMPL__
-#warning "asc_printf_simt_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "asc_printf.h" and use public functions or variables defined in interface header files."
+#warning "impl/utils/debug/asc_printf_simt_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "utils/debug/asc_printf.h" and use public functions or variables defined in interface header files."
 #endif
 
 #ifndef __SIMT_DEVICE_FUNCTIONS_DECL__
@@ -479,9 +479,9 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void simt_printf_impl(DumpType print_type,
 #ifndef __CHECK_FEATURE_AT_PRECOMPILE
 
 template <class... Args>
-__SIMT_DEVICE_FUNCTIONS_DECL__ __attribute__((always_inline)) inline void printf(const __gm__ char* fmt, Args&&... args)
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void printf(const __gm__ char* fmt, Args&&... args)
 {
-#if defined (ASCENDC_DUMP) && (ASCENDC_DUMP == 1)
+#if !defined (ASCENDC_DUMP) || (ASCENDC_DUMP != 0)
     simt_printf_impl(DumpType::DUMP_SIMT_PRINTF, fmt, args...);
 #endif
 }

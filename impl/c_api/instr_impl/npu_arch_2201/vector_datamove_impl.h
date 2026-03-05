@@ -18,10 +18,27 @@
 #ifndef IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_VECTOR_DATAMOVE_IMPL_H
 #define IMPL_C_API_INSTR_IMPL_NPU_ARCH_2201_VECTOR_DATAMOVE_IMPL_H
 
+#include "instr_impl/npu_arch_2201/vector_datamove_impl/asc_copy_ub2ub_impl.h"
 #include "instr_impl/npu_arch_2201/vector_datamove_impl/asc_copy_gm2ub_impl.h"
 #include "instr_impl/npu_arch_2201/vector_datamove_impl/asc_copy_ub2gm_impl.h"
 #include "instr_impl/npu_arch_2201/vector_datamove_impl/asc_copy_gm2ub_align_impl.h"
 #include "instr_impl/npu_arch_2201/vector_datamove_impl/asc_copy_ub2gm_align_impl.h"
+
+__aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src,
+    uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)
+{
+    asc_copy_ub2ub_impl(dst, src, n_burst, burst_len, src_gap, dst_gap);
+}
+
+__aicore__ inline void asc_copy_ub2ub(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size)
+{
+    asc_copy_ub2ub_impl(dst, src, size);
+}
+
+__aicore__ inline void asc_copy_ub2ub_sync(__ubuf__ void* dst, __ubuf__ void* src, uint32_t size)
+{
+    asc_copy_ub2ub_sync_impl(dst, src, size);
+}
 
 __aicore__ inline void asc_copy_gm2ub(__ubuf__ void* dst, __gm__ void* src,
     uint16_t n_burst, uint16_t burst_len, uint16_t src_gap, uint16_t dst_gap)

@@ -222,6 +222,14 @@ def {}({}, kernel_name="{}"{}):
     options += custom_all_compile_options_soc
     options += custom_compile_options_soc
 
+    def replace_env_vars(input_str):
+        pattern = r'\$\{{([^}}]+)\}}|\$([A-Za-z0-9_]+)'
+        def replace_match(match):
+            var_name = match.group(1) or match.group(2)
+            return os.environ.get(var_name, match.group(0))
+        return re.sub(pattern, replace_match, input_str)
+    options = [replace_env_vars(opt) for opt in options]
+
     origin_func_name = "{}"
     ascendc_src_dir_ex = "{}"
     ascendc_src_dir = "{}"

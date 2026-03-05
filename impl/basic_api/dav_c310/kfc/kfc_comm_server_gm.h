@@ -62,7 +62,7 @@ public:
         FreeMessageImpl(msg);
     }
  
-    // 310没有L1-GM通道, 改为scalar写gm，bisheng::cce::dcci
+    // 310没有L1-GM通道, 改为scalar写gm，dcci
     __aicore__ inline void FreeUB(int32_t addr)
     {
         event_t eventID = static_cast<event_t>(GetTPipePtr()->FetchEventID(HardEvent::MTE3_MTE2));
@@ -81,7 +81,7 @@ public:
         };
         __mstx_dfx_report_stub(1, sizeof(MstxCrossRecord), &record);
 #endif
-        // 添加scalar写gm，bisheng::cce::dcci刷新清零
+        // 添加scalar写gm，dcci刷新清零
         *((__gm__ uint32_t *)ubAvalidTail) = addr;
         dcci(reinterpret_cast<__gm__ int64_t *>(ubAvalidTail), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
     }

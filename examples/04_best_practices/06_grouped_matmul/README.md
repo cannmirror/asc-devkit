@@ -1,13 +1,16 @@
 # GroupMatmul算子直调样例
+
 ## 概述
 
 本样例介绍QuantGroupMatmul算子的高性能实现，支持分组量化矩阵乘与Gelu激活计算，使用<<<>>>内核调用符来完成算子核函数在NPU侧运行验证的基础流程。
 
 ## 支持的产品
+
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 目录结构介绍
+
 ```
 ├── 06_grouped_matmul
 │   ├── scripts
@@ -19,6 +22,7 @@
 ```
 
 ## 算子描述
+
 - 算子功能：  
   算子实现了分组的pertoken量化matmul计算，分组轴为m轴，并对结果进行激活函数Gelu计算。
 
@@ -49,7 +53,7 @@
   <tr><td align="center">x</td><td align="center">1024 * 1024</td><td align="center">int8</td><td align="center">ND</td></tr>
   <tr><td align="center">weight</td><td align="center">8 * 1024 * 8192</td><td align="center">int8</td><td align="center">NZ</td></tr>
   <tr><td align="center">bias</td><td align="center">8 * 8192</td><td align="center">int32</td><td align="center">ND</td></tr>
-  <tr><td align="center">groupList</td><td align="center">8</td><td align="center">uint64</td><td align="center">ND</td></tr>
+  <tr><td align="center">group</td><td align="center">8</td><td align="center">int64</td><td align="center">ND</td></tr>
   <tr><td align="center">scale</td><td align="center">8 * 8192</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">pretokenScale</td><td align="center">1024</td><td align="center">float</td><td align="center">ND</td></tr>
   </tr>
@@ -62,7 +66,7 @@
 - 算子实现：  
   本样例中实现的是pertoken量化的QuantGroupMatmul算子。
 
-  - kernel实现
+  - Kernel实现
   
     QuantGroupMatmul算子的计算为：
 
@@ -77,6 +81,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

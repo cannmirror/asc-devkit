@@ -427,12 +427,12 @@ template <HardEvent evt> __aicore__ inline TEventID TPipe::AllocEventID()
     ASCENDC_ASSERT((evt < HardEvent::MAX),
                    { KERNEL_LOG(KERNEL_ERROR, "illegal event %d", static_cast<int32_t>(evt)); });
     auto ptr = this->g_tpipeImpl.eventPool_ + EventToIndex(evt);
-    auto lastId = bisheng::cce::sff0(ptr->eventOccupy);
+    auto lastId = sff0(ptr->eventOccupy);
     ASCENDC_ASSERT((lastId < QUE_MAX_EVENT && lastId >= 0), {
         KERNEL_LOG(KERNEL_ERROR, "current id is %ld, max buffer number in same queue position is %d", lastId,
             QUE_MAX_EVENT);
     });
-    ptr->eventOccupy = bisheng::cce::sbitset1(ptr->eventOccupy, lastId);
+    ptr->eventOccupy = sbitset1(ptr->eventOccupy, lastId);
     return lastId;
 }
 
@@ -444,14 +444,14 @@ template <HardEvent evt> __aicore__ inline void TPipe::ReleaseEventID(TEventID i
     });
     ASCENDC_ASSERT((evt != HardEvent::MAX), { KERNEL_LOG(KERNEL_ERROR, "evt cannot be HardEvent::MAX"); });
     auto ptr = this->g_tpipeImpl.eventPool_ + EventToIndex(evt);
-    ptr->eventOccupy = bisheng::cce::sbitset0(ptr->eventOccupy, id);
+    ptr->eventOccupy = sbitset0(ptr->eventOccupy, id);
     return;
 }
 
 __aicore__ inline TEventID TPipe::FetchEventID(HardEvent evt)
 {
     auto ptr = this->g_tpipeImpl.eventPool_ + EventToIndex(evt);
-    auto lastId = bisheng::cce::sff0(ptr->eventOccupy);
+    auto lastId = sff0(ptr->eventOccupy);
     ASCENDC_ASSERT((lastId < QUE_MAX_EVENT && lastId >= 0), {
         KERNEL_LOG(KERNEL_ERROR, "current id is %ld, max buffer number in same queue position is %d", lastId,
             QUE_MAX_EVENT);
@@ -462,7 +462,7 @@ __aicore__ inline TEventID TPipe::FetchEventID(HardEvent evt)
 template <HardEvent evt> __aicore__ inline TEventID TPipe::FetchEventID()
 {
     auto ptr = this->g_tpipeImpl.eventPool_ + EventToIndex(evt);
-    auto lastId = bisheng::cce::sff0(ptr->eventOccupy);
+    auto lastId = sff0(ptr->eventOccupy);
     ASCENDC_ASSERT((lastId < QUE_MAX_EVENT && lastId >= 0), {
         KERNEL_LOG(KERNEL_ERROR, "current id is %ld, max buffer number in same queue position is %d", lastId,
             QUE_MAX_EVENT);
@@ -470,6 +470,7 @@ template <HardEvent evt> __aicore__ inline TEventID TPipe::FetchEventID()
     return lastId;
 }
 
+// NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. Please do not use it!
 template <TPosition pos> __aicore__ inline TBuffAddr TPipe::GetAbsAddr(int32_t offset, int32_t len) const
 {
     TBuffAddr addr;
@@ -490,6 +491,7 @@ template <TPosition pos> __aicore__ inline TBuffAddr TPipe::GetAbsAddr(int32_t o
     return addr;
 }
 
+// NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. Please do not use it!
 template <TPosition pos, typename T>
 __aicore__ inline __sync_noalias__ LocalTensor<T> TPipe::GetAbsAddr(int32_t offset, int32_t size) const
 {
@@ -813,6 +815,7 @@ inline uint64_t TPipe::GetAbsAddr(const LocalTensor<T>& tensor)
     return delta;
 }
 
+// NOTICE: GetAbsAddr has been deprecated and will be removed in the next version. Please do not use it!
 template <typename T> inline uint64_t GetAbsAddr(TPipe* tpipe, const LocalTensor<T>& tensor)
 {
     // Translates the CPU address to the actual physical address.

@@ -17,11 +17,6 @@
 #include "instr_impl/npu_arch_3510/cache_ctrl_impl/asc_get_icache_preload_status_impl.h"
 
 // ==========asc_icache_preload==========
-__aicore__ inline void asc_icache_preload(const void* addr)
-{
-    asc_icache_preload_impl(addr);
-}
-
 __aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len)
 {
     asc_icache_preload_impl(addr, prefetch_len);

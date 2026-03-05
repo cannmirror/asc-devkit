@@ -98,8 +98,9 @@ struct HcclCombineOpParam {
     GM_ADDR xnOffset;
     GM_ADDR ckeOffset;
     uint8_t res[16];
-    uint8_t algorithmType;
-    uint8_t res2[7783];
+    uint32_t opType[MAX_CC_TILING_NUM];
+    uint8_t algorithmType[MAX_CC_TILING_NUM];
+    uint8_t res2[7744];
 #else
     uint64_t windowsIn[HCCL_MAX_RANK_NUM];
     uint64_t windowsOut[HCCL_MAX_RANK_NUM];

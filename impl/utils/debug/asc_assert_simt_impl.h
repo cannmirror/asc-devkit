@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 #if !defined(__ASCENDC_INCLUDE_INTERNAL_HEADERS__)
 #define __ASCENDC_INCLUDE_INTERNAL_HEADERS__
 #define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_ASSERT_SIMT_IMPL__
-#warning "asc_assert_simt_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "asc_assert.h" and use public functions or variables defined in interface header files."
+#warning "impl/utils/debug/asc_assert_simt_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use "utils/debug/asc_assert.h" and use public functions or variables defined in interface header files."
 #endif
 
 #include "impl/utils/debug/asc_printf_simt_impl.h"
@@ -33,7 +33,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap()
 #endif
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void __assert_fail(const char* __assertion,
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void __assert_fail(const char* __assertion,
     const char* __file, unsigned int __line, const char* __function) noexcept
 {
     simt_printf_impl(DumpType::DUMP_SIMT_ASSERT, "[ASSERT] %s:%u: %s: Assertion `%s' failed.\n", __file, __line,
@@ -48,7 +48,7 @@ __SIMT_DEVICE_FUNCTIONS_DECL__ inline void __trap()
 #endif
 }
 
-__SIMT_DEVICE_FUNCTIONS_DECL__ inline void __assert_fail(const __gm__ char* __assertion,
+static __attribute__((noinline)) __SIMT_DEVICE_FUNCTIONS_DECL__ void __assert_fail(const __gm__ char* __assertion,
     const __gm__ char* __file, unsigned int __line, const __gm__ char* __function) noexcept
 {
     simt_printf_impl(DumpType::DUMP_SIMT_ASSERT, "[ASSERT] %s:%u: %s: Assertion `%s' failed.\n", __file, __line,

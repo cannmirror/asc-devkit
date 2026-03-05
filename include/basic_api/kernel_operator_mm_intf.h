@@ -22,7 +22,6 @@
 #include "kernel_tensor.h"
 #include "utils/kernel_utils_constants.h"
 #include "utils/kernel_utils_macros.h"
-#include "tile_api/kernel_tensor_tile_intf_utils.h"
 
 #if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
 #include "kernel_operator_mm_bitmode_intf.h"
@@ -470,16 +469,6 @@ __aicore__ inline void SetMMLayoutTransform(bool mmLayoutMode);
 
 } // namespace AscendC
 
-/* **************************************************************************************************
- * LoadData(Layout) API Level2                                              *
- * ************************************************************************************************* */
-namespace AscendC {
-
-template <const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U>
-__aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type
-LoadData(const T& dst, const U& src);
-
-}  // namespace AscendC
 #include "../../impl/basic_api/kernel_operator_mm_intf_impl.h"
 
 #endif // ASCENDC_MODULE_OPERATOR_MM_INTERFACE_H

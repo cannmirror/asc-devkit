@@ -35,13 +35,13 @@ template<bool isAIVOnly = true>
 __aicore__ inline void SoftSyncAllImpl(__gm__ int32_t* gmWorkspaceAddr, __ubuf__ int32_t* ubWorkspaceAddr,
     const int usedCores)
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported software syncAll!"); });
+    PipeBarrier<PIPE_ALL>();
 }
 
 template<bool isAIVOnly = true>
 __aicore__ inline void SyncAllImpl()
 {
-    ASCENDC_ASSERT(false, { KERNEL_LOG(KERNEL_ERROR, "unsupported hardware syncAll!"); });
+    PipeBarrier<PIPE_ALL>();
 }
 
 template <uint8_t modeId, pipe_t pipe>

@@ -20,24 +20,6 @@ protected:
     void TearDown() {}
 };
 
-namespace {
-void icache_preload_Stub(const void* addr)
-{
-    EXPECT_EQ(addr, reinterpret_cast<const void*>(32));
-}
-}
-
-TEST_F(TestCacheCtrlIcachePreload, icache_preload_voidptr_Succ)
-{
-    const void *ptr = reinterpret_cast<const void*>(32);
-    MOCKER(asc_icache_preload, void(const void *))
-        .times(1)
-        .will(invoke(icache_preload_Stub));
-
-    asc_icache_preload(ptr);
-    GlobalMockObject::verify();
-}
-
 class TestCacheCtrlIcachePreloadPrefetch : public testing::Test { 
 protected:
     void SetUp() {}

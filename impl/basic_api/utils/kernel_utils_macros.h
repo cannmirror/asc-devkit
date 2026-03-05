@@ -175,7 +175,7 @@ struct FuncMetaFunctionEntry {
 
 struct FuncMetaNumBlocks {
     BaseTlv head;
-    uint32_t blockDim; // blockdim
+    uint32_t numBlocks; // numBlocks
 };
 
 enum CrossCoreSyncType { // 函数级TLV类型

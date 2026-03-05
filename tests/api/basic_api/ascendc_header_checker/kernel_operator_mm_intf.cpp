@@ -11,6 +11,7 @@
 #ifndef VERIFY_SINGLE_HEADER
 #include "kernel_operator.h"
 #else
+#include "kernel_operator_data_copy_intf.h"
 #include "kernel_operator_mm_intf.h"
 #endif
 

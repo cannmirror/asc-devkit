@@ -19,6 +19,7 @@ add_executable(execute_add_op
 
 target_link_libraries(execute_add_op PRIVATE
     nnopbase
+    rt2_registry
     acl_rt
     ${package_name}::${package_name}
 )

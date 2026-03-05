@@ -13,11 +13,11 @@
 
 单次repeat内转换规则如下：
 
-- 当输入数据类型位宽为16位时，每个datablock中包含16个数，指令内部会循环16次，每次循环都会分别从指定的16个datablock中的对应位置取值，组成一个新的datablock单元放入目的地址中。如下图所示，图中的srcList[0]-srcList[15]代表源操作数的16个datablock。![](../figures/asc_transto5hd_b16.png "图1 输入数据类型位宽为16位时的转换规则")
+- 当输入数据类型位宽为16位时，每个DataBlock中包含16个数，指令内部会循环16次，每次循环都会分别从指定的16个DataBlock中的对应位置取值，组成一个新的DataBlock单元放入目的地址中。如下图所示，图中的srcList[0]-srcList[15]代表源操作数的16个DataBlock。![](../figures/asc_transto5hd_b16.png "图1 输入数据类型位宽为16位时的转换规则")
 
-- 当数据类型位宽为32位时，每个datablock包含8个数，指令内部会循环8次，每次循环都会分别从指定的16个datablock中的对应位置取值，组成2个新的datablock放入目的地址中。如下图所示：![](../figures/asc_transto5hd_b32.png "图2 输入数据类型位宽为32位时的转换规则")
+- 当数据类型位宽为32位时，每个DataBlock包含8个数，指令内部会循环8次，每次循环都会分别从指定的16个DataBlock中的对应位置取值，组成2个新的DataBlock放入目的地址中。如下图所示：![](../figures/asc_transto5hd_b32.png "图2 输入数据类型位宽为32位时的转换规则")
 
--当数据类型位宽为8位时，每个datablock包含32个数，指令内部会循环16次，每次循环都会分别从指定的16个datablock中的对应位置取值，组成半个datablock放入目的地址中，读取和存放是在datablock的高半部还是低半部由参数srcHighHalf和dstHighHalf决定。如下图所示：![](../figures/asc_transto5hd_b8.png "图3 输入数据类型位宽为8位时的转换规则")
+-当数据类型位宽为8位时，每个DataBlock包含32个数，指令内部会循环16次，每次循环都会分别从指定的16个DataBlock中的对应位置取值，组成半个DataBlock放入目的地址中，读取和存放是在DataBlock的高半部还是低半部由参数srcHighHalf和dstHighHalf决定。如下图所示：![](../figures/asc_transto5hd_b8.png "图3 输入数据类型位宽为8位时的转换规则")
 
 基于以上的转换规则，使用该接口进行NC1HWC0格式转换或者矩阵转置。NC1HWC0格式转换相对复杂，这里给出其具体的转换方法：
 
@@ -26,7 +26,6 @@ NCHW格式转换成NC1HWC0格式时，如果是数据类型的位宽为32位或�
 ## 函数原型
 
 ```cpp
-__aicore__ inline void asc_set_va_reg(ub_addr8_t addr, uint64_t* src_array)
 __aicore__ inline void asc_transto5hd_b32(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat,
     uint16_t dst_stride, uint16_t src_stride)
 __aicore__ inline void asc_transto5hd_b16(ub_addr8_t dst, ub_addr8_t src, uint8_t repeat,
@@ -67,13 +66,53 @@ PIPE_TYPE_V
 ## 调用示例
 
 ```cpp
-__ubuf__ half dst_list[16];
-__ubuf__ half src_list[16];
+constexpr uint64_t total_length = 256;    // total_length指参与计算的数据长度
+__ubuf__ half src[total_length];
+__ubuf__ half dst[total_length];
+const uint32_t STEP = 16;
+// src_list和dst_list是16个DataBlock地址的数组
+__ubuf__ half* src_list[16] = {
+    (__ubuf__ half*)(src + 0 * STEP),
+    (__ubuf__ half*)(src + 1 * STEP),
+    (__ubuf__ half*)(src + 2 * STEP),
+    (__ubuf__ half*)(src + 3 * STEP),
+    (__ubuf__ half*)(src + 4 * STEP),
+    (__ubuf__ half*)(src + 5 * STEP),
+    (__ubuf__ half*)(src + 6 * STEP),
+    (__ubuf__ half*)(src + 7 * STEP),
+    (__ubuf__ half*)(src + 8 * STEP),
+    (__ubuf__ half*)(src + 9 * STEP),
+    (__ubuf__ half*)(src + 10 * STEP),
+    (__ubuf__ half*)(src + 11 * STEP),
+    (__ubuf__ half*)(src + 12 * STEP),
+    (__ubuf__ half*)(src + 13 * STEP),
+    (__ubuf__ half*)(src + 14 * STEP),
+    (__ubuf__ half*)(src + 15 * STEP)
+};
+__ubuf__ half* dst_list[16] = {
+    (__ubuf__ half*)(dst + 0 * STEP),
+    (__ubuf__ half*)(dst + 1 * STEP),
+    (__ubuf__ half*)(dst + 2 * STEP),
+    (__ubuf__ half*)(dst + 3 * STEP),
+    (__ubuf__ half*)(dst + 4 * STEP),
+    (__ubuf__ half*)(dst + 5 * STEP),
+    (__ubuf__ half*)(dst + 6 * STEP),
+    (__ubuf__ half*)(dst + 7 * STEP),
+    (__ubuf__ half*)(dst + 8 * STEP),
+    (__ubuf__ half*)(dst + 9 * STEP),
+    (__ubuf__ half*)(dst + 10 * STEP),
+    (__ubuf__ half*)(dst + 11 * STEP),
+    (__ubuf__ half*)(dst + 12 * STEP),
+    (__ubuf__ half*)(dst + 13 * STEP),
+    (__ubuf__ half*)(dst + 14 * STEP),
+    (__ubuf__ half*)(dst + 15 * STEP)
+};
 const int32_t VA_REG_ARRAY_LEN = 8;
 uint8_t repeat = 16;
 uint16_t dst_stride = 16;
 uint16_t src_stride = 1;
 
+// asc_set_va_reg接口要求前8个和后8个地址序列与地址寄存器分别关联
 asc_set_va_reg(VA0, dst_list);
 asc_set_va_reg(VA1, dst_list + VA_REG_ARRAY_LEN);
 asc_set_va_reg(VA2, src_list);

@@ -24,7 +24,7 @@
   支持在数据搬运时进行NZ到ND格式的转换。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
+ <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">DataCopyNZ2ND</td></tr> 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
   <tr><td align="center">x</td><td align="center">32 * 32</td><td align="center">half</td><td align="center">Nz</td></tr>

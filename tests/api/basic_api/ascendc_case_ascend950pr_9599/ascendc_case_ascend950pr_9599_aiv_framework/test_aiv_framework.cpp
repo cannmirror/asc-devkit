@@ -166,10 +166,10 @@ TEST_F(TQueWithBufIDTest, testGetTQueHeadAddr)
 //     uint64_t spySetBlockId = 0xff;
 //     uint64_t spyWaitBlockId = 0xff;
 
-//     MOCKER_CPP(bisheng::cce::set_intra_block, void(*)(pipe_t, uint64_t))
+//     MOCKER_CPP(set_intra_block, void(*)(pipe_t, uint64_t))
 //         .stubs()
 //         .with(any(), spy(spySetBlockId));
-//     MOCKER_CPP(bisheng::cce::wait_intra_block, void(*)(pipe_t, uint64_t))
+//     MOCKER_CPP(wait_intra_block, void(*)(pipe_t, uint64_t))
 //         .stubs()
 //         .with(any(), spy(spyWaitBlockId));
 //     for (int32_t i = 0; i < 2; i++) {

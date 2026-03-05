@@ -16,6 +16,16 @@
 #ifndef INCLUDE_C_API_SCALAR_COMPUTE_H
 #define INCLUDE_C_API_SCALAR_COMPUTE_H
 
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
+
+#include "instr_impl/npu_arch_2201/scalar_compute_impl.h"
+
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+
+#include "instr_impl/npu_arch_3510/scalar_compute_impl.h"
+
+#endif
+
 __aicore__ inline int64_t asc_sflbits(int64_t value);
 
 __aicore__ inline int64_t asc_ffz(uint64_t value);
@@ -25,8 +35,6 @@ __aicore__ inline int64_t asc_ffs(uint64_t value);
 __aicore__ inline int64_t asc_popc(uint64_t value);
 
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
-
-#include "instr_impl/npu_arch_2201/scalar_compute_impl.h"
 
 __aicore__ inline int64_t asc_clz(uint64_t value_in);
 
@@ -45,8 +53,6 @@ __aicore__ inline int32_t asc_float2int32_rn(float value);
 __aicore__ inline int32_t asc_float2int32_rna(float value);
 
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
-
-#include "instr_impl/npu_arch_3510/scalar_compute_impl.h"
 
 __aicore__ inline void asc_store_dev(__gm__ int8_t* addr, int8_t value);
 

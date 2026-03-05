@@ -60,7 +60,7 @@ void dcci(uint8_t *addr, uint64_t entire, uint64_t type)
 }
 
 #undef ASCENDC_CPU_DEBUG
-#include "kernel_simt_print_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_print_intf_impl.h"
 
 class PrintfTestsuite : public testing::Test {
 protected:

@@ -1,6 +1,6 @@
 # Transpose增强转置样例
 ## 概述
-本样例基于Transpose实现增强转置，适用于对16*16的二维矩阵数据块进行转置，也可用于[N,C,H,W]与[N,H,W,C]互相转换。
+本样例基于Transpose实现增强转置，适用于[N,C,H,W]与[N,H,W,C]两个数据格式互相转换。
 
 ## 支持的产品
 - Ascend 950PR/Ascend 950DT
@@ -19,16 +19,16 @@
 
 ## 算子描述
 - 算子功能：  
-  TransposeCommonCustom算子实现增强转置，支持16*16的二维矩阵数据块转置，支持[N,C,H,W]与[N,H,W,C]互相转换。
+  TransposeCommonCustom算子实现增强转置，支持[N,C,H,W]与[N,H,W,C]互相转换。
 - 算子规格：  
   <table>
   <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">144</td><td align="center">float16</td><td align="center">ND</td></tr>
+  <tr><td align="center">x</td><td align="center">(3,3,2,8)</td><td align="center">float16</td><td align="center">NCHW</td></tr>
   <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">y</td><td align="center">144</td><td align="center">float16</td><td align="center">ND</td></tr>
+  <tr><td align="center">y</td><td align="center">(3,2,8,3)</td><td align="center">float16</td><td align="center">NHWC</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">transpose_enhanced_custom</td></tr>
   </table>

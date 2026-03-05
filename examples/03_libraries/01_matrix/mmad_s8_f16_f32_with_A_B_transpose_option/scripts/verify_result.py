@@ -51,7 +51,7 @@ def verify_result(scenarioNum, output, golden):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 13))
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 14))
     parser.add_argument('output', type=str)
     parser.add_argument('golden', type=str)
     args = parser.parse_args()

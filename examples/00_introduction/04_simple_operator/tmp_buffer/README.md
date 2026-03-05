@@ -18,7 +18,7 @@
 │   │   └── verify_result.py     // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt           // 编译工程文件
 │   ├── data_utils.h             // 数据读入写出函数
-│   └── vector_add_custom.asc    // Ascend C算子实现 & 调用样例
+│   └── tmp_buffer.asc           // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -39,7 +39,7 @@
   </tr>
   <tr><td rowspan="1" align="center">算子输出</td><td align="center">z</td><td align="center">1 * 2048</td><td align="center">bfloat16_t</td><td align="center">ND</td></tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">add_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">tmp_buffer_custom</td></tr>
   </table>
 - 算子实现：  
   计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用Cast接口进行数据转换，并将结果存入临时内存中。之后再调用计算接口完成两个输入参数相加，得到最终结果，再搬出到外部存储上。
@@ -53,6 +53,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

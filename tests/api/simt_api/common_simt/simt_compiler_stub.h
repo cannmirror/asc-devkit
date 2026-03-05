@@ -11,7 +11,7 @@
 #ifndef SIMT_COMPILER_STUB_H
 #define SIMT_COMPILER_STUB_H
 
-#include "simt_api/dav_c310/kernel_simt_cpu.h"
+#include "kernel_simt_cpu.h"
 #include "kernel_vectorized.h"
 #include "simt_stub.h"
 #include "stub_def.h"
@@ -34,13 +34,5 @@ int32_t get_block_num();
 int32_t asc_get_block_idx();
 
 int32_t asc_get_block_num();
-
-half2 h2exp(half2 x);
-
-half2 h2log(half2 x);
-
-half2 h2sqrt(half2 x);
-
-half2 h2rsqrt(half2 x);
 
 #endif

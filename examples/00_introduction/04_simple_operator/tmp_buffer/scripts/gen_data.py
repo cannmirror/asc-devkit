@@ -17,6 +17,7 @@ import numpy as np
 import tensorflow as tf
 bfloat16 = tf.bfloat16.as_numpy_dtype
 
+
 def gen_golden_data_simple():
     input_shape_x = [1, 2048]
     input_shape_y = [1, 2048]

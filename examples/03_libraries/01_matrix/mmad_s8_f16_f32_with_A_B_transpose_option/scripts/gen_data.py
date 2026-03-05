@@ -67,7 +67,7 @@ def gen_golden_data(scenarioNum=1, M=0, K=0, N=0):
         x2_gm = np.random.uniform(1, 10, [K, N]).astype(np.float32)
         golden = (np.matmul(x1_gm.astype(np.float32), x2_gm.astype(np.float32))).astype(np.float32)
         x2_gm = x2_gm.transpose()
-    elif scenarioNum == 11:
+    elif scenarioNum == 11 or scenarioNum == 13:
         x1_gm = np.random.uniform(1, 10, [M, K]).astype(np.float32)
         x2_gm = np.random.uniform(1, 10, [K, N]).astype(np.float32)
         golden = (np.matmul(x1_gm.astype(np.float32), x2_gm.astype(np.float32))).astype(np.float32)
@@ -91,7 +91,7 @@ def gen_golden_data(scenarioNum=1, M=0, K=0, N=0):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 13))
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 14))
     parser.add_argument('-m', type=int)
     parser.add_argument('-k', type=int)
     parser.add_argument('-n', type=int)

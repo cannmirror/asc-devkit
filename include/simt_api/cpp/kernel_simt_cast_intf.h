@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -35,5 +35,5 @@ __aicore__ inline T Trunc(T x);
 }  // namespace Simt
 }  // namespace AscendC
 
-#include "impl/simt_api/kernel_simt_cast_intf_impl.h"
+#include "impl/simt_api/cpp/kernel_simt_cast_intf_impl.h"
 #endif  // ASCENDC_MODULE_SIMT_CAST_INTERFACE_H

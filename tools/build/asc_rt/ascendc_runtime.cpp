@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <string>
+#include <cstring>
 
 #include "runtime/rt_ffts.h"
 #include "runtime/kernel.h"

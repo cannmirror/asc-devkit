@@ -30,7 +30,7 @@
 - 算子规格：  
   <table>
   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center"> Axpy </td></tr>
-  <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">default</td></tr> <tr><td align="center">x</td><td align="center">4 * 128</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr> <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">4 * 128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr> <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">axpy_half_float</td></tr> 
+  <tr><td rowspan="2" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">default</td></tr> <tr><td align="center">x</td><td align="center">4 * 128</td><td align="center">float16</td><td align="center">ND</td><td align="center">\</td></tr> <tr><td rowspan="1" align="center">算子输出</td><td align="center">out</td><td align="center">4 * 128</td><td align="center">float32</td><td align="center">ND</td><td align="center">\</td></tr> <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">kernel_vec_ternary_scalar_Axpy_half_2_float</td></tr> 
   </table>
 
 - 算子实现：  

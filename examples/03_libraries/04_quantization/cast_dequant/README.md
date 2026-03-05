@@ -1,13 +1,17 @@
 # CastDequant样例
+
 ## 概述
+
 本样例介绍调用CastDequant基础API实现对输入做量化并进行精度转换。
 
 ## 支持的产品
+
 - Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 目录结构介绍
+
 ```
 ├── cast_dequant
 │   ├── scripts
@@ -18,6 +22,7 @@
 ```
 
 ## 算子描述
+
 - 算子功能：  
   CastDequantCustom单算子，将int16_t数据类型输入量化并进行精度转换，得到uint8_t类型的输出。
 
@@ -33,11 +38,11 @@
   <tr><td align="center">outputGm</td><td align="center">512</td><td align="center">int8_t</td><td align="center">ND</td></tr>
 
 
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cast_dequant_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">cast_dequants_custom</td></tr>
   </table>
 
 - 算子实现：  
-  - kernel实现
+  - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用CastDequant基础API接口完成量化计算，得到最终结果，再搬出到外部存储上。
 
@@ -47,6 +52,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

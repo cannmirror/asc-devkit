@@ -104,6 +104,14 @@ file(GLOB ASCENDC_TEST_ascend950pr_9599_AIV_BASIC_CASE_SRC_FILES
     ascendc_case_ascend950pr_9599/ascendc_case_ascend950pr_9599_aiv_basic/*.cpp
 )
 
+set(ASCENDC_TEST_ascend950pr_9599_AIV_BASIC_PRINTF_CASE_FILE
+    ascendc_case_ascend950pr_9599/ascendc_case_ascend950pr_9599_aiv_basic/test_operator_printf.cpp
+)
+# Keep target-level ASCENDC_DUMP=0; enable it only for this source file.
+set_source_files_properties(${ASCENDC_TEST_ascend950pr_9599_AIV_BASIC_PRINTF_CASE_FILE} PROPERTIES
+    COMPILE_OPTIONS "-UASCENDC_DUMP;-DASCENDC_DUMP=1"
+)
+
 # ascend950pr_9599 framework test cases
 file(GLOB ASCENDC_TEST_ascend950pr_9599_AIV_FRAMEWORK_CASE_SRC_FILES
     ascendc_case_common/test_kernel_pop_stack_buffer.cpp

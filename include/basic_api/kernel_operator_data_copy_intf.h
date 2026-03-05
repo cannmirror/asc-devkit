@@ -18,7 +18,6 @@
 #include "kernel_macros.h"
 #include "common_types.h"
 #include "kernel_struct_data_copy.h"
-#include "tile_api/kernel_tensor_tile_intf_utils.h"
 #include "utils/kernel_utils_macros.h"
 #include "utils/kernel_utils_struct_confusion_pad.h"
 #include "kernel_tensor.h"
@@ -433,40 +432,6 @@ __aicore__ inline void SetLoopModePara(const LoopModeParams& loopParams, DataCop
 
 __aicore__ inline void ResetLoopModePara(DataCopyMVType type);
 #endif
-}  // namespace AscendC
-
-/* **************************************************************************************************
- * DataCopy(Layout) API Level2                                              *
- * ************************************************************************************************* */
-namespace AscendC {
-template <typename T, size_t row, size_t column>
-using NZLayout = typename NZLayoutFormat<T, row, column>::type;
-
-template <typename T, size_t row, size_t column>
-using RowMajorLayout = NDLayoutFormat<T, row, column>;
-
-template <typename T, size_t row, size_t column>
-using ColumnMajorLayout = DNLayoutFormat<T, row, column>;
-
-template <typename T, size_t row, size_t column>
-using ZNLayout = ZNLayoutFormat<T, row, column>;
-
-template <typename T>
-__aicore__ inline decltype(auto) MakeNZLayout(size_t row, size_t column);
-
-template <typename T>
-__aicore__ inline decltype(auto) MakeRowMajorLayout(size_t row, size_t column);
-
-template <typename T>
-__aicore__ inline decltype(auto) MakeColumnMajorLayout(size_t row, size_t column);
-
-template <typename T>
-__aicore__ inline decltype(auto) MakeZNLayout(size_t row, size_t column);
-
-template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U>
-__aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
-DataCopy(const T& dst, const U& src);
-
 }  // namespace AscendC
 
 #include "../../impl/basic_api/kernel_operator_data_copy_intf_impl.h"

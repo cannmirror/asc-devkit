@@ -359,7 +359,8 @@ TEST_F(HcclSuiteAIC, AllGather_CcuAllGatherMeshMem2Mem1D)
     std::vector<uint8_t> workSpace(workSpaceSize + 1024 * 100 * 1024);
     HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
     HcclCombineOpParam hcclCombineOpParam = GetHcclCombineOpParam(workSpace);
-    hcclCombineOpParam.algorithmType = static_cast<uint8_t>(AlgorithmType::CcuAllGatherMeshMem2Mem1D);
+    hcclCombineOpParam.opType[0] = static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALLGATHER);
+    hcclCombineOpParam.algorithmType[0] = static_cast<uint8_t>(AlgorithmType::CcuAllGatherMeshMem2Mem1D);
 
     Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl;
     hccl.Init(reinterpret_cast<GM_ADDR>(&hcclCombineOpParam));
@@ -377,7 +378,8 @@ TEST_F(HcclSuiteAIC, AllReduce_CcuAllReduceMeshMem2Mem1D)
     std::vector<uint8_t> workSpace(workSpaceSize + 1024 * 14);
     HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
     HcclCombineOpParam hcclCombineOpParam = GetHcclCombineOpParam(workSpace);
-    hcclCombineOpParam.algorithmType = static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D);
+    hcclCombineOpParam.opType[0] = static_cast<uint32_t>(HcclCMDType::HCCL_CMD_ALLREDUCE);
+    hcclCombineOpParam.algorithmType[0] = static_cast<uint8_t>(AlgorithmType::CcuAllReduceMeshMem2Mem1D);
 
     Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl;
     hccl.Init(reinterpret_cast<GM_ADDR>(&hcclCombineOpParam));
@@ -395,8 +397,8 @@ TEST_F(HcclSuiteAIC, ReduceScatter_CcuReduceScatterMeshMem2Mem1D)
     std::vector<uint8_t> workSpace(workSpaceSize + 1024 * 100 * 1024);
     HcclMsgArea* hcclMsgArea = GetHcclMsgArea(workSpace.data());
     HcclCombineOpParam hcclCombineOpParam = GetHcclCombineOpParam(workSpace);
-
-    hcclCombineOpParam.algorithmType = static_cast<uint8_t>(AlgorithmType::CcuReduceScatterMeshMem2Mem1D);
+    hcclCombineOpParam.opType[0]  = static_cast<uint32_t>(HcclCMDType::HCCL_CMD_REDUCE_SCATTER);
+    hcclCombineOpParam.algorithmType[0] = static_cast<uint8_t>(AlgorithmType::CcuReduceScatterMeshMem2Mem1D);
 
     Hccl<HcclServerType::HCCL_SERVER_TYPE_CCU> hccl;
     hccl.Init(reinterpret_cast<GM_ADDR>(&hcclCombineOpParam));

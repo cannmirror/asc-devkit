@@ -79,7 +79,7 @@ private:
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = trait.unitFlag;
-        bool isChannelSplit = trait.enableChannleSplit;
+        bool isChannelSplit = trait.enableChannelSplit;
         bool nz2ndEn = false;
         bool nz2dnEn = false;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit,
@@ -174,7 +174,7 @@ private:
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = trait.unitFlag;
-        bool isChannelSplit = trait.enableChannleSplit;
+        bool isChannelSplit = trait.enableChannelSplit;
         bool nz2ndEn = true;
         bool nz2dnEn = false;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit,
@@ -271,7 +271,7 @@ private:
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = trait.unitFlag;
-        bool isChannelSplit = trait.enableChannleSplit;
+        bool isChannelSplit = trait.enableChannelSplit;
         bool nz2ndEn = false;
         bool nz2dnEn = true;
         auto params = Std::make_tuple(nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit,

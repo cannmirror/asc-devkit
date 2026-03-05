@@ -25,6 +25,7 @@ target_link_libraries(demo PRIVATE
     platform
     m
     graph_base
+    dl
 )
 
 # ======================================================================================

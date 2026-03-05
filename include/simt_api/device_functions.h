@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -20,6 +20,16 @@
 #include "simt_api/device_sync_functions.h"
 #include "simt_api/device_warp_functions.h"
 #include "simt_api/device_atomic_functions.h"
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rn(const float x);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rz(const float x);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rd(const float x);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_ru(const float x);
+
+__SIMT_DEVICE_FUNCTIONS_DECL__ inline float __float2float_rna(const float x);
 
 __SIMT_DEVICE_FUNCTIONS_DECL__ inline unsigned int __float2uint_rn(const float x);
 

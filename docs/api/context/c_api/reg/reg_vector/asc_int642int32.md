@@ -47,7 +47,7 @@ PIPE_V
 
 ## 约束说明
 
-无
+- 使能饱和模式和非饱和模式生效时，需配置ctrl寄存器，ctrl寄存器的详细说明请参见[asc_set_ctrl.md](../../sys_var/asc_set_ctrl.md)。
 
 ## 调用示例
 

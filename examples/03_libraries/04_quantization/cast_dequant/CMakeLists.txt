@@ -22,7 +22,8 @@ add_executable(demo
 target_link_libraries(demo PRIVATE
     register
     platform
-    ascendalog
+    unified_dlog
+    dl
     m
     graph_base
 )

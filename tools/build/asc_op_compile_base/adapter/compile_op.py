@@ -245,6 +245,11 @@ the superkernel cannot be integrated with the operator.", \
             f"The operator {op_info.op_type} is simt type, current soc version has not been adapted to \
 superkernel. Therefore, the superkernel cannot be integrated with the operator.", AscendCLogLevel.LOG_WARNING)
 
+    aicore_num = get_context().get_addition("_op_aicore_num")
+    vectorcore_num = get_context().get_addition("_op_vectorcore_num")
+    if aicore_num is not None and vectorcore_num is not None:
+        js["platformInfo"] = {"cubeCoreNum": int(aicore_num), "vectorCoreNum": int(vectorcore_num)}
+
     if not global_var_storage.get_variable("ascendc_dump_disable_compile_options") \
         and compile_info.dump_info.get("dump_type", "") != "":
         js["debugOptions"] = compile_info.dump_info["dump_type"]
@@ -613,7 +618,7 @@ def gen_kernel_fun(compile_info: CompileInfo, func_name: str, opinfo: OpInfo, \
             gen_func_attributes += " __attribute__((need_auto_sync))"
 
     kernel_func_dec = f"extern \"C\" {gen_func_attributes} [aicore] void {auto_gen_kernel_func}("
-    kernel_func_dec_pub = f"__aicore__ inline void ascendc_{auto_gen_kernel_func}("
+    kernel_func_dec_pub = f"__aicore__ inline __attribute__((always_inline)) void ascendc_{auto_gen_kernel_func}("
 
     source_declare_pub, workspace_idx, called_func_params, called_func_params_type = \
         _gen_kernel_func_declare_head(is_mix, is_single_and_using_hard_sync, \

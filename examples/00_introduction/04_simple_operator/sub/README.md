@@ -38,13 +38,11 @@
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">sub_custom</td></tr>
   </table>
 - 算子实现：   
-  Sub算子的数学表达式为：
-
   计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用计算接口完成两个输入参数相减，得到最终结果，再搬出到外部存储上。
 
   Sub算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm和yGm搬运到Local Memory，分别存储在xLocal、yLocal，Compute任务负责对xLocal、yLocal执行减法操作，计算结果存储在zLocal中，CopyOut任务负责将输出数据从zLocal搬运至Global Memory上的输出Tensor zGm中。
 
-  TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本样例算子使用了5个tiling参数：totalLength、tileNum。
+  TilingData参数设计，TilingData参数本质上是和并行数据切分相关的参数，本样例算子使用了5个tiling参数：formerNum、tailNum、formerLength、tailLength、alignNum。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。

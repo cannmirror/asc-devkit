@@ -49,7 +49,7 @@ void main_data_type_kernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* _
         if constexpr (USE_TOFLOAT) {
             res1 = value.ToFloat();
         } else {
-            res1 = Cast<T>(value);
+            res1 = Cast<T, float>(value);
         }
         T res2{res1};
     }
@@ -61,7 +61,7 @@ void main_data_type_kernel(__gm__ uint8_t* __restrict__ srcGm, __gm__ uint8_t* _
         if constexpr (USE_TOFLOAT) {
             res1 = value.ToFloat();
         } else {
-            res1 = Cast<T>(value);
+            res1 = Cast<T, float>(value);
         }
         T res2{res1};
         float x = 0.5f;

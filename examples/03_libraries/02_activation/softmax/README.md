@@ -44,13 +44,13 @@
 - 算子实现：  
   本样例中实现的是固定shape为输入x [960, 960], 输出z[960, 960], max[960, 8], sum[960, 8]的softmax算子。
 
-  - kernel实现
+  - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用SoftMax高阶API接口完成softmax计算，得到最终结果，再搬出到外部存储上。
 
     softmax算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm搬运至Local Memory，存储在xLocal，Compute任务负责对xLocal执行softmax计算，计算结果由于复用了xLocal，因此还是存储在xLocal中，CopyOut任务负责将输出数据xLocal、maxLocal和sumLocal搬运至Global Memory上的输出Tensor zGm 、maxGm和sumGm中。
 
-  - tiling实现
+  - Tiling实现
 
     softmax算子的tiling实现流程如下：首先对shape按照行数进行分核，使用平均分配法先按照核数向上对齐分配，确定主核的计算行数，再确定尾核计算行数，对主核计算的shape调用softmax高阶API的tiling函数获取API所需tiling参数，尾核计算所需的高阶API的tiling由kernel侧自行计算。
 
@@ -58,6 +58,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

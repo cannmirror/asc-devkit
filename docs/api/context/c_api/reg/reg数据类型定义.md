@@ -42,7 +42,7 @@ vector_bool mask = asc_update_mask_b16(length); // 根据矢量计算需要操�
 
 非对齐寄存器包括vector_load_align和vector_store_align。这些寄存器作为缓冲区，用于在UB和矢量数据寄存器之间进行连续的非对齐数据搬运，其中非对齐特指数据起始地址未按32字节对齐。在搬运过程中，非对齐数据首先被加载到专用的非对齐寄存器，随后通过相应的搬运接口完成数据的分块读取或写入。
 
-在读非对齐地址前，vector_load_align应该通过asc_loadunalign_pre初始化，然后再使用asc_loadunalign。在写非对齐地址时，应先使用asc_storealign，再使用asc_storealign_post进行处理。
+在读非对齐地址前，vector_load_align应该通过asc_loadunalign_pre初始化，然后再使用asc_loadunalign。在写非对齐地址时，应先使用asc_storeunalign，再使用asc_storeunalign_post进行处理。
 
 ### 调用示例
 

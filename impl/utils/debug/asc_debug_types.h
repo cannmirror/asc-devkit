@@ -1,5 +1,5 @@
 /**
-* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
 * Please refer to the License for details. You may not use this file except in compliance with the License.
@@ -21,6 +21,38 @@
 #warning "asc_debug_types.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future."
 #endif
 namespace __asc_aicore {
+
+enum class DumpTensorDataType : uint32_t {
+    ACL_FLOAT = 0,
+    ACL_FLOAT16 = 1,
+    ACL_INT8 = 2,
+    ACL_INT32 = 3,
+    ACL_UINT8 = 4,
+    ACL_INT16 = 6,
+    ACL_UINT16 = 7,
+    ACL_UINT32 = 8,
+    ACL_INT64 = 9,
+    ACL_UINT64 = 10,
+    ACL_DOUBLE = 11,
+    ACL_BOOL = 12,
+    ACL_STRING = 13,
+    ACL_COMPLEX64 = 16,
+    ACL_COMPLEX128 = 17,
+    ACL_BF16 = 27,
+    ACL_INT4 = 29,
+    ACL_UINT1 = 30,
+    ACL_COMPLEX32 = 33,
+    ACL_HIFLOAT8 = 34,
+    ACL_FLOAT8_E5M2 = 35,
+    ACL_FLOAT8_E4M3FN = 36,
+    ACL_FLOAT8_E8M0 = 37,
+    ACL_FLOAT6_E3M2 = 38,
+    ACL_FLOAT6_E2M3 = 39,
+    ACL_FLOAT4_E2M1 = 40,
+    ACL_FLOAT4_E1M2 = 41,
+    ACL_MAX = 42,
+};
+
 enum class DumpType : uint8_t {
     DUMP_DEFAULT = 0,
     DUMP_SCALAR,

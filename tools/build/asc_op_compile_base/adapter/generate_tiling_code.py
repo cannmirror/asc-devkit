@@ -52,7 +52,9 @@ def generate_pointer_directly_assess_data(is_dynamic: bool = True, \
 
 #define GET_TILING_DATA_PTR_WITH_STRUCT(tiling_struct, dst_ptr, tiling_ptr)                                                     \
     REGISTER_TILINGDATA_SIZE(tiling_struct, __COUNTER__);                                                             \
-    {is_need_const} tiling_struct __var__##dst_ptr;                                                                             \
+    {tiling_assign_str % ('dst_ptr')}                                                                                           \
+    {is_need_const} tiling_struct __var__##dst_ptr =                                                                            \
+        convert_from_bytes<tiling_struct>(__ascendc_arr_##dst_ptr);                                                                             \
     __tiling_data_ptr__ tiling_struct *dst_ptr = &__var__##dst_ptr;
 
 #define COPY_TILING_WITH_STRUCT(tiling_struct, src_ptr, dst_ptr)                                                                \

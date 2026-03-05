@@ -15,3 +15,4 @@
 | [set_next_task_start](./set_next_task_start)                           | 本样例基于SetNextTaskStart接口实现Superkernel的子kernel并行。 |
 | [sync_all](./sync_all)                                                 | 本样例基于SyncAll实现核间同步，适用于以下场景：不同核之间操作同一块全局内存且可能存在读后写、写后读以及写后写等数据依赖问题，通过调用本接口来插入同步语句来避免上述数据依赖时可能出现的数据读写错误问题。|
 | [wait_pre_task_end](./wait_pre_task_end)                                                 | 本样例基于SetPreTaskEnd接口实现Superkernel的子kernel并行。|
+| [pipe_barrier](./pipe_barrier)                                                       |本样例基于PipeBarrier实现核内同步，适用于以下场景：阻塞相同流水，具有数据依赖的相同流水之间需要插入此同步。|

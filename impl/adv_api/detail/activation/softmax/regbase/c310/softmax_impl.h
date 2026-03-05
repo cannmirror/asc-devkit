@@ -1546,7 +1546,7 @@ __aicore__ inline bool AdjustSoftMaxResBaseImpl(const LocalTensor<T1>& softMaxRe
     constexpr uint32_t stride = GetVecLen() / sizeof(T1);
     __ubuf__ T1* resUb = (__ubuf__ T1*)softMaxRes.GetPhyAddr();
     __ubuf__ T2* maxUb = (__ubuf__ T2*)maxTensor.GetPhyAddr();
-    __ubuf__ uint64_t* maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 4);
+    __ubuf__ uint64_t* maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 4);
 
     if constexpr (isDataFormatNZ) {
         constexpr uint32_t stepSize = GetDataBlockSizeInBytes() / sizeof(T2);

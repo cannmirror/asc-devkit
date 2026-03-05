@@ -31,9 +31,12 @@
 
 
 
-通常的矩阵乘法计算公式：C = A × B，其中A、B、C矩阵的需要满足的shape分别为[M,K]、[K,N]和[M,N]。当A矩阵需要转置才能参与矩阵乘法时，GM上输入的A矩阵shape为[K,M]，同理，当B矩阵需要转置才能参与矩阵乘法时,GM上输入的A矩阵shape为[N,K]。当输入数据类型分别取S8/F16/F32时，若同时通过布尔变量isAtranspose和isBtranspose分别控制A、B矩阵是否转置，组合得到12种场景。下文将介绍上述12种场景下，A、B矩阵在完整矩阵乘法流程的各个阶段前后数据的排布方式、对齐要求、所调用的指令以及如何配置相应的参数。
+通常的矩阵乘法计算公式：C = A × B，其中A、B、C矩阵的需要满足的shape分别为[M,K]、[K,N]和[M,N]。当A矩阵需要转置才能参与矩阵乘法时，GM上输入的A矩阵shape为[K,M]，同理，当B矩阵需要转置才能参与矩阵乘法时,GM上输入的A矩阵shape为[N,K]。当输入数据类型分别取S8/F16/F32时，若同时通过布尔变量isAtranspose和isBtranspose分别控制A、B矩阵是否转置，组合得到12种场景。
 
-程序中以参数scenarioNum来代表上述12中场景，scenarioNum不同取值对应的含义如下表所示：
+
+此外，当L1上A矩阵转置、B矩阵不转置时，若L1上A、B矩阵为ZZ排列，则应在L1-->L0通路中调用LoadDataWithTranspose接口；而当排列为通常情况下的NZ排列时，则应调用LoadData3DV2接口。因此，在原有12种场景的基础上，需要新增一种特殊场景：L1上A、B矩阵为ZZ排布,且L1-->L0通路调用LoadDataWithTranspose接口。
+
+下文将介绍上述13种场景下，A、B矩阵在完整矩阵乘法流程的各个阶段前后数据的排布方式、对齐要求、所调用的指令以及如何配置相应的参数。程序中以参数scenarioNum来代表上述13中场景，scenarioNum不同取值对应的含义如下表1所示：
 
 <table border="2" align="center">
 <caption>表1：scenarioNum不同取值的含义</caption>
@@ -90,8 +93,8 @@
   </tr>
     <tr>
     <td>9</td>
-    <td rowspan="4" >float</td>
-    <td rowspan="4" >float</td>
+    <td rowspan="5" >float</td>
+    <td rowspan="5" >float</td>
     <td>不转置</td>
     <td>不转置</td>
   </tr>
@@ -110,8 +113,14 @@
     <td>转置</td>
     <td>转置</td>
   </tr>
+    <tr>
+    <td>13</td>
+    <td>转置</td>
+    <td>不转置</td>
+  </tr>
 </table>
 
+注：scenarioNum取值1到12时，L1上A、B矩阵均为NZ排布；scenarioNum=13时，L1上A、B矩阵均为ZZ排布。
 
 为了方便描述，在此对后续常用概念给出定义：
 
@@ -119,7 +128,7 @@
  
 （2）fractalShape(fS):a矩阵和b矩阵的shape为[16, 32/sizeof(T)],其中T表示输入数据类型。
 
-（3）fractalNum(fN):当a或者b矩阵从L1-->L0A/L0B需要转置时，且调用LoadDataWithTranspose接口时，该接口一次只能转置一个方块矩阵，对于S8和F32数据类型fractalShape分别为[16,32]和[16,8]，都需要两个连续的分形合并为一个方块然后转置，因此该参数表示一个方块包含几个分形。对于S8和F32数据类型，fractalNum=2；对F16数据类型，该参数不起作用。
+（3）fractalNum(fN):当a或者b矩阵从L1-->L0A/L0B需要转置时，且调用LoadDataWithTranspose接口时，该接口一次只能转置一个方块矩阵，对于S8和F32数据类型fractalShape分别为[16,32]和[16,8]，都需要两个连续的分形合并为一个方块然后转置，因此该参数表示一个方块包含几个分形。对于S8和F32数据类型，；对F16数据类型，fractalNum=1。
 
 （4）fractalSize:a矩阵或b矩阵中包含的元素个数=16 * 32/sizeof(T),当输入数据类型分别为S8/F16/F32时，该变量取值分别为512、256、128。
 
@@ -140,10 +149,10 @@
 （9）srcoffset和dstoffset:在L1上，A/B矩阵外轴方向每循环一次时,LocalTensor的地址偏移量；在L0A/L0B上，A/B矩阵外轴方向每循环一次时,LocalTensor的地址偏移量。
 。注意，为了方便理解，本次样例全部默认将A矩阵的M轴和B矩阵的K轴作为外轴循环，暂不考虑将M轴与K轴中较长轴作为外轴的场景。
 
-从L1-->L0通路，常用的搬运指令有LoadData2D、LoadDataWithTranspose 和 LoadData3DV2 三个指令，现在将上述12种场景下可以调用指令总结如下表所示：
+从L1-->L0通路，常用的搬运指令有LoadData2D、LoadDataWithTranspose 和 LoadData3DV2 三个指令，现在将上述13种场景下可以调用指令总结如下表2所示：
 
 <table border="2" align="center">
-<caption>表2：L1-->L0,12种场景下可以调用的指令</caption>
+<caption>表2：L1-->L0,13种场景下可以调用的指令</caption>
   <tr>
     <td></td>
     <td>int8_t</td>
@@ -160,13 +169,13 @@
     <td>A矩阵转置(a转置)</td>
     <td>LoadDataWithTranspose</td>
     <td>LoadData、LoadData3DV2、LoadDataWithTranspose</td>
-    <td>LoadData3DV2、LoadDataWithTranspose</td>
+    <td>LoadData3DV2、LoadDataWithTranspose(L1上数据排布为ZZ)</td>
   </tr>
     <tr>
     <td>B矩阵不转置(b转置)</td>
     <td>LoadDataWithTranspose</td>
     <td>LoadData、LoadData3DV2、LoadDataWithTranspose</td>
-    <td>LoadData3DV2、LoadDataWithTranspose</td>
+    <td>LoadData3DV2、LoadDataWithTranspose(L1上数据排布为ZZ)</td>
   </tr>
     <tr>
     <td>B矩阵转置(b不转置)</td>
@@ -176,7 +185,7 @@
   </tr>
 </table>
 
-另外，12种场景下，A、B矩阵在L1和L0上在高度和宽度方向上对齐的要求也不相同，现将对齐要求总结得到
+另外，A、B矩阵在L1和L0上在高度和宽度方向上对齐的要求也不相同，现将表1中scenarioNum取1-12对应的12种场景的对齐要求总结得到
 如下两个表格：
 
 <table border="2" align="center">
@@ -266,24 +275,74 @@
   <tr>
 </table>
 
+特别的，当scenarioNum=13时，A、B矩阵在L1和L0上在高度和宽度方向上对齐的要求如下两个表所示：
+<table border="2" align="center">
+<caption>表5：scenarioNum=13，A、B矩阵在L1上各个轴的对齐要求</caption>
+  <tr>
+    <td align="center" ></td>
+    <td align="center" >float</td>
+  </tr>
+   <tr>
+    <td rowspan="2">A矩阵转置(a转置)</td>
+    <td align="center" >kAlignValue = fS[0]</td>
+  </tr>
+    <tr>
+    <td align="center" >mAlignValue = fS[1]*fN</td>
+  </tr>
+   <tr>
+    <td rowspan="2">B矩阵不转置(b转置)</td>
+    <td align="center" >kAlignValue = fS[0]</td>
+  </tr>
+    <tr>
+    <td align="center" >nAlignValue = fS[1]*fN</td>
+  </tr>
+</table>
+
+<table border="2" align="center">
+<caption>表6：scenarioNum=13，A、B矩阵在L0上各个轴的对齐要求</caption>
+  <tr>
+    <td align="center" ></td>
+    <td align="center" >float</td>
+  </tr>
+   <tr>
+    <td rowspan="2">A矩阵转置(a转置)</td>
+    <td align="center" >mAlignValue = fS[0]</td>
+  </tr>
+    <tr>
+    <td align="center" >kAlignValue = fS[1]*fN</td>
+  </tr>
+   <tr>
+    <td rowspan="2">B矩阵不转置(b转置)</td>
+    <td align="center" >kAlignValue = fS[1]*fN</td>
+  </tr>
+    <tr>
+    <td align="center" >nAlignValue = fS[0]</td>
+  </tr>
+</table>
+
 
 ### 一.A矩阵不转置
 #### 1.1. 输入数据类型为half
-A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ，如下图所示，当输入数据类型为half类型、A矩阵不转置时,由于A矩阵在L1和L0A上shape都是[M,K]，因此从L1-->L0A过程下图中红色所示的a矩阵不需要转置。
+A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ，如下图2所示，当输入数据类型为half类型、A矩阵不转置时,由于A矩阵在L1和L0A上shape都是[M,K]，因此从L1-->L0A过程下图2中红色所示的a矩阵不需要转置。
 
 对齐要求方面，在L1和L0A上A矩阵的M轴都向fS[0]对齐、K轴都向fS[0]对齐。
 
-从上图可以看出，只要是A矩阵不转置，那么GM-->L1、L1-->L0A整个过程的数据搬运方案和对齐要求，可以共用一套配置，因此下面两个小节的描述不仅仅适用于输入为half类型，也适用于输入为int8_t和float类型。
+从图1、图2可以看出，只要是A矩阵不转置，那么GM-->L1、L1-->L0A整个过程的数据搬运方案和对齐要求，可以共用一套配置，因此下面两个小节的描述不仅仅适用于输入为half类型，也适用于输入为int8_t和float类型。
 
-<p align="center">
-  <img src="img/A矩阵不转置_F16.png" width="1200">
-</p>
 
-<p align="center">
-图1：A矩阵不转置，half数据类型下，GM-->L1-->L0A 数据排布示意
-</p>
+
+
 
 ##### 1.1.1 GM到L1
+
+<p align="center">
+  <img src="img/A矩阵不转置_F16_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图1：A矩阵不转置，half数据类型下，GM-->L1数据排布示意
+</p>
+
 下面将介绍如何配置
 [DataCopy随路转换ND2NZ搬运](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00127.html)指令的Nd2NzParams结构体的成员，各个成员变量的具体含义这里不再赘述。其中需要注意的是，dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数。
 
@@ -300,16 +359,20 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ，如下图所示
             nd2nzA1Params.dstNzNStride = 1;
             nd2nzA1Params.dstNzMatrixStride = 0;
 ##### 1.1.2 L1到L0A
+
+<p align="center">
+  <img src="img/A矩阵不转置_F16_L1_L0.png" width="800">
+</p>
+
+<p align="center">
+图2：A矩阵不转置，half数据类型下，L1-->L0A数据排布示意
+</p>
+
 由于A矩阵不转置时，a矩阵也不转置，因此可以调用Load2D接口。下面将介绍如何配置
 [Load2D](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00169.html)指令的LoadData2DParams结构体的成员，各个成员变量的具体含义这里不再赘述。
 
-如图1所示，以M轴方向作为外轴进行for循环，以K轴方向作为内轴来配置loadDataParams.repeatTimes。如图1所示，srcoffset和dstoffset的含义分别是:在L1上，A矩阵M轴方向每循环一次时,LocalTensor的地址偏移量；在L0A上，A矩阵M轴方向每循环一次时,LocalTensor的地址偏移量。
+如图2所示，以M轴方向作为外轴进行for循环，以K轴方向作为内轴来配置loadDataParams.repeatTimes。如图2所示，srcoffset和dstoffset的含义分别是:在L1上，A矩阵M轴方向每循环一次时,LocalTensor的地址偏移量；在L0A上，A矩阵M轴方向每循环一次时,LocalTensor的地址偏移量。
 
-
-        __aicore__ inline void SplitA()
-        {
-            AscendC::LocalTensor<T> a1Local = inQueueA1.DeQue<T>();
-            AscendC::LocalTensor<T> a2Local = inQueueA2.AllocTensor<T>();
             uint32_t dstOffset = CeilDivision(k, fractalShape[1]) * fractalSize;
             uint32_t srcOffset = fractalSize;
             // Nz -> Zz
@@ -322,24 +385,22 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ，如下图所示
             for (int i = 0; i < CeilDivision(m, fractalShape[0]); ++i) {
                 AscendC::LoadData(a2Local[i * dstOffset], a1Local[i * srcOffset], loadDataParams);
             }
-            inQueueA2.EnQue<T>(a2Local);
-            inQueueA1.FreeTensor(a1Local);
-        }
+
 ### 二.A矩阵转置
 #### 2.1. 输入数据类型为int8_t
-A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图所示，L1上数据排布为NZ、shape为[K,M]的B矩阵与数据排布为ZN、shape为[M,K]的B矩阵是等价的（内存排布一致），接着调用LoadDataWithTranspose将ZN排布、shape为[M,K]的B矩阵中K轴方向的分形两两合并(图中红色分形)为一个方块矩阵后转置就可以实现L0A上A矩阵为ZZ排布、shape为[M,K]。
+A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图4所示，L1上数据排布为NZ、shape为[K,M]的B矩阵与数据排布为ZN、shape为[M,K]的B矩阵是等价的（内存排布一致），接着调用LoadDataWithTranspose将ZN排布、shape为[M,K]的B矩阵中K轴方向的分形两两合并(图中红色分形)为一个方块矩阵后转置就可以实现L0A上A矩阵为ZZ排布、shape为[M,K]。
 
 
 对齐要求方面，在L1上A矩阵的K轴向fS[0] * fractalNum对齐、M轴向fS[1]对齐；在L0A上A矩阵的M轴向fS[0] * fractalNum对齐、K轴向fS[1]对齐。
-<p align="center">
-  <img src="img/A矩阵转置_S8.png" width="1200">
-</p>
-
-<p align="center">
-图2：A矩阵转置，int8_t数据类型下，GM-->L1-->L0A 数据排布示意
-</p>
-
 ##### 2.1.1 GM到L1
+
+<p align="center">
+  <img src="img/A矩阵转置_S8_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图3：A矩阵转置，int8_t数据类型下，GM-->L1数据排布示意
+</p>
 
 配置Nd2NzParams结构体的成员时，需要注意，源操作数的shape为[K,M]以及dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数。
 
@@ -359,10 +420,18 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图所示
             nd2nzA1Params.dstNzMatrixStride = 0;
 
 ##### 2.1.2 L1到L0A
+<p align="center">
+  <img src="img/A矩阵转置_S8_L1_L0.png" width="1000">
+</p>
+
+<p align="center">
+图4：A矩阵转置，int8_t数据类型下，L1-->L0B数据排布示意
+</p>
+
 由于A矩阵转置时，a矩阵也转置，因此可以调用LoadDataWithTranspose接口。下面将介绍如何配置
 [LoadDataWithTranspose](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0239.html)指令的LoadData2dTransposeParams结构体的成员，各个成员变量的具体含义这里不再赘述。
 
-如图2所示，以M轴方向作为外轴进行for循环，以K轴方向作为内轴来配置loadDataParams.repeatTimes。需要特别注意的是，由于转置时连续两个分形合并为一个方块，因此loadDataParams.repeatTimes=CeilDivision(k, fractalShape[0] * fractalNum)。另外，如图2所示，L0A中转置前处于同一方块中的两个分形在L1中是连续的，转置后前一个分形结束地址与后一个分形起始地址的间隔为CeilDivision(k, fractalShape[1]) - 1，单位是512B。
+如图4所示，以M轴方向作为外轴进行for循环，以K轴方向作为内轴来配置loadDataParams.repeatTimes。需要特别注意的是，由于转置时连续两个分形合并为一个方块，因此loadDataParams.repeatTimes=CeilDivision(k, fractalShape[0] * fractalNum)。另外，如图4所示，L0A中转置前处于同一方块中的两个分形在L1中是连续的，转置后前一个分形结束地址与后一个分形起始地址的间隔为CeilDivision(k, fractalShape[1]) - 1，单位是512B。
 
            // dstoffset要根据A矩阵在L0上，宽度方向的对齐来求解
             uint32_t dstOffset = CeilDivision(k, fractalShape[1]) * fractalSize * fractalNum;
@@ -383,21 +452,21 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图所示
 
 #### 2.2 输入数据类型为half
 
-A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图所示，L1上数据排布为NZ、shape为[K,M]的B矩阵与数据排布为ZN、shape为[M,K]的B矩阵是等价的（内存排布一致），接着调用LoadData指令将ZN排布、shape为[M,K]的B矩阵中的分形(图中红色分形)转置就可以实现L0A上A矩阵为ZZ排布、shape为[M,K]。
+A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图6所示，L1上数据排布为NZ、shape为[K,M]的B矩阵与数据排布为ZN、shape为[M,K]的B矩阵是等价的（内存排布一致），接着调用LoadData指令将ZN排布、shape为[M,K]的B矩阵中的分形(图中红色分形)转置就可以实现L0A上A矩阵为ZZ排布、shape为[M,K]。
 
 
 对齐要求方面，在L1上A矩阵的K轴向fS[0]对齐、M轴向fS[1]对齐；在L0A上A矩阵的M轴向fS[0]对齐、K轴向fS[1]对齐。
 
-
-<p align="center">
-  <img src="img/A矩阵转置_F16.png" width="1200">
-</p>
-
-<p align="center">
-图3：A矩阵转置，half数据类型下，GM-->L1-->L0A 数据排布示意
-</p>
-
 ##### 2.2.1 GM到L1
+
+<p align="center">
+  <img src="img/A矩阵转置_F16_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图5：A矩阵转置，half数据类型下，GM-->L1 数据排布示意
+</p>
+
 配置Nd2NzParams结构体的成员时，需要注意，源操作数的shape为[K,M]以及dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数,也就是K轴对齐到fractalShape[0]后的长度。
 
 
@@ -414,9 +483,18 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图所示
 
 
 ##### 2.2.2 L1到L0A
-根据表可知，当A矩阵转置时，a矩阵也转置，当且仅当输入数据类型为half时，可以调用LoadData指令完成转置。
 
-如图3所示，以M轴方向作为外轴进行for循环，以K轴方向作为内轴来配置loadDataParams.repeatTimes。结合图示3，并根据前述srcoffset和dstoffset的定义，可以得出两者的取值均为：CeilDivision(k, fractalShape[0]) * fractalSize。  
+<p align="center">
+  <img src="img/A矩阵转置_F16_L1_L0.png" width="1000">
+</p>
+
+<p align="center">
+图6：A矩阵转置，half数据类型下，L1-->L0A 数据排布示意
+</p>
+
+根据表2可知，当A矩阵转置时，a矩阵也转置，当且仅当输入数据类型为half时，可以调用LoadData指令完成转置。
+
+如图6所示，以M轴方向作为外轴进行for循环，以K轴方向作为内轴来配置loadDataParams.repeatTimes。结合图示3，并根据前述srcoffset和dstoffset的定义，可以得出两者的取值均为：CeilDivision(k, fractalShape[0]) * fractalSize。  
 
             uint32_t dstOffset = CeilDivision(k, fractalShape[0]) * fractalSize;
             uint32_t srcOffset = CeilDivision(k, fractalShape[0]) * fractalSize;
@@ -434,23 +512,25 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。如下图所示
 #### 2.3. 输入数据类型为float
 A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。与2.1和2.2小节中类似，L1上数据排布为NZ、shape为[K,M]的B矩阵与数据排布为ZN、shape为[M,K]的B矩阵是等价的（内存排布一致），然而此时不能像2.1小节中那样调用LoadDataWithTranspose指令进行转置，因为在K轴方向两个连续的分形并不能合并为一个16*16的方块。
 
-如图4所示，当L1上A矩阵为NZ排布时并不满足LoadDataWithTranspose指令要求两个连续分形合并为方块矩阵的要求，如果要调用该指令
-要求L1上的A矩阵满足ZZ排布。
+如图7所示，当L1上A矩阵为NZ排布时并不满足LoadDataWithTranspose指令要求两个连续分形合并为方块矩阵的要求，如果要调用LoadDataWithTranspose，要求L1上的A矩阵必须满足ZZ排布。通常矩阵乘法要求L1上A、B矩阵排列为NZ，但是在GM-->L1通路调用DataCopyND2NZ 指令时，可以通过对参数特殊设置最终实现ND2ZZ的效果。
 
 <p align="center">
   <img src="img/A矩阵转置_F32_L1上ZZ才能调用loaddatatranspose.png" width="400">
 </p>
 
 <p align="center">
-图4：L1上NZ排布的A矩阵，无法调用LoadDataWithTranspose指令示意图
+图7：L1上NZ排布的A矩阵，无法调用LoadDataWithTranspose指令示意图
 </p>
 
-根据表1可知，此时可以调用LoadData3DV2接口实现a矩阵转置。调用LoadData3DV2指令时，在写入L0A之前会先分别将A矩阵高度和宽度轴向16、8对齐，接着该指令会将整个A矩阵进行转置并且每一个分形也转置，最终写入到L0A的A矩阵是ZZ排布。
 
 
+##### 2.3.1 L1上数据排布为NZ，L1-->L0A调用Load3DV2
+当GM-->L1通路调用DataCopyND2NZ 指令后，L1上数据排布为NZ，此时可以调用LoadData3DV2接口实现a矩阵转置。如图8所示，调用LoadData3DV2指令时，在写入L0A之前会先分别将A矩阵高度和宽度轴向16、8对齐，接着该指令会将整个A矩阵进行转置并且每一个分形也转置，最终写入到L0A的A矩阵是ZZ排布。
 
-对齐要求方面，在L1上A矩阵的K轴向fS[0] 对齐、M轴向fS[1]对齐；在L0A上A矩阵的M轴向fS[1]对齐、K轴向fS[1]*fractalNum对齐                                                                                          
-##### 2.3.1 GM到L1
+对齐要求方面，根据图可知以下对齐要求：在L1上A矩阵的K轴向fS[0] 对齐、M轴向fS[1]对齐；在L0A上A矩阵的M轴向fS[1]对齐、K轴向fS[1]*fractalNum对齐。
+
+###### 2.3.1.1 GM到L1
+
 配置Nd2NzParams结构体的成员时，需要注意，源操作数的shape为[K,M]以及dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数,也就是K轴对齐到fractalShape[0]后的长度。
 
             nd2nzA1Params.ndNum = 1;
@@ -468,11 +548,16 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。与2.1和2.2小
             nd2nzA1Params.dstNzNStride = 1;
             nd2nzA1Params.dstNzMatrixStride = 0;
             
-##### 2.3.2 L1到L0A
-下面将介绍如何配置
-[Load3Dv2](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00170.html)指令的 LoadData3DParamsV2结构体的成员，各个成员变量的具体含义这里不再赘述。
+###### 2.3.1.2 L1到L0A
+<p align="center">
+  <img src="img/load3dv2_f32_A转置.png" width="1000">
+</p>
 
-根据Load3Dv2指令完成img2col的过程，可知 img2col后A矩阵高度为ho * wo,根据ho和wo的计算公式，代入卷积核宽度、卷积核滑动步长、卷积核膨胀系数等参数可知：A矩阵的高度为 CeilAlign(k, fractalShape[0])；img2col后A矩阵宽度为ho * wo,ci * kh * kw,代入kh=1,kw=1，可知A矩阵的宽度为CeilAlign(m, fractalShape[1])。最后，配置loadDataParams.enTranspose = true，将整个A
+<p align="center">
+图8：A矩阵转置，float数据类型下，Load3DV2指令功能示意
+</p>
+
+[Load3Dv2](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00170.html)指令的 LoadData3DParamsV2结构体的成员，各个成员变量的具体含义这里不再赘述。根据Load3Dv2指令完成img2col的过程，可知 img2col后A矩阵高度为ho * wo,根据ho和wo的计算公式，代入卷积核宽度、卷积核滑动步长、卷积核膨胀系数等参数可知：A矩阵的高度为 CeilAlign(k, fractalShape[0])；img2col后A矩阵宽度为ho * wo,ci * kh * kw,代入kh=1,kw=1，可知A矩阵的宽度为CeilAlign(m, fractalShape[1])。最后，配置loadDataParams.enTranspose = true，将整个A
 矩阵转置并且将其中每一个分形转置。
 
             // 源操作数height
@@ -501,21 +586,86 @@ A矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZZ。与2.1和2.2小
             loadDataParams.dilationFilterH = 1;
             loadDataParams.enTranspose = true;
 
+##### 2.3.2 L1上数据排布为ZZ，L1-->L0A调用LoadDataWithTranspose
+当GM-->L1通路调用DataCopyND2NZ 指令后，L1上数据排布为ZZ，此时可以调用LoadDataWithTranspose接口实现a矩阵转置。
+
+对齐要求方面，根据图2、图3可知以下对齐要求：在L1上A矩阵的K轴向fS[0] 对齐、M轴向fS[1]*fractalNum对齐；在L0A上A矩阵的M轴向fS[0]对齐、K轴向fS[1]*fractalNum对齐。
+###### 2.3.2.1 GM到L1
+
+<p align="center">
+  <img src="img/A矩阵转置_F32_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图9：A矩阵转置，float数据类型下，GM-->L1过程中ND2ZZ数据排布示意
+</p>
+
+如上图9所示，A矩阵转置(a转置)，输入数据类型为float类型时，为了调用LoadDataWithTranspose接口，要求L1上A矩阵的排布必须是ZZ,因此需要在GM-->L1阶段调用DataCopyND2NZ 指令时通过巧妙地配置Nd2NzParams结构体来实现ND2ZZ的效果。
+DataCopyND2NZ 指令实现ND2ZZ效果的核心思想：将1个ND矩阵沿着高度轴以步长16进行切分，看作CeilDivision(k, 16)个ND矩阵。由于搬运后CeilDivision(k, 16)个NZ矩阵在高度轴方向有且仅有1个分形，因此最终搬运到L1上的A矩阵等效于ZZ排列。
+                    
+                    nd2nzA1Params.ndNum = CeilDivision(k, fractalShape[0]);
+                    nd2nzA1Params.nValue = fractalShape[0];
+                    nd2nzA1Params.dValue = m;
+                    nd2nzA1Params.srcNdMatrixStride = fractalShape[0] * m;
+                    nd2nzA1Params.srcDValue = m;
+                    nd2nzA1Params.dstNzC0Stride = fractalShape[0];
+                    nd2nzA1Params.dstNzNStride = 1;
+                    nd2nzA1Params.dstNzMatrixStride = fractalShape[0] * CeilAlign(m, fractalShape[1] * fractalNum);
+                    
+###### 2.3.2.2 L1到L0A
+
+<p align="center">
+  <img src="img/A矩阵转置_F32_L1_L0.png" width="1200">
+</p>
+
+<p align="center">
+图10：A矩阵转置，float数据类型下，L1上数据排布为ZZ,L1-->L0A数据排布示意
+</p>
+
+如上图10所示，L1上shape为[K,M]、ZZ排布的A矩阵与shape为[M,K]、NN排布的A矩阵是等价的。L0A上要求A矩阵shape为[M,K]、ZZ排布，因此L1-->L0A通路通过调用LoadDataWithTranspose指令实现a矩阵（上图10中2个红色分形）的转置。
+
+下面将介绍如何配置
+[LoadDataWithTranspose](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0239.html)指令的LoadData2dTransposeParams结构体的成员，各个成员变量的具体含义这里不再赘述。需要特别注意的是，由于转置时连续两个分形合并为一个方块，因此loadDataParams.repeatTimes=CeilDivision(k, fractalShape[1] * fractalNum)。另外，由于在目的操作数中同属一个方块矩阵的两个分形地址连续，因此参数loadDataParams.dstFracGap = 0。
+
+
+                // A矩阵在L0A上shape为[M，K]、ZZ排布，因此dstoffset要根据A矩阵在K轴方向的对齐来求解
+                uint32_t dstOffset = CeilDivision(k, fractalShape[1] * fractalNum) * fractalSize * fractalNum;
+                // A矩阵在L1上shape为[K,M]、ZZ排布，因此srcoffset为1个分形包含的元素个数
+                uint32_t srcOffset = fractalSize * fractalNum;
+
+                AscendC::LoadData2dTransposeParams loadDataParams;
+                // 搬运起始位置为源操作数中第几个方块矩阵（0 为源操作数中第1个方块矩阵)
+                loadDataParams.startIndex = 0;
+                // 迭代次数,每次迭代转置一个方块矩阵
+                loadDataParams.repeatTimes = CeilDivision(k, fractalShape[1] * fractalNum);
+                // 相邻迭代间，源操作数前一个分形与后一个分形起始地址的间隔。单位是方块矩阵的大小
+                loadDataParams.srcStride = CeilDivision(m, fractalShape[1] * fractalNum);
+                // 相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址的间隔，单位：512B
+                loadDataParams.dstGap = 1;
+                // 每个迭代内目的操作数转置前一个分形结束地址与后一个分形起始地址的间隔，单位为512B
+                loadDataParams.dstFracGap = 0;
+                for (int i = 0; i < CeilDivision(m, fractalShape[1] * fractalNum); ++i) {
+                    AscendC::LoadDataWithTranspose(a2Local[i * dstOffset], a1Local[i * srcOffset], loadDataParams);
+                }
+
+
 ### 三.B矩阵不转置
 #### 3.1. 输入数据类型为int8_t
 
-B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示，当输入数据类型为int8_t类型、B矩阵不转置时,将L1上数据排布为NZ、shape为[K，N]的B矩阵中分形沿着K轴两两合并为一个方块矩阵后转置，并且调整分形之间的顺序，最终可以得到L0B上数据排布为ZN、shape为[K,N]的B矩阵。
+B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图12所示，当输入数据类型为int8_t类型、B矩阵不转置时,将L1上数据排布为NZ、shape为[K，N]的B矩阵中分形沿着K轴两两合并为一个方块矩阵后转置，并且调整分形之间的顺序，最终可以得到L0B上数据排布为ZN、shape为[K,N]的B矩阵。
 
 对齐要求方面，在L1上B矩阵的K轴向fS[0] 对齐、N轴向fS[1]对齐；在L0B上B矩阵的K轴向fS[1] 对齐、N轴向fS[0] 对齐。
-<p align="center">
-  <img src="img/B矩阵不转置_S8.png" width="1200">
-</p>
-
-<p align="center">
-图5：B矩阵不转置，int8_t数据类型下，GM-->L1-->L0B 数据排布示意
-</p>
 
 ##### 3.1.1 GM到L1
+
+<p align="center">
+  <img src="img/B矩阵不转置_S8_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图11：B矩阵不转置，int8_t数据类型下，GM-->L1 数据排布示意
+</p>
+
 配置Nd2NzParams结构体的成员时，需要注意，源操作数的shape为[K,N]以及dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数。
 
             nd2nzB1Params.ndNum = 1;
@@ -532,10 +682,19 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
             nd2nzB1Params.dstNzMatrixStride = 0;
 
 ##### 3.1.2 L1到L0B
+
+<p align="center">
+  <img src="img/B矩阵不转置_S8_L1_L0.png" width="800">
+</p>
+
+<p align="center">
+图12：B矩阵不转置，int8_t数据类型下，L1-->L0B 数据排布示意
+</p>
+
 由于b转置，因此可以调用LoadDataWithTranspose接口。下面将介绍如何配置
 [LoadDataWithTranspose](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_0239.html)指令的LoadData2dTransposeParams结构体的成员，各个成员变量的具体含义这里不再赘述。
 
-如图5所示，以K轴方向作为外轴进行for循环，以N轴方向作为内轴来配置loadDataParams.repeatTimes。需要特别注意的是，由于转置时连续两个分形合并为一个方块，因此loadDataParams.repeatTimes=CeilDivision(k, fractalShape[0] * fractalNum)。另外，如图5所示，L0A中转置前处于同一方块中的两个分形在L1中是连续的，转置后两个分形依然是连续的，因此前一个分形结束地址与后一个分形起始地址的间隔为0。
+如图12所示，以K轴方向作为外轴进行for循环，以N轴方向作为内轴来配置loadDataParams.repeatTimes。需要特别注意的是，由于转置时连续两个分形合并为一个方块，因此loadDataParams.repeatTimes=CeilDivision(k, fractalShape[0] * fractalNum)。另外，如图12所示，L0A中转置前处于同一方块中的两个分形在L1中是连续的，转置后两个分形依然是连续的，因此前一个分形结束地址与后一个分形起始地址的间隔为0。
 
             uint32_t dstOffset = CeilDivision(n, fractalShape[0] * fractalNum) * fractalSize * fractalNum;
             uint32_t srcOffset = fractalSize * fractalNum;
@@ -549,18 +708,20 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
                 AscendC::LoadDataWithTranspose(b2Local[i * dstOffset], b1Local[i * srcOffset], loadDataParams);
             }
 #### 3.2 输入数据类型为half
-B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示，当输入数据类型为half类型、B矩阵不转置时,将L1上数据排布为NZ、shape为[K，N]的B矩阵中每个分形转置，并且调整分形之间的顺序，最终可以得到L0B上数据排布为ZN、shape为[K,N]的B矩阵。
+B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图14所示，当输入数据类型为half类型、B矩阵不转置时,将L1上数据排布为NZ、shape为[K，N]的B矩阵中每个分形转置，并且调整分形之间的顺序，最终可以得到L0B上数据排布为ZN、shape为[K,N]的B矩阵。
 
 对齐要求方面，在L1上B矩阵的K轴向fS[0] 对齐、N轴向fS[1]对齐；在L0B上B矩阵的K轴向fS[0]对齐、N轴向fS[1]对齐。
-<p align="center">
-  <img src="img/B矩阵不转置_F16.png" width="1200">
-</p>
-
-<p align="center">
-图6：B矩阵不转置，half数据类型下，GM-->L1-->L0B 数据排布示意
-</p>
 
 ##### 3.2.1 GM到L1
+
+<p align="center">
+  <img src="img/B矩阵不转置_F16_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图13：B矩阵不转置，half数据类型下，GM-->L1 数据排布示意
+</p>
+
 配置Nd2NzParams结构体的成员时，需要注意，源操作数的shape为[K,N]以及dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数。
 
             nd2nzB1Params.ndNum = 1;
@@ -576,9 +737,18 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
             nd2nzB1Params.dstNzNStride = 1;
             nd2nzB1Params.dstNzMatrixStride = 0;
 ##### 3.2.2 L1到L0B
-根据表可知，当B矩阵转置时，b矩阵也转置，当且仅当输入数据类型为half时，可以调用LoadData指令完成转置。
 
-如上图所示，以K轴方向作为外轴进行for循环，以N轴方向作为内轴来配置loadDataParams.repeatTimes。结合图示，并根据前述srcoffset和dstoffset的定义，可以得出两者的取值。
+<p align="center">
+  <img src="img/B矩阵不转置_F16_L1_L0.png" width="800">
+</p>
+
+<p align="center">
+图14：B矩阵不转置，half数据类型下，L1-->L0B 数据排布示意
+</p>
+
+根据表2可知，当B矩阵转置时，b矩阵也转置，当且仅当输入数据类型为half时，可以调用LoadData指令完成转置。
+
+如上图14所示，以K轴方向作为外轴进行for循环，以N轴方向作为内轴来配置loadDataParams.repeatTimes。结合图示，并根据前述srcoffset和dstoffset的定义，可以得出两者的取值。
 
             uint32_t dstOffset = CeilDivision(n, fractalShape[0] * fractalNum) * fractalSize * fractalNum;
             uint32_t srcOffset = fractalSize * fractalNum;
@@ -592,14 +762,16 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
                 AscendC::LoadData(b2Local[i * dstOffset], b1Local[i * srcOffset], loadDataParams);
             }
 #### 3.3. 输入数据类型为float
-B矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZN。与2.3小节中类似，L1上数据排布为NZ、shape为[K,N]的B矩阵同样不能调用LoadDataWithTranspose指令进行转置。
 
-根据表1可知，此时可以调用LoadData3DV2接口实现b矩阵转置。调用LoadData3DV2指令时，在写入L0B之前会先分别将B矩阵高度和宽度轴向16、8对齐，接着该指令不会将整个B矩阵进行转置而是将每一个分形转置，最终写入到L0B的B矩阵是ZN排布。
+与 2.3 小节类似，当输入数据类型为 float 且 b 矩阵需要转置时，若 L1 上的数据排布为 NZ 或 ZZ，可调用的指令会有所差异，因此本节也将分为两小节分别介绍。
+
+##### 3.3.1 L1上数据排布为NZ,L1-->L0B调用Load3DV2
+
+如图15所示，调用LoadData3DV2指令时，在写入L0B之前会先分别将B矩阵高度和宽度轴向16、8对齐，接着该指令不会将整个B矩阵进行转置而是将每一个分形转置，最终写入到L0B的B矩阵是ZN排布。
 
 对齐要求方面，在L1上B矩阵的K轴向fS[0] * fractalNum对齐、N轴向fS[1]对齐；在L0B上B矩阵的K轴向fS[0] * fractalNum对齐、N轴向fS[1]对齐。
 
-
-##### 3.3.1 GM到L1
+###### 3.3.1.1 GM到L1
 配置Nd2NzParams结构体的成员时，需要注意，源操作数的shape为[K,N]以及dstNzC0Stride的单位为32B，该参数取值为L1上NZ矩阵的对齐后的行数。
 
             nd2nzB1Params.ndNum = 1;
@@ -614,7 +786,16 @@ B矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZN。与2.3小节中
             }
             nd2nzB1Params.dstNzNStride = 1;
             nd2nzB1Params.dstNzMatrixStride = 0;
-##### 3.3.2 L1到L0B
+###### 3.3.1.2 L1到L0B
+
+<p align="center">
+  <img src="img/load3dv2_f32_B转置.png" width="800">
+</p>
+
+<p align="center">
+图15：B矩阵不转置，float数据类型下，Load3DV2指令功能示意
+</p>
+
 下面将介绍如何配置
 [Load3Dv2](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00170.html)指令的 LoadData3DParamsV2结构体的成员，各个成员变量的具体含义这里不再赘述。
 
@@ -635,23 +816,78 @@ B矩阵在GM、L1和L0A上的数据排布分别是ND、NZ和ZN。与2.3小节中
             loadDataParams.filterSizeH = false;
             loadDataParams.enTranspose = true;
             loadDataParams.fMatrixCtrl = false;
+
+##### 3.3.2 L1上数据排布为ZZ,L1-->L0B调用LoadDataWithTranspose
+
+如图7所示，当L1上的A矩阵或者B矩阵满足ZZ排布才能满足LoadDataWithTranspose指令要求两个连续分形合并为方块矩阵的要求。如下图16所示，为确保L1上的A矩阵或者B矩阵的数据排布为ZZ,在GM-->L1通路调用DataCopyND2NZ 指令时，需要通过对参数特殊设置最终实现ND2ZZ的效果，参数的具体配置方式见下一个小节。
+###### 3.3.2.1 GM到L1
+
+<p align="center">
+  <img src="img/B矩阵不转置_F32_GM_L1.png" width="1000">
+</p>
+<p align="center">
+图16：B矩阵不转置，float数据类型下，GM-->L1过程中ND2ZZ数据排布示意
+</p>
+
+ B矩阵不转置(b转置)，输入数据类型为float类型时，为了调用LoadDataWithTranspose接口，要求L1上B矩阵的排布必须是ZZ, 因此需要在GM-->L1阶段调用DataCopyND2NZ 指令时通过巧妙地配置Nd2NzParams结构体来实现ND2ZZ的效果。
+                    
+如上图16所示，DataCopyND2NZ 指令实现ND2ZZ效果的核心思想在于将1个ND矩阵沿着高度轴以步长16进行切分，看作CeilDivision(k, 16)个ND矩阵。由于搬运后CeilDivision(k, 16)个NZ矩阵在高度轴方向有且仅有1个分形，因此最终搬运到L1上的B矩阵等效于ZZ排列。
+                    
+                    nd2nzB1Params.ndNum = CeilDivision(k, fractalShape[0]);
+                    nd2nzB1Params.nValue = fractalShape[0];
+                    nd2nzB1Params.dValue = n;
+                    nd2nzB1Params.srcNdMatrixStride = fractalShape[0] * n;
+                    nd2nzB1Params.srcDValue = n;
+                    nd2nzB1Params.dstNzC0Stride = fractalShape[0];
+                    nd2nzB1Params.dstNzNStride = 1;
+                    nd2nzB1Params.dstNzMatrixStride = fractalShape[0] * CeilAlign(n, fractalShape[1] * fractalNum);
+###### 3.3.2.2 L1到L0B
+
+<p align="center">
+  <img src="img/B矩阵不转置_F32_L1_L0.png" width="800">
+</p>
+
+<p align="center">
+图17：B矩阵不转置，float数据类型下，L1上数据排布为ZZ,L1-->L0B数据排布示意
+</p>
+
+配置LoadData2dTransposeParams结构体时，需要特别注意的是，由于转置时连续两个分形合并为一个方块，因此loadDataParams.repeatTimes=CeilDivision(n, fractalShape[1] * fractalNum)。另外，由于在目的操作数中同属一个方块矩阵的两个分形地址不再连续，此时参数loadDataParams.dstFracGap = CeilDivision(n, fractalShape[0]) - 1 =3-1=2。
+
+                // B矩阵在L0B上shape为[K，N]、ZN排布，因此dstoffset要根据B矩阵在N轴方向的对齐来求解
+                uint32_t dstOffset = CeilDivision(n, fractalShape[0]) * fractalSize * fractalNum;
+                // B矩阵在L1上shape为[K,N]、ZZ排布，因此srcoffset要根据B矩阵在N轴方向的对齐来求解
+                uint32_t srcOffset = CeilDivision(n, fractalShape[1] * fractalNum) * fractalSize * fractalNum;
+
+                AscendC::LoadData2dTransposeParams loadDataParams;
+                // 搬运起始位置为源操作数中第几个方块矩阵（0 为源操作数中第1个方块矩阵)
+                loadDataParams.startIndex = 0;
+                // 迭代次数,每次迭代转置一个方块矩阵
+                loadDataParams.repeatTimes = CeilDivision(n, fractalShape[1] * fractalNum);
+                // 相邻迭代间，源操作数前一个分形与后一个分形起始地址的间隔。单位是方块矩阵的大小
+                loadDataParams.srcStride = 1;
+                // 相邻迭代间，目的操作数前一个迭代第一个分形的结束地址到下一个迭代第一个分形起始地址的间隔，单位：512B
+                loadDataParams.dstGap = 0;
+                // 每个迭代内目的操作数转置前一个分形结束地址与后一个分形起始地址的间隔，单位为512B
+                loadDataParams.dstFracGap = CeilDivision(n, fractalShape[0]) - 1;
+                for (int i = 0; i < CeilDivision(k, fractalShape[0]); ++i) {
+                    AscendC::LoadDataWithTranspose(b2Local[i * dstOffset], b1Local[i * srcOffset], loadDataParams);
+                }
 ### 四.B矩阵转置
 #### 1.1. 输入数据类型为half
-B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示，当输入数据类型为half类型、B矩阵转置时,L1上数据排布为NZ、shape为[N,K]的B矩阵与L0B上数据排布为ZN、shape为[K,N]的B矩阵是等价的（内存排布一致），因此从L1-->L0B过程中b矩阵不需要转置。
+B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图19所示，当输入数据类型为half类型、B矩阵转置时,L1上数据排布为NZ、shape为[N,K]的B矩阵与L0B上数据排布为ZN、shape为[K,N]的B矩阵是等价的（内存排布一致），因此从L1-->L0B过程中b矩阵不需要转置。
 
 对齐要求方面，在L1和L0B上B矩阵的N轴都向fS[0]对齐、K轴都向fS[1]对齐。
 
-从上图可以看出，只要是B矩阵不转置，那么GM-->L1、L1-->L0B整个过程的数据搬运方案和对齐要求，可以共用一套配置，因此下面两个小节的描述不仅仅适用于输入为half类型，也适用于输入为int8_t和float类型。
-
-<p align="center">
-  <img src="img/B矩阵转置_F16.png" width="1200">
-</p>
-
-<p align="center">
-图7：B矩阵转置，half数据类型下，GM-->L1-->L0B 数据排布示意
-</p>
-
+从图18、图19可以看出，只要是B矩阵不转置，那么GM-->L1、L1-->L0B整个过程的数据搬运方案和对齐要求，可以共用一套配置，因此下面两个小节的描述不仅仅适用于输入为half类型，也适用于输入为int8_t和float类型。
 ##### 1.1.1 GM到L1
+<p align="center">
+  <img src="img/B矩阵转置_F16_GM_L1.png" width="800">
+</p>
+
+<p align="center">
+图18：B矩阵转置，half数据类型下，GM-->L1 数据排布示意
+</p>
+
 下面将介绍如何配置
 [DataCopy随路转换ND2NZ搬运](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00127.html)指令的Nd2NzParams结构体的成员，各个成员变量的具体含义这里不再赘述。
 
@@ -669,16 +905,19 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
             nd2nzB1Params.dstNzMatrixStride = 0;
 
 ##### 1.1.2 L1到L0B
-由于B矩阵转置时，b矩阵也不转置，因此可以调用Load2D接口。下面将介绍如何配置
+<p align="center">
+  <img src="img/B矩阵转置_F16_L1_L0.png" width="800">
+</p>
+
+<p align="center">
+图19：B矩阵转置，half数据类型下，L1-->L0B 数据排布示意
+</p>
+由于B矩阵转置时，b矩阵也不转置，因此可以调用Load2D接口。
+
 [Load2D](https://www.hiascend.com/document/detail/zh/canncommercial/850/API/ascendcopapi/atlasascendc_api_07_00169.html)指令的LoadData2DParams结构体的成员，各个成员变量的具体含义这里不再赘述。
 
-如图7所示，以K轴方向作为外轴进行for循环，以N轴方向作为内轴来配置loadDataParams.repeatTimes。如图7所示，srcoffset和dstoffset的含义分别是:在L1上，B矩阵K轴方向每循环一次时,LocalTensor的地址偏移量；在L0B上，B矩阵K轴方向每循环一次时,LocalTensor的地址偏移量。由于L1上的B矩阵与L0B上的B矩阵等价，因此srcOffset和dstOffset相同。
+如图19所示，以K轴方向作为外轴进行for循环，以N轴方向作为内轴来配置loadDataParams.repeatTimes。如图19所示，srcoffset和dstoffset的含义分别是:在L1上，B矩阵K轴方向每循环一次时,LocalTensor的地址偏移量；在L0B上，B矩阵K轴方向每循环一次时,LocalTensor的地址偏移量。由于L1上的B矩阵与L0B上的B矩阵等价，因此srcOffset和dstOffset相同。
 
-
-    __aicore__ inline void SplitB()
-    {
-        AscendC::LocalTensor<T> b1Local = inQueueB1.DeQue<T>();
-        AscendC::LocalTensor<T> b2Local = inQueueB2.AllocTensor<T>();
         // srcOffset和dstOffset相同
         // n轴向fractalShape[0]对齐
         uint32_t dstOffset = CeilDivision(n, fractalShape[0]) * fractalSize;
@@ -694,9 +933,7 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
         for (int i = 0; i < CeilDivision(k, fractalShape[1]); ++i) {
             AscendC::LoadData(b2Local[i * dstOffset], b1Local[i * srcOffset], loadDataParams);
         }
-        inQueueB1.FreeTensor(b1Local);
-        inQueueB2.EnQue<T>(b2Local);
-    }
+
 
 ### 五.矩阵乘法（Mmad）
 
@@ -709,18 +946,18 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
 
 因此当L0A/L0B上对A矩阵和B矩阵在各个轴的实际对齐要求与Mmad指令默认的对齐要求不一致时，就可能导致连续读入分形时，错误读入完全由无效数据填充的分形而忽略了包含有效数据的分形。
 
-如下图8所示，以输入数据类型为int8_t，A、B矩阵均不转置为例，假设A、B矩阵的shape分别为[30,50]、[50,70],根据3.1小节内容可知：L0A在M轴和K轴分别向16、32对齐，L0B在K轴和N轴分别向32、16 * 2对齐，而Mmad指令默认在M、K、N三个轴的对齐要求分别是向16、32、16对齐，因此此时n轴实际对齐要求与Mmad指令默认的对齐要求不一致。
+如下图20所示，以输入数据类型为int8_t，A、B矩阵均不转置为例，假设A、B矩阵的shape分别为[30,50]、[50,70],根据3.1小节内容可知：L0A在M轴和K轴分别向16、32对齐，L0B在K轴和N轴分别向32、16 * 2对齐，而Mmad指令默认在M、K、N三个轴的对齐要求分别是向16、32、16对齐，因此此时n轴实际对齐要求与Mmad指令默认的对齐要求不一致。
 
-如图8左边子图所示，如果设置mmadParams.n = n = 70,就会导致读入编号为5的分形，同时没能将包含有效数据的编号为10的分形。
+如图20左边子图所示，如果设置mmadParams.n = n = 70,就会导致读入编号为5的分形，同时没能将包含有效数据的编号为10的分形。
 
-如图8右边子图所示，如果设置mmadParams.n = CeilAlign(n, fractalShape[0] * fractalNum) = 96,此时会读入全部分形，虽然矩阵计算结果中包含了无效数据参与计算的结果，但是在Fixpipe指令搬出数据时通过设置fixpipeParams.nSize = n来保证无效数据参与计算的结果不会被搬出。
+如图20右边子图所示，如果设置mmadParams.n = CeilAlign(n, fractalShape[0] * fractalNum) = 96,此时会读入全部分形，虽然矩阵计算结果中包含了无效数据参与计算的结果，但是在Fixpipe指令搬出数据时通过设置fixpipeParams.nSize = n来保证无效数据参与计算的结果不会被搬出。
 
 <p align="center">
   <img src="img/B不转置_S8_多读入无效的分形.png" width="1200">
 </p>
 
 <p align="center">
-图8：B矩阵不转置，int8_t数据类型下，n轴实际对齐要求与Mmad指令默认的对齐要求不一致
+图20：B矩阵不转置，int8_t数据类型下，n轴实际对齐要求与Mmad指令默认的对齐要求不一致
 </p>
 
 
@@ -728,7 +965,7 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
 
 根据矩阵乘法的计算公式可知，K轴作为A、B矩阵公共的维度，此时如果像上述场景那样设置mmadParams.k = CeilAlign(k, fractalShape[1] * fractalNum)会导致C矩阵中每个元素的数值都受到多读入的无效数据的影响，并且也不能通过设置fixpipeParams的参数来保证无效数据参与计算的结果不会被搬出。
 
-如下图9所示，mmadParams.kDirectionAlign仅在输入数据类型为float时生效。当A矩阵转置时，该参数需要设置为真，此时L0A上A矩阵在K方向向16对齐，矩阵计算单元从L0A读取数据会跳过填充的无效数据，其余场景下该参数取默认值为假，此时L0A上A矩阵在K方向向8对齐。
+如下图21所示，mmadParams.kDirectionAlign仅在输入数据类型为float时生效。当A矩阵转置时，该参数需要设置为真，此时L0A上A矩阵在K方向向16对齐，矩阵计算单元从L0A读取数据会跳过填充的无效数据，其余场景下该参数取默认值为假，此时L0A上A矩阵在K方向向8对齐。
 
 
 <p align="center">
@@ -736,7 +973,7 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
 </p>
 
 <p align="center">
-图9：A矩阵转置，float数据类型下，K轴实际对齐要求与Mmad指令默认的对齐要求不一致
+图21：A矩阵转置，float数据类型下，K轴实际对齐要求与Mmad指令默认的对齐要求不一致
 </p>
 
         AscendC::MmadParams mmadParams;
@@ -770,7 +1007,7 @@ B矩阵在GM、L1和L0B上的数据排布分别是ND、NZ和ZN。如下图所示
         fixpipeParams.mSize = m;
 
         // 源操作数来源于L0c，因此m只需要向16对齐，与数据类型无关
-        //源NZ矩阵中相邻Z排布的起始地址偏移
+        // 源NZ矩阵中相邻Z排布的起始地址偏移
         fixpipeParams.srcStride = CeilAlign(m, fractalShape[0]);
         fixpipeParams.dstStride = n;
 

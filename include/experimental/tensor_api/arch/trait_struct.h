@@ -15,6 +15,8 @@
 #ifndef EXPERIMENTAL_TENSOR_API_ARCH_TRAIT_STRUCT_H
 #define EXPERIMENTAL_TENSOR_API_ARCH_TRAIT_STRUCT_H
 
+#include "impl/utils/sys_macros.h"
+
 namespace AscendC {
 namespace Te {
 
@@ -59,14 +61,14 @@ struct FixpipeTrait {
     ) :
         quantPre(quantPreIn),
         enableRelu(enableReluIn),
-        enableChannleSplit(enableChannelSplitIn),
+        enableChannelSplit(enableChannelSplitIn),
         unitFlag(unitFlagIn),
         dualDstCtl(dualDstCtlIn)
     {}
 
     QuantMode_t quantPre = QuantMode_t::NoQuant;
     bool enableRelu = false;
-    bool enableChannleSplit = false;
+    bool enableChannelSplit = false;
     uint8_t unitFlag = false;
     uint8_t dualDstCtl = false;
 };

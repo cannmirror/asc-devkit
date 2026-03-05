@@ -26,30 +26,47 @@
 - 算子功能：  
   broadcast单算子，对输入tensor做广播计算。
 - 算子规格：  
-  <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">broadcast</td></tr>
-  </tr>
-  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">x</td><td align="center">1 * 48 / 96 * 1</td><td align="center">float</td><td align="center">ND</td></tr>
+<table>
   <tr>
+    <td align="center">算子类型(OpType)</td>
+    <td colspan="4" align="center">broadcast</td>
+  </tr>
   <tr>
+    <td rowspan="2" align="center">算子输入</td>
+    <td align="center">name</td>
+    <td align="center">shape</td>
+    <td align="center">data type</td>
+    <td align="center">format</td>
   </tr>
+  <tr>
+    <td align="center">x</td>
+    <td align="center">1 * 48 / 96 * 1</td>
+    <td align="center">float</td>
+    <td align="center">ND</td>
   </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">y</td><td align="center">96 * 48 / 96 * 96</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr>
+    <td align="center">算子输出</td>
+    <td align="center">y</td>
+    <td align="center">96 * 48 / 96 * 96</td>
+    <td align="center">float</td>
+    <td align="center">ND</td>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">broadcast_custom</td></tr>
-  </table>
+  <tr>
+    <td align="center">核函数名</td>
+    <td colspan="4" align="center">broadcast_custom</td>
+  </tr>
+</table>
 
 - 算子实现：  
   本样例中实现了两种场景的broadcast算子，分别是[1, 48]到[96, 48]的广播和[96, 1]到[96, 96]的广播。
 
-  - kernel实现
+  - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用BroadCast高阶API接口完成broadcast计算，得到最终结果，再搬出到外部存储上。
 
     broadcast算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor xGm搬运至Local Memory，存储在xLocal中，Compute任务负责对xLocal执行broadcast计算，然后存储在yLocal中，CopyOut任务负责将输出数据从yLocal搬运至Global Memory上的输出Tensor yGm中。
 
-  - tiling实现
+  - Tiling实现
 
     broadcast算子的tiling实现流程如下：首先获取input和output的二维shape，然后将其与广播的轴、input/output tensor的维度填充到TilingData中。
 
@@ -57,6 +74,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

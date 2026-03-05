@@ -15,15 +15,15 @@ reg计算数据搬运接口，支持从UB非32字节对齐的源地址src搬运�
 ## 函数原型
 
 ```cpp
-__simd_callee__ inline void asc_load(vector_int8_t& dst, __ubuf__  int8_t* src)
-__simd_callee__ inline void asc_load(vector_uint8_t& dst, __ubuf__  uint8_t* src)
-__simd_callee__ inline void asc_load(vector_int16_t& dst, __ubuf__  int16_t* src)
-__simd_callee__ inline void asc_load(vector_uint16_t& dst, __ubuf__  uint16_t* src)
-__simd_callee__ inline void asc_load(vector_int32_t& dst, __ubuf__  int32_t* src)
-__simd_callee__ inline void asc_load(vector_uint32_t& dst, __ubuf__  uint32_t* src)
+__simd_callee__ inline void asc_load(vector_int8_t& dst, __ubuf__ int8_t* src)
+__simd_callee__ inline void asc_load(vector_uint8_t& dst, __ubuf__ uint8_t* src)
+__simd_callee__ inline void asc_load(vector_int16_t& dst, __ubuf__ int16_t* src)
+__simd_callee__ inline void asc_load(vector_uint16_t& dst, __ubuf__ uint16_t* src)
+__simd_callee__ inline void asc_load(vector_int32_t& dst, __ubuf__ int32_t* src)
+__simd_callee__ inline void asc_load(vector_uint32_t& dst, __ubuf__ uint32_t* src)
 __simd_callee__ inline void asc_load(vector_half& dst, __ubuf__ half* src)
 __simd_callee__ inline void asc_load(vector_float& dst, __ubuf__ float* src)
-__simd_callee__ inline void asc_load(vector_int64_t& dst, __ubuf__  int64_t* src)
+__simd_callee__ inline void asc_load(vector_int64_t& dst, __ubuf__ int64_t* src)
 __simd_callee__ inline void asc_load(vector_bfloat16_t& dst, __ubuf__ bfloat16_t* src)
 __simd_callee__ inline void asc_load(vector_fp8_e4m3fn_t& dst, __ubuf__ fp8_e4m3fn_t* src)
 __simd_callee__ inline void asc_load(vector_fp8_e5m2_t& dst, __ubuf__ fp8_e5m2_t* src)

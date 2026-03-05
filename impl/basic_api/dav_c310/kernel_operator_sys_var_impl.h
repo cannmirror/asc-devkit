@@ -30,7 +30,7 @@ __aicore__ inline int64_t GetSubBlockIdxImpl()
     }
     return 0;
 #else
-    return bisheng::cce::get_subblockid();
+    return get_subblockid();
 #endif
 }
 
@@ -42,7 +42,7 @@ __aicore__ inline int64_t GetTaskRationImpl()
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
         return g_taskRation;
 #else
-        return bisheng::cce::get_subblockdim();
+        return get_subblockdim();
 #endif
     }
 }
@@ -52,7 +52,7 @@ __aicore__ inline int64_t TscmGetTaskRation()
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
         return g_taskRation;
 #else
-        return bisheng::cce::get_subblockdim();
+        return get_subblockdim();
 #endif
 }
 
@@ -65,7 +65,7 @@ __aicore__ inline int64_t GetBlockIdxImpl()
     return block_idx;
 #else
     if ASCEND_IS_AIV {
-        return get_block_idx() * bisheng::cce::get_subblockdim() + bisheng::cce::get_subblockid();
+        return get_block_idx() * get_subblockdim() + get_subblockid();
     } else {
         return get_block_idx();
     }
@@ -75,7 +75,7 @@ __aicore__ inline int64_t GetBlockIdxImpl()
 __aicore__ inline void GetArchVersionImpl(uint32_t& coreVersion)
 {
     const int32_t coreVersionOffset = 32;
-    coreVersion = static_cast<uint32_t>((static_cast<uint64_t>(bisheng::cce::get_arch_ver()) >> coreVersionOffset) & 0xFFF);
+    coreVersion = static_cast<uint32_t>((static_cast<uint64_t>(get_arch_ver()) >> coreVersionOffset) & 0xFFF);
 }
 
 __aicore__ inline int64_t GetSubBlockNumImpl()
@@ -86,14 +86,14 @@ __aicore__ inline int64_t GetSubBlockNumImpl()
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
         return g_taskRation;
 #else
-        return bisheng::cce::get_subblockdim();
+        return get_subblockdim();
 #endif
     }
 }
 
 __aicore__ inline int64_t GetProgramCounterImpl()
 {
-    int64_t pc = static_cast<int64_t>(static_cast<uint64_t>(bisheng::cce::get_pc()) & 0xFFFFFFFFFFFF);
+    int64_t pc = static_cast<int64_t>(static_cast<uint64_t>(get_pc()) & 0xFFFFFFFFFFFF);
     return pc;
 }
 
@@ -117,7 +117,7 @@ __aicore__ inline int64_t GetSprImpl()
 {
     static_assert(SupportEnum<spr, SpecialPurposeReg::AR>(),
         "current GetSpr api only support SpecialPurposeReg AR on current device!");
-    return bisheng::cce::get_ar();
+    return get_ar();
 }
 
 __simd_vf__ inline void ClearARImpl()

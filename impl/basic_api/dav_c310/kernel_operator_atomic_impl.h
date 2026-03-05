@@ -18,7 +18,7 @@ __aicore__ inline T AtomicAddImpl(__gm__ T *address, T value)
 {
     static_assert(SupportType<T, uint32_t, int32_t, uint64_t, int64_t, float>(),
         "AtomicAdd only support uint32_t/int32_t/uint64_t/int64_t/float data type on current device!");
-    return bisheng::cce::simt::atomicAdd(address, value);
+    return atomicAdd(address, value);
 }
 
 // atomic_max
@@ -27,7 +27,7 @@ __aicore__ inline T AtomicMaxImpl(__gm__ T *address, T value)
 {
     static_assert(SupportType<T, uint32_t, int32_t, uint64_t, int64_t, float>(),
         "AtomicMax only support uint32_t/int32_t/uint64_t/int64_t/float data type on current device!");
-    return bisheng::cce::simt::atomicMax(address, value);
+    return atomicMax(address, value);
 }
 
 // atomic_min
@@ -36,7 +36,7 @@ __aicore__ inline T AtomicMinImpl(__gm__ T *address, T value)
 {
     static_assert(SupportType<T, uint32_t, int32_t, uint64_t, int64_t, float>(),
         "AtomicMin only support uint32_t/int32_t/uint64_t/int64_t/float data type on current device!");
-    return bisheng::cce::simt::atomicMin(address, value);
+    return atomicMin(address, value);
 }
 
 // atomic_cas
@@ -45,7 +45,7 @@ __aicore__ inline T AtomicCasImpl(__gm__ T *address, T value1, T value2)
 {
     static_assert(SupportType<T, uint32_t, uint64_t>(),
         "AtomicCas only support uint32_t/uint64_t data type on current device!");
-    return bisheng::cce::simt::atomicCAS(address, value1, value2);
+    return atomicCAS(address, value1, value2);
 }
 
 // atomic_exch
@@ -54,7 +54,7 @@ __aicore__ inline T AtomicExchImpl(__gm__ T *address, T value)
 {
     static_assert(SupportType<T, uint32_t, uint64_t>(),
         "AtomicExch only support uint32_t/uint64_t data type on current device!");
-    return bisheng::cce::simt::atomicExch(address, value);
+    return atomicExch(address, value);
 }
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_ATOMIC_ADD_IMPL_H

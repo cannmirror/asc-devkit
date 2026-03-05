@@ -23,7 +23,7 @@ __global__ __aicore__ void MainSyncAllTest(__gm__ uint8_t* __restrict__ dstGm, _
     __gm__ uint8_t* __restrict__ workGm, __gm__ uint8_t* __restrict__ syncGm)
 {
     AscendC::TPipe tpipe;
-    block_num = 1; // system blockdim
+    block_num = 1; // system numBlocks
     int32_t blockNum = block_num;
     uint32_t srcDataSize = 256;
     uint32_t perBlockDataSize = srcDataSize;

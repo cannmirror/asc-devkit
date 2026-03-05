@@ -119,7 +119,7 @@ __aicore__ inline void PairReduceTemplate(__ubuf__ T *dst, __ubuf__ T *src, int3
      __ubuf__ uint64_t *maskBuf = nullptr;
     if (isCounterMode) {
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         }
         VF_CALL<ReduceAlignCall<isSetMask, isBitMask, true, func, T>>(
             dst, newSrc, newRepeat, dstRepOffset, srcBlkStride, srcRepStride, maskReg, maskBuf);
@@ -141,7 +141,7 @@ __aicore__ inline void ReduceTemplate(__ubuf__ U *dst, __ubuf__ T *src, int32_t 
     __ubuf__ uint64_t *maskBuf = nullptr;
     if (isCounterMode) {
         if constexpr (!isSetMask) {
-            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(TMP_UB_OFFSET, 2);
+            maskBuf = AscendCUtils::GetTemporaryBufferAddr<uint64_t>(GetRuntimeUBSize(), 2);
         }
         if (dstRepStride == 0 && repeat > 0) {
             uint32_t srcStrideOffset = srcRepStride * ONE_BLK_ELEMENT_NUM;

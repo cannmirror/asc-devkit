@@ -978,8 +978,8 @@ __aicore__ inline void TQueBind<src, dst, depth, mask>::InitBufHandle(T* bufPool
     uint8_t bufId = MAX_TBUFID + 1;
     uint32_t foundId = 0;
     while (foundId <= index) {
-        bufId = bisheng::cce::sff1(bufPool->tBufPoolImpl.availableIdMask_);
-        bufPool->tBufPoolImpl.availableIdMask_ = bisheng::cce::sbitset0(bufPool->tBufPoolImpl.availableIdMask_, bufId);
+        bufId = sff1(bufPool->tBufPoolImpl.availableIdMask_);
+        bufPool->tBufPoolImpl.availableIdMask_ = sbitset0(bufPool->tBufPoolImpl.availableIdMask_, bufId);
         foundId++;
     }
     bufPool->tBufPoolImpl.availableIdMask_ = bufPool->tBufPoolImpl.bufIdPool_;
@@ -1292,13 +1292,13 @@ __aicore__ inline bool TBufPoolExtImpl<pos, bufIDSize>::InitBuffer(T &que, uint8
         ptr->state = TBufState::FREE;
         ptr->freeBufEvt = T::freeBufEvt;
         if constexpr (enableBufId) {
-            uint8_t bufId = bisheng::cce::sff1(this->tBufPoolImpl.availableIdMask_);
+            uint8_t bufId = sff1(this->tBufPoolImpl.availableIdMask_);
             ASCENDC_ASSERT((bufId <= MAX_TBUFID), {
                 KERNEL_LOG(KERNEL_ERROR, "current id is %u, max buffer ID allocated is %u", static_cast<uint32_t>(bufId),
                            static_cast<uint32_t>(MAX_TBUFID));
             });
             ptr->bufId = bufId;
-            this->tBufPoolImpl.availableIdMask_ = bisheng::cce::sbitset0(this->tBufPoolImpl.availableIdMask_, bufId);
+            this->tBufPoolImpl.availableIdMask_ = sbitset0(this->tBufPoolImpl.availableIdMask_, bufId);
             ptr->bufIdAlt = INVALID_TBUFID;
         } else {
             ptr->enQueEvtID = INVALID_TEVENTID;

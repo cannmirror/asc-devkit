@@ -11,6 +11,7 @@
 │   │   ├── gen_data.py         // 输入数据和真值数据生成脚本
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
+│   ├── data_utils.h            // 数据读入写出函数
 │   └── mutex.asc      // Ascend C算子实现 & 调用样例
 ```
 
@@ -21,7 +22,7 @@
 
 - 算子规格：  
   <table>  
-  <tr><th align="center"></th><th colspan="5" align="center"></th></tr>  
+   <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Mutex</td></tr>  
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center"></td></tr>  
   <tr><td align="center">x</td><td align="center">2048</td><td align="center">float</td><td align="center">ND</td><td align="center"></td></tr>  
   <tr><td align="center">y</td><td align="center">2048</td><td align="center">float</td><td align="center">ND</td><td align="center"></td></tr>  

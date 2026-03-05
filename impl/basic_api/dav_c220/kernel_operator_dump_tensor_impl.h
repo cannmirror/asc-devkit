@@ -700,7 +700,16 @@ __aicore__ __gm__ inline BlockRingBufInfo* GetBlockRingBufInfo()
     uint32_t blockLength = reinterpret_cast<__gm__ BlockRingBufInfo*>(g_sysPrintFifoSpace)->length;
     __gm__ BlockRingBufInfo* ringBufInfo =
         reinterpret_cast<__gm__ BlockRingBufInfo*>(g_sysPrintFifoSpace + blockLength * blockIdx);
-    return ringBufInfo->magic == 0xAE86 ? ringBufInfo : nullptr;
+    if (ringBufInfo->magic != 0xAE86) {
+        return nullptr;
+    }
+    if ASCEND_IS_AIV {
+        ringBufInfo->flag = 1;
+    } else {
+        ringBufInfo->flag = 0;
+    }
+    dcci(reinterpret_cast<__gm__ uint64_t*>(ringBufInfo), cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
+    return ringBufInfo;
 }
 
 __aicore__ inline void SkipRingBufDirectly(__gm__ RingBufWriteInfo* writeInfo)

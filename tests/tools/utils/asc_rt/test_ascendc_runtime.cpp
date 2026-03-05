@@ -324,7 +324,7 @@ TEST_F(TEST_ASCENDC_RUNTIME, AscendLaunchKernelWithHostArgs_unsupport_soc) {
     size_t argsSize = 0;
     uint32_t ubufDynamicSize = 0;
     EXPECT_EXIT({
-        MOCKER(aclrtGetSocName).stubs().will(returnValue((const char*)"Ascend910D"));
+        MOCKER(aclrtGetSocName).stubs().will(returnValue((const char*)"UnsupportedSoc"));
         int32_t ret = AscendLaunchKernelWithHostArgs(funcHandle, numBlocks, stream, hostArgs, argsSize, ubufDynamicSize);
         exit(ret == 0 ? 0 : 1);
     }, ::testing::ExitedWithCode(1), "");

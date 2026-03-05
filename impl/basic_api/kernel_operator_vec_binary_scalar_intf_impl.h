@@ -951,7 +951,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void AddsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Adds API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, uint8_t, int8_t, half, bfloat16_t, int16_t, float, int32_t,
         int64_t, uint64_t>());
@@ -1040,7 +1040,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void MulsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Muls API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, half, bfloat16_t, int16_t, float, int32_t, int64_t, uint64_t>());
     using ActualT = typename U::PrimType;
@@ -1128,7 +1128,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void MaxsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Maxs API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, uint8_t, int8_t, half, bfloat16_t, int16_t, float, int32_t,
         int64_t, uint64_t>());
@@ -1216,7 +1216,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void MinsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Mins API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, uint8_t, int8_t, half, bfloat16_t, int16_t, float, int32_t,
         int64_t, uint64_t>());
@@ -1305,7 +1305,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void AndsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Ands API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, uint16_t, int16_t, int64_t, uint64_t>());
     using ActualT = typename U::PrimType;
@@ -1392,7 +1392,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void OrsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Ors API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, uint16_t, int16_t, int64_t, uint64_t>());
     using ActualT = typename U::PrimType;
@@ -1479,7 +1479,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void SubsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Subs API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, half, bfloat16_t, int16_t, float, int32_t, int64_t, uint64_t>());
     using ActualT = typename U::PrimType;
@@ -1567,7 +1567,7 @@ template <bool isSetMask, const BinaryConfig &config, typename U, typename S, ty
 __aicore__ inline void DivsCommon(const U& dst, const S& src0, const V& src1, MaskType mask,
     const uint8_t repeatTime, const UnaryRepeatParams& repeatParams)
 {
-    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "One of src0 and src1 should be Tensor");
+    static_assert(!TypeUtils::IsInnerDefaultType<S, V>(), "Divs API: One of src0 and src1 should be Tensor");
     static_assert(TypeUtils::IsLocalTensorType<U>());
     static_assert(SupportType<typename U::PrimType, half, float, int64_t, uint64_t>());
     using ActualT = typename U::PrimType;

@@ -16,28 +16,13 @@
 #include "aicpu_api.h"
 #include "kernel_args.h"
 
-__global__ __aicpu__ uint32_t MyAicpuKernel1(void *arg)
+__global__ __aicpu__ uint32_t MyAicpuKernel(KernelInfo::KernelArgs args)
 {
-    KernelInfo::KernelArgs* cfg = (KernelInfo::KernelArgs*)arg;
-    AscendC::printf("MyAicpuKernel1 inited\n");
-    cfg->ti->lock = 1;
-    cfg->ti->type = 1;
-    cfg->ti->mode = 2;
-    cfg->ti->len = 4;
+    AscendC::printf("MyAicpuKernel inited\n");
+    args.ti->type = 1;
+    args.ti->mode = 2;
+    args.ti->len = 4;
     AscendC::DataStoreBarrier();
-    AscendC::printf("MyAicpuKernel1 inited type %u mode %u len %u end!\n", cfg->ti->type, cfg->ti->mode, cfg->ti->len);
-    return 0;
-}
-
-__global__ __aicpu__ uint32_t MyAicpuKernel2(void *arg)
-{
-    KernelInfo::KernelArgs* cfg = (KernelInfo::KernelArgs*)arg;
-    AscendC::printf("MyAicpuKernel2 inited\n");
-    cfg->ti->lock = 1;
-    cfg->ti->type = 0;
-    cfg->ti->mode = 1;
-    cfg->ti->len = 2;
-    AscendC::DataStoreBarrier();
-    AscendC::printf("MyAicpuKernel2 inited type %u mode %u len %u end!\n", cfg->ti->type, cfg->ti->mode, cfg->ti->len);
+    AscendC::printf("MyAicpuKernel inited type %u mode %u len %u end!\n", args.ti->type, args.ti->mode, args.ti->len);
     return 0;
 }

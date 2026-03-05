@@ -13,7 +13,7 @@
 │   │   └── verify_result.py    // 验证输出数据和真值数据是否一致的验证脚本
 │   ├── CMakeLists.txt          // 编译工程文件
 │   ├── data_utils.h            // 数据读入写出函数
-│   └── whole_reduce_max.asc      // Ascend C算子实现 & 调用样例
+│   └── whole_reduce_max.asc    // Ascend C算子实现 & 调用样例
 ```
 
 ## 算子描述
@@ -21,7 +21,7 @@
   WholeReduceMaxCustom算子对输入tensor的每个repeat内所有数据求最大值以及其索引index，返回的索引值为每个repeat内部索引。
 - 算子规格：  
   <table>
-  <tr><td rowspan="1" align="center"></td><td colspan="4" align="center"></td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center"> WholeReduceMax </td></tr>
 
   <tr><td rowspan="3" align="center">算子输入</td></tr>
   <tr><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>

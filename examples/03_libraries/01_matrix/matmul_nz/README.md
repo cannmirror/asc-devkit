@@ -1,12 +1,15 @@
 # Matmul算子NZ格式直调样例
+
 ## 概述
 本样例介绍Matmul API输入矩阵内轴非256B对齐的场景下，在AIV核上使用DataCopyPad实现ND转换NZ格式的单算子。能够避免随路非对齐搬移时效率较低，从而提升算子性能。
 
 ## 支持的产品
-- Ascend 950PR/Ascend 950DT
+
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
+
 ## 目录结构介绍
+
 ```
 ├── matmul_nz
 │   └── scripts
@@ -17,7 +20,9 @@
 │   ├── nd2nz_utils.h           // 数据ND to NZ格式转换函数
 │   └── matmul_nz.asc              // Ascend C算子实现 & 调用样例
 ```
+
 ## 算子描述
+
 - 算子功能： 
 
   Matmul算子对输入的A、B矩阵做矩阵乘和加bias偏置。如果A矩阵或者B矩阵的内轴非256B对齐（后文简称非对齐），可以在AIV核上使用DataCopyPad等指令，实现ND格式到NZ格式的转换（后文简称ND2NZ），解决随路非对齐搬移效率降低的问题。通常非对齐的矩阵数据量较大时，使用这种转换方式后，再将对齐的NZ数据搬入L1 Buffer的算子有较大的性能提升。
@@ -38,6 +43,7 @@
   </tr>
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">matmul_nz_custom</td></tr>
   </table>
+
 - 算子实现： 
   - Kernel实现
     - 计算逻辑：C = A * B + Bias。
@@ -98,6 +104,7 @@
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

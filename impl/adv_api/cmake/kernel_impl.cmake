@@ -26,3 +26,15 @@ file(
     CREATE_LINK ../../utils/debug
     ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/debug
     SYMBOLIC)
+file(
+    CREATE_LINK ../../utils/common_types.h
+    ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/common_types.h
+    SYMBOLIC)
+file(
+    CREATE_LINK ../../utils/sys_constants.h
+    ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/sys_constants.h
+    SYMBOLIC)
+file(
+    CREATE_LINK ../../utils/sys_macors.h
+    ${ASCENDC_INSTALL_BASE_PATH}/asc/impl/basic_api/utils/sys_macors.h
+    SYMBOLIC)

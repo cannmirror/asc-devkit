@@ -22,8 +22,8 @@ absolute_tol = 1e-9
 error_tol = 1e-4
 
 
-def verify_result(tiling_key, output, golden):
-    if tiling_key <= 4:
+def verify_result(scenarioNum, output, golden):
+    if scenarioNum <= 4:
         output_type = np.float32
     else:
         output_type = np.int32
@@ -51,12 +51,12 @@ def verify_result(tiling_key, output, golden):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-key', type=int, default=1, choices=range(1, 13))
+    parser.add_argument('-scenarioNum', type=int, default=1, choices=range(1, 6))
     parser.add_argument('output', type=str)
     parser.add_argument('golden', type=str)
     args = parser.parse_args()
     try:
-        res = verify_result(args.key, args.output, args.golden)
+        res = verify_result(args.scenarioNum, args.output, args.golden)
         if not res:
             raise ValueError("[ERROR] result error")
         else:

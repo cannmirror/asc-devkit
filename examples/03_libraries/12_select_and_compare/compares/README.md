@@ -28,7 +28,7 @@ NE：不等于（not equal to）
 LE：小于或等于（less than or equal to）
 - 算子规格：  
   <table>  
-  <tr><th align="center"></th><th colspan="5" align="center"></th></tr>  
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">Compares</td></tr> 
   <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center"></td></tr>  
   <tr><td align="center">x</td><td align="center">256</td><td align="center">float</td><td align="center">ND</td><td align="center"></td></tr>  
   <tr><td align="center">y</td><td align="center">256</td><td align="center">float</td><td align="center">ND</td><td align="center"></td></tr>  

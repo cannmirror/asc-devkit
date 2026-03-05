@@ -34,7 +34,7 @@
   <tr><td rowspan="2" align="center">算子输出</td></tr>
   <tr><td align="center">z</td><td align="center">8 * 9 * 16</td><td align="center">half</td><td align="center">ND</td></tr>
 
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">kernel_fixpipe_custom</td></tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">KernelFixpipeCustom</td></tr>
   </table>
 
 

@@ -83,11 +83,6 @@ __aicore__ inline int64_t asc_get_icache_preload_status()
     return asc_get_icache_preload_status_impl();
 }
 
-__aicore__ inline void asc_icache_preload(const void* addr)
-{
-    asc_icache_preload_impl(addr);
-}
-
 __aicore__ inline void asc_icache_preload(const void* addr, int64_t prefetch_len)
 {
     asc_icache_preload_impl(addr, prefetch_len);

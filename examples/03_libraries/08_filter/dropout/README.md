@@ -34,28 +34,25 @@
   <tr><td align="center">src</td><td align="center">4*256</td><td align="center">float</td><td align="center">ND</td></tr>
   <tr><td align="center">mask</td><td align="center">4*32</td><td align="center">uint8_t</td><td align="center">ND</td></tr>
   <tr><td rowspan="2" align="center">算子输出</td></tr>
-  <tr><td align="center">y</td><td align="center">4*256</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td align="center">dst</td><td align="center">4*256</td><td align="center">float</td><td align="center">ND</td></tr>
 
   <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">dropout_custom</td></tr>
   </table>
 
 - 算子实现：  
-  本样例中实现的是固定shape为输入src[4, 256]，输出dst[4, 256]的DropoutCustom算子。
+  本样例中实现的是固定shape为输入src[4, 256]、mask[4, 32]，输出dst[4, 256]的DropoutCustom算子。
 
   - Kernel实现
 
     计算逻辑是：Ascend C提供的矢量计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储，然后使用DropOut高阶API接口完成dropout计算，得到最终结果，再搬出到外部存储上。
 
-    DropoutCustom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm存储在srcLocal中，Compute任务负责对srcLocal执行dropout计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
-
-  - Tiling实现
-
-    根据输入数据x、mask的内轴、外轴长度和所用核数量确定所需tiling参数，并调用GetDropOutMaxMinTmpSize接口获取DropOut计算所需的临时空间大小。
+    DropoutCustom算子的实现流程分为3个基本任务：CopyIn，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入Tensor srcGm、maskGm存储在srcLocal、markLocal中，Compute任务负责对srcLocal、markLocal执行dropout计算，计算结果存储在dstLocal中，CopyOut任务负责将输出数据从dstLocal搬运至Global Memory上的输出Tensor dstGm。
 
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
 ## 编译运行  
+
 在本样例根目录下执行如下步骤，编译并执行算子。
 - 配置环境变量  
   请根据当前环境上CANN开发套件包的[安装方式](../../../../docs/quick_start.md#prepare&install)，选择对应配置环境变量的命令。

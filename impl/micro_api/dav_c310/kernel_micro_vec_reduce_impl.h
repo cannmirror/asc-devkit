@@ -68,9 +68,10 @@ __simd_callee__ inline void ReduceSumB64Impl(T& dstReg, T srcReg, MaskReg mask)
     RegTensor<uint32_t> midReg;
     RegTensor<uint32_t> highReg;
     RegTensor<uint32_t> tmpReg;
-    Duplicate(lowReg, 0xffff);
+    RegTensor<uint32_t> lowFReg;
+    Duplicate(lowFReg, 0xffff);
     // srcreg[1] for high 32 bit, tmpReg1 for mid 16 bit, tmpReg0 for low 16 bit
-    vand(lowReg, lowReg, (RegTensor<uint32_t>&)srcReg.reg[0], mask, modeValue);
+    vand(lowReg, lowFReg, (RegTensor<uint32_t>&)srcReg.reg[0], mask, modeValue);
     vcadd(lowReg, lowReg, mask, modeValue);
     MicroAPI::ShiftRights(midReg, (RegTensor<uint32_t>&)srcReg.reg[0], (int16_t)16, mask);
     vcadd(midReg, midReg, mask, modeValue);
@@ -81,6 +82,9 @@ __simd_callee__ inline void ReduceSumB64Impl(T& dstReg, T srcReg, MaskReg mask)
     // add mid carry to high
     MicroAPI::ShiftRights(tmpReg, midReg, (int16_t)16, mask);
     vadd((RegTensor<uint32_t>&)dstReg.reg[1], (RegTensor<uint32_t>&)dstReg.reg[1], tmpReg, mask, modeValue);
+
+    vand(lowReg, lowReg, lowFReg, mask, modeValue);
+    vand(midReg, midReg, lowFReg, mask, modeValue);
     Interleave((RegTensor<uint16_t>&)dstReg.reg[0], (RegTensor<uint16_t>&)tmpReg, \
                 (RegTensor<uint16_t>&)lowReg, (RegTensor<uint16_t>&)midReg);
 }
