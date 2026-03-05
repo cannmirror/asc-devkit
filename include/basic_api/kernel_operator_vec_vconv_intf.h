@@ -203,7 +203,7 @@ __aicore__ inline void SetDeqScale(float scale, int16_t offset, bool signMode);
 template <typename T>
 __aicore__ inline void SetDeqScale(const LocalTensor<T>& vdeq, const VdeqInfo& vdeqInfo);
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 /*
  * @ingroup Truncate Level 2
  * @brief dst[i] = Precision conversion

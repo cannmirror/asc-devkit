@@ -59,6 +59,6 @@ PIPE_V
 ```cpp
 vector_half dst;
 half value = 1.0;
-vector_bool mask = asc_create_mask_b16(Pat::ALL);
+vector_bool mask = asc_create_mask_b16(PAT_ALL);
 asc_duplicate_scalar(dst, value, mask);
 ```

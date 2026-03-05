@@ -34,7 +34,7 @@ asc_arange(dst, index);
 
 ```cpp
 uint32_t length = 255;
-vector_bool mask = asc_create_mask_b16(Pat::ALL); // 创建一个所有元素为True的掩码寄存器
+vector_bool mask = asc_create_mask_b16(PAT_ALL); // 创建一个所有元素为True的掩码寄存器
 vector_bool mask = asc_update_mask_b16(length); // 根据矢量计算需要操作的元素的具体数量，生成对应的掩码寄存器
 ```
 
@@ -71,7 +71,7 @@ __simd_vf__ inline void neg_vf(__ubuf__ int8_t* dst_addr, __ubuf__ int8_t* src_a
 
 ## 地址寄存器
 
-地址寄存器的数据类型为iter_reg，用于存储地址偏移量。iter_reg通过asc_create_vector_address初始化，然后在循环之中使用iter_reg存储地址偏移量。iter_reg在每层循环中根据所设置的步长进行自增。
+地址寄存器的数据类型为iter_reg，用于存储地址偏移量。iter_reg通过asc_create_iter_reg初始化，然后在循环之中使用iter_reg存储地址偏移量。iter_reg在每层循环中根据所设置的步长进行自增。
 
 ### 调用示例
 

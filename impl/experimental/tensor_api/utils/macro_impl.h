@@ -19,7 +19,7 @@
 #include "impl/utils/sys_macros.h"
 
 #if !defined(ASCENDC_CPU_DEBUG)
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     using fp4x2_e2m1_t = float4_e2m1x2_t;
     using fp4x2_e1m2_t = float4_e1m2x2_t;
     using fp8_e5m2_t = float8_e5m2_t;

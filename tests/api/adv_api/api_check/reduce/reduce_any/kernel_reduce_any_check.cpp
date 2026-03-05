@@ -81,7 +81,7 @@ TEST_F(ReduceAnyAPICheck, ReduceAnyAPICheckOverlap)
         HighLevelApiCheck::CheckFuncReduceAny<float, AscendC::Pattern::Reduce::RA>>("ReduceAny");
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 TEST_F(ReduceAnyAPICheck, ReduceAnyAPICheckWidth32B)
 {
     AscendC::TPipe pipe;

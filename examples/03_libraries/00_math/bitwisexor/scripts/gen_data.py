@@ -29,7 +29,7 @@ def gen_golden_data_simple():
     src1 = np.random.uniform(-1000, 1000, src1_shape).astype(dtype)
     golden = np.zeros(dst_shape).astype(dtype)
 
-    golden[:1023] = np.bitwise_and(src0[:1023], src1[:1023])
+    golden[:1023] = np.bitwise_xor(src0[:1023], src1[:1023])
 
     os.makedirs("input", exist_ok=True)
     src0.tofile("./input/input_src0.bin")

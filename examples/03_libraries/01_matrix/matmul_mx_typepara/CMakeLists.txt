@@ -27,6 +27,6 @@ target_link_libraries(demo PRIVATE
 )
 
 target_compile_options(demo PRIVATE
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
     -DENABLE_CV_COMM_VIA_SSBUF=true
 )

@@ -21,13 +21,13 @@
 #include "antiquantize_common.h"
 #include "../../common/check.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "../antiquant/ascend_antiquant_c310_impl.h"
 #include "antiquantize_c310_impl.h"
 #endif
 
 namespace AscendC {
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 template <typename DstT, typename SrcT, typename ScaleT, AntiQuantizePolicy policy>
 __aicore__ inline constexpr bool IsDataTypeValid()
 {

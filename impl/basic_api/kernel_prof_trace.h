@@ -41,7 +41,7 @@ __aicore__ inline void ProfMarkEvent(void)
 __aicore__ inline void ProfStartImpl()
 {
 #ifndef ASCENDC_CPU_DEBUG
-#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
+#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
     bisheng::cce::metrics_prof_start();
 #else
     ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "MetricsProfStart is not supported on current device\n"));
@@ -52,7 +52,7 @@ __aicore__ inline void ProfStartImpl()
 __aicore__ inline void ProfStopImpl()
 {
 #ifndef ASCENDC_CPU_DEBUG
-#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
+#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
     bisheng::cce::metrics_prof_stop();
 #else
     ASCENDC_DEBUG_ASSERT(false, KERNEL_LOG_INTERNAL(KERNEL_ERROR, "MetricsProfStart is not supported on current device\n"));
@@ -60,7 +60,7 @@ __aicore__ inline void ProfStopImpl()
 #endif
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 template<pipe_t pipe, uint16_t index>
 __aicore__ inline void MarkStampImpl()
 {

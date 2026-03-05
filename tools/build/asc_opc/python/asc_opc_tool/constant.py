@@ -100,6 +100,7 @@ class OpcOptions:
     OPTIONAL_OUTPUT_MODE = "optional_output_mode"
     RELOCATABLE_BIN = "op_relocatable_kernel_binary"
     SPK_OPT = "op_super_kernel_options"
+    KERNEL_TEMPLATE_INPUT = "kernel-template-input"
 
     OpcOptionDefaultValueDict = {
         OUTPUT : "",

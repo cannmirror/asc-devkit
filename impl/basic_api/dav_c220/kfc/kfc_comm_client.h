@@ -55,6 +55,8 @@ public:
                            { KERNEL_LOG(KERNEL_ERROR, "vecin base addr can not be nullptr"); });
             // Note that the addresses of aic and aiv are exchanged.
             this->msgSendStart = (__gm__ KfcMsg *)GetMsgHead(workspace, subBlockID);
+
+            // The leader of KFC's second queue serves as the matmul count in the superkernel mode
             this->msgRcvStart = this->msgSendStart + MAX_MSG_COUNT;
 
             this->msgSendHead = this->msgSendStart;
@@ -113,6 +115,26 @@ public:
 #endif
 
             dcci(reinterpret_cast<__gm__ int64_t *>(msg), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
+
+#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+            // only executed in 1:2 mode
+            if (GetTaskRationImpl() == 2) {
+                CrossCoreWaitFlag(KFC_SYNC_ID);
+                dcci(reinterpret_cast<__gm__ int64_t *>(this->msgRcvStart), cache_line_t::SINGLE_CACHE_LINE, dcci_dst_t::CACHELINE_OUT);
+                // Traverse all matmul objects to compensate for waiting events
+                for(int i = 0; i < MAX_MATMUL_OBJ_CNT; i++) {
+                    uint32_t eventId = reinterpret_cast<__gm__ SuperKernelWaitEventCnt *>(this->msgRcvStart)->eventId[i];
+                    int32_t eventCnt = reinterpret_cast<__gm__ SuperKernelWaitEventCnt *>(this->msgRcvStart)->eventCnt[i];
+                    if (eventCnt > 0) {
+                        // After dividing the count value by 16 and taking the modulus, compensate for the waiting event
+                        int32_t waitCnt = eventCnt % 16;
+                        for (int i = 0; i < waitCnt; i++) {
+                            CrossCoreWaitFlag(eventId);
+                        }
+                    }
+                }
+            }
+#endif
         }
     }
 

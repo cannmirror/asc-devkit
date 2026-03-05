@@ -21,5 +21,5 @@ add_executable(demo
 
 target_compile_options(demo PRIVATE
     # 该NPU架构版本号暂未正式发布，后续可能会有变更，请关注正式版本发布信息
-    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3101>
+    $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
 )

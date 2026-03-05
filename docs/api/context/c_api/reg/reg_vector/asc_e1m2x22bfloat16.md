@@ -52,7 +52,7 @@ PIPE_V
 ```cpp
 vector_f4e1m2x2 src;
 vector_bfloat16_t dst;
-vector_bool mask = asc_create_mask_b8(Pat::ALL);
+vector_bool mask = asc_create_mask_b8(PAT_ALL);
 asc_loadalign(src, src_addr); // src_addr是外部输入的UB内存空间地址。
 asc_e1m2x22bfloat16(dst, src, mask);
 ```

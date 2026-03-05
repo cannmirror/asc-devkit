@@ -18,10 +18,10 @@
 
 #include "kernel_macros.h"
 #include "utils/kernel_utils_macros.h"
-#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101
+#if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
 #if __NPU_ARCH__ == 2201
 #include "dav_c220/core_mng/roc/kernel_operator_cube_group_info.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/core_mng/roc/kernel_operator_cube_group_info.h"
 #endif
 

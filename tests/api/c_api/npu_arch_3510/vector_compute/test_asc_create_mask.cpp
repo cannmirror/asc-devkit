@@ -22,16 +22,16 @@ protected:                                                                      
 };                                                                                              \
                                                                                                 \
 namespace {                                                                                     \
-vector_bool cce_name##_Stub(int32_t mode) {}                                                          \
+vector_bool cce_name##_Stub(Literal mode) {}                                                          \
 }                                                                                               \
                                                                                                 \
 TEST_F(TestVectorCompute##class_name##_CApi, c_api_name##_Succ)       \
 {                                                                                               \
-    MOCKER_CPP(cce_name, vector_bool(int32_t))                     \
+    MOCKER_CPP(cce_name, vector_bool(Literal))                     \
         .times(1)                                                                               \
         .will(invoke(cce_name##_Stub));                                           \
                                                                                                 \
-    c_api_name(Pat::VL1);                                                                \
+    c_api_name(PAT_VL16);                                                                \
     GlobalMockObject::verify();                                                                 \
 }                                                                                               \
 

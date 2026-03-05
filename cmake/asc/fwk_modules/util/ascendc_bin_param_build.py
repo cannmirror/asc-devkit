@@ -42,6 +42,7 @@ class BinParamBuilder(opdesc_parser.OpDesc):
         self.tiling_keys = set()
         self.op_debug_config = ''
         self.op_super_config = []
+        self.kernel_template_input = ''
 
     def set_soc_version(self: any, soc: str):
         self.soc = soc
@@ -52,6 +53,10 @@ class BinParamBuilder(opdesc_parser.OpDesc):
     def set_tiling_key(self: any, tiling_key_info: Set):
         if tiling_key_info:
             self.tiling_keys.update(tiling_key_info)
+    
+    def set_kernel_template_input(self: any, kernel_template_input_info: str):
+        if kernel_template_input_info:
+            self.kernel_template_input = kernel_template_input_info
 
     def set_op_debug_config(self: any, op_debug_config: str):
         if op_debug_config:
@@ -481,6 +486,10 @@ grep -q \"None of the given tiling keys are in the supported list\"; then\n"
             op_super_config_str = ' '.join([str(_key) for _key in list(self.op_super_config)])
             build_cmd_var += f' {op_super_config_str}'
 
+        if self.kernel_template_input:
+            kernel_template_input_str = self.kernel_template_input
+            build_cmd_var += f' --kernel-template-input={kernel_template_input_str}'
+
         build_cmd_var += ")\n"
         build_cmd_var += "\n"
 
@@ -524,11 +533,12 @@ def parse_op_debug_config(opc_config_file: str, soc: str) -> Dict:
     op_debug_config = defaultdict(set)
     kernel_json_file = defaultdict(dict)
     input_param_file = defaultdict(dict)
+    kernel_template_input_info = defaultdict(dict)
     if not opc_config_file:
-        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file
+        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file, kernel_template_input_info
 
     if not os.path.exists(opc_config_file):
-        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file
+        return tiling_key_info, op_debug_config, kernel_json_file, input_param_file, kernel_template_input_info
 
     with open(opc_config_file, 'r') as file:
         contents = file.readlines()
@@ -582,7 +592,15 @@ def parse_op_debug_config(opc_config_file: str, soc: str) -> Dict:
                 else:
                     json_file = ""
                 input_param_file[op_type] = json_file
-    return tiling_key_info, op_debug_config, kernel_json_file, input_param_file
+            if "--kernel-template-input" in options:
+                first_index = options.find('=')
+                if first_index != -1:
+                    kernel_template_input = options[first_index + 1:]
+                else:
+                    kernel_template_input = ""
+                kernel_template_input_info[op_type] = kernel_template_input
+
+    return tiling_key_info, op_debug_config, kernel_json_file, input_param_file, kernel_template_input_info
 
 
 def gen_option_config(debug_config, super_config, op_debug_config):
@@ -607,7 +625,8 @@ def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
     debug_config = defaultdict(set)
     super_config = defaultdict(set)
     op_descs = opdesc_parser.get_op_desc(cfgfile, [], [], BinParamBuilder, ops)
-    tiling_key_info, op_debug_config, kernel_json_file, input_param_file = parse_op_debug_config(opc_config_file, soc)
+    tiling_key_info, op_debug_config, kernel_json_file, \
+        input_param_file, kernel_template_input_info = parse_op_debug_config(opc_config_file, soc)
     gen_option_config(debug_config, super_config, op_debug_config)
 
     auto_gen_path_dir = os.path.dirname(cfgfile)
@@ -631,6 +650,10 @@ def gen_bin_param_file(cfgfile: str, out_dir: str, soc: str,
             op_desc.json_file = kernel_json_file[op_desc.op_type]
         if all_soc_key in kernel_json_file:
             op_desc.json_file = kernel_json_file[all_soc_key]
+        if all_soc_key in kernel_template_input_info:
+            op_desc.set_kernel_template_input(kernel_template_input_info[all_soc_key])
+        if op_desc.op_type in kernel_template_input_info:
+            op_desc.set_kernel_template_input(kernel_template_input_info[op_desc.op_type])
 
         key_params = ""
         if op_desc.op_type in input_param_file:

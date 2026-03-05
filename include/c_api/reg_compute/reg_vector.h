@@ -19,33 +19,30 @@
 #include "instr_impl/npu_arch_3510/vector_compute_impl.h"
 
 /*
-*   vector_bool asc_create_mask_b8(Pat mode);
-*   vector_bool asc_create_mask_b16(Pat mode);
-*   vector_bool asc_create_mask_b32(Pat mode);
+*   asc_create_mask_b8(pat_mode);
+*   asc_create_mask_b16(pat_mode);
+*   asc_create_mask_b32(pat_mode);
 *
-*   The parameter mode is of the enum class type Pat,
-*   which is defined as follows:
+*   The parameter pat_mode is defined as follows:
 *
-*   enum class Pat {
-*       ALL, // All elements are set to True
-*       VL1, // The lowest element
-*       VL2, // The lowest 2 element
-*       VL3, // The lowest 3 element
-*       VL4, // The lowest 4 element
-*       VL8, // The lowest 8 element
-*       VL16, // The lowest 16 element
-*       VL32, // The lowest 32 element
-*       VL64, // The lowest 64 element
-*       VL128, // The lowest 128 element
-*       M3, // Multiples of 3
-*       M4, // Multiples of 4
-*       H, // The lowest half elements
-*       Q, // The lowest quarter elements
-*       ALLF = 15 // All elements are set to False
-*   };
+*    PAT_ALL, // All elements are set to True
+*    PAT_VL1, // The lowest element
+*    PAT_VL2, // The lowest 2 element
+*    PAT_VL3, // The lowest 3 element
+*    PAT_VL4, // The lowest 4 element
+*    PAT_VL8, // The lowest 8 element
+*    PAT_VL16, // The lowest 16 element
+*    PAT_VL32, // The lowest 32 element
+*    PAT_VL64, // The lowest 64 element
+*    PAT_VL128, // The lowest 128 element
+*    PAT_M3, // Multiples of 3
+*    PAT_M4, // Multiples of 4
+*    PAT_H, // The lowest half elements
+*    PAT_Q, // The lowest quarter elements
+*    PAT_ALLF = 15 // All elements are set to False
 *
 *   usage example:
-*       vector_bool mask = asc_create_mask_b8(Pat::VL1);
+*       vector_bool mask = asc_create_mask_b8(PAT_VL1);
 */
 #define asc_create_mask_b8 pset_b8
 #define asc_create_mask_b16 pset_b16

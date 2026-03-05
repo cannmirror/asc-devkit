@@ -55,12 +55,12 @@ __aicore__ inline void asc_copy_gm2l1_pad1_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad1_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad1_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad1_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -75,12 +75,12 @@ __aicore__ inline void asc_copy_gm2l1_pad2_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad2_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad2_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad2_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad2_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -95,12 +95,12 @@ __aicore__ inline void asc_copy_gm2l1_pad3_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad3_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad3_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad3_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad3_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -115,12 +115,12 @@ __aicore__ inline void asc_copy_gm2l1_pad4_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad4_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad4_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad4_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad4_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -135,12 +135,12 @@ __aicore__ inline void asc_copy_gm2l1_pad5_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad5_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad5_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad5_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad5_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -155,12 +155,12 @@ __aicore__ inline void asc_copy_gm2l1_pad6_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad6_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad6_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad6_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad6_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -175,12 +175,12 @@ __aicore__ inline void asc_copy_gm2l1_pad7_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad7_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad7_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad7_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad7_impl(dst, src, size);
     asc_sync_post_process();
 }
 
@@ -195,12 +195,12 @@ __aicore__ inline void asc_copy_gm2l1_pad8_impl(__cbuf__ void* dst, __gm__ void*
 
 __aicore__ inline void asc_copy_gm2l1_pad8_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
+    asc_copy_gm2l1_pad8_impl(dst, src, 1, size / ASC_C_API_ONE_DATABLOCK_SIZE, 0, 0);
 }
 
 __aicore__ inline void asc_copy_gm2l1_pad8_sync_impl(__cbuf__ void* dst, __gm__ void* src, uint32_t size)
 {
-    asc_copy_gm2l1_impl(dst, src, size);
+    asc_copy_gm2l1_pad8_impl(dst, src, size);
     asc_sync_post_process();
 }
 

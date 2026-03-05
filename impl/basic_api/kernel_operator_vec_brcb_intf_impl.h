@@ -27,7 +27,7 @@
 #include "dav_c220/kernel_operator_vec_brcb_impl.h"
 #elif __NPU_ARCH__ == 3002
 #include "dav_m300/kernel_operator_vec_brcb_impl.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/kernel_operator_vec_brcb_impl.h"
 #elif (__NPU_ARCH__ == 5102)
 #include "dav_m510/kernel_operator_vec_brcb_impl.h"

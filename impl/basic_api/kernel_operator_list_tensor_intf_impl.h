@@ -22,7 +22,7 @@
 #include "dav_m200/kernel_operator_list_tensor_impl.h"
 #elif __NPU_ARCH__ == 1001
 #include "dav_c100/kernel_operator_list_tensor_impl.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/kernel_operator_list_tensor_impl.h"
 #elif __NPU_ARCH__ == 3003
 #include "dav_l300/kernel_operator_list_tensor_impl.h"

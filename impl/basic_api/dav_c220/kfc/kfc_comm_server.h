@@ -27,6 +27,11 @@ public:
     __gm__ KfcMsg* msgRcvHead;
     __gm__ KfcMsg* msgRcvStart;
 
+#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+    // The KFC's second queue serves as the matmul count in the superkernel mode
+    __gm__ KfcMsg* msgCntStart;
+#endif
+
     GM_ADDR ubAvalidTail;
 
     uint8_t msgSendPos; // for the subBlockID of the AIC core
@@ -39,6 +44,13 @@ public:
         // the Rcv on the server is the same as the Send on the client. The addresses of aic and aiv are swap.
         this->msgRcvStart = (__gm__ KfcMsg*)GetMsgHead(workspace, i);
         this->msgSendStart = this->msgRcvStart + MAX_MSG_COUNT;
+
+#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+        // vec0 stores the sendEvent and eventId of the vec1, and the vec1 same as vec0.
+        // Therefore, the address position of the other party is taken for writing
+        uint8_t mapId = i != 0 ? 0 : 1;
+        this->msgCntStart = (__gm__ KfcMsg*)GetMsgHead(workspace, mapId) + MAX_MSG_COUNT;
+#endif
 
         this->msgSendHead = this->msgSendStart;
         this->msgSendPos = 0;
@@ -95,6 +107,13 @@ public:
         auto msg = (__gm__ KfcMsg*)RcvMessageImpl(this->msgRcvHead, this->msgRcvPos, this->msgRcvStart);
         return msg;
     }
+
+#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+    __aicore__ inline __gm__ KfcMsg* GetSecondBuffStart()
+    {
+        return this->msgCntStart;
+    }
+#endif
 
     __aicore__ inline void RollBackMsg()
     {

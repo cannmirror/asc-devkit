@@ -74,7 +74,7 @@ __ubuf__ int8_t dst_align32b;
 vector_int8_t src;
 uint16_t block_stride;
 uint16_t repeat_stride;
-vector_bool mask = asc_create_mask_b8(Pat::ALL);
+vector_bool mask = asc_create_mask_b8(PAT_ALL);
 asc_storealign(dst_align32b, src, block_stride, repeat_stride, mask);
 
 // asc_storealign_postupdate
@@ -82,6 +82,6 @@ __ubuf__ int8_t dst_align32b;
 vector_int8_t src;
 uint16_t block_stride;
 uint16_t repeat_stride;
-vector_bool mask = asc_create_mask_b8(Pat::ALL);
+vector_bool mask = asc_create_mask_b8(PAT_ALL);
 asc_storealign_postupdate(dst_align32b, src, block_stride, repeat_stride, mask);
 ```

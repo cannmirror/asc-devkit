@@ -49,7 +49,7 @@ foreach(product_type ${ASCENDC_UT_PRODUCT_TYPE_LIST})
         ASCENDC_OOM=1
         ASCENDC_DUMP=0
         $<$<STREQUAL:${product_type},ascend910B1>:__NPU_ARCH__=2201>
-        $<$<STREQUAL:${product_type},ascend950pr_9599>:__NPU_ARCH__=3101>
+        $<$<STREQUAL:${product_type},ascend950pr_9599>:__NPU_ARCH__=3510>
         __disable_kernel_type_autoinfer__=
     )
 

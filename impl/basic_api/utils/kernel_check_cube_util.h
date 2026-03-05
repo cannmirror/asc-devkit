@@ -114,7 +114,7 @@ struct CubeCreateCxMatrixApiParams {
 
 struct CubeInitConstValueApiParams {
     CubeInitConstValueApiParams() {}
-    CubeInitConstValueApiParams(uint64_t dstAddrIn, uint8_t repeatIn, uint16_t blkNumIn, uint16_t dstGapIn,
+    CubeInitConstValueApiParams(uint64_t dstAddrIn, uint16_t repeatIn, uint16_t blkNumIn, uint16_t dstGapIn,
         uint32_t dstDtypeBytesIn, uint64_t dstSizeIn, uint8_t dstPosIn)
     {
         dstAddr = dstAddrIn;

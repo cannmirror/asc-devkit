@@ -52,7 +52,7 @@ PIPE_V
 ```cpp
 vector_uint16_t dst;
 vector_uint8_t src;
-vector_bool mask = asc_create_mask_b8(Pat::ALL);
+vector_bool mask = asc_create_mask_b8(PAT_ALL);
 asc_loadalign(src, src_addr); // src_addr是外部输入的UB内存空间地址。
 asc_cumulative_histogram_bin0(dst, src, mask);
 ```

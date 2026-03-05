@@ -22,12 +22,12 @@
 #include "utils/debug/asc_time.h"
 
 #ifndef SPLIT_CORE_VEC
-#if (defined(__DAV_VEC__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)) 
+#if (defined(__DAV_VEC__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510)) 
 #define SPLIT_CORE_VEC
 #endif
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 #ifndef __NPU_COMPILER_INTERNAL_PURE_SIMT__
 using dim3 = cce::dim3;
 

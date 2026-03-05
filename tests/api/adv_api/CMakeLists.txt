@@ -227,6 +227,7 @@ file(GLOB ASCENDC_TEST_ascend910B1_AIC_CASE_SRC_FILES
     matmul/scheduler/bias_scheduler/test_bias_scheduler_v220.cpp
     matmul/scheduler/batch_scheduler/test_batch_scheduler.cpp
     matmul/scheduler/batch_scheduler/test_batch_scheduler_single.cpp
+    matmul/kfc/test_matmul_server_c220.cpp
 )
 
 # ascend950pr_9599 test cases
@@ -396,8 +397,8 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend610>:__NPU_ARCH__=2002;__DAV_M200__>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:__NPU_ARCH__=2201;__DAV_C220__;__DAV_C220_CUBE__;__DAV_CUBE__>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:__NPU_ARCH__=2201;__DAV_C220__;__DAV_C220_VEC__;__DAV_VEC__>
-        $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:__NPU_ARCH__=3101;__DAV_C310__;__DAV_C310_CUBE__>
-        $<$<STREQUAL:${product_type},ascend950pr_9599_AIV>:__NPU_ARCH__=3101;__DAV_C310__;__DAV_C310_VEC__>
+        $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_CUBE__>
+        $<$<STREQUAL:${product_type},ascend950pr_9599_AIV>:__NPU_ARCH__=3510;__DAV_C310__;__DAV_C310_VEC__>
         $<$<STREQUAL:${product_type},ascend310B1>:__NPU_ARCH__=3002;__DAV_M300__>
         __disable_kernel_type_autoinfer__=
     )
@@ -480,8 +481,8 @@ foreach(product_type ${PRODUCT_TYPE_LIST})
         $<$<STREQUAL:${product_type},ascend610>:__NPU_ARCH__=2002>
         $<$<STREQUAL:${product_type},ascend910B1_AIC>:__NPU_ARCH__=2201>
         $<$<STREQUAL:${product_type},ascend910B1_AIV>:__NPU_ARCH__=2201>
-        $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:__NPU_ARCH__=3101>
-        $<$<STREQUAL:${product_type},ascend950pr_9599_AIV>:__NPU_ARCH__=3101>
+        $<$<STREQUAL:${product_type},ascend950pr_9599_AIC>:__NPU_ARCH__=3510>
+        $<$<STREQUAL:${product_type},ascend950pr_9599_AIV>:__NPU_ARCH__=3510>
         $<$<STREQUAL:${product_type},ascend310B1>:__NPU_ARCH__=3002>
     )
 

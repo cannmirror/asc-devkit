@@ -14,7 +14,7 @@
  */
 #ifndef ASCENDC_MODULE_TPIPE_INTERFACE_IMPL_H
 #define ASCENDC_MODULE_TPIPE_INTERFACE_IMPL_H
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #include "dav_c310/kernel_tpipe_impl_c310.h"
 #include "dav_c310/kernel_tpipe_impl_c310_vec.h"
 #include "kernel_tquesync_impl.h"
@@ -603,7 +603,7 @@ __aicore__ inline void TPipe::InitSpmBuffer(const GlobalTensor<T>& workspace, co
 
 __aicore__ inline void TPipe::InitSpmBuffer(const int32_t bufferSize)
 {
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510)
     (void)(bufferSize);
     ASCENDC_DEBUG_ASSERT((false),
                    KERNEL_LOG_INTERNAL(KERNEL_ERROR, "not supported on current device"));

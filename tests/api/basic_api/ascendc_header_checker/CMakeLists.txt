@@ -39,8 +39,8 @@ endif()
 # ==========================================
 # 格式: "ConfigName|Arch|Define1|Define2|..."
 set(CONFIGS_LIST
-    "dav-c310-vec|3101|-D__DAV_C310__|-D__DAV_C310_VEC__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
-    "dav-c310-cube|3101|-D__DAV_C310__|-D__DAV_C310_CUBE__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
+    "dav-c310-vec|3510|-D__DAV_C310__|-D__DAV_C310_VEC__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
+    "dav-c310-cube|3510|-D__DAV_C310__|-D__DAV_C310_CUBE__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
     "dav-c220-vec|2201|-D__DAV_C220__|-D__DAV_C220_VEC__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
     "dav-c220-cube|2201|-D__DAV_C220__|-D__DAV_C220_CUBE__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"
     "dav-c100|1001|-D__DAV_C100__|-DASCENDC_DEBUG=1|-DASCENDC_DUMP=1"

@@ -199,7 +199,7 @@ __aicore__ inline T CastFallback(U x)
 {
     T y;
     switch (roundMode) {
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
         case RoundMode::CAST_EVEN:
             Rint_(y, x);
             break;

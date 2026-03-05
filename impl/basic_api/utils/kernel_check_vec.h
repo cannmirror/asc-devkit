@@ -81,7 +81,7 @@ bool CheckFuncLoadDataTranspose(const LocalTensor<T> &dst, const LocalTensor<T> 
     constexpr bool dtypeMatch = SupportType<PrimT<T>, uint8_t, int8_t, half>();
     ASSERT(dtypeMatch && "LoadData2dTransposeParams without dtype of u8/s8/fp16 is not supported on current device");
     return dtypeMatch;
-#elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#elif (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
     constexpr bool dtypeMatch = SupportType<PrimT<T>, uint8_t, int8_t, half, bfloat16_t, float, int32_t, uint32_t>();
     ASSERT(dtypeMatch && "LoadData2dTransposeParams without dtype of u8/s8/fp16/bf16/f32/s32/u32 is not supported on current device");
     return dtypeMatch;
@@ -94,14 +94,14 @@ template <typename T>
 bool CheckFuncLoadDataTranspose(const LocalTensor<T> &dst, const LocalTensor<T> &src,
     const LoadData2dTransposeParamsV2 &loadDataParams, const char *intriName)
 {
-#if __NPU_ARCH__ == 3102 || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if __NPU_ARCH__ == 3102 || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
     bool scopeMatch = (GetPhyType(static_cast<TPosition>(dst.GetPosition())) == Hardware::L0B &&
                        GetPhyType(static_cast<TPosition>(src.GetPosition())) == Hardware::L1);
     ASSERT(scopeMatch && "LoadDataWithTranspose without B1->B2 is not supported on current device");
 #if __NPU_ARCH__ == 3102
     constexpr bool dtypeMatch =
         IsSameType<PrimT<T>, int4b_t>::value || sizeof(PrimT<T>) == sizeof(int8_t) || sizeof(PrimT<T>) == sizeof(half);
-#elif (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#elif (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
     constexpr bool dtypeMatch =
         sizeof(PrimT<T>) == sizeof(int8_t) || sizeof(PrimT<T>) == sizeof(half) || sizeof(PrimT<T>) == sizeof(float);
 #endif
@@ -181,7 +181,7 @@ bool CheckMmadParams(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
 #endif
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <typename T, typename U, typename S, typename V>
 bool CheckMmadParams(const LocalTensor<T>& dst, const LocalTensor<U>& fm,
     const LocalTensor<S>& filter, const LocalTensor<V>& bias, const uint64_t& mmadParams,

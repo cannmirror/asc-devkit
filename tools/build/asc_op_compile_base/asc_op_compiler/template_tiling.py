@@ -16,6 +16,7 @@ from enum import Enum, auto
 from dataclasses import dataclass
 from typing import List, Any
 from asc_op_compile_base.common.utils.log_utils import AscendCLogLevel
+from asc_op_compile_base.common.context import get_context
 from .ascendc_common_utility import CommonUtility
 from .get_op_tiling import OpInfo
 
@@ -58,6 +59,41 @@ ASCENDC_COMPILE_DATATYPE_MAP = {
     "DT_MAX": ["unknown", ASCENDC_TPL_DATATYPE_MAX],
 }
 ASCENDC_COMPILE_DATATYPE_REVERT_MAP = {v[-1]: v[0] for v in ASCENDC_COMPILE_DATATYPE_MAP.values()}
+ASCENDC_KERNEL_TEMPLATE_INPUT_DATATYPE_MAP = {
+    "float": 0,
+    "half": 1,
+    "int8_t": 2,
+    "int32_t": 3,
+    "uint8_t": 4,
+    "int16_t": 6,
+    "uint16_t": 7,
+    "uint32_t": 8,
+    "int64_t": 9,
+    "uint64_t": 10,
+    "double": 11,
+    "bool": 12,
+    "complex64": 16,
+    "bfloat16_t": 27,
+    "int4b_t": 29,
+    "hifloat8_t": 34,
+    "fp8_e5m2_t": 35,
+    "fp8_e4m3fn_t": 36,
+    "fp4x2_e2m1_t": 40,
+    "fp4x2_e1m2_t": 41
+}
+ASCENDC_KERNEL_TEMPLATE_INPUT_KERNEL_TYPE_MAP = {
+    "ASCENDC_TPL_AIV_ONLY": 0,
+    "ASCENDC_TPL_AIC_ONLY": 1,
+    "ASCENDC_TPL_MIX_AIV_1_0": 4,
+    "ASCENDC_TPL_MIX_AIC_1_0": 5,
+    "ASCENDC_TPL_MIX_AIC_1_1": 6,
+    "ASCENDC_TPL_MIX_AIC_1_2": 7,
+    "ASCENDC_TPL_AICORE": 8,
+    "ASCENDC_TPL_VECTORCORE": 9,
+    "ASCENDC_TPL_MIX_AICORE": 10,
+    "ASCENDC_TPL_MIX_VECTOR_CORE": 11,
+    "ASCENDC_TPL_MAX": 12
+}
 ASCENDC_TPL_DATAFORMAT_MAX = 55
 ASCENDC_COMPILE_DATAFORMAT_MAP = {
     "FORMAT_NCHW": ["NCHW", 0],
@@ -494,6 +530,7 @@ def extract_template_tiling_params(tiling_param_list: List[str], bit_map: dict =
 GROUP_ID = 0
 ID_LIST = []
 group_map = {}
+kernel_compile_dict = {}
 
 
 def get_concated_tiling_key(template_param_list: List[TilingTemplateParams], \
@@ -501,6 +538,7 @@ def get_concated_tiling_key(template_param_list: List[TilingTemplateParams], \
     global ID_LIST
     global GROUP_ID
     global group_map
+    global kernel_compile_dict
     result = dict()
     if index == len(template_param_list):
         data.update({"paramArgs": tiling_args})
@@ -519,6 +557,9 @@ def get_concated_tiling_key(template_param_list: List[TilingTemplateParams], \
         return result
     template_param = template_param_list[index]
     for val in template_param.values:
+        if kernel_compile_dict and template_param.name in kernel_compile_dict \
+            and str(val) not in kernel_compile_dict[template_param.name]:
+            continue
         if template_param.param_type == TilingParamType.TPL_TILING_STRUCT:
             data["tilingStruct"] = template_param.name
             encode_ = ""
@@ -597,7 +638,47 @@ def extract_decl_param_options(op_info: OpInfo, option_name="dtype"):
     return decl_input_options + decl_output_options, deck_select_indexes
 
 
+def check_kernel_template_input(kernel_compile_dict_input: dict):
+    tiling_map_dict = {item.name: item for item in TILING_DECLARE_MAP}
+    for key, values in kernel_compile_dict_input.items():
+        if key not in tiling_map_dict:
+            raise RuntimeError('kernel-template-input key {} is invalid!'.format(key))
+        valid_values = tiling_map_dict[key].values
+        valid_values_str = set(str(v) for v in valid_values)
+        for value in values:
+            if value not in valid_values_str:
+                raise RuntimeError('kernel-template-input key: {} value: {} is invalid!'.format(key, value))
+
+
 def decode_tiling(tiling_key: int = None) -> dict:
+    global kernel_compile_dict
+    kernel_template_input = get_context().get_addition("kernel-template-input")
+    if kernel_template_input and "=" not in kernel_template_input:
+        raise RuntimeError('Invalid kernel-template-input format! Please use key value pairs!')
+    if kernel_template_input:
+        if kernel_template_input.startswith("'") and kernel_template_input.endswith("'"):
+            kernel_template_input = kernel_template_input[1:-1]
+        pairs = kernel_template_input.split(';')
+        for pair in pairs:
+            if pair.count("=") > 1:
+                raise RuntimeError('kernel-template-input value has invalid format!')
+            if '=' in pair:
+                key, value = pair.split('=', 1)
+                value_list = value.split(',')
+                format_value_list = []
+                for v in value_list:
+                    if v in ASCENDC_KERNEL_TEMPLATE_INPUT_DATATYPE_MAP.keys():
+                        format_value_list.append(str(ASCENDC_KERNEL_TEMPLATE_INPUT_DATATYPE_MAP[v]))
+                    elif v == 'false':
+                        format_value_list.append('0')
+                    elif v == 'true':
+                        format_value_list.append('1')
+                    elif v in ASCENDC_KERNEL_TEMPLATE_INPUT_KERNEL_TYPE_MAP.keys():
+                        format_value_list.append(str(ASCENDC_KERNEL_TEMPLATE_INPUT_KERNEL_TYPE_MAP[v]))
+                    else:
+                        format_value_list.append(v)
+                kernel_compile_dict[key] = format_value_list
+        check_kernel_template_input(kernel_compile_dict)
     encode_book = dict()
     for param in TILING_DECLARE_MAP:
         encode_book[param.name] = param.get_encodes()

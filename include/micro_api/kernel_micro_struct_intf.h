@@ -15,7 +15,7 @@
 #ifndef ASCENDC_MODULE_MICRO_STRUCT_INTERFACE_H
 #define ASCENDC_MODULE_MICRO_STRUCT_INTERFACE_H
 
-#if (__NPU_ARCH__ == 3101) || defined(__ASC_NPU_HOST__)
+#if (__NPU_ARCH__ == 3510) || defined(__ASC_NPU_HOST__)
 #include "micro_api/dav_c310/kernel_micro_datatype_impl.h"
 #elif __NPU_ARCH__ == 5102
 #include "micro_api/dav_m510/kernel_micro_datatype_impl.h"

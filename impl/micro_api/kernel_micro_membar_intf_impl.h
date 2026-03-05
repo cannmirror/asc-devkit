@@ -15,7 +15,7 @@
 #ifndef ASCENDC_KERNEL_MICRO_MEMBAR_INTERFACE_IMPL_H
 #define ASCENDC_KERNEL_MICRO_MEMBAR_INTERFACE_IMPL_H
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) || \
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 2103) || \
     (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3103) || (__NPU_ARCH__ == 3113) || defined(__ASC_NPU_HOST__)
 #if __NPU_ARCH__ == 2103
 #include "micro_api/dav_l210/kernel_micro_membar_impl.h"

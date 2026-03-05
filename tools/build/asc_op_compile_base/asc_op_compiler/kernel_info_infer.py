@@ -469,6 +469,8 @@ REGISTER_TILING_DEFAULT')
             extract_template_tiling_info(declare_param_str, select_param_str)
             decode_tiling_result = decode_tiling()
             tiling_key_list = [str(k) for k in decode_tiling_result.keys()]
+            if len(tiling_key_list) == 0:
+                raise Exception(f'no match kernel template input!')
             # ==================== All SEL checks
             tiling_key_list, decode_tiling_result = tpl_tilingkey_kernel_type_check(
                 tiling_key_list, decode_tiling_result, tiling_key_kernel_type

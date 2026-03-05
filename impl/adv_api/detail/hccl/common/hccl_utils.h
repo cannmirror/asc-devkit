@@ -31,7 +31,7 @@ __aicore__ inline void FlushDataCache(__gm__ void *gmAddr)
     FlushDataCache(globalHcclMsgArea, gmAddr);
 }
 
-#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3101
+#if defined(__NPU_ARCH__) && __NPU_ARCH__ == 3510
 
 template <typename T>
 __aicore__ inline T ReadHBMData(__gm__ T* addr)

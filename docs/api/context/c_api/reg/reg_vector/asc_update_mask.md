@@ -43,7 +43,7 @@ PIPE_V
 
 ```cpp
 uint32_t value = 127;
-vector_bool mask = asc_create_mask_b32(Pat::ALL);
+vector_bool mask = asc_create_mask_b32(PAT_ALL);
 // 一共127个元素需要进行计算，即需要2个VL
 for (int32_t i = 0; i < 2; i++>) {
   mask = asc_update_mask_b32(value);

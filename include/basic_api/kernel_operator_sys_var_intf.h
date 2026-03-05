@@ -50,7 +50,7 @@ __aicore__ inline void Trap();
 
 __aicore__ inline int64_t GetSystemCycle();
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 template <SpecialPurposeReg spr>
 __aicore__ inline int64_t GetSpr();
 
@@ -60,7 +60,7 @@ __aicore__ inline void ClearSpr();
 
 #if defined(__NPU_ARCH__) &&                                                                                    \
     ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||    \
-     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3101))
+     (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510))
 __aicore__ inline constexpr uint32_t GetUBSizeInBytes()
 {
     return TOTAL_UB_SIZE;
@@ -76,7 +76,7 @@ __aicore__ inline uint32_t GetRuntimeUBSize()
 #if defined(ASCENDC_CPU_DEBUG) && ASCENDC_CPU_DEBUG == 1
     return TOTAL_UB_SIZE;
 #else
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
 #if defined(SPLIT_CORE_VEC)
     constexpr uint32_t RESERVED_UB_SIZE = 8 * 1024;
     return get_shmem_sz() - RESERVED_UB_SIZE;

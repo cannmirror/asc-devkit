@@ -66,7 +66,7 @@ extern "C" __global__ __aicore__ void KernelTestSetFixPipeClipRelu1() {
 
 #if defined(__NPU_ARCH__) &&                                                                            \
     (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3003 ||    \
-     __NPU_ARCH__ == 3113 || __NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+     __NPU_ARCH__ == 3113 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 // // __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsV220& intriParams);
 // extern "C" __global__ __aicore__ void KernelTestFixpipe1() {
 //     AscendC::LocalTensor<float> dst;
@@ -176,7 +176,7 @@ extern "C" __global__ __aicore__ void KernelTestFixpipe12() {
 }
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 // __aicore__ inline void Fixpipe(const LocalTensor<T>& dst, const LocalTensor<U>& src, const FixpipeParamsC310<config.format>& intriParams);
 extern "C" __global__ __aicore__ void KernelTestFixpipe13() {
     AscendC::LocalTensor<float> dst;

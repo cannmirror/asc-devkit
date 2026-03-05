@@ -111,7 +111,7 @@ PIPE_V
 
 ```cpp
 __ubuf__ half* src = (__ubuf__ half*)asc_get_phy_buf_addr(0);
-vector_bool mask = asc_create_mask_b16(Pat::ALL);
+vector_bool mask = asc_create_mask_b16(PAT_ALL);
 uint32_t offset = 128;
 asc_storealign(dst, src + offset, mask)
 ```

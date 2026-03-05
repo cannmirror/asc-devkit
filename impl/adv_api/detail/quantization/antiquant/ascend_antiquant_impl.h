@@ -23,7 +23,7 @@
 #include "../../api_check/kernel_check/quantization/antiquant/antiquant_check.h"
 #endif // ASCENDC_CPU_DEBUG
 #include "../../api_check/kernel_api_check.h"
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "ascend_antiquant_c310_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 #include "ascend_antiquant_c220_impl.h"
@@ -601,7 +601,7 @@ __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<DstType>& dst, cons
     AscendAntiQuantImpl<SrcType, DstType, isTranspose>(dst, src, offset, scale, sharedTmpBuffer, K, shapeInfo);
 }
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 template <typename InputDataType, typename OutputDataType, bool isTranspose>
 __aicore__ inline void AscendAntiQuantImpl(const LocalTensor<OutputDataType>& dst,
     const LocalTensor<InputDataType>& src, const LocalTensor<fp8_e8m0_t>& scale, const uint32_t K,

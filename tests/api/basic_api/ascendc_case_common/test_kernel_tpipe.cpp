@@ -362,7 +362,7 @@ constexpr int32_t R_0 = 0;
 constexpr int32_t R_1 = 1;
 constexpr int32_t R_2 = 2;
 constexpr int32_t R_3 = 3;
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3101)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510)
 constexpr int32_t R_4 = 4;
 constexpr int32_t R_5 = 5;
 constexpr int32_t R_6 = 6;

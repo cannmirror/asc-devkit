@@ -59,7 +59,7 @@ docker run --name cann_container --device /dev/davinci0 --device /dev/davinci_ma
     
     执行如下命令查看CANN Toolkit版本信息，是否为8.5.0版本。
     ```bash
-    cat /usr/local/Ascend/ascend-toolkit/latest/opp/version.info
+    cat /usr/local/Ascend/cann/share/info/asc-devkit/version.info
     ```
 至此，你已经拥有了一个“开箱即用”的开发环境。
 

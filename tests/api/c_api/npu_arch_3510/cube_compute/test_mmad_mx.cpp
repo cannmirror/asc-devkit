@@ -27,7 +27,7 @@ protected:                                                                      
                                                                                                 \
 namespace {                                                                                     \
 void cce_name##_##src0_type##_##src1_type##_Stub(dst_type* dst, src0_type* src0, src1_type* src1,   \
-    uint16_t left_height, uint16_t right_width, uint16_t n_dim,                                 \
+    uint16_t left_height, uint16_t n_dim, uint16_t right_width,                                 \
     uint8_t unitFlag, bool disableGemv, bool cMatrixSource, bool cMatrixInitVal) {}             \
 }                                                                                               \
                                                                                                 \
@@ -49,7 +49,7 @@ TEST_F(TestVectorCompute##class_name##_##src0_type##_##src1_type##_CApi, c_api_n
         .times(1)                                                                               \
         .will(invoke(cce_name##_##src0_type##_##src1_type##_Stub));                             \
                                                                                                 \
-    c_api_name(dst, src0, src1, left_height, right_width, n_dim, unitFlag, disableGemv,         \
+    c_api_name(dst, src0, src1, left_height, n_dim, right_width, unitFlag, disableGemv,         \
         cMatrixSource, cMatrixInitVal);                                                         \
     GlobalMockObject::verify();                                                                 \
 }

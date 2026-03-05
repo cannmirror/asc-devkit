@@ -18,7 +18,7 @@
 #include <cstdint>
 #include "kernel_basic_intf.h"
 
-#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101 || __NPU_ARCH__ == 5102)
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
 #include "digamma_c310_impl.h"
 #elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
 #include "digamma_v220_impl.h"

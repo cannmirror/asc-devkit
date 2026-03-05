@@ -520,5 +520,14 @@ __aicore__ inline bool MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, 
     }
     return true;
 }
+
+#if defined(__ASCENDC_ENABLE_SUPER_KERNEL__)
+template <class A_TYPE, class B_TYPE, class C_TYPE, class BIAS_TYPE, const auto& MM_CFG, class MM_CB,
+    MATMUL_POLICY_TEMPLATE_OF(MATMUL_POLICY)>
+__aicore__ inline void MatmulService<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, MM_CFG, MM_CB, MATMUL_POLICY>::SuperKernelEventCount(uint16_t eventID)
+{
+    (void)eventID;
+}
+#endif
 } // namespace AscendC
 #endif // IMPL_MATMUL_KFC_MATMUL_SERVER_IMPL_C310_H

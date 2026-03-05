@@ -102,6 +102,15 @@ constexpr int32_t MAX_SYNC_COUNT = 100000000;
 constexpr int32_t MMCNT_L1_RESERVERD_SIZE = 64; // Reserved L1 64B for MMCNT Query
 constexpr uint16_t KFC_SYNC_ID = 15;
 
+#ifdef __ASCENDC_ENABLE_SUPER_KERNEL__
+// the max cnt of matmul object in superkernel mode
+constexpr int MAX_MATMUL_OBJ_CNT = 4;
+struct SuperKernelWaitEventCnt {
+    uint32_t eventId[MAX_MATMUL_OBJ_CNT] = {0};
+    int32_t eventCnt[MAX_MATMUL_OBJ_CNT] = {0};
+};
+#endif
+
 struct TilingInfo {
     GM_ADDR tilingAddr;  // the GM address of the tiling.
 };

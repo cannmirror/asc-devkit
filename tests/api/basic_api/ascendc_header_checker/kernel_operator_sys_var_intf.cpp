@@ -25,7 +25,7 @@ extern "C" __global__ __aicore__ void KernelTestTrap1() {
     AscendC::Trap();
 }
 
-#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102))
+#if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102))
 // template <SpecialPurposeReg spr>
 // __aicore__ inline void ClearSpr();
 extern "C" __global__ __aicore__ void KernelTestClearSpr1() {

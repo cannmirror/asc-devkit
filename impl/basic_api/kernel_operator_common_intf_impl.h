@@ -51,7 +51,7 @@
 #include "dav_c310/kernel_operator_common_impl.h"
 #elif __NPU_ARCH__ == 3102
 #include "dav_m310/kernel_operator_set_atomic_impl.h"
-#elif __NPU_ARCH__ == 3101
+#elif __NPU_ARCH__ == 3510
 #include "dav_c310/kernel_operator_set_atomic_impl.h"
 #include "dav_c310/kernel_operator_common_impl.h"
 #include "dav_c310/kernel_operator_sync_impl.h"
@@ -108,7 +108,7 @@ template <typename T>
 __aicore__ inline __in_pipe__(V)
     __out_pipe__(MTE3) void InitOutput(GlobalTensor<T> gmWorkspaceAddr, uint32_t size, T value)
 {
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 #if (__NPU_ARCH__ != 5102)
     if ASCEND_IS_AIC {
         return;
@@ -167,7 +167,7 @@ __aicore__ inline void CheckLocalMemoryIA(const CheckLocalMemoryIAParam& checkPa
     CheckLocalMemoryIAImpl(checkParams);
 }
 
-#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102)
+#if (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)
 template <HardEvent event, MemoryT memT, bool isVirtual> __aicore__ inline void HSetFlag(int32_t eventID)
 {
     if (g_coreType == AIV) {
@@ -185,7 +185,7 @@ template <HardEvent event, MemoryT memT, bool isVirtual> __aicore__ inline void 
 }
 #endif
 
-#if (__NPU_ARCH__ == 3101) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
+#if (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) || (__NPU_ARCH__ == 3113)
 template <int8_t startBit, int8_t endBit>
 __aicore__ static inline void SetCtrlSpr(int64_t value){
     SetCtrlSprImpl<startBit, endBit>(value);

@@ -388,7 +388,7 @@ ASCENDC_ASSERT(count <= ASC_CAPI_MAX_COUNT,
                "count exceeds maximum supported value");
 
 // 4. 架构检查
-#if !defined(__NPU_ARCH__) || (__NPU_ARCH__ != 2201 && __NPU_ARCH__ != 3101)
+#if !defined(__NPU_ARCH__) || (__NPU_ARCH__ != 2201 && __NPU_ARCH__ != 3510)
     #error "Unsupported NPU architecture"
 #endif
 ```
@@ -403,7 +403,7 @@ ASCENDC_ASSERT(count <= ASC_CAPI_MAX_COUNT,
 // 条件编译
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201)
     // NPU ARCH 220X架构特定代码
-#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3101)
+#elif defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
     // NPU ARCH 310X架构特定代码
 #endif
 
