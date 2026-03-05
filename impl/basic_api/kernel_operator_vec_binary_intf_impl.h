@@ -1586,8 +1586,13 @@ __aicore__ inline void ExpSub(const LocalTensor<T> &dst, const LocalTensor<U> &s
         KERNEL_LOG(KERNEL_ERROR,
                    "count is %u, which should not larger than tensor size of dst / src0 / src1", count);
     });
+#if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510)
+    static_assert(SupportType<Tuple<DstPrimType, SrcPrimType>, Tuple<float, half>, Tuple<float, float>>(), "Failed to check dtype in "
+        "ExpSub, current api support dtype combination is src : half / float, dst: float.");
+#else
     static_assert(SupportType<Tuple<DstPrimType, SrcPrimType>, Tuple<half, half>, Tuple<float, float>>(), "Failed to check dtype in " 
         "ExpSub, current api support dtype combination is src and dst both: half / float.");
+#endif
     FusedExpSubImpl<DstPrimType, SrcPrimType>((__ubuf__ DstPrimType *)dst.GetPhyAddr(), (__ubuf__ SrcPrimType *)src0.GetPhyAddr(), 
         (__ubuf__ SrcPrimType *)src1.GetPhyAddr(), count);
 }
