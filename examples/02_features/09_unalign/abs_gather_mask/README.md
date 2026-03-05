@@ -35,7 +35,7 @@
   <td align="center">data type</td>
   <td align="center">format</td></tr>
   <tr><td align="center">x</td>
-  <td align="center"></td>
+  <td align="center">128 * 18</td>
   <td align="center">half</td>
   <td align="center">ND</td></tr>
   </tr>

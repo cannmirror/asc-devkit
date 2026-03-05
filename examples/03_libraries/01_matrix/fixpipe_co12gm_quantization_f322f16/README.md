@@ -46,7 +46,7 @@
   ```
   计算逻辑是：Ascend C提供的矩阵乘计算接口的操作元素都为LocalTensor，输入数据需要先搬运进片上存储并进行分形转换，然后使用计算接口完成两个输入参数矩阵乘运算，得到最终结果，再搬出到外部存储上。  
 
-  Matmul算子的实现流程分为3个基本任务：CopyIn，SplitA, SplitB, Compute，CopyOut。CopyIn任务负责将Global Memory上的输入inputGM搬运到Local Memory A1/B1中，搬运过程中进行ND至NZ分形转换。SplitA/SplitB分别将数据进一步搬运至接口所要求Local Memory A2/B2，Compute任务负责对数据进行矩阵乘运算，计算结果存储在Local Memory CO1中。CopyOut任务负责将输出数据从CO1搬运至Global Memory上的输出outputGm中，同时完成NZ到ND的分形转换且使能量化将float类型数据转换为half类型，通过Fixpipe接口完成。
+  Matmul算子的实现流程分为基本任务：CopyIn，SplitA，SplitB，Compute，CopyOut。CopyIn任务负责将Global Memory上的输入inputGM搬运到Local Memory A1/B1中，搬运过程中进行ND至NZ分形转换。SplitA/SplitB分别将数据进一步搬运至接口所要求Local Memory A2/B2，Compute任务负责对数据进行矩阵乘运算，计算结果存储在Local Memory CO1中。CopyOut任务负责将输出数据从CO1搬运至Global Memory上的输出outputGm中，同时完成NZ到ND的分形转换且使能量化将float类型数据转换为half类型，通过Fixpipe接口完成。
   - 调用实现  
     使用内核调用符<<<>>>调用核函数。
 
