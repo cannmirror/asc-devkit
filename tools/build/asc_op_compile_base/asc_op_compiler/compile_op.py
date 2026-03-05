@@ -227,7 +227,7 @@ superkernel. Therefore, the superkernel cannot be integrated with the operator."
     aicore_num = get_context().get_addition("_op_aicore_num")
     vectorcore_num = get_context().get_addition("_op_vectorcore_num")
     if aicore_num is not None and vectorcore_num is not None:
-        js["platformInfo"] = {"cubeCoreNum": int(aicore_num), "vectorCoreNum": int(vectorcore_num)}
+        js["platformInfo"] = {"cubeCoreCnt": int(aicore_num), "vectorCoreCnt": int(vectorcore_num)}
 
     if not global_var_storage.get_variable("ascendc_dump_disable_compile_options") \
         and compile_info.dump_info.get("dump_type", "") != "":
