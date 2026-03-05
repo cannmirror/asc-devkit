@@ -2634,11 +2634,6 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 <td class="cellrowborder" valign="top" width="60%" headers="mcps1.2.3.1.2 "><p id="p119172054133314"><a name="p119172054133314"></a><a name="p119172054133314"></a>获取输入数据x与2的n次方的乘积。</p>
 </td>
 </tr>
-<tr id="row178323439144"><td class="cellrowborder" valign="top" width="40%" headers="mcps1.2.3.1.1 "><p id="p7832443201414"><a name="p7832443201414"></a><a name="p7832443201414"></a><a href="context\zh-cn_topic_0000002501758908.md">modff</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="60%" headers="mcps1.2.3.1.2 "><p id="p883214361417"><a name="p883214361417"></a><a name="p883214361417"></a><span>将输入数据分解为小数部分和整数部分</span>。</p>
-</td>
-</tr>
 </tbody>
 </table>
 
@@ -4131,24 +4126,8 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 41**  Tiling下沉API列表
 
-<a name="table2173036112514"></a>
-<table><thead align="left"><tr id="row161714011250"><th class="cellrowborder" valign="top" width="37.3%" id="mcps1.2.3.1.1"><p id="p96601406261"><a name="p96601406261"></a><a name="p96601406261"></a>接口名</p>
-</th>
-<th class="cellrowborder" valign="top" width="62.7%" id="mcps1.2.3.1.2"><p id="p26609019267"><a name="p26609019267"></a><a name="p26609019267"></a>功能描述</p>
-</th>
-</tr>
-</thead>
-<tbody><tr id="row917323610256"><td class="cellrowborder" valign="top" width="37.3%" headers="mcps1.2.3.1.1 "><p id="p1419164561913"><a name="p1419164561913"></a><a name="p1419164561913"></a><a href="context\zh-cn_topic_0000002269484441.md">DEVICE_IMPL_OP_OPTILING</a></p>
-</td>
-<td class="cellrowborder" valign="top" width="62.7%" headers="mcps1.2.3.1.2 "><p id="p9191945151920"><a name="p9191945151920"></a><a name="p9191945151920"></a><span id="ph419114452199"><a name="ph419114452199"></a><a name="ph419114452199"></a>在<a href="context\zh-cn_topic_0000002130625528.md">Tiling下沉</a>场景中，该宏定义用于生成Tiling下沉的注册类，再通过调用注册类的成员函数来注册需要下沉的Tiling函数。</span></p>
-</td>
-</tr>
-</tbody>
-</table>
-
-**表 42**  RTC API列表
+**表 41**  RTC API列表
 
 <a name="table59039568269"></a>
 <table><thead align="left"><tr id="row99046568261"><th class="cellrowborder" valign="top" width="37.419999999999995%" id="mcps1.2.3.1.1"><p id="p1490425632618"><a name="p1490425632618"></a><a name="p1490425632618"></a>接口名</p>
@@ -4195,7 +4174,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 43**  log API列表
+**表 42**  log API列表
 
 <a name="table1514223372716"></a>
 <table><thead align="left"><tr id="row3142033112715"><th class="cellrowborder" valign="top" width="37.79%" id="mcps1.2.3.1.1"><p id="p181421633182714"><a name="p181421633182714"></a><a name="p181421633182714"></a>接口名</p>
@@ -4212,7 +4191,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 </tbody>
 </table>
 
-**表 44**  调测接口列表
+**表 43**  调测接口列表
 
 <a name="table17826192512135"></a>
 <table><thead align="left"><tr id="row10826162551319"><th class="cellrowborder" valign="top" width="37.79%" id="mcps1.2.3.1.1"><p id="p782622512134"><a name="p782622512134"></a><a name="p782622512134"></a>接口名</p>
@@ -4241,7 +4220,7 @@ Ascend C提供一组类库API，开发者使用标准C++语法和类库API进行
 
 ## AI CPU API<a name="section06362251213"></a>
 
-**表 45**  AI CPU API列表
+**表 44**  AI CPU API列表
 
 <a name="table340354212211"></a>
 <table><thead align="left"><tr id="row1440344222113"><th class="cellrowborder" valign="top" width="37.419999999999995%" id="mcps1.2.3.1.1"><p id="p140384218217"><a name="p140384218217"></a><a name="p140384218217"></a>接口名</p>
