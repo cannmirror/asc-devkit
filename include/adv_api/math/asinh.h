@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASINH_H
+#endif
+
 #ifndef LIB_MATH_ASINH_H
 #define LIB_MATH_ASINH_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -97,3 +103,8 @@ __aicore__ inline void Asinh(const LocalTensor<T>& dstTensor, const LocalTensor<
 #endif
 #endif
 #endif // LIB_MATH_ASINH_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASINH_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASINH_H
+#endif

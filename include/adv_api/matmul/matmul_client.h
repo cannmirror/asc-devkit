@@ -12,6 +12,12 @@
  * \file matmul_client.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_CLIENT_H
+#endif
+
 #ifndef LIB_MATMUL_MATMUL_CLIENT_H
 #define LIB_MATMUL_MATMUL_CLIENT_H
 
@@ -2980,4 +2986,9 @@ public:
 #include "../../../impl/adv_api/detail/matmul/kfc/matmul_client_impl_aicore.h"
 #endif
 } // namespace matmul
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_CLIENT_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_CLIENT_H
 #endif

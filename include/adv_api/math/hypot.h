@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HYPOT_H
+#endif
+
 #ifndef LIB_MATH_HYPOT_H
 #define LIB_MATH_HYPOT_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -116,3 +122,8 @@ __aicore__ inline void Hypot(const LocalTensor<T>& dstTensor, const LocalTensor<
 }  // namespace AscendC
 #endif
 #endif  // LIB_MATH_HYPOT_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HYPOT_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HYPOT_H
+#endif

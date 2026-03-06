@@ -12,6 +12,12 @@
  * \file gelu_tiling_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_TILING_INTF_H
+#endif
+
 #ifndef TILING_GELU_TILING_INTF_H
 #define TILING_GELU_TILING_INTF_H
 #include "gelu_tiling.h"
@@ -22,3 +28,8 @@ namespace AscendC {
 using LibTilingGeluTilingInterface = UsingDeprecatedHeader;
 } // namespace AscendC
 #endif // TILING_GELU_TILING_INTF_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_TILING_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GELU_TILING_INTF_H
+#endif

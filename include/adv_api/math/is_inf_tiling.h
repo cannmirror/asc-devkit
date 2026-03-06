@@ -12,6 +12,12 @@
  * \file is_inf_tiling.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_IS_INF_TILING_H
+#endif
+
 #ifndef LIB_MATH_ISINF_TILING_H
 #define LIB_MATH_ISINF_TILING_H
 
@@ -46,3 +52,8 @@ void GetIsInfTmpBufferFactorSize(const platform_ascendc::PlatformAscendC& ascend
     uint32_t& maxLivedNodeCount, uint32_t& extraBuf);
 }  // namespace AscendC
 #endif  // LIB_MATH_ISINF_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_IS_INF_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_IS_INF_TILING_H
+#endif

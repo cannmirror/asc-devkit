@@ -33,6 +33,12 @@
  *   R2 = 0.008333049340
  *   R3 = -0.1666665792
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_H
+#endif
+
 #ifndef LIB_MATH_COS_H
 #define LIB_MATH_COS_H
 
@@ -220,3 +226,8 @@ __aicore__ inline void Cos(const LocalTensor<T>& dstTensor, const LocalTensor<T>
 #endif
 
 #endif  // LIB_MATH_COS_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_COS_H
+#endif

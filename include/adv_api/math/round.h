@@ -12,6 +12,12 @@
  * \file kernel_operator_round_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ROUND_H
+#endif
+
 #ifndef LIB_MATH_ROUND_H
 #define LIB_MATH_ROUND_H
 #include "kernel_tensor.h"
@@ -66,3 +72,8 @@ __aicore__ inline void Round(const LocalTensor<T>& dstTensor, const LocalTensor<
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_ROUND_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ROUND_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ROUND_H
+#endif

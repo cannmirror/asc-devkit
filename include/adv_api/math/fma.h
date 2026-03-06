@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FMA_H
+#endif
+
 #ifndef LIB_MATH_FMA_H
 #define LIB_MATH_FMA_H
 
@@ -68,3 +74,8 @@ __aicore__ inline void Fma(const LocalTensor<T>& dst, const LocalTensor<T>& src0
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_FMA_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FMA_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FMA_H
+#endif

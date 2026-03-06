@@ -12,6 +12,12 @@
  * \file kernel_operator_softmax_flash_intf.h
  * \brief SoftmaxFlash api of AscendC, this api will be deprecated, please use SoftmaxFlashV2 api instead
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SOFTMAX_FLASH_INTF_H
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_SOFTMAX_FLASH_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_SOFTMAX_FLASH_INTERFACE_H
 #include "softmaxflash.h"
@@ -21,3 +27,8 @@ namespace AscendC {
 using AscendCModuleOperatorSoftmaxflashInterface = using_deprecated_header_h;
 } // namespace AscendC
 #endif // ASCENDC_MODULE_OPERATOR_SOFTMAX_FLASH_INTERFACE_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SOFTMAX_FLASH_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SOFTMAX_FLASH_INTF_H
+#endif

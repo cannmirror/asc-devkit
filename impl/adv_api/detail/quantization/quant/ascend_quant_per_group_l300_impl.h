@@ -12,6 +12,13 @@
  * \file ascend_quant_l300_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/quantization/quant/ascend_quant_per_group_l300_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/ascend_quant.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
+#endif
+
 #ifndef LIB_ASCEND_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
 #define LIB_ASCEND_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
 #include "kernel_tensor.h"
@@ -583,3 +590,8 @@ __aicore__ inline void AscendQuantImpl(const LocalTensor<dstT>& dstTensor, const
 }
 }  //  namespace AscendC
 #endif  // LIB_ASCEND_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_PER_GROUP_L300_IMPL_H
+#endif

@@ -12,6 +12,12 @@
  * \file dropout.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_H
+#endif
+
 #ifndef LIB_DROPOUT_DROPOUT_H
 #define LIB_DROPOUT_DROPOUT_H
 
@@ -62,3 +68,8 @@ __aicore__ inline void DropOut(const LocalTensor<T>& dstLocal, const LocalTensor
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_DROPOUT_DROPOUT_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DROPOUT_H
+#endif

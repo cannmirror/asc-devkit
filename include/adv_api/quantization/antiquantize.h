@@ -12,6 +12,12 @@
  * \file antiquantize.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ANTIQUANTIZE_H
+#endif
+
 #ifndef LIB_QUANTIZATION_ANTIQUANTIZE_H
 #define LIB_QUANTIZATION_ANTIQUANTIZE_H
 #include "kernel_basic_intf.h"
@@ -78,3 +84,8 @@ __aicore__ inline void AntiQuantize(const LocalTensor<DstT>& dstTensor, const Lo
 #pragma end_pipe
 } // namespace AscendC
 #endif // LIB_QUANTIZATION_ANTIQUANTIZE_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ANTIQUANTIZE_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ANTIQUANTIZE_H
+#endif

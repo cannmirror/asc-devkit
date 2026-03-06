@@ -12,6 +12,12 @@
  * \file softmax.h
  * \brief SoftMax and AdjustSoftMaxRes api of AscendC
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_H
+#endif
+
 #ifndef LIB_SOFTMAX_SOFTMAX_H
 #define LIB_SOFTMAX_SOFTMAX_H
 
@@ -226,3 +232,8 @@ __aicore__ inline bool AdjustSoftMaxRes(const LocalTensor<T1>& softMaxRes, const
 #pragma end_pipe
 #endif
 #endif // LIB_SOFTMAX_SOFTMAX_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_H
+#endif

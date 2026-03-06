@@ -12,6 +12,12 @@
  * \file ceil_tiling_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CEIL_TILING_INTF_H
+#endif
+
 #ifndef LIB_MATH_CEIL_TILING_INTF_H
 #define LIB_MATH_CEIL_TILING_INTF_H
 
@@ -23,3 +29,8 @@ typedef void CeilTilingDeprecatedHeader;
 using LibCeilTilingInterface = CeilTilingDeprecatedHeader;
 }  // namespace AscendC
 #endif  // LIB_MATH_CEIL_TILING_INTF_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CEIL_TILING_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CEIL_TILING_INTF_H
+#endif

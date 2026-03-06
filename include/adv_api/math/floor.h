@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FLOOR_H
+#endif
+
 #ifndef LIB_MATH_FLOOR_H
 #define LIB_MATH_FLOOR_H
 
@@ -77,3 +83,8 @@ __aicore__ inline void Floor(const LocalTensor<T>& dstTensor, const LocalTensor<
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_FLOOR_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FLOOR_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_FLOOR_H
+#endif

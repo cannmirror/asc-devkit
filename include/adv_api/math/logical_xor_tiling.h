@@ -12,6 +12,12 @@
  * \file logical_xor_tiling.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_XOR_TILING_H
+#endif
+
 #ifndef LIB_MATH_LOGICAL_XOR_TILING_H
 #define LIB_MATH_LOGICAL_XOR_TILING_H
 
@@ -47,3 +53,8 @@ void GetLogicalXorTmpBufferFactorSize(const platform_ascendc::PlatformAscendC& a
                                       uint32_t& maxLivedNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_MATH_LOGICAL_XOR_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_XOR_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_XOR_TILING_H
+#endif

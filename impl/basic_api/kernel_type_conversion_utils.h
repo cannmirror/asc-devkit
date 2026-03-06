@@ -1,4 +1,4 @@
-/**
+﻿/**
 * Copyright (c) 2025 Huawei Technologies Co., Ltd.
 * This program is free software, you can redistribute it and/or modify it under the terms and conditions of
 * CANN Open Software License Agreement Version 2.0 (the "License").
@@ -12,6 +12,11 @@
  * \file kernel_type_conversion_utils.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/basic_api/kernel_type_conversion_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_scalar_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TYPE_CONVERSION_UTILS_H
+#endif
 #ifndef ASCENDC_TYPE_CONVERSION_UTILS_H
 #define ASCENDC_TYPE_CONVERSION_UTILS_H
 #include "utils/kernel_utils_macros.h"
@@ -426,3 +431,7 @@ __aicore__ inline float Bf16ToFp32(const bfloat16_t& bVal)
 #endif
 } // namespace AscendC
 #endif // ASCENDC_TYPE_CONVERSION_UTILS_H
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TYPE_CONVERSION_UTILS_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_TYPE_CONVERSION_UTILS_H
+#endif

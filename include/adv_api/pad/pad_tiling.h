@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_TILING_H
+#endif
+
 #ifndef LIB_PAD_PAD_TILING_H
 #define LIB_PAD_PAD_TILING_H
 
@@ -79,3 +85,8 @@ void UnPadTilingFunc(const ge::Shape srcShape, const uint32_t stackBufferSize, c
     AscendC::tiling::UnPadTiling& tiling);
 }
 #endif // LIB_PAD_PAD_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_PAD_TILING_H
+#endif

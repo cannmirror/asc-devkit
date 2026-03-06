@@ -12,6 +12,12 @@
  * \file lgamma.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LGAMMA_H
+#endif
+
 #ifndef LIB_MATH_LGAMMA_H
 #define LIB_MATH_LGAMMA_H
 #include "kernel_tensor.h"
@@ -68,3 +74,8 @@ __aicore__ inline void Lgamma(const LocalTensor<T>& dstTensor, const LocalTensor
 }  // namespace AscendC
 #endif
 #endif  // LIB_MATH_LGAMMA_INTERFACE_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LGAMMA_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LGAMMA_H
+#endif

@@ -12,6 +12,13 @@
  * \file ascend_quant_common_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/quantization/quant/ascend_quant_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/ascend_quant.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H
+#endif
+
 #ifndef IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H
 #define IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H
 
@@ -252,3 +259,8 @@ __aicore__ inline void IsQuantParamValid(const LocalTensor<int8_t>& dstTensor, c
 #endif
 }  // namespace AscendC
 #endif  // IMPL_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_QUANTIZATION_QUANT_ASCEND_QUANT_COMMON_IMPL_H
+#endif

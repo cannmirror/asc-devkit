@@ -12,6 +12,12 @@
  * \file round_v200_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/math/round/round_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/round.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ROUND_ROUND_V200_IMPL_H
+#endif
 #ifndef IMPL_MATH_ROUND_ROUND_V200_IMPL_H
 #define IMPL_MATH_ROUND_ROUND_V200_IMPL_H
 #include "kernel_basic_intf.h"
@@ -123,3 +129,8 @@ __aicore__ inline void RoundComputeCount<half, false>(const LocalTensor<half>& d
 #endif
 
 #endif // IMPL_MATH_ROUND_ROUND_V200_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ROUND_ROUND_V200_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_ROUND_ROUND_V200_IMPL_H
+#endif

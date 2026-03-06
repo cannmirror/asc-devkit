@@ -12,6 +12,12 @@
  * \file dequant_check.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/quantization/dequant/dequant_check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/quantization/dequantize.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEQUANT_CHECK_H
+#endif
+
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_QUANTIZATION_DEQUANT_DEQUANT_CHECK_H_
 #define IMPL_API_CHECK_KERNEL_CHECK_QUANTIZATION_DEQUANT_DEQUANT_CHECK_H_
 
@@ -46,3 +52,8 @@ __aicore__ inline void CheckFuncAscendDequant(__gm__ const char *apiName, const 
 }
 }
 #endif // IMPL_API_CHECK_KERNEL_CHECK_QUANTIZATION_DEQUANT_DEQUANT_CHECK_H_
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEQUANT_CHECK_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DEQUANT_CHECK_H
+#endif

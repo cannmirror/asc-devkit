@@ -12,6 +12,12 @@
  * \file broadcast.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BROADCAST_H
+#endif
+
 #ifndef LIB_PAD_BROADCAST_H
 #define LIB_PAD_BROADCAST_H
 
@@ -96,3 +102,8 @@ __aicore__ inline void Broadcast(const LocalTensor<T>& dst, const LocalTensor<T>
 #endif
 
 #endif  // LIB_PAD_BROADCAST_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BROADCAST_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BROADCAST_H
+#endif

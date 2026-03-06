@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOSH_H
+#endif
+
 #ifndef LIB_MATH_ACOSH_H
 #define LIB_MATH_ACOSH_H
 #if (defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201)) || defined(__NPU_ARCH__) && (__NPU_ARCH__ == 3510 || __NPU_ARCH__ == 5102)
@@ -101,3 +107,8 @@ __aicore__ inline void Acosh(const LocalTensor<T>& dstTensor, const LocalTensor<
 }
 #endif
 #endif // LIB_MATH_ACOSH_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOSH_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOSH_H
+#endif

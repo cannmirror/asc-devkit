@@ -13,6 +13,11 @@
  * \brief
  */
 
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/math/power/power_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/power.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_C310_IMPL_H
+#endif
 #ifndef IMPL_MATH_POWER_POWER_C310_IMPL_H
 #define IMPL_MATH_POWER_POWER_C310_IMPL_H
 #include "kernel_basic_intf.h"
@@ -185,7 +190,7 @@ __simd_callee__ inline void GetLogFExtStepTwo(MicroAPI::RegTensor<float>& logHig
     MicroAPI::RegTensor<float> tmpSReg;
     MicroAPI::Mul(tmpSReg, tmpQHIReg, tmpQHIReg, mask);
     /* 
-     * step 10：
+     * step 10:     
      * r =  0.129394531f;
      * r = fmaf (r, s, 0.141957462f)
      * r = fmaf (r, s, 0.200015724f)
@@ -1184,4 +1189,9 @@ __aicore__ inline void PowerCommonImpl(const LocalTensor<T>& dstTensor, const Lo
     PowerCommonImpl<T, isReuseSource, config>(dstTensor, src0Tensor, src1Scalar, stackTensor, calCount);
 }
 } //namespace AscendC
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_C310_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_POWER_POWER_C310_IMPL_H
 #endif

@@ -8,10 +8,15 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
-/* !
+/*!
  * \file logical_xor_check.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/math/logical_xor/logical_xor_check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/logical_xor.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_XOR_CHECK_H
+#endif
 
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_MATH_LOGICAL_XOR_LOGICAL_XOR_CHECK_H
 #define IMPL_API_CHECK_KERNEL_CHECK_MATH_LOGICAL_XOR_LOGICAL_XOR_CHECK_H
@@ -32,5 +37,9 @@ __aicore__ inline void CheckFuncLogicalXor(__gm__ const char* name, const LocalT
 }
 } // namespace HighLevelApiCheck
 } // namespace AscendC
+#endif // IMPL_API_CHECK_KERNEL_CHECK_MATH_LOGICAL_XOR_LOGICAL_XOR_CHECK_H_
 
-#endif // IMPL_API_CHECK_KERNEL_CHECK_MATH_LOGICAL_XOR_LOGICAL_XOR_CHECK_H
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_XOR_CHECK_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_XOR_CHECK_H
+#endif

@@ -12,6 +12,12 @@
  * \file topk.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H
+#endif
+
 #ifndef LIB_SORT_TOPK_H
 #define LIB_SORT_TOPK_H
 
@@ -317,3 +323,8 @@ __aicore__ inline void TopK(const LocalTensor<T>& dstValueLocal, const LocalTens
 #endif
 
 #endif  // LIB_SORT_TOPK_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_H
+#endif

@@ -8,6 +8,12 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/sort/sort/sort_check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/sort/sort.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_CHECK_H
+#endif
+
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_SORT_SORT_SORT_CHECK_H_
 #define IMPL_API_CHECK_KERNEL_CHECK_SORT_SORT_SORT_CHECK_H_
 
@@ -29,3 +35,8 @@ __aicore__ inline void CheckFuncSort(__gm__ const char* apiName, Args... args)
 }  // namespace HighLevelApiCheck
 }  // namespace AscendC
 #endif  // IMPL_API_CHECK_KERNEL_CHECK_SORT_SORT_SORT_CHECK_H_
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_CHECK_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_CHECK_H
+#endif

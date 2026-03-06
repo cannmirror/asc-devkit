@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_ORS_H
+#endif
+
 #ifndef LIB_MATH_LOGICAL_ORS_H
 #define LIB_MATH_LOGICAL_ORS_H
 
@@ -39,3 +45,8 @@ __aicore__ inline void LogicalOrs(const LocalTensor<T>& dst, const U& src0, cons
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_LOGICAL_ORS_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_ORS_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LOGICAL_ORS_H
+#endif

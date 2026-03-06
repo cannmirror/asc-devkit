@@ -12,6 +12,12 @@
  * \file hccl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H
+#endif
+
 #ifndef LIB_HCCL_HCCL_H
 #define LIB_HCCL_HCCL_H
 
@@ -414,3 +420,8 @@ private:
 
 #include "../../../impl/adv_api/detail/hccl/impl/hccl_impl.h"
 #endif  // LIB_HCCL_HCCL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_H
+#endif

@@ -12,6 +12,12 @@
  * \file batchnorm.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_H
+#endif
+
 #ifndef LIB_NORMALIZATION_BATCHNORM_H
 #define LIB_NORMALIZATION_BATCHNORM_H
 
@@ -72,3 +78,8 @@ __aicore__ inline void BatchNorm(const LocalTensor<T>& output, const LocalTensor
 } // namespace AscendC
 #endif
 #endif // LIB_NORMALIZATION_BATCHNORM_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_H
+#endif

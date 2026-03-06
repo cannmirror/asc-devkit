@@ -12,6 +12,12 @@
  * \file simplesoftmax.h
  * \brief SimpleSoftMax api of AscendC
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLESOFTMAX_H
+#endif
+
 #ifndef LIB_SOFTMAX_SIMPLESOFTMAX_H
 #define LIB_SOFTMAX_SIMPLESOFTMAX_H
 
@@ -144,3 +150,8 @@ __aicore__ inline void SimpleSoftMax(const LocalTensor<half>& dstTensor, const L
 #pragma end_pipe
 #endif
 #endif // LIB_SOFTMAX_SIMPLESOFTMAX_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLESOFTMAX_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIMPLESOFTMAX_H
+#endif

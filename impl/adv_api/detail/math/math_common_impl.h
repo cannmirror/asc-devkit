@@ -12,6 +12,11 @@
  * \file math_common_util.h
  * \brief defined commonly used math related function.
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/math/math_common_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/round.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_MATH_COMMON_IMPL_H
+#endif
 #ifndef IMPL_MATH_MATH_COMMON_UTIL_H
 #define IMPL_MATH_MATH_COMMON_UTIL_H
 
@@ -45,3 +50,8 @@ __aicore__ inline void CommonCheckInputsValidness(
 } // namespace AscendC
 
 #endif // IMPL_MATH_MATH_COMMON_UTIL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_MATH_COMMON_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_MATH_COMMON_IMPL_H
+#endif

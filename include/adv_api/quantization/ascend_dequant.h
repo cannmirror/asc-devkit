@@ -12,6 +12,12 @@
  * \file ascend_dequant.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_DEQUANT_H
+#endif
+
 #ifndef LIB_QUANTIZATION_ASCEND_DEQUANT_H
 #define LIB_QUANTIZATION_ASCEND_DEQUANT_H
 #include "include/adv_api/quantization/ascend_dequant_utils.h"
@@ -261,3 +267,8 @@ __aicore__ inline void AscendDequant(const LocalTensor<dstT>& dstTensor, const L
 } // namespace AscendC
 #endif
 #endif // LIB_QUANTIZATION_ASCEND_DEQUANT_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_DEQUANT_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASCEND_DEQUANT_H
+#endif

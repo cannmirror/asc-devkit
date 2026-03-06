@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GROUPNORM_TILING_H
+#endif
+
 #ifndef LIB_NORMALIZATION_GROUPNORM_TILING_H
 #define LIB_NORMALIZATION_GROUPNORM_TILING_H
 #include "graph/tensor.h"
@@ -54,3 +60,8 @@ void GetGroupNormNDTilingInfo(const ge::Shape& srcShape, const uint32_t stackBuf
     const bool isReuseSource, const uint32_t groupNum, AscendC::tiling::GroupNormTiling& tiling);
 }
 #endif // LIB_NORMALIZATION_GROUPNORM_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GROUPNORM_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GROUPNORM_TILING_H
+#endif

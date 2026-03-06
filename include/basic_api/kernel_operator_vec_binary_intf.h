@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_binary_intf.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BINARY_INTF_H
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BINARY_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BINARY_INTERFACE_H
 
@@ -740,3 +745,8 @@ __aicore__ inline void FusedExpSub(const LocalTensor<T> &dst, const LocalTensor<
 #pragma end_pipe
 #include "../../impl/basic_api/kernel_operator_vec_binary_intf_impl.h"
 #endif  // ASCENDC_MODULE_OPERATOR_VEC_BINARY_INTERFACE_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BINARY_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_BINARY_INTF_H
+#endif

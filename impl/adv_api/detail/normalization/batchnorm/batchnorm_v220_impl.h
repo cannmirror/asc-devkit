@@ -12,6 +12,12 @@
  * \file batchnorm_v220_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/normalization/batchnorm/batchnorm_v220_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H
+#endif
 #ifndef IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H
 #define IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H
 
@@ -76,3 +82,8 @@ __aicore__ inline void BrcFirstDimByBrcb(const LocalTensor<float>& dst, const Lo
 } // namespace BatchNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_BATCHNORM_BATCHNORM_V220_IMPL_H
+#endif

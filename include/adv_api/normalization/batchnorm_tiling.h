@@ -7,6 +7,12 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_TILING_H
+#endif
+
 #ifndef LIB_NORMALIZATION_BATCHNORM_TILING_H
 #define LIB_NORMALIZATION_BATCHNORM_TILING_H
 #include "graph/tensor.h"
@@ -56,3 +62,8 @@ bool GetBatchNormNDTilingInfo(const ge::Shape& srcShape, const ge::Shape& origin
     AscendC::tiling::BatchNormTiling& tilling, const bool isBasicBlock = false);
 }
 #endif // LIB_NORMALIZATION_BATCHNORM_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_TILING_H
+#endif

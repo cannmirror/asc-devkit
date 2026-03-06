@@ -13,6 +13,12 @@
  * \brief Sigmoid is an activation function,
  * Mathematical formulas: Sigmoid(x) = 1 / (1 + exp(-x))
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_H
+#endif
+
 #ifndef LIB_SIGMOID_SIGMOID_H
 #define LIB_SIGMOID_SIGMOID_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 1001 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 2201 || \
@@ -102,3 +108,8 @@ __aicore__ inline void Sigmoid(const LocalTensor<T>& dstTensor, const LocalTenso
 }  // namespace AscendC
 #endif
 #endif  // LIB_SIGMOID_SIGMOID_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIGMOID_H
+#endif

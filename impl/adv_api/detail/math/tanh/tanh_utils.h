@@ -12,9 +12,14 @@
  * \file tanh_utils.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/math/tanh/tanh_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/tanh.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TANH_TANH_UTILS_H
+#endif
 #ifndef LIB_MATH_TANH_UTILS_H
 #define LIB_MATH_TANH_UTILS_H
-
 namespace AscendC {
 enum class TanhAlgo {
     INTRINSIC = 0,
@@ -29,3 +34,8 @@ constexpr TanhConfig DEFAULT_TANH_CONFIG = { TanhAlgo::INTRINSIC };
 
 }; // namespace AscendC
 #endif // LIB_MATH_TANH_UTILS_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TANH_TANH_UTILS_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_TANH_TANH_UTILS_H
+#endif

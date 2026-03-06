@@ -12,6 +12,11 @@
  * \file kernel_operator_vec_transpose_intf.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TRANSPOSE_INTF_H
+#endif
+
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_TRANSPOSE_INTERFACE_H
 #define ASCENDC_MODULE_OPERATOR_VEC_TRANSPOSE_INTERFACE_H
 
@@ -71,3 +76,8 @@ __aicore__ inline __check_sync_alias__ __in_pipe__(S) __out_pipe__(V) void Trans
 
 #include "../../impl/basic_api/kernel_operator_vec_transpose_intf_impl.h"
 #endif // ASCENDC_MODULE_OPERATOR_VEC_TRANSPOSE_INTERFACE_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TRANSPOSE_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_VEC_TRANSPOSE_INTF_H
+#endif

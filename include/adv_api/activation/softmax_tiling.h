@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_TILING_H
+#endif
+
 #ifndef LIB_SOFTMAX_SOFTMAX_TILING_H
 #define LIB_SOFTMAX_SOFTMAX_TILING_H
 #include "graph/tensor.h"
@@ -213,3 +219,8 @@ void SoftMaxFlashV2TilingFunc(const ge::Shape& srcShape, const uint32_t dataType
     const bool isBasicBlock = false, const bool isFlashOutputBrc = false);
 }
 #endif // LIB_SOFTMAX_SOFTMAX_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAX_TILING_H
+#endif

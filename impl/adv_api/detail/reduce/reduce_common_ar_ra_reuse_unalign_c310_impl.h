@@ -7,6 +7,13 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/reduce/reduce_common_ar_ra_reuse_unalign_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/reduce/reduce.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_RA_REUSE_UNALIGN_C310_IMPL_H
+#endif
+
 #ifndef IMPL_REDUCE_REDUCE_COMMON_AR_RA_REUSE_UNALIGN_C310_IMPL_H
 #define IMPL_REDUCE_REDUCE_COMMON_AR_RA_REUSE_UNALIGN_C310_IMPL_H
 
@@ -1253,3 +1260,8 @@ __aicore__ inline void ReduceARReuseSourceUnAligned(__ubuf__ T *dstAddr, __ubuf_
 }
 } // namespace AscendC
 #endif // IMPL_REDUCE_REDUCE_COMMON_AR_RA_REUSE_UNALIGN_C310_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_RA_REUSE_UNALIGN_C310_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_REDUCE_REDUCE_COMMON_AR_RA_REUSE_UNALIGN_C310_IMPL_H
+#endif

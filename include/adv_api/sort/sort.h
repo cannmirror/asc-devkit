@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_H
+#endif
+
 #ifndef LIB_SORT_SORT_H
 #define LIB_SORT_SORT_H
 
@@ -184,3 +190,8 @@ __aicore__ inline void Sort(LocalTensor<T>& dstTensor, LocalTensor<uint32_t>& ds
 } // namespace AscendC
 #endif
 #endif // LIB_SORT_SORT_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SORT_H
+#endif

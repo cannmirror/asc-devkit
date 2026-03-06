@@ -8,6 +8,11 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/normalization/rmsnorm/rmsnorm_v200_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_V200_IMPL_H
+#endif
 #ifndef IMPL_NORMALIZATION_RMSNORM_RMSNORM_V200_IMPL_H
 #define IMPL_NORMALIZATION_RMSNORM_RMSNORM_V200_IMPL_H
 #include "kernel_tensor.h"
@@ -51,3 +56,8 @@ __aicore__ inline void RmsNormBasicBlockBrc(const LocalTensor<float>& dst,
 } // namespace RmsNormAPI
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_RMSNORM_RMSNORM_V200_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_V200_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_RMSNORM_RMSNORM_V200_IMPL_H
+#endif

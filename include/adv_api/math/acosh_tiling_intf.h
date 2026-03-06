@@ -12,6 +12,12 @@
  * \file acosh_tiling_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOSH_TILING_INTF_H
+#endif
+
 #ifndef LIB_MATH_ACOSH_TILING_INTF_H
 #define LIB_MATH_ACOSH_TILING_INTF_H
 
@@ -22,3 +28,8 @@ typedef void AcoshTilingDeprecatedHeader;
 using LibAcoshTilingInterface = AcoshTilingDeprecatedHeader;
 } // namespace AscendC
 #endif // LIB_MATH_ACOSH_TILING_INTF_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOSH_TILING_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ACOSH_TILING_INTF_H
+#endif

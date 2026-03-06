@@ -12,6 +12,12 @@
  * \file matmul.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_H
+#endif
+
 #ifndef LIB_MATMUL_MATMUL_H
 #define LIB_MATMUL_MATMUL_H
 
@@ -375,4 +381,9 @@ namespace matmul = AscendC;
 #include "../../../impl/adv_api/detail/matmul/matmul_impl.h"
 #include "../../../impl/adv_api/detail/matmul/batch_matmul_impl.h"
 #include "../../../impl/adv_api/detail/matmul/mx_matmul_impl.h"
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATMUL_H
 #endif

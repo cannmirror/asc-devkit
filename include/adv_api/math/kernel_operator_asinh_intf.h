@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_ASINH_INTF_H
+#endif
+
 #ifndef LIB_MATH_KERNEL_OPERATOR_ASINH_INTF_H
 #define LIB_MATH_KERNEL_OPERATOR_ASINH_INTF_H
 #include "asinh.h"
@@ -21,4 +27,9 @@ namespace AscendC {
 [[deprecated(__FILE__ " is deprecated, please use asinh.h instead!")]] typedef void AsinDeprecatedHeader;
 using LibAsinInterface = AsinDeprecatedHeader;
 }
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_ASINH_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_ASINH_INTF_H
 #endif

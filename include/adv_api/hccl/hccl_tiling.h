@@ -12,6 +12,12 @@
 * \file hccl_tiling.h
 * \brief
 */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_TILING_H
+#endif
+
 #ifndef LIB_HCCL_HCCL_TILING_H
 #define LIB_HCCL_HCCL_TILING_H
 
@@ -49,4 +55,9 @@ private:
     HcclTilingImpl impl_;
 };
 } // namespace AscendC
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_HCCL_TILING_H
 #endif

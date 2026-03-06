@@ -12,6 +12,12 @@
  * \file silu_tiling.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_TILING_H
+#endif
+
 #ifndef LIB_ACTIVATION_SILU_TILING_H
 #define LIB_ACTIVATION_SILU_TILING_H
 #include "graph/tensor.h"
@@ -30,4 +36,9 @@ namespace AscendC {
 void GetSiluTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, const bool isReuseSource,
     uint32_t& maxValue, uint32_t& minValue);
 } // namespace AscendC
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SILU_TILING_H
 #endif

@@ -12,6 +12,12 @@
  * \file geglu_tiling.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_TILING_H
+#endif
+
 #ifndef LIB_ACTIVATION_GEGLU_TILING_H
 #define LIB_ACTIVATION_GEGLU_TILING_H
 #include <cstdint>
@@ -44,3 +50,8 @@ void GetGeGLUMaxMinTmpSize(const ge::Shape& srcShape, const uint32_t typeSize, c
 void GetGeGLUTmpBufferFactorSize(const uint32_t typeSize, uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 } // namespace AscendC
 #endif // LIB_ACTIVATION_GEGLU_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_GEGLU_TILING_H
+#endif

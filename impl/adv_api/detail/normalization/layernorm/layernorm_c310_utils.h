@@ -12,6 +12,12 @@
  * \file layernorm_c310_utils.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/normalization/layernorm/layernorm_c310_utils.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/layernorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_UTILS_H
+#endif
 #ifndef IMPL_NORMALIZATION_LAYERNORM_C310_UTILS_H
 #define IMPL_NORMALIZATION_LAYERNORM_C310_UTILS_H
 
@@ -386,3 +392,8 @@ __simd_callee__ inline void ReduceWorkBufferAndStore(__ubuf__ T* const workUbYOr
 
 } // namespace AscendC
 #endif // IMPL_NORMALIZATION_LAYERNORM_C310_UTILS_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_UTILS_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_NORMALIZATION_LAYERNORM_LAYERNORM_C310_UTILS_H
+#endif

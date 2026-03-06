@@ -12,7 +12,11 @@
  * \file kernel_operator_sys_var_intf_impl.h
  * \brief
  */
-
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/basic_api/kernel_operator_sys_var_intf_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_sys_var_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SYS_VAR_INTF_IMPL_H
+#endif
 #ifndef ASCENDC_MODULE_OPERATOR_SYS_VAR_INTERFACE_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_SYS_VAR_INTERFACE_IMPL_H
 
@@ -116,3 +120,7 @@ __aicore__ inline void ClearSpr(){
 #endif
 }  // namespace AscendC
 #endif  // ASCENDC_MODULE_OPERATOR_SYS_VAR_INTERFACE_IMPL_H
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SYS_VAR_INTF_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_OPERATOR_SYS_VAR_INTF_IMPL_H
+#endif

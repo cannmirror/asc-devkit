@@ -13,6 +13,12 @@
  * \brief
  */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_WHERE_H
+#endif
+
 #ifndef LIB_MATH_WHERE_H
 #define LIB_MATH_WHERE_H
 
@@ -43,3 +49,8 @@ __aicore__ inline void Where(const LocalTensor<T>& dst, const U& src0, const S& 
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_WHERE_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_WHERE_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_WHERE_H
+#endif

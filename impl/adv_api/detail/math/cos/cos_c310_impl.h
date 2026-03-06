@@ -12,9 +12,14 @@
  * \file cos_c310_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/math/cos/cos_c310_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/math/cos.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_C310_IMPL_H
+#endif
 #ifndef LIB_MATH_COS_C310_IMPL_H
 #define LIB_MATH_COS_C310_IMPL_H
-
 #include "kernel_tensor.h"
 #include "kernel_basic_intf.h"
 #include "../../common/common.h"
@@ -232,3 +237,8 @@ __aicore__ inline void CosCastFullMask(
 }
 } // namespace AscendC
 #endif // LIB_MATH_COS_C310_IMPL_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_C310_IMPL_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MATH_COS_COS_C310_IMPL_H
+#endif

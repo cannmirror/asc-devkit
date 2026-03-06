@@ -12,6 +12,12 @@
  * \file batchnorm_check_aicore.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/api_check/kernel_check/normalization/batchnorm/batchnorm_check_aicore.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/normalization/batchnorm.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_CHECK_AICORE_H
+#endif
+
 #ifndef IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_AICORE_H_
 #define IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_AICORE_H_
 
@@ -34,3 +40,8 @@ public:
 }
 }
 #endif // IMPL_API_CHECK_KERNEL_CHECK_NORMALIZATION_BATCHNORM_BATCHNORM_CHECK_AICORE_H_
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_CHECK_AICORE_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_BATCHNORM_CHECK_AICORE_H
+#endif

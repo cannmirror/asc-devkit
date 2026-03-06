@@ -12,6 +12,12 @@
  * \file softmaxgrad.h
  * \brief SoftmaxGrad and SoftmaxGradFront api of AscendC
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAXGRAD_H
+#endif
+
 #ifndef LIB_SOFTMAX_SOFTMAXGRAD_H
 #define LIB_SOFTMAX_SOFTMAXGRAD_H
 
@@ -142,3 +148,8 @@ __aicore__ inline void SoftmaxGradFront(const LocalTensor<T>& dstTensor, const L
 #pragma end_pipe
 #endif
 #endif // LIB_SOFTMAX_SOFTMAXGRAD_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAXGRAD_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SOFTMAXGRAD_H
+#endif

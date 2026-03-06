@@ -12,6 +12,11 @@
  * \file kernel_utils_mode_cpu.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/basic_api/utils/kernel_utils_mode_cpu.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"basic_api/kernel_operator_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_MODE_CPU_H
+#endif
 #ifndef ASCENDC_MODULE_UTILS_MODE_CPU_H
 #define ASCENDC_MODULE_UTILS_MODE_CPU_H
 #include "utils/kernel_utils_constants.h"
@@ -478,3 +483,7 @@ constexpr AntiQuantConfig ANTIQUANT_DEFAULT_CFG = {AntiQuantMode::DEFAULT};
 #endif
 } // namespace AscendC
 #endif // ASCENDC_MODULE_UTILS_MODE_H
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_MODE_CPU_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_UTILS_MODE_CPU_H
+#endif

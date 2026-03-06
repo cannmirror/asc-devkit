@@ -7,6 +7,13 @@
 * INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
 * See LICENSE in the root of the software repository for the full text of the License.
 */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/common/check.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/kernel_api.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CHECK_H
+#endif
+
 #ifndef IMPL_COMMON_CHECK_H
 #define IMPL_COMMON_CHECK_H
 
@@ -51,4 +58,10 @@ __aicore__ inline void CheckTmpBufferSize(const uint32_t checkBufferSize, const 
 }
 
 } // namespace AscendC
+
 #endif // IMPL_COMMON_CHECK_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CHECK_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_CHECK_H
+#endif

@@ -12,6 +12,12 @@
  * \file layernorm.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_H
+#endif
+
 #ifndef LIB_NORMALIZATION_LAYERNORM_H
 #define LIB_NORMALIZATION_LAYERNORM_H
 #include "include/adv_api/normalization/layernorm_utils.h"
@@ -183,3 +189,8 @@ __aicore__ inline void WelfordUpdate(const LocalTensor<U>& outputMean, const Loc
 } // namespace AscendC
 #endif
 #endif // LIB_NORMALIZATION_LAYERNORM_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_H
+#endif

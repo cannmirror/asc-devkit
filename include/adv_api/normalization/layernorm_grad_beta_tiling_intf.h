@@ -12,6 +12,12 @@
  * \file layernorm_grad_beta_tiling_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_GRAD_BETA_TILING_INTF_H
+#endif
+
 #ifndef LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_INTF_H
 #define LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_INTF_H
 #include "layernorm_grad_beta_tiling.h"
@@ -21,3 +27,8 @@ typedef void LayernormGradBetaTilingDeprecatedHeader;
 using LibLayernormGradBetaTilingInterface = LayernormGradBetaTilingDeprecatedHeader;
 } // namespace AscendC
 #endif // LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_INTF_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_GRAD_BETA_TILING_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_GRAD_BETA_TILING_INTF_H
+#endif

@@ -12,6 +12,12 @@
  * \file round_tiling.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ROUND_TILING_H
+#endif
+
 #ifndef LIB_MATH_ROUND_TILING_H
 #define LIB_MATH_ROUND_TILING_H
 
@@ -47,3 +53,8 @@ void GetRoundTmpBufferFactorSize(const platform_ascendc::PlatformAscendC& ascend
     uint32_t& maxLiveNodeCount, uint32_t& extraBuf);
 }
 #endif // LIB_MATH_ROUND_TILING_INTF
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ROUND_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ROUND_TILING_H
+#endif

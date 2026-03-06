@@ -28,6 +28,12 @@
  *   R2 = 0.008333049340
  *   R3 = -0.1666665792
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIN_H
+#endif
+
 #ifndef LIB_MATH_SIN_H
 #define LIB_MATH_SIN_H
 
@@ -210,3 +216,8 @@ __aicore__ inline void Sin(const LocalTensor<T>& dstTensor, const LocalTensor<T>
 #endif
 
 #endif  // LIB_MATH_SIN_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIN_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_SIN_H
+#endif

@@ -12,6 +12,11 @@
  * \file kernel_common.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_COMMON_H
+#endif
+
 #ifndef ASCENDC_KERNEL_COMMON_H
 #define ASCENDC_KERNEL_COMMON_H
 
@@ -220,4 +225,9 @@ __aicore__ inline __gm__ uint8_t* __gm__ GetDumpWorkSpacePtr()
 {
     return g_dumpWorkspaceReserved;
 }
+#endif
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_COMMON_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_COMMON_H
 #endif

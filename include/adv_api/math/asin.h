@@ -18,6 +18,12 @@
  * when x x belongs to (-1, -2^(-0.5)), Asin(x) = arcsin(sqrt(1-x^2)) - PI*0.5
  * when x belongs to (2^(-0.5), 1), Asin(x) = PI*0.5 - arcsin(sqrt(1-x^2))
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASIN_H
+#endif
+
 #ifndef LIB_MATH_ASIN_H
 #define LIB_MATH_ASIN_H
 #if defined(__NPU_ARCH__) && (__NPU_ARCH__ == 2201 || __NPU_ARCH__ == 2002 || __NPU_ARCH__ == 3510 || \
@@ -116,3 +122,8 @@ __aicore__ inline void Asin(const LocalTensor<T>& dstTensor, const LocalTensor<T
 } // namespace AscendC
 #endif
 #endif // LIB_MATH_ASIN_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASIN_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASIN_H
+#endif

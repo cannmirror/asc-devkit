@@ -8,6 +8,12 @@
 * See LICENSE in the root of the software repository for the full text of the License.
 */
 
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_RMSNORM_H
+#endif
+
 #ifndef LIB_NORMALIZATION_RMSNORM_H
 #define LIB_NORMALIZATION_RMSNORM_H
 #include "kernel_tensor.h"
@@ -78,3 +84,8 @@ __aicore__ inline void RmsNorm(const LocalTensor<T>& dstLocal, const LocalTensor
 } // namespace AscendC
 #endif
 #endif // LIB_NORMALIZATION_RMSNORM_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_RMSNORM_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_RMSNORM_H
+#endif

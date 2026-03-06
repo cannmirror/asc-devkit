@@ -12,6 +12,12 @@
  * \file mean_tiling_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_TILING_INTF_H
+#endif
+
 #ifndef LIB_REDUCE_MEAN_TILING_INTF
 #define LIB_REDUCE_MEAN_TILING_INTF
 
@@ -21,3 +27,8 @@ namespace AscendC {
 using LibMeanTilingInterface = MeanTilingDeprecatedHeader;
 } // namespace AscendC
 #endif  // LIB_REDUCE_MEAN_TILING_INTF
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_TILING_INTF_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_MEAN_TILING_INTF_H
+#endif

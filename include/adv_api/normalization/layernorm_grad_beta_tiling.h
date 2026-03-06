@@ -12,6 +12,12 @@
  * \file layernorm_grad_beta_tiling.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_GRAD_BETA_TILING_H
+#endif
+
 #ifndef LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_H
 #define LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_H
 #include "graph/tensor.h"
@@ -75,3 +81,8 @@ void GetLayerNormGradBetaNDTilingInfo(const ge::Shape srcShape, const uint32_t s
     const bool isReuseSource, AscendC::tiling::LayerNormGradBetaTiling& tiling);
 } // namespace AscendC
 #endif // LIB_NORMALIZATION_LAYERNORM_GRAD_BETA_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_GRAD_BETA_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_LAYERNORM_GRAD_BETA_TILING_H
+#endif

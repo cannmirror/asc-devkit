@@ -12,6 +12,12 @@
  * \file topk_utils.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_UTILS_H
+#endif
+
 #ifndef LIB_SORT_TOPK_UTILS_H
 #define LIB_SORT_TOPK_UTILS_H
 #include <cstdint>
@@ -25,3 +31,8 @@ struct TopKInfo {
 };
 }; // namespace AscendC
 #endif // ADV_API_SORT_TOPK_UTILS_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_UTILS_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_TOPK_UTILS_H
+#endif
