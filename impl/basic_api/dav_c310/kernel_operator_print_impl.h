@@ -289,8 +289,8 @@ __aicore__ __gm__ inline BlockRingBufInfo* GetBlockRingBufInfo()
     } else {
         ringBufInfo->flag = 0;
     }
-    bisheng::cce::dcci((__gm__ uint64_t*)ringBufInfo, bisheng::cce::cache_line_t::ENTIRE_DATA_CACHE,
-        bisheng::cce::dcci_dst_t::CACHELINE_OUT);
+    dcci((__gm__ uint64_t*)ringBufInfo, cache_line_t::ENTIRE_DATA_CACHE,
+        dcci_dst_t::CACHELINE_OUT);
     return ringBufInfo;
 }
 
