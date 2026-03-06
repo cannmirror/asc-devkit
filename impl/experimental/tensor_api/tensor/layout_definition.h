@@ -42,6 +42,8 @@ template <typename T, typename U>
 struct Layout : private Std::tuple<T, U>
 {
     static constexpr auto size = StaticLayoutSize<T, U>::size;
+    static constexpr auto depth = nesting_depth_v<T>;
+    static constexpr auto rank = Std::tuple_size_v<T>;
 
     __aicore__ inline constexpr Layout(const T& shape  = {}, const U& stride = {})
         : Std::tuple<T, U>(shape, stride)
@@ -106,9 +108,6 @@ struct Layout : private Std::tuple<T, U>
     {
         return TupleSize<I...>(Shape());
     }
-
-    static constexpr auto depth = nesting_depth_v<T>;
-    static constexpr auto rank = Std::tuple_size_v<T>;
 };
 
 template <typename T>

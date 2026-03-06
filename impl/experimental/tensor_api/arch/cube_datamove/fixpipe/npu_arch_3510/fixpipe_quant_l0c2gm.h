@@ -170,8 +170,7 @@ class FixpipeQuantFourDimL0C2GM3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {
-        auto fourDimDst = PreProcess(dst);
-        Execute<trait>(fourDimDst, src, quant, coord);
+        Execute<trait>(dst, src, quant, coord);
     }
 
 private:

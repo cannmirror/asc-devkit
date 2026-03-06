@@ -418,8 +418,7 @@ class DataCopyFourDim2201GM2L1 : public CopyGmToCbufMultiND2NZBase, public CopyG
 public:
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto fourDimSrc = PreProcess(src);
-        Execute<trait>(dst, fourDimSrc, coord);
+        Execute<trait>(dst, src, coord);
     }
 
 private:

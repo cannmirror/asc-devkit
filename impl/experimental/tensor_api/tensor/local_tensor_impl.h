@@ -183,17 +183,11 @@ __aicore__ inline constexpr auto operator()(const Arg0& arg0, const Args&... arg
 };
 
 template <typename Iterator, typename... Args>
-__aicore__ inline constexpr auto MakeTensorImpl(const Iterator& iter, const Args&... args)
+__aicore__ inline constexpr auto MakeTensor(const Iterator& iter, const Args&... args)
 {
     static_assert(HasDereference<Iterator>::value, "Expected iterator iter in MakeLocalTensor(iter, args...)");
     static_assert(!(HasDereference<Args>::value && ...), "Expected layout args... in MakeLocalTensor(iter, args...)");
     return MakeLocalTensor<Iterator>{}(iter, args...);
-}
-
-template <typename Iterator, typename... Args>
-__aicore__ inline constexpr auto MakeTensor(const Iterator& iter, const Args&... args)
-{
-    return MakeTensorImpl<Iterator, Args...>(iter, args...);
 }
 
 } // namespace Te

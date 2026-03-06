@@ -23,43 +23,8 @@
 namespace AscendC {
 namespace Te {
 
-class DimConversion {
-public:
-    template<typename T>
-    __aicore__ inline auto Run(const T& tensor) {
-        return ConvertTwoDim2FourDim(tensor);
-    }
-    
-private:
-    template<typename T>
-    __aicore__ inline auto ConvertTwoDim2FourDim(const T& tensor) {
-        auto layout = tensor.Layout();
-        auto shape4Dim = MakeShape(
-            MakeShape(Std::Int<1>{}, GetShape<0>(layout)),
-            MakeShape(Std::Int<1>{}, GetShape<1>(layout))
-        );
-        auto stride4Dim = MakeStride(
-            MakeStride(Std::Int<0>{}, GetStride<0>(layout)),
-            MakeStride(Std::Int<0>{}, GetStride<1>(layout))
-        );
-        auto fourDimLayout = MakeLayout(shape4Dim, stride4Dim);
-        return MakeTensorImpl(tensor.Engine().Begin(), fourDimLayout);
-    }
-};
-
-template <typename T>
-__aicore__ inline auto PreProcess(const T& tensor) {
-    using  tensorShape = Std::remove_cvref_t<decltype(tensor.Shape())>;
-    if constexpr (nesting_depth_v<tensorShape> == TWO_DIM_DATA) {
-        return DimConversion{}.Run(tensor);
-    } else {
-        static_assert(nesting_depth_v<tensorShape> == FOUR_DIM_DATA, "Only support two or four dim LayoutType");
-        return tensor;
-    }
-}
-
-template <typename Layout, typename TileShape>
-__aicore__ inline decltype(auto) MakeTileLayout(const Layout& layout, const TileShape& tileShape) {
+template <typename LayoutType, typename TileShape>
+__aicore__ inline decltype(auto) MakeTileLayout(const LayoutType& layout, const TileShape& tileShape) {
     static_assert(Std::is_tuple_v<TileShape>);
 
     using OriginShape = Std::remove_cvref_t<decltype(layout.Shape())>;

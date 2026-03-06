@@ -35,22 +35,6 @@ struct MakeTupleCons {
 };
 
 template <typename F, typename T>
-__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T&& t);
-
-template <typename F, typename T0, typename T1>
-__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1);
-
-template <typename F, typename T0, typename T1, typename... Ts>
-__aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1, Ts&&... ts);
-
-template <typename T0, typename T1, typename T2, typename T3, typename... Ts>
-__aicore__ inline decltype(auto) LayoutConstructor(T0&& t0, T1&& t1, T2&& t2, T3&& t3, Ts&&... ts) {
-    auto shape = Make2Params2Tuple(MakeTupleCons{}, t0, t1, t2, t3);
-    auto stride = Make2Params2Tuple(MakeTupleCons{}, ts...);
-    return Layout(shape, stride);
-}
-
-template <typename F, typename T>
 __aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T&& t) {
     return t;
 }
@@ -65,6 +49,13 @@ __aicore__ inline decltype(auto) Make2Params2Tuple(F&& f, T0&& t0, T1&& t1, Ts&&
     auto tuple1 = Make2Params2Tuple(f, t0, t1);
     auto tuple2 = Make2Params2Tuple(f, ts...);
     return Make2Params2Tuple(f, tuple1, tuple2);
+}
+
+template <typename T0, typename T1, typename T2, typename T3, typename... Ts>
+__aicore__ inline decltype(auto) LayoutConstructor(T0&& t0, T1&& t1, T2&& t2, T3&& t3, Ts&&... ts) {
+    auto shape = Make2Params2Tuple(MakeTupleCons{}, t0, t1, t2, t3);
+    auto stride = Make2Params2Tuple(MakeTupleCons{}, ts...);
+    return Layout(shape, stride);
 }
 
 // layout_dispatch.h
