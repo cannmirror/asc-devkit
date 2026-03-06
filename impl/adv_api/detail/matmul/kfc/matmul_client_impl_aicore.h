@@ -12,6 +12,12 @@
  * \file matmul_client_impl_aicore.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/kfc/matmul_client_impl_aicore.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul_intf.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_CLIENT_IMPL_AICORE_H
+#endif
+
 #ifndef IMPL_MATMUL_KFC_MATMUL_CLIENT_IMPL_AICORE_H
 #define IMPL_MATMUL_KFC_MATMUL_CLIENT_IMPL_AICORE_H
 
@@ -291,4 +297,8 @@ __aicore__ inline void SetTPipe(MatmulClient<A_TYPE, B_TYPE, C_TYPE, BIAS_TYPE, 
 }
 
 } // namespace AscendC
+#endif
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_CLIENT_IMPL_AICORE_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_KFC_MATMUL_CLIENT_IMPL_AICORE_H
 #endif

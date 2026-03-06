@@ -12,6 +12,12 @@
 * \file matmul_usr_define_info.h
 * \brief
 */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/param/matmul_usr_define_info.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_USR_DEFINE_INFO_H
+#endif
+
 #ifndef IMPL_MATMUL_PARAM_MATMUL_USER_DEFINE_INFO_H
 #define IMPL_MATMUL_PARAM_MATMUL_USER_DEFINE_INFO_H
 
@@ -74,4 +80,8 @@ private:
 }  // namespace Detail
 }  // namespace Impl
 }  // namespace AscendC
+#endif
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_USR_DEFINE_INFO_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_USR_DEFINE_INFO_H
 #endif // _MATMUL_USER_DEFINE_INFO_H_

@@ -12,6 +12,12 @@
  * \file scheduler_mdl_partial_output.h
  * \brief partial output, only for aicore like 310
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/scheduler/base/scheduler_mdl_partial_output.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BASE_SCHEDULER_MDL_PARTIAL_OUTPUT_H
+#endif
+
 #ifndef IMPL_MATMUL_SCHEDULER_BASE_SCHEDULER_MDL_PARTIAL_OUTPUT_H
 #define IMPL_MATMUL_SCHEDULER_BASE_SCHEDULER_MDL_PARTIAL_OUTPUT_H
  
@@ -157,3 +163,8 @@ private:
 }  // namespace AscendC
 
 #endif // IMPL_MATMUL_SCHEDULER_BASE_SCHEDULER_MDL_PARTIAL_OUTPUT_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BASE_SCHEDULER_MDL_PARTIAL_OUTPUT_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BASE_SCHEDULER_MDL_PARTIAL_OUTPUT_H
+#endif

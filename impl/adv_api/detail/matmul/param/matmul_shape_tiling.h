@@ -13,6 +13,12 @@
  * \brief matmul variable manager
  */
 
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/param/matmul_shape_tiling.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
+#endif
+
 #ifndef IMPL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
 #define IMPL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
 
@@ -478,3 +484,8 @@ private:
 }  // namespace Impl
 }  // namespace AscendC
 #endif // IMPL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_PARAM_MATMUL_SHAPE_TILING_H
+#endif

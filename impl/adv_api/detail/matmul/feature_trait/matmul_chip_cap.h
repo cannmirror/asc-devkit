@@ -13,6 +13,12 @@
 * \brief
 */
 
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/feature_trait/matmul_chip_cap.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_FEATURE_TRAIT_MATMUL_CHIP_CAP_H
+#endif
+
 #ifndef IMPL_MATMUL_FEATURE_TRAIT_MATMUL_CHIP_CAP_H
 #define IMPL_MATMUL_FEATURE_TRAIT_MATMUL_CHIP_CAP_H
 
@@ -110,3 +116,8 @@ private:
 }  // namespace Impl
 }  // namespace AscendC
 #endif // _MATMUL_CHIP_CAP_H_
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_FEATURE_TRAIT_MATMUL_CHIP_CAP_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_FEATURE_TRAIT_MATMUL_CHIP_CAP_H
+#endif

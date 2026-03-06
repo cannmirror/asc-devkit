@@ -12,6 +12,12 @@
 * \file l1_manager.h
 * \brief l1 address manager
 */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/resource/l1_manager/l1_manager.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_L1_MANAGER_L1_MANAGER_H
+#endif
+
 #ifndef IMPL_MATMUL_RESOURCE_L1_MANAGER_L1_MANAGER_H
 #define IMPL_MATMUL_RESOURCE_L1_MANAGER_L1_MANAGER_H
 
@@ -71,4 +77,8 @@ private:
 }  // namespace Detail
 }  // namespace Impl
 }  // namespace AscendC
+#endif
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_L1_MANAGER_L1_MANAGER_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_RESOURCE_L1_MANAGER_L1_MANAGER_H
 #endif // IMPL_MATMUL_RESOURCE_L1_MANAGER_L1_MANAGER_H

@@ -12,6 +12,12 @@
  * \file batch_scheduler.h
  * \brief
  */
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("impl/adv_api/detail/matmul/scheduler/batch/batch_scheduler.h is an internal header file and must not be used directly. Functions or variables defined in this file may be removed in the future. Please use \"#include \"adv_api/matmul/matmul.h\"\" and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_H
+#endif
+
 #ifndef IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_H
 #define IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_H
 
@@ -478,3 +484,8 @@ private:
 }  // namespace Impl
 }  // namespace AscendC
 #endif // IMPL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_H
+
+#if defined(UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_H)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_DETAIL_MATMUL_SCHEDULER_BATCH_BATCH_SCHEDULER_H
+#endif
