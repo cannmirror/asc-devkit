@@ -19,3 +19,4 @@
 | [slice_data_movement](./slice_data_movement) | 本样例通过Ascend C编程语言实现了DataCopy数据切片算子，支持数据的切片搬运，提取多维Tensor数据的子集进行搬运 |
 | [tensor_quantized_activation_during](./tensor_quantized_activation_during) | 本样例基于DataCopy实现数据搬运，支持在数据搬运过程中进行tensor量化和Relu激活等操作 |
 | [broadcast_vec_to_mm](./broad_cast_vec_to_mm) | 本样例基于BroadCastVecToMM实现数据广播搬运，适用于Unified Buffer与L0C Buffer之间的数据传输 |
+[multidimensional_data_movement](./multidimensional_data_movement) | 本样例基于DataCopy的多维数据搬运，相较于基础数据搬运接口，可自由配置搬入的维度以及对应的Stride |
