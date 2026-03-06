@@ -1,0 +1,98 @@
+/**
+* Copyright (c) 2026 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+
+/*!
+ * \file nz2nz.h
+ * \brief
+ */
+#ifndef IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_NZ2NZ_H
+#define IMPL_EXPERIMENTAL_TENSOR_API_ARCH_CUBE_DATAMOVE_DATA_COPY_NPU_ARCH_3510_DATA_COPY_GM2L1_NZ2NZ_H
+
+#include "impl/experimental/tensor_api/utils/utils_impl.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/instruction.h"
+
+namespace AscendC {
+namespace Te {
+
+class CopyGmToCbufAlignV2NZBase {
+public:
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+        DataCopyImpl<trait, T, U>(dst, src);
+    }
+
+private:
+    template <typename T>
+    __aicore__ inline constexpr void CheckNZTemplate()
+    {
+        using type = typename T::elementType;
+        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
+        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
+        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>, "Layout->Shape->Row->ZeroDim, is not Std::Int<16> type!");
+        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<C0_SIZE / sizeof(type)>>, "Layout->Shape->Column->ZeroDim, is not Std::Int<C0Size/Type> type!");
+
+        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
+        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
+        static_assert(Std::is_same_v<StrideRow0, Std::Int<C0_SIZE / sizeof(type)>>, "Layout->Stride->Row->ZeroDim, is not Std::Int<C0Size/Type> type!");
+        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>, "Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
+    }
+
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline constexpr void CheckTemplate()
+    {
+        using srcType = typename U::elementType;
+        using dstType = typename T::elementType;
+        CheckNZTemplate<T>();
+        CheckNZTemplate<U>();
+
+#if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
+        static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__cbuf__ bfloat16_t, __gm__ bfloat16_t>, 
+            Std::tuple<__cbuf__ half, __gm__ half>, Std::tuple<__cbuf__ float, __gm__ float>, 
+            Std::tuple<__cbuf__ int16_t, __gm__ int16_t>, Std::tuple<__cbuf__ int32_t, __gm__ int32_t>, 
+            Std::tuple<__cbuf__ int8_t, __gm__ int8_t>, Std::tuple<__cbuf__ uint16_t, __gm__ uint16_t>, 
+            Std::tuple<__cbuf__ uint32_t, __gm__ uint32_t>, Std::tuple<__cbuf__ uint8_t, __gm__ uint8_t>>,
+            "The data type is not supported.");
+#endif
+    }
+
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
+    {
+        CheckTemplate<trait, T, U>();
+
+        auto dstLayout = dst.Layout();
+        auto srcLayout = src.Layout();
+
+        auto smallFractalSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout);
+        auto bigFractalSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout)
+            * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
+        auto srcStrideSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(srcLayout);
+        auto dstStrideSize = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
+
+        uint8_t leftPaddingCnt = 0;
+        uint8_t rightPaddingCnt = 0;
+        uint8_t cacheMode = GetCacheModeFromTensor(src.Data().Get());
+
+        using type = typename U::elementType;
+
+        auto blockCount = bigFractalSize;
+        auto blockLen = smallFractalSize * sizeof(type);
+        auto srcStride = srcStrideSize * sizeof(type);
+        auto dstStride = dstStrideSize * sizeof(type);
+
+        CopyGmToCbufAlignV2Base copy_gm_to_cbuf_align_v2_base;
+        copy_gm_to_cbuf_align_v2_base.DataCopy(dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
+    }
+};
+}
+}
+
+#endif
