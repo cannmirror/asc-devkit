@@ -49,6 +49,12 @@ set_target_properties(custom_ops PROPERTIES
     OUTPUT_NAME "custom_ops"
 )
 
+# ======================================================================================
+# NPU 编译选项配置
+#
+# 说明：
+#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
+# ======================================================================================
 target_compile_options(custom_ops PRIVATE
     ${TF_CFLAGS}
 )
