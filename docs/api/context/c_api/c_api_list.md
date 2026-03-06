@@ -261,7 +261,10 @@ C API文档目录，整体使用时可以引入asc_simd.h，C API列表如下：
 | [asc_set_atomic_min_int](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int32_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_atomic_min_int8](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int8_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
 | [asc_set_atomic_min_int16](simd_atomic/asc_set_atomic_min.md) | 设置计算结果以原子比较的方式传输到GM。在拷贝前，将待传输的int16_t数据与GM中已有数据进行逐元素比较，并将最小值写入GM。 |
-| [asc_set_store_atomic_config](simd_atomic/asc_set_store_atomic_config.md)| 设置原子操作使能位与原子操作类型的值。 |
+| [asc_set_store_atomic_config_v1](simd_atomic/asc_set_store_atomic_config_v1.md)| 设置原子操作使能位与原子操作类型的值，适用于Atlas A3 训练系列产品/Atlas A3 推理系列产品和Atlas A2 训练系列产品/Atlas A2 推理系列产品。 |
+<cann-filter npu_type="950">
+| [asc_set_store_atomic_config_v2](simd_atomic/asc_set_store_atomic_config_v2.md)| 设置原子操作使能位与原子操作类型的值，适用于Ascend 950PR/Ascend 950DT。 |
+</cann-filter>
 | [asc_get_store_atomic_config](simd_atomic/asc_get_store_atomic_config.md)| 获取原子操作使能位与原子操作类型的值。 |
 | [asc_set_atomic_none](simd_atomic/asc_set_atomic_none.md) | 清空原子操作的状态。 |
 
