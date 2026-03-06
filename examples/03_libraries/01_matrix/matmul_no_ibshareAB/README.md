@@ -56,7 +56,7 @@
     其中A的形状为[128, 384]，B的形状为[384, 256]，C的形状为[128, 256]。
 
     matmul_no_ibshareAB算子代码数据处理说明图示(A矩阵和B矩阵不切分处理)：  
-    ![alt text](./pictures/matmul_ABshare.png)
+    ![alt text](./pictures/matmul_noABshare.png)
 
 
   - 调用实现  

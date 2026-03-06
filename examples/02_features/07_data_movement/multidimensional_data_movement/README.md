@@ -37,12 +37,13 @@
   - kernel实现   
     输入数据从GM搬运至VECIN时，通过配置搬入的维度和对应的Stride，实现2D Padding，将GM上[2, 8]的数据，搬运至VECIN并Padding为[4, 16]。
     ```
-    // 2维数据搬运，xShape：[2, 8]，搬运8列2行数据，左Padding 3，上Padding 1，右Padding 5，下Padding 1，最终输出yShape：[4, 16]
+    // 2D Padding场景，2维数据搬运
+    // xGmShape：[2, 8]，搬运8列2行数据，左Padding 3，上Padding 1，右Padding 5，下Padding 1，xLocalShape：[4, 16]
     AscendC::NdDmaLoopInfo<2> loopInfo{{1, 8}, {1, 16}, {8, 2}, {3, 1}, {5, 1}};
     AscendC::NdDmaParams<T, 2> params{loopInfo, 0};  // padding的值为0
     AscendC::NdDmaDci();  // 刷新cache
-    static constexpr NdDmaConfig CFG;  // // 使用默认参数，也可以不传
-    AscendC::DataCopy<T, 2, CFG>(xLocal, xGm, params);
+    static constexpr AscendC::NdDmaConfig dmaConfig;  // // 使用默认参数，也可以不传
+    AscendC::DataCopy<T, 2, dmaConfig>(xLocal, xGm, params);
     ```
 
   - 调用实现  

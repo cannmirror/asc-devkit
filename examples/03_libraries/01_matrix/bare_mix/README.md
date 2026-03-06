@@ -31,18 +31,19 @@
 - 算子规格：
 
   <table>
-  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="4" align="center">MatmulLeakyRelu</td></tr>
+  <tr><td rowspan="1" align="center">算子类型(OpType)</td><td colspan="5" align="center">Matmul</td></tr>
   </tr>
-  <tr><td rowspan="3" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td></tr>
-  <tr><td align="center">a</td><td align="center">128 * 256</td><td align="center">float16</td><td align="center">ND</td></tr>
-  <tr><td align="center">b</td><td align="center">256 * 128</td><td align="center">float16</td><td align="center">ND</td></tr>
-  </tr>
-  </tr>
-  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">128 * 128</td><td align="center">float</td><td align="center">ND</td></tr>
+  <tr><td rowspan="4" align="center">算子输入</td><td align="center">name</td><td align="center">shape</td><td align="center">data type</td><td align="center">format</td><td align="center">isTrans</td></tr>
+  <tr><td align="center">a</td><td align="center">m*k</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">b</td><td align="center">k*n</td><td align="center">float16</td><td align="center">ND</td><td align="center">false</td></tr>
+  <tr><td align="center">bias</td><td align="center">1*n</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
   </tr>
   </tr>
-  <tr><td rowspan="1" align="center">核函数名</td><td colspan="4" align="center">baremix_custom</td></tr>
+  <tr><td rowspan="1" align="center">算子输出</td><td align="center">c</td><td align="center">m*n</td><td align="center">float</td><td align="center">ND</td><td align="center">-</td></tr>
+  </tr>
+  <tr><td rowspan="1" align="center">核函数名</td><td colspan="5" align="center">baremix_custom</td></tr>
   </table>
+
 - 算子实现： 
 
   - Kernel实现  
@@ -50,7 +51,7 @@
     ```
     C = A * B + Bias
     ```
-    其中A的形状为[128, 256], B的形状为[256, 128], C的形状为[128, 128]。
+    其中A的形状为[128, 256]，B的形状为[256, 128]，Bias的形状为[1, 128]，C的形状为[128, 128]。
 
     LeakyRelu算子的数学表达式为：
     ```
