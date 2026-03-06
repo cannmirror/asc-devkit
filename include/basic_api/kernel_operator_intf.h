@@ -18,7 +18,7 @@
     ((__NPU_ARCH__ == 5102) || (__NPU_ARCH__ == 3003) ||    \
      (__NPU_ARCH__ == 3113) || (__NPU_ARCH__ == 3510)) || defined(__ASC_NPU_HOST__)
 // MICRO API
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 #endif
 #include "kernel_prof_trace_intf.h"
 #include "kernel_operator_data_copy_intf.h"

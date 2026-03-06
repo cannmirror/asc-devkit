@@ -15,7 +15,7 @@
 #ifndef ASCENDC_MODULE_OPERATOR_VEC_BRCB_IMPL_H
 #define ASCENDC_MODULE_OPERATOR_VEC_BRCB_IMPL_H
 
-#include "micro_api/kernel_micro_intf.h"
+#include "reg_compute/kernel_reg_compute_intf.h"
 
 namespace AscendC {
 /* **************************************************************************************************

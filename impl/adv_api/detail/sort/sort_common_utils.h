@@ -40,7 +40,7 @@ template <> struct ExtractTypeBySize<sizeof(uint64_t)> {
 } // namespace Internal
 #endif
 
-namespace MicroAPI {
+namespace Reg {
 namespace Internal {
 
 template <typename T>
@@ -120,7 +120,7 @@ __simd_vf__ inline void TwiddleOutData(__ubuf__ U *src, __ubuf__ U *dst, uint32_
 }
 
 } // namespace Internal
-} // namespace MicroAPI
+} // namespace Reg
 
 } // namespace AscendC
 #endif // IMPL_SORT_SORT_COMMON_UTILS_H

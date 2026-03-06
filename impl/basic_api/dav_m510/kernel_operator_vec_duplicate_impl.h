@@ -12,7 +12,7 @@
 #include <type_traits>
 #include "kernel_operator_common_impl.h"
 #include "kernel_operator_vec_template_impl.h"
-#include "micro_api/kernel_micro_intf_impl.h"
+#include "reg_compute/kernel_reg_compute_intf_impl.h"
 
 namespace AscendC {
 template <typename T> constexpr __aicore__ inline void CheckDuplicateSupportedType()

@@ -38,7 +38,7 @@ constexpr auto singleSortElementCount = singleSortElementCountL311;
 constexpr auto singleSortElementCount = singleSortElementCountC310;
 #endif
 
-namespace MicroAPI {
+namespace Reg {
 namespace internal {
 __simd_callee__ inline void ConvertRegToWithShift(
     __ubuf__ uint32_t*& input, RegTensor<uint8_t>& dst, const int16_t offset)
@@ -1299,6 +1299,6 @@ __aicore__ inline void SortImpl(const LocalTensor<T> &dstLocal, const LocalTenso
     SortImpl<T, U, isReuseSource, config>(dstLocal, dstIndexLocal, srcLocal, srcIndexLocal, sharedTmpBuffer, calCount);
 }
 } // namespace internal
-} // namespace MicroAPI
+} // namespace Reg
 };     // namespace AscendC
 #endif // IMPL_SORT_SORT_SORT_IMPL_H

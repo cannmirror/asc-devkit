@@ -163,7 +163,7 @@ __aicore__ inline void TopKNSmallCompute(const LocalTensor<T> &dstValueLocal, co
     TopKNSmallGetTopKValue(dstValueLocal, dstIndexLocal, tmpLocal, k, tilling, topKInfo);
 }
 
-namespace MicroAPI {
+namespace Reg {
 namespace RadixSelectTopK {
 
 constexpr uint32_t LOAD_NUMS_PER_ROUND = 256;
@@ -1307,7 +1307,7 @@ __aicore__ inline void TopKNSmall(const LocalTensor<T> &dstValueLocal, const Loc
 }
 
 }  // namespace RadixSelectTopK
-}  // namespace MicroAPI
+}  // namespace Reg
 
 template <typename T, bool isInitIndex = false, bool isHasfinish = false, bool isReuseSrc = false>
 __aicore__ inline void TopKNormal(const LocalTensor<T> &dstValueLocal, const LocalTensor<int32_t> &dstIndexLocal,

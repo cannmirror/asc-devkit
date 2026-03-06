@@ -25,7 +25,7 @@
 #endif
 
 namespace AscendC {
-namespace MicroAPI {
+namespace Reg {
 namespace Sin {
 const uint8_t SIN_FLOAT_NOREUSE_CALC_PROCEDURE = 3;
 const uint8_t SIN_FLOAT_REUSE_CALC_PROCEDURE = 2;
@@ -142,7 +142,7 @@ template <typename T> __aicore__ inline void SinPolynomialImpl(__ubuf__ T *dst, 
     uint16_t repeat = CeilDivision(calCount, oneRepSize);
     SinPolynomial<T>(dst, src, calCount, repeat);
 }
-} // namespace MicroAPI
+} // namespace Reg
 } // namespace Sin
 
 __aicore__ inline constexpr uint32_t GetSinTmpBufferLiveNode() {

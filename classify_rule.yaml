@@ -32,6 +32,10 @@ asc-devkit:
       - impl/utils/**/*.h
       - impl/experimental/tensor_api/utils/*.h
       - impl/c_api/instr_impl/npu_arch_2201/utils_impl/**/*.h
+      - impl/basic_api/reg_compute/kernel_reg_compute_struct_intf_impl.h
+      - impl/basic_api/reg_compute/kernel_reg_compute_common_intf_impl.h
+      - impl/basic_api/reg_compute/kernel_reg_compute_intf_impl.h
+      - impl/basic_api/reg_compute/dav_c310/kernel_reg_compute_datatype_impl.h
   llt:
     ut_check: true
     st_check: false

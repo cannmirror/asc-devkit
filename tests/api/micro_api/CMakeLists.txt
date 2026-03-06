@@ -20,11 +20,11 @@ set(ASCENDC_TEST_HEADER_FILES
     ${ASCENDC_DIR}
     ${ASCENDC_DIR}/include
     ${ASCENDC_DIR}/include/basic_api
-    ${ASCENDC_DIR}/include/micro_api
+    ${ASCENDC_DIR}/include/basic_api/reg_compute
     ${ASCENDC_DIR}/include/utils
     ${ASCENDC_DIR}/impl
     ${ASCENDC_DIR}/impl/basic_api
-    ${ASCENDC_DIR}/impl/micro_api
+    ${ASCENDC_DIR}/impl/basic_api/reg_compute
 )
 
 # # ================ micro_api kernel ut ================
