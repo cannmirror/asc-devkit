@@ -9,57 +9,24 @@
 */
 
 /*!
- * \file fixpipe_base.h
+ * \file instruction.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_BASE_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_BASE_H
-
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
-#include "impl/experimental/tensor_api/arch/arch_utils.h"
-#include "impl/experimental/tensor_api/tensor/pointer_impl.h"
-#include "impl/experimental/tensor_api/tensor/local_tensor_impl.h"
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_INSTRUCTION_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_INSTRUCTION_H
 
 namespace AscendC {
 namespace Te {
-constexpr uint32_t MAIN_LOOP_N_SIZE_3510 = 512;
-constexpr uint32_t CBURST_NUM_3510 = MAIN_LOOP_N_SIZE_3510 / BLOCK_CUBE;
-
-class CopyDeqTensorToFbuf3510 {
-public:
-    template <typename T>
-    __aicore__ inline void CopyDeqTensorToFbufImpl(const T& src, uint16_t calNSize, uint16_t nIterIndex)
-    {
-        auto dstAddr = reinterpret_cast<__fbuf__ uint64_t*>(AllocTempBuf(calNSize));
-        auto dst = MakeTensor(MakeFixbufmemPtr(dstAddr), src.Layout());
-        auto tileSrc = TileSrcTensor(src, calNSize, nIterIndex);
-        DataCopy(dst, tileSrc);
-        SetFpc(dstAddr);
-    }
-private:
-    template <typename T>
-    __aicore__ inline decltype(auto) TileSrcTensor(const T& src, uint16_t calNSize, uint16_t nIterIndex) {
-        auto coord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterIndex * MAIN_LOOP_N_SIZE_3510));
-        auto shape = MakeShape(1, calNSize);
-        return src(coord, shape);
-    }
-};
 
 class CopyMatrixCcToGmBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V>
-    __aicore__ inline void DataCopy(const T& dst, const U& src, const V& params)
+    template <const FixpipeTrait& trait, typename T, typename U, typename... Params>
+    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params)
     {
-        DataCopyImpl<trait, T, U, V>(dst, src, params, tuple_sequence<decltype(params)>{});
+        CopyMatrixCcToGm<trait.quantPre>(dst.Data().Get(), src.Data().Get(), params...);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, size_t... Is>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& tupleParams, Std::index_sequence<Is...>)
-    {
-        CopyMatrixCcToGm<trait.quantPre>(dst.Data().Get(), src.Data().Get(), Std::get<Is>(tupleParams)...);
-    }
-
     template <QuantMode_t quantPre, typename T, typename U>
     __aicore__ inline void CopyMatrixCcToGm(__gm__ T *dst, __cc__ U *src, uint32_t nSize, uint32_t mSize,
         uint32_t srcStride, uint32_t dstStride, uint8_t cacheMode, bool reluEn, uint8_t unitFlag, bool isChannelSplit,
@@ -78,29 +45,20 @@ private:
 
 class SetRegisterBase3510 {
 public:
-    template <typename T, typename U>
-    __aicore__ inline void SetRegister(const T& quant, const U& params)
+    template <typename... Params>
+    __aicore__ inline void SetRegister(const uint64_t& quant, const Params& ...params)
     {
         SetQuantPre(quant);
-        SetRegisterImpl<U>(params, tuple_sequence<decltype(params)>{});
+        SetParamsToRegister<uint64_t>(params...);
     }
-    template <typename T>
-    __aicore__ inline void SetRegister(const T& params)
+
+    template <typename... Params>
+    __aicore__ inline void SetRegister(const Params& ...params)
     {
-        SetRegisterImpl<T>(params, tuple_sequence<decltype(params)>{});
+        SetParamsToRegister<uint64_t>(params...);
     }
 
 private:
-    template <typename T, size_t... Is>
-    __aicore__ inline void SetRegisterImpl(const T& tupleParams, Std::index_sequence<Is...>)
-    {
-        if constexpr (sizeof...(Is) == 0) {
-            return;
-        } else {
-            SetParamsToRegister<uint64_t>(Std::get<Is>(tupleParams)...);
-        }
-    }
-
     template <typename T>
     __aicore__ inline void SetQuantPre(const T& quant)
     {
@@ -146,4 +104,4 @@ private:
 }
 }
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_BASE_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_INSTRUCTION_H

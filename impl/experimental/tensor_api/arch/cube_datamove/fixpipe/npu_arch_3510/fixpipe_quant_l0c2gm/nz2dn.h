@@ -9,64 +9,49 @@
 */
 
 /*!
- * \file fixpipe_quant_nz2nz_l0c2gm.h
+ * \file nz2dn.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_NZ2NZ_L0C2GM_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_NZ2NZ_L0C2GM_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2GM_NZ2DN_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2GM_NZ2DN_H
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_base.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
 
 namespace AscendC {
 namespace Te {
 
-class FixpipeNZ2NZSimpleQuant3510 : public CopyMatrixCcToGmBase3510, public SetRegisterBase3510 {
+class FixpipeNZ2DNSimpleQuant3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
     {
-        auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
-        SetRegister<V, decltype(registerParams)>(quant, registerParams);
-        auto copyParams = GenFixpipeQuantParams<trait, T, U>(dst, src);
-        DataCopy<trait, T, U, decltype(copyParams)>(dst, src, copyParams);
+        SetRegisterImpl<trait, T, U>(dst, src, quant);
+        DataCopyImpl<trait, T, U>(dst, src);
     }
 
 private:
-    template <typename T>
-    __aicore__ inline constexpr void CheckL0CNZTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-            "Fixpipe Layout->Shape->Row->ZeroDim, is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-            "Fixpipe Layout->Shape->Column->ZeroDim, is not Std::Int<16> type!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<FRACTAL_FIXED>>,
-            "Fixpipe Layout->Stride->Row->ZeroDim, is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
-            "Fixpipe Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
-    }
-
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        CheckL0CNZTemplate<T>();
-        CheckL0CNZTemplate<U>();
+        FormatCheckUtils3510 formatCheckInst;
+        formatCheckInst.CheckDNTemplate<T>();
+        formatCheckInst.CheckL0CNZTemplate<U>();
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenRegisterParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void SetRegisterImpl(const T& dst, const U& src, const V& quant)
     {
-        auto params = Std::make_tuple();
-        return params;
+        uint32_t dnNum = 1;
+        uint32_t srcNZMatrixStride = 0;
+        uint32_t dstDNMatrixStride = 0;
+        uint32_t srcNZC0Stride = 1;
+        SetRegisterBase3510 setRegisterInst;
+        setRegisterInst.SetRegister<V>(quant, dnNum, dstDNMatrixStride, srcNZMatrixStride, srcNZC0Stride);
     }
 
     template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenFixpipeQuantParams(const T& dst, const U& src)
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -79,35 +64,26 @@ private:
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
         uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
-        uint64_t quantPre = static_cast<uint64_t>(QuantMode_t::NoQuant);
         bool reluEn = false;
         uint8_t unitFlag = 0;
         bool isChannelSplit = false;
         bool nz2ndEn = false;
-        bool nz2dnEn = false;
-        auto params = Std::make_tuple(
+        bool nz2dnEn = true;
+        CopyMatrixCcToGmBase3510 copyInst;
+        copyInst.DataCopy<trait, T, U>(dst, src,
             nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
-        return params;
     }
 };
 
-
-class FixpipeNZ2NZVectorBase3510 : public CopyMatrixCcToGmBase3510, public CopyDeqTensorToFbuf3510 {
+class FixpipeNZ2DNVectorBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename S>
-    __aicore__ inline void FixpipeNZ2NZVectorEntrance(const T& dst, const U& src, const V& quant, const S& params)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename... Params>
+    __aicore__ inline void FixpipeNZ2DNVectorEntrance(const T& dst, const U& src, const V& quant, const Params& ...params)
     {
-        FixpipeNZ2NZVectorImpl<trait, T, U, V, S>(dst, src, quant, params, tuple_sequence<decltype(params)>{});
+        FixpipeNZ2DNVectorCompute<trait, T, U, V>(dst, src, quant, params...);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename S, size_t... Is>
-    __aicore__ inline void FixpipeNZ2NZVectorImpl(
-        const T& dst, const U& src, const V& quant, const S& tupleParams, Std::index_sequence<Is...>)
-    {
-        FixpipeNZ2NZVectorCompute<trait, T, U, V>(dst, src, quant, Std::get<Is>(tupleParams)...);
-    }
-
     template <const FixpipeTrait& trait, typename T, typename U, bool isTail>
     __aicore__ inline auto GenParams(const T& dst, const U& src)
     {
@@ -128,78 +104,70 @@ private:
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
         uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
-
         bool reluEn = false;
         uint8_t unitFlag = 0;
         bool isChannelSplit = false;
         bool nz2ndEn = false;
-        bool nz2dnEn = false;
+        bool nz2dnEn = true;
         auto params = Std::make_tuple(
             nSize, mSize, srcStride, dstStride, cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
         return params;
     }
 
     template <const FixpipeTrait& trait, typename T, typename U, typename V>
-    __aicore__ inline void FixpipeNZ2NZVectorCompute(const T& dst, const U& src, const V& quant, uint32_t nIterNum,
+    __aicore__ inline void FixpipeNZ2DNVectorCompute(const T& dst, const U& src, const V& quant, uint32_t nIterNum,
         uint32_t calNSize, uint32_t tailNSize)
     {
         auto mainLoopParam = GenParams<trait, T, U, false>(dst, src);
+        CopyMatrixCcToGmBase3510 copyInst;
+        CopyDeqTensorToFbuf3510 copyDeqTensorInst;
         for (uint16_t i = 0; i < nIterNum; ++i) {
-            CopyDeqTensorToFbufImpl(quant, calNSize, i);
+            copyDeqTensorInst.CopyDeqTensorToFbufImpl(quant, calNSize, i);
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
-            auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * CBURST_NUM_3510));
-            DataCopy<trait>(dst(dstCoord), src(srcCoord), mainLoopParam);
+            auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, i * MAIN_LOOP_N_SIZE_3510));
+            DataCopyWrapper<trait>(copyInst, dst(dstCoord), src(srcCoord),
+                mainLoopParam, tuple_sequence<decltype(mainLoopParam)>{});
         }
         if (tailNSize) {
             auto tailParam = GenParams<trait, T, U, true>(dst, src);
-            CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
+            copyDeqTensorInst.CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
             InsertSync();
             auto srcCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
-            auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * CBURST_NUM_3510));
-            DataCopy<trait>(dst(dstCoord), src(srcCoord), tailParam);
+            auto dstCoord = MakeCoord(MakeCoord(0, 0), MakeCoord(0, nIterNum * MAIN_LOOP_N_SIZE_3510));
+            DataCopyWrapper<trait>(copyInst, dst(dstCoord), src(srcCoord),
+                tailParam, tuple_sequence<decltype(tailParam)>{});
         }
+    }
+
+    template <const FixpipeTrait& trait, typename T, typename U, typename V, size_t... Is>
+    __aicore__ inline void DataCopyWrapper(const CopyMatrixCcToGmBase3510& copyInst, const T& dst, const U& src,
+        const V& tupleParams, Std::index_sequence<Is...>)
+    {
+        copyInst.DataCopy<trait>(dst, src, Std::get<Is>(tupleParams)...);
     }
 };
 
-class FixpipeNZ2NZVectorQuant3510 : public FixpipeNZ2NZVectorBase3510 {
+class FixpipeNZ2DNVectorQuant3510 : public FixpipeNZ2DNVectorBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
     {
-        auto params = GenTileParams<trait, T, U>(dst, src);
-        FixpipeNZ2NZVectorEntrance<trait, T, U, V, decltype(params)>(dst, src, quant, params);
+        SetRegisterImpl<trait, T, U>(dst, src);
+        DataCopyImpl<trait, T, U, V>(dst, src, quant);
     }
 
 private:
-    template <typename T>
-    __aicore__ inline constexpr void CheckL0CNZTemplate()
-    {
-        using type = typename T::elementType;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
-        using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<ShapeRow0, Std::Int<FRACTAL_FIXED>>,
-            "Fixpipe Layout->Shape->Row->ZeroDim, is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<ShapeColumn0, Std::Int<FRACTAL_FIXED>>,
-            "Fixpipe Layout->Shape->Column->ZeroDim, is not Std::Int<16> type!");
-
-        using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-        using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-        static_assert(Std::is_same_v<StrideRow0, Std::Int<FRACTAL_FIXED>>,
-            "Fixpipe Layout->Stride->Row->ZeroDim, is not Std::Int<16> type!");
-        static_assert(Std::is_same_v<StrideColumn0, Std::Int<1>>,
-            "Fixpipe Layout->Stride->Column->ZeroDim, is not Std::Int<1> type!");
-    }
-
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
-        CheckL0CNZTemplate<T>();
-        CheckL0CNZTemplate<U>();
+        FormatCheckUtils3510 formatCheckInst;
+        formatCheckInst.CheckDNTemplate<T>();
+        formatCheckInst.CheckL0CNZTemplate<U>();
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline auto GenTileParams(const T& dst, const U& src)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const V& quant)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -218,13 +186,21 @@ private:
             tailNSize = nSize % MAIN_LOOP_N_SIZE_3510;
             calNSize = MAIN_LOOP_N_SIZE_3510;
         }
-        auto params = Std::make_tuple(nIterNum, calNSize, tailNSize);
-        return params;
+        FixpipeNZ2DNVectorEntrance<trait, T, U, V>(dst, src, quant, nIterNum, calNSize, tailNSize);
+    }
+
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void SetRegisterImpl(const T& dst, const U& src)
+    {
+        uint32_t dnNum = 1;
+        uint32_t srcNZMatrixStride = 0;
+        uint32_t dstDNMatrixStride = 0;
+        uint32_t srcNZC0Stride = 1;
+        SetRegisterBase3510 setRegisterInst;
+        setRegisterInst.SetRegister(dnNum, dstDNMatrixStride, srcNZMatrixStride, srcNZC0Stride);
     }
 };
-
-
 }  // namespace Te
 }  // namespace AscendC
 
-#endif  // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_NZ2NZ_L0C2GM_H
+#endif  // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2GM_NZ2DN_H

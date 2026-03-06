@@ -15,9 +15,9 @@
 #ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2GM_H
 #define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_QUANT_L0C2GM_H
 
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_nz2dn_l0c2gm.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_nz2nd_l0c2gm.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_nz2nz_l0c2gm.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2gm/nz2dn.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2gm/nz2nd.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/fixpipe_quant_l0c2gm/nz2nz.h"
 
 namespace AscendC {
 namespace Te {
@@ -28,7 +28,7 @@ enum class QuantMode3510 : uint8_t { None, Scalar, Vector, Direct };
 template <typename T>
 __aicore__ inline constexpr Format3510 GetDataFormat()
 {
-    if constexpr (IsL0cNZFormat<T>::value) {
+    if constexpr (IsL0cNZFormat<T>::value || IsNZFormat<T>::value) {
         return Format3510::NZ;
     } else if constexpr (IsNDFormat<T>::value) {
         return Format3510::ND;
