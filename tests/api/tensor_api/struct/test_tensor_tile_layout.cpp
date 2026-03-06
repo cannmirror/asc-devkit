@@ -217,10 +217,10 @@ TEST_F(Tensor_Api_Layout, MakeMxLayout)
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(Zzlayout)), 2);
     EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxANDLayout)), 48);
     EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxANDLayout)), 16);
-    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxADNLayout)), 48);
+    EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxADNLayout)), 1); // 48
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(MxADNLayout)), 2);
-    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxBNDLayout)), 1);
-    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxBNDLayout)), 8);
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<0>(MxBNDLayout)), 8); // 1
+    EXPECT_EQ(AscendC::Std::get<1>(GetShape<1>(MxBNDLayout)), 48); // 8
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<0>(MxBDNLayout)), 1);
     EXPECT_EQ(AscendC::Std::get<0>(GetShape<1>(MxBDNLayout)), 1);
 }
@@ -580,7 +580,7 @@ TEST_F(Tensor_Api_Layout, TestOperator)
     auto coord3 = AscendC::Std::Int<7>{};
     auto shape3 = AscendC::Std::Int<2>{};
     auto stride3 = AscendC::Std::Int<5>{};
-    auto idxRes3 = Crd2IdxImpl(coord3, shape3, stride3);
+    auto idxRes3 = Crd2Idx(coord3, shape3, stride3);
     EXPECT_EQ(idxRes3, 35);
 
     // 2*2维度的layout
