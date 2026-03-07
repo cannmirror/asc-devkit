@@ -133,6 +133,7 @@ struct IsIntegralConstant<Std::Int<Value>> : Std::true_type {};
 template <typename T>
 constexpr bool IsIntegralConstantV = IsIntegralConstant<T>::value;
 
+constexpr uint32_t BLOCK_CUBE = 16;
 } // namespace Te
 } // namespace AscendC
 

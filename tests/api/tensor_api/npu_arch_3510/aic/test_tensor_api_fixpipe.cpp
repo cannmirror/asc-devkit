@@ -12,6 +12,8 @@
 #include "include/experimental/tensor_api/tensor.h"
 #include <mockcpp/mockcpp.hpp>
 
+#define GM_ADDR __gm__ uint8_t*
+
 class TEST_TENSOR_API_FIXPIPE : public testing::Test {
 protected:
     void SetUp() override {

@@ -11,6 +11,8 @@
 #include "tensor_api/stub/cce_stub.h"
 #include "include/experimental/tensor_api/tensor.h"
 
+#define GM_ADDR __gm__ uint8_t*
+
 class TEST_TENSOR_TILE_FIXPIPE : public testing::Test {
 protected:
     void SetUp()

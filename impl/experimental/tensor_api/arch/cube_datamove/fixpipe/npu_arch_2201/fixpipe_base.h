@@ -37,7 +37,7 @@ __aicore__ inline void CheckCoord(const T& dst, const U& src, const Coord& coord
     uint32_t dstCol1 = GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout);
     uint32_t srcRow1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
     uint32_t srcCol1 = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-    ASSERT((coordRow >= 0) && (coordCol >= 0) && (coordRow <= dstRow1 - srcRow1) && (coordCol <= dstCol1 - srcCol1));
+    assert((coordRow >= 0) && (coordCol >= 0) && (coordRow <= dstRow1 - srcRow1) && (coordCol <= dstCol1 - srcCol1));
 }
 
 template <typename T, typename Coord>

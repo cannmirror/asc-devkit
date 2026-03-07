@@ -11,6 +11,8 @@
 #include "tensor_api/stub/cce_stub.h"
 #include "include/experimental/tensor_api/tensor.h"
 
+#define GM_ADDR __gm__ uint8_t*
+
 class Tensor_Api_GEMM_Empty_Routing : public testing::Test {
 protected:
     void SetUp()
