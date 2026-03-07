@@ -289,6 +289,12 @@ __aicore__ inline void DumpTensorLocal2GMImpl(const LocalTensor<T>& src, uint32_
     dcci((__gm__ uint64_t*)g_sysPrintFifoSpace, cache_line_t::ENTIRE_DATA_CACHE, dcci_dst_t::CACHELINE_OUT);
     if (g_sysPrintFifoSpace != nullptr) {
         const Hardware position = GetPhyType(static_cast<TPosition>(src.GetPosition()));
+#ifdef ASCENDC_DUMP
+        if constexpr (GetTensorDataType<T>() == Internal::DumpTensorDataType::ACL_MAX) {
+            ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "dump tensor is not supported this data type\n");});
+            return;
+        }
+#endif
         if (position == Hardware::UB) {
             __asc_aicore::asc_dump_ubuf((__ubuf__ T*)src.GetPhyAddr(), desc, dumpSize);
         } else if (position == Hardware::L1) {

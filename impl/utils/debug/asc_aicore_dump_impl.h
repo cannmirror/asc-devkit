@@ -75,7 +75,6 @@ __aicore__ inline void set_dump_tlv_data(U src, __gm__ DumpTensorTlv* dumpTlv, u
 template <Hardware hardware, typename T, typename U>
 __aicore__ inline void asc_dump_impl(U src, uint32_t desc, uint32_t dumpSize)
 {
-    static_assert((get_dump_datatype<T>() != DumpTensorDataType::ACL_MAX), "dump tensor is not supported this data type\n");
     __gm__ DebugBlockHeadInfo* blockInfo = get_block_info();
     if (dumpSize <= 0 || blockInfo == nullptr) {
         return;
