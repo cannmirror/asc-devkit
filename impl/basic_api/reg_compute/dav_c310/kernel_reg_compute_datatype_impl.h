@@ -12,6 +12,13 @@
  * \file kernel_reg_compute_datatype_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("kernel_reg_compute_datatype_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use kernel_reg_compute_intf.h and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_DATATYPE_IMPL__
+#endif
+
 #ifndef ASCENDC_MODULE_REG_COMPUTE_DATATYPE_IMPL_H
 #define ASCENDC_MODULE_REG_COMPUTE_DATATYPE_IMPL_H
 
@@ -223,3 +230,9 @@ struct TypeGet<bool> {
 } // namespace Reg
 } // namespace AscendC
 #endif // ASCENDC_MODULE_REG_COMPUTE_DATATYPE_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_DATATYPE_IMPL__)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_DATATYPE_IMPL__
+#endif
+

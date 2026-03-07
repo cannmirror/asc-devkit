@@ -12,6 +12,13 @@
  * \file kernel_reg_compute_intf.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("kernel_reg_compute_impl_intf.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use kernel_reg_compute_intf.h and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_IMPL_INTF__
+#endif
+
 #ifndef ASCENDC_MODULE_REG_COMPUTE_IMPL_INTF_H
 #define ASCENDC_MODULE_REG_COMPUTE_IMPL_INTF_H
 
@@ -33,3 +40,9 @@
 #include "kernel_reg_compute_gather_mask_impl.h"
 #include "kernel_reg_compute_vec_fused_impl.h"
 #endif // ASCENDC_MODULE_REG_COMPUTE_IMPL_INTF_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_IMPL_INTF__)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_IMPL_INTF__
+#endif
+

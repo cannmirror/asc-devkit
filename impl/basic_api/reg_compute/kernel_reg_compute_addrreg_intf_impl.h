@@ -12,6 +12,13 @@
  * \file kernel_reg_compute_addrreg_intf_impl.h
  * \brief
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#pragma message("kernel_reg_compute_addrreg_intf_impl.h is an internal header file and must not be used directly. Functions or variables defined in this file maybe removed in the future. Please use kernel_reg_compute_intf.h and use public functions or variables defined in interface headers files.")
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_ADDRREG_INTF_IMPL__
+#endif
+
 #ifndef ASCENDC_KERNEL_REG_COMPUTE_ADDRREG_INTERFACE_IMPL_H
 #define ASCENDC_KERNEL_REG_COMPUTE_ADDRREG_INTERFACE_IMPL_H
 
@@ -57,3 +64,9 @@ __simd_callee__ inline AddrReg CreateAddrReg(uint16_t index0, uint32_t stride0, 
 } // namespace AscendC
 
 #endif // ASCENDC_KERNEL_REG_COMPUTE_ADDRREG_INTERFACE_IMPL_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_ADDRREG_INTF_IMPL__)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_ADDRREG_INTF_IMPL__
+#endif
+

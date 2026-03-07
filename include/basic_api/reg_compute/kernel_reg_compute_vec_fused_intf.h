@@ -11,6 +11,12 @@
 /* !
  * \file kernel_reg_compute_vec_fused_impl.h
  */
+
+#if !defined(_ASCENDC_INCLUDE_INTERNAL_HEADERS_)
+#define _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#define __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_FUSED_INTF_H__
+#endif
+
 #ifndef ASCENDC_MODULE_REG_COMPUTE_VEC_FUSED_INTERFACE_H
 #define ASCENDC_MODULE_REG_COMPUTE_VEC_FUSED_INTERFACE_H
 
@@ -37,3 +43,9 @@ __simd_callee__ inline void MulDstAdd(U& dstReg, U& srcReg0, U& srcReg1, MaskReg
 
 #include "../../impl/basic_api/reg_compute/kernel_reg_compute_vec_fused_intf_impl.h"
 #endif // ASCENDC_MODULE_REG_COMPUTE_VEC_FUSED_INTERFACE_H
+
+#if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_FUSED_INTF_H__)
+#undef _ASCENDC_INCLUDE_INTERNAL_HEADERS_
+#undef __UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_KERNEL_REG_COMPUTE_VEC_FUSED_INTF_H__
+#endif
+
