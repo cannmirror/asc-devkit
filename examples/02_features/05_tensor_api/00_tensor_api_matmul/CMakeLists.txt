@@ -18,6 +18,10 @@ add_executable(demo
     tensor_api_matmul.asc
 )
 
+include_directories(
+    /usr/local/Ascend/cann/x86_64-linux/asc/
+)
+
 target_link_libraries(demo PRIVATE
     tiling_api
     register
@@ -26,6 +30,15 @@ target_link_libraries(demo PRIVATE
     dl
 )
 
+
+# ======================================================================================
+# NPU 编译选项配置
+#
+# 说明：
+#   - 需根据实际部署的 NPU 硬件架构选择对应的 `npu-arch` 参数。
+# ======================================================================================
 target_compile_options(demo PRIVATE
     $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-2201>
+    # # 该NPU架构版本号暂未正式发布，后续可能会有变更，请关注正式版本发布信息
+    # $<$<COMPILE_LANGUAGE:ASC>:--npu-arch=dav-3510>
 )
