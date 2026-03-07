@@ -37,7 +37,6 @@ asc-devkit:
       - impl/basic_api/reg_compute/kernel_reg_compute_common_intf_impl.h
       - impl/basic_api/reg_compute/kernel_reg_compute_intf_impl.h
       - impl/basic_api/reg_compute/dav_c310/kernel_reg_compute_datatype_impl.h
-      - impl/basic_api/**/*.h
   llt:
     ut_check: true
     st_check: false
