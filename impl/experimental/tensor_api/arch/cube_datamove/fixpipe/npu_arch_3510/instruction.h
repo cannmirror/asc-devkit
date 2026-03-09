@@ -42,6 +42,32 @@ private:
         }
     }
 };
+class CopyMatrixCcToUbBase3510 {
+public:
+template <const FixpipeTrait& trait, typename T, typename U, typename... Params>
+    __aicore__ inline void DataCopy(const T& dst, const U& src, const Params& ...params)
+    {
+        CopyMatrixCcToUb<trait.quantPre>(dst.Data().Get(), src.Data().Get(), params...);
+    }
+
+private:
+
+    template <QuantMode_t quantPre, typename T, typename U>
+    __aicore__ inline void CopyMatrixCcToUb(__ubuf__ T *dst, __cc__ U *src, uint32_t nSize, uint32_t mSize,
+        uint32_t srcStride, uint32_t dstStride, uint8_t dualDstCtl, bool reluEn, uint8_t unitFlag, bool subBlockId,
+        bool nz2ndEn, bool nz2dnEn)
+    {
+        if ASCEND_IS_AIV {
+            return;
+        }
+        if constexpr (CURRENT_ARCH_VERSION == ArchVersion::V3510) {
+            copy_matrix_cc_to_ub(dst, src, 0, nSize, mSize, dstStride, srcStride, dualDstCtl, subBlockId, 0, unitFlag, static_cast<uint64_t>(quantPre),
+                reluEn, false, nz2ndEn, static_cast<uint64_t>(QuantMode_post::NoConv), 0, false, false, 0, false, false, false, false, false, 
+                nz2dnEn); 
+        }
+    }
+};
+
 
 class SetRegisterBase3510 {
 public:

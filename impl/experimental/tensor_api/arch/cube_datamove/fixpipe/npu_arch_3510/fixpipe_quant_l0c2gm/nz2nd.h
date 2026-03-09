@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Te {
 
-class FixpipeNZ2NDSimpleQuant3510 {
+class Fixpipe2GmNZ2NDSimpleQuant3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
@@ -81,7 +81,7 @@ private:
     }
 };
 
-class FixpipeNZ2NDVectorBase3510 {
+class Fixpipe2GmNZ2NDVectorBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename... Params>
     __aicore__ inline void FixpipeNZ2NDVectorEntrance(const T& dst, const U& src, const V& quant, const Params& ...params)
@@ -155,7 +155,7 @@ private:
 
 };
 
-class FixpipeNZ2NDVectorQuant3510 : public FixpipeNZ2NDVectorBase3510 {
+class Fixpipe2GmNZ2NDVectorQuant3510 : public Fixpipe2GmNZ2NDVectorBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)

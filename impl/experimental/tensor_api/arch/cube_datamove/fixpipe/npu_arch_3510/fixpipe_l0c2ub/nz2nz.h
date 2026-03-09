@@ -9,11 +9,11 @@
 */
 
 /*!
- * \file nz2dn.h
+ * \file nz2nz.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2GM_NZ2DN_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2GM_NZ2DN_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2NZ_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2NZ_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
@@ -21,39 +21,27 @@
 namespace AscendC {
 namespace Te {
 
-class Fixpipe2GmNz2DnBase3510 {
+class Fixpipe2UbNz2NzBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        SetRegisterImpl<trait, T, U>(dst, src);
         DataCopyImpl<trait, T, U, Coord>(dst, src, coord);
     }
 
 private:
-
     template <const FixpipeTrait& trait, typename T, typename U>
     __aicore__ inline constexpr void CheckTemplate()
     {
         using srcType = typename U::elementType;
         using dstType = typename T::elementType;
-        FormatCheckUtils3510 formatCheckInst;
-        formatCheckInst.CheckDNTemplate<T>();
-        formatCheckInst.CheckL0CNZTemplate<U>();
+
+        FormatCheckUtils3510 formatCheck;
+        formatCheck.CheckNZTemplate<T>();
+        formatCheck.CheckL0CNZTemplate<U>();
 #if defined(__NPU_ARCH__ ) && __NPU_ARCH__ == 3510
         static_assert(Std::is_one_of_v<Std::tuple<dstType, srcType>, Std::tuple<__gm__ float, __cc__ float>, 
             Std::tuple<__gm__ int32_t, __cc__ int32_t>>, "The data type is not supported.");
 #endif
-    }
-
-    template <const FixpipeTrait& trait, typename T, typename U>
-    __aicore__ inline void SetRegisterImpl(const T& dst, const U& src)
-    {
-        uint32_t dnNum = 1;
-        uint32_t srcNzMatrixStride = 0;
-        uint32_t dstDnMatrixStride = 0;
-        uint32_t srcNzC0Stride = 1;
-        SetRegisterBase3510 setRegisterInst;
-        setRegisterInst.SetRegister(dnNum, dstDnMatrixStride, srcNzMatrixStride, srcNzC0Stride);
     }
 
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
@@ -70,24 +58,24 @@ private:
             * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) - Std::get<0>(coord));
-        uint32_t srcStride =
+        uint32_t srcStride = 
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
-        uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
+        uint8_t dualDstCtl = trait.dualDstCtl;
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = trait.unitFlag;
-        bool isChannelSplit = trait.enableChannelSplit;
+        bool subBlockId = false;
         bool nz2ndEn = false;
-        bool nz2dnEn = true;
+        bool nz2dnEn = false;
         auto dstDNTensor = dst(coord, dst.Layout().Shape());
-        CopyMatrixCcToGmBase3510 copyInst;
-        copyInst.DataCopy<trait, T, U>(dstDNTensor, src, nSize, mSize, srcStride, dstStride, cacheMode,
-            reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
+        CopyMatrixCcToUbBase3510 copyInst;
+        copyInst.DataCopy<trait, T, U>(dstDNTensor, src, nSize, mSize, srcStride, dstStride, dualDstCtl,
+            reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
     }
 };
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2GM_NZ2DN_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2NZ_H

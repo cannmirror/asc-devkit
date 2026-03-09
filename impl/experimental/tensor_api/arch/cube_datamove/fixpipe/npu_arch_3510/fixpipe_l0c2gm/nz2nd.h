@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Te {
 
-class FixpipeNz2NdBase3510 {
+class Fixpipe2GmNz2NdBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {

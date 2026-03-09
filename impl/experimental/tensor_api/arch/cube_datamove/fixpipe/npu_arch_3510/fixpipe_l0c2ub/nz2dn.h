@@ -12,8 +12,8 @@
  * \file nz2dn.h
  * \brief
  */
-#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2GM_NZ2DN_H
-#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2GM_NZ2DN_H
+#ifndef IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2DN_H
+#define IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2DN_H
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/fixpipe_utils.h"
 #include "impl/experimental/tensor_api/arch/cube_datamove/fixpipe/npu_arch_3510/instruction.h"
@@ -21,7 +21,7 @@
 namespace AscendC {
 namespace Te {
 
-class Fixpipe2GmNz2DnBase3510 {
+class Fixpipe2UbNz2DnBase3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
@@ -73,21 +73,21 @@ private:
         uint32_t srcStride =
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
-        uint8_t cacheMode = GetCacheModeFromTensor(dst.Data().Get());
+        uint8_t dualDstCtl = trait.dualDstCtl;
 
         bool reluEn = trait.enableRelu;
         uint8_t unitFlag = trait.unitFlag;
-        bool isChannelSplit = trait.enableChannelSplit;
+        bool subBlockId = false;
         bool nz2ndEn = false;
         bool nz2dnEn = true;
         auto dstDNTensor = dst(coord, dst.Layout().Shape());
-        CopyMatrixCcToGmBase3510 copyInst;
-        copyInst.DataCopy<trait, T, U>(dstDNTensor, src, nSize, mSize, srcStride, dstStride, cacheMode,
-            reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
+        CopyMatrixCcToUbBase3510 copyInst;
+        copyInst.DataCopy<trait, T, U>(dstDNTensor, src, nSize, mSize, srcStride, dstStride, dualDstCtl,
+            reluEn, unitFlag, subBlockId, nz2ndEn, nz2dnEn);
     }
 };
 
 } // namespace Te
 } // namespace AscendC
 
-#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2GM_NZ2DN_H
+#endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_FIXPIPE_NPU_ARCH_3510_FIXPIPE_L0C2UB_NZ2DN_H

@@ -16,7 +16,7 @@
 #define IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
 
 #include "impl/experimental/tensor_api/atom/cube_datamove/copy_gm2l1.h"
-#include "impl/experimental/tensor_api/atom/cube_datamove/copy_l0c2gm.h"
+#include "impl/experimental/tensor_api/atom/cube_datamove/copy_l0c2out.h"
 #include "impl/experimental/tensor_api/atom/cube_datamove/copy_l12l0.h"
 
 #endif // IMPL_TENSOR_API_ATOM_CUBE_DATAMOVE_CUBE_DATAMOVE_IMPL_H
