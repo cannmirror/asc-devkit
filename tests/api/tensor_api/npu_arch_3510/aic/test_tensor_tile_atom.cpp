@@ -72,16 +72,27 @@ TEST_F(Tensor_Api_Atom, CopyL12L0Operation)
     auto dstL0B = MakeTensor(MakeL0BmemPtr(l0bDst), MakeLayout(shape, stride));
 
     auto atomCopy = MakeCopy(CopyL12L0{}, LoadDataTraitDefault{});
+    atomCopy.Call(dstL0A, srcL1);
 
     atomCopy.Call(dstL0A, srcL1, coord);
 
+    CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0A, srcL1);
+
     CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0A, srcL1, coord);
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0A, srcL1);
 
     Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0A, srcL1, coord);
 
+
+    atomCopy.Call(dstL0B, srcL1);
     atomCopy.Call(dstL0B, srcL1, coord);
 
+    CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0B, srcL1);
+
     CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}.Call(dstL0B, srcL1, coord);
+
+    Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0B, srcL1);
 
     Copy(CopyAtom<CopyTraits<CopyL12L0, LoadDataTraitDefault>>{}, dstL0B, srcL1, coord);
 

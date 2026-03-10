@@ -35,6 +35,11 @@ struct LoadDataTensor2Tensor {
     using type = LoadDataIgnore;
 };
 
+template <Hardware dstPos, Hardware srcPos, uint32_t Version, size_t dimension>
+struct LoadDataTensor2TensorNoCoord {
+    using type = LoadDataIgnore;
+};
+
 template <>
 struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V2201, FOUR_DIM_DATA>
 {
@@ -48,15 +53,27 @@ struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V2201, FO
 };
 
 template <>
-struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+struct LoadDataTensor2TensorNoCoord<Hardware::L0A, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
 {
     using type = LoadDataFourDim3510L12L0A;
 };
 
 template <>
-struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+struct LoadDataTensor2TensorNoCoord<Hardware::L0B, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
 {
     using type = LoadDataFourDim3510L12L0B;
+};
+
+template <>
+struct LoadDataTensor2Tensor<Hardware::L0A, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+{
+    using type = LoadDataFourDim3510L12L0AWithCoord;
+};
+
+template <>
+struct LoadDataTensor2Tensor<Hardware::L0B, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA>
+{
+    using type = LoadDataFourDim3510L12L0BWithCoord;
 };
 } // namespace Te
 } // namespace AscendC

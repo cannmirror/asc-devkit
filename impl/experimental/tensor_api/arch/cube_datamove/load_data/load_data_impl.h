@@ -33,7 +33,11 @@ template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typen
 __aicore__ inline typename Std::enable_if<VerifyingLoadDataTemplate<T, U>, void>::type 
 LoadData(const T& dst, const U& src)
 {
-    LoadData<trait, T, U>(dst, src, ZeroCoord2DType{});
+    constexpr Hardware dstPos = GetHardPos<T>();
+    constexpr Hardware srcPos = GetHardPos<U>();
+    using Tensor2Tensor = typename LoadDataTensor2TensorNoCoord<dstPos, srcPos, 
+        CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
+    Tensor2Tensor{}.template Run<trait, T, U>(dst, src);
 }
 
 template<const LoadDataTrait& trait = DEFAULT_LOAD_DATA_TRAIT, typename T, typename U, class Coord>
@@ -46,7 +50,6 @@ LoadData(const T& dst, const U& src, const Coord& coord)
         CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
     Tensor2Tensor{}.template Run<trait, T, U, Coord>(dst, src, coord);
 }
-
 } // namespace Te
 } // namespace AscendC
 #endif // IMPL_TENSOR_API_ARCH_CUBE_DATAMOVE_LOAD_DATA_LOAD_DATA_IMPL_H
