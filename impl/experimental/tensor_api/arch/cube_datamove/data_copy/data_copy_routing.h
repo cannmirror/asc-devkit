@@ -20,8 +20,8 @@
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_2201/data_copy_l12fb.h"
 
 #include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_gm2l1.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt.h"
-#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12bt_normal.h"
+#include "impl/experimental/tensor_api/arch/cube_datamove/data_copy/npu_arch_3510/data_copy_l12fb_normal.h"
 
 namespace AscendC {
 namespace Te {
@@ -59,12 +59,12 @@ struct DataCopyTensor2Tensor<Hardware::L1, Hardware::GM, ArchVersion::V3510, FOU
 
 template <>
 struct DataCopyTensor2Tensor<Hardware::BIAS, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = CopyCbufToBT3510;
+    using type = DataCopyFourDim3510L12BT;
 };
 
 template <>
 struct DataCopyTensor2Tensor<Hardware::FIXBUF, Hardware::L1, ArchVersion::V3510, FOUR_DIM_DATA> {
-    using type = CopyCbufToFB3510;
+    using type = DataCopyFourDim3510L12FB;
 };
 } // namespace Te
 } // namespace AscendC

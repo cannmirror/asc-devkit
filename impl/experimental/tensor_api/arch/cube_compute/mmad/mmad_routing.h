@@ -18,8 +18,8 @@
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_2201/mmad_details.h"
 #include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_2201/mmad_with_bias_details.h"
 
-#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/mmad_details.h"
-#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/mmad_with_bias_details.h"
+#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/mmad.h"
+#include "impl/experimental/tensor_api/arch/cube_compute/mmad/npu_arch_3510/mmad_with_bias.h"
 
 namespace AscendC {
 namespace Te {
@@ -58,19 +58,19 @@ struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::
 template<>
 struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::MAX, ArchVersion::V3510, FOUR_DIM_DATA>
 {
-    using type = MmadFourDim3510;
+    using type = Mmad3510;
 };
 
 template<>
 struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::L0C, ArchVersion::V3510, FOUR_DIM_DATA>
 {
-    using type = MmadWithBiasFourDim3510;
+    using type = MmadWithBias3510;
 };
 
 template<>
 struct MmadTensor2Tensor<Hardware::L0C, Hardware::L0A, Hardware::L0B, Hardware::BIAS, ArchVersion::V3510, FOUR_DIM_DATA>
 {
-    using type = MmadWithBiasFourDim3510;
+    using type = MmadWithBias3510;
 };
 } // namespace Te
 } // namespace AscendC
