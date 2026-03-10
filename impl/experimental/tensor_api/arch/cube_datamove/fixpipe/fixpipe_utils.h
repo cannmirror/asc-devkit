@@ -238,6 +238,8 @@ class FormatRegistorIgnore3510 {
 public:
     template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {}
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant) {}
 };
 
 } // namespace Te

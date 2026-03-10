@@ -19,11 +19,13 @@ protected:
     void SetUp() override {
         AscendC::SetGCoreType(1);
         is_mock_copy_matrix_cc_to_gm = true;
+        gm_addr_global = nullptr;
     }
     
     void TearDown() override {
         AscendC::SetGCoreType(0);
         is_mock_copy_matrix_cc_to_gm = false;
+        gm_addr_global = nullptr;
     }
 };
 
@@ -55,27 +57,43 @@ public:
         nLength_ = n;
         qAddr = reinterpret_cast<__cbuf__ uint64_t*>(0);
         l0cAddr = reinterpret_cast<__cc__ L0cT*>(0);
+        constexpr uint32_t base = 16;
         constexpr static FixpipeTrait trait(QUANT_MODE, false, false, 0, 0);
         auto l0cIterator = MakeL0CmemPtr(l0cAddr);
         auto l0cMatrixLayout = MakeL0CLayout(mLength_, nLength_);
         auto l0cTensor = MakeTensor(l0cIterator, l0cMatrixLayout);
         if constexpr (C_TYPE::format == CubeFormat::ND) {
-            n_size_global = n;
-            m_size_global = m;
+            if constexpr (HAS_COORD) {
+                n_size_global = n - base;
+                m_size_global = m - base;
+            } else {
+                n_size_global = n;
+                m_size_global = m;
+            }
             dst_stride_global = n;
             src_stride_global = C0_SIZE / sizeof(uint16_t) * CeilAlign(m, FRACTAL_FIXED) / FRACTAL_FIXED;
             NZ2ND_en_global = true;
             NZ2DN_en_global = false;
         } else if constexpr (C_TYPE::format == CubeFormat::NZ) {
-            n_size_global = CeilAlign(n, FRACTAL_FIXED);
-            m_size_global =  CeilAlign(m, C0_SIZE / sizeof(uint16_t));
+            if constexpr (HAS_COORD) {
+                n_size_global = CeilAlign(n - base, FRACTAL_FIXED);
+                m_size_global =  CeilAlign(m - base, C0_SIZE / sizeof(uint16_t));
+            } else {
+                n_size_global = CeilAlign(n, FRACTAL_FIXED);
+                m_size_global =  CeilAlign(m, C0_SIZE / sizeof(uint16_t));
+            }
             dst_stride_global = C0_SIZE / sizeof(DstT) * CeilAlign(m, FRACTAL_FIXED);
             src_stride_global = C0_SIZE / sizeof(uint16_t) * CeilAlign(m, FRACTAL_FIXED) / FRACTAL_FIXED;
             NZ2ND_en_global = false;
             NZ2DN_en_global = false;
         } else {
-            n_size_global = n;
-            m_size_global = m;
+            if constexpr (HAS_COORD) {
+                n_size_global = n -base;
+                m_size_global = m - base;
+            } else {
+                n_size_global = n;
+                m_size_global = m;
+            }
             dst_stride_global = m;
             src_stride_global = C0_SIZE / sizeof(uint16_t) * CeilAlign(m, FRACTAL_FIXED) / FRACTAL_FIXED;
             NZ2ND_en_global = false;
@@ -85,14 +103,32 @@ public:
         auto gmTensor = MakeGMTensor();
 
         if constexpr (QUANT_MODE == QuantMode_t::F322F16) {
-            Fixpipe<trait>(gmTensor, l0cTensor, (uint64_t)0);
+            if constexpr (HAS_COORD) {
+                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
+                Fixpipe<trait>(gmTensor, l0cTensor, (uint64_t)0, MakeCoord(base, base));
+            } else {
+                gm_addr_global = gmC_;
+                Fixpipe<trait>(gmTensor, l0cTensor, (uint64_t)0);
+            }
         } else if constexpr (QUANT_MODE == QuantMode_t::NoQuant) {
-            Fixpipe<trait>(gmTensor, l0cTensor);
+            if constexpr (HAS_COORD) {
+                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
+                Fixpipe<trait>(gmTensor, l0cTensor, MakeCoord(base, base));
+            } else {
+                gm_addr_global = gmC_;
+                Fixpipe<trait>(gmTensor, l0cTensor);
+            }
         } else {
             auto qIterator = MakeL1memPtr(qAddr);
             auto qMatrixLayout = MakeNDLayout<uint64_t>(1, nLength_);
             auto qTensor = MakeTensor(qIterator, qMatrixLayout);
-            Fixpipe<trait>(gmTensor, l0cIterator, qTensor);
+            if constexpr (HAS_COORD) {
+                gm_addr_global = gmTensor(MakeCoord(base, base), gmTensor.Layout().Shape()).Data().Get();
+                Fixpipe<trait>(gmTensor, l0cIterator, qTensor, MakeCoord(base, base));
+            } else {
+                gm_addr_global = gmC_;
+                Fixpipe<trait>(gmTensor, l0cIterator, qTensor);
+            }
         }
     }
 
@@ -162,5 +198,8 @@ KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, float, NoQuant, false)
 KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, NZ, float, float, NoQuant, false)
 // KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, DN, float, float, NoQuant, false)
 KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, float, NoQuant, true)
 KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, NZ, float, float, NoQuant, true)
 KERNEL_TENSOR_API_FIXPIPE_E2E(1, 16, 16, ND, float, half, F322F16, false)
+KERNEL_TENSOR_API_FIXPIPE_E2E(1, 128, 64, ND, float, half, F322F16, true)

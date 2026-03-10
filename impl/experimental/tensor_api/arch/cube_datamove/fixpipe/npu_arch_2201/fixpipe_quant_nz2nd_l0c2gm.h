@@ -22,16 +22,14 @@ namespace Te {
 
 class FixpipeNZ2ND2201SimpleQuant : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
     {
-        CheckCoord<T, U, Coord>(dst, src, coord);
         auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<S, decltype(registerParams)>(quant, registerParams);
         auto params = GenFixpipeQuantParams<trait, T, U>(dst, src);
-        auto dstNdTensor = MakeTensorWithCoord<T, Coord>(dst, coord, 0);
 
-        DataCopy<trait, T, U, decltype(params)>(dstNdTensor, src, params);
+        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -116,18 +114,18 @@ private:
 
 class FixpipeNZ2ND2201VectorBase : public Copy2201MatrixCcToGmBase, public Copy2201DeqTensorToFbuf {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename V, typename Coord>
-    __aicore__ inline void FixpipeNZ2NDVectorEntrance(const T& dst, const U& src, const S& quant, const Coord& coord, const V& params)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename V>
+    __aicore__ inline void FixpipeNZ2NDVectorEntrance(const T& dst, const U& src, const S& quant, const V& params)
     {
-        FixpipeNZ2NDVectorImpl<trait, T, U, S, V, Coord>(dst, src, quant, coord, params, tuple_sequence<decltype(params)>{});
+        FixpipeNZ2NDVectorImpl<trait, T, U, S, V>(dst, src, quant, params, tuple_sequence<decltype(params)>{});
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename V, typename Coord, size_t... Is>
+    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename V, size_t... Is>
     __aicore__ inline void FixpipeNZ2NDVectorImpl(
-        const T& dst, const U& src, const S& quant, const Coord& coord, const V& tupleParams, Std::index_sequence<Is...>)
+        const T& dst, const U& src, const S& quant, const V& tupleParams, Std::index_sequence<Is...>)
     {
-        FixpipeNZ2NDVectorCompute<trait, T, U, S, Coord>(dst, src, quant, coord, Std::get<Is>(tupleParams)...);
+        FixpipeNZ2NDVectorCompute<trait, T, U, S>(dst, src, quant, Std::get<Is>(tupleParams)...);
     }
 
     template <const FixpipeTrait& trait, typename T, typename U, bool isTail>
@@ -157,8 +155,8 @@ private:
         return params;
     }
 
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Coord>
-    __aicore__ inline void FixpipeNZ2NDVectorCompute(const T& dst, const U& src, const S& quant, const Coord& coord,
+    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    __aicore__ inline void FixpipeNZ2NDVectorCompute(const T& dst, const U& src, const S& quant,
         uint32_t nIterNum, uint32_t calNSize, uint32_t tailNSize, uint32_t dstOffset, uint32_t srcOffset)
     {
         auto mainLoopParam = GenParams<trait, T, U, false>(dst, src);
@@ -166,8 +164,8 @@ private:
             CopyDeqTensorToFbufImpl(quant, calNSize, i);
             InsertSync();
             auto coordZero = MakeCoord(Std::Int<0>{}, Std::Int<0>{});
-            auto srcTensor = MakeTensorWithCoord<U, Coord>(src, coordZero, srcOffset * i);
-            auto dstTensor = MakeTensorWithCoord<T, Coord>(dst, coord, dstOffset * i);
+            auto srcTensor = MakeTensorWithCoord<U>(src, coordZero, srcOffset * i);
+            auto dstTensor = MakeTensorWithCoord<T>(dst, coordZero, dstOffset * i);
 
             DataCopy<trait, T, U, decltype(mainLoopParam)>(dstTensor, srcTensor, mainLoopParam);
         }
@@ -176,8 +174,8 @@ private:
             CopyDeqTensorToFbufImpl(quant, tailNSize, nIterNum);
             InsertSync();
             auto coordZero = MakeCoord(Std::Int<0>{}, Std::Int<0>{});
-            auto srcTensor = MakeTensorWithCoord<U, Coord>(src, coordZero, srcOffset * nIterNum);
-            auto dstTensor = MakeTensorWithCoord<T, Coord>(dst, coord, dstOffset * nIterNum);
+            auto srcTensor = MakeTensorWithCoord<U>(src, coordZero, srcOffset * nIterNum);
+            auto dstTensor = MakeTensorWithCoord<T>(dst, coordZero, dstOffset * nIterNum);
 
             DataCopy<trait, T, U, decltype(tailParam)>(dstTensor, srcTensor, tailParam);
         }
@@ -186,14 +184,13 @@ private:
 
 class FixpipeNZ2ND2201VectorQuant : public FixpipeNZ2ND2201VectorBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename S, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const S& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, typename T, typename U, typename S>
+    __aicore__ inline void Run(const T& dst, const U& src, const S& quant)
     {
-        CheckCoord<T, U, Coord>(dst, src, coord);
         auto registerParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(registerParams)>(registerParams);
         auto params = GenParams<trait, T, U>(dst, src);
-        FixpipeNZ2NDVectorEntrance<trait, T, U, S, decltype(params), Coord>(dst, src, quant, coord, params);
+        FixpipeNZ2NDVectorEntrance<trait, T, U, S, decltype(params)>(dst, src, quant, params);
     }
 
 private:

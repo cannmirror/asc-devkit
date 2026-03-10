@@ -77,19 +77,19 @@ struct FormatRegistorFixpipe2Gm3510<Format3510::DN, Format3510::NZ, QuantMode351
 
 class FixpipeQuantFourDimL0C2GM3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord) {
-        Execute<trait>(dst, src, quant, coord);
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant) {
+        Execute<trait>(dst, src, quant);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const V& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void Execute(const T& dst, const U& src, const V& quant)
     {
         CheckFixpipeQuantParams<trait, T, U>();
         using FixpipeQuantL0C2GM =
             typename FormatRegistorFixpipe2Gm3510<GetDataFormat<T>(), GetDataFormat<U>(), GetQuantMode<trait>()>::type;
-        FixpipeQuantL0C2GM{}.template Run<trait, T, U, V, Coord>(dst, src, quant, coord);
+        FixpipeQuantL0C2GM{}.template Run<trait, T, U, V>(dst, src, quant);
     }
 };
 }  // namespace Te

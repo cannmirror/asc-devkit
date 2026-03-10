@@ -23,8 +23,8 @@ namespace Te {
 
 class Fixpipe2GmNZ2NZSimpleQuant3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant)
     {
         SetRegisterImpl<V>(quant);
         DataCopyImpl<trait, T, U>(dst, src);
@@ -52,10 +52,18 @@ private:
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
         auto srcLayout = src.Layout();
-        uint32_t nSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) *
-                         GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout);
-        uint32_t mSize = GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) *
-                         GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout);
+        uint32_t nSize = Std::min(
+            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout) *
+            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout)
+        );
+        uint32_t mSize = Std::min(
+            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout) *
+            GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout)
+        );
         uint32_t srcStride =
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(dstLayout);
@@ -149,8 +157,8 @@ private:
 
 class Fixpipe2GmNZ2NZVectorQuant3510 : public Fixpipe2GmNZ2NZVectorBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename V, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const V& quant, const Coord& coord)
+    template <const FixpipeTrait& trait, typename T, typename U, typename V>
+    __aicore__ inline void Run(const T& dst, const U& src, const V& quant)
     {
         DataCopyImpl<trait, T, U, V>(dst, src, quant);
     }

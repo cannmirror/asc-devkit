@@ -22,12 +22,10 @@ namespace Te {
 
 class FixpipetNz2Nz2201Base : public Copy2201MatrixCcToGmBase {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        CheckCoord<T, U, Coord>(dst, src, coord);
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         auto params = GenFixpipeParams<trait, T, U>(dst, src); 
-        auto dstNzTensor = MakeTensorWithCoord<T, Coord>(dst, coord, 0);
-        DataCopy<trait, T, U, decltype(params)>(dstNzTensor, src, params);
+        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -84,15 +82,13 @@ private:
 
 class FixpipetNz2Nd2201Base : public Copy2201MatrixCcToGmBase, public SetRegister2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        CheckCoord<T, U, Coord>(dst, src, coord);
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         auto ndParams = GenRegisterParams<trait, T, U>(dst, src);
         SetRegister<decltype(ndParams)>(ndParams);
         auto params = GenFixpipeParams<trait, T, U>(dst, src);
-        auto dstNDTensor = MakeTensorWithCoord<T, Coord>(dst, coord, 0);
 
-        DataCopy<trait, T, U, decltype(params)>(dstNDTensor, src, params);
+        DataCopy<trait, T, U, decltype(params)>(dst, src, params);
     }
 
 private:
@@ -174,18 +170,18 @@ private:
 
 class FixpipeFourDim2201L0C2GM : public FixpipetNz2Nz2201Base, public FixpipetNz2Nd2201Base {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        Execute<trait>(dst, src, coord);
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
+        Execute<trait>(dst, src);
     }
 
 private:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void Execute(const T& dst, const U& src) {
         if constexpr (IsL0cNZFormat<U>::value && IsL0cNZFormat<T>::value) {
-            FixpipetNz2Nz2201Base::Run<trait, T, U, Coord>(dst, src, coord);
+            FixpipetNz2Nz2201Base::Run<trait, T, U>(dst, src);
         } else if constexpr (IsL0cNZFormat<U>::value && IsNDFormat<T>::value) {
-            FixpipetNz2Nd2201Base::Run<trait, T, U, Coord>(dst, src, coord);
+            FixpipetNz2Nd2201Base::Run<trait, T, U>(dst, src);
         }
     }
 };

@@ -23,10 +23,10 @@ namespace Te {
 
 class Fixpipe2GmNz2NdBase3510 {
 public:
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         SetRegisterImpl<trait, T, U>(dst, src);
-        DataCopyImpl<trait, T, U, Coord>(dst, src, coord);
+        DataCopyImpl<trait, T, U>(dst, src);
     }
 
 private:
@@ -53,9 +53,9 @@ private:
         SetRegisterBase3510 setRegisterInst;
         setRegisterInst.SetRegister(ndNum, dstNdStride, srcNdStride);
     }
-    
-    template <const FixpipeTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void DataCopyImpl(const T& dst, const U& src, const Coord& coord)
+
+    template <const FixpipeTrait& trait, typename T, typename U>
+    __aicore__ inline void DataCopyImpl(const T& dst, const U& src)
     {
         CheckTemplate<trait, T, U>();
         auto dstLayout = dst.Layout();
@@ -63,11 +63,11 @@ private:
         uint32_t nSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(srcLayout)
             * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dstLayout) *
-            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout) - Std::get<1>(coord));
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dstLayout));
         uint32_t mSize = Std::min(GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(srcLayout)
             * GetEleFromLayout<decltype(srcLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(srcLayout),
             GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dstLayout) *
-            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout) - Std::get<0>(coord));
+            GetEleFromLayout<decltype(dstLayout), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dstLayout));
         uint32_t srcStride =
             GetEleFromLayout<decltype(srcLayout), AttrInfo::STRIDE, AttrInfo::COLUMN, 1>(srcLayout) / FRACTAL_FIXED;
         uint32_t dstStride = GetEleFromLayout<decltype(dstLayout), AttrInfo::STRIDE, AttrInfo::ROW, 1>(dstLayout);
@@ -78,9 +78,8 @@ private:
         bool isChannelSplit = trait.enableChannelSplit;
         bool nz2ndEn = true;
         bool nz2dnEn = false;
-        auto dstNDTensor = dst(coord, dst.Layout().Shape());
         CopyMatrixCcToGmBase3510 copyInst;
-        copyInst.DataCopy<trait, T, U>(dstNDTensor, src, nSize, mSize, srcStride, dstStride,
+        copyInst.DataCopy<trait, T, U>(dst, src, nSize, mSize, srcStride, dstStride,
             cacheMode, reluEn, unitFlag, isChannelSplit, nz2ndEn, nz2dnEn);
     }
 };
