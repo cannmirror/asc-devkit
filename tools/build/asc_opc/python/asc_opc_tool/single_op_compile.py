@@ -59,6 +59,24 @@ class SingleOpCompile:
         extra_params = op_info.get(GraphDefParam.EXTRA_PARAMS, {})
         params.update(extra_params)
         context_op_info.extra_params = params
+    
+    @staticmethod
+    def set_extra_settings_for_context(extra_settings, context, context_op_info):
+        if extra_settings is None or not isinstance(extra_settings, list):
+            return
+        for setting in extra_settings:
+            if not isinstance(setting, dict):
+                continue
+            setting_key = setting.get("key", "")
+            setting_value = setting.get("value", "")
+            setting_type = setting.get("type", "")
+            if setting_type == "addition":
+                logger.debug("[asc_opc] add key: {}, value {} to context".format(setting_key, setting_value))
+                context.add_addition(setting_key, setting_value)
+            if setting_type == "op_info.extra_params":
+                extra_params = context_op_info.extra_params
+                extra_params.update(setting_value)
+                logger.debug("[asc_opc] extra_params is {}".format(context_op_info.extra_params))
 
     def __get_single_check_impl_mode(self, op_info, impl_mode):
         op_func = op_info.get(OpcOptions.OP_FUNC_ATTR)
@@ -129,11 +147,13 @@ class SingleOpCompile:
                      str(kwargs), str(opt_input_mode), str(opt_output_mode), str(dyn_param_mode),
                      str(sub_kernel_option), str(output_path))
         tiling_key_list = self.__opc_compile_args.get(OpcOptions.TILING_KEY)
+        extra_settings = self.__op_info.get(CompileParam.EXTRA_SETTINGS, None)
         kernel_template_input = self.__opc_compile_args.get(OpcOptions.KERNEL_TEMPLATE_INPUT)
         if self.__op_info.get(OpcOptions.IS_DYNAMIC) or \
             self.__opc_compile_args.get(OpcOptions.OP_MODE) == OpModeType.DYNAMIC:
             with op_context.OpContext("dynamic"):
                 context = op_context.get_context()
+                self.set_extra_settings_for_context(extra_settings, context, context_op_info)
                 context.add_op_info(context_op_info)
                 context.add_addition(OpcOptions.OPTIONAL_INPUT_MODE, opt_input_mode)
                 context.add_addition(OpcOptions.OPTIONAL_OUTPUT_MODE, opt_output_mode)
@@ -156,6 +176,7 @@ class SingleOpCompile:
         elif dynamic_compile_static == "true":
             with op_context.OpContext("static"):
                 context = op_context.get_context()
+                self.set_extra_settings_for_context(extra_settings, context, context_op_info)
                 context.add_op_info(context_op_info)
                 context.add_addition(OpcOptions.OPTIONAL_OUTPUT_MODE, opt_output_mode)
                 context.add_addition(OpcOptions.OPTIONAL_INPUT_MODE, opt_input_mode)
@@ -176,6 +197,7 @@ class SingleOpCompile:
         else:
             with op_context.OpContext("prestatic"):
                 context = op_context.get_context()
+                self.set_extra_settings_for_context(extra_settings, context, context_op_info)
                 context.add_op_info(context_op_info)
                 context.add_addition(OpcOptions.OPTIONAL_OUTPUT_MODE, opt_output_mode)
                 context.add_addition(OpcOptions.OPTIONAL_INPUT_MODE, opt_input_mode)
