@@ -23,8 +23,8 @@ namespace Te {
 
 class CopyGmToCbufAlignV2NZBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
         DataCopyImpl<trait, T, U>(dst, src);
     }
 
@@ -88,8 +88,8 @@ private:
         auto srcStride = srcStrideSize * sizeof(type);
         auto dstStride = dstStrideSize * sizeof(type);
 
-        CopyGmToCbufAlignV2Base copy_gm_to_cbuf_align_v2_base;
-        copy_gm_to_cbuf_align_v2_base.DataCopy(dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
+        CopyGmToCbufAlignV2Base copyGmToCbufAlignV2;
+        copyGmToCbufAlignV2.DataCopy(dst, src, blockCount, blockLen, leftPaddingCnt, rightPaddingCnt, cacheMode, srcStride, dstStride);
     }
 };
 }

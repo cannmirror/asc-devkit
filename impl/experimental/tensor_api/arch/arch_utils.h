@@ -166,11 +166,11 @@ private:
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
-
-        constexpr bool isShapeRight = Std::is_constant<C0_SIZE / sizeof(type), ShapeRow0>::value 
-            && Std::is_constant<FRACTAL_FIXED, ShapeColumn0>::value;
-        constexpr bool isStrideRight = Std::is_constant<1, StrideRow0>::value 
-            && Std::is_constant<C0_SIZE / sizeof(type), StrideColumn0>::value;
+        constexpr auto c0Size = is_b4_type<type> ? C0_SIZE * 2 : C0_SIZE / sizeof(type);
+        constexpr bool isShapeRight =
+            Std::is_constant<c0Size, ShapeRow0>::value && Std::is_constant<FRACTAL_FIXED, ShapeColumn0>::value;
+        constexpr bool isStrideRight =
+            Std::is_constant<1, StrideRow0>::value && Std::is_constant<c0Size, StrideColumn0>::value;
 
         return (isShapeRight && isStrideRight);
     }
@@ -185,15 +185,15 @@ private:
         using type = typename T::elementType;
         // NZ shape (Int<16>, row) , (Int<C0Size>, column))
         using ShapeColumn0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::COLUMN, 0>::type;
-        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;        
+        using ShapeRow0 = typename GetFourDimType<T, AttrInfo::SHAPE, AttrInfo::ROW, 0>::type;
         // NZ stride (Int<C0Size>, N * C0Size + 16 * Int<C0Size>) , (Int<1>, row * (N * C0Size + 16 * Int<C0Size>)))
         using StrideColumn0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::COLUMN, 0>::type;
         using StrideRow0 = typename GetFourDimType<T, AttrInfo::STRIDE, AttrInfo::ROW, 0>::type;
-
-        constexpr bool isStrideRight = Std::is_constant<C0_SIZE / sizeof(type), StrideRow0>::value 
-            && Std::is_constant<1, StrideColumn0>::value;
-        constexpr bool isShapeRight = Std::is_constant<FRACTAL_FIXED, ShapeRow0>::value 
-            && Std::is_constant<C0_SIZE / sizeof(type), ShapeColumn0>::value;
+        constexpr auto c0Size = is_b4_type<type> ? C0_SIZE * 2 : C0_SIZE / sizeof(type);
+        constexpr bool isStrideRight =
+            Std::is_constant<c0Size, StrideRow0>::value && Std::is_constant<1, StrideColumn0>::value;
+        constexpr bool isShapeRight =
+            Std::is_constant<FRACTAL_FIXED, ShapeRow0>::value && Std::is_constant<c0Size, ShapeColumn0>::value;
 
         return (isShapeRight && isStrideRight);
     }

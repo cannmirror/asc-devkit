@@ -35,7 +35,11 @@ template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, type
 __aicore__ inline typename Std::enable_if<VerifyingDataCopyTemplate<T, U>, void>::type
 DataCopy(const T& dst, const U& src)
 {
-    DataCopy<trait, T, U>(dst, src, ZeroCoord2DType{});
+    constexpr Hardware dstTPos = GetHardPos<T>();
+    constexpr Hardware srcTPos = GetHardPos<U>();
+    using Tensor2Tensor = typename
+        DataCopyTensor2Tensor<dstTPos, srcTPos, CURRENT_ARCH_VERSION, FOUR_DIM_DATA>::type;
+    Tensor2Tensor{}.template Run<trait, T, U>(dst, src);
 }
 
 template <const DataCopyTrait& trait = DEFAULT_DATA_COPY_TRAIT, typename T, typename U, typename Coord>

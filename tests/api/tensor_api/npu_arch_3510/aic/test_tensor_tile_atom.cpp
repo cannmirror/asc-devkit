@@ -24,17 +24,15 @@ TEST_F(Tensor_Api_Atom, CopyGM2L1Operation)
     using namespace AscendC::Std;
     using namespace AscendC::Te;
 
-    constexpr uint32_t TILE_LENGTH = 128;
+    constexpr uint32_t TILE_LENGTH = 1024;
 
     __gm__ float src[TILE_LENGTH] = {0};
     __cbuf__ float dst[TILE_LENGTH] = {0};
 
     auto coord = MakeCoord(Int<20>{}, Int<30>{});
-    auto shape = MakeShape(MakeShape(Int<11>{}, Int<12>{}), MakeShape(Int<13>{}, Int<14>{}));
-    auto stride = MakeStride(MakeStride(Int<15>{}, Int<16>{}), MakeStride(Int<17>{}, Int<18>{}));
 
-    auto gmSrc = MakeTensor(MakeGMmemPtr(src), MakeLayout(shape, stride));
-    auto l1Dst = MakeTensor(MakeL1memPtr(dst), MakeLayout(shape, stride));
+    auto gmSrc = MakeTensor(MakeGMmemPtr(src), MakeNDLayout<float>(11, 12));
+    auto l1Dst = MakeTensor(MakeL1memPtr(dst), MakeNzLayout<float>(11, 12));
 
     auto atomCopy = MakeCopy(CopyGM2L1{}, DataCopyTraitDefault{});
     atomCopy.Call(l1Dst, gmSrc);

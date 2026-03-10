@@ -26,6 +26,10 @@ namespace Te {
 
 class DataCopyFourDim3510L12BT : public CopyL12BTBase {
 public:
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
+        Execute<trait>(dst, src, ZeroCoord2DType{});
+    }
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         Execute<trait>(dst, src, coord);

@@ -88,11 +88,17 @@ struct LocalTensor<TensorAttribute<EngineType, LayoutType>> {
 
     template <typename Coord>
     __aicore__ inline constexpr decltype(auto) operator[](const Coord& coord) {
+        if constexpr (is_b4_type<elementType>) {
+            return Data()[Layout()(coord) >> 1];
+        }
         return Data()[Layout()(coord)];
     }
 
     template <typename Coord>
     __aicore__ inline constexpr decltype(auto) operator[](const Coord& coord) const {
+        if constexpr (is_b4_type<elementType>) {
+            return Data()[Layout()(coord) >> 1];
+        }
         return Data()[Layout()(coord)];
     }
 

@@ -30,33 +30,59 @@ namespace Te {
 
 class DataCopyFourDim3510GM2L1 {
 public:
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
+        Execute<trait>(dst, src);
+    }
+
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         Execute<trait>(dst, src, coord);
     }
 
 private:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Execute(const T& dst, const U& src) {
         if constexpr (IsNDFormat<U>::value && IsNDFormat<T>::value) {
             CopyGmToCbufAlignV2NDBase nd2ndStrategy;
-            nd2ndStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nd2ndStrategy.Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsNZFormat<T>::value) {
             CopyGmToCbufMultiNd2nzBase nd2nzStrategy;
-            nd2nzStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nd2nzStrategy.Run<trait, T, U>(dst, src);
         } else if constexpr (IsNDFormat<U>::value && IsZNFormat<T>::value) {
             CopyGmToCbufMultiNd2znBase nd2znStrategy;
-            nd2znStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nd2znStrategy.Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsNZFormat<T>::value) {
             CopyGmToCbufMultiDn2nzBase dn2nzStrategy;
-            dn2nzStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            dn2nzStrategy.Run<trait, T, U>(dst, src);
         } else if constexpr (IsDNFormat<U>::value && IsZNFormat<T>::value) {
             CopyGmToCbufMultiDn2ZnBase dn2znStrategy;
-            dn2znStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            dn2znStrategy.Run<trait, T, U>(dst, src);
         } else if constexpr (IsNZFormat<U>::value && IsNZFormat<T>::value) {
             CopyGmToCbufAlignV2NZBase nz2nzStrategy;
-            nz2nzStrategy.Run<trait, T, U, Coord>(dst, src, coord);
+            nz2nzStrategy.Run<trait, T, U>(dst, src);
+        } else {
+            // assert error
+            static_assert(Std::is_same_v<T, U>, "The data format is not supported.");
         }
+    }
+
+    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
+    __aicore__ inline void Execute(const T& dst, const U& src, const Coord& coord) {
+        uint32_t rowSize =
+            Std::min(GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dst.Layout())
+                         * GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dst.Layout()),
+                     GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 0>(src.Layout())
+                             * GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 1>(src.Layout())
+                         - Std::get<0>(coord));
+        uint32_t colSize = Std::min(
+            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dst.Layout())
+                * GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dst.Layout()),
+            GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(src.Layout())
+                    * GetEleFromLayout<decltype(src.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(src.Layout())
+                - Std::get<1>(coord));
+        auto sliceTensor = src(coord, MakeShape(rowSize, colSize));
+        Execute<trait>(dst, sliceTensor);
     }
 };
 

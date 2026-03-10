@@ -23,16 +23,9 @@ namespace Te {
 
 class CopyGmToCbufMultiNd2znBase {
 public:
-    template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
-    __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
-        auto shape = MakeShape(
-            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 1>(dst.Layout()) *
-            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::ROW, 0>(dst.Layout()),
-            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 1>(dst.Layout()) *
-            GetEleFromLayout<decltype(dst.Layout()), AttrInfo::SHAPE, AttrInfo::COLUMN, 0>(dst.Layout())
-            );
-        auto sliceTensor = src(coord, shape);
-        DataCopyImpl<trait>(dst, sliceTensor);
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
+        DataCopyImpl<trait>(dst, src);
     }
 
 private:
@@ -117,9 +110,9 @@ private:
         uint16_t loop4DstStride = static_cast<uint16_t>(dstNzMatrixStride * sizeof(type) / C0_SIZE);
 
         uint8_t cacheMode = GetCacheModeFromTensor(src.Data().Get());
-        CopyGmToCbufMultiNd2nzInstr copy_gm_to_cbuf_multi_nd2nz;
-        copy_gm_to_cbuf_multi_nd2nz.DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
-                                             loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
+        CopyGmToCbufMultiNd2nzInstr copyGmToCbufMultiNd2nz;
+        copyGmToCbufMultiNd2nz.DataCopy(dst, src, ndNum, loop2DstStride, loop3DstStride, loop4DstStride,
+                                         loop1SrcStride, cacheMode, nValue, dValue, loop4SrcStride, false);
     }
 };
 

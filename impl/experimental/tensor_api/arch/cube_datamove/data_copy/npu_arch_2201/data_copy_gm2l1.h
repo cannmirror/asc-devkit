@@ -416,6 +416,10 @@ private:
 class DataCopyFourDim2201GM2L1 : public CopyGmToCbufMultiND2NZBase, public CopyGmToCbufMultiDN2ZNBase,
     public CopyGmToCbufNZBase, public CopyGmToCbufNDBase {
 public:
+    template <const DataCopyTrait& trait, typename T, typename U>
+    __aicore__ inline void Run(const T& dst, const U& src) {
+        Execute<trait>(dst, src, ZeroCoord2DType{});
+    }
     template <const DataCopyTrait& trait, typename T, typename U, typename Coord>
     __aicore__ inline void Run(const T& dst, const U& src, const Coord& coord) {
         Execute<trait>(dst, src, coord);
