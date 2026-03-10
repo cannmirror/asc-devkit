@@ -16,6 +16,7 @@
 #define IMPL_UTILS_DEBUG_ASC_AICORE_TIME_IMPL_H
 
 #if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
+#ifndef ASCENDC_CPU_DEBUG
 #include "impl/utils/debug/asc_debug_utils.h"
 
 namespace __asc_aicore {
@@ -50,7 +51,7 @@ __aicore__ inline void asc_time_stamp_impl(uint32_t desc_id)
 
 __aicore__ inline void asc_time_stamp(uint32_t desc_id)
 {
-#if defined(ASCENDC_TIME_STAMP_ON) && !defined(ASCENDC_CPU_DEBUG)
+#if defined(ASCENDC_TIME_STAMP_ON)
     enable_asc_diagnostics();
     asc_time_stamp_impl(desc_id);
 #endif
@@ -58,19 +59,15 @@ __aicore__ inline void asc_time_stamp(uint32_t desc_id)
 
 __aicore__ inline void asc_prof_start()
 {
-#ifndef ASCENDC_CPU_DEBUG
 #if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
     bisheng::cce::metrics_prof_start();
-#endif
 #endif
 }
 
 __aicore__ inline void asc_prof_stop()
 {
-#ifndef ASCENDC_CPU_DEBUG
 #if __NPU_ARCH__ == 2201 || __NPU_ARCH__ == 3510
     bisheng::cce::metrics_prof_stop();
-#endif
 #endif
 }
 
@@ -78,20 +75,25 @@ __aicore__ inline void asc_prof_stop()
 template<pipe_t pipe>
 __aicore__ inline void asc_mark_stamp(uint16_t idx)
 {
-#ifndef ASCENDC_CPU_DEBUG
     bisheng::cce::mark_stamp<pipe>(idx);
-#endif
 }
 
 template<pipe_t pipe, uint16_t idx>
 __aicore__ inline void asc_mark_stamp()
 {
-#ifndef ASCENDC_CPU_DEBUG
     bisheng::cce::mark_stamp<pipe>(idx);
-#endif
 }
 #endif
 } // namespace __asc_aicore
+#else
+#include "kernel_log.h"
+
+namespace __asc_aicore {
+__aicore__ inline void asc_time_stamp(uint32_t desc_id) {
+    ASCENDC_ASSERT((false), "asc_time_stamp is not supported in cpu mode.");
+}
+} // namespace __asc_aicore
+#endif
 #endif
 
 #ifdef ASCENDC_TRACE_ON

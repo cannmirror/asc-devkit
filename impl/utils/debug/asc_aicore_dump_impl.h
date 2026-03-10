@@ -15,6 +15,7 @@
 #ifndef IMPL_UTILS_DEBUG_ASC_AICORE_DUMP_IMPL_H
 #define IMPL_UTILS_DEBUG_ASC_AICORE_DUMP_IMPL_H
 
+#ifndef ASCENDC_CPU_DEBUG
 #include "impl/utils/sys_macros.h"
 #include "impl/utils/common_types.h"
 #include "impl/utils/debug/asc_debug_types.h"
@@ -141,8 +142,32 @@ __aicore__ inline void asc_dump_l1buf(__cbuf__ T* input, uint32_t desc, uint32_t
     }
     set_ctrl(ctrlValue);
 }
+} // namespace __asc_aicore
+#else
+#include "kernel_log.h"
 
+namespace __asc_aicore {
+template<typename T>
+__aicore__ inline void asc_dump_gm(__gm__ T* input, uint32_t desc, uint32_t dumpSize) {
+    ASCENDC_ASSERT((false), "asc_dump_gm is not supported in cpu mode.");
 }
+
+template<typename T>
+__aicore__ inline void asc_dump_ubuf(__ubuf__ T* input, uint32_t desc, uint32_t dumpSize) {
+    ASCENDC_ASSERT((false), "asc_dump_ubuf is not supported in cpu mode.");
+}
+
+template<typename T>
+__aicore__ inline void asc_dump_cbuf(__cc__ T* input, uint32_t desc, uint32_t dumpSize) {
+    ASCENDC_ASSERT((false), "asc_dump_cbuf is not supported in cpu mode.");
+}
+
+template<typename T>
+__aicore__ inline void asc_dump_l1buf(__cbuf__ T* input, uint32_t desc, uint32_t dumpSize) {
+    ASCENDC_ASSERT((false), "asc_dump_l1buf is not supported in cpu mode.");
+}
+} // namespace __asc_aicore
+#endif
 
 #if defined(__UNDEF_ASCENDC_INCLUDE_INTERNAL_HEADERS_ASC_AICORE_DUMP_IMPL__)
 #undef __ASCENDC_INCLUDE_INTERNAL_HEADERS__
