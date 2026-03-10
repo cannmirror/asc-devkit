@@ -6,13 +6,14 @@
 
 ## 支持的产品
 
+- Ascend 950PR/Ascend 950DT
 - Atlas A3 训练系列产品/Atlas A3 推理系列产品
 - Atlas A2 训练系列产品/Atlas A2 推理系列产品
 
 ## 目录结构介绍
 
 ```
-├── 00_tensor_api_matmul
+├── 02_tensor_api_matmul_usage3
 │   └── scripts
 │       ├── gen_data.py         // 输入数据和真值数据生成脚本文件
 │       └── verify_result.py    // 真值对比文件

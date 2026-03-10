@@ -63,37 +63,37 @@ __aicore__ inline constexpr auto MakeFixbufmemPtr(Iterator iter) {
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeUBmemPtr(const U& byteOffset) {
+__aicore__ inline auto MakeUBmemPtr(const U& byteOffset) {
     return MakeUBmemPtr(reinterpret_cast<__ubuf__ T*>(get_imm(0) + byteOffset));
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeL1memPtr(const U& byteOffset) {
+__aicore__ inline auto MakeL1memPtr(const U& byteOffset) {
     return MakeL1memPtr(reinterpret_cast<__cbuf__ T*>(get_imm(0) + byteOffset));
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeL0AmemPtr(const U& byteOffset) {
+__aicore__ inline auto MakeL0AmemPtr(const U& byteOffset) {
     return MakeL0AmemPtr(reinterpret_cast<__ca__ T*>(get_imm(0) + byteOffset));
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeL0BmemPtr(const U& byteOffset) {
+__aicore__ inline auto MakeL0BmemPtr(const U& byteOffset) {
     return MakeL0BmemPtr(reinterpret_cast<__cb__ T*>(get_imm(0) + byteOffset));
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeL0CmemPtr(const U& byteOffset) {
+__aicore__ inline auto MakeL0CmemPtr(const U& byteOffset) {
     return MakeL0CmemPtr(reinterpret_cast<__cc__ T*>(get_imm(0) + byteOffset));
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeBiasmemPtr(const U& byteOffset) {
+__aicore__ inline auto MakeBiasmemPtr(const U& byteOffset) {
     return MakeBiasmemPtr(reinterpret_cast<__biasbuf__ T*>(get_imm(0) + byteOffset));
 }
 
 template <typename T, typename U>
-__aicore__ inline constexpr auto MakeFixbufmemPtr(const U& byteOffset) {
+__aicore__ inline auto MakeFixbufmemPtr(const U& byteOffset) {
     return MakeFixbufmemPtr(reinterpret_cast<__fbuf__ T*>(get_imm(0) + byteOffset));
 }
 
