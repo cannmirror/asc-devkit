@@ -22,6 +22,17 @@ TOP_PATH = os.path.join(FILE_PATH, "../../../")
 FRAMEWORK_PATH = os.path.join(TOP_PATH, "cmake/asc/legacy_modules/util")
 sys.path.append(FRAMEWORK_PATH)
 
+STUB_CPP_LICENSE = """/**
+* Copyright (c) 2025 Huawei Technologies Co., Ltd.
+* This program is free software, you can redistribute it and/or modify it under the terms and conditions of
+* CANN Open Software License Agreement Version 2.0 (the "License").
+* Please refer to the License for details. You may not use this file except in compliance with the License.
+* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED,
+* INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+* See LICENSE in the root of the software repository for the full text of the License.
+*/
+""" # to compare generated and stub code
+
 from extract_host_stub import *
 from update_host_stub import *
 from channel import v310_mode
@@ -236,7 +247,7 @@ struct AddCustomTilingData {{
         with open(os.path.join(TOP_PATH, "tests/python/aclrt_launch_kernel/stub_files/test_gen_host_stup_code.cpp"), 'r') as f:
             golden_code = f.read()
             f.close()
-        self.assertEqual(host_stub_code, golden_code)
+        self.assertEqual(STUB_CPP_LICENSE + host_stub_code, golden_code)
         
         dump_info ={'dump_type': 'printf','dump_size': 1048576}
         mode = CodeMode.MIX
@@ -308,7 +319,7 @@ struct AddCustomTilingData {{
             golden_code = f.read()
             f.close()
 
-        self.assertEqual(host_stub_code, golden_code)
+        self.assertEqual(STUB_CPP_LICENSE + host_stub_code, golden_code)
 
     @mock.patch('os.environ', {'ASCENDC_CCACHE_EXECUTABLE': '/usr/bin/ccache'})
     @mock.patch('extract_host_stub.get_mode_by_ofile')
