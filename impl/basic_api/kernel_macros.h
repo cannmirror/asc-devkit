@@ -94,19 +94,6 @@
 #define ASCENDC_MATMUL_AICORE
 #endif
 
-#if (defined(__NPU_ARCH__) &&                                               \
-     ((__NPU_ARCH__ == 1001) || (__NPU_ARCH__ == 2002) ||                   \
-      (__NPU_ARCH__ == 2201) || (__NPU_ARCH__ == 3002) ||                   \
-      (__NPU_ARCH__ == 3510) || (__NPU_ARCH__ == 5102)))
-#ifndef ASCENDC_DUMP
-#define ASCENDC_DUMP 1
-#endif
-#endif
-
-#if defined(ASCENDC_DUMP) && (ASCENDC_DUMP == 0)
-    #undef ASCENDC_DUMP
-#endif
-
 namespace AscendC {
 #if defined(__NPU_ARCH__) && ((__NPU_ARCH__ == 2002) || (__NPU_ARCH__ == 2201) ||           \
     (__NPU_ARCH__ == 3002) || (__NPU_ARCH__ == 3102) || (__NPU_ARCH__ == 3510) ||           \

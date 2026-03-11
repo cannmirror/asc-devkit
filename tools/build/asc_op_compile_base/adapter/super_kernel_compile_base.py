@@ -16,11 +16,4 @@ super kernel compile base
 
 def gen_super_dump_code(is_mix: bool, dump_size: int, offset: int):
     source = ""
-    source += "    #if defined ASCENDC_DUMP || defined ASCENDC_TIME_STAMP_ON\n"
-    source += "    constexpr uint32_t ASCENDC_DUMP_SIZE = 123;\n"
-    if is_mix:
-        source += f"    AscendC::InitDump(true, workspace + {offset}, ASCENDC_DUMP_SIZE);\n"
-    else:
-        source += f"    AscendC::InitDump(false, workspace + {offset}, ASCENDC_DUMP_SIZE);\n"
-    source += "    #endif\n"
     return source

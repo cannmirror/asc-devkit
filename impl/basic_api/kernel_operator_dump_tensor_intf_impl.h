@@ -40,6 +40,8 @@
 #include "dav_l300/kernel_operator_dump_tensor_impl.h"
 #elif (__NPU_ARCH__ == 3113)
 #include "dav_l311/kernel_operator_dump_tensor_impl.h"
+#elif (__NPU_ARCH__ == 3102)
+#include "dav_m310/kernel_operator_dump_tensor_impl.h"
 #endif
 
 #ifdef ASCENDC_CPU_DEBUG
@@ -55,7 +57,7 @@ __aicore__ inline void DumpTensor(const LocalTensor<T> &input, uint32_t desc, ui
 #else
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #endif
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     DumpTensorLocal2GMImpl(input, desc, dumpSize);
 #endif
     return;
@@ -67,7 +69,7 @@ __aicore__ inline void DumpTensor(const GlobalTensor<T>& input, uint32_t desc, u
 #else
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #endif
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     DumpTensorGM2GMImpl(input, desc, dumpSize);
 #endif
     return;
@@ -79,7 +81,7 @@ __aicore__ inline void DumpTensor(const GlobalTensor<T>& input, uint32_t desc, u
 #else
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #endif
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     DumpShapeImpl(shapeInfo);
     DumpTensorGM2GMImpl(input, desc, dumpSize);
 #endif
@@ -92,7 +94,7 @@ __aicore__ inline void DumpTensor(const LocalTensor<T>& input, uint32_t desc, ui
 #else
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpTensor is not supported in cpu mode.");});
 #endif
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     DumpShapeImpl(shapeInfo);
     DumpTensorLocal2GMImpl(input, desc, dumpSize);
 #endif
@@ -106,7 +108,7 @@ __aicore__ inline void DumpAccChkPoint(const LocalTensor<T> &input, uint32_t ind
 #else
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
 #endif
-#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_ACC_DUMP)
     if (countOff > input.GetSize()) {
         ASCENDC_ASSERT((false),
             { KERNEL_LOG(KERNEL_ERROR, "tensor offset [%d] exceeds limit [%d]",
@@ -125,7 +127,7 @@ __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &input, uint32_t in
 #else
     ASCENDC_ASSERT((false), {KERNEL_LOG(KERNEL_ERROR, "DumpAccChkPoint is not supported in cpu mode.");});
 #endif
-#if defined(ASCENDC_DUMP) || defined(ASCENDC_ACC_DUMP)
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0) || defined(ASCENDC_ACC_DUMP)
     if (countOff > input.GetSize()) {
         ASCENDC_ASSERT((false),
             { KERNEL_LOG(KERNEL_ERROR, "tensor offset [%d] exceeds limit [%d]",
@@ -142,14 +144,14 @@ __aicore__ inline void DumpAccChkPoint(const GlobalTensor<T> &input, uint32_t in
 template <class... Args>
 __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
 template <class... Args>
 __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
@@ -162,7 +164,7 @@ using ::printf;
 template<typename... Args>
 inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)...))
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     return printf(std::forward<Args>(args)...);
 #else
     return 0;
@@ -173,7 +175,7 @@ inline auto PRINTF(Args&&... args) -> decltype(printf(std::forward<Args>(args)..
 template <class... Args>
 inline void PRINTF(const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
@@ -183,7 +185,7 @@ inline void PRINTF(const char* fmt, Args&&... args)
 template <class... Args>
 __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
@@ -191,7 +193,7 @@ __aicore__ inline void PRINTF(__gm__ const char* fmt, Args&&... args)
 template <class... Args>
 __aicore__ inline void printf(__gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
     PrintfImpl(DumpType::DUMP_SCALAR, fmt, args...);
 #endif
 }
@@ -211,7 +213,7 @@ __aicore__ inline void StoreArgsOfInitDump(bool mixFlag, __gm__ uint8_t* dumpAdd
 template <class... Args>
 __aicore__ inline void AssertImpl(__gm__ const char* fmt, Args&&... args)
 {
-#ifdef ASCENDC_DUMP
+#if !(defined(ASCENDC_DUMP) && ASCENDC_DUMP == 0)
 #ifdef ASCENDC_DUMP_ASSERT_ONLY
     if (g_dumpAddrAssertOnlyReserved == nullptr) {
         InitDump(g_mixFlagAssertOnlyReserved, ONE_CORE_DUMP_SIZE);

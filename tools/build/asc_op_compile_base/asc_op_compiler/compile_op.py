@@ -1487,17 +1487,6 @@ def handle_dump_options(compile_info: CompileInfo, compile_option_tuple):
         compile_option_tuple.compile_options.append('-DASCENDC_DUMP_ASSERT_ONLY')
         global_var_storage.set_variable("ascendc_dump_assert_only", True)
 
-    # handle dump macro
-    if "assert" not in compile_info.dump_info["dump_type"] and "printf" not in compile_info.dump_info["dump_type"]:
-        compile_option_tuple.compile_options.append('-DASCENDC_DUMP=0')
-        length_before = len(compile_option_tuple.compile_options)
-        CommonUtility.remove_options(compile_option_tuple.compile_options, ['-DASCENDC_DUMP', '-DASCENDC_DUMP=1'])
-        length_after = len(compile_option_tuple.compile_options)
-        if length_before != length_after:
-            CommonUtility.print_compile_log(compile_info.kernel_name, \
-                "-DASCENDC_DUMP=1 is deleted because the feature is not used internally in src file", \
-                AscendCLogLevel.LOG_WARNING)
-
     # dump or acc or timestamp or recognize_simtvf will need extra workspace
     ascendc_enable_dump_workspace = ("-DASCENDC_DUMP=0" not in compile_option_tuple.compile_options) or \
         ("assert" == compile_info.dump_info["dump_type"]) or \

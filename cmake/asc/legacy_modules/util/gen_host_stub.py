@@ -67,16 +67,6 @@ def generate_host_stub_head_code(has_mix: bool, has_aic: bool, has_aiv: bool, du
 #include <dlfcn.h>
 #include <securec.h>
 ''')
-    buff.write('\n')
-
-    buff.write(r'''#ifndef ASCENDC_DUMP
-#define ASCENDC_DUMP 1
-#endif
-
-#if defined(ASCENDC_DUMP) && (ASCENDC_DUMP == 0)
-    #undef ASCENDC_DUMP
-#endif
-''')
 
     if dump_assert:
         buff.write(r'''

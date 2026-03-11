@@ -35,12 +35,10 @@ inline __gm__ uint8_t* __gm__ g_sysPrintFifoSpace = nullptr;
 namespace __asc_aicore {
 __aicore__ inline void enable_asc_diagnostics()
 {
-#if defined(__ENABLE_ASCENDC_PRINTF__)
 #if (!defined(ASCENDC_DUMP) || (ASCENDC_DUMP != 0)) || defined(ASCENDC_TIME_STAMP_ON)
     static const struct AscTlv __asc_debug_meta_section__ __attribute__ ((used, section (".ascend.meta"))) =
     {4, 4, 1};
 #endif // defined(ASCENDC_DUMP) || defined(ASCENDC_TIME_STAMP_ON)
-#endif // __ENABLE_ASCENDC_PRINTF__
 }
 
 template <typename T, typename U, typename... Args>
